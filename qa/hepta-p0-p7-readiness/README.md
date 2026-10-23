@@ -36,7 +36,7 @@ The original NDU v1 real grounded trial #3213 was negative (0.833594 quality vs 
 
 ## Why an all-PASS synthetic test is still HOLD_NO_GO
 
-Unit tests exercise only tool logic with simulated GitHub API responses. The production check fetches current GitHub PR heads twice (to detect drift), only considers exact-sha `pull_request` workflow runs, selects the newest attempt, requires all mandatory native jobs truly completed with `success`, and rejects incomplete pages rather than assuming missing runs passed. It does not verify the external independent origin of task labels, raw decoded outputs, authority signatures or hardware counters. That is why it *cannot* qualify scientific or production evidence alone.
+Unit tests exercise only tool logic with simulated GitHub API responses. The production check fetches current GitHub PR heads twice (to detect drift), only considers exact-sha `pull_request` workflow runs **associated with the same target PR number and linked PR-head SHA** (a different PR can reuse a commit), selects the newest matching attempt, requires all mandatory native jobs truly completed with `success`, and rejects incomplete pages rather than assuming missing runs passed. It does not verify the external independent origin of task labels, raw decoded outputs, authority signatures or hardware counters. That is why it *cannot* qualify scientific or production evidence alone.
 
 The project owner must explicitly review any prospective combined PR against unmodified security controls, registered scientific protocols, heldout outcome receipts, true cost/energy measurements, and independent authorization before converting any scientific/blocker status to closed.
 
@@ -47,3 +47,7 @@ The scoped workflow uses the already exercised `ubuntu-slim` runner to execute o
 The script's pinned candidate plan and all its strict CI/native/scientific requirements remain unchanged. A successful workflow is only proof that this observer was run on the named source, not that any original PR, Windows DELETE isolation, model, future/OOD evaluation, NDU benefit, hardware energy, or FinalUse gate passed. Missing, stale, cancelled, skipped, and failed source evidence remains `BLOCKED`; every P0–P7 capability gate remains `HOLD_NO_GO`.
 
 If the runner is unavailable, source checkout fails, or GitHub API is incomplete, retain the failure/queue evidence. Never replace it with a different branch's PASS or weaker checks.
+
+### Cross-PR run substitution regression
+
+When two open PRs share a commit SHA, GitHub Actions may list their workflows under that same SHA. An unrelated PR's success is **not** qualification evidence for the target PR. The read-only observer now requires each run's actual `pull_requests[].number` and linked `head.sha` to match the pinned PR and SHA. Empty, malformed, missing or aliased associations fail closed; a newer run for another PR cannot override a valid target-specific historical run. Synthetic tests cover these cases; exact-head CI must independently run them.
