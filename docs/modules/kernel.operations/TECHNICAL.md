@@ -175,6 +175,8 @@ Stale claimants, stale generations, changed semantic digests and changed predece
 
 Notes terminal settlement requires the complete application receipt checked by the original observation owner. Generic `reconcile(Committed/Rejected)`, `apply(string)` and `reject(string)` cannot supply this evidence. Once a Notes effect is indeterminate, generic rollback/cancellation cannot hide it from observer-only recovery. Cancellation while still queued remains available.
 
+The same cancellation boundary applies to indeterminate HOS2 installs. Generic rollback cannot replace native observation, while queued cancellation and the original observer's typed `Hos2ProtocolConflict` rollback remain available. The original HOS2 ordering and conflict tests qualify both paths.
+
 The original writer can separately prove a synchronous FinalUse claim/entry rejection before it invokes the target. Its private, non-serializable `NotesPreDispatchRejection` binds the immutable request and the exact current dispatch event/fence; public callers and targets cannot construct this permission. A failed durable rejection append leaves the operation indeterminate. This source-side no-entry proof is never an application receipt or permission to retire one.
 
 `production_notes_owner_tests.rs` exercises all five generic bypass attempts against real SQLite, successful observer recovery with the complete receipt, queued cancellation, both original FinalUse rejection stages and rejection persistence failure. The separately selected `notes_actual_ui_original_owner_roundtrip` uses the real companion Session/App and the original writer to qualify lost-reply recovery and receipt retirement; its fixture issuer is not production authority or native-kernel acceptance.
