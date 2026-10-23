@@ -231,7 +231,7 @@ mod qualification {
         if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_OBJECTIVE").is_some() {
             std::thread::sleep(Duration::from_secs(3));
             let identity: PublicFixtureIdentity =
-                serde_json::from_str(&std::env::var("HEPTA_SERVICE_IDENTITY")?)?;
+                serde_json::from_slice(std::env::var("HEPTA_SERVICE_IDENTITY")?.as_bytes())?;
             let request = serde_json::to_vec(
                 &serde_json::json!({"schema_version":1,"operation":"runtime.authbus.objective.sign.v1","body":objective_body(identity.spawn_generation)}),
             )?;
@@ -265,7 +265,7 @@ mod qualification {
                 "expired lease must not emit a feed prefix"
             );
             let identity: PublicFixtureIdentity =
-                serde_json::from_str(&std::env::var("HEPTA_SERVICE_IDENTITY")?)?;
+                serde_json::from_slice(std::env::var("HEPTA_SERVICE_IDENTITY")?.as_bytes())?;
             let provider = AgentdUnixFinalUseGrantProvider::from_stream(
                 issuer,
                 AgentdFinalUseIssuerPeer {
@@ -299,7 +299,7 @@ mod qualification {
                 16 * 1024,
             )?;
             let public: [u8; 32] =
-                serde_json::from_str(&std::env::var("HEPTA_SERVICE_PUBLIC_KEY")?)?;
+                serde_json::from_slice(std::env::var("HEPTA_SERVICE_PUBLIC_KEY")?.as_bytes())?;
             let key = ed25519_dalek::VerifyingKey::from_bytes(&public)?;
             let signature = read
                 .proof
@@ -364,7 +364,7 @@ mod qualification {
             "feed freshness from before read"
         );
         let identity: PublicFixtureIdentity =
-            serde_json::from_str(&std::env::var("HEPTA_SERVICE_IDENTITY")?)?;
+            serde_json::from_slice(std::env::var("HEPTA_SERVICE_IDENTITY")?.as_bytes())?;
         assert_eq!(observation_data.schema_version, 1);
         assert_eq!(observation_data.operation, "runtime.authority.observation.v1");
         assert_eq!(observation_data.authority_epoch, 1);
@@ -399,7 +399,7 @@ mod qualification {
             app_server_socket: layout.app_server_socket().to_path_buf(),
             layout,
         };
-        let public: [u8; 32] = serde_json::from_str(&std::env::var("HEPTA_SERVICE_PUBLIC_KEY")?)?;
+        let public: [u8; 32] = serde_json::from_slice(std::env::var("HEPTA_SERVICE_PUBLIC_KEY")?.as_bytes())?;
         let key = ed25519_dalek::VerifyingKey::from_bytes(&public)?;
         let mut unregistered_objective = issuer.try_clone()?;
         let objective_sequence = if writer_proof {
