@@ -361,3 +361,22 @@ entry. No deadline, lease lifetime, binding or revocation policy changes.
 [Original entry-clock qualification and failures](acceptance/2026-10-23-entry-clock/README.md)
 retain the real old-behavior negative, corrected17-test lease scope, remaining
 full-contracts clock failure and subsequent formatting/lint phase.
+
+The original general-lease verifier also exposes two bounded, same-owner local
+entry APIs. `with_joint_dispatch_boundary` validates two distinct opaque lease
+tokens against their complete current records under one mutex and one post-lock
+clock sample. `with_retired_predecessor_boundary` requires a live successor and
+an independently authenticated complete predecessor that is exactly expired,
+exactly revoked with its original tombstone, or expired and pruned with its exact
+retired revision. Both use distinct registry lease IDs in the same authority
+epoch; neither missing records nor arbitrary replacement revisions imply retirement.
+The local durable writer ID is independent and can remain unchanged.
+
+Callbacks receive complete original records and revision metadata, hold the
+original owner/revocation fence, and must never reenter that registry. These APIs
+create no issuer, key, proof, publisher generation or transferable authority.
+Trusted writer rotation still needs strict verification/CAS of the old retained
+proof, actual old-process quiescence, canonical sequence reservation/signing and
+post-I/O expiry checks. The two protected stores cannot be atomically committed
+by this guard: uncertain cross-store outcomes require refusal and exact retained
+state reconciliation, never reset or a new blind generation.

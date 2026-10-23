@@ -30,6 +30,10 @@ use std::sync::Mutex;
 #[path = "authority_lease_windows.rs"]
 mod windows;
 
+#[path = "authority_lease_pair_boundary.rs"]
+mod pair_boundary;
+pub use pair_boundary::AuthorityLeaseRetirement;
+
 const LEASE_SCHEMA_VERSION: u32 = 1;
 const STORE_SCHEMA_VERSION: u32 = 2;
 pub const MAX_AUTHORITY_LEASES: usize = 16_384;
