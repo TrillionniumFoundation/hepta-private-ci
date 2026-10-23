@@ -106,6 +106,19 @@ class SourceClusterTailTests(unittest.TestCase):
             with self.subTest(size=len(changed)), self.assertRaises(ValueError):
                 describe_source_cluster_tail(changed, registration)
 
+    def test_declared_source_reuse_is_exposed_not_miscounted(self):
+        registration, rows = fixture(easy_draws=10)
+        report = describe_source_cluster_tail(rows, registration)
+        self.assertEqual(report["source_strata"], 4)
+        self.assertEqual(report["declared_unique_original_source_ids"], 2)
+        self.assertEqual(report["declared_source_ids_reused_across_seeds"], 2)
+        self.assertFalse(report["sampling_unit_independence_verified"])
+        self.assertIsNone(report["independent_sampling_unit"])
+        self.assertEqual(report["within_seed_weighting_unit"],
+                         "original_source_within_training_seed")
+        self.assertFalse(report["independent_outcome_attestation_verified"])
+        self.assertFalse(report["scientific_superiority_established"])
+
     def test_reordering_does_not_change_tail_evidence(self):
         registration, rows = fixture(easy_draws=19)
         first = describe_source_cluster_tail(rows, registration)

@@ -154,6 +154,37 @@ class RegisteredFactorialTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             describe_registered_factorial(sample, cohort)
 
+    def test_repeated_cross_seed_sources_are_not_inflated_into_independence(self):
+        cohort, rows = fixture()
+        result = describe_registered_factorial(rows, cohort)
+        # Four seed/source strata describe just TWO original media/source
+        # identities; repeated model seeds do not acquire new raw evidence.
+        self.assertEqual(result["original_source_strata"], 4)
+        self.assertEqual(result["declared_unique_original_source_ids"], 2)
+        self.assertEqual(result["declared_source_ids_reused_across_seeds"], 2)
+        self.assertFalse(result["cross_seed_source_independence_verified"])
+        self.assertFalse(result["independent_outcome_attestation_verified"])
+
+    def test_distinct_declared_sources_do_not_imply_verified_independence(self):
+        cohort, rows = fixture()
+        amended = []
+        for r in rows:
+            if r.seed == 29:
+                r = replace(r, original_source="separate-" + r.original_source)
+            amended.append(r)
+        keys = tuple((r.seed, r.original_source, r.world, r.draw)
+                     for r in amended if r.arm == "base_static")
+        updated = RegisteredFactorialCohort(
+            keys,
+            frozenset(r.original_source for r in amended),
+            cohort.scoring_digest, cohort.physical_unit, cohort.failed_output_loss)
+        report = describe_registered_factorial(amended, updated)
+        self.assertEqual(report["original_source_strata"], 4)
+        self.assertEqual(report["declared_unique_original_source_ids"], 4)
+        self.assertEqual(report["declared_source_ids_reused_across_seeds"], 0)
+        # The names and hashes are caller-supplied, not external custody.
+        self.assertFalse(report["cross_seed_source_independence_verified"])
+
     def test_reordering_does_not_change_registered_descriptor(self):
         cohort, rows = fixture(repeated_easy_draws=3)
         a = describe_registered_factorial(rows, cohort)

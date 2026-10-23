@@ -200,7 +200,7 @@ independent sources. All digests and outcomes remain **caller-supplied**, and
 the four arms have not been run on a real pretrained common model here.
 
 \`registered_tail.py\` extends this **descriptive-only** admission with
-fractional CVaR90 at independent-original-source level. It reports separately:
+fractional CVaR90 over **declared original-source IDs within each training seed**. The same source appearing under two model seeds is **not** two independently acquired sources. It reports separately:
 
 * Worst 10% of per-source mean **decoded external losses**, balanced by
   training seed, original source, world and draw.
@@ -209,9 +209,16 @@ fractional CVaR90 at independent-original-source level. It reports separately:
 * Similarly clustered modeled physical-cost tail and the upper-tail
   distribution of the within-source NDU-minus-static paired loss contrasts.
 
+The report now distinguishes source-within-seed weighting strata from
+`declared_unique_original_source_ids` and explicitly counts original IDs
+reused across training seeds. Neither unique-looking IDs nor byte digests
+authenticate independent original-source acquisition; all independence and
+causal-superiority flags remain false. These additions do not modify the
+original frozen CVaR, pooling, matching or cost calculations.
+
 The difference of two CVaR values is **not** the CVaR of their paired
 difference. Both are reported without conflating their interpretations.
-The 90% level and independent grouping unit are frozen in code; no heldout
+The 90% level and within-seed weighting unit are frozen in code; no heldout
 test can select a more flattering tail threshold after outcome inspection.
 
 \`test_registered_tail.py\` proves in synthetic adversarial fixtures that
