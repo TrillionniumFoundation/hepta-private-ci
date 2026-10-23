@@ -6,9 +6,9 @@ codex_rust_crate(
     crate_name = "i18n_config",
 )
 
-# Generated @crates dependency labels refer to the versioned external target.
-# Preserve the canonical rust_library and expose only its Bazel alias.
+# crate_universe references patched path crates by their versioned directory.
 alias(
     name = "i18n-config-0.4.8",
     actual = ":i18n-config",
+    visibility = ["//visibility:public"],
 )
