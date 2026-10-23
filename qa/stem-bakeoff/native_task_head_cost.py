@@ -43,6 +43,16 @@ def _digest(value):
             and value != "0" * 64)
 
 
+def _finite_scalar(value):
+    """Reject out-of-range JSON integers without leaking OverflowError."""
+    if type(value) not in (int, float):
+        return False
+    try:
+        return math.isfinite(value)
+    except OverflowError:
+        return False
+
+
 def _json(raw):
     def pairs(items):
         result = {}
@@ -100,7 +110,7 @@ def _inputs(raw, manifest):
                 or type(item["present_mask"]) is not int or not 0 <= item["present_mask"] <= 31
                 or type(item["features"]) is not list
                 or len(item["features"]) != manifest["width"]
-                or any(type(x) not in (float, int) or not math.isfinite(x)
+                or any(not _finite_scalar(x)
                        or abs(x) > 3.4028234663852886e38 for x in item["features"])):
             raise NativeCostError("request feature identity, shape or values differ")
         if item["present_mask"] & 3 == 3:
@@ -129,15 +139,14 @@ def _response(result, index, request_sha, source, artifact_sha, manifest):
         raise NativeCostError("complete task prediction required")
     logits, probs = prediction["task_logits"], prediction["task_probabilities"]
     if (any(type(v) is not list or len(v) != manifest["task_count"]
-            or any(type(x) not in (float, int) or not math.isfinite(x) for x in v)
+            or any(not _finite_scalar(x) for x in v)
             for v in (logits, probs))
             or any(not 0 <= p <= 1 for p in probs) or abs(sum(probs) - 1) > 1e-6
             or type(prediction["predicted_class"]) is not int
             or prediction["predicted_class"] != max(range(len(probs)), key=probs.__getitem__)
             or type(prediction["accepted"]) is not bool
             or prediction["accepted"] != (max(probs) >= manifest["confidence_threshold"])
-            or type(prediction["gate"]) not in (float, int)
-            or not math.isfinite(prediction["gate"]) or not 0 <= prediction["gate"] <= 1
+            or not _finite_scalar(prediction["gate"]) or not 0 <= prediction["gate"] <= 1
             or prediction["authority"] != "DENY_ALL" or prediction["mode"] != "SHADOW_ONLY"):
         raise NativeCostError("task prediction values or research posture differ")
     return _sha(json.dumps(prediction, sort_keys=True, separators=(",", ":"),
