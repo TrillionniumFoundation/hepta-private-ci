@@ -155,6 +155,12 @@ class CellComparisonTest(unittest.TestCase):
         with self.assertRaisesRegex(GateError, "pre-registered resource overhead"):
             compare(plan, rows)
 
+    def test_huge_cost_allowance_fails_closed_without_overflow(self):
+        plan, rows = fixture()
+        plan["max_cpu_overhead_fraction"] = 10**500
+        with self.assertRaisesRegex(GateError, "pre-registered resource overhead"):
+            compare(plan, rows)
+
     def test_duplicate_receipt_and_contradictory_outcome_denied(self):
         plan, rows = fixture()
         rows[1]["observation_digest"] = rows[0]["observation_digest"]
