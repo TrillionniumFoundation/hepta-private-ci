@@ -65,6 +65,39 @@ class CohortFirewallTests(unittest.TestCase):
         v["splits"]["test"]["sources"][0]["image_sha256"] = v["splits"]["train"]["sources"][0]["image_sha256"]
         self.assertEqual(check_cohort(v, [self.old])["status"], "fail")
 
+    def test_task_id_aliases_are_rejected_across_and_within_splits(self):
+        # A task ID is a score/journal join key, independently of image bytes.
+        for first, second in (("train", "dev"), ("train", "test"),
+                              ("dev", "calibration"), ("calibration", "test")):
+            with self.subTest(first=first, second=second):
+                candidate = copy.deepcopy(self.new)
+                candidate["splits"][second]["sources"][0]["task_id"] = (
+                    candidate["splits"][first]["sources"][0]["task_id"])
+                with self.assertRaisesRegex(CohortContractError, "duplicate task_id"):
+                    check_cohort(candidate, [self.old])
+        candidate = copy.deepcopy(self.new)
+        duplicate = image(98765)
+        duplicate["task_id"] = candidate["splits"]["train"]["sources"][0]["task_id"]
+        candidate["splits"]["train"]["sources"].append(duplicate)
+        candidate["splits"]["train"]["count"] = 2
+        with self.assertRaisesRegex(CohortContractError, "duplicate task_id"):
+            check_cohort(candidate, [self.old])
+        historical = copy.deepcopy(self.old)
+        historical["splits"]["test"]["sources"][0]["task_id"] = (
+            historical["splits"]["train"]["sources"][0]["task_id"])
+        with self.assertRaisesRegex(CohortContractError, "duplicate task_id"):
+            check_cohort(self.new, [historical])
+
+    def test_noncanonical_task_ids_are_rejected_before_scoring(self):
+        for task_id in ("", " ", "two words", " leading", "trailing ",
+                        "x\\ny", "a/b", "a" * 129, "🚫", "\\t"):
+            with self.subTest(task_id=task_id):
+                candidate = copy.deepcopy(self.new)
+                candidate["splits"]["test"]["sources"][0]["task_id"] = task_id
+                with self.assertRaisesRegex(CohortContractError, "task_id"):
+                    check_cohort(candidate, [self.old])
+        self.assertEqual(check_cohort(self.new, [self.old])["status"], "pass")
+
     def test_bad_contract_fails_closed(self):
         for bad in [None, {}, {"schema": "bad"}, {"schema": "hepta.grounded-cohort.v1", "splits": {}}]:
             with self.subTest(bad=bad), self.assertRaises(CohortContractError):
@@ -162,6 +195,25 @@ class CohortFirewallTests(unittest.TestCase):
             old["splits"][split]["count"] = 400
         with self.assertRaisesRegex(CohortContractError, "comparison budget"):
             check_cohort(many, [old])
+
+    @unittest.skipUnless(hasattr(os, "O_NOFOLLOW") and hasattr(os, "symlink"),
+                         "no-follow open is unavailable on this platform")
+    def test_cli_does_not_follow_mutable_manifest_symlink(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            (root / "real.json").write_text(json.dumps(self.new))
+            (root / "alias.json").symlink_to(root / "real.json")
+            raw = json.dumps(self.old).encode()
+            (root / "history.json").write_bytes(raw)
+            args = [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
+                    "--candidate", str(root / "alias.json"),
+                    "--historical", str(root / "history.json"),
+                    "--historical-sha256", hashlib.sha256(raw).hexdigest(),
+                    "--output", str(root / "receipt.json")]
+            result = subprocess.run(args, capture_output=True, text=True, timeout=5)
+            self.assertEqual(result.returncode, 2, result.stderr)
+            self.assertEqual(json.loads((root / "receipt.json").read_text())["status"],
+                             "fail")
 
     def test_cli_refuses_unpinned_or_incomplete_history(self):
         with tempfile.TemporaryDirectory() as td:
