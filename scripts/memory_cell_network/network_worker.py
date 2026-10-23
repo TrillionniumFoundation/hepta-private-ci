@@ -8,6 +8,7 @@ from network_fences import Fences
 from parametric_owner import ParametricOwner, _name
 from tensor_contract import bounded_read, strict_json
 from network_wire import call, endpoint, fields
+from model_process import run_decoder
 
 
 class Worker:
@@ -37,12 +38,10 @@ class Worker:
         return self.fences.observe(scope, cell_id, snapshot)
 
     def _read_model(self, active, questions, control):
-        from parametric_worker import run
-
         config = strict_json(
             bounded_read(Path(active.directory) / "adapter_config.json", 64 * 1024)
         )
-        return run(
+        return run_decoder(
             dict(
                 model=self.model,
                 snapshot=active.directory,
@@ -53,7 +52,8 @@ class Worker:
                 rank=config["r"],
                 seed=2718,
                 control=control,
-            )
+            ),
+            cwd=self.root,
         )
 
     def _admit(self, scope, cell_id):

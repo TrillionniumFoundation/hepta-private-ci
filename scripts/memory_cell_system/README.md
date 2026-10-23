@@ -77,6 +77,17 @@ corrected fact must decode to its new value. Both groups must pass for exit 0.
 Source overlay accuracy is excluded. All raw text, token IDs, prompt identities,
 training receipts and checkpoint hashes remain available when a gate fails.
 The transport key is temporary and removed when the process group closes.
+Training and each decoder read execute in bounded child processes that terminate
+after returning their raw result. The coordinator and persistent TCP workers do
+not retain model tensors between calls. Child PIDs, exit status and load-inclusive
+wall time are retained; this mode does not claim hot-model serving latency.
+On Linux, a fresh Python bootstrap binds each child to its creating parent
+thread before importing model code. A killed worker therefore kills even a
+stopped decoder child. The caller waits in that same thread until normal exit
+or timeout and retains raw stderr and process receipts. Other platforms record
+that parent-death binding is unsupported. After a worker is killed, orphan
+reaping belongs to the host supervisor; observing a stopped process does not
+prove that this supervisor has reaped it.
 
 Freeze all `scripts/memory_cell*/*.py` files and Git HEAD during a run. The
 runner compares their complete identity before and after execution. Formatting,

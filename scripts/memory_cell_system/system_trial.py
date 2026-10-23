@@ -9,7 +9,6 @@ is evaluated separately by memory_cell_domain; neither trial proves general memo
 
 import argparse
 from concurrent.futures import ThreadPoolExecutor
-import gc
 import json
 from pathlib import Path
 import sys
@@ -26,7 +25,6 @@ for dependency in (
     sys.path.insert(0, str(SCRIPTS / dependency))
 
 from memory_service import MemoryService
-from parametric_trial import read_worker
 from prepare_parametric import prepare
 from system_common import (
     exact,
@@ -37,6 +35,7 @@ from system_common import (
     wait_for_claim,
 )
 from system_network import NetworkSession
+from system_runtime import read_worker, train_once
 
 SCOPE = "memory-service-network-development"
 TEMPLATE = (
@@ -47,13 +46,12 @@ COLORS = ("red", "blue", "green", "yellow", "black", "white", "orange", "purple"
 
 def train(service, model, output, label, steps=256):
     print(json.dumps({"stage": label, "steps": steps}), flush=True)
-    result = service.work_once(model, steps=steps)
+    result = train_once(service, model, output, label, steps)
     retain(output / f"{label}.json", result)
     if result["status"] != "published":
         raise AssertionError(
             f"current complete replay was not published: {result['status']}"
         )
-    gc.collect()
     return service.parameter_binding()["active"]
 
 
@@ -95,6 +93,7 @@ def run(model, output):
             "corrected_source_exact_value_required": True,
             "source_overlay_excluded_from_parameter_metrics": True,
             "physical_hosts": 1,
+            "training_and_decoder_execution": "bounded_child_processes",
             "production_accepted": False,
         },
     )
@@ -111,7 +110,9 @@ def run(model, output):
         output / "initial-writes-and-overlay.json", {"writes": writes, "reads": overlay}
     )
     with ThreadPoolExecutor(max_workers=1) as executor:
-        future = executor.submit(service.work_once, model, steps=32)
+        future = executor.submit(
+            train_once, service, model, output, "background-worker", 32
+        )
         claim = wait_for_claim(service.queue, writes[-1].training_job_id, future)
         deadline = time.monotonic() + 60
         while not list(service.artifacts.glob("job-*/")):
