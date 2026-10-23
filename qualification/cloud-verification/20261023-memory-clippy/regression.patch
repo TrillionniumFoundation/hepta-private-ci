@@ -1,0 +1,95 @@
+--- a/codex-rs/hepta-memory/src/cognitive_intelligence_writer_tests.rs
++++ b/codex-rs/hepta-memory/src/cognitive_intelligence_writer_tests.rs
+@@ -15,6 +15,7 @@
+ use crate::MemoryRevisionDraft;
+ use crate::MemoryVerification;
+ use crate::SourceDraft;
++use crate::StableMemoryId;
+ use crate::cognitive_intelligence_writer::canonical_entity_id;
+ use crate::cognitive_kg_store::MAX_PROJECTION_SCOPES;
+ use crate::cognitive_test_support::agent_id;
+@@ -138,6 +139,48 @@
+             .await
+             .expect("stale source rollback"),
+         sources_before_stale
++    );
++
++    assert_eq!(
++        store
++            .latest_memory(&access, &first.memory.id.memory_id)
++            .await
++            .expect("stale CAS preserves the complete current revision"),
++        corrected.memory
++    );
++    let missing_id = StableMemoryId::for_key(
++        store.owner_agent_id(),
++        &CognitiveScope::AgentPrivate,
++        "never-created-memory",
++    );
++    let missing = store
++        .correct_with_kg(
++            &access,
++            &missing_id,
++            2,
++            &source("missing-correction", stale_content),
++            &revision(stale_content),
++            &KgFactSetDraft::default(),
++        )
++        .await
++        .expect_err("CAS must retain the exact target memory identity");
++    assert!(matches!(
++        missing,
++        CognitiveStoreError::Invalid(message) if message == "memory does not exist"
++    ));
++    assert_eq!(
++        sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM source_ledger")
++            .fetch_one(&store.pool)
++            .await
++            .expect("missing target rolls back its appended source"),
++        sources_before_stale
++    );
++    assert_eq!(
++        store
++            .latest_memory(&access, &first.memory.id.memory_id)
++            .await
++            .expect("wrong target cannot alter the existing memory"),
++        corrected.memory
+     );
+ 
+     let forgotten = store
+--- a/codex-rs/hepta-memory/src/local_lease_outbox_tests.rs
++++ b/codex-rs/hepta-memory/src/local_lease_outbox_tests.rs
+@@ -1081,10 +1081,32 @@
+         panic!("first admission must append");
+     };
+     assert!(!receipt.external_effect);
+-    handle
++    let indeterminate = handle
+         .mark_indeterminate("occurrence:unknown", "lost-local-ack")
+         .await
+         .expect("indeterminate");
++    let counts_before_replay = handle
++        .snapshot_counts()
++        .await
++        .expect("counts before replay");
++    assert_eq!(
++        handle
++            .mark_indeterminate("occurrence:unknown", "lost-local-ack")
++            .await
++            .expect("exact outcome replay"),
++        indeterminate
++    );
++    assert!(matches!(
++        handle
++            .mark_indeterminate("occurrence:unknown", "different-reason")
++            .await,
++        Err(LocalLeaseOutboxError::CasConflict(message))
++            if message == "outcome replay changed its reason/payload"
++    ));
++    assert_eq!(
++        handle.snapshot_counts().await.expect("counts after replay"),
++        counts_before_replay
++    );
+     assert_eq!(
+         handle.status("occurrence:unknown").await.expect("status"),
+         LocalOutcomeState::Indeterminate

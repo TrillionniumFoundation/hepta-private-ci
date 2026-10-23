@@ -1,0 +1,61 @@
+    Checking codex-utils-absolute-path v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/absolute-path)
+    Checking codex-utils-rustls-provider v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/rustls-provider)
+    Checking codex-utils-cache v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/cache)
+    Checking codex-hepta-types v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-types)
+    Checking codex-utils-string v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/string)
+    Checking codex-utils-home-dir v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/home-dir)
+    Checking codex-execpolicy v0.0.0 (/workspace/bedrock-integration/codex-rs/execpolicy)
+    Checking codex-network-proxy v0.0.0 (/workspace/bedrock-integration/codex-rs/network-proxy)
+    Checking codex-utils-path-uri v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/path-uri)
+    Checking codex-extension-items v0.0.0 (/workspace/bedrock-integration/codex-rs/ext/items)
+    Checking codex-utils-image v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/image)
+    Checking codex-http-client v0.0.0 (/workspace/bedrock-integration/codex-rs/http-client)
+    Checking codex-utils-redacted-string v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/redacted-string)
+    Checking codex-async-utils v0.0.0 (/workspace/bedrock-integration/codex-rs/async-utils)
+    Checking codex-hepta-contracts v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-contracts)
+    Checking codex-utils-pty v0.0.0 (/workspace/bedrock-integration/codex-rs/utils/pty)
+    Checking codex-hepta-cognitive-types v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-cognitive-types)
+    Checking codex-hepta-cognitive-read v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-cognitive-read)
+    Checking codex-hepta-memory-retrieval v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-memory-retrieval)
+    Checking codex-hepta-memory-federation v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-memory-federation)
+    Checking codex-protocol v0.0.0 (/workspace/bedrock-integration/codex-rs/protocol)
+    Checking codex-hepta-prompt-registry v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-prompt-registry)
+    Checking codex-hepta-paths v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-paths)
+    Checking codex-hepta-kg v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-kg)
+    Checking codex-file-system v0.0.0 (/workspace/bedrock-integration/codex-rs/file-system)
+    Checking codex-history v0.0.0 (/workspace/bedrock-integration/codex-rs/history)
+    Checking codex-git-utils v0.0.0 (/workspace/bedrock-integration/codex-rs/git-utils)
+    Checking codex-state v0.0.0 (/workspace/bedrock-integration/codex-rs/state)
+    Checking codex-hepta-operations v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-operations)
+    Checking codex-hepta-memory v0.0.0 (/workspace/bedrock-integration/codex-rs/hepta-memory)
+error: this function has too many arguments (8/7)
+   --> hepta-memory/src/cognitive_intelligence_writer.rs:156:5
+    |
+156 | /     pub(crate) async fn correct_with_kg_tx(
+157 | |         &self,
+158 | |         transaction: &mut Transaction<'_, Sqlite>,
+159 | |         access: &CognitiveAccess,
+...   |
+164 | |         facts: &KgFactSetDraft,
+165 | |     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
+    | |___________________________________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#too_many_arguments
+    = note: `-D clippy::too-many-arguments` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::too_many_arguments)]`
+
+error: this function has too many arguments (8/7)
+    --> hepta-memory/src/local_lease_outbox.rs:2618:5
+     |
+2618 | /     async fn append_outcome_in_transaction(
+2619 | |         &self,
+2620 | |         transaction: &mut Transaction<'_, Sqlite>,
+2621 | |         occurrence_key: String,
+...    |
+2626 | |         allow_exact_replay: bool,
+2627 | |     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+     | |___________________________________________________________^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#too_many_arguments
+
+error: could not compile `codex-hepta-memory` (lib) due to 2 previous errors
