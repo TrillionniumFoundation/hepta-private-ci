@@ -72,8 +72,9 @@ impl RootNotesGrantAdmission {
         let proof = canonical
             .with_dispatch_boundary(token, &actual.lease.binding, || {
                 let state = issuer.store.load(STATE_OWNER).map_err(io::Error::other)?;
-                if state.policies != [policy.clone()] || lifetime_ms == 0 {
-                    return Err(denied("exact single Notes policy required"));
+                let slot = notes_slot(&state.policies, &policy.subject_id)?;
+                if state.policies[slot] != policy || lifetime_ms == 0 {
+                    return Err(denied("exact Notes policy slot required"));
                 }
                 issuer.retained_writer_authorization(&writer)
             })
@@ -190,8 +191,20 @@ fn denied(message: &'static str) -> io::Error {
     io::Error::new(io::ErrorKind::PermissionDenied, message)
 }
 
+fn notes_slot(policies: &[DeploymentGrantPolicy], subject: &str) -> io::Result<usize> {
+    let mut slots = policies.iter().enumerate().filter(|(_, policy)| {
+        policy.subject_id == subject && policy.destination_id.starts_with("trill.notes:")
+    });
+    let slot = slots.next().map(|(index, _)| index)
+        .ok_or_else(|| denied("registered Notes policy missing"))?;
+    if slots.next().is_some() {
+        return Err(denied("registered Notes policy is ambiguous"));
+    }
+    Ok(slot)
+}
+
 impl DeploymentFinalUseIssuer {
-    /// Trusted Root launcher only: move the single exact Notes policy after
+    /// Trusted Root launcher only: move the one exact Notes policy slot after
     /// obtaining its actual new Session Reserved target. The launcher must
     /// separately finish publisher quiescence, writer rotation and Current
     /// adoption. Existing signed grants remain evidence for old reconciliation;
@@ -253,15 +266,18 @@ impl DeploymentFinalUseIssuer {
                 expires_at_unix_ms: 1_u64.checked_add(lifetime_ms)
                     .ok_or_else(|| io::Error::other("invalid Notes lifetime"))?,
             }.signing_bytes().map_err(io::Error::other)?;
-            if state.policies == [next.clone()] {
+            let slot = notes_slot(&state.policies, &next.subject_id)?;
+            if state.policies[slot] == next {
                 let after = self.clock.now_unix_ms().map_err(io::Error::other)?;
                 return writer::validate_writer_time(registration, state.head.authority_epoch, after);
             }
-            if state.policies != [previous] {
+            if state.policies[slot] != previous {
                 return Err(denied("original Notes policy CAS mismatch"));
             }
             let mut changed = state.clone();
-            changed.policies = vec![next];
+            // Preserve every original Objective and other installed route at
+            // its exact position under the full original issuer-state CAS.
+            changed.policies[slot] = next;
             self.store.compare_and_set(STATE_OWNER, &state, &changed).map_err(io::Error::other)?;
             let after = self.clock.now_unix_ms().map_err(io::Error::other)?;
             writer::validate_writer_time(registration, state.head.authority_epoch, after)

@@ -294,6 +294,23 @@ fn deployment_notes_preserves_original_objective_route_across_exact_policy_repla
 }
 
 #[test]
+fn deployment_notes_ambiguous_notes_slot_cannot_install_or_replace_policy() {
+    let f = Fixture::new();
+    let state = f.issuer.store.load(STATE_OWNER).unwrap();
+    let mut ambiguous = state.clone();
+    ambiguous.policies.push(state.policies[0].clone());
+    f.issuer.store.compare_and_set(STATE_OWNER, &state, &ambiguous).unwrap();
+    let frontier = f.registry.frontier().unwrap();
+    assert!(RootNotesGrantAdmission::open(&f.issuer, f.registry.clone(),
+        f.writer.clone(), &f.target, 1_000).is_err());
+    let next = NotesTargetIdentity { incarnation: "3".repeat(32), ..f.target.clone() };
+    assert!(f.issuer.replace_notes_policy(&f.writer, &f.target, 1_000, &next, 1_000).is_err());
+    assert!(f.issuer.store.load(STATE_OWNER).unwrap() == ambiguous);
+    assert_eq!(f.registry.frontier().unwrap(), frontier);
+    assert_eq!(f.sequence(), 1);
+}
+
+#[test]
 #[ignore = "explicit Root-only exact Notes admission on selected protected filesystem"]
 fn deployment_notes_actual_root_clock_registry_and_canonical_issuer_issue_distinct_payloads() {
     use codex_hepta_contracts::HostAuthorityClock;
