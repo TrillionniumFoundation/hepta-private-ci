@@ -107,3 +107,5 @@ independent issuer operation deployment, concrete parent-to-Session descriptor
 custody, original-owner recovery/effect/receipt acceptance gates, and required CI.
 This entry point neither signs AuthBus Objective requests nor supplies their
 sender-side durable retain-before-send lifecycle.
+
+The [protected original FinalUse consumer frontier adapter](HOST_FINAL_USE_FRONTIERS.md) preserves the two fixed original owners. Its Root/data qualification does not imply service wire or recovered-writer qualification.
