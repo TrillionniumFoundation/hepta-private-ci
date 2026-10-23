@@ -1,0 +1,360 @@
+{
+  "study": "hepta-memory-historical-source-only-A-C-D-v1",
+  "protocol_status": "POST_HOC_HISTORICAL_EXPLORATION_NOT_PREREGISTERED_PROSPECTIVE",
+  "pinned_code_parent_commit": "347023c9ceb97901dce623cd118f6496387e76c3",
+  "source_original_commit": "3eb6f2c585f5e1699204e3c3bdf7adc5c28cb376",
+  "source_blob": "d95b872480b413d935821fdc3c84f8a8f5f29e73",
+  "source_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "parent_plan_sha256": "62216f4a7b69fb9f27e087b49daa5249bfb485e99ef96b88123d8fb8b025ff2f",
+  "source_input_bytes": 2805274,
+  "heldout_source_groups": [
+    "conv-47",
+    "conv-42",
+    "conv-48",
+    "conv-43",
+    "conv-49",
+    "conv-50"
+  ],
+  "method_notes": {
+    "A": "Original-turn tokenized JS BM25, not same FTS5 implementation as previous reports",
+    "C": "Untrained source-derived time adjacency and rare-token graph with two-hop expansion, not full HippoRAG",
+    "D": "Untrained query-intent-based episodic/semantic/procedural heuristic expansion",
+    "dense_model_executed": false,
+    "reader_executed": false,
+    "learned_head_executed": false,
+    "gold_only_used_after_all_retrieval_rows_created": true,
+    "scorer_is_independent_process": false,
+    "actual_resource_cost_comparable": false,
+    "all_nine_arms_compared": false,
+    "paired_source_cluster_n": 6,
+    "source_family_independence_authenticated": false,
+    "source_license": "CC BY-NC 4.0"
+  },
+  "predictions_generated": 3993,
+  "schema": "hepta.memory.source-graph-controls.audit.v1",
+  "historical_test_only": true,
+  "all_arms_A_to_I_complete": false,
+  "whole_answer_scored": false,
+  "semantic_citations_verified": false,
+  "prospective_independence_verified": false,
+  "source_license": "CC-BY-NC-4.0",
+  "results": {
+    "A": {
+      "planned_questions": 1331,
+      "scorable": 1022,
+      "adversarial": 299,
+      "unresolved": 10,
+      "all_gold_support_recalled": 0.5156555772994129,
+      "mean_gold_support_recall": 0.5655246451118081,
+      "group_macro_all_gold_support": 0.5145317942881085,
+      "by_category": {
+        "1": {
+          "scorable": 175,
+          "all": 19,
+          "recall": 43.53971671603251,
+          "adversarial": 0,
+          "all_gold_support_rate": 0.10857142857142857,
+          "mean_support_recall": 0.24879838123447148
+        },
+        "2": {
+          "scorable": 206,
+          "all": 119,
+          "recall": 129.08333333333337,
+          "adversarial": 0,
+          "all_gold_support_rate": 0.5776699029126213,
+          "mean_support_recall": 0.6266181229773464
+        },
+        "3": {
+          "scorable": 63,
+          "all": 13,
+          "recall": 18.843137254901958,
+          "adversarial": 0,
+          "all_gold_support_rate": 0.20634920634920634,
+          "mean_support_recall": 0.29909741674447554
+        },
+        "4": {
+          "scorable": 578,
+          "all": 376,
+          "recall": 386.5,
+          "adversarial": 0,
+          "all_gold_support_rate": 0.6505190311418685,
+          "mean_support_recall": 0.6686851211072664
+        },
+        "5": {
+          "scorable": 0,
+          "all": 0,
+          "recall": 0,
+          "adversarial": 299,
+          "all_gold_support_rate": null,
+          "mean_support_recall": null
+        }
+      },
+      "by_group": {
+        "conv-42": {
+          "scorable": 197,
+          "all_gold_support_recalled": 0.5126903553299492,
+          "mean_gold_support_recall": 0.5565466118765611
+        },
+        "conv-43": {
+          "scorable": 177,
+          "all_gold_support_recalled": 0.559322033898305,
+          "mean_gold_support_recall": 0.6128598331988163
+        },
+        "conv-47": {
+          "scorable": 149,
+          "all_gold_support_recalled": 0.5302013422818792,
+          "mean_gold_support_recall": 0.5682326621923937
+        },
+        "conv-48": {
+          "scorable": 191,
+          "all_gold_support_recalled": 0.5235602094240838,
+          "mean_gold_support_recall": 0.587521815008726
+        },
+        "conv-49": {
+          "scorable": 153,
+          "all_gold_support_recalled": 0.5098039215686274,
+          "mean_gold_support_recall": 0.5673223156104235
+        },
+        "conv-50": {
+          "scorable": 155,
+          "all_gold_support_recalled": 0.45161290322580644,
+          "mean_gold_support_recall": 0.49139784946236564
+        }
+      }
+    },
+    "C": {
+      "planned_questions": 1331,
+      "scorable": 1022,
+      "adversarial": 299,
+      "unresolved": 10,
+      "all_gold_support_recalled": 0.5058708414872799,
+      "mean_gold_support_recall": 0.5546814329935509,
+      "group_macro_all_gold_support": 0.5058474219838947,
+      "by_category": {
+        "1": {
+          "scorable": 175,
+          "all": 17,
+          "recall": 46.14913040176199,
+          "adversarial": 0,
+          "all_gold_support_rate": 0.09714285714285714,
+          "mean_support_recall": 0.26370931658149704
+        },
+        "2": {
+          "scorable": 206,
+          "all": 110,
+          "recall": 117.00000000000001,
+          "adversarial": 0,
+          "all_gold_support_rate": 0.5339805825242718,
+          "mean_support_recall": 0.5679611650485438
+        },
+        "3": {
+          "scorable": 63,
+          "all": 14,
+          "recall": 18.735294117647058,
+          "adversarial": 0,
+          "all_gold_support_rate": 0.2222222222222222,
+          "mean_support_recall": 0.2973856209150327
+        },
+        "4": {
+          "scorable": 578,
+          "all": 376,
+          "recall": 385,
+          "adversarial": 0,
+          "all_gold_support_rate": 0.6505190311418685,
+          "mean_support_recall": 0.6660899653979239
+        },
+        "5": {
+          "scorable": 0,
+          "all": 0,
+          "recall": 0,
+          "adversarial": 299,
+          "all_gold_support_rate": null,
+          "mean_support_recall": null
+        }
+      },
+      "by_group": {
+        "conv-42": {
+          "scorable": 197,
+          "all_gold_support_recalled": 0.45685279187817257,
+          "mean_gold_support_recall": 0.49938763999677704
+        },
+        "conv-43": {
+          "scorable": 177,
+          "all_gold_support_recalled": 0.5480225988700564,
+          "mean_gold_support_recall": 0.6077347323110035
+        },
+        "conv-47": {
+          "scorable": 149,
+          "all_gold_support_recalled": 0.5637583892617449,
+          "mean_gold_support_recall": 0.6068232662192393
+        },
+        "conv-48": {
+          "scorable": 191,
+          "all_gold_support_recalled": 0.5445026178010471,
+          "mean_gold_support_recall": 0.5969458987783595
+        },
+        "conv-49": {
+          "scorable": 153,
+          "all_gold_support_recalled": 0.45098039215686275,
+          "mean_gold_support_recall": 0.5103660903333094
+        },
+        "conv-50": {
+          "scorable": 155,
+          "all_gold_support_recalled": 0.47096774193548385,
+          "mean_gold_support_recall": 0.5059139784946237
+        }
+      }
+    },
+    "D": {
+      "planned_questions": 1331,
+      "scorable": 1022,
+      "adversarial": 299,
+      "unresolved": 10,
+      "all_gold_support_recalled": 0.5675146771037182,
+      "mean_gold_support_recall": 0.6179137867377404,
+      "group_macro_all_gold_support": 0.5678357551449974,
+      "by_category": {
+        "1": {
+          "scorable": 175,
+          "all": 18,
+          "recall": 47.24808612440193,
+          "adversarial": 0,
+          "all_gold_support_rate": 0.10285714285714286,
+          "mean_support_recall": 0.269989063568011
+        },
+        "2": {
+          "scorable": 206,
+          "all": 125,
+          "recall": 132.75,
+          "adversarial": 0,
+          "all_gold_support_rate": 0.6067961165048543,
+          "mean_support_recall": 0.6444174757281553
+        },
+        "3": {
+          "scorable": 63,
+          "all": 15,
+          "recall": 20.509803921568626,
+          "adversarial": 0,
+          "all_gold_support_rate": 0.23809523809523808,
+          "mean_support_recall": 0.325552443199502
+        },
+        "4": {
+          "scorable": 578,
+          "all": 422,
+          "recall": 431,
+          "adversarial": 0,
+          "all_gold_support_rate": 0.7301038062283737,
+          "mean_support_recall": 0.745674740484429
+        },
+        "5": {
+          "scorable": 0,
+          "all": 0,
+          "recall": 0,
+          "adversarial": 299,
+          "all_gold_support_rate": null,
+          "mean_support_recall": null
+        }
+      },
+      "by_group": {
+        "conv-42": {
+          "scorable": 197,
+          "all_gold_support_recalled": 0.5736040609137056,
+          "mean_gold_support_recall": 0.6098863911046652
+        },
+        "conv-43": {
+          "scorable": 177,
+          "all_gold_support_recalled": 0.5649717514124294,
+          "mean_gold_support_recall": 0.6292036588646758
+        },
+        "conv-47": {
+          "scorable": 149,
+          "all_gold_support_recalled": 0.610738255033557,
+          "mean_gold_support_recall": 0.6582774049217002
+        },
+        "conv-48": {
+          "scorable": 191,
+          "all_gold_support_recalled": 0.5602094240837696,
+          "mean_gold_support_recall": 0.6253054101221641
+        },
+        "conv-49": {
+          "scorable": 153,
+          "all_gold_support_recalled": 0.5555555555555556,
+          "mean_gold_support_recall": 0.6016855558560166
+        },
+        "conv-50": {
+          "scorable": 155,
+          "all_gold_support_recalled": 0.5419354838709678,
+          "mean_gold_support_recall": 0.5833333333333334
+        }
+      }
+    }
+  },
+  "descriptive_contrasts": {
+    "C_minus_A": {
+      "group_macro_difference": -0.008684372304213817,
+      "whole_group_deltas": [
+        0.03355704697986572,
+        -0.05583756345177665,
+        0.020942408376963373,
+        -0.011299435028248594,
+        -0.05882352941176466,
+        0.019354838709677413
+      ]
+    },
+    "D_minus_A": {
+      "group_macro_difference": 0.05330396085688893,
+      "whole_group_deltas": [
+        0.08053691275167785,
+        0.06091370558375642,
+        0.03664921465968585,
+        0.005649717514124353,
+        0.045751633986928164,
+        0.09032258064516135
+      ]
+    },
+    "D_minus_C": {
+      "group_macro_difference": 0.06198833316110275,
+      "whole_group_deltas": [
+        0.046979865771812124,
+        0.11675126903553307,
+        0.015706806282722474,
+        0.016949152542372947,
+        0.10457516339869283,
+        0.07096774193548394
+      ]
+    }
+  },
+  "source_graph_meta": {
+    "conv-42": {
+      "turns": 629,
+      "graph_edges": 2406,
+      "queries": 260
+    },
+    "conv-43": {
+      "turns": 680,
+      "graph_edges": 2512,
+      "queries": 242
+    },
+    "conv-47": {
+      "turns": 689,
+      "graph_edges": 2552,
+      "queries": 190
+    },
+    "conv-48": {
+      "turns": 681,
+      "graph_edges": 2630,
+      "queries": 239
+    },
+    "conv-49": {
+      "turns": 509,
+      "graph_edges": 1933,
+      "queries": 196
+    },
+    "conv-50": {
+      "turns": 568,
+      "graph_edges": 2027,
+      "queries": 204
+    }
+  },
+  "authority": "SHADOW_ONLY/DENY_ALL/HOLD_NO_GO"
+}
