@@ -24,6 +24,14 @@ mod control;
 mod deployment_frontier;
 #[cfg(target_os = "linux")]
 pub use deployment_frontier::DeploymentFrontierStore;
+#[cfg(target_os = "linux")]
+mod deployment_issuer;
+#[cfg(target_os = "linux")]
+pub use deployment_issuer::DeploymentFinalUseIssuer;
+#[cfg(target_os = "linux")]
+pub use deployment_issuer::DeploymentGrantPolicy;
+#[cfg(target_os = "linux")]
+pub use deployment_issuer::DeploymentIssuerObserver;
 mod error;
 mod event_buffer;
 mod evidence_frontier;
