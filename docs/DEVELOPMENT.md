@@ -731,13 +731,29 @@ edge re-selection still requires target-specific CI. This slice does not close
 the remaining vulnerable dependencies or the full PN0 security baseline; native
 consumer checks and the original security gates remain required.
 
-PN0's V8 canary build job uses the existing Rust release build's bounded
+PN0's V8 canary build jobs outside Intel macOS use the Rust release build's bounded
 90-minute CI budget. In run 39880109276, both x86_64 macOS and both aarch64 GNU
 Linux variants reached GitHub's 30-minute job limit while V8 compilation was
 still progressing without a BuildBuddy key. The full build matrix, artifact
 checks and Cargo smoke steps remain required. This infrastructure budget does
 not change runtime or model resource limits; successful exact-source CI is
 still needed to establish that the cold builds complete.
+
+The existing Intel macOS V8 matrix runner uses a bounded 150-minute cold-build job
+budget. On source `2a098b36`, Intel macOS jobs
+[120336831957](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39911485825/job/120336831957)
+and [120336832064](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39911485825/job/120336832064)
+both reached GitHub's confirmed 90-minute limit in the original Bazel build step.
+The sandbox build had completed 11,870 of 14,054 actions, including only 84 actions
+in its last 918 seconds; the release build had completed 12,232, including 166
+in its last 900 seconds. Both were still compiling generated C++ and had not
+reached staging or Cargo smoke linking. The original cancellations remain failed
+completion evidence. Action counts do not establish remaining build time, so
+150 minutes is a bounded CI budget, not evidence that either build will finish.
+The twelve matrix entries, every original build, stage, artifact and smoke
+command, the Windows source-build budget, per-test limits, runtime budgets and
+the eight-second controlled-test deadline remain unchanged. Successful current
+source and merge-candidate hosted CI must still prove completion.
 
 PN0's separate Windows V8 source-build job uses the same bounded 90-minute
 CI budget. On source `2a098b36`, jobs

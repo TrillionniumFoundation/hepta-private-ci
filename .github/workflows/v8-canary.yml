@@ -74,9 +74,9 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build:
-    # Keyless native V8 cold builds need room for compilation and Cargo smoke.
-    # Keep the job bounded by the existing Rust release build budget.
-    timeout-minutes: 90
+    # Intel macOS native V8 cold builds exceeded 90 minutes while compiling C++.
+    # The larger bounded build budget still requires actual stage/smoke success.
+    timeout-minutes: ${{ matrix.runner == 'macos-15-intel' && 150 || 90 }}
     name: Build ${{ matrix.variant }} ${{ matrix.target }}
     needs: metadata
     # Metadata always runs; only relevant changes pay for the large matrix.
