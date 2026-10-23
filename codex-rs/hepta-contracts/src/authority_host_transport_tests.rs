@@ -17,8 +17,20 @@ fn policy(fixture: &Fixture, pid: u32) -> HostIssuerSessionPolicy {
         lease_revision: 1,
         revocations: fixture.authority.revocation_head().unwrap(),
         timeout: Duration::from_secs(5),
+        lifetime: Duration::from_secs(30),
     }
 }
+
+fn owner_pidfd(pid: u32) -> std::os::fd::OwnedFd {
+    rustix::process::pidfd_open(
+        rustix::process::Pid::from_raw(pid as i32).unwrap(),
+        rustix::process::PidfdFlags::empty(),
+    )
+    .unwrap()
+}
+
+#[path = "authority_host_channel_tests.rs"]
+mod channel_tests;
 
 fn binding() -> FinalUseBinding {
     FinalUseBinding {
@@ -121,19 +133,24 @@ fn actual_process_peer_and_original_wire_produce_a_verifiable_grant_after_denial
         .env("HEPTA_HOST_AUTHORITY_TEST_RESPONSE", &response)
         .spawn()
         .unwrap();
+    let owner = owner_pidfd(child.id());
     let stream = accept_child(&listener, &mut child);
     let policy = policy(&fixture, child.id());
     let mut session = HostIssuerSession::from_stream(
         stream,
         policy,
+        owner,
         Arc::new(fixture.issuer),
         fixture.leases.verifier(),
     )
     .unwrap();
     assert_eq!(session.serve_next(), Ok(true));
     assert_eq!(session.serve_next(), Ok(true));
-    assert_eq!(session.serve_next(), Ok(false));
     assert!(child.wait().unwrap().success());
+    assert_eq!(
+        session.serve_next(),
+        Err(HostIssuerTransportError::PeerDenied)
+    );
     let grant: SignedFinalUseGrant =
         serde_json::from_slice(&std::fs::read(response).unwrap()).unwrap();
     fixture.authority.claim(&grant, &binding()).unwrap();
@@ -149,6 +166,7 @@ fn mismatched_process_is_rejected_before_reading_or_issuing() {
         HostIssuerSession::from_stream(
             server,
             policy,
+            owner_pidfd(std::process::id()),
             Arc::new(fixture.issuer),
             fixture.leases.verifier()
         ),
@@ -164,9 +182,11 @@ fn bounded_frame_error_and_normal_idle_deadline_close_the_channel() {
         let (server, mut client) = UnixStream::pair().unwrap();
         let mut policy = policy(&fixture, std::process::id());
         policy.timeout = Duration::from_millis(100);
+        policy.lifetime = Duration::from_millis(100);
         let mut session = HostIssuerSession::from_stream(
             server,
             policy,
+            owner_pidfd(std::process::id()),
             Arc::new(fixture.issuer),
             fixture.leases.verifier(),
         )
@@ -199,9 +219,13 @@ fn root_directory_and_actual_unprivileged_process_isolation() {
         .parse()
         .unwrap();
     assert_ne!(uid, 0);
+    // The explicit qualification runner may select another root-protected
+    // filesystem. This never weakens the real root/ancestor validation below.
+    let state_parent = std::env::var_os("HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT")
+        .unwrap_or_else(|| "/var/lib".into());
     let state = tempfile::Builder::new()
         .prefix("hepta-authority-qualification-")
-        .tempdir_in("/var/lib")
+        .tempdir_in(state_parent)
         .unwrap();
     std::fs::set_permissions(state.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
     let root = RootAuthorityDirectory::open(state.path()).unwrap();
@@ -249,6 +273,7 @@ fn root_directory_and_actual_unprivileged_process_isolation() {
         )
         .spawn()
         .unwrap();
+    let owner = owner_pidfd(child.id());
     let stream = accept_child(&listener, &mut child);
     let actual = rustix::net::sockopt::socket_peercred(&stream).unwrap();
     assert_eq!(actual.uid.as_raw(), uid);
@@ -258,14 +283,18 @@ fn root_directory_and_actual_unprivileged_process_isolation() {
     let mut session = HostIssuerSession::from_stream(
         stream,
         policy,
+        owner,
         Arc::new(fixture.issuer),
         fixture.leases.verifier(),
     )
     .unwrap();
     assert_eq!(session.serve_next(), Ok(true));
     assert_eq!(session.serve_next(), Ok(true));
-    assert_eq!(session.serve_next(), Ok(false));
     assert!(child.wait().unwrap().success());
+    assert_eq!(
+        session.serve_next(),
+        Err(HostIssuerTransportError::PeerDenied)
+    );
     let grant: SignedFinalUseGrant =
         serde_json::from_slice(&std::fs::read(response).unwrap()).unwrap();
     fixture.authority.claim(&grant, &binding()).unwrap();

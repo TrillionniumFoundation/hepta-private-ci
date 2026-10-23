@@ -123,6 +123,19 @@ exchange at a time and no discovery, reconnect, retry or administrative lease
 endpoint. The launcher must control descriptor inheritance/transfer and retain
 the peer lifecycle; matching a stale numeric PID alone is insufficient.
 
+The trusted launcher supplies an already-held Linux pidfd for this exact owner,
+before accepting the connection. Its descriptor type and process identity must
+match; opening a numeric PID again from an inherited connection is insufficient.
+Nonblocking stream I/O polls the socket and retained pidfd together. Owner exit
+wins over readable socket data, including when a descendant keeps the old stream
+open. Waiting for the first byte is idle time; the thirty-second request deadline
+starts with that byte and applies to the remaining frame, issuance and response.
+A separately configured hard session lifetime is at most 300 seconds and cannot
+be refreshed by requests. Expiry closes this capability. It does not issue a new
+publisher generation, reconnect or reopen a writer gate. A runtime loader must
+renew its private channel only at an independently authorized quiescent boundary;
+that production renewal/recovery integration is not supplied by this transport.
+
 Socket I/O uses one deadline capped at thirty seconds. This does not cancel
 kernel filesystem I/O inside the issuer. After such an operation returns, an
 expired deadline cannot emit a successful grant. A root-only test launches a

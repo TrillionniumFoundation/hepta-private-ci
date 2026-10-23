@@ -10,13 +10,14 @@ use crate::authority_lease::AuthorityLeaseVerifier;
 use serde::Deserialize;
 use serde::Serialize;
 use std::io;
-use std::io::Read;
-use std::io::Write;
 use std::net::Shutdown;
+use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
 use std::sync::Arc;
 use std::time::Duration;
-use std::time::Instant;
+
+#[path = "authority_host_channel.rs"]
+mod channel;
 
 const OPERATION: &str = "runtime.agentd.production_operation";
 const MAX_REQUEST: usize = 16 * 1024;
@@ -39,6 +40,9 @@ pub struct HostIssuerSessionPolicy {
     /// Agentd provider treats this field as untrusted and does not apply it.
     pub revocations: FinalUseRevocations,
     pub timeout: Duration,
+    /// Hard channel lifetime. Renewal belongs to the trusted loader at a
+    /// quiescent writer boundary; the peer cannot renew itself on this wire.
+    pub lifetime: Duration,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -69,12 +73,14 @@ pub struct HostIssuerSession {
     policy: HostIssuerSessionPolicy,
     issuer: Arc<HostFinalUseIssuer>,
     leases: AuthorityLeaseVerifier,
+    channel: channel::OwnerChannel,
 }
 
 impl HostIssuerSession {
     pub fn from_stream(
         stream: UnixStream,
         policy: HostIssuerSessionPolicy,
+        owner_pidfd: OwnedFd,
         issuer: Arc<HostFinalUseIssuer>,
         leases: AuthorityLeaseVerifier,
     ) -> Result<Self, HostIssuerTransportError> {
@@ -103,12 +109,17 @@ impl HostIssuerSession {
         {
             return Err(HostIssuerTransportError::PeerDenied);
         }
-        stream.set_nonblocking(false).map_err(io_error)?;
+        // The launcher must pin this exact process before accepting the
+        // connection (while retaining its Child or original pidfd). Opening a
+        // numeric PID afresh from an inherited connection is not sufficient.
+        let channel = channel::OwnerChannel::new(owner_pidfd, policy.peer.pid, policy.lifetime)?;
+        stream.set_nonblocking(true).map_err(io_error)?;
         Ok(Self {
             stream: Some(stream),
             policy,
             issuer,
             leases,
+            channel,
         })
     }
 
@@ -116,8 +127,7 @@ impl HostIssuerSession {
     /// frame. No partial response or unsigned substitute grant is successful.
     pub fn serve_next(&mut self) -> Result<bool, HostIssuerTransportError> {
         let mut stream = self.stream.take().ok_or(HostIssuerTransportError::Closed)?;
-        let deadline = Instant::now() + self.policy.timeout;
-        let result = self.exchange(&mut stream, deadline);
+        let result = self.exchange(&mut stream);
         match result {
             Ok(true) => {
                 self.stream = Some(stream);
@@ -131,38 +141,32 @@ impl HostIssuerSession {
         }
     }
 
-    fn exchange(
-        &self,
-        stream: &mut UnixStream,
-        deadline: Instant,
-    ) -> Result<bool, HostIssuerTransportError> {
+    fn exchange(&self, stream: &mut UnixStream) -> Result<bool, HostIssuerTransportError> {
         let mut length = [0; 4];
-        loop {
-            stream
-                .set_read_timeout(Some(remaining(deadline)?))
-                .map_err(io_error)?;
-            match stream.read(&mut length[..1]) {
-                Ok(0) => return Ok(false),
-                Ok(_) => break,
-                Err(error) if error.kind() == io::ErrorKind::Interrupted => {
-                    remaining(deadline)?;
-                }
-                Err(error) => return Err(io_error(error)),
-            }
+        // Idle is not an in-flight request. It still ends on owner exit or the
+        // hard lifetime, even if a child retains the connected descriptor.
+        if self
+            .channel
+            .read(stream, &mut length[..1], self.channel.end())?
+            == 0
+        {
+            return Ok(false);
         }
-        read_until(stream, &mut length[1..], deadline)?;
+        let deadline = self.channel.deadline(self.policy.timeout);
+        self.channel
+            .read_until(stream, &mut length[1..], deadline)?;
         let length = u32::from_be_bytes(length) as usize;
         if length == 0 || length > MAX_REQUEST {
             return Err(HostIssuerTransportError::InvalidRequest);
         }
         let mut bytes = vec![0; length];
-        read_until(stream, &mut bytes, deadline)?;
+        self.channel.read_until(stream, &mut bytes, deadline)?;
         let request: Request =
             serde_json::from_slice(&bytes).map_err(|_| HostIssuerTransportError::InvalidRequest)?;
         if request.schema_version != 1 || request.operation != OPERATION {
             return Err(HostIssuerTransportError::InvalidRequest);
         }
-        remaining(deadline)?;
+        self.channel.check(deadline)?;
         let grant = match self.issuer.issue(
             &self.leases,
             &self.policy.lease_id,
@@ -181,7 +185,7 @@ impl HostIssuerSession {
             )) => None,
             Err(_) => return Err(HostIssuerTransportError::Unavailable),
         };
-        remaining(deadline)?;
+        self.channel.check(deadline)?;
         let denied = grant.is_none();
         let bytes = serde_json::to_vec(&Response {
             schema_version: 1,
@@ -193,9 +197,10 @@ impl HostIssuerSession {
         if bytes.is_empty() || bytes.len() > MAX_RESPONSE {
             return Err(HostIssuerTransportError::Unavailable);
         }
-        write_until(stream, &(bytes.len() as u32).to_be_bytes(), deadline)?;
-        write_until(stream, &bytes, deadline)?;
-        remaining(deadline)?;
+        self.channel
+            .write_until(stream, &(bytes.len() as u32).to_be_bytes(), deadline)?;
+        self.channel.write_until(stream, &bytes, deadline)?;
+        self.channel.check(deadline)?;
         Ok(true)
     }
 }
@@ -214,51 +219,6 @@ struct Response<'a> {
     revocations: &'a FinalUseRevocations,
     grant: Option<SignedFinalUseGrant>,
     denial_reason: Option<&'static str>,
-}
-
-fn remaining(deadline: Instant) -> Result<Duration, HostIssuerTransportError> {
-    deadline
-        .checked_duration_since(Instant::now())
-        .filter(|value| !value.is_zero())
-        .ok_or(HostIssuerTransportError::DeadlineElapsed)
-}
-
-fn read_until(
-    stream: &mut UnixStream,
-    mut bytes: &mut [u8],
-    deadline: Instant,
-) -> Result<(), HostIssuerTransportError> {
-    while !bytes.is_empty() {
-        stream
-            .set_read_timeout(Some(remaining(deadline)?))
-            .map_err(io_error)?;
-        match stream.read(bytes) {
-            Ok(0) => return Err(HostIssuerTransportError::Closed),
-            Ok(count) => bytes = &mut bytes[count..],
-            Err(error) if error.kind() == io::ErrorKind::Interrupted => {}
-            Err(error) => return Err(io_error(error)),
-        }
-    }
-    Ok(())
-}
-
-fn write_until(
-    stream: &mut UnixStream,
-    mut bytes: &[u8],
-    deadline: Instant,
-) -> Result<(), HostIssuerTransportError> {
-    while !bytes.is_empty() {
-        stream
-            .set_write_timeout(Some(remaining(deadline)?))
-            .map_err(io_error)?;
-        match stream.write(bytes) {
-            Ok(0) => return Err(HostIssuerTransportError::Closed),
-            Ok(count) => bytes = &bytes[count..],
-            Err(error) if error.kind() == io::ErrorKind::Interrupted => {}
-            Err(error) => return Err(io_error(error)),
-        }
-    }
-    Ok(())
 }
 
 fn io_error(error: impl Into<io::Error>) -> HostIssuerTransportError {
