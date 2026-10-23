@@ -325,7 +325,10 @@ impl NativeLoopCursorV1 {
     pub fn request_cancel(&self) -> Self {
         let mut next = self.clone();
         next.phase = match &self.phase {
-            NativeLoopPhaseV1::Ready => NativeLoopPhaseV1::Cancelled,
+            NativeLoopPhaseV1::Ready | NativeLoopPhaseV1::CompletionCandidate { .. } => {
+                // An unverified completion proposal is still cancellable.
+                NativeLoopPhaseV1::Cancelled
+            }
             NativeLoopPhaseV1::AwaitingExternal {
                 step_observation_digest,
                 ..
