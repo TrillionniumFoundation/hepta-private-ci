@@ -152,6 +152,20 @@ has no measured training/allocation or content-benefit result, and bundle export
 explicitly refuses that profile until serving integration is supported. No
 additional formal test or AV generation is authorized at this stage.
 
+The subsequently frozen [D1 TRAIN-only codec comparison](runs/codex-cloud-codec-training-d1/REPORT.md)
+actually launched once. Its first rowwise slot exited **1** at NDU selected
+validation: complete CPU 10.022472113 s exceeded the unchanged 10 s cap.
+All 36 candidates and twelve selected content states are retained, but only ten
+selected-service output traces were reached. Under its predeclared hard-stop
+rule, the two codebook slots and final rowwise slot never launched. START and
+SLOT-0 are consumed: do not resume or relaunch D1. There is **no measured codec
+speed, allocation or content effect**. The 249 integrated engine tests and eight
+isolated diagnostic tests passed before that real budget failure; test success
+cannot replace it. No new formal test opened. The saved TRAIN-only
+[H1 dynamic headroom analysis](runs/codex-cloud-dynamic-train-headroom-h1/REPORT.md)
+identifies conditional oracle allowance but lacks direct NC/full service and
+static NDU TRAIN content terms. Dynamic superiority remains unconfirmed.
+
 **The first configured Codex Cloud execution passed the frozen finite-scene
 acceptance on 2026-10-23**, using source commit
 `57d2c7aa5880dd761b4c43f79d0f6f16b26b72e7`. The exact runner exited 0; all 30

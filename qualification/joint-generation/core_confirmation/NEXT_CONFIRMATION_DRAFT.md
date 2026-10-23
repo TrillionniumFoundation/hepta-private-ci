@@ -361,3 +361,29 @@ Only a later explicit authorization plus a reviewed, committed scientific
 protocol and binding source/plan/freeze can permit any new confirmation.
 No new formal test is authorized now. No merge, deployment, permission change,
 AV generation or alternate execution environment is part of this draft.
+
+
+## Recorded development outcome after drafting: codec D1
+
+The single registered D1 invocation used source
+`525fa87a3e0f7220553fbcc9782df3f2e4b073e8`, freeze
+`97f83d0e26251546cbaeecbc3b613ee8abe9ed44285352827a555e98ca0246dc`,
+and execution commit `2e7b08c86b2694727d7c989113a59ccfc8779a72`.
+It exited 1 in its first rowwise slot after selected NDU monitoring cost reached
+10.022472113 s, beyond the unchanged 10 s cap. Its hard-stop rule prevented
+both cache slots and the final rowwise slot. All partial states, 36 candidate
+witnesses, TRAIN identities and ten selected-service traces remain retained.
+This is a development budget failure, not a codec comparison or scientific
+confirmation. It does not spend or establish any retroactive/future alpha
+allocation. D1 cannot be resumed or renamed as a successful repeat. The proposed
+future confirmation remains draft-only and no new formal opening is allowed.
+
+Parent-reported parallel TRAIN studies also belong in any final selection
+history: the content group at `86601343b8691a535f9f9105759ee03b1eb20061`
+reported dense A-H +0.002641 across three positive seeds but its small refiner
+A_R-H_R -0.000822 and insufficient actual action headroom. A separate NDU group
+reported 11%-14% lower stratified gradient variance and positive N-A decoded
+TRAIN utility under comparable complete budgets; independent accounting review
+is pending. Those results are not independently verified in this document and
+cannot be inherited as dynamic or formal success. Any applicable optimization
+must also be supplied to the effective static NDU comparator.
