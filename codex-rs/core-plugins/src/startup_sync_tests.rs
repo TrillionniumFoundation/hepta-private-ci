@@ -1440,8 +1440,8 @@ fn extract_zipball_masks_special_permission_bits() {
             .by_name("root/plugin")
             .expect("read executable entry");
         assert_eq!(
-            entry.unix_mode(),
-            Some(entry_mode),
+            entry.external_attributes() >> 16,
+            entry_mode,
             "fixture must preserve SUID/SGID/sticky bits before extraction"
         );
     }
