@@ -167,6 +167,74 @@ fn receipt_binds_selected_output_and_rejects_invalid_abstain() {
     ));
 }
 
+#[test]
+fn selected_receipt_requires_candidate_evidence_and_global_budget() {
+    let mut receipt = valid_receipt();
+    receipt.candidate_digest = None;
+    assert!(matches!(
+        receipt.validate(),
+        Err(HnmfContractError::Missing(
+            "selected memory cell receipt successor"
+        ))
+    ));
+
+    let mut receipt = valid_receipt();
+    receipt.resident_bytes = MAX_MEMORY_CELL_STATE_BYTES + 1;
+    assert!(matches!(
+        receipt.validate(),
+        Err(HnmfContractError::LimitExceeded {
+            field: "residentBytes",
+            ..
+        })
+    ));
+}
+
+#[test]
+fn receipt_rejects_cross_generation_and_over_budget_bindings() {
+    let manifest = valid_manifest();
+    let input = valid_tick_input();
+    assert!(valid_receipt()
+        .validate_against_manifest_and_input(&manifest, &input)
+        .is_ok());
+
+    let mut receipt = valid_receipt();
+    receipt.logical_sequence += 1;
+    assert!(matches!(
+        receipt.validate_against_manifest_and_input(&manifest, &input),
+        Err(HnmfContractError::Conflict(
+            "memory cell receipt/input binding"
+        ))
+    ));
+
+    let mut receipt = valid_receipt();
+    receipt.predecessor_checkpoint_digest = Some(digest("wrong-predecessor"));
+    assert!(matches!(
+        receipt.validate_against_manifest_and_input(&manifest, &input),
+        Err(HnmfContractError::Conflict(
+            "memory cell receipt/input binding"
+        ))
+    ));
+
+    let mut stale_input = input.clone();
+    stale_input.forget_frontier_digest = digest("stale-forget");
+    assert!(matches!(
+        valid_receipt().validate_against_manifest_and_input(&manifest, &stale_input),
+        Err(HnmfContractError::Conflict(
+            "memory cell manifest/input binding"
+        ))
+    ));
+
+    let mut receipt = valid_receipt();
+    receipt.resident_bytes = manifest.max_state_bytes + 1;
+    assert!(matches!(
+        receipt.validate_against_manifest_and_input(&manifest, &input),
+        Err(HnmfContractError::LimitExceeded {
+            field: "residentBytes",
+            ..
+        })
+    ));
+}
+
 fn valid_split() -> MemoryCellSplitProposalV1 {
     let topology = TopologyProposalV1 {
         proposal_id: id("topology:split:1"),
