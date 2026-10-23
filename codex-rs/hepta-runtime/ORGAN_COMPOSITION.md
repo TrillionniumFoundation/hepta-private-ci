@@ -38,6 +38,13 @@ plugins. `status()` retains its legacy direct snapshot API; the network route us
 only `status_json()`. State adapters must not create or migrate stores while
 observing status.
 
+The [`CellSplitMigrationOwnerV1`](CELL_SPLIT_MIGRATION.md) reference is the
+candidate-only state handoff for a multi-child split. It runs through the
+existing migration seam and binds the committed parent checkpoint, recurrent
+and eligibility state, optimizer state, cache and message fence. Its journal
+and CAS witness make an interrupted handoff visible after restart; they do not
+claim production model or target-host durability.
+
 Qualification targets are `codex-hepta-control-plane`, `codex-hepta-runtime` and
 `codex-hepta-native-gateway`. Tests cover graph lifecycle, bounded dispatch, the
 real adapter call, denied authority, busy/stopped failure and verified-store reopen.
