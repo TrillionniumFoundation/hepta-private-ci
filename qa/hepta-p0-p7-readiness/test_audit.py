@@ -37,7 +37,9 @@ def fixtures():
             ident = 1000 + k * 10 + idx
             runs.append({"name": requirement["workflow"], "head_sha": s["head_sha"],
                          "event": "pull_request", "status": "completed", "conclusion": "success",
-                         "id": ident, "run_attempt": 1, "run_started_at": "2026-10-22T10:00:00Z"})
+                         "id": ident, "run_attempt": 1, "run_started_at": "2026-10-22T10:00:00Z",
+                         "pull_requests": [{"number": s["pr"],
+                                            "head": {"sha": s["head_sha"]}}]})
             db[f"{base}/actions/runs/{ident}/jobs?per_page=100"] = {
                 "total_count": 1,
                 "jobs": [{"name": requirement["jobs"][0],
@@ -112,6 +114,51 @@ class AdmissionTests(unittest.TestCase):
         result = audit(plan, MockGitHub(db).get)
         self.assertEqual(result["stages"][3]["ci_preflight"], "BLOCKED")
         self.assertIn("cancelled", " ".join(result["stages"][3]["ci_blockers"]))
+
+    def test_same_sha_other_pr_cannot_qualify_target(self):
+        plan, db = fixtures()
+        sha = plan["stages"]["P2"]["head_sha"]
+        path = f"/repos/{REPO}/actions/runs?head_sha={sha}&per_page=100"
+        db[path]["workflow_runs"][0]["pull_requests"] = [
+            {"number": 99999, "head": {"sha": sha}}]
+        report = audit(plan, MockGitHub(db).get)
+        self.assertEqual(report["stages"][2]["ci_preflight"], "BLOCKED")
+        self.assertIn("missing exact-SHA workflow",
+                      " ".join(report["stages"][2]["ci_blockers"]))
+
+    def test_missing_or_malformed_pr_link_fails_closed(self):
+        plan, original = fixtures()
+        sha = plan["stages"]["P0"]["head_sha"]
+        path = f"/repos/{REPO}/actions/runs?head_sha={sha}&per_page=100"
+        malformed = (
+            [],
+            [{"number": True, "head": {"sha": sha}}],
+            [{"number": 101, "head": {"sha": "f" * 40}}],
+            [{"number": "101", "head": {"sha": sha}}],
+            [{"number": 101}],
+            [{"head": {"sha": sha}}],
+            None,
+        )
+        for links in malformed:
+            db = copy.deepcopy(original)
+            db[path]["workflow_runs"][0]["pull_requests"] = links
+            with self.subTest(links=links):
+                report = audit(plan, MockGitHub(db).get)
+                self.assertEqual(report["stages"][0]["ci_preflight"], "BLOCKED")
+
+    def test_newer_other_pr_run_does_not_override_own_success(self):
+        plan, db = fixtures()
+        sha = plan["stages"]["P0"]["head_sha"]
+        path = f"/repos/{REPO}/actions/runs?head_sha={sha}&per_page=100"
+        foreign = copy.deepcopy(db[path]["workflow_runs"][0])
+        foreign.update(id=99999, run_started_at="2026-10-23T10:00:00Z",
+                       status="completed", conclusion="failure",
+                       pull_requests=[{"number": 202, "head": {"sha": sha}}])
+        db[path]["workflow_runs"].append(foreign)
+        db[path]["total_count"] += 1
+        report = audit(plan, MockGitHub(db).get)
+        self.assertEqual(report["stages"][0]["ci_preflight"], "PASS")
+        self.assertFalse(report["all_blockers_closed"])
 
     def test_other_sha_workflow_is_not_reused(self):
         plan, db = fixtures()
