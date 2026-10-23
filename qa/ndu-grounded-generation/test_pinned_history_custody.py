@@ -7,11 +7,15 @@ of the real source images. The deployed digest constants are immutable receipts.
 import copy
 import hashlib
 import json
+import random
 from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
 
+from PIL import Image
+
+from cohort import image_fingerprint
 import cohort_firewall as firewall
 from test_cohort_firewall import image, manifest
 
@@ -71,13 +75,35 @@ class PinnedHistoryCustodyTests(unittest.TestCase):
     def test_cli_emits_custody_receipts_for_real_pass(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            (root / "candidate.json").write_bytes(raw(self.candidate))
+            # A CLI PASS must exercise actual source-byte custody, not just
+            # trust the synthetic manifest fingerprints. Use four distinct,
+            # deterministic JPEGs and compute fingerprints with the frozen
+            # v1 cohort algorithm required by the production gate.
+            image_dir = root / "images"
+            image_dir.mkdir()
+            candidate = copy.deepcopy(self.candidate)
+            for index, split in enumerate(firewall.SPLITS):
+                rng = random.Random(702100 + index)
+                picture = Image.new("RGB", (128, 96))
+                picture.putdata([
+                    (rng.randrange(256), rng.randrange(256), rng.randrange(256))
+                    for _ in range(128 * 96)
+                ])
+                filename = f"candidate-{split}.jpg"
+                path = image_dir / filename
+                picture.save(path, format="JPEG", quality=95, subsampling=0)
+                record = candidate["splits"][split]["sources"][0]
+                record.update(image_fingerprint(path, [128, 96]))
+                record["image_size"] = [128, 96]
+                record["image_filename"] = filename
+            (root / "candidate.json").write_bytes(raw(candidate))
             for n, blob in enumerate(self.old_bytes):
                 (root / f"history-{n}.json").write_bytes(blob)
             output = root / "gate.json"
             args = ["--candidate", str(root / "candidate.json"),
                     "--historical", str(root / "history-1.json"),
                     "--historical", str(root / "history-0.json"),
+                    "--image-dir", str(image_dir),
                     "--output", str(output)]
             with patch.object(firewall, "PINNED_HISTORIES", self.synthetic_pins):
                 self.assertEqual(firewall.main(args), 0)
@@ -85,6 +111,9 @@ class PinnedHistoryCustodyTests(unittest.TestCase):
             self.assertEqual(receipt["status"], "pass")
             self.assertEqual(receipt["pinned_history_source_total"], 5)
             self.assertEqual(set(receipt["pinned_history_receipts"]), set(self.synthetic_pins))
+            self.assertEqual(receipt["candidate_image_custody"]["checked_images"], 4)
+            self.assertTrue(receipt["candidate_image_custody"]["original_bytes_cryptographically_checked"])
+            self.assertGreater(receipt["candidate_image_custody"]["source_jpeg_bytes"], 0)
 
     def test_cli_missing_history_fails_closed(self):
         with tempfile.TemporaryDirectory() as tmp:
