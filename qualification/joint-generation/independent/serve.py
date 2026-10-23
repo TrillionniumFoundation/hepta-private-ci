@@ -31,7 +31,8 @@ _spec = importlib.util.spec_from_file_location("joint_rgb8_legacy_serve", Path(_
 _legacy = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_legacy)
 encode_request = _legacy.encode_request
-SCHEMA = "hepta.joint-generation.native-bundle.v1"
+SCHEMA = "hepta.joint-generation.native-bundle.v2"
+LEGACY_SCHEMA = "hepta.joint-generation.native-bundle.v1"
 
 
 def _json(path, limit):
@@ -45,6 +46,49 @@ def _file(directory, name, limit, expected):
     if path.stat().st_size > limit or sha256(path) != expected:
         raise ContractError("artifact hash or byte bound mismatch: " + name)
     return path
+
+
+def _canonical_sha(value):
+    return digest(json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode())
+
+
+def _calibration_binding(manifest):
+    """Bind a train-only raw-gain law to content and its separately priced cost."""
+    runtime, provenance = manifest["runtime"], manifest["provenance"]
+    receipt = provenance["controller_calibration"]
+    if manifest["mode"] != "continuation":
+        if any(value is not None for value in (runtime["decision_price"], runtime["cost_ratio"], receipt,
+               provenance["controller_calibration_sha256"], provenance["calibration_inputs_sha256"])):
+            raise ContractError("static policy must not carry controller calibration")
+        return
+    if not isinstance(receipt, dict) or _canonical_sha(receipt) != provenance["controller_calibration_sha256"]:
+        raise ContractError("controller calibration receipt hash mismatch")
+    if (receipt.get("schema") != "hepta.joint-generation.controller-cost-calibration.v1"
+            or receipt.get("gain_objective") != "raw-decoded-task-utility"
+            or receipt.get("model_digest") != manifest["model_digest"]
+            or receipt.get("calibration_inputs_sha256") != provenance["calibration_inputs_sha256"]
+            or not isinstance(provenance["calibration_inputs_sha256"], str)
+            or len(provenance["calibration_inputs_sha256"]) != 64
+            or ("seed" in receipt and receipt["seed"] != manifest["seed"])):
+        raise ContractError("controller calibration model/train identity mismatch")
+    numbers = {key: receipt.get(key) for key in ("reference_full_cpu_ns", "compute_price", "cost_ratio",
+        "decision_price", "median_incremental_cpu_ns_per_request", "nonnegative_incremental_cpu_ns_per_request")}
+    deltas = receipt.get("paired_cpu_deltas_ns_per_request")
+    if (not isinstance(deltas, list) or len(deltas) != 3
+            or any(type(value) not in (int, float) or not np.isfinite(value) for value in [*numbers.values(), *deltas])
+            or numbers["reference_full_cpu_ns"] <= 0 or numbers["compute_price"] <= 0):
+        raise ContractError("invalid controller CPU calibration values")
+    median = float(np.median(deltas))
+    nonnegative = max(0.0, median)
+    expected = {"median_incremental_cpu_ns_per_request": median,
+        "nonnegative_incremental_cpu_ns_per_request": nonnegative,
+        "cost_ratio": nonnegative / numbers["reference_full_cpu_ns"],
+        "compute_price": runtime["compute_price"]}
+    expected["decision_price"] = runtime["compute_price"] * expected["cost_ratio"]
+    pairs = [(numbers[key], value) for key, value in expected.items()]
+    pairs.extend((runtime[key], numbers[key]) for key in ("decision_price", "cost_ratio"))
+    if any(type(a) not in (int, float) or not np.isfinite(a) or not np.isclose(a, b, atol=1e-12, rtol=1e-12) for a, b in pairs):
+        raise ContractError("controller decision price/cost ratio formula mismatch")
 
 
 def export_bundle(run, system, seed, out):
@@ -66,6 +110,9 @@ def export_bundle(run, system, seed, out):
     controller = None
     if row["controller_file"] is not None:
         controller = _file(run, row["controller_file"], 65536, row["controller_sha256"])
+    calibrated = row["mode"] == "continuation"
+    receipt = row.get("controller_calibration")
+    train_hash = selection["common"]["calibration_identity"]["inputs_sha256"] if calibrated else None
     manifest = {"schema": SCHEMA, "system": system, "seed": seed, "mode": row["mode"],
         "model_sha256": row["model_sha256"], "model_digest": row["model_digest"],
         "controller_sha256": row["controller_sha256"], "native_sha256": selection["native_library_sha256"],
@@ -73,7 +120,11 @@ def export_bundle(run, system, seed, out):
         "input_profile": "rgb8-instruction10-v1", "behavior_policy": "independent-categorical-v1",
         "runtime": {key: plan[key] for key in ("rho", "compute_price", "inference_cap_full_equivalents", "runtime_batch_size")},
         "provenance": {"selection_sha256": sha256(selection_path), "source_commit": selection["source_commit"],
-                       "plan_sha256": selection["plan_sha256"], "selection_ready": selection.get("selection_ready") is True}}
+                       "plan_sha256": selection["plan_sha256"], "selection_ready": selection.get("selection_ready") is True,
+                       "calibration_inputs_sha256": train_hash, "controller_calibration": receipt,
+                       "controller_calibration_sha256": _canonical_sha(receipt) if receipt is not None else None}}
+    manifest["runtime"].update(decision_price=row.get("decision_price"), cost_ratio=row.get("cost_ratio"))
+    _calibration_binding(manifest)
     out = Path(out); out.mkdir(parents=True, exist_ok=False)
     for source, name in ((model, "model.npz"), (native, "native.so"), (controller, "controller.npz")):
         if source is not None:
@@ -93,17 +144,20 @@ class Bundle:
 
 def load_bundle(directory):
     directory = Path(directory).resolve()
-    manifest = _json(_artifact(directory, "manifest.json"), 32768)
+    manifest = _json(_artifact(directory, "manifest.json"), 128 * 2**10)
     expected = {"schema", "system", "seed", "mode", "model_sha256", "model_digest", "controller_sha256",
                 "native_sha256", "native_abi", "input_profile", "behavior_policy", "runtime", "provenance"}
-    if (not isinstance(manifest, dict) or set(manifest) != expected or manifest["schema"] != SCHEMA
+    if (not isinstance(manifest, dict) or set(manifest) != expected or manifest["schema"] not in (SCHEMA, LEGACY_SCHEMA)
             or manifest["input_profile"] != "rgb8-instruction10-v1"
             or manifest["behavior_policy"] != "independent-categorical-v1"
             or manifest["system"] not in SYSTEMS or type(manifest["seed"]) is not int
             or manifest["native_abi"] != {"system": platform.system(), "machine": platform.machine()}):
         raise ContractError("unsupported native bundle manifest or ABI")
     runtime = manifest["runtime"]
-    if not isinstance(runtime, dict) or set(runtime) != {"rho", "compute_price", "inference_cap_full_equivalents", "runtime_batch_size"}:
+    fields = {"rho", "compute_price", "inference_cap_full_equivalents", "runtime_batch_size"}
+    if manifest["schema"] == SCHEMA:
+        fields.update(("decision_price", "cost_ratio"))
+    if not isinstance(runtime, dict) or set(runtime) != fields:
         raise ContractError("unsupported runtime profile")
     for key in ("rho", "compute_price", "inference_cap_full_equivalents"):
         value = runtime[key]
@@ -114,6 +168,12 @@ def load_bundle(directory):
     mode = manifest["mode"]
     if mode not in ("full", "low", "ensemble", "continuation") or (mode == "continuation") != (manifest["system"] == "ndu_control"):
         raise ContractError("unsupported selected generation mode")
+    if manifest["schema"] == SCHEMA:
+        provenance_fields = {"selection_sha256", "source_commit", "plan_sha256", "selection_ready",
+                             "calibration_inputs_sha256", "controller_calibration", "controller_calibration_sha256"}
+        if not isinstance(manifest["provenance"], dict) or set(manifest["provenance"]) != provenance_fields:
+            raise ContractError("unsupported calibration provenance")
+        _calibration_binding(manifest)
     model = JointModel.load(_file(directory, "model.npz", 32 * 2**20, manifest["model_sha256"]))
     if model.dimensions[:3] != (202, 12, 192) or model.digest() != manifest["model_digest"]:
         raise ContractError("selected content identity mismatch")
@@ -125,7 +185,7 @@ def load_bundle(directory):
             raise ContractError("selected critic class mismatch")
     elif manifest["controller_sha256"] is not None or (directory / "controller.npz").exists():
         raise ContractError("static policy must not carry an unused critic")
-    identity = digest(json.dumps(manifest, sort_keys=True, separators=(",", ":"), allow_nan=False).encode())
+    identity = _canonical_sha(manifest)
     return Bundle(manifest, model, controller, native, identity)
 
 
@@ -151,7 +211,8 @@ def infer(directory, envelope, outdir):
     preparation = WorkLedger("native-bundle-prepare", total_cap=envelope.budget.compute_units)
     generator = NativeGenerator(bundle.model, bundle.library, preparation, prepare_low=mode != "full")
     ledger = WorkLedger("native-service", total_cap=min(frozen_cap, envelope.budget.compute_units - preparation.consumed_units))
-    p, q, route = generator.batch(full, mode, critic=bundle.controller, price=runtime["compute_price"],
+    decision_price = runtime.get("decision_price", runtime["compute_price"]) if mode == "continuation" else runtime["compute_price"]
+    p, q, route = generator.batch(full, mode, critic=bundle.controller, price=decision_price,
                                 ledger=ledger, per_request_cap=ledger.remaining_units - output_units)
     outputs, sizes = _outputs(generator, p, q, ledger, np.random.default_rng(envelope.decoding_seed))
     output = outputs[0]; png = base64.b64decode(output["png_base64"], validate=True)
@@ -174,6 +235,7 @@ def infer(directory, envelope, outdir):
         "preparation": preparation.snapshot(), "runtime_cost": ledger.snapshot(),
         "cpu_ns": time.process_time_ns() - cpu_start, "wall_ns": time.perf_counter_ns() - wall_start,
         "qualification_only": True, "selection_ready": bundle.manifest["provenance"]["selection_ready"],
+        "controller_cost_calibrated": bundle.manifest["schema"] == SCHEMA and mode == "continuation",
         "timing_scope": "single request including loading/preparation/contract/PNG receipt; final file persistence excluded; not frozen batch-throughput qualification"}
     outdir = Path(outdir); outdir.mkdir(parents=True, exist_ok=False)
     (outdir / "output.png").write_bytes(png)
