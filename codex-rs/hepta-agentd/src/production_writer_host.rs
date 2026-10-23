@@ -292,6 +292,16 @@ impl AgentdProductionWriterHost {
         lease_id: impl Into<String>,
         lease_generation: u64,
     ) -> Result<Self, AgentdError> {
+        let lease_id = lease_id.into();
+        verifier
+            .verify_sender_process_binding(
+                &authority,
+                &config.identity().agent_id,
+                &lease_id,
+                lease_generation,
+                config.identity().spawn_generation,
+            )
+            .map_err(AgentdError::GenerationFenced)?;
         let store = CognitiveStore::open_with_recovery(
             &config.identity().layout,
             requirement,
@@ -307,7 +317,7 @@ impl AgentdProductionWriterHost {
             store,
             authority,
             verifier,
-            lease_id.into(),
+            lease_id,
             lease_generation,
         )
         .await
@@ -326,12 +336,21 @@ impl AgentdProductionWriterHost {
             ProductionDurableWriter::open_with_live_verifier(
                 store,
                 authority,
-                verifier,
+                Arc::clone(&verifier),
                 lease_id,
                 lease_generation,
             )
             .await?,
         );
+        verifier
+            .verify_sender_process_binding(
+                writer.authority(),
+                writer.owner_agent_id(),
+                writer.lease_id(),
+                writer.generation(),
+                spawn_generation,
+            )
+            .map_err(AgentdError::GenerationFenced)?;
         let mutation = Arc::new(writer.cognitive_mutation_capability()?);
         Ok(Self {
             spawn_generation,

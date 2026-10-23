@@ -370,6 +370,21 @@ async fn notes_local_handoff_before_expiry_refuses_and_consumes_current_into_dir
     assert!(now() < expiry);
     let grant = authority(&config.identity().agent_id, 2, now() + 600);
     let peer = checkpoint(cut, &grant, 2);
+    let rejected = AgentdProductionWriterHost::open_with_protected_recovery(
+        &config,
+        grant.clone(),
+        Arc::new(ProcessVerifier { spawn: 4, local: 2 }),
+        LEASE,
+        2,
+        inputs(&peer),
+    )
+    .await;
+    assert!(matches!(rejected, Err(AgentdError::GenerationFenced(_))));
+    assert_eq!(peer.calls.load(Ordering::SeqCst), 0);
+    assert_eq!(
+        peer.receipt.lock().unwrap().head.phase,
+        CognitiveCheckpointPhase::Current
+    );
     let result = AgentdProductionWriterHost::open_with_protected_recovery(
         &config,
         grant,

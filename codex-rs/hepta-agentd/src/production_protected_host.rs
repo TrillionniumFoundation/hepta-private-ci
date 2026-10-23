@@ -51,6 +51,15 @@ impl AgentdProductionWriterHost {
                     .to_string(),
             ));
         }
+        verifier
+            .verify_sender_process_binding(
+                &authority,
+                &config.identity().agent_id,
+                &lease_id,
+                lease_generation,
+                config.identity().spawn_generation,
+            )
+            .map_err(AgentdError::GenerationFenced)?;
         let store = CognitiveStore::open_with_recovery(
             &config.identity().layout,
             CognitiveRecoveryRequirement::ExactCurrentCut(&receipt.head.last_current),
