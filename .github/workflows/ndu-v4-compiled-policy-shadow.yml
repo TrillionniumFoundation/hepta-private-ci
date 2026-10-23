@@ -1,0 +1,28 @@
+name: NDU v4 compiled finite policy qualification (research only)
+on:
+  push:
+    branches:
+      - 'research/ndu-v4-compiled-policy-fastpath-20261023'
+    paths:
+      - 'experiments/multimodal_output_portfolio/v4/**'
+      - '.github/workflows/ndu-v4-compiled-policy-shadow.yml'
+  pull_request:
+    paths:
+      - 'experiments/multimodal_output_portfolio/v4/**'
+      - '.github/workflows/ndu-v4-compiled-policy-shadow.yml'
+permissions:
+  contents: read
+jobs:
+  compiled-policy:
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Verify all inherited and compiled finite strategy tests
+        working-directory: experiments/multimodal_output_portfolio/v4
+        run: |
+          python3 -m unittest discover -v -p "test_*.py"
+          python3 -m compileall -q portfolio.py counterfactual_audit.py information_acquisition.py snapshot_policy.py benchmark_solver.py benchmark_snapshot.py test_*.py
+      - name: Measure offline oracle versus online compiled policy on this runner
+        working-directory: experiments/multimodal_output_portfolio/v4
+        run: python3 benchmark_snapshot.py
