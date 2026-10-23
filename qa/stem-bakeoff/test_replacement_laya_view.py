@@ -122,5 +122,32 @@ class ViewTests(unittest.TestCase):
                 load_laya_cpu_isolated(snapshot, wrong_agent)
 
 
+class ResourceBoundsTests(unittest.TestCase):
+    def test_bounded_tokenizer_file_and_directory_inventories(self):
+        with tempfile.TemporaryDirectory() as t:
+            snapshot = fixture(Path(t))
+            tok = snapshot / "tokenizer"
+            for i in range(64):
+                (tok / f"extra-{i:02d}.json").write_text("{}")
+            with self.assertRaisesRegex(ValueError, "exceeds fixed limits"):
+                load_laya_cpu_isolated(snapshot, lambda path, device: None)
+        with tempfile.TemporaryDirectory() as t:
+            snapshot = fixture(Path(t))
+            tok = snapshot / "tokenizer"
+            for i in range(513):
+                (tok / f"empty-{i:03d}").mkdir()
+            with self.assertRaisesRegex(ValueError, "tree exceeds fixed limits"):
+                load_laya_cpu_isolated(snapshot, lambda path, device: None)
+
+    def test_encoder_directory_link_denied(self):
+        with tempfile.TemporaryDirectory() as t:
+            snapshot = fixture(Path(t))
+            (snapshot / "encoder" / "config.json").unlink()
+            (snapshot / "encoder").rmdir()
+            (snapshot / "encoder").symlink_to(snapshot / "tokenizer", target_is_directory=True)
+            with self.assertRaises(ValueError):
+                load_laya_cpu_isolated(snapshot, lambda path, device: None)
+
+
 if __name__ == "__main__":
     unittest.main()
