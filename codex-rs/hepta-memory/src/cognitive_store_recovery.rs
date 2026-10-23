@@ -43,8 +43,11 @@ use crate::ProductionAuthorityVerifier;
 use crate::cognitive_path::canonical_path_without_redirection;
 use crate::framing::frame_part;
 
+#[path = "cognitive_store_material.rs"]
+mod material;
 #[path = "cognitive_store_recovery_read_only.rs"]
 mod read_only;
+pub use material::VerifiedCognitiveMaterial;
 pub use read_only::RecoveredCognitiveReadOnly;
 
 const PROFILE: &str = "hepta:cognitive:exact-current-cut:v1";
@@ -170,79 +173,15 @@ impl CognitiveStore {
 
         let result = async {
             let commit_gate = CognitiveCommitGate::default();
-            let connection_gate = commit_gate.clone();
-            let pool = config
-                .open_durable_evidence_pool_guarded(&candidate, move || {
-                    connection_gate.commit_allowed()
-                })
-                .await
-                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-            let authenticated = async {
-                verify_store(&pool, layout.agent_id())
-                    .await
-                    .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
-                let mut transaction = pool
-                    .begin_with("BEGIN IMMEDIATE")
-                    .await
-                    .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-                let observed = capture(&mut transaction, layout.agent_id())
-                    .await
-                    .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
-                if observed != *expected {
-                    return Err(CognitiveRecoveryError::AccessDenied(
-                        "recovery candidate differs from independently retained current cut"
-                            .to_string(),
-                    ));
-                }
-                let integrity: Vec<String> = sqlx::query_scalar("PRAGMA integrity_check(1)")
-                    .fetch_all(&mut *transaction)
-                    .await
-                    .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
-                if integrity != ["ok"] {
-                    return Err(CognitiveRecoveryError::Indeterminate(
-                        "recovery candidate failed SQLite integrity_check".to_string(),
-                    ));
-                }
-                transaction
-                    .commit()
-                    .await
-                    .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-
-                Ok(())
-            }
-            .await;
-            if let Err(error) = authenticated {
-                pool.close().await;
-                return Err(error);
-            }
-            pool.close().await;
-
-            config
-                .checkpoint_private_recovery_database(&candidate)
-                .await
-                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-
-            cleanup_candidate_sidecars(&candidate)?;
-            protect_database_file(&candidate)
-                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-            {
-                let mut options = std::fs::OpenOptions::new();
-                options.read(true);
-                #[cfg(windows)]
-                options.write(true);
-                let file = options.open(&candidate).map_err(|error| {
-                    CognitiveRecoveryError::Unavailable(format!(
-                        "open recovered cognitive database for sync: {error}"
-                    ))
-                })?;
-                file.sync_all().map_err(|error| {
-                    CognitiveRecoveryError::Unavailable(format!(
-                        "sync recovered cognitive database: {error}"
-                    ))
-                })?;
-            }
-            sync_cognitive_directory(&canonical_root)
-                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+            material::validate_private_candidate(
+                &config,
+                &candidate,
+                layout.agent_id(),
+                expected,
+                &canonical_root,
+                &commit_gate,
+            )
+            .await?;
 
             let connection_gate = commit_gate.clone();
             let pool = config
