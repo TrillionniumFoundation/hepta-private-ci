@@ -55,6 +55,23 @@ class NearNeutralRiskTests(unittest.TestCase):
         )
         self.assertEqual(Config(risk_aversion=1e-320).risk_aversion, 1e-320)
 
+    def test_tiny_risk_can_still_be_material_on_wide_finite_support(self):
+        # Counterexample to a gamma-only risk-neutral shortcut: gamma -> 0
+        # does not imply a small gamma * payoff span.
+        probabilities = (0.5, 0.5)
+        for gamma, payoff in ((1e-260, 1e260), (1e-308, 1e308)):
+            with self.subTest(gamma=gamma):
+                values = (0.0, payoff)
+                actual = conditional_ce(values, probabilities, gamma)
+                reference = decimal_reference(values, probabilities, gamma)
+                self.assertTrue(
+                    math.isclose(actual, reference, rel_tol=2e-14),
+                    (gamma, actual, reference),
+                )
+                # An incorrectly neutralized policy would value this at
+                # payoff / 2 instead of the risk-sensitive certainty equivalent.
+                self.assertLess(actual, 0.9 * (payoff / 2))
+
     def test_registered_ordinary_risk_uses_unchanged_evaluation(self):
         values, probabilities, gamma = (-10.0, -3.0), (0.4, 0.6), 0.5
         anchor = min(values)
