@@ -1,0 +1,121 @@
+name: Hepta parametric memory shadow checks
+
+on:
+  push:
+    branches:
+      - codex/memory-parametric-cell-loop-20261023
+    paths:
+      - scripts/memory_cell/**
+      - qa/stem-bakeoff/**
+      - .github/workflows/hepta-parametric-memory-shadow.yml
+  pull_request:
+    paths:
+      - scripts/memory_cell/**
+      - qa/stem-bakeoff/**
+      - .github/workflows/hepta-parametric-memory-shadow.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Preserve evidence from each exact source HEAD; no production gate is changed.
+concurrency:
+  group: hepta-parametric-shadow-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
+  TOKENIZERS_PARALLELISM: "false"
+  HF_HUB_DISABLE_TELEMETRY: "1"
+  OPENBLAS_NUM_THREADS: "2"
+  OMP_NUM_THREADS: "2"
+  MKL_NUM_THREADS: "2"
+
+jobs:
+  parametric-memory-confirmation:
+    # pull_request.branches filters the base branch, so constrain its head here.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/codex/memory-parametric-cell-loop-20261023') ||
+      (github.event_name == 'pull_request' && github.head_ref == 'codex/memory-parametric-cell-loop-20261023')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Verify and record exact source identity
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          mkdir -p "$RUNNER_TEMP/parametric-metadata"
+          python - <<'PY'
+          import json, os, platform, subprocess
+          from pathlib import Path
+          record = {
+              "source_sha": os.environ["SOURCE_SHA"],
+              "tree_sha": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "event_name": os.environ["GITHUB_EVENT_NAME"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "python": platform.python_version(),
+              "platform": platform.platform(),
+              "mode": "SHADOW_ONLY",
+              "production_activation_allowed": False,
+          }
+          (Path(os.environ["RUNNER_TEMP"]) / "parametric-metadata" / "source.json").write_text(
+              json.dumps(record, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+      - name: Install pinned CPU model runtime
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1'
+          python -m pip install --only-binary=:all: -r scripts/memory_cell/requirements.txt
+          python -m pip check
+          python -m pip freeze > "$RUNNER_TEMP/parametric-metadata/runtime.txt"
+      - name: Run parametric unit and owner regression tests
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s scripts/memory_cell -p 'test_parametric_*.py' -v 2>&1 | tee "$RUNNER_TEMP/parametric-metadata/parametric-unit.log"
+          python -m unittest discover -s qa/stem-bakeoff -p 'test_cell_evolution.py' -v 2>&1 | tee "$RUNNER_TEMP/parametric-metadata/evolution.log"
+          python -m unittest discover -s qa/stem-bakeoff -p 'test_cell_process_inference.py' -v 2>&1 | tee "$RUNNER_TEMP/parametric-metadata/process.log"
+      - name: Acquire the pinned public decoder
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          python scripts/memory_cell/prepare_parametric.py --output "$RUNNER_TEMP/smol135m" --download 2>&1 | tee "$RUNNER_TEMP/parametric-metadata/acquisition.log"
+      - name: Run the actual confirmation and require the mechanism gate
+        timeout-minutes: 45
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          python scripts/memory_cell/parametric_trial.py --model "$RUNNER_TEMP/smol135m" --output "$RUNNER_TEMP/parametric-trial" --phase confirmation 2>&1 | tee "$RUNNER_TEMP/parametric-metadata/confirmation.log"
+      - name: Preserve reports and adapter evidence without the base checkpoint
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: parametric-memory-shadow-${{ env.SOURCE_SHA }}
+          path: |
+            ${{ runner.temp }}/parametric-metadata/
+            ${{ runner.temp }}/parametric-trial/
+            ${{ runner.temp }}/smol135m.acquisition.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Confirm source tree unchanged
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
