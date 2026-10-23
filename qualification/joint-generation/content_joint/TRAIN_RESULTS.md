@@ -103,4 +103,3 @@ Per-call timers now include input/guard/ledger setup through inference, sampling
 Maximum final native sparse/full-Q metric discrepancy=6.6613381477509392e-16. Exact requestwise joint CE, the original scorer/rho and declared greedy contracts are retained. TRAIN positivity here does not authorize formal opening or close the parent training/NDU/dynamic research goals.
 
 Review build.json, analysis.json, the outer .execution.json, source-map.json, quality-summary.json, every model directory and evidence/audit-result.json.
-
