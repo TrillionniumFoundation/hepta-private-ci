@@ -171,6 +171,11 @@ class RiskIdentificationTests(unittest.TestCase):
                                          (0., 0., 1.)))
         with self.assertRaises(GateRejected):
             portfolio_weights((1., 2., 3.), indefinite)
+        extreme = Covariance(True, ((100., 0., 0.),
+                                    (0., 100., 0.),
+                                    (0., 0., 100.)), 30, 1., 3, "forced")
+        with self.assertRaisesRegex(GateRejected, "did not converge"):
+            portfolio_weights((1., 2., 3.), extreme)
 
 
 class CreditClosureTests(unittest.TestCase):
