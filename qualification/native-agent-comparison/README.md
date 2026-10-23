@@ -41,3 +41,32 @@ The execution-port source changes belong to
 Hepta V8 Codex App Server execution spine or authorize physical cutover.
 The referenced upstream Runtime PR stack, real model calls, mandatory Rust CI
 and signed Final-use verification remain independent P2–P6 blockers.
+
+## P5 split/merge efficacy holdout (source-only)
+
+`python3 -m unittest discover -s qualification/native-agent-comparison -p 'test_*.py' -q`
+
+`python3 qualification/native-agent-comparison/cell_split.py frozen-cell-plan.json independently-observed-cell-rows.json`
+
+`cell_split.py` requires six equal-limit arms: `no_change`, `reuse`,
+`fixed_count`, `shared_head`, `sparse_moe` and `split`, paired over
+64/256/1024/4096 logical Cells. The preregistered cohort contains exact
+source/model/target/evaluator digests, task fixture/oracle digests, grouped old
+test tasks and at least five entirely unseen future groups with disjoint
+families. Only `test` and `future` observations enter measured scores; any
+train/calibration overlap with the evaluation families fails closed.
+
+The structural scorer compares future-group gains against the strongest
+other arm *within each future group*, uses a seed-bound grouped bootstrap,
+measures old-task retention against `no_change`, enforces per-row measured
+resource limits and refuses missing/duplicate pairs, changed source or
+model profiles, unknown effects and idempotency replay. Its output can
+report `candidate_meets_structural_metrics` but it **always** returns
+`HOLD_NO_GO_INDEPENDENT_EVIDENCE_REQUIRED`, with
+`independent_acceptance=false` and `physical_execution_proven=false`.
+
+These are synthetic unit tests for evaluator invariants, **not** learning
+runs, valid held-out results, source/host attestations or evidence that Cell
+division produces AGI. A distinct authenticated evaluator must authenticate
+the actual source, model, corpus, measurements and producer identities before
+any selection or production promotion.
