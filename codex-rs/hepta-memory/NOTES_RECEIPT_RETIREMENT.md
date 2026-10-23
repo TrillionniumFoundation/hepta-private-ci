@@ -1,14 +1,14 @@
 # Managed Notes receipt retirement
 
-**Concurrency qualification reopened on 2026-10-23.** A later actual
+**Historical exclusion counterexample, 2026-10-23.** A later actual
 competitor returned `Ok(ProductionQueuedReceipt)` and committed SQLite changes
 while the metadata-retirement callback was still held. The read-only pool's
 `BEGIN IMMEDIATE` did not provide the intended writer exclusion. The earlier
 59/59 and 33/33 results remain historical test results; their short pending
 observation does not prove mutual exclusion. Notes retirement and the HOS2 and
-pre-effect paths sharing this barrier remain blockers pending a real fix and
-actual competing-writer acceptance. No physical Current/recovery safety is
-claimed from this barrier.
+pre-effect paths sharing that old barrier were reopened. The subsequent
+physical writer-lock repair is qualified in its component scope below. No
+physical Current/recovery safety is claimed from the old read-only barrier.
 
 The [actual competing-writer counterexample](acceptance/2026-10-23-retirement-counterexample/README.md)
 retains both failing phases, original source deltas and exact binary hashes.
@@ -48,3 +48,12 @@ must be qualified on their own paths.
 include the original premature-retirement failure, the invalid stale-binary
 run, the fresh 59-case owner run, 33 shared regressions and finish checks. These
 component fixtures do not qualify the physical Root store or crash recovery.
+
+## Subsequent physical exclusion repair
+
+The original read-only exclusion claim above remains withdrawn. Frozen
+2ff0a02710 subsequently passed the repaired physical writer barrier and
+pre-effect Current scope74/74, including all original67 in one run and9 real
+SIGKILL cases. This new result does not retroactively validate the old barrier.
+See [the actual replacement design](OWNER_PUBLICATION_BARRIER.md) and
+[its original success/failure records](acceptance/2026-10-23-owner-barrier-effect-entry/README.md).
