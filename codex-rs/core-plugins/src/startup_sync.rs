@@ -1036,6 +1036,17 @@ fn read_sha_file(sha_path: &Path) -> Option<String> {
 }
 
 fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String> {
+    // Do not trust the extraction root itself: checking only child components
+    // would still permit writes through a symlinked destination directory.
+    if let Ok(metadata) = std::fs::symlink_metadata(destination)
+        && metadata.file_type().is_symlink()
+    {
+        return Err(format!(
+            "curated plugins extraction root {} is a symbolic link",
+            destination.display()
+        ));
+    }
+
     std::fs::create_dir_all(destination).map_err(|err| {
         format!(
             "failed to create curated plugins extraction directory {}: {err}",
@@ -1058,6 +1069,19 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
             ));
         };
 
+        // An archive-provided symlink must never be materialized in this tree.
+        // This also prevents future extractor refactors from silently enabling it.
+        #[cfg(unix)]
+        if entry
+            .unix_mode()
+            .is_some_and(|mode| (mode & 0o170000) == 0o120000)
+        {
+            return Err(format!(
+                "curated plugins zip entry `{}` is a symbolic link",
+                entry.name()
+            ));
+        }
+
         let mut components = relative_path.components();
         let Some(std::path::Component::Normal(_)) = components.next() else {
             continue;
@@ -1074,6 +1098,21 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
         }
 
         let output_path = destination.join(&output_relative);
+        // Files inside the staging tree must not redirect writes outside it.
+        // The staging directory is private, and this check rejects any stale
+        // symlink component before create_dir_all/File::create can follow it.
+        let mut checked_path = destination.to_path_buf();
+        for component in output_relative.components() {
+            checked_path.push(component);
+            if let Ok(metadata) = std::fs::symlink_metadata(&checked_path)
+                && metadata.file_type().is_symlink()
+            {
+                return Err(format!(
+                    "curated plugins zip path {} traverses a symbolic link",
+                    checked_path.display()
+                ));
+            }
+        }
         if entry.is_dir() {
             std::fs::create_dir_all(&output_path).map_err(|err| {
                 format!(
@@ -1117,12 +1156,22 @@ fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> 
     let Some(mode) = entry.unix_mode() else {
         return Ok(());
     };
-    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode)).map_err(|err| {
+    // Never propagate archive-controlled setuid, setgid, sticky or type bits.
+    std::fs::set_permissions(
+        output_path,
+        std::fs::Permissions::from_mode(safe_zip_file_mode(mode)),
+    )
+    .map_err(|err| {
         format!(
             "failed to set permissions on curated plugins file {}: {err}",
             output_path.display()
         )
     })
+}
+
+#[cfg(unix)]
+fn safe_zip_file_mode(mode: u32) -> u32 {
+    mode & 0o777
 }
 
 #[cfg(not(unix))]
