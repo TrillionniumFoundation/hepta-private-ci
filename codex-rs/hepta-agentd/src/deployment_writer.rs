@@ -101,53 +101,62 @@ impl DeploymentFinalUseIssuer {
             }
             let now = self.clock.now_unix_ms().map_err(io::Error::other)?;
             validate_writer_time(registration, state.head.authority_epoch, now)?;
-            let mut reserved = state.clone();
-            reserved.sequence = state
-                .sequence
-                .checked_add(1)
-                .ok_or_else(|| io::Error::other("issuer counter exhausted"))?;
-            let claims = HostWriterAuthorizationClaimsV1 {
-                schema_version: 1,
-                issuer_id: state.signer_id.clone(),
-                sequence: reserved.sequence,
-                registered_agent_id: registration.registered_agent_id.clone(),
-                spawn_generation: registration.spawn_generation,
-                owner_epoch: registration.owner_epoch,
-                local_lease_id: registration.local_lease_id.clone(),
-                local_lease_generation: registration.local_lease_generation,
-                authority_lease: registration.authority_lease.clone(),
-                authority_lease_sha256: Sha256Digest::for_bytes(&serde_json::to_vec(
-                    &registration.authority_lease,
-                )?),
-            };
-            let bytes = claims.signing_bytes()?;
-            self.store
-                .compare_and_set(STATE_OWNER, &state, &reserved)
-                .map_err(io::Error::other)?;
-            let proof = HostSignedWriterAuthorizationV1 {
-                claims,
-                signature_hex: self
-                    .key
-                    .sign(&bytes)
-                    .to_bytes()
-                    .iter()
-                    .map(|byte| format!("{byte:02x}"))
-                    .collect(),
-            };
-            // I/O may outlive the lease. Never refund the reserved sequence.
-            let after = self.clock.now_unix_ms().map_err(io::Error::other)?;
-            if after < now {
-                return Err(io::Error::other("writer clock regressed"));
-            }
-            validate_writer_time(registration, state.head.authority_epoch, after)?;
-            let mut retained = reserved.clone();
-            retained.writer_authorization = Some(proof.clone());
-            self.store
-                .compare_and_set(STATE_OWNER, &reserved, &retained)
-                .map_err(io::Error::other)?;
-            self.validate_writer_proof(&retained, registration, &proof)?;
-            Ok(proof)
+            self.retain_writer_authorization(&state, registration, now)
         })
+    }
+
+    fn retain_writer_authorization(
+        &self,
+        state: &IssuerState,
+        registration: &HostAuthorityWriterRegistration,
+        now: u64,
+    ) -> io::Result<HostSignedWriterAuthorizationV1> {
+        let mut reserved = state.clone();
+        reserved.sequence = state
+            .sequence
+            .checked_add(1)
+            .ok_or_else(|| io::Error::other("issuer counter exhausted"))?;
+        let claims = HostWriterAuthorizationClaimsV1 {
+            schema_version: 1,
+            issuer_id: state.signer_id.clone(),
+            sequence: reserved.sequence,
+            registered_agent_id: registration.registered_agent_id.clone(),
+            spawn_generation: registration.spawn_generation,
+            owner_epoch: registration.owner_epoch,
+            local_lease_id: registration.local_lease_id.clone(),
+            local_lease_generation: registration.local_lease_generation,
+            authority_lease: registration.authority_lease.clone(),
+            authority_lease_sha256: Sha256Digest::for_bytes(&serde_json::to_vec(
+                &registration.authority_lease,
+            )?),
+        };
+        let bytes = claims.signing_bytes()?;
+        self.store
+            .compare_and_set(STATE_OWNER, state, &reserved)
+            .map_err(io::Error::other)?;
+        let proof = HostSignedWriterAuthorizationV1 {
+            claims,
+            signature_hex: self
+                .key
+                .sign(&bytes)
+                .to_bytes()
+                .iter()
+                .map(|byte| format!("{byte:02x}"))
+                .collect(),
+        };
+        // I/O may outlive the lease. Never refund the reserved sequence.
+        let after = self.clock.now_unix_ms().map_err(io::Error::other)?;
+        if after < now {
+            return Err(io::Error::other("writer clock regressed"));
+        }
+        validate_writer_time(registration, state.head.authority_epoch, after)?;
+        let mut retained = reserved.clone();
+        retained.writer_authorization = Some(proof.clone());
+        self.store
+            .compare_and_set(STATE_OWNER, &reserved, &retained)
+            .map_err(io::Error::other)?;
+        self.validate_writer_proof(&retained, registration, &proof)?;
+        Ok(proof)
     }
 
     /// Open-only read for a trusted service registration. The caller retains
@@ -166,6 +175,18 @@ impl DeploymentFinalUseIssuer {
     }
 
     fn validate_writer_proof(
+        &self,
+        state: &IssuerState,
+        registration: &HostAuthorityWriterRegistration,
+        proof: &HostSignedWriterAuthorizationV1,
+    ) -> io::Result<()> {
+        self.validate_writer_proof_identity(state, registration, proof)?;
+        let now = self.clock.now_unix_ms().map_err(io::Error::other)?;
+        validate_writer_time(registration, state.head.authority_epoch, now)
+    }
+    // Authentication of a retired predecessor is deliberately independent of
+    // temporal liveness. Its retirement is proved by the original registry.
+    fn validate_writer_proof_identity(
         &self,
         state: &IssuerState,
         registration: &HostAuthorityWriterRegistration,
@@ -206,8 +227,7 @@ impl DeploymentFinalUseIssuer {
             .verifying_key()
             .verify_strict(&claims.signing_bytes()?, &signature)
             .map_err(io::Error::other)?;
-        let now = self.clock.now_unix_ms().map_err(io::Error::other)?;
-        validate_writer_time(registration, state.head.authority_epoch, now)
+        Ok(())
     }
 }
 
@@ -229,3 +249,6 @@ pub(crate) fn validate_writer_time(
 #[cfg(test)]
 #[path = "deployment_writer_tests.rs"]
 mod tests;
+
+#[path = "deployment_writer_rotate.rs"]
+mod rotation;

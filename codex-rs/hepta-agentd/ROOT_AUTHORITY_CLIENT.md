@@ -81,3 +81,27 @@ separate fixture frontiers. Blocking and failed consumer updates must refuse
 pure verification. These are client qualifications, not proof that a root
 service, its protected directories or a complete device/Notes deployment was
 installed and qualified.
+
+## Trusted writer succession
+
+`DeploymentFinalUseIssuer::rotate_writer_authorization` is a trusted launcher
+API, absent from peer wire. It uses the verifier retained by the canonical
+protected factory, the original registry's retired-predecessor/live-successor
+fence, and the same issuer key, durable head and shared sequence. It strictly
+authenticates the complete old retained proof without requiring that old lease
+to remain temporally live. Exact original revocation, expiry or original pruning
+is required; a missing or arbitrary replacement lease is not retirement.
+
+The trusted launcher must separately prove old publisher quiescence with its
+retained pidfd, capture the exact new registered identity/peer, and supply that
+full successor registration. Local writer generation advances exactly once;
+actual Fleet spawn must increase and may skip failed starts. No peer may choose
+these values. The registry callback never reenters the registry owner.
+
+Only an exact already retained successor may reconcile a lost ACK without a new
+sequence. An error may follow a durable sequence reservation or replacement and
+does not permit rollback or another invented generation. Checkpoint adoption is
+a separate protected CAS: a crash between the two stores must refuse runtime
+opening until exact trusted reconciliation. This API does not recover Dirty or
+Publishing, initialize a missing cut, renew a live predecessor, or add another
+issuer/nonce ledger. Original-owner unit tests are not deployment qualification.

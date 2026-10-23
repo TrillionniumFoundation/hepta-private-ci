@@ -8,7 +8,7 @@ use codex_hepta_contracts::authority_lease::AuthorityLeaseError;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
 
 pub(super) struct ProtectedLease {
-    verifier: AuthorityLeaseVerifier,
+    pub(super) verifier: AuthorityLeaseVerifier,
     id: String,
     revision: u64,
 }
