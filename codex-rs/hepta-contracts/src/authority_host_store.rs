@@ -27,6 +27,11 @@ use rustix::fs::OFlags;
 
 const MAX_RECORD_BYTES: u64 = 16 * 1024;
 
+#[path = "authority_host_issuer.rs"]
+mod issuer;
+pub use issuer::HostFinalUseIssuer;
+pub use issuer::HostIssuerError;
+
 enum DirectoryAccess {
     Ancestor,
     Private,

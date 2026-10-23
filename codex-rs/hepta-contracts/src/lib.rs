@@ -36,6 +36,10 @@ pub use authority_host_clock::HostAuthorityClock;
 #[cfg(unix)]
 pub use authority_host_store::HostAuthorityFrontierStore;
 #[cfg(unix)]
+pub use authority_host_store::HostFinalUseIssuer;
+#[cfg(unix)]
+pub use authority_host_store::HostIssuerError;
+#[cfg(unix)]
 pub use authority_host_store::RootAuthorityDirectory;
 pub use authority_lease::deliver_authority_lease_with_witness;
 pub use authority_lease::dispatch_authority_lease_with_witness;

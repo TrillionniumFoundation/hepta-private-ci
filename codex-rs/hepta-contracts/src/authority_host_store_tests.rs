@@ -20,6 +20,10 @@ use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+#[cfg(target_os = "linux")]
+#[path = "authority_host_issuer_tests.rs"]
+mod issuer_tests;
+
 const OWNER: &str = "local-host-authority";
 
 // Tests exercise real filesystem persistence as their ordinary test UID. This

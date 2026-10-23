@@ -67,5 +67,25 @@ restores both the protected frontier and OS time. Root and the OS remain trusted
 
 Clock tests cover actual Linux sampling and reopen, a retained future watermark
 that refuses to reopen without rewriting state, and projection/reboot/rollback
-boundaries. The issuer, private endpoint, runtime loader and authenticated
-cognitive current-cut protocol remain separate requirements.
+boundaries.
+
+## Local key custody and issuance
+
+`HostFinalUseIssuer` explicitly creates a fresh OS-random Ed25519 key in this
+root directory. Opening an absent, unsafe or different identity fails; it never
+regenerates keys. Only the public trust key leaves the issuer API. Grant issuance
+requires a live existing `AuthorityLeaseRegistry` lease with exact subject,
+operation class, destination, scope and payload, revalidated under the original
+lease dispatch fence. Grants expire within thirty seconds and no later than the
+lease. This API does not create leases or CognitiveStore recovery cuts.
+
+The issuer has no second FinalUse journal. The consumer retains the original
+FinalUse signature/nonce/revocation/effect-entry owner. Lease revocation stops
+new issuance. Already signed grants additionally require the original FinalUse
+revocation protocol or expiry; lease revocation alone is not a claim of their
+instant invalidation. Tests use new real keys and original FinalUse/lease owners
+to verify signatures, replay denial, changed binding denial and both revocation
+paths without entering an effect.
+
+The private endpoint, runtime loader and authenticated cognitive current-cut
+protocol remain separate requirements.
