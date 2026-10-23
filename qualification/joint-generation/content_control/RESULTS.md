@@ -183,3 +183,9 @@ rerun here or used as project benefit evidence; the frozen experiment is unchang
 The later [group-wide budget clarification and next TRAIN proposal](BUDGET_REVIEW_AND_NEXT_TRAIN_PROPOSAL.md)
 points directly to all nine candidates' complete accounts and proposes one
 fixed dense block-update design. That proposal has not been implemented or run.
+
+A subsequent explicit parent authorization permitted ONE fixed joint-versus-
+alternating TRAIN diagnostic. It has now run without schedule search: the
+[block-update result](../content_block/RESULTS.md) retained36 candidates, real
+budget-to-head-update conversion and a failed readiness exit2. This later
+result supersedes the proposal's earlier unrun status; no formal test was opened.

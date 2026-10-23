@@ -122,3 +122,24 @@ or equal cumulative historical R&D. The refiner remains rejected; its small
 headroom does not authorize a gate expansion. Confirmation drafts and the
 unrun block-update proposal remain on hold pending a unified design with the
 parent's NDU review. No old/new formal test or old-system retest is authorized.
+
+## Later explicit TRAIN authorization and terminal block result
+
+After that hold, the parent explicitly authorized implementation and ONE new
+TRAIN-only standard-joint versus fixed1:1 alternating joint/heads-only diagnostic,
+with matched H/A schedules/opportunities and complete group caps. This specific
+authorization superseded the earlier no-old-system-retest restriction solely
+for the registered standard-joint TRAIN controls. It did not authorize formal
+tests, frequency search or refiner/gate expansion.
+
+The new source356acf562431 and frozen execution4693f47b30ee were committed and
+pushed before the sole build. All36 candidates and all first/last gradients,
+actual deltas, moments/clocks and costs were retained. The builder exited0;
+prespecified readiness analysis exited2. More real head updates were funded,
+but A_alt lost to current A_joint and the previously saved strong dense A.
+A-H stayed positive within both schedules. All complete10s/12B caps held.
+Five hand-array tests and the saved36-candidate state/unit audit passed;12
+external PNG/caption checks passed. No rerun or replacement build occurred.
+See [the full block result](../content_block/RESULTS.md). This remains TRAIN
+R&D, not a formal look or retroactive qualification of any earlier failure.
+Further design/confirmation remains for unified parent/NDU review.

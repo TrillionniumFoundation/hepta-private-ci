@@ -1,5 +1,11 @@
 # Group-wide budget clarification and next TRAIN proposal
 
+Later status: the parent subsequently authorized ONE implementation/diagnostic
+of the proposed fixed1:1 recipe. It was executed without ratio search and failed
+TRAIN readiness; [the new result](../content_block/RESULTS.md) preserves all36
+candidates and complete costs. The proposal text below records the earlier
+pre-execution scope. Formal confirmation remains unexecuted.
+
 This is a post-result review/proposal, not another execution authorization or
 an amendment to the completed frozen study. No new training, gate, old-system
 retest or formal confirmation accompanies it.

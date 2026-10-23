@@ -1,0 +1,652 @@
+{
+  "accounting": {
+    "A_alt": {
+      "complete_cpu": 6.748299155,
+      "complete_units": 11647940121,
+      "derived_from_executed_update_types": 7993580544,
+      "training_kernel_units": 7993580544
+    },
+    "A_joint": {
+      "complete_cpu": 6.1315849129999975,
+      "complete_units": 11645004069,
+      "derived_from_executed_update_types": 7990651620,
+      "training_kernel_units": 7990651620
+    },
+    "H_alt": {
+      "complete_cpu": 6.404051245999998,
+      "complete_units": 11650130073,
+      "derived_from_executed_update_types": 7997017248,
+      "training_kernel_units": 7997017248
+    },
+    "H_joint": {
+      "complete_cpu": 5.796900304,
+      "complete_units": 11625527853,
+      "derived_from_executed_update_types": 7972422156,
+      "training_kernel_units": 7972422156
+    }
+  },
+  "audit_cpu_before_receipt": 0.48687499200000006,
+  "external_observations": [
+    {
+      "PNG_scene": 1,
+      "caption": "red square right",
+      "group": "A_alt",
+      "joint_correct": true,
+      "seed": 11,
+      "target_scene": 1
+    },
+    {
+      "PNG_scene": 1,
+      "caption": "red square right",
+      "group": "A_alt",
+      "joint_correct": true,
+      "seed": 23,
+      "target_scene": 1
+    },
+    {
+      "PNG_scene": 1,
+      "caption": "red square right",
+      "group": "A_alt",
+      "joint_correct": true,
+      "seed": 47,
+      "target_scene": 1
+    },
+    {
+      "PNG_scene": 1,
+      "caption": "red square right",
+      "group": "A_joint",
+      "joint_correct": true,
+      "seed": 11,
+      "target_scene": 1
+    },
+    {
+      "PNG_scene": 1,
+      "caption": "red square right",
+      "group": "A_joint",
+      "joint_correct": true,
+      "seed": 23,
+      "target_scene": 1
+    },
+    {
+      "PNG_scene": 1,
+      "caption": "red square right",
+      "group": "A_joint",
+      "joint_correct": true,
+      "seed": 47,
+      "target_scene": 1
+    },
+    {
+      "PNG_scene": 1,
+      "caption": "red square right",
+      "group": "H_alt",
+      "joint_correct": true,
+      "seed": 11,
+      "target_scene": 1
+    },
+    {
+      "PNG_scene": 1,
+      "caption": "red square right",
+      "group": "H_alt",
+      "joint_correct": true,
+      "seed": 23,
+      "target_scene": 1
+    },
+    {
+      "PNG_scene": 1,
+      "caption": "red square right",
+      "group": "H_alt",
+      "joint_correct": true,
+      "seed": 47,
+      "target_scene": 1
+    },
+    {
+      "PNG_scene": 1,
+      "caption": "red square right",
+      "group": "H_joint",
+      "joint_correct": true,
+      "seed": 11,
+      "target_scene": 1
+    },
+    {
+      "PNG_scene": 1,
+      "caption": "red square right",
+      "group": "H_joint",
+      "joint_correct": true,
+      "seed": 23,
+      "target_scene": 1
+    },
+    {
+      "PNG_scene": 1,
+      "caption": "red square right",
+      "group": "H_joint",
+      "joint_correct": true,
+      "seed": 47,
+      "target_scene": 1
+    }
+  ],
+  "saved_candidate_checks": [
+    {
+      "clocks": {
+        "bias": 256,
+        "encoder": 256,
+        "image": 512,
+        "image_bias": 512,
+        "text": 512,
+        "text_bias": 512
+      },
+      "first_delta_max_error": 1.1167282376600696e-16,
+      "name": "A_alt-11-0.001",
+      "skip_hashes": {
+        "after_sha256": "8ab340b573b7f4e9ae4ded86a677cde1f9c330752276ac4bd0893dd2c8e8c01b",
+        "before_sha256": "8ab340b573b7f4e9ae4ded86a677cde1f9c330752276ac4bd0893dd2c8e8c01b"
+      }
+    },
+    {
+      "clocks": {
+        "bias": 256,
+        "encoder": 256,
+        "image": 512,
+        "image_bias": 512,
+        "text": 512,
+        "text_bias": 512
+      },
+      "first_delta_max_error": 1.0972125985553305e-16,
+      "name": "A_alt-11-0.003",
+      "skip_hashes": {
+        "after_sha256": "43cbab03b55fbb8f5e8770fdde93dc37886b7bf47d43a2455b87e75bcaa4721d",
+        "before_sha256": "43cbab03b55fbb8f5e8770fdde93dc37886b7bf47d43a2455b87e75bcaa4721d"
+      }
+    },
+    {
+      "clocks": {
+        "bias": 256,
+        "encoder": 256,
+        "image": 512,
+        "image_bias": 512,
+        "text": 512,
+        "text_bias": 512
+      },
+      "first_delta_max_error": 1.1796119636642288e-16,
+      "name": "A_alt-11-0.01",
+      "skip_hashes": {
+        "after_sha256": "3393bbae5b112ae32b1d6585330334e071b99df3627406ac0f3608bced46e39a",
+        "before_sha256": "3393bbae5b112ae32b1d6585330334e071b99df3627406ac0f3608bced46e39a"
+      }
+    },
+    {
+      "clocks": {
+        "bias": 256,
+        "encoder": 256,
+        "image": 512,
+        "image_bias": 512,
+        "text": 512,
+        "text_bias": 512
+      },
+      "first_delta_max_error": 1.0549287138283958e-16,
+      "name": "A_alt-23-0.001",
+      "skip_hashes": {
+        "after_sha256": "9e878ace47ebc5c6f647a10e930d4ce2cbd043745a31758f91f397aaaa51196e",
+        "before_sha256": "9e878ace47ebc5c6f647a10e930d4ce2cbd043745a31758f91f397aaaa51196e"
+      }
+    },
+    {
+      "clocks": {
+        "bias": 256,
+        "encoder": 256,
+        "image": 512,
+        "image_bias": 512,
+        "text": 512,
+        "text_bias": 512
+      },
+      "first_delta_max_error": 1.0798653637955624e-16,
+      "name": "A_alt-23-0.003",
+      "skip_hashes": {
+        "after_sha256": "865e24a57f69ada434daefcdb152a864bdb523625b24deb58a0384c7667a623f",
+        "before_sha256": "865e24a57f69ada434daefcdb152a864bdb523625b24deb58a0384c7667a623f"
+      }
+    },
+    {
+      "clocks": {
+        "bias": 256,
+        "encoder": 256,
+        "image": 512,
+        "image_bias": 512,
+        "text": 512,
+        "text_bias": 512
+      },
+      "first_delta_max_error": 1.0755285551056204e-16,
+      "name": "A_alt-23-0.01",
+      "skip_hashes": {
+        "after_sha256": "e7c2cb69772f45647de7a1694a0b8c1642a95730990e3ea77744842f2080fd78",
+        "before_sha256": "e7c2cb69772f45647de7a1694a0b8c1642a95730990e3ea77744842f2080fd78"
+      }
+    },
+    {
+      "clocks": {
+        "bias": 256,
+        "encoder": 256,
+        "image": 512,
+        "image_bias": 512,
+        "text": 512,
+        "text_bias": 512
+      },
+      "first_delta_max_error": 1.1069704181077e-16,
+      "name": "A_alt-47-0.001",
+      "skip_hashes": {
+        "after_sha256": "6223376c926e85ddb9db3d16e8e59ea90b968936268b373d766111c772149eda",
+        "before_sha256": "6223376c926e85ddb9db3d16e8e59ea90b968936268b373d766111c772149eda"
+      }
+    },
+    {
+      "clocks": {
+        "bias": 256,
+        "encoder": 256,
+        "image": 512,
+        "image_bias": 512,
+        "text": 512,
+        "text_bias": 512
+      },
+      "first_delta_max_error": 1.0711917464156784e-16,
+      "name": "A_alt-47-0.003",
+      "skip_hashes": {
+        "after_sha256": "15c2ed9f037070fa5faba02e34be544b3c35f0043aa554dc1f9d85c39556f427",
+        "before_sha256": "15c2ed9f037070fa5faba02e34be544b3c35f0043aa554dc1f9d85c39556f427"
+      }
+    },
+    {
+      "clocks": {
+        "bias": 256,
+        "encoder": 256,
+        "image": 512,
+        "image_bias": 512,
+        "text": 512,
+        "text_bias": 512
+      },
+      "first_delta_max_error": 1.1275702593849246e-16,
+      "name": "A_alt-47-0.01",
+      "skip_hashes": {
+        "after_sha256": "28347701d5ee172ac1d52ef424e828aa41f1bf3fa992764276ac39a4f431bcf5",
+        "before_sha256": "28347701d5ee172ac1d52ef424e828aa41f1bf3fa992764276ac39a4f431bcf5"
+      }
+    },
+    {
+      "clocks": {
+        "bias": 386,
+        "encoder": 386,
+        "image": 386,
+        "image_bias": 386,
+        "text": 386,
+        "text_bias": 386
+      },
+      "first_delta_max_error": 1.1167282376600696e-16,
+      "name": "A_joint-11-0.001",
+      "skip_hashes": null
+    },
+    {
+      "clocks": {
+        "bias": 386,
+        "encoder": 386,
+        "image": 386,
+        "image_bias": 386,
+        "text": 386,
+        "text_bias": 386
+      },
+      "first_delta_max_error": 9.93129189996722e-17,
+      "name": "A_joint-11-0.003",
+      "skip_hashes": null
+    },
+    {
+      "clocks": {
+        "bias": 386,
+        "encoder": 386,
+        "image": 386,
+        "image_bias": 386,
+        "text": 386,
+        "text_bias": 386
+      },
+      "first_delta_max_error": 1.1796119636642288e-16,
+      "name": "A_joint-11-0.01",
+      "skip_hashes": null
+    },
+    {
+      "clocks": {
+        "bias": 386,
+        "encoder": 386,
+        "image": 386,
+        "image_bias": 386,
+        "text": 386,
+        "text_bias": 386
+      },
+      "first_delta_max_error": 1.0169816377914032e-16,
+      "name": "A_joint-23-0.001",
+      "skip_hashes": null
+    },
+    {
+      "clocks": {
+        "bias": 386,
+        "encoder": 386,
+        "image": 386,
+        "image_bias": 386,
+        "text": 386,
+        "text_bias": 386
+      },
+      "first_delta_max_error": 1.0798653637955624e-16,
+      "name": "A_joint-23-0.003",
+      "skip_hashes": null
+    },
+    {
+      "clocks": {
+        "bias": 386,
+        "encoder": 386,
+        "image": 386,
+        "image_bias": 386,
+        "text": 386,
+        "text_bias": 386
+      },
+      "first_delta_max_error": 9.71445146547012e-17,
+      "name": "A_joint-23-0.01",
+      "skip_hashes": null
+    },
+    {
+      "clocks": {
+        "bias": 386,
+        "encoder": 386,
+        "image": 386,
+        "image_bias": 386,
+        "text": 386,
+        "text_bias": 386
+      },
+      "first_delta_max_error": 1.0538445116559103e-16,
+      "name": "A_joint-47-0.001",
+      "skip_hashes": null
+    },
+    {
+      "clocks": {
+        "bias": 386,
+        "encoder": 386,
+        "image": 386,
+        "image_bias": 386,
+        "text": 386,
+        "text_bias": 386
+      },
+      "first_delta_max_error": 1.0278236595162582e-16,
+      "name": "A_joint-47-0.003",
+      "skip_hashes": null
+    },
+    {
+      "clocks": {
+        "bias": 386,
+        "encoder": 386,
+        "image": 386,
+        "image_bias": 386,
+        "text": 386,
+        "text_bias": 386
+      },
+      "first_delta_max_error": 1.1275702593849246e-16,
+      "name": "A_joint-47-0.01",
+      "skip_hashes": null
+    },
+    {
+      "clocks": {
+        "bias": 264,
+        "encoder": 264,
+        "image": 528,
+        "image_bias": 528,
+        "text": 528,
+        "text_bias": 528
+      },
+      "first_delta_max_error": 1.0538445116559103e-16,
+      "name": "H_alt-11-0.001",
+      "skip_hashes": {
+        "after_sha256": "d9b3e667426076f4f46a5431b6fe21f1028a0c2504676c8f077b962843a3287e",
+        "before_sha256": "d9b3e667426076f4f46a5431b6fe21f1028a0c2504676c8f077b962843a3287e"
+      }
+    },
+    {
+      "clocks": {
+        "bias": 264,
+        "encoder": 264,
+        "image": 528,
+        "image_bias": 528,
+        "text": 528,
+        "text_bias": 528
+      },
+      "first_delta_max_error": 1.0343288725511712e-16,
+      "name": "H_alt-11-0.003",
+      "skip_hashes": {
+        "after_sha256": "4725fc1848b43a5ee9767c4dfd3625b4f5e0d55e7e4442041504d573d8fea0e7",
+        "before_sha256": "4725fc1848b43a5ee9767c4dfd3625b4f5e0d55e7e4442041504d573d8fea0e7"
+      }
+    },
+    {
+      "clocks": {
+        "bias": 264,
+        "encoder": 264,
+        "image": 528,
+        "image_bias": 528,
+        "text": 528,
+        "text_bias": 528
+      },
+      "first_delta_max_error": 1.0321604682062002e-16,
+      "name": "H_alt-11-0.01",
+      "skip_hashes": {
+        "after_sha256": "845da11e32133b0bcbd78c87c602901247baa40bac20cb9700bfe8a944ba4e36",
+        "before_sha256": "845da11e32133b0bcbd78c87c602901247baa40bac20cb9700bfe8a944ba4e36"
+      }
+    },
+    {
+      "clocks": {
+        "bias": 264,
+        "encoder": 264,
+        "image": 528,
+        "image_bias": 528,
+        "text": 528,
+        "text_bias": 528
+      },
+      "first_delta_max_error": 1.0018028073766061e-16,
+      "name": "H_alt-23-0.001",
+      "skip_hashes": {
+        "after_sha256": "640d34c669be35cc82e9cb11b6b09561934ab857d4dc5590ab3246d0570b4808",
+        "before_sha256": "640d34c669be35cc82e9cb11b6b09561934ab857d4dc5590ab3246d0570b4808"
+      }
+    },
+    {
+      "clocks": {
+        "bias": 264,
+        "encoder": 264,
+        "image": 528,
+        "image_bias": 528,
+        "text": 528,
+        "text_bias": 528
+      },
+      "first_delta_max_error": 1.0928757898653885e-16,
+      "name": "H_alt-23-0.003",
+      "skip_hashes": {
+        "after_sha256": "ceaa70611184db4f6055c15386eab7fb63b625af3a15566d27773fd8637f3f4d",
+        "before_sha256": "ceaa70611184db4f6055c15386eab7fb63b625af3a15566d27773fd8637f3f4d"
+      }
+    },
+    {
+      "clocks": {
+        "bias": 264,
+        "encoder": 264,
+        "image": 528,
+        "image_bias": 528,
+        "text": 528,
+        "text_bias": 528
+      },
+      "first_delta_max_error": 1.0581813203458523e-16,
+      "name": "H_alt-23-0.01",
+      "skip_hashes": {
+        "after_sha256": "a02e8e78e21a9fb4c5f8732816cffd5c145ff0fecca9549aa9cee6b523104752",
+        "before_sha256": "a02e8e78e21a9fb4c5f8732816cffd5c145ff0fecca9549aa9cee6b523104752"
+      }
+    },
+    {
+      "clocks": {
+        "bias": 264,
+        "encoder": 264,
+        "image": 528,
+        "image_bias": 528,
+        "text": 528,
+        "text_bias": 528
+      },
+      "first_delta_max_error": 1.0928757898653885e-16,
+      "name": "H_alt-47-0.001",
+      "skip_hashes": {
+        "after_sha256": "81bc8780cea4b8aa4e01b561755815e1993afdeb5bfac16fe112f08f41d52f8d",
+        "before_sha256": "81bc8780cea4b8aa4e01b561755815e1993afdeb5bfac16fe112f08f41d52f8d"
+      }
+    },
+    {
+      "clocks": {
+        "bias": 264,
+        "encoder": 264,
+        "image": 528,
+        "image_bias": 528,
+        "text": 528,
+        "text_bias": 528
+      },
+      "first_delta_max_error": 1.1058862159352145e-16,
+      "name": "H_alt-47-0.003",
+      "skip_hashes": {
+        "after_sha256": "7c603d244e56ef8fcc5ccc86827fbe1fac1f9528f4ba0fa9d4b1d8b7e3adeb12",
+        "before_sha256": "7c603d244e56ef8fcc5ccc86827fbe1fac1f9528f4ba0fa9d4b1d8b7e3adeb12"
+      }
+    },
+    {
+      "clocks": {
+        "bias": 264,
+        "encoder": 264,
+        "image": 528,
+        "image_bias": 528,
+        "text": 528,
+        "text_bias": 528
+      },
+      "first_delta_max_error": 1.1102230246251565e-16,
+      "name": "H_alt-47-0.01",
+      "skip_hashes": {
+        "after_sha256": "e5e530f69df3af678ca50b308e2e3bdc53ad13d342107babd2e364432705e46f",
+        "before_sha256": "e5e530f69df3af678ca50b308e2e3bdc53ad13d342107babd2e364432705e46f"
+      }
+    },
+    {
+      "clocks": {
+        "bias": 394,
+        "encoder": 394,
+        "image": 394,
+        "image_bias": 394,
+        "text": 394,
+        "text_bias": 394
+      },
+      "first_delta_max_error": 1.0538445116559103e-16,
+      "name": "H_joint-11-0.001",
+      "skip_hashes": null
+    },
+    {
+      "clocks": {
+        "bias": 394,
+        "encoder": 394,
+        "image": 394,
+        "image_bias": 394,
+        "text": 394,
+        "text_bias": 394
+      },
+      "first_delta_max_error": 9.020562075079397e-17,
+      "name": "H_joint-11-0.003",
+      "skip_hashes": null
+    },
+    {
+      "clocks": {
+        "bias": 394,
+        "encoder": 394,
+        "image": 394,
+        "image_bias": 394,
+        "text": 394,
+        "text_bias": 394
+      },
+      "first_delta_max_error": 9.8879238130678e-17,
+      "name": "H_joint-11-0.01",
+      "skip_hashes": null
+    },
+    {
+      "clocks": {
+        "bias": 394,
+        "encoder": 394,
+        "image": 394,
+        "image_bias": 394,
+        "text": 394,
+        "text_bias": 394
+      },
+      "first_delta_max_error": 1.0018028073766061e-16,
+      "name": "H_joint-23-0.001",
+      "skip_hashes": null
+    },
+    {
+      "clocks": {
+        "bias": 394,
+        "encoder": 394,
+        "image": 394,
+        "image_bias": 394,
+        "text": 394,
+        "text_bias": 394
+      },
+      "first_delta_max_error": 1.0928757898653885e-16,
+      "name": "H_joint-23-0.003",
+      "skip_hashes": null
+    },
+    {
+      "clocks": {
+        "bias": 394,
+        "encoder": 394,
+        "image": 394,
+        "image_bias": 394,
+        "text": 394,
+        "text_bias": 394
+      },
+      "first_delta_max_error": 9.020562075079397e-17,
+      "name": "H_joint-23-0.01",
+      "skip_hashes": null
+    },
+    {
+      "clocks": {
+        "bias": 394,
+        "encoder": 394,
+        "image": 394,
+        "image_bias": 394,
+        "text": 394,
+        "text_bias": 394
+      },
+      "first_delta_max_error": 1.0299920638612292e-16,
+      "name": "H_joint-47-0.001",
+      "skip_hashes": null
+    },
+    {
+      "clocks": {
+        "bias": 394,
+        "encoder": 394,
+        "image": 394,
+        "image_bias": 394,
+        "text": 394,
+        "text_bias": 394
+      },
+      "first_delta_max_error": 1.0755285551056204e-16,
+      "name": "H_joint-47-0.003",
+      "skip_hashes": null
+    },
+    {
+      "clocks": {
+        "bias": 394,
+        "encoder": 394,
+        "image": 394,
+        "image_bias": 394,
+        "text": 394,
+        "text_bias": 394
+      },
+      "first_delta_max_error": 1.1102230246251565e-16,
+      "name": "H_joint-47-0.01",
+      "skip_hashes": null
+    }
+  ],
+  "scope": "saved TRAIN artifacts only; no repeated training/evaluation"
+}
