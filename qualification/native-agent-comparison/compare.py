@@ -108,7 +108,7 @@ def compare(base: object, observations: object) -> dict:
         require(type(o.get("recovery_pass")) is bool, "missing recovery disposition")
         for name in METRICS:
             v = o.get(name)
-            require(type(v) in (int, float) and math.isfinite(v) and v >= 0, f"metric {name} invalid")
+            require(type(v) in (int, float) and v >= 0 and (type(v) is int or math.isfinite(v)), f"metric {name} invalid")
             if name in ("input_tokens", "output_tokens", "tool_calls",
                         "peak_rss_bytes", "peak_gpu_memory_bytes", "active_concurrency"):
                 require(type(v) is int, f"metric {name} must be integer")
