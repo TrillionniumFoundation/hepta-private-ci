@@ -647,6 +647,24 @@ separate from product composition, qualification and beneficial model evolution.
 | P1 — independent evidence and withdrawal; `LRN-2-CAUSAL-EVALUATION`, `LONG-1-TEMPORAL-HOLDOUT`, `LONG-2-RETENTION-FORGETTING`, `LONG-3-UNLEARNING-NON-RESURRECTION`                                                                | learning-platform with qualification-plane independent evaluation; artifact/ledger writers remain unchanged                                                                   | Pre-register objective, metrics, future windows, evaluator/controller separation and negative controls; retain failed/plateau/no-update rounds. Forged benchmark numbers and hash-valid poisoned weights must not qualify a release. Withdrawal/reorg/restore tests cannot resurrect a revoked artifact or repeat a committed external effect.                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | P2 — throughput after the above boundaries; `P0.8C-RESOURCE-BUDGETS`, `INFER-V4-T4`, `INFER-V4-T5`                                                                                                                                 | runtime-control and inference-platform; agent-runtime owns composition overhead                                                                                               | Measure complete task latency and throughput including fetch, hash, decoding, device transfer and Chain observation. Optimize immutable-base sharing, compatible batching, prefetch and bounded caches; preserve revocation freshness and generation fences. Compare p50/p95/p99, sustained rate, error rate and all resource ceilings under the same hardware/network/load; report cold and warm paths separately.                                                                                                                                                                                                                                                                                                                                                                                                       |
 
+PN0's dependency baseline is owned by `security-authority` with the affected
+package owners. Resolve advisories against the candidate's actual Cargo, pnpm
+and Python locks and selected features; default-branch alerts alone do not
+identify the candidate or prove runtime reachability. Apply compatible patches
+first, then separately validate API-family upgrades. Cargo changes must refresh
+the existing Bazel lock in the same change. Keep unresolved advisories and
+failed checks visible; an exception or an unused feature is not a repaired lock.
+
+The first npm security slice pins Handlebars 4.7.10 and proxy-addr 2.0.8 through
+the existing root resolution policy. Three tests in the existing TypeScript SDK
+suite exercise AST rejection, prototype-constructor denial and mapped-IPv6 proxy
+trust, with ordinary-template and correctly scoped-subnet controls. The old
+locked packages fail all three; the official patched packages pass. These are
+SDK development dependencies through ts-jest and the MCP SDK/Express graph;
+this is not evidence of a deployed exploit or closure of the remaining Cargo,
+npm, Python, build or exact-source CI gates. Complete PN0 before treating later
+PoN or model experiments as a qualified integration baseline.
+
 Cross-repository qualification follows the Chain plan's single
 [PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/6724ed1905e11d30775738ad0eb84b53d1d9ea97/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
 PN0 exact-source/security baseline → PN1 work security and PN2 bounded state →
@@ -680,108 +698,11 @@ same packages, dependent on confirming that no source-navigation evidence
 uses them. Closing this inventory defect neither establishes a production
 writer deployment nor closes the three-round real-model acceptance.
 
-## 20. First vertical learning slice
-
-`C1-PROMPTED-MEMORY-RETRIEVAL-RANK` executes:
-
-```text
-request
-→ ObjectiveFunctionReceipt
-→ bounded Memory/KG retrieval candidate set
-→ Episode/Agent NDU state
-→ PromptFactor demand and candidate set
-→ state-dependent pricing and portfolio
-→ discrete exercise timing
-→ ContextCompilationReceipt
-→ LLM retrieval-use action distribution
-→ read-only report
-→ OutcomeReceipt and delayed correction
-→ causal attribution
-→ operator/policy artifact proposal
-→ next-snapshot shadow and rollback
-```
-
-Primary metrics are task success, retrieval utility, citation precision, stale rejection, contradiction detection, abstention safety, token cost, latency, context interference, factor interactions, timing uplift, calibration, OOD and cross-window retention.
-
-## 21. Performance, fault and security contracts
-
-Every affected path records comparable baseline and candidate throughput, p50/p95/p99 latency, CPU, resident memory, allocations, queue depth/age, SQLite busy/WAL, file descriptors/sockets, model/provider usage, token/context cost and confidence bounds.
-
-Stateful modules cover before/after intent, commit, outbox, wakeup, claim, send, acknowledgement, source settlement, stale callback, permission loss, filesystem full, corruption, nonempty WAL, identity drift, backup/restore and process kill/reopen.
-
-Raw prompts, credentials, secret values, private keys, unrestricted source content and raw model payloads never enter general receipts. External content remains evidence, not instruction. Forget/correct closes only after Memory, KG/index, prompt graph, compact, federation, trajectories, sensor/training caches and signed artifacts prove deletion/rebuild or revocation.
-
-## 22. Claim ladders and prohibited substitutions
-
-Initial truthful state:
-
-```text
-Learning = L0_STATIC
-NDU = D0_SPECIFIED_ONLY
-Neuron = N0_METAPHORICAL
-Intuition = I0_DETERMINISTIC
-Prompt Intervention = P0_STATIC_CONTEXT
-Structural Plasticity = S0_FIXED
-local small model used by Neuron/Intuition = false
-closed-loop learning = false
-longitudinal efficacy = false
-functional biomimicry = false
-neuromorphic mechanism = false
-self-iteration/evolution = false
-```
-
-The following substitutions are invalid:
-
-```text
-memory persisted != long-term learning
-model adapter exists != local model used by Neuron
-local model invoked != Neuron efficacy
-offline loss improved != policy improved
-replay improved != closed-loop learning
-prompt correlated with success != causal prompt uplift
-NDU equations specified != preference/utility efficacy
-sparse activation exists != functional biomimicry
-topology proposal generated != structural plasticity
-artifact generated != selected
-operator acceptance != promotion
-promotion != release
-```
-
-## 23. Immediate queue
-
-1. Qualify `DOC-3E-PRECODING-READINESS-CLOSED-WORLD` through the dedicated and global exact-source and synthetic-merge jobs, then obtain independent semantic review.
-2. Resolve the current canonical source and target branch only from fresh receipts; do not reuse a cached pull-request number or historical branch relationship.
-3. Begin `LANE-A-FOUNDATION`, `LANE-C-MEMORY` and `LANE-G-ENGINEERING` contract-first packages against frozen readiness and contract digests.
-4. Close AuthBus semantic review, Browser identity reconciliation, dependency inversion, runtime bootstrap, B4 call-site proof and common fault/resource gates.
-5. Materialize Objective, deterministic NDU, episode ledger, artifact registry, PromptFactor registry and the first read-only vertical slice.
-6. Add Bellman, Neuron, Intuition and prompt optimization only in shadow mode after immutable stores and independent evaluation exist.
-7. Require future-window, retention, rollback and unlearning evidence before any longitudinal, biomimicry or structural-plasticity claim.
-8. Start `EMB-0` through `EMB-3` in simulator-only mode; real sensors, actuators and hardware-in-loop acceptance remain external gates.
-9. Start `ASM-0` through `ASM-4` only with explicit external-system owner consent and a non-privileged Debian/POSIX fixture; autonomous propagation remains forbidden.
-10. Keep acceptance, selection, merge, promotion and release in distinct identities and receipts.
-
-All authority flags remain false in this document set.
-
-## 24. V8 audit closure and executable document integrity
-
-V8 closes the remaining V8.1 review gaps rather than merely adding prose:
-
-- every logical module has at least one bounded work package;
-- cross-module contracts, critical protocol fields and durable data domains have explicit machine owners;
-- the Intelligence path has one typed composition route into Agentd and the Codex execution spine;
-- package write paths, foreign-namespace co-owners and overlapping-path ordering are machine checked;
-- every registry has an exact 17-field all-false authority posture and a recursive shape digest;
-- the cleanup base, 143-path deletion set, exact Git objects, dangling references and deleted JSON consumers are verified;
-- mutable `CURRENT.json` no longer caches future/stale CI observations; dynamic facts live only in exact-candidate receipts;
-- pull-request qualification executes separate source-head and synthetic-merge jobs with explicit refs and retained receipts;
-- Prompt assignment, compilation, provider delivery, token position and causal effect remain separate claims;
-- longitudinal claims require at least three independently identified snapshots spanning at least two calendar windows;
-- current-run replacement, online topology activation, self-review, self-selection, self-merge and self-promotion remain forbidden;
-- adaptive algorithms are bound to canonical protocols, data writers, exact golden vectors, paper source locks and the global document verifier;
-- nine coding-level readiness specifications close objective, NDU, neuron, evaluation, self-iteration, embodiment, assimilation, source and parallel-lane ambiguities;
-- 31 readiness protocols have registered module owners and consumers, bounded fields, canonical encoding and zero authority delta;
-- all 40 modules are projected into exactly one acyclic primary implementation lane and every guide carries its coding-entry binding;
-- embodiment and authorized Debian/POSIX assimilation have bounded source work packages, target roots, predecessors, rollback and independent evidence gates;
-- the global document system invokes module, adaptive, readiness, CNS and HNMF verifiers and binds their digests into exact-candidate receipts.
-
-The documentation gate is necessary but does not waive unrelated repository failures. A failed repository check must be attributed and closed or explicitly excluded by an independent policy authority; documentation source success cannot turn a red product matrix green.
+PN0's first compatible dependency patch candidate updates OpenSSL to 0.10.81,
+cmov to 0.5.4, gix-packetline to 0.21.5, gix-sec to 0.13.3 and quinn-proto to
+0.11.15, with their required compatible helpers, through the existing Cargo and
+Bazel lock generators. Rust 1.96, manifests, source feature selections, registry
+checks and advisory policies stay fixed. Cargo's compatible Windows dependency
+edge re-selection still requires target-specific CI. This slice does not close
+the remaining vulnerable dependencies or the full PN0 security baseline; native
+consumer checks and the original security gates remain required.
