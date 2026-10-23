@@ -22,6 +22,36 @@ def require(condition, message):
         raise ValueError(message)
 
 
+def verify_row_scoring(row, expected, selected, status, category):
+    """Independently validate every recorded gold/support/abstention score."""
+    accepted = row["accepted"]
+    require(type(accepted) is bool and accepted == bool(selected),
+            "retrieval acceptance does not match delivered source references")
+    require(type(row["gold_evidence_count"]) is int
+            and row["gold_evidence_count"] == len(expected),
+            "gold evidence denominator changed")
+    chosen = set(selected)
+    hits = len(expected & chosen)
+    scorable = status == "scorable"
+    expected_scores = {
+        "support_recall": hits / len(expected) if scorable else None,
+        "all_support_recalled": int(expected <= chosen) if scorable else None,
+        "any_support_recalled": int(hits > 0) if scorable else None,
+    }
+    for name, value in expected_scores.items():
+        actual = row[name]
+        if value is not None:
+            if name == "support_recall":
+                require(type(actual) is float, "support_recall must be a float")
+            else:
+                require(type(actual) is int, f"{name} must be an integer indicator")
+        require(actual == value, f"{name} changed from original evidence")
+    answerability = int(accepted == (category != 5))
+    require(type(row["answerability_screen_correct"]) is int
+            and row["answerability_screen_correct"] == answerability,
+            "answerability scoring changed")
+
+
 def audit(source, directory):
     root = Path(directory)
     plan = json.loads((root / "plan.json").read_bytes())
@@ -77,12 +107,9 @@ def audit(source, directory):
             unresolved = [ref for ref in question.get("evidence", []) if (group, ref) not in frames]
             status = "adversarial" if question["category"] == 5 else "unresolved" if unresolved else "missing" if not expected else "scorable"
             require(row["annotation_status"] == status and row["unresolved_evidence"] == unresolved, "annotation was silently repaired or excluded")
-            recall = len(expected & set(selected)) / len(expected) if status == "scorable" else None
-            complete = int(expected <= set(selected)) if status == "scorable" else None
-            require(row["support_recall"] == recall and row["all_support_recalled"] == complete, "gold evidence scoring")
+            verify_row_scoring(row, expected, selected, status, question["category"])
             image = any(image_refs.get((group, ref), False) for ref in expected)
             require(row["evidence_has_image"] == image, "image-dependent evidence slice")
-            require(row["answerability_screen_correct"] == int(row["accepted"] == (question["category"] != 5)), "answerability scoring")
             rows.append(row)
     require(len(seen) == len(query_map) * len(plan["arms"]), "missing question arm")
     for split, groups in {**plan["partitions"], "full_census": list(source_groups)}.items():
