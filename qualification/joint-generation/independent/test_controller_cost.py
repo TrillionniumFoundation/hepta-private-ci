@@ -109,6 +109,16 @@ class ControllerCostTests(unittest.TestCase):
         self.assertEqual(ledger.consumed_units,
             ledger.estimate_kernel(**c.controller_work(self.model, 2, 2, 3, raw_reward_cached=False)))
 
+    def test_low_and_full_targets_reuse_the_same_label_indexed_reward_tensor(self):
+        with patch.object(c, "measure", self.fake_measure()), \
+             patch.object(c.np, "einsum", wraps=np.einsum) as contract:
+            self.call()
+        rewards = [call.args[1] for call in contract.call_args_list
+                   if call.args[0] == "nij,nj->ni"]
+        self.assertEqual(len(rewards), 2)
+        self.assertIs(rewards[0], rewards[1])
+        np.testing.assert_array_equal(rewards[0], self.reward[self.data["labels"]])
+
     def test_budget_rejects_before_forward_or_probe(self):
         ledger = WorkLedger("NC", total_cap=1)
         with patch.object(c, "measure", side_effect=AssertionError("probe must not run")), patch.object(FrozenGenerator, "forward_low", side_effect=AssertionError("forward must not run")):

@@ -137,10 +137,11 @@ def fit_and_calibrate(model, train_data, calibration_data, plan, runtime_plan, l
     else:
         pl, ql = gen.forward_low(x, ledger, "critic_targets")
     pf, qf = gen.forward_full(x, ledger, "critic_targets")
+    labeled_reward = reward[y]
     values = []
     for p, q in ((pl, ql), (pf, qf)):
         ledger.charge_kernel("critic_targets", "raw_utility_value", **value_work("additive", len(x)))
-        values.append(np.sum(p * np.einsum("nij,nj->ni", reward[y], q), axis=1))
+        values.append(np.sum(p * np.einsum("nij,nj->ni", labeled_reward, q), axis=1))
     ledger.charge_kernel("critic_targets", "raw_gain_and_summary", scalar_ops=2 * len(x) - 1,
                          compare_ops=2 * (len(x) - 1), div_ops=1)
     target = values[1] - values[0]
