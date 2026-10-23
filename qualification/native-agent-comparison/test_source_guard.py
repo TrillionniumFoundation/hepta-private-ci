@@ -82,6 +82,14 @@ class SourceGuardTests(unittest.TestCase):
                 git(root, "reset", "--hard", "-q")
                 (root / "extra.txt").unlink(missing_ok=True)
 
+    def test_ignored_untracked_build_input_is_not_clean_source(self):
+        root = Path(self.paths["hepta"])
+        (root / ".git" / "info" / "exclude").write_text("ignored-build-input\n")
+        (root / "ignored-build-input").write_text("tampered\n")
+        self.assertEqual(git(root, "status", "--porcelain=v1"), "")
+        with self.assertRaisesRegex(SourceGuardError, "ignored untracked"):
+            verify_worktrees(self.base, self.paths)
+
     def test_concealed_index_flags_denied(self):
         root = Path(self.paths["hepta"])
         for flag, clear in (("--assume-unchanged", "--no-assume-unchanged"),

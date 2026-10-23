@@ -85,7 +85,7 @@ python3 qualification/native-agent-comparison/source_guard.py \
 ```
 
 It matches **HEAD commit and tree** against the frozen P0 manifest for all
-three repositories, rejects dirty/staged/visible-untracked worktrees,
+three repositories, rejects dirty/staged/untracked (including ignored) worktrees,
 assume-unchanged/skip-worktree index entries, unpinned submodule gitlinks,
 environment-level Git overrides and wrong repository roots. It calls the
 existing strict baseline validator for model, host, task and budget pins.
@@ -96,7 +96,7 @@ python3 -m unittest discover -s qualification/native-agent-comparison -p 'test_*
 ```
 
 **Nonclaims:** Git source matching cannot attest the *built* executable, the
-dependency cache, ignored generated build inputs, model weights, source of
+dependency cache, generated inputs outside the checkout, model weights, source of
 task/oracle data, independent result provenance, machine resource usage or
 physical effects. The receipt explicitly retains false values for
 `actual_built_source_attested`, `independent_acceptance`

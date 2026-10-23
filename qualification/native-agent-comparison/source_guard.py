@@ -83,6 +83,11 @@ def verify_worktrees(baseline: object, paths: dict[str, str]) -> dict:
         if _git(path, "status", "--porcelain=v1", "-z", "--untracked-files=all",
                 "--ignore-submodules=none"):
             raise SourceGuardError(f"{owner}: modified, staged or untracked files present")
+        # A build may read ignored files even when porcelain status is clean.
+        # Demand a source-only checkout before a reproducibility claim; callers
+        # can keep generated outputs in separate worktrees or build directories.
+        if _git(path, "ls-files", "--others", "--ignored", "--exclude-standard", "-z"):
+            raise SourceGuardError(f"{owner}: ignored untracked files present")
         # Hidden index flags can conceal locally modified tracked inputs from
         # status, making a supposedly exact-source execution irreproducible.
         for entry in _git(path, "ls-files", "-v", "-z").split(b"\0"):
