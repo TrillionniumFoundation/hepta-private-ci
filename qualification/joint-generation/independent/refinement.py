@@ -151,6 +151,9 @@ def _preparation_forecast(calibration, mode, measures, plan):
 
 def forecast(system, selected, candidates, common, plan, inventories, ledger):
     """Retain every training-only input used by the residual scheduler."""
+    uses_actual_units = "adaptation_kernel" in plan
+    if uses_actual_units and plan["adaptation_kernel"] != "folded-mixed-encoder-v1":
+        raise ValueError("unsupported adaptation kernel")
     if not selected or len({row["seed"] for row in selected}) != len(selected):
         raise ValueError("one selected model per seed required")
     if not candidates or any(type(row["updates"]) is not int or row["updates"] <= 0
@@ -158,8 +161,13 @@ def forecast(system, selected, candidates, common, plan, inventories, ledger):
             or not math.isfinite(row["objective_step_cpu_seconds"])
             or row["objective_step_cpu_seconds"] <= 0 for row in candidates):
         raise ValueError("complete positive training counters required")
-    unit_rates = [row["objective_step_cpu_seconds"] / (row["updates"] * row["candidate_step_units"])
-                  for row in candidates]
+    if uses_actual_units and any(type(row.get("objective_step_units")) is not int
+            or not 0 < row["objective_step_units"] <= row["updates"] * row["candidate_step_units"]
+            for row in candidates):
+        raise ValueError("bounded positive actual objective-step units required")
+    unit_rates = [row["objective_step_cpu_seconds"] / (
+        row["objective_step_units"] if uses_actual_units else row["updates"] * row["candidate_step_units"])
+        for row in candidates]
     if not unit_rates or any(not math.isfinite(v) or v <= 0 for v in unit_rates):
         raise ValueError("positive observed training CPU/unit rates required")
     unit_rate = max(unit_rates)
@@ -203,7 +211,9 @@ def forecast(system, selected, candidates, common, plan, inventories, ledger):
         "changed_model_cpu_seconds": changed_cpu, "training_cpu_per_unit_max": unit_rate,
         "training_cpu_per_unit_samples": unit_rates, "serialization_cpu_seconds_max": serialization,
         "training_rate_inputs": [{key: row[key] for key in ("name", "updates",
-            "candidate_step_units", "objective_step_cpu_seconds")} for row in candidates],
+            "candidate_step_units", "objective_step_cpu_seconds")
+            + (("objective_step_units",) if uses_actual_units else ())} for row in candidates],
+        **({"training_rate_unit_basis": "objective-step-ledger-deltas-v1"} if uses_actual_units else {}),
         "arithmetic_safety": safety, "service_multiplier": multiplier,
         "tail_cpu_floor": floor, "service_profiles": profiles,
         "service_cpu_seconds": service_cpu, "preparation_cpu_seconds": preparation_cpu,

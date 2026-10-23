@@ -199,6 +199,16 @@ def score(model, p, q, data, *, observer=None):
     return {key: float(value.mean()) for key, value in metrics.items()}
 
 
+def adaptation_step_work(dimensions, system, plan):
+    """Reserve a complete update before drawing its examples or view mask."""
+    if "adaptation_kernel" not in plan:
+        return step_work(dimensions, system, plan["batch_size"])
+    if plan["adaptation_kernel"] != "folded-mixed-encoder-v1":
+        raise ValueError("unsupported adaptation kernel")
+    from independent.mixed_training import mixed_step_work
+    return mixed_step_work(dimensions, system, plan["batch_size"], low_rows=None)
+
+
 def batch_validation(model, data, ledger, *, stage="search_validation"):
     n = len(data["labels"])
     ledger.charge_kernel(stage, "two_view_validation", **validation_work(model, n),
@@ -368,9 +378,10 @@ def _train_system_candidates(system, plan, run, shared, bases, train, val, commo
                 ce_anchor=plan["ce_anchor"], ledger=ledger)
             guard("candidate_setup_complete", current)
             rng = np.random.default_rng(seed + 9000)
-            step_units = ledger.estimate_kernel(**step_work(model.dimensions, system, plan["batch_size"]))
+            step_units = ledger.estimate_kernel(**adaptation_step_work(model.dimensions, system, plan))
             step_start, cpu_start, steps = ledger.consumed_units, cpu_clock(), 0
             last_step_cpu, maximum_step_cpu, objective_cpu = 0.0, 0.0, 0.0
+            objective_units = 0
             losses, slow_steps = [], []
             progress["phase"] = "candidate_training"
             with traced_phase(telemetry, "candidate_training", system=system, candidate=name):
@@ -379,11 +390,14 @@ def _train_system_candidates(system, plan, run, shared, bases, train, val, commo
                     idx = rng.integers(len(train["labels"]), size=plan["batch_size"])
                     full = rng.random(len(idx)) < 0.5
                     x = np.where(full[:, None], train["full"][idx], train["low"][idx])
+                    units_before = ledger.consumed_units
                     before = cpu_clock()
                     before_thread = time.thread_time()
                     progress["phase"] = "candidate_train_step"
-                    losses.append(objective.step(model, x, train["labels"][idx], lr, ledger=ledger))
+                    losses.append(objective.step(model, x, train["labels"][idx], lr, ledger=ledger,
+                        **({"full_mask": full} if plan.get("adaptation_kernel") else {})))
                     ended = cpu_clock()
+                    objective_units += ledger.consumed_units - units_before
                     last_step_cpu = ended - before
                     objective_cpu += last_step_cpu
                     maximum_step_cpu = max(maximum_step_cpu, last_step_cpu)
@@ -420,6 +434,7 @@ def _train_system_candidates(system, plan, run, shared, bases, train, val, commo
                 "candidate_cpu_scope": "training loop, validation and export; phase fields are separate",
                 "training_loop_cpu_seconds": train_cpu,
                 "objective_step_cpu_seconds": objective_cpu,
+                "objective_step_units": objective_units,
                 "maximum_step_cpu_seconds": maximum_step_cpu,
                 "validation_cpu_seconds": validation_cpu,
                 "serialization_cpu_seconds": artifact["serialization_cpu_seconds"],
@@ -497,15 +512,15 @@ def refine_content(selected, progress, ledgers, costs, plan, common, train, val,
                     row.update(search_updates=row["updates"], search_validation=row["validation"],
                         search_model_file=row["model_file"], search_model_sha256=row["model_sha256"],
                         search_model_digest=row["model_digest"], final_model_file=row["model_file"],
-                        refinement_updates=0)
+                        refinement_updates=0, refinement_objective_step_units=0)
             guard_cpu_budget(system, plan, run, ledger, cost, state["candidates"], "refinement_prepared")
         index = 0
         while True:
             eligible = []
             for system in plan["systems"]:
                 states = progress[system]["_selected_states"]
-                step_units = sum(ledgers[system].estimate_kernel(**step_work(
-                    state["model"].dimensions, system, plan["batch_size"])) for state in states.values())
+                step_units = sum(ledgers[system].estimate_kernel(**adaptation_step_work(
+                    state["model"].dimensions, system, plan)) for state in states.values())
                 guard = max(plan["cpu_guard_seconds"], 2 * sum(state["last_step_cpu"] for state in states.values()))
                 if admit_round(costs[system]["refinement"], ledgers[system], costs[system]["cpu_seconds"],
                                step_units, guard_seconds=guard):
@@ -524,10 +539,13 @@ def refine_content(selected, progress, ledgers, costs, plan, common, train, val,
                             ids = rng.integers(len(train["labels"]), size=plan["batch_size"])
                             full = rng.random(len(ids)) < 0.5
                             x = np.where(full[:, None], train["full"][ids], train["low"][ids])
+                            units_before = ledger.consumed_units
                             before = cpu_clock()
                             state["objective"].step(state["model"], x, train["labels"][ids],
-                                row["learning_rate"], ledger=ledger, stage="selected_refinement")
+                                row["learning_rate"], ledger=ledger, stage="selected_refinement",
+                                **({"full_mask": full} if plan.get("adaptation_kernel") else {}))
                             state["last_step_cpu"] = cpu_clock() - before
+                            row["refinement_objective_step_units"] += ledger.consumed_units - units_before
                             state["refinement_updates"] += 1
                             row["refinement_updates"] += 1
                             row["updates"] += 1

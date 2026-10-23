@@ -190,6 +190,69 @@ class RefinementTests(unittest.TestCase):
         self.assertEqual([row["requests"] for row in receipt["service_profiles"]], [24, 24, 24])
         self.assertEqual([row["measures"] for row in receipt["service_profiles"]], [1, 1, 1])
 
+    def test_folded_forecast_uses_actual_charged_units_instead_of_worst_step_quotes(self):
+        selected, candidates, common, plan, inventories = fixtures()
+        plan["adaptation_kernel"] = "folded-mixed-encoder-v1"
+        candidates[0]["objective_step_units"] = 6000
+        candidates[1]["objective_step_units"] = 5000
+        ledger = WorkLedger("actual-step-forecast", total_cap=1000000)
+        before = ledger.snapshot()
+        receipt = forecast("supervised", selected, candidates, common, plan, inventories, ledger)
+        for actual, expected in zip(receipt["training_cpu_per_unit_samples"], (0.0002, 0.0008)):
+            self.assertAlmostEqual(actual, expected)
+        self.assertEqual(receipt["training_cpu_per_unit_max"], 0.0008)
+        self.assertAlmostEqual(receipt["arithmetic_cpu_seconds"], 0.528)
+        self.assertAlmostEqual(receipt["changed_model_cpu_seconds"], 0.642)
+        self.assertEqual(receipt["training_rate_unit_basis"], "objective-step-ledger-deltas-v1")
+        self.assertEqual(receipt["training_rate_inputs"], [
+            {key: row[key] for key in ("name", "updates", "candidate_step_units",
+                                      "objective_step_cpu_seconds", "objective_step_units")}
+            for row in candidates])
+        self.assertEqual(ledger.snapshot(), before)
+
+    def test_actual_unit_boundary_and_legacy_receipts_remain_compatible(self):
+        selected, candidates, common, plan, inventories = fixtures()
+        ledger = WorkLedger("legacy-step-forecast", total_cap=1000000)
+        legacy = forecast("supervised", selected, candidates, common, plan, inventories, ledger)
+        for row in candidates:
+            row["objective_step_units"] = 1
+        self.assertEqual(forecast("supervised", selected, candidates, common, plan, inventories, ledger),
+                         legacy)
+        plan["adaptation_kernel"] = "folded-mixed-encoder-v1"
+        for row in candidates:
+            row["objective_step_units"] = row["updates"] * row["candidate_step_units"]
+        expected = copy.deepcopy(legacy)
+        expected["training_rate_unit_basis"] = "objective-step-ledger-deltas-v1"
+        for source, recorded in zip(candidates, expected["training_rate_inputs"]):
+            recorded["objective_step_units"] = source["objective_step_units"]
+        self.assertEqual(forecast("supervised", selected, candidates, common, plan, inventories, ledger),
+                         expected)
+
+    def test_folded_forecast_requires_valid_actual_units_for_every_candidate(self):
+        selected, candidates, common, plan, inventories = fixtures()
+        plan["adaptation_kernel"] = "folded-mixed-encoder-v1"
+        for row in candidates:
+            row["objective_step_units"] = row["updates"] * row["candidate_step_units"]
+        ledger = WorkLedger("invalid-actual-step-forecast", total_cap=1000000)
+        for index, row in enumerate(candidates):
+            for invalid in (None, True, 0, -1, 1.5, float("nan"), float("inf"),
+                            row["objective_step_units"] + 1):
+                changed = copy.deepcopy(candidates)
+                changed[index]["objective_step_units"] = invalid
+                with self.subTest(candidate=index, actual_units=invalid):
+                    with self.assertRaisesRegex(ValueError, "actual objective-step units"):
+                        forecast("supervised", selected, changed, common, plan, inventories, ledger)
+            changed = copy.deepcopy(candidates)
+            del changed[index]["objective_step_units"]
+            with self.subTest(candidate=index, actual_units="missing"):
+                with self.assertRaisesRegex(ValueError, "actual objective-step units"):
+                    forecast("supervised", selected, changed, common, plan, inventories, ledger)
+        for invalid in (None, "unknown", True, 0):
+            with self.subTest(adaptation_kernel=invalid):
+                with self.assertRaisesRegex(ValueError, "unsupported adaptation kernel"):
+                    forecast("supervised", selected, candidates, common,
+                             {**plan, "adaptation_kernel": invalid}, inventories, ledger)
+
     def test_control_forecast_uses_worst_training_profile_and_floor_only_once(self):
         selected, candidates, common, plan, inventories = fixtures()
         ledger = WorkLedger("control-forecast", total_cap=1000000)

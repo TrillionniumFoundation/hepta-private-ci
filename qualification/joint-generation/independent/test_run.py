@@ -129,6 +129,41 @@ class FrozenRunnerTests(unittest.TestCase):
 
 
 class CandidateSchedulingTests(unittest.TestCase):
+    def test_real_mixed_update_charges_only_executed_work_below_driver_reservation(self):
+        from independent.learning import setup_work
+        from model import JointModel
+        model = JointModel(202, 12, 192, hidden=4, seed=1701)
+        full = np.random.default_rng(2108).uniform(0, 1, (4, 202))
+        thumbnail = full[:, :192].reshape(4, 4, 2, 4, 2, 3).mean(axis=(2, 4))
+        low = np.column_stack((thumbnail.repeat(2, axis=1).repeat(2, axis=2).reshape(4, 192), full[:, 192:]))
+        mask = np.array([True, False, True, False])
+        x = np.where(mask[:, None], full, low)
+        plan = {"batch_size": 4, "adaptation_kernel": "folded-mixed-encoder-v1"}
+        price = WorkLedger("quote")
+        reserved = price.estimate_kernel(**run.adaptation_step_work(model.dimensions, "ndu", plan))
+        setup = price.estimate_kernel(**setup_work(model.dimensions, "ndu"))
+        ledger = WorkLedger("mixed-manual-update", total_cap=setup + reserved)
+        objective = run.CachedObjective("ndu", model, ledger=ledger)
+        before = ledger.consumed_units
+        objective.step(model, x, np.arange(4), .003, ledger=ledger, full_mask=mask)
+        self.assertLess(ledger.consumed_units - before, reserved)
+        self.assertEqual((ledger.totals["encoder_full_rows"], ledger.totals["encoder_low_rows"]), (2, 2))
+        self.assertEqual((ledger.totals["encoder_fold_builds"], ledger.totals["encoder_gradient_merges"]), (1, 1))
+        self.assertEqual(ledger.totals["model_forward_rows"], 4)
+
+    def test_adaptation_quote_dispatches_reservation_only_and_preserves_legacy(self):
+        dimensions, plan = (202, 12, 192, 4), {"batch_size": 2}
+        with patch.object(run, "step_work", return_value={"scalar_ops": 13}) as dense:
+            self.assertEqual(run.adaptation_step_work(dimensions, "N", plan), {"scalar_ops": 13})
+        dense.assert_called_once_with(dimensions, "N", 2)
+        plan["adaptation_kernel"] = "folded-mixed-encoder-v1"
+        with patch("independent.mixed_training.mixed_step_work", return_value={"scalar_ops": 17}) as mixed:
+            self.assertEqual(run.adaptation_step_work(dimensions, "N", plan), {"scalar_ops": 17})
+        mixed.assert_called_once_with(dimensions, "N", 2, low_rows=None)
+        for invalid in (None, False, "unknown"):
+            with self.subTest(invalid=invalid), self.assertRaisesRegex(ValueError, "adaptation kernel"):
+                run.adaptation_step_work(dimensions, "N", {**plan, "adaptation_kernel": invalid})
+
     def test_rotating_rounds_exclude_other_arms_cpu_and_preserve_returns(self):
         now, observed = [0.0], []
 
@@ -151,6 +186,85 @@ class CandidateSchedulingTests(unittest.TestCase):
         self.assertEqual(completed, {"S": {"active_cpu": 3.0, "name": "S"},
             "A": {"active_cpu": 6.0, "name": "A"}, "N": {"active_cpu": 9.0, "name": "N"}})
         self.assertEqual(len(retained), 9)
+
+    def mixed_candidate(self, cap):
+        now, calls = [0.0], []
+        rng, expected_rng = np.random.default_rng(9011), np.random.default_rng(9011)
+        model = SimpleNamespace(dimensions=(202, 12, 192, 4))
+        full = np.arange(4 * 202).reshape(4, 202) / (4 * 202)
+        thumbnail = full[:, :192].reshape(4, 4, 2, 4, 2, 3).mean(axis=(2, 4))
+        low = np.column_stack((thumbnail.repeat(2, axis=1).repeat(2, axis=2).reshape(4, 192), full[:, 192:]))
+        train = {"full": full, "low": low, "labels": np.arange(4)}
+        plan = {"adaptation_kernel": "folded-mixed-encoder-v1", "operator_units_per_system": cap,
+            "cpu_seconds_per_system": 100, "control_reserve_units": 0,
+            "control_reserve_cpu_seconds": 0, "tail_reserve_units": 10,
+            "tail_reserve_cpu_seconds": 0, "candidate_validation_reserve_cpu_seconds": 0,
+            "model_seeds": [11], "learning_rates": [.01], "batch_size": 2,
+            "rho": 1.5, "ce_anchor": .2, "cpu_guard_seconds": .001,
+            "static_modes": ["full"], "compute_price": .02}
+        common = {"cpu_seconds": 0, "reference_full_cpu_ns": 1,
+                  "calibrations": {11: {"cpu_ns": {"full": 1}}}}
+
+        class Objective:
+            def __init__(self, *args, ledger, **kwargs):
+                ledger.charge_kernel("search_setup", "fixture", scalar_ops=2)
+
+            def step(self, current, x, y, lr, *, ledger, full_mask):
+                cost = (10, 7)[len(calls)]
+                ledger.charge_kernel("search_train", "fixture", scalar_ops=cost)
+                calls.append((x.copy(), y.copy(), full_mask.copy()))
+                now[0] += .01
+                return 0.0
+
+        def validation(current, data, ledger):
+            ledger.charge_kernel("search_validation", "fixture", scalar_ops=3)
+            return {"full": {"task_utility": .2}}, None
+
+        progress = {}
+        with patch.object(run, "cpu_clock", lambda: now[0]), \
+             patch.object(run, "plain_copy", return_value=model), \
+             patch.object(run, "CachedObjective", Objective), \
+             patch.object(run, "validation_work", return_value={"scalar_ops": 3}), \
+             patch.object(run, "setup_work", return_value={"scalar_ops": 2}), \
+             patch.object(run, "adaptation_step_work", return_value={"scalar_ops": 10}) as quote, \
+             patch.object(run.np.random, "default_rng", return_value=rng), \
+             patch.object(run, "traced_phase", side_effect=lambda *args, **kwargs: nullcontext()), \
+             patch.object(run, "batch_validation", side_effect=validation), \
+             patch.object(run, "save_model", return_value={"file": "hand.npz", "sha256": "hand",
+                 "digest": "hand", "serialization_cpu_seconds": 0}), \
+             patch("builtins.print"):
+            task = run.train_system("supervised", plan, Path("/unused"), WorkLedger("shared"),
+                {11: model}, train, {"labels": np.arange(4)}, common, progress=progress)
+            if cap < 38:
+                with self.assertRaisesRegex(ValueError, "no complete update"):
+                    next(task)
+                row = None
+            else:
+                row = next(task)
+                with self.assertRaises(StopIteration):
+                    next(task)
+        quote.assert_called_once_with(model.dimensions, "supervised", plan)
+        return calls, row, rng, expected_rng, train, progress
+
+    def test_mixed_candidate_preserves_draws_and_accumulates_actual_update_units(self):
+        calls, row, rng, expected_rng, train, progress = self.mixed_candidate(38)
+        self.assertEqual(len(calls), 2)
+        for x, y, mask in calls:
+            ids = expected_rng.integers(4, size=2)
+            expected_mask = expected_rng.random(2) < .5
+            np.testing.assert_array_equal(mask, expected_mask)
+            np.testing.assert_array_equal(x, np.where(mask[:, None], train["full"][ids], train["low"][ids]))
+            np.testing.assert_array_equal(y, train["labels"][ids])
+        np.testing.assert_array_equal(rng.integers(1000, size=8), expected_rng.integers(1000, size=8))
+        self.assertEqual((row["updates"], row["candidate_step_units"], row["objective_step_units"],
+                          row["candidate_train_units"]), (2, 10, 17, 17))
+        self.assertEqual(progress["ledger"].consumed_units, 2 + 17 + 3)
+
+    def test_candidate_worst_admission_rejects_before_any_draw(self):
+        calls, _, rng, expected_rng, _, progress = self.mixed_candidate(24)
+        self.assertEqual(calls, [])
+        self.assertEqual(progress["ledger"].consumed_units, 2)
+        np.testing.assert_array_equal(rng.integers(1000, size=8), expected_rng.integers(1000, size=8))
 
     def test_generator_exception_flushes_active_cpu_without_charging_idle(self):
         now, progress = [0.0], {}
@@ -388,6 +502,61 @@ class ResidualContinuationTests(unittest.TestCase):
                                {"labels": ()}, Path("/unused"), [], [])
         self.assertTrue(all(row["refinement_updates"] == 0 for row in selected))
         self.assertTrue(all(ledger.consumed_units == 0 for ledger in ledgers.values()))
+
+    def mixed_round(self, cap):
+        now, _, _, selected, progress, ledgers, costs, plan, common, receipt, train = self.fixture(cap)
+        plan["adaptation_kernel"] = "folded-mixed-encoder-v1"
+        calls = []
+        for system, value in progress.items():
+            for seed, state in value["_selected_states"].items():
+                def step(model, x, y, lr, *, ledger, stage, full_mask, name=system, value=seed):
+                    ledger.charge_kernel(stage, "fixture", scalar_ops=7)
+                    calls.append((name, value, x.copy(), y.copy(), full_mask.copy()))
+                    model.marker += 1
+                    now[0] += .01
+                state["objective"] = SimpleNamespace(step=step)
+
+        def validation(model, data, ledger, *, stage):
+            ledger.charge_kernel(stage, "fixture", scalar_ops=1)
+            return {mode: {"task_utility": float(model.marker)} for mode in plan["static_modes"]}, None
+
+        with patch.object(run, "cpu_clock", lambda: now[0]), \
+             patch.object(run, "reserve_work", return_value={}), \
+             patch.object(run, "forecast", side_effect=lambda *args: dict(receipt)), \
+             patch.object(run, "adaptation_step_work", return_value={"scalar_ops": 10}), \
+             patch.object(run, "traced_phase", side_effect=lambda *args, **kwargs: nullcontext()), \
+             patch.object(run, "batch_validation", side_effect=validation), \
+             patch.object(run, "save_model", return_value={"file": "refined.npz", "sha256": "hand", "digest": "hand"}):
+            run.refine_content(selected, progress, ledgers, costs, plan, common, train,
+                               {"labels": ()}, Path("/unused"), [], [])
+        return calls, selected, progress, ledgers, costs, train
+
+    def test_mixed_residual_round_charges_actual_units_and_keeps_seed_streams(self):
+        calls, selected, progress, ledgers, costs, train = self.mixed_round(40)
+        self.assertEqual(len(calls), 6)
+        for system, seed, x, y, mask in calls:
+            expected = np.random.default_rng(seed)
+            ids = expected.integers(2, size=1)
+            expected_mask = expected.random(1) < .5
+            np.testing.assert_array_equal(mask, expected_mask)
+            np.testing.assert_array_equal(x, np.where(mask[:, None], train["full"][ids], train["low"][ids]))
+            np.testing.assert_array_equal(y, train["labels"][ids])
+            rng = progress[system]["_selected_states"][seed]["rng"]
+            np.testing.assert_array_equal(rng.integers(1000, size=8), expected.integers(1000, size=8))
+        self.assertTrue(all(row["refinement_objective_step_units"] == 7 for row in selected))
+        self.assertTrue(all(row["refinement_updates"] == 1 for row in selected))
+        self.assertTrue(all(cost["refinement"]["completed_rounds"] == 1 for cost in costs.values()))
+        self.assertTrue(all(ledger.consumed_units == 3 * 7 + 3 for ledger in ledgers.values()))
+
+    def test_mixed_round_requires_three_worst_updates_before_any_seed_draw(self):
+        calls, selected, progress, ledgers, _, _ = self.mixed_round(39)
+        self.assertEqual(calls, [])
+        self.assertTrue(all(row["refinement_updates"] == 0 for row in selected))
+        self.assertTrue(all(ledger.consumed_units == 0 for ledger in ledgers.values()))
+        for value in progress.values():
+            for seed, state in value["_selected_states"].items():
+                expected = np.random.default_rng(seed)
+                np.testing.assert_array_equal(state["rng"].integers(1000, size=8), expected.integers(1000, size=8))
 
 
 if __name__ == "__main__":
