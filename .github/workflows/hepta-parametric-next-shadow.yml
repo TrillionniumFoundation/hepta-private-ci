@@ -1,0 +1,122 @@
+name: Hepta parametric memory next-stage shadow checks
+
+on:
+  pull_request:
+    paths:
+      - scripts/memory_cell/**
+      - scripts/memory_cell_catalog/**
+      - scripts/memory_cell_growth/**
+      - scripts/memory_cell_hardening/**
+      - .github/workflows/hepta-parametric-next-shadow.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-parametric-next-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  PYTHONPATH: scripts/memory_cell:scripts/memory_cell_catalog:scripts/memory_cell_growth:scripts/memory_cell_hardening
+  PYTHONDONTWRITEBYTECODE: "1"
+  TOKENIZERS_PARALLELISM: "false"
+  HF_HUB_DISABLE_TELEMETRY: "1"
+  HF_HUB_OFFLINE: "1"
+  TRANSFORMERS_OFFLINE: "1"
+  OPENBLAS_NUM_THREADS: "2"
+  OMP_NUM_THREADS: "2"
+  MKL_NUM_THREADS: "2"
+
+jobs:
+  memory-growth-and-admission:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && github.head_ref == 'codex/memory-parametric-next-20261023')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Verify and record exact source identity
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          mkdir -p "$RUNNER_TEMP/parametric-next-metadata"
+          python - <<'PY'
+          import hashlib, json, os, platform, subprocess
+          from pathlib import Path
+          roots = [
+              Path("scripts/memory_cell"),
+              Path("scripts/memory_cell_catalog"),
+              Path("scripts/memory_cell_growth"),
+              Path("scripts/memory_cell_hardening"),
+          ]
+          files = {
+              path.as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+              for root in roots for path in sorted(root.glob("*.py"))
+          }
+          fixture_files = {
+              path.as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+              for path in sorted(Path("scripts/memory_cell_growth/fixtures").rglob("*.json"))
+          }
+          record = {
+              "source_sha": os.environ["SOURCE_SHA"],
+              "tree_sha": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "event_name": os.environ["GITHUB_EVENT_NAME"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "python": platform.python_version(),
+              "platform": platform.platform(),
+              "python_files_sha256": files,
+              "fixture_files_sha256": fixture_files,
+              "mode": "SHADOW_ONLY",
+              "pretrained_model_download": False,
+              "full_growth_confirmation_executed": False,
+              "production_activation_allowed": False,
+          }
+          (Path(os.environ["RUNNER_TEMP"]) / "parametric-next-metadata" / "source.json").write_text(
+              json.dumps(record, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+      - name: Install pinned CPU test runtime
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1' 2>&1 | tee "$RUNNER_TEMP/parametric-next-metadata/install.log"
+          python -m pip install --only-binary=:all: -r scripts/memory_cell/requirements.txt 2>&1 | tee -a "$RUNNER_TEMP/parametric-next-metadata/install.log"
+          python -m pip check
+          python -m pip freeze > "$RUNNER_TEMP/parametric-next-metadata/runtime.txt"
+      - name: Run memory, catalog, growth and admission regressions
+        run: |
+          set -euo pipefail
+          python -B -m unittest discover -s scripts/memory_cell -p 'test_parametric_*.py' -v 2>&1 | tee "$RUNNER_TEMP/parametric-next-metadata/parametric-unit.log"
+          python -B -m unittest discover -s scripts/memory_cell_catalog -p 'test_metadata_catalog.py' -v 2>&1 | tee "$RUNNER_TEMP/parametric-next-metadata/catalog.log"
+          python -B -m unittest discover -s scripts/memory_cell_growth -p 'test_growth.py' -v 2>&1 | tee "$RUNNER_TEMP/parametric-next-metadata/growth.log"
+          python -B -m unittest discover -s scripts/memory_cell_hardening -p 'test_owner_admission.py' -v 2>&1 | tee "$RUNNER_TEMP/parametric-next-metadata/admission.log"
+      - name: Run existing evolution and process regressions
+        run: |
+          set -euo pipefail
+          python -B -m unittest discover -s qa/stem-bakeoff -p 'test_cell_evolution.py' -v 2>&1 | tee "$RUNNER_TEMP/parametric-next-metadata/evolution.log"
+          python -B -m unittest discover -s qa/stem-bakeoff -p 'test_cell_process_inference.py' -v 2>&1 | tee "$RUNNER_TEMP/parametric-next-metadata/process.log"
+      - name: Preserve exact source, runtime and test evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: parametric-memory-next-shadow-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/parametric-next-metadata/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Confirm source tree unchanged
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
