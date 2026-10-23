@@ -195,7 +195,9 @@ def _open_pinned_image_directory(image_dir):
         and hasattr(os, "O_DIRECTORY")
         and os.open in os.supports_dir_fd
     ):
-        raise CohortContractError("secure no-follow image directory descriptors unavailable")
+        raise CohortContractError(
+            "secure no-follow image directory descriptors unavailable"
+        )
     absolute = Path(os.path.abspath(os.fspath(image_dir)))
     flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0)
     fd = None
@@ -224,88 +226,95 @@ def verify_candidate_image_bytes(candidate, image_dir):
     This verifies JPEG/RGB/dHash identity, not entity or pretraining lineage.
     Every directory component and the JPEG are opened without following links.
     """
+    directory_fd = _open_pinned_image_directory(image_dir)
+    try:
+        return _verify_candidate_image_bytes_from_fd(candidate, directory_fd)
+    finally:
+        os.close(directory_fd)
+
+
+def _verify_candidate_image_bytes_from_fd(candidate, directory_fd):
+    """Read all JPEG bytes from one already pinned directory descriptor."""
     from PIL import Image, ImageOps
     from cohort import canonical
 
-    directory_fd = _open_pinned_image_directory(image_dir)
-    try:
-        validated = 0
-        total_bytes = 0
-        for split in SPLITS:
-            for index, row in enumerate(candidate["splits"][split]["sources"]):
-                origin = f"candidate:{split}:{index}"
-                name = row.get("image_filename")
-                if (
-                    not isinstance(name, str)
-                    or not name
-                    or name in (".", "..")
-                    or Path(name).name != name
-                    or "\\" in name
-                ):
-                    raise CohortContractError(f"{origin}: require safe image_filename basename")
-                dimensions = row.get("image_size")
-                if (
-                    not isinstance(dimensions, list)
-                    or len(dimensions) != 2
-                    or any(type(n) is not int or not 1 <= n <= 20000 for n in dimensions)
-                    or dimensions[0] * dimensions[1] > MAX_IMAGE_PIXELS
-                ):
-                    raise CohortContractError(f"{origin}: require bounded image_size [width,height]")
-                expected_bytes = row.get("image_bytes")
-                if type(expected_bytes) is not int or not 0 < expected_bytes <= MAX_IMAGE_BYTES:
-                    raise CohortContractError(f"{origin}: missing/invalid image_bytes")
-                flags = os.O_RDONLY | os.O_NOFOLLOW | getattr(os, "O_NONBLOCK", 0)
-                try:
-                    with os.fdopen(os.open(name, flags, dir_fd=directory_fd), "rb") as opened:
-                        metadata = os.fstat(opened.fileno())
-                        if not stat.S_ISREG(metadata.st_mode):
-                            raise CohortContractError(f"{origin}: image must be a regular file")
-                        if metadata.st_size > MAX_IMAGE_BYTES:
-                            raise CohortContractError(f"{origin}: image exceeds byte limit")
-                        raw = opened.read(MAX_IMAGE_BYTES + 1)
-                    if not 0 < len(raw) <= MAX_IMAGE_BYTES:
+    validated = 0
+    total_bytes = 0
+    for split in SPLITS:
+        for index, row in enumerate(candidate["splits"][split]["sources"]):
+            origin = f"candidate:{split}:{index}"
+            name = row.get("image_filename")
+            if (
+                not isinstance(name, str)
+                or not name
+                or name in (".", "..")
+                or Path(name).name != name
+                or "\\" in name
+            ):
+                raise CohortContractError(f"{origin}: require safe image_filename basename")
+            dimensions = row.get("image_size")
+            if (
+                not isinstance(dimensions, list)
+                or len(dimensions) != 2
+                or any(type(n) is not int or not 1 <= n <= 20000 for n in dimensions)
+                or dimensions[0] * dimensions[1] > MAX_IMAGE_PIXELS
+            ):
+                raise CohortContractError(f"{origin}: require bounded image_size [width,height]")
+            expected_bytes = row.get("image_bytes")
+            if type(expected_bytes) is not int or not 0 < expected_bytes <= MAX_IMAGE_BYTES:
+                raise CohortContractError(f"{origin}: missing/invalid image_bytes")
+            flags = os.O_RDONLY | os.O_NOFOLLOW | getattr(os, "O_NONBLOCK", 0)
+            try:
+                with os.fdopen(
+                    os.open(name, flags, dir_fd=directory_fd), "rb"
+                ) as opened:
+                    metadata = os.fstat(opened.fileno())
+                    if not stat.S_ISREG(metadata.st_mode):
+                        raise CohortContractError(f"{origin}: image must be a regular file")
+                    if metadata.st_size > MAX_IMAGE_BYTES:
                         raise CohortContractError(f"{origin}: image exceeds byte limit")
-                    with Image.open(BytesIO(raw)) as picture:
-                        if picture.format != "JPEG" or list(picture.size) != dimensions:
-                            raise ValueError("image format or dimensions differ from annotation")
-                        rgb = ImageOps.exif_transpose(picture).convert("RGB")
-                        tiny = list(
-                            rgb.convert("L").resize(
-                                (9, 8), Image.Resampling.LANCZOS
-                            ).getdata()
-                        )
-                        bits = 0
-                        for y in range(8):
-                            for x in range(8):
-                                bits = (bits << 1) | int(
-                                    tiny[y * 9 + x] > tiny[y * 9 + x + 1]
-                                )
-                        observed = {
-                            "image_sha256": hashlib.sha256(raw).hexdigest(),
-                            "image_bytes": len(raw),
-                            "dhash64": f"{bits:016x}",
-                            "decoded_rgb_sha256": hashlib.sha256(
-                                canonical([rgb.width, rgb.height, "RGB"])
-                                + rgb.tobytes()
-                            ).hexdigest(),
-                        }
-                except (OSError, ValueError, OverflowError, Image.DecompressionBombError) as exc:
-                    raise CohortContractError(f"{origin}: invalid candidate JPEG: {exc}") from exc
-                for key, value in observed.items():
-                    if row.get(key) != value:
-                        raise CohortContractError(f"{origin}: actual image bytes disagree with {key}")
-                validated += 1
-                total_bytes += len(raw)
-        return {
-            "checked_images": validated,
-            "source_jpeg_bytes": total_bytes,
-            "algorithm": "original v1 JPEG/RGB/dHash; descriptor-pinned local bytes",
-            "original_bytes_cryptographically_checked": True,
-            "independent_real_world_entities_proven": False,
-            "foundation_pretraining_excluded": False,
-        }
-    finally:
-        os.close(directory_fd)
+                    raw = opened.read(MAX_IMAGE_BYTES + 1)
+                if not 0 < len(raw) <= MAX_IMAGE_BYTES:
+                    raise CohortContractError(f"{origin}: image exceeds byte limit")
+                with Image.open(BytesIO(raw)) as picture:
+                    if picture.format != "JPEG" or list(picture.size) != dimensions:
+                        raise ValueError("image format or dimensions differ from annotation")
+                    rgb = ImageOps.exif_transpose(picture).convert("RGB")
+                    tiny = list(
+                        rgb.convert("L").resize(
+                            (9, 8), Image.Resampling.LANCZOS
+                        ).getdata()
+                    )
+                    bits = 0
+                    for y in range(8):
+                        for x in range(8):
+                            bits = (bits << 1) | int(
+                                tiny[y * 9 + x] > tiny[y * 9 + x + 1]
+                            )
+                    observed = {
+                        "image_sha256": hashlib.sha256(raw).hexdigest(),
+                        "image_bytes": len(raw),
+                        "dhash64": f"{bits:016x}",
+                        "decoded_rgb_sha256": hashlib.sha256(
+                            canonical([rgb.width, rgb.height, "RGB"])
+                            + rgb.tobytes()
+                        ).hexdigest(),
+                    }
+            except (OSError, ValueError, OverflowError, Image.DecompressionBombError) as exc:
+                raise CohortContractError(f"{origin}: invalid candidate JPEG: {exc}") from exc
+            for key, value in observed.items():
+                if row.get(key) != value:
+                    raise CohortContractError(f"{origin}: actual image bytes disagree with {key}")
+            validated += 1
+            total_bytes += len(raw)
+    return {
+        "checked_images": validated,
+        "source_jpeg_bytes": total_bytes,
+        "algorithm": "original v1 JPEG/RGB/dHash; descriptor-pinned local bytes",
+        "original_bytes_cryptographically_checked": True,
+        "independent_real_world_entities_proven": False,
+        "foundation_pretraining_excluded": False,
+    }
 
 
 def collision(first, second, distance):
