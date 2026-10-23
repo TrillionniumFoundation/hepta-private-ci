@@ -157,6 +157,28 @@ decoder emission are measured separately; this is not an energy, full
 end-to-end decoder, neural throughput or target production device test.
 The workflow runs the benchmark but does not set a universal latency claim.
 
+## Source-converged profile admission and compiled-policy replay
+
+The sibling `#3416` bounded numeric admissibility profile was ported
+**byte-for-byte** into this compiled-snapshot candidate: integer and finite
+physical resource limits, bounded risk/price, conditional probability support
+and value limits, immutable four-channel tuple state/action vectors and
+committed nonnegative 63-bit replay seeds. The independent sibling regression
+`test_profile_safety.py` is retained without rewriting its original assertions.
+This also prevents mutable vectors from entering Bellman caches.
+
+`snapshot_policy.rollout_snapshot` now enforces the **same seed bound** as the
+original `portfolio.execute`; otherwise a compiled policy had accepted
+entropy-derived, negative or oversized seeds that the source generator rejects.
+`test_compiled_profile_admission.py` verifies both APIs reject identical
+invalid seeds, retain 0/max-seed replay, survive canonical cold snapshot reload,
+and preserve all four toy outputs and physical-cost parity.
+
+Any source change invalidates previously compiled snapshot source digests:
+recompile and re-evaluate against the exact reviewed source. No older CI run
+qualifies this composition. This closes only a narrow numeric/state/replay
+source integration gap, not real learned-generator efficacy or production use.
+
 ## Next independently measured scientific experiment
 
 Replace the synthetic proxy-state/decoder fixtures with a source-pinned **real** shared Encoder plus four output decoders, observed partial latents, actual Neural/Cell feature invocation and all separately paid decoder/verifier/selection costs. Preregister source-disjoint natural tasks, multiple training seeds and common random-number draws, then compare same-information/static, MoE, risk-neutral MPC, fixed-risk MPC, dynamic NDU and best-of-N with independent decoded-output scoring and risk/coverage/cost thresholds. Train/inference factorial ablations are essential to determine whether NDU changes learned generation rather than only selecting an existing candidate. Do not enable or deploy any output-portfolio policy based only on this code.
