@@ -152,6 +152,57 @@ fn malformed_abstain_net_cannot_hide_behind_positive_continuation() {
 }
 
 #[test]
+fn exhausted_resource_budget_abstains_with_positive_net() {
+    let subject = subject();
+    let candidates = candidate_fixtures();
+    let mut trace = make_trace(&subject, &candidates);
+    trace.cells[0].cost_micros = subject.resource_ceiling_micros;
+    let result = must(decide_group_continuation_v1(
+        &subject,
+        &trace,
+        &candidates,
+    ));
+    assert_eq!(result.selected_candidate_id, "abstain");
+    assert_eq!(result.net_value_q32, 0);
+    assert_eq!(result.authority, AuthorityPosture::DENY_ALL);
+
+    // With a nonzero remaining balance, the existing positive-net baseline
+    // remains advisory; an execution owner must still reserve actual work.
+    trace.cells[0].cost_micros = subject.resource_ceiling_micros - 1;
+    let still_possible = must(decide_group_continuation_v1(&subject, &trace, &candidates));
+    assert_eq!(still_possible.selected_candidate_id, "continue");
+
+    trace.cells[0].cost_micros = subject.resource_ceiling_micros + 1;
+    assert_eq!(
+        decide_group_continuation_v1(&subject, &trace, &candidates),
+        Err(GroupSystem2Error::ResourceCeilingExceeded {
+            used: subject.resource_ceiling_micros + 1,
+            ceiling: subject.resource_ceiling_micros,
+        })
+    );
+}
+
+#[test]
+fn exhausted_budget_is_aggregated_across_distinct_cells() {
+    let subject = subject();
+    let candidates = candidate_fixtures();
+    let mut trace = make_trace(&subject, &candidates);
+    trace.cells[0].cost_micros = 80;
+    let mut second = trace.cells[0].clone();
+    second.cell_id = "cell:1".to_owned();
+    second.cost_micros = 20;
+    trace.cells.push(second);
+
+    let decision = must(decide_group_continuation_v1(
+        &subject,
+        &trace,
+        &candidates,
+    ));
+    assert_eq!(decision.selected_candidate_id, "abstain");
+    assert_eq!(decision.authority, AuthorityPosture::DENY_ALL);
+}
+
+#[test]
 fn candidate_set_digest_is_bound_and_deterministic() {
     let subject = subject();
     let candidates = candidate_fixtures();

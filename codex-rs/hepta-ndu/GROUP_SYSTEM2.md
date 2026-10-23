@@ -33,8 +33,13 @@ The legal abstain candidate has its own net value under that same equation.
 A strictly positive continuation is selected only if its net value is also
 strictly greater than the abstain alternative; equal values favor abstention.
 The abstain net is validated before any selection so overflow cannot hide
-behind an otherwise positive continuation. These are advisory economics,
-not an allocation of physical microsecond budget or production authority.
+behind an otherwise positive continuation. The Group also abstains if the
+sum of its already-observed Cell execution microseconds exactly exhausts the
+owner's declared resource ceiling. A sum above the ceiling remains an error.
+This conservative check does **not** reserve the future cost of a suggested
+continuation or authorize it: a separate execution owner must charge the next
+physical action before executing it. Utility costs are Q32 and must not be
+silently interpreted as wall-clock microseconds.
 
 The candidate set is digest-bound and the trace digest is deterministic, so a
 future learned critic, Neural Differential Utility solver, or router can be
