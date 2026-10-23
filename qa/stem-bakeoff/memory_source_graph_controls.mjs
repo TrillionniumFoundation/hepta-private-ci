@@ -3,8 +3,9 @@
 // No Reader, dense Encoder, trained Head or qualified claim is produced.
 import fs from "node:fs";
 import crypto from "node:crypto";
+import {pathToFileURL} from "node:url";
 
-function sourceOnlyControls(raw, partitions) {
+export function sourceOnlyControls(raw, partitions) {
   const N = 8, MAX_BYTES = 4096, MAX_SEEDS = 24;
   const STOP = new Set("a an and are as at be been but by can could did do does for from had has have how i if in is it its me my of on or our she should that the their them there they this to was were what when where which who why will with would you your".split(" "));
   const terms = s => (String(s).normalize("NFKC").toLowerCase().match(/[a-z0-9]+/g) || []).filter(w=>w.length>1&&!STOP.has(w));
@@ -149,39 +150,48 @@ function sourceOnlyControls(raw, partitions) {
     only_source_text_used:true,arms:["A","C","D"],budget:{turns:N,utf8_bytes:MAX_BYTES},predictions:results};
 }
 
-function independentEvidenceScore(raw,predictionSet,partitions) {
-  const gold=new Map(),sourceIds=new Map(),byGroup=new Map();
+export function independentEvidenceScore(raw,predictionSet,partitions) {
+  const gold=new Map(),sourceIds=new Map(),sourceFrames=new Map();
+  if(JSON.stringify(predictionSet.arms)!==JSON.stringify(["A","C","D"]))throw Error("unexpected arms");
   for(const r of raw){
-    const ids=new Set();
-    for(const k of Object.keys(r.conversation).filter(k=>/^session_[0-9]+$/.test(k)))for(const t of r.conversation[k])ids.add(t.dia_id);
-    sourceIds.set(r.sample_id,ids);
+    const ids=new Set(),frames=new Map();
+    for(const k of Object.keys(r.conversation).filter(k=>/^session_[0-9]+$/.test(k)))for(const t of r.conversation[k]){
+      if(ids.has(t.dia_id))throw Error("duplicate source ID");
+      ids.add(t.dia_id);
+      frames.set(t.dia_id,`[${t.dia_id} | ${k} | ${r.conversation[k+"_date_time"]} | ${t.speaker}]\n${t.text}\n`);
+    }
+    sourceIds.set(r.sample_id,ids);sourceFrames.set(r.sample_id,frames);
     r.qa.forEach((q,i)=>gold.set(r.sample_id+":qa:"+String(i).padStart(4,"0"),{group:r.sample_id,category:q.category,evidence:q.evidence||[]}));
   }
   const results={};let complete=true;
   for(const arm of predictionSet.arms){
     const rows=predictionSet.predictions.filter(x=>x.arm===arm);
     let scorable=0,all=0,partial=0,adversarial=0,total=0,unresolved=0;
-    const categories={}, groups={};
+    const categories={}, groups={}, seen=new Set();
+    const expected=new Set([...gold].filter(([qid,v])=>partitions.evaluation.includes(v.group)).map(([qid])=>qid));
     for(const r of rows){
       const g=gold.get(r.query_id);
-      if(!g||g.group!==r.group)throw Error("incomplete label/source match");
+      if(!g||g.group!==r.group||!expected.has(r.query_id)||seen.has(r.query_id))throw Error("missing/duplicate or mismatched row");
+      seen.add(r.query_id);
       if(!Array.isArray(r.selected_source_ids)||r.selected_source_ids.length>8||
           new Set(r.selected_source_ids).size!==r.selected_source_ids.length||
           r.selected_source_ids.some(x=>!sourceIds.get(r.group).has(x)))throw Error("selected source scope mismatch");
+      const exactBytes=r.selected_source_ids.reduce((n,id)=>n+new TextEncoder().encode(sourceFrames.get(r.group).get(id)).length,0);
+      if(r.context_bytes!==exactBytes||exactBytes>4096)throw Error("forged/out-of-budget context bytes");
       total++;
       const cat=String(g.category);
       if(!categories[cat])categories[cat]={scorable:0,all:0,recall:0,adversarial:0};
       if(g.category===5){adversarial++;categories[cat].adversarial++;continue;}
       if(!g.evidence.length||g.evidence.some(x=>!sourceIds.get(r.group).has(x))){unresolved++;continue;}
-      const selected=new Set(r.selected_source_ids);
-      const hits=g.evidence.filter(x=>selected.has(x)).length;
-      const ratio=hits/g.evidence.length,yes=hits===g.evidence.length?1:0;
+      const selected=new Set(r.selected_source_ids),required=[...new Set(g.evidence)];
+      const hits=required.filter(x=>selected.has(x)).length;
+      const ratio=hits/required.length,yes=hits===required.length?1:0;
       scorable++;all+=yes;partial+=ratio;
       categories[cat].scorable++;categories[cat].all+=yes;categories[cat].recall+=ratio;
       if(!groups[r.group])groups[r.group]={scorable:0,all:0,recall:0};
       groups[r.group].scorable++;groups[r.group].all+=yes;groups[r.group].recall+=ratio;
     }
-    if(total!==partitions.evaluation.reduce((n,g)=>n+(predictionSet.source_groups[g]?.queries||0),0))throw Error("partial query census");
+    if(total!==expected.size||seen.size!==expected.size)throw Error("partial query census");
     results[arm]={planned_questions:total,scorable,adversarial,unresolved,
       all_gold_support_recalled:all/scorable,mean_gold_support_recall:partial/scorable,
       group_macro_all_gold_support:partitions.evaluation.reduce((n,g)=>n+groups[g].all/groups[g].scorable,0)/partitions.evaluation.length,
@@ -204,6 +214,7 @@ function independentEvidenceScore(raw,predictionSet,partitions) {
     authority:"SHADOW_ONLY/DENY_ALL/HOLD_NO_GO"};
 }
 
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href) {
 const args=process.argv.slice(2);
 if(args.length!==3)throw Error("usage: node memory_source_graph_controls.mjs ORIGINAL_LOCOMO.json OUT_PREDICTIONS.json OUT_AUDIT.json");
 const bytes=fs.readFileSync(args[0]);
@@ -217,3 +228,5 @@ const report=independentEvidenceScore(rows,predictions,partitions);
 report.prediction_sha256=crypto.createHash("sha256").update(fs.readFileSync(args[1])).digest("hex");
 fs.writeFileSync(args[2],JSON.stringify(report,null,2)+"\n",{flag:"wx"});
 console.log(JSON.stringify({status:report.authority,census:report.results.A.planned_questions,arms:predictions.arms}));
+
+}
