@@ -160,3 +160,55 @@ writer; deployment needs a dedicated non-login UID without sudo permission.
 The runtime loader, authenticated clock/head feed and cognitive current-cut
 protocol remain separate requirements. These tests do not attach a production
 CognitiveStore writer or establish full crash recovery.
+
+## Canonical root service integration
+
+The Agentd host service selects the original `DeploymentFinalUseIssuer`, with
+one retained Ed25519 key, revocation head and durable sequence shared by original
+FinalUse issuance and canonical AuthBus Objective signing. `HostFinalUseIssuer`
+remains a library/qualification primitive; it is not a second deployed issuer.
+The root factory preserves exact original lease revision/binding checks and
+post-I/O expiry rejection. A discarded or undelivered signature never refunds
+its retained sequence. Original FinalUse still owns nonce consumption.
+
+`hepta-authority-host initialize --state STATE --bootstrap ROOT0600_JSON` is an
+explicit fresh administrative authorization. Existing/partial state is refused,
+not reset. It emits only the new public key/lease identity and
+`production_ready=false`; it creates no CognitiveStore genesis or current cut.
+`serve-session --config ROOT0600_JSON --registration ROOT0600_JSON
+--owner-pidfd-stdin` opens that state without initialization. It requires the
+configured actual bind mount and exact device/inode, public key pin, registered
+original identity/current spawn, actual boot/start identity, dedicated UID,
+empty supplementary groups and NoNewPrivileges. The trusted launcher retains
+its child and supplies the already-held pidfd as stdin before any connection.
+Configuration and registration are root-owned single-link 0600 files in a
+protected 0700 directory. The original Agentd writer lock is never reacquired
+by the authority service merely to reconstruct its registered identity.
+
+Three separate purpose-limited private listeners use the same owner lifetime:
+observation 16 KiB, issuer 64 KiB (original FinalUse requests remain 16 KiB), and
+checkpoint 32 KiB. `HostAuthorityPeerChannel` is a server-only framing helper
+using the existing pidfd/deadline implementation. It pre-encodes and bounds the
+entire response before emitting a length prefix. The observation carries the
+complete original head and post-I/O clock projection; it never truncates revoked
+IDs. Capacity includes the existing 16 KiB protected record and observation
+bounds, so 256 maximum-sized IDs are not a promised operational capacity. An
+oversized record/observation fails closed. Administrative quiescence and an
+original protocol epoch/key handoff are needed before resuming a full owner;
+this CLI does not invent an automatic reset/rotation endpoint.
+
+A client must start its 500 ms feed-freshness measurement before reading,
+validate the root peer and registered identity, and permanently fence its writer
+generation on expiry, failure or rollback. It projects actual matching-boot
+BOOTTIME from the retained anchor and refuses beyond the durable ceiling; the
+ceiling is never actual-now. Service threads keep the feed out of a signing work
+queue, but do not turn a slow fsync into a fresh observation. The 300-second hard
+session cap requires an independently reconciled quiescent loader handoff;
+ordinary requests cannot renew it or restore a permanently fenced writer.
+
+Explicit root qualification runs the original grant client and canonical
+AuthBus signature verification from UID60001 against data-backed persistent
+state with real fsync, SO_PEERCRED and retained pidfd. An absent checkpoint
+registration closes its lane without any successful record. This qualifies the
+service/factory boundary, not production loader, genesis, current-cut recovery,
+whole-host antirollback, native-kernel compatibility or G2 control admission.

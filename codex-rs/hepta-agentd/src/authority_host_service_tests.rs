@@ -51,3 +51,5 @@ fn lane_decoders_reject_unknown_duplicate_and_self_selected_authority() {
     }
 }
 
+#[path = "authority_host_service_root_tests.rs"]
+mod root;
