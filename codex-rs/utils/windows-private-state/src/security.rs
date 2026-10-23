@@ -364,3 +364,7 @@ pub fn validate_owner_descriptor(
     validate_descriptor(descriptor.bytes()?, current)?;
     Ok(DescriptorObservation { identity })
 }
+
+#[cfg(test)]
+#[path = "security_tests.rs"]
+mod tests;
