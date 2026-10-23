@@ -267,7 +267,13 @@ class ParametricOwner:
             return self._current(db, scope, cell_id)
 
     def invoke(self, cell_id, scope, provider, callback, *, query_roots=()):
-        """No result escapes if observed provenance, bytes or version changes."""
+        """Admit after byte validation; suppress results changed after admission.
+
+        The final short transaction is the local admission linearization point.
+        No SQLite transaction spans callback execution. An authority/version
+        change after admission may overlap an in-flight callback, but its result
+        is rejected by the existing post-callback checks.
+        """
         if not _name(cell_id) or not callable(callback):
             raise ValueError("cell identity and inference callback required")
         query = set(_roots(query_roots))
@@ -284,6 +290,13 @@ class ParametricOwner:
             cell.base_identity,
         ):
             raise ValueError("active checkpoint differs from retained metadata")
+        admission = self._observe(scope, provider)
+        with self._transaction() as db:
+            self._barrier(db, admission)
+            if admission != before or self._current(db, scope, cell_id) != cell:
+                raise ValueError(
+                    "inference frontier or active version changed before callback"
+                )
         result = callback(cell)
         after = self._observe(scope, provider)
         if _checkpoint(cell.directory, cell.manifest_sha256, scope) != (
