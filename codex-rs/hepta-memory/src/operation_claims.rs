@@ -6,6 +6,10 @@ use sqlx::Transaction;
 use crate::CognitiveStore;
 use crate::LocalLeaseOutboxError;
 
+#[path = "operation_claim_entry.rs"]
+mod entry;
+pub(crate) use entry::require_entered_transaction;
+
 #[path = "operation_pre_boundary.rs"]
 mod pre_boundary;
 pub(crate) use pre_boundary::ReauthorizationBinding;

@@ -53,6 +53,7 @@ use sync::sync_cognitive_directory;
 
 #[path = "cognitive_store_gate.rs"]
 mod gate;
+pub(crate) use gate::CheckpointAttempt;
 pub(crate) use gate::CognitiveCommitGate;
 
 #[path = "cognitive_checkpoint_bind.rs"]

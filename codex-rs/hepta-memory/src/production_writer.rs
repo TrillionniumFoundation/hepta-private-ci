@@ -90,6 +90,9 @@ mod hos2_owner;
 pub use hos2_owner::Hos2RetirementObservation;
 pub use hos2_owner::Hos2RetirementPermit;
 
+#[path = "production_effect_entry.rs"]
+mod effect_entry;
+
 #[path = "production_owner_publication.rs"]
 mod owner_publication;
 
@@ -1562,6 +1565,10 @@ impl ProductionDurableWriter {
                 .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
         }
 
+        let mut bound_entry = self
+            .begin_bound_effect_entry(&entered_claim, &request, &dispatch_claim_event_id)
+            .await?;
+
         // Then consume the single-use grant and revalidate it immediately at
         // target entry. If either check fails before the adapter is entered we
         // know no external effect happened. HOS2 retains an internal proof
@@ -1570,6 +1577,9 @@ impl ProductionDurableWriter {
         let token = match final_use.claim(signed, expected) {
             Ok(token) => token,
             Err(error) => {
+                if let Some(entry) = bound_entry.take() {
+                    entry.release().await?;
+                }
                 if request.topic == crate::HOS2_INSTALL_TOPIC_V1
                     && inherited_from_generation.is_none()
                 {
@@ -1611,11 +1621,20 @@ impl ProductionDurableWriter {
                 return Err(ProductionWriterError::FinalUse(error));
             }
         };
-        let future = match final_use
-            .with_verified_use(token, expected, || target.dispatch(request.clone()))
-        {
-            Ok(future) => future,
+        let future = match final_use.with_verified_use(token, expected, || {
+            if bound_entry.is_some() {
+                self.effect_entry_live_check(&entered_claim)?;
+            }
+            Ok::<_, ProductionWriterError>(target.dispatch(request.clone()))
+        }) {
+            Ok(Ok(future)) => future,
+            // This is an original owner/TTL failure, not a FinalUse proof of
+            // non-entry. Dropping the retained guard fences every writer clone.
+            Ok(Err(error)) => return Err(error),
             Err(error) => {
+                if let Some(entry) = bound_entry.take() {
+                    entry.release().await?;
+                }
                 if request.topic == crate::HOS2_INSTALL_TOPIC_V1
                     && inherited_from_generation.is_none()
                 {
@@ -1657,6 +1676,9 @@ impl ProductionDurableWriter {
                 return Err(ProductionWriterError::FinalUse(error));
             }
         };
+        if let Some(entry) = bound_entry {
+            entry.release().await?;
+        }
         let outcome = future.await;
         let observed_contradiction = matches!(
             &outcome,
