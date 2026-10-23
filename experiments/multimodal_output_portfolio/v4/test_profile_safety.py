@@ -6,7 +6,7 @@ target-hardware costs, or a deployable stochastic control policy.
 import math
 import unittest
 
-from portfolio import Config, Controller, State, conditional_ce, execute
+from portfolio import Allocation, Config, Controller, State, conditional_ce, execute
 
 
 class FiniteProfileSafetyTests(unittest.TestCase):
@@ -91,6 +91,26 @@ class FiniteProfileSafetyTests(unittest.TestCase):
                               gamma=str(gamma)[:20]):
                 with self.assertRaises(ValueError):
                     conditional_ce(values, probabilities, gamma)
+
+    def test_mutable_vectors_are_rejected_at_state_admission(self):
+        # Frozen dataclasses do not freeze a nested list: it can mutate
+        # after validation and is not hashable for Controller.solve's cache.
+        with self.assertRaises(ValueError):
+            State([0, 0, 0, 0], 12)
+        with self.assertRaises(ValueError):
+            Allocation([1, 0, 0, 0])
+        self.assertEqual(State((0, 0, 0, 0), 12).levels, (0, 0, 0, 0))
+        self.assertEqual(Allocation((1, 0, 0, 0)).units, (1, 0, 0, 0))
+
+    def test_unreplayable_seed_types_rejected_before_policy(self):
+        for seed in (None, True, 2.5, -1, 2**63, "7", [7]):
+            with self.subTest(seed=str(seed)):
+                with self.assertRaises(ValueError):
+                    execute(State((0, 0, 0, 0), 4), Config(), seed=seed)
+        # Legal seeded STOP consumes only the mandatory four-emission reserve.
+        x = execute(State((0, 0, 0, 0), 4), Config(), seed=7)
+        y = execute(State((0, 0, 0, 0), 4), Config(), seed=7)
+        self.assertEqual(x["trace_sha256"], y["trace_sha256"])
 
     def test_unchanged_original_causal_trajectory_and_finite_receipts(self):
         cfg = Config(horizon=3, risk_aversion=0, activation_cost=1,
