@@ -6,6 +6,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
+from audit_memory_retrieval import verify_row_scoring
 from memory_retrieval_data import Corpus, Gold, Query, Turn, decode_source, load_source
 from memory_retrieval_probe import MAX_CONTEXT_BYTES, MAX_TURNS, RetrievalIndex, pack_context
 from memory_retrieval_scoring import paired_group_interval, score_query, summarize
@@ -95,6 +96,45 @@ class MemoryRetrievalProbeTests(unittest.TestCase):
             path.write_text("[]")
             with self.assertRaises(ValueError):
                 load_source(path)
+
+    def test_independent_audit_rejects_partial_support_score_tampering(self):
+        row = {"accepted": True, "gold_evidence_count": 2,
+               "support_recall": 0.5, "all_support_recalled": 0,
+               "any_support_recalled": 1, "answerability_screen_correct": 1}
+        def verify(candidate):
+            verify_row_scoring(candidate, {"D1:1", "D1:2"}, ["D1:1"], "scorable", 2)
+        verify(row)
+        for field, value in (
+                ("support_recall", 1.0), ("all_support_recalled", 1),
+                ("any_support_recalled", 0), ("any_support_recalled", True),
+                ("gold_evidence_count", 1), ("gold_evidence_count", True),
+                ("answerability_screen_correct", 0),
+                ("answerability_screen_correct", True),
+                ("accepted", False), ("accepted", 1), ("accepted", "true")):
+            with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+                changed = deepcopy(row)
+                changed[field] = value
+                verify(changed)
+
+    def test_independent_audit_preserves_unscored_and_abstained_rows(self):
+        adversarial = {"accepted": False, "gold_evidence_count": 1,
+            "support_recall": None, "all_support_recalled": None,
+            "any_support_recalled": None, "answerability_screen_correct": 1}
+        verify_row_scoring(adversarial, {"D1:1"}, [], "adversarial", 5)
+        verify_row_scoring({**adversarial, "answerability_screen_correct": 0},
+                           {"D1:1"}, [], "unresolved", 2)
+        for field, value in (("support_recall", 0.0),
+                             ("all_support_recalled", 0),
+                             ("any_support_recalled", 0)):
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                verify_row_scoring({**adversarial, field: value},
+                                   {"D1:1"}, [], "adversarial", 5)
+        missing = {**adversarial, "gold_evidence_count": 0,
+                   "answerability_screen_correct": 0}
+        verify_row_scoring(missing, set(), [], "missing", 2)
+        with self.assertRaises(ValueError):
+            verify_row_scoring({**missing, "all_support_recalled": 1},
+                               set(), [], "missing", 2)
 
     def test_cluster_interval_is_paired_and_uses_source_groups(self):
         query = Query("a:1", "a", "x")
