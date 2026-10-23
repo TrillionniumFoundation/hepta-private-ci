@@ -153,7 +153,7 @@ fn step_budget_cannot_be_reopened_by_model_claim() {
 fn ports_are_object_safe_for_runtime_backend_selection() {
     struct Unavailable;
     impl ModelPort for Unavailable {
-        fn infer<'a>(&'a self, _: &'a ModelInvocationV1) -> PortFuture<'a, ModelObservationV1> {
+        fn infer<'a>(&'a self, _: &'a CheckedModelInvocationV1) -> PortFuture<'a, ModelObservationV1> {
             Box::pin(async { Err(PortError::Unavailable) })
         }
     }
@@ -213,4 +213,49 @@ fn checked_handle_retains_verified_start_identity_without_granting_effect() {
         ..observation
     };
     assert!(forged.validate_against(&checked).is_err());
+}
+
+struct DenyModel;
+
+impl ModelStartVerifier for DenyModel {
+    fn verify_model_start(&self, _: &ModelInvocationV1) -> Result<(), PortError> {
+        Err(PortError::Denied)
+    }
+}
+
+struct TestOnlyAllowModel;
+
+impl ModelStartVerifier for TestOnlyAllowModel {
+    fn verify_model_start(&self, _: &ModelInvocationV1) -> Result<(), PortError> {
+        Ok(())
+    }
+}
+
+#[test]
+fn model_port_requires_checked_final_use_and_independent_verifier() {
+    let request = ModelInvocationV1 {
+        binding: binding(),
+        model_artifact_digest: dig(10),
+        input_digest: dig(11),
+        max_input_tokens: 100,
+        max_output_tokens: 20,
+        deadline_unix_ms: 1234,
+    };
+    assert!(matches!(
+        CheckedModelInvocationV1::admit(request.clone(), &TestOnlyAllowModel),
+        Err(PortError::Denied)
+    ));
+    let mut authorized = request;
+    authorized.binding.final_use = FinalUse::Verified {
+        grant_digest: dig(14),
+        verifier_receipt_digest: dig(15),
+    };
+    assert!(matches!(
+        CheckedModelInvocationV1::admit(authorized.clone(), &DenyModel),
+        Err(PortError::Denied)
+    ));
+    let checked = CheckedModelInvocationV1::admit(authorized, &TestOnlyAllowModel).unwrap();
+    assert_eq!(checked.request_digest(), checked.request().digest().unwrap());
+    assert!(matches!(checked.request().binding.final_use, FinalUse::Verified { .. }));
+    // A unit-test-only accepting verifier does not constitute production authority.
 }

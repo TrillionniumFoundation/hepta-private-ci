@@ -46,6 +46,8 @@ pub use ports::ExecutionObservationV1;
 pub use ports::ExecutionPort;
 pub use ports::ModelInvocationV1;
 pub use ports::ModelObservationV1;
+pub use ports::CheckedModelInvocationV1;
+pub use ports::ModelStartVerifier;
 pub use ports::ModelPort;
 pub use ports::PortError;
 pub use ports::PortFuture;
