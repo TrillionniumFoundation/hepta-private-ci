@@ -1,0 +1,209 @@
+{
+  "array_uncompressed_bound_bytes": 2097152,
+  "artifact_bound_bytes": 2097152,
+  "artifacts": {
+    "base-11.npz": "f6b75f2639fe5d14475d0d68634bc637fbaabf12346102426a202923d8166c47",
+    "base-23.npz": "640aeaaaa82ca4be068b6680d1d919b03c7650f22a3e6139e44dce2591492083",
+    "base-47.npz": "4b9f25a39c2849f2ebd27989c9d1a6ef91f1c3163d78d813e17ab21713d54400",
+    "build/libjoint.so": "ca84652442d6258ab67f2d553fb55742e0cc4c08222cb5e0fad02504c7ad32a0",
+    "ndu_control-11-0.01.npz": "e52eec96a9c8a0f0c7584a3b5f1ceb51296aefecb5f35f2c1fd17985d2d3e734",
+    "ndu_control-23-0.01.npz": "15022326fd66116b31f5601fbeda3c143079672369ab3ca2bec4646a873b09b7",
+    "ndu_control-47-0.01.npz": "1e15a7d787cb0c0d386a3dcb1dd8f0c4850879da433b0e3edb54172db98f401a",
+    "selection.json": "43667a768d2b951b2bf6965c32683a5e9114fb6832a33af924ae161581b5c157"
+  },
+  "bases": [
+    {
+      "digest": "ac7213954b0bae518d1206a63cf8c07637efac570e21fea90c08fb25a75f8f5f",
+      "file": "base-11.npz",
+      "seed": 11,
+      "sha256": "f6b75f2639fe5d14475d0d68634bc637fbaabf12346102426a202923d8166c47"
+    },
+    {
+      "digest": "d5897594f56e42a5ee43623c8dd685d11cb99b0a93fa1e730401bf656e31a530",
+      "file": "base-23.npz",
+      "seed": 23,
+      "sha256": "640aeaaaa82ca4be068b6680d1d919b03c7650f22a3e6139e44dce2591492083"
+    },
+    {
+      "digest": "b15ef7e4449974f0654058917a3182ab886e4e49872d30cbfe0d8db82a6c93d6",
+      "file": "base-47.npz",
+      "seed": 47,
+      "sha256": "4b9f25a39c2849f2ebd27989c9d1a6ef91f1c3163d78d813e17ab21713d54400"
+    }
+  ],
+  "classifier_threshold": 0.5,
+  "command": [
+    "python",
+    "-W",
+    "error",
+    "-m",
+    "independent.diagnose_decisions",
+    "--protocol-dir",
+    "runs/codex-cloud-efficient-r2-decision-diagnostic-q1"
+  ],
+  "content_probe": "One native low-state and one native full TRAIN call per seed; one fixed decoded reward preparation and two expected raw-utility values; shared across the two diagnostic methods, never reused as a free qualified-build cache",
+  "cost_boundary": {
+    "actual_cpu": "Internal timer begins before dependency imports and includes child CPU until before final receipt serialization; root external launcher retains complete worker/startup/final serialization and parent overhead",
+    "attribution": "Single R&D diagnostic total; shared probe/normalizer costs are explicitly visible. No claim that cumulative research budgets were matched",
+    "declared": "Actual content/decoder/value kernels, every OOF normalizer/ridge/prediction, target/decision and metric/group-sort inventories charged to one bounded WorkLedger; no unused probability-feature kernels",
+    "native_reuse": "Existing T11 native library is reused by exact SHA; no compiler invocation. Historical compilation/build costs are not erased or credited to a qualified build",
+    "unpriced_as_operators": "data-generation RNG, allocation/copies, hashing, I/O and serialization remain in actual CPU/wall; mathematical inventories are not hardware FLOPs/energy"
+  },
+  "data_profile": {
+    "background_range": [
+      0.0,
+      0.04
+    ],
+    "foreground_range": [
+      0.75,
+      1.0
+    ],
+    "instructions_per_source": 8,
+    "noise_range": [
+      0.03,
+      0.12
+    ],
+    "schema": "hepta.joint-generation.independent-data.v1",
+    "seeds": {
+      "test": 130303,
+      "train": 130101,
+      "validation": 130202
+    },
+    "sources_per_class": {
+      "test": 6,
+      "train": 16,
+      "validation": 6
+    },
+    "variants": 2,
+    "vertical_shifts": [
+      -1,
+      0,
+      1
+    ]
+  },
+  "declared_unit_cap": 2000000000,
+  "diagnostic_id": "efficient-r2-decision-diagnostic-q1",
+  "expected_fit_count": 24,
+  "feature_dim": 42,
+  "fold_salt": "hepta-t11-decision-regret-q1",
+  "folds": 4,
+  "limitations": [
+    "Critic OOF only: fixed content encoders saw all TRAIN physical sources",
+    "The fixed T11 checkpoints were previously selected using validation; no new validation statistics are used for this diagnostic or method selection",
+    "No held-out or content-generalization estimate; r2 formal split remains sealed",
+    "Classification scores cannot silently replace raw-gain units or the production CPU-price law",
+    "No production head/model/plan/threshold changes and no qualification claim; promising evidence can only motivate a separately reviewed, costed candidate"
+  ],
+  "methods": [
+    "mse42",
+    "weighted_binary42"
+  ],
+  "metrics": {
+    "analytic_references": [
+      "always_full",
+      "always_low",
+      "label_known_TRAIN_oracle"
+    ],
+    "concentration": "top1 and top5 physical-source shares of false-stop lost net and raw utility; all sources retained; no outlier removal",
+    "other": [
+      "false-stop row and physical-source counts",
+      "false-stop lost positive net margin",
+      "false-stop lost raw utility",
+      "continue fraction",
+      "chosen raw utility",
+      "raw routing gain versus always-full"
+    ],
+    "primary": "physical-source-equal mean abs(delta-TRAIN_price)*1[action differs from delta>TRAIN_price]"
+  },
+  "model_seeds": [
+    11,
+    23,
+    47
+  ],
+  "models": [
+    {
+      "decision_price": 0.00294876742283356,
+      "learning_rate": 0.01,
+      "model_digest": "a710a356825664824bace9aaccc3467ab76214ac4dc3888218e23a62bb791f38",
+      "model_file": "ndu_control-11-0.01.npz",
+      "model_sha256": "e52eec96a9c8a0f0c7584a3b5f1ceb51296aefecb5f35f2c1fd17985d2d3e734",
+      "name": "ndu_control-11-0.01",
+      "seed": 11,
+      "updates": 488
+    },
+    {
+      "decision_price": 0.0,
+      "learning_rate": 0.01,
+      "model_digest": "0143471f2cdc19655f9743e165d931da7556f526d742f90f28607d10196777df",
+      "model_file": "ndu_control-23-0.01.npz",
+      "model_sha256": "15022326fd66116b31f5601fbeda3c143079672369ab3ca2bec4646a873b09b7",
+      "name": "ndu_control-23-0.01",
+      "seed": 23,
+      "updates": 488
+    },
+    {
+      "decision_price": 0.00589753484566712,
+      "learning_rate": 0.01,
+      "model_digest": "bb4c4900a4f58fb9ce1c0c70cbe60e25bf4fc70d733bc0f14955bbfd24a3d7df",
+      "model_file": "ndu_control-47-0.01.npz",
+      "model_sha256": "1e15a7d787cb0c0d386a3dcb1dd8f0c4850879da433b0e3edb54172db98f401a",
+      "name": "ndu_control-47-0.01",
+      "seed": 47,
+      "updates": 488
+    }
+  ],
+  "mse42": {
+    "normalizer": "fit-fold population mean/std, scale floor .05",
+    "objective": "ordinary unweighted raw-gain MSE plus .001 ridge; unpenalized intercept",
+    "prediction": "clip to fit-fold raw-gain support; continue when prediction > fixed per-seed TRAIN decision_price"
+  },
+  "native_library": "build/libjoint.so",
+  "new_evidence_and_nonrepeat": {
+    "excluded_repeats": "No 31-vs-42 representation comparison, no third classifier, no lambda/threshold/feature search, no content-model training or comparison of historical best results",
+    "new_fixed_state": "T11 three selected NC checkpoints each have 488 updates at fixed LR .01 and their existing TRAIN-derived decision prices; these bytes and prices differ from the earlier T5 probe",
+    "new_question": "Within the already adopted 42-dimensional hidden/instruction representation, does unweighted raw-gain MSE make a small number of large-regret stopping decisions, and does the fixed regret-weighted binary objective change those decisions?",
+    "prior_t5_weighted_classifier": "31 probability-derived p/q features; it always continued; retained without reinterpretation"
+  },
+  "one_shot": "Directory must contain only this protocol before execute; exclusive START precedes TRAIN construction; completed or failed receipt prevents any repeat; never invoke evaluation or dataset(test)",
+  "protocol_preparation_commit": "a7db854f2d51e11ee6f1e1d99f93ff2fd0d400ce",
+  "qualification": false,
+  "regularization": 0.001,
+  "schema": "hepta.train-decision-protocol.v1",
+  "source_commit": "d45f99d572f13668e79d93b3a7158efa39c597c8",
+  "source_folds": "Within each of 12 TRAIN source classes, SHA(salt+NUL+source_id) order cycles across four folds; all instructions/variants of one physical source stay together; expected 48 physical sources and 768 rows per hold fold",
+  "source_run": "runs/codex-cloud-efficient-r2-t11",
+  "sources": {
+    "control.py": "1b79169db91317cf80f8cd29793ea8ac4a08dd2088e05095543c139181209c4b",
+    "data.py": "2e7401afac84deec2149fad89fe3a2b461046b6cd667408070c7da9ec130e0a3",
+    "independent/accounting.py": "3deccbaee86f5142391ddd1472522e331055935d4f17c458eb050c177650509b",
+    "independent/data_v2.py": "8f25960bf6ab43e461f7866a41c0f33742d04ba70cb62cd656b3bad478db2764",
+    "independent/diagnose_decisions.py": "4a4f23f608b21dbf2a76b6fe339b62b030668e64c8b6f5663bf1a2148b379f1a",
+    "independent/gain_head.py": "87392b5477c7ff13eb473932a6752219d53022bee6ff4c37dd263ea7bb094d12",
+    "independent/inference.py": "68438497601e2f26bd615da646c167933187a0410a557f83218025dd231e9a3a",
+    "independent/learning.py": "d3073d3fb652addde680d8aa569f32c898d782b35135e187e99fdd321a453941",
+    "independent/native.c": "0d2be36cc6d9dbf3f22efeb7ff973f5ae7b049a74fb60a676db9c0b68d6ccc62",
+    "independent/native.py": "b9919cec02efeca9383a58182bc4273c4506b23a0adddf360a954b3d6c7e2f42",
+    "model.py": "b1892fb8568336034cd52f7e280a6dbbad5b5cc48c072edf2455815e4c817291",
+    "utility.py": "bbfcbad5557107e3d9be587f55cd91889e2c1b0d6c3d87d07ec329ff54251037"
+  },
+  "train_manifest": {
+    "group_count": 192,
+    "groups_sha256": "074e4da7f6049bda14d1536d5bdbf5a2a67124f544f416be379f243b0baf4197",
+    "inputs_sha256": "3863542c447c6b5f898f9ac14d7f9e76afb5f602ddb9798f65f20cba39cbff68",
+    "profile_sha256": "ed8d6d855015774a2b31176a3179722121017eb14dc4d53b1d95ef82f0219c95",
+    "rows": 3072,
+    "schema": "hepta.joint-generation.independent-data.v1",
+    "source_count": 192,
+    "source_ids_sha256": "871610869b1481f326c77ac534b6368e3ccd60b99066e7c5ed7e21b2a77373b0",
+    "sources_sha256": "c9272aed0e6e850b74fb244d8e4fbab7193e7c940d66fa159bad86004ecc1b95",
+    "split": "train"
+  },
+  "weighted_binary42": {
+    "label": "y = 1[actual full-minus-low decoded raw utility > fixed per-seed TRAIN decision_price]",
+    "normalizer": "same fit-fold-only unweighted population mean/std and .05 scale floor; weighted centering removes the unpenalized intercept",
+    "objective": "sum(w*(y-b-z*beta)^2)/sum(w) + .001*||beta||^2; unpenalized weighted intercept",
+    "prediction": "dimensionless score clipped to [0,1], continue at fixed score > .5; not a raw-gain estimate",
+    "weight": "abs(actual full-minus-low decoded raw utility - fixed per-seed TRAIN decision_price); fit rows only; zero total weight fails explicitly"
+  },
+  "worker_cpu_cap_seconds": 30.0
+}
