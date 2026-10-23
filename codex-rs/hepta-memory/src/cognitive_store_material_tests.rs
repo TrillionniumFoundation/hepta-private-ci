@@ -1,5 +1,27 @@
 use super::*;
 
+#[test]
+fn active_pointer_fifo_is_rejected_without_waiting_for_a_writer() {
+    use std::os::unix::ffi::OsStrExt;
+    let temp = TempDir::new().unwrap();
+    let pointer = temp
+        .path()
+        .join(super::super::super::COGNITIVE_ACTIVE_DB_POINTER);
+    let name = std::ffi::CString::new(pointer.as_os_str().as_bytes()).unwrap();
+    // SAFETY: name is a live NUL-terminated path and mkfifo retains no pointer.
+    assert_eq!(unsafe { libc::mkfifo(name.as_ptr(), 0o600) }, 0);
+    let root = temp.path().to_path_buf();
+    let (sender, receiver) = std::sync::mpsc::channel();
+    let worker = std::thread::spawn(move || {
+        sender.send(resolve_active_database_path(&root)).unwrap();
+    });
+    let result = receiver
+        .recv_timeout(std::time::Duration::from_secs(1))
+        .expect("active pointer open blocked on a FIFO");
+    worker.join().unwrap();
+    assert!(result.is_err());
+}
+
 #[tokio::test]
 async fn private_material_rejects_unregistered_schema_before_check_expressions() {
     let temp = TempDir::new().unwrap();

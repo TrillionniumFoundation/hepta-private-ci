@@ -26,9 +26,10 @@ impl RootCognitiveMaterialRegistration {
     ) -> Result<Self, CognitiveRecoveryError> {
         #[cfg(unix)]
         {
-            if registered_uid == 0 {
+            // SAFETY: geteuid has no preconditions or pointer arguments.
+            if unsafe { libc::geteuid() } != 0 || registered_uid == 0 {
                 return Err(CognitiveRecoveryError::AccessDenied(
-                    "registered owner must be non-Root".into(),
+                    "Root must register a non-Root owner".into(),
                 ));
             }
             let root = layout.cognitive_root();
