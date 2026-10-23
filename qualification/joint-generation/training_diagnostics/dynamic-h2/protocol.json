@@ -127,6 +127,15 @@
     "split": "train"
   },
   "diagnostic_id": "dynamic-train-headroom-h2",
+  "failure_accounting": {
+    "known_settled_units": "lower bound on total declared charged units if a partial private measure ledger cannot be returned",
+    "reporting": "set accounting_incomplete=true on missing partial measure; retain original failure, known lower bound, unsettled quote/scope and missing information; if no valid finite upper bound is recoverable, state this explicitly; never claim a complete ledger or successful cap verification",
+    "terminal": "any such failure stops H2 and consumes START without retry",
+    "unsettled_quote_units": "upper bound on additional unsettled units from its scoped preflight quote, not executed/settled work",
+    "when_partial_measure_unavailable": {
+      "accounting_incomplete": true
+    }
+  },
   "failure_policy": "exclusive fixed START before reconstruction; any exception, cap breach, mismatch or interrupted/partial run is terminal, persist original error/partial costs, no retry or new output alias",
   "model_seeds": [
     11,
@@ -191,6 +200,7 @@
   },
   "output": "runs/codex-cloud-dynamic-train-headroom-h2",
   "output_start_copy": "runs/codex-cloud-dynamic-train-headroom-h2/START.json",
+  "pre_START_revision": "clarifies retained evidence and failure-accounting scope after the preserved committed v1 freeze candidate; no sample, cost, budget or claim change; no execution authorized",
   "q1": {
     "diagnostic_path": "runs/codex-cloud-efficient-r2-decision-diagnostic-q1/diagnostic.json",
     "diagnostic_sha256": "2e5c518b0190ae97ce887fd20e5e36fb07f2d9562cde1fcbd8d01feb137bfb5d",
@@ -217,6 +227,20 @@
     "batch_size": 64,
     "calls": 36,
     "output_codec_profile": "rowwise-png-v1",
+    "output_retention": {
+      "all_110592_output_payloads_retained": false,
+      "complete_RNG_trajectories_retained": false,
+      "cross_codec_equivalence_goal": false,
+      "full_row_evidence": [
+        "work",
+        "cpu",
+        "output_bytes",
+        "batch",
+        "preparation"
+      ],
+      "sampled_output": "first actual sampled PNG/JSON per completed call only",
+      "timing_scope": "retain original batch/preparation allocation scope; not independent per-row timing measurements"
+    },
     "output_rows": 110592,
     "paired_sampling": "same sample seed for all four paths within each seed/repeat",
     "path_order": "left rotate base paths by (repeat + seed_index) modulo 4; seed_index follows model_seeds",
@@ -228,7 +252,7 @@
     ],
     "per_call_preparation": "fresh complete generator/controller setup; record and charge preparation then all actual sampled caption/PNG/hash/base64/JSON/output-ledger service; no output/codec cache or warmup",
     "repeats": 3,
-    "retention": "retain all three raw observations, negative increments, outliers and exact order; no timing CI or best-of selection",
+    "retention": "retain all three raw observations, negative increments, outliers and exact order; each completed call retains only its first actual PNG/JSON sampled_output plus all 3072-row work/cpu/output_bytes vectors, batch/preparation vectors and original receipts and sample seed; no timing CI or best-of selection",
     "rows_per_call": 3072,
     "sample_seed_formula": "seed + 1009 * repeat"
   },

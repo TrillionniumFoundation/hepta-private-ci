@@ -1,6 +1,5 @@
 """Opaque archive and one-shot failure fixtures; no real data, model or timing."""
 
-import copy
 import hashlib
 import importlib.util
 import io
@@ -77,6 +76,23 @@ class BoundaryTests(unittest.TestCase):
             protocol["cost"]["historical_NC_build_cpu_seconds"] = 8.1
             with patch.object(w, "ROOT", root), self.assertRaisesRegex(ValueError, "build"):
                 w.safe_restore(protocol, out)
+
+    def test_unsettled_work_is_interval_not_a_fabricated_complete_charge(self):
+        from independent.accounting import WorkLedger
+        ledger = WorkLedger("handmade", total_cap=1000)
+        ledger.record("known", units=17)
+        attempts = [{"accounting_status": "known_actual", "actual_units": 12,
+                     "reserved_operator_units": 99},
+                    {"accounting_status": "unsettled", "reserved_operator_units": 80}]
+        result = w.accounting_summary(ledger, attempts)
+        self.assertFalse(result["accounting_complete"])
+        self.assertEqual(result["known_consumed_units"], 17)
+        self.assertEqual(result["possible_consumed_units_interval"],
+                         {"lower_inclusive": 17, "upper_inclusive": 97})
+        self.assertEqual(ledger.consumed_units, 17)
+        result = w.accounting_summary(ledger, attempts[:1])
+        self.assertTrue(result["accounting_complete"])
+        self.assertEqual(result["unsettled_reserved_operator_units_upper_bound"], 0)
 
     def test_mkdir_failure_consumes_stage_start_and_preserves_original_fault(self):
         with tempfile.TemporaryDirectory() as name:

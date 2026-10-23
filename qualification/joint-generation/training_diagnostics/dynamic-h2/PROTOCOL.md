@@ -98,6 +98,16 @@ observations, including negative increments and outliers. No fastest sample,
 trimmed repeat, alternative order or repeated timing until favorable is allowed.
 Timing is descriptive; no service CI or significance claim is computed.
 
+For each completed call, retain only its **first actual PNG/JSON** in
+`sampled_output`, together with all 3072 rows' work/CPU/output-byte vectors,
+batch/preparation vectors and original receipts, and the sample seed.
+Batch-shared CPU/preparation allocations
+keep their original scope; they are not independent per-row timing samples.
+The other sampled outputs are actually produced and costed, but **not all
+110592 PNG/JSON payloads or complete RNG trajectories are retained**. Do not
+claim full output-byte retention or cross-codec equivalence: H2 has no such
+goal, and does not inherit D1's full PNG comparison obligations.
+
 ## Fixed cost equations and conditional assumptions
 
 Keep R=**73435.296875 ns**, price=**0.02**, H=**100000** requests per selected
@@ -153,8 +163,9 @@ work and persistence. Retain launcher-own CPU separately, without counting
 waited-child CPU twice, and include its overhead in total R&D cap review.
 Every executed mathematical kernel is admitted/charged; RNG, hashing,
 allocation, PNG/JSON and I/O remain actual CPU even outside declared arithmetic.
-Store actual output evidence in bounded compressed artifacts if needed;
-administrative compression is paid R&D, not cached runtime execution.
+Store the specified first-output evidence and complete returned cost vectors
+within the bound. Administrative compression is paid R&D, not cached runtime
+execution; it does not imply retention of every generated output payload.
 
 The fixed experiment-wide exclusive latch is
 `training_diagnostics/dynamic-h2/START.json`; retain an identical copy at fixed
@@ -167,8 +178,21 @@ partial costs and available artifacts, and **do not rerun**. No automatic retry
 or new output alias is allowed. Final persistence must preserve failure rather
 than conceal a cap breach. Check retained source/artifact identities unchanged.
 
+If a measure fails before returning its partial private ledger, report known
+settled declared units as a **lower bound**, its unsettled preflight quote as an
+**upper bound on the additional units**, and `accounting_incomplete=true`.
+Retain the quote's scope and the original failure; reserved upper-bound work
+must not be labeled executed/settled. An unavailable partial measure does not
+justify claiming a complete ledger, zero remaining work or a successful bound
+check. If a valid finite unsettled bound is unavailable, state that limitation
+explicitly. Failure still consumes H2 and stops without a retry.
+
 Keep the reconstructed input artifact, row IDs/hashes, decoded utility arrays,
-all 36 raw calls and output/cost evidence, execution order/sample seeds, runtime
-environment, exact source/protocol/freeze identities and full process/child
-receipts. Report what failed or remained unrun. H1, D1, all r2/CORE failures and
-their test states remain unchanged; no merge, deployment or permissions change.
+all returned raw call/cost records, one `sampled_output` per completed call,
+execution order/sample seeds, runtime environment, exact source/protocol/freeze
+identities and full process/child receipts. Report what failed or remained unrun
+and the stated evidence/accounting limits. H1, D1, all r2/CORE failures and their
+test states remain unchanged; no merge, deployment or permissions change.
+
+This pre-START clarification follows the retained committed v1 freeze candidate.
+It changes no sample, cost equation, budget or claim, and authorizes no execution.

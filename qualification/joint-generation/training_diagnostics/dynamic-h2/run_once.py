@@ -194,6 +194,17 @@ def call_order():
                 yield repeat, seed, path, seed + 1009 * repeat
 
 
+def accounting_summary(ledger, attempted_calls):
+    """Keep unsettled service reservations separate from known actual charges."""
+    known = 0 if ledger is None else ledger.consumed_units
+    unsettled = [row for row in attempted_calls if row["accounting_status"] != "known_actual"]
+    upper = sum(row["reserved_operator_units"] for row in unsettled)
+    return {"accounting_complete": not unsettled, "known_consumed_units": known,
+            "unsettled_reserved_operator_units_upper_bound": upper,
+            "possible_consumed_units_interval": {"lower_inclusive": known, "upper_inclusive": known + upper},
+            "unsettled_accounting_scope": "Known charges <= actual total including interrupted services <= known charges plus unsettled prescribed-path reservations. Reservations are upper bounds only, never actual charges or budget credits; failure is terminal."}
+
+
 def collect(freeze_path):
     frozen, protocol = source_guard(freeze_path)
     if OUTPUT.exists():
@@ -334,7 +345,9 @@ def collect(freeze_path):
                 if quote.consumed_units > ledger.remaining_units:
                     raise BudgetExceeded("H2 complete service cannot fit remaining actual-work cap")
                 attempted = {"repeat": repeat, "seed": seed, "path": path, "sampling_seed": sample_seed,
-                             "status": "attempted; measurement outcome unknown"}
+                             "status": "attempted; measurement outcome unknown",
+                             "reserved_operator_units": quote.consumed_units,
+                             "known_units_before": ledger.consumed_units, "accounting_status": "unsettled"}
                 result["attempted_calls"].append(attempted)
                 report = measure(model, head, mode, train, runtime,
                     protocol["cost"]["reference_full_cpu_ns"], seed=sample_seed, observe=False)
@@ -351,6 +364,7 @@ def collect(freeze_path):
                     totals[key] = totals.get(key, 0) + value
                 totals.pop("consumed_units", None)
                 ledger.record("service_collection", units=actual, **totals, h2_service_calls=1)
+                attempted.update(accounting_status="known_actual", actual_units=actual)
                 expected_forwards = 6144 if path == "NC-go" else 3072
                 if actual != quote.consumed_units or report["model_forwards"] != expected_forwards or report["budget_violations"]:
                     raise ValueError("forced service law or complete actual work receipt changed")
@@ -393,7 +407,8 @@ def collect(freeze_path):
                 result.update(outcome="failed", error_type=type(protection).__name__, error=str(protection),
                               traceback=traceback.format_exc())
         try:
-            result.update(ledger=None if ledger is None else ledger.snapshot(), worker_cpu_ns=cpu()-CPU_START,
+            result.update(**accounting_summary(ledger, result["attempted_calls"]),
+                ledger=None if ledger is None else ledger.snapshot(), worker_cpu_ns=cpu()-CPU_START,
                 worker_wall_ns=time.perf_counter_ns()-WALL_START,
                 cost_boundary="Entire R&D worker from before dependency imports to this receipt; actual inference, observers, data, hashing and I/O included. Final receipt/manifest serialization is additionally retained by the outer complete-process launcher, never a budget credit; no qualification or hardware-FLOP claim.")
             if OUTPUT.is_dir():
