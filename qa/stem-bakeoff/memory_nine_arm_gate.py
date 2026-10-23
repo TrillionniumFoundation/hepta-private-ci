@@ -368,6 +368,11 @@ def audit(plan_path, cohort_path, prediction_path, judgment_path=None):
                                          for v in checked) if checked else None),
                 "answer_correct": (statistics.fmean(j["correct"] for j in judged)
                                    if len(judged) == len(records) else None),
+                "grounded_answer_correct": (statistics.fmean(
+                    bool(j["correct"] and j["supported"]
+                         and observations[(j["query_id"], arm)]["accepted"]
+                         and observations[(j["query_id"], arm)]["support_all"] == 1)
+                    for j in judged) if len(judged) == len(records) else None),
                 "citation_supported": (statistics.fmean(j["supported"] for j in judged)
                                        if len(judged) == len(records) else None),
                 "answer_coverage": statistics.fmean(v["accepted"] for v in records),
@@ -382,8 +387,11 @@ def audit(plan_path, cohort_path, prediction_path, judgment_path=None):
     for (qid, arm), value in observations.items():
         split = value["split"]
         scored[(split, qid)][arm] = {
-            **value, "correct": judgments[(qid, arm)]["correct"]
-            if (qid, arm) in judgments else None}
+            **value, "correct": (
+                bool(judgments[(qid, arm)]["correct"]
+                     and judgments[(qid, arm)]["supported"]
+                     and value["accepted"] and value["support_all"] == 1)
+                if (qid, arm) in judgments else None)}
     adequate = True
     for split in PRIMARY:
         members = {q["group"] for q in questions.values() if q["split"] == split}
@@ -419,6 +427,18 @@ def audit(plan_path, cohort_path, prediction_path, judgment_path=None):
     # With no original negative-control data and signed verification this is not a GO.
     for control in POLICY["required_negative_controls"]:
         result["blockers"].append("unverified causal control: " + control)
+    for negative_split in ("adversarial", "deletion"):
+        unsafe = sum(v["accepted"] for v in observations.values()
+                     if v["split"] == negative_split)
+        if unsafe:
+            result["blockers"].append(
+                negative_split + " has " + str(unsafe) + " unsafe accepted answers")
+    unsupported = sum(1 for key, v in observations.items()
+                      if v["accepted"] and key in judgments
+                      and not judgments[key]["supported"])
+    if unsupported:
+        result["blockers"].append(
+            str(unsupported) + " accepted answers lack independent support")
     if not any(q["split"] == "adversarial" for q in questions.values()):
         result["blockers"].append("no adversarial abstention cohort")
     if not any(q["split"] == "deletion" for q in questions.values()):
