@@ -738,22 +738,47 @@ async fn bounded_pages_recover_exact_owner_bytes_without_caller_memory_or_send_r
         .unwrap();
     assert_eq!(first.requests.len(), 16);
     let second = sender
-        .retained_page(ObjectiveSenderRetainedPosition::After(first.next.unwrap()))
+        .retained_page_after_token(first.next.unwrap().navigation_token())
         .await
         .unwrap();
     assert_eq!(second.requests.len(), 1);
     assert!(second.next.is_none());
+    assert!(sender.retained_page_after_token("../owner").await.is_err());
+    assert!(
+        sender
+            .retained_page_after_token(&"A".repeat(64))
+            .await
+            .is_err()
+    );
+    assert!(
+        sender
+            .retained_request_for_run("not-retained")
+            .await
+            .unwrap()
+            .is_none()
+    );
+    let anchor = fixture.writer.store.recovery_anchor().await.unwrap();
     let mut actual = std::collections::BTreeMap::new();
     for retained in first.requests.into_iter().chain(second.requests) {
         actual.insert(
             retained.identity.original_sha256.as_str().to_string(),
             retained.exact_original().to_vec(),
         );
-        let recovered = sender.recover_pending(retained).await.unwrap();
+        let looked_up = sender
+            .retained_request_for_run(&retained.identity.run_id)
+            .await
+            .unwrap()
+            .unwrap();
+        assert_eq!(looked_up, retained);
+        let recovered = sender.recover_pending(looked_up).await.unwrap();
         assert!(matches!(
             sender.mark_send_started(&recovered).await,
             Err(ObjectiveSenderError::SendPermissionUnavailable)
         ));
     }
     assert_eq!(actual, expected);
+    assert_eq!(
+        fixture.writer.store.recovery_anchor().await.unwrap(),
+        anchor
+    );
 }
