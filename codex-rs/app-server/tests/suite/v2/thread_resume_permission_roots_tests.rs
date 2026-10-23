@@ -6,6 +6,7 @@ use anyhow::Result;
 use app_test_support::TestAppServer;
 use app_test_support::create_mock_responses_server_repeating_assistant;
 use codex_app_server_protocol::ActivePermissionProfile;
+use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::SandboxPolicy;
 use codex_app_server_protocol::ThreadHistoryMode;
 use codex_app_server_protocol::ThreadResumeParams;
@@ -184,5 +185,130 @@ async fn changed_named_policy_preserves_explicit_typed_and_raw_roots() -> Result
         assert!(matches!(response.sandbox, SandboxPolicy::ReadOnly { .. }));
         timeout(DEFAULT_READ_TIMEOUT, app.shutdown_gracefully()).await??;
     }
+    Ok(())
+}
+
+#[tokio::test]
+async fn conflicting_typed_and_raw_roots_are_rejected() -> Result<()> {
+    let server = create_mock_responses_server_repeating_assistant("Done").await;
+    let home = TempDir::new()?;
+    let old_workspace = TempDir::new()?;
+    let requested_workspace = TempDir::new()?;
+    let conflicting_workspace = TempDir::new()?;
+    let old_root =
+        AbsolutePathBuf::from_absolute_path(normalized_existing_path(old_workspace.path())?)?;
+    let requested_root =
+        AbsolutePathBuf::from_absolute_path(normalized_existing_path(requested_workspace.path())?)?;
+    let conflicting_root =
+        AbsolutePathBuf::from_absolute_path(normalized_existing_path(conflicting_workspace.path())?)?;
+    let thread_id = persist_named_profile_roots(
+        &server.uri(),
+        home.path(),
+        ThreadHistoryMode::Paginated,
+        &old_root,
+    )
+    .await?;
+    write_dev_permission_config(&server.uri(), home.path(), ":read-only")?;
+    let mut app = TestAppServer::builder()
+        .with_codex_home(home.path())
+        .without_managed_config()
+        .build_initialized()
+        .await?;
+    let request = app
+        .send_thread_resume_request(ThreadResumeParams {
+            thread_id: thread_id.clone(),
+            runtime_workspace_roots: Some(vec![requested_root.clone()]),
+            config: Some(HashMap::from([(
+                "workspace_roots".to_string(),
+                json!([conflicting_root]),
+            )])),
+            ..Default::default()
+        })
+        .await?;
+    let error = timeout(
+        DEFAULT_READ_TIMEOUT,
+        app.read_stream_until_error_message(RequestId::Integer(request)),
+    )
+    .await??;
+    assert_eq!(error.error.code, -32602);
+    assert!(
+        error
+            .error
+            .message
+            .contains("conflicting typed and raw runtime workspace root overrides")
+    );
+
+    // Rejection must leave the thread available and admit agreeing overrides.
+    let request = app
+        .send_thread_resume_request(ThreadResumeParams {
+            thread_id,
+            runtime_workspace_roots: Some(vec![requested_root.clone()]),
+            config: Some(HashMap::from([(
+                "workspace_roots".to_string(),
+                json!([requested_root]),
+            )])),
+            ..Default::default()
+        })
+        .await?;
+    let response: ThreadResumeResponse =
+        timeout(DEFAULT_READ_TIMEOUT, app.read_response(request)).await??;
+    assert_eq!(response.runtime_workspace_roots, vec![requested_root]);
+    assert!(matches!(response.sandbox, SandboxPolicy::ReadOnly { .. }));
+    timeout(DEFAULT_READ_TIMEOUT, app.shutdown_gracefully()).await??;
+    Ok(())
+}
+
+#[tokio::test]
+async fn malformed_raw_roots_are_rejected_but_explicit_empty_roots_are_preserved() -> Result<()> {
+    let server = create_mock_responses_server_repeating_assistant("Done").await;
+    let home = TempDir::new()?;
+    let old_workspace = TempDir::new()?;
+    let old_root =
+        AbsolutePathBuf::from_absolute_path(normalized_existing_path(old_workspace.path())?)?;
+    let thread_id = persist_named_profile_roots(
+        &server.uri(),
+        home.path(),
+        ThreadHistoryMode::Paginated,
+        &old_root,
+    )
+    .await?;
+    write_dev_permission_config(&server.uri(), home.path(), ":read-only")?;
+    let mut app = TestAppServer::builder()
+        .with_codex_home(home.path())
+        .without_managed_config()
+        .build_initialized()
+        .await?;
+    let request = app
+        .send_thread_resume_request(ThreadResumeParams {
+            thread_id: thread_id.clone(),
+            config: Some(HashMap::from([(
+                "workspace_roots".to_string(),
+                json!({"unexpected": "map"}),
+            )])),
+            ..Default::default()
+        })
+        .await?;
+    let error = timeout(
+        DEFAULT_READ_TIMEOUT,
+        app.read_stream_until_error_message(RequestId::Integer(request)),
+    )
+    .await??;
+    assert_eq!(error.error.code, -32602);
+    assert!(error.error.message.contains("workspace_roots"));
+    let request = app
+        .send_thread_resume_request(ThreadResumeParams {
+            thread_id,
+            config: Some(HashMap::from([(
+                "workspace_roots".to_string(),
+                json!([]),
+            )])),
+            ..Default::default()
+        })
+        .await?;
+    let response: ThreadResumeResponse =
+        timeout(DEFAULT_READ_TIMEOUT, app.read_response(request)).await??;
+    assert!(response.runtime_workspace_roots.is_empty());
+    assert!(matches!(response.sandbox, SandboxPolicy::ReadOnly { .. }));
+    timeout(DEFAULT_READ_TIMEOUT, app.shutdown_gracefully()).await??;
     Ok(())
 }
