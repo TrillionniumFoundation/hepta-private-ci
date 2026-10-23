@@ -371,3 +371,7 @@ async fn protected_checkpoint_mismatched_dirty_ack_never_opens_commit_permission
 
 #[path = "cognitive_checkpoint_notes_retirement_tests.rs"]
 mod notes_retirement_tests;
+
+#[cfg(unix)]
+#[path = "cognitive_checkpoint_hos2_retirement_tests.rs"]
+mod hos2_retirement_tests;
