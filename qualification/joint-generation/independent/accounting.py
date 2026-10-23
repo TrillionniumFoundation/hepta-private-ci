@@ -139,8 +139,9 @@ class WorkLedger:
             raise BudgetExceeded(f"{self.arm}:{stage} needs {units} units; {self.remaining_units} remain")
         before = self._stages.get(stage, {})
         after = {**before}
+        totals = self.totals
         for key, value in clean.items():
-            _count(self.totals.get(key, 0) + value, "total " + key)
+            _count(totals.get(key, 0) + value, "total " + key)
             after[key] = _count(before.get(key, 0) + value, "accumulated " + key)
         self._stages[stage] = after
 

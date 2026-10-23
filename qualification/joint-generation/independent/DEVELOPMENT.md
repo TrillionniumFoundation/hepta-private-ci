@@ -38,3 +38,25 @@ Only the fixed-rho finite text/image prototype is in experimental scope. Typed
 audio/video envelopes preserve timing and capability boundaries; this backend
 explicitly declines their generation. Synchronous AV, long interactions,
 device measurements and production qualification remain future work.
+
+## Training-only implementation follow-up after t1
+
+The first independent training/validation run exited 2 with effective-reference
+CPU-net delta -0.009623; no independent test was opened. Its complete receipts
+and standalone export/reload evidence were retained in commit `f8b15aea9e`.
+Content updates were real, but this did not pass first-goal readiness.
+
+The next source revision leaves the plan, objective equations, rho, CE weights,
+prices, budgets and benefit gates unchanged. It removes redundant input/policy
+checks from the internally generated training path while keeping public input
+validation, and aggregates a ledger's existing totals once per atomic charge
+rather than once per counter. Every system receives these same optimizations.
+The declared inventory removes the checks that no longer execute.
+
+A hand-random-input no-update microprobe (five repeats of 150 calls per arm,
+alternating old/new order; optimizer deliberately disabled) measured median
+CPU ns/call S 604615→446413, H 748867→508854, A 663407→575294,
+N 791126→693288. Digests/updates were unchanged. This diagnostic excludes the
+optimizer and shows timing variation; it cannot establish whole-build benefit.
+Seven learning tests and 22 combined learning/accounting/freeze tests passed.
+A new immutable source freeze precedes the next actual training/validation run.

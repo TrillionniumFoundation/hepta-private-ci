@@ -10,8 +10,8 @@ import functools
 
 import numpy as np
 
-from independent.accounting import BudgetExceeded
 from data import outcome_table
+from model import softmax
 
 
 ALIASES = {"S": "S", "H": "H", "A": "A", "N": "N",
@@ -87,8 +87,10 @@ def _step_work(dimensions, arm, n):
     optimizer = {"scalar_ops": 13 * elements + 4 * arrays,
         "div_ops": 3 * elements + 1, "sqrt_ops": elements + 1,
         "pow_ops": 2 * arrays, "compare_ops": 2}
-    # Input/gradient validation and fixed-decoder equality checks are charged.
-    checks = {"compare_ops": 2 * n * d + 2 * elements}
+    # One public input scan, label bounds, the optimizer's finite-gradient scan,
+    # and fixed-decoder equality checks. Internally produced softmax outputs do
+    # not undergo a second public policy-validation pass during an update.
+    checks = {"compare_ops": n * d + 2 * n + elements}
     if arm in ("A", "N"):
         checks["compare_ops"] += k * pixels + pixels
     return _sum_work(forward, backward, optimizer, objective_work(arm, n, k), checks)
@@ -119,9 +121,8 @@ def setup_work(dimensions, arm):
 def _charge(ledger, stage, kernel, work, counts):
     if ledger is None:
         return
-    units = ledger.estimate_kernel(**work)
-    if units > ledger.remaining_units:
-        raise BudgetExceeded(f"{ledger.arm}:{stage} whole {kernel} needs {units} units")
+    # This single complete-kernel admission is already atomic in WorkLedger.
+    # A duplicate estimate/remaining-budget pass adds no protection.
     ledger.charge_kernel(stage, kernel, **work, counts=counts)
 
 
@@ -195,7 +196,10 @@ class CachedObjective:
         return self.shift[y] - np.log(normalizer) / self.rho
 
     def policy_gradients(self, p, q, labels):
-        p, q, y = self._inputs(p, q, labels)
+        return self._policy_gradients_checked(*self._inputs(p, q, labels))
+
+    def _policy_gradients_checked(self, p, q, y):
+        """Internal math for already validated labels and generated policies."""
         n, rows = len(p), np.arange(len(p))
         loss = -self.ce_weight * np.mean(np.log(np.maximum(p[rows, y], 1e-300))
                                       + np.log(np.maximum(q[rows, y], 1e-300))) / 2
@@ -244,9 +248,14 @@ class CachedObjective:
             counts.update(joint_utility_calls=1, joint_utility_cells=len(x) * self.dimensions[1]**2)
             counts[("additive" if self.arm == "A" else "entropic") + "_gradient_calls"] = 1
         _charge(ledger, stage, "efficient_" + self.arm,
-                step_work(self.dimensions, self.arm, len(x)), counts)
-        x, hidden, p, q = model._forward(x)
-        loss, dt, di = self.policy_gradients(p, q, y)
+                _step_work(self.dimensions, self.arm, len(x)), counts)
+        # x was checked above. These are the unchanged model equations, using
+        # the same shared softmax implementation without rechecking x or the
+        # categorical distributions immediately produced from it.
+        hidden = np.tanh(x @ model.params["encoder"] + model.params["bias"])
+        p = softmax(hidden @ model.params["text"] + model.params["text_bias"])
+        q = softmax(hidden @ model.params["image"] + model.params["image_bias"])
+        loss, dt, di = self._policy_gradients_checked(p, q, y)
         dh = (dt @ model.params["text"].T + di @ model.params["image"].T) * (1 - hidden * hidden)
         gradients = {"encoder": x.T @ dh, "bias": dh.sum(0),
             "text": hidden.T @ dt, "text_bias": dt.sum(0),

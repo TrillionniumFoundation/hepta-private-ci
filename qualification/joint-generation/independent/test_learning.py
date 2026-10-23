@@ -37,9 +37,11 @@ class EfficientLearningTests(unittest.TestCase):
             p, q = expected.forward(self.x)
             loss, dt, di = objective.policy_gradients(p, q, self.y)
             expected.train_step(self.x, dt, di, 0.003)
-            with patch.object(actual, "_forward", wraps=actual._forward) as forward:
+            with (patch.object(actual, "_input", wraps=actual._input) as inputs,
+                  patch.object(actual, "_forward", side_effect=AssertionError("duplicate input check")),
+                  patch.object(objective, "_inputs", side_effect=AssertionError("rechecked generated policy"))):
                 self.assertAlmostEqual(objective.step(actual, self.x, self.y, 0.003), loss)
-                self.assertEqual(forward.call_count, 1)
+                self.assertEqual(inputs.call_count, 1)
             for key in actual.params:
                 np.testing.assert_array_equal(actual.params[key], expected.params[key])
             for key in ("decoder", "decoder_bias"):
@@ -111,7 +113,25 @@ class EfficientLearningTests(unittest.TestCase):
         for labels in (self.y.astype(float), np.full(7, 12), np.zeros(6, dtype=int)):
             with self.assertRaises(ValueError):
                 objective.step(self.model, self.x, labels, 0.003, ledger=ledger)
+        for inputs in (self.x[:, :-1], np.empty((0, 19)), np.full_like(self.x, float("nan"))):
+            with self.assertRaises(ValueError):
+                objective.step(self.model, inputs, self.y, 0.003, ledger=ledger)
         self.assertEqual(ledger.snapshot(), before)
+
+    def test_public_policy_and_value_interfaces_keep_strict_validation(self):
+        objective = CachedObjective("N", self.model)
+        p, q = self.model.forward(self.x)
+        invalid = []
+        for value in (float("nan"), -0.01):
+            changed = p.copy()
+            changed[0, 0] = value
+            invalid.append((changed, q, self.y))
+        invalid.extend(((p * 0.5, q, self.y), (p, q[:, :-1], self.y),
+                        (p, q, self.y.astype(float)), (p, q, np.full(7, 12))))
+        for method in (objective.policy_gradients, objective.utility_values):
+            for args in invalid:
+                with self.assertRaises(ValueError):
+                    method(*args)
 
 
 if __name__ == "__main__":

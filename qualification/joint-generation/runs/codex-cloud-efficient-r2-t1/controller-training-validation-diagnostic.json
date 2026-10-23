@@ -1,0 +1,689 @@
+{
+  "diagnostic_cpu_ns": 502858523,
+  "frozen_source_commit": "32d17e85efc2830c05acc0edb50cda6ba16d3785",
+  "readiness": false,
+  "schema": "hepta.r2.training-only-controller-diagnostic.v1",
+  "scope": "Train/validation reconstruction and frozen-model forward diagnostics only; no fitting, policy selection, test construction or qualification. Oracle quantities use labels only for retrospective bounds.",
+  "seeds": {
+    "11": {
+      "critic_work_units": 560,
+      "full_work_units": 15132,
+      "low_work_units": 6252,
+      "model_digest": "a420b3ecd67a281dcc5fc2a462ee7cd0ed26eb964e77a4e5482903f4300a290d",
+      "reference_full_work_units": 19196,
+      "splits": {
+        "train": {
+          "bounds": [
+            -0.7794168242224331,
+            0.9159428972987913
+          ],
+          "continue_fraction": 0.3401692708333333,
+          "controller_minus_full_operator_net": 0.003461534626413639,
+          "controller_minus_full_raw": 0.0001560974585140761,
+          "decision_disagreement_fraction": 0.115234375,
+          "entropic_gain_mean": 0.07728980669449685,
+          "entropic_prediction_bias": 6.691695808580533e-16,
+          "entropic_prediction_correlation": 0.8552115920750757,
+          "entropic_prediction_rmse": 0.10870229971642426,
+          "false_continue_fraction": 0.1123046875,
+          "gain_bins": [
+            {
+              "entropic_mean": -0.0023622402736558482,
+              "predicted_mean": -0.013431361521947741,
+              "predicted_range": [
+                -1000000000.0,
+                0
+              ],
+              "raw_gain_mean": -0.0012623602253295423,
+              "rows": 1052
+            },
+            {
+              "entropic_mean": 0.0006497982344770323,
+              "predicted_mean": 0.009344863780190902,
+              "predicted_range": [
+                0,
+                0.02
+              ],
+              "raw_gain_mean": 0.0008702272456322427,
+              "rows": 975
+            },
+            {
+              "entropic_mean": 0.01811207994209723,
+              "predicted_mean": 0.031031905064436992,
+              "predicted_range": [
+                0.02,
+                0.05
+              ],
+              "raw_gain_mean": 0.016758880689481732,
+              "rows": 333
+            },
+            {
+              "entropic_mean": 0.05724753061295467,
+              "predicted_mean": 0.07117670748644819,
+              "predicted_range": [
+                0.05,
+                0.1
+              ],
+              "raw_gain_mean": 0.04689237121622001,
+              "rows": 173
+            },
+            {
+              "entropic_mean": 0.15306935530096571,
+              "predicted_mean": 0.14569066838473393,
+              "predicted_range": [
+                0.1,
+                0.2
+              ],
+              "raw_gain_mean": 0.12675333504296576,
+              "rows": 141
+            },
+            {
+              "entropic_mean": 0.5069544852778128,
+              "predicted_mean": 0.5006614504448211,
+              "predicted_range": [
+                0.2,
+                1000000000.0
+              ],
+              "raw_gain_mean": 0.43556634576677694,
+              "rows": 398
+            }
+          ],
+          "gain_quantiles": {
+            "entropic": [
+              -0.7794168242224334,
+              -0.003449849252751923,
+              0.0005705541571118244,
+              0.301458808473364,
+              0.9159428972987912
+            ],
+            "predicted": [
+              -0.03727462556474759,
+              -0.019054993161499743,
+              0.009798191603293295,
+              0.32471855658972415,
+              0.8585089009649871
+            ]
+          },
+          "missed_continue_fraction": 0.0029296875,
+          "perfect_entropic_oracle_minus_full_operator_net": 0.00661232048207256,
+          "perfect_entropic_oracle_raw": 0.9843565761683769,
+          "perfect_raw_operator_oracle_minus_full_net": 0.006742013222496512,
+          "predicted_gain_mean": 0.07728980669449753,
+          "raw_controller_mean": 0.9829301729966103,
+          "raw_full_mean": 0.9827740755380964,
+          "raw_gain_mean": 0.06654986391721472,
+          "raw_low_mean": 0.9162242116208817,
+          "rows": 3072,
+          "selected_raw_gain_mean": 0.19609637640788408,
+          "selected_true_gain_mean": 0.22898163603326815,
+          "stopped_raw_gain_mean": -0.00023657197462024753,
+          "stopped_true_gain_mean": -0.0009134304337794011,
+          "true_entropic_continue_fraction": 0.23079427083333334
+        },
+        "validation": {
+          "bounds": [
+            -0.7794168242224331,
+            0.9159428972987913
+          ],
+          "continue_fraction": 0.3914930555555556,
+          "controller_minus_full_operator_net": -0.0009449003890966679,
+          "controller_minus_full_raw": -0.0034411778253681143,
+          "decision_disagreement_fraction": 0.1388888888888889,
+          "entropic_gain_mean": 0.09537372191459524,
+          "entropic_prediction_bias": 0.008651310509974716,
+          "entropic_prediction_correlation": 0.7611529944142,
+          "entropic_prediction_rmse": 0.15715083528166224,
+          "false_continue_fraction": 0.13020833333333334,
+          "gain_bins": [
+            {
+              "entropic_mean": -0.000883789545343945,
+              "predicted_mean": -0.013989913568905672,
+              "predicted_range": [
+                -1000000000.0,
+                0
+              ],
+              "raw_gain_mean": 0.002142102444073176,
+              "rows": 383
+            },
+            {
+              "entropic_mean": 0.0072315573950620885,
+              "predicted_mean": 0.00964301330953445,
+              "predicted_range": [
+                0,
+                0.02
+              ],
+              "raw_gain_mean": 0.009886200058943523,
+              "rows": 318
+            },
+            {
+              "entropic_mean": 0.013965420702239547,
+              "predicted_mean": 0.03107274146862788,
+              "predicted_range": [
+                0.02,
+                0.05
+              ],
+              "raw_gain_mean": 0.015128571473502465,
+              "rows": 112
+            },
+            {
+              "entropic_mean": 0.029966569913316577,
+              "predicted_mean": 0.07189178164909718,
+              "predicted_range": [
+                0.05,
+                0.1
+              ],
+              "raw_gain_mean": 0.031690713900316796,
+              "rows": 70
+            },
+            {
+              "entropic_mean": 0.14108822924763328,
+              "predicted_mean": 0.1433427403887337,
+              "predicted_range": [
+                0.1,
+                0.2
+              ],
+              "raw_gain_mean": 0.13025496954660915,
+              "rows": 61
+            },
+            {
+              "entropic_mean": 0.4598135326594332,
+              "predicted_mean": 0.5041923898746521,
+              "predicted_range": [
+                0.2,
+                1000000000.0
+              ],
+              "raw_gain_mean": 0.404006417555412,
+              "rows": 208
+            }
+          ],
+          "gain_quantiles": {
+            "entropic": [
+              -0.6829454424410342,
+              -0.009691209311404091,
+              0.0001412174580315284,
+              0.49500263699477676,
+              0.9299459079295604
+            ],
+            "predicted": [
+              -0.03719066915253916,
+              -0.01953195293800555,
+              0.011631611473599014,
+              0.4851151127984647,
+              0.845975266240137
+            ]
+          },
+          "missed_continue_fraction": 0.008680555555555556,
+          "perfect_entropic_oracle_minus_full_operator_net": 0.00995241159698898,
+          "perfect_entropic_oracle_raw": 0.9637415150642283,
+          "perfect_raw_operator_oracle_minus_full_net": 0.010072242257624082,
+          "predicted_gain_mean": 0.10402503242456997,
+          "raw_controller_mean": 0.9547601838380232,
+          "raw_full_mean": 0.9582013616633915,
+          "raw_gain_mean": 0.08668044689821822,
+          "raw_low_mean": 0.8715209147651732,
+          "rows": 1152,
+          "selected_raw_gain_mean": 0.21262003984905392,
+          "selected_true_gain_mean": 0.23926692636330538,
+          "stopped_raw_gain_mean": 0.005655116768650595,
+          "stopped_true_gain_mean": 0.0027976374547261243,
+          "true_entropic_continue_fraction": 0.2699652777777778
+        }
+      },
+      "updates": 266
+    },
+    "23": {
+      "critic_work_units": 560,
+      "full_work_units": 15132,
+      "low_work_units": 6252,
+      "model_digest": "a39b1287f48b477f937d93c699ff129ddf5fea6d804576cbf3bc27e431620c66",
+      "reference_full_work_units": 19196,
+      "splits": {
+        "train": {
+          "bounds": [
+            -0.6289647151215225,
+            0.9366335986787806
+          ],
+          "continue_fraction": 0.3636067708333333,
+          "controller_minus_full_operator_net": 0.0025462163719561746,
+          "controller_minus_full_raw": -0.0003897102208235714,
+          "decision_disagreement_fraction": 0.12467447916666667,
+          "entropic_gain_mean": 0.08039564306794005,
+          "entropic_prediction_bias": -4.2789537634616475e-06,
+          "entropic_prediction_correlation": 0.8402364218471252,
+          "entropic_prediction_rmse": 0.11527404266663831,
+          "false_continue_fraction": 0.123046875,
+          "gain_bins": [
+            {
+              "entropic_mean": -0.0009837396250022051,
+              "predicted_mean": -0.0094301802946852,
+              "predicted_range": [
+                -1000000000.0,
+                0
+              ],
+              "raw_gain_mean": 3.643093447651002e-07,
+              "rows": 1068
+            },
+            {
+              "entropic_mean": 0.0007339554807241769,
+              "predicted_mean": 0.00843054739897156,
+              "predicted_range": [
+                0,
+                0.02
+              ],
+              "raw_gain_mean": 0.001349267999988503,
+              "rows": 887
+            },
+            {
+              "entropic_mean": 0.017109500417804645,
+              "predicted_mean": 0.031157431420568784,
+              "predicted_range": [
+                0.02,
+                0.05
+              ],
+              "raw_gain_mean": 0.015500313313312402,
+              "rows": 378
+            },
+            {
+              "entropic_mean": 0.08071636031444936,
+              "predicted_mean": 0.07157772285860135,
+              "predicted_range": [
+                0.05,
+                0.1
+              ],
+              "raw_gain_mean": 0.07152544823483813,
+              "rows": 179
+            },
+            {
+              "entropic_mean": 0.12401523189577293,
+              "predicted_mean": 0.14437470538906932,
+              "predicted_range": [
+                0.1,
+                0.2
+              ],
+              "raw_gain_mean": 0.09464471727005169,
+              "rows": 142
+            },
+            {
+              "entropic_mean": 0.4996393500703242,
+              "predicted_mean": 0.48914994721692345,
+              "predicted_range": [
+                0.2,
+                1000000000.0
+              ],
+              "raw_gain_mean": 0.43413027460715375,
+              "rows": 418
+            }
+          ],
+          "gain_quantiles": {
+            "entropic": [
+              -0.628964715121523,
+              -0.0035785661604653793,
+              0.0007875509014450555,
+              0.33557269537394446,
+              0.936633598678781
+            ],
+            "predicted": [
+              -0.0221115845635452,
+              -0.01277154780717065,
+              0.008461578095936985,
+              0.33764755839742366,
+              0.9366335986787806
+            ]
+          },
+          "missed_continue_fraction": 0.0016276041666666667,
+          "perfect_entropic_oracle_minus_full_operator_net": 0.006082233480238996,
+          "perfect_entropic_oracle_raw": 0.9854438263404662,
+          "perfect_raw_operator_oracle_minus_full_net": 0.006222290832042368,
+          "predicted_gain_mean": 0.08039136411417658,
+          "raw_controller_mean": 0.9838220792949569,
+          "raw_full_mean": 0.9842117895157804,
+          "raw_gain_mean": 0.06991060159602074,
+          "raw_low_mean": 0.9143011879197597,
+          "rows": 3072,
+          "selected_raw_gain_mean": 0.1911980110157616,
+          "selected_true_gain_mean": 0.2214637698413714,
+          "stopped_raw_gain_mean": 0.0006123732983989829,
+          "stopped_true_gain_mean": -0.00020440685836317654,
+          "true_entropic_continue_fraction": 0.2421875
+        },
+        "validation": {
+          "bounds": [
+            -0.6289647151215225,
+            0.9366335986787806
+          ],
+          "continue_fraction": 0.3914930555555556,
+          "controller_minus_full_operator_net": 0.0020942638906505536,
+          "controller_minus_full_raw": -0.00040201354562089216,
+          "decision_disagreement_fraction": 0.1484375,
+          "entropic_gain_mean": 0.09700473060884393,
+          "entropic_prediction_bias": 0.007247185974997048,
+          "entropic_prediction_correlation": 0.8389538006830468,
+          "entropic_prediction_rmse": 0.1321407189028606,
+          "false_continue_fraction": 0.1440972222222222,
+          "gain_bins": [
+            {
+              "entropic_mean": -0.0037111623761422884,
+              "predicted_mean": -0.009022295036786164,
+              "predicted_range": [
+                -1000000000.0,
+                0
+              ],
+              "raw_gain_mean": -0.002289085975758373,
+              "rows": 387
+            },
+            {
+              "entropic_mean": 0.0017564989659670956,
+              "predicted_mean": 0.008885568483993531,
+              "predicted_range": [
+                0,
+                0.02
+              ],
+              "raw_gain_mean": 0.004296165213929166,
+              "rows": 314
+            },
+            {
+              "entropic_mean": 0.021318439804967546,
+              "predicted_mean": 0.03342298976675457,
+              "predicted_range": [
+                0.02,
+                0.05
+              ],
+              "raw_gain_mean": 0.027167231196015877,
+              "rows": 111
+            },
+            {
+              "entropic_mean": 0.04981927166439092,
+              "predicted_mean": 0.07312486822986987,
+              "predicted_range": [
+                0.05,
+                0.1
+              ],
+              "raw_gain_mean": 0.049063547036791354,
+              "rows": 92
+            },
+            {
+              "entropic_mean": 0.11381984553009773,
+              "predicted_mean": 0.1377795450368848,
+              "predicted_range": [
+                0.1,
+                0.2
+              ],
+              "raw_gain_mean": 0.11534762489279377,
+              "rows": 60
+            },
+            {
+              "entropic_mean": 0.5258256291614914,
+              "predicted_mean": 0.5430614634913629,
+              "predicted_range": [
+                0.2,
+                1000000000.0
+              ],
+              "raw_gain_mean": 0.4756915129242239,
+              "rows": 188
+            }
+          ],
+          "gain_quantiles": {
+            "entropic": [
+              -0.8914582303994714,
+              -0.007471353210014786,
+              0.00032943119387890407,
+              0.5254509854840733,
+              0.9096048561456642
+            ],
+            "predicted": [
+              -0.022105610419678484,
+              -0.012034981651105045,
+              0.009803746210399845,
+              0.5034905733979816,
+              0.8665833869612575
+            ]
+          },
+          "missed_continue_fraction": 0.004340277777777778,
+          "perfect_entropic_oracle_minus_full_operator_net": 0.008732919094041308,
+          "perfect_entropic_oracle_raw": 0.9584205108972276,
+          "perfect_raw_operator_oracle_minus_full_net": 0.008871410012975395,
+          "predicted_gain_mean": 0.10425191658384098,
+          "raw_controller_mean": 0.9539852335676993,
+          "raw_full_mean": 0.9543872471133201,
+          "raw_gain_mean": 0.09057585982466976,
+          "raw_low_mean": 0.8638113872886506,
+          "rows": 1152,
+          "selected_raw_gain_mean": 0.23033319493007604,
+          "selected_true_gain_mean": 0.2497430794360124,
+          "stopped_raw_gain_mean": 0.0006606556413056604,
+          "stopped_true_gain_mean": -0.0012620244853828778,
+          "true_entropic_continue_fraction": 0.2517361111111111
+        }
+      },
+      "updates": 261
+    },
+    "47": {
+      "critic_work_units": 560,
+      "full_work_units": 15132,
+      "low_work_units": 6252,
+      "model_digest": "f0ff62004075933d6749088fa3627f2a9632c7c8f65f0d2471a1a96354ddb809",
+      "reference_full_work_units": 19196,
+      "splits": {
+        "train": {
+          "bounds": [
+            -0.4439152038839007,
+            0.9281259330888372
+          ],
+          "continue_fraction": 0.3932291666666667,
+          "controller_minus_full_operator_net": 0.002580367273907525,
+          "controller_minus_full_raw": 0.00011146099134865862,
+          "decision_disagreement_fraction": 0.14420572916666666,
+          "entropic_gain_mean": 0.08134545618248756,
+          "entropic_prediction_bias": 6.548581121812447e-16,
+          "entropic_prediction_correlation": 0.8441462280668169,
+          "entropic_prediction_rmse": 0.11207488205379984,
+          "false_continue_fraction": 0.14095052083333334,
+          "gain_bins": [
+            {
+              "entropic_mean": -0.003188497072456138,
+              "predicted_mean": -0.01350668244448164,
+              "predicted_range": [
+                -1000000000.0,
+                0
+              ],
+              "raw_gain_mean": -0.0006517329702699486,
+              "rows": 960
+            },
+            {
+              "entropic_mean": -0.0010084196148809708,
+              "predicted_mean": 0.010096971967524673,
+              "predicted_range": [
+                0,
+                0.02
+              ],
+              "raw_gain_mean": 0.00031333571464167145,
+              "rows": 904
+            },
+            {
+              "entropic_mean": 0.02043599401800155,
+              "predicted_mean": 0.03119614608827738,
+              "predicted_range": [
+                0.02,
+                0.05
+              ],
+              "raw_gain_mean": 0.022156300087188694,
+              "rows": 429
+            },
+            {
+              "entropic_mean": 0.0629850956381155,
+              "predicted_mean": 0.07001544938310962,
+              "predicted_range": [
+                0.05,
+                0.1
+              ],
+              "raw_gain_mean": 0.05532605981322418,
+              "rows": 205
+            },
+            {
+              "entropic_mean": 0.1885600951629897,
+              "predicted_mean": 0.14222373205705188,
+              "predicted_range": [
+                0.1,
+                0.2
+              ],
+              "raw_gain_mean": 0.1672904432605999,
+              "rows": 153
+            },
+            {
+              "entropic_mean": 0.4829860553789509,
+              "predicted_mean": 0.48511983154519356,
+              "predicted_range": [
+                0.2,
+                1000000000.0
+              ],
+              "raw_gain_mean": 0.4262813129757931,
+              "rows": 421
+            }
+          ],
+          "gain_quantiles": {
+            "entropic": [
+              -0.4439152038839008,
+              -0.005796479886118709,
+              0.0010106998399767586,
+              0.38236423262139774,
+              0.9281259330888374
+            ],
+            "predicted": [
+              -0.03381224153610966,
+              -0.01730787235431193,
+              0.013341371946010663,
+              0.3323760611100459,
+              0.7871549697722485
+            ]
+          },
+          "missed_continue_fraction": 0.0032552083333333335,
+          "perfect_entropic_oracle_minus_full_operator_net": 0.006508765829983296,
+          "perfect_entropic_oracle_raw": 0.9757039985765216,
+          "perfect_raw_operator_oracle_minus_full_net": 0.00664217109087626,
+          "predicted_gain_mean": 0.08134545618248823,
+          "raw_controller_mean": 0.9739464746492749,
+          "raw_full_mean": 0.9738350136579261,
+          "raw_gain_mean": 0.07342589759614991,
+          "raw_low_mean": 0.9004091160617763,
+          "rows": 3072,
+          "selected_raw_gain_mean": 0.18700891190463212,
+          "selected_true_gain_mean": 0.2101538161539835,
+          "stopped_raw_gain_mean": -0.00018369536771624414,
+          "stopped_true_gain_mean": -0.002131206288310241,
+          "true_entropic_continue_fraction": 0.2555338541666667
+        },
+        "validation": {
+          "bounds": [
+            -0.4439152038839007,
+            0.9281259330888372
+          ],
+          "continue_fraction": 0.4288194444444444,
+          "controller_minus_full_operator_net": 0.0022543120560121897,
+          "controller_minus_full_raw": 0.00034651442456119265,
+          "decision_disagreement_fraction": 0.18055555555555555,
+          "entropic_gain_mean": 0.08204399084222379,
+          "entropic_prediction_bias": 0.007686502672121811,
+          "entropic_prediction_correlation": 0.7836408204942235,
+          "entropic_prediction_rmse": 0.1350703656890112,
+          "false_continue_fraction": 0.17447916666666666,
+          "gain_bins": [
+            {
+              "entropic_mean": -0.005023406245000917,
+              "predicted_mean": -0.013576525700790045,
+              "predicted_range": [
+                -1000000000.0,
+                0
+              ],
+              "raw_gain_mean": -0.001178064245491925,
+              "rows": 370
+            },
+            {
+              "entropic_mean": -0.003506348981121029,
+              "predicted_mean": 0.010440853423673457,
+              "predicted_range": [
+                0,
+                0.02
+              ],
+              "raw_gain_mean": 0.00012742761714416056,
+              "rows": 288
+            },
+            {
+              "entropic_mean": 0.013234411891154423,
+              "predicted_mean": 0.030867384152542813,
+              "predicted_range": [
+                0.02,
+                0.05
+              ],
+              "raw_gain_mean": 0.024713521352918266,
+              "rows": 176
+            },
+            {
+              "entropic_mean": 0.06729876088878463,
+              "predicted_mean": 0.06780765823913264,
+              "predicted_range": [
+                0.05,
+                0.1
+              ],
+              "raw_gain_mean": 0.08538227278527755,
+              "rows": 69
+            },
+            {
+              "entropic_mean": 0.13656046641935157,
+              "predicted_mean": 0.1374579409561598,
+              "predicted_range": [
+                0.1,
+                0.2
+              ],
+              "raw_gain_mean": 0.11228973646806983,
+              "rows": 62
+            },
+            {
+              "entropic_mean": 0.43820078264858764,
+              "predicted_mean": 0.46391495659449683,
+              "predicted_range": [
+                0.2,
+                1000000000.0
+              ],
+              "raw_gain_mean": 0.4051232795912205,
+              "rows": 187
+            }
+          ],
+          "gain_quantiles": {
+            "entropic": [
+              -0.6583678679390614,
+              -0.01273060907354243,
+              0.0003382557603888725,
+              0.4184669986621712,
+              0.9098323255838523
+            ],
+            "predicted": [
+              -0.03379921564693189,
+              -0.018655932544139362,
+              0.014761461923608159,
+              0.3817278136572302,
+              0.7913450135052006
+            ]
+          },
+          "missed_continue_fraction": 0.006076388888888889,
+          "perfect_entropic_oracle_minus_full_operator_net": 0.009130383589329513,
+          "perfect_entropic_oracle_raw": 0.9432192384431602,
+          "perfect_raw_operator_oracle_minus_full_net": 0.009292151862461545,
+          "predicted_gain_mean": 0.0897304935143456,
+          "raw_controller_mean": 0.938998168819963,
+          "raw_full_mean": 0.9386516543954018,
+          "raw_gain_mean": 0.08034877509356063,
+          "raw_low_mean": 0.8583028793018412,
+          "rows": 1152,
+          "selected_raw_gain_mean": 0.18818010834995214,
+          "selected_true_gain_mean": 0.19713191552116396,
+          "stopped_raw_gain_mean": -0.0006066635518153403,
+          "stopped_true_gain_mean": -0.004359405497284491,
+          "true_entropic_continue_fraction": 0.2604166666666667
+        }
+      },
+      "updates": 225
+    }
+  },
+  "selection_sha256": "4cd46ad600a1bb922ad5d4eebc04aeb131cb17cd8e99e454e4ed770a6dac790e",
+  "test_opened": false
+}
