@@ -87,6 +87,41 @@ python3 -m unittest discover -v -p "test_*.py"
 python3 -m compileall -q portfolio.py counterfactual_audit.py test_*.py
 ```
 
+## Paid independent evidence acquisition versus mandatory outputs
+
+`information_acquisition.py` is a separate two-class *synthetic* Bayesian
+test of the user's information-versus-generation portfolio principle. A
+public easy/hard observation determines a declared prior, and a separately
+specified 98%-accurate witness can be queried at one additional modeled
+unit. Four output emissions always reserve four modeled units, and the
+witness is observed only **after** a costed query. The controller compares
+conditional entropic continuation value and stopping value; hidden truth
+labels are used only by the independent offline terminal scorer.
+
+In the registered 50/50 easy/hard toy population with gamma=1 and query
+shadow price 0.05, the local exact event enumeration yields:
+
+| Policy | Mean external error | Mean modeled units |
+| --- | ---: | ---: |
+| Adaptive: query hard, skip easy | 0.015 | 4.5 |
+| Always query witness | 0.015 | 5.0 |
+| Never query witness | 0.255 | 4.0 |
+
+The external score is based on underlying truth, not on self-consistency
+of the four synthesized outputs. In a separate symmetric eight-class
+all-shared-wrong thought experiment, the top-1 information bound is
+1/7 **without an independent informative observation**. The binary
+witness illustration does not evade that bound; it introduces a new
+information channel with specified likelihood, which would require
+independent real-world calibration and actual cost receipts.
+
+The code demonstrates a *finite possible mechanism for selective
+information purchase* only. It does NOT close v3 blocker R03's claimed
+real effectiveness, verify any real witness accuracy, train an actual
+generator, or incorporate independent query actions into the v4
+four-modality Bellman action lattice. That joint runtime integration and
+new untouched heldout remain open.
+
 ## Next independently measured scientific experiment
 
 Replace the synthetic proxy-state/decoder fixtures with a source-pinned **real** shared Encoder plus four output decoders, observed partial latents, actual Neural/Cell feature invocation and all separately paid decoder/verifier/selection costs. Preregister source-disjoint natural tasks, multiple training seeds and common random-number draws, then compare same-information/static, MoE, risk-neutral MPC, fixed-risk MPC, dynamic NDU and best-of-N with independent decoded-output scoring and risk/coverage/cost thresholds. Train/inference factorial ablations are essential to determine whether NDU changes learned generation rather than only selecting an existing candidate. Do not enable or deploy any output-portfolio policy based only on this code.
