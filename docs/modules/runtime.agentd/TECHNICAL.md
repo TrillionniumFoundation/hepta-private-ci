@@ -647,3 +647,21 @@ This receipt records repository source bindings for the current documentation ca
 - Exact module-local source/test provenance is recorded as `currentSourceEvidence` and is verified by the Agentd process qualification workflow; the legacy repository-wide `sourceBase` remains a separate common baseline until the repository-wide migration.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+
+## Protected production composition and optional Notes handoff
+
+`AgentdProductionHostInputs` and `attach_production_operation_host` assemble the
+original recovered writer, bounded independent issuer provider, protected
+FinalUse owner, and operation runtime from explicit host inputs. The same
+protected clock wraps the original live verifier throughout recovery and writer
+use; configuration publishes both handles only after a final synchronous check.
+Optional `AgentdProductionNotesInputs` uses the original inherited Session
+`with_notes_from_session` descriptor/ACK path, with independent Notes FinalUse
+inputs. An attached ACK can precede a final authority refusal; only successful
+configuration returns the original Notes identity.
+
+See `codex-rs/hepta-agentd/PRODUCTION_COMPOSITION.md` for input ownership,
+transaction/failure semantics, owning-package test gates and remaining deployment
+requirements. This source composition does not qualify production trust inputs,
+activate the default CLI, implement the issuer service, or add Objective signing
+or sender-side durable retention.
