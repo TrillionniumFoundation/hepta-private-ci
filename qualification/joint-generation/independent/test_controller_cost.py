@@ -44,7 +44,8 @@ class ControllerCostTests(unittest.TestCase):
             n = len(data["full"])
             prep, ledger = WorkLedger("prepare"), WorkLedger("probe")
             prep.charge_kernel("prepare", "fold", **gen.prepare_work())
-            work = _sum_work(gen.low_work(n), gen.critic_work(n), gen.full_work(n) if go else {},
+            prediction = critic.work(n) if getattr(critic, "kind", None) == c.AFFINE_KIND else gen.critic_work(n)
+            work = _sum_work(gen.low_work(n), prediction, gen.full_work(n) if go else {},
                             {key: n * value for key, value in c.output_work().items()})
             ledger.charge_kernel("inference", "fixture", **work)
             ledger.decoder("output", rows=n, pixels=192)
@@ -130,15 +131,74 @@ class ControllerCostTests(unittest.TestCase):
             library = Path(root) / "joint.so"
             compile_native(library)
             self.runtime.update(runtime_backend="native", native_library=str(library))
-            ledger = WorkLedger("NC")
-            _, _, receipt = self.call(ledger=ledger)
-        for pair in receipt["pairs"]:
-            self.assertEqual([pair[name]["model_forwards"] for name in ("stop", "continue")], [2, 4])
-            for name in ("stop", "continue"):
-                self.assertGreater(pair[name]["cost"]["operator_totals"]["output_bytes"], 0)
-                self.assertEqual(pair[name]["cost"]["operator_totals"]["serialized_requests"], 2)
-        self.assertEqual(ledger.consumed_units,
-            ledger.estimate_kernel(**c.controller_work(self.model, 2, 2, 3)))
+            for kind in ("probability-ridge-v1", c.AFFINE_KIND):
+                with self.subTest(kind=kind):
+                    self.plan["controller"]["gain_head"] = kind
+                    ledger = WorkLedger("NC")
+                    _, _, receipt = self.call(ledger=ledger)
+                    self.assertEqual(receipt["critic_kind"], kind)
+                    for pair in receipt["pairs"]:
+                        self.assertEqual([pair[name]["model_forwards"] for name in ("stop", "continue")], [2, 4])
+                        for name in ("stop", "continue"):
+                            self.assertGreater(pair[name]["cost"]["operator_totals"]["output_bytes"], 0)
+                            self.assertEqual(pair[name]["cost"]["operator_totals"]["serialized_requests"], 2)
+                    self.assertEqual(ledger.consumed_units, ledger.estimate_kernel(
+                        **c.controller_work(self.model, 2, 2, 3, plan=self.plan)))
+
+    def test_affine_reuses_one_low_state_and_prices_fit_and_forced_pairs(self):
+        from independent.gain_head import AffineGainHead, fit_work
+        self.plan["controller"]["gain_head"] = c.AFFINE_KIND
+        ledger, calls, low_rows, full_rows = WorkLedger("affine-NC"), [], [], []
+        low_state, full_forward = FrozenGenerator.forward_low_state, FrozenGenerator.forward_full
+
+        def record_low(generator, x, *args, **kwargs):
+            low_rows.append(len(x))
+            return low_state(generator, x, *args, **kwargs)
+
+        def record_full(generator, x, *args, **kwargs):
+            full_rows.append(len(x))
+            return full_forward(generator, x, *args, **kwargs)
+
+        before = self.model.digest()
+        with patch.object(c, "measure", self.fake_measure(calls=calls)), \
+             patch.object(c, "fit_controller", side_effect=AssertionError("unused probability ridge")), \
+             patch.object(FrozenGenerator, "forward_low_state", record_low), \
+             patch.object(FrozenGenerator, "forward_full", record_full), \
+             patch.object(AffineGainHead, "fit", wraps=AffineGainHead.fit) as fit:
+            critic, decision, receipt = self.call(ledger=ledger)
+        self.assertEqual((low_rows, full_rows), ([2], [2]))
+        self.assertIsInstance(critic, AffineGainHead)
+        self.assertEqual(receipt["critic_kind"], c.AFFINE_KIND)
+        self.assertEqual(receipt["gain_head_fit"]["input_dim"], self.model.dimensions[3] + 10)
+        self.assertEqual(receipt["gain_head_fit"]["accounting_units"],
+                         ledger.estimate_kernel(**fit_work(self.model.dimensions[3], 2, self.plan)))
+        h, instruction, target = fit.call_args.args[:3]
+        np.testing.assert_array_equal(instruction, self.data["full"][:, 192:])
+        reference = FrozenGenerator(self.model)
+        pl, ql = reference.forward_low(self.data["full"])
+        pf, qf = reference.forward_full(self.data["full"])
+        y = self.data["labels"]
+        expected = np.einsum("ni,nij,nj->n", pf, self.reward[y], qf) - np.einsum("ni,nij,nj->n", pl, self.reward[y], ql)
+        np.testing.assert_allclose(target, expected, rtol=0, atol=1e-14)
+        self.assertEqual(h.shape, (2, self.model.dimensions[3]))
+        for _, _, forced in calls:
+            self.assertIsInstance(forced, AffineGainHead)
+            for name in ("mean", "scale", "weights", "intercept"):
+                np.testing.assert_array_equal(getattr(forced, name), getattr(critic, name))
+        self.assertEqual((receipt["cost_ratio"], decision), (0.3, 0.006))
+        self.assertEqual(self.model.digest(), before)
+        self.assertEqual(ledger.consumed_units, ledger.estimate_kernel(
+            **c.controller_work(self.model, 2, 2, 3, plan=self.plan)))
+
+    def test_affine_budget_reserves_entire_fit_and_probes_before_any_forward(self):
+        self.plan["controller"]["gain_head"] = c.AFFINE_KIND
+        total = WorkLedger("price").estimate_kernel(**c.controller_work(self.model, 2, 2, 3, plan=self.plan))
+        ledger = WorkLedger("short-affine", total_cap=total - 1)
+        with patch.object(FrozenGenerator, "forward_low_state", side_effect=AssertionError("unfunded low")), \
+             patch.object(c, "measure", side_effect=AssertionError("unfunded probe")):
+            with self.assertRaises(BudgetExceeded):
+                self.call(ledger=ledger)
+        self.assertEqual(ledger.consumed_units, 0)
 
 
 if __name__ == "__main__":

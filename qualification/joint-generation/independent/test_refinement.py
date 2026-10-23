@@ -1,9 +1,11 @@
 import copy
 import unittest
+from unittest.mock import patch
 
 from independent.accounting import WorkLedger
 from independent.controller_cost import controller_work
 from independent.evaluation import output_work
+from independent.gain_head import fit_work, head_work
 from independent.inference import FrozenGenerator
 from independent.learning import setup_work, value_work
 from independent.refinement import admit_round, forecast, reserve_work
@@ -53,6 +55,14 @@ class RefinementTests(unittest.TestCase):
         self.model = JointModel(202, 12, 192, hidden=4, seed=19851)
         self.rows = {"train_rows": 48, "validation_rows": 12,
                      "calibration_rows": 24, "calibration_repeats": 3}
+        self.affine_plan = {"controller": {
+            "gain_head": "low-hidden-instruction-affine-v1", "ridge_regularization": 0.001}}
+
+    def outputs(self, n):
+        pixels = self.model.dimensions[2]
+        return combine(scaled(output_work(12, pixels), n), {
+            "scalar_ops": 3 * n * pixels, "compare_ops": 2 * n * pixels,
+            "exp_ops": n * pixels, "div_ops": n * pixels})
 
     def test_static_reserves_no_unused_critic_or_paired_calibration(self):
         before = self.model.digest()
@@ -62,6 +72,51 @@ class RefinementTests(unittest.TestCase):
             self.assertEqual(reserved["tail"], combine(reserved["service"], reserved["observer"]))
             self.assertGreater(WorkLedger("price").estimate_kernel(**reserved["revalidation"]), 0)
         self.assertEqual(self.model.digest(), before)
+
+    def test_affine_plan_does_not_charge_static_fit_or_head(self):
+        for mode in ("full", "low", "ensemble"):
+            expected = reserve_work(self.model, "supervised", mode, **self.rows)
+            with patch("independent.gain_head.head_work", side_effect=AssertionError("unused head")), \
+                    patch("independent.refinement.controller_work", side_effect=AssertionError("unused fit")):
+                actual = reserve_work(self.model, "supervised", mode, **self.rows,
+                                      plan=self.affine_plan)
+            self.assertEqual(actual, expected)
+
+    def test_affine_reserves_exact_fit_pairs_and_complete_service_without_extra_encoder(self):
+        before = self.model.digest()
+        gen = FrozenGenerator(self.model, prepare_low=False)
+        n, m, h = self.rows["validation_rows"], self.rows["calibration_rows"], self.model.dimensions[3]
+        reserved = reserve_work(self.model, "ndu_control", "full", **self.rows,
+                                plan=self.affine_plan)
+        total = controller_work(self.model, self.rows["train_rows"], m,
+                                self.rows["calibration_repeats"], plan=self.affine_plan)
+        self.assertEqual(combine(reserved["critic"], reserved["paired_calibration"]), total)
+        pair = combine(scaled(gen.low_work(m), 2), gen.full_work(m),
+                       scaled(head_work(h, m), 2), scaled(self.outputs(m), 2),
+                       scaled(gen.prepare_work(), 2))
+        self.assertEqual(reserved["paired_calibration"], scaled(pair, self.rows["calibration_repeats"]))
+        expected_service = combine(scaled(gen.full_work(n), 2), gen.low_work(n),
+            head_work(h, n), {"scalar_ops": n, "compare_ops": n},
+            scaled(gen.prepare_work(), 2), scaled(self.outputs(n), 2))
+        self.assertEqual(reserved["service"], expected_service)
+        fitting = fit_work(h, self.rows["train_rows"], self.affine_plan)
+        for key, units in fitting.items():
+            self.assertGreaterEqual(reserved["critic"].get(key, 0), units, key)
+        self.assertEqual(reserved["tail"], combine(reserved["service"], reserved["observer"],
+                                                reserved["critic"], reserved["paired_calibration"]))
+        self.assertEqual(self.model.digest(), before)
+
+    def test_explicit_ridge_plan_preserves_legacy_reserves(self):
+        expected = reserve_work(self.model, "ndu_control", "full", **self.rows)
+        actual = reserve_work(self.model, "ndu_control", "full", **self.rows,
+                              plan={"controller": {"gain_head": "probability-ridge-v1"}})
+        self.assertEqual(actual, expected)
+
+    def test_authoritative_inventory_cannot_omit_reserved_pairs(self):
+        with patch("independent.refinement.controller_work", return_value={}):
+            with self.assertRaisesRegex(ValueError, "omits reserved paired work"):
+                reserve_work(self.model, "ndu_control", "full", **self.rows,
+                             plan=self.affine_plan)
 
     def test_control_reserves_two_training_views_and_raw_values_plus_complete_pairs(self):
         generator = FrozenGenerator(self.model, prepare_low=False)

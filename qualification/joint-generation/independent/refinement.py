@@ -48,7 +48,17 @@ def _observation_work(model, n):
         observer_work(n), {"macs": 2 * n * 12 * 12, "scalar_ops": 2 * n})
 
 
-def _service_work(model, generator, n, mode):
+def _critic_work(model, generator, n, plan=None):
+    kind = None if plan is None else plan.get("controller", {}).get("gain_head")
+    if kind in (None, "probability-ridge-v1"):
+        return generator.critic_work(n)
+    if kind != "low-hidden-instruction-affine-v1":
+        raise ValueError("unsupported gain head in residual forecast")
+    from independent.gain_head import head_work
+    return head_work(model.dimensions[3], n)
+
+
+def _service_work(model, generator, n, mode, plan=None):
     if mode == "full":
         generation, prepare = generator.full_work(n), {}
     elif mode == "low":
@@ -58,7 +68,8 @@ def _service_work(model, generator, n, mode):
                               {"scalar_ops": 24 * n, "div_ops": 24 * n})
         prepare = generator.prepare_work()
     elif mode == "continuation":
-        generation = add_work(generator.full_work(n), generator.low_work(n), generator.critic_work(n))
+        generation = add_work(generator.full_work(n), generator.low_work(n),
+                              _critic_work(model, generator, n, plan))
         prepare = generator.prepare_work()
     elif mode == "random":
         generation = add_work(generator.full_work(n), {"scalar_ops": n, "compare_ops": n})
@@ -71,30 +82,35 @@ def _service_work(model, generator, n, mode):
 
 
 def reserve_work(model, system, mode, *, train_rows, validation_rows,
-                 calibration_rows, calibration_repeats, raw_reward_cached=True):
+                 calibration_rows, calibration_repeats, raw_reward_cached=True, plan=None):
     """Per-selected-model future inventories, with worst-case optional passes."""
     if any(type(n) is not int or n <= 0 for n in
            (train_rows, validation_rows, calibration_rows, calibration_repeats)):
         raise ValueError("positive frozen row counts and repeats required")
     generator = FrozenGenerator(model, prepare_low=False)
     observation = _observation_work(model, validation_rows)
-    service = _service_work(model, generator, validation_rows, mode)
+    service = _service_work(model, generator, validation_rows, mode, plan)
     critic, paired = {}, {}
     if system == "ndu_control":
-        service = add_work(_service_work(model, generator, validation_rows, "continuation"),
-                            _service_work(model, generator, validation_rows, "random"))
+        service = add_work(_service_work(model, generator, validation_rows, "continuation", plan),
+                            _service_work(model, generator, validation_rows, "random", plan))
         observation = scale_work(observation, 2)
         # Each matched pair executes low+critic in both laws and full only in
         # the go law. Six measures prepare their own generator for 3 repeats.
         paired = scale_work(add_work(scale_work(generator.low_work(calibration_rows), 2),
-            generator.full_work(calibration_rows), scale_work(generator.critic_work(calibration_rows), 2),
+            generator.full_work(calibration_rows),
+            scale_work(_critic_work(model, generator, calibration_rows, plan), 2),
             scale_work(_output_work(model, calibration_rows), 2),
             scale_work(generator.prepare_work(), 2)), calibration_repeats)
         total_controller = controller_work(model, train_rows, calibration_rows,
-            calibration_repeats, raw_reward_cached=raw_reward_cached)
+            calibration_repeats, raw_reward_cached=raw_reward_cached,
+            **({"plan": plan} if plan is not None else {}))
         # Keep probe CPU and fit CPU forecasts separate while deriving the
-        # authoritative total (including ridge/summary/formula extras) once.
-        critic = {key: value - paired.get(key, 0) for key, value in total_controller.items()}
+        # authoritative total (including fit/summary/formula extras) once.
+        critic = {key: total_controller.get(key, 0) - paired.get(key, 0)
+                  for key in total_controller.keys() | paired.keys()}
+        if any(value < 0 for value in critic.values()):
+            raise ValueError("controller inventory omits reserved paired work")
     return {"service": service, "observer": observation, "critic": critic,
             "paired_calibration": paired, "tail": add_work(service, observation, critic, paired),
             "revalidation": validation_work(model, validation_rows)}

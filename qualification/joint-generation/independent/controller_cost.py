@@ -23,6 +23,14 @@ from independent.learning import CachedObjective, setup_work, value_work
 
 SCHEMA = "hepta.joint-generation.controller-cost-calibration.v1"
 GAIN_OBJECTIVE = "raw-decoded-task-utility"
+AFFINE_KIND = "low-hidden-instruction-affine-v1"
+
+
+def _affine(plan):
+    kind = None if plan is None else plan.get("controller", {}).get("gain_head")
+    if kind not in (None, "probability-ridge-v1", AFFINE_KIND):
+        raise ValueError("unsupported controller gain-head profile")
+    return kind == AFFINE_KIND
 
 
 def _hash(values):
@@ -34,23 +42,30 @@ def _ridge_extra(n, k=12):
             "compare_ops": 2 * n + 2 * k + 5, "scalar_ops": 2 * k + 8}
 
 
-def controller_work(model, trainrows, calrows, repeats, *, raw_reward_cached=True):
+def controller_work(model, trainrows, calrows, repeats, *, raw_reward_cached=True, plan=None):
     """Flat declared inventory, including fit, every service probe and preparation."""
     if (any(type(n) is not int or not 1 <= n <= 65536 for n in (trainrows, calrows))
             or repeats != 3 or type(repeats) is not int or type(raw_reward_cached) is not bool):
         raise ValueError("bounded row counts and exactly three paired repeats required")
     gen = FrozenGenerator(model, prepare_low=False)
     n, k, pixels = trainrows, model.dimensions[1], model.dimensions[2]
-    fit = WorkLedger("critic-inventory")
-    fit.critic_fit("critic_fit", rows=n, classes=k)
-    ridge = {key[3:]: value for key, value in fit.totals.items() if key.startswith("op_")}
-    row = _sum_work(gen.low_work(calrows), gen.critic_work(calrows),
+    if _affine(plan):
+        from independent.gain_head import fit_work, head_work
+        fitting = fit_work(model.dimensions[3], n, plan)
+        prediction = head_work(model.dimensions[3], calrows)
+    else:
+        fit = WorkLedger("critic-inventory")
+        fit.critic_fit("critic_fit", rows=n, classes=k)
+        fitting = _sum_work({key[3:]: value for key, value in fit.totals.items() if key.startswith("op_")},
+                            _ridge_extra(n, k))
+        prediction = gen.critic_work(calrows)
+    row = _sum_work(gen.low_work(calrows), prediction,
         {key: calrows * value for key, value in output_work(k, pixels).items()},
         {"scalar_ops": 3 * calrows * pixels, "compare_ops": 2 * calrows * pixels,
          "exp_ops": calrows * pixels, "div_ops": calrows * pixels})
     pair = _sum_work(row, row, gen.full_work(calrows), gen.prepare_work(), gen.prepare_work())
     return _sum_work(gen.prepare_work(), gen.low_work(n), gen.full_work(n),
-        value_work("additive", n, k), value_work("additive", n, k), ridge, _ridge_extra(n, k),
+        value_work("additive", n, k), value_work("additive", n, k), fitting,
         {"scalar_ops": 2 * n - 1, "compare_ops": 2 * (n - 1), "div_ops": 1},
         {} if raw_reward_cached else setup_work(model.dimensions, "additive"),
         {key: repeats * value for key, value in pair.items()},
@@ -107,7 +122,7 @@ def fit_and_calibrate(model, train_data, calibration_data, plan, runtime_plan, l
             or not set(actual_hashes).issubset(set(train_data["input_hashes"]))):
         raise ValueError("calibration identities must bind actual training input bytes")
     before, units_before = model.digest(), ledger.consumed_units
-    inventory = controller_work(model, len(x), n, repeats, raw_reward_cached=raw_reward is not None)
+    inventory = controller_work(model, len(x), n, repeats, raw_reward_cached=raw_reward is not None, plan=plan)
     if ledger.estimate_kernel(**inventory) > ledger.remaining_units:
         raise BudgetExceeded("raw critic plus complete paired calibration exceeds remaining work")
     if raw_reward is None:
@@ -116,7 +131,11 @@ def fit_and_calibrate(model, train_data, calibration_data, plan, runtime_plan, l
     if reward.shape != (12, 12, 12) or not np.isfinite(reward).all():
         raise ValueError("finite fixed decoder-bound raw reward table required")
     gen = FrozenGenerator(model, ledger, "critic_targets")
-    pl, ql = gen.forward_low(x, ledger, "critic_targets")
+    affine = _affine(plan)
+    if affine:
+        pl, ql, hidden = gen.forward_low_state(x, ledger, "critic_targets")
+    else:
+        pl, ql = gen.forward_low(x, ledger, "critic_targets")
     pf, qf = gen.forward_full(x, ledger, "critic_targets")
     values = []
     for p, q in ((pl, ql), (pf, qf)):
@@ -125,11 +144,19 @@ def fit_and_calibrate(model, train_data, calibration_data, plan, runtime_plan, l
     ledger.charge_kernel("critic_targets", "raw_gain_and_summary", scalar_ops=2 * len(x) - 1,
                          compare_ops=2 * (len(x) - 1), div_ops=1)
     target = values[1] - values[0]
-    ledger.critic_fit("critic_fit", rows=len(x), classes=12)
-    ledger.charge_kernel("critic_fit", "ridge_extra", **_ridge_extra(len(x)))
-    critic = fit_controller(pl, ql, target, regularization=plan["controller"]["ridge_regularization"])
-    forced = {name: Controller(critic.classes, critic.mean, critic.scale, critic.weights,
-              critic.intercept, np.array([bound, bound])) for name, bound in (("stop", 0.0), ("continue", 1.0))}
+    fit_receipt = None
+    if affine:
+        from independent.gain_head import AffineGainHead
+        critic, fit_receipt = AffineGainHead.fit(hidden, x[:, 192:], target, plan, seed, ledger,
+                                               stage="critic_fit")
+        forced = {name: critic.with_bounds(np.array([bound, bound]))
+                  for name, bound in (("stop", 0.0), ("continue", 1.0))}
+    else:
+        ledger.critic_fit("critic_fit", rows=len(x), classes=12)
+        ledger.charge_kernel("critic_fit", "ridge_extra", **_ridge_extra(len(x)))
+        critic = fit_controller(pl, ql, target, regularization=plan["controller"]["ridge_regularization"])
+        forced = {name: Controller(critic.classes, critic.mean, critic.scale, critic.weights,
+                  critic.intercept, np.array([bound, bound])) for name, bound in (("stop", 0.0), ("continue", 1.0))}
     pairs, deltas = [], []
     for repeat in range(repeats):
         order = ["stop", "continue"] if (repeat + plan["model_seeds"].index(seed)) % 2 == 0 else ["continue", "stop"]
@@ -152,6 +179,7 @@ def fit_and_calibrate(model, train_data, calibration_data, plan, runtime_plan, l
     if model.digest() != before:
         raise ValueError("controller calibration changed content parameters")
     receipt = {"schema": SCHEMA, "gain_objective": GAIN_OBJECTIVE, "model_digest": before,
+        "critic_kind": getattr(critic, "kind", "probability-ridge-v1"), "gain_head_fit": fit_receipt,
         "seed": seed, "calibration_inputs_sha256": identity["inputs_sha256"],
         "calibration_identity": identity, "paired_cpu_deltas_ns_per_request": deltas,
         "median_incremental_cpu_ns_per_request": median,
