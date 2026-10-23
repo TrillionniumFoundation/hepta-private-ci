@@ -337,16 +337,29 @@ impl CognitiveStore {
         access: &CognitiveAccess,
         scope: &CognitiveScope,
         request: &RetrievalRequest,
-    ) -> Result<(RetrievalBatch, u64), CognitiveStoreError> {
+    ) -> Result<(RetrievalBatch, u64, bool), CognitiveStoreError> {
         self.authorize(access, scope)?;
         let fts_query = self.validate_retrieval_request(access, request)?;
         let mut transaction = self.pool.begin().await.map_err(unavailable)?;
-        let mut batch = self
-            .retrieve_memory_candidates_tx(&mut transaction, access, request, &fts_query)
+        let generated = self
+            .generate_retrieval_for_scope_tx(&mut transaction, access, scope, request, &fts_query)
             .await?;
-        batch
-            .candidates
-            .retain(|candidate| candidate.memory.scope == *scope);
+        let channels_exhausted = generated.exhausted();
+        let mut candidates = self
+            .resolve_retrieval_tx(
+                &mut transaction,
+                access,
+                request,
+                generated.ranked,
+                MAX_RETRIEVAL_OWNER_CHANNELS * MAX_RETRIEVAL_CHANNEL_CANDIDATES,
+            )
+            .await?;
+        let owner_exhausted = channels_exhausted && candidates.len() <= MAX_RETRIEVAL_RESULTS;
+        candidates.truncate(MAX_RETRIEVAL_RESULTS);
+        let batch = RetrievalBatch {
+            query_sha256: Sha256Digest::for_bytes(request.query.as_bytes()),
+            candidates,
+        };
 
         let (scope_kind, workspace_sha256) = scope.database_parts();
         let memory_frontier: i64 = sqlx::query_scalar(
@@ -365,7 +378,7 @@ impl CognitiveStore {
             )
         })?;
         transaction.commit().await.map_err(unavailable)?;
-        Ok((batch, memory_frontier))
+        Ok((batch, memory_frontier, owner_exhausted))
     }
 
     async fn retrieve_memory_candidates_tx(
@@ -593,20 +606,29 @@ impl CognitiveStore {
         Ok((Some(generation), generation_sha256))
     }
 
-    async fn memory_fts_channel_tx(
+    async fn memory_fts_channel_scoped_tx(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         access: &CognitiveAccess,
         fts_query: &str,
         now: i64,
+        exact_scope: Option<&CognitiveScope>,
     ) -> Result<ChannelOutput<MemoryKey>, CognitiveStoreError> {
+        let exact_scope_kind = exact_scope.map(|scope| scope.database_parts().0);
+        let exact_workspace = exact_scope.and_then(|scope| scope.database_parts().1);
         let rows = sqlx::query(
             "SELECT f.memory_id, f.revision FROM memory_fts f
              JOIN memory_heads h ON h.memory_id = f.memory_id AND h.revision = f.revision
              JOIN memory_revisions r ON r.memory_id = f.memory_id AND r.revision = f.revision
              WHERE memory_fts MATCH ? AND r.owner_agent_id = ?
-               AND (r.scope_kind = 'agent_private' OR
-                    (r.scope_kind = 'workspace_private' AND r.workspace_sha256 = ?))
+               AND (
+                    (? IS NULL AND (
+                        r.scope_kind = 'agent_private' OR
+                        (r.scope_kind = 'workspace_private' AND r.workspace_sha256 = ?)
+                    ))
+                    OR
+                    (? IS NOT NULL AND r.scope_kind = ? AND r.workspace_sha256 IS ?)
+               )
                AND r.verification = 'verified' AND r.lifecycle = 'active'
                AND r.valid_from_unix_seconds <= ?
                AND (r.valid_to_unix_seconds IS NULL OR ? < r.valid_to_unix_seconds)
@@ -614,7 +636,11 @@ impl CognitiveStore {
         )
         .bind(fts_query)
         .bind(self.owner_agent_id.as_str())
+        .bind(exact_scope_kind)
         .bind(access.workspace_sha256().map(Sha256Digest::as_str))
+        .bind(exact_scope_kind)
+        .bind(exact_scope_kind)
+        .bind(exact_workspace)
         .bind(now)
         .bind(now)
         .bind(channel_limit())
@@ -629,6 +655,7 @@ impl CognitiveStore {
         })
     }
 
+    #[cfg(test)]
     async fn entity_fts_channel_tx(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
@@ -636,6 +663,19 @@ impl CognitiveStore {
         fts_query: &str,
         now: i64,
     ) -> Result<ChannelOutput<EntitySeed>, CognitiveStoreError> {
+        self.entity_fts_channel_scoped_tx(transaction, access, fts_query, now, None)
+            .await
+    }
+
+    async fn entity_fts_channel_scoped_tx(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        access: &CognitiveAccess,
+        fts_query: &str,
+        now: i64,
+        exact_scope: Option<&CognitiveScope>,
+    ) -> Result<ChannelOutput<EntitySeed>, CognitiveStoreError> {
+        let exact_projection_scope = exact_scope.map(CognitiveScope::projection_key);
         let workspace_scope = access
             .workspace_sha256()
             .map(|workspace_sha256| CognitiveScope::WorkspacePrivate {
@@ -665,7 +705,11 @@ impl CognitiveStore {
                ON s.projection_scope = p.projection_scope
               AND s.generation = p.generation
              WHERE kg_revision_entity_fts MATCH ?
-               AND (p.projection_scope = 'agent_private' OR p.projection_scope = ?)
+               AND (
+                    (? IS NULL AND (p.projection_scope = 'agent_private' OR p.projection_scope = ?))
+                    OR
+                    (? IS NOT NULL AND p.projection_scope = ?)
+               )
                AND k.valid_from_unix_seconds <= ?
                AND (k.valid_to_unix_seconds IS NULL OR ? < k.valid_to_unix_seconds)
                AND r.owner_agent_id = ? AND r.verification = 'verified'
@@ -675,7 +719,10 @@ impl CognitiveStore {
                       f.memory_id, f.memory_revision, f.entity_key LIMIT ?",
         )
         .bind(fts_query)
+        .bind(exact_projection_scope.as_deref())
         .bind(workspace_scope)
+        .bind(exact_projection_scope.as_deref())
+        .bind(exact_projection_scope.as_deref())
         .bind(now)
         .bind(now)
         .bind(self.owner_agent_id.as_str())
@@ -992,25 +1039,38 @@ impl CognitiveStore {
             .collect()
     }
 
-    async fn recency_channel_tx(
+    async fn recency_channel_scoped_tx(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         workspace: Option<&str>,
         now: i64,
+        exact_scope: Option<&CognitiveScope>,
     ) -> Result<ChannelOutput<MemoryKey>, CognitiveStoreError> {
+        let exact_scope_kind = exact_scope.map(|scope| scope.database_parts().0);
+        let exact_workspace = exact_scope.and_then(|scope| scope.database_parts().1);
         let rows = sqlx::query(
             "SELECT r.memory_id, r.revision FROM memory_heads h
              JOIN memory_revisions r ON r.memory_id = h.memory_id AND r.revision = h.revision
              WHERE r.owner_agent_id = ?
-               AND (r.scope_kind = 'agent_private' OR
-                    (r.scope_kind = 'workspace_private' AND r.workspace_sha256 = ?))
+               AND (
+                    (? IS NULL AND (
+                        r.scope_kind = 'agent_private' OR
+                        (r.scope_kind = 'workspace_private' AND r.workspace_sha256 = ?)
+                    ))
+                    OR
+                    (? IS NOT NULL AND r.scope_kind = ? AND r.workspace_sha256 IS ?)
+               )
                AND r.verification = 'verified' AND r.lifecycle = 'active'
                AND r.valid_from_unix_seconds <= ?
                AND (r.valid_to_unix_seconds IS NULL OR ? < r.valid_to_unix_seconds)
              ORDER BY r.recorded_at_unix_seconds DESC, r.memory_id, r.revision LIMIT ?",
         )
         .bind(self.owner_agent_id.as_str())
+        .bind(exact_scope_kind)
         .bind(workspace)
+        .bind(exact_scope_kind)
+        .bind(exact_scope_kind)
+        .bind(exact_workspace)
         .bind(now)
         .bind(now)
         .bind(channel_limit())

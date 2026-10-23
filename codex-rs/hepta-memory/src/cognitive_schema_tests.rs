@@ -1,4 +1,5 @@
 //! Independently derive the schema from compiled migrations, never owner bytes.
+use sqlx::sqlite::SqliteConnectOptions;
 use sqlx::sqlite::SqlitePoolOptions;
 
 use super::*;
@@ -7,7 +8,7 @@ use super::*;
 async fn compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected() {
     let pool = SqlitePoolOptions::new()
         .max_connections(1)
-        .connect("sqlite::memory:")
+        .connect_with(SqliteConnectOptions::new().in_memory(true))
         .await
         .expect("reference SQLite");
     MIGRATOR.run(&pool).await.expect("compiled migration chain");

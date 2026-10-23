@@ -1,4 +1,11 @@
 #![forbid(unsafe_code)]
+#![cfg_attr(
+    test,
+    allow(
+        clippy::expect_used,
+        reason = "deterministic unit fixtures use immediate setup assertions; production builds keep expect_used denied"
+    )
+)]
 
 pub use codex_hepta_memory_federation::FederatedCoverageV2;
 pub use codex_hepta_memory_federation::FederatedFailureCoverageV2;
@@ -138,6 +145,12 @@ pub use cognitive_retrieval_adapter::sqlite_owner_cue_profile_digest;
 pub use cognitive_retrieval_adapter::sqlite_owner_retrieval_policy_v1;
 pub use cognitive_runtime::CognitiveRuntime;
 pub use cognitive_runtime::CognitiveUnavailableReason;
+pub use cognitive_runtime::MAX_PRODUCT_FEDERATION_ATTEMPT_CONCURRENCY;
+pub use cognitive_runtime::MAX_PRODUCT_FEDERATION_DISCOVERY_CONCURRENCY;
+pub use cognitive_runtime::MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS;
+pub use cognitive_runtime::MAX_PRODUCT_FEDERATION_REVALIDATION_CONCURRENCY;
+pub use cognitive_runtime::MAX_PRODUCT_FEDERATION_TOTAL_BUDGET;
+pub use cognitive_runtime::MemoryFederationHostProfile;
 pub use cognitive_store::CognitiveRecoveryAnchor;
 pub use cognitive_store::CognitiveRecoveryError;
 pub use cognitive_store::CognitiveRecoveryRequirement;
