@@ -31,13 +31,13 @@ This repository's actual NDU mathematical source remains `docs/learning/NDU_FBSD
 
 ## Preregistered A0–A5 control ablation
 
-All arms use the exact same frozen scenarios, budget, action set, hidden realized gains and observed interactions; *forecast* gains and interactions are distinct from hidden synthetic outcomes. No arm reads the latter when choosing an action.
+All arms use the same **24 held-out evaluation scenarios**, budget, action set, hidden realized gains and observed interactions. A separate **24-episode training split** fits the A2 router and A4 covariance (no shared episode IDs); neither model reads evaluation labels. *Forecast* gains and interactions remain separate from held-out synthetic outcomes. No arm reads the latter when choosing an action.
 
 | Arm | Actual reference policy | Question |
 | --- | --- | --- |
 | A0 | Single `flash` decoder surrogate and stop | Non-portfolio baseline |
 | A1 | Fixed route over text→image→audio→video | Does a cheap deterministic controller suffice? |
-| A2 | Greedy top immediate gain per declared compute unit | Does conventional sparse routing suffice? |
+| A2 | Frozen small top-k router fitted from independent training-episode per-expert net return per compute unit | Does conventional learned sparse routing suffice? |
 | A3 | Greedy one-step risk/cost-adjusted NDU | Does one-step utility already capture benefit? |
 | A4 | One-step KL-regularized, portfolio-covariance-adjusted allocation; selects highest allocation; deterministic fallback on unsupported covariance | Does portfolio risk improve routing? |
 | A5 | Bounded exhaustive finite-horizon lookahead with interaction forecast, budget, legal modality and explicit stopping | Does continuation-aware control add value? |
@@ -52,5 +52,7 @@ A5 is **not an FBSDE solver** and its lookahead uses a synthetic forecast model;
 4. Independently measure semantic and perceptual alignment (text–image first, then text–audio and audio–video), counterfactual/perturbation quality and OOD; structured contract checks here are not semantic consistency proofs.
 5. Measure controller overhead **plus** true encoder/decoder cost, p95/p99, host RSS/GPU memory, quality per energy/latency, scaling with 64/256/1024/4096 logical cells and active-cell concurrency separately. Publish failure/rollback receipts.
 6. Freeze baseline, critic, objective and eligible subjects. Use future-window, subgroup retention, negative transfer, KL/trust region, multiplicity-aware confidence bounds, observer independence and replay/correction checks. Selection and deployment remain separate Control/Evidence actions with no same-generation parameter replacement.
+
+**Leakage rule:** training and evaluation episodes remain disjoint. Synthetic labels are not externally verified; training this toy router does not certify real learning, independent outcome truth or causal credit.
 
 **Stop rule:** production blockers remain open until the user-requested real host, real task dataset, external outcome observer and signed execution artifacts exist, all canonical numerical/security gates pass, and independent acceptance is recorded. The reference runner never reports a production pass and has no capability to promote artifacts.
