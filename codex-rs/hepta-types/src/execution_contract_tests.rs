@@ -143,7 +143,10 @@ fn rejected_native_result_cannot_hide_partial_output_or_contradict_retry_policy(
     for (stdout, stderr) in [
         (Some(digest("partial stdout")), None),
         (None, Some(digest("partial stderr"))),
-        (Some(digest("partial stdout")), Some(digest("partial stderr"))),
+        (
+            Some(digest("partial stdout")),
+            Some(digest("partial stderr")),
+        ),
     ] {
         let mut forged = rejected.clone();
         forged.tool_outcome.stdout_digest = stdout;
