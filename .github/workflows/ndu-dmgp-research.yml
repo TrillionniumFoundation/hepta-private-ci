@@ -1,0 +1,20 @@
+name: NDU-DMGP research conformance
+on:
+  pull_request:
+    paths:
+      - 'research/ndu_dmgp/**'
+      - '.github/workflows/ndu-dmgp-research.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  deterministic-reference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fail-closed A0-A5 reference invariants
+        run: python3 -m unittest discover -s research/ndu_dmgp -p 'test_*.py' -v
