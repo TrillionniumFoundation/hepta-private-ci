@@ -265,13 +265,12 @@ fn canonical_record_and_final_use_envelopes_deny_unknown_fields() {
 
     // A syntactically well-formed Verified claim with an unknown extension
     // is not valid authority; lossless canonical parsing must reject it.
-    let mut verified = serde_json::to_value(ExecutionRecord::ExecutionIntent(
-        ExecutionIntent {
-            binding: binding(ExecutionClass::DurableProcess),
-            class: ExecutionClass::DurableProcess,
-            payload_digest: digest(6),
-        },
-    )).unwrap();
+    let verified_claim = ExecutionRecord::ExecutionIntent(ExecutionIntent {
+        binding: binding(ExecutionClass::DurableProcess),
+        class: ExecutionClass::DurableProcess,
+        payload_digest: digest(6),
+    });
+    let mut verified = serde_json::to_value(verified_claim).unwrap();
     verified["record"]["binding"]["final_use"]["extra_grant"] =
         serde_json::json!("hidden");
     assert!(serde_json::from_value::<ExecutionRecord>(verified).is_err());
