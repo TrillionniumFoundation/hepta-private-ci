@@ -1,0 +1,64 @@
+{
+  "checkpoint_archive_receipt": "hepta-memory-population-checkpoints-20261023.zip.receipt.json",
+  "evidence_sources": [
+    "memory-population-20261023",
+    "memory-codec-validation-20261023",
+    "memory-population-fixture-validation-20261023",
+    "memory-population-mechanics-validation-20261023",
+    "memory-population-reporting-validation-20261023",
+    "memory-population-audit-validation-20261023",
+    "memory-population-validation-20261023",
+    "memory-population-ci-preflight-20261023",
+    "memory-population-independent-launch-review-20261023",
+    "memory-population-protocol-review-20261023.json",
+    "hepta-private-ci/scripts/memory_cell_router/validation",
+    "hepta-private-ci/scripts/memory_cell_population/validation",
+    "memory-population-evidence-assembly-20261023/assemble_evidence.py",
+    "memory-population-evidence-assembly-20261023/selfcheck_assembly.py",
+    "memory-population-evidence-assembly-20261023/helper-selfcheck-r1.log",
+    "memory-population-evidence-assembly-20261023/helper-selfcheck-r1-receipt.json",
+    "memory-population-evidence-assembly-20261023/syntax-check-r1.json",
+    "memory-population-evidence-assembly-20261023/syntax-check-r2.json",
+    "memory-population-evidence-assembly-20261023/checkpoint-receipt-interface-review-r1-failure.log",
+    "memory-population-evidence-assembly-20261023/checkpoint-receipt-interface-review-r1-failure.json",
+    "memory-population-evidence-assembly-20261023/checkpoint-receipt-interface-review-r2.json",
+    "memory-population-evidence-assembly-20261023/README.md",
+    "memory-population-evidence-assembly-20261023/assembly-spec.template.json",
+    "memory-population-source-selection-review-20261023",
+    "memory-population-packaging-20261023",
+    "memory-population-evidence-assembly-20261023/assembly-spec.before-extra-evidence-roots-r1.json",
+    "memory-population-evidence-assembly-20261023/evidence-roots-update-r1.json",
+    "memory-population-ci-repair-20261023",
+    "memory-population-evidence-assembly-20261023/assembly-spec.before-ci-repair-root-r2.json",
+    "memory-population-evidence-assembly-20261023/evidence-roots-update-r2.json",
+    "memory-population-relocated-replay-20261023",
+    "memory-population-publication-20261023",
+    "memory-population-evidence-assembly-20261023"
+  ],
+  "independent_audit": "memory-population-independent-launch-review-20261023/independent-cohort-audit.json",
+  "isolated_replay_receipt": "memory-population-relocated-replay-20261023/isolated-replay-receipt.json",
+  "isolated_replay_result": "memory-population-relocated-replay-20261023/attempt-002/replay/replay-result.json",
+  "narratives": {
+    "README.md": "memory-population-evidence-assembly-20261023/ci-final-status.zh-CN.md",
+    "blocker-register.md": "memory-population-evidence-assembly-20261023/ci-final-status.zh-CN.md",
+    "summary.md": "memory-population-publication-20261023/research-report-r2.zh-CN.md"
+  },
+  "raw_payload_exact_exceptions": [
+    {
+      "bytes": 20480,
+      "path": "memory-population-relocated-replay-20261023/attempt-002/replay/owners.sqlite3",
+      "sha256": "faf9e3fc60388d9e3007f7a8820806d96ad2df367c0e77e7f69fae9e3c3bf03f"
+    }
+  ],
+  "restore_tools_archive_receipt": "hepta-memory-population-restore-tools-20261023.zip.receipt.json",
+  "schema": "hepta.population.evidence-assembly-spec.v1",
+  "seeds": [
+    1907,
+    2719,
+    4051
+  ],
+  "source_head": "07df4a9cc385375cddded5b5e3b99632ce0652ec",
+  "source_stack": "memory-population-validation-20261023/published-source-stack.json",
+  "study_root": "memory-population-20261023",
+  "suggested_repository_destination": "qa/stem-bakeoff/evidence/20261023-memory-population"
+}

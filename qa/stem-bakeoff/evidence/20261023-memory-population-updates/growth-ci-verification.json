@@ -1,0 +1,559 @@
+{
+  "artifact": {
+    "bytes": 8590,
+    "created_at": "2026-10-23T11:08:13Z",
+    "digest_matches_api_metadata_and_job_upload_log": true,
+    "expired_at_observation": false,
+    "expires_at": "2026-11-06T11:08:12Z",
+    "id": 12496837511,
+    "members_preserved": [
+      {
+        "bytes": 1067,
+        "path": "admission.log",
+        "sha256": "06393793ad94a0376351f5847b8db069529e1af3d84a2bf50874a05c7b641e9c"
+      },
+      {
+        "bytes": 1084,
+        "path": "catalog.log",
+        "sha256": "ad697a66c9307d866c81cdce4aa8c4e5d90bd1664b757b2e064b04e0b7b4749f"
+      },
+      {
+        "bytes": 3739,
+        "path": "evolution.log",
+        "sha256": "586ca0452a00fdea851b63e890179a88beab3e4a5e28e9ac7695c56910ed9767"
+      },
+      {
+        "bytes": 1176,
+        "path": "growth.log",
+        "sha256": "531e3243e67d4876d4abe61016f0f6df52de2937a6aeaec71693dfe8b423bdb5"
+      },
+      {
+        "bytes": 11489,
+        "path": "install.log",
+        "sha256": "280fde9e22386f6182991226ba78896235d18917bbfddc2d849b6e8f23200426"
+      },
+      {
+        "bytes": 4892,
+        "path": "parametric-unit.log",
+        "sha256": "bd72b6e27ff06a646b36cb3cd47574386441663b54846dbec38b9a9ec9eacd54"
+      },
+      {
+        "bytes": 2752,
+        "path": "process.log",
+        "sha256": "f5dec061b97e6b2244cc99cc4577cb16301683eddedc2689e03781de66e76c04"
+      },
+      {
+        "bytes": 478,
+        "path": "runtime.txt",
+        "sha256": "81faab15e929211920068cef00e09e420af085764aee76b92d773497319a4314"
+      },
+      {
+        "bytes": 4669,
+        "path": "source.json",
+        "sha256": "951def5369fce097dffc19d4ab84d7aa90391fbf99c29feb53591c4f5aed84ba"
+      }
+    ],
+    "name": "parametric-memory-next-shadow-2b42a265e51ad2ac0d2127e8f6b81cc4fa4d1b3b",
+    "original_zip_preserved": true,
+    "sha256": "bfd5b9b39c49a84c0f2eea303efdfd890a9b88059a2e7cf7db35d6f00d1b1e2e"
+  },
+  "job": {
+    "completed_at": "2026-10-23T11:08:16Z",
+    "conclusion": "success",
+    "head_sha": "2b42a265e51ad2ac0d2127e8f6b81cc4fa4d1b3b",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39920456698/job/120304154416",
+    "id": 120304154416,
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "name": "memory-growth-and-admission",
+    "run_attempt": 1,
+    "runner_id": 1000211959,
+    "started_at": "2026-10-23T11:06:01Z",
+    "status": "completed"
+  },
+  "observation_window_utc": {
+    "first_api_started": "2026-10-23T11:21:39.014Z",
+    "last_artifact_transfer_finished": "2026-10-23T11:24:39.214739+00:00"
+  },
+  "pagination": {
+    "artifacts_retained": 1,
+    "artifacts_total": 1,
+    "complete": true,
+    "jobs_retained": 1,
+    "jobs_total": 1
+  },
+  "passed": true,
+  "raw_file_pins": {
+    "artifact-12496837511-original.zip": {
+      "bytes": 8590,
+      "sha256": "bfd5b9b39c49a84c0f2eea303efdfd890a9b88059a2e7cf7db35d6f00d1b1e2e"
+    },
+    "artifact-original-files/admission.log": {
+      "bytes": 1067,
+      "sha256": "06393793ad94a0376351f5847b8db069529e1af3d84a2bf50874a05c7b641e9c"
+    },
+    "artifact-original-files/catalog.log": {
+      "bytes": 1084,
+      "sha256": "ad697a66c9307d866c81cdce4aa8c4e5d90bd1664b757b2e064b04e0b7b4749f"
+    },
+    "artifact-original-files/evolution.log": {
+      "bytes": 3739,
+      "sha256": "586ca0452a00fdea851b63e890179a88beab3e4a5e28e9ac7695c56910ed9767"
+    },
+    "artifact-original-files/growth.log": {
+      "bytes": 1176,
+      "sha256": "531e3243e67d4876d4abe61016f0f6df52de2937a6aeaec71693dfe8b423bdb5"
+    },
+    "artifact-original-files/install.log": {
+      "bytes": 11489,
+      "sha256": "280fde9e22386f6182991226ba78896235d18917bbfddc2d849b6e8f23200426"
+    },
+    "artifact-original-files/parametric-unit.log": {
+      "bytes": 4892,
+      "sha256": "bd72b6e27ff06a646b36cb3cd47574386441663b54846dbec38b9a9ec9eacd54"
+    },
+    "artifact-original-files/process.log": {
+      "bytes": 2752,
+      "sha256": "f5dec061b97e6b2244cc99cc4577cb16301683eddedc2689e03781de66e76c04"
+    },
+    "artifact-original-files/runtime.txt": {
+      "bytes": 478,
+      "sha256": "81faab15e929211920068cef00e09e420af085764aee76b92d773497319a4314"
+    },
+    "artifact-original-files/source.json": {
+      "bytes": 4669,
+      "sha256": "951def5369fce097dffc19d4ab84d7aa90391fbf99c29feb53591c4f5aed84ba"
+    },
+    "growth-artifact-download-receipt.json": {
+      "bytes": 2415,
+      "sha256": "c4666cd0492b6e6ae8f1a612030dfbb5ffff291ebe469b87936b5804b646f913"
+    },
+    "growth-artifacts-api-response.json": {
+      "bytes": 839,
+      "sha256": "3869c4472b2d5c4d966dda83414f24478ae3ad4a25951bd26353d727a9d8feb8"
+    },
+    "growth-artifacts-connector-response.json": {
+      "bytes": 2554,
+      "sha256": "ed327abb388768725c324b2df48c1c4397319e65b7c4cc836cd9023ac9ae0e2b"
+    },
+    "growth-artifacts-request.json": {
+      "bytes": 254,
+      "sha256": "ba55c230bc8076d3b4e1b7fd4c5dbe3c32390133238759d772abe77f0c3e9113"
+    },
+    "growth-job-logs-connector-response.json": {
+      "bytes": 68908,
+      "sha256": "17a8cef32912e2e9f02ec262bc101b42c85adee9254f29b5640eb54d1432d421"
+    },
+    "growth-job-logs-request.json": {
+      "bytes": 300,
+      "sha256": "78884e6a2e325291aee3a37892bced4bed5bf92df9fa45f3e4f6425b5de5756c"
+    },
+    "growth-jobs-api-response.json": {
+      "bytes": 3304,
+      "sha256": "a9f7b5ee50634895e811d1237328a5c41d4a109fcb006b72ed516cd278055724"
+    },
+    "growth-jobs-connector-response.json": {
+      "bytes": 8076,
+      "sha256": "dc71ac156f2f0d2bcef61cd74f830716780893acb6574797643b022328f7bde6"
+    },
+    "growth-jobs-request.json": {
+      "bytes": 258,
+      "sha256": "afe6d2e1d71c07f1146e8951762751daa2f5a65a3b79c763ab2bba6575bb2a5f"
+    },
+    "growth-run-api-response.json": {
+      "bytes": 14982,
+      "sha256": "b48f2b90dcb103162b2adb2a087fdccd943c469617e08a8380193bc959d1cd20"
+    },
+    "growth-run-connector-response.json": {
+      "bytes": 32324,
+      "sha256": "feb170b7ddce52ff8978192f11da333b04bb6a338c4daf38f1b45ba715100756"
+    },
+    "growth-run-request.json": {
+      "bytes": 218,
+      "sha256": "953d4680af5aa1c9aa02425cc44865ec12cdd086729bd549d042966ba28222cf"
+    },
+    "job-120304154416-original.log": {
+      "bytes": 67373,
+      "sha256": "3e4fd6ca6546c7f43b20b210038f81daacccd265142c977883c6472187208a9a"
+    }
+  },
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "review_completed_utc": "2026-10-23T11:26:04.123406+00:00",
+  "run": {
+    "conclusion": "success",
+    "created_at": "2026-10-23T07:50:19Z",
+    "head_sha": "2b42a265e51ad2ac0d2127e8f6b81cc4fa4d1b3b",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39920456698",
+    "id": 39920456698,
+    "run_attempt": 1,
+    "status": "completed",
+    "updated_at": "2026-10-23T11:08:17Z"
+  },
+  "runtime": {
+    "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+    "python": "3.12.15",
+    "runtime_freeze_original_file": "artifact-original-files/runtime.txt",
+    "runtime_freeze_text": "accelerate==1.10.1\ncertifi==2026.10.19\ncharset-normalizer==3.5.2\nfilelock==3.32.3\nfsspec==2026.7.0\nhf-xet==1.7.0\nhuggingface-hub==0.35.3\nidna==3.20\nJinja2==3.1.6\nMarkupSafe==3.0.3\nmpmath==1.3.0\nnetworkx==3.6.1\nnumpy==1.26.4\npackaging==26.3\npeft==0.17.1\npsutil==7.2.2\nPyYAML==6.0.3\nregex==2026.9.29\nrequests==2.34.2\nsafetensors==0.6.2\nsetuptools==78.1.0\nsympy==1.13.1\ntokenizers==0.22.2\ntorch==2.5.1+cpu\ntqdm==4.70.1\ntransformers==4.57.1\ntyping_extensions==4.16.0\nurllib3==2.8.0\n"
+  },
+  "schema": "hepta.population.post-assembly-growth-ci-review.v1",
+  "scope": {
+    "artifact_transfer_initial_sandbox_denial_preserved_in_download_receipt": true,
+    "ci_rerun_or_cancellation": false,
+    "frozen_evidence_inputs_modified": false,
+    "frozen_source_head_after": "07df4a9cc385375cddded5b5e3b99632ce0652ec",
+    "frozen_source_head_before": "07df4a9cc385375cddded5b5e3b99632ce0652ec",
+    "full_growth_confirmation_executed": false,
+    "log_preservation": "connector-decoded UTF-8 re-encoded without content edits; BOM retained",
+    "mode": "SHADOW_ONLY",
+    "new_local_models_or_tests_executed": false,
+    "other_workflow_runs_refreshed": false,
+    "population_scientific_gates_changed": false,
+    "pretrained_model_download": false,
+    "production_activation_allowed": false,
+    "remote_mutations": false,
+    "this_growth_ci_count_is_not_added_to_population_distinct_test_count": true
+  },
+  "source_binding": {
+    "all_artifact_hashes_match_exact_git_revision": true,
+    "artifact_fixture_files": 2,
+    "artifact_python_files": 33,
+    "confirm_source_tree_unchanged_step_success": true,
+    "file_checks": [
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/citation_audit.py",
+        "sha256": "3438ed19b0dc6a5005511066e400234aea6a269da7c1eb8e0e6a0bae2a67a9d9"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/event_projection.py",
+        "sha256": "acded45612e6e5b39673fef62580cf3168ae59f4322bad19d169ded768fcd696"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/experience_inference.py",
+        "sha256": "278d9e485544d31037482a6ecc49e4985dc5ec8a5f141293665bcd352bdcceaf"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/grounded_protocol.py",
+        "sha256": "b1292d6974ba5644a9ea9bd39297d16c7c17be6a0546ae023b73c593fabb76de"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/native.py",
+        "sha256": "523389c9df28280b8fffe070f02af38bbcf1a1507130c914ced4163295c4cbd1"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/parametric_cohort.py",
+        "sha256": "fad36043c7273cbd33b34d8d6b2b4ec504016cc547907bd3eee0d573fca0624b"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/parametric_evolution.py",
+        "sha256": "b3ccbf6725c63b87e424a2958f03d689f1e6448fdadf0381c4cbb91301760cbc"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/parametric_lifecycle_trial.py",
+        "sha256": "ae9a642bb8e10f4b4ac73628958a9c2822c51275ddaef11c96ac0471ad16fedc"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/parametric_metrics.py",
+        "sha256": "e593dd4f2f765d3a38ab4cb34193ff7387f1fda58d66e2e144194fdc12c281de"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/parametric_model.py",
+        "sha256": "d3af2483ddcf66f830d1ea440405da8b03cca1f850069ffb5c5272c3d6c89760"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/parametric_network_trial.py",
+        "sha256": "ec2199b74bdf624e5697bca114a1f2572ef9fcce4a93b38c962b5fe67cb2d424"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/parametric_owner.py",
+        "sha256": "8525d074ee5cb817f8eb5f94d40039a2598c293c9f362653a04606b07e3ac672"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/parametric_trial.py",
+        "sha256": "60d7a8e25ac35921b12ba8ff3b14765b989e93ab73d5115d2aa973ab19fba942"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/parametric_worker.py",
+        "sha256": "8c06a1b6b18e98c92b4c09ddad80de2f5f3db9f140085618a8c1931a64e39366"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/prepare_parametric.py",
+        "sha256": "ff0b1aa9b2eea7f6f1c3c64782a2b4118ef92bcbd6b8531651f15d723ced4ab2"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/pretrained.py",
+        "sha256": "bd01b8596f5158ae587c9535ef34fcf66d6ce1c76b679cfb78c329b3448ac03a"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/sessions.py",
+        "sha256": "82ad3363cda9ed9d155487a96e0dc409ad66253cf0694498c807c4d1b10baec4"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/source_binding_margin.py",
+        "sha256": "8fb1452baf2b17a501bd53fda6647546bde2607946a7ec4f2beb38798c902da8"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/source_completion_loss.py",
+        "sha256": "c01b67f32fd5fa309dad15e055176fc17b4acae09c1e8315b45d9e991eb3430b"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/tensor_contract.py",
+        "sha256": "9060f62579de6ed0feea7b8ec9cbd066552308c6371ecbd2fb00309d9ddd244a"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/test_parametric_evolution.py",
+        "sha256": "f7110f10ee8cbd60d454a1c26bd28be77f343c40187a01950fb2258aae1bda6a"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/test_parametric_model.py",
+        "sha256": "96c40b58a86db45e0ab86891a22d3266c7a3ccea364f817d414ee55549ba6ea2"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/test_parametric_owner.py",
+        "sha256": "ed98463dd703ea143ec98b46a1bfe5e184a8aca821328e31d749f22ebaae4369"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell/test_parametric_transport.py",
+        "sha256": "c1b19652d307771fc7577988e12ff437d7da9c791be4f26a49803bff471f460a"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell_catalog/metadata_catalog.py",
+        "sha256": "dd0056057a91b084b349eecb975cafe5a0f62e3d95f0ca82b557aa549339538f"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell_catalog/test_metadata_catalog.py",
+        "sha256": "d01f3a1116699eec2158218daa686cb413c577becf14269f6cbfd4b9f293dcf2"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell_growth/fixtures/clean-replay-facts.json",
+        "sha256": "1e2ee44982654500732596e6d41e4f7222702ce3b187f2eb1fced0c24afd70ce"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell_growth/fixtures/parent-provenance.json",
+        "sha256": "ac920436b96e5dd9e2646add53db932d63b8d0f890a9675c9eca1beb587f430d"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell_growth/growth_policy.py",
+        "sha256": "0144c72537f2ea9612e826d5d55a32339a830701c9191cf637c353402250ed2b"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell_growth/growth_protocol.py",
+        "sha256": "8ecd68ac2ea8cacf9da29d7cf09adfcc186be39667ec6c7b8bff161d72152a84"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell_growth/growth_reads.py",
+        "sha256": "465aa4c4e548a8b5fa08e04f9af771f67a859fe73e515b041be0f0a97b8c1401"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell_growth/growth_runtime.py",
+        "sha256": "e9aa7bddf365cafffafdccb351d7a01cd5b31cf97c0da5a21b6d5a3a3e7634ac"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell_growth/growth_trial.py",
+        "sha256": "4eb1ae6d4ae5fbe4e00d9da98a4515fef3a7b38872e43f502714064c32d89d57"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell_growth/test_growth.py",
+        "sha256": "7b1365043e57a4ddf71d03cfaf3ab04a2399cc905cab6792833f5c3ddf0a6bee"
+      },
+      {
+        "matches_exact_git_revision": true,
+        "path": "scripts/memory_cell_hardening/test_owner_admission.py",
+        "sha256": "06a093d9f4e6e24197fcb913233e8f78299f31ce094facb8850738d1106f2695"
+      }
+    ],
+    "source_before_and_after_assertions_in_job_log": 2,
+    "source_sha": "2b42a265e51ad2ac0d2127e8f6b81cc4fa4d1b3b",
+    "tree_sha": "78d3287f92f3abbca4843d746b975aed922c3d36"
+  },
+  "test_result": {
+    "all_named_ids_match_artifact_logs_in_order": true,
+    "distinct_test_ids": 82,
+    "module_counts": {
+      "test_cell_evolution": 22,
+      "test_cell_process_inference": 14,
+      "test_growth": 6,
+      "test_metadata_catalog": 6,
+      "test_owner_admission": 7,
+      "test_parametric_evolution": 4,
+      "test_parametric_model": 9,
+      "test_parametric_owner": 9,
+      "test_parametric_transport": 5
+    },
+    "reported_suite_counts": [
+      27,
+      6,
+      6,
+      7,
+      22,
+      14
+    ],
+    "six_suites_all_ok": true,
+    "suite_results": [
+      {
+        "artifact_member": "parametric-unit.log",
+        "distinct_test_ids": [
+          "test_parametric_evolution.ParametricEvolutionTests.test_actual_two_slot_descendants_match_budget_and_preserve_parent",
+          "test_parametric_evolution.ParametricEvolutionTests.test_final_targets_and_unbounded_or_nonheldout_inputs_never_execute",
+          "test_parametric_evolution.ParametricEvolutionTests.test_routing_does_not_change_when_only_adapter_or_values_change",
+          "test_parametric_evolution.ParametricEvolutionTests.test_selection_keeps_parent_when_candidates_regress",
+          "test_parametric_model.SourceMemoryCellTests.test_actual_exposure_masking_and_frozen_matched_generation",
+          "test_parametric_model.SourceMemoryCellTests.test_flush_failure_does_not_return_an_admitted_snapshot",
+          "test_parametric_model.SourceMemoryCellTests.test_global_hooks_cannot_modify_foreign_parameters",
+          "test_parametric_model.SourceMemoryCellTests.test_margin_charges_both_forwards_and_source_lineages",
+          "test_parametric_model.SourceMemoryCellTests.test_partial_nonfinite_write_is_quarantined_and_frozen",
+          "test_parametric_model.SourceMemoryCellTests.test_rejects_source_leakage_bounds_and_numeric_errors",
+          "test_parametric_model.SourceMemoryCellTests.test_save_rejects_weights_changed_after_the_receipt",
+          "test_parametric_model.SourceMemoryCellTests.test_seeded_epochs_cover_every_source_template_and_reproduce",
+          "test_parametric_model.SourceMemoryCellTests.test_verified_parent_continuation_and_clean_reset",
+          "test_parametric_owner.ParametricOwnerTests.test_cas_change_during_callback_discards_result",
+          "test_parametric_owner.ParametricOwnerTests.test_checkpoint_mutation_before_and_during_callback_is_rejected",
+          "test_parametric_owner.ParametricOwnerTests.test_failed_activation_latches_frontier_and_same_digest_cas_uses_generation",
+          "test_parametric_owner.ParametricOwnerTests.test_frontier_change_during_callback_discards_result",
+          "test_parametric_owner.ParametricOwnerTests.test_independent_processes_cannot_both_win_cas",
+          "test_parametric_owner.ParametricOwnerTests.test_parent_generation_scope_allowed_roots_and_nonfinite_are_enforced",
+          "test_parametric_owner.ParametricOwnerTests.test_query_revocation_rejects_before_callback_and_is_latched",
+          "test_parametric_owner.ParametricOwnerTests.test_rejected_ancestor_frontier_survives_restart_and_clean_replay",
+          "test_parametric_owner.ParametricOwnerTests.test_restart_retains_pointer_and_only_passes_metadata",
+          "test_parametric_transport.ParametricTransportTests.test_binding_measurement_uses_decoder_logits_without_generation_or_updates",
+          "test_parametric_transport.ParametricTransportTests.test_extra_source_gold_or_lexicon_rejected_before_model_construction",
+          "test_parametric_transport.ParametricTransportTests.test_prepare_rejects_an_extra_chat_template_without_downloading",
+          "test_parametric_transport.ParametricTransportTests.test_real_matched_controls_have_distinct_effective_parameter_states",
+          "test_parametric_transport.ParametricTransportTests.test_sqlite_executes_complete_word_queries_and_retains_unresolved_reads"
+        ],
+        "outcome": "OK",
+        "seconds": 5.0,
+        "tests": 27
+      },
+      {
+        "artifact_member": "catalog.log",
+        "distinct_test_ids": [
+          "test_metadata_catalog.MetadataCatalogTests.test_catalog_tamper_before_or_during_forward_is_rejected",
+          "test_metadata_catalog.MetadataCatalogTests.test_known_key_uses_fixed_question_and_preserves_raw_response",
+          "test_metadata_catalog.MetadataCatalogTests.test_metadata_rejects_values_duplicate_keys_and_injection",
+          "test_metadata_catalog.MetadataCatalogTests.test_read_has_no_question_override_or_template_injection",
+          "test_metadata_catalog.MetadataCatalogTests.test_stale_catalog_and_unowned_source_cannot_forward",
+          "test_metadata_catalog.MetadataCatalogTests.test_unknown_and_withdrawn_keys_do_not_call_model"
+        ],
+        "outcome": "OK",
+        "seconds": 0.063,
+        "tests": 6
+      },
+      {
+        "artifact_member": "growth.log",
+        "distinct_test_ids": [
+          "test_growth.GrowthCostTests.test_rss_units_and_unavailable_measurements_are_explicit",
+          "test_growth.GrowthDecoderTests.test_actual_arrivals_preserve_ancestry_and_execute_closed_fresh_readers",
+          "test_growth.GrowthDecoderTests.test_new_sources_must_be_distinct_and_rejected_before_any_model_call",
+          "test_growth.GrowthDecoderTests.test_revoked_old_or_new_sources_are_rejected_before_model_load_or_fit",
+          "test_growth.GrowthPolicyTests.test_ties_keep_parent_and_split_requires_two_over_eligible_cheaper",
+          "test_growth.GrowthPolicyTests.test_unmatched_costs_nonboolean_or_final_scores_are_rejected"
+        ],
+        "outcome": "OK",
+        "seconds": 15.989,
+        "tests": 6
+      },
+      {
+        "artifact_member": "admission.log",
+        "distinct_test_ids": [
+          "test_owner_admission.BoundedFileTests.test_fifo_and_replacement_race_reject_without_blocking",
+          "test_owner_admission.BoundedFileTests.test_mutation_during_read_is_rejected",
+          "test_owner_admission.BoundedFileTests.test_regular_file_and_bounds",
+          "test_owner_admission.BoundedFileTests.test_regular_inode_replacement_during_open_is_rejected",
+          "test_owner_admission.BoundedFileTests.test_symlink_rejected",
+          "test_owner_admission.OwnerAdmissionTests.test_peer_version_change_during_validation_prevents_callback",
+          "test_owner_admission.OwnerAdmissionTests.test_peer_withdrawal_during_validation_prevents_callback"
+        ],
+        "outcome": "OK",
+        "seconds": 3.279,
+        "tests": 7
+      },
+      {
+        "artifact_member": "evolution.log",
+        "distinct_test_ids": [
+          "test_cell_evolution.CellEvolutionTests.test_ancestral_teacher_and_router_withdrawals_invalidate_whole_snapshot",
+          "test_cell_evolution.CellEvolutionTests.test_budget_denial_precedes_any_head_forward_and_leaves_parent_selected",
+          "test_cell_evolution.CellEvolutionTests.test_clean_parent_can_recover_from_withdrawn_child_only_sources",
+          "test_cell_evolution.CellEvolutionTests.test_global_optimizer_hook_cannot_mutate_parent",
+          "test_cell_evolution.CellEvolutionTests.test_holdout_labels_do_not_change_descendant_or_router_weights",
+          "test_cell_evolution.CellEvolutionTests.test_leakage_and_stale_candidate_fail_closed",
+          "test_cell_evolution.CellEvolutionTests.test_merge_executes_real_teacher_predictions_and_updates_student",
+          "test_cell_evolution.CellEvolutionTests.test_npz_corruption_and_snapshot_tamper_reject_real_reload",
+          "test_cell_evolution.CellEvolutionTests.test_owner_can_commit_clean_recovery_after_child_withdrawal",
+          "test_cell_evolution.CellEvolutionTests.test_owner_commit_cannot_roll_back_observed_frontier",
+          "test_cell_evolution.CellEvolutionTests.test_owner_observed_frontier_cannot_roll_back",
+          "test_cell_evolution.CellEvolutionTests.test_owner_rejected_withdrawal_remains_latched",
+          "test_cell_evolution.CellEvolutionTests.test_owner_same_epoch_frontier_fork_is_rejected",
+          "test_cell_evolution.CellEvolutionTests.test_query_revoked_during_forward_discards_and_latches",
+          "test_cell_evolution.CellEvolutionTests.test_real_npz_warm_start_private_children_and_atomic_dispatch",
+          "test_cell_evolution.CellEvolutionTests.test_retirement_executes_zero_calls_to_retired_cell",
+          "test_cell_evolution.CellEvolutionTests.test_revocation_during_actual_prediction_discards_entire_output",
+          "test_cell_evolution.CellEvolutionTests.test_rollback_never_rolls_back_current_withdrawal_frontier",
+          "test_cell_evolution.CellEvolutionTests.test_rollback_reloads_original_artifacts_under_fresh_generations",
+          "test_cell_evolution.CellEvolutionTests.test_snapshot_adopts_reloaded_weights_without_unaccounted_training_gradients",
+          "test_cell_evolution.CellEvolutionTests.test_static_continuation_uses_own_parent_with_exact_same_update_budget",
+          "test_cell_evolution.CellEvolutionTests.test_withdrawn_query_rejected_before_forward"
+        ],
+        "outcome": "OK",
+        "seconds": 8.523,
+        "tests": 22
+      },
+      {
+        "artifact_member": "process.log",
+        "distinct_test_ids": [
+          "test_cell_process_inference.CellProcessInferenceTests.test_bounded_codec_and_all_identity_fields_are_enforced",
+          "test_cell_process_inference.CellProcessInferenceTests.test_corrupted_features_and_reordered_request_fail_before_execution",
+          "test_cell_process_inference.CellProcessInferenceTests.test_generation_change_after_execution_discards_old_result_no_fallback",
+          "test_cell_process_inference.CellProcessInferenceTests.test_lifetime_limit_closes_pool_before_router_or_head_execution",
+          "test_cell_process_inference.CellProcessInferenceTests.test_lowered_budget_with_no_candidate_executes_no_head",
+          "test_cell_process_inference.CellProcessInferenceTests.test_mutated_feature_storage_after_dispatch_is_not_published",
+          "test_cell_process_inference.CellProcessInferenceTests.test_one_two_workers_reload_real_npz_and_match_reference_exactly",
+          "test_cell_process_inference.CellProcessInferenceTests.test_real_worker_crash_is_rejected",
+          "test_cell_process_inference.CellProcessInferenceTests.test_real_worker_timeout_is_bounded_and_pool_is_not_reused",
+          "test_cell_process_inference.CellProcessInferenceTests.test_replayed_response_and_worker_supplied_digest_cannot_replace_owner_pin",
+          "test_cell_process_inference.CellProcessInferenceTests.test_revoke_after_worker_execution_discards_result_and_latches_frontier",
+          "test_cell_process_inference.CellProcessInferenceTests.test_withdrawn_ancestor_and_query_are_rejected_without_head_execution",
+          "test_cell_process_inference.CellProcessInferenceTests.test_worker_reloads_exact_bytes_instead_of_inheriting_owner_parameters",
+          "test_cell_process_inference.CellProcessInferenceTests.test_wrong_feature_scope_is_rejected_before_any_worker_forward"
+        ],
+        "outcome": "OK",
+        "seconds": 36.954,
+        "tests": 14
+      }
+    ]
+  }
+}
