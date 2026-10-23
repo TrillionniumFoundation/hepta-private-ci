@@ -63,7 +63,7 @@ pub(super) async fn validate_private_candidate(
 ) -> Result<(), CognitiveRecoveryError> {
     let connection_gate = commit_gate.clone();
     let pool = config
-        .open_durable_evidence_pool_guarded(&candidate, move || connection_gate.commit_allowed())
+        .open_durable_evidence_pool_guarded(candidate, move || connection_gate.commit_allowed())
         .await
         .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
     let authenticated = async {
@@ -110,19 +110,19 @@ pub(super) async fn validate_private_candidate(
     pool.close().await;
 
     config
-        .checkpoint_private_recovery_database(&candidate)
+        .checkpoint_private_recovery_database(candidate)
         .await
         .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
 
-    cleanup_candidate_sidecars(&candidate)?;
-    protect_database_file(&candidate)
+    cleanup_candidate_sidecars(candidate)?;
+    protect_database_file(candidate)
         .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
     {
         let mut options = std::fs::OpenOptions::new();
         options.read(true);
         #[cfg(windows)]
         options.write(true);
-        let file = options.open(&candidate).map_err(|error| {
+        let file = options.open(candidate).map_err(|error| {
             CognitiveRecoveryError::Unavailable(format!(
                 "open recovered cognitive database for sync: {error}"
             ))
