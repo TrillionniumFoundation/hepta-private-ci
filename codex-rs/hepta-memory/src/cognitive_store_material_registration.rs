@@ -204,5 +204,13 @@ fn verify_pointer(
             "registered active pointer bytes changed".into(),
         ));
     }
+    let after = file
+        .metadata()
+        .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+    if snapshot(&after) != snapshot(expected) {
+        return Err(CognitiveRecoveryError::Indeterminate(
+            "registered active pointer changed during observation".into(),
+        ));
+    }
     Ok(())
 }
