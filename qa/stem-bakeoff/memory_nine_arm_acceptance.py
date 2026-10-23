@@ -474,10 +474,17 @@ def adjudicate(plan, public, manifests, artifact_root, attempts, sealed, source,
             and seal_record.get("attempts_sha256") == sha(Path(attempts).read_bytes())
             and seal_record.get("plan_sha256") == sha(canonical(plan))
             and seal_record.get("public_projection_sha256") == sha(canonical(public))
-            and seal_record.get("artifact_manifest_sha256") == sha(canonical(manifests)),
+            and seal_record.get("artifact_manifest_sha256") == sha(canonical(manifests))
+            and seal_record.get("gold_opened") is False
+            and seal_record.get("model_outputs_independently_reexecuted") is False
+            and seal_record.get("production_activation_allowed") is False,
             "sealed predictions or bindings changed")
     rows, totals = validate_attempts(plan, public, manifests, artifact_root,
                                      attempts, require_original=require_original)
+    require(seal_record.get("resource_totals") == totals
+            and seal_record.get("question_arm_rows") == len(rows)
+            and seal_record.get("attempts_sha256") == sha(Path(attempts).read_bytes()),
+            "postseal resource census, row count or attempt bytes drift")
     corpora, queries, gold = load_source(source)
     expected_public = {
         "schema": SOURCE_SCHEMA, "source_sha256": SOURCE_SHA256,
@@ -548,6 +555,7 @@ def adjudicate(plan, public, manifests, artifact_root, attempts, sealed, source,
         "sealed_attempts_sha256": seal_record["attempts_sha256"],
         "arms": per_arm, "comparisons": entries,
         "physical_resource_totals_self_reported": totals,
+        "matched_total_resource_cost_verified": False,
         "evaluation_question_census": sum(q.group in PARTITIONS["evaluation"] for q in queries),
         "independent_source_groups": 6,
         "answer_correctness_measured": False,
