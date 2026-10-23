@@ -41,7 +41,7 @@ impl AgentdProductionWriterHost {
         };
         let receipt = checkpoint.current_receipt;
         if authority.agent_id != config.identity().agent_id
-            || lease_generation != config.identity().spawn_generation
+            || lease_generation == 0
             || receipt.head.owner_agent_id != authority.agent_id
             || receipt.head.writer_binding != binding
             || receipt.head.phase != CognitiveCheckpointPhase::Current
@@ -67,9 +67,15 @@ impl AgentdProductionWriterHost {
             .map_err(|error| {
                 AgentdError::Protocol(format!("bind protected cognitive checkpoint: {error}"))
             })?;
-        let host =
-            Self::from_recovered_store(store, authority, verifier, lease_id, lease_generation)
-                .await?;
+        let host = Self::from_recovered_store(
+            config.identity().spawn_generation,
+            store,
+            authority,
+            verifier,
+            lease_id,
+            lease_generation,
+        )
+        .await?;
         Ok((host, checkpoint))
     }
 }

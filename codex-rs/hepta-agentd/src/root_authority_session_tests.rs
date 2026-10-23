@@ -192,6 +192,45 @@ async fn exact_original_consumers_activate_writer_and_drop_fences_retained_clone
         .await
         .unwrap();
     verifier.verify(&authority, &authority.agent_id).unwrap();
+    let (trust, _) = fixture();
+    verifier
+        .verify_sender_process_binding(
+            &authority,
+            &authority.agent_id,
+            &trust.local_lease_id,
+            trust.local_lease_generation,
+            trust.spawn_generation,
+        )
+        .unwrap();
+    for (lease_id, local, spawn) in [
+        (
+            "wrong-local-lease",
+            trust.local_lease_generation,
+            trust.spawn_generation,
+        ),
+        (
+            trust.local_lease_id.as_str(),
+            trust.local_lease_generation + 1,
+            trust.spawn_generation,
+        ),
+        (
+            trust.local_lease_id.as_str(),
+            trust.local_lease_generation,
+            trust.spawn_generation + 1,
+        ),
+    ] {
+        assert!(
+            verifier
+                .verify_sender_process_binding(
+                    &authority,
+                    &authority.agent_id,
+                    lease_id,
+                    local,
+                    spawn,
+                )
+                .is_err()
+        );
+    }
     let mut changed = authority.clone();
     changed.owner_epoch += 1;
     assert!(verifier.verify(&changed, &changed.agent_id).is_err());

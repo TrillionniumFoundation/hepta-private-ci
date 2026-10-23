@@ -340,7 +340,7 @@ impl AgentdConfig {
         operations.validate_for(self)?;
         let writer = host.writer();
         if writer.owner_agent_id() != &self.identity.agent_id
-            || writer.generation() != self.identity.spawn_generation
+            || host.spawn_generation() != self.identity.spawn_generation
             || writer.authority() != &operations.authority
             || writer.lease_id() != operations.lease_id
             || writer.generation() != operations.lease_generation
@@ -403,10 +403,10 @@ impl AgentdConfig {
                 "production cognitive writer owner does not match Agentd identity".to_string(),
             ));
         }
-        if writer.generation() != self.identity.spawn_generation {
+        if host.spawn_generation() != self.identity.spawn_generation {
             return Err(AgentdError::GenerationFenced(format!(
-                "production cognitive writer generation {} does not match Agentd spawn generation {}",
-                writer.generation(),
+                "production host spawn generation {} does not match Agentd spawn generation {}",
+                host.spawn_generation(),
                 self.identity.spawn_generation
             )));
         }

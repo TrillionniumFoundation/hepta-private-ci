@@ -224,6 +224,8 @@ impl AgentdProductionOperationRuntimeConfig {
 /// mutate Agentd's runtime configuration; callers explicitly attach/use it.
 #[derive(Clone)]
 pub struct AgentdProductionWriterHost {
+    // Fixed by the original Agentd configuration, independently of local lease CAS.
+    spawn_generation: u64,
     writer: Arc<ProductionDurableWriter>,
     dispatchers: BTreeMap<String, ProductionFinalUseOutboxDispatcher>,
     grants: Option<Arc<GrantProviderWorker>>,
@@ -252,6 +254,10 @@ impl fmt::Debug for AgentdProductionWriterHost {
 }
 
 impl AgentdProductionWriterHost {
+    pub(crate) fn spawn_generation(&self) -> u64 {
+        self.spawn_generation
+    }
+
     /// Open a production writer only from an independently authenticated exact
     /// current cut. No ordinary writable `CognitiveStore::open` fallback exists
     /// at this product boundary.
@@ -297,6 +303,7 @@ impl AgentdProductionWriterHost {
             AgentdError::Protocol(format!("recover production cognitive store: {error}"))
         })?;
         Self::from_recovered_store(
+            config.identity().spawn_generation,
             store,
             authority,
             verifier,
@@ -307,6 +314,7 @@ impl AgentdProductionWriterHost {
     }
 
     async fn from_recovered_store(
+        spawn_generation: u64,
         store: CognitiveStore,
         authority: ProductionAuthorityLease,
         verifier: Arc<dyn ProductionAuthorityVerifier>,
@@ -326,6 +334,7 @@ impl AgentdProductionWriterHost {
         );
         let mutation = Arc::new(writer.cognitive_mutation_capability()?);
         Ok(Self {
+            spawn_generation,
             writer,
             cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(
                 runtime_store,
@@ -357,6 +366,7 @@ impl AgentdProductionWriterHost {
             ProductionDurableWriter::open(store, authority, verifier, lease_id, lease_generation)
                 .await?;
         Ok(Self {
+            spawn_generation: lease_generation,
             writer: Arc::new(writer),
             dispatchers: BTreeMap::new(),
             grants: None,

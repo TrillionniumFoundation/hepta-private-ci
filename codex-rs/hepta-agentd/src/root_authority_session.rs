@@ -91,6 +91,29 @@ impl ProductionAuthorityVerifier for LiveRoot {
             .map(|_| ())
             .map_err(|_| "root writer observation is unavailable or fenced".into())
     }
+
+    fn verify_sender_process_binding(
+        &self,
+        authority: &ProductionAuthorityLease,
+        expected_agent: &AgentId,
+        local_lease_id: &str,
+        local_generation: u64,
+        spawn_generation: u64,
+    ) -> Result<(), String> {
+        self.verify(authority, expected_agent)?;
+        let (observation, _) = self
+            .current()
+            .map_err(|_| "root writer observation is unavailable or fenced".to_string())?;
+        if observation.spawn_generation != spawn_generation
+            || observation.writer.local_lease_id != local_lease_id
+            || observation.writer.local_lease_generation != local_generation
+        {
+            return Err(
+                "sender process binding differs from the verified root registration".into(),
+            );
+        }
+        Ok(())
+    }
 }
 
 /// Keep this handle alive for the whole original owner lifetime. `connect`

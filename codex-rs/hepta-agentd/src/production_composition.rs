@@ -82,6 +82,25 @@ impl ProductionAuthorityVerifier for ProtectedClockVerifier {
         // The external verifier may itself block. Recheck after it returns.
         self.verify_clock(authority)
     }
+
+    fn verify_sender_process_binding(
+        &self,
+        authority: &ProductionAuthorityLease,
+        expected_agent: &AgentId,
+        local_lease_id: &str,
+        local_generation: u64,
+        spawn_generation: u64,
+    ) -> Result<(), String> {
+        self.verify_clock(authority)?;
+        self.inner.verify_sender_process_binding(
+            authority,
+            expected_agent,
+            local_lease_id,
+            local_generation,
+            spawn_generation,
+        )?;
+        self.verify_clock(authority)
+    }
 }
 
 impl AgentdConfig {
@@ -98,14 +117,18 @@ impl AgentdConfig {
             .ok_or(AgentdError::CognitiveWriteRuntimeUnavailable)?;
         let writer = host.writer();
         if writer.owner_agent_id() != &self.identity().agent_id
-            || writer.generation() != self.identity().spawn_generation
+            || host.spawn_generation() != self.identity().spawn_generation
         {
             return Err(AgentdError::GenerationFenced(
                 "Objective sender owner differs from installed Agentd identity".to_string(),
             ));
         }
         writer
-            .objective_sender(checkpoint, deadline)
+            .objective_sender_for_spawn_generation(
+                checkpoint,
+                deadline,
+                self.identity().spawn_generation,
+            )
             .map_err(|error| {
                 AgentdError::Invalid(format!("original Objective sender unavailable: {error}"))
             })
@@ -136,14 +159,13 @@ pub async fn attach_production_operation_host(
         }
         CognitiveRecoveryRequirement::ExactCurrentCut(_) => {}
     }
-    if inputs.lease_generation != config.identity().spawn_generation
-        || inputs.lease_generation == 0
+    if inputs.lease_generation == 0
         || inputs.lease_id.trim().is_empty()
         || inputs.reconcile_interval.is_zero()
         || inputs.target.destination_id().is_empty()
     {
         return Err(AgentdError::Invalid(
-            "production composition requires exact generation and non-empty lease/destination/interval"
+            "production composition requires a non-zero local lease generation and non-empty lease/destination/interval"
                 .to_string(),
         ));
     }
