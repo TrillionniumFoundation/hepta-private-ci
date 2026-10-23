@@ -48,7 +48,6 @@ def fixture():
         cases.append({
             "id": "case:%d" % i, "family_id": "family:%d" % i,
             "window": "future_a" if i < 2 else "future_b",
-            "category": "multi_hop" if i % 2 else "single_hop",
             "question_sha256": h("question:%d" % i),
             "snapshot_sha256": h("snapshot:%d" % i),
             "source_roots": ["root:%d" % i],
@@ -92,6 +91,7 @@ def fixture():
                 "judge_id": "reviewer:separate",
                 "gold_status": "scorable",
                 "gold_support_ids": case["eligible_source_ids"],
+                "category": "multi_hop" if int(case["id"][-1]) % 2 else "single_hop",
                 "correct": True, "grounded": True,
                 "semantic_citation_entailment": True,
                 "proper_abstention": False, "unsafe": False,
@@ -234,7 +234,7 @@ class NineArmGateTests(unittest.TestCase):
 
     def test_source_first_gold_cannot_enter_plan(self):
         p, o, j = fixture()
-        p["cases"][0]["gold_support_ids"] = ["source:0"]
+        p["cases"][0]["category"] = "multi_hop"
         with self.assertRaises(Refused):
             check(p, o, j)
 
