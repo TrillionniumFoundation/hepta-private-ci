@@ -148,8 +148,12 @@ fn submit(
     requests: HmiRequestsV1,
     input: SignedInput,
     tx: &Sender,
+    authority:&OwnerAuthority,
 ) -> Result<Pending, AgentdError> {
     let delivery = input.authenticate(&state)?;
+    if input.key_epoch()!=authority.key_epoch || input.audio_policy()!=authority.audio_policy {
+        return Err(invalid("signed input profile or authority epoch differs from the attached session"));
+    }
     if !input.matches(&state, requests.binding()) {
         return Err(invalid(
             "signed input belongs to another attached owner/thread",
@@ -184,6 +188,11 @@ fn submit(
         match result {
             Ok(Ok(receipt)) if receipt["delivery_id"] == delivery => {
                 json!({"type":"admission","input":context,"receipt":receipt})
+            }
+            Ok(Ok(failed)) if failed.get("audioAdmissionFailure").is_some()=>{
+                let _=requests.stop_output(requests.binding().organ_generation);
+                let failure=&failed["audioAdmissionFailure"];
+                json!({"type":"inputError","input":context,"error":failure["error"],"committedAudioObservation":failure["committedObservation"],"admissionReady":false})
             }
             other => {
                 let _ = requests.stop_output(requests.binding().organ_generation);
@@ -233,7 +242,7 @@ pub(super) async fn serve<R: AsyncBufRead + Unpin>(
         tx.clone(),
     )?;
     let mut pending = if admit {
-        Some(submit(state.clone(), requests.clone(), input, tx)?)
+        Some(submit(state.clone(), requests.clone(), input, tx, &authority)?)
     } else {
         None
     };
@@ -264,11 +273,11 @@ pub(super) async fn serve<R: AsyncBufRead + Unpin>(
                     Command::Stop=>break Ok(()),
                     Command::Submit {request}=>{
                         if pending.is_some(){if let Err(error)=emit(tx,json!({"type":"inputError","error":"input slot busy"})){break Err(error);}continue;}
-                        match submit(state.clone(),requests.clone(),SignedInput::Text(request),tx){Ok(future)=>pending=Some(future),Err(error)=>{if let Err(error)=emit(tx,json!({"type":"inputError","error":error.to_string()})){break Err(error);}}}
+                        match submit(state.clone(),requests.clone(),SignedInput::Text(request),tx,&authority){Ok(future)=>pending=Some(future),Err(error)=>{if let Err(error)=emit(tx,json!({"type":"inputError","error":error.to_string()})){break Err(error);}}}
                     }
                     Command::SubmitAudio {request}=>{
                         if pending.is_some(){if let Err(error)=emit(tx,json!({"type":"inputError","error":"input slot busy"})){break Err(error);}continue;}
-                        match submit(state.clone(),requests.clone(),SignedInput::Audio(request),tx){Ok(future)=>pending=Some(future),Err(error)=>{if let Err(error)=emit(tx,json!({"type":"inputError","error":error.to_string()})){break Err(error);}}}
+                        match submit(state.clone(),requests.clone(),SignedInput::Audio(request),tx,&authority){Ok(future)=>pending=Some(future),Err(error)=>{if let Err(error)=emit(tx,json!({"type":"inputError","error":error.to_string()})){break Err(error);}}}
                     }
                     Command::Attach {..}=>{if let Err(error)=emit(tx,json!({"type":"inputError","error":"attach is only valid as the first command"})){break Err(error);}}
                     Command::ReconcileAudio {request}=>{

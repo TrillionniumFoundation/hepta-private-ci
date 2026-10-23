@@ -44,7 +44,7 @@ pub(crate) async fn run(
     }
 }
 
-async fn tick(state: &AgentdState) -> Result<(), AgentdError> {
+pub(super) async fn tick(state: &AgentdState) -> Result<(), AgentdError> {
     require_ready(state)?;
     let host = attached(state)?;
     let policy = AudioPolicy::current(state)?;
@@ -69,6 +69,12 @@ async fn tick(state: &AgentdState) -> Result<(), AgentdError> {
     let Some(status) = pending.into_iter().next() else {
         return Ok(());
     };
+    // A failed connection is known not to have crossed the Core seam. Resolve it
+    // before consuming a durable delivery attempt, as the original text relay does.
+    let client=crate::authbus_dispatch::connect(state).await?;
+    let result=async {
+    require_ready(state)?;
+    let issuer=host.trust(state)?.issuer()?;
     let worker = StableId::new(format!(
         "agentd:audio:{}",
         state.identity().spawn_generation
@@ -126,8 +132,6 @@ async fn tick(state: &AgentdState) -> Result<(), AgentdError> {
                 .map_err(invalid);
         }
     };
-    let client = crate::authbus_dispatch::connect(state).await?;
-    let result = async {
         require_ready(state)?;
         let issuer = host.trust(state)?.issuer()?;
         AudioPolicy::current(state)?.permits(

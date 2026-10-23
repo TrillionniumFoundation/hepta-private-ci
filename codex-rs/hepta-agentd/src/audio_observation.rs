@@ -64,6 +64,19 @@ pub struct AudioObservationReceiptV1 {
     pub queue_receipt_digest: Option<String>,
 }
 
+/// A failure may follow a known canonical commit. Preserve that receipt without
+/// upgrading replay-checkpoint readiness, Core admission or external effects.
+#[derive(Debug,thiserror::Error)]
+#[error("{error}")]
+pub(crate) struct AudioAdmissionFailure {
+    #[source]
+    pub error:Box<AgentdError>,
+    pub committed_observation:Option<Box<AudioObservationReceiptV1>>,
+}
+impl From<AgentdError> for AudioAdmissionFailure {
+    fn from(error:AgentdError)->Self {Self {error:Box::new(error),committed_observation:None}}
+}
+
 pub(crate) fn invalid(message: impl std::fmt::Display) -> AgentdError {
     AgentdError::Invalid(format!("signed audio observation: {message}"))
 }
@@ -245,7 +258,7 @@ pub(crate) async fn reconcile(
 pub(crate) async fn submit(
     state: &AgentdState,
     request: SignedAudioObservationV1,
-) -> Result<AudioObservationReceiptV1, AgentdError> {
+) -> Result<AudioObservationReceiptV1, AudioAdmissionFailure> {
     authenticate(state, &request)?;
     let policy = crate::audio_policy::AudioPolicy::current(state)?;
     policy
@@ -267,11 +280,18 @@ pub(crate) async fn submit(
         )
         .await
         .map_err(invalid)?;
-    host.sync_replay_checkpoint().await?;
+    let committed_observation=receipt(result,&request.body)?;
     // A revocation after commit remains a real committed observation, but it
     // cannot authorize publication/dispatch. Recovery must use the original ID.
-    authenticate(state, &request)?;
-    receipt(result, &request.body)
+    let readiness=async {
+        host.sync_replay_checkpoint().await?;
+        authenticate(state,&request)?;
+        Ok::<(),AgentdError>(())
+    }.await;
+    if let Err(error)=readiness {
+        return Err(AudioAdmissionFailure {error:Box::new(error),committed_observation:Some(Box::new(committed_observation))});
+    }
+    Ok(committed_observation)
 }
 
 pub(crate) fn receipt(

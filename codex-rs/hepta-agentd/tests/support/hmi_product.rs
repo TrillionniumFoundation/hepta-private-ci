@@ -61,7 +61,7 @@ pub(crate) struct Fixture {
     pub(crate) audio_policy: Option<PathBuf>,
     pub(crate) generation: u64,
     pub(crate) pid: u32,
-    _checkpoint: tempfile::TempDir,
+    pub(crate) _checkpoint: tempfile::TempDir,
 }
 impl Fixture {
     pub(crate) async fn new(model: &wiremock::MockServer, profile: Profile) -> Result<Self> {

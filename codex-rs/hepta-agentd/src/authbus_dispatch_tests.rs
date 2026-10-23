@@ -1,6 +1,9 @@
 //! Failure injection around the real signed SQLite lifecycle. The separate
 //! native product tests exercise the real Agentd/App Server/rollout transport.
 
+#[path = "audio_dispatch_review_tests.rs"]
+mod audio_review;
+
 use std::collections::BTreeMap;
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;

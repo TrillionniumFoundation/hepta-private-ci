@@ -91,10 +91,10 @@ impl SignedInput {
                 crate::authbus_ingress::submit(state, r).await?,
             )?),
             Self::Audio(r) => {
-                let receipt = crate::audio_observation::submit(state, *r).await?;
-                // Keep the canonical receipt as its own typed audio observation.
-                // The outer admission ID is shared by the owner loop only.
-                Ok(json!({"delivery_id":receipt.delivery_id,"audioObservation":receipt}))
+                match crate::audio_observation::submit(state,*r).await {
+                    Ok(receipt)=>Ok(json!({"delivery_id":receipt.delivery_id,"audioObservation":receipt})),
+                    Err(failure)=>Ok(json!({"audioAdmissionFailure":{"error":failure.error.to_string(),"committedObservation":failure.committed_observation,"admissionReady":false}})),
+                }
             }
         }
     }

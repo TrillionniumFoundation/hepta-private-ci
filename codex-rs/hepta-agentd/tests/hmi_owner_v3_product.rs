@@ -11,4 +11,6 @@ mod hmi_fixture;
 mod lifecycle;
 #[path = "hmi_owner_v3/pressure_tests.rs"]
 mod pressure;
+#[path = "hmi_owner_v3/review_tests.rs"]
+mod review;
 mod support;
