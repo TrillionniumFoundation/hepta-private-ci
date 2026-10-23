@@ -1,4 +1,4 @@
-"""Once-only H2 TRAIN collection, reusing frozen T11 artifacts; never qualification."""
+"""Fixed H2/H3 TRAIN collection, reusing frozen T11 artifacts; never qualification."""
 
 import time
 
@@ -25,6 +25,42 @@ OUTPUT = ROOT / "runs/codex-cloud-dynamic-train-headroom-h2"
 PATHS = ("NC-full", "NC-go", "NC-stop", "N-full")
 SEEDS = (11, 23, 47)
 ENVIRONMENT = "ccarenv_b64_Y2NhcmVudl8wOGNhYzlkMjdjYjg4MTkxOWJkMDY0MGIyMDBhYTA5OA"
+
+
+def experiment_paths(experiment):
+    if type(experiment) is not str or experiment not in ("h2", "h3"):
+        raise ValueError("only fixed h2/h3 diagnostic identities are supported")
+    if experiment == "h2":
+        return STAGE, OUTPUT
+    return ROOT / "training_diagnostics/dynamic-h3", ROOT / "runs/codex-cloud-dynamic-train-headroom-h3"
+
+
+def dependency_imports(experiment):
+    """The actual collect/smoke initialization; no data or model is constructed."""
+    experiment_paths(experiment)
+    sys.path.insert(0, str(ROOT))
+    import numpy as np
+    from independent.accounting import BudgetExceeded, WorkLedger
+    from independent.data_v2 import dataset, manifest
+    from independent.evaluation import _controller, measure, output_work
+    from independent.inference import FrozenGenerator
+    from independent.learning import CachedObjective
+    from independent.native import NativeGenerator
+    from model import JointModel
+    ledger = WorkLedger("H2-TRAIN-RD-not-qualification" if experiment == "h2" else
+                        "H3-TRAIN-RD-not-qualification", total_cap=4_000_000_000)
+    return (np, BudgetExceeded, WorkLedger, dataset, manifest, _controller, measure,
+            output_work, FrozenGenerator, CachedObjective, NativeGenerator, JointModel, ledger)
+
+
+def startup_smoke(experiment):
+    dependencies = dependency_imports(experiment)
+    ledger = dependencies[-1]
+    return {"schema": "hepta.headroom-startup-smoke.v1", "experiment_id": experiment,
+            "outcome": "completed", "arm": ledger.arm, "operator_cap": ledger.total_cap,
+            "known_consumed_units": ledger.consumed_units, "dataset_constructions": 0,
+            "model_loads": 0, "service_calls": 0, "START_consumed": False,
+            "worker_cpu_ns": cpu() - CPU_START, "worker_wall_ns": time.perf_counter_ns() - WALL_START}
 
 
 def sha(path):
@@ -71,18 +107,21 @@ def verify_protected(frozen):
             raise ValueError("protected previous evidence changed: " + name)
 
 
-def source_guard(freeze_path):
-    if Path(freeze_path).resolve() != STAGE / "frozen-h2.json":
-        raise ValueError("fixed H2 freeze path required")
-    frozen, protocol = read(freeze_path), read(STAGE / "protocol.json")
+def source_guard(freeze_path, *, experiment="h2"):
+    stage, output = experiment_paths(experiment)
+    if Path(freeze_path).resolve() != stage / f"frozen-{experiment}.json":
+        raise ValueError(f"fixed {experiment.upper()} freeze path required")
+    frozen, protocol = read(freeze_path), read(stage / "protocol.json")
+    if frozen.get("experiment_id", "h2") != experiment:
+        raise ValueError("frozen diagnostic identity changed")
     if frozen["environment_id"] != ENVIRONMENT:
-        raise ValueError("H2 requires the original selected Codex cloud environment identity")
-    if (protocol["schema"] != "hepta.TRAIN-headroom-h2.protocol.v1"
-            or protocol["diagnostic_id"] != "dynamic-train-headroom-h2"
+        raise ValueError(f"{experiment.upper()} requires the original selected Codex cloud environment identity")
+    if (protocol["schema"] != f"hepta.TRAIN-headroom-{experiment}.protocol.v1"
+            or protocol["diagnostic_id"] != f"dynamic-train-headroom-{experiment}"
             or protocol["qualification"] is not False
             or protocol["model_seeds"] != list(SEEDS)
-            or protocol["output"] != str(OUTPUT.relative_to(ROOT))
-            or protocol["start_marker"] != str((STAGE / "START.json").relative_to(ROOT))
+            or protocol["output"] != str(output.relative_to(ROOT))
+            or protocol["start_marker"] != str((stage / "START.json").relative_to(ROOT))
             or protocol["budgets"]["cpu_seconds"] != 30.0
             or protocol["budgets"]["operator_units"] != 4_000_000_000
             or protocol["budgets"]["artifact_bytes"] != 32 * 1024**2
@@ -98,23 +137,23 @@ def source_guard(freeze_path):
             or protocol["service"]["output_codec_profile"] != "rowwise-png-v1"
             or protocol["content_check"]["absolute_tolerance"] != 1e-12
             or protocol["content_check"]["relative_tolerance"] != 0.0):
-        raise ValueError("fixed H2 TRAIN collection scope changed")
+        raise ValueError(f"fixed {experiment.upper()} TRAIN collection scope changed")
     paths = list(ROOT.glob("*.py")) + list((ROOT / "independent").glob("*.py"))
     paths += list((ROOT / "independent").glob("*.c"))
     sources = {str(path.relative_to(ROOT)): sha(path) for path in sorted(paths)}
-    if (frozen["sources"] != sources or frozen["protocol_sha256"] != sha(STAGE / "protocol.json")
+    if (frozen["sources"] != sources or frozen["protocol_sha256"] != sha(stage / "protocol.json")
             or frozen["script_sha256"] != sha(__file__)
-            or frozen["analysis_sha256"] != sha(STAGE / "analyze.py")):
-        raise ValueError("frozen H2 runtime/protocol/script identity changed")
-    bound = {**sources, "training_diagnostics/dynamic-h2/protocol.json": frozen["protocol_sha256"],
-             "training_diagnostics/dynamic-h2/run_once.py": frozen["script_sha256"],
-             "training_diagnostics/dynamic-h2/analyze.py": frozen["analysis_sha256"],
-             "training_diagnostics/dynamic-h2/PROTOCOL.md": sha(STAGE / "PROTOCOL.md")}
+            or frozen["analysis_sha256"] != sha(Path(__file__).with_name("analyze.py"))):
+        raise ValueError(f"frozen {experiment.upper()} runtime/protocol/script identity changed")
+    bound = {**sources, str((stage / "protocol.json").relative_to(ROOT)): frozen["protocol_sha256"],
+             str(Path(__file__).resolve().relative_to(ROOT)): frozen["script_sha256"],
+             str(Path(__file__).with_name("analyze.py").resolve().relative_to(ROOT)): frozen["analysis_sha256"],
+             str((stage / "PROTOCOL.md").relative_to(ROOT)): sha(stage / "PROTOCOL.md")}
     for name, expected in bound.items():
         committed = subprocess.check_output(["git", "show", frozen["source_commit"]
             + ":qualification/joint-generation/" + name], cwd=ROOT)
         if hashlib.sha256(committed).hexdigest() != expected:
-            raise ValueError("commit all frozen H2 bytes first: " + name)
+            raise ValueError(f"commit all frozen {experiment.upper()} bytes first: " + name)
     for name, expected in protocol["dataset"]["source_hashes"].items():
         if sources.get(name) != expected:
             raise ValueError("original Q1 TRAIN construction source changed: " + name)
@@ -205,16 +244,19 @@ def accounting_summary(ledger, attempted_calls):
             "unsettled_accounting_scope": "Known charges <= actual total including interrupted services <= known charges plus unsettled prescribed-path reservations. Reservations are upper bounds only, never actual charges or budget credits; failure is terminal."}
 
 
-def collect(freeze_path):
-    frozen, protocol = source_guard(freeze_path)
-    if OUTPUT.exists():
-        raise ValueError("fixed H2 output already exists; no repeat or output alias")
-    start = {"schema": "hepta.dynamic-train-headroom-h2-start.v1", "protocol_sha256": sha(STAGE / "protocol.json"),
+def collect(freeze_path, *, experiment="h2"):
+    stage, output_root = experiment_paths(experiment)
+    frozen, protocol = source_guard(freeze_path, experiment=experiment)
+    if output_root.exists():
+        raise ValueError(f"fixed {experiment.upper()} output already exists; no repeat or output alias")
+    start = {"schema": f"hepta.dynamic-train-headroom-{experiment}-start.v1", "protocol_sha256": sha(stage / "protocol.json"),
         "freeze_sha256": sha(freeze_path), "script_sha256": sha(__file__), "source_commit": frozen["source_commit"],
-        "argv": sys.argv, "started_unix_ns": time.time_ns(), "output": str(OUTPUT), "qualification": False,
-        "environment_id": ENVIRONMENT, "cwd": str(ROOT)}
-    write(STAGE / "START.json", start)
-    result = {"schema": "hepta.dynamic-train-headroom-h2.v1", "qualification": False,
+        "argv": sys.argv, "started_unix_ns": time.time_ns(), "output": str(output_root), "qualification": False,
+        "environment_id": ENVIRONMENT, "cwd": str(ROOT), "experiment_id": experiment}
+    write(stage / "START.json", start)
+    result = {"schema": f"hepta.dynamic-train-headroom-{experiment}.v1", "qualification": False, "experiment_id": experiment,
+        "prior_H2_failure": protocol.get("prior_H2_failure"),
+        "prior_cost_policy": "H2 startup failure costs remain separately retained; H3 has a fresh unchanged30s/4B cap, without refund or erased research cost.",
         "protocol_sha256": start["protocol_sha256"], "freeze_sha256": start["freeze_sha256"],
         "script_sha256": start["script_sha256"], "source_commit": frozen["source_commit"],
         "environment_id": ENVIRONMENT, "cwd": str(ROOT), "thread_environment": {key: os.environ.get(key)
@@ -225,11 +267,11 @@ def collect(freeze_path):
 
     def limits():
         if cpu() - CPU_START > 30_000_000_000:
-            raise RuntimeError("complete H2 R&D CPU cap exceeded")
-        size = sum(path.stat().st_size for path in OUTPUT.rglob("*") if path.is_file())
-        size += sum(path.stat().st_size for path in (STAGE / "START.json", STAGE / "PARTIAL.json") if path.is_file())
+            raise RuntimeError(f"complete {experiment.upper()} R&D CPU cap exceeded")
+        size = sum(path.stat().st_size for path in output_root.rglob("*") if path.is_file())
+        size += sum(path.stat().st_size for path in (stage / "START.json", stage / "PARTIAL.json") if path.is_file())
         if size > 32 * 1024**2:
-            raise RuntimeError("H2 retained-artifact cap exceeded")
+            raise RuntimeError(f"{experiment.upper()} retained-artifact cap exceeded")
 
     @contextmanager
     def phase(name, **fields):
@@ -246,23 +288,15 @@ def collect(freeze_path):
                 limits()
 
     try:
-        OUTPUT.mkdir()
-        write(OUTPUT / "START.json", start)
+        output_root.mkdir()
+        write(output_root / "START.json", start)
         result["execution_commit"] = subprocess.check_output(
             ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
         with phase("dependency_imports"):
-            sys.path.insert(0, str(ROOT))
-            import numpy as np
-            from independent.accounting import BudgetExceeded, WorkLedger
-            from independent.data_v2 import dataset, manifest
-            from independent.evaluation import _controller, measure, output_work
-            from independent.inference import FrozenGenerator
-            from independent.learning import CachedObjective
-            from independent.native import NativeGenerator
-            from model import JointModel
-            ledger = WorkLedger("H2-TRAIN-R&D-not-qualification", total_cap=4_000_000_000)
+            (np, BudgetExceeded, WorkLedger, dataset, manifest, _controller, measure, output_work,
+             FrozenGenerator, CachedObjective, NativeGenerator, JointModel, ledger) = dependency_imports(experiment)
         with phase("verify_and_restore_artifacts"):
-            restored = safe_restore(protocol, OUTPUT)
+            restored = safe_restore(protocol, output_root)
             q1_files = {local(protocol["q1"][name + "_path"]): protocol["q1"][name + "_sha256"]
                         for name in ("diagnostic", "predictions", "protocol")}
             if any(sha(path) != expected for path, expected in q1_files.items()):
@@ -281,9 +315,9 @@ def collect(freeze_path):
                     or np.asarray(train["source_ids"], dtype="S76").tobytes() != q1["source_ids"].tobytes()
                     or np.asarray(train["input_hashes"], dtype="S64").tobytes() != q1["input_hashes"].tobytes()):
                 raise ValueError("Q1 TRAIN row inputs or physical-source identities changed")
-            np.savez_compressed(OUTPUT / "train.npz", **{key: train[key] for key in
+            np.savez_compressed(output_root / "train.npz", **{key: train[key] for key in
                 ("full", "low", "labels", "source_scenes", "commands")})
-            write(OUTPUT / "train-metadata.json", {"manifest": manifest(train),
+            write(output_root / "train-metadata.json", {"manifest": manifest(train),
                 **{key: train[key] for key in ("source_ids", "input_hashes", "groups", "sources")},
                 "profile": protocol["dataset"]["profile"]})
             ledger.record("train_persistence", reconstructed_train_rows=3072,
@@ -323,9 +357,9 @@ def collect(freeze_path):
                         if any(not np.isfinite(value) or value > 1e-12 for value in errors.values()):
                             raise ValueError("NC native/raw TRAIN value mismatch against Q1: " + str(errors))
                         checks.append({"seed": seed, "max_absolute_difference": errors, "relative_tolerance": 0., "absolute_tolerance": 1e-12})
-            np.savez_compressed(OUTPUT / "content-values.npz", **values)
-            write(OUTPUT / "content-checks.json", {"seeds": checks, "ledger": ledger.snapshot()})
-        (OUTPUT / "reports").mkdir()
+            np.savez_compressed(output_root / "content-values.npz", **values)
+            write(output_root / "content-checks.json", {"seeds": checks, "ledger": ledger.snapshot()})
+        (output_root / "reports").mkdir()
         for repeat, seed, path, sample_seed in call_order():
             with phase("complete_service", repeat=repeat, seed=seed, path=path, sampling_seed=sample_seed):
                 model = models["N" if path == "N-full" else "NC", seed]
@@ -343,7 +377,7 @@ def collect(freeze_path):
                 quote.decoder("reserve", rows=3072, pixels=192)
                 quote.charge_kernel("reserve", "outputs", **{key: 3072*value for key, value in output_work().items()})
                 if quote.consumed_units > ledger.remaining_units:
-                    raise BudgetExceeded("H2 complete service cannot fit remaining actual-work cap")
+                    raise BudgetExceeded(f"{experiment.upper()} complete service cannot fit remaining actual-work cap")
                 attempted = {"repeat": repeat, "seed": seed, "path": path, "sampling_seed": sample_seed,
                              "status": "attempted; measurement outcome unknown",
                              "reserved_operator_units": quote.consumed_units,
@@ -353,42 +387,42 @@ def collect(freeze_path):
                     protocol["cost"]["reference_full_cpu_ns"], seed=sample_seed, observe=False)
                 attempted["status"] = "measured; persistence pending"
                 record = {"repeat": repeat, "seed": seed, "path": path, "sampling_seed": sample_seed}
-                report["H2_call_identity"] = record
-                output = OUTPUT / "reports" / f"service-r{repeat}-s{seed}-{path}.json"
+                report[f"{experiment.upper()}_call_identity"] = record
+                output = output_root / "reports" / f"service-r{repeat}-s{seed}-{path}.json"
                 write(output, report)
                 attempted.update(status="persisted; accounting and law validation pending",
-                                 file=str(output.relative_to(OUTPUT)))
+                                 file=str(output.relative_to(output_root)))
                 actual = sum(report["per_row_cost"]["work_units"]) + report["cost"]["prepare"]["consumed_units"]
                 totals = dict(report["cost"]["operator_totals"])
                 for key, value in report["cost"]["prepare"]["totals"].items():
                     totals[key] = totals.get(key, 0) + value
                 totals.pop("consumed_units", None)
-                ledger.record("service_collection", units=actual, **totals, h2_service_calls=1)
+                ledger.record("service_collection", units=actual, **totals, **{experiment + "_service_calls": 1})
                 attempted.update(accounting_status="known_actual", actual_units=actual)
                 expected_forwards = 6144 if path == "NC-go" else 3072
                 if actual != quote.consumed_units or report["model_forwards"] != expected_forwards or report["budget_violations"]:
                     raise ValueError("forced service law or complete actual work receipt changed")
                 attempted["status"] = "completed and persisted"
-                result["service_calls"].append({**record, "file": str(output.relative_to(OUTPUT)),
+                result["service_calls"].append({**record, "file": str(output.relative_to(output_root)),
                     "sha256": sha(output), "bytes": output.stat().st_size, "work_units": actual,
                     "service_cpu_ns": report["cost"]["cpu_ns"], "prepare_cpu_ns": report["cost"]["prepare_cpu_ns"]})
         with phase("final_identity_verification"):
-            if len(result["service_calls"]) != 36 or ledger.totals.get("h2_service_calls") != 36:
-                raise ValueError("H2 did not retain exactly36 complete service calls")
+            if len(result["service_calls"]) != 36 or ledger.totals.get(experiment + "_service_calls") != 36:
+                raise ValueError(f"{experiment.upper()} did not retain exactly36 complete service calls")
             for name, row in result["inputs"].items():
                 if sha(local(name)) != row["sha256"]:
                     raise ValueError("immutable source evidence changed")
-            source_guard(freeze_path)
+            source_guard(freeze_path, experiment=experiment)
         result["outcome"] = "completed"
     except BaseException as error:
-        if "values" in locals() and values and not (OUTPUT / "content-values.npz").exists():
+        if "values" in locals() and values and not (output_root / "content-values.npz").exists():
             try:
-                np.savez_compressed(OUTPUT / "content-values.npz", **values)
+                np.savez_compressed(output_root / "content-values.npz", **values)
             except Exception as retention_error:
                 error.add_note("partial raw-value retention also failed: " + repr(retention_error))
         result.update(outcome="failed", error_type=type(error).__name__, error=str(error), traceback=traceback.format_exc())
         if isinstance(error, SystemExit) and error.code in (None, 0):
-            error.add_note("H2 incomplete SystemExit converted to nonzero exit1; original request retained above")
+            error.add_note(f"{experiment.upper()} incomplete SystemExit converted to nonzero exit1; original request retained above")
             error.code = 1
         raise
     finally:
@@ -402,7 +436,7 @@ def collect(freeze_path):
             result["protected_evidence_verified_at_exit"] = False
             result["protected_evidence_error"] = repr(protection)
             if original is not None:
-                original.add_note("H2 previous-evidence protection also failed: " + repr(protection))
+                original.add_note(f"{experiment.upper()} previous-evidence protection also failed: " + repr(protection))
             else:
                 result.update(outcome="failed", error_type=type(protection).__name__, error=str(protection),
                               traceback=traceback.format_exc())
@@ -411,34 +445,34 @@ def collect(freeze_path):
                 ledger=None if ledger is None else ledger.snapshot(), worker_cpu_ns=cpu()-CPU_START,
                 worker_wall_ns=time.perf_counter_ns()-WALL_START,
                 cost_boundary="Entire R&D worker from before dependency imports to this receipt; actual inference, observers, data, hashing and I/O included. Final receipt/manifest serialization is additionally retained by the outer complete-process launcher, never a budget credit; no qualification or hardware-FLOP claim.")
-            if OUTPUT.is_dir():
-                write(OUTPUT / "diagnostic.json", result)
-                files = {str(path.relative_to(OUTPUT)): {"sha256": sha(path), "bytes": path.stat().st_size}
-                         for path in sorted(OUTPUT.rglob("*")) if path.is_file()}
-                write(OUTPUT / "manifest.json", {"schema": "hepta.retained-artifacts.sha256.v1", "files": files})
+            if output_root.is_dir():
+                write(output_root / "diagnostic.json", result)
+                files = {str(path.relative_to(output_root)): {"sha256": sha(path), "bytes": path.stat().st_size}
+                         for path in sorted(output_root.rglob("*")) if path.is_file()}
+                write(output_root / "manifest.json", {"schema": "hepta.retained-artifacts.sha256.v1", "files": files})
             if result["outcome"] == "failed":
-                write(STAGE / "PARTIAL.json", result)
+                write(stage / "PARTIAL.json", result)
             limits()
         except Exception as persistence:
             if original is not None:
-                original.add_note("H2 terminal persistence also failed: " + repr(persistence))
+                original.add_note(f"{experiment.upper()} terminal persistence also failed: " + repr(persistence))
                 try:
-                    if not (STAGE / "PARTIAL.json").exists():
-                        write(STAGE / "PARTIAL.json", result)
+                    if not (stage / "PARTIAL.json").exists():
+                        write(stage / "PARTIAL.json", result)
                 except Exception as fallback:
-                    original.add_note("H2 stage failure retention also failed: " + repr(fallback))
+                    original.add_note(f"{experiment.upper()} stage failure retention also failed: " + repr(fallback))
             else:
                 result.update(outcome="failed", error_type=type(persistence).__name__, error=str(persistence),
                               worker_cpu_ns=cpu()-CPU_START, worker_wall_ns=time.perf_counter_ns()-WALL_START)
                 try:
-                    write(STAGE / "PARTIAL.json", result)
-                    if OUTPUT.is_dir():
-                        write(OUTPUT / "diagnostic.json", result, exclusive=False)
-                        files = {str(path.relative_to(OUTPUT)): {"sha256": sha(path), "bytes": path.stat().st_size}
-                                 for path in sorted(OUTPUT.rglob("*")) if path.is_file() and path.name != "manifest.json"}
-                        write(OUTPUT / "manifest.json", {"schema": "hepta.retained-artifacts.sha256.v1", "files": files}, exclusive=False)
+                    write(stage / "PARTIAL.json", result)
+                    if output_root.is_dir():
+                        write(output_root / "diagnostic.json", result, exclusive=False)
+                        files = {str(path.relative_to(output_root)): {"sha256": sha(path), "bytes": path.stat().st_size}
+                                 for path in sorted(output_root.rglob("*")) if path.is_file() and path.name != "manifest.json"}
+                        write(output_root / "manifest.json", {"schema": "hepta.retained-artifacts.sha256.v1", "files": files}, exclusive=False)
                 except Exception as fallback:
-                    persistence.add_note("H2 stage/diagnostic failure retention also failed: " + repr(fallback))
+                    persistence.add_note(f"{experiment.upper()} stage/diagnostic failure retention also failed: " + repr(fallback))
                 raise
         if protected_error is not None and original is None:
             raise protected_error
@@ -447,6 +481,16 @@ def collect(freeze_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--freeze", type=Path, default=STAGE / "frozen-h2.json")
-    result = collect(parser.parse_args().freeze)
-    print(json.dumps({"outcome": result["outcome"], "service_calls": len(result["service_calls"])}))
+    parser.add_argument("--experiment", choices=("h2", "h3"), default="h2")
+    parser.add_argument("--freeze", type=Path)
+    parser.add_argument("--startup-smoke", action="store_true")
+    args = parser.parse_args()
+    if args.startup_smoke:
+        if args.freeze is not None:
+            parser.error("startup smoke neither reads nor consumes a freeze")
+        print(json.dumps(startup_smoke(args.experiment), sort_keys=True))
+    else:
+        stage, _ = experiment_paths(args.experiment)
+        result = collect(args.freeze or stage / f"frozen-{args.experiment}.json", experiment=args.experiment)
+        print(json.dumps({"experiment_id": args.experiment, "outcome": result["outcome"],
+                          "service_calls": len(result["service_calls"])}))

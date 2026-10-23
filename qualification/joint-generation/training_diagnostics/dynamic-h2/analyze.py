@@ -1,4 +1,4 @@
-"""Descriptive, conditional TRAIN headroom from saved H2 artifacts; no model execution."""
+"""Descriptive, conditional TRAIN headroom from saved H2/H3 artifacts; no model execution."""
 
 import argparse
 import hashlib
@@ -132,7 +132,11 @@ def analyze(directory):
     with np.load(directory / "content-values.npz", allow_pickle=False) as archive:
         arrays = {key: archive[key] for key in archive.files}
     rows = [seed_summary(seed, arrays, reports) for seed in SEEDS]
-    return {"schema": "hepta.dynamic-train-headroom-h2-analysis.v1", "qualification_eligible": False,
+    experiment = diagnostic.get("experiment_id", "h2")
+    if experiment not in ("h2", "h3"):
+        raise ValueError("unknown fixed diagnostic identity")
+    return {"schema": f"hepta.dynamic-train-headroom-{experiment}-analysis.v1", "experiment_id": experiment,
+        "prior_H2_failure": diagnostic.get("prior_H2_failure"), "qualification_eligible": False,
         "seeds": rows, "mean_oracle_proxy_minus_N_full": mean(
             row["oracle_proxy_net_minus_direct_N_full"] for row in rows),
         "mean_content_gap_N_minus_NC": mean(row["content_gap_N_minus_NC"] for row in rows),
