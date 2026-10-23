@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import statistics
 from pathlib import Path
 from typing import Any
 
@@ -28,6 +29,66 @@ def _sha(value: Any) -> bool:
 
 def _finite(value: Any) -> bool:
     return type(value) in (float, int) and math.isfinite(value)
+
+
+def validate_private_head_scale(value: Any) -> list[str]:
+    """Recompute 100-sample fanout latency quantiles without trusting summaries."""
+    from replacement_head_scale import SAMPLES, SCALES, SCHEMA, _quantile_nearest_rank
+
+    if not isinstance(value, dict) or value.get("schema") != SCHEMA:
+        return ["physical private task-Head scale receipt missing"]
+    if (value.get("mode") != "SHADOW_ONLY" or value.get("authority") != "DENY_ALL"
+            or value.get("production_activation_allowed") is not False
+            or value.get("target_device_qualified") is not False
+            or value.get("independent_input_event_scaling_measured") is not False
+            or value.get("gpu_observed") is not False
+            or value.get("power_energy_observed") is not False
+            or value.get("source_events") != 1
+            or value.get("model_encoder_forwards_within_probe") != 0
+            or not _sha(value.get("source_feature_sha256"))):
+        return ["physical private task-Head probe claimed unsupported execution or authority"]
+    rows = value.get("measurements")
+    if not isinstance(rows, list) or len(rows) != len(SCALES):
+        return ["four physical private task-Head scales required"]
+    errors = []
+    for count, row in zip(SCALES, rows, strict=True):
+        if not isinstance(row, dict):
+            errors.append(f"{count}: malformed physical Head scale")
+            continue
+        timing = row.get("raw_full_fanout_latency_ms")
+        if (type(row.get("logical_cells")) is not int or row["logical_cells"] != count
+                or type(row.get("head_calls_per_batch")) is not int
+                or row["head_calls_per_batch"] != count
+                or row.get("simultaneously_executing_heads") != 1
+                or type(row.get("private_head_instances")) is not int
+                or row["private_head_instances"] != count
+                or type(row.get("unique_parameter_storages")) is not int
+                or row["unique_parameter_storages"] != count * 2
+                or type(row.get("actual_private_head_tensor_bytes")) is not int
+                or row["actual_private_head_tensor_bytes"] <= 0
+                or row.get("source_feature_sha256") != value["source_feature_sha256"]
+                or not isinstance(timing, list) or len(timing) != SAMPLES):
+            errors.append(f"{count}: physical distinct Head count/storage or 100 timings missing")
+            continue
+        try:
+            p95 = _quantile_nearest_rank(timing, 0.95)
+            p99 = _quantile_nearest_rank(timing, 0.99)
+            med = statistics.median(timing)
+            throughput = count * SAMPLES / (sum(timing) / 1000)
+            if (not all(_finite(row.get(k)) and row[k] > 0 for k in (
+                    "observed_rss_after_allocation_bytes",
+                    "observed_rss_after_execution_bytes",
+                    "process_high_water_rss_bytes",
+                    "head_outputs_per_second",
+                    "full_batch_p50_ms", "full_batch_p95_ms", "full_batch_p99_ms"))
+                    or not math.isclose(row["full_batch_p95_ms"], p95, rel_tol=1e-10)
+                    or not math.isclose(row["full_batch_p99_ms"], p99, rel_tol=1e-10)
+                    or not math.isclose(row["full_batch_p50_ms"], med, rel_tol=1e-10)
+                    or not math.isclose(row["head_outputs_per_second"], throughput, rel_tol=1e-10)):
+                errors.append(f"{count}: forged timing quantile, RSS or throughput")
+        except (ValueError, OverflowError, TypeError, ZeroDivisionError):
+            errors.append(f"{count}: invalid physical raw Head latency samples")
+    return errors
 
 
 def audit_arm(name: str, result: Any, spec: dict) -> list[str]:
@@ -161,6 +222,11 @@ def audit_arm(name: str, result: Any, spec: dict) -> list[str]:
             errors.append(f"{name}: inconsistent tokenizer rewrite or original-weight identity")
     elif compat is not None:
         errors.append(f"{name}: non-Laya Encoder must not claim Laya tokenizer compatibility")
+    scale = perf.get("physical_private_head_scale") if isinstance(perf, dict) else None
+    if kind == "encoder_plus_new_task_head":
+        errors.extend(f"{name}: {error}" for error in validate_private_head_scale(scale))
+    elif scale is not None:
+        errors.append(f"{name}: Laya complete policy cannot claim encoder-only task-Head fanout")
     limits = result["limits"]
     if (not isinstance(limits, dict)
             or limits.get("historical_2014_dataset") is not True
