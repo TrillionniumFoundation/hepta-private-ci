@@ -235,8 +235,8 @@ class CohortFirewallTests(unittest.TestCase):
                 ("candidate", b'{"unverified": NaN,' + clean_candidate[1:], "nonstandard JSON"),
                 ("history", b'{"unverified": Infinity,' + clean_history[1:], "nonstandard JSON"),
                 ("candidate", b'{"unverified": 1e10000,' + clean_candidate[1:], "nonfinite JSON"),
-                ("candidate", b"\\xff" + clean_candidate, "invalid cohort JSON"),
-                ("history", b"\\xff" + clean_history, "invalid cohort JSON"),
+                ("candidate", b"\xff" + clean_candidate, "invalid cohort JSON"),
+                ("history", b"\xff" + clean_history, "invalid cohort JSON"),
             )
             for side, malicious, expected_error in cases:
                 with self.subTest(side=side, error=expected_error):
