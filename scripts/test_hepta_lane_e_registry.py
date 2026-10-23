@@ -207,6 +207,40 @@ fn id(event: &LedgerEvent) {
             [],
         )
 
+    def test_exhaustive_legacy_rejection_and_ignored_arms_are_reads(self):
+        source = """
+#[derive(Clone, Debug)]
+pub struct Material { pub generation: u64 }
+fn read(event: &LedgerEvent) {
+    match event {
+        LedgerEvent::Decision(_) | LedgerEvent::Outcome(_) => {
+            return Err("authenticated records required");
+        }
+        LedgerEvent::Credit(_) | LedgerEvent::Revocation(_) => {}
+        _ => {}
+    }
+}
+"""
+        self.assertEqual(self.verify(source), [])
+        # Only patterns disappear. A constructor in the same arm still blocks.
+        findings = self.verify(source.replace(
+            'return Err("authenticated records required");',
+            'journal.append(head, LedgerEvent::Outcome(value));',
+        ))
+        self.assertTrue(any("Outcome" in finding.message for finding in findings))
+
+    def test_wildcard_match_exemption_cannot_cross_macro_or_unknown_attribute(self):
+        sources = [
+            "fn product() { transform!(LedgerEvent::Decision(_) => {}); }",
+            "#[rewrite] fn product(event: LedgerEvent) { match event { LedgerEvent::Decision(_) => {} } }",
+            "#[rewrite] mod product { fn read(event: LedgerEvent) { match event { LedgerEvent::Credit(_) => {} } } }",
+            "#[derive(Clone)] fn product(event: LedgerEvent) { match event { LedgerEvent::Outcome(_) => {} } }",
+            "#[derive(Clone)] pub struct Material { field: transform!(LedgerEvent::Revocation(_) => {}) }",
+        ]
+        for source in sources:
+            with self.subTest(source=source):
+                self.assertTrue(self.verify(source))
+
     def test_explicit_disabled_qualification_function_is_not_product_write(self):
         self.assertEqual(
             self.verify("""
