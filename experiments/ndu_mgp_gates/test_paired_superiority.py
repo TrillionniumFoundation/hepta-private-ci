@@ -1,5 +1,6 @@
 """Strong-control equal-information paired-score comparisons (synthetic fixtures only)."""
 import copy
+import json
 import unittest
 from hashlib import sha256
 
@@ -12,8 +13,13 @@ H = lambda x: sha256(x.encode()).hexdigest()
 def study_fixture(*, strong_ndu=True, bootstrap_replicates=120):
     seeds = [101, 211, 307]
     ids = {str(s): [f'heldout-{s}-{i}' for i in range(32)] for s in seeds}
+    registered_protected = {str(s): [wid for idx, wid in enumerate(ids[str(s)])
+                                     if idx % 4 == 0] for s in seeds}
     p = {
         'seeds': seeds, 'heldout_world_ids': ids,
+        'protected_world_ids': registered_protected,
+        'protected_worlds_digest': sha256(json.dumps(
+            registered_protected, sort_keys=True, separators=(',', ':')).encode()).hexdigest(),
         'calibration_world_ids': [f'calibration-{i}' for i in range(100)],
         'arms': list(ARMS), 'validation_selected_best': 'free_controller',
         'selection_lock_digest': H('frozen-validation-selection'),
@@ -142,11 +148,77 @@ class PairedEvidenceTests(unittest.TestCase):
         rec = evaluate(d)
         self.assertFalse(rec['comparison']['free_controller']['gates']['protected_task_no_regression'])
 
+    def test_protected_loss_and_modal_safety_cannot_hide_in_global_benefit(self):
+        # Before this fix, a protected world with worse *all three* safety
+        # measures was admitted by every gate if its quality score stayed high.
+        # 2,000 bootstraps exercise the same provisional-success path.
+        d = study_fixture(bootstrap_replicates=2000)
+        for draw in d['worlds'][0]['outcomes']['ndu']['decoded_draw_scores']:
+            draw['loss'] = .47  # baseline free controller is about .44
+            draw['ambiguity'] = .17  # free controller is .06
+            draw['inconsistency'] = .13  # free controller is .04
+        receipt = evaluate(d)
+        checks = receipt['comparison']['free_controller']['protected_task_checks']
+        self.assertFalse(checks['loss'])
+        self.assertFalse(checks['ambiguity'])
+        self.assertFalse(checks['inconsistency'])
+        self.assertTrue(checks['quality'])
+        self.assertFalse(receipt['comparison']['free_controller']['gates']['protected_task_no_regression'])
+        self.assertFalse(receipt['all_provisional_gates_pass'])
+        self.assertEqual(receipt['status'], 'HOLD_NO_GO')
+
+    def test_protected_cost_spike_denied_even_if_global_budget_passes(self):
+        d = study_fixture()
+        cost = d['worlds'][0]['outcomes']['ndu']['measured_cost']
+        cost['controller'] += .30
+        cost['total'] += .30
+        receipt = evaluate(d)
+        control = receipt['comparison']['free_controller']
+        self.assertTrue(control['gates']['physical_total_cost'])
+        self.assertFalse(control['protected_task_checks']['physical_cost'])
+        self.assertFalse(control['gates']['protected_task_no_regression'])
+
+    def test_protected_single_metric_ambiguity_regression_denied(self):
+        d = study_fixture()
+        for draw in d['worlds'][0]['outcomes']['ndu']['decoded_draw_scores']:
+            draw['ambiguity'] = .065  # just worse than .06 control; globally still safe
+        receipt = evaluate(d)
+        checks = receipt['comparison']['free_controller']['protected_task_checks']
+        self.assertFalse(checks['ambiguity'])
+        self.assertTrue(checks['loss'])
+        self.assertTrue(checks['quality'])
+        self.assertTrue(checks['inconsistency'])
+        self.assertFalse(receipt['comparison']['free_controller']['gates']['protected_task_no_regression'])
+
+    def test_relabeled_failed_protected_world_must_be_rejected(self):
+        d = study_fixture(bootstrap_replicates=2000)
+        for draw in d['worlds'][0]['outcomes']['ndu']['decoded_draw_scores']:
+            draw.update(loss=.47, ambiguity=.17, inconsistency=.13)
+        self.assertFalse(evaluate(d)['all_provisional_gates_pass'])
+        # Previously this single edit bypassed every safety gate; protection
+        # must be a frozen characteristic of the registered world ID.
+        d['worlds'][0]['protected_task'] = False
+        with self.assertRaisesRegex(EvidenceGap, 'label contradicts preregistered'):
+            evaluate(d)
+
+    def test_protected_manifest_digest_must_remain_frozen(self):
+        d = study_fixture()
+        manifest = d['protocol']['protected_world_ids']['101']
+        manifest.remove(d['worlds'][0]['world_id'])
+        with self.assertRaisesRegex(EvidenceGap, 'digest mismatch'):
+            evaluate(d)
+
+    def test_zero_preregistered_protected_coverage_denied(self):
+        d = study_fixture()
+        d['protocol']['protected_world_ids']['101'] = []
+        with self.assertRaisesRegex(EvidenceGap, 'protected-world coverage'):
+            evaluate(d)
+
     def test_missing_protected_coverage_rejected(self):
         d = study_fixture()
         for row in d['worlds']:
             row['protected_task'] = False
-        with self.assertRaisesRegex(EvidenceGap, 'no protected-task'):
+        with self.assertRaisesRegex(EvidenceGap, 'protected-task label'):
             evaluate(d)
 
     def test_failed_draw_must_stay_in_denominator_as_penalty(self):

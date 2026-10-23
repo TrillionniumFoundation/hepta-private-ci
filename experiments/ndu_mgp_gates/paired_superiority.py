@@ -76,6 +76,25 @@ def evaluate(study: Mapping):
     _need(isinstance(calibration_ids, list) and
           len(set(flat_ids).intersection(calibration_ids)) == 0,
           "calibration/heldout leakage or missing calibration lock")
+    # Protected-world identity belongs to the preregistered protocol, not to
+    # caller-mutatable result rows. The digest is a local consistency check,
+    # not independent attestation that the lock preceded heldout scoring.
+    locked_protected = protocol.get("protected_world_ids")
+    _need(isinstance(locked_protected, dict) and set(locked_protected) == set(world_ids),
+          "missing preregistered protected-world cohort")
+    protected_sets = {}
+    for seed in seeds:
+        cohort = locked_protected[str(seed)]
+        _need(isinstance(cohort, list) and len(cohort) >= 1 and
+              all(isinstance(x, str) and x for x in cohort) and
+              len(set(cohort)) == len(cohort) and
+              set(cohort).issubset(world_ids[str(seed)]),
+              "invalid preregistered protected-world coverage")
+        protected_sets[seed] = set(cohort)
+    protected_json = json.dumps(locked_protected, sort_keys=True, separators=(",", ":"))
+    expected_protected_digest = sha256(protected_json.encode()).hexdigest()
+    _need(protocol.get("protected_worlds_digest") == expected_protected_digest,
+          "protected-world identity digest mismatch")
     _need(tuple(protocol.get("arms", [])) == ARMS, "comparison arms not exact/frozen")
     _need(protocol.get("validation_selected_best") in CONTROLS and
           isinstance(protocol.get("selection_lock_digest"), str) and
@@ -111,8 +130,11 @@ def evaluate(study: Mapping):
                   row.get("world_id") == world_id, "heldout world order/identity mismatch")
             context = row.get("public_input_digest")
             _need(isinstance(context, str) and len(context) == 64, "missing public input identity")
-            protected[i, j] = row.get("protected_task") is True
             _need(type(row.get("protected_task")) is bool, "protected status missing")
+            registered_protected = world_id in protected_sets[seed]
+            _need(row["protected_task"] is registered_protected,
+                  "observed protected-task label contradicts preregistered cohort")
+            protected[i, j] = registered_protected
             outcomes = row.get("outcomes")
             _need(isinstance(outcomes, dict) and set(outcomes) == set(ARMS),
                   "missing required matched control or NDU")
@@ -182,8 +204,20 @@ def evaluate(study: Mapping):
         upper = np.quantile(cloud, 1 - tail_level, axis=0)
         lower = np.quantile(cloud, tail_level, axis=0)
         ratio = point[0, -1] / point[index + 1, -1]
-        protected_delta = values[0, :, :, 1] - values[index + 1, :, :, 1]
-        protected_ok = bool(np.all(protected_delta[protected] >= -1e-12))
+        # Protected tasks are a per-world hard guard, not an average statistic.
+        # A single protected-world semantic failure must not be concealed by
+        # global CVaR/mean noninferiority or by a higher quality proxy score.
+        p_ndu = values[0][protected]
+        p_control = values[index + 1][protected]
+        protected_checks = {
+            "loss": bool(np.all(p_ndu[:, 0] <= p_control[:, 0] + 1e-12)),
+            "quality": bool(np.all(p_ndu[:, 1] >= p_control[:, 1] - 1e-12)),
+            "ambiguity": bool(np.all(p_ndu[:, 2] <= p_control[:, 2] + 1e-12)),
+            "inconsistency": bool(np.all(p_ndu[:, 3] <= p_control[:, 3] + 1e-12)),
+            "physical_cost": bool(np.all(p_ndu[:, 4] <=
+                                         max_cost_ratio * p_control[:, 4] + 1e-12)),
+        }
+        protected_ok = all(protected_checks.values())
         gates = {
             "cvar90_incremental_superiority": bool(x[0] <= -min_gain and upper[0] < -min_gain),
             "factual_quality_noninferiority": bool(lower[1] >= -quality_tol),
@@ -195,7 +229,8 @@ def evaluate(study: Mapping):
         local_all &= all(gates.values())
         out[name] = {"mean_pair_difference": dict(zip(("cvar90", "quality", "ambiguity", "inconsistency", "total_cost"), x.tolist())),
                      "simultaneous_lower": lower.tolist(), "simultaneous_upper": upper.tolist(),
-                     "observed_cost_ratio": ratio, "gates": gates}
+                     "observed_cost_ratio": ratio,
+                     "protected_task_checks": protected_checks, "gates": gates}
     receipt = {"schema": "hepta-mgp-paired-review-v1", "status": "HOLD_NO_GO", "authority": "DENY_ALL",
                "source": "LOCAL_RESEARCH_UNAUTHENTICATED", "scientific_superiority_proven": False,
                "all_provisional_gates_pass": bool(local_all and boots >= 2000),
