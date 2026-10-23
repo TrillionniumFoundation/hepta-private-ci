@@ -32,7 +32,7 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/mgp-paired-venv"
           "$RUNNER_TEMP/mgp-paired-venv/bin/python" -m pip install \
             --disable-pip-version-check --no-cache-dir 'numpy==1.26.4'
-      - name: Execute exact-head 15 adversarial P1 checks and original five gates
+      - name: Execute exact-head 19 adversarial P1 checks and original five gates
         shell: bash
         run: |
           set -euo pipefail
