@@ -96,11 +96,16 @@ def describe_registered_factorial(
     raw_groups = defaultdict(list)
     for r in rows:
         if (type(r) is not ScoreRow
+            or type(r.arm) is not str or r.arm not in ARMS
+            or type(r.seed) is not int or not 0 <= r.seed <= MAX_SEED
+            or type(r.original_source) is not str
+            or type(r.world) is not str or not r.world
+            or type(r.draw) is not int or not 0 <= r.draw <= 1_000_000
             or type(r.external_loss) not in (int, float)
             or not 0 <= r.external_loss <= cohort.failed_output_loss
             or not isfinite(r.external_loss)
             or type(r.physical_cost) not in (int, float)
-            or not 0 <= r.physical_cost < float("inf")
+            or not 0 <= r.physical_cost <= 1e12
             or not isfinite(r.physical_cost)
             or type(r.complete) is not bool
             or r.unit != cohort.physical_unit):
