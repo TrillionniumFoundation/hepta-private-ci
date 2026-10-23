@@ -159,6 +159,29 @@ impl FleetHarness {
     }
 
     #[allow(dead_code)]
+    pub(crate) fn start_with_hmi_text(
+        &mut self,
+        agent: &AgentFixture,
+        trust_file: &Path,
+        checkpoint_file: &Path,
+    ) -> Result<()> {
+        let command = AgentCommand::new(
+            agentd_binary()?,
+            vec![
+                "--hmi-text".into(),
+                "--authbus-trust-file".into(),
+                trust_file.as_os_str().to_owned(),
+                "--authbus-checkpoint-file".into(),
+                checkpoint_file.as_os_str().to_owned(),
+            ],
+        )?;
+        self.supervisor
+            .start(&agent.agent_id, command, Instant::now())?;
+        self.started = true;
+        Ok(())
+    }
+
+    #[allow(dead_code)]
     pub(crate) fn start_with_evidence_trust_file(
         &mut self,
         agent: &AgentFixture,
