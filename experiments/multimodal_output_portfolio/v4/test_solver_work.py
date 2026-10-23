@@ -59,6 +59,19 @@ class SolverWorkTests(unittest.TestCase):
         self.assertEqual(after["evaluated_branches"], before["evaluated_branches"])
         self.assertEqual(after["cache_hits"], before["cache_hits"] + 1)
 
+    def test_4096_ephemeral_cell_controllers_are_not_globally_retained(self):
+        cfg = Config(horizon=1)
+        state = State((2, 2, 2, 2), cfg.emission_reserve)
+        refs = []
+        for _ in range(4096):
+            ctl = Controller(cfg)
+            action, _value = ctl.solve(state)
+            self.assertTrue(action.stop)
+            refs.append(weakref.ref(ctl))
+        del ctl
+        gc.collect()
+        self.assertTrue(all(ref() is None for ref in refs))
+
     def test_state_work_cap_rejects_before_unbounded_expansion(self):
         with patch("portfolio.MAX_EXACT_SOLVER_STATES", 1):
             ctl = Controller(Config(horizon=2))
