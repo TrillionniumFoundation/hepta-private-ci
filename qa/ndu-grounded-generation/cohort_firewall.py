@@ -122,6 +122,57 @@ def verify_pinned_histories(raw_documents):
     return [documents[schema] for schema in PINNED_HISTORIES], receipts
 
 
+def verify_candidate_image_bytes(candidate, image_dir):
+    """Verify every claimed candidate fingerprint against a local original JPEG.
+
+    Candidate manifests can otherwise fabricate source_id and fingerprint
+    values. This is only byte/provenance checking, NOT proof of an independent
+    training/pretraining cohort or of legal source attribution.
+    """
+    if not image_dir:
+        raise CohortContractError("candidate image bytes are required (--image-dir)")
+    folder = Path(image_dir)
+    if folder.is_symlink() or not folder.is_dir():
+        raise CohortContractError("image-dir must be an existing non-symlink directory")
+    # Reuse the original frozen v1 fingerprint algorithm byte-for-byte:
+    # raw JPEG SHA, EXIF-transposed RGB SHA, and 9x8 horizontal dHash.
+    from cohort import image_fingerprint
+    validated = 0
+    bytes_total = 0
+    for split in SPLITS:
+        for index, item in enumerate(candidate["splits"][split]["sources"]):
+            origin = f"candidate:{split}:{index}"
+            filename = item.get("image_filename")
+            if (not isinstance(filename, str) or not filename or
+                    Path(filename).name != filename or
+                    filename in (".", "..") or "\\" in filename):
+                raise CohortContractError(f"{origin}: require a safe image_filename basename")
+            path = folder / filename
+            if path.is_symlink() or not path.is_file():
+                raise CohortContractError(f"{origin}: missing image or image symlink")
+            expected_size = item.get("image_size")
+            if (not isinstance(expected_size, list) or len(expected_size) != 2 or
+                    any(type(n) is not int or n < 1 or n > 20000 for n in expected_size)):
+                raise CohortContractError(f"{origin}: require bounded image_size [width,height]")
+            expected_bytes = item.get("image_bytes")
+            if type(expected_bytes) is not int or not 0 < expected_bytes <= 3_000_000:
+                raise CohortContractError(f"{origin}: missing/invalid image_bytes")
+            try:
+                actual = image_fingerprint(path, expected_size)
+            except (OSError, ValueError) as exc:
+                raise CohortContractError(f"{origin}: invalid candidate JPEG: {exc}") from exc
+            for key in ("image_sha256", "decoded_rgb_sha256", "dhash64", "image_bytes"):
+                if actual[key] != item.get(key):
+                    raise CohortContractError(f"{origin}: actual image bytes disagree with {key}")
+            validated += 1
+            bytes_total += actual["image_bytes"]
+    return {"checked_images": validated, "source_jpeg_bytes": bytes_total,
+            "algorithm": "original v1 cohort.image_fingerprint (JPEG/RGB/dHash)",
+            "original_bytes_cryptographically_checked": True,
+            "independent_real_world_entities_proven": False,
+            "foundation_pretraining_excluded": False}
+
+
 def collision(first, second, distance):
     keys = ("source_id", "image_sha256", "decoded_rgb_sha256")
     exact = [key for key in keys if first[key] == second[key]]
@@ -170,12 +221,22 @@ def main(argv=None):
     parser.add_argument("--historical", action="append", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--max-dhash-distance", type=int, default=4)
+    parser.add_argument("--image-dir", help="required for a PASS: directory of exact candidate JPEG files")
     args = parser.parse_args(argv)
     try:
         candidate = json.loads(Path(args.candidate).read_text())
         history, receipts = verify_pinned_histories(
             [Path(p).read_bytes() for p in args.historical])
         result = check_cohort(candidate, history, max_hamming=args.max_dhash_distance)
+        # No PASS from merely claimed candidate fingerprints. Verify raw
+        # JPEG, RGB and dHash before a disjointness receipt is authorizing.
+        if result["status"] == "pass":
+            result["candidate_image_custody"] = verify_candidate_image_bytes(
+                candidate, args.image_dir)
+        else:
+            result["candidate_image_custody"] = {
+                "original_bytes_cryptographically_checked": False,
+                "reason": "image identity already overlaps pinned history"}
         result["pinned_history_receipts"] = receipts
         result["pinned_history_source_total"] = sum(
             row["sources"] for row in receipts.values())
