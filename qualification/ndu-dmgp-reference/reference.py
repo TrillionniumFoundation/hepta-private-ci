@@ -174,6 +174,8 @@ def cross_modal_contract(
     for pair in by_pair.values():
         audio = [e for e in pair if e.modality == "audio"]
         video = [e for e in pair if e.modality == "video"]
+        if bool(audio) != bool(video):
+            problems.append("unpaired audio-video timeline")
         if audio and video:
             for a in audio:
                 for v in video:
@@ -307,12 +309,21 @@ def portfolio_weights(
     n = len(advantage)
     if not n or n > 8 or any(not math.isfinite(x) for x in advantage):
         raise GateRejected("invalid portfolio advantages")
-    if risk_price < 0 or kl_price <= 0 or not math.isfinite(kl_price):
+    if (not math.isfinite(risk_price) or risk_price < 0
+            or kl_price <= 0 or not math.isfinite(kl_price)):
         raise GateRejected("invalid portfolio optimization profile")
     if not covariance.supported or len(covariance.matrix) != n:
         # Explicit deterministic NDU fallback when covariance is unidentified.
         winner = max(range(n), key=lambda i: (advantage[i], -i))
         return tuple(float(i == winner) for i in range(n))
+    if any(len(row) != n or any(not math.isfinite(v) for v in row)
+           for row in covariance.matrix):
+        raise GateRejected("malformed portfolio covariance")
+    if (any(covariance.matrix[i][i] < 0 for i in range(n))
+            or any(abs(covariance.matrix[i][j] - covariance.matrix[j][i]) > 1e-8
+                   for i in range(n) for j in range(n))
+            or _eigen_symmetric([list(row) for row in covariance.matrix])[-1][0] < -1e-8):
+        raise GateRejected("non-PSD or asymmetric portfolio covariance")
     weight = [1 / n] * n
     for _ in range(256):
         grad = [advantage[i] - risk_price * sum(
@@ -629,6 +640,16 @@ def next_snapshot_gate(
         base_scores = [independent_utility(objective, x) for x in baseline]
         old_cand = [independent_utility(objective, x) for x in retention_candidate]
         old_base = [independent_utility(objective, x) for x in retention_baseline]
+        if (len({r.policy_id for r in candidate}) != 1
+                or len({r.policy_id for r in baseline}) != 1
+                or {r.policy_id for r in candidate} == {r.policy_id for r in baseline}
+                or len({r.policy_id for r in retention_candidate}) != 1
+                or len({r.policy_id for r in retention_baseline}) != 1
+                or {r.policy_id for r in retention_candidate}
+                   != {r.policy_id for r in candidate}
+                or {r.policy_id for r in retention_baseline}
+                   != {r.policy_id for r in baseline}):
+            raise GateRejected("candidate/baseline policy identity mismatch")
         if ({r.episode for r in candidate} != {r.episode for r in baseline}
                 or {r.episode for r in retention_candidate}
                 != {r.episode for r in retention_baseline}
