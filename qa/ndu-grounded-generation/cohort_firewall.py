@@ -7,6 +7,7 @@ only; it cannot attest real-world entity overlap or base-model pretraining.
 
 import argparse
 import hashlib
+from io import BytesIO
 import json
 import math
 import os
@@ -25,6 +26,8 @@ MAX_HISTORICAL_SOURCES = 4096
 MAX_PAIR_COMPARISONS = 2_000_000
 MAX_VIOLATIONS = 4096
 MAX_INPUT_BYTES = 16 * 1024 * 1024
+MAX_IMAGE_BYTES = 3_000_000
+MAX_IMAGE_PIXELS = 16_000_000
 
 # Immutable original negative-v1 source roster bytes; the caller's SHA alone
 # cannot attest that the full historical sources were actually supplied.
@@ -176,6 +179,103 @@ def verify_pinned_history_bytes(raw_documents, documents):
     return receipts
 
 
+
+
+def verify_candidate_image_bytes(candidate, image_dir):
+    """Pin each claimed candidate fingerprint to bounded local JPEG bytes.
+
+    Pathnames are not trusted as bytes: open each basename with O_NOFOLLOW,
+    inspect the opened regular descriptor, and decode those exact bytes.
+    This verifies JPEG/RGB/dHash identity, not entity or pretraining lineage.
+    The image directory and its ancestors must be operator-controlled.
+    """
+    if not image_dir:
+        raise CohortContractError("candidate image bytes are required (--image-dir)")
+    folder = Path(image_dir)
+    if folder.is_symlink() or not folder.is_dir():
+        raise CohortContractError("image-dir must be an existing non-symlink directory")
+    if not hasattr(os, "O_NOFOLLOW"):
+        raise CohortContractError("secure no-follow image descriptor unavailable")
+    from PIL import Image, ImageOps
+    from cohort import canonical
+
+    validated = 0
+    total_bytes = 0
+    for split in SPLITS:
+        for index, row in enumerate(candidate["splits"][split]["sources"]):
+            origin = f"candidate:{split}:{index}"
+            name = row.get("image_filename")
+            if (
+                not isinstance(name, str)
+                or not name
+                or name in (".", "..")
+                or Path(name).name != name
+                or "\\" in name
+            ):
+                raise CohortContractError(f"{origin}: require safe image_filename basename")
+            dimensions = row.get("image_size")
+            if (
+                not isinstance(dimensions, list)
+                or len(dimensions) != 2
+                or any(type(n) is not int or not 1 <= n <= 20000 for n in dimensions)
+                or dimensions[0] * dimensions[1] > MAX_IMAGE_PIXELS
+            ):
+                raise CohortContractError(f"{origin}: require bounded image_size [width,height]")
+            expected_bytes = row.get("image_bytes")
+            if type(expected_bytes) is not int or not 0 < expected_bytes <= MAX_IMAGE_BYTES:
+                raise CohortContractError(f"{origin}: missing/invalid image_bytes")
+            flags = os.O_RDONLY | os.O_NOFOLLOW | getattr(os, "O_NONBLOCK", 0)
+            try:
+                with os.fdopen(os.open(folder / name, flags), "rb") as opened:
+                    metadata = os.fstat(opened.fileno())
+                    if not stat.S_ISREG(metadata.st_mode):
+                        raise CohortContractError(f"{origin}: image must be a regular file")
+                    if metadata.st_size > MAX_IMAGE_BYTES:
+                        raise CohortContractError(f"{origin}: image exceeds byte limit")
+                    raw = opened.read(MAX_IMAGE_BYTES + 1)
+                if not 0 < len(raw) <= MAX_IMAGE_BYTES:
+                    raise CohortContractError(f"{origin}: image exceeds byte limit")
+                with Image.open(BytesIO(raw)) as picture:
+                    if picture.format != "JPEG" or list(picture.size) != dimensions:
+                        raise ValueError("image format or dimensions differ from annotation")
+                    rgb = ImageOps.exif_transpose(picture).convert("RGB")
+                    tiny = list(
+                        rgb.convert("L").resize(
+                            (9, 8), Image.Resampling.LANCZOS
+                        ).getdata()
+                    )
+                    bits = 0
+                    for y in range(8):
+                        for x in range(8):
+                            bits = (bits << 1) | int(
+                                tiny[y * 9 + x] > tiny[y * 9 + x + 1]
+                            )
+                    observed = {
+                        "image_sha256": hashlib.sha256(raw).hexdigest(),
+                        "image_bytes": len(raw),
+                        "dhash64": f"{bits:016x}",
+                        "decoded_rgb_sha256": hashlib.sha256(
+                            canonical([rgb.width, rgb.height, "RGB"])
+                            + rgb.tobytes()
+                        ).hexdigest(),
+                    }
+            except (OSError, ValueError, OverflowError, Image.DecompressionBombError) as exc:
+                raise CohortContractError(f"{origin}: invalid candidate JPEG: {exc}") from exc
+            for key, value in observed.items():
+                if row.get(key) != value:
+                    raise CohortContractError(f"{origin}: actual image bytes disagree with {key}")
+            validated += 1
+            total_bytes += len(raw)
+    return {
+        "checked_images": validated,
+        "source_jpeg_bytes": total_bytes,
+        "algorithm": "original v1 JPEG/RGB/dHash; descriptor-pinned local bytes",
+        "original_bytes_cryptographically_checked": True,
+        "independent_real_world_entities_proven": False,
+        "foundation_pretraining_excluded": False,
+    }
+
+
 def collision(first, second, distance):
     keys = ("source_id", "image_sha256", "decoded_rgb_sha256")
     exact = [key for key in keys if first[key] == second[key]]
@@ -263,8 +363,8 @@ def check_cohort(candidate, history, *, max_hamming=4, require_complete_history=
             "scope": "source_id/byte/RGB/dHash only; entity and pretraining claims remain unproven"}
 
 
-def validate_output_destination(output, input_paths):
-    """Never overwrite frozen source evidence, including aliases or links.
+def validate_output_destination(output, input_paths, *, protected_image_dir=None):
+    """Never overwrite frozen source or image evidence, including aliases.
 
     Invalid output destinations cannot receive even a denial receipt. The
     caller must select a separate, ordinary path for that receipt.
@@ -276,6 +376,12 @@ def validate_output_destination(output, input_paths):
             if not output.is_file() or output.stat().st_nlink != 1:
                 raise CohortContractError("output path must be an unlinked regular file")
         resolved_output = output.resolve(strict=False)
+        if protected_image_dir is not None:
+            protected_root = Path(protected_image_dir).resolve(strict=False)
+            if resolved_output.is_relative_to(protected_root):
+                raise CohortContractError(
+                    "receipt output overlaps frozen candidate image directory"
+                )
         for source in input_paths:
             if resolved_output == source.resolve(strict=False) or (
                 output.exists() and source.exists() and output.samefile(source)
@@ -285,14 +391,18 @@ def validate_output_destination(output, input_paths):
         raise CohortContractError("cannot verify safe output path") from error
 
 
-def write_receipt_atomically(dest, result, input_paths):
+def write_receipt_atomically(
+    dest, result, input_paths, *, protected_image_dir=None
+):
     """Publish without following a late-swapped symlink or mutating a hardlink.
 
     A shared hostile parent directory is not a security boundary: keep inputs
     and receipts in separately trusted directories for a production run.
     """
     dest.parent.mkdir(parents=True, exist_ok=True)
-    validate_output_destination(dest, input_paths)
+    validate_output_destination(
+        dest, input_paths, protected_image_dir=protected_image_dir
+    )
     temporary = None
     try:
         with tempfile.NamedTemporaryFile(
@@ -302,7 +412,9 @@ def write_receipt_atomically(dest, result, input_paths):
             handle.write(json.dumps(result, sort_keys=True, indent=2) + "\n")
             handle.flush()
             os.fsync(handle.fileno())
-        validate_output_destination(dest, input_paths)
+        validate_output_destination(
+            dest, input_paths, protected_image_dir=protected_image_dir
+        )
         # rename replaces the pathname itself, not the target of a late link.
         os.replace(temporary, dest)
     finally:
@@ -316,13 +428,15 @@ def main(argv=None):
     parser.add_argument("--historical", action="append", required=True)
     parser.add_argument("--historical-sha256", action="append", default=[],
                         help="externally pinned raw SHA256 per --historical, same order")
+    parser.add_argument("--image-dir", help="required for PASS: exact candidate JPEG directory")
     parser.add_argument("--output", required=True)
     parser.add_argument("--max-dhash-distance", type=int, default=4)
     args = parser.parse_args(argv)
     dest = Path(args.output)
     try:
         validate_output_destination(
-            dest, [Path(args.candidate), *(Path(item) for item in args.historical)]
+            dest, [Path(args.candidate), *(Path(item) for item in args.historical)],
+            protected_image_dir=args.image_dir,
         )
     except CohortContractError as error:
         # A denial receipt cannot safely be written to an aliased output.
@@ -368,12 +482,24 @@ def main(argv=None):
                               require_complete_history=True)
         result["caller_pinned_historical_bytes"] = True
         result["historical_bytes_match_frozen_original_roots"] = pinned_receipts
+        if result["status"] == "pass":
+            result["candidate_image_custody"] = verify_candidate_image_bytes(
+                candidate, args.image_dir
+            )
+        else:
+            result["candidate_image_custody"] = {
+                "original_bytes_cryptographically_checked": False,
+                "reason": "candidate image identity already overlaps original history",
+            }
     except (OSError, json.JSONDecodeError, CohortContractError) as exc:
         result = {"schema": "hepta.ndu-cohort-firewall.v2", "status": "fail",
                   "error": str(exc), "observable_image_identity_disjoint": False}
     try:
-        write_receipt_atomically(dest, result,
-                                 [Path(args.candidate), *(Path(item) for item in args.historical)])
+        write_receipt_atomically(
+            dest, result,
+            [Path(args.candidate), *(Path(item) for item in args.historical)],
+            protected_image_dir=args.image_dir,
+        )
     except (CohortContractError, OSError) as error:
         print(json.dumps({"status": "fail", "error": str(error),
                           "output_written": False}, sort_keys=True))
