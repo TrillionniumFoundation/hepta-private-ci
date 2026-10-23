@@ -20,6 +20,7 @@ import time
 from prepare_news_cohorts import load_cohorts, sha
 from replacement_gate import EXPECTED, SPLITS, score_rows, validate_registry
 from replacement_laya_view import load_laya_cpu_isolated
+from replacement_head_scale import measure_trained_head_fanout
 
 LAYA_SOURCE_REVISION = "c7527708f9f5220c669d8aa385077cd28d04708a"
 CATEGORIES = ("business", "entertainment", "medicine and health", "science and technology")
@@ -190,6 +191,7 @@ def run(name: str, registry: dict, snapshot: Path, cohorts_dir: Path, archive: P
     training = None
     arctic_cpu_flags = None
     laya_tokenizer_compat = None
+    head_scale_cpu = None
     counters = [0]
     if name.startswith("laya_"):
         if laya_source is None:
@@ -279,6 +281,19 @@ def run(name: str, registry: dict, snapshot: Path, cohorts_dir: Path, archive: P
         with torch.no_grad():
             for split in SPLITS:
                 observed[split] = F.softmax(head(raw_features[split]) / temperature, dim=-1).tolist()
+        # Exactly one frozen real Encoder input reused by independently allocated
+        # trained Heads. This sequential CPU measurement does not claim 4096
+        # simultaneous independent input encodings or a production target-host p99.
+        post_encode_forwards = [0]
+        fanout_hook = encoder.register_forward_hook(
+            lambda *_: post_encode_forwards.__setitem__(0, post_encode_forwards[0] + 1))
+        try:
+            head_scale_cpu = measure_trained_head_fanout(
+                head, raw_features["future_1"][0:1].to(dtype=torch.float32))
+        finally:
+            fanout_hook.remove()
+        if post_encode_forwards[0] != 0:
+            raise ValueError("scale probe unexpectedly executed pretrained Encoder")
         loaded_parameters = sum(p.numel() for p in encoder.parameters())
         kind = "encoder_plus_new_task_head"
     expected_count = sum(map(len, rows.values()))
@@ -300,6 +315,7 @@ def run(name: str, registry: dict, snapshot: Path, cohorts_dir: Path, archive: P
               "performance": {"device": "cpu", "host": platform.platform(),
                               "runtime": torch.__version__, "arctic_cpu_override": arctic_cpu_flags,
                               "laya_tokenizer_compat": laya_tokenizer_compat,
+                              "physical_private_head_scale": head_scale_cpu,
                               "rss_after_bytes": _rss_bytes(),
                               "rss_before_bytes": before_rss,
                               "load_ms": load_ms, "original_forward_latency_ms": latency,
