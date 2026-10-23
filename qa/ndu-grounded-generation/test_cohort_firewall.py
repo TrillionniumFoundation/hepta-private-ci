@@ -86,6 +86,40 @@ class CohortFirewallTests(unittest.TestCase):
         result = check_cohort(duplicate, [wrapper])
         self.assertEqual(result["status"], "fail")
 
+    def test_original_image_id_source_id_mismatch_fails_closed(self):
+        mismatched_candidate = copy.deepcopy(self.new)
+        mismatched_candidate["splits"]["train"]["sources"][0]["image_id"] = 1
+        with self.assertRaisesRegex(CohortContractError, "inconsistent original image_id"):
+            check_cohort(mismatched_candidate, [self.old])
+
+        mismatched_history = image(120)
+        mismatched_history["image_id"] = 1
+        historical = {
+            "schema": "hepta.ndu.historical-exclusions.v1",
+            "source_sample": {"images": [mismatched_history]},
+        }
+        with self.assertRaisesRegex(CohortContractError, "inconsistent original image_id"):
+            check_cohort(self.new, [historical])
+
+    def test_historical_wrapper_requires_original_image_id_even_with_source_id(self):
+        historical = {
+            "schema": "hepta.ndu.historical-exclusions.v1",
+            "source_sample": {"images": [image(120)]},
+        }
+        with self.assertRaisesRegex(CohortContractError, "invalid original image_id"):
+            check_cohort(self.new, [historical])
+
+    def test_matching_explicit_original_image_identity_still_passes(self):
+        prior = image(120)
+        prior["image_id"] = 120
+        historical = {
+            "schema": "hepta.ndu.historical-exclusions.v1",
+            "source_sample": {"images": [prior]},
+        }
+        candidate = copy.deepcopy(self.new)
+        candidate["splits"]["train"]["sources"][0]["image_id"] = 32
+        self.assertEqual(check_cohort(candidate, [historical])["status"], "pass")
+
     def test_incomplete_candidate_rejects_cli(self):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td)
@@ -106,7 +140,7 @@ class CohortFirewallTests(unittest.TestCase):
                               "source_sample": sample}, "history", historical=True)
         prior = image(17)
         prior["image_id"] = 18
-        with self.assertRaisesRegex(CohortContractError, "source_id/image_id mismatch"):
+        with self.assertRaisesRegex(CohortContractError, "inconsistent original image_id"):
             load_sources({"schema": "hepta.ndu.historical-exclusions.v1",
                           "source_sample": {"images": [prior]}}, "history", historical=True)
 

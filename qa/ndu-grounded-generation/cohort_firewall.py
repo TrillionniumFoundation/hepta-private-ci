@@ -30,21 +30,25 @@ def _checked_image(row, origin, *, allow_image_id=False):
     if not isinstance(row, dict):
         raise CohortContractError(f"{origin}: source must be an object")
     identifier = row.get("source_id")
-    if allow_image_id and not identifier:
-        image_id = row.get("image_id")
+    image_id = row.get("image_id")
+    # Historical wrappers must include their original image_id. In either
+    # cohort, explicit source_id and image_id must identify the same image.
+    if allow_image_id or "image_id" in row:
         if type(image_id) is not int or image_id < 0:
-            raise CohortContractError(f"{origin}: invalid historical image_id")
-        identifier = f"coco:val2017:{image_id}"
+            raise CohortContractError(f"{origin}: invalid original image_id")
+        canonical_id = f"coco:val2017:{image_id}"
+        if "source_id" in row and identifier != canonical_id:
+            raise CohortContractError(f"{origin}: inconsistent original image_id and source_id")
+        if allow_image_id and "source_id" not in row:
+            identifier = canonical_id
     if not isinstance(identifier, str) or not identifier.strip():
         raise CohortContractError(f"{origin}: missing source_id")
-    if (len(identifier) > 256 or identifier != identifier.strip()
-            or any(ord(char) < 32 or ord(char) == 127 for char in identifier)):
+    if (
+        len(identifier) > 256
+        or identifier != identifier.strip()
+        or any(ord(char) < 32 or ord(char) == 127 for char in identifier)
+    ):
         raise CohortContractError(f"{origin}: noncanonical source_id")
-    if allow_image_id and "image_id" in row:
-        image_id = row["image_id"]
-        if (type(image_id) is not int or image_id < 0
-                or identifier != f"coco:val2017:{image_id}"):
-            raise CohortContractError(f"{origin}: source_id/image_id mismatch")
     keys = ("image_sha256", "decoded_rgb_sha256", "dhash64")
     for key, rule in zip(keys, (HEX256, HEX256, HEX64)):
         if not isinstance(row.get(key), str) or not rule.fullmatch(row[key]):

@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.ndu.v2-source-exclusions-receipt.v1",
+  "scope": "input-image identity exclusion preparation, not a new generation experiment",
+  "sources": {
+    "historical": 384,
+    "v1": {
+      "train": 128,
+      "dev": 32,
+      "calibration": 32,
+      "test": 64
+    },
+    "total_unique_originals": 640
+  },
+  "inputs": {
+    "historical_wrapper_sha256": "4c2b88f85c9ef5fea08790775a652798a72e9281bed1534561f14c681e7bba9d",
+    "v1_cohort_manifest_sha256": "71168c26fffdd913d71a69d8708cec957f55dc2bece112c9c50153fbf31de75d"
+  },
+  "output": {
+    "schema": "hepta.ndu.historical-exclusions.v1",
+    "sha256": "55c25e153f582633030004420f1babdf14188eef32814c006c16371eb78d298b",
+    "directly_accepted_by_existing_builder": true,
+    "published_as_source_file_in_repo": false
+  },
+  "checks": {
+    "exact_image_id_unique": true,
+    "image_sha256_unique": true,
+    "decoded_rgb_sha256_unique": true,
+    "dhash64_no_pairs_with_distance_le_4": true,
+    "source_id_image_id_alignment": true,
+    "test_count": 15,
+    "test_outcome": "passed",
+    "verified_existing_cohort_exclusions_parser": true,
+    "standard_library_tests": 14,
+    "synthetic_image_builder_integration_tests": 1,
+    "synthetic_test_is_not_real_model_evidence": true
+  },
+  "evidence_boundaries": {
+    "fresh_v2_cohort_executed": false,
+    "independent_generated_text_and_pixels": false,
+    "model_inference_performed": false,
+    "real_world_entity_independence_proven": false,
+    "foundation_model_pretraining_exclusion_proven": false,
+    "confirmatory_ndu_success": false
+  }
+}
