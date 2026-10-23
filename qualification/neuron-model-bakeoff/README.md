@@ -33,6 +33,41 @@ python3 qualification/neuron-model-bakeoff/run_laya.py \
   --output /evidence/laya-english.predictions.jsonl
 ```
 
+The pinned upstream Laya `Agent` has a two-argument `predict(state, questions)`
+interface and the `load(path, device)` loader does **not** accept
+`backend` or `calibration` keyword arguments. This runner calls the
+real pinned interface, uses in-memory declared context budgets, verifies
+its actual device both after loading and after every forward, and
+rejects automatic CPU fallback. The upstream constructor may rewrite
+`tokenizer_config.json`; the runner therefore borrows the audited
+P41 private tokenizer compatibility copy and verifies that original
+weights/config/tokenizer bytes are unchanged.
+
+The `--calibration-file` must be an **already independently prepared**
+JSON object with exactly the following material fields (illustrative
+values are not a fitted calibration and must never be used as evidence):
+
+```json
+{
+  "schema": "hepta.neuron-bakeoff.laya-calibration.v1",
+  "weights_sha256": "<actual 64-hex weight digest>",
+  "calibration_split_sha256": "<sha256 of canonical sorted calibration rows>",
+  "temperature": 1.0,
+  "threshold": 0.8
+}
+```
+
+`calibration_split_sha256` uses the UTF-8 SHA256 of
+`bakeoff.canonical(sorted(calibration_rows, key=lambda r: r["case_id"]))`.
+Only training/calibration outcomes may determine these values;
+test/future labels cannot. `threshold` must equal the frozen
+`--confidence-min` argument; all four train/calibration/test/future
+partitions must exist with disjoint group identifiers. An additional
+temperature is applied to already Laya-calibrated output probabilities,
+so this is a **second-stage calibration** and must be named as such
+when comparing native pretrained Laya probabilities. The original
+SDK probabilities cannot serve as a final-use authorization.
+
 This runner sends `state` and `question`/option criteria to the model but **never** the truth label, OOD flag, group or split. It records measured local latency and RSS; `gpu_peak_bytes=null` because PyTorch allocator peak is not total device-resident GPU usage. Observe GPU usage separately on the target host. Laya `choice` probabilities must be checked for label completeness. Output is not signed and does not certify independent observations by itself. SDK reproducibility: https://nandhakishorm.github.io/laya/reference/agent/ ; the existing reference source pin is in the canonical spec.
 
 For the two embedding models, `run_heads.py` supports `train`, `calibrate`, and `eval` with pre-staged locally audited SentenceTransformer checkpoints. **Both** use the same 256-dimensional fixed random projection and the same 257-parameter linear option-scoring head, batch size, step count, seed and optimizer schedule. Training uses **only** the train split, temperature and abstention fit **only** calibration, evaluation **only** test/future. The experimental Head is not Laya-compatible at the tensor level, and is not connected to production inference. `--reviewed-local-code` permits local third-party Python only after an external audit; it is disabled by default. The train stage writes a safe tensor `.npz`, calibration writes a separate immutable JSON file, and eval writes candidate prediction JSONL. Keep these separated for reproducibility. This is one *candidate experimental protocol*, not a claim of Pareto improvement.
