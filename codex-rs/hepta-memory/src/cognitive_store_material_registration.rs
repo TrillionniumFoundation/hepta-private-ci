@@ -26,8 +26,7 @@ impl RootCognitiveMaterialRegistration {
     ) -> Result<Self, CognitiveRecoveryError> {
         #[cfg(unix)]
         {
-            // SAFETY: geteuid has no preconditions or pointer arguments.
-            if unsafe { libc::geteuid() } != 0 || registered_uid == 0 {
+            if RootSqliteMaterialRegistration::verify_caller(registered_uid).is_err() {
                 return Err(CognitiveRecoveryError::AccessDenied(
                     "Root must register a non-Root owner".into(),
                 ));

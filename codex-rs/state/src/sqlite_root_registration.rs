@@ -54,6 +54,22 @@ pub struct RootSqliteMaterialRegistration {
 }
 
 impl RootSqliteMaterialRegistration {
+    /// Check actual Root and the non-Root source UID before any source-path I/O.
+    /// This is only a caller precondition, not registration or Current evidence.
+    pub fn verify_caller(registered_uid: u32) -> Result<(), SqliteRecoveryError> {
+        #[cfg(unix)]
+        {
+            super::OwnerRule::RegisteredRootSource(registered_uid)
+                .expected_uid()
+                .map(|_| ())
+        }
+        #[cfg(not(unix))]
+        {
+            let _ = registered_uid;
+            Err(SqliteRecoveryError::Unavailable)
+        }
+    }
+
     /// Call only with the launcher's fixed source layout and registered UID,
     /// after the original factory has returned the sole recovered owner.
     pub fn bind_registered(
@@ -61,6 +77,7 @@ impl RootSqliteMaterialRegistration {
         database: &Path,
         registered_uid: u32,
     ) -> Result<Self, SqliteRecoveryError> {
+        Self::verify_caller(registered_uid)?;
         #[cfg(unix)]
         {
             if database.parent() != Some(config.home()) {

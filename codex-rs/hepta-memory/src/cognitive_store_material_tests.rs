@@ -1,15 +1,18 @@
 use super::*;
+use pretty_assertions::assert_eq;
 
 #[test]
 fn active_pointer_fifo_is_rejected_without_waiting_for_a_writer() {
-    use std::os::unix::ffi::OsStrExt;
     let temp = TempDir::new().unwrap();
     let pointer = temp
         .path()
         .join(super::super::super::COGNITIVE_ACTIVE_DB_POINTER);
-    let name = std::ffi::CString::new(pointer.as_os_str().as_bytes()).unwrap();
-    // SAFETY: name is a live NUL-terminated path and mkfifo retains no pointer.
-    assert_eq!(unsafe { libc::mkfifo(name.as_ptr(), 0o600) }, 0);
+    let result = std::process::Command::new("mkfifo")
+        .args(["-m", "600"])
+        .arg(&pointer)
+        .output()
+        .expect("create actual FIFO fixture");
+    assert!(result.status.success(), "{result:?}");
     let root = temp.path().to_path_buf();
     let (sender, receiver) = std::sync::mpsc::channel();
     let worker = std::thread::spawn(move || {
@@ -184,7 +187,7 @@ async fn root_material_mismatched_full_cut_does_not_return_evidence_or_activate(
     let mut cut = store.recovery_anchor().await.unwrap();
     cut.state_digest = Sha256Digest::for_bytes(b"another prospective cut");
     root_source_layout(&source_layout);
-    let mut transaction = store
+    let transaction = store
         .observation_pool()
         .begin_with("BEGIN IMMEDIATE")
         .await
@@ -242,7 +245,7 @@ async fn root_registration_selects_original_recovered_generation_and_rejects_poi
         std::fs::Permissions::from_mode(0o700),
     )
     .unwrap();
-    let mut transaction = recovered
+    let transaction = recovered
         .observation_pool()
         .begin_with("BEGIN IMMEDIATE")
         .await
