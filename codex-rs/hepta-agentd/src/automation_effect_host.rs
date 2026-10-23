@@ -942,7 +942,7 @@ mod tests {
             &intent.run_id,
             &intent.step_id,
         )
-        .checked("provider key")?;
+        .map_err(|error| anyhow::anyhow!("provider key: {error:?}"))?;
         let provider_operation = Sha256Digest::for_bytes(b"provider-operation");
         let ack = serde_json::json!({
             "effect_key": provider_key.as_str(),
