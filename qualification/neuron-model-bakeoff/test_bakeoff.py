@@ -228,6 +228,24 @@ class BakeoffContractTests(unittest.TestCase):
         with self.assertRaisesRegex(bakeoff.EvidenceError, "raw request trace"):
             self.run_eval()
 
+    def test_same_stateful_cell_cannot_overlap_its_own_tick(self):
+        workloads = bakeoff.records(self.root / "workload.jsonl")
+        selected = next(r for r in workloads if r["logical_cells"] == 64)
+        traces = bakeoff.records(self.root / selected["trace"]["path"])
+        traces[1]["cell_id"] = traces[0]["cell_id"]
+        traces[64]["cell_id"] = "cell-1"  # preserve 64-cell coverage; still overlaps.
+        selected["trace"] = self.put_jsonl(selected["trace"]["path"], traces)
+        self.manifest["workload"] = self.put_jsonl("workload.jsonl", workloads)
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "overlapping request spans"):
+            self.run_eval()
+
+    def test_fake_throughput_rejected(self):
+        workloads = bakeoff.records(self.root / "workload.jsonl")
+        workloads[0]["throughput_per_sec"] *= 10
+        self.manifest["workload"] = self.put_jsonl("workload.jsonl", workloads)
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "throughput_per_sec"):
+            self.run_eval()
+
     def test_4096_cell_claim_with_one_cell_observed_is_rejected(self):
         workloads = bakeoff.records(self.root / "workload.jsonl")
         selected = next(r for r in workloads if r["logical_cells"] == 4096)
