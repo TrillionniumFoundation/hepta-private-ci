@@ -184,7 +184,6 @@ class CohortFirewallTests(unittest.TestCase):
                 self.assertEqual(receipt["status"], "fail")
                 self.assertIn(expected_error, receipt["error"])
 
-
     def test_cli_refuses_direct_frozen_input_output_aliases(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
