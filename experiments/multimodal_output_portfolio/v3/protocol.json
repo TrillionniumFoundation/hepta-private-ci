@@ -1,0 +1,178 @@
+{
+  "protocol_id": "hepta-feedback-generation-v3-20261023",
+  "status": "registered_before_v3_development_and_heldout",
+  "parent_evidence_commit": "cea2bd4a2a5d0c6a35f83968994aded2b57bcdee",
+  "preservation": "v1/v1.1/v2 source, protocol, results and failures remain unchanged",
+  "scope": "Finite synthetic stochastic latent-restoration mechanism, robust semantic evidence and executable native budget bridge. Not a natural-data foundation model or a general learned FBSDE solver.",
+  "source_checkpoints": {
+    "17": {
+      "path": "seed-17/supervised-model.pt",
+      "sha256": "14671dbfe57e61f0bfce5cefff18a98a7f58d75d8a160c4344628babf8b567b4"
+    },
+    "29": {
+      "path": "seed-29/supervised-model.pt",
+      "sha256": "fc004ab7e44c992dfd78494cf3e3ef3efdf5bae4320ee7efe3c74e00ce6483fa"
+    },
+    "43": {
+      "path": "seed-43/supervised-model.pt",
+      "sha256": "2cfec95bee20ea0c78e35d0b0ffed26e0cad31ca16cd6e902a2a4e142592ecf1"
+    }
+  },
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "development_seed": 5,
+  "rng_namespace": "hepta-v3-independent-feedback-and-evidence",
+  "feedback": {
+    "maximum_refinements": 3,
+    "conditioning": "one-hot text encoder report from new clean rendered input; same eight concepts",
+    "initial_and_transition_innovations": "three declared branches {-scale*d,0,+scale*d}; a separate public direction per depth; future branch is revealed only after REFINE",
+    "noise_scale": 0.8,
+    "nominal_branch_probabilities": [
+      0.25,
+      0.5,
+      0.25
+    ],
+    "shift_branch_probabilities": [
+      0.45,
+      0.1,
+      0.45
+    ],
+    "ambiguity_rows": [
+      [
+        0.25,
+        0.5,
+        0.25
+      ],
+      [
+        0.45,
+        0.1,
+        0.45
+      ]
+    ],
+    "injected_disturbance_is_artificial": true,
+    "clean_anchor_can_bypass_restoration": "Reported as a separate no-disturbance reference; this benchmark requires exogenous disturbance and cannot establish superiority over direct generation.",
+    "gamma": 2.0,
+    "cost_penalty_per_refinement": 0.015,
+    "supervised_warmup_steps": 60,
+    "matched_supervised_steps": 30,
+    "ndu_steps": 30,
+    "learning_rate": 0.003,
+    "weight_decay": 0.0001,
+    "batch_size": 64,
+    "ndu_learning_rate": 0.001,
+    "trainable_groups": "conditional refiner only; source encoders, initial map and decoders frozen",
+    "ndu_objective": "negative exact recursive risk-sensitive utility over the full current latent tree; external loss to encoded class, no auxiliary reconstruction anchor",
+    "matched_compute": "both arms evaluate the same entire latent tree and same decoder examples for each of 30 updates; backward arithmetic and native/compiler cost reported separately",
+    "training_terminal_utility": "negative unchanged v2 external output loss against the conditioning class; this isolates restoration, not unknown input truth",
+    "arms": [
+      "matched_supervised_static",
+      "matched_supervised_feedback",
+      "ndu_static",
+      "ndu_feedback",
+      "ndu_myopic",
+      "ndu_robust",
+      "ndu_no_refine",
+      "clean_no_disturbance_reference"
+    ],
+    "heldout_worlds_per_seed_per_scenario": 1024,
+    "scenarios": [
+      "nominal_noise",
+      "noise_shift"
+    ],
+    "static_policy": "fixed depth chosen by exact nominal noise expectation before heldout generation; penalty charged once per executed refinement",
+    "online_controller": "STOP/REFINE selected again after each observed latent; immutable exact-node state binding, native session owns budget and emission seal",
+    "primary_contrast": "ndu_feedback minus ndu_static in nominal_noise",
+    "primary_gates": {
+      "mean_external_loss_delta_max": -0.01,
+      "paired_ci95_upper_below": 0.0,
+      "online_linear_mac_ratio_max": 1.1,
+      "budget_or_output_violations": 0
+    },
+    "mechanism_gates": [
+      "same conditioning and depth has both STOP and REFINE on actual differing latent histories",
+      "at least 5 percent and at most 95 percent of nominal heldout trajectories refine",
+      "utility-only refiner gradients finite and nonzero in at least half of registered NDU updates",
+      "independent Bellman parity and native/Python action parity"
+    ],
+    "continuation_contrast": "ndu_feedback minus ndu_myopic; superiority only if independently negative paired CI, otherwise unresolved",
+    "all_other_contrasts": "descriptive; no multiplicity-adjusted general superiority claim"
+  },
+  "robust_sources": {
+    "calibration_worlds_per_regime": 4096,
+    "validation_worlds": 512,
+    "heldout_worlds_per_scenario": 1024,
+    "scenarios": [
+      "iid",
+      "correlation_shift",
+      "all_shared_wrong"
+    ],
+    "ambiguity": "joint report likelihoods across registered source regimes, conditioned on available reports; history rectangular envelope used only where explicitly stated",
+    "generation": "actual source checkpoint depth0 four decoders, portfolios from 331-point frozen grid",
+    "arms": [
+      "nominal",
+      "robust",
+      "robust_verified",
+      "verifier_only"
+    ],
+    "independent_verifier_error": 0.02,
+    "independent_verifier_contract": "new, paid, separately rendered raw text observation; reveal only on chosen query; external verifier is an additional information assumption, not a recovery of hidden truth from old inputs",
+    "verifier_proxy_cost": 5,
+    "verifier_utility_penalty": 0.025,
+    "gates": {
+      "robust_verified_quality_min_per_stress_scenario": 0.9,
+      "all_outputs_required": true,
+      "no_label_or_scenario_access": true
+    },
+    "no_verifier_limit": "in the explicitly uniform eight-class all-shared-wrong generator, observed report excludes one class and leaves seven exchangeable possible truths; best conditional top1 probability is 1/7",
+    "no_robust_guarantee_outside_registered_models": true
+  },
+  "preference": {
+    "model": "Gaussian lottery CE=mean-gamma*variance/2; fixed logistic temperature and utility scale",
+    "profiles": [
+      0.5,
+      2.0,
+      5.0
+    ],
+    "train_pairs": 8192,
+    "heldout_pairs": 4096,
+    "temperature": 1.0,
+    "bounds": [
+      0.0,
+      8.0
+    ],
+    "acceptance_absolute_gamma_error": 0.2,
+    "real_user_preference_claim": false
+  },
+  "fbsde": {
+    "scope": "known entropic Brownian analytic special case with separate U and Z and numerical residual check",
+    "general_solver_claim": false
+  },
+  "statistics": {
+    "bootstrap_replicates": 1000,
+    "paired_seed_world_resampling": true,
+    "new_worlds_independent_across_source_seeds": true,
+    "all_failures_retained": true
+  },
+  "infrastructure": {
+    "native": "actual compiled codex-hepta-ndu budget/feedback bridge, not production NeuronRuntime deployment",
+    "execution": "local CPU completion and external Actions assignment are distinct gates"
+  },
+  "out_of_scope_for_automatic_closure": [
+    "natural-data four-modality foundation-scale validation",
+    "global optimum of neural training",
+    "general nonlinear controlled FBSDE convergence",
+    "real-human preference identification",
+    "unavailable dedicated runner assignment"
+  ],
+  "evidence_rules": [
+    "no thresholds changed after heldout inspection",
+    "no old outcome removed",
+    "all offline model forwards and tree compilation counted",
+    "implementation freeze before confirmation",
+    "new external information disclosed",
+    "source and artifacts hashed"
+  ]
+}
