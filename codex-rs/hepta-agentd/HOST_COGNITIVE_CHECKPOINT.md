@@ -108,3 +108,11 @@ new publisher's local sequence. A CAS conflict remains a definite pre-write
 refusal. All storage errors other than that conflict, and every clock/pidfd
 failure after a successful CAS, return Unavailable: the exact new head may
 already be durable and must be reconciled instead of reissued.
+
+The separate frozen `338bf7ed` phase passed all 14 explicit Root tests, including
+the real pidfd handoff/uncertainty cases and a fresh head bound through the
+original CognitiveStore client. Its earlier `44ed8335` phase failed two of 14;
+those failures and the unchanged-input, empty-diff finish evidence are retained
+in [the complete adoption receipts](acceptance/2026-10-23-checkpoint-adoption/README.md).
+This is the clean same-boot backend boundary; real service/issuer and cold or
+Dirty recovery remain separate requirements.
