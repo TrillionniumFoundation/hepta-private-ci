@@ -1,0 +1,42 @@
+{
+  "reviewed_at": "2026-10-22T14:24:30.330996+00:00",
+  "reviewer": "hepta_repository",
+  "base_sha": "7bf0db2c7549104ce59b6e5ad52256ff6b51a995",
+  "reviewed_head": "705e28a445403b3c8924dc7a1ab2ff6698856907",
+  "scope": "Rust DELETE matrix FFI, DACL fixture isolation, preserved production and original test bytes only",
+  "blocking_findings": [],
+  "source_guards": {
+    "codex-rs/windows-sandbox-rs/src/token.rs": {
+      "unchanged": true,
+      "sha256": "3fe5daee06868755f298a415864e4087984f95b1d20325a86687638bba4cd8ac"
+    },
+    "codex-rs/windows-sandbox-rs/src/acl.rs": {
+      "unchanged": true,
+      "sha256": "7dd4054f8764fc677ddc116e4f828d465d9734cf5a0b85cd985cdd582b1f2bd8"
+    },
+    "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs": {
+      "unchanged": true,
+      "sha256": "1c433d36d0099a33d1e96570b77a753ade76bdfa3f1dec1e91197895c3b3715e"
+    },
+    "codex-rs/windows-sandbox-rs/src/unified_exec/backends/legacy.rs": {
+      "unchanged": true,
+      "sha256": "121082fbb179ea82e808201e8478622c07c73ec90cecc9c25ce7b2f8b447f969"
+    },
+    "codex-rs/windows-sandbox-rs/src/token_tests.rs": {
+      "original_bytes_preserved_except_module_hook": true,
+      "original_sha256": "b9ba4c055e5a65c645ae5c2ea8c5a0e6c256718b7705f28f5274079064eb5b2f"
+    }
+  },
+  "findings": [
+    "Every measured outside parent and victim replaces inherited DACL with a protected exact one-ACE Everyone mask, verified by raw ACE count/type/flags/mask/SID readback.",
+    "DELETE and parent FILE_DELETE_CHILD varied independently; base-token controls verify the positive mechanism and exact OS5 denial when neither route is supplied.",
+    "Preexisting-Low object label is installed and read back before creating each measured restricted token; production token factory and token integrity are not modified.",
+    "Allowed workspace/temp create/read/nested-delete controls precede each route group. Restricted outside escapes remain actual final security assertion failures; all five routes recorded before that assertion.",
+    "LocalFree owns all three documented LocalAlloc-returned descriptor/string buffers; token integrity buffer is usize-aligned; all Win32 0.52 signatures and required declared features were checked locally."
+  ],
+  "primary_reference": "https://learn.microsoft.com/en-us/windows/win32/api/sddl/nf-sddl-convertsecuritydescriptortostringsecuritydescriptorw",
+  "native_tests_executed": false,
+  "owning_compile_executed": false,
+  "workflow_review_owner": "encoder_candidates",
+  "qualification_granted": false
+}

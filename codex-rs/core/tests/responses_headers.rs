@@ -467,6 +467,14 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
     test.submit_turn("hello")
         .await
         .expect("submit first turn prompt");
+    // TurnComplete can be observed before its admission fence is retired.
+    // Finish the exact first-turn terminalizer before testing a second turn;
+    // this grants no admission authority and leaves every header assertion.
+    if let Some(completion) = test.codex.pending_admission_fence_completion() {
+        tokio::time::timeout(std::time::Duration::from_secs(10), completion)
+            .await
+            .expect("initial turn's admission fence must retire");
+    }
     let initial_request = first_request.single_request();
     let initial_header = initial_request
         .header("x-codex-turn-metadata")

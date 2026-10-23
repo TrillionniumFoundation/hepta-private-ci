@@ -1,0 +1,100 @@
+{
+  "schema": "hepta.p41-publication-map.v1",
+  "original_measurement": {
+    "local_commit": "f8855a7ac07af47b618199a3a9ccb87ff9552a5c",
+    "remote_commit": "f7cc3002ecc7498e01b2cac6550608f878b5cb71",
+    "tree": "231ed14ea73a71c6d2ac3fe353b1779419154f53",
+    "report_sha256": "f4ed9cce8f33cb26764933cbc2b950239c9b7e2f8360410b051467a50ca8abe0"
+  },
+  "auditor_validation": {
+    "local_commit": "a9a1581ddf49b3268939b69ff74c101f70b334bc",
+    "remote_commit": "7b8a4740e6a513b904a47bb2ce0c58ded9f1da97",
+    "tree": "3799d5f5fd7fd977a19c7137505ef6cbadbf306f",
+    "audited_original_measurement_without_rerun": true
+  },
+  "composed_source": {
+    "local_commit": "705f364d40f2c67930f4a5df30cd0ff66d7226d5",
+    "remote_commit": "89ad290a86703649562f919343b43c4bc5f71a89",
+    "tree": "001e07a6edaf9002dd67796601da849251b5db38",
+    "p40_remote": "cb9c0b8334368e5515861ad8f08fdc260e585170",
+    "p39_remote": "787b682296c98d49d7c4307de1f20c40ac75f3d6",
+    "p38_remote": "3dbaae20d47904bae2987993813b84f1479a7e8b"
+  },
+  "evidence_package": {
+    "path": "qa/stem-bakeoff/evidence/20261022-native-cell-pool",
+    "benchmark_rerun": false,
+    "bytes": 2238126,
+    "files": 70,
+    "manifest_sha256": "61e4253d1f5507f43f794ba432e0bbe1becca8a553259c21368cd90dd140e996",
+    "original_payload_bytes_modified": false,
+    "path_mapping": {
+      "README.md": "original-notes/initial-package-README.md",
+      "source-snapshot/codex-rs/hepta-neuron/examples/native_task_head_pool.rs": "source-snapshot/codex-rs/hepta-neuron/examples/native_task_head_pool.rs.source",
+      "source-snapshot/codex-rs/hepta-neuron/src/lib.rs": "source-snapshot/codex-rs/hepta-neuron/src/lib.rs.source",
+      "source-snapshot/codex-rs/hepta-neuron/src/task_head_native.rs": "source-snapshot/codex-rs/hepta-neuron/src/task_head_native.rs.source"
+    },
+    "schema": "hepta.p41-publication-package-receipt.v1",
+    "sha256sums_sha256": "943acdfcf1709ce61a617c9240d1e929e63d4e8dfa90fb9d2fab241b01a8b7c0"
+  },
+  "independent_source_review": {
+    "reviewed_scope": "root inspected original pool driver, runner, tests, complete auditor and composed workflow; independent Windows owner review was delivered separately",
+    "finding": "No blocking source finding in pool logic; redundant target-directory export introduced by merge removed before publication.",
+    "native_windows_qualification": false
+  },
+  "cloud_execution_status": "PENDING_CURRENT_SOURCE",
+  "claim_scope": {
+    "actual_private_head_allocations_up_to": 4096,
+    "independently_trained_templates_total": 2,
+    "encoder_executed_in_pool": false,
+    "new_independent_quality_trial": false,
+    "full_stateful_policy_qualified": false,
+    "target_device_qualified": false,
+    "energy_joules": null,
+    "authority": "DENY_ALL"
+  },
+  "stages": [
+    {
+      "local": "1f903bb1a8dc8f2ac087fae91c394a9c8fc096ab",
+      "remote": "e6fd824529457b45e5cd4cf0d72215231c8d6097",
+      "tree": "11c61240242314bc6f9529ec6be23899195cf46d"
+    },
+    {
+      "local": "3f414cf69ed191ad7de2c8252fda76c345cf8551",
+      "remote": "60c3653db781b968576b6bf7340b0d20bac4811f",
+      "tree": "fafd59ca73bdfe8997adc79b1b7d9222862e6dd0"
+    },
+    {
+      "local": "f8855a7ac07af47b618199a3a9ccb87ff9552a5c",
+      "remote": "f7cc3002ecc7498e01b2cac6550608f878b5cb71",
+      "tree": "231ed14ea73a71c6d2ac3fe353b1779419154f53"
+    },
+    {
+      "local": "8ad31750346b86a9ca54c226c3081a9abba94ba8",
+      "remote": "74353db2682df29eac78cc68e7d262965d01941c",
+      "tree": "29a89cbc3a04cb301344a768061e5bcc82f9292f"
+    },
+    {
+      "local": "a9a1581ddf49b3268939b69ff74c101f70b334bc",
+      "remote": "7b8a4740e6a513b904a47bb2ce0c58ded9f1da97",
+      "tree": "3799d5f5fd7fd977a19c7137505ef6cbadbf306f"
+    },
+    {
+      "local": "098b92b2809f9314fe5c1002ad182d62fac01764",
+      "remote": "ff6cf3bec4d97be6232bad637bce11b514e19f3f",
+      "tree": "c11b3a4a534e96f0d0ea65bc24023d619e8f0ba8"
+    },
+    {
+      "local": "705f364d40f2c67930f4a5df30cd0ff66d7226d5",
+      "remote": "89ad290a86703649562f919343b43c4bc5f71a89",
+      "tree": "001e07a6edaf9002dd67796601da849251b5db38"
+    }
+  ],
+  "initial_package": {
+    "path": "qa/stem-bakeoff/evidence/20261022-native-cell-pool",
+    "files": 66,
+    "bytes": 2201317,
+    "manifest_sha256": "48180760e9f2771f859e80cfd1df057a4fdfc19572403520cec47024172d1170",
+    "checksums_sha256": "9c8486ca465e1bcc2d83b3add942b5664e2817557036279ed94c8b5c932561be",
+    "originals_modified": false
+  }
+}

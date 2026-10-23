@@ -1,0 +1,421 @@
+{
+  "benchmark_rerun": false,
+  "dispatch_samples": 32768,
+  "experiments": 8,
+  "fanout_samples": 128,
+  "files": {
+    "README.md": {
+      "bytes": 3278,
+      "kind": "package-documentation",
+      "original_source": "generated packaging scope and instructions",
+      "sha256": "8ab1c98855827cd2735657bd791aad5bda9b6255b8a28faf4e27e4646be78a6b"
+    },
+    "RECONSTRUCT.sh": {
+      "bytes": 2131,
+      "kind": "commands-not-executed-during-packaging",
+      "original_source": "generated packaging documentation",
+      "sha256": "919ca8dd36b21e6df84b7466d0f4959570161263ea4eafe494c8d73a5cb29196"
+    },
+    "checks/hepta-p41-document-evidence.py": {
+      "bytes": 12896,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-document-evidence.py",
+      "sha256": "9f46876ad2effdfd977ae5d3398fe5a0ad96800dc7c990a90e78a11e6a22002d"
+    },
+    "checks/hepta-p41-driver-probe.py": {
+      "bytes": 3572,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-driver-probe.py",
+      "sha256": "a0581c5cb42006dd3a2d5e7637a3695b6d36cd0c3ba2f61d36043eba5271a8b3"
+    },
+    "checks/hepta-p41-native-pools-crosscheck.json": {
+      "bytes": 4456,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-crosscheck.json",
+      "sha256": "55dd55b383bb989962876c398e0e6e4a9bbd0be68a4e7b594625fd6855528a5c"
+    },
+    "checks/hepta-p41-validation.json": {
+      "bytes": 5764,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-validation.json",
+      "sha256": "c625ea432e0a2f3dc089a80c83344479acbab150dca3fe0887423b38ffb7cc7a"
+    },
+    "checks/hepta-p41-verify-results.py": {
+      "bytes": 9569,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-verify-results.py",
+      "sha256": "f98c468aae3f617869598cf6122e9cecf056f33aa91d54099d75118b4fdd2337"
+    },
+    "checks/native-fixture-probe/1.json": {
+      "bytes": 82096,
+      "kind": "unchanged-synthetic-execution-fixture-not-quality",
+      "original_source": "/tmp/hepta-p41-driver-probe/1.json",
+      "sha256": "1d95dc3a0190091a528d2eb28a576c7ea0a96a9265ac3e37e2dd5aebec25f666"
+    },
+    "checks/native-fixture-probe/1.stderr": {
+      "bytes": 0,
+      "kind": "unchanged-synthetic-execution-fixture-not-quality",
+      "original_source": "/tmp/hepta-p41-driver-probe/1.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "checks/native-fixture-probe/32.json": {
+      "bytes": 82254,
+      "kind": "unchanged-synthetic-execution-fixture-not-quality",
+      "original_source": "/tmp/hepta-p41-driver-probe/32.json",
+      "sha256": "504cde66c42564002601a62043e4ffbcd522f4a79c4af672d556b88c2cd2eb00"
+    },
+    "checks/native-fixture-probe/32.stderr": {
+      "bytes": 0,
+      "kind": "unchanged-synthetic-execution-fixture-not-quality",
+      "original_source": "/tmp/hepta-p41-driver-probe/32.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "checks/native-fixture-probe/manifest.json": {
+      "bytes": 1011,
+      "kind": "unchanged-synthetic-execution-fixture-not-quality",
+      "original_source": "/tmp/hepta-p41-driver-probe/manifest.json",
+      "sha256": "4e708115ac64d19baa78605e4fa00c787ee74662049cf320676740fe5b02e53c"
+    },
+    "checks/native-fixture-probe/missing_modality.jsonl": {
+      "bytes": 122880,
+      "kind": "unchanged-synthetic-execution-fixture-not-quality",
+      "original_source": "/tmp/hepta-p41-driver-probe/missing_modality.jsonl",
+      "sha256": "ccab4ac86f0cd8964213dbf3458d395d4dbeada676bec2ba796384f8a63a1dfb"
+    },
+    "checks/native-fixture-probe/receipt.json": {
+      "bytes": 1070,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-driver-probe/receipt.json",
+      "sha256": "cc1f04b3762f32b814a54c3ac4d086e98bd0cf516a81b3eec4b2eadb606edfad"
+    },
+    "checks/native-fixture-probe/requests.jsonl": {
+      "bytes": 122880,
+      "kind": "unchanged-synthetic-execution-fixture-not-quality",
+      "original_source": "/tmp/hepta-p41-driver-probe/requests.jsonl",
+      "sha256": "1a1643c1de7bd1c610fabee3690270aad38c0b4c6ec2a774bc6022fb073a240b"
+    },
+    "checks/native-fixture-probe/weights.f32le": {
+      "bytes": 144,
+      "kind": "unchanged-synthetic-execution-fixture-not-quality",
+      "original_source": "/tmp/hepta-p41-driver-probe/weights.f32le",
+      "sha256": "7ab74dda9d34d70b6146a40c5f9fa20b6825181a97532d10af02615daf1963a1"
+    },
+    "checks/native-fixture-probe/wrong_identity.jsonl": {
+      "bytes": 122880,
+      "kind": "unchanged-synthetic-execution-fixture-not-quality",
+      "original_source": "/tmp/hepta-p41-driver-probe/wrong_identity.jsonl",
+      "sha256": "b115a818dce690bc46465282968e96a8207f13da48e58617073dc5a04304af02"
+    },
+    "checks/original-evidence-index.json": {
+      "bytes": 6897,
+      "kind": "unchanged-original-index",
+      "original_source": "/tmp/hepta-p41-evidence-index.json",
+      "sha256": "c31f8c898d540dcd10ca744dcf1e02094dfd7909fc72f614a8ee7e5e8f5e66b8"
+    },
+    "checks/package_evidence.py": {
+      "bytes": 15606,
+      "kind": "packaging-script",
+      "original_source": "/tmp/hepta-p41-package-evidence.py",
+      "sha256": "6d5efe9a5fccbcaf63cadb592e6a784c712f97d1c23f7d20adfe47c325a673d3"
+    },
+    "input-references.json": {
+      "bytes": 4226,
+      "kind": "package-metadata",
+      "original_source": "generated from pinned originals",
+      "sha256": "8329d4c7beb8b2c9174701328b358a16d62fd904ff0c157905b45e0ef65516be"
+    },
+    "logs/hepta-p41-clean-release-build.log": {
+      "bytes": 62,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-clean-release-build.log",
+      "sha256": "32ca1650a7f9a887e3881efceb061c74c6a8e993cca73c33c726b1feaefc8e57"
+    },
+    "logs/hepta-p41-driver-probe.log": {
+      "bytes": 1132,
+      "kind": "unchanged-historical-log",
+      "original_source": "/tmp/hepta-p41-driver-probe.log",
+      "sha256": "b6784e5928cee74ee16bec01d57b384c704e1488e2aeba46b57bff84c251ee06"
+    },
+    "logs/hepta-p41-neuron-tests-final.log": {
+      "bytes": 15531,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-neuron-tests-final.log",
+      "sha256": "78a7aab16828f34371ec6de9ec3cfae16b41c93f869ebd4b7519a95323dd3457"
+    },
+    "logs/hepta-p41-neuron-tests.log": {
+      "bytes": 359,
+      "kind": "unchanged-historical-log",
+      "original_source": "/tmp/hepta-p41-neuron-tests.log",
+      "sha256": "fdbbb402b58670aa02158efe2208a1d8b212abab9612be2be564531b197a862b"
+    },
+    "logs/hepta-p41-pool-release-build.log": {
+      "bytes": 318,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-pool-release-build.log",
+      "sha256": "9a7e5e4acb680611cb3bba65e1cfcdd932f08c4c3e784874c89d7c274c410253"
+    },
+    "logs/hepta-p41-pool-replay.log": {
+      "bytes": 763,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-pool-replay.log",
+      "sha256": "0dd22753e8a9c1f26c9ed092753e25a189ad4ef8031e3eee4f373ac15143d06f"
+    },
+    "logs/hepta-p41-python-tests-final.log": {
+      "bytes": 1977,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-python-tests-final.log",
+      "sha256": "f57889cee085aa79b4e131a758571f2848bd1f220614a88ed364f1fac25b6d4b"
+    },
+    "logs/hepta-p41-python-tests.log": {
+      "bytes": 1799,
+      "kind": "unchanged-historical-log",
+      "original_source": "/tmp/hepta-p41-python-tests.log",
+      "sha256": "e4c34c261c8b9f4b69a44c7e059b7de944eef76e73523aed4ed46ef9241300b6"
+    },
+    "logs/hepta-p41-scoped-clippy-check.log": {
+      "bytes": 826,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-scoped-clippy-check.log",
+      "sha256": "78dc82929876f413f2f7a30619f1f088532c34f1b0b6afc642dc94557f1a9793"
+    },
+    "logs/hepta-p41-scoped-clippy.log": {
+      "bytes": 209,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-scoped-clippy.log",
+      "sha256": "6bb10e993781fcfafa03cdc3bb9385d58a4125ed406243f1ca86f8aa893f5afd"
+    },
+    "native-results/gated-1.json": {
+      "bytes": 98998,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/gated-1.json",
+      "sha256": "dfd356b7796ec9780dc3fea429caa2214558b9c6fb9e4c63d363994964bd064b"
+    },
+    "native-results/gated-1.stderr": {
+      "bytes": 0,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/gated-1.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "native-results/gated-256.json": {
+      "bytes": 99836,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/gated-256.json",
+      "sha256": "458eb5c5696d58c4161b719f84323d5989a668cae26d720824d24c754070d376"
+    },
+    "native-results/gated-256.stderr": {
+      "bytes": 0,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/gated-256.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "native-results/gated-32.json": {
+      "bytes": 99190,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/gated-32.json",
+      "sha256": "ac87dfa03b7e1fbc3a4033e7cf586f69cff73fdd61f91fdc1e8250b635d78066"
+    },
+    "native-results/gated-32.stderr": {
+      "bytes": 0,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/gated-32.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "native-results/gated-4096.json": {
+      "bytes": 109136,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/gated-4096.json",
+      "sha256": "d19b27d328b9156e31a10dea520bbefa6c7fb98bc3ada570c0cfba9b01957612"
+    },
+    "native-results/gated-4096.stderr": {
+      "bytes": 0,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/gated-4096.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "native-results/gated-head/manifest.json": {
+      "bytes": 1021,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/gated-head/manifest.json",
+      "sha256": "70b0b57e9fad07be76047dd0d6c31f24e58a6fbc1e0515af03947b592f544f8b"
+    },
+    "native-results/gated-head/weights.f32le": {
+      "bytes": 135256,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/gated-head/weights.f32le",
+      "sha256": "36f32f6b26c1e9751e1979a62801d22c1108f0b2abf6670c01044f73490d55fa"
+    },
+    "native-results/linear-1.json": {
+      "bytes": 102157,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/linear-1.json",
+      "sha256": "2bca6431afc787d4d89f7b4bbf4aed54533d0627498458c05c6449f0be9fe40f"
+    },
+    "native-results/linear-1.stderr": {
+      "bytes": 0,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/linear-1.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "native-results/linear-256.json": {
+      "bytes": 102984,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/linear-256.json",
+      "sha256": "b71b12f11a28e6a448860211360df36df466eb4894756a8f3e984e43cd25278b"
+    },
+    "native-results/linear-256.stderr": {
+      "bytes": 0,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/linear-256.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "native-results/linear-32.json": {
+      "bytes": 102399,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/linear-32.json",
+      "sha256": "bf166a0e6d82b497c084b082d0b34502173217bf1e2a18b0091388f1377c872a"
+    },
+    "native-results/linear-32.stderr": {
+      "bytes": 0,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/linear-32.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "native-results/linear-4096.json": {
+      "bytes": 110473,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/linear-4096.json",
+      "sha256": "4c5621a2fb53bcc1431045c0501d33b417386e82f0da927fc9fb01566f0f10d8"
+    },
+    "native-results/linear-4096.stderr": {
+      "bytes": 0,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/linear-4096.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "native-results/linear-head/manifest.json": {
+      "bytes": 1021,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/linear-head/manifest.json",
+      "sha256": "6f5a5b0d75fdacc5d1e46a460638c135fafcca6331e9b7a91706c1c345c2aa84"
+    },
+    "native-results/linear-head/weights.f32le": {
+      "bytes": 135256,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/linear-head/weights.f32le",
+      "sha256": "22781ddbc683e4af786e80ab8301e89bf7b56a2e5fbd2a1ba87caed1c482c230"
+    },
+    "native-results/plan.json": {
+      "bytes": 1560,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/plan.json",
+      "sha256": "1f412506d8d8e45ef24b8bbca7d3e573a0bbf17bacdda5d2f1c48e3f51276945"
+    },
+    "native-results/report.json": {
+      "bytes": 21856,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-native-pools-f8855a7/report.json",
+      "sha256": "f4ed9cce8f33cb26764933cbc2b950239c9b7e2f8360410b051467a50ca8abe0"
+    },
+    "original-notes/hepta-p41-README.md": {
+      "bytes": 6626,
+      "kind": "unchanged-original",
+      "original_source": "/tmp/hepta-p41-README.md",
+      "sha256": "5873610f6735792685ccfa336f7469679b28709b4b986e0af2d82976db71bdc8"
+    },
+    "references/p40/gated-paired.jsonl": {
+      "bytes": 153679,
+      "kind": "unchanged-p40-reference",
+      "original_source": "/tmp/hepta-p41-pool/qa/stem-bakeoff/evidence/20261022-native-task-head/native-results/gated-paired.jsonl",
+      "sha256": "1b1d3e9f581fe4ccdc18a5b3130d7536697c071f90a26d8e104d876b30b91cd7"
+    },
+    "references/p40/linear-paired.jsonl": {
+      "bytes": 156825,
+      "kind": "unchanged-p40-reference",
+      "original_source": "/tmp/hepta-p41-pool/qa/stem-bakeoff/evidence/20261022-native-task-head/native-results/linear-paired.jsonl",
+      "sha256": "1f51c63c6f0c9a49cae499feb737f28497e19c265ebb40ec1f1306d86a18eaab"
+    },
+    "references/p40/report.json": {
+      "bytes": 14294,
+      "kind": "unchanged-p40-reference",
+      "original_source": "/tmp/hepta-p41-pool/qa/stem-bakeoff/evidence/20261022-native-task-head/native-results/report.json",
+      "sha256": "22e4560ca4ff2b1c604267c92aed71bbf1417e612018c6760930633ca52395e6"
+    },
+    "references/research-archive-manifest.json": {
+      "bytes": 17260,
+      "kind": "unchanged-input-reference",
+      "original_source": "/tmp/hepta-p41-pool/qa/stem-bakeoff/evidence/20261022-real-multimodal/archive-manifest.json",
+      "sha256": "2a853d6c975b30d98a8c79348f01bb3f5b26f36793f2986826a5deed3ea4454e"
+    },
+    "source-snapshot/codex-rs/hepta-neuron/examples/native_task_head_pool.rs": {
+      "bytes": 10996,
+      "kind": "exact-git-source-blob",
+      "original_source": "f8855a7ac07af47b618199a3a9ccb87ff9552a5c:codex-rs/hepta-neuron/examples/native_task_head_pool.rs",
+      "sha256": "6294c5786f5223cacc3f74a62e6e0b5908bdad7653eabf25106cfd597c7ff0ed"
+    },
+    "source-snapshot/codex-rs/hepta-neuron/src/lib.rs": {
+      "bytes": 11729,
+      "kind": "exact-git-source-blob",
+      "original_source": "f8855a7ac07af47b618199a3a9ccb87ff9552a5c:codex-rs/hepta-neuron/src/lib.rs",
+      "sha256": "839b884d6853dd8a2b62dc36e45dd2c71f84c7637b2250e93f517c1bb27b7206"
+    },
+    "source-snapshot/codex-rs/hepta-neuron/src/task_head_native.rs": {
+      "bytes": 12910,
+      "kind": "exact-git-source-blob",
+      "original_source": "f8855a7ac07af47b618199a3a9ccb87ff9552a5c:codex-rs/hepta-neuron/src/task_head_native.rs",
+      "sha256": "a75cdad0fbcb4e99141e1b35d6525f595b06a1759e56e32fe0f4df7f3986c227"
+    },
+    "source-snapshot/codex-rs/rust-toolchain.toml": {
+      "bytes": 78,
+      "kind": "exact-git-source-blob",
+      "original_source": "f8855a7ac07af47b618199a3a9ccb87ff9552a5c:codex-rs/rust-toolchain.toml",
+      "sha256": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64"
+    },
+    "source-snapshot/qa/stem-bakeoff/native_task_head_pool.py": {
+      "bytes": 18981,
+      "kind": "exact-git-source-blob",
+      "original_source": "f8855a7ac07af47b618199a3a9ccb87ff9552a5c:qa/stem-bakeoff/native_task_head_pool.py",
+      "sha256": "21fffc60c82a7f4c02e1b04a3bde413c2e8b21336fa4bb4cc9be8f94710ec07f"
+    },
+    "source-snapshot/qa/stem-bakeoff/replay_native_task_head_v1.py": {
+      "bytes": 15898,
+      "kind": "exact-git-source-blob",
+      "original_source": "f8855a7ac07af47b618199a3a9ccb87ff9552a5c:qa/stem-bakeoff/replay_native_task_head_v1.py",
+      "sha256": "9fa6d2e1dac42eb67cbcaf1f8fc960d0a3071156250c421cdc0d759b1186e64b"
+    },
+    "source-snapshot/qa/stem-bakeoff/test_native_task_head_pool.py": {
+      "bytes": 8555,
+      "kind": "exact-git-source-blob",
+      "original_source": "f8855a7ac07af47b618199a3a9ccb87ff9552a5c:qa/stem-bakeoff/test_native_task_head_pool.py",
+      "sha256": "f3d6eaa5942060df1638e04aec10dff43d43416b3bc914df1483ba0928294f4e"
+    }
+  },
+  "index_exclusions": [
+    "manifest.json",
+    "SHA256SUMS"
+  ],
+  "omitted": [
+    {
+      "bytes": 2673320,
+      "included": false,
+      "logical_path": "native-results/native_task_head_pool.bin",
+      "original_path": "/tmp/hepta-p41-native-pools-f8855a7/native_task_head_pool.bin",
+      "reason": "deliberately omitted large reconstructible input or executable",
+      "sha256": "42c69fcec3a2b5332893e6a417710df38fbc6cab3ca51ab1afe195db2fe4fc31"
+    },
+    {
+      "bytes": 16988720,
+      "included": false,
+      "logical_path": "native-results/requests.jsonl",
+      "original_path": "/tmp/hepta-p41-native-pools-f8855a7/requests.jsonl",
+      "reason": "deliberately omitted large reconstructible input or executable",
+      "sha256": "3bb13eaae37d0d72b245ce65aa28c81b057a542fe555d367a0f7758b392cd214"
+    }
+  ],
+  "original_measurements_modified": false,
+  "payload_bytes": 2175560,
+  "payload_file_count": 64,
+  "report_sha256": "f4ed9cce8f33cb26764933cbc2b950239c9b7e2f8360410b051467a50ca8abe0",
+  "schema": "hepta.p41-evidence-package.v1",
+  "source_commit": "f8855a7ac07af47b618199a3a9ccb87ff9552a5c",
+  "source_tree": "231ed14ea73a71c6d2ac3fe353b1779419154f53"
+}

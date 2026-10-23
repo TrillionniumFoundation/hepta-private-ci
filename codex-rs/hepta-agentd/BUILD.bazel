@@ -16,6 +16,13 @@ codex_rust_crate(
     crate_name = "codex_hepta_agentd",
     integration_test_timeout = "long",
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
+    # Only this historical fixture needs the test-only raw ledger seeding API.
+    # Production paths and other integration tests keep the typed writer.
+    integration_test_dependency_replacements = {
+        "plasticity_process_e2e": {
+            "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+        },
+    },
 )
 
 # Compile the local writer qualification separately from the default product

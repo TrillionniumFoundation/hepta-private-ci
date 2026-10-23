@@ -1,0 +1,71 @@
+{
+  "started_at": "2026-10-22T14:29:05.924950+00:00",
+  "base": "e2fe930fe6e188539264c69bf09a1b74ea48641c",
+  "commands": [
+    {
+      "name": "fmt",
+      "argv": [
+        "just",
+        "fmt",
+        "--base",
+        "e2fe930fe6e188539264c69bf09a1b74ea48641c"
+      ],
+      "cwd": "/tmp/hepta-ci-appserver-next-20261022/codex-rs",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "fmt-check",
+      "argv": [
+        "just",
+        "fmt",
+        "--base",
+        "e2fe930fe6e188539264c69bf09a1b74ea48641c",
+        "--check"
+      ],
+      "cwd": "/tmp/hepta-ci-appserver-next-20261022/codex-rs",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "diff-check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/tmp/hepta-ci-appserver-next-20261022",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "codespell",
+      "argv": [
+        "/tmp/hepta-codespell-2.4.3/bin/codespell",
+        "--ignore-words",
+        ".codespellignore",
+        "--skip",
+        "./.git",
+        "codex-rs/app-server/README.md",
+        "codex-rs/app-server/src/request_processors/persisted_resume_settings.rs",
+        "codex-rs/app-server/src/request_processors/persisted_resume_settings_tests.rs",
+        "codex-rs/app-server/src/request_processors/thread_processor.rs",
+        "codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+        "codex-rs/app-server/tests/suite/v2/thread_resume_permission_roots_tests.rs"
+      ],
+      "cwd": "/tmp/hepta-ci-appserver-next-20261022",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "files": {
+    "codex-rs/app-server/README.md": "f9686e66036b3dbe3e7348a32b4abf7f4d96baf7b0a686e2edf1c9af835643b2",
+    "codex-rs/app-server/src/request_processors/persisted_resume_settings.rs": "1d9f348240f0324ed632883b263f44f35d85cd0f425c10542cfb983863b7c30e",
+    "codex-rs/app-server/src/request_processors/persisted_resume_settings_tests.rs": "a49a218dd2a31a237ff249e84ce1acbce4dc86af135de379de1698723e3bc6d4",
+    "codex-rs/app-server/src/request_processors/thread_processor.rs": "4c5f17b8bb9c03b4fb5d31804ea8917ddb3a34823d7117d0ce5951e8c9646175",
+    "codex-rs/app-server/tests/suite/v2/thread_resume.rs": "ea945c6fc37665571b463edd12cb84367446dda6d85fed75611c5767a8cfa830",
+    "codex-rs/app-server/tests/suite/v2/thread_resume_permission_roots_tests.rs": "2e5a7a05e8cf2d83cf3e02c9404cc1ff716fd3f2faa52ee461c4e7d9e06150d8"
+  },
+  "completed_at": "2026-10-22T14:29:06.702950+00:00",
+  "success": true
+}
