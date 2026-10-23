@@ -142,6 +142,48 @@ class PairedEvidenceTests(unittest.TestCase):
         rec = evaluate(d)
         self.assertFalse(rec['comparison']['free_controller']['gates']['protected_task_no_regression'])
 
+    def test_protected_loss_and_modal_safety_cannot_hide_in_global_benefit(self):
+        # Before this fix, a protected world with worse *all three* safety
+        # measures was admitted by every gate if its quality score stayed high.
+        # 2,000 bootstraps exercise the same provisional-success path.
+        d = study_fixture(bootstrap_replicates=2000)
+        for draw in d['worlds'][0]['outcomes']['ndu']['decoded_draw_scores']:
+            draw['loss'] = .47  # baseline free controller is about .44
+            draw['ambiguity'] = .17  # free controller is .06
+            draw['inconsistency'] = .13  # free controller is .04
+        receipt = evaluate(d)
+        checks = receipt['comparison']['free_controller']['protected_task_checks']
+        self.assertFalse(checks['loss'])
+        self.assertFalse(checks['ambiguity'])
+        self.assertFalse(checks['inconsistency'])
+        self.assertTrue(checks['quality'])
+        self.assertFalse(receipt['comparison']['free_controller']['gates']['protected_task_no_regression'])
+        self.assertFalse(receipt['all_provisional_gates_pass'])
+        self.assertEqual(receipt['status'], 'HOLD_NO_GO')
+
+    def test_protected_cost_spike_denied_even_if_global_budget_passes(self):
+        d = study_fixture()
+        cost = d['worlds'][0]['outcomes']['ndu']['measured_cost']
+        cost['controller'] += .30
+        cost['total'] += .30
+        receipt = evaluate(d)
+        control = receipt['comparison']['free_controller']
+        self.assertTrue(control['gates']['physical_total_cost'])
+        self.assertFalse(control['protected_task_checks']['physical_cost'])
+        self.assertFalse(control['gates']['protected_task_no_regression'])
+
+    def test_protected_single_metric_ambiguity_regression_denied(self):
+        d = study_fixture()
+        for draw in d['worlds'][0]['outcomes']['ndu']['decoded_draw_scores']:
+            draw['ambiguity'] = .065  # just worse than .06 control; globally still safe
+        receipt = evaluate(d)
+        checks = receipt['comparison']['free_controller']['protected_task_checks']
+        self.assertFalse(checks['ambiguity'])
+        self.assertTrue(checks['loss'])
+        self.assertTrue(checks['quality'])
+        self.assertTrue(checks['inconsistency'])
+        self.assertFalse(receipt['comparison']['free_controller']['gates']['protected_task_no_regression'])
+
     def test_missing_protected_coverage_rejected(self):
         d = study_fixture()
         for row in d['worlds']:
