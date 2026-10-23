@@ -23,6 +23,8 @@ mod qualification {
     use codex_hepta_agentd::authbus_objective_claims;
     use codex_hepta_contracts::AgentId;
     use codex_hepta_contracts::FinalUseBinding;
+    use codex_hepta_contracts::FinalUseRevocations;
+    use codex_hepta_contracts::HostAuthorityClockProjection;
     use codex_hepta_fleet::ResourceBudget;
     use codex_hepta_paths::HeptaFleetRoot;
     use ed25519_dalek::Verifier;
@@ -44,6 +46,25 @@ mod qualification {
         fleet_root: PathBuf,
         workspace: PathBuf,
         resources: ResourceBudget,
+    }
+
+    #[derive(Deserialize)]
+    struct ObservationResponse {
+        schema_version: u32,
+        operation: String,
+        authority_epoch: u64,
+        revocations: FinalUseRevocations,
+        clock: HostAuthorityClockProjection,
+        observed_unix_ms: u64,
+        registered_agent_id: String,
+        spawn_generation: u64,
+    }
+
+    #[derive(Deserialize)]
+    struct ObjectiveResponse {
+        schema_version: u32,
+        operation: String,
+        ingress: AuthBusObjectiveIngress,
     }
 
     fn connect(path: &Path, root_pid: u32) -> UnixStream {
@@ -87,11 +108,11 @@ mod qualification {
         }
     }
 
-    pub(super) fn exchange(
+    pub(super) fn exchange<T: serde::de::DeserializeOwned>(
         stream: &mut UnixStream,
         request: &serde_json::Value,
         bound: usize,
-    ) -> serde_json::Value {
+    ) -> serde_json::Result<T> {
         let bytes = serde_json::to_vec(request).unwrap();
         stream
             .write_all(&(bytes.len() as u32).to_be_bytes())
@@ -103,7 +124,7 @@ mod qualification {
         assert!((1..=bound).contains(&length));
         let mut bytes = vec![0; length];
         stream.read_exact(&mut bytes).unwrap();
-        serde_json::from_slice(&bytes).unwrap()
+        serde_json::from_slice(&bytes)
     }
 
     fn objective_body(spawn_generation: u64) -> AuthBusObjectiveBody {
@@ -272,11 +293,11 @@ mod qualification {
         }
         let mut writer_expiry = None;
         if writer_proof {
-            let read = serde_json::from_value::<HostWriterAuthorizationReadResponseV1>(exchange(
+            let read: HostWriterAuthorizationReadResponseV1 = exchange(
                 &mut observation,
                 &serde_json::json!({"schema_version":1,"operation":"runtime.authority.writer_authorization.v1"}),
                 16 * 1024,
-            ))?;
+            )?;
             let public: [u8; 32] =
                 serde_json::from_str(&std::env::var("HEPTA_SERVICE_PUBLIC_KEY")?)?;
             let key = ed25519_dalek::VerifyingKey::from_bytes(&public)?;
@@ -294,11 +315,11 @@ mod qualification {
             assert_eq!(read.proof.claims.sequence, 1);
             writer_expiry = Some(read.proof.claims.authority_lease.expires_at_unix_ms);
             let before = Instant::now();
-            let feed: HostAuthorityObservationResponseV2 = serde_json::from_value(exchange(
+            let feed: HostAuthorityObservationResponseV2 = exchange(
                 &mut observation,
                 &serde_json::json!({"schema_version":2,"operation":"runtime.authority.observation.v2"}),
                 16 * 1024,
-            ))?;
+            )?;
             let fresh_ms = before.elapsed().as_millis();
             assert!(before.elapsed() <= Duration::from_millis(500));
             assert_eq!(
@@ -320,11 +341,11 @@ mod qualification {
                 read.proof.claims.local_lease_generation
             );
             assert!(feed.writer.store_revision > 1);
-            let again: HostWriterAuthorizationReadResponseV1 = serde_json::from_value(exchange(
+            let again: HostWriterAuthorizationReadResponseV1 = exchange(
                 &mut observation,
                 &serde_json::json!({"schema_version":1,"operation":"runtime.authority.writer_authorization.v1"}),
                 16 * 1024,
-            ))?;
+            )?;
             assert_eq!(again, read);
             println!(
                 "{}",
@@ -332,11 +353,11 @@ mod qualification {
             );
         }
         let start = Instant::now();
-        let observation_data = exchange(
+        let observation_data: ObservationResponse = exchange(
             &mut observation,
             &serde_json::json!({"schema_version":1,"operation":"runtime.authority.observation.v1"}),
             16 * 1024,
-        );
+        )?;
         let feed_ms = start.elapsed().as_millis();
         assert!(
             start.elapsed() <= Duration::from_millis(500),
@@ -344,27 +365,24 @@ mod qualification {
         );
         let identity: PublicFixtureIdentity =
             serde_json::from_str(&std::env::var("HEPTA_SERVICE_IDENTITY")?)?;
-        assert_eq!(observation_data["schema_version"], 1);
-        assert_eq!(observation_data["authority_epoch"], 1);
+        assert_eq!(observation_data.schema_version, 1);
+        assert_eq!(observation_data.operation, "runtime.authority.observation.v1");
+        assert_eq!(observation_data.authority_epoch, 1);
+        assert_eq!(observation_data.revocations.authority_epoch, observation_data.authority_epoch);
         assert_eq!(
-            observation_data["registered_agent_id"],
+            observation_data.registered_agent_id,
             identity.agent_id.as_str()
         );
         assert_eq!(
-            observation_data["spawn_generation"],
+            observation_data.spawn_generation,
             identity.spawn_generation
         );
         assert_eq!(
-            observation_data["clock"]["boot_id"],
+            observation_data.clock.boot_id,
             std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?.trim()
         );
         assert!(
-            observation_data["observed_unix_ms"]
-                .as_u64()
-                .ok_or("missing observation")?
-                <= observation_data["clock"]["ceiling_unix_ms"]
-                    .as_u64()
-                    .ok_or("missing ceiling")?
+            observation_data.observed_unix_ms <= observation_data.clock.ceiling_unix_ms
         );
         let layout = HeptaFleetRoot::parse(identity.fleet_root.clone())?
             .layout()
@@ -385,13 +403,14 @@ mod qualification {
         let key = ed25519_dalek::VerifyingKey::from_bytes(&public)?;
         let mut unregistered_objective = issuer.try_clone()?;
         let objective_sequence = if writer_proof {
-            let signed = exchange(
+            let signed: ObjectiveResponse = exchange(
                 &mut issuer,
                 &serde_json::json!({"schema_version":1,"operation":"runtime.authbus.objective.sign.v1","body":objective_body(identity.spawn_generation)}),
                 64 * 1024,
-            );
-            let ingress: AuthBusObjectiveIngress =
-                serde_json::from_value(signed["ingress"].clone())?;
+            )?;
+            assert_eq!(signed.schema_version, 1);
+            assert_eq!(signed.operation, "runtime.authbus.objective.signed.v1");
+            let ingress = signed.ingress;
             assert_eq!(ingress.sequence, 2);
             assert_eq!(
                 ingress.expires_at_ms,

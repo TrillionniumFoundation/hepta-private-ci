@@ -78,8 +78,7 @@ pub(super) fn qualify(
     grants: [SignedFinalUseGrant; 2],
     binding: &FinalUseBinding,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let runtime = tokio::runtime::Builder::new_multi_thread()
-        .worker_threads(2)
+    let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()?;
     runtime.block_on(async {
