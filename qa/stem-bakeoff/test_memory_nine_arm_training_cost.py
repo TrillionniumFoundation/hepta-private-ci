@@ -35,6 +35,8 @@ def package_for(plan):
         head_units = bank["total_training_budget_units"] - per_additional * (len(phases) - 1)
         events = [create_event(phase, head_units if phase == "head" else per_additional,
                                plan["common"]["training_roots"]) for phase in phases]
+        tensors = [h("physical tensor:" + arm + ":" + str(i))
+                   for i in range(bank["trained_heads"])]
         records.append({
             "arm": arm, "artifact_sha256": bank["artifact_sha256"],
             "encoder_sha256": plan["common"]["encoder_sha256"],
@@ -42,12 +44,9 @@ def package_for(plan):
             "forget_frontier_sha256": plan["common"]["forget_frontier_sha256"],
             "source_ancestor_roots": plan["common"]["training_roots"],
             "replay_source_roots": plan["common"]["training_roots"],
-            "trained_head_tensor_digests": [
-                h("physical tensor:" + arm + ":" + str(i))
-                for i in range(bank["trained_heads"])
-            ],
-            "weight_inventory_sha256": h("inventory:" + arm),
-            "journal_sha256": h("journal:" + arm),
+            "trained_head_tensor_digests": tensors,
+            "weight_inventory_sha256": sha(canonical(tensors)),
+            "journal_sha256": sha(canonical(events)),
             "observed_encoder_forwards": 20, "artifact_bytes": 1024,
             "peak_rss_bytes": 4096,
             "parent_artifact_sha256": (
@@ -59,6 +58,8 @@ def package_for(plan):
             ),
             "events": events,
         })
+    for record in records:
+        plan["arms"][record["arm"]]["training_receipt_sha256"] = sha(canonical(record))
     return {"schema": SCHEMA, "plan_sha256": sha(canonical(plan)), "arms": records}
 
 
@@ -69,6 +70,14 @@ class PhysicalTrainingCostTests(unittest.TestCase):
 
     def subject(self, arm):
         return next(x for x in self.package["arms"] if x["arm"] == arm)
+
+    def reseal(self, arm):
+        record = self.subject(arm)
+        record["journal_sha256"] = sha(canonical(record["events"]))
+        record["weight_inventory_sha256"] = sha(canonical(
+            record["trained_head_tensor_digests"]))
+        self.plan["arms"][arm]["training_receipt_sha256"] = sha(canonical(record))
+        self.package["plan_sha256"] = sha(canonical(self.plan))
 
     def refuses(self, phrase):
         with self.assertRaisesRegex(Refused, phrase):
@@ -108,6 +117,25 @@ class PhysicalTrainingCostTests(unittest.TestCase):
         with self.assertRaisesRegex(Refused, "work census"):
             audit(self.plan, obs, judgments, sha(canonical(self.plan)),
                   training_receipts=self.package)
+
+    def test_whole_training_record_tamper_rejected(self):
+        self.subject("E")["observed_encoder_forwards"] += 1
+        self.refuses("physical complete E-I training receipt")
+
+    def test_journal_ledger_digest_mismatch_rejected(self):
+        e = self.subject("G")["events"][0]
+        e["forward_calls"] += 1
+        e["record_sha256"] = sha(canonical({
+            k: v for k, v in e.items() if k != "record_sha256"}))
+        self.refuses("training journal event inventory")
+
+    def test_weight_inventory_digest_mismatch_rejected(self):
+        self.subject("H")["trained_head_tensor_digests"][1] = h("other real tensor")
+        self.refuses("physical Head tensor inventory")
+
+    def test_malformed_tensor_digest_fails_as_typed_refusal(self):
+        self.subject("H")["trained_head_tensor_digests"][1] = {"malformed": True}
+        self.refuses("trained tensor bytes")
 
     def test_missing_arm_rejected(self):
         self.package["arms"].pop()
@@ -151,6 +179,7 @@ class PhysicalTrainingCostTests(unittest.TestCase):
         r["events"][0]["work_units"] += 1
         r["events"][0]["record_sha256"] = sha(canonical({
             k: v for k, v in r["events"][0].items() if k != "record_sha256"}))
+        self.reseal("I")
         self.refuses("not at equal frozen budget")
 
     def test_forged_phase_digest_rejected(self):
@@ -178,6 +207,7 @@ class PhysicalTrainingCostTests(unittest.TestCase):
         e["optimizer_updates"] += 1
         e["record_sha256"] = sha(canonical({
             k: v for k, v in e.items() if k != "record_sha256"}))
+        self.reseal("E")
         self.refuses("Head steps/examples")
 
     def test_physical_split_merge_both_required(self):
