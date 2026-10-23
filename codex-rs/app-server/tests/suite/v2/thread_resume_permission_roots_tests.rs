@@ -232,7 +232,7 @@ async fn conflicting_typed_and_raw_roots_are_rejected() -> Result<()> {
     .await??;
     assert_eq!(error.error.code, -32602);
     let error_message = &error.error.message;
-    assert!(error_message.contains("conflicting typed and raw runtime workspace root overrides"));
+    assert!(error_message.contains("conflicting `runtimeWorkspaceRoots` and `workspace_roots` overrides"));
 
     // Rejection must leave the thread available and admit agreeing overrides.
     let request = app
