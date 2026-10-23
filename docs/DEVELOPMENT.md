@@ -860,7 +860,8 @@ no token, descriptor or fixture result supplies a `PrivateDirectory`, FinalUse
 backend, registry backend, cold-recovery or resource-release qualification.
 
 The following are implementation slices of that same PN0 item, not a second
-roadmap. C2b interface names below are proposed contracts, not implemented APIs.
+roadmap. Except for the read-only volume inspection below, C2b interface names
+remain proposed contracts, not implemented APIs.
 
 | Existing slice                       | Module responsibility and interface change                                                                                                                                                                                                                                         | Dependency and acceptance                                                                                                                                                                                                                             |
 | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -893,12 +894,25 @@ reject untrusted write/create/mutation rights; directory rights alias file data
 rights and cannot be classified as harmless by their friendly names. Retained
 ancestor handles and depth must be bounded, with no unbounded global cache.
 
-The proposed `inspect_local_ntfs(&File)` must query the same held object for NTFS,
+`volume::inspect_local_ntfs(&File)` now queries the same held object for NTFS,
 persistent ACL support and volume identity, plus native
 `FileFsDeviceInformation` with successful status and exact initialized output
-length. Reject remote/unsupported devices and incomplete queries. A mapped drive
+length. It rejects remote/unsupported devices and incomplete queries. A mapped drive
 such as `Z:` can report NTFS while still being remote; path syntax and filesystem
 name alone are insufficient. These observations do not prove power-loss behavior.
+The utility uses `ReOpenFile` on the held object to obtain its own synchronous,
+read-attributes handle and verifies both identities; arbitrary overlapped input
+cannot leave native output storage pending after return. It returns
+`LocalNtfsObservation`, not a trusted parent or owner guard.
+Three required `native_volume` integration controls cover actual local file and
+directory queries, a non-disk handle, and an overlapped held object renamed while
+its former path is replaced. The existing Windows workflow retains all ten prior receipts and
+the five original owner-descriptor controls, adding an eleventh receipt for these
+three operations. This source slice has no native Windows result yet. Actual SMB
+or mapped-remote rejection remains a required, unexecuted C2b acceptance item;
+no fabricated flags or skipped remote test count toward those three controls.
+Trusted ancestor admission, protected creation and C3–C5 remain open; production
+Windows owner support and power-loss qualification remain false.
 
 Creation must use one internal native-open implementation with typed
 existing-versus-new requests: `FILE_CREATE`, the captured SID/protected descriptor

@@ -9,3 +9,5 @@ pub mod mechanism;
 
 #[cfg(windows)]
 pub mod security;
+#[cfg(windows)]
+pub mod volume;

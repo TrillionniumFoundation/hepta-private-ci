@@ -48,7 +48,7 @@ jobs:
           set -euo pipefail
           test ! -e "$RUNNER_TEMP/windows-delete-boundary"
           mkdir -p "$RUNNER_TEMP/windows-delete-boundary"
-          printf 'Three existing native Windows deletion-boundary regressions, four native private-state mechanism probes, five read-only owner-descriptor controls, all eight current ACL unit controls, and a test-only full-restriction token candidate. AccessCheck output is diagnostic; original deletion assertions determine success. Candidate success does not admit a production sandbox. Mechanism and descriptor control success does not establish Windows private-state owner support, parent or volume admission, power-loss durability, whole-project or PoN qualification.\n' > "$RUNNER_TEMP/windows-delete-boundary/SCOPE.txt"
+          printf 'Three existing native Windows deletion-boundary regressions, four native private-state mechanism probes, five read-only owner-descriptor controls, all eight current ACL unit controls, a test-only full-restriction token candidate, and three read-only same-handle local-NTFS controls. Real remote-device rejection remains a C2b acceptance gap. AccessCheck output is diagnostic; original deletion assertions determine success. Candidate success does not admit a production sandbox. Mechanism and descriptor control success does not establish Windows private-state owner support, parent or volume admission, power-loss durability, whole-project or PoN qualification.\n' > "$RUNNER_TEMP/windows-delete-boundary/SCOPE.txt"
           git config --global core.autocrlf false
           git config --global core.longpaths true
           printf 'CARGO_TARGET_DIR=%s/windows-delete-boundary-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
@@ -111,7 +111,7 @@ jobs:
               "security::tests::native_readback_parser_rejects_altered_forms_and_every_truncation",
               "security::tests::native_unqueryable_thread_token_never_falls_back_to_process_user",
           )
-          required = ("partial-delete-deny", "broad-identity-delete", "legacy-delete-boundary", *probes, "acl-unit-controls", "private-owner-descriptor", "full-restriction-candidate")
+          required = ("partial-delete-deny", "broad-identity-delete", "legacy-delete-boundary", *probes, "acl-unit-controls", "private-owner-descriptor", "full-restriction-candidate", "private-local-ntfs")
           if sys.argv[1] == "tests":
               name, minimum = sys.argv[2], int(sys.argv[3])
               assert name in required, "unknown native test receipt"
@@ -146,6 +146,25 @@ jobs:
                   runs = re.findall(r"Summary[^\n]*?(\d+) tests? run:", text)
                   ok = ok and minimum == passed == len(owner_selectors) and runs[-1:] == [str(len(owner_selectors))] and all(observed.values())
                   proof = {"test_package": "codex-utils-windows-private-state", "required_test_names_observed": observed, "owner_supported": False, "power_loss_qualified": False}
+              elif name == "private-local-ntfs":
+                  selectors = (
+                      "native_local_ntfs_file_and_directory_report_same_volume",
+                      "native_nondisk_handle_is_rejected",
+                      "native_volume_observation_stays_bound_to_renamed_held_object",
+                  )
+                  observed = {selector: re.search(r"^test " + re.escape(selector) + r" \.\.\. ok\s*$", text, re.MULTILINE) is not None for selector in selectors}
+                  runs = re.findall(r"Summary[^\n]*?(\d+) tests? run:", text)
+                  records, malformed = [], False
+                  for payload in re.findall(r"^HEPTA_LOCAL_NTFS_OBSERVATION (.+)$", text, re.MULTILINE):
+                      try:
+                          records.append(json.loads(payload))
+                      except ValueError:
+                          malformed = True
+                  expected_stages = {"local_ntfs_complete", "nondisk_complete", "held_binding_complete"}
+                  scopes = all(isinstance(row, dict) and set(row) == {"stage", "owner_supported", "trusted_parent", "power_loss_qualified"} and row.get("owner_supported") is False and row.get("trusted_parent") is False and row.get("power_loss_qualified") is False and isinstance(row.get("stage"), str) for row in records)
+                  completed = len(records) == 3 and scopes and {row["stage"] for row in records} == expected_stages
+                  ok = ok and minimum == passed == 3 and runs == ["3"] and all(observed.values()) and completed and not malformed
+                  proof = {"test_target": "native_volume", "required_test_names_observed": observed, "completion_observed": completed, "owner_supported": False, "trusted_parent": False, "power_loss_qualified": False, "remote_device_native_executed": False}
               elif name == "full-restriction-candidate":
                   selector = "token::tests::full_restriction::native_full_restriction_preserves_reads_and_refuses_parent_delete"
                   named = re.search(r"^test " + re.escape(selector) + r" \.\.\. ok\s*$", text, re.MULTILINE) is not None
@@ -163,7 +182,7 @@ jobs:
               save(name + ".json", {"returncode": code, "logging_returncode": log_code, "minimum_tests": minimum, "observed_passed_tests": passed, "observed_failed_tests": failed, "log_sha256": hashlib.sha256(raw).hexdigest(), "status": "passed" if ok else "failed", **proof})
               sys.exit(0 if ok else 1)
           phase = sys.argv[2]
-          result = {"scope": "three native Windows deletion regressions, four private-state mechanism probes, five read-only descriptor controls, eight current ACL controls, and one test-only full-restriction candidate; no Windows owner support, production sandbox admission or power-loss qualification", "production_sandbox_admitted": False, "windows_private_state_owners_supported": False, "power_loss_qualified": False, "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"], "status": "running"}
+          result = {"scope": "three native Windows deletion regressions, four private-state mechanism probes, five read-only descriptor controls, eight current ACL controls, one test-only full-restriction candidate and three read-only local-NTFS controls; real remote-device rejection is untested; no Windows owner support, production sandbox admission or power-loss qualification", "production_sandbox_admitted": False, "windows_private_state_owners_supported": False, "power_loss_qualified": False, "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"], "status": "running"}
           save("result.json", result)
           assert sys.argv[1] == "source" and phase in {"before", "after"}
           if phase == "before":
@@ -226,6 +245,14 @@ jobs:
           codes="${PIPESTATUS[*]}"
           set -e
           python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests private-owner-descriptor 5 "$codes"
+      - name: Run three read-only same-handle native local-NTFS controls
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: |
+          set +e
+          just test --locked -p codex-utils-windows-private-state --test native_volume --test-threads 1 --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-delete-boundary/private-local-ntfs.log"
+          codes="${PIPESTATUS[*]}"
+          set -e
+          python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests private-local-ntfs 3 "$codes"
       - name: Run test-only full-restriction token candidate with original destructive controls
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
         run: |
@@ -298,7 +325,7 @@ jobs:
           codes="${PIPESTATUS[*]}"
           set -e
           python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests acl-unit-controls 8 "$codes"
-      - name: Require unchanged source and all ten completed Windows result receipts
+      - name: Require unchanged source and all eleven completed Windows result receipts
         if: ${{ always() && steps.source.outcome == 'success' }}
         run: python "$RUNNER_TEMP/windows-delete-boundary/check.py" source after
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
