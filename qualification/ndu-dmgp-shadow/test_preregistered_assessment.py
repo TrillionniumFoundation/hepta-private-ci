@@ -76,6 +76,7 @@ class PreregisteredComparisonTests(unittest.TestCase):
                   replace(P, familywise_alpha=float("nan")),
                   replace(P, min_future_episodes=2),
                   replace(P, max_total_us=True),
+                  replace(P, cost_per_us=1e308),
                   replace(P, max_total_us=100)):
             with self.subTest(protocol=p):
                 with self.assertRaises(Unavailable):
