@@ -1,0 +1,152 @@
+test_non_state_generation_rejects_before_field_access (test_joint_generation_admission.JointGenerationAdmissionTests.test_non_state_generation_rejects_before_field_access) ... 
+  test_non_state_generation_rejects_before_field_access (test_joint_generation_admission.JointGenerationAdmissionTests.test_non_state_generation_rejects_before_field_access) (generation_type='NoneType') ... ERROR
+  test_non_state_generation_rejects_before_field_access (test_joint_generation_admission.JointGenerationAdmissionTests.test_non_state_generation_rejects_before_field_access) (generation_type='object') ... ERROR
+  test_non_state_generation_rejects_before_field_access (test_joint_generation_admission.JointGenerationAdmissionTests.test_non_state_generation_rejects_before_field_access) (generation_type='dict') ... ERROR
+  test_non_state_generation_rejects_before_field_access (test_joint_generation_admission.JointGenerationAdmissionTests.test_non_state_generation_rejects_before_field_access) (generation_type='str') ... ERROR
+  test_non_state_generation_rejects_before_field_access (test_joint_generation_admission.JointGenerationAdmissionTests.test_non_state_generation_rejects_before_field_access) (generation_type='bool') ... ERROR
+test_nonregistered_priors_remain_explicit_model_parameters (test_joint_generation_admission.JointGenerationAdmissionTests.test_nonregistered_priors_remain_explicit_model_parameters) ... ok
+test_ordinary_state_subclass_keeps_paid_transition_and_audit (test_joint_generation_admission.JointGenerationAdmissionTests.test_ordinary_state_subclass_keeps_paid_transition_and_audit) ... ok
+test_structural_generation_cannot_bypass_root_activation_guard (test_joint_generation_admission.JointGenerationAdmissionTests.test_structural_generation_cannot_bypass_root_activation_guard) ... 
+  test_structural_generation_cannot_bypass_root_activation_guard (test_joint_generation_admission.JointGenerationAdmissionTests.test_structural_generation_cannot_bypass_root_activation_guard) (mask=0) ... FAIL
+  test_structural_generation_cannot_bypass_root_activation_guard (test_joint_generation_admission.JointGenerationAdmissionTests.test_structural_generation_cannot_bypass_root_activation_guard) (mask=1) ... FAIL
+test_counterfactual_audits_reject_structural_roots (test_fresh_audit_admission.FreshAuditAdmissionTests.test_counterfactual_audits_reject_structural_roots) ... 
+  test_counterfactual_audits_reject_structural_roots (test_fresh_audit_admission.FreshAuditAdmissionTests.test_counterfactual_audits_reject_structural_roots) (initial=Structural(levels=(0, 0, 0, 0), remaining=12, step=0, active_mask=0)) ... FAIL
+  test_counterfactual_audits_reject_structural_roots (test_fresh_audit_admission.FreshAuditAdmissionTests.test_counterfactual_audits_reject_structural_roots) (initial=Structural(levels=(0, 0, 0, 0), remaining=12, step=0, active_mask=1)) ... FAIL
+  test_counterfactual_audits_reject_structural_roots (test_fresh_audit_admission.FreshAuditAdmissionTests.test_counterfactual_audits_reject_structural_roots) (initial=None) ... ERROR
+test_joint_audit_rejects_structural_outer_state (test_fresh_audit_admission.FreshAuditAdmissionTests.test_joint_audit_rejects_structural_outer_state) ... 
+  test_joint_audit_rejects_structural_outer_state (test_fresh_audit_admission.FreshAuditAdmissionTests.test_joint_audit_rejects_structural_outer_state) (initial=StructuralJoint(generation=State(levels=(0, 0, 0, 0), remaining=12, step=0, active_mask=0), p_zero=Fraction(1, 2), witness_seen=False)) ... FAIL
+  test_joint_audit_rejects_structural_outer_state (test_fresh_audit_admission.FreshAuditAdmissionTests.test_joint_audit_rejects_structural_outer_state) (initial=None) ... ERROR
+test_ordinary_subclasses_preserve_full_episode_cost (test_fresh_audit_admission.FreshAuditAdmissionTests.test_ordinary_subclasses_preserve_full_episode_cost) ... ok
+
+======================================================================
+ERROR: test_non_state_generation_rejects_before_field_access (test_joint_generation_admission.JointGenerationAdmissionTests.test_non_state_generation_rejects_before_field_access) (generation_type='NoneType')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpbaz3wqxk/v4/test_joint_generation_admission.py", line 31, in test_non_state_generation_rejects_before_field_access
+    JointState(generation, Fraction(1, 2))
+  File "<string>", line 6, in __init__
+  File "/tmp/tmpbaz3wqxk/v4/joint_evidence_generation.py", line 42, in __post_init__
+    or (self.generation.step == 0 and self.witness_seen)):
+        ^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'step'
+
+======================================================================
+ERROR: test_non_state_generation_rejects_before_field_access (test_joint_generation_admission.JointGenerationAdmissionTests.test_non_state_generation_rejects_before_field_access) (generation_type='object')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpbaz3wqxk/v4/test_joint_generation_admission.py", line 31, in test_non_state_generation_rejects_before_field_access
+    JointState(generation, Fraction(1, 2))
+  File "<string>", line 6, in __init__
+  File "/tmp/tmpbaz3wqxk/v4/joint_evidence_generation.py", line 42, in __post_init__
+    or (self.generation.step == 0 and self.witness_seen)):
+        ^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'object' object has no attribute 'step'
+
+======================================================================
+ERROR: test_non_state_generation_rejects_before_field_access (test_joint_generation_admission.JointGenerationAdmissionTests.test_non_state_generation_rejects_before_field_access) (generation_type='dict')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpbaz3wqxk/v4/test_joint_generation_admission.py", line 31, in test_non_state_generation_rejects_before_field_access
+    JointState(generation, Fraction(1, 2))
+  File "<string>", line 6, in __init__
+  File "/tmp/tmpbaz3wqxk/v4/joint_evidence_generation.py", line 42, in __post_init__
+    or (self.generation.step == 0 and self.witness_seen)):
+        ^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'step'
+
+======================================================================
+ERROR: test_non_state_generation_rejects_before_field_access (test_joint_generation_admission.JointGenerationAdmissionTests.test_non_state_generation_rejects_before_field_access) (generation_type='str')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpbaz3wqxk/v4/test_joint_generation_admission.py", line 31, in test_non_state_generation_rejects_before_field_access
+    JointState(generation, Fraction(1, 2))
+  File "<string>", line 6, in __init__
+  File "/tmp/tmpbaz3wqxk/v4/joint_evidence_generation.py", line 42, in __post_init__
+    or (self.generation.step == 0 and self.witness_seen)):
+        ^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'step'
+
+======================================================================
+ERROR: test_non_state_generation_rejects_before_field_access (test_joint_generation_admission.JointGenerationAdmissionTests.test_non_state_generation_rejects_before_field_access) (generation_type='bool')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpbaz3wqxk/v4/test_joint_generation_admission.py", line 31, in test_non_state_generation_rejects_before_field_access
+    JointState(generation, Fraction(1, 2))
+  File "<string>", line 6, in __init__
+  File "/tmp/tmpbaz3wqxk/v4/joint_evidence_generation.py", line 42, in __post_init__
+    or (self.generation.step == 0 and self.witness_seen)):
+        ^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'bool' object has no attribute 'step'
+
+======================================================================
+ERROR: test_counterfactual_audits_reject_structural_roots (test_fresh_audit_admission.FreshAuditAdmissionTests.test_counterfactual_audits_reject_structural_roots) (initial=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpbaz3wqxk/v4/test_fresh_audit_admission.py", line 22, in test_counterfactual_audits_reject_structural_roots
+    evaluate(initial, cfg, policy)
+  File "/tmp/tmpbaz3wqxk/v4/counterfactual_audit.py", line 142, in evaluate
+    if initial.step != 0 or initial.remaining < cfg.emission_reserve:
+       ^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'step'
+
+======================================================================
+ERROR: test_joint_audit_rejects_structural_outer_state (test_fresh_audit_admission.FreshAuditAdmissionTests.test_joint_audit_rejects_structural_outer_state) (initial=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpbaz3wqxk/v4/test_fresh_audit_admission.py", line 33, in test_joint_audit_rejects_structural_outer_state
+    full_outcome_audit(initial, Config(), lambda _s: EMIT)
+  File "/tmp/tmpbaz3wqxk/v4/joint_evidence_generation.py", line 193, in full_outcome_audit
+    if initial.generation.step != 0 or initial.generation.remaining < cfg.emission_reserve:
+       ^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'generation'
+
+======================================================================
+FAIL: test_structural_generation_cannot_bypass_root_activation_guard (test_joint_generation_admission.JointGenerationAdmissionTests.test_structural_generation_cannot_bypass_root_activation_guard) (mask=0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpbaz3wqxk/v4/test_joint_generation_admission.py", line 24, in test_structural_generation_cannot_bypass_root_activation_guard
+    with self.assertRaisesRegex(ValueError, "unsupported public belief-state"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_structural_generation_cannot_bypass_root_activation_guard (test_joint_generation_admission.JointGenerationAdmissionTests.test_structural_generation_cannot_bypass_root_activation_guard) (mask=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpbaz3wqxk/v4/test_joint_generation_admission.py", line 24, in test_structural_generation_cannot_bypass_root_activation_guard
+    with self.assertRaisesRegex(ValueError, "unsupported public belief-state"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_counterfactual_audits_reject_structural_roots (test_fresh_audit_admission.FreshAuditAdmissionTests.test_counterfactual_audits_reject_structural_roots) (initial=Structural(levels=(0, 0, 0, 0), remaining=12, step=0, active_mask=0))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpbaz3wqxk/v4/test_fresh_audit_admission.py", line 21, in test_counterfactual_audits_reject_structural_roots
+    with self.assertRaisesRegex(ValueError, "four-modal emission"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_counterfactual_audits_reject_structural_roots (test_fresh_audit_admission.FreshAuditAdmissionTests.test_counterfactual_audits_reject_structural_roots) (initial=Structural(levels=(0, 0, 0, 0), remaining=12, step=0, active_mask=1))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpbaz3wqxk/v4/test_fresh_audit_admission.py", line 21, in test_counterfactual_audits_reject_structural_roots
+    with self.assertRaisesRegex(ValueError, "four-modal emission"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_joint_audit_rejects_structural_outer_state (test_fresh_audit_admission.FreshAuditAdmissionTests.test_joint_audit_rejects_structural_outer_state) (initial=StructuralJoint(generation=State(levels=(0, 0, 0, 0), remaining=12, step=0, active_mask=0), p_zero=Fraction(1, 2), witness_seen=False))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpbaz3wqxk/v4/test_fresh_audit_admission.py", line 32, in test_joint_audit_rejects_structural_outer_state
+    with self.assertRaisesRegex(ValueError, "first decision boundary"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.005s
+
+FAILED (failures=5, errors=7)
+Baseline expected rejection-test failure exit: 1

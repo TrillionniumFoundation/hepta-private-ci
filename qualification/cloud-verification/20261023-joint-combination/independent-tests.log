@@ -1,0 +1,19 @@
+test_non_state_generation_rejects_before_field_access (test_joint_generation_admission.JointGenerationAdmissionTests.test_non_state_generation_rejects_before_field_access) ... ok
+test_nonregistered_priors_remain_explicit_model_parameters (test_joint_generation_admission.JointGenerationAdmissionTests.test_nonregistered_priors_remain_explicit_model_parameters) ... ok
+test_ordinary_state_subclass_keeps_paid_transition_and_audit (test_joint_generation_admission.JointGenerationAdmissionTests.test_ordinary_state_subclass_keeps_paid_transition_and_audit) ... ok
+test_structural_generation_cannot_bypass_root_activation_guard (test_joint_generation_admission.JointGenerationAdmissionTests.test_structural_generation_cannot_bypass_root_activation_guard) ... ok
+test_counterfactual_audits_reject_structural_roots (test_fresh_audit_admission.FreshAuditAdmissionTests.test_counterfactual_audits_reject_structural_roots) ... ok
+test_joint_audit_rejects_structural_outer_state (test_fresh_audit_admission.FreshAuditAdmissionTests.test_joint_audit_rejects_structural_outer_state) ... ok
+test_ordinary_subclasses_preserve_full_episode_cost (test_fresh_audit_admission.FreshAuditAdmissionTests.test_ordinary_subclasses_preserve_full_episode_cost) ... ok
+test_full_episode_audits_reject_continuation_as_root (test_execute_boundary.ExecuteBoundaryTests.test_full_episode_audits_reject_continuation_as_root) ... ok
+test_paid_successor_retains_activation_and_prefix_cost_is_separate (test_execute_boundary.ExecuteBoundaryTests.test_paid_successor_retains_activation_and_prefix_cost_is_separate) ... ok
+test_supplied_state_changes_suffix_cost_not_provenance (test_execute_boundary.ExecuteBoundaryTests.test_supplied_state_changes_suffix_cost_not_provenance) ... ok
+test_fresh_root_remains_eligible_for_four_output_audit (test_fresh_root_custody.FreshRootCustodyTests.test_fresh_root_remains_eligible_for_four_output_audit) ... ok
+test_root_cannot_claim_unpaid_independent_witness (test_fresh_root_custody.FreshRootCustodyTests.test_root_cannot_claim_unpaid_independent_witness) ... ok
+test_root_cannot_forge_paid_activation (test_fresh_root_custody.FreshRootCustodyTests.test_root_cannot_forge_paid_activation) ... ok
+test_true_successors_retain_earned_state (test_fresh_root_custody.FreshRootCustodyTests.test_true_successors_retain_earned_state) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.004s
+
+OK
