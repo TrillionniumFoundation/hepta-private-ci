@@ -344,3 +344,96 @@ async fn generic_terminal_outcomes_cannot_replace_notes_application_evidence() -
     assert_eq!(observed, expected);
     Ok(())
 }
+
+#[cfg(unix)]
+#[tokio::test]
+async fn original_final_use_rejection_preserves_notes_no_entry_settlement() -> TestResult {
+    use codex_hepta_contracts::AuthorityClock;
+    use codex_hepta_contracts::AuthorityTrustError;
+    use codex_hepta_contracts::FinalUseGrant;
+    use codex_hepta_contracts::FinalUseRevocations;
+    use ed25519_dalek::Signer;
+    use ed25519_dalek::SigningKey;
+    use std::collections::BTreeSet;
+    use std::os::unix::fs::PermissionsExt;
+
+    struct EntryClock {
+        calls: AtomicUsize,
+        expire_after: usize,
+    }
+    impl AuthorityClock for EntryClock {
+        fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
+            Ok(if self.calls.fetch_add(1, Ordering::SeqCst) >= self.expire_after {
+                1_120_000
+            } else {
+                1_000_000
+            })
+        }
+    }
+
+    let temp = tempfile::tempdir()?;
+    let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2d20")?;
+    for (stage, expire_after) in [("claim", 0), ("entry", 2)] {
+        let fleet_path = temp.path().join(stage);
+        std::fs::create_dir(&fleet_path)?;
+        let fleet = HeptaFleetRoot::parse(fleet_path.canonicalize()?)?;
+        let store = CognitiveStore::open(&fleet.layout().agent(&owner)).await?;
+        let writer = ProductionDurableWriter::open_with_live_verifier(
+            store.clone(),
+            source(&owner, 1)?,
+            Arc::new(Verifier),
+            LEASE,
+            /*generation*/ 1,
+        )
+        .await?;
+        let (payload, identity, target) = fixture()?;
+        let intent = notes_operation_intent(
+            &identity,
+            &payload,
+            StableId::new(owner.as_str())?,
+            Generation::new(1)?,
+        )?;
+        let queued = writer.prepare_operation(intent, crate::NOTES_REPLACE_TOPIC_V1, payload).await?;
+        let binding = writer.final_use_binding(&queued, &identity.destination_id()).await?;
+        let authority_dir = fleet_path.join("final-use");
+        std::fs::create_dir(&authority_dir)?;
+        std::fs::set_permissions(&authority_dir, std::fs::Permissions::from_mode(0o700))?;
+        let issuer = SigningKey::from_bytes(&[85; 32]);
+        let clock = Arc::new(EntryClock { calls: AtomicUsize::new(0), expire_after });
+        let authority = FinalUseAuthority::open_state_dir_with_clock(
+            &authority_dir,
+            "notes-fixture-issuer".to_string(),
+            issuer.verifying_key().to_bytes(),
+            FinalUseRevocations { authority_epoch: 71, revision: 1, revoked_grant_ids: BTreeSet::new() },
+            clock.clone(),
+        )?;
+        let grant = FinalUseGrant {
+            schema_version: 1,
+            signer_id: "notes-fixture-issuer".to_string(),
+            authority_epoch: 71,
+            grant_id: format!("notes-rejected-{stage}"),
+            nonce: [86; 32],
+            binding: binding.clone(),
+            not_before_unix_ms: 999_000,
+            expires_at_unix_ms: 1_060_000,
+        };
+        let signature = issuer.sign(&grant.signing_bytes()?).to_bytes().to_vec();
+        let signed = SignedFinalUseGrant { grant, signature };
+        clock.calls.store(0, Ordering::SeqCst);
+        let target = Arc::new(target);
+        let dispatcher = ProductionFinalUseOutboxDispatcher::attach(authority, target.clone());
+        let operation = queued.occurrence_key.clone();
+        assert!(matches!(
+            dispatcher.dispatch(&writer, &signed, &binding, queued).await,
+            Err(ProductionWriterError::FinalUse(_))
+        ));
+        assert_eq!(writer.status(&operation).await?, LocalOutcomeState::Rejected);
+        let reason: String = sqlx::query_scalar(
+            "SELECT payload_json FROM cognitive_local_events WHERE lease_id = ? AND occurrence_key = ? AND event_kind = 'reconcile_rejected'",
+        ).bind(LEASE).bind(&operation).fetch_one(&store.pool).await?;
+        assert!(reason.starts_with(&format!("final-use {stage} rejected:")));
+        assert_eq!((target.observations.load(Ordering::SeqCst), target.retirements.load(Ordering::SeqCst)), (0, 0));
+        store.close().await;
+    }
+    Ok(())
+}

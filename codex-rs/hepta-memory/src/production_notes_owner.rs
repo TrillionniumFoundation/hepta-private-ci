@@ -4,6 +4,33 @@
 use super::*;
 use crate::production_notes::NotesTerminalReceipt;
 
+/// Non-serializable evidence created only by the original writer when FinalUse
+/// rejects synchronously before the target is entered. This is not an
+/// application receipt and cannot be supplied by a target or public caller.
+pub(crate) struct NotesPreDispatchRejection {
+    request: ProductionDispatchRequest,
+    dispatch_event_id: String,
+    reason: String,
+}
+
+impl NotesPreDispatchRejection {
+    pub(super) fn at_rejected_entry(
+        request: &ProductionDispatchRequest,
+        dispatch_event_id: &str,
+        reason: String,
+    ) -> Self {
+        Self {
+            request: request.clone(),
+            dispatch_event_id: dispatch_event_id.to_string(),
+            reason,
+        }
+    }
+
+    pub(crate) fn parts(&self) -> (&ProductionDispatchRequest, &str, &str) {
+        (&self.request, &self.dispatch_event_id, &self.reason)
+    }
+}
+
 /// Borrowed, non-serializable permission to discard one exact application
 /// receipt. Only a live original writer can construct this after verifying the
 /// existing durable terminal event and its immutable operation binding.

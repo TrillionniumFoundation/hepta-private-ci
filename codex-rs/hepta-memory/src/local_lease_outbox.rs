@@ -44,6 +44,7 @@ enum ReconciliationEvidence<'a> {
     General(LocalReconcileOutcome),
     Hos2Terminal(&'a Hos2TerminalReceipt),
     NotesTerminal(&'a crate::production_notes::NotesTerminalReceipt),
+    NotesPreDispatchRejected(&'a crate::production_writer::NotesPreDispatchRejection),
     Hos2ProtocolConflict(&'a Hos2ProtocolConflict),
 }
 
@@ -2390,6 +2391,17 @@ impl LocalLeaseOutbox {
         .await
     }
 
+    pub(crate) async fn reject_notes_before_dispatch(
+        &self,
+        proof: &crate::production_writer::NotesPreDispatchRejection,
+    ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        self.append_reconciliation(
+            proof.parts().0.occurrence_key.clone(),
+            ReconciliationEvidence::NotesPreDispatchRejected(proof),
+        )
+        .await
+    }
+
     pub(crate) async fn reconcile_hos2_terminal(
         &self,
         occurrence_key: &str,
@@ -2424,6 +2436,7 @@ impl LocalLeaseOutbox {
             ReconciliationEvidence::General(outcome) => outcome,
             ReconciliationEvidence::Hos2Terminal(receipt) => receipt.outcome(),
             ReconciliationEvidence::NotesTerminal(receipt) => receipt.outcome(),
+            ReconciliationEvidence::NotesPreDispatchRejected(_) => LocalReconcileOutcome::Rejected,
             ReconciliationEvidence::Hos2ProtocolConflict(_) => {
                 LocalReconcileOutcome::StillIndeterminate
             }
@@ -2449,6 +2462,7 @@ impl LocalLeaseOutbox {
             };
         let payload = match evidence {
             ReconciliationEvidence::NotesTerminal(receipt) => receipt.as_str().to_string(),
+            ReconciliationEvidence::NotesPreDispatchRejected(proof) => proof.parts().2.to_string(),
             ReconciliationEvidence::Hos2Terminal(receipt) => {
                 receipt.to_json().map_err(LocalLeaseOutboxError::Invalid)?
             }
@@ -2507,7 +2521,8 @@ impl LocalLeaseOutbox {
                 ReconciliationEvidence::Hos2ProtocolConflict(conflict) => conflict
                     .matches(&occurrence_key, &outbox.payload_json)
                     .map_err(LocalLeaseOutboxError::Invalid)?,
-                ReconciliationEvidence::NotesTerminal(_) => {
+                ReconciliationEvidence::NotesTerminal(_)
+                | ReconciliationEvidence::NotesPreDispatchRejected(_) => {
                     return Err(LocalLeaseOutboxError::Invalid(
                         "Notes evidence targets HOS2".to_string(),
                     ));
@@ -2522,18 +2537,42 @@ impl LocalLeaseOutbox {
                     ));
                 }
             }
-        } else if let ReconciliationEvidence::NotesTerminal(receipt) = evidence {
-            if outbox.topic != crate::NOTES_REPLACE_TOPIC_V1 {
-                return Err(LocalLeaseOutboxError::Invalid(
-                    "Notes evidence targets another outbox".to_string(),
-                ));
+        } else if outbox.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+            match evidence {
+                ReconciliationEvidence::NotesTerminal(receipt) => receipt
+                    .matches(&outbox.payload_json)
+                    .map_err(LocalLeaseOutboxError::Invalid)?,
+                ReconciliationEvidence::NotesPreDispatchRejected(proof) => {
+                    let (request, _, _) = proof.parts();
+                    if request.lease_id != self.lease_id
+                        || request.occurrence_key != occurrence_key
+                        || request.topic != outbox.topic
+                        || request.payload_json != outbox.payload_json
+                    {
+                        return Err(LocalLeaseOutboxError::AccessDenied(
+                            "Notes pre-entry proof targets a different operation".to_string(),
+                        ));
+                    }
+                }
+                ReconciliationEvidence::General(LocalReconcileOutcome::StillIndeterminate) => {}
+                ReconciliationEvidence::General(
+                    LocalReconcileOutcome::Committed | LocalReconcileOutcome::Rejected,
+                ) => {
+                    return Err(LocalLeaseOutboxError::AccessDenied(
+                        "Notes terminal settlement requires the original observation owner"
+                            .to_string(),
+                    ));
+                }
+                ReconciliationEvidence::Hos2Terminal(_)
+                | ReconciliationEvidence::Hos2ProtocolConflict(_) => {
+                    return Err(LocalLeaseOutboxError::Invalid(
+                        "HOS2 evidence targets Notes".to_string(),
+                    ));
+                }
             }
-            receipt
-                .matches(&outbox.payload_json)
-                .map_err(LocalLeaseOutboxError::Invalid)?;
         } else if !matches!(evidence, ReconciliationEvidence::General(_)) {
             return Err(LocalLeaseOutboxError::Invalid(
-                "HOS2 observation targets a different outbox".to_string(),
+                "typed observation targets a different outbox".to_string(),
             ));
         }
 
@@ -2559,6 +2598,15 @@ impl LocalLeaseOutbox {
         )
         .await?
         .ok_or_else(|| corrupt("occurrence event chain is missing"))?;
+        if let ReconciliationEvidence::NotesPreDispatchRejected(proof) = evidence
+            && (latest.event_id != proof.parts().1
+                || latest.generation != self.generation
+                || latest.fencing_token != self.fencing_token)
+        {
+            return Err(LocalLeaseOutboxError::AccessDenied(
+                "Notes pre-entry proof is not the current dispatch claim".to_string(),
+            ));
+        }
         let current_fence =
             latest.generation == self.generation && latest.fencing_token == self.fencing_token;
         let admission_fence = admission.generation == self.generation
@@ -2787,6 +2835,13 @@ impl LocalLeaseOutbox {
         .await?
         .ok_or_else(|| corrupt("event admission has no paired outbox row"))?;
         ensure_current_occurrence_fence(self, &admission, &outbox)?;
+        if outbox.topic == crate::NOTES_REPLACE_TOPIC_V1
+            && matches!(kind, "reconcile_committed" | "reconcile_rejected")
+        {
+            return Err(LocalLeaseOutboxError::AccessDenied(
+                "Notes terminal settlement requires the original observation owner".to_string(),
+            ));
+        }
         if outbox.topic == crate::HOS2_INSTALL_TOPIC_V1 {
             if matches!(kind, "reconcile_committed" | "reconcile_rejected") {
                 return Err(LocalLeaseOutboxError::AccessDenied(

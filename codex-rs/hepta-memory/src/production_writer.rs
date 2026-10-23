@@ -68,6 +68,7 @@ pub use hos2_owner::Hos2RetirementPermit;
 
 #[path = "production_notes_owner.rs"]
 mod notes_owner;
+pub(crate) use notes_owner::NotesPreDispatchRejection;
 pub use notes_owner::NotesRetirementPermit;
 
 #[path = "production_hos2_execution.rs"]
@@ -1525,7 +1526,8 @@ impl ProductionDurableWriter {
                 }
                 if self
                     .settle_pre_dispatch_rejection(
-                        &receipt.occurrence_key,
+                        &request,
+                        &dispatch_claim_event_id,
                         inherited_from_generation.is_some(),
                         format!("final-use claim rejected: {error}"),
                     )
@@ -1570,7 +1572,8 @@ impl ProductionDurableWriter {
                 }
                 if self
                     .settle_pre_dispatch_rejection(
-                        &receipt.occurrence_key,
+                        &request,
+                        &dispatch_claim_event_id,
                         inherited_from_generation.is_some(),
                         format!("final-use entry rejected: {error}"),
                     )
@@ -1644,15 +1647,24 @@ impl ProductionDurableWriter {
 
     async fn settle_pre_dispatch_rejection(
         &self,
-        occurrence_key: &str,
+        request: &ProductionDispatchRequest,
+        dispatch_event_id: &str,
         inherited: bool,
         reason: String,
     ) -> Result<ProductionOutcomeReceipt, ProductionWriterError> {
-        if inherited {
-            self.reconcile(occurrence_key, LocalReconcileOutcome::Rejected)
+        if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+            self.verify_authority().await?;
+            let proof = NotesPreDispatchRejection::at_rejected_entry(
+                request,
+                dispatch_event_id,
+                reason,
+            );
+            Ok(self.lease.reject_notes_before_dispatch(&proof).await?.into())
+        } else if inherited {
+            self.reconcile(&request.occurrence_key, LocalReconcileOutcome::Rejected)
                 .await
         } else {
-            self.reject(occurrence_key, reason).await
+            self.reject(&request.occurrence_key, reason).await
         }
     }
 
