@@ -583,6 +583,15 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
     )
     .await;
 
+    // TurnComplete is published before the terminalizer necessarily retires
+    // its admission fence. Observe that exact fence before starting the next
+    // user turn; never retry or bypass a genuinely active turn.
+    test.codex
+        .observe_admission_fences_until(
+            tokio::time::Instant::now() + std::time::Duration::from_secs(10),
+        )
+        .await
+        .expect("previous completed turn should retire its admission fence");
     test.submit_turn("hello")
         .await
         .expect("submit post-git turn prompt");
