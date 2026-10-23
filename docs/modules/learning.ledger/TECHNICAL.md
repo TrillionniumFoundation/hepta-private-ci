@@ -199,6 +199,20 @@ Projection domains rebuild from declared sources and publish complete generation
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.ledger.md#10-current-native-implementation) identifies the actual state owner, persistent surfaces and lock/transaction boundary. Product composition uses `LedgerWriter`; it consumes either `DurableLedger` or `SegmentedLedger`, one `ActivatedLearningTrustV1`, a separately durable `LedgerWitnessStore`, and host-authorized handles for the actual containing directories. Construction synchronizes the ledger/witness directory entries before the writer can acknowledge facts. The writer owns the backend handle while composed, so the same caller cannot bypass authenticated V2 admission through a raw append surface.
 
+`LedgerWriter::verify_committed_unlearning` verifies the original signed
+UnlearningAuthority evidence against current trust and the exact indexed committed
+event, historical dataset and source membership. Here current trust means the
+writer's selected activated snapshot and its signer/evidence validity checks;
+root/distribution windows are checked at activation, not newly enforced as
+per-operation expiry. The host owns newest-revocation distribution and key custody.
+The read requires the actual backend
+and independently retained witness frontiers to agree. The returned opaque fact
+borrows that writer; it is not a deserializable receipt, artifact-membership proof
+or dispatch permission. Evidence invalid under that snapshot blocks new handoff. A later
+artifact denial remains subject to the artifact owner's own durable CURRENT and
+recovery rules; this read neither issues that denial nor supplies its signing
+transport, dataset-wide withdrawal or FinalUse authority.
+
 One append transaction prepares and validates the full semantic event, compares the exact predecessor, writes one canonical frame, syncs the ledger, publishes the in-memory state, then advances and syncs the independent witness before returning success. Atomic conserved credit is one `CreditBatchV2` event. Outcome correction accepts only the current same-episode predecessor head, so a fork, stale branch or cycle cannot commit. Segment rotation runs through `LedgerWriter::rotate_segment`, synchronizes the host-supplied successor directory handle, and only then witnesses the new topology before reporting success.
 
 Legacy `LearningLedger`, `DurableLedger`, `SegmentedLedger` and `DurableLearningJournal` APIs remain readable compatibility/testing surfaces. New composed callers use `LedgerWriter`; compatibility availability is not permission to create a second production writer.
@@ -376,11 +390,13 @@ For `learning.ledger`, this document grants no runtime, production, model, provi
 - `unbounded_resource_or_retry`
 
 <!-- BEGIN GENERATED EXACT REGISTRY PROJECTION -->
+
 ### Exact closed-world registry projection
 
 This generated projection binds `learning.ledger` to the current canonical contract, protocol, data, delivery and threat registries. The registries remain authoritative; this block is a digest-checked documentation projection.
 
 **Produced contracts:**
+
 - `CandidateSetCompletenessReceiptV1`
 - `CreditAssignmentReceiptV1`
 - `DatasetSnapshotV1`
@@ -396,6 +412,7 @@ This generated projection binds `learning.ledger` to the current canonical contr
 - `OutcomeWatermarkV1`
 
 **Consumed contracts:**
+
 - `ContextCompilationReceiptV1`
 - `DomainRead::cross_owner_outboxV1`
 - `DomainRead::operation_ledgerV1`
@@ -417,6 +434,7 @@ This generated projection binds `learning.ledger` to the current canonical contr
 - `RunStartSnapshotV1`
 
 **Typed protocols:**
+
 - `CandidateSetCompletenessReceiptV1`
 - `ContextCompilationReceiptV1`
 - `CreditAssignmentReceiptV1`
@@ -440,6 +458,7 @@ This generated projection binds `learning.ledger` to the current canonical contr
 - `RunStartSnapshotV1`
 
 **Owned data domains:**
+
 - `candidate_set_completeness_receipt_v1`
 - `learning_credit_ledger`
 - `learning_episode_ledger`
@@ -447,15 +466,18 @@ This generated projection binds `learning.ledger` to the current canonical contr
 - `outcome_watermark_v1`
 
 **Read data domains:**
+
 - `cross_owner_outbox`
 - `ndu_update_receipt_v1`
 - `operation_ledger`
 
 **Work packages:**
+
 - `LRN-0-CAUSAL-LEARNING-CONTRACTS`
 - `LRN-1-DURABLE-EPISODE-LEDGER`
 
 **Owned threats:**
+
 - `candidate_set_omission`
 - `credit_double_count`
 - `delayed_reward_misattribution`

@@ -17,8 +17,15 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
+#[path = "cognitive_artifact_unlearning.rs"]
+mod unlearning;
+pub use unlearning::CognitiveArtifactUnlearningError;
+pub use unlearning::CognitiveArtifactUnlearningOwnerV1;
+pub use unlearning::CognitiveArtifactUnlearningRequestV1;
+
 pub struct CognitiveRetrievalLearningSink {
     writer: Mutex<LedgerWriter>,
+    unlearning_owner: Option<CognitiveArtifactUnlearningOwnerV1>,
 }
 
 impl CognitiveRetrievalLearningSink {
@@ -26,6 +33,7 @@ impl CognitiveRetrievalLearningSink {
     pub fn new(writer: LedgerWriter) -> Self {
         Self {
             writer: Mutex::new(writer),
+            unlearning_owner: None,
         }
     }
 

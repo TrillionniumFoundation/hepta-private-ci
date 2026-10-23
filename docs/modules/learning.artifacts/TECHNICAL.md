@@ -243,6 +243,22 @@ Create-only file writers hold an exclusive advisory file lock through the empty-
 
 Iteration bookkeeping is separately bounded and authority-free. `IterationLedgerV1` can record typed externally produced evidence and replay candidate state, but it does not execute a sandbox, evaluate code, select a candidate, merge source or release an artifact.
 
+Agentd's explicit `CognitiveRetrievalLearningSink::revoke_artifact_from_unlearning`
+composes the original owners for one already-committed unlearning event. Immutable
+host pins bind the original ledger store/root/distribution and artifact
+trust/storage; no request can supply its own owner binding. The full V2 manifest
+must match the actual registry index and contain the exact dataset digest.
+The original independently signed CURRENT still authorizes the exact Revoke
+operation/reason and successor. `verify_owner_binding` checks only the service's
+immutable identity, including during recovery; it grants no CURRENT or use
+authority. The original writer/O/checkpoint/ACK path alone performs mutation and
+same-operation reconciliation. The host retains its signed CURRENT floor.
+
+This opt-in library composition is off by default. It does not add source
+unlearning ingestion, a daemon command, signing transport, dataset-wide persistent
+withdrawal/future-admission protection, complete V2 descendant fanout, erasure,
+HF inference or held FinalUse. Those integrations remain open.
+
 ## 8. Failure semantics, recovery and rollback
 
 The module fails closed on digest mismatch, scope mismatch, predecessor mismatch, stale withdrawal head, invalid lifecycle transition, expired mutation credentials, invalid current-head witness, non-canonical durable bytes, capacity exhaustion and publication phase skips.
@@ -460,11 +476,13 @@ For `learning.artifacts`, this document grants no runtime, production, model, pr
 - `unbounded_resource_or_retry`
 
 <!-- BEGIN GENERATED EXACT REGISTRY PROJECTION -->
+
 ### Exact closed-world registry projection
 
 This generated projection binds `learning.artifacts` to the current canonical contract, protocol, data, delivery and threat registries. The registries remain authoritative; this block is a digest-checked documentation projection.
 
 **Produced contracts:**
+
 - `DomainRead::learning_artifact_registryV1`
 - `DomainRead::operator_sensor_core_registryV1`
 - `LearningArtifactManifestV1`
@@ -478,6 +496,7 @@ This generated projection binds `learning.artifacts` to the current canonical co
 - `OperatorSensorCoreManifestV1`
 
 **Consumed contracts:**
+
 - `AlgorithmFaultReceiptV1`
 - `BellmanOperatorArtifactV1`
 - `CandidateEvaluationReceiptV1`
@@ -501,6 +520,7 @@ This generated projection binds `learning.artifacts` to the current canonical co
 - `UnlearningComplianceReceiptV1`
 
 **Typed protocols:**
+
 - `AlgorithmFaultReceiptV1`
 - `CandidateEvaluationReceiptV1`
 - `ConformanceReceiptV1`
@@ -521,11 +541,13 @@ This generated projection binds `learning.artifacts` to the current canonical co
 - `UnlearningComplianceReceiptV1`
 
 **Owned data domains:**
+
 - `learning_artifact_registry`
 - `operator_sensor_core_manifest_v1`
 - `operator_sensor_core_registry`
 
 **Read data domains:**
+
 - `algorithm_fault_receipt_v1`
 - `candidate_evaluation_receipt_v1`
 - `conformance_receipt_v1`
@@ -542,11 +564,13 @@ This generated projection binds `learning.artifacts` to the current canonical co
 - `topology_proposal_v1`
 
 **Work packages:**
+
 - `ART-1-LEARNING-ARTIFACT-REGISTRY`
 - `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK`
 - `HBO-1-OPERATOR-SENSOR-CORE`
 
 **Owned threats:**
+
 - `artifact_lineage_break`
 - `current_run_artifact_swap`
 - `operator_sensor_clustering`

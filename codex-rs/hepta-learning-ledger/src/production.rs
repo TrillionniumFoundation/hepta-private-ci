@@ -58,6 +58,10 @@ use crate::verify_dataset_snapshot_receipt_v3;
 
 const MAX_PRODUCTION_CANDIDATES: usize = 128;
 
+#[path = "production_unlearning_read.rs"]
+mod unlearning_read;
+pub use unlearning_read::VerifiedCommittedUnlearningV1;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ProductionDecisionV2 {
     pub record_id: StableId,

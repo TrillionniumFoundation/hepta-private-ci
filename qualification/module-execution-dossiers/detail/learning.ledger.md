@@ -231,6 +231,12 @@ or future-time efficacy.
   [src/segments.rs](../../../codex-rs/hepta-learning-ledger/src/segments.rs).
 - **Independent acknowledgement:** `LedgerWitnessStore` in
   [src/witness.rs](../../../codex-rs/hepta-learning-ledger/src/witness.rs).
+- **Confirmed unlearning read:** `LedgerWriter::verify_committed_unlearning` in
+  [src/production_unlearning_read.rs](../../../codex-rs/hepta-learning-ledger/src/production_unlearning_read.rs)
+  revalidates the original signature and exact event against current trust and an
+  equal independent witness frontier. Its opaque borrowed fact is not an artifact
+  authority or a public receipt constructor. Source tests cover real-file reopen,
+  changed/expired evidence, trust revocation and an actual unwitnessed durable tail.
 - **Trust distribution:** pinned `LearningTrustRootV1`, root-signed
   `SignedLearningTrustDistributionV1`, `ActivatedLearningTrustV1`, and
   `activate_learning_trust` in

@@ -89,6 +89,7 @@ pub use production::ProductionDecisionV2;
 pub use production::ProductionLedgerError;
 pub use production::UnlearningLineageReceiptV1;
 pub use production::UnlearningLineageRequestV1;
+pub use production::VerifiedCommittedUnlearningV1;
 pub use production::candidate_ids_digest_v2;
 pub use production::candidate_order_digest_v2;
 pub use production::credit_batch_signing_payload_v2;

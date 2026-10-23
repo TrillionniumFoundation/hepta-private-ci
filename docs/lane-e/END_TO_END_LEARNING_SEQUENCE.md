@@ -203,6 +203,19 @@ remain separately governed outcomes.
 
 ## 6. Correction, deletion and non-resurrection
 
+The source-composed narrow handoff now verifies an already-committed original
+signed unlearning event through `LedgerWriter` and its independent witness, then
+uses Agentd's explicitly configured original sink to invoke the original artifact
+service Revoke. Store/root/distribution and target trust/storage pins come from
+trusted host configuration. Full V2 dataset membership, independent signed
+CURRENT, exact-operation restart/retry and retained-floor backup refusal are
+tested on real files. A disk-prefix recovery test is not power-loss evidence.
+Expired source evidence blocks new delivery while the original acknowledged
+artifact denial remains independently readable. This is a single-artifact host
+component, not the complete sequence below: daemon ingestion/signing transport,
+persistent dataset withdrawal and future-admission/fanout, HF and held FinalUse
+remain open. No three-round or external product qualification follows from it.
+
 ```text
 source owner supplies authenticated correction or unlearning authority
   -> for explicit unlearning, LedgerWriter verifies the exact historical
