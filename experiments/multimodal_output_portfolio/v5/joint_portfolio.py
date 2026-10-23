@@ -84,6 +84,11 @@ class PublicState:
             or type(self.active_mask) is not int
             or not 0 <= self.active_mask <= 15
             or type(self.witnessed) is not bool
+            # A fresh stage-zero episode has no previously activated Cell or
+            # purchased witness. Accepting a forged active mask would waive
+            # real modeled activation charges; accepting witnessed=True would
+            # assert an unobserved prior information purchase.
+            or (self.stage == 0 and (self.active_mask != 0 or self.witnessed))
         ):
             raise ValueError("invalid public state")
 
