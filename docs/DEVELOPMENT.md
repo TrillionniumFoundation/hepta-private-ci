@@ -749,18 +749,84 @@ resolve the original Windows failures. Exact-source Windows native CI is pending
 including the separate unsupported private-owner backend boundary;
 these handle repairs do not qualify owner SID/DACL checks or FinalUse durability.
 
-Within this existing PN0 boundary, low-level OS tools must own a held,
-non-inheritable root, relative leaf opens rejecting reparse points and hard links,
-atomic creation with the current SID and strict DACL, validation through the same
-held handles, and exact staged-handle rename with file and parent flushes. A small
-shared OS utility is a candidate dependency, not an implemented or qualified
-backend; the contracts owner must not acquire a reverse dependency on the broad
-sandbox stack. `hepta-contracts` retains exclusive ownership of the FinalUse
-journal, replay checks and Unknown state; `hepta-prompt-registry` retains its
-existing claim/payload journal. Neither gains another authority or relaxes an
-unsupported-platform guard. Complete the safe OS primitives and SID/DACL negative
-controls before connecting either owner, then qualify the current four Windows
-shards and native owner tests with every original consumer assertion retained.
+Within this existing PN0/P0 Windows storage item, the small
+`utils/windows-private-state` utility supplies OS mechanisms without importing the
+sandbox, C++/V8, serialization or protocol stack. Its current C1 mechanisms and C2a
+read-only `CurrentUser::capture_effective` / `validate_owner_descriptor` observe
+the same held object against the captured effective TokenUser. C2a requires the
+current owner and a protected, non-NULL DACL containing exactly one ordinary,
+non-inherited full-control allow ACE for that owner; SYSTEM and Administrators
+are not implicit exceptions. A descriptor observation is not a private-owner
+capability. Cross-target compilation is not native execution: all five actual
+Windows controls, including the OWNER|DACL Group/SACL-offset readback assumption,
+remain pending until the existing workflow records them. Its nine required
+receipts retain the original three deletion tests, four mechanism probes and
+eight ACL controls. Owner support and power-loss qualification remain false.
+
+The following are implementation slices of that same PN0 item, not a second
+roadmap. C2b interface names below are proposed contracts, not implemented APIs.
+
+| Existing slice                       | Module responsibility and interface change                                                                                                                                                                                                                                         | Dependency and acceptance                                                                                                                                                                                                                             |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| C2b: private namespace and creation  | The OS utility owns held-handle local-volume inspection, trusted namespace bootstrap, atomic protected creation, and opaque `PrivateDirectory`, `HeldInput`, `StagedFile`, lock and journal handles. Fleet/Agentd owns obtaining its real home/run parents through that bootstrap. | Follow C2a native readback; qualify local NTFS/device and parent provenance before any owner factory. Require positive and negative native controls below; no consumer activation in a mechanism-only slice.                                          |
+| C3: FinalUse owner                   | `hepta-contracts` consumes the completed opaque backend and passes the exact already-synced stage into snapshot/claims replacement. It retains the only FinalUse journal, lock lifetime, replay checks, external frontier/clock composition and Unknown/fenced state.              | Depends on C2b, including trusted parent admission. Preserve all existing consumer assertions and [FinalUse storage requirements](../codex-rs/hepta-contracts/FINAL_USE.md#durable-schema-and-storage-protocol); no second authority or replay reset. |
+| C4: registry and real runtime caller | `hepta-prompt-registry` consumes lock, bounded mutable payload/journal, input and stage roles. Fleet/Agentd passes qualified home/run guards and converts the actual `prompt-runtime` store as well.                                                                               | Depends on C2b and the existing owner integration order. Retain [registry V3 and recovery rules](modules/prompt.registry/TECHNICAL.md#native-storage-v3-immutable-payload-extents); Windows permission/sync no-ops cannot qualify the pipeline.       |
+| C5: existing native qualification    | The existing Windows workflow and four native shards test source-head and base-merge candidates and the original consumer suites.                                                                                                                                                  | After the corresponding implementations, require complete native receipts, lock/process-death, recovery and controlled-run evidence. Safe mechanisms alone do not close sandbox isolation, power-loss persistence or whole-project qualification.     |
+
+C2b must derive provenance from actual held kernel objects. Agentd currently
+derives `prompt-registry` from `identity.home_root` and `prompt-runtime` from
+`identity.run_root`; Fleet registration and canonical path spelling do not prove
+a private Windows parent. A proposed internal namespace-anchor operation must
+traverse a bounded ancestor chain from the actual local volume, reject reparse
+components, retain required non-inheritable handles without delete sharing, and
+validate who can mutate that namespace. It needs minimal read/traverse/security
+query access for OS ancestors, rather than the C1 root's general write access.
+The ancestor policy must explicitly account for privileged OS mutators; any
+SYSTEM/Administrators allowance would be a separately reviewed namespace policy,
+not a relaxation of C2a's private-child DACL. Unknown owners, ACL forms and
+untrusted mutation rights reject. No asserted path, boolean or receipt may mint
+the opaque guards.
+
+A restrictive child ACL is insufficient: parent `DELETE_CHILD` can authorize
+removing or renaming it. Omitting delete sharing protects live handles but does
+not prevent whole-root replacement after the last handle closes or the process
+dies. Recreating the root can erase both initialization marker and replay state.
+Bootstrap must therefore establish a trusted namespace across restart, preserving
+the existing owner-controlled namespace premise on Unix too. Conservatively
+reject untrusted write/create/mutation rights; directory rights alias file data
+rights and cannot be classified as harmless by their friendly names. Retained
+ancestor handles and depth must be bounded, with no unbounded global cache.
+
+The proposed `inspect_local_ntfs(&File)` must query the same held object for NTFS,
+persistent ACL support and volume identity, plus native
+`FileFsDeviceInformation` with successful status and exact initialized output
+length. Reject remote/unsupported devices and incomplete queries. A mapped drive
+such as `Z:` can report NTFS while still being remote; path syntax and filesystem
+name alone are insufficient. These observations do not prove power-loss behavior.
+
+Creation must use one internal native-open implementation with typed
+existing-versus-new requests: `FILE_CREATE`, the captured SID/protected descriptor
+in `OBJECT_ATTRIBUTES`, held `RootDirectory`, validated leaf and no inherited
+handle. Require `FILE_CREATED`, then validate the same handle before yielding a
+guard. An existing object uses `FILE_OPEN` and verification only: no `OPEN_IF`,
+ACL repair, unsafe adoption, truncation or treating AccessDenied as absence.
+Every factory rechecks effective-principal continuity. Guards retain the root and
+parent provenance and expose only each role's required operations, without raw
+handle/`File` escape or public constructors. Stages need DELETE access on their
+original handle for later exact-handle rename; there is no SHARE_DELETE fallback.
+The lock role must still let a second owner process reach `File::try_lock` and
+receive `StateLocked`; journal/payload roles must cover actual append/seek/sync
+needs rather than pretending that read-input and stage roles are sufficient.
+
+C2b acceptance requires actual local NTFS and remote-device controls, restrictive
+descriptor readback at creation, collision/non-repair controls, reparse/hardlink
+and invalid-leaf rejection, principal drift, bounded provenance and child-process
+handle non-inheritance. Include a prepared parent DELETE_CHILD attack and
+whole-root replacement after last-close; failed attack preparation is a failed
+test. C3/C4 additionally require exact staged-handle rename, real file sync before
+and parent sync after publication, two-process lock/process-death controls, and
+original precommit versus indeterminate poison/reopen assertions. Neither design
+text nor passing C2a changes the unsupported Windows owner guards.
 
 The next PN0 DNS dependency candidate retains the original Rama alpha.4
 resolver trait and constructor signatures, and vendors its published `rama-dns`
