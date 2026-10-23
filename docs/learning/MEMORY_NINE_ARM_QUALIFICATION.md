@@ -23,9 +23,11 @@ evidence slots, source-frame bytes and resource budgets. Do not assemble
 different original research reports into a fictional nine-arm paired result.
 
 The ten predeclared contrasts are B-A, C-B, D-C, E-D, F-E, G-F, H-G,
-I-H, I-B and I-C. Primary metric is independently adjudicated full-answer
-correctness, source-family macro averaged across each of future_1, future_2
-and OOD. Retrieval-only all-support coverage is diagnostic, not full
+I-H, I-B and I-C. Primary gate metric is independently adjudicated
+**grounded full-answer correctness** (correct answer AND supported citations AND
+complete annotated evidence AND actual acceptance), source-family macro
+averaged across each of future_1, future_2 and OOD. Raw answer accuracy is
+retained as a separate diagnostic. Retrieval-only all-support coverage is diagnostic, not full
 answer correctness. Report complete adversarial coverage, calibration,
 hallucination, temporal/multi-hop and forget/delete failures.
 
