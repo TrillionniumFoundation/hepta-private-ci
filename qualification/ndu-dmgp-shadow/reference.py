@@ -65,6 +65,7 @@ class Outcome:
     controller_us: int
     verifier_us: int
     work_key: str
+    behavior_propensity: float = 1.0
 
     def validate(self, freeze: Freeze) -> None:
         freeze.validate()
@@ -77,6 +78,9 @@ class Outcome:
         require(self.split in {"train", "future"}, "undeclared split")
         require(finite(self.observed_utility) and -1 <= self.observed_utility <= 1,
                 "unbounded observed utility")
+        require(finite(self.behavior_propensity)
+                and 0 < self.behavior_propensity <= 1,
+                "unbound behavior propensity")
         require(min(self.decoder_us, self.controller_us, self.verifier_us) >= 0,
                 "invalid physical cost")
 
