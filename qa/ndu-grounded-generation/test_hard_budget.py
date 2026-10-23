@@ -1,5 +1,6 @@
 """Exercise real externally preempted subprocesses (no model download)."""
 import time
+import os
 import unittest
 from hard_budget import HardBudgetPool
 
@@ -12,6 +13,8 @@ def work(job):
     if isinstance(job,(int,float)):
         time.sleep(job)
         return {'duration':job}
+    if job=='crash':
+        os._exit(19)
     if job=='error':
         raise ValueError('deliberate worker exception')
     raise ValueError('unknown job')
@@ -46,6 +49,13 @@ class HardBudgetTests(unittest.TestCase):
         pool=HardBudgetPool(init,(),work,workers=1,init_timeout=5)
         results=list(pool.run(['error',0.001],budget=1))
         self.assertEqual([x[2]['status'] for x in results],['worker_failed','completed'])
+        self.assertIsNone(results[0][1])
+
+    def test_abrupt_worker_exit_is_counted_and_recovered(self):
+        pool=HardBudgetPool(init,(),work,workers=1,init_timeout=5)
+        results=list(pool.run(['crash',0.001],budget=.5))
+        self.assertEqual([x[2]['status'] for x in results],['worker_crashed','completed'])
+        self.assertEqual(len(pool.initializations),2)
         self.assertIsNone(results[0][1])
 
     def test_bad_budget_rejected_and_context_exits(self):
