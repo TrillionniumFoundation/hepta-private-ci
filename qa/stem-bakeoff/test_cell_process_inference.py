@@ -13,8 +13,8 @@ from unittest.mock import patch
 
 import torch
 
-from cell_evolution_snapshot import (EvolutionBudgetV1, EvolutionError, WithdrawalViewV1,
-    bootstrap_snapshot, load_snapshot, retire_snapshot)
+from cell_evolution_snapshot import (EvolutionBudgetV1, EvolutionError, OfflineEvolutionOwnerV1,
+    WithdrawalViewV1, bootstrap_snapshot, load_snapshot, retire_snapshot)
 from cell_process_owner import SnapshotProcessOwnerV1, SnapshotWorkerPoolV1
 from cell_process_protocol import (MAX_WIRE_BYTES, ProcessInferenceError, ProcessMessageV1,
     feature_payload, match_response, read_features, snapshot_pins)
@@ -218,6 +218,17 @@ class CellProcessInferenceTests(unittest.TestCase):
         provider.view = WithdrawalViewV1(IDENTITY.scope_id)
         with self.assertRaisesRegex(EvolutionError, "frontier"):
             owner.capture()
+
+    def test_reentrant_prepublication_callback_cannot_overwrite_committed_child(self):
+        # The verifier is user-supplied. An RLock permits it to re-enter commit;
+        # the outer CAS must fail if the callback already published a child.
+        owner = OfflineEvolutionOwnerV1(self.parent, self.withdrawals)
+        with self.assertRaisesRegex(EvolutionError, "stale snapshot compare-and-swap"):
+            owner.commit(self.retired, expected_parent_manifest_sha256=self.parent.manifest_sha256,
+                before_publish=lambda: owner.commit(
+                    self.retired, expected_parent_manifest_sha256=self.parent.manifest_sha256))
+        self.assertIs(owner.current, self.retired)
+        self.assertEqual(owner.current.generation, self.parent.generation + 1)
 
     def test_wrong_feature_scope_is_rejected_before_any_worker_forward(self):
         pool = self.pool()

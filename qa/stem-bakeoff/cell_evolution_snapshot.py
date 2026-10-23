@@ -402,6 +402,11 @@ class OfflineEvolutionOwnerV1:
             candidate.require_current(self._provider)
             if before_publish is not None:
                 before_publish()
+            # A host verifier may re-enter this RLock and publish a competing
+            # child. Never let the outer caller overwrite a changed parent.
+            if (self._current.manifest_sha256 != expected_parent_manifest_sha256
+                    or candidate.generation != self._current.generation + 1):
+                raise EvolutionError("stale snapshot compare-and-swap")
             # Recheck after the host hook; it may observe a newer withdrawal cut.
             candidate.require_current(self._provider)
             self._current = candidate
