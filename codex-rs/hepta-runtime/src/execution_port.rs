@@ -55,15 +55,6 @@ impl RuntimeExecutionPortV1 {
         Self::default()
     }
 
-    // Only the runtime-owning crate may opt in after host policy admission.
-    // External callers cannot elevate a fresh shadow port by supplying a tag.
-    pub(crate) fn with_cutover(cutover: RuntimeCutoverStageV1) -> Self {
-        Self {
-            journal: ExecutionJournal::new(),
-            cutover,
-        }
-    }
-
     pub fn events(&self) -> &[ExecutionRecord] {
         self.journal.events()
     }
@@ -94,5 +85,36 @@ impl RuntimeExecutionPortV1 {
         verifier: &impl EffectReceiptVerifier,
     ) -> Result<String, ExecutionError> {
         self.journal.append_effect_receipt(event, verifier)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn production_default_always_denies_execution() {
+        let port = RuntimeExecutionPortV1::new();
+        assert_eq!(port.cutover, RuntimeCutoverStageV1::ShadowOnly);
+        let classes = [
+            ExecutionClass::ReadOnlyInspection,
+            ExecutionClass::FileRead,
+            ExecutionClass::NonDestructiveBuild,
+            ExecutionClass::RestrictedFileWrite,
+            ExecutionClass::DurableProcess,
+            ExecutionClass::PrivilegedAction,
+            ExecutionClass::CrossHostDevice,
+        ];
+        for class in classes {
+            assert!(!port.cutover.permits(class));
+        }
+    }
+
+    #[test]
+    fn staged_capability_never_skips_prerequisites() {
+        assert!(RuntimeCutoverStageV1::FileRead.permits(ExecutionClass::FileRead));
+        assert!(RuntimeCutoverStageV1::FileRead.permits(ExecutionClass::ReadOnlyInspection));
+        assert!(!RuntimeCutoverStageV1::FileRead.permits(ExecutionClass::DurableProcess));
+        assert!(!RuntimeCutoverStageV1::PrivilegedAction.permits(ExecutionClass::CrossHostDevice));
     }
 }
