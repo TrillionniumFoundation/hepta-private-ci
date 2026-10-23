@@ -11,6 +11,31 @@ REGISTRY = json.loads(Path(__file__).with_name("replacement_models.json").read_t
 H = "a" * 64
 
 
+def fake_scale():
+    from replacement_head_scale import SCHEMA, SCALES
+    rows = []
+    for count in SCALES:
+        rows.append(dict(logical_cells=count, head_calls_per_batch=count,
+                         simultaneously_executing_heads=1,
+                         private_head_instances=count,
+                         unique_parameter_storages=2 * count,
+                         actual_private_head_tensor_bytes=count * 1024,
+                         source_feature_sha256=H,
+                         raw_full_fanout_latency_ms=[1.0] * 100,
+                         full_batch_p50_ms=1.0, full_batch_p95_ms=1.0,
+                         full_batch_p99_ms=1.0,
+                         head_outputs_per_second=count * 1000.0,
+                         observed_rss_after_allocation_bytes=1000000,
+                         observed_rss_after_execution_bytes=1000000,
+                         process_high_water_rss_bytes=2000000))
+    return dict(schema=SCHEMA, source_feature_sha256=H, measurements=rows,
+                model_encoder_forwards_within_probe=0, source_events=1,
+                independent_input_event_scaling_measured=False,
+                target_device_qualified=False, gpu_observed=False,
+                power_energy_observed=False, mode="SHADOW_ONLY",
+                authority="DENY_ALL", production_activation_allowed=False)
+
+
 def fake(name):
     spec = REGISTRY["models"][name]
     data = {}
@@ -49,7 +74,9 @@ def fake(name):
                     original_forward_latency_ms=[1.0] * 40,
                     load_ms=200., forward_latency_p50_ms=1.,
                     raw_forward_throughput_per_second=1.0,
-                    laya_tokenizer_compat=compat),
+                    laya_tokenizer_compat=compat,
+                    physical_private_head_scale=(None if name.startswith("laya_")
+                                                 else fake_scale())),
                 limits=dict(historical_2014_dataset=True, target_device_qualified=False,
                     prospective_holdout=False, independent_observer_attested=False,
                     retrieval_quality_measured=False, multilingual_quality_measured=False),
@@ -130,6 +157,36 @@ class PhysicalAuditTests(unittest.TestCase):
         case["performance"]["laya_tokenizer_compat"]["registered_config_rewrite"] = True
         errors = audit_arm("laya_multi_322m", case, REGISTRY["models"]["laya_multi_322m"])
         self.assertTrue(any("inconsistent tokenizer" in x for x in errors))
+
+    def test_must_have_four_real_head_scale_receipts_for_encoder_arms(self):
+        cases = samples()
+        cases["harrier_270m"]["performance"]["physical_private_head_scale"] = None
+        self.assertEqual(assess(REGISTRY, cases)["raw_shadow_preflight"], "BLOCKED")
+        cases = samples()
+        cases["arctic_305m"]["performance"]["physical_private_head_scale"]["measurements"].pop()
+        self.assertEqual(assess(REGISTRY, cases)["raw_shadow_preflight"], "BLOCKED")
+
+    def test_head_scale_under_sampled_forged_p99_and_storage_alias_denied(self):
+        for corrupt in ("sample", "p99", "alias"):
+            cases = samples()
+            row = cases["harrier_270m"]["performance"]["physical_private_head_scale"]["measurements"][3]
+            if corrupt == "sample":
+                row["raw_full_fanout_latency_ms"].pop()
+            elif corrupt == "p99":
+                row["full_batch_p99_ms"] = 0.1
+            else:
+                row["unique_parameter_storages"] = row["private_head_instances"]
+            self.assertEqual(assess(REGISTRY, cases)["raw_shadow_preflight"], "BLOCKED")
+
+    def test_scale_authority_or_parallelism_smuggling_denied(self):
+        cases = samples()
+        cases["arctic_305m"]["performance"]["physical_private_head_scale"][
+            "target_device_qualified"] = True
+        self.assertEqual(assess(REGISTRY, cases)["raw_shadow_preflight"], "BLOCKED")
+        cases = samples()
+        cases["harrier_270m"]["performance"]["physical_private_head_scale"][
+            "measurements"][0]["simultaneously_executing_heads"] = 64
+        self.assertEqual(assess(REGISTRY, cases)["raw_shadow_preflight"], "BLOCKED")
 
     def test_training_budget_or_token_row_drift_rejected(self):
         cases = samples()
