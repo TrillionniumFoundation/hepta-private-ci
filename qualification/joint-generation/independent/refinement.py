@@ -116,6 +116,39 @@ def reserve_work(model, system, mode, *, train_rows, validation_rows,
             "revalidation": validation_work(model, validation_rows)}
 
 
+def _preparation_forecast(calibration, mode, measures, plan):
+    if type(measures) is not int or not 1 <= measures <= 2**63 - 1:
+        raise ValueError("bounded positive future preparation count required")
+    maximum = calibration["prepare_cpu_ns"][mode]
+    if (type(maximum) not in (int, float) or not 0 <= maximum <= 2**63 - 1
+            or not math.isfinite(maximum)):
+        raise ValueError("finite nonnegative observed preparation CPU required")
+    policy = plan.get("preparation_forecast")
+    if "preparation_forecast" not in plan:
+        return {"preparation_forecast": "legacy-repeated-maximum",
+                "prepare_cpu_samples_ns": calibration.get("prepare_cpu_samples_ns", {}).get(mode),
+                "prepare_cpu_median_ns": None, "prepare_cpu_max_ns": maximum,
+                "prepare_cpu_observed_excess_ns": None,
+                "prepare_cpu_forecast_ns": measures * maximum}
+    if policy != "median-plus-one-observed-excess-v1":
+        raise ValueError("unknown preparation forecast policy")
+    if type(plan["calibration_repeats"]) is not int or plan["calibration_repeats"] != 3:
+        raise ValueError("three TRAIN calibration repeats required by preparation forecast")
+    samples = calibration.get("prepare_cpu_samples_ns", {}).get(mode)
+    if (not isinstance(samples, (tuple, list)) or len(samples) != 3
+            or any(type(value) is not int or not 0 <= value <= 2**63 - 1 for value in samples)):
+        raise ValueError("exactly three bounded TRAIN preparation CPU samples required")
+    ordered = sorted(samples)
+    median, observed_max = ordered[1], ordered[2]
+    if maximum != observed_max:
+        raise ValueError("observed preparation maximum disagrees with TRAIN samples")
+    excess = observed_max - median
+    return {"preparation_forecast": policy, "prepare_cpu_samples_ns": list(samples),
+            "prepare_cpu_median_ns": median, "prepare_cpu_max_ns": observed_max,
+            "prepare_cpu_observed_excess_ns": excess,
+            "prepare_cpu_forecast_ns": measures * median + excess}
+
+
 def forecast(system, selected, candidates, common, plan, inventories, ledger):
     """Retain every training-only input used by the residual scheduler."""
     if not selected or len({row["seed"] for row in selected}) != len(selected):
@@ -150,12 +183,13 @@ def forecast(system, selected, candidates, common, plan, inventories, ledger):
             requests += 2 * plan["calibration_rows"] * plan["calibration_repeats"]
             measures += 2 * plan["calibration_repeats"]
         cpu_ns = calibration["cpu_ns"][mode]
-        prepare_ns = calibration["prepare_cpu_ns"][mode]
+        preparation = _preparation_forecast(calibration, mode, measures, plan)
         profiles.append({"seed": row["seed"], "mode": mode, "requests": requests,
-            "cpu_ns_per_request": cpu_ns, "prepare_cpu_ns_per_measure": prepare_ns,
-            "measures": measures})
+            "cpu_ns_per_request": cpu_ns,
+            "prepare_cpu_ns_per_measure": calibration["prepare_cpu_ns"][mode],
+            "measures": measures, **preparation})
         service_cpu += requests * cpu_ns * multiplier / 1e9
-        preparation_cpu += measures * prepare_ns * multiplier / 1e9
+        preparation_cpu += preparation["prepare_cpu_forecast_ns"] * multiplier / 1e9
     # The external observers are outside service probes and must be forecast
     # separately together with critic training and changed-model validation.
     arithmetic_cpu = safety * unit_rate * (priced["critic"] + priced["observer"])

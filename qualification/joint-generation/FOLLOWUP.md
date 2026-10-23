@@ -33,9 +33,9 @@ claimed to be historically unseen semantic classes. Every source's instructions
 and sensor variants stay together. The new test must remain unopened until the
 protocol, source hashes and selection are frozen and validation is ready.
 
-The first five r2 training/validation builds all exited 2 and never constructed
+The first six r2 training/validation builds all exited 2 and never constructed
 the formal test. Their signed failures, models and costs remain in verified
-receipts under `runs/codex-cloud-efficient-r2-t1` through `t5`; earlier complete
+receipts under `runs/codex-cloud-efficient-r2-t1` through `t6`; earlier complete
 builds also have byte-verified lossless archives.
 
 | Build | Content A-anchor utility | NDU-additive utility | Control CPU-net vs efficient reference | Outcome |
@@ -45,6 +45,7 @@ builds also have byte-verified lossless archives.
 | t3 | +0.021224 | +0.006639 | -0.004409 | Unready; caps held |
 | t4 | +0.024836 | +0.003498 | -0.004656 | Unready; caps held; raw control/random also negative |
 | t5 | +0.014986 | +0.012584 | -0.002427 | Unready; caps held; raw control/random also negative |
+| t6 | +0.007445 | +0.012055 | -0.014405 | Unready; caps held; affine raw control/random +0.001884 |
 
 These are validation mean contrasts, not held-out confidence intervals. t4
 aligned raw critic gain and complete marginal service CPU using train-only
@@ -65,6 +66,15 @@ The core content/NDU generation claim and the stronger adaptive-continuation
 claim have separate evidence states. Core validation contrasts are positive but
 not independently tested. The frozen r2 dynamic gates remain failed. Neither a
 service smoke nor a transport contract permits an overall first-goal pass.
+
+The [t6 affine report](runs/codex-cloud-efficient-r2-t6/REPORT.md) shows positive
+same-weight routing means for every seed, but only 164/172/169 control updates
+and no residual rounds. Shared preparation consumed 6.543 CPU seconds; a large
+TRAIN preparation maximum was repeated in all eight future control measures'
+CPU forecast. Actual control cost was lower, leaving about 0.977 seconds unspent.
+This is conservative opportunity cost, not fake billed work. The prospective
+forecast stores all raw TRAIN samples and reserves median repeated cost plus one
+observed excess; actual budget guards, prices and all benefit gates stay fixed.
 
 First-goal efficient-budget acceptance remains blocked by demonstrated control
 net-benefit failure. Audio/video generation and long interactions remain unrun

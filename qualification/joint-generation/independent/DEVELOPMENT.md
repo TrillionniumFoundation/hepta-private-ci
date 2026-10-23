@@ -176,3 +176,28 @@ method on a frozen dataclass; only the test spy was corrected. Production
 equations, budgets and guards were not relaxed. The old C entry points retain
 their argument lists; an old library lacking the new state/gain entry points
 rejects an affine request before execution instead of using an unsafe ABI.
+
+## Preparation forecast after t6
+
+t6 exited 2 with real affine control/raw-random utility +0.001884 and joint
+success +0.001971, but complete control/NDU CPU-net -0.014405. All actual caps
+held and the test stayed shut. Content NC/full trailed NDU/full by 0.017696;
+the control models received only 164/172/169 updates and no residual rounds.
+
+Actual shared preparation cost was 6.543093432 CPU seconds, including compiler
+CPU 0.916755295. Its broader slowdown has not been causally explained. The TRAIN
+calibration retained a full-mode preparation maximum of 136.988070 ms for seed23.
+The old scheduler repeated this maximum for all eight future control measures,
+contributing to a 2.363858-second tail forecast. Actual subsequent fit/calibration
+and selected/random validation CPU was 0.879944 seconds. This is conservative
+reserved opportunity cost, not falsely charged work. Old receipts retained only
+the maximum, so that historical sample distribution cannot be reconstructed.
+
+The next fixed forecast retains all three actual TRAIN preparation samples and
+uses `m*median + max(0, maximum-median)` for m future preparations. It reserves one
+observed excess above the central repeated-work estimate, does not choose a
+minimum, and applies the same formula to every arm. For a static model with one
+future measure this equals the old maximum. Raw samples and every forecast term
+are retained. This estimate cannot guarantee future execution times: actual full
+cost, unchanged caps, phase guards and nonzero failure rules remain decisive.
+No reward, head equation, threshold law, price, data or benefit gate changes.

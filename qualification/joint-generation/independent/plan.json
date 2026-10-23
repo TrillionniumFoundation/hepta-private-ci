@@ -30,6 +30,8 @@
   "refinement_policy": "selected-residual-v1",
   "refinement_cpu_unit_safety": 2.0,
   "refinement_service_cpu_multiplier": 1.0,
+  "preparation_forecast": "median-plus-one-observed-excess-v1",
+  "preparation_forecast_rule": "retain three actual TRAIN preparation CPU samples per seed/mode; for m future preparations estimate m*median(samples)+max(0,max(samples)-median(samples)); same formula for every arm, not a charge or cap guarantee; all actual work remains fully charged",
   "refinement": "after one fixed LR/mode selection, all arms may continue their selected three-seed models using original Adam and RNG state in rotated complete seed rounds; no validation-based stopping or reselection; reserve exact future operators and training-only CPU forecasts for critic, paired calibration, selected service, changed-model revalidation and exports; actual caps remain authoritative",
   "runtime_backend": "native",
   "runtime_batch_size": 64,

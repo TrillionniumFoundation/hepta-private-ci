@@ -181,6 +181,72 @@ class RefinementTests(unittest.TestCase):
         self.assertAlmostEqual(observed["tail_cpu_seconds"], 7.6992)
         self.assertEqual(ledger.snapshot(), before)
 
+    def preparation_fixture(self):
+        selected, candidates, common, plan, inventories = fixtures()
+        plan["preparation_forecast"] = "median-plus-one-observed-excess-v1"
+        for calibration in common["calibrations"].values():
+            calibration["prepare_cpu_samples_ns"] = {
+                mode: [10000, 20000, 200000] for mode in plan["static_modes"]}
+            calibration["prepare_cpu_ns"] = {mode: 200000 for mode in plan["static_modes"]}
+        return selected, candidates, common, plan, inventories
+
+    def test_repeated_preparation_retains_one_observed_excess_without_charging(self):
+        selected, candidates, common, plan, inventories = self.preparation_fixture()
+        ledger = WorkLedger("preparation-forecast", total_cap=1000000)
+        before, original = ledger.snapshot(), copy.deepcopy(common)
+        receipt = forecast("ndu_control", selected, candidates, common, plan, inventories, ledger)
+        for profile in receipt["service_profiles"]:
+            self.assertEqual(profile["measures"], 8)
+            self.assertEqual(profile["prepare_cpu_samples_ns"], [10000, 20000, 200000])
+            self.assertEqual(profile["prepare_cpu_median_ns"], 20000)
+            self.assertEqual(profile["prepare_cpu_max_ns"], 200000)
+            self.assertEqual(profile["prepare_cpu_observed_excess_ns"], 180000)
+            self.assertEqual(profile["prepare_cpu_forecast_ns"], 8 * 20000 + 180000)
+            self.assertEqual(profile["preparation_forecast"], plan["preparation_forecast"])
+        self.assertAlmostEqual(receipt["preparation_cpu_seconds"], 3 * 340000 * 1.5 / 1e9)
+        self.assertEqual(ledger.snapshot(), before)
+        self.assertEqual(common, original)
+
+    def test_single_preparation_matches_legacy_max_and_equal_samples_scale_normally(self):
+        selected, candidates, common, plan, inventories = self.preparation_fixture()
+        ledger = WorkLedger("single-preparation")
+        current = forecast("supervised", selected, candidates, common, plan, inventories, ledger)
+        legacy_plan = {key: value for key, value in plan.items() if key != "preparation_forecast"}
+        legacy = forecast("supervised", selected, candidates, common, legacy_plan, inventories, ledger)
+        self.assertEqual(current["preparation_cpu_seconds"], legacy["preparation_cpu_seconds"])
+        self.assertTrue(all(row["prepare_cpu_forecast_ns"] == 200000 for row in current["service_profiles"]))
+        for calibration in common["calibrations"].values():
+            calibration["prepare_cpu_samples_ns"]["ensemble"] = [200000] * 3
+        equal = forecast("ndu_control", selected, candidates, common, plan, inventories, ledger)
+        self.assertTrue(all(row["prepare_cpu_observed_excess_ns"] == 0 for row in equal["service_profiles"]))
+        self.assertTrue(all(row["prepare_cpu_forecast_ns"] == 8 * 200000 for row in equal["service_profiles"]))
+
+    def test_new_preparation_policy_rejects_missing_invalid_or_inconsistent_train_samples(self):
+        selected, candidates, common, plan, inventories = self.preparation_fixture()
+        ledger = WorkLedger("invalid-preparation")
+        for invalid in (None, [], [10000, 200000], [1, 2, 3, 200000],
+                        [10000, float("nan"), 200000], [10000, float("inf"), 200000],
+                        [10000, -1, 200000], [10000, True, 200000],
+                        [10000, 20000.0, 200000], [10000, 20000, 2**63], [10000, 20000, 199999]):
+            changed = copy.deepcopy(common)
+            changed["calibrations"][11]["prepare_cpu_samples_ns"]["ensemble"] = invalid
+            with self.subTest(samples=invalid):
+                with self.assertRaises(ValueError):
+                    forecast("ndu_control", selected, candidates, changed, plan, inventories, ledger)
+        changed = copy.deepcopy(common)
+        del changed["calibrations"][11]["prepare_cpu_samples_ns"]
+        with self.assertRaises(ValueError):
+            forecast("ndu_control", selected, candidates, changed, plan, inventories, ledger)
+        for invalid in (None, "unknown"):
+            with self.assertRaises(ValueError):
+                forecast("ndu_control", selected, candidates, common,
+                         {**plan, "preparation_forecast": invalid}, inventories, ledger)
+        for invalid in (0, -1, True, 3.0, float("nan"), float("inf"), 2**63):
+            with self.subTest(repeats=invalid):
+                with self.assertRaises(ValueError):
+                    forecast("ndu_control", selected, candidates, common,
+                             {**plan, "calibration_repeats": invalid}, inventories, ledger)
+
     def test_admission_requires_whole_seed_round_and_revalidation_without_charging(self):
         receipt = {"tail_units": 100, "changed_model_units": 20, "tail_cpu_seconds": 3.0,
                    "changed_model_cpu_seconds": 1.0, "arithmetic_safety": 2.0,

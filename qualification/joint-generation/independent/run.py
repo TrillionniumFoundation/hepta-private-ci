@@ -260,7 +260,7 @@ def prepare_shared(plan, run, runtime_plan):
             objective.step(model, x, train["labels"][idx], 0.003,
                            ledger=shared, stage="base_pretrain")
         base_validation, _ = batch_validation(model, val, shared, stage="base_validation")
-        times, costs, preparation, components = {}, {}, {}, {}
+        times, costs, preparation, preparation_raw, components = {}, {}, {}, {}, {}
         for mode in plan["static_modes"]:
             cpu_samples, work_samples, preparation_samples = [], [], []
             component_samples = {"native_generation_and_ledger_cpu_ns": [],
@@ -280,10 +280,12 @@ def prepare_shared(plan, run, runtime_plan):
             times[mode] = float(np.median(cpu_samples))
             costs[mode] = float(np.mean(work_samples))
             preparation[mode] = float(np.max(preparation_samples))
+            preparation_raw[mode] = list(preparation_samples)
             components[mode] = {key: float(sum(cpu for cpu, _ in values) / sum(n for _, n in values))
                                 for key, values in component_samples.items()}
         calibrations[seed] = {"cpu_ns": times, "work_units": costs,
-                              "prepare_cpu_ns": preparation, "mean_component_cpu_ns": components}
+                              "prepare_cpu_ns": preparation, "prepare_cpu_samples_ns": preparation_raw,
+                              "mean_component_cpu_ns": components}
         shared.record("base_calibration", serving_calibration_rows=len(calibration_data["labels"])
                       * len(plan["static_modes"]) * plan["calibration_repeats"])
         base_rows[seed] = {"decoder_mse": mse, "validation": base_validation,
