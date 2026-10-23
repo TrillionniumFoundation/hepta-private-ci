@@ -22,21 +22,32 @@ jobs:
   fail-closed-contracts:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Bind exact executing commit
         shell: bash
         run: |
           set -euo pipefail
-          git rev-parse HEAD
-          test -n "$(git rev-parse HEAD)"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
       - name: Run five-model registry and six-stage adversarial gates
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m unittest discover -s qa/stem-bakeoff -p 'test_replacement_*.py' -v
+          # Do not import torch-only physical contract tests on this no-torch host.
+          # They run separately in the five-model workflow's pinned CPU venv.
+          for test in \
+            test_replacement_gate.py \
+            test_replacement_metadata.py \
+            test_replacement_physical_audit.py \
+            test_replacement_source_audit.py \
+            test_replacement_laya_view.py; do
+            python3 -m unittest discover -s qa/stem-bakeoff -p "$test" -v
+          done
           python3 qa/stem-bakeoff/replacement_gate.py --assert-no-production
           python3 -m py_compile qa/stem-bakeoff/replacement_gate.py qa/stem-bakeoff/replacement_metadata.py
           test -z "$(git status --porcelain)"
@@ -44,14 +55,18 @@ jobs:
   publisher-weight-metadata:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Inspect immutable upstream revision/LFS metadata (no weight load)
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 qa/stem-bakeoff/replacement_metadata.py --out "$RUNNER_TEMP/replacement-hub-pointers.json"
       - name: Preserve provenance-preflight result
         uses: actions/upload-artifact@v4
