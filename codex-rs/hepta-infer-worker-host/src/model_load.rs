@@ -133,7 +133,11 @@ impl<D: ModelDriver> InferenceWorker<D> {
         match observed.state {
             DriverLoadState::Released => {}
             DriverLoadState::NoEffect if loaded.handle.is_none() => {}
-            DriverLoadState::NoEffect | DriverLoadState::Unknown | DriverLoadState::Owned(_) => {
+            DriverLoadState::Owned(handle) => {
+                loaded.handle.get_or_insert(handle);
+                return Err(Error::DriverFailure("release unresolved".to_string()));
+            }
+            DriverLoadState::NoEffect | DriverLoadState::Unknown => {
                 return Err(Error::DriverFailure("release unresolved".to_string()));
             }
         }
