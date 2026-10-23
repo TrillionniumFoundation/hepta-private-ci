@@ -1,0 +1,11 @@
+test_destination_failure_preserves_original_fault_and_other_receipt (test_run_once.MasterTests.test_destination_failure_preserves_original_fault_and_other_receipt) ... {"terminal_persistence_error": "handmade output failure", "target": "/tmp/tmptp_s9wv3/out/PARTIAL.json"}
+ok
+test_mkdir_failure_after_start_keeps_partial_and_runs_no_child (test_run_once.MasterTests.test_mkdir_failure_after_start_keeps_partial_and_runs_no_child) ... {"terminal_persistence_error": "[Errno 2] No such file or directory: '/tmp/tmpz1dv2y7f/runs/fixed/PARTIAL.json'", "target": "/tmp/tmpz1dv2y7f/runs/fixed/PARTIAL.json"}
+ok
+test_report_only_risk_uses_handmade_inputs_without_training_or_dataset (test_run_once.MasterTests.test_report_only_risk_uses_handmade_inputs_without_training_or_dataset) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.115s
+
+OK
+{"exit_code": 1, "fault": {"error": "handmade mkdir failure", "type": "PermissionError"}, "unexecuted_slots": [0, 1, 2, 3]}
