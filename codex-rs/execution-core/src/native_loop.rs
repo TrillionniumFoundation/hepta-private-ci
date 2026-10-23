@@ -156,7 +156,7 @@ impl NativeLoopCursorV1 {
     }
 
     pub fn next_request(&self, now_unix_ms: u64) -> Result<AgentStepRequestV1, PortError> {
-        if !matches!(self.phase, NativeLoopPhaseV1::Ready) {
+        if !matches!(&self.phase, NativeLoopPhaseV1::Ready) {
             return Err(PortError::Invalid("loop has outstanding step or terminal state"));
         }
         if now_unix_ms >= self.deadline_unix_ms {
@@ -270,7 +270,7 @@ impl NativeLoopCursorV1 {
         independent_receipt_digest: &str,
         verifier: &dyn NativeLoopObserver,
     ) -> Result<Self, PortError> {
-        if !matches!(self.phase, NativeLoopPhaseV1::CompletionCandidate { .. })
+        if !matches!(&self.phase, NativeLoopPhaseV1::CompletionCandidate { .. })
             || !valid_digest(independent_receipt_digest)
         {
             return Err(PortError::Invalid("unverified completion candidate"));

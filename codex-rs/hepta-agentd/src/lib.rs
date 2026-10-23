@@ -45,6 +45,7 @@ mod runtime_tasks;
 mod shared_terminal_cell;
 mod shadow_execution;
 pub use shadow_execution::ShadowExecutionCandidateV1;
+pub use shadow_execution::propose_native_shadow_execution_v1;
 pub use shadow_execution::propose_shadow_execution_v1;
 mod state;
 pub use shared_terminal_cell::AgentdSharedReplayHostV1;

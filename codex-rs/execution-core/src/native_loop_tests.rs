@@ -105,11 +105,12 @@ fn model_continuation_requires_independent_observation_and_no_replay() {
         .unwrap();
     assert!(matches!(waiting.phase(), NativeLoopPhaseV1::AwaitingExternal { .. }));
     assert!(waiting.next_request(2).is_err());
+    let unchanged = waiting.checkpoint_digest().unwrap();
     assert!(matches!(
         waiting.accept_external(&external(NativeExternalKindV1::Model), &Deny, 3),
         Err(PortError::Denied)
     ));
-    assert_eq!(waiting.checkpoint_digest().unwrap(), waiting.checkpoint_digest().unwrap());
+    assert_eq!(waiting.checkpoint_digest().unwrap(), unchanged);
     let resumed = waiting
         .accept_external(&external(NativeExternalKindV1::Model), &TrustedFixture, 3)
         .unwrap();
