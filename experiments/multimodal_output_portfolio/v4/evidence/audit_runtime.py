@@ -147,6 +147,10 @@ def verify_trace(row, actual, observed_count, outputs, native, replay, tree, ref
             for policy_arm in ('dynamic', 'myopic'):
                 values = reference[f'{policy_arm}_scores_{depth}'][matches]
                 compare(values, np.broadcast_to(values[0], values.shape), 'ambiguous state action values', 1e-10)
+            for sequence in PLANS:
+                if depth + len(sequence) <= 2:
+                    values = [sequence_value(losses, depth, int(candidate), sequence, protocol) for candidate in matches]
+                    compare(values, [values[0]] * len(values), 'ambiguous state remaining committed-plan values', 1e-10)
         node = candidates[int(distances.argmin())]
         require(event['node'] == node, 'lookup uses observed latent and causal prior action')
         if depth == 0:
