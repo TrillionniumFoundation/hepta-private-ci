@@ -1,7 +1,13 @@
 name: Hepta Neuron model bakeoff contract qualification (read-only)
 
 on:
-  # Deep qualification is opt-in; aggregate workflows own default PR/main fanout.
+  # Source-only verifier tests for the named research branch, never GPU evidence.
+  push:
+    branches:
+      - "dot/neuron-bakeoff-*"
+    paths:
+      - "qualification/neuron-model-bakeoff/**"
+      - ".github/workflows/hepta-neuron-model-bakeoff.yml"
   workflow_call:
   workflow_dispatch:
 
