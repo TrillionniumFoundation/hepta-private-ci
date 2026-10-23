@@ -36,6 +36,16 @@ class NearNeutralRiskTests(unittest.TestCase):
                     places=8,
                 )
 
+    def test_tiny_risk_with_large_payoff_span_is_not_neutral(self):
+        # gamma alone cannot select the expectation limit: gamma*span is
+        # O(1) or larger even for an extremely small positive coefficient.
+        for gamma, high in ((1e-251, 1e252), (1e-300, 1e300)):
+            with self.subTest(gamma=gamma, high=high):
+                actual = conditional_ce((0.0, high), (0.5, 0.5), gamma)
+                oracle = decimal_reference((0.0, high), (0.5, 0.5), gamma)
+                self.assertTrue(math.isclose(actual, oracle, rel_tol=1e-12))
+                self.assertLess(actual, 0.5 * high)
+
     def test_near_neutral_ignores_impossible_extreme_outcome(self):
         # A zero-mass extreme outcome must never change the supported anchor.
         self.assertAlmostEqual(

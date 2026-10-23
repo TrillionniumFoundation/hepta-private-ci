@@ -196,7 +196,9 @@ def conditional_ce(values: tuple[float, ...],
     # Restrict compensated arithmetic to the near-neutral limit, leaving
     # the frozen ordinary-risk evaluation path bit-for-bit unchanged.
     span = max(v for _, v in supported) - anchor
-    if risk_aversion < 1e-250:
+    # A tiny coefficient is not near-neutral if the supported payoff span is huge.
+    if (risk_aversion < 1e-250 and math.isfinite(span)
+        and risk_aversion * span < 1e-16):
         total = math.fsum(p for p, _ in supported)
         return math.fsum(v * (p / total) for p, v in supported)
     if math.isfinite(span) and risk_aversion * span <= 1e-4:
