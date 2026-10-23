@@ -23,7 +23,7 @@ use std::path::PathBuf;
 pub struct RootSqliteMaterialSource {
     _private: (),
     #[cfg(unix)]
-    source: ExistingSqliteRecoveryGuard,
+    pub(super) source: ExistingSqliteRecoveryGuard,
     #[cfg(unix)]
     destination: super::RetainedObject,
 }

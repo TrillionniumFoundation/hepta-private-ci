@@ -245,3 +245,38 @@ fn root_material_cannot_escape_home_or_overwrite_existing_material() -> anyhow::
     assert!(!fixture.root.join("escaped").exists());
     Ok(())
 }
+
+#[test]
+#[ignore = "requires actual Root0, a protected destination and private /data TMP"]
+fn root_registration_keeps_inode_while_new_capture_admits_changed_contents() -> anyhow::Result<()> {
+    let fixture = Fixture::root_owned()?;
+    let registered = super::super::RootSqliteMaterialRegistration::bind_registered(
+        &fixture.source,
+        &fixture.database,
+        REGISTERED_UID,
+    )?;
+    let identity = registered.identity().clone();
+    registered
+        .bind_capture(&fixture.destination)?
+        .materialize_private_candidate(OsStr::new("first.sqlite"))?;
+    std::fs::write(&fixture.database, b"new contents in the registered inode")?;
+    registered.verify_registered()?;
+    let second = registered
+        .bind_capture(&fixture.destination)?
+        .materialize_private_candidate(OsStr::new("second.sqlite"))?;
+    assert_eq!(
+        std::fs::read(second)?,
+        b"new contents in the registered inode"
+    );
+    assert_eq!(registered.identity(), &identity);
+    std::fs::rename(
+        &fixture.database,
+        fixture.database.with_extension("retired"),
+    )?;
+    std::fs::write(&fixture.database, b"replacement is not registered")?;
+    std::fs::set_permissions(&fixture.database, std::fs::Permissions::from_mode(0o600))?;
+    std::os::unix::fs::chown(&fixture.database, Some(REGISTERED_UID), None)?;
+    assert!(registered.verify_registered().is_err());
+    assert!(registered.bind_capture(&fixture.destination).is_err());
+    Ok(())
+}

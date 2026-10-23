@@ -20,6 +20,10 @@ mod image;
 #[path = "sqlite_root_material.rs"]
 mod root_material;
 pub use root_material::RootSqliteMaterialSource;
+#[path = "sqlite_root_registration.rs"]
+mod root_registration;
+pub use root_registration::RootSqliteMaterialIdentity;
+pub use root_registration::RootSqliteMaterialRegistration;
 
 #[cfg(unix)]
 use std::ffi::CString;
