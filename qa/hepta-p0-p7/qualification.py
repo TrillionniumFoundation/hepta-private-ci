@@ -48,6 +48,7 @@ def reject_constant(value):
 
 
 def read_json(path: Path, cap: int = MAX_JSON_BYTES):
+    """Legacy fixture reader only; evidence CLI uses pinned descriptor-safe reads."""
     require(path.is_file() and not path.is_symlink(), "missing or symlinked JSON")
     require(path.stat().st_size <= cap, "JSON exceeds byte cap")
     return json.loads(path.read_text(encoding="utf-8"),
@@ -136,6 +137,14 @@ def _read_pinned_artifact(root: Path, filename: str, expected: str, cap=64_000_0
             os.close(dir_fd)
 
 
+def read_pinned_json(path: Path, expected_sha: str, cap: int = MAX_JSON_BYTES):
+    """Read one independently SHA-pinned JSON input with no path re-open."""
+    raw = _read_pinned_artifact(path.parent, path.name, expected_sha,
+                                cap, collect=True)
+    return json.loads(raw.decode("utf-8"), object_pairs_hook=strict_pairs,
+                      parse_constant=reject_constant)
+
+
 def verify_artifact(root: Path, filename: str, expected: str, cap=64_000_000) -> None:
     _read_pinned_artifact(root, filename, expected, cap)
 
@@ -204,10 +213,11 @@ def validate_protocol(protocol, protocol_path: Path, expected_sha: str):
             protocol["encoder_generation"] > 0, "encoder/generation identity")
 
 
-def read_episodes(path: Path):
-    require(path.is_file() and not path.is_symlink() and
-            path.stat().st_size <= MAX_EPISODES_BYTES, "episodes missing/over cap")
-    lines = path.read_text(encoding="utf-8").splitlines()
+def read_episodes(path: Path, expected_sha: str):
+    """Read the exact frozen JSONL ledger with a bounded descriptor-safe read."""
+    raw = _read_pinned_artifact(path.parent, path.name, expected_sha,
+                                MAX_EPISODES_BYTES, collect=True)
+    lines = raw.decode("utf-8").splitlines()
     require(len(lines) <= 100_000, "episode count over cap")
     records = []
     for index, line in enumerate(lines):
@@ -369,16 +379,21 @@ def main(argv=None):
     parser.add_argument("--protocol", type=Path, required=True)
     parser.add_argument("--protocol-sha256", required=True)
     parser.add_argument("--sources", type=Path, required=True)
+    parser.add_argument("--sources-sha256", required=True)
     parser.add_argument("--history", type=Path, required=True)
+    parser.add_argument("--history-sha256", required=True)
     parser.add_argument("--episodes", type=Path, required=True)
+    parser.add_argument("--episodes-sha256", required=True)
     parser.add_argument("--artifacts-root", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
-        protocol = read_json(args.protocol)
+        protocol = read_pinned_json(args.protocol, args.protocol_sha256)
         validate_protocol(protocol, args.protocol, args.protocol_sha256)
         root = args.artifacts_root.resolve(strict=True)
-        by_id, _ = validate_sources(root, read_json(args.sources), read_json(args.history))
-        rows = read_episodes(args.episodes)
+        sources = read_pinned_json(args.sources, args.sources_sha256)
+        history = read_pinned_json(args.history, args.history_sha256)
+        by_id, _ = validate_sources(root, sources, history)
+        rows = read_episodes(args.episodes, args.episodes_sha256)
         for row in rows:
             validate_episode(root, row, by_id, protocol)
         report = report_status(by_id, protocol, rows)
