@@ -181,9 +181,18 @@ impl MemoryCellTickReceiptV1 {
                 maximum: usize::try_from(MAX_MEMORY_CELL_TRANSIENT_BYTES).unwrap_or(usize::MAX),
             });
         }
+        if self.resident_bytes > MAX_MEMORY_CELL_STATE_BYTES {
+            return Err(HnmfContractError::LimitExceeded {
+                field: "residentBytes",
+                actual: usize::try_from(self.resident_bytes).unwrap_or(usize::MAX),
+                maximum: usize::try_from(MAX_MEMORY_CELL_STATE_BYTES).unwrap_or(usize::MAX),
+            });
+        }
         match self.status {
             MemoryCellStatusV1::Selected => {
-                if self.successor_checkpoint_digest.is_none() || self.recall_packet_digest.is_none()
+                if self.successor_checkpoint_digest.is_none()
+                    || self.recall_packet_digest.is_none()
+                    || self.candidate_digest.is_none()
                 {
                     return Err(HnmfContractError::Missing(
                         "selected memory cell receipt successor",
@@ -213,6 +222,47 @@ impl MemoryCellTickReceiptV1 {
                     ));
                 }
             }
+        }
+        Ok(())
+    }
+
+    /// Validate a tick receipt against its exact admitted definition and input.
+    ///
+    /// Structural receipt validation alone cannot establish the predecessor,
+    /// source/forget frontiers, or the per-cell resident-state budget. This
+    /// check is pure: it neither attests evidence ownership nor persists state.
+    pub fn validate_against_manifest_and_input(
+        &self,
+        manifest: &MemoryCellManifestV1,
+        input: &MemoryCellTickInputV1,
+    ) -> Result<(), HnmfContractError> {
+        manifest.validate()?;
+        input.validate()?;
+        self.validate()?;
+        if input.cell_id != manifest.cell_id
+            || input.graph_generation != manifest.graph_generation
+            || input.model_generation != manifest.model_generation
+            || input.source_frontier_digest != manifest.source_frontier_digest
+            || input.forget_frontier_digest != manifest.forget_frontier_digest
+        {
+            return Err(HnmfContractError::Conflict(
+                "memory cell manifest/input binding",
+            ));
+        }
+        if self.cell_id != input.cell_id
+            || self.graph_generation != input.graph_generation
+            || self.model_generation != input.model_generation
+            || self.logical_sequence != input.logical_sequence
+            || self.predecessor_checkpoint_digest != input.predecessor_checkpoint_digest
+        {
+            return Err(HnmfContractError::Conflict("memory cell receipt/input binding"));
+        }
+        if self.resident_bytes > manifest.max_state_bytes {
+            return Err(HnmfContractError::LimitExceeded {
+                field: "residentBytes",
+                actual: usize::try_from(self.resident_bytes).unwrap_or(usize::MAX),
+                maximum: usize::try_from(manifest.max_state_bytes).unwrap_or(usize::MAX),
+            });
         }
         Ok(())
     }
