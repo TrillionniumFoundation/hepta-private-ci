@@ -71,6 +71,31 @@ and missing historical evidence cause explicit nonzero exits. It verifies
 **observable image identities only**: real-world entity identity and
 foundation-model pretraining overlap remain outside what hashes can prove.
 
+### Mandatory pinned history custody (subsequent hardening)
+
+The **CLI** now requires *both* immutable historical files, not merely one
+caller-supplied manifest. The exact raw SHA256 receipts are:
+
+| Archived historical member | SHA256 | Sources |
+| --- | --- | ---: |
+| `cohort/manifest.json` (v1) | `71168c26fffdd913d71a69d8708cec957f55dc2bece112c9c50153fbf31de75d` | 256 |
+| `code/historical_exclusions.json` (pre-v1 wrapper) | `4c2b88f85c9ef5fea08790775a652798a72e9281bed1534561f14c681e7bba9d` | 384 |
+
+These receipts were independently recomputed from the original
+`hepta-ndu-evidence-v1-20261022.zip` archive, whose SHA256 is
+`2ac7d46df01fb3e24cd1004cef75ad0efd4076b5f1c9556b560e97546ffaceb5`.
+The CLI rejects missing, duplicate, modified or substituted historical
+documents and records the verified source totals. Pass the **exact archived
+bytes**, not a reformatted JSON export; the two `--historical` flags may be
+supplied in either order. The standalone `check_cohort` function remains a
+pure unit-test/research helper and does **not** establish historical custody by
+itself. Do not use its return value as a release authorization.
+
+This closes the specific omitted/substituted-manifest loophole; it still does
+**not** verify that a new candidate's claimed SHA256 is backed by the actual
+source image bytes, or that real-world entities or pretrained images are
+disjoint. Those custody and scientific blockers remain open.
+
 A required negative control was run with the *v1 candidate manifest itself*
 and both historical data sources. All **256/256** reused v1 sources were
 caught, with no internal false assumption that test data could be recycled.
