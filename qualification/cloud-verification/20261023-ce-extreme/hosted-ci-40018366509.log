@@ -1,0 +1,215 @@
+﻿2026-10-23T20:20:06.7967576Z Current runner version: '2.338.0'
+2026-10-23T20:20:06.7995140Z ##[group]Runner Image Provisioner
+2026-10-23T20:20:06.7995994Z Hosted Compute Agent
+2026-10-23T20:20:06.8027158Z Version: 20261021.618
+2026-10-23T20:20:06.8027918Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-23T20:20:06.8028637Z Build Date: 2026-10-21T00:45:21Z
+2026-10-23T20:20:06.8029327Z Worker ID: {511615d7-3f92-46d1-9f81-1259100fa913}
+2026-10-23T20:20:06.8030017Z Region: eastus
+2026-10-23T20:20:06.8030524Z Cloud: Azure
+2026-10-23T20:20:06.8031055Z ##[endgroup]
+2026-10-23T20:20:06.8032706Z ##[group]VM Image
+2026-10-23T20:20:06.8033351Z - OS: Linux (x64)
+2026-10-23T20:20:06.8033915Z - Source: Docker
+2026-10-23T20:20:06.8034441Z - Name: ubuntu:24.04
+2026-10-23T20:20:06.8035027Z - Version: 20261021.31.1
+2026-10-23T20:20:06.8035582Z ##[endgroup]
+2026-10-23T20:20:06.8051370Z ##[group]GITHUB_TOKEN Permissions
+2026-10-23T20:20:06.8058242Z Contents: read
+2026-10-23T20:20:06.8058822Z Metadata: read
+2026-10-23T20:20:06.8059624Z ##[endgroup]
+2026-10-23T20:20:06.8061936Z Secret source: Actions
+2026-10-23T20:20:06.8062861Z Cache mode: write
+2026-10-23T20:20:06.8063583Z Prepare workflow directory
+2026-10-23T20:20:06.9112804Z Prepare all required actions
+2026-10-23T20:20:06.9225884Z Getting action download info
+2026-10-23T20:20:07.2895581Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-10-23T20:20:08.1916800Z Complete job name: finite-portfolio
+2026-10-23T20:20:08.3193517Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-10-23T20:20:08.3194587Z with:
+2026-10-23T20:20:08.3195072Z   ref: 2c04e4a16c837f16bcb9087a3e8b513a2086ff53
+2026-10-23T20:20:08.3195687Z   persist-credentials: false
+2026-10-23T20:20:08.3196676Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-10-23T20:20:08.3200851Z   token: ***
+2026-10-23T20:20:08.3201292Z   ssh-strict: true
+2026-10-23T20:20:08.3201731Z   ssh-user: git
+2026-10-23T20:20:08.3202153Z   clean: true
+2026-10-23T20:20:08.3202618Z   sparse-checkout-cone-mode: true
+2026-10-23T20:20:08.3203153Z   fetch-depth: 1
+2026-10-23T20:20:08.3203589Z   fetch-tags: false
+2026-10-23T20:20:08.3204042Z   show-progress: true
+2026-10-23T20:20:08.3204506Z   lfs: false
+2026-10-23T20:20:08.3204932Z   submodules: false
+2026-10-23T20:20:08.3205387Z   set-safe-directory: true
+2026-10-23T20:20:08.3206439Z ##[endgroup]
+2026-10-23T20:20:12.2569068Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-10-23T20:20:12.2571315Z ##[group]Getting Git version info
+2026-10-23T20:20:12.2572238Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-10-23T20:20:12.2710147Z [command]/usr/bin/git version
+2026-10-23T20:20:12.3811714Z git version 2.43.0
+2026-10-23T20:20:12.3910389Z ##[endgroup]
+2026-10-23T20:20:12.3963062Z Temporarily overriding HOME='/home/runner/work/_temp/67b8102f-812d-4499-a7f8-76a2e1fe5be4' before making global git config changes
+2026-10-23T20:20:12.3967917Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-23T20:20:12.3978492Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-23T20:20:12.4303638Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-10-23T20:20:12.4322172Z ##[group]Initializing the repository
+2026-10-23T20:20:12.4343256Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-23T20:20:12.5683730Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-23T20:20:12.5692868Z hint: is subject to change. To configure the initial branch name to use in all
+2026-10-23T20:20:12.5707871Z hint: of your new repositories, which will suppress this warning, call:
+2026-10-23T20:20:12.5720001Z hint: 
+2026-10-23T20:20:12.5722754Z hint: 	git config --global init.defaultBranch <name>
+2026-10-23T20:20:12.5740687Z hint: 
+2026-10-23T20:20:12.5753490Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-23T20:20:12.5757648Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-23T20:20:12.5760102Z hint: 
+2026-10-23T20:20:12.5760666Z hint: 	git branch -m <name>
+2026-10-23T20:20:12.6385396Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-10-23T20:20:12.6413441Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-10-23T20:20:12.6497557Z ##[endgroup]
+2026-10-23T20:20:12.6498758Z ##[group]Disabling automatic garbage collection
+2026-10-23T20:20:12.6519067Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-23T20:20:12.6569703Z ##[endgroup]
+2026-10-23T20:20:12.6570615Z ##[group]Setting up auth
+2026-10-23T20:20:12.6575690Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-23T20:20:12.6607915Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-23T20:20:13.1729045Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-23T20:20:13.1771076Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-23T20:20:13.1975281Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-23T20:20:13.2346573Z ##[endgroup]
+2026-10-23T20:20:13.2351677Z ##[group]Fetching the repository
+2026-10-23T20:20:13.2378907Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 2c04e4a16c837f16bcb9087a3e8b513a2086ff53
+2026-10-23T20:20:20.6878963Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-10-23T20:20:20.6904880Z  * branch            2c04e4a16c837f16bcb9087a3e8b513a2086ff53 -> FETCH_HEAD
+2026-10-23T20:20:20.7263224Z ##[endgroup]
+2026-10-23T20:20:20.7263853Z ##[group]Determining the checkout info
+2026-10-23T20:20:20.7264388Z ##[endgroup]
+2026-10-23T20:20:20.7264757Z [command]/usr/bin/git sparse-checkout disable
+2026-10-23T20:20:20.7739213Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-23T20:20:20.7779538Z ##[group]Checking out the ref
+2026-10-23T20:20:20.7787970Z [command]/usr/bin/git checkout --progress --force 2c04e4a16c837f16bcb9087a3e8b513a2086ff53
+2026-10-23T20:20:21.6247556Z Note: switching to '2c04e4a16c837f16bcb9087a3e8b513a2086ff53'.
+2026-10-23T20:20:21.6248267Z 
+2026-10-23T20:20:21.6252136Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-23T20:20:21.6252917Z changes and commit them, and you can discard any commits you make in this
+2026-10-23T20:20:21.6258555Z state without impacting any branches by switching back to a branch.
+2026-10-23T20:20:21.6259070Z 
+2026-10-23T20:20:21.6259420Z If you want to create a new branch to retain commits you create, you may
+2026-10-23T20:20:21.6262771Z do so (now or later) by using -c with the switch command. Example:
+2026-10-23T20:20:21.6263280Z 
+2026-10-23T20:20:21.6263505Z   git switch -c <new-branch-name>
+2026-10-23T20:20:21.6313915Z 
+2026-10-23T20:20:21.6314160Z Or undo this operation with:
+2026-10-23T20:20:21.6314406Z 
+2026-10-23T20:20:21.6314537Z   git switch -
+2026-10-23T20:20:21.6314737Z 
+2026-10-23T20:20:21.6315060Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-23T20:20:21.6315888Z 
+2026-10-23T20:20:21.6318118Z HEAD is now at 2c04e4a fix(ndu-v4): retain extreme finite entropic risk and rare mass
+2026-10-23T20:20:21.6350071Z ##[endgroup]
+2026-10-23T20:20:21.6793849Z [command]/usr/bin/git log -1 --format=%H
+2026-10-23T20:20:21.6825687Z 2c04e4a16c837f16bcb9087a3e8b513a2086ff53
+2026-10-23T20:20:21.6847148Z ##[group]Removing auth
+2026-10-23T20:20:21.6857391Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-23T20:20:21.6908951Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-23T20:20:21.7257407Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-23T20:20:21.7292434Z http.https://github.com/.extraheader
+2026-10-23T20:20:21.7310926Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-23T20:20:21.7358296Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-23T20:20:21.7595415Z ##[endgroup]
+2026-10-23T20:20:21.7974368Z ##[group]Run actual="$(git rev-parse HEAD)"
+2026-10-23T20:20:21.7974907Z [36;1mactual="$(git rev-parse HEAD)"[0m
+2026-10-23T20:20:21.7975382Z [36;1mtest "$actual" = "$EXPECTED_SOURCE_SHA" || {[0m
+2026-10-23T20:20:21.7975911Z [36;1m  echo "source HEAD mismatch: $actual != $EXPECTED_SOURCE_SHA" >&2[0m
+2026-10-23T20:20:21.7976803Z [36;1m  exit 1[0m
+2026-10-23T20:20:21.7977068Z [36;1m}[0m
+2026-10-23T20:20:21.7977351Z [36;1mecho "verified-source-head=$actual"[0m
+2026-10-23T20:20:21.7987309Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-23T20:20:21.7987737Z env:
+2026-10-23T20:20:21.7988074Z   EXPECTED_SOURCE_SHA: 2c04e4a16c837f16bcb9087a3e8b513a2086ff53
+2026-10-23T20:20:21.7988481Z ##[endgroup]
+2026-10-23T20:20:21.8088484Z verified-source-head=2c04e4a16c837f16bcb9087a3e8b513a2086ff53
+2026-10-23T20:20:21.8131798Z ##[group]Run python3 -m unittest discover -v -p "test_*.py"
+2026-10-23T20:20:21.8132368Z [36;1mpython3 -m unittest discover -v -p "test_*.py"[0m
+2026-10-23T20:20:21.8133146Z [36;1mpython3 -m compileall -q portfolio.py counterfactual_audit.py information_acquisition.py joint_evidence_generation.py test_*.py[0m
+2026-10-23T20:20:21.8137729Z shell: /usr/bin/bash -e {0}
+2026-10-23T20:20:21.8138046Z ##[endgroup]
+2026-10-23T20:20:23.5437907Z test_dependence_shift_can_reverse_risk_utility_and_cvar (test_counterfactual_audit.CounterfactualAuditTests.test_dependence_shift_can_reverse_risk_utility_and_cvar) ... ok
+2026-10-23T20:20:23.5442838Z test_exponential_open_loop_search_rejects_over_cap (test_counterfactual_audit.CounterfactualAuditTests.test_exponential_open_loop_search_rejects_over_cap) ... ok
+2026-10-23T20:20:23.5445525Z test_four_outputs_always_charge_mandatory_reserve (test_counterfactual_audit.CounterfactualAuditTests.test_four_outputs_always_charge_mandatory_reserve) ... ok
+2026-10-23T20:20:23.5448313Z test_fractional_weighted_upper_tail_cvar (test_counterfactual_audit.CounterfactualAuditTests.test_fractional_weighted_upper_tail_cvar) ... ok
+2026-10-23T20:20:23.6478446Z test_independent_complete_tree_matches_controller_value (test_counterfactual_audit.CounterfactualAuditTests.test_independent_complete_tree_matches_controller_value) ... ok
+2026-10-23T20:20:23.6483409Z test_invalid_regimes_fail_closed (test_counterfactual_audit.CounterfactualAuditTests.test_invalid_regimes_fail_closed) ... ok
+2026-10-23T20:20:23.6487946Z test_negative_cross_modal_dependence_is_observable (test_counterfactual_audit.CounterfactualAuditTests.test_negative_cross_modal_dependence_is_observable) ... ok
+2026-10-23T20:20:23.6780681Z test_no_controller_access_to_future_noise (test_counterfactual_audit.CounterfactualAuditTests.test_no_controller_access_to_future_noise) ... ok
+2026-10-23T20:20:23.6787858Z test_caller_decimal_context_does_not_change_float_function (test_extreme_risk.ExtremeRiskTests.test_caller_decimal_context_does_not_change_float_function) ... ok
+2026-10-23T20:20:24.2198537Z test_existing_probability_mass_conventions_are_explicit (test_extreme_risk.ExtremeRiskTests.test_existing_probability_mass_conventions_are_explicit) ... ok
+2026-10-23T20:20:24.2206058Z test_large_risk_and_degenerate_extreme_support (test_extreme_risk.ExtremeRiskTests.test_large_risk_and_degenerate_extreme_support) ... ok
+2026-10-23T20:20:24.6287777Z test_rare_outcome_at_ordinary_scaled_risk (test_extreme_risk.ExtremeRiskTests.test_rare_outcome_at_ordinary_scaled_risk) ... ok
+2026-10-23T20:20:25.1936730Z test_scaled_span_threshold_both_sides (test_extreme_risk.ExtremeRiskTests.test_scaled_span_threshold_both_sides) ... ok
+2026-10-23T20:20:25.4980495Z test_subnormal_positive_mass_is_preserved (test_extreme_risk.ExtremeRiskTests.test_subnormal_positive_mass_is_preserved) ... ok
+2026-10-23T20:20:26.9873600Z test_translation_and_support_bounds (test_extreme_risk.ExtremeRiskTests.test_translation_and_support_bounds) ... ok
+2026-10-23T20:20:27.9027766Z test_two_sided_extremes_and_subnormal_risk (test_extreme_risk.ExtremeRiskTests.test_two_sided_extremes_and_subnormal_risk) ... ok
+2026-10-23T20:20:28.6662811Z test_wide_support_is_not_neutralized (test_extreme_risk.ExtremeRiskTests.test_wide_support_is_not_neutralized) ... ok
+2026-10-23T20:20:28.6672068Z test_zero_mass_extremes_and_permutation (test_extreme_risk.ExtremeRiskTests.test_zero_mass_extremes_and_permutation) ... ok
+2026-10-23T20:20:28.6678131Z test_exogenous_bayes_channel_has_full_mass (test_information_acquisition.InformationTests.test_exogenous_bayes_channel_has_full_mass) ... ok
+2026-10-23T20:20:28.6687139Z test_four_agreeing_outputs_can_still_all_be_wrong (test_information_acquisition.InformationTests.test_four_agreeing_outputs_can_still_all_be_wrong) ... ok
+2026-10-23T20:20:28.6694361Z test_fractional_tail_and_input_rejection (test_information_acquisition.InformationTests.test_fractional_tail_and_input_rejection) ... ok
+2026-10-23T20:20:28.6702022Z test_joint_truth_witness_mass_and_budget_accounting (test_information_acquisition.InformationTests.test_joint_truth_witness_mass_and_budget_accounting) ... ok
+2026-10-23T20:20:28.6708591Z test_no_information_purchase_when_price_exceeds_value (test_information_acquisition.InformationTests.test_no_information_purchase_when_price_exceeds_value) ... ok
+2026-10-23T20:20:28.6727562Z test_query_only_if_public_evidence_is_ambiguous (test_information_acquisition.InformationTests.test_query_only_if_public_evidence_is_ambiguous) ... ok
+2026-10-23T20:20:28.6830415Z test_selective_witness_is_cheaper_at_equal_fixture_accuracy (test_information_acquisition.InformationTests.test_selective_witness_is_cheaper_at_equal_fixture_accuracy) ... ok
+2026-10-23T20:20:28.6831735Z test_shared_wrong_upper_bound_without_new_information (test_information_acquisition.InformationTests.test_shared_wrong_upper_bound_without_new_information) ... ok
+2026-10-23T20:20:28.7150629Z test_allocation_response_changes_after_real_observed_shock (test_joint_evidence_generation.JointEvidenceGenerationTests.test_allocation_response_changes_after_real_observed_shock) ... ok
+2026-10-23T20:20:28.7161900Z test_deny_invalid_actions_beliefs_and_witness_provenance (test_joint_evidence_generation.JointEvidenceGenerationTests.test_deny_invalid_actions_beliefs_and_witness_provenance) ... ok
+2026-10-23T20:20:28.8370304Z test_evidence_and_generation_compete_in_one_action_set (test_joint_evidence_generation.JointEvidenceGenerationTests.test_evidence_and_generation_compete_in_one_action_set) ... ok
+2026-10-23T20:20:29.3312490Z test_fraction_risk_neutral_oracle_independent_of_value_solver (test_joint_evidence_generation.JointEvidenceGenerationTests.test_fraction_risk_neutral_oracle_independent_of_value_solver) ... ok
+2026-10-23T20:20:29.4206905Z test_frozen_controller_fails_when_witness_reuses_common_wrong_source (test_joint_evidence_generation.JointEvidenceGenerationTests.test_frozen_controller_fails_when_witness_reuses_common_wrong_source) ... ok
+2026-10-23T20:20:29.9653591Z test_full_decoded_terminal_law_matches_recursion (test_joint_evidence_generation.JointEvidenceGenerationTests.test_full_decoded_terminal_law_matches_recursion) ... ok
+2026-10-23T20:20:30.0796634Z test_no_query_is_a_nested_subset_not_a_strong_baseline (test_joint_evidence_generation.JointEvidenceGenerationTests.test_no_query_is_a_nested_subset_not_a_strong_baseline) ... ok
+2026-10-23T20:20:30.0885718Z test_query_cannot_spend_mandatory_emission_reserve (test_joint_evidence_generation.JointEvidenceGenerationTests.test_query_cannot_spend_mandatory_emission_reserve) ... ok
+2026-10-23T20:20:30.0924430Z test_shared_wrong_modal_agreement_is_not_factual_accuracy (test_joint_evidence_generation.JointEvidenceGenerationTests.test_shared_wrong_modal_agreement_is_not_factual_accuracy) ... ok
+2026-10-23T20:20:30.1630143Z test_solver_state_budget_rejects_before_unbounded_expansion (test_joint_evidence_generation.JointEvidenceGenerationTests.test_solver_state_budget_rejects_before_unbounded_expansion) ... ok
+2026-10-23T20:20:30.1635663Z test_near_neutral_ignores_impossible_extreme_outcome (test_near_neutral_risk.NearNeutralRiskTests.test_near_neutral_ignores_impossible_extreme_outcome) ... ok
+2026-10-23T20:20:30.1645800Z test_positive_tiny_risk_agrees_with_decimal_oracle (test_near_neutral_risk.NearNeutralRiskTests.test_positive_tiny_risk_agrees_with_decimal_oracle) ... ok
+2026-10-23T20:20:30.1650104Z test_registered_ordinary_risk_uses_unchanged_evaluation (test_near_neutral_risk.NearNeutralRiskTests.test_registered_ordinary_risk_uses_unchanged_evaluation) ... ok
+2026-10-23T20:20:30.1656358Z test_roundoff_mass_and_subnormal_risk_stay_continuous (test_near_neutral_risk.NearNeutralRiskTests.test_roundoff_mass_and_subnormal_risk_stay_continuous) ... ok
+2026-10-23T20:20:30.1663971Z test_tiny_risk_can_still_be_material_on_wide_finite_support (test_near_neutral_risk.NearNeutralRiskTests.test_tiny_risk_can_still_be_material_on_wide_finite_support) ... ok
+2026-10-23T20:20:30.1718378Z test_budget_horizon_and_sync_units_are_exact_integers (test_numeric_admission.NumericAdmissionTests.test_budget_horizon_and_sync_units_are_exact_integers) ... ok
+2026-10-23T20:20:30.1737884Z test_exact_zero_mass_law_is_rejected (test_numeric_admission.NumericAdmissionTests.test_exact_zero_mass_law_is_rejected) ... ok
+2026-10-23T20:20:30.1762414Z test_invalid_normalization_beyond_absolute_tolerance_rejects (test_numeric_admission.NumericAdmissionTests.test_invalid_normalization_beyond_absolute_tolerance_rejects) ... ok
+2026-10-23T20:20:30.1863052Z test_risk_and_shadow_prices_reject_bools_nonfinite_and_strings (test_numeric_admission.NumericAdmissionTests.test_risk_and_shadow_prices_reject_bools_nonfinite_and_strings) ... ok
+2026-10-23T20:20:30.1871580Z test_support_permutation_and_impossible_outcome_invariance (test_numeric_admission.NumericAdmissionTests.test_support_permutation_and_impossible_outcome_invariance) ... ok
+2026-10-23T20:20:30.1901427Z test_tiny_supported_probability_is_not_silently_dropped (test_numeric_admission.NumericAdmissionTests.test_tiny_supported_probability_is_not_silently_dropped) ... ok
+2026-10-23T20:20:30.2186523Z test_valid_zero_risk_profile_preserves_solver_and_budget (test_numeric_admission.NumericAdmissionTests.test_valid_zero_risk_profile_preserves_solver_and_budget) ... ok
+2026-10-23T20:20:30.2194604Z test_zero_probability_extreme_is_not_part_of_conditional_support (test_numeric_admission.NumericAdmissionTests.test_zero_probability_extreme_is_not_part_of_conditional_support) ... ok
+2026-10-23T20:20:30.2201248Z test_declared_query_cannot_mask_actual_emit (test_policy_replay_admission.PolicyReplayAdmissionTests.test_declared_query_cannot_mask_actual_emit) ... ok
+2026-10-23T20:20:30.2206648Z test_identical_public_state_cannot_branch_on_private_world_order (test_policy_replay_admission.PolicyReplayAdmissionTests.test_identical_public_state_cannot_branch_on_private_world_order) ... ok
+2026-10-23T20:20:30.2212622Z test_true_public_state_policy_preserves_external_audit (test_policy_replay_admission.PolicyReplayAdmissionTests.test_true_public_state_policy_preserves_external_audit) ... ok
+2026-10-23T20:20:30.2224331Z test_cost_charged_once_per_activation_and_budget_never_negative (test_portfolio.PortfolioTests.test_cost_charged_once_per_activation_and_budget_never_negative) ... ok
+2026-10-23T20:20:30.2241559Z test_different_observed_states_change_modal_allocation (test_portfolio.PortfolioTests.test_different_observed_states_change_modal_allocation) ... ok
+2026-10-23T20:20:30.2245913Z test_entropy_penalizes_downside_and_stable_large_values (test_portfolio.PortfolioTests.test_entropy_penalizes_downside_and_stable_large_values) ... ok
+2026-10-23T20:20:30.3919419Z test_exact_fraction_reference_for_risk_neutral_bellman (test_portfolio.PortfolioTests.test_exact_fraction_reference_for_risk_neutral_bellman) ... ok
+2026-10-23T20:20:30.3940049Z test_fail_closed_on_missing_output_illegal_state_and_action (test_portfolio.PortfolioTests.test_fail_closed_on_missing_output_illegal_state_and_action) ... ok
+2026-10-23T20:20:30.3980444Z test_four_distinct_outputs_and_true_emission_reserve (test_portfolio.PortfolioTests.test_four_distinct_outputs_and_true_emission_reserve) ... ok
+2026-10-23T20:20:30.4618245Z test_future_noise_not_known_at_decision_and_hashed_trace_is_consistent (test_portfolio.PortfolioTests.test_future_noise_not_known_at_decision_and_hashed_trace_is_consistent) ... ok
+2026-10-23T20:20:30.4624865Z test_joint_shock_produces_positive_cross_modal_covariance (test_portfolio.PortfolioTests.test_joint_shock_produces_positive_cross_modal_covariance) ... ok
+2026-10-23T20:20:30.4637221Z test_non_linear_joint_decoder_and_joint_action (test_portfolio.PortfolioTests.test_non_linear_joint_decoder_and_joint_action) ... ok
+2026-10-23T20:20:30.7895005Z test_within_one_episode_switches_modality_after_observation (test_reallocation.FeedbackReallocationTests.test_within_one_episode_switches_modality_after_observation) ... ok
+2026-10-23T20:20:30.7907426Z 
+2026-10-23T20:20:30.7911411Z ----------------------------------------------------------------------
+2026-10-23T20:20:30.7914392Z Ran 62 tests in 7.343s
+2026-10-23T20:20:30.7919296Z 
+2026-10-23T20:20:30.7929750Z OK
+2026-10-23T20:20:31.0196614Z Post job cleanup.
+2026-10-23T20:20:31.2133087Z [command]/usr/bin/git version
+2026-10-23T20:20:31.2187999Z git version 2.43.0
+2026-10-23T20:20:31.2244359Z Temporarily overriding HOME='/home/runner/work/_temp/d2b91dc4-4bb1-4753-bc53-08b63cf18ebe' before making global git config changes
+2026-10-23T20:20:31.2248311Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-23T20:20:31.2258771Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-23T20:20:31.2358153Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-23T20:20:31.2409657Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-23T20:20:31.3007719Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-23T20:20:31.3071711Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-23T20:20:31.4006972Z Cleaning up orphan processes
+2026-10-23T20:20:31.4312297Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
