@@ -98,6 +98,7 @@ fn expired_historical_request_matches_after_reopen_without_changing_journal() {
     )
     .expect("reopen");
     let state = ObjectiveHostState {
+        notes_cursor: 0,
         highest_sequences: replay_frontier(&journal).expect("frontier"),
         journal,
     };

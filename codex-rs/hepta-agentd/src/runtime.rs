@@ -79,6 +79,16 @@ pub async fn run(
     let intuition_policy_host = config.intuition_policy_host();
     let intelligence_product = config.intelligence_product_runner();
     let intelligence_invocation = config.intelligence_invocation_provider();
+    let notes_objective = config.notes_objective();
+    if notes_objective.is_some()
+        && (production_operations.is_none()
+            || intelligence_product.is_some()
+            || intelligence_invocation.is_some())
+    {
+        return Err(AgentdError::Invalid(
+            "Notes Objective requires original operations and a dedicated finite profile".into(),
+        ));
+    }
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -93,6 +103,12 @@ pub async fn run(
         registry,
         EVENT_CAPACITY,
     )?);
+    if let Some(notes) = notes_objective {
+        state
+            .notes_objective
+            .set(notes)
+            .map_err(|_| AgentdError::Invalid("Notes Objective already attached".into()))?;
+    }
     let plasticity_runtime =
         crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, plasticity_bootstrap)?;
     if let Some(host) = intuition_policy_host {
@@ -462,6 +478,9 @@ async fn monitor_runtime(
                 }
                 Err(_not_ready) => {}
             }
+        }
+        if app_server_ready && let Some(host) = state.objective_runtime.get() {
+            host.reconcile_notes(&state).await?;
         }
         tokio::select! {
             () = cancellation.cancelled() => return Ok(()),

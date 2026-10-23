@@ -85,6 +85,7 @@ pub struct AgentdConfig {
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
     production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
+    notes_objective: Option<crate::AgentdNotesObjectiveConfig>,
     cognitive_retrieval_mode: CognitiveRetrievalMode,
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
@@ -208,6 +209,7 @@ impl AgentdConfig {
             cognitive_ranker: None,
             production_operations: None,
             production_writer_host: None,
+            notes_objective: None,
             cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
@@ -574,6 +576,25 @@ impl AgentdConfig {
         &self,
     ) -> Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>> {
         self.intelligence_invocation_provider.clone()
+    }
+
+    /// Opt in to one frozen literal Notes profile; no general AI executor.
+    pub fn with_notes_objective(
+        mut self,
+        config: crate::AgentdNotesObjectiveConfig,
+    ) -> Result<Self, AgentdError> {
+        config.validate()?;
+        if self.notes_objective.is_some() {
+            return Err(AgentdError::Invalid(
+                "Notes Objective adapter already configured".into(),
+            ));
+        }
+        self.notes_objective = Some(config);
+        Ok(self)
+    }
+
+    pub(crate) fn notes_objective(&self) -> Option<crate::AgentdNotesObjectiveConfig> {
+        self.notes_objective.clone()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {

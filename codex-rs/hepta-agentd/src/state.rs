@@ -27,10 +27,15 @@ use crate::EventBuffer;
 use crate::RunReceipt;
 use crate::RuntimeComposition;
 
+#[path = "notes_objective_state.rs"]
+mod notes_objective;
+pub use notes_objective::AgentdNotesObjectiveConfig;
+
 #[path = "state_control.rs"]
 mod control;
 
 pub(crate) struct AgentdState {
+    pub(crate) notes_objective: std::sync::OnceLock<AgentdNotesObjectiveConfig>,
     pub(crate) intelligence_product:
         std::sync::OnceLock<Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     pub(crate) intelligence_invocation:
@@ -127,6 +132,7 @@ impl AgentdState {
         })?;
         let prompt_pipeline = Arc::new(prompt_pipeline);
         Ok(Self {
+            notes_objective: std::sync::OnceLock::new(),
             authbus: std::sync::OnceLock::new(),
             intelligence_product: std::sync::OnceLock::new(),
             intelligence_invocation: std::sync::OnceLock::new(),

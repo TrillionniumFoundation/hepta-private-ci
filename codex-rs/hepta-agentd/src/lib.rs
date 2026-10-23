@@ -266,6 +266,7 @@ pub use prompt_runtime::PromptRuntimeStageDisposition;
 pub use runtime::run;
 pub use runtime_tasks::RuntimeTaskFailure;
 pub use runtime_tasks::RuntimeTasks;
+pub use state::AgentdNotesObjectiveConfig;
 pub use topology_plasticity_host::AgentdTopologyAdmissionInputV1;
 pub use topology_plasticity_host::AgentdTopologyAnchorStoreV1;
 pub use topology_plasticity_host::AgentdTopologyHostErrorV1;
