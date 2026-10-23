@@ -139,8 +139,14 @@ positive_ids; corpus rows have id and text):
       --corpus /private/eval/corpus.jsonl \
       --output /private/eval/harrier-retrieval.json
 
-Observe Recall@10, MRR@10 and NDCG@10. Rankings are deterministic. This
-retrieval result does not automatically establish decision superiority.
+Observe Recall@10, MRR@10 and NDCG@10. Rankings are deterministic. Query
+vectors must use each model's reviewed **query-only** prompt: Arctic
+`prompt_name="query"`, Harrier `prompt_name="web_search_query"`; document
+embeddings do **not** take either query prompt. Missing registered prompts
+fail closed, and their name/content SHA256 are recorded in the retrieval
+receipt. Any prompt change invalidates old scores. These are upstream
+retrieval instructions, not user-provided policy authority.
+This retrieval result does not automatically establish decision superiority.
 
 For serving, build a **real** isolated qualification-only local adapter bound
 to the Inference Control owner. The adapter must accept one POST JSON with
