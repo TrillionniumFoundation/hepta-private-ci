@@ -35,6 +35,10 @@ def _number(x, name, *, lower=0.0, upper=float("inf")):
     return float(x)
 
 
+def _sha256_hex(x):
+    return isinstance(x, str) and len(x) == 64 and all(c in "0123456789abcdef" for c in x)
+
+
 def cvar90(x):
     """Worst 10% equal-probability *mass*, including fractional boundary row."""
     x = np.asarray(x, dtype=np.float64)
@@ -56,7 +60,7 @@ def evaluate(study: Mapping):
     covers one actual decoded output: no standalone-loss mixture is accepted.
     Measured physical-cost components must reconcile to the actual observed total.
     """
-    _need(isinstance(study, dict) and study.get("schema") == "hepta-mgp-paired-v1",
+    _need(isinstance(study, dict) and study.get("schema") == "hepta-mgp-paired-v2",
           "unknown study protocol")
     protocol = study.get("protocol")
     _need(isinstance(protocol, dict), "missing preregistration")
@@ -67,21 +71,40 @@ def evaluate(study: Mapping):
           "need >=3 distinct registered seeds")
     _need(isinstance(world_ids, dict) and set(world_ids) == {str(s) for s in seeds},
           "heldout world manifest must cover every registered seed")
+    _need(all(isinstance(world_ids[str(s)], list) for s in seeds),
+          "registered heldout worlds must be lists")
     counts = [len(world_ids[str(s)]) for s in seeds]
     _need(len(set(counts)) == 1 and counts[0] >= 32, "need >=32 matched worlds per seed")
     flat_ids = [k for s in seeds for k in world_ids[str(s)]]
     _need(all(isinstance(k, str) and k for k in flat_ids) and
           len(set(flat_ids)) == len(flat_ids), "missing/duplicated heldout world IDs")
+    protected_ids = protocol.get("protected_world_ids")
+    _need(isinstance(protected_ids, dict) and
+          set(protected_ids) == {str(s) for s in seeds},
+          "protected cohort manifest must cover every registered seed")
+    protected_sets = {}
+    for seed in seeds:
+        registered = protected_ids[str(seed)]
+        _need(isinstance(registered, list) and
+              all(isinstance(wid, str) and wid for wid in registered),
+              "invalid protected cohort identifiers")
+        _need(1 <= len(registered) < counts[0] and
+              len(set(registered)) == len(registered) and
+              set(registered).issubset(set(world_ids[str(seed)])),
+              "protected cohort missing/duplicate/outside heldout or insufficient per-seed coverage")
+        protected_sets[seed] = set(registered)
     calibration_ids = protocol.get("calibration_world_ids")
-    _need(isinstance(calibration_ids, list) and
+    _need(isinstance(calibration_ids, list) and len(calibration_ids) > 0 and
+          all(isinstance(wid, str) and wid for wid in calibration_ids) and
+          len(set(calibration_ids)) == len(calibration_ids) and
           len(set(flat_ids).intersection(calibration_ids)) == 0,
-          "calibration/heldout leakage or missing calibration lock")
+          "calibration/heldout leakage or missing/invalid calibration lock")
     _need(tuple(protocol.get("arms", [])) == ARMS, "comparison arms not exact/frozen")
     _need(protocol.get("validation_selected_best") in CONTROLS and
           isinstance(protocol.get("selection_lock_digest"), str) and
-          len(protocol["selection_lock_digest"]) == 64, "missing frozen validation selection")
+          _sha256_hex(protocol["selection_lock_digest"]), "missing frozen validation selection")
     for key in ("model_digest", "decoder_digest", "objective_digest", "actuator_digest"):
-        _need(isinstance(protocol.get(key), str) and len(protocol[key]) == 64,
+        _need(_sha256_hex(protocol.get(key)),
               "missing frozen same-model/actuator identity: " + key)
     min_gain = _number(protocol.get("minimum_cvar_improvement"), "minimum gain", lower=0.01)
     quality_tol = _number(protocol.get("max_quality_drop"), "quality tolerance", upper=0.05)
@@ -107,12 +130,16 @@ def evaluate(study: Mapping):
     for i, seed in enumerate(seeds):
         for j, world_id in enumerate(world_ids[str(seed)]):
             row = observations[i * size + j]
-            _need(isinstance(row, dict) and row.get("seed") == seed and
+            _need(isinstance(row, dict) and type(row.get("seed")) is int and
+                  row.get("seed") == seed and
                   row.get("world_id") == world_id, "heldout world order/identity mismatch")
             context = row.get("public_input_digest")
-            _need(isinstance(context, str) and len(context) == 64, "missing public input identity")
-            protected[i, j] = row.get("protected_task") is True
-            _need(type(row.get("protected_task")) is bool, "protected status missing")
+            _need(_sha256_hex(context), "missing public input identity")
+            expected_protected = world_id in protected_sets[seed]
+            _need(type(row.get("protected_task")) is bool and
+                  row["protected_task"] == expected_protected,
+                  "protected cohort label differs from frozen manifest")
+            protected[i, j] = expected_protected
             outcomes = row.get("outcomes")
             _need(isinstance(outcomes, dict) and set(outcomes) == set(ARMS),
                   "missing required matched control or NDU")
@@ -132,9 +159,7 @@ def evaluate(study: Mapping):
                     _need(isinstance(dr, dict) and set(dr) == set(METRICS + ("status", "output_witness_sha256")),
                           "incomplete decoded draw metrics/witness")
                     _need(dr["status"] in ("completed", "failed"), "invalid draw status")
-                    _need(isinstance(dr["output_witness_sha256"], str) and
-                          len(dr["output_witness_sha256"]) == 64 and
-                          all(ch in "0123456789abcdef" for ch in dr["output_witness_sha256"]),
+                    _need(_sha256_hex(dr["output_witness_sha256"]),
                           "missing raw-output or failure witness")
                     if dr["status"] == "failed":
                         _need(dr["loss"] == failure_loss and dr["quality"] == 0 and
@@ -205,18 +230,22 @@ def evaluate(study: Mapping):
                      "observed_cost_ratio": ratio,
                      "bootstrap_upper_cost_ratio": upper_cost_ratio,
                      "gates": gates}
-    receipt = {"schema": "hepta-mgp-paired-review-v1", "status": "HOLD_NO_GO", "authority": "DENY_ALL",
+    receipt = {"schema": "hepta-mgp-paired-review-v2", "status": "HOLD_NO_GO", "authority": "DENY_ALL",
                "source": "LOCAL_RESEARCH_UNAUTHENTICATED", "scientific_superiority_proven": False,
                "all_provisional_gates_pass": bool(local_all and boots >= 2000),
                "all_registered_worlds_seen": True, "registered_seeds": len(seeds),
                "worlds_per_seed": size, "draws_per_world": draws,
+               "protected_worlds_per_seed": {str(s): len(protected_sets[s]) for s in seeds},
+               "protected_cohort_manifest_sha256": sha256(json.dumps(
+                   protected_ids, sort_keys=True, separators=(",", ":")).encode()).hexdigest(),
                "familywise_alpha": alpha, "bootstrap_replicates": boots,
                "comparator_selection": protocol["validation_selected_best"],
                "comparison": out,
                "limitations": ["untrusted caller supplied observations and metadata",
                                "no independent observer, signature verification or prospective attestation",
                                "does not execute a pretrained encoder, model, decoder or GPU inference",
-                               "does not satisfy any P0-P4 production final-use gate"]}
+                               "does not satisfy any P0-P4 production final-use gate",
+                               "caller-supplied protected cohort digest is not a signature"]}
     receipt["input_sha256"] = sha256(json.dumps(study, sort_keys=True, allow_nan=False,
                                              separators=(",", ":")).encode()).hexdigest()
     return receipt

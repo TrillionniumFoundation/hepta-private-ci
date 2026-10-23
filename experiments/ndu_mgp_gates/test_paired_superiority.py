@@ -15,6 +15,10 @@ def study_fixture(*, strong_ndu=True, bootstrap_replicates=120):
     p = {
         'seeds': seeds, 'heldout_world_ids': ids,
         'calibration_world_ids': [f'calibration-{i}' for i in range(100)],
+        'protected_world_ids': {
+            str(s): [wid for idx, wid in enumerate(ids[str(s)]) if idx % 4 == 0]
+            for s in seeds
+        },
         'arms': list(ARMS), 'validation_selected_best': 'free_controller',
         'selection_lock_digest': H('frozen-validation-selection'),
         'model_digest': H('shared-encoder-flow'),
@@ -67,7 +71,7 @@ def study_fixture(*, strong_ndu=True, bootstrap_replicates=120):
                            'public_input_digest': identity,
                            'protected_task': idx % 4 == 0,
                            'outcomes': arms})
-    return {'schema': 'hepta-mgp-paired-v1', 'protocol': p, 'worlds': worlds}
+    return {'schema': 'hepta-mgp-paired-v2', 'protocol': p, 'worlds': worlds}
 
 
 class PairedEvidenceTests(unittest.TestCase):
@@ -164,9 +168,8 @@ class PairedEvidenceTests(unittest.TestCase):
 
     def test_missing_protected_coverage_rejected(self):
         d = study_fixture()
-        for row in d['worlds']:
-            row['protected_task'] = False
-        with self.assertRaisesRegex(EvidenceGap, 'no protected-task'):
+        d['protocol']['protected_world_ids']['211'] = []
+        with self.assertRaisesRegex(EvidenceGap, 'protected cohort'):
             evaluate(d)
 
     def test_failed_draw_must_stay_in_denominator_as_penalty(self):
@@ -191,6 +194,83 @@ class PairedEvidenceTests(unittest.TestCase):
         self.assertIn('untrusted caller', rec['limitations'][0])
         self.assertIn('does not execute', rec['limitations'][2])
         self.assertEqual(len(rec['input_sha256']), 64)
+
+
+    def test_legacy_v1_is_not_reinterpreted_as_new_protected_contract(self):
+        d = study_fixture()
+        d['schema'] = 'hepta-mgp-paired-v1'
+        with self.assertRaisesRegex(EvidenceGap, 'unknown study protocol'):
+            evaluate(d)
+
+    def test_removed_protected_label_does_not_hide_regression(self):
+        d = study_fixture()
+        d['worlds'][0]['protected_task'] = False
+        with self.assertRaisesRegex(EvidenceGap, 'protected cohort label'):
+            evaluate(d)
+
+    def test_unregistered_protected_label_cannot_be_injected(self):
+        d = study_fixture()
+        d['worlds'][1]['protected_task'] = True
+        with self.assertRaisesRegex(EvidenceGap, 'protected cohort label'):
+            evaluate(d)
+
+    def test_missing_protected_seed_manifest_rejected(self):
+        d = study_fixture()
+        del d['protocol']['protected_world_ids']['211']
+        with self.assertRaisesRegex(EvidenceGap, 'protected cohort manifest'):
+            evaluate(d)
+
+    def test_protected_identifier_outside_heldout_rejected(self):
+        d = study_fixture()
+        d['protocol']['protected_world_ids']['101'].append('calibration-12')
+        with self.assertRaisesRegex(EvidenceGap, 'protected cohort missing'):
+            evaluate(d)
+
+    def test_all_protected_seed_without_negative_control_rejected(self):
+        d = study_fixture()
+        d['protocol']['protected_world_ids']['211'] = d['protocol']['heldout_world_ids']['211'][:]
+        with self.assertRaisesRegex(EvidenceGap, 'protected cohort missing'):
+            evaluate(d)
+
+    def test_duplicate_protected_identifier_rejected(self):
+        d = study_fixture()
+        d['protocol']['protected_world_ids']['101'].append(
+            d['protocol']['protected_world_ids']['101'][0])
+        with self.assertRaisesRegex(EvidenceGap, 'protected cohort missing'):
+            evaluate(d)
+
+    def test_malformed_protected_identifier_is_evidence_gap(self):
+        d = study_fixture()
+        d['protocol']['protected_world_ids']['101'].append({'invalid': True})
+        with self.assertRaisesRegex(EvidenceGap, 'invalid protected cohort identifiers'):
+            evaluate(d)
+
+    def test_duplicate_calibration_world_rejected(self):
+        d = study_fixture()
+        d['protocol']['calibration_world_ids'].append('calibration-0')
+        with self.assertRaisesRegex(EvidenceGap, 'calibration/heldout leakage'):
+            evaluate(d)
+
+    def test_empty_calibration_manifest_rejected(self):
+        d = study_fixture()
+        d['protocol']['calibration_world_ids'] = []
+        with self.assertRaisesRegex(EvidenceGap, 'calibration/heldout leakage'):
+            evaluate(d)
+
+    def test_malformed_sha256_model_binding_rejected(self):
+        d = study_fixture()
+        d['protocol']['model_digest'] = '!' * 64
+        with self.assertRaisesRegex(EvidenceGap, 'same-model/actuator'):
+            evaluate(d)
+
+    def test_caller_supplied_protected_cohort_receipt_cannot_grant_authority(self):
+        rec = evaluate(study_fixture())
+        self.assertEqual(rec['schema'], 'hepta-mgp-paired-review-v2')
+        self.assertEqual(rec['protected_worlds_per_seed'], {'101': 8, '211': 8, '307': 8})
+        self.assertEqual(len(rec['protected_cohort_manifest_sha256']), 64)
+        self.assertEqual(rec['authority'], 'DENY_ALL')
+        self.assertFalse(rec['scientific_superiority_proven'])
+        self.assertTrue(any('not a signature' in s for s in rec['limitations']))
 
 
 if __name__ == '__main__':
