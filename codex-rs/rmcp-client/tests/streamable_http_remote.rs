@@ -126,8 +126,12 @@ async fn stalled_handshake_unblocks_remote_executor(
         tokio::select! {
             initialized = &mut initialization => {
                 match initialized {
-                    Ok(_) => anyhow::bail!("MCP handshake completed before the stalled HTTP request arrived"),
-                    Err(error) => anyhow::bail!("MCP handshake failed before the stalled HTTP request arrived: {error}"),
+                    Ok(_) => anyhow::bail!(
+                        "MCP handshake completed before the stalled HTTP request arrived"
+                    ),
+                    Err(error) => anyhow::bail!(
+                        "MCP handshake failed before the stalled HTTP request arrived: {error}"
+                    ),
                 }
             }
             received = request_rx.recv() => {
