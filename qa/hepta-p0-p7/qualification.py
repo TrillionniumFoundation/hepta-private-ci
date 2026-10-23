@@ -238,7 +238,8 @@ def validate_trace(row):
             "declared capacity is not observed steps")
     if row["arm"] == "ndu" and row["valid"]:
         require(8 <= len(trace) <= 16, "completed NDU has fewer than 8 actual decisions")
-        require(trace[-1].get("action") in ("STOP", "ABSTAIN"),
+        require(type(trace[-1]) is dict and
+                trace[-1].get("action") in ("STOP", "ABSTAIN"),
                 "completed NDU must record its terminal decision")
     prev = None
     for index, step in enumerate(trace):
