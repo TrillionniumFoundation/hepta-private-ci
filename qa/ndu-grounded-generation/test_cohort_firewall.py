@@ -603,5 +603,117 @@ class CohortFirewallTests(unittest.TestCase):
             self.assertFalse(verdict["observable_image_identity_disjoint"])
             self.assertIn("independently pinned historical SHA256", verdict["error"])
 
+
+    @staticmethod
+    def _four_original_jpegs(candidate, image_dir):
+        import random
+        from PIL import Image
+        from cohort import image_fingerprint
+        from cohort_firewall import SPLITS
+
+        image_dir.mkdir()
+        for index, split in enumerate(SPLITS):
+            filename = f"candidate-{index}.jpg"
+            path = image_dir / filename
+            pixels = random.Random(43790 + index).randbytes(32 * 24 * 3)
+            Image.frombytes("RGB", (32, 24), pixels).save(
+                path, "JPEG", quality=89
+            )
+            row = candidate["splits"][split]["sources"][0]
+            row.update(image_fingerprint(path, (32, 24)))
+            row["image_filename"] = filename
+            row["image_size"] = [32, 24]
+
+    @unittest.skipUnless(hasattr(os, "O_NOFOLLOW"), "no-follow FD required")
+    def test_real_candidate_jpeg_custody_matches_v1_fingerprint(self):
+        import cohort_firewall
+
+        with tempfile.TemporaryDirectory() as td:
+            candidate = manifest(10000)
+            image_dir = Path(td) / "images"
+            self._four_original_jpegs(candidate, image_dir)
+            proof = cohort_firewall.verify_candidate_image_bytes(
+                candidate, image_dir
+            )
+            self.assertEqual(proof["checked_images"], 4)
+            self.assertTrue(proof["original_bytes_cryptographically_checked"])
+            self.assertGreater(proof["source_jpeg_bytes"], 0)
+            self.assertFalse(proof["foundation_pretraining_excluded"])
+            for key in ("image_sha256", "decoded_rgb_sha256", "dhash64", "image_bytes"):
+                with self.subTest(key=key):
+                    forged = copy.deepcopy(candidate)
+                    row = forged["splits"]["train"]["sources"][0]
+                    if key == "image_bytes":
+                        row[key] += 1
+                    else:
+                        row[key] = ("0" if row[key][0] != "0" else "1") + row[key][1:]
+                    with self.assertRaisesRegex(
+                        CohortContractError, f"actual image bytes disagree with {key}"
+                    ):
+                        cohort_firewall.verify_candidate_image_bytes(
+                            forged, image_dir
+                        )
+
+    @unittest.skipUnless(hasattr(os, "O_NOFOLLOW"), "no-follow FD required")
+    def test_real_candidate_jpeg_custody_rejects_links_and_fifo(self):
+        import cohort_firewall
+
+        with tempfile.TemporaryDirectory() as td:
+            candidate = manifest(10000)
+            image_dir = Path(td) / "images"
+            self._four_original_jpegs(candidate, image_dir)
+            row = candidate["splits"]["train"]["sources"][0]
+            row["image_filename"] = "../candidate-0.jpg"
+            with self.assertRaisesRegex(CohortContractError, "safe image_filename"):
+                cohort_firewall.verify_candidate_image_bytes(candidate, image_dir)
+            row["image_filename"] = "candidate-0.jpg"
+            target = image_dir / "candidate-0.jpg"
+            target.unlink()
+            target.symlink_to(image_dir / "candidate-1.jpg")
+            with self.assertRaisesRegex(CohortContractError, "invalid candidate JPEG"):
+                cohort_firewall.verify_candidate_image_bytes(candidate, image_dir)
+            target.unlink()
+            if hasattr(os, "mkfifo"):
+                os.mkfifo(target)
+                with self.assertRaisesRegex(CohortContractError, "regular file"):
+                    cohort_firewall.verify_candidate_image_bytes(candidate, image_dir)
+
+    @unittest.skipUnless(hasattr(os, "O_NOFOLLOW"), "no-follow FD required")
+    def test_real_candidate_bytes_required_for_cli_pass(self):
+        import cohort_firewall
+
+        docs, raw, pins = self._complete_synthetic_histories()
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            candidate = manifest(10000)
+            images = root / "images"
+            self._four_original_jpegs(candidate, images)
+            candidate_path = root / "candidate.json"
+            candidate_path.write_text(json.dumps(candidate), encoding="utf-8")
+            args = ["--candidate", str(candidate_path)]
+            for index, blob in enumerate(raw):
+                path = root / f"history-{index}.json"
+                path.write_bytes(blob)
+                args.extend(
+                    ("--historical", str(path),
+                     "--historical-sha256", hashlib.sha256(blob).hexdigest())
+                )
+            output = root / "verdict.json"
+            args += ["--output", str(output)]
+            # The synthetic 256+384 rosters can only pass under test-only
+            # injected trust roots. Production roots are never changed.
+            with mock.patch.object(cohort_firewall, "PINNED_HISTORIES", pins):
+                self.assertEqual(cohort_firewall.main(args), 2)
+                denial = json.loads(output.read_text(encoding="utf-8"))
+                self.assertIn("image bytes are required", denial["error"])
+                self.assertEqual(denial["status"], "fail")
+                self.assertEqual(
+                    cohort_firewall.main(args + ["--image-dir", str(images)]), 0
+                )
+            receipt = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(receipt["status"], "pass")
+            self.assertEqual(receipt["candidate_image_custody"]["checked_images"], 4)
+            self.assertFalse(receipt["independent_history_trust_established"])
+
 if __name__ == "__main__":
     unittest.main()
