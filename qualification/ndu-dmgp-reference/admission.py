@@ -88,6 +88,10 @@ def admit_run(record: RunEvidence, objective: Objective,
             or record.observed_at <= 0
             or record.evidence_kind != "independent_observation"):
         raise GateRejected("unmatched objective, source, scope or independent identities")
+    if (type(record.generation) is not int or type(record.observed_at) is not int
+            or type(record.peak_rss_bytes) is not int
+            or type(record.peak_vram_bytes) is not int):
+        raise GateRejected("wrong typed immutable identity or resource measurement")
     for value in (record.input_digest, record.encoder_digest,
                   record.decoder_registry_digest, record.selected_snapshot_digest,
                   record.critic_digest, record.consistency_evidence_digest):
@@ -104,19 +108,20 @@ def admit_run(record: RunEvidence, objective: Objective,
     for name in ("quality", "compute_units", "risk", "wall_us", "encoder_us",
                  "decoder_us", "controller_us", "energy_mj"):
         value = getattr(record, name)
-        if not math.isfinite(value) or value < 0:
+        if (isinstance(value, bool) or not isinstance(value, (int, float))
+                or not math.isfinite(value) or value < 0):
             raise GateRejected("nonfinite or negative real metering and quality")
     if not 0 <= record.quality <= 1 or not 0 <= record.risk <= 1:
         raise GateRejected("quality/risk normalization unqualified")
-    if (record.compute_units > objective.budget_units
+    if (record.compute_units <= 0
+            or record.compute_units > objective.budget_units
             or record.risk > objective.max_action_risk
             or record.wall_us <= 0 or record.decoder_us <= 0
             or record.energy_mj <= 0
             or record.wall_us < max(record.encoder_us, record.decoder_us,
                                     record.controller_us)
             or record.peak_rss_bytes <= 0 or record.peak_vram_bytes < 0
-            or isinstance(record.peak_rss_bytes, bool)
-            or isinstance(record.peak_vram_bytes, bool)):
+):
         raise GateRejected("unqualified host resource envelope")
     if not record.observer_signature or not record.meter_signature:
         raise GateRejected("missing independent signatures")
