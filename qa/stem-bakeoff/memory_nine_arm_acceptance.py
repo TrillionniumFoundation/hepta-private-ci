@@ -400,6 +400,22 @@ def validate_attempts(plan, public, manifests, artifact_root, attempts, *,
                 "dense_forwards", "reranker_forwards", "typed_lookups",
                 "head_forwards", "router_forwards", "graph_traversals")),
                 "BM25 included a different architecture")
+        # An aggregate nonzero arm total cannot prove per-question execution.
+        # An accepted answer must have traversed that arm's distinguishing path;
+        # valid early abstention or explicit unavailability is preserved.
+        if row["status"] == "accepted":
+            per_question = {
+                "B": ("dense_forwards", "reranker_forwards"),
+                "C": ("graph_traversals",),
+                "D": ("typed_lookups",),
+                "E": ("head_forwards",),
+                "F": ("typed_lookups", "head_forwards"),
+                "G": ("router_forwards", "head_forwards"),
+                "H": ("router_forwards", "graph_traversals", "head_forwards"),
+                "I": ("router_forwards", "graph_traversals", "head_forwards"),
+            }.get(arm, ())
+            require(all(runtime[name] > 0 for name in per_question),
+                    "accepted answer skipped required per-question mechanism: " + arm)
         if arm in "EFGHI":
             require(runtime["head_forwards"] > 0 or row["status"] == "unavailable",
                     "trained Head never invoked")
