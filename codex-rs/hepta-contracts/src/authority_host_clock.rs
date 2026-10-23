@@ -115,16 +115,39 @@ impl HostAuthorityClock {
             .lock()
             .map_err(|_| AuthorityTrustError::Unavailable)?;
         let previous = self.store.load(&self.owner_id)?;
-        let next = project(&previous, sample_os_clock()?)?;
+        self.renew_after_load(&previous)
+    }
+
+    fn renew_after_load(
+        &self,
+        previous: &ClockRecord,
+    ) -> Result<HostAuthorityClockObservation, AuthorityTrustError> {
+        let next = project(previous, sample_os_clock()?)?;
         self.store
-            .compare_and_set(&self.owner_id, &previous, &next)?;
+            .compare_and_set(&self.owner_id, previous, &next)?;
         observe_after_io(&next, sample_os_clock()?)
     }
 }
 
 impl AuthorityClock for HostAuthorityClock {
     fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
-        Ok(self.refresh_projection()?.observed_unix_ms)
+        let _serial = self
+            .serial
+            .lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
+        // Read the complete protected record on every call. Its already durable
+        // ceiling bounds actual post-I/O time; it is never returned as "now".
+        let previous = self.store.load(&self.owner_id)?;
+        match observe_after_io(&previous, sample_os_clock()?) {
+            Ok(observation) => Ok(observation.observed_unix_ms),
+            Err(AuthorityTrustError::Unavailable) => {
+                // Expiry, a forward wall step or a legal reboot needs the same
+                // original durable renewal and post-CAS check. Invalid state
+                // is never repaired, retried or replaced by genesis.
+                Ok(self.renew_after_load(&previous)?.observed_unix_ms)
+            }
+            Err(error) => Err(error),
+        }
     }
 }
 
