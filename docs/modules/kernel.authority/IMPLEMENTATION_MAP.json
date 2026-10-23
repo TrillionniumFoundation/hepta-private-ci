@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "389ed0cf34279fd5ab2371affbbf448483b993e4",
-    "tree": "7f9b6f0e4dad96276d5a7ba72e839072e9e3e9e4"
+    "commit": "93f65e566944f5f9ea35015df009f6c0e12d00c3",
+    "tree": "e5335af0fe42f4b2a795cc2c0b300a8ca7e691af"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.authority",
@@ -44,7 +44,9 @@
       "sourcePath": "codex-rs/hepta-contracts/src/final_use_store.rs",
       "state": "source_implemented_not_product_activated",
       "authority": "none",
-      "tests": ["codex-rs/hepta-contracts/src/final_use_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-contracts/src/final_use_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "store",
       "mappingClass": "owner_native",
@@ -56,7 +58,9 @@
       "sourcePath": "codex-rs/hepta-contracts/src/authority_lease.rs",
       "state": "source_implemented_least_authority_handles_retired_revision_lineage_not_product_activated",
       "authority": "none",
-      "tests": ["codex-rs/hepta-contracts/src/authority_lease.rs"],
+      "tests": [
+        "codex-rs/hepta-contracts/src/authority_lease.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "put_verify_revoke_prune_with_retired_revision_lineage_epoch_authority_lease",
       "mappingClass": "owner_native",
@@ -68,7 +72,9 @@
       "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
       "state": "source_implemented_registered_host_not_product_activated",
       "authority": "none",
-      "tests": ["codex-rs/hepta-contracts/src/final_use_control.rs"],
+      "tests": [
+        "codex-rs/hepta-contracts/src/final_use_control.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "independent_final_use_approval_with_epoch_key_rotation",
       "mappingClass": "owner_native",
@@ -80,7 +86,9 @@
       "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
       "state": "source_implemented_registered_host_not_product_activated",
       "authority": "none",
-      "tests": ["codex-rs/hepta-contracts/src/final_use_control.rs"],
+      "tests": [
+        "codex-rs/hepta-contracts/src/final_use_control.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "authenticated_fresh_revocation_ingestion_with_epoch_key_rotation",
       "mappingClass": "owner_native",
@@ -107,7 +115,9 @@
       "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
       "state": "source_implemented_transport_external",
       "authority": "none",
-      "tests": ["codex-rs/hepta-contracts/src/final_use_control.rs"],
+      "tests": [
+        "codex-rs/hepta-contracts/src/final_use_control.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "verify_enrolled_node_revocation_convergence",
       "mappingClass": "owner_native_verifier",
@@ -134,7 +144,9 @@
       "sourcePath": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
       "state": "source_implemented_evidence_projection_not_authorization",
       "authority": "none",
-      "tests": ["codex-rs/hepta-contracts/src/verified_use_witness.rs"],
+      "tests": [
+        "codex-rs/hepta-contracts/src/verified_use_witness.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "decision_and_audit_projection",
       "mappingClass": "owner_native",
@@ -181,14 +193,18 @@
       "nativeSymbol": "FleetAuthorityPort::issue",
       "sourcePath": "codex-rs/hepta-fleet/src/authority_port.rs",
       "state": "source_composed_owner_boundary_not_product_process_activated",
-      "tests": ["codex-rs/hepta-fleet/src/authority_port.rs"]
+      "tests": [
+        "codex-rs/hepta-fleet/src/authority_port.rs"
+      ]
     },
     {
       "id": "secrets.heptabao.registered_host",
       "nativeSymbol": "BaoFinalUseHost::consume_kv_v2",
       "sourcePath": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
       "state": "registered_host_source_composed_no_deployed_process_selected",
-      "tests": ["codex-rs/hepta-bao-adapter/tests/final_use_host.rs"]
+      "tests": [
+        "codex-rs/hepta-bao-adapter/tests/final_use_host.rs"
+      ]
     },
     {
       "id": "browser.servo.agentd",
@@ -265,7 +281,7 @@
     },
     {
       "path": "codex-rs/utils/windows-private-state",
-      "object": "e5ecf6db92f347ba1ad3dfc0b2f802ba086abf9b"
+      "object": "2c66ae7e67baba3d918d349fbd0f1b550c5eb84e"
     },
     {
       "path": "codex-rs/utils/windows-private-state/BUILD.bazel",
@@ -277,7 +293,7 @@
     },
     {
       "path": "codex-rs/utils/windows-private-state/src/lib.rs",
-      "object": "73d44775b19be6e98438534b2895b4ea2140695f"
+      "object": "5dd1ef267f5456e1318ee3abe732eb5f232e5f62"
     },
     {
       "path": "codex-rs/utils/windows-private-state/src/mechanism.rs",
@@ -285,7 +301,7 @@
     },
     {
       "path": "codex-rs/utils/windows-private-state/src/security.rs",
-      "object": "d16e9919693ab16e575dfdbf9a4c2e48833465ec"
+      "object": "866f76647f4a0e236605fc04302a513f519ec350"
     },
     {
       "path": "codex-rs/utils/windows-private-state/src/security_tests.rs",
