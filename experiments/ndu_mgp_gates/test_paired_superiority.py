@@ -213,6 +213,22 @@ class PairedEvidenceTests(unittest.TestCase):
         self.assertFalse(rec['comparison']['static']['gates']['physical_total_cost'])
         self.assertEqual(rec['status'], 'HOLD_NO_GO')
 
+    def test_overbudget_failed_episode_cannot_buy_provisional_cost_pass(self):
+        # An averaged cost ratio can stay within 5% when just one of 96
+        # episodes violates the absolute common per-episode budget.
+        d = study_fixture(strong_ndu=False)
+        cost = d['worlds'][1]['outcomes']['ndu']['measured_cost']
+        cost['controller'] += 2.01
+        cost['total'] += 2.01
+        for dr in d['worlds'][1]['outcomes']['ndu']['decoded_draw_scores']:
+            dr.update(status='failed', loss=2.0, quality=0, ambiguity=1,
+                      inconsistency=1)
+        rec = evaluate(d)
+        self.assertLess(rec['comparison']['no_change']['observed_cost_ratio'], 1.05)
+        self.assertEqual(rec['overbudget_episode_counts']['ndu'], 1)
+        self.assertFalse(rec['comparison']['no_change']['gates']['physical_total_cost'])
+        self.assertEqual(rec['status'], 'HOLD_NO_GO')
+
     def test_nonpositive_common_episode_cost_limit_denied(self):
         d = study_fixture()
         d['protocol']['episode_cost_limit'] = 0
