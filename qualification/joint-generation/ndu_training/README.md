@@ -48,3 +48,8 @@ tradeoffs remain. Lower measured gradient variance is not training success.
 The [accounting erratum](../runs/codex-cloud-ndu-CV-TRAIN-d2/ERRATUM-20261023.md)
 clarifies the shared CV-file hash CPU leak and the before-receipt timing boundary;
 the original evidence remains unchanged.
+
+The [hand-only exact-fusion probe](../runs/codex-cloud-ndu-fused-pullback-HAND-d3/REPORT.md)
+retains an unconditional Adam numerical FAIL and tests fixed fallbacks without
+new TRAIN. Guarded panel checks pass, but measured CPU is slower; no new training
+candidate is justified by this NumPy implementation's current performance.
