@@ -85,6 +85,22 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 ## 5. Contracts, ports and compatibility
 
+The PN4 `controlled_aggregate` adapter uses the existing sealed
+`ProductionVerifiedDispatch` destination port. `ControlledAggregateRegistration`
+freezes one bounded `ControlledAggregateBinding` before source preparation and
+binds its canonical payload to the operation, lease and FinalUse request.
+`ResourceScope::ChildAggregate` cannot be registered for whole-unit settlement;
+`ResourceBudget` keeps U16/A8, a positive controller remainder and the original
+eight-second bound. A default sixteen-GiB model plan therefore remains refused.
+Reservation and settlement-issuer fields are declarations, not verified funding
+or authority. `ControlledAggregateTarget::unavailable` checks the original
+FinalUse authority instance and complete registration, then retains
+`Indeterminate`: it has no physical-entry callback, native owner, settlement
+receipt or AuthBus release. The existing PN4 integration sequence must supply
+original funding/issuer verification and native whole-unit lifetime ownership
+before a future target can cross an actual worker boundary. Existing ordinary
+Child observations retain their narrower semantics.
+
 Produced contracts:
 
 None.
