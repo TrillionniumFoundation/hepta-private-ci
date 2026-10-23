@@ -46,8 +46,31 @@ original `CognitiveStore::open`, capture `recovery_anchor`, and await `close`
 before registering that exact cut. An existing/partial protected head is never
 overwritten. Runtime `open` cannot create a missing head, change registration,
 promote Dirty/Publishing/Fenced to Current, or hash an existing suspect database
-to invent recovery evidence. A later publisher requires explicit trusted
-reconciliation; this module provides no remote re-registration endpoint.
+to invent recovery evidence. This module provides no remote re-registration endpoint.
+
+The trusted `adopt_current` API adds a narrow same-boot clean restart stage.
+Root must have captured and retained the old publisher's actual pidfd while its
+exact boot/PID/start-time/UID identity was alive. A PID recorded after exit or a
+deserialized identity cannot replace that object. The old pidfd must now report
+exit and a separately captured exact successor must still be alive. The
+launcher must hold the new writer's original live registry dispatch fence, with
+the old writer retired through the original lease lifecycle. This backend API
+does not grant or rotate that authorization.
+
+Adoption compares the complete existing Current head and its original token,
+keeps its exact retained cut, increments the original counter and publisher
+epoch, and starts a fresh request highwater only within that new epoch. The
+same local lease ID must advance generation and the original lexicographic
+authority/owner epoch, with a different full grant and fencing digest. Original
+CAS sync/readback and a final clock/process check precede success. A lost result
+may have committed: reconcile by opening that exact new registration. Never
+choose another identity or initialize fresh after an uncertain result.
+
+This stage refuses actual Dirty, Publishing and Fenced heads. It cannot recover
+after losing the retained old pidfd (including a Root process restart), adopt
+across a reboot, validate suspect SQLite bytes, rotate the canonical issuer's
+retained writer proof, or restore unfinished effects. Those require separate
+trusted composition and recovery evidence; a clean handoff does not close them.
 
 The explicit root/data tests create fresh original SQLite databases, use their
 real coherent anchors, and exercise actual root-protected CAS/reopen, exact

@@ -39,6 +39,13 @@ use state::{
 const STORE_OWNER: &str = "root-cognitive-checkpoint-v1";
 const OPERATION: &str = "runtime.cognitive.checkpoint.v1";
 
+#[path = "authority_host_checkpoint_publisher.rs"]
+mod publisher;
+pub use publisher::RetainedCheckpointPublisher;
+
+#[path = "authority_host_checkpoint_adoption.rs"]
+mod adoption;
+
 /// Actual trusted launcher registration. The peer cannot replace these fields.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct HostCognitiveCheckpointRegistration {
