@@ -65,7 +65,10 @@ impl Identity {
         Ok(Self {
             token: (value.TokenId.LowPart, value.TokenId.HighPart),
             modified: (value.ModifiedId.LowPart, value.ModifiedId.HighPart),
-            authentication: (value.AuthenticationId.LowPart, value.AuthenticationId.HighPart),
+            authentication: (
+                value.AuthenticationId.LowPart,
+                value.AuthenticationId.HighPart,
+            ),
             kind,
         })
     }
@@ -141,4 +144,3 @@ impl CapturedPrincipal {
         Ok(())
     }
 }
-

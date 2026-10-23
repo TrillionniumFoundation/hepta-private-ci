@@ -3,29 +3,29 @@
 use codex_utils_windows_private_state::principal::CapturedPrincipal;
 use codex_utils_windows_private_state::security::CurrentUser;
 use codex_utils_windows_private_state::security::ValidationError;
+use std::error::Error;
+use std::ffi::c_void;
 use std::io;
 use std::mem::size_of;
 use std::os::windows::io::AsRawHandle;
-use std::os::windows::io::OwnedHandle;
-use windows_sys::Win32::Foundation::HANDLE;
-use windows_sys::Win32::Security::GetTokenInformation;
-use windows_sys::Win32::Security::SecurityImpersonation;
-use windows_sys::Win32::Security::TOKEN_STATISTICS;
-use windows_sys::Win32::Security::TokenImpersonation;
-use windows_sys::Win32::Security::TokenStatistics;
-use std::error::Error;
-use std::ffi::c_void;
 use std::os::windows::io::FromRawHandle;
+use std::os::windows::io::OwnedHandle;
 use std::ptr;
 use windows_sys::Win32::Foundation::ERROR_CANT_OPEN_ANONYMOUS;
+use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::Security::AdjustTokenPrivileges;
 use windows_sys::Win32::Security::DuplicateTokenEx;
+use windows_sys::Win32::Security::GetTokenInformation;
 use windows_sys::Win32::Security::ImpersonateAnonymousToken;
 use windows_sys::Win32::Security::RevertToSelf;
+use windows_sys::Win32::Security::SecurityImpersonation;
 use windows_sys::Win32::Security::TOKEN_ADJUST_PRIVILEGES;
 use windows_sys::Win32::Security::TOKEN_DUPLICATE;
 use windows_sys::Win32::Security::TOKEN_IMPERSONATE;
 use windows_sys::Win32::Security::TOKEN_QUERY;
+use windows_sys::Win32::Security::TOKEN_STATISTICS;
+use windows_sys::Win32::Security::TokenImpersonation;
+use windows_sys::Win32::Security::TokenStatistics;
 use windows_sys::Win32::System::Threading::GetCurrentProcess;
 use windows_sys::Win32::System::Threading::GetCurrentThread;
 use windows_sys::Win32::System::Threading::OpenProcessToken;
@@ -52,7 +52,9 @@ impl Drop for RestoreThread {
 fn duplicate(level: i32) -> Result<OwnedHandle> {
     let mut raw = 0;
     // SAFETY: the process pseudo-handle and output storage are live.
-    if unsafe { OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY | TOKEN_DUPLICATE, &mut raw) } == 0 {
+    if unsafe { OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY | TOKEN_DUPLICATE, &mut raw) }
+        == 0
+    {
         return Err(io::Error::last_os_error().into());
     }
     // SAFETY: successful open transfers a newly owned, non-inherited handle.
@@ -87,7 +89,16 @@ fn statistics(token: &OwnedHandle) -> Result<TOKEN_STATISTICS> {
     let mut result: TOKEN_STATISTICS = unsafe { std::mem::zeroed() };
     let mut length = 0;
     // SAFETY: query the live fixture token into fixed-size initialized storage.
-    if unsafe { GetTokenInformation(token.as_raw_handle() as HANDLE, TokenStatistics, (&mut result as *mut TOKEN_STATISTICS).cast(), size_of::<TOKEN_STATISTICS>() as u32, &mut length) } == 0 {
+    if unsafe {
+        GetTokenInformation(
+            token.as_raw_handle() as HANDLE,
+            TokenStatistics,
+            (&mut result as *mut TOKEN_STATISTICS).cast(),
+            size_of::<TOKEN_STATISTICS>() as u32,
+            &mut length,
+        )
+    } == 0
+    {
         return Err(io::Error::last_os_error().into());
     }
     assert_eq!(length as usize, size_of::<TOKEN_STATISTICS>());
@@ -119,10 +130,19 @@ fn native_same_sid_replacement_is_refused_and_cannot_revive() -> Result {
         let original_user = CurrentUser::capture_effective()?;
         install(&second)?;
         assert!(original_user == CurrentUser::capture_effective()?);
-        assert!(statistics(&first)?.TokenId.LowPart != statistics(&second)?.TokenId.LowPart || statistics(&first)?.TokenId.HighPart != statistics(&second)?.TokenId.HighPart);
-        assert!(matches!(captured.revalidate_effective(), Err(ValidationError::PrincipalChanged)));
+        assert!(
+            statistics(&first)?.TokenId.LowPart != statistics(&second)?.TokenId.LowPart
+                || statistics(&first)?.TokenId.HighPart != statistics(&second)?.TokenId.HighPart
+        );
+        assert!(matches!(
+            captured.revalidate_effective(),
+            Err(ValidationError::PrincipalChanged)
+        ));
         install(&first)?;
-        assert!(matches!(captured.revalidate_effective(), Err(ValidationError::PrincipalChanged)));
+        assert!(matches!(
+            captured.revalidate_effective(),
+            Err(ValidationError::PrincipalChanged)
+        ));
         Ok(())
     })
 }
@@ -140,15 +160,32 @@ fn native_held_token_modification_is_refused() -> Result {
         // token. Standard Windows process tokens contain enabled privileges;
         // a fixture without an actual modification fails instead of skipping.
         if unsafe {
-            AdjustTokenPrivileges(token.as_raw_handle() as HANDLE, /*disableallprivileges*/ 1, ptr::null(), /*bufferlength*/ 0, ptr::null_mut(), ptr::null_mut())
-        } == 0 {
+            AdjustTokenPrivileges(
+                token.as_raw_handle() as HANDLE,
+                /*disableallprivileges*/ 1,
+                ptr::null(),
+                /*bufferlength*/ 0,
+                ptr::null_mut(),
+                ptr::null_mut(),
+            )
+        } == 0
+        {
             return Err(io::Error::last_os_error().into());
         }
         let changed = statistics(&token)?;
         assert!(original_user == CurrentUser::capture_effective()?);
-        assert_eq!((before.TokenId.LowPart, before.TokenId.HighPart), (changed.TokenId.LowPart, changed.TokenId.HighPart));
-        assert!((before.ModifiedId.LowPart, before.ModifiedId.HighPart) != (changed.ModifiedId.LowPart, changed.ModifiedId.HighPart));
-        assert!(matches!(captured.revalidate_effective(), Err(ValidationError::PrincipalChanged)));
+        assert_eq!(
+            (before.TokenId.LowPart, before.TokenId.HighPart),
+            (changed.TokenId.LowPart, changed.TokenId.HighPart)
+        );
+        assert!(
+            (before.ModifiedId.LowPart, before.ModifiedId.HighPart)
+                != (changed.ModifiedId.LowPart, changed.ModifiedId.HighPart)
+        );
+        assert!(matches!(
+            captured.revalidate_effective(),
+            Err(ValidationError::PrincipalChanged)
+        ));
         Ok(())
     })
 }
@@ -160,14 +197,22 @@ fn native_degraded_and_unqueryable_thread_tokens_never_fall_back() -> Result {
         let identification = duplicate(windows_sys::Win32::Security::SecurityIdentification)?;
         let _restore = RestoreThread;
         install(&identification)?;
-        assert!(matches!(CapturedPrincipal::capture_effective(), Err(ValidationError::PrincipalChanged)));
+        assert!(matches!(
+            CapturedPrincipal::capture_effective(),
+            Err(ValidationError::PrincipalChanged)
+        ));
         // SAFETY: anonymous impersonation affects only this new fixture thread.
         if unsafe { ImpersonateAnonymousToken(GetCurrentThread()) } == 0 {
             return Err(io::Error::last_os_error().into());
         }
-        assert!(matches!(original.revalidate_effective(), Err(ValidationError::Os(error)) if error.raw_os_error() == Some(ERROR_CANT_OPEN_ANONYMOUS as i32)));
+        assert!(
+            matches!(original.revalidate_effective(), Err(ValidationError::Os(error)) if error.raw_os_error() == Some(ERROR_CANT_OPEN_ANONYMOUS as i32))
+        );
         drop(_restore);
-        assert!(matches!(original.revalidate_effective(), Err(ValidationError::PrincipalChanged)));
+        assert!(matches!(
+            original.revalidate_effective(),
+            Err(ValidationError::PrincipalChanged)
+        ));
         Ok(())
     })
 }
