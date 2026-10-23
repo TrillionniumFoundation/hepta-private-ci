@@ -44,7 +44,10 @@ def _hex_digest(value: object) -> bool:
 def _number(value: object, label: str, minimum: float = 0.0) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise EvidenceRejected(f"{label}: not numeric")
-    f = float(value)
+    try:
+        f = float(value)
+    except (ValueError, TypeError, OverflowError) as exc:
+        raise EvidenceRejected(f"{label}: not representable as finite measurement") from exc
     if not math.isfinite(f) or f < minimum:
         raise EvidenceRejected(f"{label}: non-finite or out of range")
     return f
@@ -127,6 +130,8 @@ def verify_pair(entry: object, observer_pem: Path, meter_pem: Path, *,
                 (expected_objective, expected_evaluator_digest, expected_device_digest))
             or not isinstance(training_cutoff, int)
             or isinstance(training_cutoff, bool) or training_cutoff < 1
+            or isinstance(max_av_skew_ms, bool)
+            or not isinstance(max_av_skew_ms, (int, float))
             or not math.isfinite(max_av_skew_ms) or max_av_skew_ms < 0):
         raise EvidenceRejected("missing trusted frozen objective/evaluator/device/cutoff")
     if not isinstance(entry, dict) or set(entry) != {"observer", "meter"}:
@@ -172,8 +177,12 @@ def verify_pair(entry: object, observer_pem: Path, meter_pem: Path, *,
                   "controller_ms", "encoder_ms", "decoder_ms", "peak_rss_bytes",
                   "peak_vram_bytes"):
         _number(meter.get(label), label)
-    if meter["end_to_end_ms"] <= 0 or meter["decoder_ms"] <= 0:
-        raise EvidenceRejected("missing measured end-to-end decoder work")
+    if (meter["end_to_end_ms"] <= 0 or meter["decoder_ms"] <= 0
+            or meter["peak_rss_bytes"] <= 0
+            or meter["energy_joules"] <= 0
+            or meter["end_to_end_ms"] < max(meter["encoder_ms"],
+                                          meter["decoder_ms"], meter["controller_ms"])):
+        raise EvidenceRejected("missing/inconsistent measured end-to-end decoder work")
     for digest_field in ("device_digest", "encoder_digest", "decoder_digest", "runtime_digest"):
         if not _hex_digest(meter.get(digest_field)):
             raise EvidenceRejected(f"missing host artifact identity: {digest_field}")
@@ -218,8 +227,9 @@ def audit_trial_file(manifest: object, observer_pem: Path, meter_pem: Path, *,
         cohorts[k][r["arm"]] = r
     if any(set(v) != ARMS or len({a["input_digest"] for a in v.values()}) != 1
            or len({a["trace_digest"] for a in v.values()}) != len(ARMS)
+           or len({a["run_id"] for a in v.values()}) != len(ARMS)
            for v in cohorts.values()):
-        raise EvidenceRejected("missing arm or unmatched inputs across A0-A5")
+        raise EvidenceRejected("missing arm or unmatched inputs/physical runs across A0-A5")
     n = {window: sum(1 for w, _ in cohorts if w == window)
          for window in ("train", "future", "retention")}
     reasons = []
@@ -229,16 +239,27 @@ def audit_trial_file(manifest: object, observer_pem: Path, meter_pem: Path, *,
     # Pairwise future deltas preserve each input; no comparisons against shuffled episodes.
     future = [v for (w, _), v in sorted(cohorts.items()) if w == "future"]
     superiority = {}
-    if len(future) >= 24:
+    if len(future) >= 32:
+        comparisons = len(ARMS) - 1
+        alpha = 0.05  # Frozen familywise alpha; no data-dependent selection.
         for baseline in sorted(ARMS - {"A5"}):
             differences = [v["A5"]["quality"] - v[baseline]["quality"] for v in future]
-            mean = statistics.fmean(differences)
-            # Conservative normal approximation (one-sided 99%); more stringent
-            # registered bootstrap/multiplicity acceptance belongs to learning.eval.
-            bound = mean - 2.576 * statistics.stdev(differences) / math.sqrt(len(differences))
-            superiority[baseline] = {"quality_delta_mean": mean, "quality_delta_lcb99": bound}
+            estimate = statistics.fmean(differences)
+            # Differences in [-1,1]. Union-bounded one-sided Hoeffding LCB
+            # corrects for five simultaneous comparisons; valid only for
+            # independently sampled episode CLUSTERS, not merely distinct IDs.
+            radius = math.sqrt(2.0 * math.log(comparisons / alpha) / len(differences))
+            bound = estimate - radius
+            superiority[baseline] = {
+                "quality_delta_mean": estimate,
+                "quality_delta_familywise_lcb95": bound,
+                "method": "bonferroni-hoeffding",
+                "independent_clusters_verified": False,
+            }
             if bound <= 0:
                 reasons.append(f"A5 quality does not exceed {baseline} on heldout future")
+    else:
+        reasons.append("insufficient 32-cluster future support for simultaneous bounds")
     # Quality alone does not prove NDU or cost improvement: the full external
     # objective, costs, covariance support, stability, closure and independent
     # final-use decisions are still required.
