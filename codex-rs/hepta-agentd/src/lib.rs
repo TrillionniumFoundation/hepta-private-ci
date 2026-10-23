@@ -47,17 +47,21 @@ pub use authority_host_service::HostAuthorityLane;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityService;
 #[cfg(target_os = "linux")]
+mod root_authority_session;
+#[cfg(target_os = "linux")]
+mod root_observation_cache;
+#[cfg(target_os = "linux")]
+mod root_observation_stream;
+#[cfg(target_os = "linux")]
+pub use root_authority_session::AgentdRootAuthoritySession;
+#[cfg(target_os = "linux")]
 mod root_writer_proof;
+#[cfg(target_os = "linux")]
+pub use root_observation_stream::AgentdRootAuthorityPeer;
 #[cfg(target_os = "linux")]
 pub use root_writer_proof::AgentdRootAuthorityError;
 #[cfg(target_os = "linux")]
 pub use root_writer_proof::AgentdRootWriterTrust;
-#[cfg(target_os = "linux")]
-mod root_observation_stream;
-#[cfg(target_os = "linux")]
-pub use root_observation_stream::AgentdRootAuthorityPeer;
-#[cfg(target_os = "linux")]
-mod root_observation_cache;
 mod authbus_checkpoint;
 mod authbus_dispatch;
 mod authbus_ingress;
