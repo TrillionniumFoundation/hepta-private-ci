@@ -105,3 +105,8 @@ a separate protected CAS: a crash between the two stores must refuse runtime
 opening until exact trusted reconciliation. This API does not recover Dirty or
 Publishing, initialize a missing cut, renew a live predecessor, or add another
 issuer/nonce ledger. Original-owner unit tests are not deployment qualification.
+
+Source `035d67e9` passed the original 46-test owner/service/wire/proof/sender
+scope on Rust1.96, followed by scoped fix and fmt. The five new rotation cases,
+two retained compile/lint failures, complete logs and source digests are linked
+from [the rotation qualification record](acceptance/2026-10-23-writer-rotation/README.md).

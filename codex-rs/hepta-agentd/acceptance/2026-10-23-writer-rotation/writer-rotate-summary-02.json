@@ -1,0 +1,135 @@
+{
+  "schema": "hepta.canonical.writer-rotate-qualification.v1",
+  "final_source_commit": "035d67e99dcbe1243718d8f9e2b4efffcaa6b54b",
+  "source_tree": "606c34106e613bff342c452f05aa54dd042c6b8b",
+  "status": "",
+  "scoped_passed": 46,
+  "scoped_failed": 0,
+  "skipped": 271,
+  "seconds": 60.339,
+  "stages": {
+    "writer-rotate-original-owner-tests-02": {
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--locked",
+        "-E",
+        "test(deployment_) | test(authority_host_service) | test(authority_host_wire) | test(root_writer_proof) | test(production_composition::objective_sender_tests)",
+        "--test-threads",
+        "2"
+      ],
+      "exit": 0,
+      "seconds": 113.58320435800124,
+      "cache_reused": true,
+      "source_before": {
+        "head": "6393714e0bf3c619562dd5764273755ec29ddf62",
+        "tree": "215609d59079ea9e5c3f29f4bf719501144f7ea0",
+        "status": "M codex-rs/hepta-agentd/ROOT_AUTHORITY_CLIENT.md\n M codex-rs/hepta-agentd/src/deployment_issuer_root.rs\n M codex-rs/hepta-agentd/src/deployment_writer.rs\n M codex-rs/hepta-agentd/src/deployment_writer_tests.rs\n?? codex-rs/hepta-agentd/src/deployment_writer_rotate.rs\n?? codex-rs/hepta-agentd/src/deployment_writer_rotate_tests.rs",
+        "index_flags": [
+          "H"
+        ],
+        "files": 9336,
+        "live_source_sha256": "34a8a291b37a094439efaa31a997ecfa8dc46a2ca1d8ec2e73d4cd10923756c8"
+      },
+      "toolchain": "1.96.0"
+    },
+    "writer-rotate-fmt-01": {
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt"
+      ],
+      "exit": 0,
+      "seconds": 0.36315305705647916,
+      "cache_reused": true,
+      "source_before": {
+        "head": "6393714e0bf3c619562dd5764273755ec29ddf62",
+        "tree": "215609d59079ea9e5c3f29f4bf719501144f7ea0",
+        "status": "M codex-rs/hepta-agentd/ROOT_AUTHORITY_CLIENT.md\n M codex-rs/hepta-agentd/src/deployment_issuer_root.rs\n M codex-rs/hepta-agentd/src/deployment_writer.rs\n M codex-rs/hepta-agentd/src/deployment_writer_tests.rs\n?? codex-rs/hepta-agentd/src/deployment_writer_rotate.rs\n?? codex-rs/hepta-agentd/src/deployment_writer_rotate_tests.rs",
+        "index_flags": [
+          "H"
+        ],
+        "files": 9336,
+        "live_source_sha256": "34a8a291b37a094439efaa31a997ecfa8dc46a2ca1d8ec2e73d4cd10923756c8"
+      },
+      "toolchain": "1.96.0"
+    },
+    "writer-rotate-private-contracts-cache-invalidation-02": {
+      "command": [
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "clean",
+        "-p",
+        "codex-hepta-contracts"
+      ],
+      "exit": 0,
+      "seconds": 0.9397192710312083,
+      "cache_reused": true,
+      "source_before": {
+        "head": "6393714e0bf3c619562dd5764273755ec29ddf62",
+        "tree": "215609d59079ea9e5c3f29f4bf719501144f7ea0",
+        "status": "M codex-rs/hepta-agentd/ROOT_AUTHORITY_CLIENT.md\n M codex-rs/hepta-agentd/src/deployment_issuer_root.rs\n M codex-rs/hepta-agentd/src/deployment_writer.rs\n M codex-rs/hepta-agentd/src/deployment_writer_tests.rs\n?? codex-rs/hepta-agentd/src/deployment_writer_rotate.rs\n?? codex-rs/hepta-agentd/src/deployment_writer_rotate_tests.rs",
+        "index_flags": [
+          "H"
+        ],
+        "files": 9336,
+        "live_source_sha256": "0c457ec89b26161b37581292a4a99c08dd68b73d5186edf2d2ead5702a1009f4"
+      },
+      "toolchain": "1.96.0"
+    },
+    "writer-rotate-fix-02": {
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "exit": 0,
+      "seconds": 184.8839096239535,
+      "cache_reused": true,
+      "source_before": {
+        "head": "6393714e0bf3c619562dd5764273755ec29ddf62",
+        "tree": "215609d59079ea9e5c3f29f4bf719501144f7ea0",
+        "status": "M codex-rs/hepta-agentd/ROOT_AUTHORITY_CLIENT.md\n M codex-rs/hepta-agentd/src/deployment_issuer_root.rs\n M codex-rs/hepta-agentd/src/deployment_writer.rs\n M codex-rs/hepta-agentd/src/deployment_writer_tests.rs\n?? codex-rs/hepta-agentd/src/deployment_writer_rotate.rs\n?? codex-rs/hepta-agentd/src/deployment_writer_rotate_tests.rs",
+        "index_flags": [
+          "H"
+        ],
+        "files": 9336,
+        "live_source_sha256": "0c457ec89b26161b37581292a4a99c08dd68b73d5186edf2d2ead5702a1009f4"
+      },
+      "toolchain": "1.96.0"
+    },
+    "writer-rotate-final-fmt-02": {
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt"
+      ],
+      "exit": 0,
+      "seconds": 0.3745686279144138,
+      "cache_reused": true,
+      "source_before": {
+        "head": "6393714e0bf3c619562dd5764273755ec29ddf62",
+        "tree": "215609d59079ea9e5c3f29f4bf719501144f7ea0",
+        "status": "M codex-rs/hepta-agentd/ROOT_AUTHORITY_CLIENT.md\n M codex-rs/hepta-agentd/src/deployment_issuer_root.rs\n M codex-rs/hepta-agentd/src/deployment_writer.rs\n M codex-rs/hepta-agentd/src/deployment_writer_tests.rs\n?? codex-rs/hepta-agentd/src/deployment_writer_rotate.rs\n?? codex-rs/hepta-agentd/src/deployment_writer_rotate_tests.rs",
+        "index_flags": [
+          "H"
+        ],
+        "files": 9336,
+        "live_source_sha256": "0c457ec89b26161b37581292a4a99c08dd68b73d5186edf2d2ead5702a1009f4"
+      },
+      "toolchain": "1.96.0"
+    }
+  },
+  "preserved_failures": {
+    "writer-rotate-original-owner-tests-01.json": "explicit nested pretty_assertions macro import missing; compile failure, no semantic negative",
+    "writer-rotate-fix-01.json": "sequential cross-worktree check-only contracts rmeta predates new API; no method; fixed by invalidating only owned contracts derived cache and rerunning original Clippy"
+  },
+  "test_compilation_original_contracts_source": "writer-rotate-original-owner-tests-01.log:84",
+  "cache_cold": false,
+  "tests_after_format_or_fix": false,
+  "new_issuer_or_ledger": false,
+  "root_deployment_qualification": false,
+  "publisher_quiescence_and_actual_successor_identity": "trusted launcher must independently prove exact captured new identity and retained old pidfd exit; this API does not replace checkpoint adoption",
+  "cross_store_crash": "runtime refuses mismatched proof/checkpoint; only exact retained successor reconciliation, no rollback/new generation/reset"
+}
