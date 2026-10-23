@@ -85,7 +85,8 @@ def fixture() -> dict:
     for i in range(56):
         z = [rng.gauss(0, 0.3) for _ in range(3)]
         covariance.append({
-            "group_id": f"joint-{i}", "condition_digest": "frozen-condition-bin-1",
+            "group_id": f"joint-{i}", "split": "train",
+            "condition_digest": "frozen-condition-bin-1",
             "weight": 1,
             "advantages": [z[0] + z[1] * .2, z[1] + z[0] * .3, z[2] + z[1] * .1],
         })
@@ -246,6 +247,14 @@ class QualificationTests(unittest.TestCase):
     def test_measured_budget_exceed_rejected(self) -> None:
         self.bundle["runs"][4]["measured_compute_units"] = 9_000_000
         self.assert_rejects("measured_compute_units")
+
+    def test_covariance_future_leakage_rejected(self) -> None:
+        self.bundle["joint_trials"][0]["split"] = "future"
+        self.assert_rejects("evaluation/future leakage")
+
+    def test_covariance_reused_future_group_rejected(self) -> None:
+        self.bundle["joint_trials"][0]["group_id"] = "future-independent-group-000"
+        self.assert_rejects("training/evaluation group leakage")
 
     def test_covariance_context_drift_rejected(self) -> None:
         self.bundle["joint_trials"][10]["condition_digest"] = "leaked-future-conditioning"
