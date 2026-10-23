@@ -17,6 +17,7 @@ use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_memory::NOTES_REQUEST_MAX_BYTES;
 use codex_hepta_memory::NOTES_RESPONSE_MAX_BYTES;
 use codex_hepta_memory::NotesPrivateChannel;
+use codex_hepta_memory::NotesRecoveryChannel;
 use codex_hepta_memory::NotesTargetIdentity;
 use codex_hepta_memory::ProductionNotesTarget;
 
@@ -32,7 +33,7 @@ use crate::AgentdProductionWriterHost;
 pub struct AgentdNotesChannel {
     stream: Mutex<UnixStream>,
     disabled: AtomicBool,
-    recovery: Option<Mutex<UnixDatagram>>,
+    recovery: Option<Arc<Mutex<UnixDatagram>>>,
 }
 
 impl AgentdNotesChannel {
@@ -59,7 +60,7 @@ impl AgentdNotesChannel {
         }
         recovery.set_nonblocking(false)?;
         let mut channel = Self::from_private_channel(effect)?;
-        channel.recovery = Some(Mutex::new(recovery));
+        channel.recovery = Some(Arc::new(Mutex::new(recovery)));
         Ok(channel)
     }
 }
@@ -85,7 +86,36 @@ impl NotesPrivateChannel for AgentdNotesChannel {
         result.map_err(|error| error.to_string())
     }
 
+    fn recovery_handle(&self) -> Result<Arc<dyn NotesRecoveryChannel>, String> {
+        let endpoint = self
+            .recovery
+            .as_ref()
+            .ok_or("Notes recovery endpoint was not supplied")?;
+        Ok(Arc::new(AgentdNotesRecoveryChannel {
+            endpoint: Arc::clone(endpoint),
+        }))
+    }
+
     fn recovery_exchange(&self, request: &[u8]) -> Result<Vec<u8>, String> {
+        self.recovery_handle()?.exchange(request)
+    }
+
+    fn invalidate(&self) {
+        self.disabled.store(true, Ordering::Release);
+        if let Ok(stream) = self.stream.try_lock() {
+            let _ = stream.shutdown(Shutdown::Both);
+        }
+    }
+}
+
+// This object retains only the recovery datagram. It has no reference to the
+// effect stream, including through an owning AgentdNotesChannel Arc.
+struct AgentdNotesRecoveryChannel {
+    endpoint: Arc<Mutex<UnixDatagram>>,
+}
+
+impl NotesRecoveryChannel for AgentdNotesRecoveryChannel {
+    fn exchange(&self, request: &[u8]) -> Result<Vec<u8>, String> {
         if request.is_empty() || request.len() > NOTES_REQUEST_MAX_BYTES {
             return Err("invalid Notes recovery bound".to_string());
         }
@@ -94,13 +124,14 @@ impl NotesPrivateChannel for AgentdNotesChannel {
         let action = expected["action"]
             .as_str()
             .ok_or("missing Notes recovery action")?;
-        if !matches!(action, "observe" | "acknowledge_terminal") {
+        if !matches!(
+            action,
+            "observe" | "acknowledge_terminal" | "read_document_state" | "read_previous_receipt"
+        ) {
             return Err("Notes recovery cannot carry effects".to_string());
         }
         let channel = self
-            .recovery
-            .as_ref()
-            .ok_or("Notes recovery endpoint was not supplied")?
+            .endpoint
             .try_lock()
             .map_err(|_| "Notes recovery busy or poisoned")?;
         let deadline = Instant::now() + Duration::from_secs(2);
@@ -132,7 +163,23 @@ impl NotesPrivateChannel for AgentdNotesChannel {
             };
             if reply["schema_version"] != expected["schema_version"]
                 || reply["target"] != expected["target"]
-                || reply["operation_id"] != expected["operation_id"]
+            {
+                continue;
+            }
+            if matches!(action, "read_document_state" | "read_previous_receipt") {
+                let response_action = if action == "read_document_state" {
+                    "document_state"
+                } else {
+                    "previous_receipt"
+                };
+                if reply["action"] == response_action
+                    && reply["request_id"] == expected["request_id"]
+                {
+                    return Ok(buffer[..length].to_vec());
+                }
+                continue;
+            }
+            if reply["operation_id"] != expected["operation_id"]
                 || reply["payload_sha256"] != expected["payload_sha256"]
             {
                 continue;
@@ -146,13 +193,6 @@ impl NotesPrivateChannel for AgentdNotesChannel {
             }
         }
         Err("too many unrelated Notes recovery responses".to_string())
-    }
-
-    fn invalidate(&self) {
-        self.disabled.store(true, Ordering::Release);
-        if let Ok(stream) = self.stream.try_lock() {
-            let _ = stream.shutdown(Shutdown::Both);
-        }
     }
 }
 
@@ -221,7 +261,7 @@ impl AgentdProductionWriterHost {
         self.attach_additional_target(final_use, Arc::new(target))
     }
 
-    async fn notes_recoverable_target(
+    pub(crate) async fn notes_recoverable_target(
         &self,
         identity: NotesTargetIdentity,
         effect: UnixStream,

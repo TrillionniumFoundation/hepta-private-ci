@@ -24,6 +24,7 @@ use sqlx::sqlite::SqlitePoolOptions;
 use sqlx::sqlite::SqliteSynchronous;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::Duration;
 use std::time::Instant;
 
@@ -297,6 +298,46 @@ impl SqliteConfig {
     /// not route authoritative corruption through the rebuildable state-DB
     /// recovery path.
     pub async fn open_durable_evidence_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
+        self.open_durable_evidence_pool_guarded(path, || true).await
+    }
+
+    /// Open a FULL-durability pool whose every connection checks the same
+    /// owner-supplied guard at SQLite's commit boundary, including implicit
+    /// transactions and connections created after the pool was opened.
+    ///
+    /// Returning false rolls the transaction back. The callback must be bounded,
+    /// nonblocking, and must not access SQLite. This does not supply authority,
+    /// persist a recovery fence, or cover separately opened pools.
+    pub async fn open_durable_evidence_pool_guarded<F>(
+        &self,
+        path: &Path,
+        commit_allowed: F,
+    ) -> Result<SqlitePool, Error>
+    where
+        F: Fn() -> bool + Send + Sync + 'static,
+    {
+        self.open_coordinated_durable_evidence_pool(path, commit_allowed, || std::future::ready(()))
+            .await
+    }
+
+    /// Asynchronously coordinate both new and reused connections before owner
+    /// code receives them. The hook is still the final synchronous commit
+    /// boundary. Checkout may conservatively invalidate a recovery witness even
+    /// for a later read; it must never re-enter this pool or block an executor.
+    pub async fn open_coordinated_durable_evidence_pool<F, C, Fut>(
+        &self,
+        path: &Path,
+        commit_allowed: F,
+        before_checkout: C,
+    ) -> Result<SqlitePool, Error>
+    where
+        F: Fn() -> bool + Send + Sync + 'static,
+        C: Fn() -> Fut + Send + Sync + 'static,
+        Fut: std::future::Future<Output = ()> + Send + 'static,
+    {
+        let commit_allowed = Arc::new(commit_allowed);
+        let before_checkout = Arc::new(before_checkout);
+        let before_reuse = Arc::clone(&before_checkout);
         let options = SqliteConnectOptions::new()
             .filename(path)
             .create_if_missing(true)
@@ -307,6 +348,25 @@ impl SqliteConfig {
             .log_statements(LevelFilter::Off);
         SqlitePoolOptions::new()
             .max_connections(5)
+            .after_connect(move |connection, _metadata| {
+                let commit_allowed = Arc::clone(&commit_allowed);
+                let before_checkout = Arc::clone(&before_checkout);
+                Box::pin(async move {
+                    connection
+                        .lock_handle()
+                        .await?
+                        .set_commit_hook(move || commit_allowed());
+                    before_checkout().await;
+                    Ok(())
+                })
+            })
+            .before_acquire(move |_connection, _metadata| {
+                let before_checkout = Arc::clone(&before_reuse);
+                Box::pin(async move {
+                    before_checkout().await;
+                    Ok(true)
+                })
+            })
             .connect_with(options)
             .await
     }
@@ -366,6 +426,33 @@ impl SqliteConfig {
         Err(Error::Protocol(
             "path-based SQLite recovery is disabled".to_string(),
         ))
+    }
+
+    /// Open an existing Codex SQLite database without creating or modifying it.
+    ///
+    /// A live original-owner observer uses READONLY file-open flags and a
+    /// permanently rejecting commit hook on every replacement connection.
+    /// BEGIN IMMEDIATE can serialize a checkpoint observation without granting
+    /// any ability to commit writes; callers must explicitly roll back reads.
+    pub async fn open_durable_observation_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
+        let options = SqliteConnectOptions::new()
+            .filename(path)
+            .create_if_missing(false)
+            .read_only(true)
+            .synchronous(SqliteSynchronous::Full)
+            .foreign_keys(true)
+            .busy_timeout(Duration::from_secs(5))
+            .log_statements(LevelFilter::Off);
+        SqlitePoolOptions::new()
+            .max_connections(5)
+            .after_connect(|connection, _metadata| {
+                Box::pin(async move {
+                    connection.lock_handle().await?.set_commit_hook(|| false);
+                    Ok(())
+                })
+            })
+            .connect_with(options)
+            .await
     }
 
     /// Open an existing Codex SQLite database without creating or modifying it.

@@ -80,6 +80,10 @@ impl NotesPrivateChannel for NotesLocalChannel {
         self.original.invalidate();
     }
 
+    fn recovery_handle(&self) -> Result<Arc<dyn codex_hepta_memory::NotesRecoveryChannel>, String> {
+        self.original.recovery_handle()
+    }
+
     fn recovery_exchange(&self, request: &[u8]) -> Result<Vec<u8>, String> {
         let response = self.original.recovery_exchange(request)?;
         // Retain only bounded copies of actual recovery traffic for assertions;
@@ -291,6 +295,7 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
         .stdout(Stdio::from(logs.try_clone()?))
         .stderr(Stdio::from(logs))
         .env("XDG_RUNTIME_DIR", &runtime)
+        .env("XDG_STATE_HOME", directory.path().join("notes-state"))
         .env_remove("WAYLAND_DISPLAY")
         .process_group(0);
     for (key, _) in std::env::vars_os() {

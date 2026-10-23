@@ -190,6 +190,25 @@ pub(super) async fn retained_page(
     Ok(requests)
 }
 
+pub(super) async fn retained_request_for_run(
+    tx: &mut Transaction<'_, Sqlite>,
+    owner: &AgentId,
+    run_id: &str,
+) -> Result<Option<ObjectiveSenderRequest>, ObjectiveSenderError> {
+    let row = sqlx::query(
+        "SELECT * FROM cognitive_objective_sender_requests WHERE owner_agent_id = ? AND run_id = ?",
+    )
+    .bind(owner.as_str())
+    .bind(run_id)
+    .fetch_optional(&mut **tx)
+    .await
+    .map_err(unavailable)?;
+    let Some(row) = row else { return Ok(None) };
+    let request = decode_request(tx, &row).await?;
+    read_events(tx, &request, ExistingPermit::Required).await?;
+    Ok(Some(request))
+}
+
 pub(super) async fn append(
     tx: &mut Transaction<'_, Sqlite>,
     request: &ObjectiveSenderRequest,

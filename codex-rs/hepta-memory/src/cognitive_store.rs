@@ -51,6 +51,13 @@ use crate::framing::frame_part;
 mod sync;
 use sync::sync_cognitive_directory;
 
+#[path = "cognitive_store_gate.rs"]
+mod gate;
+pub(crate) use gate::CognitiveCommitGate;
+
+#[path = "cognitive_checkpoint_bind.rs"]
+mod checkpoint_bind;
+
 #[path = "cognitive_store_recovery.rs"]
 mod recovery;
 pub use recovery::CognitiveRecoveryAnchor;
@@ -241,8 +248,10 @@ pub enum CognitiveStoreError {
 #[derive(Clone)]
 pub struct CognitiveStore {
     pub(crate) pool: SqlitePool,
+    observation_pool: Option<SqlitePool>,
     pub(crate) owner_agent_id: AgentId,
     path: PathBuf,
+    pub(crate) commit_gate: CognitiveCommitGate,
     _open_guard: Option<Arc<CognitiveStoreOpenGuard>>,
 }
 
@@ -250,6 +259,7 @@ pub struct CognitiveStore {
 pub(crate) struct CognitiveStoreOpenGuard {
     _file: File,
     _path: PathBuf,
+    exclusive: bool,
 }
 
 impl CognitiveStoreOpenGuard {
@@ -300,6 +310,7 @@ impl CognitiveStoreOpenGuard {
         Ok(Arc::new(Self {
             _file: file,
             _path: path,
+            exclusive: false,
         }))
     }
 
@@ -313,6 +324,7 @@ impl CognitiveStoreOpenGuard {
         Ok(Self {
             _file: file,
             _path: path,
+            exclusive: true,
         })
     }
 }
@@ -325,8 +337,10 @@ impl CognitiveStore {
     ) -> Self {
         Self {
             pool,
+            observation_pool: None,
             owner_agent_id,
             path,
+            commit_gate: CognitiveCommitGate::default(),
             _open_guard: None,
         }
     }
@@ -341,8 +355,10 @@ impl CognitiveStore {
         let path = resolve_active_database_path(&root)?;
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+        let commit_gate = CognitiveCommitGate::default();
+        let connection_gate = commit_gate.clone();
         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-            .open_durable_evidence_pool(&path)
+            .open_durable_evidence_pool_guarded(&path, move || connection_gate.commit_allowed())
             .await
             .map_err(unavailable)?;
         MIGRATOR.run(&pool).await.map_err(classify_migrate_error)?;
@@ -359,8 +375,10 @@ impl CognitiveStore {
         verify_store(&pool, layout.agent_id()).await?;
         Ok(Self {
             pool,
+            observation_pool: None,
             owner_agent_id: layout.agent_id().clone(),
             path,
+            commit_gate,
             _open_guard: Some(open_guard),
         })
     }
@@ -374,12 +392,21 @@ impl CognitiveStore {
     /// pool is shared by all clones; other store handles must also be dropped
     /// before recovery can obtain the exclusive fence.
     pub async fn close(self) {
+        if let Some(pool) = &self.observation_pool {
+            pool.close().await;
+        }
         self.pool.close().await;
         drop(self);
     }
 
     pub fn path(&self) -> &Path {
         &self.path
+    }
+
+    /// Managed owners share their exclusive recovery guard with this physically
+    /// READONLY pool. Qualification/legacy stores retain their original pool.
+    pub(crate) fn observation_pool(&self) -> &SqlitePool {
+        self.observation_pool.as_ref().unwrap_or(&self.pool)
     }
 
     pub fn owner_agent_id(&self) -> &AgentId {

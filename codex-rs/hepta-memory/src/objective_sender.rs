@@ -46,10 +46,16 @@ const MAX_CHECKPOINT_DEADLINE: Duration = Duration::from_secs(5);
 /// constructor. An implementation must durably authenticate and retain the exact
 /// CURRENT owner/schema/state cut and fence stale publishers. There is no default
 /// implementation. Never re-enter this CognitiveStore: the future runs while its
-/// original BEGIN IMMEDIATE write lock is held. Cancellation must release all
-/// external resources and must not later publish a stale cut in the background.
+/// original BEGIN IMMEDIATE write lock is held. Cancellation must release
+/// caller-owned resources and invalidate the transport. Already accepted host
+/// I/O may finish only under the protected publisher CAS while the entire owner
+/// remains fenced; it must never publish a stale cut. No hard cancellation of
+/// external filesystem sync is implied.
 /// Each future poll must be bounded and nonblocking. The Tokio deadline is
 /// cooperative, not a preemptive wall-clock limit.
+/// An uncertain result also fences every commit through this owner pool before
+/// its SQLite write lock is released. This interlock is not an external durable
+/// publisher fence and does not waive the provider's cancellation obligations.
 pub trait ObjectiveSenderCheckpoint: Send + Sync {
     fn acknowledge_current<'a>(
         &'a self,
@@ -278,16 +284,18 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
     /// No event, sending permission or local cancellation permission is created.
     /// A failed or cancelled ACK returns no snapshot; the same original records
     /// remain available for a later explicit read/ACK without resubmission.
+    /// Re-acknowledgement never reopens a fenced owner generation.
     pub async fn snapshot_acknowledged(
         &self,
         ticket: &ObjectiveSenderTicket,
     ) -> Result<ObjectiveSenderSnapshot, ObjectiveSenderError> {
         self.require_ticket_owner(ticket)?;
-        self.writer.verify_current_authority().await?;
+        self.writer.sender_live_check()?;
+        self.writer.verify_authority().await?;
         let mut transaction = self
             .writer
             .store
-            .pool
+            .observation_pool()
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(unavailable)?;
@@ -411,7 +419,7 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         let mut transaction = self
             .writer
             .store
-            .pool
+            .observation_pool()
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(unavailable)?;
@@ -428,6 +436,7 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         let writer = self.current_fence(transaction).await?;
         let current = capture_recovery_anchor(transaction, self.writer.owner_agent_id()).await?;
         self.writer.sender_live_check()?;
+        let attempt = self.writer.store.commit_gate.checkpoint_attempt();
         let acknowledged = tokio::time::timeout(
             self.deadline,
             self.checkpoint.acknowledge_current(&current, &writer),
@@ -439,6 +448,7 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
             return Err(ObjectiveSenderError::AcknowledgementUnknown);
         }
         self.writer.sender_live_check()?;
+        attempt.acknowledge();
         Ok(())
     }
 }
@@ -454,3 +464,11 @@ mod tests;
 #[cfg(all(test, unix))]
 #[path = "objective_sender_crash_tests.rs"]
 mod crash_tests;
+
+#[cfg(test)]
+#[path = "objective_sender_gate_tests.rs"]
+mod gate_tests;
+
+#[cfg(test)]
+#[path = "cognitive_checkpoint_tests.rs"]
+mod protected_checkpoint_tests;

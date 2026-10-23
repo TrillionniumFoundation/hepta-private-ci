@@ -57,6 +57,10 @@ use crate::local_lease_outbox::legacy_dispatch_operation_digest;
 use crate::operation_claims;
 use crate::operation_claims::DurableDispatchClaim;
 
+#[path = "production_retained_operation.rs"]
+mod retained_operation;
+pub use retained_operation::ProductionRetainedOperation;
+
 #[path = "objective_sender.rs"]
 mod objective_sender;
 pub use objective_sender::ObjectiveSenderCheckpoint;
@@ -118,6 +122,8 @@ pub const PRODUCTION_DISPATCH_CLAIM_LEASE_MS: u64 = 30_000;
 /// Errors returned by the production writer and dispatcher boundary.
 #[derive(Debug, thiserror::Error)]
 pub enum ProductionWriterError {
+    #[error("the owner generation is fenced after uncertain checkpoint publication")]
+    CheckpointFenced,
     #[error(transparent)]
     Local(#[from] LocalLeaseOutboxError),
     #[error("production authority rejected: {0}")]
@@ -680,10 +686,28 @@ impl ProductionDurableWriter {
     /// Revalidate the external authority immediately before a semantic owner
     /// mutation. Legacy qualification writers fail closed at this boundary.
     pub async fn verify_current_authority(&self) -> Result<(), ProductionWriterError> {
+        self.store
+            .commit_gate
+            .require_open()
+            .map_err(|_| ProductionWriterError::CheckpointFenced)?;
         if self.live_verifier.is_none() {
             return Err(ProductionWriterError::LiveVerifierRequired);
         }
-        self.verify_authority().await
+        self.verify_authority().await?;
+        // An asynchronous pool checkout may discover that protected Dirty
+        // invalidation is unknown. Do not return a live write capability after
+        // that checkout has synchronously fenced this entire owner.
+        self.store
+            .commit_gate
+            .require_open()
+            .map_err(|_| ProductionWriterError::CheckpointFenced)
+    }
+
+    /// Whether this entire store generation stopped accepting commits after
+    /// an uncertain checkpoint. Every clone/capability shares the same fence;
+    /// a new facade cannot clear it. Read-only inspection remains available.
+    pub fn checkpoint_fenced(&self) -> bool {
+        self.store.commit_gate.is_fenced()
     }
 
     /// Mint the only production cognitive mutation capability. A legacy writer
@@ -2767,11 +2791,11 @@ fn operation_digest(
 
 async fn verify_durable_store(store: &CognitiveStore) -> Result<(), ProductionWriterError> {
     let journal_mode: String = sqlx::query_scalar("PRAGMA journal_mode")
-        .fetch_one(&store.pool)
+        .fetch_one(store.observation_pool())
         .await
         .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
     let synchronous: i64 = sqlx::query_scalar("PRAGMA synchronous")
-        .fetch_one(&store.pool)
+        .fetch_one(store.observation_pool())
         .await
         .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
     if !journal_mode.eq_ignore_ascii_case(PRODUCTION_DURABLE_WRITER_JOURNAL_MODE)

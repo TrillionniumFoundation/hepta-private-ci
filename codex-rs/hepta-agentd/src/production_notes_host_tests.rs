@@ -15,6 +15,14 @@ use std::os::fd::AsRawFd;
 use std::os::unix::net::UnixDatagram;
 use std::os::unix::net::UnixStream;
 
+#[path = "notes_objective_tests.rs"]
+mod objective_tests;
+
+#[path = "notes_objective_composition_tests.rs"]
+mod composition_tests;
+#[path = "notes_previous_host_tests.rs"]
+mod previous_tests;
+
 struct NotesHostFixture {
     directory: tempfile::TempDir,
     config: AgentdConfig,

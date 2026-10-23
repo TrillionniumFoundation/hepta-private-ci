@@ -85,6 +85,7 @@ fn state_with(record: RunStartRecordV1) -> (TempDir, ObjectiveHostState) {
     (
         temp,
         ObjectiveHostState {
+            notes_cursor: 0,
             journal,
             highest_sequences,
         },

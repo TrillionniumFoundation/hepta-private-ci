@@ -175,6 +175,11 @@ async fn retained_signed_body_hash_matches_original_agentd_wire_projection()
             }
             let original_payload = original_payload?;
             assert_eq!(original_payload, serde_json::to_vec(&ingress.body)?);
+            let claims = crate::authbus_objective_claims(config.identity(), &ingress)?;
+            assert_eq!(
+                claims.payload_digest,
+                codex_hepta_types::Digest32::of_bytes(&original_payload)
+            );
             let retained = ObjectiveSenderRequest::from_original(raw.clone(), origin.clone())?;
             assert_eq!(
                 retained.identity().signed_body_sha256,

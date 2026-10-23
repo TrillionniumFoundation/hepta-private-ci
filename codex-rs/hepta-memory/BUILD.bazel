@@ -5,6 +5,8 @@ codex_rust_crate(
     compile_data = glob(["migrations/**"]) + [
         "tests/fixtures/notes-target-v1.json",
         "tests/fixtures/notes-recovery-v1.json",
+        "tests/fixtures/notes-document-state-v1.json",
+        "tests/fixtures/notes-previous-receipt-v1.json",
     ],
     crate_name = "codex_hepta_memory",
 )

@@ -28,6 +28,8 @@ mod automation_effect_host;
 mod automation_recovery;
 mod browser_servo;
 mod client;
+#[cfg(target_os = "linux")]
+mod cognitive_checkpoint_unix;
 mod cognitive_context;
 mod cognitive_ranker;
 mod cognitive_retrieval_context;
@@ -65,6 +67,8 @@ mod neuron_runtime;
 mod notes_bootstrap;
 #[cfg(unix)]
 mod notes_channel;
+#[cfg(target_os = "linux")]
+mod notes_document_observer;
 mod objective_runtime;
 pub use objective_runtime::authbus_objective_claims;
 mod plasticity_anchor_journal;
@@ -180,6 +184,10 @@ pub use codex_hepta_automation::AutomationTaskId;
 pub use codex_hepta_automation::AutomationTimeZoneProfileV1;
 pub use codex_hepta_automation::AutomationTimezoneTransitionV1;
 pub use codex_hepta_memory::RetrievalExecutionContextV1;
+#[cfg(target_os = "linux")]
+pub use cognitive_checkpoint_unix::AgentdCognitiveCheckpointPeer;
+#[cfg(target_os = "linux")]
+pub use cognitive_checkpoint_unix::AgentdUnixCognitiveCheckpointTransport;
 pub use cognitive_ranker::CurrentCognitiveRegistry;
 pub use cognitive_ranker::PinnedCognitiveRanker;
 pub use cognitive_ranker::cognitive_action_id;
@@ -241,6 +249,9 @@ pub use lane_b_runtime::RuntimeComposition;
 pub use neuron_runtime::AgentdNeuronOwner;
 #[cfg(unix)]
 pub use notes_channel::AgentdNotesChannel;
+#[cfg(target_os = "linux")]
+pub use notes_document_observer::AgentdNotesDocumentObserver;
+pub use objective_runtime::authbus_objective_claims;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
 pub use plasticity_host::AgentdPlasticityHostErrorV1;
@@ -284,6 +295,7 @@ pub use production_composition::attach_production_operation_host;
 pub use production_writer_host::AgentdFinalUseGrantProvider;
 pub use production_writer_host::AgentdProductionOperationRuntimeConfig;
 pub use production_writer_host::AgentdProductionWriterHost;
+pub use production_writer_host::AgentdProtectedCheckpointInputs;
 pub use prompt_runtime::AgentdPromptPipelineError;
 pub use prompt_runtime::AgentdPromptPipelineOwner;
 pub use prompt_runtime::AgentdPromptRuntimeError;
@@ -292,6 +304,7 @@ pub use prompt_runtime::PromptRuntimeStageDisposition;
 pub use runtime::run;
 pub use runtime_tasks::RuntimeTaskFailure;
 pub use runtime_tasks::RuntimeTasks;
+pub use state::AgentdNotesObjectiveConfig;
 pub use topology_plasticity_host::AgentdTopologyAdmissionInputV1;
 pub use topology_plasticity_host::AgentdTopologyAnchorStoreV1;
 pub use topology_plasticity_host::AgentdTopologyHostErrorV1;

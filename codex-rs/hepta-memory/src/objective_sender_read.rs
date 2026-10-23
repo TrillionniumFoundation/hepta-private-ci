@@ -16,6 +16,14 @@ pub struct ObjectiveSenderRetainedCursor {
     after_sha256: String,
 }
 
+impl ObjectiveSenderRetainedCursor {
+    /// Public navigation data only. The token grants no authority, acknowledgment
+    /// or sending permission; the receiving sender always binds its own owner.
+    pub fn navigation_token(&self) -> &str {
+        &self.after_sha256
+    }
+}
+
 pub enum ObjectiveSenderRetainedPosition {
     Beginning,
     After(ObjectiveSenderRetainedCursor),
@@ -38,11 +46,18 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         &self,
         request: ObjectiveSenderRequest,
     ) -> Result<ObjectiveSenderTicket, ObjectiveSenderError> {
-        self.writer.verify_current_authority().await?;
+        self.writer.sender_live_check()?;
+        self.writer.verify_authority().await?;
         if request.origin.agent_id != *self.writer.owner_agent_id() {
             return Err(ObjectiveSenderError::IdentityMismatch);
         }
-        let mut transaction = self.writer.store.pool.begin().await.map_err(unavailable)?;
+        let mut transaction = self
+            .writer
+            .store
+            .observation_pool()
+            .begin()
+            .await
+            .map_err(unavailable)?;
         store::require_request(&mut transaction, &request).await?;
         transaction.rollback().await.map_err(unavailable)?;
         self.writer.sender_live_check()?;
@@ -61,7 +76,8 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         &self,
         position: ObjectiveSenderRetainedPosition,
     ) -> Result<ObjectiveSenderRetainedPage, ObjectiveSenderError> {
-        self.writer.verify_current_authority().await?;
+        self.writer.sender_live_check()?;
+        self.writer.verify_authority().await?;
         let after = match position {
             ObjectiveSenderRetainedPosition::Beginning => String::new(),
             ObjectiveSenderRetainedPosition::After(cursor) => {
@@ -71,7 +87,13 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
                 cursor.after_sha256
             }
         };
-        let mut transaction = self.writer.store.pool.begin().await.map_err(unavailable)?;
+        let mut transaction = self
+            .writer
+            .store
+            .observation_pool()
+            .begin()
+            .await
+            .map_err(unavailable)?;
         let mut requests =
             store::retained_page(&mut transaction, self.writer.owner_agent_id(), &after).await?;
         let next = if requests.len() > 16 {
@@ -94,13 +116,67 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         Ok(ObjectiveSenderRetainedPage { requests, next })
     }
 
+    /// Resume bounded navigation within this sender's fixed owner. A syntactically
+    /// valid token may select any historical position; it never proves a complete
+    /// scan or grants a send permit. Restart at Beginning for concurrent inserts.
+    pub async fn retained_page_after_token(
+        &self,
+        after: &str,
+    ) -> Result<ObjectiveSenderRetainedPage, ObjectiveSenderError> {
+        if after.len() != 64
+            || !after
+                .bytes()
+                .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+        {
+            return Err(ObjectiveSenderError::IdentityMismatch);
+        }
+        self.retained_page(ObjectiveSenderRetainedPosition::After(
+            ObjectiveSenderRetainedCursor {
+                owner: self.writer.owner_agent_id().clone(),
+                after_sha256: after.to_owned(),
+            },
+        ))
+        .await
+    }
+
+    /// Read one exact original request without scanning unrelated history. The
+    /// original request and complete observation chain are verified in the same
+    /// physical read-only snapshot. A missing record creates no sender ticket.
+    pub async fn retained_request_for_run(
+        &self,
+        run_id: &str,
+    ) -> Result<Option<ObjectiveSenderRequest>, ObjectiveSenderError> {
+        self.writer.sender_live_check()?;
+        self.writer.verify_authority().await?;
+        let mut transaction = self
+            .writer
+            .store
+            .observation_pool()
+            .begin()
+            .await
+            .map_err(unavailable)?;
+        let request =
+            store::retained_request_for_run(&mut transaction, self.writer.owner_agent_id(), run_id)
+                .await?;
+        transaction.rollback().await.map_err(unavailable)?;
+        self.writer.sender_live_check()?;
+        Ok(request)
+    }
+
     pub async fn snapshot(
         &self,
         ticket: &ObjectiveSenderTicket,
     ) -> Result<ObjectiveSenderSnapshot, ObjectiveSenderError> {
         self.require_ticket_owner(ticket)?;
-        self.writer.verify_current_authority().await?;
-        let mut transaction = self.writer.store.pool.begin().await.map_err(unavailable)?;
+        self.writer.sender_live_check()?;
+        self.writer.verify_authority().await?;
+        let mut transaction = self
+            .writer
+            .store
+            .observation_pool()
+            .begin()
+            .await
+            .map_err(unavailable)?;
         store::require_request(&mut transaction, &ticket.request).await?;
         let snapshot = store::snapshot(&mut transaction, &ticket.request).await?;
         transaction.rollback().await.map_err(unavailable)?;

@@ -72,6 +72,7 @@ pub(crate) struct ObjectiveRuntimeHost {
 struct ObjectiveHostState {
     journal: DurableRunStartJournal,
     highest_sequences: BTreeMap<(String, u64), u64>,
+    notes_cursor: usize,
 }
 
 impl ObjectiveRuntimeHost {
@@ -98,6 +99,7 @@ impl ObjectiveRuntimeHost {
             state: Mutex::new(ObjectiveHostState {
                 journal,
                 highest_sequences,
+                notes_cursor: 0,
             }),
         })
     }
@@ -140,6 +142,30 @@ impl ObjectiveRuntimeHost {
         Ok(())
     }
 
+    pub(crate) async fn reconcile_notes(&self, agentd: &AgentdState) -> Result<(), AgentdError> {
+        if agentd.notes_objective.get().is_none() {
+            return Ok(());
+        }
+        let records = {
+            let mut state = self
+                .state
+                .lock()
+                .map_err(|_| invalid("objective runtime mutex poisoned"))?;
+            let records = state.journal.records().map_err(store_error)?;
+            let end = (state.notes_cursor + 16).min(records.len());
+            let batch = records[state.notes_cursor.min(records.len())..end]
+                .iter()
+                .map(|record| (**record).clone())
+                .collect::<Vec<_>>();
+            state.notes_cursor = if end == records.len() { 0 } else { end };
+            batch
+        };
+        for record in records {
+            agentd.execute_notes_objective(&record).await?;
+        }
+        Ok(())
+    }
+
     pub(crate) async fn submit(
         &self,
         agentd: &AgentdState,
@@ -172,6 +198,13 @@ impl ObjectiveRuntimeHost {
 
         let source = decode_source_envelope_json_v1(request.body.source_envelope_json.as_bytes())
             .map_err(|error| invalid(&format!("objective source: {error}")))?;
+        agentd
+            .validate_notes_source(
+                self.profile_digest,
+                &request.body.run_id,
+                source.structured_intent.provenance.source_digest,
+            )
+            .await?;
         let now_unix_micros = now_ms
             .checked_mul(1_000)
             .ok_or_else(|| invalid("objective host clock overflow"))?;
@@ -311,6 +344,7 @@ impl ObjectiveRuntimeHost {
                     }
                     None => {
                         agentd.start_current_run_start_record(&record)?;
+                        agentd.execute_notes_objective(&record).await?;
                         "compiled"
                     }
                 }

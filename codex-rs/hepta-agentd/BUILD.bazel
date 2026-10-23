@@ -16,6 +16,8 @@ codex_rust_crate(
     compile_data = [
         "tests/fixtures/hos2_production_owner.json",
         "tests/fixtures/notes-bootstrap-v2.json",
+        "tests/fixtures/notes-objective-literal-v1.json",
+        "tests/fixtures/notes-target-v1.json",
     ],
     crate_name = "codex_hepta_agentd",
     integration_test_timeout = "long",
@@ -32,6 +34,8 @@ rust_library(
     compile_data = [
         "tests/fixtures/hos2_production_owner.json",
         "tests/fixtures/notes-bootstrap-v2.json",
+        "tests/fixtures/notes-objective-literal-v1.json",
+        "tests/fixtures/notes-target-v1.json",
     ],
     crate_features = ["qualification-cognitive-write"],
     crate_name = "codex_hepta_agentd",
@@ -46,6 +50,8 @@ rust_test(
     compile_data = [
         "tests/fixtures/hos2_production_owner.json",
         "tests/fixtures/notes-bootstrap-v2.json",
+        "tests/fixtures/notes-objective-literal-v1.json",
+        "tests/fixtures/notes-target-v1.json",
     ],
     crate = ":hepta-agentd-cognitive-write-qualification-lib",
     crate_features = ["qualification-cognitive-write"],
