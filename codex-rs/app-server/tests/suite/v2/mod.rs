@@ -103,6 +103,7 @@ mod thread_name_websocket;
 mod thread_queue;
 mod thread_read;
 mod thread_resume;
+mod thread_resume_initial_subscription;
 mod thread_revert;
 mod thread_rollback;
 mod thread_sections;

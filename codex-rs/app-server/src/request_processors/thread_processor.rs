@@ -4420,7 +4420,37 @@ impl ThreadRequestProcessor {
                     /*path*/ None,
                     /*include_history*/ false,
                 )
-                .await?;
+                .await;
+            let source_thread = match source_thread {
+                Err(error)
+                    if params.path.is_none()
+                        && params.exclude_turns
+                        && params.initial_turns_page.is_none()
+                        && error.code == crate::error_code::INVALID_REQUEST_ERROR_CODE
+                        && error.message
+                            == format!("no rollout found for thread id {existing_thread_id}")
+                        && !existing_thread.config_snapshot().await.ephemeral =>
+                {
+                    // A newly started persistent thread already exists in Core,
+                    // but its rollout is lazy until the first turn. Materialize
+                    // that same thread for explicit metadata-only subscription
+                    // before its first input. History-bearing resume still rejects
+                    // unmaterialized storage. Never reconstruct or replace history.
+                    existing_thread.ensure_rollout_materialized().await;
+                    existing_thread.flush_rollout().await.map_err(|error| {
+                        internal_error(format!(
+                            "failed to materialize existing thread for resume: {error}"
+                        ))
+                    })?;
+                    self.read_stored_thread_for_resume(
+                        &params.thread_id,
+                        /*path*/ None,
+                        /*include_history*/ false,
+                    )
+                    .await?
+                }
+                result => result?,
+            };
             Some((existing_thread_id, existing_thread, source_thread))
         } else {
             let source_thread = self
