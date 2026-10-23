@@ -143,9 +143,9 @@ External evidence gates:
 
 ## 7. `inference.worker`
 
-Owns live provider client handles; persistent request/slot/observation facts remain in the inference.control journal. App Server owns ephemeral thread execution; artifact/cache owners retain model bytes.
+The native App Server path owns live provider handles while inference.control retains its request/slot/observation journal. The separate fixed ordinary CPU destination owns the trusted destination SQLite dedupe and sixteen permanent lifetime entries, including terminal tombstones, and the original in-memory Child handles; it neither owns inference.control facts nor refunds entries.
 
-The hosted native-app-server profile observes real matching turn events; the local manifest driver remains injected and does not prove physical weights/device behavior.
+The hosted native App Server profile observes exact turn events. The separately registered ordinary destination observes only its retained original Child: timely exit zero plus durable terminal storage is an ordinary exit fact; missing owner, nonzero/late exit and uncertain durability stay indeterminate. Neither that fact nor the injected local driver proves model/device behavior, resource retirement or pool/process cold recovery.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
