@@ -89,3 +89,20 @@ rule out near-duplicate sources with different bytes. The frozen evaluator still
 returns `HOLD_NO_GO_INDEPENDENT_EVIDENCE_REQUIRED` even if structural metrics
 pass. Require external original-source identity review, signer-verified physical
 receipts, statistical review and all real model/host gates before selection.
+
+## P6 scale-isolated A/B/C descriptive statistics (source-only)
+
+The A/B/C comparator now publishes `scale_summaries["64"|"256"|"1024"|"4096"]["A"|"B"|"C"]
+with per-scale task success, tool/recovery correctness, wall p95/p99 and peak
+RSS. Historic pooled `mode_summaries` remain for compatibility; they may
+conceal severe scale-specific regressions and must not be used to authorize
+4096-Cell deployment. The test fixture verifies a 4096-Cell C failure remains
+visible even while the pooled C success fraction is 75%.
+
+`concurrent_throughput_proven=false` is unconditional. These records are not
+concurrent 4096-Cell throughput measurements, and the v1 comparison does not
+report independently measured CPU/GPU usage, queueing, power or wall-clock
+throughput. Those physical measurements and signed original-source evidence
+remain **OPEN** P6 acceptance blockers. All result values are synthetic/
+untrusted unless authenticated by a separate owner; the comparator always
+returns `independent_acceptance=false` and `physical_execution_proven=false`.
