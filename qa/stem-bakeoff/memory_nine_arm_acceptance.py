@@ -52,7 +52,8 @@ PARTITIONS = {
 }
 ROW_KEYS = frozenset((
     "schema", "plan_sha256", "arm", "query_id", "group",
-    "model_artifact_sha256", "source_frontier_sha256", "forget_frontier_sha256",
+    "model_artifact_sha256", "reader_artifact_sha256", "reader_request_digest",
+    "source_frontier_sha256", "forget_frontier_sha256",
     "selected_ids", "context_sha256", "context_bytes",
     "status", "answer", "runtime",
 ))
@@ -370,6 +371,16 @@ def validate_attempts(plan, public, manifests, artifact_root, attempts, *,
                 and type(row["context_bytes"]) is int
                 and row["context_bytes"] == len(actual_context) <= MAX_CONTEXT,
                 "forged or over-budget Reader context")
+        require(row["reader_artifact_sha256"] == plan["reader_artifact_sha256"]
+                and row["reader_request_digest"] == sha(canonical({
+                    "domain": "hepta.memory-nine-arm-reader-request.v1",
+                    "query_id": qid,
+                    "question": public["queries"][qid]["text"],
+                    "context_sha256": row["context_sha256"],
+                    "reader": plan["reader_artifact_sha256"],
+                    "tokenizer": plan["tokenizer_sha256"],
+                    "prompt": plan["prompt_sha256"],
+                })), "Reader/prompt/context binding drift")
         require(row["status"] in ("accepted", "abstained", "unavailable")
                 and type(row["answer"]) is str and len(row["answer"].encode()) <= 16_384
                 and (bool(row["answer"].strip()) if row["status"] == "accepted"
