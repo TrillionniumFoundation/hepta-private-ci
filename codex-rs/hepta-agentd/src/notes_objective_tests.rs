@@ -14,6 +14,9 @@ use pretty_assertions::assert_eq;
 use serde_json::Value;
 use serde_json::json;
 
+#[path = "notes_reconciliation_scope_tests.rs"]
+mod reconciliation_scope_tests;
+
 struct Application {
     target: NotesTargetIdentity,
     effects: AtomicUsize,
@@ -127,9 +130,48 @@ async fn attach_test_trust(state: &AgentdState, key: &SigningKey) -> Result<(), 
     Ok(())
 }
 
+enum ExecutionFixture {
+    Full,
+    FiniteNotes,
+}
+
+impl ExecutionFixture {
+    async fn submit(
+        &self,
+        runtime: &crate::objective_runtime::ObjectiveRuntimeHost,
+        state: &AgentdState,
+        ingress: AuthBusObjectiveIngress,
+    ) -> Result<crate::objective_runtime::ObjectiveStartResult, crate::AgentdError> {
+        match self {
+            Self::Full => {
+                runtime
+                    .submit(state, ingress, /*current_generation*/ 2)
+                    .await
+            }
+            Self::FiniteNotes => {
+                runtime
+                    .submit_notes(state, ingress, /*current_generation*/ 2)
+                    .await
+            }
+        }
+    }
+}
+
 #[tokio::test]
 async fn signed_notes_objective_uses_original_run_and_operation_then_recovers_lost_ack_without_reentry()
 -> Result<(), Box<dyn Error>> {
+    notes_objective_roundtrip(ExecutionFixture::Full).await
+}
+
+#[tokio::test]
+async fn finite_notes_static_execution_uses_original_publication_owner_and_recovers_lost_ack_fixture()
+-> Result<(), Box<dyn Error>> {
+    // Reuse the original synthetic issuer/ready-state fixture and original
+    // application/owner checks. This is not Root deployment or native proof.
+    notes_objective_roundtrip(ExecutionFixture::FiniteNotes).await
+}
+
+async fn notes_objective_roundtrip(execution: ExecutionFixture) -> Result<(), Box<dyn Error>> {
     for lose_reply in [false, true] {
         let NotesHostFixture {
             directory: _directory,
@@ -261,9 +303,7 @@ async fn signed_notes_objective_uses_original_run_and_operation_then_recovers_lo
             .map(|byte| format!("{byte:02x}"))
             .collect();
         assert!(matches!(
-            runtime
-                .submit(&state, ingress.clone(), /*current_generation*/ 2)
-                .await?,
+            execution.submit(&runtime, &state, ingress.clone()).await?,
             crate::objective_runtime::ObjectiveStartResult::Admitted(_)
         ));
         runtime.reconcile_notes(&state).await?;
@@ -285,9 +325,7 @@ async fn signed_notes_objective_uses_original_run_and_operation_then_recovers_lo
         };
         assert_eq!(run.phase, crate::AgentRunPhase::Succeeded);
         assert!(run.terminal_observed);
-        runtime
-            .submit(&state, ingress, /*current_generation*/ 2)
-            .await?;
+        execution.submit(&runtime, &state, ingress).await?;
         runtime.reconcile_notes(&state).await?;
         assert_eq!(application.effects.load(Ordering::SeqCst), 1);
         assert_eq!(issuer.requests.load(Ordering::SeqCst), 1);

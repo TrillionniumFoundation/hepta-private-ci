@@ -34,7 +34,12 @@ pub use notes_objective::AgentdNotesObjectiveConfig;
 #[path = "state_control.rs"]
 mod control;
 
+#[path = "notes_organ_state.rs"]
+mod notes_organ;
+
 pub(crate) struct AgentdState {
+    #[cfg(target_os = "linux")]
+    pub(crate) notes_organ_root: std::sync::OnceLock<Arc<crate::AgentdRootAuthoritySession>>,
     pub(crate) notes_objective: std::sync::OnceLock<AgentdNotesObjectiveConfig>,
     pub(crate) intelligence_product:
         std::sync::OnceLock<Arc<crate::AgentdIntelligenceProductRunnerV1>>,
@@ -71,6 +76,7 @@ struct RuntimeState {
     current_generation: u64,
     lifecycle: AgentLifecycle,
     app_server_ready: bool,
+    notes_organ_ready: bool,
     critical_stores_ready: bool,
     revocation_ready: bool,
     required_ports_ready: bool,
@@ -132,6 +138,8 @@ impl AgentdState {
         })?;
         let prompt_pipeline = Arc::new(prompt_pipeline);
         Ok(Self {
+            #[cfg(target_os = "linux")]
+            notes_organ_root: std::sync::OnceLock::new(),
             notes_objective: std::sync::OnceLock::new(),
             authbus: std::sync::OnceLock::new(),
             intelligence_product: std::sync::OnceLock::new(),
@@ -149,6 +157,7 @@ impl AgentdState {
                 current_generation: identity.spawn_generation,
                 lifecycle: AgentLifecycle::Starting,
                 app_server_ready: false,
+                notes_organ_ready: false,
                 critical_stores_ready: false,
                 revocation_ready: false,
                 required_ports_ready: false,
@@ -373,10 +382,11 @@ impl AgentdState {
                 AgentLifecycle::Draining | AgentLifecycle::Stopped | AgentLifecycle::Failed
             ) {
                 runtime.app_server_ready = false;
+                runtime.notes_organ_ready = false;
                 runtime.required_ports_ready = false;
             }
             if runtime.lifecycle == AgentLifecycle::Running
-                && runtime.app_server_ready
+                && (runtime.app_server_ready || runtime.notes_organ_ready)
                 && runtime.critical_stores_ready
                 && runtime.revocation_ready
                 && runtime.required_ports_ready
@@ -461,6 +471,7 @@ impl AgentdState {
     pub(crate) fn mark_draining(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
         runtime.app_server_ready = false;
+        runtime.notes_organ_ready = false;
         runtime.required_ports_ready = false;
         runtime.admission_open = false;
         self.app_server_drain.request_drain();
@@ -530,6 +541,7 @@ impl AgentdState {
     pub(crate) fn mark_fenced(&self) {
         if let Ok(mut runtime) = self.runtime.lock() {
             runtime.app_server_ready = false;
+            runtime.notes_organ_ready = false;
             runtime.required_ports_ready = false;
             runtime.admission_open = false;
             runtime.fenced = true;
@@ -710,7 +722,7 @@ impl AgentdState {
     }
 
     fn require_current_run_start(&self, record: &RunStartRecordV1) -> Result<u64, AgentdError> {
-        crate::authbus_ingress::require_ready(self)?;
+        crate::authbus_ingress::require_objective_ready(self)?;
         let now_ms = crate::authbus_ingress::now_ms()?;
         let current_generation = self
             .runtime

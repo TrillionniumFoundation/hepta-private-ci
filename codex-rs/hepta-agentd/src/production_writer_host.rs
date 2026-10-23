@@ -42,6 +42,9 @@ use crate::grant_provider_worker::GrantProviderWorker;
 
 #[path = "production_protected_host.rs"]
 mod protected_host;
+
+#[path = "production_writer_reconcile.rs"]
+mod reconcile;
 pub use protected_host::AgentdProtectedCheckpointInputs;
 
 /// Externally owned grant source. Agentd asks for a grant bound to the exact
@@ -229,7 +232,10 @@ pub struct AgentdProductionWriterHost {
     writer: Arc<ProductionDurableWriter>,
     dispatchers: BTreeMap<String, ProductionFinalUseOutboxDispatcher>,
     grants: Option<Arc<GrantProviderWorker>>,
-    previous_notes: Option<Arc<codex_hepta_memory::ProductionNotesRecoveryTarget>>,
+    previous_notes: Option<(
+        String,
+        Arc<codex_hepta_memory::ProductionNotesRecoveryTarget>,
+    )>,
     // Private read-side clone of the exact recovered generation. Runtime
     // composition can reuse the same fenced owner without reopening by path or
     // exposing ProductionDurableWriter's crate-private raw-store handle.
@@ -596,88 +602,8 @@ impl AgentdProductionWriterHost {
         self.previous_notes = observer
             .previous_recovery_target(self.writer.as_ref())
             .await?
-            .map(Arc::new);
+            .map(|previous| (observer.target().destination_id(), Arc::new(previous)));
         Ok(self)
-    }
-
-    /// Bounded observer-only reconciliation. This never invokes target
-    /// dispatch, so an acknowledgement-loss/restart cannot become a resend.
-    pub async fn reconcile(&self, limit: usize) -> Result<usize, AgentdError> {
-        if !(1..=256).contains(&limit) {
-            return Err(AgentdError::Protocol(
-                "production operation reconcile limit must be 1..=256".to_string(),
-            ));
-        }
-        if self.dispatchers.is_empty() {
-            return Err(AgentdError::Protocol(
-                "production final-use outbox dispatcher is not explicitly attached".to_string(),
-            ));
-        }
-        let mut total = 0_usize;
-        if let Some(previous) = &self.previous_notes {
-            total += self
-                .writer
-                .reconcile_target_batch(previous.as_ref(), limit)
-                .await?;
-        }
-        for dispatcher in self.dispatchers.values() {
-            if total >= limit {
-                break;
-            }
-            total += dispatcher
-                .reconcile(self.writer.as_ref(), limit - total)
-                .await?;
-        }
-        Ok(total)
-    }
-
-    /// Retry only an internally proved pre-boundary rejection, with a fresh
-    /// grant from the already attached external issuer. Source-unknown rows
-    /// are absent from this discovery path and can only use `reconcile`.
-    pub async fn reauthorize_pending(&self, limit: usize) -> Result<usize, AgentdError> {
-        if !(1..=256).contains(&limit) {
-            return Err(AgentdError::Protocol(
-                "reauthorization limit must be 1..=256".to_string(),
-            ));
-        }
-        let grants = self.grants.as_ref().ok_or_else(|| {
-            AgentdError::Protocol("production grant provider is not attached".to_string())
-        })?;
-        let mut attempted = 0;
-        for dispatcher in self.dispatchers.values() {
-            if attempted >= limit {
-                break;
-            }
-            let receipts = self
-                .writer
-                .awaiting_authorization(dispatcher.destination_id(), limit - attempted)
-                .await?;
-            for receipt in receipts {
-                attempted += 1;
-                let binding = self
-                    .writer
-                    .final_use_binding(&receipt, dispatcher.destination_id())
-                    .await?;
-                // An issuer refusal does not mutate the original operation or
-                // manufacture a grant. The same proof remains pending.
-                let Ok(signed) = grants.signed_grant(&binding).await else {
-                    continue;
-                };
-                match dispatcher
-                    .dispatch(self.writer.as_ref(), &signed, &binding, receipt)
-                    .await
-                {
-                    Ok(_) | Err(codex_hepta_memory::ProductionWriterError::FinalUse(_)) => {}
-                    Err(codex_hepta_memory::ProductionWriterError::Local(
-                        codex_hepta_memory::LocalLeaseOutboxError::StaleFence(_)
-                        | codex_hepta_memory::LocalLeaseOutboxError::IllegalTransition(_),
-                    ))
-                    | Err(codex_hepta_memory::ProductionWriterError::StaleReceipt) => {}
-                    Err(error) => return Err(error.into()),
-                }
-            }
-        }
-        Ok(attempted)
     }
 
     pub async fn dispatch(

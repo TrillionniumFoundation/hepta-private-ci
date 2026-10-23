@@ -124,6 +124,29 @@ impl AgentdState {
             .checked_notes_operation(config, run_id, record.admission.supplied_source_digest)
             .await?;
         let operation = retained.operation;
+        // Refresh Fleet/trust outside the run mutex: a newly observed drain
+        // itself acquires that mutex to cancel pre-dispatch runs. Bind this
+        // validation to the exact phase/revision, then re-read them under the
+        // mutation lock. Already dispatched/unknown runs need only readback,
+        // including after their original admission authentication expires.
+        let candidate = self
+            .runs
+            .lock()
+            .map_err(poisoned_state)?
+            .run(run_id)
+            .ok_or_else(|| AgentdError::Protocol("Notes run disappeared".into()))?;
+        let dispatch_stamp = if matches!(
+            candidate.phase,
+            RunPhase::Admitted | RunPhase::ContextAttached
+        ) {
+            Some((
+                candidate.revision,
+                candidate.phase,
+                self.require_current_run_start(record)?,
+            ))
+        } else {
+            None
+        };
         // Only this coordinator's first transition may enter dispatch. The
         // original durable operation then fences the actual effect boundary.
         let first_dispatch = {
@@ -135,7 +158,12 @@ impl AgentdState {
                 current.phase,
                 RunPhase::Admitted | RunPhase::ContextAttached
             ) {
-                let now_ms = self.require_current_run_start(record)?;
+                let Some((revision, phase, now_ms)) = dispatch_stamp else {
+                    return Ok(());
+                };
+                if current.revision != revision || current.phase != phase {
+                    return Ok(());
+                }
                 let context = Digest32::of_bytes(
                     format!(
                         "hepta.notes.context.v1:{}:{}",
@@ -184,7 +212,8 @@ impl AgentdState {
                 .dispatch_to_with_grant_provider(&config.target.destination_id(), queued)
                 .await;
         } else if retained.state == LocalOutcomeState::Indeterminate {
-            host.reconcile(1).await?;
+            host.reconcile_for_destination(&config.target.destination_id(), /*limit*/ 1)
+                .await?;
         }
         let state = writer.status(run_id).await?;
         let mut runs = self.runs.lock().map_err(poisoned_state)?;
@@ -206,3 +235,7 @@ impl AgentdState {
         Ok(())
     }
 }
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "notes_objective_lock_tests.rs"]
+mod lock_tests;

@@ -14,6 +14,7 @@ async fn notes_objective_previous_receipt_host_reconciles_without_registering_di
         host,
         final_use,
         issuer,
+        primary_device,
         ..
     } = notes_host_fixture().await?;
     let golden: serde_json::Value =
@@ -57,7 +58,12 @@ async fn notes_objective_previous_receipt_host_reconciles_without_registering_di
         Arc::new(AgentdNotesChannel::from_private_channels(effect, recovery)?),
     )?;
     let observer = AgentdNotesDocumentObserver::new(target.document_observer());
-    let host = host.attach_target(final_use, Arc::new(target), issuer.clone())?;
+    let host = host
+        .attach_target(final_use.clone(), Arc::new(target), issuer.clone())?
+        .attach_additional_target(
+            final_use,
+            Arc::new(ProductionHos2Target::new(primary_device)),
+        )?;
     let expected_old = old.clone();
     let peer = std::thread::spawn(move || -> Result<(), String> {
         application
@@ -107,10 +113,23 @@ async fn notes_objective_previous_receipt_host_reconciles_without_registering_di
     let host = host.attach_previous_notes_recovery(&observer).await?;
     assert_eq!(
         host.destination_count(),
-        1,
-        "old receipt target must not become a dispatcher"
+        2,
+        "old receipt target must not become a third dispatcher"
     );
-    assert_eq!(host.reconcile(1).await?, 1);
+    assert_eq!(
+        host.reconcile_for_destination(HOS2_DESTINATION_V1, /*limit*/ 1)
+            .await?,
+        0
+    );
+    assert_eq!(
+        host.writer().status(&queued.occurrence_key).await?,
+        LocalOutcomeState::Indeterminate
+    );
+    assert_eq!(
+        host.reconcile_for_destination(&observer.target().destination_id(), /*limit*/ 1)
+            .await?,
+        1
+    );
     assert_eq!(
         host.writer().status(&queued.occurrence_key).await?,
         LocalOutcomeState::Committed
