@@ -32,13 +32,21 @@ jobs:
           set -euo pipefail
           git rev-parse HEAD
           test -n "$(git rev-parse HEAD)"
+      - name: Install pinned CPU runtime for real task-Head contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/contracts"
+          "$RUNNER_TEMP/contracts/bin/python" -m pip install --only-binary=:all: \
+            --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          "$RUNNER_TEMP/contracts/bin/python" -m pip install --only-binary=:all: 'numpy==2.2.6'
       - name: Run five-model registry and six-stage adversarial gates
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m unittest discover -s qa/stem-bakeoff -p 'test_replacement_*.py' -v
-          python3 qa/stem-bakeoff/replacement_gate.py --assert-no-production
-          python3 -m py_compile qa/stem-bakeoff/replacement_gate.py qa/stem-bakeoff/replacement_metadata.py
+          "$RUNNER_TEMP/contracts/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_replacement_*.py' -v
+          "$RUNNER_TEMP/contracts/bin/python" qa/stem-bakeoff/replacement_gate.py --assert-no-production
+          "$RUNNER_TEMP/contracts/bin/python" -m py_compile qa/stem-bakeoff/replacement_gate.py qa/stem-bakeoff/replacement_metadata.py
           test -z "$(git status --porcelain)"
 
   publisher-weight-metadata:

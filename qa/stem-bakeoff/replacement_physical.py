@@ -19,7 +19,7 @@ import time
 
 from prepare_news_cohorts import load_cohorts, sha
 from replacement_gate import EXPECTED, SPLITS, score_rows, validate_registry
-from replacement_laya_view import load_laya_cpu_isolated
+from replacement_laya_view import guard_laya_originals, load_laya_cpu_isolated
 
 LAYA_SOURCE_REVISION = "c7527708f9f5220c669d8aa385077cd28d04708a"
 CATEGORIES = ("business", "entertainment", "medicine and health", "science and technology")
@@ -197,33 +197,34 @@ def run(name: str, registry: dict, snapshot: Path, cohorts_dir: Path, archive: P
         verify_laya_source(laya_source)
         sys.path.insert(0, str(laya_source))
         from laya.agent import Agent
-        agent, laya_tokenizer_compat = load_laya_cpu_isolated(snapshot, Agent)
-        if laya_tokenizer_compat["original_weight_sha256"] != physical["loaded_weight_sha256"]:
-            raise ValueError("Laya original-weight view identity differs from publisher pin")
-        if agent.device.type != "cpu":
-            raise ValueError("unapproved Laya execution device fallback")
-        handle = agent.model.register_forward_hook(lambda *_: counters.__setitem__(0, counters[0] + 1))
-        load_ms = (time.perf_counter() - loaded_at) * 1000
-        try:
-            for split in SPLITS:
-                for row in rows[split]:
-                    start = time.perf_counter()
-                    result = agent.system_one(row["text"], {"category": {
-                        "type": "choice", "instructions": "Classify this news headline by subject.",
-                        "criteria": dict.fromkeys(CATEGORIES)}})
-                    latency.append((time.perf_counter() - start) * 1000)
-                    choice = result["answers"]["category"]
-                    p = [choice["probabilities"][label] for label in CATEGORIES]
-                    total = sum(p)
-                    if not all(math.isfinite(v) and 0 <= v <= 1 for v in p) or total <= 0:
-                        raise ValueError("invalid real Laya typed policy distribution")
-                    observed[split].append([v / total for v in p])
-        finally:
-            handle.remove()
-        if counters[0] != sum(map(len, rows.values())):
-            raise ValueError("expected exactly one complete typed DecisionModel forward per example")
-        loaded_parameters = sum(p.numel() for p in agent.model.parameters())
-        kind = "full_policy"
+        with guard_laya_originals(snapshot):
+            agent, laya_tokenizer_compat = load_laya_cpu_isolated(snapshot, Agent)
+            if laya_tokenizer_compat["original_weight_sha256"] != physical["loaded_weight_sha256"]:
+                raise ValueError("Laya original-weight view identity differs from publisher pin")
+            if agent.device.type != "cpu":
+                raise ValueError("unapproved Laya execution device fallback")
+            handle = agent.model.register_forward_hook(lambda *_: counters.__setitem__(0, counters[0] + 1))
+            load_ms = (time.perf_counter() - loaded_at) * 1000
+            try:
+                for split in SPLITS:
+                    for row in rows[split]:
+                        start = time.perf_counter()
+                        result = agent.system_one(row["text"], {"category": {
+                            "type": "choice", "instructions": "Classify this news headline by subject.",
+                            "criteria": dict.fromkeys(CATEGORIES)}})
+                        latency.append((time.perf_counter() - start) * 1000)
+                        choice = result["answers"]["category"]
+                        p = [choice["probabilities"][label] for label in CATEGORIES]
+                        total = sum(p)
+                        if not all(math.isfinite(v) and 0 <= v <= 1 for v in p) or total <= 0:
+                            raise ValueError("invalid real Laya typed policy distribution")
+                        observed[split].append([v / total for v in p])
+            finally:
+                handle.remove()
+            if counters[0] != sum(map(len, rows.values())):
+                raise ValueError("expected exactly one complete typed DecisionModel forward per example")
+            loaded_parameters = sum(p.numel() for p in agent.model.parameters())
+            kind = "full_policy"
     else:
         from transformers import AutoConfig, AutoModel, AutoTokenizer
         tokenizer = AutoTokenizer.from_pretrained(snapshot, local_files_only=True, trust_remote_code=False)

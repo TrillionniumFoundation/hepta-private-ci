@@ -7,6 +7,7 @@ on:
       - qa/stem-bakeoff/replacement_laya_view.py
       - qa/stem-bakeoff/test_replacement_laya_view.py
       - qa/stem-bakeoff/test_replacement_physical.py
+      - qa/stem-bakeoff/test_replacement_physical_custody.py
       - qa/stem-bakeoff/replacement_physical_audit.py
       - qa/stem-bakeoff/replacement_source_audit.py
       - qa/stem-bakeoff/test_replacement_source_audit.py
@@ -47,6 +48,7 @@ jobs:
           python3 -m unittest discover -s qa/stem-bakeoff -p 'test_replacement_physical_audit.py' -v
           python3 -m py_compile qa/stem-bakeoff/replacement_laya_view.py qa/stem-bakeoff/test_replacement_laya_view.py
           python3 -m unittest discover -s qa/stem-bakeoff -p 'test_replacement_laya_view.py' -v
+          python3 -m unittest discover -s qa/stem-bakeoff -p 'test_replacement_physical_custody.py' -v
           python3 -m unittest discover -s qa/stem-bakeoff -p 'test_replacement_source_audit.py' -v
       - name: Execute actual task-Head contract negatives
         run: |
@@ -54,6 +56,7 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/contracts"
           "$RUNNER_TEMP/contracts/bin/python" -m pip install --only-binary=:all: \
             --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          "$RUNNER_TEMP/contracts/bin/python" -m pip install --only-binary=:all: 'numpy==2.2.6'
           "$RUNNER_TEMP/contracts/bin/python" -m unittest discover \
             -s qa/stem-bakeoff -p 'test_replacement_physical.py' -v
           git diff --check

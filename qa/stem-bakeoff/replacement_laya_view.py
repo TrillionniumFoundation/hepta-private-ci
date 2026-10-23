@@ -6,6 +6,7 @@ normalization. This module grants no production or effect authority.
 """
 from __future__ import annotations
 
+from contextlib import contextmanager
 import hashlib
 import json
 from pathlib import Path
@@ -75,6 +76,55 @@ def _expected_compatibility_config(path: Path) -> dict[str, Any]:
     return result
 
 
+def _same_json(actual: Any, expected: Any) -> bool:
+    """Compare parsed JSON without equating booleans, integers or floats."""
+    if type(actual) is not type(expected):
+        return False
+    if isinstance(actual, dict):
+        return actual.keys() == expected.keys() and all(
+            _same_json(actual[key], expected[key]) for key in expected
+        )
+    if isinstance(actual, list):
+        return len(actual) == len(expected) and all(
+            _same_json(left, right) for left, right in zip(actual, expected)
+        )
+    return actual == expected
+
+
+@contextmanager
+def guard_laya_originals(snapshot: Path, *, original: dict[str, str] | None = None,
+                         fixed: dict[str, str] | None = None):
+    """Detect selected persistent byte changes on success or failure; never undo them."""
+    if snapshot.is_symlink() or not snapshot.is_dir():
+        raise ValueError("original model snapshot must be an ordinary directory")
+    if (snapshot / "encoder").is_symlink() or not (snapshot / "encoder").is_dir():
+        raise ValueError("pinned Encoder directory must not be linked")
+    if original is None:
+        original = _inventory(snapshot / "tokenizer")
+    if fixed is None:
+        fixed = {
+            relative: _hash_file(snapshot / relative)
+            for relative in ("model.safetensors", "rl_agent_config.json", "encoder/config.json")
+        }
+    operation_failure: BaseException | None = None
+    try:
+        yield
+    except BaseException as exc:
+        operation_failure = exc
+        raise
+    finally:
+        try:
+            if _inventory(snapshot / "tokenizer") != original:
+                raise ValueError("Laya loader changed original tokenizer checkpoint bytes")
+            for relative, digest in fixed.items():
+                if _hash_file(snapshot / relative) != digest:
+                    raise ValueError(f"Laya loader changed original {relative} bytes")
+        except BaseException as verification_failure:
+            if operation_failure is not None:
+                raise verification_failure from operation_failure
+            raise
+
+
 def load_laya_cpu_isolated(snapshot: Path, agent_factory: Callable[..., Any]) -> tuple[Any, dict]:
     """Load genuine weight bytes but permit tokenizer rewrites only in a 0700 copy.
 
@@ -96,7 +146,10 @@ def load_laya_cpu_isolated(snapshot: Path, agent_factory: Callable[..., Any]) ->
     if (snapshot / "encoder").is_symlink() or not (snapshot / "encoder").is_dir():
         raise ValueError("pinned Encoder directory must not be linked")
 
-    with tempfile.TemporaryDirectory(prefix="hepta-laya-tokenizer-view-") as temporary:
+    with (
+        guard_laya_originals(snapshot, original=original, fixed=fixed),
+        tempfile.TemporaryDirectory(prefix="hepta-laya-tokenizer-view-") as temporary,
+    ):
         view = Path(temporary)
         shutil.copytree(tokenizer, view / "tokenizer", symlinks=False)
         if _inventory(view / "tokenizer") != original:
@@ -108,11 +161,6 @@ def load_laya_cpu_isolated(snapshot: Path, agent_factory: Callable[..., Any]) ->
             (snapshot / "model.safetensors").resolve(strict=True)
         )
         agent = agent_factory(str(view), device="cpu")
-        if _inventory(tokenizer) != original:
-            raise ValueError("Laya loader changed original tokenizer checkpoint bytes")
-        for relative, digest in fixed.items():
-            if _hash_file(snapshot / relative) != digest:
-                raise ValueError(f"Laya loader changed original {relative} bytes")
         effective = _inventory(view / "tokenizer")
         if any(original[key] != effective.get(key)
                for key in original if key != COMPAT_CONFIG):
@@ -121,7 +169,7 @@ def load_laya_cpu_isolated(snapshot: Path, agent_factory: Callable[..., Any]) ->
             raise ValueError("Laya loader created or deleted tokenizer files")
         if expected_config is not None:
             actual_config = json.loads((view / "tokenizer" / COMPAT_CONFIG).read_bytes())
-            if actual_config != expected_config:
+            if not _same_json(actual_config, expected_config):
                 raise ValueError("Laya loader applied an unregistered tokenizer rewrite")
         if _hash_file(view / "rl_agent_config.json") != fixed["rl_agent_config.json"]:
             raise ValueError("Laya loader changed typed-policy config inside private view")
