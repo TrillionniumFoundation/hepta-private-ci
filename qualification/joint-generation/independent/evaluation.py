@@ -189,6 +189,7 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
         chunk = full[offset:offset + batch_size]
         n = len(chunk)
         cpu_start, wall_start = time.process_time_ns(), time.perf_counter_ns()
+        component_cpu = {}
         if native_batch:
             ledger = WorkLedger("service-batch", total_cap=n * cap)
             mask = None
@@ -199,7 +200,11 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
                 mask = route_rng.random(n) < probability
             p, q, receipt = generator.batch(chunk, mode, critic=controller if mode == "continuation" else None,
                 price=price, ledger=ledger, random_full_mask=mask, per_request_cap=cap - output_units)
+            generation_done_cpu = time.process_time_ns()
             outputs, sizes = _outputs(generator, p, q, ledger, sample_rng)
+            output_done_cpu = time.process_time_ns()
+            component_cpu = {"native_generation_and_ledger_cpu_ns": generation_done_cpu - cpu_start,
+                             "output_encoding_and_ledger_cpu_ns": output_done_cpu - generation_done_cpu}
             row_costs = [{"work_units": int(work) + output_units, "model_forwards": int(forwards),
                           "output_bytes": size}
                          for work, forwards, size in zip(receipt["per_row_work_units"], receipt["per_row_forwards"], sizes)]
@@ -217,6 +222,8 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
                                   "output_bytes": ledger.totals.get("output_bytes", 0)})
         cpu_ns = time.process_time_ns() - cpu_start
         wall_ns = time.perf_counter_ns() - wall_start
+        if native_batch:
+            component_cpu["remaining_service_cpu_ns"] = cpu_ns - sum(component_cpu.values())
         if offset == 0:
             sample = {**outputs[0], "seed": seed, "input_row": 0}
         for row in row_costs:
@@ -224,7 +231,8 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
         costs.extend(row_costs)
         ps.extend(p); qs.extend(q)
         batches.append({"rows": n, "offset": offset, "cpu_ns": cpu_ns, "wall_ns": wall_ns,
-                        "native_batch": native_batch, "work_units": sum(row["work_units"] for row in row_costs)})
+                        "native_batch": native_batch, "work_units": sum(row["work_units"] for row in row_costs),
+                        **component_cpu})
         for ledger in ledgers:
             for key, value in ledger.totals.items():
                 totals[key] = totals.get(key, 0) + value
@@ -262,6 +270,7 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
                      "reference_full_work_units": reference_units, "request_cap_units": cap,
                      "cpu_ns": sum(row["cpu_ns"] for row in batches), "wall_ns": sum(row["wall_ns"] for row in batches),
                      "runtime_batch_size": batch_size, "batches": batches, "observer_cpu_ns": observer_cpu_ns,
+                     "component_timing_scope": "Native batch CPU splits cover generation/input/routing/ledger, then learned decode/sampling/PNG/JSON/output ledger; remaining service CPU covers receipt bookkeeping and timer overhead. Components sum to unchanged authoritative total; no component is subtracted. Python fallback retains total only.",
                      "latency_semantics": "batch totals and batch CPU/n attribution; not single-request latency"},
             "decoder_corruption_score_drop": corruption_drop,
             "sampled_output": sample,
@@ -334,12 +343,23 @@ def _frozen(run):
         raise ValueError("actual system build CPU budget is missing or exceeded")
     if sha256(PLAN_PATH) != selection["plan_sha256"] or json.loads(PLAN_PATH.read_text()) != plan:
         raise ValueError("independent frozen plan changed")
+    budgets = selection["budgets"]
+    cap = plan["operator_units_per_system"]
+    if (type(cap) is not int or cap <= 0 or set(budgets) != set(SYSTEMS)
+            or any(type(row["total_cap"]) is not int or row["total_cap"] != cap
+                   for row in budgets.values())):
+        raise ValueError("complete build budget cap must equal the frozen plan")
     required = {"model.py", "utility.py", "data.py", "control.py", "independent/inference.py",
-                "independent/accounting.py", "independent/evaluation.py", "independent/data_v2.py"}
+                "independent/accounting.py", "independent/evaluation.py", "independent/data_v2.py",
+                "independent/run.py", "independent/learning.py"}
     if plan["runtime_backend"] == "native":
-        required.add("independent/native.py")
-    if not required <= set(selection["sources"]):
-        raise ValueError("execution source inventory incomplete")
+        required.update(("independent/native.py", "independent/native.c"))
+    source_paths = list(ROOT.glob("*.py")) + list((ROOT / "independent").glob("*.py"))
+    source_paths += list((ROOT / "independent").glob("*.c"))
+    actual_sources = {str(path.relative_to(ROOT)) for path in source_paths}
+    if (not isinstance(selection["sources"], dict) or set(selection["sources"]) != actual_sources
+            or not required <= set(selection["sources"])):
+        raise ValueError("execution source inventory incomplete or changed")
     for name, digest in selection["sources"].items():
         path = _artifact(ROOT, name, basename=False)
         if sha256(path) != digest:
@@ -355,9 +375,6 @@ def _frozen(run):
     expected = {(system, seed) for system in SYSTEMS for seed in plan["model_seeds"]}
     if {(row["system"], row["seed"]) for row in selected} != expected or len(selected) != len(expected):
         raise ValueError("missing or duplicate system/seed")
-    budgets = selection["budgets"]
-    if set(budgets) != set(SYSTEMS) or len({row["total_cap"] for row in budgets.values()}) != 1:
-        raise ValueError("independent systems must share the complete budget cap")
     price_tables = []
     for name, row in budgets.items():
         ledger = WorkLedger("frozen-budget", total_cap=row["total_cap"], prices=row["prices"])

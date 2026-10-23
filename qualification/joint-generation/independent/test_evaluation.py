@@ -1,6 +1,7 @@
 """Hand-authored arrays only: service accounting, net definitions and bootstrap."""
 
 import base64
+import hashlib
 import json
 from pathlib import Path
 import tempfile
@@ -191,6 +192,59 @@ class EvaluationTests(unittest.TestCase):
                 self.assertFalse(marker.exists())
                 self.assertFalse((root / "test-opened.json").exists())
 
+    def test_equal_but_wrong_build_caps_reject_before_all_data(self):
+        from independent.evaluation import SYSTEMS
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            marker, plan_path = root / "global-opened.json", root / "plan.json"
+            plan = {"cpu_seconds_per_system": 1.0, "operator_units_per_system": 100}
+            plan_path.write_text(json.dumps(plan))
+            selection = {"selection_ready": True, "cpu_budget_violations": [], "plan": plan,
+                         "plan_sha256": hashlib.sha256(plan_path.read_bytes()).hexdigest(),
+                         "system_cost": {name: {"cpu_seconds": .1} for name in SYSTEMS},
+                         "budgets": {name: {"total_cap": 200} for name in SYSTEMS}}
+            (root / "selection.json").write_text(json.dumps(selection))
+            with patch("independent.evaluation.GLOBAL_MARKER", marker), patch("independent.evaluation.PLAN_PATH", plan_path):
+                with patch("independent.evaluation.dataset", side_effect=AssertionError("sealed")) as data:
+                    with self.assertRaisesRegex(ValueError, "cap must equal the frozen plan"):
+                        run_evaluation(root)
+                    data.assert_not_called()
+            self.assertFalse(marker.exists())
+            self.assertFalse((root / "test-opened.json").exists())
+
+    def test_truncated_actual_source_inventory_rejects_before_all_data(self):
+        from independent.evaluation import SYSTEMS
+        names = {"model.py", "utility.py", "data.py", "control.py", "independent/inference.py",
+                 "independent/accounting.py", "independent/evaluation.py", "independent/data_v2.py",
+                 "independent/run.py", "independent/learning.py", "independent/native.py",
+                 "independent/native.c", "independent/additional_runtime.py"}
+        for omitted in ("independent/run.py", "independent/learning.py", "independent/native.c",
+                        "independent/additional_runtime.py"):
+            with self.subTest(omitted=omitted), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                source_root = root / "source"
+                (source_root / "independent").mkdir(parents=True)
+                for name in names:
+                    (source_root / name).write_text("# hand-authored inventory fixture\n")
+                marker, plan_path = root / "global-opened.json", root / "plan.json"
+                plan = {"cpu_seconds_per_system": 1.0, "operator_units_per_system": 100,
+                        "runtime_backend": "native"}
+                plan_path.write_text(json.dumps(plan))
+                selection = {"selection_ready": True, "cpu_budget_violations": [], "plan": plan,
+                             "plan_sha256": hashlib.sha256(plan_path.read_bytes()).hexdigest(),
+                             "system_cost": {name: {"cpu_seconds": .1} for name in SYSTEMS},
+                             "budgets": {name: {"total_cap": 100} for name in SYSTEMS},
+                             "sources": {name: hashlib.sha256((source_root / name).read_bytes()).hexdigest()
+                                         for name in names if name != omitted}}
+                (root / "selection.json").write_text(json.dumps(selection))
+                with patch("independent.evaluation.GLOBAL_MARKER", marker), patch("independent.evaluation.ROOT", source_root), patch("independent.evaluation.PLAN_PATH", plan_path):
+                    with patch("independent.evaluation.dataset", side_effect=AssertionError("sealed")) as data:
+                        with self.assertRaisesRegex(ValueError, "source inventory"):
+                            run_evaluation(root)
+                        data.assert_not_called()
+                self.assertFalse(marker.exists())
+                self.assertFalse((root / "test-opened.json").exists())
+
     def test_common_native_backend_preserves_the_measured_service_law(self):
         from independent.native import compile_native
         with tempfile.TemporaryDirectory() as temporary:
@@ -219,6 +273,13 @@ class EvaluationTests(unittest.TestCase):
                 batches = result["cost"]["batches"]
                 self.assertEqual(len(batches), 2)
                 self.assertTrue(all(row["native_batch"] and row["rows"] == 2 for row in batches))
+                for batch in batches:
+                    components = [batch[key] for key in ("native_generation_and_ledger_cpu_ns",
+                                  "output_encoding_and_ledger_cpu_ns", "remaining_service_cpu_ns")]
+                    self.assertTrue(all(value >= 0 for value in components))
+                    self.assertEqual(sum(components), batch["cpu_ns"])
+                    self.assertGreater(batch["native_generation_and_ledger_cpu_ns"], 0)
+                    self.assertGreater(batch["output_encoding_and_ledger_cpu_ns"], 0)
                 self.assertEqual(result["per_row_cost"]["batch_index"], [0, 0, 1, 1])
                 self.assertEqual(result["per_row_cost"]["cpu_ns"][0], batches[0]["cpu_ns"] / 2)
                 self.assertEqual(result["per_row_cost"]["cpu_ns"][1], batches[0]["cpu_ns"] / 2)
