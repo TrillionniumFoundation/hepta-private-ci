@@ -24,9 +24,12 @@ A descriptive retrieval-support win is not a Reader answer-accuracy win.
 | H | G plus physically learned evidence-bounded Meta-Graph | H-G |
 | I | H with actual Split/Merge/Retire and matched static continuation | I-H |
 
-Additional primary tests are I-B and I-C on **each** future window.
-All eight fixed comparisons use the same complete case census; none can be
-chosen after examining results. The gate requires the same trainable Head
+The eight primary comparisons additionally test I-B and I-C on **each**
+future window. Three preregistered diagnostics complete the A-I matrix:
+B-A (hybrid vs lexical), C-A (graph vs lexical), and D-C (typed vs graph).
+All eleven overall contrasts enter familywise multiplicity accounting;
+the three diagnostics are not additional necessary superiority conditions
+for I. No contrast can be chosen after examining results. The gate requires the same trainable Head
 capacity and total training allocator ceiling for E-I, and matched H/I Head
 continuation steps. Router, graph, replay and evolution work MUST consume
 that common budget and be independently metered. A typed or evolutionary
@@ -58,9 +61,13 @@ The gate accepts three separate JSON inputs:
    gold support are all typed. A forged Boolean 0/1 is rejected; unavailable,
    missing and unresolved cases remain in the denominator.
 
-All source roots connected through any case form ONE effective component.
-The gate rejects any training/calibration ancestor used for evaluation, any
-source-root crossing windows, and any duplicate or missing attempt/judgment.
+Cases sharing either a source root **or a family ID** (including transitive
+connections) form ONE effective component. The gate rejects any
+training/calibration ancestor used for evaluation, source-root, evidence-ID,
+family-ID or exact-question reuse across future windows, and duplicate or
+missing attempt/judgment. Different opaque root labels alone never prove
+independence. The external ledger owner must still authenticate the actual
+cross-source lineage and source-ID namespace.
 The two future windows must be genuinely prospective and timestamped/authenticated
 by a separate evaluator, **not** historical test slices renamed "future".
 That external witness is not created or verified by this Python module.
@@ -91,8 +98,9 @@ original Reader answers to make a score pass.
 
 The descriptive candidate gate requires at least 200 effectively independent
 future source components in aggregate, at least the precommitted floor in
-each of two future windows, all eight Bonferroni-adjusted approximate
-family-cluster paired lower bounds above zero, and I-B and I-C above zero
+each of two future windows, all eight primary approximate family-cluster
+paired lower bounds above zero (multiplicity includes 11 overall contrasts
+and four per-window candidate comparisons), and I-B and I-C above zero
 separately in both windows. There must be zero unsafe, unavailable or
 unscorable original rows. I must meet predeclared physical CPU and peak RSS
 ratios relative to B. Any regression or incomplete case stays visible.
@@ -145,4 +153,7 @@ Source digests and test names alone cannot supply these proofs.
    topology CAS/rollback and actual multi-host trust. None is granted here.
 
 The unit fixtures are **deliberately synthetic negative/contract tests**, not
-a neural experiment. Do not count successful CI unit tests as memory quality.
+a neural experiment. The additional same-family/different-root, repeated
+cross-window source-ID, and repeated exact-question negative tests prevent
+pseudo-independent family counts. Do not count successful CI unit tests as
+memory quality.
