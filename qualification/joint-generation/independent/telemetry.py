@@ -54,7 +54,7 @@ def capture():
     rusage = None if usage is None else {key: int(getattr(usage, name)) for key, name in fields.items()}
     if rusage is not None:
         rusage.update(user_cpu_ns=round(usage.ru_utime * 1e9), system_cpu_ns=round(usage.ru_stime * 1e9))
-    return {"schema": SCHEMA, "process_cpu_ns": cpu, "wall_ns": wall,
+    out = {"schema": SCHEMA, "process_cpu_ns": cpu, "wall_ns": wall,
             "identity": {"pid": os.getpid(), "thread_id": threading.get_native_id(),
                 "start_ticks": read("identity.start_ticks", lambda: int(Path("/proc/self/stat").read_text().rsplit(")", 1)[1].split()[19]))},
             "thread_cpu_ns": read("thread_cpu_ns", lambda: time.thread_time_ns()),
@@ -63,6 +63,9 @@ def capture():
                 "cpu_stat": read("container.cpu_stat", lambda: _counter_file("/sys/fs/cgroup/cpu.stat")),
                 "memory_events": read("container.memory_events", lambda: _counter_file("/sys/fs/cgroup/memory.events"))},
             "errors": errors}
+    end_cpu, end_wall = _stamp()
+    out["sampling"] = {"cpu_ns": end_cpu - cpu, "wall_ns": end_wall - wall}
+    return out
 
 
 def difference(before, after):
@@ -79,8 +82,9 @@ def difference(before, after):
         if not same_process and not key.startswith("container."):
             errors[key] = "process identity missing/changed; delta unavailable"
             return None
-        if key == "thread_cpu_ns" and identities[0].get("thread_id") != identities[1].get("thread_id"):
-            errors[key] = "native thread changed; delta unavailable"
+        if key == "thread_cpu_ns" and (identities[0].get("thread_id") is None
+                or identities[0].get("thread_id") != identities[1].get("thread_id")):
+            errors[key] = "native thread missing/changed; delta unavailable"
             return None
         if type(a) is not int or type(b) is not int or min(a, b) < 0:
             errors[key] = "missing or invalid cumulative counter"

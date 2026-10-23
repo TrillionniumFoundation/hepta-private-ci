@@ -18,6 +18,7 @@ class TelemetryTests(unittest.TestCase):
         self.assertGreaterEqual(delta["process_cpu_ns"], 0)
         self.assertGreaterEqual(delta["wall_ns"], 0)
         self.assertGreaterEqual(after["process_threads"], 1)
+        self.assertGreaterEqual(after["sampling"]["cpu_ns"], 0)
         self.assertEqual(delta["container"]["scope"], t.CONTAINER_SCOPE)
 
     def test_optional_missing_counter_is_an_error_not_zero(self):
@@ -62,6 +63,8 @@ class TelemetryTests(unittest.TestCase):
         self.assertEqual(t.difference(before, after)["process_cpu_ns"], 0)
         after["identity"]["pid"] = -1
         self.assertIsNone(t.difference(before, after)["process_cpu_ns"])
+        after["identity"] = {key: value for key, value in before["identity"].items() if key != "thread_id"}
+        self.assertIsNone(t.difference(after, after)["thread_cpu_ns"])
 
     def test_manual_gc_events_bounded_with_complete_totals(self):
         monitor = t.GCMonitor(max_events=2)

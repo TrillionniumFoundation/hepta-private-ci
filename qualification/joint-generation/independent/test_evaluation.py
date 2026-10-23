@@ -150,6 +150,22 @@ class EvaluationTests(unittest.TestCase):
         self.assertIsNone(cohort["physical_source_groups"])
         self.assertGreater(np.ptp(cohort["ci95"]), np.ptp(physical["ci95"]))
 
+    def test_formal_measurement_order_rotates_systems_and_keeps_each_bundle_once(self):
+        from independent.evaluation import SYSTEMS, _measurement_order
+        seeds = [11, 23, 47]
+        bundles = [({"system": system, "seed": seed}, object(), object())
+                   for system in reversed(SYSTEMS) for seed in reversed(seeds)]
+        original = bundles.copy()
+        expected_rounds = [(11, ["supervised", "anchor", "additive", "ndu", "ndu_control"]),
+                           (23, ["anchor", "additive", "ndu", "ndu_control", "supervised"]),
+                           (47, ["additive", "ndu", "ndu_control", "supervised", "anchor"])]
+        ordered = _measurement_order(bundles, seeds)
+        self.assertEqual([(row["system"], row["seed"]) for row, _, _ in ordered],
+                         [(system, seed) for seed, systems in expected_rounds for system in systems])
+        self.assertEqual(len(ordered), 15)
+        self.assertEqual({id(bundle) for bundle in ordered}, {id(bundle) for bundle in bundles})
+        self.assertEqual(bundles, original)
+
     def test_global_opening_marker_blocks_before_any_dataset_call(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

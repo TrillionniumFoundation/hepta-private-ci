@@ -60,3 +60,21 @@ N 791126→693288. Digests/updates were unchanged. This diagnostic excludes the
 optimizer and shows timing variation; it cannot establish whole-build benefit.
 Seven learning tests and 22 combined learning/accounting/freeze tests passed.
 A new immutable source freeze precedes the next actual training/validation run.
+
+## Counterbalanced diagnostics after t2
+
+t2 also exited 2: NDU and NDU-control exceeded the unchanged CPU cap. Independent
+bounded TRAIN replays exactly reproduced its abnormal saved weights in normal
+millisecond steps, with finite float64 weights/Adam state and no subnormals. One
+static full-service batch had also consumed 5.3236 CPU seconds. The historical
+slowdown's cause remains unresolved; this is not evidence of a repaired runtime.
+
+The next predeclared source rotates arm order across candidate, validation and
+formal measurement rounds. Only each arm's active CPU is charged, with shared
+scheduler CPU attributed in full to every arm. Phase/resource/GC evidence and
+native-service component times are retained, and an observed overrun immediately
+stops subsequent work with its partial ledger. Exception paths preserve actual
+cost and original errors. The data, objectives, price, caps and benefit gates do
+not change. The formal test remains unopened. Before this freeze, 92 independent
+source tests passed; the final affected runner suite passed 12 tests after its
+last exception-path fix. Evaluator coverage is 17 tests, not all metadata-only.

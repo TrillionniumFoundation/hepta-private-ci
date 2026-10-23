@@ -85,8 +85,8 @@ The retained t1 and t2 training/validation builds failed readiness; neither open
 the independent test. t2 also exceeded CPU limits and showed a seconds-long
 static full-service batch. Exact bounded training replays reproduced its weights
 in milliseconds, leaving the historical slowdown unexplained. The next protocol
-revision therefore rotates systems across candidate and selected-validation
-rounds, attributes only each system's active CPU, retains phase/resource/GC
+revision therefore rotates systems across candidate, selected-validation and
+formal measurement rounds, attributes only each system's active CPU, retains phase/resource/GC
 telemetry, and stops further work as soon as a phase reveals an actual CPU
 overrun. This changes scheduling and observability; the data, content objectives,
 prices, complete budget caps and benefit gates remain unchanged.

@@ -423,6 +423,17 @@ def _frozen(run):
     return selection, bundles
 
 
+def _measurement_order(bundles, seeds):
+    """Counterbalance already validated system/seed bundles across seed rounds."""
+    by_identity = {(bundle[0]["system"], bundle[0]["seed"]): bundle for bundle in bundles}
+    ordered = []
+    for index, seed in enumerate(seeds):
+        offset = index % len(SYSTEMS)
+        systems = SYSTEMS[offset:] + SYSTEMS[:offset]
+        ordered.extend(by_identity[(system, seed)] for system in systems)
+    return ordered
+
+
 def _exclusive(path, value):
     with path.open("x", encoding="utf-8") as stream:
         json.dump(value, stream, indent=2, sort_keys=True, allow_nan=False)
@@ -436,6 +447,7 @@ def run_evaluation(run):
         raise ValueError("independent test already opened; no re-evaluation in another directory")
     selection, bundles = _frozen(run)
     plan = selection["plan"]
+    bundles = _measurement_order(bundles, plan["model_seeds"])
     train, validation = (dataset(split, plan["data_profile"]) for split in ("train", "validation"))
     if any(manifest(data) != selection["datasets"][split]
            for split, data in (("train", train), ("validation", validation))):
