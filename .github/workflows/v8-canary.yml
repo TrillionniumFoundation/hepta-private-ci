@@ -338,7 +338,8 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build-windows-source:
-    timeout-minutes: 30
+    # Match the bounded V8 build matrix; cold Windows source builds exceed 30m.
+    timeout-minutes: 90
     name: Build ptrcomp-sandbox ${{ matrix.target }} from source
     needs: metadata
     if: ${{ needs.metadata.outputs.windows_source_required == 'true' }}
