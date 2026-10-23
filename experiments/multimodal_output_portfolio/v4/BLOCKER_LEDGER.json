@@ -1,0 +1,107 @@
+{
+  "schema": "hepta.ndu-oop.fourmodal.v4.blockers.v1",
+  "updated_at": "2026-10-23",
+  "research_only": true,
+  "all_blockers_closed": false,
+  "items": [
+    {
+      "id": "P0",
+      "status": "closed_for_finite_symbolic_scope",
+      "evidence": [
+        "finite_portfolio.py",
+        "test_finite_portfolio.py"
+      ],
+      "remaining": "Real neural state and decoder integration"
+    },
+    {
+      "id": "P1",
+      "status": "v3_limited_scope_already_closed",
+      "evidence": [
+        "../v3/BLOCKER_LEDGER.json"
+      ],
+      "remaining": "Dedicated runner/production qualifications are separate"
+    },
+    {
+      "id": "R05",
+      "status": "mechanism_only_closed;natural_data_open",
+      "evidence": [
+        "run_experiment.py",
+        "evidence-development.json"
+      ],
+      "remaining": "Actual text/audio/image/video generation, target-blind task and matched independent risk/quality study"
+    },
+    {
+      "id": "UTILITY",
+      "status": "closed_for_finite_fixed_terminal_score",
+      "evidence": [
+        "factorial.py",
+        "test_factorial.py"
+      ],
+      "remaining": "Identified utility and independent natural-data result observer"
+    },
+    {
+      "id": "CORRELATION",
+      "status": "closed_for_declared_joint_law_only",
+      "evidence": [
+        "finite_portfolio.py",
+        "test_finite_portfolio.py"
+      ],
+      "remaining": "New regimes, calibrated uncertainty and robust out-of-distribution real-data validation"
+    },
+    {
+      "id": "DYNAMIC",
+      "status": "closed_for_symbolic_feedback_only",
+      "evidence": [
+        "test_finite_portfolio.py"
+      ],
+      "remaining": "Real decoder state-dependent modality allocation and continuation superiority"
+    },
+    {
+      "id": "SOLVER",
+      "status": "finite_oracle_only",
+      "evidence": [
+        "test_finite_portfolio.py"
+      ],
+      "remaining": "High-dimensional learned critics, physical solver cost and convergence evidence"
+    },
+    {
+      "id": "CREDIT",
+      "status": "factorial_auditor_only",
+      "evidence": [
+        "factorial.py",
+        "test_factorial.py"
+      ],
+      "remaining": "Executed matched 2x2 neural train/infer comparison, independent holdout, compute and outcome records"
+    },
+    {
+      "id": "P2",
+      "status": "open",
+      "remaining": "Natural target-blind text+image generation with independent output scoring"
+    },
+    {
+      "id": "P3",
+      "status": "open",
+      "remaining": "Matched static/MoE/MPC/NDU 2x2 training and inference confirmation"
+    },
+    {
+      "id": "P4",
+      "status": "open",
+      "remaining": "Actual independent audio/video generation, continuity and synchronization"
+    },
+    {
+      "id": "P5",
+      "status": "open",
+      "remaining": "Cell-scale test, resource bounds, risk calibration, version rollback and production authority"
+    },
+    {
+      "id": "E02",
+      "status": "blocked_external",
+      "remaining": "Authorized dedicated runner and completed original hosted execution receipt"
+    },
+    {
+      "id": "E03",
+      "status": "open",
+      "remaining": "Authenticated production NeuronRuntime feature driver and executed end-to-end signed lifecycle"
+    }
+  ]
+}
