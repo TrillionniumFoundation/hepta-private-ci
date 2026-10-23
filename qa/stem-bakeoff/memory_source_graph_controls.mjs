@@ -197,7 +197,7 @@ function independentEvidenceScore(raw,predictionSet,partitions) {
      whole_group_deltas:partitions.evaluation.map(g=>results[a].by_group[g].all_gold_support_recalled-results[b].by_group[g].all_gold_support_recalled)};
   }
   return {schema:"hepta.memory.source-graph-controls.audit.v1",historical_test_only:true,
-    source_sha256:"79fa87e90f04081343b8c8debcffcd7d2663f1674a4cbdb93f48a669a9",
+    source_sha256:"79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
     all_arms_A_to_I_complete:false,whole_answer_scored:false,semantic_citations_verified:false,
     prospective_independence_verified:false,source_license:"CC-BY-NC-4.0",
     results,descriptive_contrasts:diffs,source_graph_meta:predictionSet.source_groups,
@@ -207,13 +207,13 @@ function independentEvidenceScore(raw,predictionSet,partitions) {
 const args=process.argv.slice(2);
 if(args.length!==3)throw Error("usage: node memory_source_graph_controls.mjs ORIGINAL_LOCOMO.json OUT_PREDICTIONS.json OUT_AUDIT.json");
 const bytes=fs.readFileSync(args[0]);
-const expected="79fa87e90f04081343b8c8debcffcd7d2663f1674a4cbdb93f48a669a9";
+const expected="79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4";
 if(crypto.createHash("sha256").update(bytes).digest("hex")!==expected)throw Error("original LoCoMo source pin mismatch");
 const rows=JSON.parse(bytes.toString("utf8"));
 const partitions={evaluation:["conv-47","conv-42","conv-48","conv-43","conv-49","conv-50"]};
 const predictions=sourceOnlyControls(rows,partitions);
-fs.writeFileSync(args[1],JSON.stringify(predictions)+"\\n",{flag:"wx"});
+fs.writeFileSync(args[1],JSON.stringify(predictions)+"\n",{flag:"wx"});
 const report=independentEvidenceScore(rows,predictions,partitions);
 report.prediction_sha256=crypto.createHash("sha256").update(fs.readFileSync(args[1])).digest("hex");
-fs.writeFileSync(args[2],JSON.stringify(report,null,2)+"\\n",{flag:"wx"});
+fs.writeFileSync(args[2],JSON.stringify(report,null,2)+"\n",{flag:"wx"});
 console.log(JSON.stringify({status:report.authority,census:report.results.A.planned_questions,arms:predictions.arms}));
