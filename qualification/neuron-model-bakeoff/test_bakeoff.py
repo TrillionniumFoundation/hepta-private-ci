@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from bakeoff import (
     CANDIDATES, MODEL_REPOS, SCHEMA, EvidenceError, analyse,
-    file_hash, validate_dataset, validate_predictions,
+    file_hash, validate_dataset, validate_predictions, metrics,
 )
 from run_models import calibrate, choose_temperature, normalize
 
@@ -49,7 +49,11 @@ class BakeoffContractTests(unittest.TestCase):
         ]
         emit_jsonl(self.dataset_path, self.rows)
         self.plan = {
-            "schema": SCHEMA, "candidates": list(CANDIDATES),
+            "schema": SCHEMA, "kind": "frozen_experiment_plan",
+            "source_commit": "a" * 40,
+            "registered_before_utc": "2026-09-30T00:00:00Z",
+            "abstention_threshold": 0.7,
+            "candidates": list(CANDIDATES),
             "baseline": CANDIDATES[0],
             "dataset_sha256": file_hash(self.dataset_path),
             "independent_roles": {
@@ -81,6 +85,7 @@ class BakeoffContractTests(unittest.TestCase):
                 "dataset_sha256": file_hash(self.dataset_path),
                 "predictions_sha256": file_hash(path),
                 "execution": "real_weights", "role": "model_runner",
+                "calibration": {"temperature": 1.0, "abstention_threshold": 0.7},
                 "digests": {
                     key: "b" * 64 for key in (
                         "weights", "tokenizer", "preprocessor",
@@ -138,7 +143,7 @@ class BakeoffContractTests(unittest.TestCase):
         )
         row["id"] = "train"
         with self.assertRaisesRegex(EvidenceError, "nonholdout"):
-            validate_predictions([row], dataset, CANDIDATES[0])
+            validate_predictions([row], dataset, CANDIDATES[0], 0.7)
 
     def test_nan_probability_fails(self):
         dataset = validate_dataset(self.rows)
@@ -149,7 +154,7 @@ class BakeoffContractTests(unittest.TestCase):
         ]
         rows[0]["probabilities"]["allow"] = float("nan")
         with self.assertRaisesRegex(EvidenceError, "invalid probability"):
-            validate_predictions(rows, dataset, CANDIDATES[0])
+            validate_predictions(rows, dataset, CANDIDATES[0], 0.7)
 
     def test_version_drift_fails(self):
         path = self.runs / CANDIDATES[0] / "run.json"
@@ -172,6 +177,48 @@ class BakeoffContractTests(unittest.TestCase):
         result = analyse(self.plan, self.dataset_path, self.runs)
         self.assertFalse(result["results"][model]["metric_gate"])
         self.assertEqual(result["results"][model]["maximum_slice_regression"], 1.0)
+
+    def test_forged_abstention_is_rejected(self):
+        dataset = validate_dataset(self.rows)
+        path = self.runs / CANDIDATES[0] / "predictions.jsonl"
+        rows = [json.loads(x) for x in path.read_text().splitlines()]
+        rows[0]["abstained"] = True  # confidence remains 0.9 > frozen 0.7
+        with self.assertRaisesRegex(EvidenceError, "abstention flag inconsistent"):
+            validate_predictions(rows, dataset, CANDIDATES[0], 0.7)
+
+    def test_unregistered_threshold_is_rejected(self):
+        path = self.runs / CANDIDATES[0] / "run.json"
+        data = json.loads(path.read_text())
+        data["calibration"]["abstention_threshold"] = 0.9
+        path.write_text(json.dumps(data))
+        with self.assertRaisesRegex(EvidenceError, "unregistered abstention threshold"):
+            analyse(self.plan, self.dataset_path, self.runs)
+
+    def test_mixed_source_commits_are_rejected(self):
+        path = self.runs / CANDIDATES[2] / "run.json"
+        data = json.loads(path.read_text())
+        data["source_commit"] = "b" * 40
+        path.write_text(json.dumps(data))
+        with self.assertRaisesRegex(EvidenceError, "mixed or unregistered source"):
+            analyse(self.plan, self.dataset_path, self.runs)
+
+    def test_unfrozen_template_fails(self):
+        self.plan["kind"] = "UNFROZEN_TEMPLATE_NOT_EVIDENCE"
+        with self.assertRaisesRegex(EvidenceError, "unfrozen"):
+            analyse(self.plan, self.dataset_path, self.runs)
+
+    def test_raw_accuracy_does_not_conflate_abstention(self):
+        dataset = validate_dataset(self.rows)
+        path = self.runs / CANDIDATES[0] / "predictions.jsonl"
+        rows = [json.loads(x) for x in path.read_text().splitlines()]
+        rows[0]["probabilities"] = {"allow": 0.6, "deny": 0.4}
+        rows[0]["abstained"] = True
+        predicted = validate_predictions(rows, dataset, CANDIDATES[0], 0.7)
+        result = metrics(dataset, predicted)
+        self.assertEqual(result["accuracy"], 1.0)
+        self.assertEqual(result["effective_correct_rate"], 0.5)
+        self.assertEqual(result["coverage"], 0.5)
+        self.assertEqual(result["selective_accuracy"], 1.0)
 
     def test_calibration_grid_and_normalization(self):
         examples = [
