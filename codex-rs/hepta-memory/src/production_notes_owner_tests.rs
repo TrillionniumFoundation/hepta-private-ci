@@ -13,6 +13,9 @@ use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 
+#[path = "production_retained_operation_tests.rs"]
+mod retained_operation_tests;
+
 type TestResult<T = ()> = Result<T, Box<dyn Error>>;
 const LEASE: &str = "notes-owner-recovery-fixture";
 

@@ -57,6 +57,10 @@ use crate::local_lease_outbox::legacy_dispatch_operation_digest;
 use crate::operation_claims;
 use crate::operation_claims::DurableDispatchClaim;
 
+#[path = "production_retained_operation.rs"]
+mod retained_operation;
+pub use retained_operation::ProductionRetainedOperation;
+
 #[path = "objective_sender.rs"]
 mod objective_sender;
 pub use objective_sender::ObjectiveSenderCheckpoint;

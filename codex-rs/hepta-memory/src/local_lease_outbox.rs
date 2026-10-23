@@ -8,6 +8,9 @@
 //! receipt and no scheduler, router, KG writer, or production caller is wired
 //! here.
 
+#[path = "local_retained_operation.rs"]
+mod retained_operation;
+
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::time::SystemTime;
