@@ -190,7 +190,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-contracts/src/final_use_tests.rs](../../../codex-rs/hepta-contracts/src/final_use_tests.rs); named case: `signed_claim_is_single_use_and_delivers_under_same_owner`.
 - [codex-rs/hepta-contracts/src/agent_id_tests.rs](../../../codex-rs/hepta-contracts/src/agent_id_tests.rs); named case: `canonical_id_is_stable_across_display_parse_and_serde`.
-The previously listed dedicated kernel-authority traceability test is not present in this source tree. Its target-port and Browser B4 closed-set coverage must not be inferred from these source references.
+  The previously listed dedicated kernel-authority traceability test is not present in this source tree. Its target-port and Browser B4 closed-set coverage must not be inferred from these source references.
 
 In `codex-rs`, run `just test -p codex-hepta-contracts`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.authority.md) separately labels target acceptance designs.
 
@@ -412,13 +412,13 @@ The following additional work packages are source-planning envelopes introduced 
 
 This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
 
-| Operation | Native symbol | Source path | Tests |
-|---|---|---|---|
-| `finaluseauthority` | `FinalUseAuthority`, `VerifiedUseToken`, `dispatch_final_use` | `codex-rs/hepta-contracts/src/final_use.rs` | `final_use_tests.rs`, `tests/final_use_linearization.rs` |
-| `store` | `Store` | `codex-rs/hepta-contracts/src/final_use_store.rs` | `final_use_tests.rs` |
-| `authority_lease` / `capability_revocation` | `AuthorityLeaseRegistry`, `AuthorityLeaseVerifier` | `codex-rs/hepta-contracts/src/authority_lease.rs` | inline unit tests |
-| trusted time / anti-rollback interface | `AuthorityClock`, `AuthorityFrontierStore` | `codex-rs/hepta-contracts/src/authority_trust.rs` | lease + FinalUse restored-snapshot tests |
-| independent approval / revocation feed | `FinalUseApprovalVerifier`, `FinalUseRevocationFeedVerifier`, `FinalUseTrustKey` | `codex-rs/hepta-contracts/src/final_use_control.rs` | inline unit tests |
+| Operation                                   | Native symbol                                                                    | Source path                                         | Tests                                                    |
+| ------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------- | -------------------------------------------------------- |
+| `finaluseauthority`                         | `FinalUseAuthority`, `VerifiedUseToken`, `dispatch_final_use`                    | `codex-rs/hepta-contracts/src/final_use.rs`         | `final_use_tests.rs`, `tests/final_use_linearization.rs` |
+| `store`                                     | `Store`                                                                          | `codex-rs/hepta-contracts/src/final_use_store.rs`   | `final_use_tests.rs`                                     |
+| `authority_lease` / `capability_revocation` | `AuthorityLeaseRegistry`, `AuthorityLeaseVerifier`                               | `codex-rs/hepta-contracts/src/authority_lease.rs`   | inline unit tests                                        |
+| trusted time / anti-rollback interface      | `AuthorityClock`, `AuthorityFrontierStore`                                       | `codex-rs/hepta-contracts/src/authority_trust.rs`   | lease + FinalUse restored-snapshot tests                 |
+| independent approval / revocation feed      | `FinalUseApprovalVerifier`, `FinalUseRevocationFeedVerifier`, `FinalUseTrustKey` | `codex-rs/hepta-contracts/src/final_use_control.rs` | inline unit tests                                        |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.

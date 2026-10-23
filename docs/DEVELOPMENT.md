@@ -666,7 +666,7 @@ npm, Python, build or exact-source CI gates. Complete PN0 before treating later
 PoN or model experiments as a qualified integration baseline.
 
 Cross-repository qualification follows the Chain plan's single
-[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/873d5cb62b1f6bf30acd8fe6efc944e773ee10cc/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
+[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/a60f1b4b8aca55b85b98977b4a2d812695099f21/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
 PN0 exact-source/security baseline → PN1 work security and PN2 bounded state →
 PN3 real-model closure → PN4 five-budget/effect-liability qualification →
 PN5 independent-operator WAN/discovery/availability → PN6 governed migration and
@@ -679,6 +679,14 @@ controlled by one administrator. Existing package predecessors remain mandatory;
 this ordering adds cross-repository evidence dependencies without a second DAG,
 optimizer, durable journal or authority issuer. Parameter, topology, executable
 and consensus upgrades retain their separate admission and release boundaries.
+
+PN0's native pair now pins Chain source `a60f1b4b` against the unchanged default
+main `9fedf7ec`. Its source-head lane tests that source; its base-merge lane tests
+prospective merge `230412d3`, with ordered parents `[9fedf7ec, a60f1b4b]` and the
+original exact merge-tree checks. The separate original-integration baseline
+`f877` with parents `[57c1ed54, a60f1b4b]` remains required. Neither baseline can
+replace the other, and a pin refresh supplies no passing execution evidence.
+The older source-bound campaign observations below remain unchanged.
 
 PN4's source-to-destination interface carries the original verified request and
 one-shot FinalUse token in a sealed `ProductionVerifiedDispatch`. Physical targets
