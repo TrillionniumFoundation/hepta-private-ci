@@ -221,7 +221,19 @@ generation from that anchor. Cross-host deployment of this backend additionally
 requires a shared filesystem with qualified linearizable lock and fsync
 semantics.
 
-The evaluated-shadow caller now consumes only the sealed `ProductQualificationReceiptV1`, rechecks current trust/dataset/candidate bindings and never re-runs low-level signed admission. This leaves one repository-controlled product qualification spine.
+The evaluated-shadow caller now consumes only the sealed `ProductQualificationReceiptV1`, rechecks current trust/dataset/candidate bindings and never re-runs low-level signed admission. The Agentd canonical evaluation adapter and governed parameter-plasticity adapter
+now also consume only that sealed receipt, validate the owner-retained authenticated
+evidence lifetimes and scheduled revocations through `validate_current`, check current host trust and exact
+consumer bindings, and require the same independent evaluator to sign its current
+use. The low-level V2 primitive remains crate-internal. The seal includes the
+complete decision disposition, evaluation/baseline identity and failed metrics;
+changing public fields cannot upgrade an ineligible result. This leaves one
+repository-controlled product qualification spine.
+
+The product receipt is currently an in-process Rust value, with no public
+serialization/restoration constructor. Host evidence-sink implementation and
+persisted receipt recovery remain integration obligations; recovered holdout
+history alone cannot manufacture a product receipt.
 
 ## 7. Runtime, concurrency and transaction model
 

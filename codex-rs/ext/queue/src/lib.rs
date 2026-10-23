@@ -6,6 +6,10 @@ use codex_extension_api::ExtensionRegistryBuilder;
 
 mod service;
 
+pub use service::QueueHistoricalObservation;
+pub use service::QueueHistoricalObserver;
+pub use service::QueueHistoricalOutcome;
+pub use service::QueueHistoricalTerminal;
 pub use service::QueueReconcileMode;
 pub use service::QueueReconcileOutcome;
 pub use service::QueueReconcileResponse;

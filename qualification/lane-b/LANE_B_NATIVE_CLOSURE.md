@@ -63,7 +63,7 @@ External evidence gates:
 
 Owns only ephemeral run admission, immutable snapshot references, and runtime-health composition state.
 
-Agentd preserves dispatch-boundary uncertainty and accepts terminal state only from the delegated execution/effect owner.
+The local lifecycle preserves dispatch-boundary uncertainty and accepts a trusted host caller's phase/terminal_observed input. This input is not an independently authenticated provider receipt; canonical physical execution and its trusted observer remain separate composition work.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
@@ -77,17 +77,31 @@ Agentd preserves dispatch-boundary uncertainty and accepts terminal state only f
 | `shared_terminal_cell_train` | `owner_native` | `codex-rs/hepta-agentd/src/shared_terminal_cell.rs` — `pub async fn train(` |
 | `shared_terminal_cell_load` | `owner_native` | `codex-rs/hepta-agentd/src/shared_terminal_cell.rs` — `pub async fn load(` |
 | `shared_terminal_cell_predict` | `owner_native` | `codex-rs/hepta-agentd/src/shared_terminal_cell.rs` — `pub async fn predict(` |
+| `current_trust_run_start_admission` | `owner_native` | `codex-rs/hepta-agentd/src/state.rs` — `pub(crate) fn start_current_run_start_record(` |
+| `signed_objective_start` | `owner_native` | `codex-rs/hepta-agentd/src/objective_runtime.rs` — `pub(crate) async fn submit(` |
+| `objective_journal_reconciliation` | `owner_native` | `codex-rs/hepta-agentd/src/objective_runtime.rs` — `pub(crate) fn reconcile(` |
+| `configured_canonical_intelligence_admission` | `owner_native` | `codex-rs/hepta-agentd/src/state.rs` — `pub(crate) async fn start_canonical_intelligence(` |
+| `mark_dispatched` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn mark_dispatched(` |
+| `observe_terminal` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn observe_terminal(` |
+| `recover_indeterminate_component` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn recover_indeterminate(` |
+| `release_closed` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn remove_closed_run(` |
+| `durable_canonical_preparation_binding` | `owner_native` | `codex-rs/hepta-agentd/src/intelligence_product_runner.rs` — `pub(crate) async fn prepare_for_run_start(` |
+| `automation_effect_reservation_admission` | `owner_native` | `codex-rs/hepta-agentd/src/state_control.rs` — `pub(crate) fn reserve_automation_effect_worker(` |
 
 Remaining repository implementation gaps:
 
-- Compose the canonical caller through runtime.codex so physical turn start/interrupt and terminal observations are real invocation edges rather than design-only delegated targets.
-- Bind current AuthBus/trust revalidation to the durable RunStartRecordV1 before start_revalidated_run_start; raw journal records are not current authentication evidence. Post-dispatch recovery remains Indeterminate and non-redispatchable.
-- Compose AgentdNeuronOwner into the daemon-owned run lifecycle once the canonical runtime.agentd coordinator line converges, with selected-artifact/current inference.control/witness dependencies constructed by the registered owner composition rather than an ambient singleton.
+- Bind the configured canonical lifecycle to existing runtime.codex physical turn start/interrupt and an actual trusted terminal observer; local markers and caller-supplied terminal booleans are not those invocation edges.
+- Compose authenticated durable execution-owner recovery into Agentd and recover the exact product Decision/Outcome handoff. Component recover_indeterminate has no daemon ingress, authenticates no owner, and cannot redispatch.
+- Supply real host-owned invocation providers for activated task/domain profiles; the ordinary CLI constructs only the runner and cannot advertise canonical capability by itself.
+- Compose AgentdNeuronOwner into the daemon-owned run lifecycle with selected-artifact/current inference.control/witness dependencies constructed by the registered owner composition rather than an ambient singleton.
+- Execute a full socket/daemon graceful-drain integration across the new original-owner historical observation capability, durable automation settlement and closed RPC admission. Source owner/DB/history cases do not establish this composed process evidence or arbitrary downstream-owner atomic shutdown.
+- Extend source mapping where other owner integration surfaces require it; this explicit boundary inventory does not claim complete whole-crate API coverage.
 
 External evidence gates:
 
 - deployed Agentd process and authenticated socket identity
 - target-host drain/restart/backpressure measurements
+- selected-platform Fleet peer custody and original-owner historical-drain execution
 - independent acceptance, promotion and release
 
 ## 5. `runtime.codex`
@@ -263,6 +277,6 @@ External evidence gates:
 
 ## 13. Cross-module acceptance boundary
 
-All 52 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
+All 62 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
 
 Repository source closure does not self-issue real model/provider execution, Servo or Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, external-owner consent, independent acceptance, selection, promotion or release.

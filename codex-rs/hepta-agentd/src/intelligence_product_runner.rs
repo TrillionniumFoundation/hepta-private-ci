@@ -7,11 +7,13 @@ impl AgentdIntelligenceProductRunnerV1 {
         authority_file: PathBuf,
         authority_verifier: IntelligenceAuthorityVerifierV1,
     ) -> Result<Self, AgentdIntelligenceProductError> {
+        let verifying_key = VerifyingKey::from_bytes(&authority_verifier.verifying_key)
+            .map_err(|_| AgentdIntelligenceProductError::InvalidAuthorityVerifier)?;
         if !authority_file.is_absolute()
             || authority_verifier.signer_id.is_empty()
             || authority_verifier.signer_id.len() > 128
             || authority_verifier.signer_id.as_bytes().contains(&0)
-            || VerifyingKey::from_bytes(&authority_verifier.verifying_key).is_err()
+            || verifying_key.is_weak()
         {
             return Err(AgentdIntelligenceProductError::InvalidAuthorityVerifier);
         }
@@ -111,7 +113,7 @@ impl AgentdIntelligenceProductRunnerV1 {
             .ok_or(AgentdIntelligenceProductError::Clock)?;
         let authority_file = self.authority_file.clone();
         let authority_verifier = self.authority_verifier.clone();
-        let evaluation_session = match inputs.signed_evaluation.take() {
+        let evaluation_session = match inputs.qualified_evaluation.take() {
             None => None,
             Some(signed) => {
                 let trust = self
@@ -161,10 +163,8 @@ impl AgentdIntelligenceProductRunnerV1 {
                 bytes.extend_from_slice(envelope.envelope_digest.as_array());
                 bytes.extend_from_slice(snapshot.revocation_frontier_digest().as_array());
                 let dispatch_proposal_digest = Digest32::of_bytes(&bytes);
-                let mut body = b"hepta.agentd.intelligence-body.v1\0".to_vec();
-                body.extend_from_slice(snapshot.digest().as_array());
-                body.extend_from_slice(&snapshot.body_generation().get().to_be_bytes());
-                let body_digest = Digest32::of_bytes(&body);
+                let body_digest =
+                    crate::intelligence_ingress::canonical_runtime_body_digest(&snapshot);
                 let run_snapshot = crate::AgentRunSnapshot {
                     run_id: envelope.run_id.to_string(),
                     request_digest: envelope.trace_digest.to_string(),
@@ -207,10 +207,82 @@ impl AgentdIntelligenceProductRunnerV1 {
         }
     }
 
+    /// Bind canonical owner evidence to an authenticated Objective publication.
+    /// The caller revalidates live trust. Body keeps its process incarnation;
+    /// physical admission uses the exact durable Running tuple and deadline.
+    pub(crate) async fn prepare_for_run_start(
+        &self,
+        composition: &crate::RuntimeComposition,
+        record: &codex_hepta_learning_ledger::RunStartRecordV1,
+        request: CanonicalIntelligenceRunRequestV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        let running_generation = composition
+            .agentd_generation
+            .checked_add(1)
+            .ok_or(AgentdIntelligenceProductError::Clock)?;
+        let mut fence = b"hepta:agentd:objective-fence:v1\0".to_vec();
+        fence.extend_from_slice(composition.agent_id.as_bytes());
+        fence.extend_from_slice(&composition.agentd_generation.to_be_bytes());
+        fence.extend_from_slice(&running_generation.to_be_bytes());
+        if request.run_id != record.snapshot.run_id
+            || request.snapshot.body_generation().get() != composition.agentd_generation
+            || request.snapshot.objective_digest() != record.snapshot.objective_digest
+            || request.snapshot.authority_epoch() != record.snapshot.authority_epoch
+            || request.snapshot.digest() != record.snapshot.artifact_set_digest
+            || crate::intelligence_ingress::canonical_runtime_body_digest(&request.snapshot)
+                != record.runtime_body_digest
+            || record.snapshot.generation != running_generation
+            || record.snapshot.fence_digest != Digest32::of_bytes(&fence)
+        {
+            return Err(AgentdIntelligenceProductError::Run(
+                crate::AgentRunError::MixedSnapshot,
+            ));
+        }
+        let outcome = self
+            .prepare_for_composition(composition, request, inputs)
+            .await?;
+        let AgentdIntelligenceProductOutcomeV1::Ready(mut prepared) = outcome else {
+            return Ok(outcome);
+        };
+        // Reject incompatible body, artifacts or authority; never replace them
+        // with caller values to disguise a different canonical owner result.
+        if prepared.run_snapshot.body_digest != record.runtime_body_digest.to_string()
+            || prepared.run_snapshot.artifact_set_digest
+                != record.snapshot.artifact_set_digest.to_string()
+            || prepared.run_snapshot.authority_epoch != record.snapshot.authority_epoch
+            || prepared.run_snapshot.objective_digest
+                != record.snapshot.objective_digest.to_string()
+        {
+            return Err(AgentdIntelligenceProductError::Run(
+                crate::AgentRunError::MixedSnapshot,
+            ));
+        }
+        let deadline_ms = record
+            .admission
+            .deadline_unix_micros
+            .checked_add(999)
+            .map(|value| value / 1_000)
+            .ok_or(AgentdIntelligenceProductError::Clock)?;
+        let physical = &mut prepared.run_snapshot;
+        physical.request_digest = record.admission.admitted_source_digest.to_string();
+        physical.generation = record.snapshot.generation;
+        physical.fence_digest = record.snapshot.fence_digest.to_string();
+        physical.deadline_ms = deadline_ms;
+        let attachment = &mut prepared.context_attachment;
+        attachment.request_digest = physical.request_digest.clone();
+        attachment.generation = physical.generation;
+        attachment.fence_digest = physical.fence_digest.clone();
+        attachment.deadline_ms = physical.deadline_ms;
+        Ok(AgentdIntelligenceProductOutcomeV1::Ready(prepared))
+    }
+
     /// Execute the canonical seven-owner composition and immediately admit the
     /// exact resulting envelope into the Agentd-owned run coordinator. This
     /// prevents product callers from treating a prepared envelope as a valid
     /// physical-turn binding before Agentd has frozen its run/context identity.
+    /// This standalone path has no daemon Fleet lifecycle admission; ordinary
+    /// ObjectiveStart uses the authenticated durable binding instead.
     pub async fn prepare_and_admit(
         &self,
         coordinator: &mut crate::AgentRunCoordinator,

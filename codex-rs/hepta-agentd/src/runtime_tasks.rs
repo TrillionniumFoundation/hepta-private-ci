@@ -251,7 +251,21 @@ impl RuntimeTasks {
                 "duplicate runtime task or generation task capacity exceeded".to_string(),
             ));
         }
-        let handle = self.tasks.spawn(future);
+        let required = quarantine.is_none();
+        let task_name = name.to_string();
+        let cancellation = self.cancellation.clone();
+        let handle = self.tasks.spawn(async move {
+            let result = future.await;
+            // Preserve the actual exit boundary even when a ready shutdown
+            // signal wins run_until before this queued completion is observed.
+            if required && result.is_ok() && !cancellation.is_cancelled() {
+                Err(AgentdError::Protocol(format!(
+                    "{task_name} exited before agentd shutdown"
+                )))
+            } else {
+                result
+            }
+        });
         self.entries.insert(
             handle.id(),
             TaskEntry {

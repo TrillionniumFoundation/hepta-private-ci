@@ -28,9 +28,27 @@ if os.environ.get('BAZEL_PROBE_ARGV_LIMIT') and sum(len(arg.encode('utf-16-le'))
 
 patterns = next((arg for arg in raw_args if arg.startswith('--target_pattern_file=')), None)
 if patterns:
-    targets = Path(patterns.split('=', 1)[1]).read_text(encoding='utf-8').splitlines()
-    sys.argv[1:] = [arg for arg in raw_args if arg != patterns] + ['--', *targets]
-
+    native_path = patterns.split('=', 1)[1]
+    path = native_path
+    mapping = Path(os.environ['BAZEL_PROBE_PATH_MAPPING'])
+    if mapping.exists():
+        path = json.loads(mapping.read_text(encoding='utf-8')).get(native_path, native_path)
+    contents = Path(path).read_bytes().decode('utf-8')
+    effective_patterns = [pattern for line in contents.split('\\n')
+                          if (pattern := line.split('#', 1)[0].strip(
+                              ''.join(chr(value) for value in range(33))))]
+    Path(os.environ['BAZEL_PROBE_TARGET_FILE_LOG']).write_text(json.dumps({
+        'native_path': native_path,
+        'path': path,
+        'native_argv': raw_args,
+        'contents': contents,
+        'effective_patterns': effective_patterns,
+        'msys_arg_conv_excl': os.environ.get('MSYS2_ARG_CONV_EXCL'),
+    }), encoding='utf-8')
+    prefix = [arg for arg in raw_args if arg != patterns]
+    if prefix and prefix[-1] == '--':
+        prefix.pop()
+    sys.argv[1:] = prefix + ['--', *effective_patterns]
 with Path(os.environ['BAZEL_PROBE_LOG']).open('a', encoding='utf-8') as output:
     output.write(json.dumps(sys.argv[1:]) + '\\n')
 command = next(arg for arg in sys.argv[1:] if not arg.startswith('-'))
@@ -60,6 +78,10 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.addCleanup(directory.cleanup)
         self.root = Path(directory.name)
         self.log = self.root / "arguments.jsonl"
+        self.path_mapping = self.root / "native-path.json"
+        self.target_file_log = self.root / "target-file.json"
+        self.temporary_files = self.root / "temporary files"
+        self.temporary_files.mkdir()
         self.testlogs = self.root / "testlogs"
         target_log = self.testlogs / "fake" / "target" / "test.log"
         target_log.parent.mkdir(parents=True)
@@ -67,10 +89,24 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         probe = self.root / "probe.py"
         probe.write_text(PROBE, encoding="utf-8")
         if os.name == "nt":
-            executable = self.root / "bazel.cmd"
-            executable.write_text(
-                f'@"{sys.executable}" "{probe}" %*\n', encoding="utf-8"
+            # A .cmd probe adds CMD's 8191-character limit, which is not the
+            # native executable contract exercised by these long-argv cases.
+            # Use pip's installed Windows script launcher without downloading
+            # or compiling a binary, while retaining the complete probe argv.
+            from pip._vendor.distlib.scripts import ScriptMaker
+
+            launcher_source = self.root / "launcher-source"
+            launcher_source.mkdir()
+            (launcher_source / "bazel.py").write_text(
+                "#!python\n" + PROBE, encoding="utf-8"
             )
+            ScriptMaker(str(launcher_source), str(self.root)).make("bazel.py")
+            executable = self.root / "bazel.exe"
+            self.assertTrue(executable.is_file())
+            interpreter = sys.executable
+            if " " in interpreter:
+                interpreter = f'"{interpreter}"'
+            self.assertIn(f"#!{interpreter}\n".encode("utf-8"), executable.read_bytes())
             git_bash = (
                 Path(os.environ.get("ProgramFiles", "C:/Program Files"))
                 / "Git/bin/bash.exe"
@@ -84,6 +120,30 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             )
             executable.chmod(0o755)
             self.bash = shutil.which("bash")
+            # Exercise the explicit native-path conversion on Linux as well.
+            # The Bazel probe maps this Windows spelling back to the real file.
+            cygpath_probe = self.root / "cygpath_probe.py"
+            cygpath_probe.write_text(
+                "import json, os, sys\n"
+                "from pathlib import Path\n"
+                "assert sys.argv[1] in ('-m', '-w') and len(sys.argv) == 3\n"
+                "if os.environ.get('BAZEL_PROBE_CYGPATH_FAIL') == '1':\n"
+                "    sys.exit(23)\n"
+                "if sys.argv[1] == '-w':\n"
+                "    print(sys.argv[2])\n"
+                "    sys.exit(0)\n"
+                "native = 'C:/Bazel target patterns/' + Path(sys.argv[2]).name\n"
+                "Path(os.environ['BAZEL_PROBE_PATH_MAPPING']).write_text(\n"
+                "    json.dumps({native: sys.argv[2]}), encoding='utf-8')\n"
+                "print(native)\n",
+                encoding="utf-8",
+            )
+            cygpath = self.root / "cygpath"
+            cygpath.write_text(
+                f'#!/bin/sh\nexec {shlex.quote(sys.executable)} {shlex.quote(str(cygpath_probe))} "$@"\n',
+                encoding="utf-8",
+            )
+            cygpath.chmod(0o755)
         self.assertIsNotNone(self.bash, "Bash is required to exercise the CI wrapper")
         self.env = {
             key: value
@@ -96,7 +156,10 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             CODEX_BAZEL_WINDOWS_PATH=r"C:\Program Files\PowerShell\7;C:\Program Files\Git\bin",
             BAZEL_PROBE_LOG=str(self.log),
             BAZEL_PROBE_TESTLOGS=str(self.testlogs),
+            BAZEL_PROBE_PATH_MAPPING=str(self.path_mapping),
+            BAZEL_PROBE_TARGET_FILE_LOG=str(self.target_file_log),
             BAZEL_REPO_CONTENTS_CACHE="job scoped cache",
+            TMPDIR=self.temporary_files.as_posix(),
             INCLUDE=r"C:\VS\include;C:\SDK\include",
             LIB=r"C:\VS\lib;C:\SDK\lib",
             LIBPATH=r"C:\VS\libpath",
@@ -104,16 +167,41 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             VCToolsInstallDir=r"C:\VS\VC\Tools\MSVC\14.51.36231",
             WindowsSdkDir=r"C:\SDK",
         )
+        if os.name != "nt":
+            self.env["PATH"] = str(self.root) + os.pathsep + self.env["PATH"]
 
     def run_wrapper(
-        self, *args: str
+        self, *args: str, targets: list[str] | None = None
     ) -> tuple[subprocess.CompletedProcess[str], list[list[str]]]:
+        command = [self.bash, str(SCRIPTS / "run-bazel-ci.sh"), *args]
+        shell_input = None
+        if targets is not None:
+            # Avoid putting the oversized fixture in Python's own Windows
+            # CreateProcess argv. Bash builds it and invokes the real wrapper
+            # through its source builtin, just as CI expands its Bash array.
+            command = [self.bash]
+            shell_input = (
+                "targets=(\n"
+                + "\n".join(shlex.quote(target) for target in targets)
+                + "\n)\nsource "
+                + " ".join(
+                    shlex.quote(arg)
+                    for arg in [
+                        (SCRIPTS / "run-bazel-ci.sh").as_posix(),
+                        *args,
+                        "--",
+                    ]
+                )
+                + ' "${targets[@]}"\n'
+            )
         result = subprocess.run(
-            [self.bash, str(SCRIPTS / "run-bazel-ci.sh"), *args],
+            command,
+            input=shell_input,
             env=self.env,
             check=False,
             capture_output=True,
             text=True,
+            encoding="utf-8",
             timeout=60,
         )
         self.assertTrue(self.log.exists(), result.stdout + result.stderr)
@@ -122,6 +210,183 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             for line in self.log.read_text(encoding="utf-8").splitlines()
         ]
         return result, calls
+
+    def long_targets(self) -> list[str]:
+        targets = [
+            f"//codex-rs/fixture/package_{index:04d}:" + "long_clippy_target_" * 4
+            for index in range(700)
+        ]
+        targets.insert(1, "-//codex-rs/fixture:excluded")
+        targets.append(targets[0])
+        return targets
+
+    def test_long_windows_targets_use_native_file_without_changing_patterns(
+        self,
+    ) -> None:
+        targets = self.long_targets()
+        result, calls = self.run_wrapper(
+            "--windows-msvc-host-platform",
+            "--",
+            "build",
+            "--config=clippy",
+            "--platforms=//:windows_x86_64_msvc",
+            targets=targets,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 1)
+        args = calls[0]
+        observed = json.loads(self.target_file_log.read_text(encoding="utf-8"))
+        self.assertEqual(
+            observed["contents"], "".join(target + "\n" for target in targets)
+        )
+        self.assertEqual(observed["effective_patterns"], targets)
+        self.assertIn(
+            f"--target_pattern_file={observed['native_path']}", observed["native_argv"]
+        )
+        self.assertTrue(Path(observed["native_path"]).is_absolute())
+        self.assertEqual(observed["msys_arg_conv_excl"], "*")
+        self.assertEqual(args[args.index("--") + 1 :], targets)
+        for flag in (
+            "--config=clippy",
+            "--config=ci-windows",
+            "--host_platform=//:local_windows_msvc",
+            "--platforms=//:windows_x86_64_msvc",
+            "--repo_contents_cache=job scoped cache",
+        ):
+            self.assertIn(flag, args)
+        self.assertFalse(Path(observed["path"]).exists())
+        self.assertEqual(list(self.temporary_files.iterdir()), [])
+
+    def test_long_windows_target_file_failure_preserves_status_and_diagnostics(
+        self,
+    ) -> None:
+        self.env["BAZEL_PROBE_FAIL"] = "1"
+        result, calls = self.run_wrapper(
+            "--windows-cross-compile",
+            "--print-failed-action-summary",
+            "--print-failed-test-logs",
+            "--",
+            "test",
+            "--platforms=//:custom-target",
+            targets=self.long_targets(),
+        )
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 2)
+        build, info = calls
+        self.assertEqual(build[build.index("--") + 1 :], self.long_targets())
+        self.assertFalse(any(arg.startswith("--target_pattern_file=") for arg in info))
+        for flag in (
+            "--config=ci-windows",
+            "--host_platform=//:local_windows_msvc",
+            "--platforms=//:custom-target",
+        ):
+            self.assertIn(flag, build)
+            self.assertIn(flag, info)
+        self.assertIn("undefined symbol: __stack_chk_fail", result.stdout)
+        self.assertIn(">>> referenced by native-archive.o", result.stdout)
+        self.assertIn("actual failing test diagnostic", result.stdout)
+        observed = json.loads(self.target_file_log.read_text(encoding="utf-8"))
+        self.assertFalse(Path(observed["path"]).exists())
+        self.assertEqual(list(self.temporary_files.iterdir()), [])
+
+    def test_large_linux_targets_keep_the_original_argv(self) -> None:
+        self.env["RUNNER_OS"] = "Linux"
+        targets = self.long_targets()
+        if os.name == "nt":
+            # This Linux contract can also run on a Windows test host without
+            # overflowing that host's unrelated native process argv limit.
+            targets = targets[:140] + [targets[-1]]
+        result, calls = self.run_wrapper(
+            "--", "build", "--config=clippy", targets=targets
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 1)
+        args = calls[0]
+        self.assertEqual(args[args.index("--") + 1 :], targets)
+        self.assertTrue("--config=clippy" in args)
+        self.assertFalse(any(arg.startswith("--action_env=") for arg in args))
+        self.assertFalse(any(arg.startswith("--target_pattern_file=") for arg in args))
+        if os.name == "nt":
+            # RUNNER_OS is a job label; it does not remove the native host's
+            # argv limit. Its safe roster transport must retain every target.
+            observed = json.loads(self.target_file_log.read_text(encoding="utf-8"))
+            self.assertEqual(observed["effective_patterns"], targets)
+            self.assertIn(
+                f"--target_pattern_file={observed['native_path']}",
+                observed["native_argv"],
+            )
+            self.assertFalse(Path(observed["path"]).exists())
+        else:
+            self.assertFalse(self.target_file_log.exists())
+        self.assertFalse(self.path_mapping.exists())
+        self.assertEqual(list(self.temporary_files.iterdir()), [])
+
+    def test_large_windows_query_keeps_its_command_line_expression(self) -> None:
+        # Query has its own query-file option and must not receive the
+        # build/test target-pattern-file flag. Stay below the native host
+        # limit while exceeding the wrapper's target-file cutover.
+        expression = " + ".join(self.long_targets()[:100])
+        result, calls = self.run_wrapper("--", "query", targets=[expression])
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 1)
+        args = calls[0]
+        self.assertEqual(args[args.index("--") + 1 :], [expression])
+        self.assertFalse(any(arg.startswith("--target_pattern_file=") for arg in args))
+        self.assertFalse(self.target_file_log.exists())
+        self.assertFalse(self.path_mapping.exists())
+        self.assertEqual(list(self.temporary_files.iterdir()), [])
+
+    def test_windows_patterns_reinterpreted_by_file_syntax_keep_original_argv(
+        self,
+    ) -> None:
+        for pattern in (
+            "//fixture:literal#suffix",
+            "#comment",
+            " //fixture:leading",
+            "//fixture:trailing ",
+            "\x07//fixture:leading-control",
+            "//fixture:trailing-control\x07",
+            "",
+        ):
+            with self.subTest(pattern=pattern):
+                self.log.unlink(missing_ok=True)
+                targets = self.long_targets()[:100] + [pattern]
+                result, calls = self.run_wrapper("--", "build", targets=targets)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertEqual(len(calls), 1)
+                args = calls[0]
+                self.assertEqual(args[args.index("--") + 1 :], targets)
+                self.assertFalse(
+                    any(arg.startswith("--target_pattern_file=") for arg in args)
+                )
+                self.assertFalse(self.target_file_log.exists())
+                self.assertFalse(self.path_mapping.exists())
+                self.assertEqual(list(self.temporary_files.iterdir()), [])
+
+    @unittest.skipIf(os.name == "nt", "Uses the POSIX host's controlled cygpath probe")
+    def test_failed_native_path_conversion_cleans_files_before_bazel_runs(self) -> None:
+        self.env["BAZEL_PROBE_CYGPATH_FAIL"] = "1"
+        targets = self.long_targets()
+        shell_input = (
+            "targets=(\n"
+            + "\n".join(shlex.quote(target) for target in targets)
+            + "\n)\nsource "
+            + shlex.quote((SCRIPTS / "run-bazel-ci.sh").as_posix())
+            + ' -- build -- "${targets[@]}"\n'
+        )
+        result = subprocess.run(
+            [self.bash],
+            input=shell_input,
+            env=self.env,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        self.assertEqual(result.returncode, 23, result.stdout + result.stderr)
+        self.assertFalse(self.log.exists())
+        self.assertFalse(self.target_file_log.exists())
+        self.assertEqual(list(self.temporary_files.iterdir()), [])
 
     def test_keyless_cross_uses_msvc_exec_and_gnullvm_target(self) -> None:
         result, calls = self.run_wrapper(
@@ -208,7 +473,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.env["BAZEL_PROBE_FAIL"] = "1"
         physical = self.root / "physical-arguments.jsonl"
         self.env["BAZEL_PROBE_TRANSPORT_LOG"] = str(physical)
-        targets = ["//fake:target", "-//excluded:target", "//路径 with spaces:target"]
+        targets = self.long_targets() + ["//路径 with spaces:target"]
         for command in ("test", "coverage"):
             with self.subTest(command=command):
                 if self.log.exists():
@@ -216,7 +481,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
                 if physical.exists():
                     physical.unlink()
                 result, calls = self.run_wrapper(
-                    "--", command, "--keep_going", "--", *targets
+                    "--", command, "--keep_going", targets=targets
                 )
                 self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
                 self.assertIn(command, calls[0])
@@ -263,6 +528,11 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertFalse(
             any(arg == "--incompatible_strict_action_env=0" for arg in args)
         )
+        self.assertEqual(args[args.index("--") + 1 :], ["//fake:target"])
+        self.assertFalse(any(arg.startswith("--target_pattern_file=") for arg in args))
+        self.assertFalse(self.target_file_log.exists())
+        self.assertFalse(self.path_mapping.exists())
+        self.assertEqual(list(self.temporary_files.iterdir()), [])
 
     def test_native_windows_rejects_missing_required_msvc_environment(self) -> None:
         del self.env["LIB"]

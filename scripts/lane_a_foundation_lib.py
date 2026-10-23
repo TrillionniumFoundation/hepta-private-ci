@@ -49,12 +49,7 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
         if phrase not in policy:
             raise VerificationError(f"boundary policy missing {phrase!r}")
     modules = matrix.get("modules")
-    if (
-        not isinstance(modules, list)
-        or [row.get("module") for row in modules if isinstance(row, dict)]
-        != EXPECTED_MODULES
-    ):
-        raise VerificationError("closed-world module order mismatch")
+    validate_module_order(modules, root)
     for row in modules:
         module = row["module"]
         states = row.get("states")
@@ -71,11 +66,7 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
             if not isinstance(row.get(field), str) or not (root / row[field]).is_file():
                 raise VerificationError(f"{module}: missing {field}")
         current = read_text(root / row["currentSpecification"])
-        positions = [current.find(heading) for heading in SECTIONS]
-        if -1 in positions or positions != sorted(positions):
-            raise VerificationError(
-                f"{module}: current-contract sections missing/out of order"
-            )
+        validate_current_contract(module, current)
         current_caps = row.get("currentCapabilities")
         target_caps = row.get("targetOnlyCapabilities")
         if (

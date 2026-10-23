@@ -101,6 +101,36 @@ and `ClusterOpeEstimate` receipts; a caller cannot submit replacement
 The repository's current signed consumer is
 `codex-rs/hepta-intelligence/src/evaluated_shadow.rs::run_evaluated_shadow_v1`. It now accepts only a sealed `ProductQualificationReceiptV1`, checks its trust digest against the current host verifier, binds its dataset/objective/snapshot set and requires the same evaluator to sign the candidate bytes against that terminal receipt. It no longer re-runs low-level V2 admission. This closes the repository-controlled product qualification spine without claiming runtime activation, target-host qualification or production longitudinal efficacy.
 
+The Agentd canonical owner adapter and the governed parameter-plasticity adapter
+also consume only this sealed product receipt. Agentd's
+`AgentdQualifiedEvaluationV1` binds it to the actual run, snapshot, context,
+candidate set and candidate through `intelligence_evaluation_binding_payload_v2`.
+Plasticity's `CandidateEvaluationAdmissionV1` binds it to the exact governed
+admission through `plasticity_evaluation_signing_payload_v1`. Both consumers
+require the receipt owner's `validate_current` check under current host trust,
+including original generator/evaluator/longitudinal-observer evidence lifetimes
+and scheduled revocations, and a fresh independent evaluator use attestation;
+plasticity additionally binds the current generator, baseline, objective and
+dataset and checks observer/evaluator separation before its durable append.
+They cannot rerun V2 with caller-constructed metric intervals.
+
+The receipt seal binds the complete nested decision, including disposition,
+baseline, evaluation identity and failed metrics. Changing public receipt fields
+invalidates the seal. The `product-qualification.v4` digest domain replaces the
+incomplete V3 seal scope; use-attestation signing domains also change, so old
+raw-bundle Agentd/plasticity inputs are rejected rather than silently upgraded.
+These are typed in-process API changes, not a new control wire protocol.
+
+The current sealed receipt is an in-process Rust value and has no public
+serialization or restoration constructor. `LockedFileFinalHoldoutCasStoreV1`
+can recover holdout history, while each selected host still must implement its
+durable evidence sink and retain/pass the actual qualified receipt to its
+consumer. No end-to-end persisted Agentd qualification-recovery integration is
+claimed here. Consumers cannot reconstruct a seal from asserted decisions;
+persisted receipt recovery requires an owner-supported protocol. An idempotent
+holdout replay by itself is not restoration of the previously published terminal
+qualification.
+
 ## CI closure evidence
 
 Repository-controlled source qualification is the

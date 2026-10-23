@@ -1,4 +1,8 @@
 #![cfg(unix)]
+#![allow(
+    clippy::expect_used,
+    reason = "integration fixture identities and create-only owner files must be valid before the behavior under test"
+)]
 
 mod support;
 

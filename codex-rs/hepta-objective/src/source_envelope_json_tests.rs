@@ -312,6 +312,17 @@ fn numeric_and_digest_grammar_remains_exact() {
 }
 
 #[test]
+fn empty_legal_action_classes_retain_the_source_owner_structure_contract() {
+    let mut source: Value = serde_json::from_str(SOURCE).unwrap();
+    source["structuredIntent"]["legalActionClasses"] = json!([]);
+    let decoded = decode_source_envelope_json_v1(&serde_json::to_vec(&source).unwrap())
+        .expect("an empty legal action set is structurally valid");
+    let mut expected = decode_source_envelope_json_v1(SOURCE.as_bytes()).unwrap();
+    expected.structured_intent.legal_action_classes.clear();
+    assert_eq!(decoded, expected);
+}
+
+#[test]
 fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
     let original: Value = serde_json::from_str(SOURCE).unwrap();
     for (pointer, invalid) in [

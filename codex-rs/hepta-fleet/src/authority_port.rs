@@ -158,6 +158,7 @@ mod tests {
     use codex_hepta_contracts::authority_lease::AuthorityLease;
     use codex_hepta_contracts::authority_lease::AuthorityLeaseFrontier;
     use codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry;
+    use pretty_assertions::assert_eq;
     use sha2::Digest;
     use std::os::unix::fs::PermissionsExt;
     use std::sync::Arc;
@@ -194,8 +195,8 @@ mod tests {
 
     fn ledger() -> LeaseLedger {
         let mut ledger = LeaseLedger::new();
-        ledger
-            .admit_host(HostObservation {
+        assert_eq!(
+            ledger.admit_host(HostObservation {
                 host_id: "host-one".into(),
                 failure_domain_id: "rack-one".into(),
                 generation: 1,
@@ -206,8 +207,10 @@ mod tests {
                     memory_bytes: 1 << 20,
                     accelerator_millis: 1_000,
                 },
-            })
-            .unwrap();
+            }),
+            Ok(()),
+            "fixture host must be admitted"
+        );
         ledger
     }
 

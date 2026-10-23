@@ -12,6 +12,8 @@ use codex_hepta_learning_ledger::LedgerWitnessStore;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::ProductionLedgerError;
 use codex_hepta_types::ProbabilityQ32;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
 use std::fs;
 use std::fs::OpenOptions;
@@ -288,32 +290,77 @@ fn old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch() {
 
 #[test]
 fn tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports() {
-    for case in 0..3 {
+    for case in 0..4 {
         let mut fixture = Fixture::new();
-        if case == 0 {
-            fixture.qualification.decision.decision.evidence_digest = Digest32::ZERO;
-        } else if case == 1 {
-            fixture.qualification.publication_digest = Digest32::ZERO;
+        let now = if case == 2 { 95 } else { 50 };
+        match case {
+            0 => fixture.qualification.decision.decision.evidence_digest = Digest32::ZERO,
+            1 => fixture.qualification.publication_digest = Digest32::ZERO,
+            2 => {
+                // Both original owner attestations expire at 90. Their current
+                // validation precedes candidate consumption and must reject at 95.
+            }
+            _ => {
+                // Isolate candidate expiry: the owner qualification is still
+                // current, while this correctly signed candidate attestation
+                // has already expired. Changing expiry without resigning would
+                // mix this boundary with a forged signature.
+                fixture.candidate_evidence.expires_at = 40;
+                fixture.candidate_evidence.signature = SigningKey::from_bytes(&[22; 32])
+                    .sign(&fixture.candidate_evidence.signing_bytes())
+                    .to_bytes();
+                let payload = evaluated_candidate_signing_payload_v2(
+                    &fixture.qualification,
+                    &fixture.bytes,
+                    fixture.run.snapshot.learning_artifact_generation,
+                )
+                .expect("sealed candidate payload");
+                fixture
+                    .verifier
+                    .verify(
+                        LearningEvidenceRoleV1::Evaluator,
+                        &fixture.candidate_evidence,
+                        &payload,
+                        /*now*/ 40,
+                    )
+                    .expect("genuine candidate evidence at its expiry boundary");
+                fixture
+                    .qualification
+                    .validate_current(&fixture.verifier, now)
+                    .expect("qualification remains current at candidate consumption");
+            }
         }
         let mut ports = Ports::new(&fixture);
         let temp = tempfile::tempdir().unwrap();
-        let mut ledger = ledger_at(&temp.path().join("ledger"), &fixture);
-        let result = run_evaluated_shadow_v1(
-            fixture.request(),
-            &mut ledger,
-            &mut ports,
-            if case == 2 { 95 } else { 50 },
-        );
-        if case != 2 {
-            assert!(matches!(
+        let path = temp.path().join("ledger");
+        let mut ledger = ledger_at(&path, &fixture);
+        let before = fs::read(&path).unwrap();
+        let result = run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, now);
+        match case {
+            0 | 1 => assert!(matches!(
                 result,
-                Err(EvaluatedShadowError::Qualification(_))
-            ));
-        } else {
-            assert!(matches!(result, Err(EvaluatedShadowError::Evidence(_))));
+                Err(EvaluatedShadowError::Qualification(
+                    ProductEvaluationError::Integrity("qualification receipt")
+                ))
+            )),
+            2 => assert!(matches!(
+                result,
+                Err(EvaluatedShadowError::Qualification(
+                    ProductEvaluationError::Signed(SignedEvaluationError::Evidence(
+                        SignedEvidenceError::ValidityWindow
+                    ))
+                ))
+            )),
+            _ => assert!(matches!(
+                result,
+                Err(EvaluatedShadowError::Evidence(
+                    SignedEvidenceError::ValidityWindow
+                ))
+            )),
         }
         assert!(ports.calls.is_empty());
         assert!(ledger.records().unwrap().is_empty());
+        assert_eq!(fs::read(path).unwrap(), before);
     }
 }
 

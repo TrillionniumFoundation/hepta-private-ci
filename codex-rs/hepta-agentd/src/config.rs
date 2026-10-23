@@ -141,12 +141,19 @@ impl AgentdConfig {
         let typed_fleet_root = HeptaFleetRoot::parse(fleet_root.clone())
             .map_err(|error| AgentdError::Invalid(error.to_string()))?;
         require_canonical(&fleet_root, "fleet root")?;
+        #[cfg(unix)]
+        let fleet_namespace = crate::operator_namespace::OperatorNamespace::capture(
+            &fleet_root.join("state"),
+            &std::fs::metadata(&fleet_root)?,
+        )?;
         let registry = FleetRegistry::open_existing(typed_fleet_root)?;
         let record = registry
             .load()?
             .agent(&agent_id)
             .cloned()
             .ok_or_else(|| AgentdError::Invalid(format!("unknown fleet agent {agent_id}")))?;
+        #[cfg(unix)]
+        fleet_namespace.verify(&fleet_root.join("state"), &std::fs::metadata(&fleet_root)?)?;
 
         if record.lifecycle.lifecycle != AgentLifecycle::Starting
             || record.lifecycle.generation != spawn_generation
@@ -168,12 +175,29 @@ impl AgentdConfig {
             )));
         }
 
+        #[cfg(unix)]
+        let home = std::fs::metadata(&home_root)?;
+        #[cfg(unix)]
+        let home_namespace = crate::operator_namespace::OperatorNamespace::capture(
+            &home_root.join(".operator-namespace"),
+            &home,
+        )?;
+        #[cfg(unix)]
+        let writer_namespace = crate::operator_namespace::OperatorNamespace::capture(
+            record.layout.writer_lock(),
+            &home,
+        )?;
         let writer_lock = OpenOptions::new()
             .create(true)
             .truncate(false)
             .read(true)
             .write(true)
             .open(record.layout.writer_lock())?;
+        #[cfg(unix)]
+        {
+            home_namespace.verify(&home_root.join(".operator-namespace"), &home)?;
+            writer_namespace.verify(record.layout.writer_lock(), &home)?;
+        }
         writer_lock.try_lock().map_err(|error| {
             AgentdError::Invalid(format!(
                 "agent {agent_id} already has a live writer lock: {error}"

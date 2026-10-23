@@ -62,7 +62,7 @@ run_bazel() (
     printf '%s\0' "$@" > "$argument_file"
     local native_argument_file="$argument_file"
     if command -v cygpath >/dev/null 2>&1; then
-      native_argument_file="$(cygpath -w "$argument_file")"
+      native_argument_file="$(cygpath -w "$argument_file")" || return $?
     fi
     MSYS2_ARG_CONV_EXCL='*' "$(dirname "${BASH_SOURCE[0]}")/run_bazel_with_buildbuddy.py" \
       --wrapper-args-file "$native_argument_file"

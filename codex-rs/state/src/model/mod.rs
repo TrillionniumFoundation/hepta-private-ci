@@ -29,6 +29,7 @@ pub use queued_item::QueuedClientBindingFinalizeMode;
 pub use queued_item::QueuedClientBindingFinalizeOutcome;
 pub use queued_item::QueuedClientBindingFinalizeRequest;
 pub use queued_item::QueuedClientBindingLease;
+pub use queued_item::QueuedClientBindingObservation;
 pub use queued_item::QueuedClientBindingReserveOutcome;
 pub use queued_item::QueuedClientBindingState;
 pub use queued_item::QueuedClientDispatchClaimOutcome;

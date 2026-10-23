@@ -55,6 +55,13 @@ use uuid::Uuid;
 const DISPATCH_LEASE_DURATION_MS: i64 = 30_000;
 const UNCERTAIN_DISPATCH_POLL_MS: u64 = 20;
 
+#[path = "historical_observation.rs"]
+mod historical_observation;
+pub use historical_observation::QueueHistoricalObservation;
+pub use historical_observation::QueueHistoricalObserver;
+pub use historical_observation::QueueHistoricalOutcome;
+pub use historical_observation::QueueHistoricalTerminal;
+
 /// One user message waiting to start on its thread.
 #[derive(Clone, Debug, PartialEq)]
 pub struct QueuedItem {
@@ -121,6 +128,8 @@ pub enum QueueServiceError {
         "queued user input exceeds the maximum length of {MAX_USER_INPUT_TEXT_CHARS} characters ({actual_chars} provided)"
     )]
     InputTooLarge { actual_chars: usize },
+    #[error("historical rollout observation exceeded its read bound or has a truncated record")]
+    HistoricalObservationIncomplete,
 }
 
 #[derive(Clone)]
@@ -1454,6 +1463,7 @@ async fn persisted_turn_for_unbound_client_id(
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum PersistedClientJoinMode {
     Exact,
+    ExactHistorical(ThreadId),
     LegacyCompatibility,
 }
 
@@ -1463,74 +1473,11 @@ async fn persisted_turn_for_client_id_path_with_mode(
     expected_sha256: &str,
     mode: PersistedClientJoinMode,
 ) -> Result<Option<String>, QueueServiceError> {
-    let Some(path) = rollout_path else {
-        return Ok(None);
-    };
-    let mut reader = match open_rollout_line_reader(path).await {
-        Ok(reader) => reader,
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
-        Err(error) => return Err(queue_rollout_error(path, "open", error)),
-    };
-    let mut current_turn_id = None;
-    // Recovery reuses the interrupted logical turn id.  Only a strict,
-    // durable Unready -> replay-applied binding hand-off may authorize its
-    // second TurnStarted boundary.  Keep the consumed marker separate from
-    // the binding so an orphan or mismatched binding can never manufacture
-    // recovery authority from the binding alone.
-    let mut pending_recovery_unready = None;
-    let mut recovery_restart_turn_id = None;
-    let mut found = None;
-    let mut legacy_turn_ids = HashSet::new();
-    let mut legacy_without_digest = false;
-    while let Some(line) = reader
-        .next_line()
-        .await
-        .map_err(|error| queue_rollout_error(path, "read", error))?
-    {
-        if line.trim().is_empty() {
-            continue;
-        }
-        let record = serde_json::from_str::<RolloutLine>(&line).map_err(|error| {
-            QueueServiceError::Storage(ThreadStoreError::Internal {
-                message: format!(
-                    "failed to decode rollout `{}` during queue reconciliation: {error}",
-                    path.display()
-                ),
-            })
-        })?;
-        scan_persisted_client_line(
-            record.item,
-            client_id,
-            expected_sha256,
-            &mut current_turn_id,
-            &mut pending_recovery_unready,
-            &mut recovery_restart_turn_id,
-            &mut found,
-            &mut legacy_turn_ids,
-            &mut legacy_without_digest,
-        )?;
-    }
-    if let Some(turn_id) = recovery_restart_turn_id {
-        return Err(malformed_rollout_turn_boundary(format!(
-            "recovery hand-off for turn `{turn_id}` was not followed by a turn start"
-        )));
-    }
-    if legacy_turn_ids
-        .iter()
-        .any(|turn_id| found.as_deref() != Some(turn_id.as_str()))
-    {
-        if mode == PersistedClientJoinMode::LegacyCompatibility
-            && found.is_none()
-            && legacy_turn_ids.len() == 1
-            && !legacy_without_digest
-        {
-            return Ok(legacy_turn_ids.into_iter().next());
-        }
-        return Err(QueueServiceError::LegacyClientIdBinding {
-            client_id: client_id.to_string(),
-        });
-    }
-    Ok(found)
+    Ok(
+        historical_observation::scan_history(rollout_path, client_id, expected_sha256, mode)
+            .await?
+            .map(|observation| observation.0),
+    )
 }
 
 #[expect(

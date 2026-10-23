@@ -23,6 +23,7 @@ use sha2::Sha256;
 
 use crate::FleetRegistry;
 use crate::FleetRegistryError;
+use crate::control_file::ControlRoot;
 
 pub const RELEASE_METADATA_SCHEMA_VERSION: u32 = 2;
 pub const AGENT_RELEASE_STATE_SCHEMA_VERSION: u32 = 1;
@@ -40,6 +41,14 @@ const MAX_RELEASE_ARGUMENTS: usize = 128;
 const MAX_RELEASE_ARGUMENT_BYTES: usize = 65_536;
 const MAX_ALLOWED_RELEASES: usize = 256;
 static RELEASE_SEQUENCE: AtomicU64 = AtomicU64::new(1);
+
+#[path = "release_publication.rs"]
+mod publication;
+
+enum ReleaseRootSeal {
+    Required,
+    PendingInstall,
+}
 
 /// Opaque identity of one administrator-installed immutable agentd release.
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -246,9 +255,14 @@ impl FleetRegistry {
         let source_matrixd = source_matrixd.map(validate_source_program).transpose()?;
         let final_root = self.layout().releases_root().join(release_id.as_str());
         if final_root.exists() {
-            return Err(FleetRegistryError::Invalid(format!(
-                "release {release_id} is already installed"
-            )));
+            return publication::recover_pending_install(
+                self,
+                &release_id,
+                &source_agentd,
+                &agentd_args,
+                source_matrixd.as_deref(),
+                &matrixd_args,
+            );
         }
         let staging = self.layout().releases_root().join(format!(
             ".staging-{release_id}-{}-{}",
@@ -256,6 +270,7 @@ impl FleetRegistry {
             RELEASE_SEQUENCE.fetch_add(1, Ordering::Relaxed)
         ));
         std::fs::create_dir(&staging)?;
+        let owned_staging = std::fs::symlink_metadata(&staging)?;
         let result = (|| {
             let bin_root = staging.join("bin");
             std::fs::create_dir(&bin_root)?;
@@ -293,17 +308,24 @@ impl FleetRegistry {
             set_mode(&bin_root, /*mode*/ 0o555)?;
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
-            set_mode(&staging, /*mode*/ 0o555)?;
-            std::fs::rename(&staging, &final_root)?;
-            sync_directory(self.layout().releases_root())?;
+            publication::publish_prepared_directory(
+                &self.control,
+                &staging,
+                &final_root,
+                &publication::NativePublicationIo,
+            )?;
             Ok(())
         })();
         if let Err(error) = result {
-            make_tree_removable(&staging);
-            let _ = std::fs::remove_dir_all(&staging);
+            publication::cleanup_owned_tree(&staging, &owned_staging);
             return Err(error);
         }
-        resolve_catalog_release(self.layout().releases_root(), &release_id)
+        resolve_catalog_release(
+            &self.control,
+            self.layout().releases_root(),
+            &release_id,
+            ReleaseRootSeal::Required,
+        )
     }
 
     /// Allows one registered agent to use an already installed release. The
@@ -317,17 +339,23 @@ impl FleetRegistry {
         let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
             FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
         })?;
-        let _ = resolve_catalog_release(self.layout().releases_root(), release_id)?;
+        let _ = resolve_catalog_release(
+            &self.control,
+            self.layout().releases_root(),
+            release_id,
+            ReleaseRootSeal::Required,
+        )?;
         let manifest = release_manifest_path(self.layout().releases_root(), release_id);
         let allowance = ReleaseAllowance {
             schema_version: RELEASE_METADATA_SCHEMA_VERSION,
             agent_id: agent_id.clone(),
             release_id: release_id.clone(),
-            manifest_sha256: sha256_file(&manifest)?,
+            manifest_sha256: self.control.sha256(&manifest)?,
         };
         let path = allowance_path(record.layout.releases_root(), release_id);
         if path.exists() {
-            let actual: ReleaseAllowance = read_bounded_json(&path, MAX_RELEASE_MANIFEST_BYTES)?;
+            let actual: ReleaseAllowance =
+                read_bounded_json(&self.control, &path, MAX_RELEASE_MANIFEST_BYTES)?;
             if matches!(actual.schema_version, 1 | RELEASE_METADATA_SCHEMA_VERSION)
                 && actual.agent_id == allowance.agent_id
                 && actual.release_id == allowance.release_id
@@ -354,9 +382,10 @@ impl FleetRegistry {
         })?;
         let path = revocation_path(record.layout.releases_root(), release_id);
         if path.exists() {
-            let actual: ReleaseRevocation = read_bounded_json(&path, MAX_RELEASE_MANIFEST_BYTES)?;
+            let actual: ReleaseRevocation =
+                read_bounded_json(&self.control, &path, MAX_RELEASE_MANIFEST_BYTES)?;
             let manifest = release_manifest_path(self.layout().releases_root(), release_id);
-            let manifest_sha256 = sha256_file(&manifest)?;
+            let manifest_sha256 = self.control.sha256(&manifest)?;
             if actual.schema_version == RELEASE_METADATA_SCHEMA_VERSION
                 && actual.agent_id == *agent_id
                 && actual.release_id == *release_id
@@ -394,14 +423,14 @@ impl FleetRegistry {
             FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
         })?;
         let admission_frontier_sha256 =
-            release_admission_frontier_sha256(record.layout.releases_root())?;
+            release_admission_frontier_sha256(&self.control, record.layout.releases_root())?;
         // Re-admit after observing the frontier so a revocation racing the
         // first lookup cannot be hidden behind a stale successful resolve.
         let _ = self.resolve_release(agent_id, release_id)?;
         let manifest = release_manifest_path(self.layout().releases_root(), release_id);
-        let manifest_sha256 = sha256_file(&manifest)?;
+        let manifest_sha256 = self.control.sha256(&manifest)?;
         let metadata: CatalogReleaseMetadata =
-            read_bounded_json(&manifest, MAX_RELEASE_MANIFEST_BYTES)?;
+            read_bounded_json(&self.control, &manifest, MAX_RELEASE_MANIFEST_BYTES)?;
         let (agentd_program_sha256, matrixd_program_sha256) = match metadata {
             CatalogReleaseMetadata::V2(metadata) => (
                 metadata.agentd.program_sha256,
@@ -434,7 +463,7 @@ impl FleetRegistry {
         }
         let allowance_path = allowance_path(record.layout.releases_root(), release_id);
         let allowance: ReleaseAllowance =
-            match read_bounded_json(&allowance_path, MAX_RELEASE_MANIFEST_BYTES) {
+            match read_bounded_json(&self.control, &allowance_path, MAX_RELEASE_MANIFEST_BYTES) {
                 Ok(allowance) => allowance,
                 Err(FleetRegistryError::Io(error)) if error.kind() == ErrorKind::NotFound => {
                     return Err(FleetRegistryError::ReleaseNotAllowed {
@@ -456,12 +485,17 @@ impl FleetRegistry {
             )));
         }
         let manifest = release_manifest_path(self.layout().releases_root(), release_id);
-        if sha256_file(&manifest)? != allowance.manifest_sha256 {
+        if self.control.sha256(&manifest)? != allowance.manifest_sha256 {
             return Err(FleetRegistryError::Corrupt(format!(
                 "allowed release manifest changed for agent {agent_id} release {release_id}"
             )));
         }
-        resolve_catalog_release(self.layout().releases_root(), release_id)
+        resolve_catalog_release(
+            &self.control,
+            self.layout().releases_root(),
+            release_id,
+            ReleaseRootSeal::Required,
+        )
     }
 
     pub fn allowed_releases(
@@ -545,9 +579,11 @@ pub(crate) fn initialize_release_state(
 }
 
 pub(crate) fn load_release_state(
+    control: &ControlRoot,
     releases_root: &Path,
     agent_id: &AgentId,
 ) -> Result<AgentReleaseState, FleetRegistryError> {
+    let namespace = control.directory(releases_root)?;
     let mut states = Vec::new();
     for entry in std::fs::read_dir(releases_root)? {
         let entry = entry?;
@@ -561,7 +597,7 @@ pub(crate) fn load_release_state(
         }
         let generation = parse_release_state_generation(&name)?;
         let state: AgentReleaseState =
-            read_bounded_json(&entry.path(), MAX_RELEASE_MANIFEST_BYTES)?;
+            read_bounded_json(control, &entry.path(), MAX_RELEASE_MANIFEST_BYTES)?;
         if state.schema_version != AGENT_RELEASE_STATE_SCHEMA_VERSION
             || state.agent_id != *agent_id
             || state.generation != generation
@@ -573,6 +609,7 @@ pub(crate) fn load_release_state(
         }
         states.push((generation, state));
     }
+    namespace.verify()?;
     states.sort_by_key(|(generation, _)| *generation);
     for (expected, (generation, state)) in states.iter().enumerate() {
         if *generation != expected as u64 {
@@ -593,14 +630,28 @@ pub(crate) fn load_release_state(
 }
 
 fn resolve_catalog_release(
+    control: &ControlRoot,
     catalog_root: &Path,
     release_id: &ReleaseId,
+    seal: ReleaseRootSeal,
 ) -> Result<RegisteredRelease, FleetRegistryError> {
     validate_physical_directory(catalog_root, /*immutable*/ false)?;
     let release_root = catalog_root.join(release_id.as_str());
     let bin_root = release_root.join("bin");
-    validate_physical_directory(&release_root, /*immutable*/ true)?;
+    match seal {
+        ReleaseRootSeal::Required => {
+            validate_physical_directory(&release_root, /*immutable*/ true)?
+        }
+        ReleaseRootSeal::PendingInstall => {
+            validate_physical_directory(&release_root, /*immutable*/ false)?
+        }
+    }
     validate_physical_directory(&bin_root, /*immutable*/ true)?;
+    let namespaces = [
+        control.directory(catalog_root)?,
+        control.directory(&release_root)?,
+        control.directory(&bin_root)?,
+    ];
     let actual_root_entries = directory_names(&release_root)?;
     if actual_root_entries != BTreeSet::from(["bin".to_string(), RELEASE_MANIFEST_FILE.to_string()])
     {
@@ -611,7 +662,7 @@ fn resolve_catalog_release(
     let manifest_path = release_root.join(RELEASE_MANIFEST_FILE);
     validate_immutable_regular_file(&manifest_path, /*executable*/ false)?;
     let metadata: CatalogReleaseMetadata =
-        read_bounded_json(&manifest_path, MAX_RELEASE_MANIFEST_BYTES)?;
+        read_bounded_json(control, &manifest_path, MAX_RELEASE_MANIFEST_BYTES)?;
     let (release_id_from_manifest, agentd, matrixd) = match metadata {
         CatalogReleaseMetadata::V2(metadata) => {
             validate_metadata(&metadata, release_id)?;
@@ -640,14 +691,17 @@ fn resolve_catalog_release(
             "release {release_id} contains an unexpected closed-world entry"
         )));
     }
-    let program = resolve_program(&release_root, &agentd, release_id)?;
+    let program = resolve_program(control, &release_root, &agentd, release_id)?;
     let matrixd = match matrixd {
         Some(metadata) => Some(RegisteredProgram {
-            program: resolve_program(&release_root, &metadata, release_id)?,
+            program: resolve_program(control, &release_root, &metadata, release_id)?,
             args: metadata.args,
         }),
         None => None,
     };
+    for namespace in namespaces {
+        namespace.verify()?;
+    }
     Ok(RegisteredRelease {
         release_id: release_id_from_manifest,
         program,
@@ -657,6 +711,7 @@ fn resolve_catalog_release(
 }
 
 fn resolve_program(
+    control: &ControlRoot,
     release_root: &Path,
     metadata: &ReleaseProgramMetadata,
     release_id: &ReleaseId,
@@ -664,7 +719,7 @@ fn resolve_program(
     let program = release_root.join(&metadata.program_relative_path);
     validate_immutable_regular_file(&program, /*executable*/ true)?;
     if std::fs::metadata(&program)?.len() != metadata.program_size_bytes
-        || sha256_file(&program)? != metadata.program_sha256
+        || control.sha256(&program)? != metadata.program_sha256
     {
         return Err(FleetRegistryError::Corrupt(format!(
             "release {release_id} program differs from immutable metadata"
@@ -753,7 +808,11 @@ fn validate_source_program(path: &Path) -> Result<PathBuf, FleetRegistryError> {
     Ok(path.to_path_buf())
 }
 
-fn release_admission_frontier_sha256(root: &Path) -> Result<String, FleetRegistryError> {
+fn release_admission_frontier_sha256(
+    control: &ControlRoot,
+    root: &Path,
+) -> Result<String, FleetRegistryError> {
+    let namespace = control.directory(root)?;
     let mut markers = Vec::new();
     for entry in std::fs::read_dir(root)? {
         let entry = entry?;
@@ -785,8 +844,12 @@ fn release_admission_frontier_sha256(root: &Path) -> Result<String, FleetRegistr
                 "release admission marker exceeds its byte bound".to_string(),
             ));
         }
-        markers.push((name, std::fs::read(entry.path())?));
+        markers.push((
+            name,
+            control.read(&entry.path(), MAX_RELEASE_MANIFEST_BYTES)?,
+        ));
     }
+    namespace.verify()?;
     markers.sort_by(|left, right| left.0.cmp(&right.0));
     let mut hasher = Sha256::new();
     hasher.update(b"hepta-fleet:release-admission-frontier:v1\0");
@@ -899,20 +962,11 @@ fn write_new_json<T: Serialize>(path: &Path, value: &T) -> Result<(), FleetRegis
 }
 
 fn read_bounded_json<T: for<'de> Deserialize<'de>>(
+    control: &ControlRoot,
     path: &Path,
     max_bytes: u64,
 ) -> Result<T, FleetRegistryError> {
-    let metadata = std::fs::symlink_metadata(path)?;
-    if !metadata.file_type().is_file()
-        || metadata.file_type().is_symlink()
-        || metadata.len() > max_bytes
-    {
-        return Err(FleetRegistryError::Corrupt(format!(
-            "release control path is not a bounded regular file: {}",
-            path.display()
-        )));
-    }
-    serde_json::from_slice(&std::fs::read(path)?)
+    serde_json::from_slice(&control.read(path, max_bytes)?)
         .map_err(|error| FleetRegistryError::Corrupt(format!("invalid release JSON: {error}")))
 }
 

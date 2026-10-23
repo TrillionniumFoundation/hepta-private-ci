@@ -5,13 +5,8 @@
 //! acknowledgement from a suspect store and it never falls back from reopen/resume
 //! to a fresh bootstrap.
 
-use std::fs::File;
-use std::fs::OpenOptions;
-use std::io::Read;
 #[cfg(unix)]
 use std::os::unix::fs::MetadataExt;
-#[cfg(unix)]
-use std::os::unix::fs::OpenOptionsExt;
 use std::path::Path;
 use std::path::PathBuf;
 use std::str::FromStr;
@@ -45,6 +40,14 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use serde::Deserialize;
+
+#[path = "plasticity_process_file.rs"]
+mod process_file;
+use process_file::create_new_rw;
+use process_file::open_existing_rw;
+use process_file::read_bounded;
+use process_file::read_existing;
+use process_file::require_absolute_regular_file;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;
@@ -437,8 +440,10 @@ fn load_artifacts(
         records: descriptor.receipt.records,
         encoded_bytes: descriptor.receipt.encoded_bytes,
     };
-    read_registry_snapshot(File::open(&descriptor.path)?, receipt).map_err(|error| {
-        AgentdError::Invalid(format!("invalid artifact registry snapshot: {error}"))
+    read_existing(&descriptor.path, "artifact registry snapshot", |file| {
+        read_registry_snapshot(file, receipt).map_err(|error| {
+            AgentdError::Invalid(format!("invalid artifact registry snapshot: {error}"))
+        })
     })
 }
 
@@ -808,61 +813,6 @@ fn validate_distinct_registry_paths(descriptor: &RegistryDescriptorV1) -> Result
         return invalid("proposal registry and anchor journal must be distinct files");
     }
     Ok(())
-}
-
-fn read_bounded(path: &Path, maximum: u64, label: &str) -> Result<Vec<u8>, AgentdError> {
-    require_absolute_regular_file(path, label)?;
-    let metadata = std::fs::metadata(path)?;
-    if metadata.len() == 0 || metadata.len() > maximum {
-        return invalid(&format!("{label} size is outside the allowed bound"));
-    }
-    let file = File::open(path)?;
-    let capacity = usize::try_from(metadata.len())
-        .map_err(|_| AgentdError::Invalid(format!("{label} is too large")))?;
-    let mut bytes = Vec::with_capacity(capacity);
-    file.take(maximum + 1).read_to_end(&mut bytes)?;
-    if bytes.len() as u64 != metadata.len() {
-        return invalid(&format!("{label} changed while being read"));
-    }
-    Ok(bytes)
-}
-
-fn require_absolute_regular_file(path: &Path, label: &str) -> Result<(), AgentdError> {
-    if !path.is_absolute() {
-        return invalid(&format!("{label} path must be absolute"));
-    }
-    let metadata = std::fs::symlink_metadata(path)?;
-    if metadata.file_type().is_symlink() || !metadata.is_file() {
-        return invalid(&format!("{label} must be a regular non-symlink file"));
-    }
-    Ok(())
-}
-
-fn open_existing_rw(path: &Path, label: &str) -> Result<File, AgentdError> {
-    require_absolute_regular_file(path, label)?;
-    OpenOptions::new()
-        .read(true)
-        .write(true)
-        .open(path)
-        .map_err(Into::into)
-}
-
-fn create_new_rw(path: &Path, label: &str) -> Result<File, AgentdError> {
-    if !path.is_absolute() {
-        return invalid(&format!("{label} path must be absolute"));
-    }
-    let parent = path
-        .parent()
-        .ok_or_else(|| AgentdError::Invalid(format!("{label} has no parent")))?;
-    let parent = parent.canonicalize()?;
-    if path.parent() != Some(parent.as_path()) {
-        return invalid(&format!("{label} parent must be canonical"));
-    }
-    let mut options = OpenOptions::new();
-    options.read(true).write(true).create_new(true);
-    #[cfg(unix)]
-    options.mode(0o600);
-    options.open(path).map_err(Into::into)
 }
 
 fn verify_descriptor_bytes(

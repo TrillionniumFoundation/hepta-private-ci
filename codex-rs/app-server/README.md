@@ -8,6 +8,7 @@
 - [Message Schema](#message-schema)
 - [Core Primitives](#core-primitives)
 - [Lifecycle Overview](#lifecycle-overview)
+- [Embedded graceful drain](#embedded-graceful-drain)
 - [Initialization](#initialization)
 - [API Overview](#api-overview)
 - [Events](#events)
@@ -81,6 +82,32 @@ Use the thread APIs to create, list, or archive conversations. Drive a conversat
 - Begin a turn: To send user input, call `turn/start` with the target `threadId` and the user's input. Optional fields let you override model, cwd, sandbox policy or experimental `permissions` profile selection, approval policy, approvals reviewer, etc. This immediately returns the new turn object. The app-server emits `turn/started` when that turn actually begins running.
 - Stream events: After `turn/start`, keep reading JSON-RPC notifications on stdout. You’ll see `item/started`, `item/completed`, deltas like `item/agentMessage/delta`, tool progress, etc. These represent streaming model output plus any side effects (commands, tool calls, reasoning notes).
 - Finish the turn: When the model is done (or the turn is interrupted via making the `turn/interrupt` call), the server sends `turn/completed` with the final turn state and token usage.
+
+## Embedded graceful drain
+
+Rust embeddings can retain the original server's `AppServerDrainHandle` during
+graceful shutdown. All RPC ingress closes. `historical_observation_ready()`
+becomes true only after request/thread-start background tasks and all thread
+writers have successfully joined; timeout or forced shutdown does not acknowledge
+a completed drain.
+
+`observe_exact_submission(codex_home, thread_id, client_user_message_id,
+payload_sha256)` is an embedding capability, not a JSON-RPC method. It selects the
+original owner's current rollout through the retained StateRuntime, performs
+read-only queue SELECTs and rechecks that rollout pointer after observation. It
+does not repair metadata, reopen a store, reserve a message or start/resume a
+turn. The home, thread, client ID and normalized payload must match.
+
+Only matching persisted `TurnComplete` or `TurnAborted` records establish a
+terminal outcome. Recovery-unready and restart records clear earlier terminal
+evidence. Plain/compressed history reads require a complete scan bounded at
+1 MiB per record, 32 MiB of scanned bytes, 65,536 lines and four seconds. Missing,
+pending, unknown or incomplete history does not prove termination; a partial or
+over-limit scan returns `Unknown` rather than trusting a terminal prefix.
+
+Source owner, database and history regressions cover these boundaries. Full
+socket/daemon drain integration and target-host shutdown qualification require
+separate execution evidence.
 
 ## Initialization
 

@@ -20,6 +20,8 @@ import sys
 import tempfile
 import unittest
 
+from scripts.hepta_workflow_commands import load_workflow, workflow_events
+
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github/workflows/hepta-consolidated-source.yml"
 
@@ -161,19 +163,110 @@ class NativeFeedbackPolicyTests(unittest.TestCase):
             self.assertTrue(fnmatch.fnmatchcase("owner-test.json", pattern))
             self.assertTrue(fnmatch.fnmatchcase("owner-test.json.1234.log", pattern))
 
-    def test_build_inputs_cannot_miss_the_outer_path_filter(self):
-        text = WORKFLOW.read_text().split("permissions:", 1)[0]
+    def test_build_inputs_reach_the_unfiltered_aggregate_scope(self):
+        from scripts.hepta_ci_scope import select
+
+        document = load_workflow(WORKFLOW.read_text(encoding="utf-8"))
+
+        self.assertIn("workflow_call", workflow_events(document))
+        self.assertNotIn("pull_request", workflow_events(document))
+        aggregate = load_workflow(
+            (ROOT / ".github/workflows/blocking-ci.yml").read_text()
+        )
+        self.assertIn("pull_request", workflow_events(aggregate))
+        self.assertIsInstance(aggregate.get("on", {}).get("pull_request"), dict)
+        self.assertFalse(
+            {"paths", "paths-ignore"} & set(aggregate["on"]["pull_request"])
+        )
         for path in (
-            ".cargo/**",
-            "codex-rs/.cargo/**",
+            ".cargo/config.toml",
+            "codex-rs/.cargo/config.toml",
             "rust-toolchain",
             "rust-toolchain.toml",
             "codex-rs/rust-toolchain",
             "codex-rs/rust-toolchain.toml",
+        ):
+            with self.subTest(path=path):
+                selected = select([path])
+                self.assertTrue(selected["full_repo"])
+                self.assertTrue(selected["native"])
+        for path in (
             "scripts/hepta_workspace.py",
             "scripts/test_hepta_native_feedback.py",
         ):
-            self.assertIn('      - "' + path + '"', text)
+            with self.subTest(path=path):
+                self.assertTrue(select([path])["derived"])
+
+
+class NativeFeedbackExecutionTests(unittest.TestCase):
+    def test_build_inputs_reach_automatic_scope_and_dependency_selection(self):
+        try:
+            from scripts.hepta_ci_dependencies import Graph, select_packages
+            from scripts.hepta_ci_scope import select
+        except ModuleNotFoundError as error:
+            if error.name != "scripts":
+                raise
+            from hepta_ci_dependencies import Graph, select_packages
+            from hepta_ci_scope import select
+
+        graph = Graph(
+            {"codex-rs/hepta-agentd": "agentd", "codex-rs/consumer": "consumer"},
+            frozenset({("agentd", "consumer", False)}),
+        )
+        for path in (
+            ".cargo/config.toml",
+            "codex-rs/.cargo/config.toml",
+            "Cargo.toml",
+            "Cargo.lock",
+            "codex-rs/Cargo.toml",
+            "codex-rs/Cargo.lock",
+            "rust-toolchain",
+            "rust-toolchain.toml",
+            "codex-rs/rust-toolchain",
+            "codex-rs/rust-toolchain.toml",
+            "MODULE.bazel",
+            "MODULE.bazel.lock",
+            "BUILD.bazel",
+            ".github/workflows/blocking-ci.yml",
+            ".github/workflows/hepta-architecture-convergence.yml",
+        ):
+            with self.subTest(path=path):
+                scope = select([path])
+                self.assertTrue(scope["native"])
+                self.assertTrue(scope["full_repo"])
+                impact = select_packages([path], graph, graph)
+                self.assertTrue(impact["full_workspace"])
+                self.assertEqual(impact["packages"], ["agentd", "consumer"])
+
+        owner_build = "codex-rs/hepta-agentd/BUILD.bazel"
+        scope = select([owner_build])
+        self.assertTrue(scope["native"])
+        self.assertFalse(scope["full_repo"])
+        impact = select_packages([owner_build], graph, graph)
+        self.assertFalse(impact["full_workspace"])
+        self.assertEqual(impact["packages"], ["agentd", "consumer"])
+        for path in (
+            "scripts/hepta_workspace.py",
+            "scripts/test_hepta_native_feedback.py",
+        ):
+            with self.subTest(path=path):
+                self.assertTrue(select([path])["derived"])
+
+        # Automatic aggregates admit every PR; their executable scope owner,
+        # rather than a reusable deep workflow's old path list, routes inputs.
+        for name in ("blocking-ci.yml", "hepta-architecture-convergence.yml"):
+            text = (ROOT / ".github/workflows" / name).read_text()
+            trigger = re.search(r"(?ms)^on:\n(.*?)(?=^\S|\Z)", text).group(1)
+            self.assertRegex(trigger, r"(?m)^  pull_request:(?: \{\})?$")
+            self.assertNotRegex(trigger, r"(?m)^    paths(?:-ignore)?:")
+            self.assertIn("python3 scripts/hepta_ci_scope.py", text)
+            self.assertIn('args+=(--base "$BASE_SHA")', text)
+            self.assertIn("args+=(--full)", text)
+        blocking = (ROOT / ".github/workflows/blocking-ci.yml").read_text()
+        self.assertIn("  push:\n    branches: [main]", blocking)
+        self.assertIn("if: needs.scope.outputs.full_repo == 'true'", blocking)
+        self.assertIn("uses: ./.github/workflows/rust-ci.yml", blocking)
+        self.assertIn("python3 scripts/hepta_ci_dependencies.py --base", blocking)
 
 
 class NativeFeedbackExecutionTests(unittest.TestCase):
@@ -191,6 +284,10 @@ class NativeFeedbackExecutionTests(unittest.TestCase):
         shutil.copyfile(
             ROOT / "scripts/hepta_ci_dependencies.py",
             self.repo / "scripts/hepta_ci_dependencies.py",
+        )
+        shutil.copyfile(
+            ROOT / "scripts/hepta_ci_git_objects.py",
+            self.repo / "scripts/hepta_ci_git_objects.py",
         )
         (self.repo / "scripts/hepta-gap-closure.py").write_text(
             'import os\nprint("document diagnostic sentinel")\nraise SystemExit(int(os.environ.get("DOC_RC", "0")))\n'
@@ -403,7 +500,7 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
                     "--all-targets",
                     "--",
                     "-D",
-                    "warnings",
+                    "clippy::correctness",
                 ],
             ],
         )
@@ -477,7 +574,7 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
                     "--all-targets",
                     "--",
                     "-D",
-                    "warnings",
+                    "clippy::correctness",
                 ],
             ],
         )

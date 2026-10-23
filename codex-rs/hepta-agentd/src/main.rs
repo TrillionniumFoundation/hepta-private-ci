@@ -10,11 +10,18 @@ use std::ffi::OsString;
 use std::sync::Arc;
 
 fn main() -> anyhow::Result<()> {
-    let mut config = AgentdConfig::from_process_environment()?;
-    let codex_home = AbsolutePathBuf::from_absolute_path(&config.identity().home_root)?;
-    codex_utils_home_dir::set_process_codex_home_override(codex_home)?;
+    // Helper re-execs must dispatch before Fleet startup validation or taking
+    // the daemon writer lock. Retain the owner's private helper-alias home for
+    // ordinary startup without loading the daemon configuration at this stage.
+    if let Some(home) =
+        std::env::var_os(codex_hepta_agentd::HEPTA_AGENT_HOME_ENV).filter(|value| !value.is_empty())
+    {
+        let codex_home = AbsolutePathBuf::from_absolute_path(PathBuf::from(home))?;
+        codex_utils_home_dir::set_process_codex_home_override(codex_home)?;
+    }
     codex_arg0::arg0_dispatch_or_else(move |arg0_paths| async move {
-        // Helper re-execs must reach arg0 dispatch before daemon-only flags.
+        let mut config = AgentdConfig::from_process_environment()?;
+        // Helper re-execs have already dispatched before daemon-only flags.
         let mut args = std::env::args_os().skip(1);
         let mut authbus_trust = None;
         let mut intelligence_authority_file = None;

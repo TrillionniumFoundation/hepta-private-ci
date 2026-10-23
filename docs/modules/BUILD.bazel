@@ -1,0 +1,5 @@
+# Fleet embeds this exact registry in its library and inherited unit-test crate.
+exports_files(
+    ["MODULES.json"],
+    visibility = ["//codex-rs/hepta-fleet:__pkg__"],
+)

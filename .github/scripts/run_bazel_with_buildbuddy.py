@@ -322,6 +322,17 @@ def windows_target_patterns(args: Sequence[str], env: Mapping[str, str]):
         return
     if any("\n" in target or "\r" in target for target in targets):
         raise ValueError("Bazel target patterns cannot contain line breaks")
+    # Preserve the original argv whenever Bazel's file syntax would reinterpret
+    # a literal pattern. The shell's NUL transport still protects the Python
+    # launcher; only safe, long rosters use the final Bazel pattern file.
+    if sum(
+        len(target.encode("utf-16-le")) // 2 + 3 for target in targets
+    ) <= 8192 or any(
+        not target or "#" in target or ord(target[0]) <= 32 or ord(target[-1]) <= 32
+        for target in targets
+    ):
+        yield list(args), None
+        return
     # Bazel reads one UTF-8 pattern per line, including exclusion patterns.
     # Keep the file until the real child retires, even when it reports failure.
     with NamedTemporaryFile(

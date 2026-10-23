@@ -6,6 +6,8 @@ Parent authority: `docs/DEVELOPMENT.md`, plan 8.0.0. This is a subordinate imple
 
 Read the stable module guide, its existing `detail/<module>.md`, the corresponding row in `IMPLEMENTATION_PROFILES.json`, then the applicable shared contracts below. The JSON contains a distinct API, state/encoding, linearization/recovery, bounded algorithm and acceptance oracle for every registered module. It is the editable owner of those supplemental module-specific choices; do not copy them into another independent registry.
 
+`IMPLEMENTATION_PROFILES.schema.json` owns the finite V1 `implementationState` vocabulary. The four states distinguish specified contracts, composed source awaiting candidate evidence, durable source awaiting product execution, and an implemented source owner without product evidence. Unknown states reject. None changes `productTestsExecuted`, `deploymentQualified` or any other capability/evidence flag.
+
 | Contract | Required consumers |
 |---|---|
 | `PERSISTENCE.md` and `COGNITIVE_STORE.sql` | stateful owners, read adapters, supervisor, integration |

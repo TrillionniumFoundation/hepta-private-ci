@@ -26,6 +26,9 @@ use std::sync::OnceLock;
 use tokio::sync::Mutex;
 use uuid::Uuid;
 
+#[path = "queued_client_binding_observation.rs"]
+mod client_binding_observation;
+
 #[cfg(unix)]
 use std::ffi::CString;
 #[cfg(unix)]

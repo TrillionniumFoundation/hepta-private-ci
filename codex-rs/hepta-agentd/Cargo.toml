@@ -29,7 +29,7 @@ test = false
 [[bin]]
 name = "hepta-agentd-browser"
 path = "src/bin/hepta-agentd-browser.rs"
-test = false
+test = true
 [[example]]
 name = "h4_persistent_writer"
 path = "examples/h4_persistent_writer.rs"
@@ -97,6 +97,9 @@ tokio = { workspace = true, features = [
     "time",
 ] }
 tokio-util = { workspace = true }
+
+[target.'cfg(unix)'.dependencies]
+libc = { workspace = true }
 
 [dev-dependencies]
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }

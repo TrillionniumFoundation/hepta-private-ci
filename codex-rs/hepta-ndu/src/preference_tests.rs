@@ -15,7 +15,9 @@ use super::solve_preference_target;
 use super::validate_staged_updates;
 use crate::AxisValue;
 use crate::NduError;
+use crate::NduIterationContextV1;
 use crate::SubjectClass;
+use crate::bind_solver_iteration_receipt_v1;
 
 fn must<T, E: Debug>(result: Result<T, E>) -> T {
     match result {
@@ -74,9 +76,17 @@ fn damped_preference_update_emits_local_solver_receipts() {
         receipts
             .iter()
             .map(|receipt| receipt.residual_raw)
+            .chain(std::iter::once(FixedQ32::ONE.raw()))
             .max()
             .expect("maximum residual")
             .max(initial_residual_raw)
+    );
+    // The maximum includes the initial distance (one Q32 unit), before the
+    // first damped update reduces it to three quarters of a unit.
+    assert_eq!(termination.maximum_residual_raw, FixedQ32::ONE.raw());
+    assert_eq!(
+        receipts.first().expect("first damped update").residual_raw,
+        3_i64 << 30
     );
     assert!(receipts.iter().all(|receipt| receipt.validate().is_ok()));
 }
@@ -296,6 +306,61 @@ fn impossible_local_receipt_invariants_are_rejected() {
         crate::bind_solver_iteration_receipt_v1(&context, &invalid),
         Err(NduError::InvalidSolverReceipt("iteration"))
     );
+}
+
+#[test]
+fn malformed_local_solver_receipts_reject_before_protocol_publication() {
+    let context = NduIterationContextV1 {
+        subject_id: id("agent-a"),
+        subject_class: SubjectClass::Agent,
+        objective_digest: Digest32::of_bytes(b"objective"),
+        generation: must(Generation::new(4)),
+        event_digest: Digest32::of_bytes(b"event"),
+        coefficient_digest: Digest32::of_bytes(b"coefficient"),
+    };
+    let valid = NduSolverIterationReceipt {
+        subject_id: context.subject_id.clone(),
+        subject_class: context.subject_class,
+        iteration: 1,
+        predecessor_revision: must(Revision::new(1)),
+        next_revision: must(Revision::new(2)),
+        residual_raw: 0,
+        projection_count: 0,
+        state_digest: Digest32::of_bytes(b"state"),
+    };
+    let bound = must(bind_solver_iteration_receipt_v1(&context, &valid));
+    assert!(!bound.authority.grants_any());
+    assert_eq!(bound.subject_id, context.subject_id);
+
+    for field in 0..5 {
+        let mut invalid = valid.clone();
+        let reason = match field {
+            0 => {
+                invalid.iteration = 0;
+                "iteration"
+            }
+            1 => {
+                invalid.iteration = 65;
+                "iteration"
+            }
+            2 => {
+                invalid.next_revision = invalid.predecessor_revision;
+                "revision adjacency"
+            }
+            3 => {
+                invalid.residual_raw = -1;
+                "negative residual"
+            }
+            _ => {
+                invalid.state_digest = Digest32::ZERO;
+                "state digest"
+            }
+        };
+        assert_eq!(
+            must_err(bind_solver_iteration_receipt_v1(&context, &invalid)),
+            NduError::InvalidSolverReceipt(reason)
+        );
+    }
 }
 
 #[test]

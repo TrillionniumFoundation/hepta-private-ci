@@ -118,3 +118,46 @@ def resolve_source_roots(root: Path, module: dict) -> list[str]:
                 raise ValueError(f"duplicate resolved source: {candidate}")
             resolved.append(candidate)
     return resolved
+
+
+def registered_source_roots(root: Path) -> dict[str, list[str]]:
+    """Resolve the canonical owner inventory without granting runtime authority."""
+    registry = json.loads(
+        _path(root, "docs/modules/MODULES.json").read_text(encoding="utf-8"),
+        object_pairs_hook=_pairs,
+    )
+    modules = registry.get("modules") if isinstance(registry, dict) else None
+    if not isinstance(modules, list) or not modules:
+        raise ValueError("invalid registered module inventory")
+    result = {}
+    declared_owners = {}
+    resolved_owners = {}
+    for module in modules:
+        if not isinstance(module, dict):
+            raise ValueError("invalid registered module")
+        owner = module.get("id")
+        if not isinstance(owner, str) or not owner or owner in result:
+            raise ValueError("duplicate or invalid registered module owner")
+        bindings = module.get("rootBindings")
+        if not isinstance(bindings, list) or not bindings:
+            raise ValueError(f"{owner}: invalid registered root bindings")
+        for binding in bindings:
+            source = binding.get("path") if isinstance(binding, dict) else None
+            _path(root, source)
+            if source in declared_owners:
+                raise ValueError(f"ambiguous registered source root: {source}")
+            declared_owners[source] = owner
+        resolved = resolve_source_roots(root, module)
+        for source in resolved:
+            for other, other_owner in resolved_owners.items():
+                if other_owner != owner and (
+                    source == other
+                    or source.startswith(other + "/")
+                    or other.startswith(source + "/")
+                ):
+                    raise ValueError(
+                        f"ambiguous registered source root: {owner}/{other_owner}: {source}"
+                    )
+            resolved_owners[source] = owner
+        result[owner] = resolved
+    return result

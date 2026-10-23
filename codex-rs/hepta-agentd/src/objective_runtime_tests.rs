@@ -8,6 +8,155 @@ use super::*;
 use crate::AgentRunCoordinator;
 use crate::RuntimeComposition;
 
+#[cfg(unix)]
+#[path = "operator_owner_file_tests.rs"]
+mod operator_file_tests;
+
+#[cfg(unix)]
+#[test]
+fn linked_run_start_directory_is_rejected_without_changing_target_permissions() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let temp = TempDir::new().expect("temporary owner root");
+    let root = temp.path().canonicalize().expect("canonical root");
+    let outside = root.join("outside");
+    std::fs::create_dir(&outside).expect("outside directory");
+    std::fs::set_permissions(&outside, std::fs::Permissions::from_mode(0o755))
+        .expect("outside permissions");
+    let path = root.join(RUN_START_DIRECTORY);
+    std::os::unix::fs::symlink(&outside, &path).expect("simulate linked owner directory");
+    assert!(prepare_private_directory(&path).is_err());
+    assert_eq!(
+        std::fs::metadata(outside)
+            .expect("untouched target")
+            .permissions()
+            .mode()
+            & 0o777,
+        0o755,
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn linked_parent_is_rejected_before_creating_run_start_directory() {
+    let temp = TempDir::new().expect("temporary owner root");
+    let root = temp.path().canonicalize().expect("canonical root");
+    let outside = root.join("outside");
+    std::fs::create_dir(&outside).expect("outside directory");
+    let parent = root.join("linked-home");
+    std::os::unix::fs::symlink(&outside, &parent).expect("simulate replaced owner home");
+    assert!(prepare_private_directory(&parent.join(RUN_START_DIRECTORY)).is_err());
+    assert!(!outside.join(RUN_START_DIRECTORY).exists());
+}
+
+#[test]
+fn regular_file_run_start_root_is_rejected_without_changing_contents() {
+    let temp = TempDir::new().expect("temporary owner root");
+    let root = temp.path().canonicalize().expect("canonical root");
+    let path = root.join(RUN_START_DIRECTORY);
+    std::fs::write(&path, b"retained owner state").expect("existing file");
+    assert!(prepare_private_directory(&path).is_err());
+    assert_eq!(
+        std::fs::read(path).expect("retained contents"),
+        b"retained owner state"
+    );
+}
+
+#[cfg(unix)]
+pub(crate) fn run_start_owner_fixture() -> (TempDir, AgentdIdentity) {
+    use codex_hepta_contracts::AgentId;
+    use codex_hepta_fleet::ResourceBudget;
+    use codex_hepta_paths::HeptaFleetRoot;
+    use std::os::unix::fs::PermissionsExt;
+
+    let temp = TempDir::new().expect("temporary owner root");
+    let root = temp.path().canonicalize().expect("canonical root");
+    let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent id");
+    let fleet = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet root");
+    let layout = fleet.layout().agent(&agent_id);
+    std::fs::create_dir_all(layout.home_root()).expect("owner home");
+    std::fs::set_permissions(layout.home_root(), std::fs::Permissions::from_mode(0o700))
+        .expect("private owner home");
+    let identity = AgentdIdentity {
+        agent_id,
+        spawn_generation: 1,
+        fleet_root: fleet.as_path().to_path_buf(),
+        workspace: root.join("workspace"),
+        resources: ResourceBudget::local_default(),
+        home_root: layout.home_root().to_path_buf(),
+        run_root: layout.run_root().to_path_buf(),
+        control_socket: layout.agentd_control_socket().to_path_buf(),
+        app_server_socket: layout.app_server_socket().to_path_buf(),
+        layout,
+    };
+    prepare_private_directory(&identity.home_root.join(RUN_START_DIRECTORY))
+        .expect("private run-start directory");
+    (temp, identity)
+}
+
+#[cfg(unix)]
+#[test]
+fn dangling_journal_link_is_rejected_before_creating_outside_file() {
+    let (temp, identity) = run_start_owner_fixture();
+    let outside = temp.path().join("outside-journal.bin");
+    let path = identity
+        .home_root
+        .join(RUN_START_DIRECTORY)
+        .join(RUN_START_FILE);
+    std::os::unix::fs::symlink(&outside, &path).expect("simulate dangling journal link");
+    assert!(open_run_start_journal(&identity, digest("profile")).is_err());
+    assert!(!outside.exists());
+}
+
+#[cfg(unix)]
+#[test]
+fn hard_linked_journal_is_rejected_without_writing_outside_inode() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let (temp, identity) = run_start_owner_fixture();
+    let outside = temp.path().join("outside-journal.bin");
+    std::fs::write(&outside, b"").expect("empty outside file");
+    std::fs::set_permissions(&outside, std::fs::Permissions::from_mode(0o600))
+        .expect("private outside file");
+    let path = identity
+        .home_root
+        .join(RUN_START_DIRECTORY)
+        .join(RUN_START_FILE);
+    std::fs::hard_link(&outside, path).expect("simulate shared journal inode");
+    assert!(open_run_start_journal(&identity, digest("profile")).is_err());
+    assert_eq!(std::fs::read(outside).expect("untouched outside file"), b"");
+}
+
+#[cfg(unix)]
+#[test]
+fn permissive_journal_is_rejected_without_initializing_it() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let (_temp, identity) = run_start_owner_fixture();
+    let path = identity
+        .home_root
+        .join(RUN_START_DIRECTORY)
+        .join(RUN_START_FILE);
+    std::fs::write(&path, b"").expect("empty installed file");
+    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o666))
+        .expect("simulate shared write permissions");
+    assert!(open_run_start_journal(&identity, digest("profile")).is_err());
+    assert_eq!(std::fs::read(path).expect("unchanged journal"), b"");
+}
+
+#[cfg(unix)]
+#[test]
+fn private_run_start_journal_initializes_and_recovers() {
+    let (_temp, identity) = run_start_owner_fixture();
+    let journal =
+        open_run_start_journal(&identity, digest("profile")).expect("new private journal");
+    let head = journal.head_digest();
+    drop(journal);
+    let recovered =
+        open_run_start_journal(&identity, digest("profile")).expect("recover private journal");
+    assert_eq!(recovered.head_digest(), head);
+}
+
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
