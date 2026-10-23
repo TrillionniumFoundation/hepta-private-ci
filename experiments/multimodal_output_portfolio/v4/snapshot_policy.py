@@ -260,7 +260,10 @@ def load_snapshot_bytes(raw: bytes, cfg: Config, initial: State) -> PolicySnapsh
 def rollout_snapshot(snapshot: PolicySnapshot, cfg: Config,
                      source_sha256: str, seed: int) -> dict:
     """Run time: each choice is constant-time dictionary lookup, not Bellman."""
-    if type(seed) is not int:
+    # Match the generator's bounded, deterministic seed contract. A negative
+    # or oversized seed is not a valid source-bound draw identity even if
+    # random.Random can technically accept it.
+    if type(seed) is not int or not 0 <= seed <= 2**63 - 1:
         raise ValueError("invalid committed random seed")
     # One per-invocation identity check; no disk hashing in each online lookup.
     if source_sha256 != current_source_digest():
