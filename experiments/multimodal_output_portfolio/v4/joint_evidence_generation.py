@@ -180,7 +180,8 @@ def independent_fixture_score(raw: dict, truth: int, cfg: Config) -> int:
 
 def full_outcome_audit(initial: JointState, cfg: Config,
                        choose: Callable[[JointState], str | Allocation],
-                       *, query_cost: int = 1) -> dict:
+                       *, query_cost: int = 1,
+                       witness_channel: str = "declared_independent") -> dict:
     """Externally enumerate truth, witness, joint shocks and actual emitted loss.
 
     The law is small and exact: each event's probability uses Fractions. Truth
@@ -191,6 +192,8 @@ def full_outcome_audit(initial: JointState, cfg: Config,
         raise ValueError("invalid first decision boundary")
     if type(query_cost) is not int or query_cost < 1:
         raise ValueError("invalid query budget")
+    if witness_channel not in ("declared_independent", "shared_report_zero"):
+        raise ValueError("unregistered external witness law")
     rows: list[tuple[Fraction, int, int, bool, int, str]] = []
     action_at_initial = choose(initial)
 
@@ -216,7 +219,9 @@ def full_outcome_audit(initial: JointState, cfg: Config,
             if QUERY not in admitted_actions(s, cfg, query_cost=query_cost):
                 raise ValueError("unfunded or repeated witness query")
             for obs in (0, 1):
-                likelihood = (WITNESS_ACCURACY if obs == truth else 1 - WITNESS_ACCURACY)
+                likelihood = ((WITNESS_ACCURACY if obs == truth else 1 - WITNESS_ACCURACY)
+                              if witness_channel == "declared_independent"
+                              else Fraction(int(obs == 0)))
                 visit(query_successor(s, cfg, obs, query_cost), truth,
                       probability * likelihood, spent + query_cost,
                       True, generator_calls)
@@ -253,6 +258,8 @@ def full_outcome_audit(initial: JointState, cfg: Config,
         raise AssertionError("insufficient tail mass")
     return {
         "scope": "RESEARCH_ONLY_SHADOW_DENY_ALL",
+        "witness_channel": witness_channel,
+        "unmodeled_channel_shift_has_no_robustness_guarantee": True,
         "outcomes": len(rows),
         "first_action": (action_at_initial.units if isinstance(action_at_initial, Allocation)
                          else action_at_initial),
