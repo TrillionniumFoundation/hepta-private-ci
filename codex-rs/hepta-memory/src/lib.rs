@@ -207,6 +207,7 @@ pub use cognitive_store::CognitiveRecoveryError;
 pub use cognitive_store::CognitiveRecoveryRequirement;
 pub use cognitive_store::CognitiveStore;
 pub use cognitive_store::CognitiveStoreError;
+pub use cognitive_store::InstalledCognitiveMaterial;
 pub use cognitive_store::RecoveredCognitiveReadOnly;
 pub use cognitive_store::RootCognitiveMaterialRegistration;
 pub use cognitive_store::VerifiedCognitiveMaterial;
