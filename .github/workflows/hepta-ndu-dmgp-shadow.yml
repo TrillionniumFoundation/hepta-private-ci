@@ -47,6 +47,12 @@ jobs:
           assert report['model_training'] is False
           assert set(report['arms']) == {f'A{i}' for i in range(6)}
           assert report['episodes'] == 40
+          neg = report['a5_vs_a1_negative_control']
+          assert neg['paired_cases'] == 40
+          assert neg['synthetic_quality_parity'] is True
+          assert neg['synthetic_quality_delta_mean'] == 0.0
+          assert neg['model_policy_superiority_established'] is False
+          print(json.dumps(report, indent=2, sort_keys=True))
           for arm, row in report['arms'].items():
               if arm != 'A0':
                   assert row['paired_cases'] == 40
