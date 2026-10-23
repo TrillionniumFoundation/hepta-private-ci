@@ -57,6 +57,7 @@ pub use recovery::CognitiveRecoveryAnchor;
 pub use recovery::CognitiveRecoveryError;
 pub use recovery::CognitiveRecoveryRequirement;
 pub use recovery::RecoveredCognitiveReadOnly;
+pub(crate) use recovery::capture as capture_recovery_anchor;
 
 const COGNITIVE_DB_FILENAME: &str = "cognitive_1.sqlite3";
 const COGNITIVE_ACTIVE_DB_POINTER: &str = ".cognitive-active-v1";
@@ -65,6 +66,13 @@ const COGNITIVE_RECOVERED_DB_PREFIX: &str = "cognitive_recovered_v1_";
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
+    ("cognitive_objective_sender_requests", "table"),
+    ("cognitive_objective_sender_requests_no_update", "trigger"),
+    ("cognitive_objective_sender_requests_no_delete", "trigger"),
+    ("cognitive_objective_sender_events", "table"),
+    ("cognitive_objective_sender_events_no_update", "trigger"),
+    ("cognitive_objective_sender_events_no_delete", "trigger"),
+    ("cognitive_objective_sender_events_append", "trigger"),
     ("shared_experience_use_events", "table"),
     ("shared_experience_use_no_update", "trigger"),
     ("shared_experience_use_no_delete", "trigger"),
@@ -214,7 +222,7 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("cognitive_local_outbox_hos2_delivery", "index"),
 ];
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "c448a01d9749d7c409bb9c384ceaa7245ef6aca0eda722ac3ec8b2501602bed0";
+    "55a697816bedf97c5fa3ef36a4d9d39d98f6f572d825a38541afe62e19203773";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {
@@ -833,6 +841,7 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
     crate::logical_turn_registry::verify_logical_turn_registry(pool, owner).await?;
     crate::local_lease_outbox::verify_local_lease_outbox(pool, owner).await?;
     crate::local_compact_executor::verify_local_compact_events(pool, owner).await?;
+    crate::production_writer::verify_sender_store(pool, owner).await?;
     Ok(())
 }
 

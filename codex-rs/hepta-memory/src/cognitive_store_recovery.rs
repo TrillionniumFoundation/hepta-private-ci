@@ -373,7 +373,7 @@ fn recovery_error(error: SqliteRecoveryError) -> CognitiveRecoveryError {
     }
 }
 
-async fn capture(
+pub(crate) async fn capture(
     connection: &mut SqliteConnection,
     owner: &AgentId,
 ) -> Result<CognitiveRecoveryAnchor, CognitiveStoreError> {

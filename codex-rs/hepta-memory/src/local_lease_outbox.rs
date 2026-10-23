@@ -3183,6 +3183,22 @@ impl LocalLeaseOutbox {
         })
     }
 
+    /// Reuse the original host-bound lease fence in a caller-owned SQLite write
+    /// transaction without appending an effect or opening a second transaction.
+    pub(crate) async fn require_current_transaction(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+    ) -> Result<LocalLease, LocalLeaseOutboxError> {
+        if self.binding().is_none() {
+            return Err(LocalLeaseOutboxError::Invalid(
+                "owner transaction requires a host-bound lease".to_string(),
+            ));
+        }
+        let lease = self.current_lease(transaction).await?;
+        ensure_current_active(&lease, self)?;
+        Ok(lease)
+    }
+
     async fn current_lease(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,

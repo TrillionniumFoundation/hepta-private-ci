@@ -12,6 +12,8 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_memory::FinalUseProductionOutboxTarget;
 use codex_hepta_memory::NotesTargetIdentity;
+use codex_hepta_memory::ObjectiveSenderCheckpoint;
+use codex_hepta_memory::ProductionObjectiveSender;
 
 use crate::AgentdConfig;
 use crate::AgentdError;
@@ -79,6 +81,34 @@ impl ProductionAuthorityVerifier for ProtectedClockVerifier {
         self.inner.verify(authority, expected_agent)?;
         // The external verifier may itself block. Recheck after it returns.
         self.verify_clock(authority)
+    }
+}
+
+impl AgentdConfig {
+    /// Obtain the restricted Objective sender from the installed original owner.
+    /// The trusted embedding must supply an independent current-cut checkpoint;
+    /// no default checkpoint, new writer, database open or transport is created.
+    pub fn original_objective_sender<C: ObjectiveSenderCheckpoint>(
+        &self,
+        checkpoint: Arc<C>,
+        deadline: Duration,
+    ) -> Result<ProductionObjectiveSender<C>, AgentdError> {
+        let host = self
+            .production_writer_host()
+            .ok_or(AgentdError::CognitiveWriteRuntimeUnavailable)?;
+        let writer = host.writer();
+        if writer.owner_agent_id() != &self.identity().agent_id
+            || writer.generation() != self.identity().spawn_generation
+        {
+            return Err(AgentdError::GenerationFenced(
+                "Objective sender owner differs from installed Agentd identity".to_string(),
+            ));
+        }
+        writer
+            .objective_sender(checkpoint, deadline)
+            .map_err(|error| {
+                AgentdError::Invalid(format!("original Objective sender unavailable: {error}"))
+            })
     }
 }
 
@@ -194,3 +224,7 @@ mod tests;
 #[cfg(test)]
 #[path = "production_composition_notes_tests.rs"]
 mod notes_tests;
+
+#[cfg(test)]
+#[path = "objective_sender_host_tests.rs"]
+mod objective_sender_tests;
