@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.av-prefix-oracle.protocol.v1",
+  "status": "EXPLORATORY_TRAIN_ONLY_NOT_CONFIRMATION",
+  "input": "Eight previously used TRAIN recordings, four actor groups, one frozen training seed",
+  "refiners": "Six frozen 7-input/8-tanh/scalar-residual MLPs, three greedy supervised rounds per modality",
+  "signal_profile": "8 kHz mono PCM and 8 fps 48x48 grayscale video",
+  "corruption": {"seed": 2026102302, "dropout": 0.15, "noise_std": 0.03},
+  "actions": "All 16 complete audio/video prefix pairs, each depth in 0..3",
+  "joint_loss": "0.5 * (audio raw MSE + video raw MSE); report modality losses separately",
+  "comparator": "Best single prefix on the same TRAIN set; optimistic in-sample comparator",
+  "oracle": "Clean-truth-looking minimum per recording; never a deployable controller",
+  "budgets": "Exact and at-most forward-call counts 0..6, 100% coverage",
+  "cost": "Count all prerequisite calls and 64 matrix MACs per scalar per round; not physical cost parity",
+  "eager_execution": "All six forwards per clip are actually paid before diagnostic oracle selection",
+  "parity": "64 original stage losses within 1e-15; 16 final float32 arrays byte-exact",
+  "retraining": false,
+  "heldout_access": false,
+  "policy_export": false,
+  "production_authority": false,
+  "interpretation": "Zero useful headroom is a valid development stop; never require a positive REFINE rate"
+}
