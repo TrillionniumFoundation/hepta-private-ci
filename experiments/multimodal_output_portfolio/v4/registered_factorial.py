@@ -158,6 +158,16 @@ def describe_registered_factorial(
         balanced_loss[arm] = fsum(per_seed_loss) / len(per_seed_loss)
         balanced_cost[arm] = fsum(per_seed_cost) / len(per_seed_cost)
 
+    # Source × seed strata are weighting units, NOT independent real sources.
+    # Training multiple model seeds against the same underlying source must
+    # never multiply the declared number of independently acquired sources.
+    source_seed_owners = defaultdict(set)
+    for seed, sources in seed_sources.items():
+        for source in sources:
+            source_seed_owners[source].add(seed)
+    repeated_across_seeds = sum(
+        len(owners) > 1 for owners in source_seed_owners.values())
+
     pooled = describe_factorial(
         normalized, frozen_scoring_digest=cohort.scoring_digest,
         allowed_sources=set(cohort.allowed_sources))
@@ -173,6 +183,11 @@ def describe_registered_factorial(
         "original_source_strata": len({(seed, source)
                                        for seed, sources in seed_sources.items()
                                        for source in sources}),
+        # Report identifier reuse explicitly. The unique count is based on
+        # caller-provided IDs, not verified provenance or statistical power.
+        "declared_unique_original_source_ids": len(source_seed_owners),
+        "declared_source_ids_reused_across_seeds": repeated_across_seeds,
+        "cross_seed_source_independence_verified": False,
         "physical_cost_unit": cohort.physical_unit,
         "balanced_mean_external_loss": balanced_loss,
         "balanced_mean_physical_cost": balanced_cost,
