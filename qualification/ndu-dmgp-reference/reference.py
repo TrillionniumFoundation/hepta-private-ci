@@ -212,10 +212,19 @@ class Covariance:
     def risk(self, weights: Sequence[float]) -> float:
         if not self.supported or len(weights) != len(self.matrix):
             raise GateRejected("unsupported covariance dimension")
-        return max(0.0, sum(
-            weights[i] * self.matrix[i][j] * weights[j]
-            for i in range(len(weights)) for j in range(len(weights))
-        ))
+        if (any(not math.isfinite(v) or v < 0 for v in weights)
+                or abs(sum(weights) - 1.) > 1e-6):
+            raise GateRejected("invalid simplex allocation")
+        if (any(len(row) != len(weights) or any(not math.isfinite(v) for v in row)
+                for row in self.matrix)
+                or any(abs(self.matrix[i][j] - self.matrix[j][i]) > 1e-8
+                       for i in range(len(weights)) for j in range(i + 1, len(weights)))):
+            raise GateRejected("invalid covariance shape or symmetry")
+        value = sum(weights[i] * self.matrix[i][j] * weights[j]
+                    for i in range(len(weights)) for j in range(len(weights)))
+        if not math.isfinite(value) or value < -1e-9:
+            raise GateRejected("non-PSD portfolio risk")
+        return max(0., value)
 
 
 def _eigen_symmetric(matrix: list[list[float]]) -> list[tuple[float, list[float]]]:
@@ -301,6 +310,12 @@ def paired_covariance(
         for i in range(k):
             approx[i][i] += diag[i]
         shrunk = approx
+        final_eigs = _eigen_symmetric(shrunk)
+        if final_eigs[-1][0] < floor / 2:
+            return bad("invalid low-rank reconstruction eigenvalue floor")
+        cond = final_eigs[0][0] / final_eigs[-1][0]
+        if cond > 1e6:
+            return bad("ill-conditioned low-rank reconstruction")
     return Covariance(True, tuple(tuple(row) for row in shrunk), n, cond, r, "supported")
 
 
@@ -327,6 +342,11 @@ def portfolio_weights(
                                      any(not math.isfinite(v) for v in row)
                                      for row in covariance.matrix)):
         raise GateRejected("invalid covariance matrix profile")
+    if covariance.supported:
+        if (any(abs(covariance.matrix[i][j] - covariance.matrix[j][i]) > 1e-8
+                for i in range(n) for j in range(i + 1, n))
+                or _eigen_symmetric([list(row) for row in covariance.matrix])[-1][0] < -1e-9):
+            raise GateRejected("non-symmetric or non-PSD covariance profile")
     if not covariance.supported or len(covariance.matrix) != n:
         # Explicit deterministic NDU fallback when covariance is unidentified.
         winner = max(range(n), key=lambda i: (advantage[i], -i))
