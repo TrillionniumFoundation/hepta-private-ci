@@ -143,6 +143,15 @@ opened and permanently consumed; keep its markers and do not rerun or tune on
 it. The earlier core t1 TRAIN-only construction failure also remains retained.
 Neither this result nor report-only N-versus-S comparisons relabel r2 failures.
 
+The saved TRAIN receipts then motivated an optional
+[local finite-code PNG path](independent/OUTPUT_CODEC.md). It pays actual
+decoder/codebook preparation and retains per-request sampling/JSON accounting.
+All 233 independent source tests passed, including 12 new hand/native codec
+tests. Existing qualification plans still use the original path; the new profile
+has no measured training/allocation or content-benefit result, and bundle export
+explicitly refuses that profile until serving integration is supported. No
+additional formal test or AV generation is authorized at this stage.
+
 **The first configured Codex Cloud execution passed the frozen finite-scene
 acceptance on 2026-10-23**, using source commit
 `57d2c7aa5880dd761b4c43f79d0f6f16b26b72e7`. The exact runner exited 0; all 30
