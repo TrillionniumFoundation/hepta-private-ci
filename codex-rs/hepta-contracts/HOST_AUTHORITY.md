@@ -33,7 +33,15 @@ or repairs state. Different original owner domains need different owner IDs.
 
 CAS takes a nonblocking process lock, reads and compares the complete expected
 value, writes and fsyncs a private temporary file, atomically renames it, then
-fsyncs the retained directory. Lock identity is rechecked after acquisition.
+fsyncs the retained directory, then compares the exact readback under the same
+lock before acknowledgement. Those file/directory syncs have already completed;
+the readback does not repeat them. Public load/open also acquire this
+publication lock and sync both the observed file and retained directory. They
+cannot report a renamed value while another publication still owes its directory
+sync. Lock contention, failed sync or failed readback remains unavailable/uncertain;
+visibility alone is never a durable acknowledgement. The internal CAS predecessor
+read uses its already-held lock and does not recursively acquire it.
+Lock identity is rechecked after acquisition.
 A stale incomplete temporary file can be replaced under that lock; an unsafe
 file or symlink is refused before truncation. A killed process releases the OS
 lock. Uncertain errors remain errors; callers must use the original owner's
@@ -110,6 +118,11 @@ revocation protocol or expiry; lease revocation alone is not a claim of their
 instant invalidation. Tests use new real keys and original FinalUse/lease owners
 to verify signatures, replay denial, changed binding denial and both revocation
 paths without entering an effect.
+Ordinary issuer/transport timing fixtures use actual Linux clocks and fsync on
+tmpfs. They isolate deadlines and bindings from unrelated disk contention;
+they do not qualify power-loss persistence. Store CAS/crash tests use their
+selected filesystem, and the explicit root peer case accepts a separately
+selected protected state parent while retaining the production path checks.
 
 ## Private Linux issuer channel
 

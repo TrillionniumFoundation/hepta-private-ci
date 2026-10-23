@@ -24,6 +24,9 @@ use std::time::UNIX_EPOCH;
 #[path = "authority_host_issuer_tests.rs"]
 mod issuer_tests;
 
+#[path = "authority_host_store_durable_tests.rs"]
+mod durable_tests;
+
 const OWNER: &str = "local-host-authority";
 
 // Tests exercise real filesystem persistence as their ordinary test UID. This
@@ -37,6 +40,7 @@ fn test_directory(path: &Path) -> Arc<RootAuthorityDirectory> {
     Arc::new(RootAuthorityDirectory {
         directory,
         owner_uid,
+        before_directory_sync: std::sync::Mutex::new(None),
     })
 }
 
@@ -208,8 +212,24 @@ fn cas_process_child() {
         .unwrap();
     let path = Path::new(&path);
     let root = test_directory(path);
-    let store = HostAuthorityFrontierStore::<u64>::open(root, OWNER.into()).unwrap();
-    assert_eq!(store.load(OWNER), Ok(1));
+    // Opening and independently observing a durable record now take the same
+    // nonblocking publication lock. Only this pre-mutation fixture setup may
+    // retry contention; the actual competing CAS below is attempted once.
+    let deadline = Instant::now() + Duration::from_secs(10);
+    let store = loop {
+        let result = HostAuthorityFrontierStore::<u64>::open(root.clone(), OWNER.into())
+            .and_then(|store| store.load(OWNER).map(|value| (store, value)));
+        match result {
+            Ok((store, value)) => {
+                assert_eq!(value, 1);
+                break store;
+            }
+            Err(AuthorityTrustError::Conflict) if Instant::now() < deadline => {
+                std::thread::sleep(Duration::from_millis(5));
+            }
+            other => panic!("pre-mutation fixture open failed: {:?}", other.err()),
+        }
+    };
     std::fs::write(path.join(format!("ready-{id}")), []).unwrap();
     wait_for(&path.join("go"));
     let result = store.compare_and_set(OWNER, &1, &id);

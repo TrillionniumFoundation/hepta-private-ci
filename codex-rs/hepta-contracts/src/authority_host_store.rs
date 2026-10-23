@@ -42,7 +42,12 @@ enum DirectoryAccess {
 pub struct RootAuthorityDirectory {
     directory: File,
     owner_uid: u32,
+    #[cfg(test)]
+    before_directory_sync: std::sync::Mutex<Option<DurabilityHook>>,
 }
+
+#[cfg(test)]
+type DurabilityHook = Arc<dyn Fn() -> std::io::Result<()> + Send + Sync>;
 
 impl RootAuthorityDirectory {
     /// Open an existing mode-0700 root-owned authority directory. The caller
@@ -67,6 +72,8 @@ impl RootAuthorityDirectory {
         Ok(Arc::new(Self {
             directory,
             owner_uid: 0,
+            #[cfg(test)]
+            before_directory_sync: std::sync::Mutex::new(None),
         }))
     }
 
@@ -125,6 +132,23 @@ impl RootAuthorityDirectory {
         file.sync_all().map_err(unavailable)?;
         rustix::fs::renameat(&self.directory, temporary, &self.directory, name)
             .map_err(|_| AuthorityTrustError::Unavailable)?;
+        self.sync_directory()
+    }
+
+    fn sync_directory(&self) -> Result<(), AuthorityTrustError> {
+        // Controlled tests pause/fail acknowledgement at the actual boundary
+        // after rename, without claiming a simulated power-loss result.
+        #[cfg(test)]
+        {
+            let hook = self
+                .before_directory_sync
+                .lock()
+                .map_err(|_| AuthorityTrustError::Unavailable)?
+                .clone();
+            if let Some(hook) = hook {
+                hook().map_err(unavailable)?;
+            }
+        }
         self.directory.sync_all().map_err(unavailable)
     }
 }
@@ -190,7 +214,11 @@ impl<F: Serialize + DeserializeOwned + Eq> HostAuthorityFrontierStore<F> {
         if store.root.exists(&store.name)? {
             return Err(AuthorityTrustError::Conflict);
         }
-        store.persist(initial)?;
+        store.persist(&initial)?;
+        // persist already synced this file and its directory under our lock.
+        if store.read()? != initial {
+            return Err(AuthorityTrustError::Unavailable);
+        }
         Ok(store)
     }
 
@@ -200,7 +228,8 @@ impl<F: Serialize + DeserializeOwned + Eq> HostAuthorityFrontierStore<F> {
         owner_id: String,
     ) -> Result<Self, AuthorityTrustError> {
         let store = Self::configured(root, owner_id)?;
-        store.read()?;
+        let _lock = store.root.lock(&format!("{}.lock", store.name))?;
+        store.read_durable()?;
         Ok(store)
     }
 
@@ -227,12 +256,26 @@ impl<F: Serialize + DeserializeOwned + Eq> HostAuthorityFrontierStore<F> {
     }
 
     fn read(&self) -> Result<F, AuthorityTrustError> {
+        self.read_record().map(|(frontier, _)| frontier)
+    }
+
+    // Caller holds this owner's publication lock across reading and syncing.
+    // A visible renamed record alone is not an independently durable head.
+    fn read_durable(&self) -> Result<F, AuthorityTrustError> {
+        let (frontier, file) = self.read_record()?;
+        file.sync_all().map_err(unavailable)?;
+        self.root.sync_directory()?;
+        Ok(frontier)
+    }
+
+    fn read_record(&self) -> Result<(F, File), AuthorityTrustError> {
         let file = self.root.open_private(&self.name, OFlags::RDONLY)?;
         if file.metadata().map_err(unavailable)?.len() > MAX_RECORD_BYTES {
             return Err(AuthorityTrustError::Invalid);
         }
         let mut bytes = Vec::new();
-        file.take(MAX_RECORD_BYTES + 1)
+        (&file)
+            .take(MAX_RECORD_BYTES + 1)
             .read_to_end(&mut bytes)
             .map_err(unavailable)?;
         if bytes.len() as u64 > MAX_RECORD_BYTES {
@@ -243,10 +286,10 @@ impl<F: Serialize + DeserializeOwned + Eq> HostAuthorityFrontierStore<F> {
         if value.schema != 1 || value.owner_id != self.owner_id {
             return Err(AuthorityTrustError::Invalid);
         }
-        Ok(value.frontier)
+        Ok((value.frontier, file))
     }
 
-    fn persist(&self, frontier: F) -> Result<(), AuthorityTrustError> {
+    fn persist(&self, frontier: &F) -> Result<(), AuthorityTrustError> {
         let bytes = serde_json::to_vec(&Record {
             schema: 1,
             owner_id: self.owner_id.clone(),
@@ -268,7 +311,8 @@ impl<F: Serialize + DeserializeOwned + Eq + Clone> AuthorityFrontierStore<F>
         if owner_id != self.owner_id {
             return Err(AuthorityTrustError::Invalid);
         }
-        self.read()
+        let _lock = self.root.lock(&format!("{}.lock", self.name))?;
+        self.read_durable()
     }
 
     fn compare_and_set(
@@ -284,7 +328,14 @@ impl<F: Serialize + DeserializeOwned + Eq + Clone> AuthorityFrontierStore<F>
         if &self.read()? != expected {
             return Err(AuthorityTrustError::Conflict);
         }
-        self.persist(next.clone())
+        self.persist(next)?;
+        // The replacement has already completed file+directory sync. No other
+        // publisher can replace it while this lock is held, so readback need
+        // not repeat those I/O operations inside a bounded clock reservation.
+        if &self.read()? != next {
+            return Err(AuthorityTrustError::Unavailable);
+        }
+        Ok(())
     }
 }
 

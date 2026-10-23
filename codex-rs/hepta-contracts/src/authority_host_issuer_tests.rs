@@ -28,7 +28,15 @@ struct Fixture {
 
 impl Fixture {
     fn new() -> Self {
-        let directory = tempfile::tempdir().unwrap();
+        // These timing/binding tests use real Linux clock and fsync syscalls
+        // on tmpfs so unrelated disk load cannot exhaust the fixed 1000 ms
+        // observation window before their tested boundary is reached. Durable
+        // CAS/crash tests and explicit root peer qualification retain their
+        // separately selected real filesystem; this is no power-loss proof.
+        let directory = tempfile::Builder::new()
+            .prefix("hepta-issuer-fixture-")
+            .tempdir_in("/dev/shm")
+            .unwrap();
         let root = test_directory(directory.path());
         Self::with_directory(directory, root)
     }
