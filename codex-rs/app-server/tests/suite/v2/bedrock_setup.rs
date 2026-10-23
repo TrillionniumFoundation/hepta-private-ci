@@ -1,10 +1,14 @@
 use anyhow::Result;
+use app_test_support::DEFAULT_CLIENT_NAME;
 use app_test_support::TestAppServer;
 use codex_app_server_protocol::BedrockDiscoverParams;
 use codex_app_server_protocol::BedrockDiscoverResponse;
 use codex_app_server_protocol::BedrockSetupParams;
 use codex_app_server_protocol::BedrockSetupResponse;
+use codex_app_server_protocol::ClientInfo;
 use codex_app_server_protocol::ClientRequest;
+use codex_app_server_protocol::InitializeCapabilities;
+use codex_app_server_protocol::JSONRPCMessage;
 use codex_app_server_protocol::RequestId;
 use codex_config::types::AuthCredentialsStoreMode;
 use codex_login::AuthKeyringBackendKind;
@@ -16,9 +20,19 @@ use std::time::Duration;
 use tempfile::TempDir;
 use tokio::time::timeout;
 
+const INVALID_REQUEST_ERROR_CODE: i64 = -32600;
 const READ_TIMEOUT: Duration = Duration::from_secs(/*secs*/ 60);
 
 async fn bedrock_app_server(
+    codex_home: &Path,
+    environment: &[(&str, Option<&str>)],
+) -> Result<TestAppServer> {
+    let mut server = uninitialized_bedrock_app_server(codex_home, environment).await?;
+    timeout(READ_TIMEOUT, server.initialize()).await??;
+    Ok(server)
+}
+
+async fn uninitialized_bedrock_app_server(
     codex_home: &Path,
     environment: &[(&str, Option<&str>)],
 ) -> Result<TestAppServer> {
@@ -50,8 +64,61 @@ async fn bedrock_app_server(
             ("AWS_EC2_METADATA_DISABLED", Some("true")),
         ])
         .with_env_overrides(environment)
-        .build_initialized_with_timeout(READ_TIMEOUT)
+        .build()
         .await
+}
+
+#[tokio::test]
+async fn bedrock_discovery_and_setup_require_experimental_api() -> Result<()> {
+    let home = TempDir::new()?;
+    let config_path = home.path().join("config.toml");
+    let auth_path = home.path().join("auth.json");
+    let dotenv_path = home.path().join(".env");
+    let expected_config = "# existing configuration\n";
+    std::fs::write(&config_path, expected_config)?;
+    let mut server = uninitialized_bedrock_app_server(home.path(), &[]).await?;
+    let initialized = timeout(
+        READ_TIMEOUT,
+        server.initialize_with_capabilities(
+            ClientInfo {
+                name: DEFAULT_CLIENT_NAME.to_string(),
+                title: None,
+                version: "0.1.0".to_string(),
+            },
+            Some(InitializeCapabilities {
+                experimental_api: false,
+                ..Default::default()
+            }),
+        ),
+    )
+    .await??;
+    assert!(matches!(initialized, JSONRPCMessage::Response(_)));
+    assert!(!auth_path.exists());
+    assert!(!dotenv_path.exists());
+
+    for (method, params) in [
+        ("account/bedrock/discover", json!({})),
+        (
+            "account/bedrock/setup",
+            json!({"type": "profile", "profile": "engineering", "region": "us-west-2"}),
+        ),
+    ] {
+        let request_id = server.send_raw_request(method, Some(params)).await?;
+        let error = timeout(
+            READ_TIMEOUT,
+            server.read_stream_until_error_message(RequestId::Integer(request_id)),
+        )
+        .await??;
+        assert_eq!(error.error.code, INVALID_REQUEST_ERROR_CODE);
+        assert_eq!(
+            error.error.message,
+            format!("{method} requires experimentalApi capability")
+        );
+        assert_eq!(std::fs::read_to_string(&config_path)?, expected_config);
+        assert!(!auth_path.exists());
+        assert!(!dotenv_path.exists());
+    }
+    Ok(())
 }
 
 #[tokio::test]
@@ -300,24 +367,34 @@ async fn setup_bedrock_rejects_invalid_or_conflicting_credentials() -> Result<()
     assert!(!codex_home.path().join("config.toml").exists());
 
     let home = TempDir::new()?;
-    std::fs::write(
-        home.path().join("config.toml"),
-        "forced_login_method = \"chatgpt\"\n",
-    )?;
+    let config_path = home.path().join("config.toml");
+    let auth_path = home.path().join("auth.json");
+    let expected_config = "forced_login_method = \"chatgpt\"\n";
+    std::fs::write(&config_path, expected_config)?;
     let mut app_server = bedrock_app_server(home.path(), &[]).await?;
-    let request_id = app_server
-        .send_raw_request("account/bedrock/discover", Some(json!({})))
-        .await?;
-    let error = timeout(
-        READ_TIMEOUT,
-        app_server.read_stream_until_error_message(RequestId::Integer(request_id)),
-    )
-    .await??;
-    assert_eq!(
-        error.error.message,
-        "Amazon Bedrock login is disabled. Use ChatGPT login instead."
-    );
-    assert!(!home.path().join(".env").exists());
+    assert!(!auth_path.exists());
+    for (method, params) in [
+        ("account/bedrock/discover", json!({})),
+        (
+            "account/bedrock/setup",
+            json!({"type": "profile", "profile": "engineering", "region": "us-west-2"}),
+        ),
+    ] {
+        let request_id = app_server.send_raw_request(method, Some(params)).await?;
+        let error = timeout(
+            READ_TIMEOUT,
+            app_server.read_stream_until_error_message(RequestId::Integer(request_id)),
+        )
+        .await??;
+        assert_eq!(error.error.code, INVALID_REQUEST_ERROR_CODE);
+        assert_eq!(
+            error.error.message,
+            "Amazon Bedrock login is disabled. Use ChatGPT login instead."
+        );
+        assert_eq!(std::fs::read_to_string(&config_path)?, expected_config);
+        assert!(!auth_path.exists());
+        assert!(!home.path().join(".env").exists());
+    }
 
     Ok(())
 }
