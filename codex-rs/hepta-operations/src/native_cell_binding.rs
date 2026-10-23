@@ -12,6 +12,8 @@ use codex_hepta_types::StableId;
 
 use crate::DispatchClaim;
 use crate::DurableOperationIntentV1;
+use crate::MAX_DURABLE_LEASE_MS;
+use crate::MAX_DURABLE_OUTBOX_ATTEMPTS;
 
 const NATIVE_DESTINATION: &str = "hepta.runtime.native-tool.v1";
 
@@ -76,10 +78,12 @@ pub fn check_native_cell_outbox_claim_v1(
         || claim.owner_generation != expected.owner_generation
         || claim.fence == 0
         || claim.attempts == 0
+        || claim.attempts > MAX_DURABLE_OUTBOX_ATTEMPTS
         || claim.expires_at_unix_ms <= now_unix_ms
         // A preflight lease cannot extend the original Cell request deadline.
         // Post-deadline reconciliation belongs to the existing durable owner.
         || claim.expires_at_unix_ms > intent.cell.deadline_ms
+        || claim.expires_at_unix_ms.saturating_sub(now_unix_ms) > MAX_DURABLE_LEASE_MS
     {
         return Err(NativeCellBindingError::ForeignOrExpiredClaim);
     }
