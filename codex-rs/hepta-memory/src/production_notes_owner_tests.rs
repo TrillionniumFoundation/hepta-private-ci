@@ -274,3 +274,73 @@ async fn inherited_notes_settlement_preserves_complete_receipt_under_successor_f
     assert_eq!(generation, 2);
     Ok(())
 }
+
+#[tokio::test]
+async fn generic_terminal_outcomes_cannot_replace_notes_application_evidence() -> TestResult {
+    let temp = tempfile::tempdir()?;
+    let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2d19")?;
+    let mut observed = Vec::new();
+    let mut expected = Vec::new();
+    for route in ["reconcile_committed", "reconcile_rejected", "apply", "reject"] {
+        let fleet_path = temp.path().join(route);
+        std::fs::create_dir(&fleet_path)?;
+        let fleet = HeptaFleetRoot::parse(fleet_path.canonicalize()?)?;
+        let store = CognitiveStore::open(&fleet.layout().agent(&owner)).await?;
+        let writer = ProductionDurableWriter::open_with_live_verifier(
+            store.clone(),
+            source(&owner, 1)?,
+            Arc::new(Verifier),
+            LEASE,
+            /*generation*/ 1,
+        )
+        .await?;
+        let (payload, identity, target) = fixture()?;
+        let operation = prepare(&writer, payload, &identity).await?;
+        writer
+            .reconcile(&operation, LocalReconcileOutcome::StillIndeterminate)
+            .await?;
+        let result = match route {
+            "reconcile_committed" => {
+                writer.reconcile(&operation, LocalReconcileOutcome::Committed).await
+            }
+            "reconcile_rejected" => {
+                writer.reconcile(&operation, LocalReconcileOutcome::Rejected).await
+            }
+            "apply" => writer.apply(&operation, "unverified application receipt").await,
+            "reject" => writer.reject(&operation, "unverified rejection").await,
+            _ => unreachable!(),
+        };
+        let denied = matches!(
+            result,
+            Err(ProductionWriterError::Local(LocalLeaseOutboxError::AccessDenied(_)))
+        );
+        let state_after_attempt = writer.status(&operation).await?;
+        let recovered = writer.reconcile_target_batch(&target, /*limit*/ 1).await?;
+        let persisted: Option<String> = sqlx::query_scalar(
+            "SELECT payload_json FROM cognitive_local_events WHERE lease_id = ? AND occurrence_key = ? AND event_kind = 'reconcile_committed'",
+        )
+        .bind(LEASE)
+        .bind(&operation)
+        .fetch_optional(&store.pool)
+        .await?;
+        observed.push((
+            route,
+            denied,
+            state_after_attempt,
+            recovered,
+            persisted,
+            target.retirements.load(Ordering::SeqCst),
+        ));
+        expected.push((
+            route,
+            true,
+            LocalOutcomeState::Indeterminate,
+            1,
+            Some(target.receipt.clone()),
+            1,
+        ));
+        store.close().await;
+    }
+    assert_eq!(observed, expected);
+    Ok(())
+}
