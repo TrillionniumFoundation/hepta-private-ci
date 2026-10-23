@@ -221,3 +221,24 @@ python3 -m compileall -q portfolio.py counterfactual_audit.py information_acquis
 ## Next independently measured scientific experiment
 
 Replace the synthetic proxy-state/decoder fixtures with a source-pinned **real** shared Encoder plus four output decoders, observed partial latents, actual Neural/Cell feature invocation and all separately paid decoder/verifier/selection costs. Preregister source-disjoint natural tasks, multiple training seeds and common random-number draws, then compare same-information/static, MoE, risk-neutral MPC, fixed-risk MPC, dynamic NDU and best-of-N with independent decoded-output scoring and risk/coverage/cost thresholds. Train/inference factorial ablations are essential to determine whether NDU changes learned generation rather than only selecting an existing candidate. Do not enable or deploy any output-portfolio policy based only on this code.
+
+## Public-state policy replay admission (source-only follow-up)
+
+The independently enumerated joint four-modal outcome audit calls a supplied
+policy repeatedly on the same public `JointState` across hidden-truth branches.
+The original scorer recorded `first_action` from a separate early call, but
+did not ensure that the action actually executed at the root (or at repeated
+public states) matched the declaration. A mutable or truth-order-dependent
+callback could consequently report a paid QUERY as its first action while
+actually EMITting, or vary its action across identical public information.
+
+The isolated fail-closed repair records each observed-state action and rejects
+any inconsistent replay. It does **not** infer an independent witness,
+authenticate a policy artifact, defend against arbitrary malicious Python code,
+or prove that a natural model cannot access hidden future facts. The new
+adversarial `test_policy_replay_admission.py` covers first-action substitution,
+different actions on identical public state across hidden-truth enumeration, and
+a valid deterministic EMIT baseline. This closes at most a **finite synthetic
+source-replay integrity** weakness after the exact-HEAD scoped checks pass.
+Original witness-calibration shift failures and all
+`SHADOW_ONLY / DENY_ALL / HOLD_NO_GO` scientific and production blockers remain.
