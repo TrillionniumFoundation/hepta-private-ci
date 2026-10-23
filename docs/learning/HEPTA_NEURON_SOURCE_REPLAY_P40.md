@@ -64,3 +64,20 @@ Synthetic success, self-supplied SHA256 and an old/queued/cancelled
 workflow are not real production witnesses. All six production blockers
 remain OPEN. This change grants no extra Cell capabilities, model
 selection, memory writes or NDU decision authority.
+
+## Arctic pinned GTE CPU compatibility profile
+
+The pinned Snowflake Arctic m-v2.0 publisher config enables memory-efficient
+attention and unpadding; the custom GTE source can require xFormers when those
+flags are enabled. The physical worker uses a CPU-only PyTorch environment
+without xFormers. P40 now loads the publisher config, explicitly checks both
+fields are recognized booleans or true/false strings, disables both flags for
+the CPU probe, verifies they remain disabled after AutoModel load, and reports
+the original values in the measured output.
+
+This is an explicit distinct runtime profile. It neither patches published
+checkpoint/config bytes nor claims the resulting CPU profile has identical
+numerics, throughput or production support. Transformers v5 compatibility
+of the external pinned modeling source still requires real exact-HEAD
+forward execution evidence and can fail closed. Do not credit synthetic
+flag tests as original-weight CPU inference.
