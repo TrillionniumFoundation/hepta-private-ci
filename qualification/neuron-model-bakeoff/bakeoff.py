@@ -323,14 +323,23 @@ def evaluate(root: Path, manifest: dict, trusted_key: Path | None = None) -> dic
         require(arm not in predictions, "duplicate model arm")
         require(type(spec.get("revision")) is str and HEX40.fullmatch(spec["revision"]),
                 f"{arm}: pinned revision required")
-        for field in ("weights", "tokenizer", "runtime"):
+        for field in ("weights", "tokenizer", "runtime", "calibration"):
             artifact(root, spec[field])
         require(type(spec.get("license")) is str and spec["license"], "license review required")
         actual = validate_predictions(records(artifact(root, spec["predictions"])), dataset, arm)
         weight_digest = spec["weights"]["sha256"]
         require(all(o["model_weights_sha256"] == weight_digest for o in actual.values()),
                 f"{arm}: observed weights do not match artifact")
+        require(all(o.get("calibration_sha256") == spec["calibration"]["sha256"] for o in actual.values()),
+                f"{arm}: observed calibration does not match selected artifact")
         if arm in ("arctic-head", "harrier-head"):
+            head_path = artifact(root, spec["head_weights"])
+            training_report = load_json(artifact(root, spec["training_report"]))
+            require(all(o.get("head_sha256") == spec["head_weights"]["sha256"] for o in actual.values()),
+                    f"{arm}: observed head does not match artifact")
+            require(training_report.get("head_sha256") == sha_file(head_path) and
+                    training_report.get("encoder_weights_sha256") == weight_digest,
+                    f"{arm}: trained head lineage mismatch")
             h = spec.get("head_training")
             require(type(h) is dict and all(k in h for k in
                     ("steps", "examples_seen", "batch_size", "seed", "target_dim", "optimizer_sha256", "training_dataset_sha256")),
@@ -342,6 +351,8 @@ def evaluate(root: Path, manifest: dict, trusted_key: Path | None = None) -> dic
                         ("optimizer_sha256", "training_dataset_sha256")), "training SHA256 required")
             require(h["training_dataset_sha256"] == training_sha,
                     "head trained on unregistered dataset or contaminated split")
+            require(all(training_report.get(k) == h[k] for k in h),
+                    f"{arm}: training report contradicts declared budget")
             trainer.append(h)
         predictions[arm] = actual
     require(set(predictions) == set(ARMS), "candidate roster incomplete")

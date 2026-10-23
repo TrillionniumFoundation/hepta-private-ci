@@ -26,7 +26,8 @@ python3 qualification/neuron-model-bakeoff/run_laya.py \
   --dataset /approved/cases.jsonl \
   --checkpoint-dir /approved/checkpoints/laya-english \
   --weights-file /approved/checkpoints/laya-english/model.safetensors \
-  --weights-sha256 "$ACTUAL_SHA256" --host-id "$ACTUAL_HOST_ID" \
+  --weights-sha256 "$ACTUAL_SHA256" --calibration-file /approved/calibration/laya.json \
+  --host-id "$ACTUAL_HOST_ID" \
   --device cuda --confidence-min "$FROZEN_CALIBRATION_THRESHOLD" \
   --max-len 512 --head-max-len 256 \
   --output /evidence/laya-english.predictions.jsonl
@@ -36,7 +37,7 @@ This runner sends `state` and `question`/option criteria to the model but **neve
 
 For the two embedding models, `run_heads.py` supports `train`, `calibrate`, and `eval` with pre-staged locally audited SentenceTransformer checkpoints. **Both** use the same 256-dimensional fixed random projection and the same 257-parameter linear option-scoring head, batch size, step count, seed and optimizer schedule. Training uses **only** the train split, temperature and abstention fit **only** calibration, evaluation **only** test/future. The experimental Head is not Laya-compatible at the tensor level, and is not connected to production inference. `--reviewed-local-code` permits local third-party Python only after an external audit; it is disabled by default. The train stage writes a safe tensor `.npz`, calibration writes a separate immutable JSON file, and eval writes candidate prediction JSONL. Keep these separated for reproducibility. This is one *candidate experimental protocol*, not a claim of Pareto improvement.
 
-The JSONL dataset requires `case_id`, `group_id`, `split`, `state`, `question`, `labels` (ordered strings), `label`, `language`, `task_family`, `ood` (boolean), and optionally `criteria` (label-to-description map). Every split is mandatory; group IDs must not appear in multiple splits. The stage-3 head training manifest requires `steps`, `batch_size`, `examples_seen`, `seed`, `target_dim=256`, `optimizer_sha256`, and `training_dataset_sha256` computed over canonical sorted train rows. The Head *must not* read gold labels during eval.
+The JSONL dataset requires `case_id`, `group_id`, `split`, `state`, `question`, `labels` (ordered strings), `label`, `language`, `task_family`, `ood` (boolean), and optionally `criteria` (label-to-description map). Every split is mandatory; group IDs must not appear in multiple splits. Every prediction must bind its actual selected calibration SHA256; Encoder Head predictions also bind the trained Head SHA256. The stage-3 head training manifest requires `steps`, `batch_size`, `examples_seen`, `seed`, `target_dim=256`, `optimizer_sha256`, and `training_dataset_sha256` computed over canonical sorted train rows. The Head *must not* read gold labels during eval.
 
 ## Independent verifier / evidence format
 
@@ -49,7 +50,7 @@ python3 qualification/neuron-model-bakeoff/bakeoff.py \
   --output /offline/evaluation-report.json
 ```
 
-The manifest has `schema=hepta.neuron-model-bakeoff.v1`, `source_commit` (full Git SHA), `dataset` (path + SHA256), `models` (five entries with `arm`, `revision`, `license`, and SHA-bound `weights`, `tokenizer`, `runtime`, `predictions`), `workload` (SHA-bound JSONL) and `lifecycle` (SHA-bound JSON). Candidate `head_training` must have identical values for both embedding arms and exact training-split digest. All artifact paths must resolve under `--root`; absolute paths and `..` are prohibited. Evidence containing private task content must stay on authorized storage.
+The manifest has `schema=hepta.neuron-model-bakeoff.v1`, `source_commit` (full Git SHA), `dataset` (path + SHA256), `models` (five entries with `arm`, `revision`, `license`, and SHA-bound `weights`, `tokenizer`, `runtime`, `calibration`, `predictions`; Encoder arms also require SHA-bound `head_weights` and `training_report`, `workload` (SHA-bound JSONL) and `lifecycle` (SHA-bound JSON). Candidate `head_training` must have identical values for both embedding arms and exact training-split digest. All artifact paths must resolve under `--root`; absolute paths and `..` are prohibited. Evidence containing private task content must stay on authorized storage.
 
 Workload JSONL must contain 20 rows: for every arm and each logical cell count `64`, `256`, `1024`, `4096`, provide `active_cells`, `requests`, `throughput_per_sec`, `p95_ms`, `p99_ms`, `load_ms`, `peak_rss_bytes`, `host_id`, and `execution_kind="observed-real-model"`. The host-side collector must come from a real admitted Hepta worker. A fabricated `execution_kind` string or sample measurements do **not** prove genuine execution; the observer must verify target-host runtime provenance separately.
 

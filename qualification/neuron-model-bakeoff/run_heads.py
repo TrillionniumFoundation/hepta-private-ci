@@ -139,7 +139,10 @@ def main() -> int:
                 np.savez(output, weight=head.weight.detach().cpu().numpy(), bias=head.bias.detach().cpu().numpy(),
                          projection=projection)
             train_rows = sorted(rows, key=lambda r: r['case_id'])
+            optimizer_digest = hashlib.sha256(canonical({'optimizer': 'AdamW',
+                'lr': 0.001, 'weight_decay': 0.01, 'betas': [0.9, 0.999], 'eps': 1e-8})).hexdigest()
             report = {'stage': 'train', 'steps': args.steps, 'batch_size': args.batch_size,
+                      'optimizer_sha256': optimizer_digest,
                       'examples_seen': args.steps * args.batch_size, 'seed': args.seed,
                       'target_dim': args.target_dim, 'projection_seed': args.projection_seed,
                       'training_dataset_sha256': hashlib.sha256(canonical(train_rows)).hexdigest(),
@@ -190,6 +193,9 @@ def main() -> int:
                 config = json.loads(args.calibration_file.read_text())
                 if config['head_sha256'] != sha_file(args.head_file) or config['encoder_weights_sha256'] != args.weights_sha256:
                     raise ValueError('calibration artifact identity mismatch')
+                calibration_rows = sorted([r for r in data if r['split'] == 'calibration'], key=lambda r: r['case_id'])
+                if config['calibration_sha256'] != hashlib.sha256(canonical(calibration_rows)).hexdigest():
+                    raise ValueError('calibration split lineage mismatch')
                 observations = []
                 process = psutil.Process(os.getpid())
                 for row in rows:
@@ -211,7 +217,9 @@ def main() -> int:
                                          'abstained': bool(float(max(prob)) < float(config['threshold'])),
                                          'latency_ms': max(1e-6, elapsed), 'rss_bytes': process.memory_info().rss,
                                          'gpu_peak_bytes': None, 'host_id': args.host_id, 'device': args.device,
-                                         'model_weights_sha256': args.weights_sha256})
+                                         'model_weights_sha256': args.weights_sha256,
+                                         'head_sha256': sha_file(args.head_file),
+                                         'calibration_sha256': sha_file(args.calibration_file)})
                 # End-to-end local sequential inference includes the encoder, projection and head.
                 # Queue age, loading, host GPU device memory and multi-cell contention are
                 # still separate workload measurements and must never be inferred here.

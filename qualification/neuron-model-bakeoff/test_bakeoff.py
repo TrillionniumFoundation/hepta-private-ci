@@ -40,17 +40,28 @@ class BakeoffContractTests(unittest.TestCase):
             weights = self.put(arm + ".weights", ("real-weights-placeholder:" + arm).encode())
             tokenizer = self.put(arm + ".tokenizer", ("real-tokenizer-placeholder:" + arm).encode())
             runtime = self.put(arm + ".runtime", ("real-runtime-placeholder:" + arm).encode())
+            calibration = self.put(arm + ".calibration", ("calibration-fixture:" + arm).encode())
+            head = self.put(arm + ".head", ("head-fixture:" + arm).encode()) if arm.endswith("-head") else None
             obs = [{"case_id": r["case_id"], "probabilities": {"a": 0.8, "b": 0.2}
                     if r["label"] == "a" else {"a": 0.3, "b": 0.7},
                     "abstained": False, "latency_ms": 1.5, "rss_bytes": 12345678,
                     "gpu_peak_bytes": None, "host_id": "test-host", "device": "cpu",
-                    "model_weights_sha256": weights["sha256"]}
+                    "model_weights_sha256": weights["sha256"],
+                    "calibration_sha256": calibration["sha256"],
+                    **({"head_sha256": head["sha256"]} if head else {})}
                    for r in self.rows if r["split"] in ("test", "future")]
             spec = {"arm": arm, "revision": "b" * 40, "license": "fixture-only",
                     "weights": weights, "tokenizer": tokenizer, "runtime": runtime,
+                    "calibration": calibration,
                     "predictions": self.put_jsonl(arm + ".predictions.jsonl", obs)}
-            if arm.endswith("-head"):
+            if head is not None:
+                spec["head_weights"] = head
                 spec["head_training"] = dict(self.training)
+                training_report = dict(self.training)
+                training_report.update({"head_sha256": head["sha256"],
+                                        "encoder_weights_sha256": weights["sha256"]})
+                spec["training_report"] = self.put(arm + ".train.json",
+                    bakeoff.canonical(training_report))
             self.manifest["models"].append(spec)
         workloads = [{"arm": arm, "logical_cells": scale, "active_cells": min(scale, 16),
                       "requests": 256, "throughput_per_sec": 50., "p95_ms": 10., "p99_ms": 20.,
@@ -127,9 +138,30 @@ class BakeoffContractTests(unittest.TestCase):
         with self.assertRaisesRegex(bakeoff.EvidenceError, "probability keys"):
             self.run_eval()
 
+    def test_calibration_binding_drift_fails(self):
+        spec = self.manifest["models"][0]
+        data = bakeoff.records(self.root / spec["predictions"]["path"])
+        data[0]["calibration_sha256"] = "f" * 64
+        spec["predictions"] = self.put_jsonl(spec["predictions"]["path"], data)
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "observed calibration"):
+            self.run_eval()
+
+    def test_trained_head_binding_drift_fails(self):
+        spec = self.manifest["models"][-1]
+        data = bakeoff.records(self.root / spec["predictions"]["path"])
+        data[0]["head_sha256"] = "f" * 64
+        spec["predictions"] = self.put_jsonl(spec["predictions"]["path"], data)
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "observed head"):
+            self.run_eval()
+
+    def test_missing_actual_lifecycle_receipt_fails(self):
+        (self.root / "signed_load.receipt").unlink()
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "artifact is missing"):
+            self.run_eval()
+
     def test_training_budget_drift_fails(self):
         self.manifest["models"][-1]["head_training"]["steps"] = 21
-        with self.assertRaisesRegex(bakeoff.EvidenceError, "identical budgets"):
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "training report|identical budgets"):
             self.run_eval()
 
     def test_test_set_not_admitted_as_train_fails(self):

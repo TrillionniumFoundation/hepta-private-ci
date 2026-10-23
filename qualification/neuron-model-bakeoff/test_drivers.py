@@ -28,7 +28,8 @@ class DriverContractTests(unittest.TestCase):
     def test_laya_abstention_and_gpu_unknown(self):
         result = result_row(self.row, {"probabilities": {"a": .65, "b": .35}},
                             elapsed_ms=4.5, rss=12345, host_id="local", device="cpu",
-                            weights_sha256="a" * 64, threshold=.8, gpu_allocator_peak=None)
+                            weights_sha256="a" * 64, calibration_sha256="b" * 64,
+                            threshold=.8, gpu_allocator_peak=None)
         self.assertTrue(result["abstained"])
         self.assertIsNone(result["gpu_peak_bytes"])
         self.assertEqual(result["model_weights_sha256"], "a" * 64)
@@ -37,6 +38,7 @@ class DriverContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "schema"):
             result_row(self.row, {"probabilities": {"a": 1.0}}, elapsed_ms=2,
                        rss=123, host_id="local", device="cpu", weights_sha256="a" * 64,
+                       calibration_sha256="b" * 64,
                        threshold=.5, gpu_allocator_peak=None)
 
     def test_encoder_prompt_labels_mismatch_rejected(self):

@@ -35,7 +35,8 @@ def choice_question(row: dict) -> dict:
 
 
 def result_row(row: dict, answer: dict, *, elapsed_ms: float, rss: int, host_id: str,
-               device: str, weights_sha256: str, threshold: float, gpu_allocator_peak: int | None) -> dict:
+               device: str, weights_sha256: str, calibration_sha256: str,
+               threshold: float, gpu_allocator_peak: int | None) -> dict:
     probs = answer["probabilities"]
     if set(probs) != set(row["labels"]):
         raise ValueError("Laya returned wrong choice schema")
@@ -44,7 +45,8 @@ def result_row(row: dict, answer: dict, *, elapsed_ms: float, rss: int, host_id:
             "abstained": bool(confidence < threshold), "latency_ms": elapsed_ms,
             "rss_bytes": rss, "gpu_peak_bytes": None,
             "gpu_allocator_peak_bytes": gpu_allocator_peak, "host_id": host_id,
-            "device": device, "model_weights_sha256": weights_sha256}
+            "device": device, "model_weights_sha256": weights_sha256,
+            "calibration_sha256": calibration_sha256}
 
 
 def main() -> int:
@@ -53,6 +55,8 @@ def main() -> int:
     parser.add_argument("--checkpoint-dir", type=Path, required=True)
     parser.add_argument("--weights-file", type=Path, required=True)
     parser.add_argument("--weights-sha256", required=True)
+    parser.add_argument("--calibration-file", type=Path, required=True,
+                        help="pinned, separately fitted Laya SDK temperature-calibration JSON")
     parser.add_argument("--host-id", required=True)
     parser.add_argument("--device", choices=["cpu", "cuda", "mps", "xpu"], required=True)
     parser.add_argument("--confidence-min", type=float, required=True,
@@ -70,13 +74,15 @@ def main() -> int:
             raise ValueError("weights must be within checkpoint directory")
         if file_sha(weight_path) != args.weights_sha256:
             raise ValueError("selected weights SHA256 mismatch")
+        calibration = args.calibration_file.resolve(strict=True)
+        calibration_sha256 = file_sha(calibration)
         if not args.host_id or args.output.exists():
             raise ValueError("explicit host and new output path are required; refuse overwrite")
         # Heavy optional dependencies are deliberately imported after exact-file checks.
         import laya
         import psutil
         import torch
-        agent = laya.load(str(root), device=args.device, backend="eager")
+        agent = laya.load(str(root), device=args.device, backend="eager", calibration=str(calibration))
         process = psutil.Process(os.getpid())
         if args.device == "cuda":
             torch.cuda.synchronize()
@@ -103,7 +109,8 @@ def main() -> int:
                 observation = result_row(
                     row, prediction["answers"]["decision"], elapsed_ms=elapsed,
                     rss=process.memory_info().rss, host_id=args.host_id, device=args.device,
-                    weights_sha256=args.weights_sha256, threshold=args.confidence_min,
+                    weights_sha256=args.weights_sha256, calibration_sha256=calibration_sha256,
+                    threshold=args.confidence_min,
                     gpu_allocator_peak=allocated)
                 output.write(json.dumps(observation, ensure_ascii=False, allow_nan=False) + "\n")
                 output.flush()
