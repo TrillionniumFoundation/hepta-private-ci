@@ -6,7 +6,7 @@ import numpy as np
 
 from content_control.refiner import Capture, PATHS, Refiner
 from content_control.run import inner_split, service
-from independent.accounting import BudgetExceeded, WorkLedger
+from independent.accounting import BudgetExceeded, WorkLedger, counted_model_class
 from independent.learning import CachedObjective
 from model import JointModel, softmax
 
@@ -70,6 +70,14 @@ class RefinerTests(unittest.TestCase):
             "sources": {"a": {"index": 0}, "b": {"index": 1}, "c": {"index": 4}, "d": {"index": 7}}}
         fit, inner = inner_split(data)
         self.assertEqual((fit["source_ids"], inner["source_ids"]), (["b", "b", "d", "d"], ["a", "a", "c", "c"]))
+
+    def test_explicit_base_clone_removes_automatic_accounting_wrapper(self):
+        counted = counted_model_class(JointModel)(202, 12, 192, ledger=WorkLedger("decoder"))
+        plain = JointModel.clone(counted)
+        self.assertFalse(hasattr(plain, "ledger"))
+        CachedObjective("S", plain).step(plain, np.zeros((1, 202)), np.array([0]), .003,
+                                         ledger=WorkLedger("pretrain"))
+        self.assertEqual(plain.updates, 1)
 
     def test_external_service_needs_no_labels_and_charges_real_png(self):
         refiner = Refiner()

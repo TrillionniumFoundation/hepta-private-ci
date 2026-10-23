@@ -126,7 +126,7 @@ def build(out, freeze):
         decoder = Counted(202, 12, 192, hidden=32, seed=seed, ledger=shared)
         with shared.phase("decoder"):
             decoder.fit_decoder(templates(), steps=300)
-        model = decoder.clone()
+        model = JointModel.clone(decoder)
         objective, rng = CachedObjective("S", model), np.random.default_rng(seed + 1000)
         for _ in range(500):
             idx = rng.integers(len(fit["labels"]), size=64)
@@ -163,7 +163,6 @@ def build(out, freeze):
         PROGRESS[arm] = ledger
         costs[arm] = {"shared_cpu": common_cpu, "feature_cpu": feature_cpu if arm.endswith("_R") else 0,
                       "active_cpu": 0.0}
-    phase_start = cpu_clock()
     status = 0
     try:
         for round_index, (seed, lr_index) in enumerate((s, j) for s in SEEDS for j in range(3)):
@@ -262,7 +261,7 @@ def build(out, freeze):
                     "decoder_corruption_drop": float((metrics["task_utility"] - bad_metrics["task_utility"]).mean()),
                     "reload_exact": True})
                 costs[arm]["active_cpu"] += cpu_clock() - begin
-        scheduler = max(0.0, cpu_clock() - phase_start - sum(v["active_cpu"] for v in costs.values()))
+        scheduler = max(0.0, cpu_clock() - common_cpu - feature_cpu - sum(v["active_cpu"] for v in costs.values()))
         for arm in ARMS:
             costs[arm]["scheduler_cpu"] = scheduler
             costs[arm]["complete_cpu"] = sum(v for k, v in costs[arm].items() if k != "complete_cpu")

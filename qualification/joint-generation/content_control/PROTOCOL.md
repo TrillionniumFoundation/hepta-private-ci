@@ -140,3 +140,18 @@ This code implements no diffusion, stochastic control theorem, learned halting,
 NDU superiority, natural-image model, AV generation or open-world capability.
 The separately considered natural-gradient literature was read but no such
 candidate was implemented or trained. Exactly one new refiner is studied.
+
+## Pre-score implementation repair v2
+
+The first build at source/freeze `512b0182a7` exited1 before any base content
+update, candidate, validation score or selected model. Its bound wrapper's
+`clone()` retained instrumentation; CachedObjective correctly refused double
+accounting. All data, compiled library, 300 decoder updates (37,616,283 units),
+partial ledger, traceback and original 1.554477821 CPU-second receipt remain in
+`runs/content-control-train-r1-20261023*`. This is additional failed R&D cost.
+The repair calls the existing plain JointModel clone explicitly and adds a
+hand-fixture regression. It also attributes ledger/scheduler setup CPU to every
+arm, closing a pre-score bookkeeping gap. Objectives, architecture, data/split,
+all candidate counts, selections, caps and thresholds remain as registered.
+No score informed this repair; a new committed source freeze must precede the
+replacement build. No score-based rerun is permitted.
