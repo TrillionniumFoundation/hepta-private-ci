@@ -22,7 +22,7 @@ def sample():
         "input_digest": h("2"), "policy_digest": h("3"),
         "source_frontier_digest": h("4"), "candidate_ids": ["cell.memory", "cell.logic"],
         "allowed_actions": ["RECALL", "VERIFY", "STOP", "ABSTAIN"],
-        "hard_cost_cap": 10, "max_depth": 8,
+        "hard_cost_cap": 10, "max_depth": 8, "emission_reserve": 1,
         "required_outputs": ["answer"],
     }
     pre_sha = seal_predecision(pre)["predecision_digest"]
@@ -35,14 +35,14 @@ def sample():
                    {"index": 2, "action": "STOP", "candidate_id": "cell.logic",
                     "cost": 0, "observation_digest": h("7"), "status": "COMPLETE"},
                ],
-               "outputs": [{"kind": "answer", "digest": h("8")}],
+               "outputs": [{"kind": "answer", "digest": h("8"), "cost": 1}],
                "terminal_action": "STOP"}
     exe_sha = seal_execution(pre, execute)["execution_digest"]
     post = {"phase": "POSTSCORE", "pre_digest": pre_sha,
             "execution_digest": exe_sha, "evaluator_id": "reviewer.1",
             "outcome_digest": h("9"), "independent_evidence_digest": h("a"),
             "quality": 0.8, "severe": False, "completed": True,
-            "reported_cost": 5}
+            "reported_cost": 6}
     return pre, execute, post
 
 
@@ -53,7 +53,7 @@ class CausalReceiptTests(unittest.TestCase):
         self.assertEqual(a, seal_predecision(pre))
         self.assertEqual(b, seal_execution(pre, exe))
         self.assertEqual(c, seal_postscore(pre, exe, post))
-        self.assertEqual(b["physical_cost_claim"], 5)
+        self.assertEqual(b["physical_cost_claim"], 6)
         self.assertTrue(b["complete_outputs"])
         self.assertFalse(c["production_promotion_authorized"])
         self.assertEqual(c["authority"], "DENY_ALL")
@@ -99,7 +99,7 @@ class CausalReceiptTests(unittest.TestCase):
         exe["steps"][1]["status"] = "FAILED"
         seal = seal_execution(pre, exe)
         self.assertFalse(seal["complete_outputs"])
-        self.assertEqual(seal["physical_cost_claim"], 5)
+        self.assertEqual(seal["physical_cost_claim"], 6)
         post.update(execution_digest=seal["execution_digest"], quality=0.0,
                     severe=True, completed=False)
         self.assertFalse(seal_postscore(pre, exe, post)["completed"])
@@ -131,7 +131,7 @@ class CausalReceiptTests(unittest.TestCase):
         post["execution_digest"] = sealed["execution_digest"]
         with self.assertRaises(ReceiptError):
             seal_postscore(pre, exe, post)
-        post.update(completed=False, quality=0.0, severe=True)
+        post.update(completed=False, quality=0.0, severe=True, reported_cost=5)
         self.assertFalse(seal_postscore(pre, exe, post)["completed"])
 
     def test_abstain_is_explicit_and_never_emits_output(self):
@@ -145,7 +145,7 @@ class CausalReceiptTests(unittest.TestCase):
 
     def test_untrusted_cost_mismatch_rejected(self):
         pre, exe, post = sample()
-        post["reported_cost"] = 4
+        post["reported_cost"] = 5
         with self.assertRaises(ReceiptError):
             seal_postscore(pre, exe, post)
 
@@ -164,6 +164,40 @@ class CausalReceiptTests(unittest.TestCase):
         exe["outputs"][0]["digest"] = h("b")
         with self.assertRaises(ReceiptError):
             seal_postscore(pre, exe, post)
+
+    def test_output_emission_is_paid(self):
+        pre, exe, post = sample()
+        self.assertEqual(seal_execution(pre, exe)["physical_cost_claim"], 6)
+        self.assertEqual(seal_postscore(pre, exe, post)["cost_units"], 6)
+
+    def test_zero_cost_output_rejected(self):
+        pre, exe, _ = sample()
+        exe["outputs"][0]["cost"] = 0
+        with self.assertRaises(ReceiptError):
+            seal_execution(pre, exe)
+
+    def test_output_reserve_cannot_be_spent_on_reasoning(self):
+        pre, exe, _ = sample()
+        pre["hard_cost_cap"] = 5
+        exe["pre_digest"] = seal_predecision(pre)["predecision_digest"]
+        with self.assertRaises(ReceiptError):
+            seal_execution(pre, exe)
+
+    def test_decoder_cost_cannot_exceed_remaining_budget(self):
+        pre, exe, _ = sample()
+        exe["outputs"][0]["cost"] = 6
+        with self.assertRaises(ReceiptError):
+            seal_execution(pre, exe)
+
+    def test_reserved_output_cost_is_preregistered_and_sufficient(self):
+        pre, _, _ = sample()
+        pre["emission_reserve"] = 0
+        with self.assertRaises(ReceiptError):
+            seal_predecision(pre)
+        pre["emission_reserve"] = 2
+        pre["required_outputs"] = ["answer", "audio", "video"]
+        with self.assertRaises(ReceiptError):
+            seal_predecision(pre)
 
     def test_strict_json_rejects_ambiguous_keys_and_nan(self):
         with self.assertRaises(ReceiptError):
