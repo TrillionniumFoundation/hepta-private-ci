@@ -48,7 +48,9 @@ export class MemoryBrowserOperationJournal {
     const key = keyOf(snapshot);
     const prior = this.#records.get(key);
     if (prior && prior.requestDigest !== snapshot.requestDigest) {
-      throw new TypeError("journal operation identity was reused with changed semantics");
+      throw new TypeError(
+        "journal operation identity was reused with changed semantics",
+      );
     }
     this.#records.set(key, snapshot);
   }
@@ -57,15 +59,23 @@ export class MemoryBrowserOperationJournal {
     const snapshot = freezeRecord(requireRecord(record, "observation record"));
     const key = keyOf(snapshot);
     const prior = this.#records.get(key);
-    if (!prior) throw new TypeError("journal observation has no dispatch intent");
-    if (prior.requestDigest !== snapshot.requestDigest || prior.semanticDigest !== snapshot.semanticDigest) {
+    if (!prior)
+      throw new TypeError("journal observation has no dispatch intent");
+    if (
+      prior.requestDigest !== snapshot.requestDigest ||
+      prior.semanticDigest !== snapshot.semanticDigest
+    ) {
       throw new TypeError("journal observation changed immutable semantics");
     }
     this.#records.set(key, freezeRecord({ ...prior, ...snapshot }));
   }
 
   async getOperation(profileId, generation, operationId) {
-    return this.#records.get(`${profileId}\u0000${generation}\u0000${operationId}`) ?? null;
+    return (
+      this.#records.get(
+        `${profileId}\u0000${generation}\u0000${operationId}`,
+      ) ?? null
+    );
   }
 
   async listOperations(profileId, generation) {
@@ -89,40 +99,66 @@ export class FileBrowserOperationJournal {
 
   async recordDispatch(record) {
     return this.#serialize(async () => {
-      const prior = await this.#getOperationUnlocked(record.profileId, record.generation, record.operationId);
+      const prior = await this.#getOperationUnlocked(
+        record.profileId,
+        record.generation,
+        record.operationId,
+      );
       if (prior && prior.requestDigest !== record.requestDigest) {
-        throw new TypeError("journal operation identity was reused with changed semantics");
+        throw new TypeError(
+          "journal operation identity was reused with changed semantics",
+        );
       }
-      await this.#append({ type: "dispatch", record: requireRecord(record, "dispatch record") });
+      await this.#append({
+        type: "dispatch",
+        record: requireRecord(record, "dispatch record"),
+      });
     });
   }
 
   async recordObservation(record) {
     return this.#serialize(async () => {
-      const prior = await this.#getOperationUnlocked(record.profileId, record.generation, record.operationId);
-      if (!prior) throw new TypeError("journal observation has no dispatch intent");
-      if (prior.requestDigest !== record.requestDigest || prior.semanticDigest !== record.semanticDigest) {
+      const prior = await this.#getOperationUnlocked(
+        record.profileId,
+        record.generation,
+        record.operationId,
+      );
+      if (!prior)
+        throw new TypeError("journal observation has no dispatch intent");
+      if (
+        prior.requestDigest !== record.requestDigest ||
+        prior.semanticDigest !== record.semanticDigest
+      ) {
         throw new TypeError("journal observation changed immutable semantics");
       }
-      await this.#append({ type: "observation", record: requireRecord(record, "observation record") });
+      await this.#append({
+        type: "observation",
+        record: requireRecord(record, "observation record"),
+      });
     });
   }
 
   async getOperation(profileId, generation, operationId) {
-    return this.#serialize(() => this.#getOperationUnlocked(profileId, generation, operationId));
+    return this.#serialize(() =>
+      this.#getOperationUnlocked(profileId, generation, operationId),
+    );
   }
 
   async listOperations(profileId, generation) {
     return this.#serialize(async () => {
       const records = await this.#load();
       const prefix = `${profileId}\u0000${generation}\u0000`;
-      return [...records.entries()].filter(([key]) => key.startsWith(prefix)).map(([, value]) => value);
+      return [...records.entries()]
+        .filter(([key]) => key.startsWith(prefix))
+        .map(([, value]) => value);
     });
   }
 
   async #getOperationUnlocked(profileId, generation, operationId) {
     const records = await this.#load();
-    return records.get(`${profileId}\u0000${generation}\u0000${operationId}`) ?? null;
+    return (
+      records.get(`${profileId}\u0000${generation}\u0000${operationId}`) ?? null
+    );
   }
 
   async #load() {
@@ -161,7 +197,11 @@ export class FileBrowserOperationJournal {
       } catch {
         throw new TypeError("browser journal contains malformed JSON");
       }
-      if (envelope.schema !== SCHEMA || envelope.version !== 1 || typeof envelope.checksum !== "string") {
+      if (
+        envelope.schema !== SCHEMA ||
+        envelope.version !== 1 ||
+        typeof envelope.checksum !== "string"
+      ) {
         throw new TypeError("browser journal envelope is unsupported");
       }
       const unsigned = {
@@ -173,17 +213,25 @@ export class FileBrowserOperationJournal {
       if (checksum(unsigned) !== envelope.checksum) {
         throw new TypeError("browser journal checksum mismatch");
       }
-      const record = freezeRecord(requireRecord(envelope.record, "journal record"));
+      const record = freezeRecord(
+        requireRecord(envelope.record, "journal record"),
+      );
       const key = keyOf(record);
       const prior = records.get(key);
       if (envelope.type === "dispatch") {
         if (prior && prior.requestDigest !== record.requestDigest) {
-          throw new TypeError("browser journal contains conflicting dispatch identity");
+          throw new TypeError(
+            "browser journal contains conflicting dispatch identity",
+          );
         }
         records.set(key, record);
       } else if (envelope.type === "observation") {
-        if (!prior) throw new TypeError("browser journal observation precedes dispatch");
-        if (prior.requestDigest !== record.requestDigest || prior.semanticDigest !== record.semanticDigest) {
+        if (!prior)
+          throw new TypeError("browser journal observation precedes dispatch");
+        if (
+          prior.requestDigest !== record.requestDigest ||
+          prior.semanticDigest !== record.semanticDigest
+        ) {
           throw new TypeError("browser journal observation changed semantics");
         }
         records.set(key, freezeRecord({ ...prior, ...record }));
@@ -196,14 +244,16 @@ export class FileBrowserOperationJournal {
 
   async #append({ type, record }) {
     const unsigned = { schema: SCHEMA, version: 1, type, record };
-    const line = canonical({ ...unsigned, checksum: checksum(unsigned) }) + "\n";
+    const line =
+      canonical({ ...unsigned, checksum: checksum(unsigned) }) + "\n";
     const lineBytes = UTF8.encode(line).byteLength;
     if (lineBytes > MAX_LINE_BYTES) {
       throw new TypeError("browser journal record exceeds line limit");
     }
     await ensureCanonicalPrivateParent(this.#path);
     const noFollow = constants.O_NOFOLLOW ?? 0;
-    const flags = constants.O_WRONLY | constants.O_APPEND | constants.O_CREAT | noFollow;
+    const flags =
+      constants.O_WRONLY | constants.O_APPEND | constants.O_CREAT | noFollow;
     const handle = await open(this.#path, flags, 0o600);
     try {
       const info = await handle.stat();
