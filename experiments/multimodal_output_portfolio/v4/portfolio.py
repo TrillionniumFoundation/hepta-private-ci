@@ -8,6 +8,7 @@ There are no hidden truth labels or future innovations in policy inputs.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from decimal import Context, Decimal, localcontext
 from functools import lru_cache
 import hashlib
 import json
@@ -186,30 +187,41 @@ def conditional_ce(values: tuple[float, ...],
         raise ValueError("invalid conditional risk law")
     if risk_aversion == 0:
         return math.fsum(p * v for p, v in zip(probabilities, values))
-    # Stabilize only on the conditional support. A zero-probability low
-    # outlier is impossible, and must not force all supported terms to
-    # underflow to zero (or change the policy's value).
     supported = [(p, v) for p, v in zip(probabilities, values) if p > 0]
     anchor = min(v for _, v in supported)
-    # With small positive gamma, rounding log(1 + O(gamma)) *before*
-    # division by gamma can materially change finite Bellman action ranks.
-    # Restrict compensated arithmetic to the near-neutral limit, leaving
-    # the frozen ordinary-risk evaluation path bit-for-bit unchanged.
     span = max(v for _, v in supported) - anchor
-    # A tiny coefficient alone does not imply negligible entropic risk:
-    # payoff scales may be inversely large. Only replace by the mean when
-    # the risk-weighted support span is numerically indistinguishable from 0.
-    scaled_span = risk_aversion * span if math.isfinite(span) else math.inf
-    if scaled_span < 1e-250:
-        total = math.fsum(p for p, _ in supported)
-        return math.fsum(v * (p / total) for p, v in supported)
-    if scaled_span <= 1e-4:
-        total = math.fsum(p for p, _ in supported)
-        delta = math.fsum(
-            (p / total) * math.expm1(-risk_aversion * (v - anchor))
-            for p, v in supported
-        )
-        return anchor - math.log1p(delta) / risk_aversion
+    scaled_span = risk_aversion * span
+    if (not math.isfinite(span) or scaled_span <= 1e-4
+        or min(p for p, _ in supported) < 1e-16):
+        # Rare supported outcomes also need extra precision: a rounded
+        # moment can lose their contribution even at ordinary scaled risk.
+        # Binary subtraction may overflow before multiplication by tiny gamma.
+        # Even a safe scaled difference is insufficient near neutrality: the
+        # anchor subtraction can erase a representable risk premium. Evaluate
+        # the same entropic law at precision derived from its dimensionless
+        # span; do not replace positive risk by a mean. Decimal.from_float
+        # preserves the actual binary inputs, including subnormal gamma.
+        with localcontext(Context(prec=800)) as ctx:
+            risk = Decimal.from_float(risk_aversion)
+            support = [(Decimal.from_float(p), Decimal.from_float(v))
+                       for p, v in zip(probabilities, values) if p > 0]
+            origin = min(v for _, v in support)
+            width = risk * (max(v for _, v in support) - origin)
+            if not width:
+                return float(origin)
+            # Resolve both a second-order risk premium and the smallest
+            # positive mass, even when either is subnormal. Otherwise a rare
+            # finite outcome can disappear during the anchor cancellation.
+            mass_digits = -min(p.adjusted() for p, _ in support)
+            ctx.prec = max(80, 80 - 2 * width.adjusted()) + mass_digits
+            # Preserve the existing mass convention: near-neutral inputs
+            # normalize admitted roundoff; ordinary risk uses raw mass. A
+            # global convention change requires separate policy validation.
+            mass = (sum(p for p, _ in support)
+                    if width <= Decimal("1e-4") else Decimal(1))
+            moment = sum(p * (-risk * (v - origin)).exp()
+                         for p, v in support) / mass
+            return float(origin - moment.ln() / risk)
     scaled = math.fsum(p * math.exp(-risk_aversion * (v - anchor))
                        for p, v in supported)
     if scaled <= 0:
