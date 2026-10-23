@@ -5,6 +5,18 @@ native `runtime.codex` App Server caller. It is repository source design, not
 proof of a deployed approval service, target-host trust, activation, promotion,
 or release.
 
+The existing PN3/PN4 work also has an authority-free
+`OrdinaryCpuRegistration` prerequisite. It derives one exact bounded payload and
+the complete canonical `OperationIntentV1` from trusted host metadata: subject,
+scope, policy generation, source/profile/worker identity, fixed program/arguments
+and an observer deadline of at most eight seconds. Requests carry that fixed
+payload rather than an executable path or argument list. Registration and
+semantic validation do not enter a worker or consume FinalUse authority. The
+source digest is a declared binding; deployment must separately authenticate the
+immutable executable. Destination persistence, actual Child ownership, the signed
+source route and the original U/C/A resource qualification remain later required
+parts of the same PN3/PN4 implementation.
+
 ## 1. Ownership and effect boundary
 
 The named caller in
