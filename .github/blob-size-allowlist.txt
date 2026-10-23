@@ -8,3 +8,18 @@ codex-rs/app-server-protocol/schema/json/codex_app_server_protocol.v2.schemas.js
 codex-rs/tui/tests/fixtures/oss-story.jsonl
 codex-rs/tui_app_server/tests/fixtures/oss-story.jsonl
 codex-rs/tui/src/app.rs
+
+# Five immutable, SHA-256-inventoried MemoryCell research evidence files.
+# Exact paths only; preserving source features and full prediction ledgers is
+# required for reproducible equal-budget/head-call and process-fault audits.
+# Limits remain unchanged for every other file. See each evidence/inventory.json.
+# 1581490 bytes; sha256 b1d65d43af0ea80cf8ec0e581b08c185bfd96fe1dbef68a07f333953963f53b7
+qa/stem-bakeoff/evidence/20261022-real-cell-evolution/features.npz
+# 974144 bytes; sha256 fa4aced018c45fd214d426bd5eec91a271f39151cf92e2083519fa0aaab933a3
+qa/stem-bakeoff/evidence/20261022-real-cell-evolution/prediction_ledger.json.gz
+# 689179 bytes; sha256 df8b3d5fbeecb4511c285c17f3f56543e5e3f9cb87eaa2e9c5fea36383110cca
+qa/stem-bakeoff/evidence/20261022-real-cell-router/prediction_ledger.json.gz
+# 985032 bytes; sha256 18003059b331c7fdeb3e4ff6f5f2f380fe98d717c9a866e476e5f6b3b647847e
+qa/stem-bakeoff/evidence/20261022-real-local-process-v2/prediction_ledger.json.gz
+# 985038 bytes; sha256 a9251c424e18e2f5667fc52c340e61d5188b4f1c795ed0676e60d56d65fcf4ad
+qa/stem-bakeoff/evidence/20261022-real-local-process/prediction_ledger.json.gz

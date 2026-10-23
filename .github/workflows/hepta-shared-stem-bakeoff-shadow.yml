@@ -40,6 +40,7 @@ jobs:
           python3 -m unittest discover -s qa/stem-bakeoff -p 'test_teacher_snapshot.py' -v
           python3 -m unittest discover -s qa/stem-bakeoff -p 'test_teacher_forward.py' -v
           python3 -m unittest discover -s qa/stem-bakeoff -p 'test_teacher_media_seal.py' -v
+          python3 -m unittest discover -s qa/stem-bakeoff -p 'test_memory_retrieval_probe.py' -v
           python3 -m py_compile qa/stem-bakeoff/stem_bakeoff.py qa/stem-bakeoff/evidence_gate.py qa/stem-bakeoff/teacher_snapshot.py qa/stem-bakeoff/teacher_forward.py qa/stem-bakeoff/teacher_media_seal.py qa/stem-bakeoff/test_teacher_media_seal.py qa/stem-bakeoff/feature_shard.py qa/stem-bakeoff/offline_shard_distill.py qa/stem-bakeoff/test_offline_shard_distill.py
       - name: Confirm source tree unchanged
         if: always()
@@ -82,6 +83,13 @@ jobs:
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_scale_probe.py' -v
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_feature_bundle.py' -v
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_cell_head_training.py' -v
+          "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_cell_router_training.py' -v
+          "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_cell_evolution.py' -v
+          "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_cell_process_inference.py' -v
+          "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_shared_student_training.py' -v
+          "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_procedure_replay.py' -v
+          "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_procedure_native_export.py' -v
+          "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_procedure_replay_verify.py' -v
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_real*.py' -v
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" qa/stem-bakeoff/scale_probe.py --repeats 2 > "$RUNNER_TEMP/stem-scale-probe.json"
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -c 'import json,sys; r=json.load(open(sys.argv[1])); assert [x["cells"] for x in r["measurements"]] == [1,8,64,256,1024,4096]; assert all(x["module_forward_hook_calls"] == 2 and x["owner_forward_calls"] == 2 for x in r["measurements"]); assert r["may_satisfy_real_model_bakeoff_gate"] is False; assert r["production_activation_allowed"] is False' "$RUNNER_TEMP/stem-scale-probe.json"
