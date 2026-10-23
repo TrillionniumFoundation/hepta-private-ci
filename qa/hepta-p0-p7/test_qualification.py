@@ -98,6 +98,45 @@ class QualificationTests(unittest.TestCase):
         self.assertFalse(receipt["model_promotion_authorized"])
         self.assertEqual(set(receipt["stage_status"].values()), {"HOLD_NO_GO"})
 
+    def test_128_distinct_files_from_one_original_group_do_not_qualify(self):
+        # Every file has unique bytes/hash, yet all heldout frames are
+        # derived from one declared recording. Before the fix the gate
+        # incorrectly treated these as 128 independent original sources.
+        manifest = {"sources": [dict(s) for s in self.sources["sources"]]}
+        for source in manifest["sources"]:
+            if source["split"] == "test":
+                source["original_group"] = "one-original-recording"
+        with self.assertRaisesRegex(
+                EvidenceError, "128 distinct declared original heldout groups"):
+            validate_sources(self.root, manifest, self.history)
+
+    def test_extra_derived_view_does_not_inflate_source_group_count(self):
+        # A second view of an existing original group is allowed, but counts
+        # as a FILE, not an additional independent heldout group.
+        original = next(s for s in self.sources["sources"]
+                        if s["source_id"] == "test:0")
+        payload = b"second independently hashed view of the same original"
+        path = "inputs/test_derived_view.bin"
+        (self.root / path).write_bytes(payload)
+        derived = dict(original, source_id="test:derived", path=path,
+                       source_sha256=digest(payload))
+        manifest = {"sources": self.sources["sources"] + [derived]}
+        by_id, counts = validate_sources(self.root, manifest, self.history)
+        self.assertEqual(counts["test"], 129)
+        original_rows = [r for r in self.records if r["source_id"] == "test:0"]
+        derived_rows = [dict(r, source_id=derived["source_id"],
+                             source_sha256=derived["source_sha256"])
+                        for r in original_rows]
+        for row in derived_rows:
+            validate_episode(self.root, row, by_id, self.protocol)
+        report = report_status(
+            by_id, self.protocol, self.records + derived_rows)
+        self.assertEqual(report["heldout_source_files"], 129)
+        self.assertEqual(report["source_groups"], 128)
+        self.assertFalse(report["declared_source_group_provenance_verified"])
+        self.assertFalse(report["independent_source_clustered_inference_verified"])
+        self.assertFalse(report["model_promotion_authorized"])
+
     def test_source_leakage_fails(self):
         sources = {"sources":[dict(x) for x in self.sources["sources"]]}
         sources["sources"][-1]["source_sha256"] = sources["sources"][0]["source_sha256"]
