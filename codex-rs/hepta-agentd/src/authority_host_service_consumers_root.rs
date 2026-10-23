@@ -76,6 +76,9 @@ pub(super) fn create_local(runtime: &Path) {
     let path = std::ffi::CString::new(local.as_os_str().as_encoded_bytes()).unwrap();
     // SAFETY: root-created, NUL-free fixture directory; no caller pointer remains.
     assert_eq!(unsafe { libc::chown(path.as_ptr(), 60001, 60001) }, 0);
+    // The mode02710 runtime passes SGID to subdirectories even with mode0700.
+    // Directory chown preserves it; satisfy the original exact-mode contract.
+    std::fs::set_permissions(&local, std::fs::Permissions::from_mode(0o700)).unwrap();
 }
 
 pub(super) fn release(
