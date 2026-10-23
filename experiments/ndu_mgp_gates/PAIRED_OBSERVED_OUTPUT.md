@@ -10,7 +10,7 @@
 - Seven required arms: NDU, NoChange, validation-locked static, MoE, risk-neutral MPC, fixed-risk MPC and equal-actuator learned free Controller. Identical public inputs, model, decoder, objective and actuator digests across arms at every paired world.
 - Per-draw loss, factual quality, ambiguity and inconsistency, with an immutable raw-output or failure witness identifier; explicit failed/overbudget draw rows remain in the denominator with preregistered maximum loss, zero quality, maximum ambiguity/inconsistency. Digests do not authenticate raw media.
 - Measured physical cost ledger per arm/world: encoder, backbone, Cell, controller, decoder, verifier and amortized training. All components must be finite/nonnegative and sum to the actual total. The scalar units must be fixed externally and should represent **actual** cost (not approximate MAC-only counts). This tool cannot inspect GPUs, power or wall clock independently.
-- Compute each episode loss **after averaging its draws**, then upper-tail CVaR90 with exact fractional probability mass. Resample **paired** worlds within resampled training seeds for 2,000+ bootstrap replicates; use a familywise Bonferroni upper bound across six baselines and five metrics. Require practical tail-risk superiority, noninferior factual quality/ambiguity/consistency, observed cost at most registered ratio and **zero protected-task quality regression** against each comparator.
+- Compute each episode loss **after averaging its draws**, then upper-tail CVaR90 with exact fractional probability mass. Resample **paired** worlds within resampled training seeds for 2,000+ bootstrap replicates; use a familywise Bonferroni upper bound across six baselines and five metrics. Require practical tail-risk superiority, noninferior factual quality/ambiguity/consistency, observed cost at most registered ratio and **per-world protected-task no-regression on all four semantic metrics** (loss, quality, ambiguity, inconsistency), plus protected per-world physical cost bounded by the predeclared total-cost ratio against every comparator. Every component's Boolean result is included in the receipt so strong global bootstrap gains cannot conceal a protected-world failure.
 - The validation-selected comparator name is frozen in the manifest, but this code cannot verify the timestamp or independently prove that the validation selection did not inspect heldout. An external observer must check provenance, input isolation, cold-start drift and the registered freeze.
 
 ## Reproducible local check
@@ -21,6 +21,12 @@ python -m unittest discover -s experiments/ndu_mgp_gates -p test_paired_superior
 ```
 
 Local CPU replay of the **exact Git blob** versions `25b59c9a30bd7846660a27d47cbf123cf021f740` and `23a8779de8e5a475a667bebb4b69457ba9df3535`: 15/15 adversarial tests. Two 2,000-bootstrap simulated cohorts correctly produce opposite **provisional** decisions while **both** retain `HOLD_NO_GO`. Exact-head hosted CI: `.github/workflows/ndu-mgp-paired-observed-shadow.yml`; its completion is a narrow structural gate, not scientific efficacy.
+
+## Protected-task regression found and fixed (2026-10-22)
+
+The prior per-world protected-task gate only checked `quality`. A 3-seed, 32-world/seed, 2,000-bootstrap synthetic adversarial cohort had **all ordinary CVaR/quality/ambiguity/inconsistency/cost gates passing**, with one protected world having loss 0.47 versus ~0.44 in a free learned controller, ambiguity 0.17 versus 0.06, and inconsistency 0.13 versus 0.04. Before the patch this still produced `all_provisional_gates_pass=true`. The new gate returns `protected_task_no_regression=false` and `all_provisional_gates_pass=false` without changing the already frozen research outcomes. A separate regression tests a protected-world cost spike while the aggregate cost budget still passes. The P1 study remains unauthenticated and `HOLD_NO_GO` regardless of fixture behavior.
+
+This patch reran **39/39 local independent research subpackage tests**, including 18 P1 tests (3 new). These tests do not execute a model or constitute an independent research replication. Prior 15-test blob references above are historical, not the newly changed SHA. Require exact patched-head CI and normal repository gates.
 
 ## Scientific state and negative controls
 
