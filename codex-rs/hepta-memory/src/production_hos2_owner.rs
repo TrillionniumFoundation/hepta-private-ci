@@ -108,8 +108,7 @@ impl ProductionDurableWriter {
         self.verify_authority().await?;
         let mut transaction = self
             .store
-            .observation_pool()
-            .begin_with("BEGIN IMMEDIATE")
+            .begin_checkpoint_barrier()
             .await
             .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
         let terminal_chain_sha256 = self

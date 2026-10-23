@@ -94,11 +94,11 @@ impl ProductionDurableWriter {
             ));
         }
         // Keep the original write-serialization lock through publication and
-        // the synchronous metadata ACK. This pool is physically read-only.
+        // the synchronous metadata ACK. A physical READONLY connection cannot
+        // provide this lock; the original managed store owns a lock-only role.
         let mut transaction = self
             .store
-            .observation_pool()
-            .begin_with("BEGIN IMMEDIATE")
+            .begin_checkpoint_barrier()
             .await
             .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
         let (kind, receipt, digest): (String, String, String) = sqlx::query_as(

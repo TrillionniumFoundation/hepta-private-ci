@@ -17,6 +17,7 @@ mod model;
 mod paths;
 mod runtime;
 mod sqlite;
+mod sqlite_read_barrier;
 mod sqlite_recovery;
 mod telemetry;
 
@@ -45,6 +46,7 @@ pub use model::RolloutMigrationState;
 /// Preferred entrypoint: owns configuration and metrics.
 pub use runtime::StateRuntime;
 pub use sqlite::SqliteConfig;
+pub use sqlite_read_barrier::SqliteReadBarrier;
 pub use sqlite_recovery::ExistingSqliteRecoveryGuard;
 pub use sqlite_recovery::SqliteRecoveryError;
 

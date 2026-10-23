@@ -6,7 +6,7 @@ use sqlx::Sqlite;
 use sqlx::Transaction;
 
 impl ProductionDurableWriter {
-    /// Runs under the original read-only BEGIN IMMEDIATE lock, so publication
+    /// Runs under the original lock-only BEGIN IMMEDIATE transaction, so publication
     /// and the following synchronous metadata retirement refer to one cut.
     pub(super) async fn acknowledge_bound_owner_transaction(
         &self,

@@ -111,6 +111,12 @@ impl CognitiveStore {
                 "read-only observer differs from the recovered owner cut".to_string(),
             ));
         }
+        self.checkpoint_barrier = Some(
+            config
+                .open_durable_read_barrier(&self.path)
+                .await
+                .map_err(unavailable)?,
+        );
         self.bound_publication = Some(coordinator.clone());
         attempt.acknowledge();
         Ok((self, coordinator))

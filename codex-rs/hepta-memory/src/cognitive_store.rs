@@ -51,6 +51,8 @@ use crate::framing::frame_part;
 mod sync;
 use sync::sync_cognitive_directory;
 
+#[path = "cognitive_store_barrier.rs"]
+mod barrier;
 #[path = "cognitive_store_gate.rs"]
 mod gate;
 pub(crate) use gate::CheckpointAttempt;
@@ -250,6 +252,7 @@ pub enum CognitiveStoreError {
 pub struct CognitiveStore {
     pub(crate) pool: SqlitePool,
     observation_pool: Option<SqlitePool>,
+    checkpoint_barrier: Option<codex_state::SqliteReadBarrier>,
     bound_publication: Option<Arc<dyn crate::cognitive_checkpoint::BoundOwnerPublication>>,
     pub(crate) owner_agent_id: AgentId,
     path: PathBuf,
@@ -346,6 +349,7 @@ impl CognitiveStore {
         Self {
             pool,
             observation_pool: None,
+            checkpoint_barrier: None,
             bound_publication: None,
             owner_agent_id,
             path,
@@ -385,6 +389,7 @@ impl CognitiveStore {
         Ok(Self {
             pool,
             observation_pool: None,
+            checkpoint_barrier: None,
             bound_publication: None,
             owner_agent_id: layout.agent_id().clone(),
             path,
@@ -402,6 +407,9 @@ impl CognitiveStore {
     /// pool is shared by all clones; other store handles must also be dropped
     /// before recovery can obtain the exclusive fence.
     pub async fn close(self) {
+        if let Some(barrier) = &self.checkpoint_barrier {
+            barrier.close().await;
+        }
         if let Some(pool) = &self.observation_pool {
             pool.close().await;
         }

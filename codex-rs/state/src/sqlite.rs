@@ -432,8 +432,8 @@ impl SqliteConfig {
     ///
     /// A live original-owner observer uses READONLY file-open flags and a
     /// permanently rejecting commit hook on every replacement connection.
-    /// BEGIN IMMEDIATE can serialize a checkpoint observation without granting
-    /// any ability to commit writes; callers must explicitly roll back reads.
+    /// BEGIN IMMEDIATE on READONLY does not exclude writers. Use the separate
+    /// lock-only barrier for checkpoint publication; roll back ordinary reads.
     pub async fn open_durable_observation_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
         let options = SqliteConnectOptions::new()
             .filename(path)

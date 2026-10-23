@@ -229,6 +229,10 @@ impl ManagedFixture {
 }
 
 #[cfg(test)]
+#[path = "cognitive_checkpoint_barrier_tests.rs"]
+mod barrier_tests;
+
+#[cfg(test)]
 #[path = "cognitive_checkpoint_observation_tests.rs"]
 mod observation_tests;
 

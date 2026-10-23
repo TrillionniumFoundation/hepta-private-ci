@@ -339,8 +339,7 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         let mut transaction = self
             .writer
             .store
-            .observation_pool()
-            .begin_with("BEGIN IMMEDIATE")
+            .begin_checkpoint_barrier()
             .await
             .map_err(unavailable)?;
         store::require_request(&mut transaction, &ticket.request).await?;
@@ -477,8 +476,7 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         let mut transaction = self
             .writer
             .store
-            .observation_pool()
-            .begin_with("BEGIN IMMEDIATE")
+            .begin_checkpoint_barrier()
             .await
             .map_err(unavailable)?;
         self.acknowledge_transaction(&mut transaction).await?;
