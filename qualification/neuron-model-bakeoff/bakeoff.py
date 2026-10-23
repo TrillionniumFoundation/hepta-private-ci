@@ -30,6 +30,7 @@ EMBEDDING_MODELS = CANDIDATES[-2:]
 HEAD_BUDGET_FIELDS = (
     "head_trainable_parameters", "head_epochs", "head_training_steps",
     "head_learning_rate", "head_l2", "head_seed", "projection",
+    "head_training_dataset_sha256",
 )
 SPLITS = ("train", "validation", "calibration", "future_test")
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
@@ -98,7 +99,7 @@ def validate_dataset(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
         require(all(isinstance(x, str) and x for x in options), f"{rid}: invalid option")
         require(len(set(options)) == len(options), f"{rid}: duplicate option")
         require(row.get("gold") in options, f"{rid}: gold label not in options")
-        for name in ("language", "slice"):
+        for name in ("state", "question", "language", "slice"):
             require(isinstance(row.get(name), str) and row[name], f"{rid}: missing {name}")
         require(type(row.get("ood")) is bool, f"{rid}: missing OOD label")
         windows[split].append(parse_time(row.get("event_time")))
@@ -109,9 +110,23 @@ def validate_dataset(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     return by_id
 
 
+def training_partition_digest(rows: list[dict[str, Any]]) -> str:
+    """Freeze the exact label-bearing train cases, separate from future gold."""
+    training = [
+        {name: row[name] for name in ("id", "state", "question", "options", "gold")}
+        for row in rows if row["split"] == "train"
+    ]
+    training.sort(key=lambda row: row["id"])
+    require(bool(training), "empty head training partition")
+    return hashlib.sha256(json.dumps(
+        training, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+        allow_nan=False,
+    ).encode("utf-8")).hexdigest()
+
+
 def validate_run(
     run: dict[str, Any], model: str, dataset_hash: str, prediction_hash: str,
-    source_commit: str, frozen_threshold: float,
+    source_commit: str, frozen_threshold: float, training_digest: str,
 ) -> None:
     require(run.get("schema") == SCHEMA and run.get("model") == model, "run schema/model mismatch")
     require(run.get("dataset_sha256") == dataset_hash, "dataset identity mismatch")
@@ -141,6 +156,8 @@ def validate_run(
         require(isinstance(profile, dict), "missing encoder training profile")
         require(all(k in profile for k in HEAD_BUDGET_FIELDS), "incomplete equal-budget head training")
         require(profile["head_trainable_parameters"] == 256, "unapproved head parameter budget")
+        require(profile["head_training_dataset_sha256"] == training_digest,
+                "head training partition digest mismatch")
         d = profile.get("projection_sha256")
         require(isinstance(d, str) and SHA256.fullmatch(d) is not None, "missing feature projection digest")
 
@@ -303,6 +320,7 @@ def analyse(plan: dict[str, Any], dataset_path: Path, run_dir: Path) -> dict[str
     dataset_hash = file_hash(dataset_path)
     require(plan.get("dataset_sha256") == dataset_hash, "preregistered dataset hash mismatch")
     dataset = validate_dataset(load_jsonl(dataset_path))
+    training_digest = training_partition_digest(list(dataset.values()))
     results: dict[str, Any] = {}
     predictions_by_model: dict[str, dict[str, dict[str, Any]]] = {}
     for model in CANDIDATES:
@@ -310,7 +328,7 @@ def analyse(plan: dict[str, Any], dataset_path: Path, run_dir: Path) -> dict[str
         run_path = run_dir / model / "run.json"
         require(predictions_path.is_file() and run_path.is_file(), f"missing measured run for {model}")
         validate_run(load_json(run_path), model, dataset_hash, file_hash(predictions_path),
-                     source_commit, frozen_threshold)
+                     source_commit, frozen_threshold, training_digest)
         predicted = validate_predictions(load_jsonl(predictions_path), dataset, model,
                                          frozen_threshold)
         predictions_by_model[model] = predicted
