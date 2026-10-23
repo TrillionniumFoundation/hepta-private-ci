@@ -141,6 +141,7 @@ class NineArmGateTests(unittest.TestCase):
 
     def test_missing_arm_execution_cannot_be_hidden_as_success(self):
         self.rows.pop()
+        self.judgments.pop()
         self.write_rows()
         report = self.check()
         self.assertFalse(report["complete"])
