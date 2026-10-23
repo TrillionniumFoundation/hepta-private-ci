@@ -39,6 +39,12 @@ fixture lease verifier; they do not qualify production key custody or cold
 recovery. Ordinary exit is not wait4/cgroup accounting, resource retirement or
 model acceptance.
 
+The source-route race controls hold the real destination SQLite write lock while
+the original sealed claim waits. Expiry or revocation then prevents spawn while
+the committed entry stays permanent. Cancelling a delivery future after an
+actual worker effect never enables a second spawn: its original Child remains
+observable, or loss of that owner leaves source reconciliation indeterminate.
+
 ## 1. Ownership and effect boundary
 
 The named caller in
