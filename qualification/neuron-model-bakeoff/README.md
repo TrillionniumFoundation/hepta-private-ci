@@ -39,6 +39,16 @@ For the two embedding models, `run_heads.py` supports `train`, `calibrate`, and 
 
 The JSONL dataset requires `case_id`, `group_id`, `split`, `state`, `question`, `labels` (ordered strings), `label`, `language`, `task_family`, `ood` (boolean), and optionally `criteria` (label-to-description map). Every split is mandatory; group IDs must not appear in multiple splits. Every prediction must bind its actual selected calibration SHA256; Encoder Head predictions also bind the trained Head SHA256. The stage-3 head training manifest requires `steps`, `batch_size`, `examples_seen`, `seed`, `target_dim=256`, `optimizer_sha256`, and `training_dataset_sha256` computed over canonical sorted train rows. The Head *must not* read gold labels during eval.
 
+## Phase 1: immutable five-model source roster
+
+`bakeoff.py` now rejects any candidate manifest whose `repository`,
+`subfolder`, `revision` or `license` differs from committed
+`CANDIDATES.json` (all five arms required). Model manifests must include
+these exact fields along with separately hashed weights, tokenizer,
+runtime, calibration and predictions. A pinned **source revision** does
+not establish a verified physical weight download or binary provenance;
+those external evidence gates remain open.
+
 ## Phase 5: mandatory raw target-host request spans
 
 The resource verifier previously accepted a summary with arbitrary p99,
