@@ -48,6 +48,7 @@ builds also have byte-verified lossless archives.
 | t6 | +0.007445 | +0.012055 | -0.014405 | Unready; caps held; affine raw control/random +0.001884 |
 | t7 | — | — | — | Exit 1; shared admission left no candidate allocation |
 | t8 | — | — | — | Exit 1; shared CPU 12.274880402s exceeded the unchanged 10s cap |
+| t9 | +0.023052 | +0.004811 | -0.002094 | Exit 2; all caps held; affine raw control/random +0.001311 |
 
 These are validation mean contrasts, not held-out confidence intervals. t4
 aligned raw critic gain and complete marginal service CPU using train-only
@@ -103,3 +104,22 @@ Current evidence does not identify one that closes the resource variation or
 the effective-control benefit gap. No cloud-quota error was observed; the actual
 failure is the frozen scientific CPU budget. GitHub identity/PR API queries
 remain separately denied with `Forbidden`; Git branch transport succeeded.
+
+The subsequent fixed paired launch probe retained four complete shared
+executions and actual numerical-backend identities; it did not reproduce t8
+slowness or support blaming the idle Python parent. Concrete local allocation
+and decoder-observation reuse then passed source checks and were frozen before
+the [t9 build](runs/codex-cloud-efficient-r2-t9/REPORT.md). That complete build
+held every cap and retained positive core content/NDU and same-weight routing
+means, but its complete effective-control CPU-net gate still failed. Its
+[cost decomposition](runs/codex-cloud-efficient-r2-t9/COST_DECOMPOSITION.md)
+identifies a -0.003729 content-model gap, partly offset by +0.001311 routing and
++0.000324 complete CPU pricing. NDU/control trained 386/367 updates per seed.
+All candidates were limited by their operator allocations, with CPU headroom.
+
+The next implementation targets repeated low-view encoder arithmetic during
+continued training. Shared dense pretraining remains unchanged so the common
+base bytes stay fixed; existing data/RNG/loss and all benefit gates remain.
+Its real variable-step work and floating-point reordering require hand-fixture
+gradient, optimizer and admission tests before any new source-frozen build.
+No operator saving or acceptance is credited before implementation/measurement.

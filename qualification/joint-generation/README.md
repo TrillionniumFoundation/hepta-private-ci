@@ -119,6 +119,11 @@ serving/reload demonstration passed without implying experimental acceptance.
 The subsequent [one-shot shared timing diagnostic](runs/codex-cloud-efficient-r2-shared-timing-d2/REPORT.md)
 reproduced t8's model/library bytes in 2.528 CPU seconds but did not reproduce
 or explain its slowdown. That debug result does not replace the cap failure.
+The subsequent [t9 build](runs/codex-cloud-efficient-r2-t9/REPORT.md) completed
+under all caps with positive content/NDU validation means, but control CPU-net
+benefit remained -0.002094. It is operator-allocation limited, with CPU headroom;
+the core generation claim still awaits independent evidence and the stronger
+dynamic gate remains failed. Its actual standalone RGB/reload smoke passed.
 
 **The first configured Codex Cloud execution passed the frozen finite-scene
 acceptance on 2026-10-23**, using source commit
