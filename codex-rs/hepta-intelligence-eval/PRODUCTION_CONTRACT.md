@@ -129,3 +129,52 @@ promotion or release evidence.
 head and ordered-parent synthetic merge pass the Lane E workflow including the
 mandatory learning-eval qualification artifact. External evidence gates remain
 open independently and must not be collapsed into source qualification.
+
+## DecisionCell split evaluation
+
+`CellSplitEvaluationRequestV1` is the adapter for the typed
+`hepta-types::CellSplitV1` contract. It requires the existing product runner's
+sealed candidate/baseline temporal receipts, a `SystemLongitudinal` bundle,
+V3 observed-time windows, pairwise independent Generator/Evaluator/Observer
+verification, a timing Observer distinct from a resource Observer, and a
+host-observer-signed `CellSplitResourceReceiptV1`. The
+adapter binds utility, old-task retention, task coverage, negative transfer,
+latency, memory, communication, training cost, failure rate and rollback rate.
+It returns evidence only; it cannot select, activate, route or retire a child.
+
+`CellSplitLifecycleJournalV1` is a replayable state boundary for
+`proposal -> evaluation pending/accepted -> canary -> retained/quarantined ->
+retired/rolled back`. Retired and rolled-back states are terminal, so replay
+rejects stale append attempts and prevents a process restart from resurrecting
+the parent. The journal is not itself a durable writer; the owning learning
+ledger must persist its events and head digest. `canonical_bytes()` is the
+replay payload for that owner; it does not claim fsync, CAS commit or witness
+publication.
+
+`CellSplitProposalSourceV1` and `run_cell_split_automation_v1` provide the
+machine-driven source boundary: an observed parent trigger deterministically
+emits a proposal receipt, then the driver invokes the signed evaluator, canary
+owner and retirement owner in order. `CellSplitAutomationJournalOwnerV1` is an
+explicit adapter seam. The in-memory implementation is source qualification
+only; production completion still requires a durable TaskFlow/ledger adapter
+with commit witnesses and restart/reconciliation evidence.
+
+`CellSplitLearningLedgerJournalOwnerV1` is the durable learning-ledger side of
+that seam. It wraps `CellSplitLearningLedgerV1`, which fsyncs each lifecycle
+frame, advances an independently retained witness frontier, and replays the
+exact `proposal -> evaluate -> canary -> retain/quarantine -> retire/rollback`
+prefix after restart. It rejects a foreign split, sequence rewrite, state-tag
+rewrite, support-digest rewrite, stale predecessor, or unwitnessed tail. This
+adapter deliberately does not claim that a learning-ledger event is a
+TaskFlow event: its owner-event digest is a deterministic binding for the
+ledger frame. A production host must bind this ledger chain to the fenced
+TaskFlow run (and retain both commit witnesses) before claiming the combined
+TaskFlow/learning-ledger gate. The adapter therefore supplies durable
+replayability, not the missing host-level atomicity by itself.
+
+The cell-split adapter uses `CellSplitV1::evaluation_subject_digest()` before
+evaluation. The subject digest excludes final evaluation, retention,
+negative-transfer and cost receipts so the frozen plan can be bound before
+holdout collection. `CellSplitLongHorizonEvaluationReceiptV1::bind_contract`
+is the subsequent step that installs those receipts into the fully validated
+split record.

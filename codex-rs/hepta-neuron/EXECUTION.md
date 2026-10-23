@@ -65,3 +65,45 @@ removes the additive export; the old API and callers remain unchanged.
 The durable V1 `SparseConfig` format remains single-population and same-width so old journal replay bytes never change meaning. `PopulationSparseConfigV2` / `population_sparse_tick_v2` are a separate pure mechanism profile: temporal state is bounded independently from activation state, temporal-to-activation projection is explicit, populations form one complete non-overlapping activation partition, each population performs deterministic local top-k, and a bounded global top-k is applied only to those local candidates. V2 emits no authority and still requires independent calibration.
 
 This V2 source implementation closes the mechanism-shape gap in the readiness target; it does not silently make the V1 journal capable of replaying V2 state. A production promotion to V2 requires a separately versioned durable encoding, owner migration/recovery tests, exact product composition, and target-host qualification.
+
+## Authority-free cell-state projection
+
+`CellStateSplitPlanV1` and `CellStateSplitChildV1` provide the narrow state
+projection needed by an external DecisionCell migration owner. A plan binds
+parent/child identities, child scopes, an exact successor generation and
+complete non-overlapping temporal and activation partitions. `SparseCheckpoint`
+and `PopulationSparseCheckpointV2` can project recurrent temporal state,
+activation, activity, thresholds and eligibility vectors into child payloads;
+each payload binds the parent checkpoint/config/context digests and has its own
+canonical digest. The operation is pure: it does not write a journal, advance
+a witness CAS, select artifacts, alter routes, or issue authority. Cache,
+optimizer and parameter-bundle policies remain in the semantic
+`codex-hepta-types` cell-split contract and must be executed by their owning
+migration/artifact stores.
+
+`CellStateSplitPlanV1::from_contract` binds the executable Q24 partitions to a
+validated `CellSplitV1` contract. For this kernel profile the recurrent and
+eligibility transforms must be explicit partitions, the optimizer transform
+must be an external-owner reset, and the mapping digests must equal the
+canonical Q24 partition digests. This is a migration payload boundary; it is
+not a checkpoint commit or a topology-application authority.
+
+## Fenced multi-child state migration owner
+
+`CellStateMigrationV1` wraps that projection in an owner-safe transaction. It
+requires the parent `SparseCheckpoint` to match an independently acknowledged
+`JournalAnchor`; a caller cannot start a split from an uncommitted or stale
+parent. `persist_child_state` serializes exactly the projected Q24 vectors to a
+host-created file and calls `sync_all` before returning a
+`CellStateCasReceiptV1`. `record_payloads_durable` accepts the complete child
+set only when every operation id, parent anchor, fence, payload digest and
+encoded size matches.
+
+The transition to `ChildrenCommitted` requires an external multi-file commit
+witness containing every child receipt. Only then can `acknowledge` produce a
+`CellStateMigrationReceiptV1`; callers must consume that receipt before fencing
+parent retirement or route activation. Any child failure can move the whole
+operation to `Quarantined` and then `RolledBack`, which returns the parent cell
+identity as the rollback predecessor. The module does not claim that an
+external witness, signed lease, directory sync or product route cutover exists;
+those remain target-host evidence obligations.

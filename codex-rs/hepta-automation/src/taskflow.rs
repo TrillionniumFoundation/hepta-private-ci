@@ -563,6 +563,29 @@ pub struct TaskFlowRun {
     pub updated_at_ms: u64,
 }
 
+/// Immutable TaskFlow event projection exposed to a durable composition
+/// owner.  The event payload is the canonical transition JSON already sealed
+/// by the TaskFlow event-chain digest; callers must treat it as evidence and
+/// never as an instruction to execute an effect.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct TaskFlowEvent {
+    pub owner_agent_id: AgentId,
+    pub run_id: String,
+    pub event_seq: u64,
+    pub command_id: String,
+    pub command_digest: Sha256Digest,
+    pub transition: String,
+    pub payload_json: String,
+    pub revision: u64,
+    pub state_digest: Sha256Digest,
+    pub previous_event_digest: Sha256Digest,
+    pub event_digest: Sha256Digest,
+    pub owner_id: Option<String>,
+    pub owner_epoch: Option<u64>,
+    pub generation: Option<u64>,
+    pub fencing_token: Option<String>,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum TaskFlowTransition {
@@ -957,6 +980,39 @@ impl AutomationStore {
             .await
             .map_err(|_| TaskFlowError::Unavailable)?;
         Ok(run)
+    }
+
+    /// Returns the verified immutable event chain for one run.  This is a
+    /// read-only replay seam for composed owners (for example, a cell-split
+    /// lifecycle journal); it grants no scheduler, provider or effect
+    /// authority.  The returned rows are read in the same SQLite snapshot as
+    /// the projection and the complete chain is verified before decoding.
+    pub async fn taskflow_events(&self, run_id: &str) -> Result<Vec<TaskFlowEvent>, TaskFlowError> {
+        validate_text(run_id, "run_id", MAX_ID_BYTES)?;
+        let mut transaction = self
+            .taskflow_pool()
+            .begin()
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+        let run = load_taskflow_run_tx(&mut transaction, self.taskflow_owner_agent_id(), run_id)
+            .await?
+            .ok_or_else(|| TaskFlowError::Conflict("TaskFlow run does not exist".to_string()))?;
+        let rows = sqlx::query(TASKFLOW_EVENT_CHAIN_QUERY)
+            .bind(self.taskflow_owner_agent_id().as_str())
+            .bind(run_id)
+            .fetch_all(&mut *transaction)
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+        verify_taskflow_event_rows(&run, &rows)?;
+        let events = rows
+            .iter()
+            .map(|row| taskflow_event_from_row(row, self.taskflow_owner_agent_id(), run_id))
+            .collect::<Result<Vec<_>, _>>()?;
+        transaction
+            .commit()
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+        Ok(events)
     }
 
     /// Claims a single run's wakeup lease.  No background task is created;
@@ -1910,8 +1966,77 @@ fn taskflow_run_from_row(
     Ok(run)
 }
 
+fn taskflow_event_from_row(
+    row: &sqlx::sqlite::SqliteRow,
+    expected_owner: &AgentId,
+    expected_run_id: &str,
+) -> Result<TaskFlowEvent, TaskFlowError> {
+    let owner = AgentId::parse(
+        row.try_get::<String, _>("owner_agent_id")
+            .map_err(|_| corrupt("TaskFlow event owner column"))?,
+    )
+    .map_err(|_| corrupt("TaskFlow event owner is not a valid AgentId"))?;
+    if &owner != expected_owner {
+        return Err(TaskFlowError::StaleFence);
+    }
+    let run_id: String = row
+        .try_get("run_id")
+        .map_err(|_| corrupt("TaskFlow event run id column"))?;
+    if run_id != expected_run_id {
+        return Err(corrupt("TaskFlow event run id mismatch"));
+    }
+    let digest = |column: &str| -> Result<Sha256Digest, TaskFlowError> {
+        parse_digest(
+            row.try_get::<String, _>(column)
+                .map_err(|_| corrupt(format!("TaskFlow event {column} column")))?,
+            &format!("TaskFlow event {column}"),
+        )
+    };
+    Ok(TaskFlowEvent {
+        owner_agent_id: owner,
+        run_id,
+        event_seq: to_u64(
+            row.try_get("event_seq")
+                .map_err(|_| corrupt("TaskFlow event sequence column"))?,
+        )?,
+        command_id: row
+            .try_get("command_id")
+            .map_err(|_| corrupt("TaskFlow event command id column"))?,
+        command_digest: digest("command_digest")?,
+        transition: row
+            .try_get("transition")
+            .map_err(|_| corrupt("TaskFlow event transition column"))?,
+        payload_json: row
+            .try_get("payload_json")
+            .map_err(|_| corrupt("TaskFlow event payload column"))?,
+        revision: to_u64(
+            row.try_get("revision")
+                .map_err(|_| corrupt("TaskFlow event revision column"))?,
+        )?,
+        state_digest: digest("state_digest")?,
+        previous_event_digest: digest("previous_event_digest")?,
+        event_digest: digest("event_digest")?,
+        owner_id: row
+            .try_get("owner_id")
+            .map_err(|_| corrupt("TaskFlow event owner id column"))?,
+        owner_epoch: row
+            .try_get::<Option<i64>, _>("owner_epoch")
+            .map_err(|_| corrupt("TaskFlow event owner epoch column"))?
+            .map(to_u64)
+            .transpose()?,
+        generation: row
+            .try_get::<Option<i64>, _>("generation")
+            .map_err(|_| corrupt("TaskFlow event generation column"))?
+            .map(to_u64)
+            .transpose()?,
+        fencing_token: row
+            .try_get("fencing_token")
+            .map_err(|_| corrupt("TaskFlow event fencing token column"))?,
+    })
+}
+
 const TASKFLOW_EVENT_CHAIN_QUERY: &str =
-    "SELECT event_seq, command_id, command_digest, transition, payload_json,
+    "SELECT owner_agent_id, run_id, event_seq, command_id, command_digest, transition, payload_json,
             revision, state_digest, previous_event_digest, event_digest,
             owner_id, owner_epoch, generation, fencing_token
      FROM taskflow_events WHERE owner_agent_id = ? AND run_id = ? ORDER BY event_seq";

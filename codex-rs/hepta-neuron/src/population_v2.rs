@@ -14,7 +14,11 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 
+use crate::CellStateSplitChildV1;
+use crate::CellStateSplitError;
+use crate::CellStateSplitPlanV1;
 use crate::InhibitoryEdge;
+use crate::cell_split::build_child_state_v1;
 
 const Q: i64 = 1 << 24;
 const H: i64 = 8 * Q;
@@ -313,6 +317,42 @@ impl PopulationSparseCheckpointV2 {
 
     pub fn eligibility_q24(&self) -> &[i64] {
         &self.eligibility
+    }
+
+    /// Project this committed population checkpoint into deterministic child
+    /// state snapshots. This is a pure payload for an external migration owner;
+    /// it does not publish journal state or issue runtime authority.
+    pub fn split_state_v1(
+        &self,
+        plan: &CellStateSplitPlanV1,
+    ) -> Result<Vec<CellStateSplitChildV1>, CellStateSplitError> {
+        if self
+            .calculate_digest()
+            .map_err(|_| CellStateSplitError::InvalidCheckpoint)?
+            != self.digest
+        {
+            return Err(CellStateSplitError::InvalidCheckpoint);
+        }
+        plan.validate_dimensions(self.temporal.len(), self.activation.len())?;
+        (0..plan.child_count())
+            .map(|child_index| {
+                build_child_state_v1(
+                    plan,
+                    child_index,
+                    self.digest,
+                    self.config,
+                    self.scope,
+                    self.objective,
+                    self.body,
+                    self.sequence,
+                    &self.temporal,
+                    &self.activation,
+                    &self.activity,
+                    &self.threshold,
+                    &self.eligibility,
+                )
+            })
+            .collect()
     }
 
     fn calculate_digest(&self) -> Result<Digest32, PopulationSparseError> {
