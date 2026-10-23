@@ -281,6 +281,7 @@ jobs:
             CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
+            RUSTY_V8_EXPECT_SANDBOX="${SANDBOX}" \
             cargo "${cargo_args[@]}"
           )
 

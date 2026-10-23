@@ -323,6 +323,7 @@ jobs:
             RUSTUP_TOOLCHAIN="1.96.0" \
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
+            RUSTY_V8_EXPECT_SANDBOX="${SANDBOX}" \
             "${CARGO_1_95}" "${cargo_args[@]}"
           )
 
