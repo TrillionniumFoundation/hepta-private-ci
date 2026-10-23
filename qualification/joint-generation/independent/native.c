@@ -5,6 +5,45 @@
 #include <math.h>
 #include <stddef.h>
 
+/* Independent adaptation-only Adam ABI. The Python caller retains the original
+ * finite-gradient scan, norm reduction, clipping and Python pow denominators.
+ * No reduction or algebraic reassociation is performed here. Compile with
+ * fp-contract=off, without fast-math, to preserve each NumPy operation's order.
+ */
+int hepta_adam_content_v1(size_t groups, double **parameters, double **first,
+                          double **second, const double **gradients,
+                          const size_t *sizes, const double *first_denominator,
+                          const double *second_denominator, double scale,
+                          double learning_rate) {
+    if (groups != 6 || !parameters || !first || !second || !gradients ||
+        !sizes || !first_denominator || !second_denominator ||
+        !isfinite(scale) || scale < 0.0 || scale > 1.0 ||
+        !isfinite(learning_rate) || learning_rate <= 0.0 || learning_rate > 1.0)
+        return 1;
+    /* Validate every group before the first write. Array extents, ownership,
+     * contiguity and nonaliasing belong to the bound Python model contract. */
+    for (size_t group = 0; group < groups; ++group) {
+        if (!parameters[group] || !first[group] || !second[group] ||
+            !gradients[group] || sizes[group] < 1 || sizes[group] > 4000000 ||
+            !isfinite(first_denominator[group]) || first_denominator[group] <= 0.0 ||
+            !isfinite(second_denominator[group]) || second_denominator[group] <= 0.0)
+            return 1;
+    }
+    for (size_t group = 0; group < groups; ++group) {
+        for (size_t index = 0; index < sizes[group]; ++index) {
+            double g = gradients[group][index] * scale;
+            double m = 0.9 * first[group][index] + 0.1 * g;
+            double v = 0.999 * second[group][index] + (0.001 * g) * g;
+            double numerator = learning_rate * (m / first_denominator[group]);
+            double denominator = sqrt(v / second_denominator[group]) + 1e-8;
+            parameters[group][index] -= numerator / denominator;
+            first[group][index] = m;
+            second[group][index] = v;
+        }
+    }
+    return 0;
+}
+
 static int softmax12(double *values) {
     double maximum = values[0];
     double total = 0.0;
