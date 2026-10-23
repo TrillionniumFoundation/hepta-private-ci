@@ -180,14 +180,26 @@ jobs:
           # the real impacted-owner test graph. Never report green by skipping.
           test "$after" -ge "$target"
 
-      - name: Prepare native test prerequisites before compilation
+      - name: Prepare native test prerequisites with confined Bubblewrap
+        shell: bash
         run: |
+          set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
-          sudo sysctl -w kernel.unprivileged_userns_clone=1
-          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
-            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-          fi
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config apparmor-profiles apparmor-utils
+          # Reuse the executable-scoped distro profile proven by owner qualification.
+          # Do not change host-wide user namespace security controls.
+          before="$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)"
+          test "$before" = 1
+          distro_profile=/usr/share/apparmor/extra-profiles/bwrap-userns-restrict
+          test -r "$distro_profile"
+          sudo install -m 0644 "$distro_profile" /etc/apparmor.d/bwrap-userns-restrict
+          sudo apparmor_parser -r /etc/apparmor.d/bwrap-userns-restrict
+          test "$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)" = "$before"
+          bwrap --unshare-user --unshare-net --uid 0 --gid 0 \
+            --ro-bind / / --dev-bind /dev /dev --proc /proc \
+            /bin/true
+          printf 'apparmor_userns=%s; confined_bwrap_smoke=passed\n' "$before" \
+            >> "$RUNNER_TEMP/hepta-scoped-disk.txt"
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
