@@ -16,7 +16,7 @@ use tokio_util::sync::CancellationToken;
 
 #[path = "hmi_text_session.rs"]
 mod session;
-pub(super) type Bridge = HmiOwnerBridgeV1<TextAuthority, TextPort, NoAudio>;
+pub(super) type Bridge = HmiOwnerBridgeV1<OwnerAuthority, TextPort, NoAudio>;
 pub(super) struct UiEnvelope {
     value: Value,
     guard: Option<UiGate>,
@@ -28,7 +28,7 @@ pub(super) enum UiKind {
 pub(super) struct UiGate {
     requests: HmiRequestsV1,
     scope: HmiOutputScopeV1,
-    authority: TextAuthority,
+    authority: OwnerAuthority,
     kind: UiKind,
 }
 pub(super) type Sender = mpsc::Sender<UiEnvelope>;
@@ -41,12 +41,14 @@ pub(super) fn invalid(message: impl std::fmt::Display) -> AgentdError {
 }
 
 #[derive(Clone)]
-pub(super) struct TextAuthority {
+pub(super) struct OwnerAuthority {
     state: Arc<AgentdState>,
     active: Arc<AtomicBool>,
     binding: HmiBindingV1,
+    key_epoch: u64,
+    audio_policy: Option<String>,
 }
-impl HmiOwnerAuthorityV1 for TextAuthority {
+impl HmiOwnerAuthorityV1 for OwnerAuthority {
     fn check_current(&self, binding: &HmiBindingV1) -> Result<(), HmiError> {
         let check = || -> Result<(), AgentdError> {
             if !self.active.load(Ordering::SeqCst) || binding != &self.binding {
@@ -59,12 +61,17 @@ impl HmiOwnerAuthorityV1 for TextAuthority {
             let issuer = trust.issuer()?;
             if !trust.permits(&binding.thread_id)
                 || issuer.issuer_id.as_str() != binding.principal_id
-                || issuer.key_epoch.get() != binding.device_generation
-                || self.state.identity().spawn_generation != binding.organ_generation
+                || issuer.key_epoch.get() != self.key_epoch
             {
                 return Err(invalid(
                     "current issuer/thread/generation permission changed",
                 ));
+            }
+            match &self.audio_policy {
+                Some(digest)=>crate::audio_policy::AudioPolicy::current(&self.state)?.permits_binding(binding,digest)?,
+                None=>if binding.device_generation!=self.key_epoch || self.state.identity().spawn_generation!=binding.organ_generation {
+                    return Err(invalid("text generation permission changed"));
+                },
             }
             Ok(())
         };
@@ -119,15 +126,9 @@ impl HmiOwnerObservationsV1 for NoAudio {
 }
 pub(super) fn bridge(
     connection: &HmiConnectionV1,
-    state: Arc<AgentdState>,
-    active: Arc<AtomicBool>,
+    authority: OwnerAuthority,
     tx: Sender,
 ) -> Result<Arc<Bridge>, AgentdError> {
-    let authority = TextAuthority {
-        state,
-        active,
-        binding: connection.requests.binding().clone(),
-    };
     HmiOwnerBridgeV1::attach_text(
         connection.requests.clone(),
         authority,
@@ -178,32 +179,9 @@ pub(crate) async fn run(
     active: Arc<AtomicBool>,
     cancel: CancellationToken,
 ) -> Result<(), AgentdError> {
-    use std::os::unix::fs::MetadataExt;
-    use std::os::unix::fs::PermissionsExt;
     use tokio::io::AsyncWriteExt;
     use tokio::io::BufReader;
-    let path = state.identity().run_root.join("hmi-text.sock");
-    let mut listener = codex_uds::UnixListener::bind(&path).await?;
-    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))?;
-    let inode = std::fs::symlink_metadata(&path)?.ino();
-    struct Cleanup {
-        path: std::path::PathBuf,
-        inode: u64,
-        active: Arc<AtomicBool>,
-    }
-    impl Drop for Cleanup {
-        fn drop(&mut self) {
-            self.active.store(false, Ordering::SeqCst);
-            if std::fs::symlink_metadata(&self.path).is_ok_and(|m| m.ino() == self.inode) {
-                let _ = std::fs::remove_file(&self.path);
-            }
-        }
-    }
-    let _cleanup = Cleanup {
-        path,
-        inode,
-        active: active.clone(),
-    };
+    let (mut listener,_cleanup)=crate::hmi_socket::bind(&state,active.clone()).await?;
     loop {
         let socket = tokio::select! {_=cancel.cancelled()=>return Ok(()),connected=listener.accept()=>connected?};
         let (read, mut write) = tokio::io::split(socket);

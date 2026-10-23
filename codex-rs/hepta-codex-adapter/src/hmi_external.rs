@@ -122,6 +122,43 @@ impl HmiRequestsV1 {
         }
         Ok(response)
     }
+
+    /// Cancel an exact durable owner input after process/connection loss. Close
+    /// local presentation before lookup, never arm output or create admission.
+    /// The response is reconciliation plus a request acknowledgement; callers
+    /// must not describe it as tool rollback or an observed model terminal.
+    pub async fn cancel_owner_submission(
+        &self,
+        generation: u64,
+        client_id: &str,
+        text: &str,
+    ) -> Result<ThreadQueueReconcileResponse, HmiError> {
+        self.retire_output_epoch(generation, 0)?;
+        // Queue deletion may race the original dispatcher. Reconcile once more
+        // with the same ID; an absent/cancelled input is never recreated.
+        for _ in 0..2 {
+            let response=self.reconcile_owner_submission(generation,client_id,text).await?;
+            {
+                let state=self.shared.state.lock().map_err(|_|HmiError::Fenced)?;
+                if state.fenced || generation!=self.shared.binding.organ_generation {return Err(HmiError::Fenced);}
+            }
+            match &response.outcome {
+                ThreadQueueReconcileOutcome::Persisted {turn_id}=>{
+                    self.interrupt_turn(turn_id.clone()).await?;
+                    return Ok(response);
+                }
+                ThreadQueueReconcileOutcome::Queued {queued_submission,..}=>{
+                    let _:ThreadQueueDeleteResponse=self.call(ClientRequest::ThreadQueueDelete {
+                        request_id:self.id(),params:ThreadQueueDeleteParams {
+                            thread_id:self.shared.binding.thread_id.clone(),queued_submission_id:queued_submission.id.clone(),
+                        },
+                    }).await?;
+                }
+                ThreadQueueReconcileOutcome::Missing | ThreadQueueReconcileOutcome::Cancelled=>return Ok(response),
+            }
+        }
+        Err(HmiError::Busy)
+    }
 }
 fn owner_input(client_id: &str, text: &str) -> Result<(Vec<UserInput>, String), HmiError> {
     if client_id.is_empty()

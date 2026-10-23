@@ -337,7 +337,7 @@ impl RuntimeTasks {
         let Some(quarantine) = entry.quarantine else {
             return Err(error);
         };
-        let diagnostic = error
+        let diagnostic: String = error
             .to_string()
             .chars()
             .take(MAX_DIAGNOSTIC_CHARS)
@@ -347,12 +347,12 @@ impl RuntimeTasks {
         }
         self.failures.push_back(RuntimeTaskFailure {
             name: entry.name.clone(),
-            diagnostic,
+            diagnostic: diagnostic.clone(),
         });
         std::panic::catch_unwind(std::panic::AssertUnwindSafe(quarantine)).map_err(|_| {
             AgentdError::Protocol("runtime quarantine callback panicked".to_string())
         })??;
-        lifecycle_warning(&entry.name, "optional runtime component quarantined");
+        lifecycle_warning(&entry.name, &format!("optional runtime component quarantined: {diagnostic}"));
         Ok(())
     }
 

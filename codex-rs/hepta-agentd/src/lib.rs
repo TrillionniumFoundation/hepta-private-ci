@@ -29,6 +29,9 @@ mod evidence_frontier;
 mod evidence_host;
 mod evidence_trust;
 mod hmi_text;
+mod hmi_input;
+#[cfg(unix)]
+mod hmi_socket;
 mod intelligence_ingress;
 mod intelligence_product;
 mod intuition_policy;
