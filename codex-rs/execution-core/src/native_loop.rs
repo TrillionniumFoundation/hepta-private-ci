@@ -97,16 +97,26 @@ fn valid_digest(value: &str) -> bool {
             .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
 }
 
+// Variable-length run and operation identities must use an unambiguous
+// encoding. Concatenation aliases (run="a", operation="bc") with
+// (run="ab", operation="c") and can reuse a state digest across runs.
+fn hash_text_field(hasher: &mut Sha256, text: &str) {
+    hasher.update((text.len() as u64).to_le_bytes());
+    hasher.update(text.as_bytes());
+}
+
 fn hash_transition(cursor: &NativeLoopCursorV1, next: &str, observed: &str) -> String {
     let mut hasher = Sha256::new();
-    hasher.update(b"hepta.native-loop.external-v1\0");
-    hasher.update(cursor.binding.run_id.as_bytes());
-    hasher.update(cursor.binding.operation_id.as_bytes());
+    // V2 domain makes the strengthened hash distinct from older proposals.
+    // No deployed V1 transition has been qualified or promoted.
+    hasher.update(b"hepta.native-loop.external-v2\0");
+    hash_text_field(&mut hasher, &cursor.binding.run_id);
+    hash_text_field(&mut hasher, &cursor.binding.operation_id);
     hasher.update(cursor.binding.generation.to_le_bytes());
     hasher.update(cursor.next_step.to_le_bytes());
-    hasher.update(cursor.state_digest.as_bytes());
-    hasher.update(next.as_bytes());
-    hasher.update(observed.as_bytes());
+    hash_text_field(&mut hasher, &cursor.state_digest);
+    hash_text_field(&mut hasher, next);
+    hash_text_field(&mut hasher, observed);
     format!("{:x}", hasher.finalize())
 }
 
