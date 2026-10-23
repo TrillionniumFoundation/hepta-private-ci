@@ -448,11 +448,21 @@ def effect(groups, scores, left, right, alpha):
             "interval_kind": "descriptive_bonferroni_gaussian_cluster"}
 
 
-def audit(plan, observations, judgments, expected_plan_sha256):
+def audit(plan, observations, judgments, expected_plan_sha256,
+          training_receipts=None):
     digest(expected_plan_sha256, "externally pinned plan")
     require(sha(canonical(plan)) == expected_plan_sha256,
             "plan changed after external freeze")
     cases, scores, judge_count = audit_rows(plan, observations, judgments)
+    # The old A-I contract matched *declared* learning budgets but did not
+    # reconcile actual E-I optimizer/graph/evolution journals. A missing
+    # training receipt now blocks external qualification, not the old synthetic
+    # contract tests. Even a matching receipt is not an authenticated host.
+    training_audit = None
+    if training_receipts is not None:
+        from memory_nine_arm_training_cost import verify_training_receipts
+        training_audit = verify_training_receipts(plan, training_receipts)
+    training_cost_gate = training_audit is not None
     groups = (independent_components(cases, "future_a")
               + independent_components(cases, "future_b"))
     alpha = plan["policy"]["alpha"]
@@ -516,6 +526,8 @@ def audit(plan, observations, judgments, expected_plan_sha256):
         blockers.append("unsafe/unavailable/unscorable original outcomes remain")
     if not costs:
         blockers.append("CPU/RSS candidate ceiling failed")
+    if not training_cost_gate:
+        blockers.append("E-I actual optimizer/router/graph/evolution work budget and source lineage not reconciled")
     blockers.extend((
         "original model/source and independent reviewer signatures not authenticated",
         "actual training FLOPs, full lifecycle cost, deletion and recovery not verified",
@@ -540,7 +552,10 @@ def audit(plan, observations, judgments, expected_plan_sha256):
         "descriptive_quality_gate": quality,
         "measured_task_cost_gate": costs,
         "task_safety_gate": safety,
-        "eligible_for_external_authenticity_review": bool(quality and costs and safety),
+        "physical_e_i_training_cost_gate": training_cost_gate,
+        "physical_e_i_training_audit": training_audit,
+        "eligible_for_external_authenticity_review": bool(
+            quality and costs and safety and training_cost_gate),
         "production_accepted": False,
         "superiority_established": False,
         "authority": "DENY_ALL",
@@ -563,11 +578,16 @@ def main(argv=None):
     parser.add_argument("--plan", type=Path, required=True)
     parser.add_argument("--observations", type=Path, required=True)
     parser.add_argument("--judgments", type=Path, required=True)
+    parser.add_argument("--training-receipts", type=Path,
+                        help="source-sealed E-I physical training events; absence is HOLD_NO_GO")
     parser.add_argument("--expected-plan-sha256", required=True)
     parser.add_argument("--report", type=Path, required=True)
     args = parser.parse_args(argv)
+    training_receipts = (read_json(args.training_receipts)
+                         if args.training_receipts is not None else None)
     result = audit(read_json(args.plan), read_json(args.observations),
-                   read_json(args.judgments), args.expected_plan_sha256)
+                   read_json(args.judgments), args.expected_plan_sha256,
+                   training_receipts=training_receipts)
     create_only(args.report, result)
     print(json.dumps({"status": result["status"], "report": str(args.report),
                       "blockers": result["blockers"]}, sort_keys=True))
