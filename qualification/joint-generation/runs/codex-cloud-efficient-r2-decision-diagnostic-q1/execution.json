@@ -1,0 +1,17 @@
+{
+  "child_complete_cpu_ns": 938736000,
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python -m independent.diagnose_decisions --protocol-dir runs/codex-cloud-efficient-r2-decision-diagnostic-q1",
+  "completed_utc": "2026-10-23T14:09:15.400554+00:00",
+  "core_formal_test_opened": false,
+  "cost_boundary": "child complete CPU includes startup/imports/work/final serialization and its waited children; launcher own CPU listed separately, no double counting internal worker CPU",
+  "cwd": "/workspace/hepta-private-ci/qualification/joint-generation",
+  "execution_commit": "4cb8664a5487c12162d475cc0187fe5cd741120f",
+  "exit_code": 0,
+  "launcher_own_cpu_ns": 1329442,
+  "outer_wall_ns": 954485832,
+  "protocol_sha256": "392fe74821fddd3b61622a077342561ed68a2aad0c89be5017a4a8753145d5a2",
+  "qualification": false,
+  "r2_formal_test_opened": false,
+  "selected_cloud_environment_id": "ccarenv_b64_Y2NhcmVudl8wOGNhYzlkMjdjYjg4MTkxOWJkMDY0MGIyMDBhYTA5OA",
+  "started_utc": "2026-10-23T14:09:14.446078+00:00"
+}
