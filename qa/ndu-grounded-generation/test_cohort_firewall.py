@@ -420,6 +420,50 @@ class CohortFirewallTests(unittest.TestCase):
                 self.assertEqual((candidate.read_bytes(), history.read_bytes()), before)
 
 
+    def test_direct_receipt_writer_denial_never_mutates_frozen_image_tree(self):
+        # Unlike the CLI, the public writer has no outer preflight. Reject
+        # before even a parent mkdir; test both a direct and a symlinked path.
+        from cohort_firewall import write_receipt_atomically
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            frozen = root / "original-images"
+            frozen.mkdir()
+            source = root / "candidate.json"
+            source.write_bytes(b"immutable candidate evidence")
+            denied = frozen / "unexpected-subdir" / "receipt.json"
+            with self.assertRaisesRegex(CohortContractError, "overlaps frozen"):
+                write_receipt_atomically(
+                    denied, {"status": "fail"}, [source],
+                    protected_image_dir=frozen,
+                )
+            self.assertFalse(denied.parent.exists())
+            self.assertEqual(source.read_bytes(), b"immutable candidate evidence")
+
+            if os.name == "posix":
+                alias = root / "image-alias"
+                alias.symlink_to(frozen, target_is_directory=True)
+                denied_alias = alias / "unexpected-alias-subdir" / "receipt.json"
+                with self.assertRaisesRegex(CohortContractError, "overlaps frozen"):
+                    write_receipt_atomically(
+                        denied_alias, {"status": "fail"}, [source],
+                        protected_image_dir=frozen,
+                    )
+                self.assertFalse((frozen / "unexpected-alias-subdir").exists())
+
+            # Preserve the supported publication of ordinary nested receipts.
+            allowed = root / "separate-receipts" / "nested" / "receipt.json"
+            write_receipt_atomically(
+                allowed, {"status": "fail"}, [source],
+                protected_image_dir=frozen,
+            )
+            self.assertEqual(
+                json.loads(allowed.read_text(encoding="utf-8")),
+                {"status": "fail"},
+            )
+            self.assertEqual(source.read_bytes(), b"immutable candidate evidence")
+
+
     @unittest.skipUnless(os.name == "posix", "requires a POSIX named pipe")
     def test_cli_rejects_unopened_candidate_fifo_without_blocking(self):
         with tempfile.TemporaryDirectory() as td:
