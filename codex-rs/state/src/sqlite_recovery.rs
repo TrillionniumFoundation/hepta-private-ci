@@ -24,6 +24,10 @@ pub use root_material::RootSqliteMaterialSource;
 mod root_registration;
 pub use root_registration::RootSqliteMaterialIdentity;
 pub use root_registration::RootSqliteMaterialRegistration;
+#[path = "sqlite_root_owner_copy.rs"]
+mod root_owner_copy;
+pub use root_owner_copy::RootSqliteOwnerCandidate;
+pub use root_owner_copy::RootSqliteOwnerCopy;
 
 #[cfg(unix)]
 use std::ffi::CString;
