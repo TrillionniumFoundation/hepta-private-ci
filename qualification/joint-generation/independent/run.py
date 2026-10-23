@@ -631,9 +631,12 @@ def train(freeze_path, out):
     runtime_plan = {**plan}
     telemetry, schedule, progress = [], [], {}
     all_candidates, selected, ledgers, system_cost, val_measures = [], [], {}, {}, {}
+    shared = common = train_data = val = None
+    shared_prepared = False
     try:
         with traced_phase(telemetry, "shared_preparation"):
             shared, bases, train_data, val, common = prepare_shared(plan, run, runtime_plan)
+            shared_prepared = True
             calibration_data = common.pop("_calibration_data", None)
         common["cpu_seconds"] = cpu_clock() - start
         common["reference_full_cpu_ns"] = common["calibrations"][plan["model_seeds"][0]]["cpu_ns"]["full"]
@@ -809,6 +812,19 @@ def train(freeze_path, out):
         return 0 if ready else 2
     except Exception as error:
         original_traceback = traceback.format_exc()
+        if shared_prepared:
+            try:
+                write_json(run / "shared-build.json", {
+                    "schema": "hepta.joint-generation.shared-build.v1",
+                    "common": {key: value for key, value in common.items() if key != "_calibration_data"},
+                    "ledger": shared.snapshot(),
+                    "datasets": {"train": manifest(train_data), "validation": manifest(val)},
+                    "source_commit": frozen["source_commit"], "sources": frozen.get("sources"),
+                    "plan_sha256": frozen.get("plan_sha256"), "freeze_sha256": sha(freeze_path),
+                    "test_opened": MARKER.exists(),
+                    "scope": "Already completed shared preparation; administrative failure persistence, no new data or measurement."})
+            except Exception as persistence_error:
+                error.add_note("shared-build persistence also failed: " + repr(persistence_error))
         try:
             if progress:
                 write_json(run / "partial-build.json", {"test_opened": MARKER.exists(),

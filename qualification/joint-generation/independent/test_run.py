@@ -184,15 +184,63 @@ class CandidateSchedulingTests(unittest.TestCase):
             with patch.object(run, "check_freeze", return_value=frozen), \
                     patch.object(run, "prepare_shared", return_value=(WorkLedger("shared"), {}, {}, {}, common)), \
                     patch.object(run, "run_candidate_rounds", side_effect=original), \
-                    patch.object(run, "write_json", side_effect=OSError("archive unavailable")), \
+                    patch.object(run, "manifest", return_value={"fixture": True}), \
+                    patch.object(run, "write_json", side_effect=OSError("archive unavailable")) as writer, \
                     patch.object(run, "sha", return_value="fixture"):
                 with self.assertRaises(RuntimeError) as caught:
                     run.train(Path(directory) / "freeze.json", out)
         self.assertIs(caught.exception, original)
-        self.assertEqual(len(original.__notes__), 3)
+        self.assertEqual(len(original.__notes__), 4)
+        self.assertEqual([call.args[0].name for call in writer.call_args_list],
+                         ["shared-build.json", "partial-build.json", "failure.json", "telemetry.json"])
+        self.assertTrue(any("shared-build" in note for note in original.__notes__))
         self.assertTrue(any("partial-build" in note for note in original.__notes__))
         self.assertTrue(any("failure persistence" in note for note in original.__notes__))
         self.assertTrue(any("telemetry" in note for note in original.__notes__))
+
+    def test_prepared_failure_keeps_shared_metadata_without_constructing_data(self):
+        original = ValueError("no useful candidate admission budget")
+        plan = {"systems": ["S"], "model_seeds": [11, 23, 47], "learning_rates": [.001],
+                "cpu_seconds_per_system": 100}
+        shared = WorkLedger("shared")
+        shared.record("base_pretrain", units=7, content_updates=1)
+        common = {"native_compile": {"cpu_ns": 123, "sha256": "c" * 64},
+                  "calibrations": {seed: {"cpu_ns": {"full": 1},
+                    "prepare_cpu_samples_ns": {"full": [10, 11, 12], "low": [20, 21, 22]}}
+                    for seed in plan["model_seeds"]},
+                  "_calibration_data": {"full": np.zeros((1, 202))}}
+        frozen = {"plan": plan, "source_commit": "fixture-source", "sources": {"model.py": "a" * 64},
+                  "plan_sha256": "b" * 64}
+        train, validation = {"split": "train"}, {"split": "validation"}
+        manifests = {"train": {"rows": 8, "inputs_sha256": "d" * 64},
+                     "validation": {"rows": 4, "inputs_sha256": "e" * 64}}
+        with tempfile.TemporaryDirectory() as directory:
+            out = Path(directory) / "out"
+            with patch.object(run, "check_freeze", return_value=frozen), \
+                    patch.object(run, "prepare_shared", return_value=(shared, {}, train, validation, common)), \
+                    patch.object(run, "run_candidate_rounds", side_effect=original), \
+                    patch.object(run, "dataset", side_effect=AssertionError("no new data")) as data, \
+                    patch.object(run, "manifest", side_effect=lambda value: manifests[value["split"]]) as manifest, \
+                    patch.object(run, "traced_phase", return_value=nullcontext()), \
+                    patch.object(run, "cpu_clock", return_value=10.), \
+                    patch.object(run, "sha", return_value="fixture-freeze"):
+                with self.assertRaises(ValueError) as caught:
+                    run.train(Path(directory) / "freeze.json", out)
+                data.assert_not_called()
+                self.assertEqual([call.args[0] for call in manifest.call_args_list], [train, validation])
+            self.assertIs(caught.exception, original)
+            receipt = json.loads((out / "shared-build.json").read_text())
+            self.assertEqual(receipt["ledger"], shared.snapshot())
+            self.assertEqual(receipt["common"]["native_compile"], common["native_compile"])
+            self.assertEqual(receipt["common"]["calibrations"],
+                             json.loads(json.dumps(common["calibrations"])))
+            self.assertNotIn("_calibration_data", receipt["common"])
+            self.assertEqual(receipt["datasets"], manifests)
+            self.assertEqual((receipt["source_commit"], receipt["sources"], receipt["plan_sha256"], receipt["freeze_sha256"]),
+                             ("fixture-source", frozen["sources"], "b" * 64, "fixture-freeze"))
+            self.assertEqual(json.loads((out / "failure.json").read_text())["error"], str(original))
+            self.assertTrue((out / "telemetry.json").is_file())
+            self.assertFalse((out / "selection.json").exists())
 
     def test_static_selected_validation_does_not_prepare_random_routing(self):
         row = {"system": "anchor", "model_file": "unused.npz", "seed": 1,
