@@ -131,7 +131,7 @@ class HardBudgetPool:
                 if not active:
                     raise RuntimeError('supervisor lost all assigned workers')
                 now=time.perf_counter()
-                near=min((item['job']['started'] or item['job']['dispatched']) + budget for item in active)
+                near=min(item['job']['dispatched'] + budget for item in active)
                 ready=wait([item['conn'] for item in active],timeout=min(0.02,max(0,near-now)))
                 finished=[]
                 for conn in ready:
@@ -140,7 +140,7 @@ class HardBudgetPool:
                     try:
                         kind,index,at,*other=conn.recv()
                     except EOFError:
-                        finished.append((job['index'],None,'worker_crashed',time.perf_counter()- (job['started'] or job['dispatched']),item,None))
+                        finished.append((job['index'],None,'worker_crashed',time.perf_counter()-job['dispatched'],item,None))
                         continue
                     if index!=job['index']:
                         raise RuntimeError('supervisor message/job identity mismatch')
@@ -149,7 +149,7 @@ class HardBudgetPool:
                         continue
                     if kind not in ('done','failed'):
                         raise RuntimeError('unrecognized resident reply')
-                    elapsed=at-(job['started'] or job['dispatched'])
+                    elapsed=max(time.perf_counter(),at)-job['dispatched']  # Charge result serialization and transport.
                     status='hard_timeout' if elapsed>budget else ('completed' if kind=='done' else 'worker_failed')
                     value=other[0] if kind=='done' and status=='completed' else None
                     finished.append((index,value,status,elapsed,item,other[0] if kind=='failed' else None))
@@ -158,9 +158,9 @@ class HardBudgetPool:
                     if any(x[4] is item for x in finished):
                         continue
                     job=item['job']
-                    if time.perf_counter() - (job['started'] or job['dispatched']) >= budget:
+                    if time.perf_counter() - job['dispatched'] >= budget:
                         finished.append((job['index'],None,'hard_timeout',
-                                         time.perf_counter()-(job['started'] or job['dispatched']),item,None))
+                                         time.perf_counter()-job['dispatched'],item,None))
                 for index,value,status,elapsed,item,error_detail in finished:
                     slot=item['resident']['slot']
                     resident=item['resident']
@@ -170,7 +170,7 @@ class HardBudgetPool:
                     restart_now=restart and not other_active and next_job < len(jobs)
                     if restart:
                         self._stop(item)
-                        elapsed=max(elapsed,time.perf_counter() - (item['job']['started'] or item['job']['dispatched']))
+                        elapsed=max(elapsed,time.perf_counter() - item['job']['dispatched'])
                         del self.residents[slot]
                     else:
                         item['job']=None
