@@ -58,6 +58,31 @@ class RegisteredFactorialTests(unittest.TestCase):
         self.assertAlmostEqual(result["balanced_inference_effect_on_base"], 0.45)
         self.assertEqual(result["registered_world_draws"], 202)
 
+    def test_many_draws_from_one_world_cannot_flip_source_means(self):
+        # One original source has two different worlds: 99 favorable draws
+        # for one and one adverse draw for the other. Correct hierarchy is
+        # seed -> source -> world -> draw; row or source-only averaging fails.
+        inherited, rows = fixture(repeated_easy_draws=100)
+        adjusted = []
+        for r in rows:
+            if r.original_source == "original-hard" and r.arm == "base_ndu":
+                r = replace(r, external_loss=1.0)
+            if r.original_source == "original-easy" and r.draw == 99:
+                r = replace(r, world=r.world + "-second-world",
+                            external_loss=2.0 if r.arm == "base_ndu"
+                            else r.external_loss)
+            adjusted.append(r)
+        keys = tuple((r.seed, r.original_source, r.world, r.draw)
+                     for r in adjusted if r.arm == "base_static")
+        cohort = RegisteredFactorialCohort(
+            keys, inherited.allowed_sources, R, UNIT, 3.0)
+        result = describe_registered_factorial(adjusted, cohort)
+        pooled = result["pooled_mean_external_loss_diagnostic"]
+        self.assertLess(pooled["base_ndu"] - pooled["base_static"], 0)
+        self.assertAlmostEqual(result["balanced_inference_effect_on_base"], 0.225)
+        self.assertEqual(result["balancing_hierarchy"],
+                         "training_seed/original_source/world/draw")
+
     def test_missing_world_and_extra_draw_are_both_rejected(self):
         cohort, rows = fixture()
         trimmed = [r for r in rows if not (r.seed == 17 and
