@@ -29,7 +29,10 @@ ARMS = {
     "H": "learned_meta_graph",
     "I": "budget_matched_split_merge",
 }
-CONTRASTS = {
+# Eight primary effects govern the descriptive quality gate. Three additional
+# fixed baseline/typed controls are reported and included in multiplicity,
+# but a weak baseline does not have to beat BM25 for I to be evaluated.
+PRIMARY_CONTRASTS = {
     "typed_vs_hybrid": ("D", "B"),
     "training_vs_frozen": ("E", "D"),
     "specialization_vs_pooled": ("F", "E"),
@@ -39,6 +42,12 @@ CONTRASTS = {
     "candidate_vs_hybrid": ("I", "B"),
     "candidate_vs_graph_rag": ("I", "C"),
 }
+DIAGNOSTIC_CONTRASTS = {
+    "hybrid_vs_bm25": ("B", "A"),
+    "graph_vs_bm25": ("C", "A"),
+    "typed_vs_graph": ("D", "C"),
+}
+CONTRASTS = {**PRIMARY_CONTRASTS, **DIAGNOSTIC_CONTRASTS}
 WINDOWS = ("development", "calibration", "future_a", "future_b", "retention")
 CATEGORIES = ("multi_hop", "temporal", "single_hop", "procedural", "semantic",
               "adversarial", "other")
@@ -186,7 +195,7 @@ def validate_plan(plan):
             "invalid case census")
     seen, splits, family_window = set(), set(), {}
     known_train = set(common["training_roots"]) | set(common["calibration_roots"])
-    root_window = {}
+    root_window, source_id_window, query_window = {}, {}, {}
     for case in cases:
         keys(case, ("id", "family_id", "window", "question_sha256",
                     "snapshot_sha256", "source_roots", "eligible_source_ids"),
@@ -210,6 +219,12 @@ def validate_plan(plan):
         for root in case["source_roots"]:
             previous = root_window.setdefault(root, case["window"])
             require(previous == case["window"], "source-root cross-window leak")
+        # Disjoint root labels alone do not prove disjoint evidence or queries.
+        for source_id in case["eligible_source_ids"]:
+            previous = source_id_window.setdefault(source_id, case["window"])
+            require(previous == case["window"], "source ID cross-window reuse")
+        previous = query_window.setdefault(case["question_sha256"], case["window"])
+        require(previous == case["window"], "identical question cross-window reuse")
     require({"future_a", "future_b"} <= splits, "two named future windows absent")
     return {case["id"]: case for case in cases}
 
@@ -371,13 +386,18 @@ def independent_components(cases, window):
             x = parent[x]
         return x
 
-    root_owner = {}
+    # Both explicit source ancestry and source-family identity create
+    # dependence. Separate source-root labels do not make two tasks from
+    # one family statistically independent.
+    ancestor_owner = {}
     for case in subset:
-        for root in case["source_roots"]:
-            if root in root_owner:
-                parent[find(case["id"])] = find(root_owner[root])
+        ancestors = ([("source", root) for root in case["source_roots"]]
+                     + [("family", case["family_id"])])
+        for ancestor in ancestors:
+            if ancestor in ancestor_owner:
+                parent[find(case["id"])] = find(ancestor_owner[ancestor])
             else:
-                root_owner[root] = case["id"]
+                ancestor_owner[ancestor] = case["id"]
     groups = defaultdict(list)
     for case in subset:
         groups[find(case["id"])].append(case["id"])
@@ -453,7 +473,7 @@ def audit(plan, observations, judgments, expected_plan_sha256):
     quality = (future_n >= p["min_independent_future_groups"]
                and all(n >= p["min_independent_groups_per_future_window"]
                        for n in win_counts.values())
-               and all(item["lower"] > 0 for item in contrasts.values())
+               and all(contrasts[name]["lower"] > 0 for name in PRIMARY_CONTRASTS)
                and all(item["lower"] > 0 for window in by_window.values()
                        for item in window.values()))
     cpu_ratio = (per_arm["I"]["total_cpu_ns"]
