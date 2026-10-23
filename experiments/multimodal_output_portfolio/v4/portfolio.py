@@ -34,14 +34,24 @@ class Config:
     sync_penalty: int = 5
 
     def __post_init__(self) -> None:
-        if (self.horizon < 1 or self.horizon > 3
-            or not 1 <= self.max_units_per_step <= 4
-            or self.unit_cost <= 0 or self.activation_cost < 0
-            or self.emission_cost_each <= 0
+        # These are *physical integer* budget units, not continuous portfolio
+        # weights. Reject bool/float and oversize inputs before optimization.
+        integer_limits = (
+            (self.horizon, 1, 3),
+            (self.max_units_per_step, 1, 4),
+            (self.unit_cost, 1, 1_000_000),
+            (self.activation_cost, 0, 1_000_000),
+            (self.emission_cost_each, 1, 1_000_000),
+            (self.sync_penalty, 0, 1_000_000),
+        )
+        if (any(type(value) is not int or not low <= value <= high
+                for value, low, high in integer_limits)
+            or type(self.risk_aversion) not in (int, float)
+            or not 0 <= self.risk_aversion <= 10
             or not math.isfinite(self.risk_aversion)
-            or self.risk_aversion < 0 or self.risk_aversion > 10
-            or not math.isfinite(self.cost_shadow_price)
-            or self.cost_shadow_price < 0 or self.sync_penalty < 0):
+            or type(self.cost_shadow_price) not in (int, float)
+            or not 0 <= self.cost_shadow_price <= 1_000_000
+            or not math.isfinite(self.cost_shadow_price)):
             raise ValueError("unadmitted control profile")
 
     @property
@@ -170,17 +180,26 @@ def advance(state: State, action: Allocation, shock: int, cfg: Config) -> State:
 def conditional_ce(values: tuple[float, ...],
                    probabilities: tuple[float, ...], risk_aversion: float) -> float:
     if (not values or len(values) != len(probabilities)
-        or any(not math.isfinite(x) for x in values)
-        or any(not math.isfinite(p) or p < 0 for p in probabilities)
-        or not math.isclose(sum(probabilities), 1.0, abs_tol=1e-12)
-        or not math.isfinite(risk_aversion) or risk_aversion < 0):
+        or any(type(x) not in (int, float) or not -1e12 <= x <= 1e12
+               or not math.isfinite(x) for x in values)
+        or any(type(p) not in (int, float) or not 0 <= p <= 1
+               or not math.isfinite(p) for p in probabilities)
+        or not math.isclose(math.fsum(probabilities), 1.0,
+                            rel_tol=0.0, abs_tol=1e-12)
+        or type(risk_aversion) not in (int, float)
+        or not 0 <= risk_aversion <= 10
+        or not math.isfinite(risk_aversion)):
         raise ValueError("invalid conditional risk law")
+    positive_mass = tuple((p, v) for p, v in zip(probabilities, values)
+                          if p > 0)
     if risk_aversion == 0:
-        return sum(p * v for p, v in zip(probabilities, values))
-    anchor = min(values)
-    scaled = sum(p * math.exp(-risk_aversion * (v - anchor))
-                 for p, v in zip(probabilities, values))
-    if scaled <= 0:
+        return math.fsum(p * v for p, v in positive_mass)
+    # Zero-probability outcomes are outside the conditional support. Anchoring
+    # to one can underflow the whole lawful expectation and spuriously fail.
+    anchor = min(v for _, v in positive_mass)
+    scaled = math.fsum(p * math.exp(-risk_aversion * (v - anchor))
+                       for p, v in positive_mass)
+    if scaled <= 0 or not math.isfinite(scaled):
         raise ValueError("unsupported numerical risk profile")
     return anchor - math.log(scaled) / risk_aversion
 
