@@ -76,6 +76,29 @@ or deployment latency evidence. Ordinary Python reflection is not a trusted
 authority boundary; production hosts must independently enforce model/profile
 version and effect authorization.
 
+## Fail-closed numerical interpretation near zero risk
+
+A scientific audit of the bounded v5 controller found that the ordinary
+`log(sum(p * exp(-gamma * payoff))) / gamma` expression loses precision
+as `gamma` approaches zero even when all inputs are finite, normalized
+and admitted. For two supported payoffs `[-10, -3]` with probabilities
+`[0.4, 0.6]`, `gamma=1e-16` previously returned about `-5.5591`
+instead of a value near its risk-neutral limit `-5.8`. This can
+incorrectly change Bellman policy rankings without any change in evidence.
+
+The finite scorer now uses `expm1/log1p` relative to the minimum
+**positive-support** payoff when `gamma * payoff_span <= 1e-4`, and
+normalizes the already-admitted rounded probability mass on that path.
+Extremely subnormal positive risk coefficients use the mathematically
+indistinguishable risk-neutral limit; ordinary `gamma=1` frozen research
+scoring follows its original evaluation path. An independent 90-digit
+Decimal numerical oracle, boundary-mass counterexample, and near-zero
+terminal Bellman tests are collected in `test_near_neutral_risk.py`.
+
+This is an isolated **finite numerical correctness** fix, not a
+re-estimate of frozen v1–v4 outcomes, calibrated natural preference,
+independent real-world reward, physical budget or model promotion.
+
 ## Falsification and explicit assumptions
 
 An *intentionally adverse* observation-law shift freezes the controller's
