@@ -75,11 +75,17 @@ class CellComparisonTest(unittest.TestCase):
     def test_raw_original_fixture_identity_cannot_leak_between_cohorts(self):
         p, rows = fixture()
         p["tasks"][3]["fixture_digest"] = p["tasks"][2]["fixture_digest"]
+        for r in rows:
+            if r["task_id"] == "future-1":
+                r["fixture_digest"] = p["tasks"][2]["fixture_digest"]
         with self.assertRaisesRegex(GateError, "fixture reused across independent groups"):
             compare(p, rows)
 
         p, rows = fixture()
         p["tasks"][0]["fixture_digest"] = p["tasks"][2]["fixture_digest"]
+        for r in rows:
+            if r["task_id"] == "old-0":
+                r["fixture_digest"] = p["tasks"][2]["fixture_digest"]
         with self.assertRaisesRegex(GateError, "fixture reused across independent groups"):
             compare(p, rows)
 
