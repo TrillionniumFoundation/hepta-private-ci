@@ -113,6 +113,19 @@ pub(super) async fn validate_private_candidate(
 }
 
 impl CognitiveStore {
+    /// Root-private physical material admission is unavailable on non-Unix
+    /// platforms. This does not change the original shared recovery verifier.
+    #[cfg(not(unix))]
+    pub async fn verify_root_material_candidate(
+        layout: &HeptaAgentLayout,
+        expected: &CognitiveRecoveryAnchor,
+    ) -> Result<VerifiedCognitiveMaterial, CognitiveRecoveryError> {
+        let _ = (layout, expected);
+        Err(CognitiveRecoveryError::Unavailable(
+            "Root material admission requires Unix".into(),
+        ))
+    }
+
     /// Validate and consolidate an already isolated Root-private candidate.
     ///
     /// The launcher derives this layout from its fixed material registration.
@@ -125,6 +138,7 @@ impl CognitiveStore {
     /// that exchange, not their currentness. No checkpoint is advanced here.
     /// The caller must retain this material before the original Prepare/Commit
     /// CAS can reference it, and must independently reconcile every unknown.
+    #[cfg(unix)]
     pub async fn verify_root_material_candidate(
         layout: &HeptaAgentLayout,
         expected: &CognitiveRecoveryAnchor,
