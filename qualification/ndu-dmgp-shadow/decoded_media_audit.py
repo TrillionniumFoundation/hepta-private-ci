@@ -27,6 +27,9 @@ MAX_CLIP_SECONDS = 30.0
 MAX_PIXEL_COUNT = 1920 * 1080
 MAX_EVENTS = 64
 MAX_SKEW_MS = 120
+MP4_BRANDS = frozenset({b"isom", b"iso2", b"iso3", b"iso4", b"iso5", b"iso6",
+                        b"iso7", b"iso8", b"iso9", b"mp41", b"mp42", b"avc1",
+                        b"dash", b"M4V ", b"MSNV"})
 
 
 class DecodedMediaRejected(ValueError):
@@ -84,12 +87,29 @@ def _run(command, timeout=20):
     return result.stdout
 
 
+def _media_header(raw, modality):
+    # FFmpeg detects formats by content, not the declared suffix. A playable
+    # JPEG/Matroska asset must not be relabeled PNG/MP4 by a correct digest.
+    if modality == "image":
+        valid = raw.startswith(b"\x89PNG\r\n\x1a\n")
+    elif modality == "audio":
+        valid = raw[:4] in {b"RIFF", b"RIFX", b"RF64"} and raw[8:12] == b"WAVE"
+    else:
+        size = int.from_bytes(raw[:4], "big")
+        valid = (raw[4:8] == b"ftyp" and 16 <= size <= min(len(raw), 4096)
+                 and size % 4 == 0 and raw[8:12] != b"qt  "
+                 and (raw[8:12] in MP4_BRANDS or
+                      any(raw[i:i + 4] in MP4_BRANDS
+                          for i in range(16, size, 4))))
+    _require(valid, "media decode format does not match declared modality")
+
+
 def _stream_probe(filename, modality):
     # Input is a PRIVATE, byte-snapshotted regular file. Explicitly disallow
     # nested HTTP/concat/network protocols inside complex media containers.
     raw = _run(["ffprobe", "-v", "error", "-protocol_whitelist", "file,pipe",
                 "-show_entries",
-                "stream=index,codec_type,codec_name,width,height,duration:format=duration",
+                "stream=index,codec_type,codec_name,width,height,duration:format=duration,format_name",
                 "-of", "json", str(filename)])
     try:
         info = json.loads(raw)
@@ -110,6 +130,16 @@ def _stream_probe(filename, modality):
     index = chosen.get("index")
     _require(_int(index, 0, 15) and type(chosen.get("codec_name")) is str,
              "invalid decoder stream index/codec")
+    format_info = info.get("format", {})
+    _require(type(format_info) is dict and
+             type(format_info.get("format_name")) is str,
+             "missing original media format")
+    formats = set(format_info["format_name"].split(","))
+    codec = chosen["codec_name"]
+    _require((modality == "image" and formats == {"png_pipe"} and codec == "png")
+             or (modality == "audio" and formats == {"wav"} and codec.startswith("pcm_"))
+             or (modality == "video" and "mp4" in formats),
+             "decoded format/codec does not match declared modality")
     if required_kind == "video":
         width, height = chosen.get("width"), chosen.get("height")
         _require(_int(width, 1, 1920) and _int(height, 1, 1080) and
@@ -120,8 +150,9 @@ def _stream_probe(filename, modality):
               "file,pipe", "-i", str(filename), "-map", f"0:{index}",
               "-frames:v", "1", "-f", "null", "-"], timeout=15)
         return {"stream": required_kind, "stream_index": index,
-                "duration_ms": None}
-    raw_duration = chosen.get("duration") or info.get("format", {}).get("duration")
+                "duration_ms": None, "codec": codec,
+                "format": format_info["format_name"]}
+    raw_duration = chosen.get("duration") or format_info.get("duration")
     try:
         duration = float(raw_duration)
     except (TypeError, ValueError, OverflowError) as exc:
@@ -132,7 +163,8 @@ def _stream_probe(filename, modality):
           "file,pipe", "-i", str(filename), "-map", f"0:{index}",
           "-f", "null", "-"], timeout=20)
     return {"stream": required_kind, "stream_index": index,
-            "duration_ms": round(duration * 1000)}
+            "duration_ms": round(duration * 1000), "codec": codec,
+            "format": format_info["format_name"]}
 
 
 def _snapshot_regular(root, name, declared_digest):
@@ -216,6 +248,7 @@ def audit_decoded_media(plan: dict, manifest: dict, *, asset_root: Path) -> dict
             else:
                 suffix = {"image": ".png", "audio": ".wav", "video": ".mp4"}[m]
                 _require(Path(filename).suffix == suffix, "invalid media type/extension")
+                _media_header(raw, m)
                 copied = Path(workdir) / f"{m}{suffix}"
                 copied.write_bytes(raw)
                 stream = _stream_probe(copied, m)
