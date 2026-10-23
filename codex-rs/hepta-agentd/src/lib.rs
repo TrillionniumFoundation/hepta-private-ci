@@ -97,7 +97,6 @@ mod notes_channel;
 #[cfg(target_os = "linux")]
 mod notes_document_observer;
 mod objective_runtime;
-pub use objective_runtime::authbus_objective_claims;
 mod plasticity_anchor_journal;
 mod plasticity_host;
 mod plasticity_learning_producer;
