@@ -5,6 +5,7 @@
 //! operation ledger, reconnect policy, or default runtime registration.
 
 use std::sync::Arc;
+use std::sync::Mutex;
 
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_operations::OperationIntentV1;
@@ -81,6 +82,12 @@ impl NotesTargetIdentity {
 pub trait NotesPrivateChannel: Send + Sync {
     fn exchange(&self, request: &[u8]) -> Result<Vec<u8>, String>;
     fn invalidate(&self);
+    /// A separately inherited recovery datagram lane. It accepts observation
+    /// and exact durable-receipt retirement, never effect payloads. Legacy
+    /// single-stream compositions explicitly have no recovery fallback.
+    fn recovery_exchange(&self, _request: &[u8]) -> Result<Vec<u8>, String> {
+        Err("Notes recovery channel was not supplied".to_string())
+    }
 }
 
 #[derive(Deserialize)]
@@ -136,6 +143,7 @@ enum NotAppliedReason {
     RevisionExhausted,
     TargetMismatch,
     UiDeadlineElapsed,
+    ReceiptPending,
 }
 
 #[derive(Serialize)]
@@ -192,6 +200,7 @@ pub struct ProductionNotesTarget {
     identity: NotesTargetIdentity,
     destination: String,
     channel: Arc<dyn NotesPrivateChannel>,
+    retired_receipt: Mutex<Option<Sha256Digest>>,
 }
 
 impl ProductionNotesTarget {
@@ -204,6 +213,7 @@ impl ProductionNotesTarget {
             destination: identity.destination_id(),
             identity,
             channel,
+            retired_receipt: Mutex::new(None),
         })
     }
 
@@ -246,34 +256,111 @@ impl ProductionNotesTarget {
         request: &NotesReplace,
         digest: &str,
     ) -> Result<(NotesResult, String), String> {
-        if bytes.is_empty() || bytes.len() > NOTES_RESPONSE_MAX_BYTES {
-            return Err("Notes response exceeds its bound".to_string());
-        }
-        let response: NotesResponse =
-            serde_json::from_slice(&bytes).map_err(|_| "invalid Notes response schema")?;
-        if response.schema_version != 1
-            || response.target != self.identity
-            || response.operation_id != request.operation_id
-            || response.payload_sha256 != digest
-        {
-            return Err("Notes response identity mismatch".to_string());
-        }
-        if let NotesResult::Applied {
-            previous_revision,
-            revision,
-            text_sha256,
-        } = &response.result
-            && (*previous_revision != request.expected_revision
-                || previous_revision.checked_add(1) != Some(*revision)
-                || *text_sha256 != Sha256Digest::for_bytes(request.text.as_bytes()).as_str())
-        {
-            return Err(
-                "Notes response does not prove the requested document mutation".to_string(),
-            );
-        }
-        let receipt = String::from_utf8(bytes).map_err(|_| "Notes response is not UTF-8")?;
-        Ok((response.result, receipt))
+        parse_response(&self.identity, bytes, request, digest)
     }
+}
+
+fn parse_response(
+    identity: &NotesTargetIdentity,
+    bytes: Vec<u8>,
+    request: &NotesReplace,
+    digest: &str,
+) -> Result<(NotesResult, String), String> {
+    if bytes.is_empty() || bytes.len() > NOTES_RESPONSE_MAX_BYTES {
+        return Err("Notes response exceeds its bound".to_string());
+    }
+    let response: NotesResponse =
+        serde_json::from_slice(&bytes).map_err(|_| "invalid Notes response schema")?;
+    if response.schema_version != 1
+        || response.target != *identity
+        || response.operation_id != request.operation_id
+        || response.payload_sha256 != digest
+    {
+        return Err("Notes response identity mismatch".to_string());
+    }
+    if let NotesResult::Applied {
+        previous_revision,
+        revision,
+        text_sha256,
+    } = &response.result
+        && (*previous_revision != request.expected_revision
+            || previous_revision.checked_add(1) != Some(*revision)
+            || *text_sha256 != Sha256Digest::for_bytes(request.text.as_bytes()).as_str())
+    {
+        return Err("Notes response does not prove the requested document mutation".to_string());
+    }
+    let receipt = String::from_utf8(bytes).map_err(|_| "Notes response is not UTF-8")?;
+    Ok((response.result, receipt))
+}
+
+/// Exact application evidence carried by the existing append-only source
+/// journal. This type is not a new ledger and cannot authorize a mutation.
+pub(crate) struct NotesTerminalReceipt {
+    raw: String,
+    outcome: crate::LocalReconcileOutcome,
+}
+
+impl NotesTerminalReceipt {
+    pub(crate) fn from_json(payload: &str, evidence: &str) -> Result<Self, String> {
+        let parsed: NotesReplace =
+            serde_json::from_str(payload).map_err(|_| "invalid Notes payload")?;
+        let parsed = parse_replace(&parsed.target, payload)?;
+        let (result, raw) = parse_response(
+            &parsed.target,
+            evidence.as_bytes().to_vec(),
+            &parsed,
+            Sha256Digest::for_bytes(payload.as_bytes()).as_str(),
+        )?;
+        let outcome = match result {
+            NotesResult::Applied { .. } => crate::LocalReconcileOutcome::Committed,
+            NotesResult::NotApplied { .. } => crate::LocalReconcileOutcome::Rejected,
+            NotesResult::Unknown { .. } => {
+                return Err("unknown Notes observation is not terminal".to_string());
+            }
+        };
+        Ok(Self { raw, outcome })
+    }
+    pub(crate) fn outcome(&self) -> crate::LocalReconcileOutcome {
+        self.outcome
+    }
+    pub(crate) fn as_str(&self) -> &str {
+        &self.raw
+    }
+    pub(crate) fn matches(&self, payload: &str) -> Result<(), String> {
+        let checked = Self::from_json(payload, &self.raw)?;
+        if checked.outcome != self.outcome {
+            return Err("Notes outcome mismatch".to_string());
+        }
+        Ok(())
+    }
+}
+
+#[derive(Serialize)]
+struct NotesAcknowledge<'a> {
+    schema_version: u16,
+    action: &'static str,
+    target: &'a NotesTargetIdentity,
+    operation_id: &'a str,
+    payload_sha256: &'a str,
+    receipt_sha256: &'a str,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct NotesRetirementResponse {
+    schema_version: u16,
+    target: NotesTargetIdentity,
+    operation_id: String,
+    payload_sha256: String,
+    receipt_sha256: String,
+    status: NotesRetirementStatus,
+}
+#[derive(Deserialize)]
+#[serde(rename_all = "snake_case")]
+enum NotesRetirementStatus {
+    Released,
+    AlreadyReleased,
+    Unknown,
 }
 
 impl ProductionOutboxTarget for ProductionNotesTarget {
@@ -321,6 +408,52 @@ impl FinalUseProductionOutboxTarget for ProductionNotesTarget {
         &self.destination
     }
 
+    fn retire_notes_receipt(&self, permit: &crate::NotesRetirementPermit) -> Result<(), String> {
+        let request = permit.request();
+        self.decode(request)?;
+        let receipt = NotesTerminalReceipt::from_json(&request.payload_json, permit.receipt())?;
+        if receipt.outcome() != crate::LocalReconcileOutcome::Committed {
+            return Err("only an applied Notes receipt occupies retirement capacity".to_string());
+        }
+        let digest = Sha256Digest::for_bytes(permit.receipt().as_bytes());
+        let mut retired = self
+            .retired_receipt
+            .try_lock()
+            .map_err(|_| "Notes retirement busy")?;
+        if retired.as_ref() == Some(&digest) {
+            return Ok(());
+        }
+        let raw = serde_json::to_vec(&NotesAcknowledge {
+            schema_version: 1,
+            action: "acknowledge_terminal",
+            target: &self.identity,
+            operation_id: &request.occurrence_key,
+            payload_sha256: request.payload_sha256.as_str(),
+            receipt_sha256: digest.as_str(),
+        })
+        .map_err(|error| error.to_string())?;
+        let bytes = self.channel.recovery_exchange(&raw)?;
+        if bytes.is_empty() || bytes.len() > NOTES_RESPONSE_MAX_BYTES {
+            return Err("Notes retirement response bound".to_string());
+        }
+        let response: NotesRetirementResponse =
+            serde_json::from_slice(&bytes).map_err(|_| "invalid Notes retirement response")?;
+        if response.schema_version != 1
+            || response.target != self.identity
+            || response.operation_id != request.occurrence_key
+            || response.payload_sha256 != request.payload_sha256.as_str()
+            || response.receipt_sha256 != digest.as_str()
+            || !matches!(
+                response.status,
+                NotesRetirementStatus::Released | NotesRetirementStatus::AlreadyReleased
+            )
+        {
+            return Err("Notes retirement does not match the durable receipt".to_string());
+        }
+        *retired = Some(digest);
+        Ok(())
+    }
+
     fn observe_terminal<'a>(
         &'a self,
         request: &'a ProductionDispatchRequest,
@@ -337,7 +470,7 @@ impl FinalUseProductionOutboxTarget for ProductionNotesTarget {
                 };
                 let result = serde_json::to_vec(&query)
                     .map_err(|error| error.to_string())
-                    .and_then(|bytes| self.channel.exchange(&bytes))
+                    .and_then(|bytes| self.channel.recovery_exchange(&bytes))
                     .and_then(|bytes| {
                         self.response(bytes, &parsed, request.payload_sha256.as_str())
                     });
@@ -351,10 +484,7 @@ impl FinalUseProductionOutboxTarget for ProductionNotesTarget {
                                 .to_string(),
                         }
                     }
-                    Err(reason) => {
-                        self.channel.invalidate();
-                        ProductionTerminalObservation::Unavailable { reason }
-                    }
+                    Err(reason) => ProductionTerminalObservation::Unavailable { reason },
                 }
             }
         };
