@@ -91,11 +91,10 @@ async fn forty_audio_observations_bound_software_resources_after_warmup_without_
     let thread=fixture.read_thread().await?;
     ensure!(thread.thread.turns.len()==usize::try_from(WARMUP+MEASURED)?);
     ensure!(samples.last().context("last resource sample")?.media_bytes==3200*(WARMUP+MEASURED),"retained audio has incorrect expected growth");
-    let store=fixture.store().await?;
-    let pool=sqlx::sqlite::SqlitePoolOptions::new().max_connections(1).connect_with(sqlx::sqlite::SqliteConnectOptions::new().filename(store.path()).read_only(true)).await?;
+    let pool=fixture.evidence_pool().await?;
     let rows:i64=sqlx::query_scalar("SELECT COUNT(*) FROM authbus_outbox").fetch_one(&pool).await?;
     ensure!(rows==i64::try_from(WARMUP+MEASURED)? && rows<codex_hepta_evidence::AUTHBUS_OUTBOX_MAX_ROWS);
-    pool.close().await;store.close().await;
+    pool.close().await;
     latency.sort_unstable();let percentile=|p:usize|latency[(latency.len()*p).div_ceil(100)-1];
     println!("HMI_SOFTWARE_RESOURCE={}",json!({"scope":"actual Agentd and embedded App Server, temporary signed PCM observations, HTTP SSE fixture; not physical audio or long-run product acceptance",
         "warmupTurns":WARMUP,"measuredTurns":MEASURED,"samples":samples,"canonicalRows":rows,"outboxRowBound":codex_hepta_evidence::AUTHBUS_OUTBOX_MAX_ROWS,

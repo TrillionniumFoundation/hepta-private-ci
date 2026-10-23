@@ -57,7 +57,15 @@ impl Fixture {
                 let policy=json!({"schema_version":1,"agent_id":agent.agent_id.as_str(),"issuer_id":"issuer:native-authbus-test","key_epoch":1,
                     "device_id":"device:temporary-pcm-fixture","device_generation":7,"organ_id":"pipecat:fixture","organ_generation":11,
                     "capture_generation":3,"media_root":root,"max_segment_bytes":1048576,"expires_at_ms":now_ms()?+300000,"revoked":false});
-                write_policy(&path,&policy)?;fleet.start_with_hmi_audio(&agent,&trust,&checkpoint_file,&path)?;Some(path)
+                write_policy(&path,&policy)?;
+                // All fixture agents are already registered. Start the same
+                // supervised binary with this explicit disposable profile.
+                let command=codex_hepta_supervisor::AgentCommand::new(codex_utils_cargo_bin::cargo_bin("codex-hepta-agentd")?,vec![
+                    "--hmi-text".into(),"--authbus-trust-file".into(),trust.as_os_str().to_owned(),
+                    "--authbus-checkpoint-file".into(),checkpoint_file.as_os_str().to_owned(),
+                    "--hmi-audio-authority-file".into(),path.as_os_str().to_owned(),
+                ])?;
+                fleet.supervisor.start(&agent.agent_id,command,Instant::now())?;Some(path)
             }
         };
         let (control,health)=fleet.wait_ready(&agent,1).await?;
@@ -130,8 +138,9 @@ impl Fixture {
     pub(crate) async fn read_thread(&self)->Result<ThreadReadResponse> {
         Ok(self.client.as_ref().context("client missing")?.request_typed(ClientRequest::ThreadRead {request_id:RequestId::Integer(5),params:ThreadReadParams {thread_id:self.thread.clone(),include_turns:true}}).await?)
     }
-    pub(crate) async fn store(&self)->Result<HeptaEvidenceStore> {
-        Ok(HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(AbsolutePathBuf::from_absolute_path(self.agent.layout.home_root())?)).await?)
+    pub(crate) async fn evidence_pool(&self)->Result<sqlx::SqlitePool> {
+        let sqlite=SqliteConfig::from_sqlite_home(AbsolutePathBuf::from_absolute_path(self.agent.layout.home_root())?);
+        Ok(sqlite.open_read_only_pool(&self.agent.layout.home_root().join(codex_hepta_evidence::EVIDENCE_DATABASE_LINEAGE)).await?)
     }
 }
 pub(crate) fn write_policy(path:&std::path::Path,policy:&Value)->Result<()> {

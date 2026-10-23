@@ -56,19 +56,37 @@ async fn full_process_crash_during_a_live_turn_recovers_and_cancels_without_mode
     tokio::time::timeout(Duration::from_secs(10),async {while sends(&model).await!=1 {tokio::time::sleep(Duration::from_millis(10)).await;}}).await?;
     let original=fixture.read_thread().await?;let turn=original.thread.turns[0].id.clone();
     ensure!(original.thread.turns[0].status==TurnStatus::InProgress);
+    let control=fixture.fleet.control_client(&fixture.agent,fixture.generation)?;
+    let queued=control.submit_authbus_text(fixture.request(2)?).await?;
+    tokio::time::timeout(Duration::from_secs(10),async {
+        loop {
+            let status=control.authbus_text_status(queued.delivery_id.clone()).await?;
+            if status.state==codex_hepta_agentd::AuthBusTextState::QueueAccepted {return Ok::<_,anyhow::Error>(());}
+            tokio::time::sleep(Duration::from_millis(25)).await;
+        }
+    }).await??;
+    ensure!(sends(&model).await==1,"queued input dispatched while the original turn was active");
     fixture.crash_and_restart().await?;drop(ui);
-    let mut ui=fixture.ui().await?;ui.send(json!({"type":"attach","request":fixture.request(2)?})).await?;ui.until("attached").await?;
+    let mut ui=fixture.ui().await?;ui.send(json!({"type":"attach","request":fixture.request(3)?})).await?;ui.until("attached").await?;
     ui.send(json!({"type":"reconcile","delivery_id":delivery,"text":INPUT})).await?;
     let recovered=ui.until("reconciled").await?;
     ensure!(recovered["receipt"]["outcome"]["type"]=="persisted" && recovered["receipt"]["outcome"]["turnId"]==turn,"{recovered}");
     ui.send(json!({"type":"cancelRecovered","delivery_id":delivery,"text":INPUT})).await?;
     let cancelled=ui.until("recoveredInterruptRequested").await?;
     ensure!(cancelled["terminalObserved"]==false);
+    ui.send(json!({"type":"reconcile","delivery_id":queued.delivery_id,"text":INPUT})).await?;
+    let recovered_queue=ui.until("reconciled").await?;
+    ensure!(recovered_queue["receipt"]["outcome"]["type"]=="queued","durable queued input was lost or dispatched during cold resume: {recovered_queue}");
+    ui.send(json!({"type":"cancelRecovered","delivery_id":queued.delivery_id,"text":INPUT})).await?;
+    let cancelled_queue=ui.until("recoveredInterruptRequested").await?;
+    ensure!(cancelled_queue["reconciliation"]["outcome"]["type"]=="cancelled" && cancelled_queue["terminalObserved"]==false,"{cancelled_queue}");
+    ui.send(json!({"type":"reconcile","delivery_id":queued.delivery_id,"text":INPUT})).await?;
+    ensure!(ui.until("reconciled").await?["receipt"]["outcome"]["type"]=="cancelled");
     let cold=fixture.read_thread().await?;
     ensure!(cold.thread.turns.len()==1 && cold.thread.turns[0].id==turn && cold.thread.turns[0].status==TurnStatus::Interrupted,"{cold:?}");
     ensure!(cold.thread.turns[0].items.iter().filter(|i|matches!(i,ThreadItem::UserMessage {client_id:Some(id),..} if id==&format!("hepta.authbus:{delivery}"))).count()==1);
     ui.send(json!({"type":"stop"})).await?;ui.until("sessionTerminal").await?;
     ensure!(sends(&model).await==1,"process recovery/cancellation physically executed the original model input again");
-    println!("CRASH_RECOVERY={{\"deliveryId\":\"{delivery}\",\"turnId\":\"{turn}\",\"persistedStatus\":\"interrupted\",\"modelRequests\":1,\"terminalAckClaimed\":false}}");
+    println!("CRASH_RECOVERY={{\"deliveryId\":\"{delivery}\",\"turnId\":\"{turn}\",\"persistedStatus\":\"interrupted\",\"queuedDelivery\":\"{}\",\"queueReconciliation\":\"cancelled\",\"modelRequests\":1,\"terminalAckClaimed\":false}}",queued.delivery_id);
     Ok(())
 }

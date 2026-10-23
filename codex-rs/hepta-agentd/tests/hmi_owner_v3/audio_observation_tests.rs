@@ -5,7 +5,9 @@ use codex_hepta_agentd::SignedAudioObservationV1;
 use codex_hepta_types::Digest32;
 use core_test_support::responses;
 use serde_json::{Value,json};
-use sqlx::sqlite::{SqliteConnectOptions,SqlitePoolOptions};
+use std::time::Duration;
+use wiremock::{Mock,ResponseTemplate};
+use wiremock::matchers::{method,path_regex};
 
 async fn rejected(fixture:&Fixture,request:&SignedAudioObservationV1,reason:&str)->Result<()> {
     let mut ui=fixture.ui().await?;ui.send(json!({"type":"submitAudio","request":request})).await?;
@@ -29,7 +31,11 @@ async fn actual_owner_audio_binds_signature_device_capture_interval_digest_and_o
     let request=fixture.audio(1,&pcm)?;
     let mut wrong=request.clone();wrong.signature_hex="00".repeat(64);
     rejected(&fixture,&wrong,"InvalidSignature").await?;
+    let mut wrong=request.clone();wrong.body.source.stream.principal_id="issuer:another-source".into();fixture.sign_audio(&mut wrong)?;
+    rejected(&fixture,&wrong,"device/capture authority").await?;
     let mut wrong=request.clone();wrong.body.source.stream.device_generation+=1;fixture.sign_audio(&mut wrong)?;
+    rejected(&fixture,&wrong,"device/capture authority").await?;
+    let mut wrong=request.clone();wrong.body.source.stream.organ_generation+=1;fixture.sign_audio(&mut wrong)?;
     rejected(&fixture,&wrong,"device/capture authority").await?;
     let mut wrong=request.clone();wrong.body.source.capture_generation+=1;wrong.body.source.asset_id="capture-4-1.pcm16".into();fixture.sign_audio(&mut wrong)?;
     rejected(&fixture,&wrong,"device/capture authority").await?;
@@ -41,6 +47,15 @@ async fn actual_owner_audio_binds_signature_device_capture_interval_digest_and_o
     rejected(&fixture,&wrong,"media byte digest").await?;
     let mut wrong=request.clone();wrong.signature_hex=fixture.request(1)?.signature_hex;
     rejected(&fixture,&wrong,"InvalidSignature").await?; // A text-domain signature cannot become an audio observation.
+    let policy:Value=serde_json::from_slice(&std::fs::read(fixture.audio_policy.as_ref().context("fixture policy")?)?)?;
+    let asset=std::path::PathBuf::from(policy["media_root"].as_str().context("fixture media root")?).join(&request.body.source.asset_id);
+    let saved=asset.with_extension("saved");std::fs::rename(&asset,&saved)?;
+    std::os::unix::fs::symlink(&saved,&asset)?;
+    rejected(&fixture,&request,"private owner-controlled regular file").await?;
+    std::fs::remove_file(&asset)?;std::fs::rename(&saved,&asset)?;
+    std::fs::hard_link(&asset,&saved)?;
+    rejected(&fixture,&request,"private owner-controlled regular file").await?;
+    std::fs::remove_file(&saved)?;
     ensure!(sends(&model).await==0);
     let mut ui=fixture.ui().await?;ui.send(json!({"type":"submitAudio","request":request})).await?;
     let admission=ui.until("admission").await?;let receipt=&admission["receipt"]["audioObservation"];
@@ -56,17 +71,22 @@ async fn actual_owner_audio_binds_signature_device_capture_interval_digest_and_o
     let mut replay=request.clone();replay.message_id="audio:replay:new-id".into();fixture.sign_audio(&mut replay)?;
     rejected(&fixture,&replay,"Replay").await?;
     fixture.restart().await?;
+    let mut resumed=fixture.ui().await?;resumed.send(json!({"type":"attach","request":fixture.request(2)?})).await?;resumed.until("attached").await?;
+    resumed.send(json!({"type":"reconcileAudio","request":request})).await?;
+    let retained=resumed.until("audioReconciled").await?;
+    ensure!(retained["observation"]["deliveryId"]==delivery && retained["observation"]["source"]==serde_json::to_value(&request.body.source)?);
+    ensure!(retained["observation"]["observationSha256"]==receipt["observationSha256"]);
+    resumed.send(json!({"type":"stop"})).await?;resumed.until("sessionTerminal").await?;drop(resumed);
     replay.body.spawn_generation=fixture.generation;
     replay.message_id="audio:replay:after-process-restart".into();fixture.sign_audio(&mut replay)?;
     rejected(&fixture,&replay,"Replay").await?;
     ensure!(sends(&model).await==1,"a durable audio replay fence was lost on actual process restart");
-    let store=fixture.store().await?;
-    let pool=SqlitePoolOptions::new().max_connections(1).connect_with(SqliteConnectOptions::new().filename(store.path()).read_only(true)).await?;
+    let pool=fixture.evidence_pool().await?;
     let encoded:Vec<u8>=sqlx::query_scalar("SELECT payload FROM authbus_outbox WHERE delivery_id = ?").bind(delivery.parse::<Digest32>()?.as_array().as_slice()).fetch_one(&pool).await?;
     ensure!(serde_json::from_slice::<Value>(&encoded)?==serde_json::to_value(&request.body)?);
     let count:i64=sqlx::query_scalar("SELECT COUNT(*) FROM authbus_outbox").fetch_one(&pool).await?;
     ensure!(count==1,"rejections/replay created additional canonical observations");
-    pool.close().await;store.close().await;
+    pool.close().await;
     let thread=fixture.read_thread().await?;
     ensure!(thread.thread.turns.len()==1);
     ensure!(thread.thread.turns[0].items.iter().filter(|i|matches!(i,ThreadItem::UserMessage{..})).count()==1);
@@ -78,14 +98,22 @@ async fn actual_owner_audio_binds_signature_device_capture_interval_digest_and_o
 #[tokio::test(flavor="multi_thread",worker_threads=4)]
 async fn actual_owner_audio_current_device_revocation_fences_publication_and_further_admission()->Result<()> {
     let model=responses::start_mock_server().await;
-    responses::mount_sse_once(&model,responses::sse(vec![responses::ev_assistant_message("audio-revocation",ANSWER),responses::ev_completed("audio-revocation-response")])).await;
+    Mock::given(method("POST")).and(path_regex(".*/responses$")).respond_with(ResponseTemplate::new(200)
+        .insert_header("content-type","text/event-stream")
+        .set_body_string(responses::sse(vec![responses::ev_assistant_message("audio-revocation",ANSWER),responses::ev_completed("audio-revocation-response")]))
+        .set_delay(Duration::from_secs(5))).mount(&model).await;
     let fixture=Fixture::new(&model,Profile::TemporaryAudio).await?;
     let request=fixture.audio(1,&[0;3200])?;
     let mut ui=fixture.ui().await?;ui.send(json!({"type":"submitAudio","request":request})).await?;
-    ui.until("admission").await?;ui.completed().await?;
+    ui.until("admission").await?;
+    tokio::time::timeout(Duration::from_secs(10),async {while sends(&model).await!=1 {tokio::time::sleep(Duration::from_millis(10)).await;}}).await?;
     let path=fixture.audio_policy.as_ref().context("device policy")?;
     let mut policy:Value=serde_json::from_slice(&std::fs::read(path)?)?;policy["revoked"]=json!(true);write_policy(path,&policy)?;
-    let terminal=ui.until("sessionTerminal").await?;
+    let terminal=loop {
+        let event=ui.next().await?;
+        if event["type"]=="sessionTerminal" {break event;}
+        if event["type"]=="output" {let kind=&event["outcome"]["event"]["kind"]["type"];ensure!(kind!="textDelta" && kind!="textFinal","revoked device output escaped publication fence: {event}");}
+    };
     ensure!(terminal["error"].as_str().context("live revocation")?.contains("device/capture authority changed"));
     drop(ui);
     rejected(&fixture,&request,"device/capture authority").await?;
