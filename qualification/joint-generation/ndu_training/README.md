@@ -27,3 +27,8 @@ recomputes all 72 saved parameter deltas and adds source-hash-bound unit-test lo
 The [confirmation proposal](review_followup/CONFIRMATION_PROPOSAL_V1.md) specifies
 a fixed multi-seed/source/timing design, its explicit research-budget increase and
 conditional power limits. It has not generated data or run confirmation.
+
+The [saved-aggregate mechanism readout](mechanism_readout/REPORT.md) separates
+continuous utility gains, wrong agreement and negative-tail mass. Per-request
+probabilities/source maps were not saved. A fixed CE-anchor control-variate
+candidate has only hand-array checks; it has not been used for training.

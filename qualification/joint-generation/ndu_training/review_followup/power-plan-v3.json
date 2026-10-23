@@ -1,0 +1,126 @@
+{
+  "blocks": 32,
+  "budget": {
+    "build_attributed_cpu_each_system": 320,
+    "model_service_units_cap": 1500000000000,
+    "paired_attributed_cpu_cap": 4840,
+    "physical_cpu_upper_cap": 4540,
+    "scope": "this NDU A/N design, excludes content and dynamic research",
+    "service_cpu_each_system": 1800,
+    "statistics_fully_attributed_each_system": 300,
+    "statistics_physical_cpu_cap": 300
+  },
+  "cpu_net_sensitivity": [
+    {
+      "block_sd_assumption": 0.003,
+      "cohort_sd_assumption": 0.005,
+      "interaction_sd_assumption": 0,
+      "label": "CPU-net illustrative only",
+      "mde_marginal80": 0.002062343438514618,
+      "mde_six80_union_model": 0.0026988502199275966,
+      "se_model": 0.0006414501799308606
+    },
+    {
+      "block_sd_assumption": 0.003,
+      "cohort_sd_assumption": 0.01,
+      "interaction_sd_assumption": 0,
+      "label": "CPU-net illustrative only",
+      "mde_marginal80": 0.002879438479434906,
+      "mde_six80_union_model": 0.0037681275719469833,
+      "se_model": 0.0008955910525085283
+    },
+    {
+      "block_sd_assumption": 0.006,
+      "cohort_sd_assumption": 0.01,
+      "interaction_sd_assumption": 0,
+      "label": "CPU-net illustrative only",
+      "mde_marginal80": 0.004124686877029236,
+      "mde_six80_union_model": 0.005397700439855193,
+      "se_model": 0.0012829003598617212
+    },
+    {
+      "block_sd_assumption": 0.01,
+      "cohort_sd_assumption": 0.01,
+      "interaction_sd_assumption": 0,
+      "label": "CPU-net illustrative only",
+      "mde_marginal80": 0.0061389834651743155,
+      "mde_six80_union_model": 0.008033674976584238,
+      "se_model": 0.0019094065395649333
+    },
+    {
+      "block_sd_assumption": 0.006,
+      "cohort_sd_assumption": 0.01,
+      "interaction_sd_assumption": 0.02,
+      "label": "CPU-net illustrative only",
+      "mde_marginal80": 0.004205475726155311,
+      "mde_six80_union_model": 0.005503423375792887,
+      "se_model": 0.0013080280960285219
+    },
+    {
+      "block_sd_assumption": 0.006,
+      "cohort_sd_assumption": 0.02,
+      "interaction_sd_assumption": 0.02,
+      "label": "CPU-net illustrative only",
+      "mde_marginal80": 0.005817013673453585,
+      "mde_six80_union_model": 0.00761233475411315,
+      "se_model": 0.0018092643532662662
+    }
+  ],
+  "estimand_unit": "random three-tuple complete-budget block; fixed TRAIN and host",
+  "formula": "SE^2=sigma_block^2/32+sigma_cohort^2/192+sigma_interaction^2/(32*192)",
+  "new_training_or_predictions": false,
+  "physical_sources": 768,
+  "power_warning": "six-test model MDE is not calibrated conjunction power; t cutoff and MC quantile bounds do not establish test size",
+  "previous_v2_sha256": "866f0b1c0df9fdd4019cda5cb59b62da3aa97a429e720f6485276390d90aace9",
+  "raw_sensitivity": [
+    {
+      "block_sd_assumption": 0.001452273572277914,
+      "cohort_sd_assumption": 0.005,
+      "interaction_sd_assumption": 0,
+      "label": "raw utility illustrative only",
+      "mde_marginal80": 0.001423824337187761,
+      "mde_six80_union_model": 0.0018632631955447297,
+      "se_model": 0.0004428517385721321,
+      "seed_sd_multiplier_assumption": 2,
+      "within_block_corr_assumption": 0.5
+    },
+    {
+      "block_sd_assumption": 0.003557329219009835,
+      "cohort_sd_assumption": 0.005,
+      "interaction_sd_assumption": 0,
+      "label": "raw utility illustrative only",
+      "mde_marginal80": 0.002331053830688063,
+      "mde_six80_union_model": 0.003050493446497298,
+      "se_model": 0.0007250271080942377,
+      "seed_sd_multiplier_assumption": 4,
+      "within_block_corr_assumption": 1.0
+    },
+    {
+      "block_sd_assumption": 0.001452273572277914,
+      "cohort_sd_assumption": 0.01,
+      "interaction_sd_assumption": 0.01,
+      "label": "raw utility illustrative only",
+      "mde_marginal80": 0.002496683260662105,
+      "mde_six80_union_model": 0.003267241547305318,
+      "se_model": 0.0007765427895634772,
+      "seed_sd_multiplier_assumption": 2,
+      "within_block_corr_assumption": 0.5
+    },
+    {
+      "block_sd_assumption": 0.003557329219009835,
+      "cohort_sd_assumption": 0.01,
+      "interaction_sd_assumption": 0.02,
+      "label": "raw utility illustrative only",
+      "mde_marginal80": 0.0031850748358203374,
+      "mde_six80_union_model": 0.004168093325586345,
+      "se_model": 0.0009906530543728012,
+      "seed_sd_multiplier_assumption": 4,
+      "within_block_corr_assumption": 1.0
+    }
+  ],
+  "scope": "NDU A/N proposal only; analytical assumptions, no experiment",
+  "shared_timing_cohorts": 192,
+  "source_to_cohort_warning": "sigma_cohort=sigma_source/2 requires independent within-cohort source effects; not assumed for shared CPU timers",
+  "training_tuples": 96,
+  "tuples_per_block": 3
+}
