@@ -137,6 +137,21 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/inference.worker.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.worker.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
+The existing `model_worker::InferenceWorker` component retains the original request
+slot and model handle when token or neuron-feature execution returns a driver
+error or an unobserved terminal state. Its typed unresolved lifecycle refuses
+further execution and unloading of that model with the existing `ActiveRequests`
+error; duplicate request identities retain `RequestCapacity`. Only an observed
+terminal result releases the request slot. Failed unloading retains and freezes
+the same handle; a retry must reconcile that exact opaque handle, and only
+successful unloading removes it. This component adds no durable journal or
+terminal reconciler. Dropping or restarting the owner does not prove resource
+release. These safeguards are prerequisites within existing `P0.8C-RESOURCE-BUDGETS`
+and `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK`; the hosted App Server path, real local
+neural backend, aggregate memory accounting and three-round model acceptance
+remain separately qualified boundaries. Initial-load rejection followed by
+failed cleanup also still needs a separately qualified handle owner.
+
 Hosted output observation retains per-item text within one bound turn, including
 the interrupt grace period. Completed message bytes replace that item's partial
 deltas; identical completions deduplicate, conflicting completions and later

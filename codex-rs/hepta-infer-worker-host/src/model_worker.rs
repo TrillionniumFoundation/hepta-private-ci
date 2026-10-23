@@ -154,7 +154,16 @@ pub trait ModelDriver {
         handle: &DriverModelHandle,
         request: &WorkerRequest,
     ) -> Result<DriverRunObservation, Error>;
+    /// Success confirms release. Repeated attempts for the same opaque handle
+    /// must reconcile an earlier failure without creating a second effect.
     fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error>;
+}
+
+#[derive(Debug, Eq, PartialEq)]
+enum ModelLifecycle {
+    Ready,
+    ExecutionUnresolved,
+    UnloadUnresolved,
 }
 
 #[derive(Debug)]
@@ -162,6 +171,7 @@ struct LoadedModel {
     manifest: ModelManifest,
     handle: DriverModelHandle,
     active_requests: usize,
+    lifecycle: ModelLifecycle,
 }
 
 #[derive(Debug)]
@@ -234,6 +244,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 manifest,
                 handle,
                 active_requests: 0,
+                lifecycle: ModelLifecycle::Ready,
             },
         );
         Ok(observation)
@@ -256,6 +267,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
             return Err(Error::RequestCapacity);
         }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.lifecycle != ModelLifecycle::Ready {
+            return Err(Error::ActiveRequests);
+        }
         if request.model_digest != loaded.manifest.model_digest
             || request.reservation_model_digest != loaded.manifest.model_digest
         {
@@ -290,10 +304,13 @@ impl<D: ModelDriver> InferenceWorker<D> {
             .ok_or(Error::ArithmeticOverflow)?;
         self.active_requests
             .insert(request.request_id.clone(), model_id.to_string());
-        let observed = self.driver.run(&loaded.handle, &request);
-        self.active_requests.remove(&request.request_id);
-        loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        loaded.lifecycle = ModelLifecycle::ExecutionUnresolved;
+        let observed = self.driver.run(&loaded.handle, &request)?;
+        if observed.terminal_observed {
+            self.active_requests.remove(&request.request_id);
+            loaded.active_requests -= 1;
+            loaded.lifecycle = ModelLifecycle::Ready;
+        }
         if observed.consumed_tokens > request.maximum_tokens
             || observed.consumed_tokens > request.reservation_maximum_tokens
         {
@@ -338,12 +355,13 @@ impl<D: ModelDriver> InferenceWorker<D> {
     ) -> Result<ModelUnloadObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
-        let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
-        if loaded.active_requests != 0 {
+        let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.active_requests != 0 || loaded.lifecycle == ModelLifecycle::ExecutionUnresolved {
             return Err(Error::ActiveRequests);
         }
-        let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        loaded.lifecycle = ModelLifecycle::UnloadUnresolved;
+        self.driver.unload(loaded.handle.clone())?;
+        self.models.remove(model_id);
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -516,6 +534,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             return Err(Error::RequestCapacity);
         }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.lifecycle != ModelLifecycle::Ready {
+            return Err(Error::ActiveRequests);
+        }
         if request.authorization.model_digest != loaded.manifest.model_digest
             || request.authorization.reservation_model_digest != loaded.manifest.model_digest
             || request.weights_digest != loaded.manifest.weights_digest
@@ -556,11 +577,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             request.authorization.request_id.clone(),
             model_id.to_string(),
         );
-        let observed = self.driver.run_neuron_features(&loaded.handle, &request);
-        self.active_requests
-            .remove(&request.authorization.request_id);
-        loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        loaded.lifecycle = ModelLifecycle::ExecutionUnresolved;
+        let observed = self.driver.run_neuron_features(&loaded.handle, &request)?;
+        if observed.terminal_observed {
+            self.active_requests
+                .remove(&request.authorization.request_id);
+            loaded.active_requests -= 1;
+            loaded.lifecycle = ModelLifecycle::Ready;
+        }
         if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
             return Err(Error::ModelCapacity);
         }

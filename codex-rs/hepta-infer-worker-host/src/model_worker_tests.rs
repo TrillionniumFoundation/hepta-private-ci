@@ -5,6 +5,10 @@ struct Driver {
     fail_terminal: bool,
     indeterminate: bool,
     corrupt_neuron_head: bool,
+    fail_run: bool,
+    unload_failures: usize,
+    dispatch_count: usize,
+    unload_handles: Vec<DriverModelHandle>,
     loaded: usize,
 }
 
@@ -22,6 +26,10 @@ impl ModelDriver for Driver {
         _handle: &DriverModelHandle,
         _request: &WorkerRequest,
     ) -> Result<DriverRunObservation, Error> {
+        self.dispatch_count += 1;
+        if self.fail_run {
+            return Err(Error::DriverFailure("execution unresolved".to_string()));
+        }
         if self.indeterminate {
             return Ok(DriverRunObservation {
                 terminal_observed: false,
@@ -40,7 +48,12 @@ impl ModelDriver for Driver {
         })
     }
 
-    fn unload(&mut self, _handle: DriverModelHandle) -> Result<(), Error> {
+    fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error> {
+        self.unload_handles.push(handle);
+        if self.unload_failures != 0 {
+            self.unload_failures -= 1;
+            return Err(Error::DriverFailure("unload unresolved".to_string()));
+        }
         self.loaded = self.loaded.saturating_sub(1);
         Ok(())
     }
@@ -52,6 +65,10 @@ impl NeuronFeatureDriver for Driver {
         _handle: &DriverModelHandle,
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, Error> {
+        self.dispatch_count += 1;
+        if self.fail_run {
+            return Err(Error::DriverFailure("execution unresolved".to_string()));
+        }
         if self.indeterminate {
             return Ok(DriverNeuronFeatureObservation {
                 terminal_observed: false,
@@ -270,4 +287,224 @@ fn neuron_feature_worker_projects_exact_inference_control_receipt() {
     );
     assert!(!receipt.receipt_digest.is_zero());
     assert!(!receipt.authority.grants_any());
+}
+
+#[derive(Clone, Copy, Debug)]
+enum DispatchPath {
+    Tokens,
+    NeuronFeatures,
+}
+
+fn dispatch(
+    worker: &mut InferenceWorker<Driver>,
+    path: DispatchPath,
+    model_id: &str,
+    request_id: &str,
+) -> Result<ExecutionStatus, Error> {
+    match path {
+        DispatchPath::Tokens => {
+            let mut value = request();
+            value.request_id = request_id.to_string();
+            worker
+                .run(/*now_ms*/ 100, model_id, value)
+                .map(|value| value.status)
+        }
+        DispatchPath::NeuronFeatures => {
+            let mut value = neuron_feature_request();
+            value.authorization.request_id = request_id.to_string();
+            let digest = canonical_neuron_feature_payload_digest(&value);
+            value.authorization.payload_digest = digest.clone();
+            value.authorization.lease_payload_digest = digest;
+            worker
+                .run_neuron_features(/*now_ms*/ 100, model_id, value)
+                .map(|value| value.status)
+        }
+    }
+}
+
+#[test]
+fn unresolved_execution_keeps_original_request_and_freezes_both_dispatch_paths() {
+    for path in [DispatchPath::Tokens, DispatchPath::NeuronFeatures] {
+        for fail_run in [false, true] {
+            let driver = Driver {
+                indeterminate: !fail_run,
+                fail_run,
+                ..Driver::default()
+            };
+            let mut worker = InferenceWorker::new(
+                /*now_ms*/ 100,
+                "worker.1".to_string(),
+                /*generation*/ 3,
+                grant(),
+                driver,
+            )
+            .expect("worker");
+            worker.load_model(/*now_ms*/ 100, manifest()).expect("load");
+            let handle = worker.models["model.1"].handle.clone();
+            let expected = if fail_run {
+                Err(Error::DriverFailure("execution unresolved".to_string()))
+            } else {
+                Ok(ExecutionStatus::Indeterminate)
+            };
+            assert_eq!(
+                dispatch(&mut worker, path, "model.1", "request.1"),
+                expected
+            );
+            assert_eq!(
+                worker.active_requests,
+                BTreeMap::from([("request.1".to_string(), "model.1".to_string())])
+            );
+            assert_eq!(worker.models["model.1"].active_requests, 1);
+            assert_eq!(
+                worker.models["model.1"].lifecycle,
+                ModelLifecycle::ExecutionUnresolved
+            );
+            // Even a now-healthy driver cannot silently reconcile the old run.
+            worker.driver.fail_run = false;
+            worker.driver.indeterminate = false;
+            for retry_path in [DispatchPath::Tokens, DispatchPath::NeuronFeatures] {
+                assert_eq!(
+                    dispatch(&mut worker, retry_path, "model.1", "request.1"),
+                    Err(Error::RequestCapacity)
+                );
+                assert_eq!(
+                    dispatch(&mut worker, retry_path, "model.1", "request.2"),
+                    Err(Error::ActiveRequests)
+                );
+            }
+            assert_eq!(
+                worker.unload_model(/*now_ms*/ 100, "model.1"),
+                Err(Error::ActiveRequests)
+            );
+            assert_eq!(worker.models["model.1"].handle, handle);
+            assert_eq!(worker.driver.dispatch_count, 1);
+            assert!(worker.driver.unload_handles.is_empty());
+            assert_eq!(worker.driver.loaded, 1);
+        }
+    }
+}
+
+#[test]
+fn unresolved_execution_keeps_its_worker_capacity_reservation() {
+    for path in [DispatchPath::Tokens, DispatchPath::NeuronFeatures] {
+        let mut limits = grant();
+        limits.maximum_active_requests = 1;
+        let driver = Driver {
+            indeterminate: true,
+            ..Driver::default()
+        };
+        let mut worker = InferenceWorker::new(
+            /*now_ms*/ 100,
+            "worker.1".to_string(),
+            /*generation*/ 3,
+            limits,
+            driver,
+        )
+        .expect("worker");
+        worker.load_model(/*now_ms*/ 100, manifest()).expect("load");
+        let mut other = manifest();
+        other.model_id = "model.2".to_string();
+        worker
+            .load_model(/*now_ms*/ 100, other)
+            .expect("other load");
+        assert_eq!(
+            dispatch(&mut worker, path, "model.1", "request.1"),
+            Ok(ExecutionStatus::Indeterminate)
+        );
+        assert_eq!(
+            dispatch(&mut worker, path, "model.2", "request.2"),
+            Err(Error::RequestCapacity)
+        );
+        assert_eq!(worker.driver.dispatch_count, 1);
+    }
+}
+
+#[test]
+fn observed_terminal_success_and_failure_release_requests_on_both_paths() {
+    for path in [DispatchPath::Tokens, DispatchPath::NeuronFeatures] {
+        for fail_terminal in [false, true] {
+            let driver = Driver {
+                fail_terminal,
+                ..Driver::default()
+            };
+            let mut worker = InferenceWorker::new(
+                /*now_ms*/ 100,
+                "worker.1".to_string(),
+                /*generation*/ 3,
+                grant(),
+                driver,
+            )
+            .expect("worker");
+            worker.load_model(/*now_ms*/ 100, manifest()).expect("load");
+            let expected = if fail_terminal {
+                ExecutionStatus::Failed
+            } else {
+                ExecutionStatus::Succeeded
+            };
+            assert_eq!(
+                dispatch(&mut worker, path, "model.1", "request.1"),
+                Ok(expected)
+            );
+            assert!(worker.active_requests.is_empty());
+            assert_eq!(worker.models["model.1"].active_requests, 0);
+            assert_eq!(worker.models["model.1"].lifecycle, ModelLifecycle::Ready);
+            worker.driver.fail_terminal = false;
+            assert_eq!(
+                dispatch(&mut worker, path, "model.1", "request.2"),
+                Ok(ExecutionStatus::Succeeded)
+            );
+            assert!(worker.active_requests.is_empty());
+            worker
+                .unload_model(/*now_ms*/ 100, "model.1")
+                .expect("unload");
+            assert!(worker.models.is_empty());
+            assert_eq!(worker.driver.loaded, 0);
+        }
+    }
+}
+
+#[test]
+fn failed_unload_retains_and_freezes_original_handle_until_successful_retry() {
+    let driver = Driver {
+        unload_failures: 1,
+        ..Driver::default()
+    };
+    let mut worker = InferenceWorker::new(
+        /*now_ms*/ 100,
+        "worker.1".to_string(),
+        /*generation*/ 3,
+        grant(),
+        driver,
+    )
+    .expect("worker");
+    worker.load_model(/*now_ms*/ 100, manifest()).expect("load");
+    let handle = worker.models["model.1"].handle.clone();
+    assert_eq!(
+        worker.unload_model(/*now_ms*/ 100, "model.1"),
+        Err(Error::DriverFailure("unload unresolved".to_string()))
+    );
+    assert_eq!(worker.models["model.1"].handle, handle);
+    assert_eq!(
+        worker.models["model.1"].lifecycle,
+        ModelLifecycle::UnloadUnresolved
+    );
+    assert_eq!(worker.driver.loaded, 1);
+    assert_eq!(
+        worker.load_model(/*now_ms*/ 100, manifest()),
+        Err(Error::ModelAlreadyLoaded)
+    );
+    for path in [DispatchPath::Tokens, DispatchPath::NeuronFeatures] {
+        assert_eq!(
+            dispatch(&mut worker, path, "model.1", "request.2"),
+            Err(Error::ActiveRequests)
+        );
+    }
+    worker
+        .unload_model(/*now_ms*/ 100, "model.1")
+        .expect("reconcile unload");
+    assert_eq!(worker.driver.unload_handles, vec![handle.clone(), handle]);
+    assert_eq!(worker.driver.dispatch_count, 0);
+    assert!(worker.models.is_empty());
+    assert!(worker.active_requests.is_empty());
+    assert_eq!(worker.driver.loaded, 0);
 }
