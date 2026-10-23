@@ -19,6 +19,8 @@ import subprocess
 import tempfile
 from collections import defaultdict
 
+from trace_evidence import TraceEvidenceError, audit_trace
+
 SCHEMA = "hepta.neuron-model-bakeoff.v1"
 ARMS = ("laya-english", "laya-typed", "laya-multilingual", "arctic-head", "harrier-head")
 SPLITS = ("train", "calibration", "test", "future")
@@ -238,7 +240,7 @@ def paired_ci(cases: dict, baseline: dict, candidate: dict, split: str,
             "groups": len(keys), "method": "paired-group-bootstrap-seed0-500"}
 
 
-def verify_workload(root: Path, manifest: dict) -> list[dict]:
+def verify_workload(root: Path, manifest: dict, weights_by_arm: dict[str, str]) -> list[dict]:
     rows = records(artifact(root, manifest["workload"]))
     seen = set()
     for row in rows:
@@ -255,6 +257,13 @@ def verify_workload(root: Path, manifest: dict) -> list[dict]:
                 "invalid workload measurement")
         require(type(row.get("host_id")) is str and row["host_id"], "host identity required")
         require(row.get("execution_kind") == "observed-real-model", "synthetic workload cannot qualify")
+        require(row.get("model_weights_sha256") == weights_by_arm[arm],
+                "workload model digest differs from evaluated predictions")
+        require(type(row.get("trace")) is dict, "raw request trace reference required")
+        try:
+            row["recomputed_from_raw_trace"] = audit_trace(row, records(artifact(root, row["trace"])))
+        except TraceEvidenceError as exc:
+            raise EvidenceError(str(exc)) from exc
         seen.add((arm, scale))
     require(seen == {(arm, scale) for arm in ARMS for scale in SCALES},
             "not all 5 models x 64/256/1024/4096 scales are measured")
@@ -359,9 +368,11 @@ def evaluate(root: Path, manifest: dict, trusted_key: Path | None = None) -> dic
     require(trainer[0] == trainer[1], "Arctic/Harrier heads were not trained with identical budgets")
     out = {"schema": "hepta.neuron-model-bakeoff.report.v1", "source_commit": manifest["source_commit"],
            "dataset_sha256": manifest["dataset"]["sha256"], "models": {}, "paired_accuracy_vs_english": {},
-           "workload": verify_workload(root, manifest),
+           "workload": verify_workload(root, manifest, {s["arm"]: s["weights"]["sha256"] for s in model_specs}),
            "lifecycle": verify_lifecycle(root, manifest, trusted_key),
-           "qualification": "evaluation_evidence_only_not_release_or_promotion"}
+           "qualification": "evaluation_evidence_only_not_release_or_promotion",
+           "independent_acceptance": False, "all_blockers_closed": False,
+           "production_activation_allowed": False}
     for split in ("test", "future"):
         for arm in ARMS:
             rows = [(row, predictions[arm][cid]) for cid, row in dataset.items() if row["split"] == split]
