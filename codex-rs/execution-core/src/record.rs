@@ -18,7 +18,7 @@ pub enum Currentness {
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(tag = "state", rename_all = "snake_case")]
+#[serde(tag = "state", rename_all = "snake_case", deny_unknown_fields)]
 pub enum FinalUse {
     NotGranted,
     Verified {
@@ -225,7 +225,7 @@ pub struct EffectReceipt {
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(tag = "kind", content = "record", rename_all = "snake_case")]
+#[serde(tag = "kind", content = "record", rename_all = "snake_case", deny_unknown_fields)]
 pub enum ExecutionRecord {
     ExecutionIntent(ExecutionIntent),
     ExecutionReservation(ExecutionReservation),
