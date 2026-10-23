@@ -1,0 +1,89 @@
+name: Hepta Memory Windows blocker regressions
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/exec-server/**"
+      - "codex-rs/tui/**"
+      - ".github/workflows/hepta-memory-windows-blockers.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-memory-windows-blockers-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  capability:
+    name: RPC fail-closed and transcript lifecycle (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - name: Checkout exact SHA without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify tested HEAD
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+
+      - name: Compile and execute real authorized-read RPC integration
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-exec-server --test authorized_read_rpc -- --nocapture
+
+      - name: Exercise real paginated transcript turn transitions
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-tui resume_picker::transcript_preview::tests -- --nocapture
+
+      # Keep the original aggregate command unchanged: this step only identifies
+      # which Windows async case overflows a Tokio worker stack after it fails.
+      - name: Diagnose Windows Tokio async cases individually (no waiver)
+        if: ${{ failure() && runner.os == 'Windows' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set +e
+          cargo test --locked -p codex-tui --lib 'resume_picker::transcript_preview::tests::transcript_preview_preserves_legacy_and_paginated_output' -- --exact --nocapture
+          legacy_status=$?
+          cargo test --locked -p codex-tui --lib 'resume_picker::transcript_preview::tests::paginated_transcript_preview_pages_past_old_item_budget' -- --exact --nocapture
+          paginated_status=$?
+          printf 'Exact Windows async test exit codes: legacy=%s paginated=%s\n' "$legacy_status" "$paginated_status"
+          test "$legacy_status" -eq 0 && test "$paginated_status" -eq 0
+
+      - name: Verify Rust formatting
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-exec-server --package codex-tui -- --check
+
+      - name: Ensure test checkout remained immutable
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
