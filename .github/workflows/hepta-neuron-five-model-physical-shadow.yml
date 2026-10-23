@@ -5,6 +5,10 @@ on:
     paths:
       - qa/stem-bakeoff/replacement_physical.py
       - qa/stem-bakeoff/replacement_laya_view.py
+      - qa/stem-bakeoff/replacement_head_parity.py
+      - qa/stem-bakeoff/replacement_head_parity_audit.py
+      - qa/stem-bakeoff/test_replacement_head_parity.py
+      - qa/stem-bakeoff/test_replacement_head_parity_audit.py
       - qa/stem-bakeoff/test_replacement_laya_view.py
       - qa/stem-bakeoff/test_replacement_physical.py
       - qa/stem-bakeoff/replacement_physical_audit.py
@@ -16,6 +20,7 @@ on:
       - qa/stem-bakeoff/prepare_news_cohorts.py
       - qa/stem-bakeoff/requirements-real.txt
       - docs/learning/HEPTA_NEURON_PHYSICAL_SHADOW.md
+      - docs/learning/HEPTA_NEURON_EQUAL_HEAD_P42.md
       - .github/workflows/hepta-neuron-five-model-physical-shadow.yml
   workflow_dispatch:
 
@@ -48,14 +53,20 @@ jobs:
           python3 -m py_compile qa/stem-bakeoff/replacement_laya_view.py qa/stem-bakeoff/test_replacement_laya_view.py
           python3 -m unittest discover -s qa/stem-bakeoff -p 'test_replacement_laya_view.py' -v
           python3 -m unittest discover -s qa/stem-bakeoff -p 'test_replacement_source_audit.py' -v
+          python3 -m py_compile qa/stem-bakeoff/replacement_head_parity.py qa/stem-bakeoff/replacement_head_parity_audit.py qa/stem-bakeoff/test_replacement_head_parity.py qa/stem-bakeoff/test_replacement_head_parity_audit.py
       - name: Execute actual task-Head contract negatives
         run: |
           set -euo pipefail
           python3 -m venv "$RUNNER_TEMP/contracts"
           "$RUNNER_TEMP/contracts/bin/python" -m pip install --only-binary=:all: \
             --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          "$RUNNER_TEMP/contracts/bin/python" -m pip install --only-binary=:all: 'safetensors==0.8.0'
           "$RUNNER_TEMP/contracts/bin/python" -m unittest discover \
             -s qa/stem-bakeoff -p 'test_replacement_physical.py' -v
+          "$RUNNER_TEMP/contracts/bin/python" -m unittest discover \
+            -s qa/stem-bakeoff -p 'test_replacement_head_parity.py' -v
+          "$RUNNER_TEMP/contracts/bin/python" -m unittest discover \
+            -s qa/stem-bakeoff -p 'test_replacement_head_parity_audit.py' -v
           git diff --check
           git diff --exit-code
 
@@ -158,6 +169,8 @@ jobs:
             --rows-per-split 8
             --operator-accepted-terms
             --output "$RUNNER_TEMP/physical-output.json"
+            --parity-report "$RUNNER_TEMP/equal-head-output.json"
+            --parity-head "$RUNNER_TEMP/equal-head.safetensors"
           )
           if [[ "$CANDIDATE" == laya_* ]]; then
             args+=(--laya-source "$RUNNER_TEMP/laya-source")
@@ -174,6 +187,11 @@ jobs:
           assert set(r["scores"]) == {"train","calibration","future_1","future_2","ood"}
           assert r["authority"] == "DENY_ALL" and r["production_activation_allowed"] is False
           assert r["limits"]["target_device_qualified"] is False
+          report = json.loads((Path(os.environ["RUNNER_TEMP"]) / "equal-head-output.json").read_text())
+          assert report["candidate"] == os.environ["CANDIDATE"]
+          assert report["trained_head_parameter_count"] == 1028
+          assert report["authority"] == "DENY_ALL" and report["production_activation_allowed"] is False
+          assert (Path(os.environ["RUNNER_TEMP"]) / "equal-head.safetensors").is_file()
           PY
       - name: Retain original raw outputs and exact weight metadata
         if: always()
@@ -182,6 +200,8 @@ jobs:
           name: neuron-physical-${{ matrix.candidate }}-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
             ${{ runner.temp }}/physical-output.json
+            ${{ runner.temp }}/equal-head-output.json
+            ${{ runner.temp }}/equal-head.safetensors
             ${{ runner.temp }}/physical-weight-sha256.json
             ${{ runner.temp }}/live-publisher.json
           if-no-files-found: warn
@@ -236,6 +256,14 @@ jobs:
           python3 qa/stem-bakeoff/replacement_physical_audit.py \
             --input-directory "$RUNNER_TEMP/five-arm-raw" \
             --output "$RUNNER_TEMP/five-model-original-audit.json"
+      - name: Validate five fixed-budget persisted Head artifacts and raw scores
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qa/stem-bakeoff/replacement_head_parity_audit.py \
+            --input-directory "$RUNNER_TEMP/five-arm-artifacts" \
+            --expected-sha "$EXPECTED_SHA" \
+            --output "$RUNNER_TEMP/five-arm-equal-head-audit.json"
       - name: Independently replay UCI archive and cross-check raw prediction origins
         shell: bash
         run: |
@@ -258,6 +286,7 @@ jobs:
           name: neuron-five-arm-original-audit-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
             ${{ runner.temp }}/five-model-original-audit.json
+            ${{ runner.temp }}/five-arm-equal-head-audit.json
             ${{ runner.temp }}/five-model-source-audit.json
           if-no-files-found: warn
           retention-days: 30

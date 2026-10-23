@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import platform
 import statistics
@@ -20,6 +21,7 @@ import time
 from prepare_news_cohorts import load_cohorts, sha
 from replacement_gate import EXPECTED, SPLITS, score_rows, validate_registry
 from replacement_laya_view import load_laya_cpu_isolated
+from replacement_head_parity import frozen_encode_rows, train_and_replay
 
 LAYA_SOURCE_REVISION = "c7527708f9f5220c669d8aa385077cd28d04708a"
 CATEGORIES = ("business", "entertainment", "medicine and health", "science and technology")
@@ -168,7 +170,10 @@ def _rss_bytes() -> int | None:
 
 
 def run(name: str, registry: dict, snapshot: Path, cohorts_dir: Path, archive: Path,
-        laya_source: Path | None, per_split: int) -> dict:
+        laya_source: Path | None, per_split: int,
+        parity_report_path: Path | None = None, parity_head_path: Path | None = None) -> dict:
+    if (parity_report_path is None) != (parity_head_path is None):
+        raise ValueError("equal-Head report and exact artifact path must be paired")
     import torch
     import torch.nn.functional as F
     if validate_registry(registry):
@@ -224,6 +229,10 @@ def run(name: str, registry: dict, snapshot: Path, cohorts_dir: Path, archive: P
             raise ValueError("expected exactly one complete typed DecisionModel forward per example")
         loaded_parameters = sum(p.numel() for p in agent.model.parameters())
         kind = "full_policy"
+        if parity_report_path is not None:
+            agent.model.encoder.requires_grad_(False).eval()
+            parity_features, parity_forwards = frozen_encode_rows(
+                agent.model.encoder, agent.tok, rows, pooling="cls")
     else:
         from transformers import AutoConfig, AutoModel, AutoTokenizer
         tokenizer = AutoTokenizer.from_pretrained(snapshot, local_files_only=True, trust_remote_code=False)
@@ -281,6 +290,8 @@ def run(name: str, registry: dict, snapshot: Path, cohorts_dir: Path, archive: P
                 observed[split] = F.softmax(head(raw_features[split]) / temperature, dim=-1).tolist()
         loaded_parameters = sum(p.numel() for p in encoder.parameters())
         kind = "encoder_plus_new_task_head"
+        if parity_report_path is not None:
+            parity_features, parity_forwards = raw_features, counters[0]
     expected_count = sum(map(len, rows.values()))
     scored = {}
     for split in SPLITS:
@@ -315,6 +326,30 @@ def run(name: str, registry: dict, snapshot: Path, cohorts_dir: Path, archive: P
               "production_activation_allowed": False}
     if verify_checkpoint(name, spec, snapshot) != physical:
         raise ValueError("checkpoint weight/config/tokenizer bytes drifted during experiment")
+    if parity_report_path is not None:
+        parity, head_artifact = train_and_replay(
+            parity_features, rows, train_fn=train_task_head, score_fn=score_rows)
+        parity.update({
+            "candidate": name,
+            "checkpoint_weight_sha256": physical["loaded_weight_sha256"],
+            "source_archive_sha256": manifest["source_archive_sha256"],
+            "frozen_selected_rows_sha256": dataset,
+            "real_encoder_forward_calls": parity_forwards,
+            "original_full_policy_forward_calls":
+                counters[0] if name.startswith("laya_") else 0,
+        })
+        if verify_checkpoint(name, spec, snapshot) != physical:
+            raise ValueError("original checkpoint drifted during Head parity")
+        # Exclusive immutable shadow evidence, never a production Artifact CAS.
+        with parity_head_path.open("xb") as out:
+            out.write(head_artifact)
+            out.flush()
+            os.fsync(out.fileno())
+        with parity_report_path.open("x", encoding="utf-8") as out:
+            json.dump(parity, out, sort_keys=True, indent=2, allow_nan=False)
+            out.write("\n")
+            out.flush()
+            os.fsync(out.fileno())
     return result
 
 
@@ -327,13 +362,16 @@ def main() -> int:
     parser.add_argument("--archive", type=Path, required=True)
     parser.add_argument("--laya-source", type=Path)
     parser.add_argument("--rows-per-split", type=int, default=8)
+    parser.add_argument("--parity-report", type=Path)
+    parser.add_argument("--parity-head", type=Path)
     parser.add_argument("--operator-accepted-terms", action="store_true")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if not args.operator_accepted_terms:
         parser.error("independent operator must accept the exact upstream model terms")
     result = run(args.candidate, json.loads(Path(args.registry).read_text()), args.snapshot,
-                 args.cohorts, args.archive, args.laya_source, args.rows_per_split)
+                 args.cohorts, args.archive, args.laya_source, args.rows_per_split,
+                 args.parity_report, args.parity_head)
     with args.output.open("x", encoding="utf-8") as out:
         json.dump(result, out, sort_keys=True, indent=2, allow_nan=False)
         out.write("\n")
