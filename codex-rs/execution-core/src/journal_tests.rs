@@ -248,6 +248,35 @@ fn strict_deserialization_and_hash_chain() {
 }
 
 #[test]
+fn canonical_record_and_final_use_envelopes_deny_unknown_fields() {
+    let original = ExecutionRecord::ExecutionIntent(ExecutionIntent {
+        binding: binding(ExecutionClass::ReadOnlyInspection),
+        class: ExecutionClass::ReadOnlyInspection,
+        payload_digest: digest(6),
+    });
+    let mut record = serde_json::to_value(&original).unwrap();
+    record["unexpected_authority"] = serde_json::json!("forged");
+    assert!(serde_json::from_value::<ExecutionRecord>(record).is_err());
+
+    let mut final_use = serde_json::to_value(&original).unwrap();
+    final_use["record"]["binding"]["final_use"]["grant_digest"] =
+        serde_json::json!(digest(7));
+    assert!(serde_json::from_value::<ExecutionRecord>(final_use).is_err());
+
+    // A syntactically well-formed Verified claim with an unknown extension
+    // is not valid authority; lossless canonical parsing must reject it.
+    let verified_claim = ExecutionRecord::ExecutionIntent(ExecutionIntent {
+        binding: binding(ExecutionClass::DurableProcess),
+        class: ExecutionClass::DurableProcess,
+        payload_digest: digest(6),
+    });
+    let mut verified = serde_json::to_value(verified_claim).unwrap();
+    verified["record"]["binding"]["final_use"]["extra_grant"] =
+        serde_json::json!("hidden");
+    assert!(serde_json::from_value::<ExecutionRecord>(verified).is_err());
+}
+
+#[test]
 fn external_runtime_shadow_abi_has_identical_digest() {
     let mut common = binding(ExecutionClass::ReadOnlyInspection);
     common.objective_digest = "1".repeat(64);

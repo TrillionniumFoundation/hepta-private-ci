@@ -46,7 +46,7 @@ pub enum NativeLoopPhaseV1 {
 }
 
 /// A model-provided response is not independent effect evidence.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct NativeExternalObservationV1 {
     pub operation_id: String,
     pub generation: u64,
@@ -97,17 +97,31 @@ fn valid_digest(value: &str) -> bool {
             .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
 }
 
-fn hash_transition(cursor: &NativeLoopCursorV1, next: &str, observed: &str) -> String {
+// The successor digest commits to the complete binding, step/budget/deadline,
+// previous state, continuation and externally observed action/result. Canonical
+// tuple serialization frames every field without ambiguous concatenation.
+fn hash_transition(
+    cursor: &NativeLoopCursorV1,
+    next: &str,
+    observed: &NativeExternalObservationV1,
+) -> Result<String, PortError> {
+    let transition = (
+        &cursor.binding,
+        cursor.next_step,
+        cursor.max_steps,
+        cursor.deadline_unix_ms,
+        &cursor.state_digest,
+        next,
+        observed,
+    );
+    let bytes = serde_json::to_vec(&transition)
+        .map_err(|_| PortError::Invalid("native loop transition encoding"))?;
     let mut hasher = Sha256::new();
-    hasher.update(b"hepta.native-loop.external-v1\0");
-    hasher.update(cursor.binding.run_id.as_bytes());
-    hasher.update(cursor.binding.operation_id.as_bytes());
-    hasher.update(cursor.binding.generation.to_le_bytes());
-    hasher.update(cursor.next_step.to_le_bytes());
-    hasher.update(cursor.state_digest.as_bytes());
-    hasher.update(next.as_bytes());
-    hasher.update(observed.as_bytes());
-    format!("{:x}", hasher.finalize())
+    // V2 is a deliberate incompatible domain; no V1 has been deployed.
+    hasher.update(b"hepta.native-loop.external-v2\0");
+    hasher.update((bytes.len() as u64).to_le_bytes());
+    hasher.update(bytes);
+    Ok(format!("{:x}", hasher.finalize()))
 }
 
 impl NativeLoopCursorV1 {
@@ -253,7 +267,7 @@ impl NativeLoopCursorV1 {
         let mut next = self.clone();
         if observed.status == PortTerminal::Succeeded {
             next.state_digest =
-                hash_transition(self, continuation_digest, &observed.observation_digest);
+                hash_transition(self, continuation_digest, observed)?;
             next.next_step = self
                 .next_step
                 .checked_add(1)
@@ -273,7 +287,13 @@ impl NativeLoopCursorV1 {
         &self,
         independent_receipt_digest: &str,
         verifier: &dyn NativeLoopObserver,
+        now_unix_ms: u64,
     ) -> Result<Self, PortError> {
+        // The task deadline is a completion boundary, not just an admission
+        // boundary. A delayed observer must not promote a stale candidate.
+        if now_unix_ms >= self.deadline_unix_ms {
+            return Err(PortError::Cancelled);
+        }
         if !matches!(&self.phase, NativeLoopPhaseV1::CompletionCandidate { .. })
             || !valid_digest(independent_receipt_digest)
         {
@@ -292,7 +312,10 @@ impl NativeLoopCursorV1 {
     pub fn request_cancel(&self) -> Self {
         let mut next = self.clone();
         next.phase = match &self.phase {
-            NativeLoopPhaseV1::Ready => NativeLoopPhaseV1::Cancelled,
+            NativeLoopPhaseV1::Ready | NativeLoopPhaseV1::CompletionCandidate { .. } => {
+                // An unverified completion proposal is still cancellable.
+                NativeLoopPhaseV1::Cancelled
+            }
             NativeLoopPhaseV1::AwaitingExternal {
                 step_observation_digest,
                 ..

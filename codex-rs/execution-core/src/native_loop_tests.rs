@@ -173,14 +173,20 @@ fn completion_is_a_candidate_until_verified_by_independent_observer() {
         NativeLoopPhaseV1::CompletionCandidate { .. }
     ));
     assert!(matches!(
-        candidate.accept_completion(&digest(9), &Deny),
+        candidate.accept_completion(&digest(9), &Deny, 2),
         Err(PortError::Denied)
     ));
+    let cancelled = candidate.request_cancel();
+    assert!(matches!(cancelled.phase(), NativeLoopPhaseV1::Cancelled));
+    assert!(cancelled
+        .accept_completion(&digest(9), &TrustedFixture, 2)
+        .is_err());
     let done = candidate
-        .accept_completion(&digest(9), &TrustedFixture)
+        .accept_completion(&digest(9), &TrustedFixture, 2)
         .unwrap();
     assert!(matches!(done.phase(), NativeLoopPhaseV1::Completed { .. }));
     assert!(done.next_request(2).is_err());
+    assert!(matches!(done.request_cancel().phase(), NativeLoopPhaseV1::Completed { .. }));
 }
 
 #[test]
@@ -215,4 +221,124 @@ fn continuation_digest_is_bound_to_run_and_operation() {
         .accept_external(&observed, &TrustedFixture, 2)
         .unwrap();
     assert_ne!(first_done.state_digest(), second_done.state_digest());
+}
+
+#[test]
+fn expired_completion_remains_unverified_even_if_observer_approves() {
+    let base = start();
+    let mut proposed_completion = proposed(&base, AgentStepDisposition::Completed);
+    proposed_completion.action_digest = None;
+    proposed_completion.next_state_digest = None;
+    let candidate = base.accept_step(&proposed_completion, 9_999).unwrap();
+    let before = candidate.checkpoint_digest().unwrap();
+
+    // Deadline equality must fail closed; an observer cannot extend the run.
+    for now in [10_000, 10_001, u64::MAX] {
+        assert!(matches!(
+            candidate.accept_completion(&digest(9), &TrustedFixture, now),
+            Err(PortError::Cancelled)
+        ));
+        assert_eq!(candidate.checkpoint_digest().unwrap(), before);
+    }
+    let before_deadline = candidate
+        .accept_completion(&digest(9), &TrustedFixture, 9_999)
+        .unwrap();
+    assert!(matches!(
+        before_deadline.phase(),
+        NativeLoopPhaseV1::Completed { .. }
+    ));
+}
+
+#[test]
+fn variable_length_run_and_operation_ids_cannot_alias_successor_state() {
+    // With the old unframed concatenation these two different pairs produced
+    // identical successor state SHA-256 digests despite independent bindings.
+    let mut first_binding = binding();
+    first_binding.run_id = "a".into();
+    first_binding.operation_id = "bc".into();
+    let mut second_binding = binding();
+    second_binding.run_id = "ab".into();
+    second_binding.operation_id = "c".into();
+
+    let first = NativeLoopCursorV1::begin(first_binding, digest(4), 3, 10_000).unwrap();
+    let second = NativeLoopCursorV1::begin(second_binding, digest(4), 3, 10_000).unwrap();
+    let first_waiting = first
+        .accept_step(&proposed(&first, AgentStepDisposition::InvokeModel), 1)
+        .unwrap();
+    let second_waiting = second
+        .accept_step(&proposed(&second, AgentStepDisposition::InvokeModel), 1)
+        .unwrap();
+    let mut first_observation = external(NativeExternalKindV1::Model);
+    first_observation.operation_id = "bc".into();
+    let mut second_observation = external(NativeExternalKindV1::Model);
+    second_observation.operation_id = "c".into();
+
+    let first_done = first_waiting
+        .accept_external(&first_observation, &TrustedFixture, 2)
+        .unwrap();
+    let second_done = second_waiting
+        .accept_external(&second_observation, &TrustedFixture, 2)
+        .unwrap();
+    assert_ne!(first_done.state_digest(), second_done.state_digest());
+}
+
+#[test]
+fn action_and_step_receipt_identity_are_part_of_successor_state() {
+    let initial = start();
+    let first_proposal = proposed(&initial, AgentStepDisposition::InvokeModel);
+    let mut second_proposal = first_proposal.clone();
+    second_proposal.action_digest = Some(digest(9));
+
+    let first_waiting = initial.accept_step(&first_proposal, 1).unwrap();
+    let second_waiting = initial.accept_step(&second_proposal, 1).unwrap();
+    let first_observation = external(NativeExternalKindV1::Model);
+    let mut second_observation = first_observation.clone();
+    second_observation.action_digest = Some(digest(9));
+
+    let first_done = first_waiting
+        .accept_external(&first_observation, &TrustedFixture, 2)
+        .unwrap();
+    let second_done = second_waiting
+        .accept_external(&second_observation, &TrustedFixture, 2)
+        .unwrap();
+    assert_ne!(first_done.state_digest(), second_done.state_digest());
+
+    // Different step receipts must also produce distinct replay state, even if
+    // the model or tool output digest is identical.
+    let mut third_proposal = first_proposal;
+    third_proposal.observation_digest = digest(10);
+    let third_waiting = initial.accept_step(&third_proposal, 1).unwrap();
+    let mut third_observation = first_observation;
+    third_observation.step_observation_digest = digest(10);
+    let third_done = third_waiting
+        .accept_external(&third_observation, &TrustedFixture, 2)
+        .unwrap();
+    assert_ne!(first_done.state_digest(), third_done.state_digest());
+}
+
+#[test]
+fn full_binding_and_resource_envelope_are_committed_in_successor_state() {
+    let base = start();
+    let mut other_binding = binding();
+    other_binding.host = "host-2".into();
+    other_binding.policy_digest = digest(13);
+    let other = NativeLoopCursorV1::begin(other_binding, digest(4), 3, 10_000).unwrap();
+
+    let base_waiting = base
+        .accept_step(&proposed(&base, AgentStepDisposition::InvokeModel), 1)
+        .unwrap();
+    let other_waiting = other
+        .accept_step(&proposed(&other, AgentStepDisposition::InvokeModel), 1)
+        .unwrap();
+    let outcome = external(NativeExternalKindV1::Model);
+    let base_result = base_waiting
+        .accept_external(&outcome, &TrustedFixture, 2)
+        .unwrap();
+    let other_result = other_waiting
+        .accept_external(&outcome, &TrustedFixture, 2)
+        .unwrap();
+
+    // The result may look identical to a model, but belongs to different
+    // principal/policy/host boundary metadata and cannot share state identity.
+    assert_ne!(base_result.state_digest(), other_result.state_digest());
 }
