@@ -1,0 +1,93 @@
+name: Hepta frozen COCO cosine control (research only)
+
+on:
+  pull_request:
+    paths:
+      - qa/stem-bakeoff/cheap_cosine_control.py
+      - qa/stem-bakeoff/test_cheap_cosine_control.py
+      - docs/learning/STEM_P42_COSINE_CONTROL.md
+      - .github/workflows/hepta-cheap-cosine-shadow.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-cosine-shadow-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  frozen-archive-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Check exact candidate source
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+      - name: Install pinned numerical dependency only
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/p42-venv"
+          "$RUNNER_TEMP/p42-venv/bin/python" -m pip install --only-binary=:all: --no-cache-dir 'numpy==2.2.6'
+      - name: Execute baseline and fail-closed tests
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/p42-venv/bin/python" -m unittest discover \
+            -s qa/stem-bakeoff -p 'test_cheap_cosine_control.py' -v \
+            2>&1 | tee "$RUNNER_TEMP/p42-tests.log"
+      - name: Restore SHA-bound original COCO source-pair research evidence
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/p42-venv/bin/python" qa/stem-bakeoff/multimodal_evidence.py \
+            --directory qa/stem-bakeoff/evidence/20261022-real-multimodal \
+            --manifest-sha256 2a853d6c975b30d98a8c79348f01bb3f5b26f36793f2986826a5deed3ea4454e \
+            --output "$RUNNER_TEMP/p42-original" \
+            2>&1 | tee "$RUNNER_TEMP/p42-restore.log"
+      - name: Fit train-only cosine control and compare every historical test row
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/p42-venv/bin/python" qa/stem-bakeoff/cheap_cosine_control.py \
+            --restored "$RUNNER_TEMP/p42-original" \
+            --archive-manifest qa/stem-bakeoff/evidence/20261022-real-multimodal/archive-manifest.json \
+            --output "$RUNNER_TEMP/p42-result" \
+            2>&1 | tee "$RUNNER_TEMP/p42-result.log"
+          "$RUNNER_TEMP/p42-venv/bin/python" - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])/"p42-result"
+          report=json.loads((root/"report.json").read_bytes())
+          rows=json.loads((root/"test-rows.json").read_bytes())
+          assert report["original_trained_head_correct"] == 251
+          assert report["cohorts"]["test"] == {"rows":256,"pair_blocks":64}
+          assert report["paired_learned_head_vs_cheap_cosine"]["new_independent_trial"] is False
+          assert not report["new_blind_trial"] and not report["production_activation_allowed"]
+          assert report["authority"] == "DENY_ALL" and report["semantic_quality_qualified"] is False
+          assert len(rows) == 256 and all("cheap_prediction" in r and "learned_prediction" in r for r in rows)
+          print("Historical post-hoc control completed; production activation remains prohibited")
+          PY
+      - name: Preserve per-row, resource and test evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: p42-cosine-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/p42-tests.log
+            ${{ runner.temp }}/p42-restore.log
+            ${{ runner.temp }}/p42-result.log
+            ${{ runner.temp }}/p42-result/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Ensure source unchanged
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
