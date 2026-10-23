@@ -14,6 +14,7 @@ import tempfile
 from typing import Any, Callable
 
 MAX_TOKENIZER_FILES = 64
+MAX_TOKENIZER_ENTRIES = 512
 MAX_TOKENIZER_BYTES = 256 * 1024 * 1024
 COMPAT_CONFIG = "tokenizer_config.json"
 
@@ -33,7 +34,11 @@ def _inventory(root: Path) -> dict[str, str]:
         raise ValueError("original tokenizer directory is missing or linked")
     hashes: dict[str, str] = {}
     total = 0
-    for path in sorted(root.rglob("*")):
+    entries = 0
+    for path in root.rglob("*"):
+        entries += 1
+        if entries > MAX_TOKENIZER_ENTRIES or len(path.relative_to(root).parts) > 8:
+            raise ValueError("tokenizer compatibility tree exceeds fixed limits")
         if path.is_symlink():
             raise ValueError("tokenizer tree must not contain linked members")
         if path.is_dir():
@@ -103,6 +108,11 @@ def load_laya_cpu_isolated(snapshot: Path, agent_factory: Callable[..., Any]) ->
             (snapshot / "model.safetensors").resolve(strict=True)
         )
         agent = agent_factory(str(view), device="cpu")
+        if _inventory(tokenizer) != original:
+            raise ValueError("Laya loader changed original tokenizer checkpoint bytes")
+        for relative, digest in fixed.items():
+            if _hash_file(snapshot / relative) != digest:
+                raise ValueError(f"Laya loader changed original {relative} bytes")
         effective = _inventory(view / "tokenizer")
         if any(original[key] != effective.get(key)
                for key in original if key != COMPAT_CONFIG):
@@ -115,11 +125,6 @@ def load_laya_cpu_isolated(snapshot: Path, agent_factory: Callable[..., Any]) ->
                 raise ValueError("Laya loader applied an unregistered tokenizer rewrite")
         if _hash_file(view / "rl_agent_config.json") != fixed["rl_agent_config.json"]:
             raise ValueError("Laya loader changed typed-policy config inside private view")
-        if _inventory(tokenizer) != original:
-            raise ValueError("Laya loader changed original tokenizer checkpoint bytes")
-        for relative, digest in fixed.items():
-            if _hash_file(snapshot / relative) != digest:
-                raise ValueError(f"Laya loader changed original {relative} bytes")
         report = {
             "isolation": "private_tokenizer_copy_original_weight_symlink",
             "original_tokenizer_inventory_sha256": _inventory_digest(original),
