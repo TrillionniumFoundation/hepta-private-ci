@@ -492,3 +492,5 @@ Terminate it:
 {"method":"process/exited","params":{"processId":"proc-1","seq":3,"exitCode":0,"sandboxDenied":false}}
 {"method":"process/closed","params":{"processId":"proc-1","seq":4}}
 ```
+
+[Linux authorized-read source and original package qualification](acceptance/2026-10-23-linux-authorized-read/README.md) retains all intermediate failures, the O_PATH admission review, final512-case scope and its native/full-workspace limits.

@@ -1,0 +1,30 @@
+{
+  "recordedAt": "2026-10-23T20:33:47.235531+00:00",
+  "commit": "44b4820a43ee9a34d4c0fddb7762e94fed59a9b1",
+  "tree": "3e28621eeb30dfc9beda9953ee6a4a21437cdafa",
+  "sourceBase": "f3ee06d59275582cdcccfdec44bab96e57db6a49",
+  "testedDiffSha256": "72af10b06c0ea9cbdd21a6ea3cc5bb18398a0e56750205c185c900ee43c736c7",
+  "reconstructedTestedTree": "f0582f47957f73a76189956764a3954a2a239b07",
+  "prePostTwoSourceFilesEqual": true,
+  "focused": {
+    "run": 25,
+    "passed": 25,
+    "failed": 0
+  },
+  "owning": {
+    "run": 511,
+    "passed": 511,
+    "failed": 0,
+    "retried": 0,
+    "originalSkipped": 3,
+    "testSeconds": 56.59
+  },
+  "newKernelContract": "Initial ordinary private-file O_PATH descriptor read fails EBADF with no returned bytes, while fstat/statx/proc descriptor path still prove identity. No device opened.",
+  "productionAndRuntimeProbeInitialPins": "O_PATH|CLOEXEC",
+  "noTestsAfterFixOrFmt": true,
+  "posttestDifference": "Formatting only, retained separately; final bytes not retested.",
+  "qualifiedScope": "Initial pin stage only. New complete readable-pin chain still required by root review before main integration.",
+  "completeReadablePinChainQualified": false,
+  "nativeAsterinasQualified": false,
+  "finalUnifiedFullQualified": false
+}
