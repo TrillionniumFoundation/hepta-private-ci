@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -22,6 +23,17 @@ def ranked_metrics(ranked: list[str], positives: set[str], k: int = 10) -> tuple
     dcg = sum(1 / math.log2(i + 1) for i, item in enumerate(top, 1) if item in positives)
     ideal = sum(1 / math.log2(i + 1) for i in range(1, min(k, len(positives)) + 1))
     return mrr, dcg / ideal, recall
+
+
+def retrieval_query_kwargs(model_name: str, prompts: object) -> dict[str, str]:
+    """Use the upstream's query-only training instruction, not a document prompt."""
+    if model_name != "harrier-270m":
+        return {}
+    require(isinstance(prompts, dict) and
+            isinstance(prompts.get("web_search_query"), str) and
+            bool(prompts["web_search_query"]),
+            "Harrier query-side web_search_query instruction unavailable")
+    return {"prompt_name": "web_search_query"}
 
 
 def main() -> int:
@@ -75,9 +87,10 @@ def main() -> int:
             [docs[i] for i in ids], batch_size=16, normalize_embeddings=True,
             convert_to_numpy=True,
         )
+        query_options = retrieval_query_kwargs(a.model, getattr(model, "prompts", None))
         query_vec = model.encode(
             [row["query"] for row in queries], batch_size=16, normalize_embeddings=True,
-            convert_to_numpy=True,
+            convert_to_numpy=True, **query_options,
         )
         scores = np.asarray(query_vec) @ np.asarray(doc_vec).T
         results = []
@@ -94,6 +107,10 @@ def main() -> int:
             "tokenizer_digest": inventory["tokenizer"], "runtime_digest": runtime_identity(),
             "device_digest": device_identity(), "queries_sha256": file_hash(a.queries),
             "corpus_sha256": file_hash(a.corpus), "n_queries": len(results),
+            "query_instruction_name": query_options.get("prompt_name"),
+            "query_instruction_sha256": hashlib.sha256(
+                model.prompts[query_options["prompt_name"]].encode("utf-8")
+            ).hexdigest() if query_options else None,
             "mrr_at_10": sum(x["mrr"] for x in results) / len(results),
             "ndcg_at_10": sum(x["ndcg"] for x in results) / len(results),
             "recall_at_10": sum(x["recall"] for x in results) / len(results),
