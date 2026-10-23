@@ -424,24 +424,73 @@ fn ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded()
     assert_eq!(fs::read(path).unwrap(), before);
 
     let path = temp.path().join("faulted-ledger");
+    #[cfg(windows)]
+    let ledger = ledger_at(&path, &fixture);
+    #[cfg(not(windows))]
     let mut ledger = ledger_at(&path, &fixture);
-    OpenOptions::new()
-        .write(true)
-        .open(&path)
-        .unwrap()
-        .set_len(/*size*/ 0)
-        .unwrap();
-    let mut ports = Ports::new(&fixture);
-    assert!(matches!(
-        run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, /*now*/ 50),
-        Err(EvaluatedShadowError::Ledger(
-            ProductionLedgerError::Durable(DurableLedgerError::Corrupt)
-        ))
-    ));
-    assert!(matches!(
-        ledger.records(),
-        Err(ProductionLedgerError::Durable(DurableLedgerError::Poisoned))
-    ));
+    #[cfg(windows)]
+    {
+        // Mandatory Windows byte-range locks must refuse a second handle's
+        // destructive injection while the original authenticated owner lives.
+        let original = empty_ledger_baseline(&temp.path().join("faulted-ledger-control"), &fixture);
+        let bytes_before = fs::metadata(&path).unwrap().len();
+        let denied = OpenOptions::new()
+            .write(true)
+            .open(&path)
+            .and_then(|file| file.set_len(/*size*/ 0))
+            .expect_err("active Windows ledger owner must deny external truncation");
+        assert!(
+            matches!(denied.raw_os_error(), Some(5 | 32 | 33)),
+            "unexpected native active-lock denial: {denied}"
+        );
+        assert_eq!(fs::metadata(&path).unwrap().len(), bytes_before);
+        assert!(ledger.records().unwrap().is_empty());
+        drop(ledger);
+        assert_eq!(fs::read(&path).unwrap(), original);
+
+        // Closed-owner corruption is then actually injected. Recovery must
+        // fail before a typed LedgerWriter can admit any learning evidence.
+        let file = OpenOptions::new().write(true).open(&path).unwrap();
+        file.set_len(/*size*/ 0).unwrap();
+        file.sync_all().unwrap();
+        drop(file);
+        let file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(&path)
+            .unwrap();
+        assert!(matches!(
+            DurableLedger::recover(
+                file,
+                digest("host-authorized-ledger"),
+                /*max_records*/ 1,
+                LedgerRecovery::Unacknowledged
+            ),
+            Err(DurableLedgerError::MissingHeader)
+        ));
+    }
+    #[cfg(not(windows))]
+    {
+        // Preserve the original live-owner corruption and poison regression
+        // on platforms where a second handle can cross an advisory lock.
+        OpenOptions::new()
+            .write(true)
+            .open(&path)
+            .unwrap()
+            .set_len(/*size*/ 0)
+            .unwrap();
+        let mut ports = Ports::new(&fixture);
+        assert!(matches!(
+            run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, /*now*/ 50),
+            Err(EvaluatedShadowError::Ledger(
+                ProductionLedgerError::Durable(DurableLedgerError::Corrupt)
+            ))
+        ));
+        assert!(matches!(
+            ledger.records(),
+            Err(ProductionLedgerError::Durable(DurableLedgerError::Poisoned))
+        ));
+    }
 }
 
 #[test]
