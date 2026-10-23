@@ -179,3 +179,7 @@ A later [parent-reported exact-reference note](MATHEMATICAL_REFERENCE_NOTE.md)
 records positive/zero/negative mathematical controls and the distinction between
 two refinement units and complete control cost. Those toy numbers were not
 rerun here or used as project benefit evidence; the frozen experiment is unchanged.
+
+The later [group-wide budget clarification and next TRAIN proposal](BUDGET_REVIEW_AND_NEXT_TRAIN_PROPOSAL.md)
+points directly to all nine candidates' complete accounts and proposes one
+fixed dense block-update design. That proposal has not been implemented or run.
