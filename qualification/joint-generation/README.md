@@ -182,9 +182,24 @@ loading or any of the 36 service calls**: exact float equality rejected original
 build costs differing from their frozen decimal representation by less than
 0.00001 nanoseconds. The binding now compares canonical nanoseconds; a real
 archive metadata-only check passes. H3 itself remains consumed and failed;
-there is still no current-weight headroom measurement. H2+H3 actual startup
+it produced no current-weight headroom measurement. H2+H3 actual startup
 research costs, 1.326427460 CPU seconds, remain recorded. The new source repair
-does not authorize another collection or change any scientific threshold.
+did not itself authorize another collection or change any scientific threshold.
+
+The later parent-authorized [H4 technical recovery](runs/codex-cloud-dynamic-train-headroom-h4/REPORT.md)
+passed actual no-data entry preflight, then completed all36 fixed TRAIN service
+calls once, exit0:110592 rows,1728 batches,12.813186359 complete execution CPU
+seconds and2.419694784B declared units. No model was fitted. Complete seed/row/source
+pairings and old/new cost ledgers are published. Free two-action raw oracle
+minus static NDU/full averages **-0.000213380872** on these current weights and
+TRAIN rows. The conditional median-cost net proxy averages **-0.001503815134**,
+but is not a strict CPU-net upper bound. Positive seed results and material
+timing nonadditivity remain visible. H2/H3 failures/costs stay preserved.
+Stop enlarging this full/low critic or repeating its timing; dynamic superiority
+is still unconfirmed. The [post-H4 architecture proposal](independent/POST_H4_DYNAMIC_PROPOSAL.md)
+is a separate richer-task proposal only, with strong compiled/static comparators
+and unknown budget feasibility. No new training, formal opening or AV generation
+is executed or authorized by it.
 
 **The first configured Codex Cloud execution passed the frozen finite-scene
 acceptance on 2026-10-23**, using source commit

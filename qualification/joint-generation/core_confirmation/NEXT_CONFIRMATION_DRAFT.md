@@ -412,3 +412,19 @@ supply no model/utility result and do not reopen H3. Actual startup research
 cost remains H2 0.519258463 s plus H3 0.807168997 s. Retain this technical
 selection/error history in any later development or confirmation registration.
 No formal alpha or new independent evidence was created by these failures.
+
+The subsequently parent-authorized H4 technical execution completed the fixed
+36-call TRAIN collection once, without fitting or selecting any model. Complete
+cost was12.813186359 execution CPU seconds and2.419694784B declared work; H2/H3
+startup costs remain additional. Its saved empirical two-action raw ceiling
+minus static NDU/full averages -0.000213380872, with seed signs(+,-,-).
+The conditional median-cost proxy averages -0.001503815134, signs(-,-,+),
+and is not a strict complete-net bound. All row/source/seed pairings,36raw calls,
+model identities and historical build costs are retained in the
+[H4 report](../runs/codex-cloud-dynamic-train-headroom-h4/REPORT.md).
+Stop expanding this specific full/low critic/timing route. This does not prove
+all dynamic systems ineffective, erase old failures or supply formal evidence.
+The separate [richer content-state proposal](../independent/POST_H4_DYNAMIC_PROPOSAL.md)
+has no execution authority, new samples or alpha allocation. Any future
+confirmation must include H4 and the parallel content/NDU study histories,
+not treat a changed architecture/task as a reset of past research.
