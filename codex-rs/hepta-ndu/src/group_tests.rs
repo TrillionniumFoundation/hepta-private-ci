@@ -169,11 +169,8 @@ fn exhausted_resource_budget_abstains_with_positive_net() {
     // With a nonzero remaining balance, the existing positive-net baseline
     // remains advisory; an execution owner must still reserve actual work.
     trace.cells[0].cost_micros = subject.resource_ceiling_micros - 1;
-    assert_eq!(
-        must(decide_group_continuation_v1(&subject, &trace, &candidates))
-            .selected_candidate_id,
-        "continue"
-    );
+    let still_possible = must(decide_group_continuation_v1(&subject, &trace, &candidates));
+    assert_eq!(still_possible.selected_candidate_id, "continue");
 
     trace.cells[0].cost_micros = subject.resource_ceiling_micros + 1;
     assert_eq!(
