@@ -12,7 +12,7 @@ python3 -m unittest discover -v
 python3 experiment.py > synthetic-results.json
 ```
 
-Python 3.11+ standard library only. The output declares `kind=synthetic-shadow-only`, `model_training=false`, `neural_decoding=false` and `gpu_benchmark=false` regardless of synthetic gains. `mean_local_controller_us` is a local process measurement not comparable with the fabricated decoder costs. The exploratory bound `mean - 2.5*SE` is **not** a production confidence interval or a guaranteed anytime bound.
+Python 3.11+ standard library only. The output declares `kind=synthetic-shadow-only`, `model_training=false`, `neural_decoding=false` and `gpu_benchmark=false` regardless of synthetic gains. `mean_local_controller_us` is a local process measurement not comparable with the fabricated decoder costs. The exploratory bound `mean - 2.5*SE` is **not** a production confidence interval or a guaranteed anytime bound. The standalone A0 and A1 paths do not load fitted policy advantages; training fits are frozen before timed inference to avoid charging first-arm cold-start work to A0. Even after this fix, microsecond process timing is noisy and never a fair GPU/energy or end-to-end quality-matched production benchmark.
 
 ## A0–A5 predeclared contrasts
 
