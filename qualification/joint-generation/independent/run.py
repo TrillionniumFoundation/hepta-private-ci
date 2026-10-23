@@ -643,7 +643,12 @@ def refine_content(selected, progress, ledgers, costs, plan, common, train, val,
                 step_units = sum(ledgers[system].estimate_kernel(**adaptation_step_work(
                     state["model"].dimensions, system, plan)) for state in states.values())
                 guard = max(plan["cpu_guard_seconds"], 2 * sum(state["last_step_cpu"] for state in states.values()))
-                if admit_round(costs[system]["refinement"], ledgers[system], costs[system]["cpu_seconds"],
+                active_now = sum(cost.get("refinement_cpu_seconds", 0.0) for cost in costs.values())
+                pending_scheduler = max(0.0, cpu_clock() - start - (active_now - active_before))
+                # Reserve elapsed shared bookkeeping now; the finally block
+                # still charges its actual full total exactly once to each arm.
+                if admit_round(costs[system]["refinement"], ledgers[system],
+                               costs[system]["cpu_seconds"] + pending_scheduler,
                                step_units, guard_seconds=guard):
                     eligible.append(system)
             if not eligible:
@@ -1013,6 +1018,7 @@ def train(freeze_path, out, *, experiment=None, variant=None, build_index=None, 
             if progress:
                 write_json(run / "partial-build.json", {"test_opened": profile.marker_path.exists(),
                     "all_completed_candidates": all_candidates, "selected": selected,
+                    "completed_selected_service_measures": val_measures,
                     "execution_schedule": schedule, "systems": {name: {
                         "ledger": value["ledger"].snapshot() if "ledger" in value else None,
                         "cost": value.get("cost"), "completed_candidates": value.get("candidates", []),
