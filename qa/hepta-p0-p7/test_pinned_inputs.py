@@ -145,9 +145,9 @@ class PinnedInputTests(unittest.TestCase):
         raw_protocol = json.dumps(protocol, sort_keys=True).encode("utf-8")
         raw_sources = json.dumps(sources, sort_keys=True).encode("utf-8")
         raw_history = json.dumps(history, sort_keys=True).encode("utf-8")
-        raw_episodes = ("\\n".join(
+        raw_episodes = ("\n".join(
             json.dumps(row, sort_keys=True) for row in records
-        ) + "\\n").encode("utf-8")
+        ) + "\n").encode("utf-8")
         paths = {
             "protocol": self.put("protocol.json", raw_protocol),
             "sources": self.put("sources.json", raw_sources),
