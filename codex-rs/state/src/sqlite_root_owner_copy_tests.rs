@@ -374,6 +374,118 @@ fn root_owner_copy_injected_sync_error_leaves_unactivated_orphan() {
     drop(fixture.bind());
 }
 
+#[test]
+#[ignore = "requires actual Root0 and a protected destination"]
+fn root_owner_copy_bounds_image_and_refuses_path_names_before_creation() {
+    for length in [0, 128 * 1024 * 1024 + 1] {
+        let fixture = Fixture::root_owned();
+        OpenOptions::new()
+            .write(true)
+            .open(fixture.source.home().join("cognitive_1.sqlite3"))
+            .unwrap()
+            .set_len(length)
+            .unwrap();
+        let result = fixture
+            .bind()
+            .materialize_consolidated_candidate(&fixture.source(), OsStr::new(CANDIDATE));
+        assert!(matches!(result, Err(SqliteRecoveryError::Unavailable)));
+        assert!(!fixture.destination.home().join(CANDIDATE).exists());
+    }
+    let fixture = Fixture::root_owned();
+    for name in [
+        "../escaped.sqlite3",
+        "/absolute.sqlite3",
+        "nested/candidate.sqlite3",
+        "foo.sqlite3/",
+        ".cognitive-active-v1",
+        "line\nbreak.sqlite3",
+    ] {
+        assert!(
+            fixture
+                .bind()
+                .materialize_consolidated_candidate(&fixture.source(), OsStr::new(name))
+                .is_err(),
+            "{name:?}"
+        );
+    }
+    assert!(!fixture.root.join("escaped.sqlite3").exists());
+    fixture.assert_predecessor_unchanged();
+}
+
+#[test]
+#[ignore = "requires actual Root0, a protected destination and controlled child barriers"]
+fn root_owner_copy_replacement_during_write_never_targets_replacement_entries() {
+    for replacement in ["candidate", "hardlink", "directory"] {
+        let fixture = Fixture::root_owned();
+        let mut command = child_command("copy-refuse");
+        command
+            .env("HEPTA_OWNER_COPY_ROOT", &fixture.root)
+            .env("HEPTA_OWNER_COPY_STAGE", "created")
+            .stdin(Stdio::piped());
+        let mut child = start_child(command);
+        assert_eq!(
+            child.signals.recv_timeout(Duration::from_secs(5)).unwrap(),
+            "created"
+        );
+        let candidate = fixture.destination.home().join(CANDIDATE);
+        match replacement {
+            "candidate" | "hardlink" => {
+                std::fs::rename(&candidate, fixture.destination.home().join("held-orphan"))
+                    .unwrap();
+                if replacement == "candidate" {
+                    private_file(&candidate, b"replacement must stay unchanged", 60001);
+                } else {
+                    std::fs::hard_link(fixture.destination.home().join(OLD), &candidate).unwrap();
+                }
+            }
+            "directory" => {
+                std::fs::rename(fixture.destination.home(), fixture.root.join("held-owner"))
+                    .unwrap();
+                std::fs::create_dir(fixture.destination.home()).unwrap();
+                std::fs::set_permissions(
+                    fixture.destination.home(),
+                    std::fs::Permissions::from_mode(0o700),
+                )
+                .unwrap();
+                std::os::unix::fs::chown(
+                    fixture.destination.home(),
+                    Some(60001),
+                    /*gid*/ None,
+                )
+                .unwrap();
+            }
+            _ => unreachable!(),
+        }
+        child.child.stdin.as_mut().unwrap().write_all(&[1]).unwrap();
+        assert_eq!(
+            child.signals.recv_timeout(Duration::from_secs(5)).unwrap(),
+            "rejected"
+        );
+        assert!(child.child.wait().unwrap().success());
+        drop(child);
+        if replacement == "directory" {
+            assert!(
+                std::fs::read_dir(fixture.destination.home())
+                    .unwrap()
+                    .next()
+                    .is_none()
+            );
+            assert_eq!(
+                std::fs::read(fixture.root.join("held-owner").join(POINTER)).unwrap(),
+                format!("{OLD}\n").as_bytes()
+            );
+        } else {
+            fixture.assert_predecessor_unchanged();
+            let expected = if replacement == "candidate" {
+                b"replacement must stay unchanged".as_slice()
+            } else {
+                b"dirty sentinel ".as_slice()
+            };
+            assert_eq!(std::fs::read(&candidate).unwrap(), expected);
+        }
+    }
+}
+
 // Private test-only barrier. Production exposes no callback or fault switch.
 pub(super) fn checkpoint(stage: &str) -> Result<(), SqliteRecoveryError> {
     let Ok(requested) = std::env::var("HEPTA_OWNER_COPY_STAGE") else {
@@ -473,7 +585,7 @@ fn child_helper() {
                 std::thread::park();
             }
         }
-        "copy" => {
+        "copy" | "copy-refuse" => {
             let root = PathBuf::from(std::env::var_os("HEPTA_OWNER_COPY_ROOT").unwrap());
             let source = config(root.join("source"));
             let guard = source
@@ -483,8 +595,12 @@ fn child_helper() {
                 RootSqliteOwnerCopy::bind_registered(&config(root.join("owner")), OsStr::new(LOCK))
                     .unwrap()
                     .materialize_consolidated_candidate(&guard, OsStr::new(CANDIDATE));
-            assert!(std::env::var("HEPTA_OWNER_COPY_STAGE").unwrap() == "fail-directory-sync");
+            assert!(
+                std::env::var("HEPTA_OWNER_COPY_STAGE").unwrap() == "fail-directory-sync"
+                    || std::env::var("HEPTA_OWNER_COPY_CHILD").unwrap() == "copy-refuse"
+            );
             assert!(result.is_err());
+            println!("ROOT_OWNER_COPY rejected");
         }
         value => panic!("unexpected controlled child role: {value}"),
     }
