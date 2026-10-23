@@ -41,7 +41,7 @@ pub enum NativeLoopPhaseV1 {
     Abstained,
     Cancelled,
     Quarantined {
-        observation_digest: String,
+        reason_digest: String,
     },
 }
 
@@ -100,6 +100,10 @@ fn valid_digest(value: &str) -> bool {
 fn hash_transition(cursor: &NativeLoopCursorV1, next: &str, observed: &str) -> String {
     let mut hasher = Sha256::new();
     hasher.update(b"hepta.native-loop.external-v1\0");
+    hasher.update(cursor.binding.run_id.as_bytes());
+    hasher.update(cursor.binding.operation_id.as_bytes());
+    hasher.update(cursor.binding.generation.to_le_bytes());
+    hasher.update(cursor.next_step.to_le_bytes());
     hasher.update(cursor.state_digest.as_bytes());
     hasher.update(next.as_bytes());
     hasher.update(observed.as_bytes());
@@ -209,7 +213,7 @@ impl NativeLoopCursorV1 {
             AgentStepDisposition::Abstained => NativeLoopPhaseV1::Abstained,
             AgentStepDisposition::Cancelled => NativeLoopPhaseV1::Cancelled,
             AgentStepDisposition::Indeterminate => NativeLoopPhaseV1::Quarantined {
-                observation_digest: observed.observation_digest.clone(),
+                reason_digest: observed.observation_digest.clone(),
             },
         };
         Ok(next)
@@ -257,7 +261,7 @@ impl NativeLoopCursorV1 {
             next.phase = NativeLoopPhaseV1::Ready;
         } else {
             next.phase = NativeLoopPhaseV1::Quarantined {
-                observation_digest: observed.observation_digest.clone(),
+                reason_digest: observed.observation_digest.clone(),
             };
         }
         Ok(next)
@@ -293,7 +297,7 @@ impl NativeLoopCursorV1 {
                 step_observation_digest,
                 ..
             } => NativeLoopPhaseV1::Quarantined {
-                observation_digest: step_observation_digest.clone(),
+                reason_digest: step_observation_digest.clone(),
             },
             _ => self.phase.clone(),
         };

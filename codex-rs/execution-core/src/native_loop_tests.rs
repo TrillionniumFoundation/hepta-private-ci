@@ -193,3 +193,26 @@ fn deadline_and_step_budgets_reject_reopening() {
     assert!(NativeLoopCursorV1::begin(binding(), digest(4), 0, 100).is_err());
     assert!(NativeLoopCursorV1::begin(binding(), digest(0), 3, 100).is_err());
 }
+
+#[test]
+fn continuation_digest_is_bound_to_run_and_operation() {
+    let first = start();
+    let first_waiting = first
+        .accept_step(&proposed(&first, AgentStepDisposition::InvokeModel), 1)
+        .unwrap();
+    let first_done = first_waiting
+        .accept_external(&external(NativeExternalKindV1::Model), &TrustedFixture, 2)
+        .unwrap();
+    let mut distinct_binding = binding();
+    distinct_binding.operation_id = "operation-native-2".into();
+    let second = NativeLoopCursorV1::begin(distinct_binding, digest(4), 3, 10_000).unwrap();
+    let second_waiting = second
+        .accept_step(&proposed(&second, AgentStepDisposition::InvokeModel), 1)
+        .unwrap();
+    let mut observed = external(NativeExternalKindV1::Model);
+    observed.operation_id = "operation-native-2".into();
+    let second_done = second_waiting
+        .accept_external(&observed, &TrustedFixture, 2)
+        .unwrap();
+    assert_ne!(first_done.state_digest(), second_done.state_digest());
+}
