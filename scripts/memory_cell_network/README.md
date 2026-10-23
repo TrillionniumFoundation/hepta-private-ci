@@ -15,7 +15,12 @@ lifecycle mechanics; its output is not a pretrained memory quality result.
 
 Run the authority with `--source-root` and `--scope` to bind the existing
 `MemoryService`. Every frontier request then calls `MemoryService.authority_view`
-against its durable source owner. A service correction or revocation is visible
+against its durable source owner. The CLI also binds `parameter_binding`: every
+read and publish must match the currently admitted source publication, including
+its epoch, manifest and roots. New facts or conflicts invalidate an old placement
+even when no old source root was withdrawn. A clean rebuild and explicit new
+placement publication restore reads; a stale checkpoint cannot be republished
+as current merely by advancing its placement generation. A service correction or revocation is visible
 on the next network admission without an extra frontier synchronization call.
 Only the authority receives the source directory. Workers receive scope, roots,
 manifest pins, placement metadata, checkpoint bytes, and questions; they receive
@@ -25,7 +30,10 @@ Bound mode rejects manual `frontier` RPC writes. An authority without a bound
 source service has an explicit operator-managed frontier RPC for isolated
 mechanism experiments. That mode must not be used as a cached replacement for a
 live source owner. `Authority(database, source_frontier=provider)` also accepts a
-trusted callable returning `Frontier` for embedding into a service.
+trusted callable returning `Frontier` for embedding into a service. Embeddings
+that require current-publication admission must additionally supply
+`source_binding=service.parameter_binding`; frontier-only embedding remains the
+explicit withdrawal-only research mode, not full current-source admission.
 
 One bound service owns one `(scope, cell_id, role)` identity. Independent source
 services should use distinct scopes and authorities. Combining multiple source
@@ -119,3 +127,14 @@ sockets; a sandbox denial is a test failure, never a skipped success.
 For reviewable commits, the dependencies divide into: (1) wire, authority and
 durable observations; (2) checkpoint transport, worker and client; (3) process CLI
 and network integration tests; (4) source-service binding and documentation.
+
+Source-bound snapshots now carry a closed `publication` status. Workers persist
+the returned frontier and placement before rejecting unavailable/stale publication
+status, including withdrawals received on denied reads. Upgrade the authority and
+workers together: the closed snapshot schema rejects older/missing status fields
+rather than silently falling back to withdrawal-only behavior.
+
+Restart claims assume the trusted authority keeps its source-bound configuration
+and transport identity. Workers do not persist a separate requirement that an
+authority must remain source-bound; restarting the authority in withdrawal-only
+mode is not a supported downgrade or a demonstrated fail-closed recovery path.
