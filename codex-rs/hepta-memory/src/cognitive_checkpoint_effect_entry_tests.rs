@@ -255,11 +255,46 @@ async fn managed_effect_entry_holds_exact_entered_cut_through_synchronous_channe
         .unwrap()
         .unwrap();
     assert_eq!(receipt.state, LocalOutcomeState::Committed);
-    tokio::time::timeout(Duration::from_secs(5), competitor)
+    let admission = tokio::time::timeout(Duration::from_secs(5), competitor)
         .await
         .unwrap()
-        .unwrap()
         .unwrap();
+    if let Err(error) = admission {
+        // A connection checked out before another Current publication can
+        // lose Dirty commit permission. This is an explicit rolled-back
+        // SQLite commit, not evidence of an admitted or replayable effect.
+        assert!(
+            matches!(
+                &error,
+                ProductionWriterError::Local(crate::LocalLeaseOutboxError::Store(
+                    crate::CognitiveStoreError::Unavailable(reason)
+                )) if reason.contains("(code: 531)")
+            ),
+            "unexpected competing admission failure: {error:?}"
+        );
+        let retained: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM cognitive_local_events WHERE occurrence_key = ?",
+        )
+        .bind("effect-entry-competitor")
+        .fetch_one(fixture.store.observation_pool())
+        .await
+        .unwrap();
+        assert_eq!(retained, 0);
+        assert!(!fixture.store.commit_gate.is_fenced());
+        fixture
+            .writer
+            .admit("effect-entry-competitor", "fixture", "{}")
+            .await
+            .unwrap();
+    }
+    assert_eq!(
+        fixture
+            .writer
+            .status("effect-entry-competitor")
+            .await
+            .unwrap(),
+        LocalOutcomeState::Queued
+    );
     sqlx::query("BEGIN IMMEDIATE")
         .execute(&mut *lock_competitor)
         .await
