@@ -46,7 +46,7 @@ pub enum NativeLoopPhaseV1 {
 }
 
 /// A model-provided response is not independent effect evidence.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct NativeExternalObservationV1 {
     pub operation_id: String,
     pub generation: u64,
@@ -97,44 +97,31 @@ fn valid_digest(value: &str) -> bool {
             .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
 }
 
-// Variable-length run and operation identities must use an unambiguous
-// encoding. Concatenation aliases (run="a", operation="bc") with
-// (run="ab", operation="c") and can reuse a state digest across runs.
-fn hash_text_field(hasher: &mut Sha256, text: &str) {
-    hasher.update((text.len() as u64).to_le_bytes());
-    hasher.update(text.as_bytes());
-}
-
+// The successor digest commits to the complete binding, step/budget/deadline,
+// previous state, continuation and externally observed action/result. Canonical
+// tuple serialization frames every field without ambiguous concatenation.
 fn hash_transition(
     cursor: &NativeLoopCursorV1,
     next: &str,
     observed: &NativeExternalObservationV1,
-) -> String {
+) -> Result<String, PortError> {
+    let transition = (
+        &cursor.binding,
+        cursor.next_step,
+        cursor.max_steps,
+        cursor.deadline_unix_ms,
+        &cursor.state_digest,
+        next,
+        observed,
+    );
+    let bytes = serde_json::to_vec(&transition)
+        .map_err(|_| PortError::Invalid("native loop transition encoding"))?;
     let mut hasher = Sha256::new();
-    // V2 binds all observed causal data and frames variable-length fields.
-    // No deployed V1 transition has been qualified or promoted.
+    // V2 is a deliberate incompatible domain; no V1 has been deployed.
     hasher.update(b"hepta.native-loop.external-v2\0");
-    hash_text_field(&mut hasher, &cursor.binding.run_id);
-    hash_text_field(&mut hasher, &cursor.binding.operation_id);
-    hasher.update(cursor.binding.generation.to_le_bytes());
-    hasher.update(cursor.next_step.to_le_bytes());
-    hash_text_field(&mut hasher, &cursor.state_digest);
-    hash_text_field(&mut hasher, next);
-    let kind = match observed.kind {
-        NativeExternalKindV1::Model => "model",
-        NativeExternalKindV1::Tool => "tool",
-        NativeExternalKindV1::Wake => "wake",
-    };
-    hash_text_field(&mut hasher, kind);
-    if let Some(action) = &observed.action_digest {
-        hasher.update([1]);
-        hash_text_field(&mut hasher, action);
-    } else {
-        hasher.update([0]);
-    }
-    hash_text_field(&mut hasher, &observed.step_observation_digest);
-    hash_text_field(&mut hasher, &observed.observation_digest);
-    format!("{:x}", hasher.finalize())
+    hasher.update((bytes.len() as u64).to_le_bytes());
+    hasher.update(bytes);
+    Ok(format!("{:x}", hasher.finalize()))
 }
 
 impl NativeLoopCursorV1 {
@@ -280,7 +267,7 @@ impl NativeLoopCursorV1 {
         let mut next = self.clone();
         if observed.status == PortTerminal::Succeeded {
             next.state_digest =
-                hash_transition(self, continuation_digest, observed);
+                hash_transition(self, continuation_digest, observed)?;
             next.next_step = self
                 .next_step
                 .checked_add(1)
