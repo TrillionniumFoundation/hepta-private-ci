@@ -6,6 +6,7 @@ use hepta_control_core::runtime_view::RuntimeUnavailable;
 pub(crate) struct RuntimeDisplay {
     pub(crate) text: String,
     pub(crate) busy: bool,
+    pub(crate) refresh_available: bool,
 }
 impl Default for RuntimeDisplay {
     fn default() -> Self {
@@ -13,6 +14,7 @@ impl Default for RuntimeDisplay {
             return Self {
                 text: "Read-only metadata is unavailable in this native product port. No native owner bridge is installed; chat and commands remain unavailable.".to_owned(),
                 busy: false,
+                refresh_available: false,
             };
         }
         Self {
@@ -22,8 +24,37 @@ impl Default for RuntimeDisplay {
                 RuntimeReadState::Unavailable(RuntimeUnavailable::NotConnected).display_text()
             ),
             busy: false,
+            refresh_available: true,
         }
     }
+}
+
+#[cfg(feature = "native-presentation")]
+pub(crate) fn publish_native(
+    cx: &mut makepad_widgets::Cx,
+    ui: &makepad_widgets::WidgetRef,
+    observation: crate::native_presentation::NativeConsoleObservation,
+) {
+    use makepad_widgets::*;
+    let display = cx.global::<RuntimeDisplay>();
+    if display.text == observation.text
+        && display.busy == observation.refresh_pending
+        && display.refresh_available
+    {
+        return;
+    }
+    display.text = observation.text;
+    display.busy = observation.refresh_pending;
+    display.refresh_available = true;
+    let text = display.text.clone();
+    let enabled = !display.busy;
+    ui.button(cx, ids!(owner_refresh)).set_enabled(cx, enabled);
+    ui.button(cx, ids!(mobile_owner_refresh))
+        .set_enabled(cx, enabled);
+    ui.label(cx, ids!(console_status)).set_text(cx, &text);
+    ui.label(cx, ids!(mobile_console_status))
+        .set_text(cx, &text);
+    ui.redraw(cx);
 }
 
 #[cfg(target_arch = "wasm32")]
