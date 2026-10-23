@@ -14,7 +14,7 @@ from .lifecycle import Progress, atomic_json, worker_signals
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-FROZEN = HERE / "FROZEN-recovery-v2.json"
+FROZEN = HERE / "FROZEN-recovery-v3.json"
 PROTOCOL = HERE / "protocol-recovery-v2.json"
 MARKER = HERE / "D-PROBE-OPENED.json"
 NS = 10**9
@@ -40,7 +40,7 @@ def freeze():
     write_json(FROZEN, {"schema": "hepta.fashion-D-freeze.v1", "sources": sources(),
         "source_commit": head, "numpy": importlib.metadata.version("numpy"),
         "threadpoolctl": importlib.metadata.version("threadpoolctl"),
-        "previous_freeze_sha256": hashlib.sha256((HERE / "FROZEN.json").read_bytes()).hexdigest(),
+        "previous_freeze_sha256": hashlib.sha256((HERE / "FROZEN-recovery-v2.json").read_bytes()).hexdigest(),
         "candidate_commit": "dedbb0a0d3470dd58bfafbe770c8d916f7ff17cc",
         "created_unix_ns": time.time_ns(), "scope": "D preprobe only; no formal evaluation"})
 
@@ -224,6 +224,19 @@ def close_shared_preparation(fit, policy, metadata, budget, protocol):
     return pindex, folds, row["end_cpu_ns"]
 
 
+def close_seed_build(seed, build_start, policy_start, progress, budget, protocol):
+    progress.complete_stage("policy", seed)
+    row = budget.row(f"seed-{seed}-complete-build", build_start)
+    end = row["end_cpu_ns"]
+    # Keep the observed row even on failure. Both subcaps use this exact cut;
+    # comparison/transition CPU after it belongs to the following phase.
+    if end - build_start > protocol["seed_build_CPU_ns"]:
+        raise BudgetExceeded("actual seed build CPU cap exceeded at closing timestamp")
+    if end - policy_start > protocol["policy_selection_export_CPU_ns"]:
+        raise BudgetExceeded("actual policy CPU cap exceeded at closing timestamp")
+    return end
+
+
 def worker(data_path, out):
     preflight(data_path, out)
     if any(os.environ.get(key) != "1" for key in
@@ -300,9 +313,8 @@ def worker(data_path, out):
             budget.check(start_ns=policy_start, phase_ns=protocol["policy_selection_export_CPU_ns"])
             budget.check(start_ns=build_start, phase_ns=protocol["seed_build_CPU_ns"])
             if not oracle > best_static:
-                progress.complete_stage("policy", seed)
-                budget.check(start_ns=policy_start, phase_ns=protocol["policy_selection_export_CPU_ns"])
-                build_boundary = budget.row(f"seed-{seed}-complete-build", build_start)["end_cpu_ns"]
+                build_boundary = close_seed_build(seed, build_start, policy_start,
+                                                   progress, budget, protocol)
                 terminal["status"] = "negative_development_probe"
                 terminal["reason"] = "predeclared negative: no positive oracle raw headroom"
                 break
@@ -321,9 +333,8 @@ def worker(data_path, out):
                 raise RuntimeError("actor export/reload mismatch")
             budget.check(start_ns=policy_start, phase_ns=protocol["policy_selection_export_CPU_ns"])
             budget.check(start_ns=build_start, phase_ns=protocol["seed_build_CPU_ns"])
-            progress.complete_stage("policy", seed)
-            budget.check(start_ns=policy_start, phase_ns=protocol["policy_selection_export_CPU_ns"])
-            build_boundary = budget.row(f"seed-{seed}-complete-build", build_start)["end_cpu_ns"]
+            build_boundary = close_seed_build(seed, build_start, policy_start,
+                                               progress, budget, protocol)
             if not value > best_constant:
                 terminal["status"] = "negative_development_probe"
                 terminal["reason"] = "predeclared negative: OOF does not improve best constant final action"
