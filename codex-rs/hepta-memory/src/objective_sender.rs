@@ -231,6 +231,40 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         .await
     }
 
+    /// Check the current retained observations and append under the same original
+    /// BEGIN IMMEDIATE transaction. This is for trusted composition code which
+    /// must preserve a semantic invariant across concurrently recovered handles;
+    /// it supplies no authority or sending permission. The check must be bounded,
+    /// synchronous and nonblocking: no I/O, waiting, or re-entry into this store.
+    /// A check rejection rolls back before append or checkpoint acknowledgement.
+    /// Success still uses the original live checks, immutable append and independent ACK.
+    /// Exact retries are checked again and re-acknowledged without another event.
+    pub async fn retain_observation_checked<F>(
+        &self,
+        ticket: &ObjectiveSenderTicket,
+        observation: &ObjectiveSenderObservation,
+        check: F,
+    ) -> Result<(), ObjectiveSenderError>
+    where
+        F: FnOnce(&ObjectiveSenderSnapshot) -> Result<(), ObjectiveSenderError> + Send,
+    {
+        self.require_ticket_owner(ticket)?;
+        match ticket
+            .local
+            .compare_exchange(STARTED, OBSERVED, Ordering::SeqCst, Ordering::SeqCst)
+        {
+            Ok(_) | Err(OBSERVED) | Err(RECOVERED) => {}
+            Err(_) => return Err(ObjectiveSenderError::ObservationConflict),
+        }
+        self.append_with_check(
+            ticket,
+            store::EventKind::from(observation.kind),
+            &observation.exact_json,
+            Some(check),
+        )
+        .await
+    }
+
     /// Consume only this live unused local permission. A failed durable ACK
     /// cannot rearm it; the same local cancellation can only be re-acknowledged.
     pub async fn retain_local_cancellation(
@@ -265,6 +299,26 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         kind: store::EventKind,
         observation: &str,
     ) -> Result<(), ObjectiveSenderError> {
+        self.append_with_check(
+            ticket,
+            kind,
+            observation,
+            /*check*/
+            None::<fn(&ObjectiveSenderSnapshot) -> Result<(), ObjectiveSenderError>>,
+        )
+        .await
+    }
+
+    async fn append_with_check<F>(
+        &self,
+        ticket: &ObjectiveSenderTicket,
+        kind: store::EventKind,
+        observation: &str,
+        check: Option<F>,
+    ) -> Result<(), ObjectiveSenderError>
+    where
+        F: FnOnce(&ObjectiveSenderSnapshot) -> Result<(), ObjectiveSenderError> + Send,
+    {
         self.writer.verify_current_authority().await?;
         if ticket.request.origin.agent_id != *self.writer.owner_agent_id() {
             return Err(ObjectiveSenderError::IdentityMismatch);
@@ -278,6 +332,10 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
             .map_err(unavailable)?;
         let fence = self.current_fence(&mut transaction).await?;
         store::require_request(&mut transaction, &ticket.request).await?;
+        if let Some(check) = check {
+            let snapshot = store::snapshot(&mut transaction, &ticket.request).await?;
+            check(&snapshot)?;
+        }
         store::append(&mut transaction, &ticket.request, &fence, kind, observation).await?;
         self.writer.sender_live_check()?;
         transaction

@@ -8,6 +8,141 @@ use sqlx::Connection;
 use sqlx::sqlite::SqliteConnectOptions;
 use sqlx::sqlite::SqliteConnection;
 
+#[derive(Clone, Copy)]
+enum ObservationPath {
+    SnapshotThenAppend,
+    CheckInTransaction,
+}
+
+fn require_same_publication(
+    snapshot: &ObjectiveSenderSnapshot,
+    publication: &ObjectiveSenderObservation,
+) -> Result<(), ObjectiveSenderError> {
+    if snapshot.observations.iter().any(|retained| {
+        retained.kind == ObjectiveSenderObservationKind::History && retained != publication
+    }) {
+        return Err(ObjectiveSenderError::IdentityMismatch);
+    }
+    Ok(())
+}
+
+async fn race_recovered_publications(
+    fixture: &Fixture,
+    path: ObservationPath,
+) -> [(
+    ObjectiveSenderObservation,
+    Result<(), ObjectiveSenderError>,
+    usize,
+); 2] {
+    // These are deliberately contradictory test metadata, never authenticated
+    // publications. The original generic owner does not interpret their meaning.
+    let publications = ["compiled", "explicit_abstain"].map(|outcome| {
+        observation(
+            ObjectiveSenderObservationKind::History,
+            &serde_json::json!({
+                "type": "historical_publication", "publication_sequence": 17,
+                "chain_digest": "44".repeat(32), "outcome": outcome,
+            })
+            .to_string(),
+        )
+    });
+    let barrier = Arc::new(tokio::sync::Barrier::new(2));
+    let tasks = publications.map(|publication| {
+        // Separate capabilities and recovered tickets over the same real owner.
+        let sender = fixture.sender();
+        let barrier = Arc::clone(&barrier);
+        tokio::spawn(async move {
+            let ticket = sender.recover_pending(request()).await.unwrap();
+            let stale_snapshot = sender.snapshot(&ticket).await.unwrap();
+            assert!(stale_snapshot.observations.is_empty());
+            require_same_publication(&stale_snapshot, &publication).unwrap();
+            // Neither contender can append until BOTH prechecks saw no history.
+            barrier.wait().await;
+            let mut checked_length = stale_snapshot.observations.len();
+            let result = match path {
+                ObservationPath::SnapshotThenAppend => {
+                    sender.retain_observation(&ticket, &publication).await
+                }
+                ObservationPath::CheckInTransaction => {
+                    sender
+                        .retain_observation_checked(&ticket, &publication, |current| {
+                            checked_length = current.observations.len();
+                            require_same_publication(current, &publication)
+                        })
+                        .await
+                }
+            };
+            (publication, result, checked_length)
+        })
+    });
+    let [first, second] = tasks;
+    let (first, second) = tokio::join!(first, second);
+    [first.unwrap(), second.unwrap()]
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn checked_negative_control_separate_prechecks_allow_conflicting_generic_appends() {
+    let fixture = Fixture::new().await;
+    let sender = fixture.sender();
+    drop(sender.retain_before_send(request()).await.unwrap());
+    let outcomes = race_recovered_publications(&fixture, ObservationPath::SnapshotThenAppend).await;
+    let recovered = sender.recover_pending(request()).await.unwrap();
+    let snapshot = sender.snapshot(&recovered).await.unwrap();
+    assert_eq!(snapshot.observations.len(), 2);
+    for (publication, result, precheck_length) in outcomes {
+        result.unwrap();
+        assert_eq!(precheck_length, 0);
+        assert!(snapshot.observations.contains(&publication));
+    }
+    // This counterexample uses the real unchanged generic append, not a model:
+    // both conflicting histories committed and received independent test ACKs.
+    assert_eq!(fixture.checkpoint.seen.lock().unwrap().len(), 3);
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn checked_concurrent_history_keeps_one_publication_and_idempotent_acknowledgement() {
+    let fixture = Fixture::new().await;
+    let sender = fixture.sender();
+    drop(sender.retain_before_send(request()).await.unwrap());
+    let [
+        (first, first_result, first_length),
+        (second, second_result, second_length),
+    ] = race_recovered_publications(&fixture, ObservationPath::CheckInTransaction).await;
+    let winner = match (first_result, second_result) {
+        (Ok(()), Err(ObjectiveSenderError::IdentityMismatch)) => first,
+        (Err(ObjectiveSenderError::IdentityMismatch), Ok(())) => second,
+        results => panic!("exactly one checked publication must survive: {results:?}"),
+    };
+    let mut checked_lengths = [first_length, second_length];
+    checked_lengths.sort_unstable();
+    assert_eq!(checked_lengths, [0, 1]);
+    assert_eq!(fixture.checkpoint.seen.lock().unwrap().len(), 2);
+
+    let recovered = sender.recover_pending(request()).await.unwrap();
+    let snapshot = sender.snapshot(&recovered).await.unwrap();
+    assert!(snapshot.observations == vec![winner.clone()]);
+    assert!(!snapshot.locally_cancelled);
+    let before_retry = fixture.store.recovery_anchor().await.unwrap();
+    sender
+        .retain_observation_checked(&recovered, &winner, |current| {
+            require_same_publication(current, &winner)
+        })
+        .await
+        .unwrap();
+    assert_eq!(fixture.checkpoint.seen.lock().unwrap().len(), 3);
+    assert!(sender.snapshot(&recovered).await.unwrap().observations == vec![winner]);
+    assert_eq!(fixture.store.recovery_anchor().await.unwrap(), before_retry);
+    assert!(matches!(
+        sender.mark_send_started(&recovered).await,
+        Err(ObjectiveSenderError::SendPermissionUnavailable)
+    ));
+    // Exercise the original complete semantic startup audit of the surviving
+    // immutable chain. This is not a process-crash or production genesis claim.
+    let audited =
+        CognitiveStore::open(&layout(&fixture.temp, fixture.writer.owner_agent_id())).await;
+    assert!(audited.is_ok());
+}
+
 #[tokio::test]
 async fn retain_binds_exact_raw_to_one_permit_without_effect_outbox_rows() {
     let fixture = Fixture::new().await;
