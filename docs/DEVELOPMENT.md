@@ -689,6 +689,20 @@ edge re-selection still requires target-specific CI. This slice does not close
 the remaining vulnerable dependencies or the full PN0 security baseline; native
 consumer checks and the original security gates remain required.
 
+PN0's Python SDK code-generation slice replaces datamodel-code-generator 0.31.2
+with 0.64.0 through the existing Python test dependency and uv lock. The nine
+matched generator advisories concern untrusted schema/import/reference handling;
+this developer tool is not a model-serving dependency. The maintenance entrypoint
+keeps Python 3.10 syntax, existing Enum classes, plain discriminator literals,
+required nullable account email and the existing omitted-section request value.
+The generated artifact is a mechanical regeneration exception; all 888 existing
+model/enum names, field requirements, defaults, aliases and constraints are
+compared. Inline literal titles and redundant RootModel population settings
+change; eight unconstrained list annotations become list[Any]. Existing SDK
+tests and deterministic regeneration must pass with the CI-pinned uv version.
+Real external-service tests remain opt-in and separate from this scoped check;
+the remaining dependency and exact-source CI gates are still required.
+
 ## 20. First vertical learning slice
 
 `C1-PROMPTED-MEMORY-RETRIEVAL-RANK` executes:

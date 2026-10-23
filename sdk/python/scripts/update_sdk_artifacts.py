@@ -410,16 +410,6 @@ def _variant_collision_key(base: str, variant: dict[str, Any], generated_name: s
     return "|".join(parts)
 
 
-def _set_discriminator_titles(props: dict[str, Any], owner: str) -> None:
-    for key in DISCRIMINATOR_KEYS:
-        prop = props.get(key)
-        if not isinstance(prop, dict):
-            continue
-        if _string_literal(prop) is None or "title" in prop:
-            continue
-        prop["title"] = f"{owner}{_to_pascal_case(key)}"
-
-
 def _annotate_variant_list(variants: list[Any], base: str | None) -> None:
     seen = {
         variant["title"]
@@ -451,27 +441,22 @@ def _annotate_variant_list(variants: list[Any], base: str | None) -> None:
             seen.add(generated_name)
             variant_name = generated_name
 
-        if isinstance(variant_name, str):
-            props = variant.get("properties")
-            if isinstance(props, dict):
-                _set_discriminator_titles(props, variant_name)
-
-        _annotate_schema(variant, base)
+        _annotate_schema(variant, base, is_inline=True)
 
 
-def _annotate_schema(value: Any, base: str | None = None) -> None:
+def _annotate_schema(value: Any, base: str | None = None, *, is_inline: bool = False) -> None:
     if isinstance(value, list):
         for item in value:
-            _annotate_schema(item, base)
+            _annotate_schema(item, base, is_inline=True)
         return
 
     if not isinstance(value, dict):
         return
 
-    owner = value.get("title")
-    props = value.get("properties")
-    if isinstance(owner, str) and isinstance(props, dict):
-        _set_discriminator_titles(props, owner)
+    # Name object/union variants and standalone definitions. Generator 0.64
+    # otherwise wraps inline single literals, changing field/union runtime values.
+    if is_inline and _string_literal(value) is not None:
+        value.pop("title", None)
 
     one_of = value.get("oneOf")
     if isinstance(one_of, list):
@@ -497,7 +482,7 @@ def _annotate_schema(value: Any, base: str | None = None) -> None:
     for key, child in value.items():
         if key in {"oneOf", "anyOf", "definitions", "$defs"}:
             continue
-        _annotate_schema(child, base)
+        _annotate_schema(child, base, is_inline=True)
 
 
 def _make_chatgpt_account_email_nullable(schema: dict[str, Any]) -> None:
@@ -551,6 +536,17 @@ def _normalized_schema_bundle_text(schema_dir: Path) -> str:
     schema = json.loads(schema_bundle_path(schema_dir).read_text())
     _make_chatgpt_account_email_nullable(schema)
     definitions = schema.get("definitions", {})
+    # Keep the existing Python constructor's omitted-section behavior. The
+    # serialized request still contains sectionId: null, as the server requires.
+    move = definitions.get("ThreadSectionMoveParams", {})
+    section = move.get("properties", {}).get("sectionId", {})
+    if section.get("type") != ["string", "null"] or move.get("required") != [
+        "sectionId",
+        "threadId",
+    ]:
+        raise RuntimeError("ThreadSectionMoveParams sectionId schema changed")
+    section["default"] = None
+    move["required"] = ["threadId"]
     if isinstance(definitions, dict):
         for definition in definitions.values():
             if isinstance(definition, dict):
@@ -584,7 +580,9 @@ def generate_v2_all(schema_dir: Path) -> None:
                 "--output-model-type",
                 "pydantic_v2.BaseModel",
                 "--target-python-version",
-                "3.11",
+                "3.10",
+                # Keep the existing Enum API and the SDK's declared Python floor.
+                "--no-use-specialized-enum",
                 "--use-standard-collections",
                 "--enum-field-as-literal",
                 "one",
@@ -623,17 +621,10 @@ def _require_nullable_chatgpt_account_email(out_path: Path) -> None:
         class_end = len(source)
 
     class_source = source[class_start:class_end]
-    nullable_with_default = "    email: str | None = None"
-    if class_source.count(nullable_with_default) != 1:
+    if class_source.splitlines().count("    email: str | None") != 1:
         raise RuntimeError(
-            "Generated ChatgptAccount email did not have the expected nullable shape"
+            "Generated ChatgptAccount email did not have the required nullable shape"
         )
-    class_source = class_source.replace(
-        nullable_with_default,
-        "    email: str | None",
-        1,
-    )
-    out_path.write_text(source[:class_start] + class_source + source[class_end:])
 
 
 def _preserve_reasoning_effort_enum(out_path: Path) -> None:
