@@ -147,3 +147,32 @@ executions, source-group statistical intervals and independent terminal
 outcomes. The helper explicitly returns
 `causal_or_statistical_superiority_established=false`. The synthetic
 regression tests are not a natural model execution or a closed P3 gate.
+
+## Frozen cohort and source-balanced factorial follow-up
+
+The original `factorial_admission.py` validates four-arm pairing but cannot
+tell if the caller **omitted an entire difficult world** after seeing its result.
+It also reports row-pooled averages, which can reverse a result when a single
+original source produces many correlated draws.
+
+`registered_factorial.py` introduces a stricter **additive** research route:
+an immutable exact (seed, original source, world, draw) roster, a fixed physical
+unit, fixed independent scoring digest, and fixed maximal failed-output loss
+are supplied before evaluation. It rejects unregistered/missing draws even
+when all four arms are otherwise perfectly paired. A failed output retains its
+observed cost and must carry the prespecified failure loss. A completed output
+cannot exceed that loss ceiling simply by switching its status flag.
+
+The reporting path keeps the old pooled mean as a **diagnostic only** and also
+computes an equal-training-seed / equal-original-source average (with per-source
+draw means). A synthetic adversarial fixture deliberately reverses the apparent
+effect: 100 favorable repeated draws from one source per seed outweigh one
+adverse source in the pooled score, whereas balanced source weighting correctly
+shows the registered contrast is adverse. It additionally rejects changed
+random draws, decoders and scoring identities.
+
+All roster entries, digests, real physical costs and failure classifications
+are **still caller-supplied**. The cohort hash is a reproducible integrity
+identifier, not independent attestation or protection against a malicious
+pre-registration owner. This is neither executed 2x2 training nor real
+scientific superiority. Retain DRAFT/SHADOW_ONLY/DENY_ALL/HOLD_NO_GO.
