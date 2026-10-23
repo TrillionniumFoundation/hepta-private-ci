@@ -26,6 +26,19 @@ MAX_PAIR_COMPARISONS = 2_000_000
 MAX_VIOLATIONS = 4096
 MAX_INPUT_BYTES = 16 * 1024 * 1024
 
+# Immutable original negative-v1 source roster bytes; the caller's SHA alone
+# cannot attest that the full historical sources were actually supplied.
+PINNED_HISTORIES = {
+    "hepta.grounded-cohort.v1": {
+        "sha256": "71168c26fffdd913d71a69d8708cec957f55dc2bece112c9c50153fbf31de75d",
+        "sources": 256,
+    },
+    "hepta.ndu.historical-exclusions.v1": {
+        "sha256": "4c2b88f85c9ef5fea08790775a652798a72e9281bed1534561f14c681e7bba9d",
+        "sources": 384,
+    },
+}
+
 
 class CohortContractError(ValueError):
     pass
@@ -127,6 +140,40 @@ def load_sources(document, origin, *, historical=False):
             task_ids.add(task_id)
             sources.append(_checked_image(item, f"{origin}:{split}:{n}"))
     return sources
+
+
+
+
+def verify_pinned_history_bytes(raw_documents, documents):
+    """Require both complete original historical manifests by frozen raw SHA."""
+    if len(raw_documents) != 2 or len(documents) != 2:
+        raise CohortContractError(
+            "v2 requires both independently pinned historical manifests"
+        )
+    seen = set()
+    receipts = {}
+    for index, (raw, document) in enumerate(zip(raw_documents, documents, strict=True)):
+        schema = document.get("schema") if isinstance(document, dict) else None
+        expected = PINNED_HISTORIES.get(schema)
+        if expected is None or schema in seen:
+            raise CohortContractError(
+                f"history:{index}: duplicate or unknown pinned historical schema"
+            )
+        sha = hashlib.sha256(raw).hexdigest()
+        if sha != expected["sha256"]:
+            raise CohortContractError(
+                f"history:{index}: independently pinned historical SHA256 mismatch"
+            )
+        count = len(load_sources(document, f"history:{index}", historical=True))
+        if count != expected["sources"]:
+            raise CohortContractError(
+                f"history:{index}: original history source-count mismatch"
+            )
+        receipts[schema] = {"sha256": sha, "sources": count}
+        seen.add(schema)
+    if seen != set(PINNED_HISTORIES):
+        raise CohortContractError("incomplete independently pinned history roster")
+    return receipts
 
 
 def collision(first, second, distance):
@@ -306,6 +353,7 @@ def main(argv=None):
 
         candidate = decode_unambiguous_json(read_bounded(args.candidate))
         history = []
+        history_bytes = []
         for path, expected in zip(args.historical, args.historical_sha256):
             if not isinstance(expected, str) or not HEX256.fullmatch(expected):
                 raise CohortContractError("invalid externally supplied historical SHA256")
@@ -313,10 +361,13 @@ def main(argv=None):
             if hashlib.sha256(raw).hexdigest() != expected:
                 raise CohortContractError("historical SHA256 mismatch")
             history.append(decode_unambiguous_json(raw))
+            history_bytes.append(raw)
+        pinned_receipts = verify_pinned_history_bytes(history_bytes, history)
         result = check_cohort(candidate, history,
                               max_hamming=args.max_dhash_distance,
                               require_complete_history=True)
         result["caller_pinned_historical_bytes"] = True
+        result["historical_bytes_match_frozen_original_roots"] = pinned_receipts
     except (OSError, json.JSONDecodeError, CohortContractError) as exc:
         result = {"schema": "hepta.ndu-cohort-firewall.v2", "status": "fail",
                   "error": str(exc), "observable_image_identity_disjoint": False}

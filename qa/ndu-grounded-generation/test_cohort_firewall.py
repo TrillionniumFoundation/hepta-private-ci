@@ -210,16 +210,22 @@ class CohortFirewallTests(unittest.TestCase):
         with self.assertRaisesRegex(CohortContractError, "source limit exceeded"):
             check_cohort(too_many, [self.old])
         many = manifest(10000)
-        for split in ("train", "dev", "calibration", "test"):
+        # Distinct task IDs across all four splits: otherwise the earlier
+        # canonical task-identity guard aborts before the comparison budget.
+        for split_index, split in enumerate(
+            ("train", "dev", "calibration", "test")
+        ):
             many["splits"][split]["sources"] = [
-                image(30000 + 1000 * n + i)
-                for n, i in enumerate(range(400))]
+                image(30000 + split_index * 1000 + i) for i in range(400)
+            ]
             many["splits"][split]["count"] = 400
         old = manifest(2000)
-        for split in ("train", "dev", "calibration", "test"):
+        for split_index, split in enumerate(
+            ("train", "dev", "calibration", "test")
+        ):
             old["splits"][split]["sources"] = [
-                image(40000 + 1000 * n + i)
-                for n, i in enumerate(range(400))]
+                image(40000 + split_index * 1000 + i) for i in range(400)
+            ]
             old["splits"][split]["count"] = 400
         with self.assertRaisesRegex(CohortContractError, "comparison budget"):
             check_cohort(many, [old])
@@ -512,6 +518,90 @@ class CohortFirewallTests(unittest.TestCase):
                 self.assertEqual(history.read_bytes(), original_history)
                 self.assertFalse(destination.is_symlink())
                 self.assertEqual(json.loads(destination.read_text())["status"], "fail")
+
+
+    @staticmethod
+    def _complete_synthetic_histories():
+        v1 = manifest()
+        offset = 0
+        for split, count in zip(
+            ("train", "dev", "calibration", "test"), (128, 32, 32, 64)
+        ):
+            v1["splits"][split] = {
+                "count": count,
+                "sources": [image(offset + i) for i in range(count)],
+            }
+            offset += count
+        excluded = {
+            "schema": "hepta.ndu.historical-exclusions.v1",
+            "source_sample": {
+                "images": [
+                    {**image(1000 + i), "image_id": 1000 + i}
+                    for i in range(384)
+                ]
+            },
+        }
+        docs = [v1, excluded]
+        raw = [json.dumps(d, sort_keys=True).encode() for d in docs]
+        pins = {
+            doc["schema"]: {
+                "sha256": hashlib.sha256(data).hexdigest(),
+                "sources": 256 if i == 0 else 384,
+            }
+            for i, (doc, data) in enumerate(zip(docs, raw, strict=True))
+        }
+        return docs, raw, pins
+
+    def test_original_history_byte_roots_reject_caller_rehash(self):
+        import cohort_firewall
+
+        docs, raw, pins = self._complete_synthetic_histories()
+        # Complete, well-formed synthetic v1 and pre-v1 rosters cannot
+        # masquerade as the frozen original evidence by self-signing SHA256.
+        with self.assertRaisesRegex(CohortContractError, "independently pinned"):
+            cohort_firewall.verify_pinned_history_bytes(raw, docs)
+        # Inject synthetic roots only within this isolated unit test to
+        # exercise successful matching, reordering and tamper rejection.
+        with mock.patch.object(cohort_firewall, "PINNED_HISTORIES", pins):
+            receipt = cohort_firewall.verify_pinned_history_bytes(raw, docs)
+            self.assertEqual(set(receipt), set(pins))
+            self.assertEqual(
+                receipt,
+                cohort_firewall.verify_pinned_history_bytes(raw[::-1], docs[::-1]),
+            )
+            with self.assertRaisesRegex(CohortContractError, "requires both"):
+                cohort_firewall.verify_pinned_history_bytes(raw[:1], docs[:1])
+            with self.assertRaisesRegex(CohortContractError, "duplicate or unknown"):
+                cohort_firewall.verify_pinned_history_bytes(raw[:1] * 2, docs[:1] * 2)
+            with self.assertRaisesRegex(CohortContractError, "SHA256 mismatch"):
+                cohort_firewall.verify_pinned_history_bytes(
+                    [raw[0] + b" ", raw[1]], docs
+                )
+
+    def test_cli_denies_two_complete_but_self_pinned_original_rosters(self):
+        import cohort_firewall
+
+        docs, raw, _ = self._complete_synthetic_histories()
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            candidate = root / "candidate.json"
+            candidate.write_text(json.dumps(manifest(10000)), encoding="utf-8")
+            args = ["--candidate", str(candidate)]
+            for i, data in enumerate(raw):
+                path = root / f"history-{i}.json"
+                path.write_bytes(data)
+                args.extend(
+                    ("--historical", str(path),
+                     "--historical-sha256", hashlib.sha256(data).hexdigest())
+                )
+            output = root / "denial.json"
+            self.assertEqual(
+                cohort_firewall.main(args + ["--output", str(output)]), 2
+            )
+            verdict = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(verdict["status"], "fail")
+            self.assertFalse(verdict["observable_image_identity_disjoint"])
+            self.assertIn("independently pinned historical SHA256", verdict["error"])
 
 if __name__ == "__main__":
     unittest.main()
