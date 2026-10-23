@@ -184,6 +184,8 @@ impl RootSqliteOwnerPublication {
                 temporary_name,
                 libc::O_RDWR | libc::O_CREAT | libc::O_EXCL,
             )?;
+            #[cfg(test)]
+            tests::checkpoint("pointer-created")?;
             file.write_all(&bytes)
                 .map_err(super::super::indeterminate)?;
             file.sync_all().map_err(super::super::indeterminate)?;
@@ -196,6 +198,8 @@ impl RootSqliteOwnerPublication {
                 .map_err(super::super::indeterminate)?;
             file.sync_all().map_err(super::super::indeterminate)?;
             let temporary = BoundFile::retain(temporary_name, file)?;
+            #[cfg(test)]
+            tests::checkpoint("pointer-synced")?;
             self.verify_unchanged()?;
             temporary.verify(directory)?;
             let from = directory::name_bytes(temporary_name)?;
@@ -213,6 +217,8 @@ impl RootSqliteOwnerPublication {
             {
                 return Err(SqliteRecoveryError::Indeterminate);
             }
+            #[cfg(test)]
+            tests::checkpoint("pointer-renamed")?;
             let pointer = BoundFile::retain(&self.pointer_name, temporary.file)?;
             // Rename can advance ctime, but must preserve every other field.
             let mut before = temporary.snapshot;
@@ -230,7 +236,11 @@ impl RootSqliteOwnerPublication {
                 return Err(SqliteRecoveryError::Indeterminate);
             }
             pointer.verify(directory)?;
+            #[cfg(test)]
+            tests::checkpoint("before-pointer-directory-sync")?;
             directory.sync_all().map_err(super::super::indeterminate)?;
+            #[cfg(test)]
+            tests::checkpoint("pointer-directory-synced")?;
             let published = RootSqliteOwnerPublished {
                 pointer,
                 candidate: self.candidate,
@@ -261,3 +271,7 @@ impl RootSqliteOwnerPublished {
         Err(SqliteRecoveryError::Unavailable)
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "sqlite_root_owner_publication_tests.rs"]
+mod tests;
