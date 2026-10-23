@@ -3973,10 +3973,12 @@ mod tests {
         let addr = listener.local_addr().expect("listener address");
         let server = std::thread::spawn(move || {
             let (mut head_stream, _) = listener.accept().expect("accept HEAD probe request");
+            // Hold HEAD well past its deadline; give the independent GET the
+            // time needed to complete even on a busy Windows CI runner.
             let head = std::thread::spawn(move || {
                 let mut request = [0; 1024];
                 let _ = head_stream.read(&mut request);
-                std::thread::sleep(Duration::from_millis(50));
+                std::thread::sleep(Duration::from_secs(3));
             });
 
             let (mut get_stream, _) = listener.accept().expect("accept GET probe request");
@@ -3992,7 +3994,7 @@ mod tests {
 
         let status = mcp_http_probe_url_with_timeout(
             &format!("http://{addr}/mcp"),
-            Duration::from_millis(10),
+            Duration::from_secs(1),
         )
         .await;
         server.join().expect("probe server thread should finish");
