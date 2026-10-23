@@ -165,6 +165,13 @@ pub fn decide_group_continuation_v1(
     }
 
     let (selected_candidate, selected_net) = match best_non_abstain {
+        Some((candidate, net))
+            if trace.cells.iter().try_fold(0_u64, |total, cell| {
+                total.checked_add(cell.cost_micros)
+            }) == Some(subject.resource_ceiling_micros) =>
+        {
+            (abstain, abstain_net)
+        }
         Some((candidate, net)) if net > 0 && net > abstain_net => (candidate, net),
         _ => (abstain, abstain_net),
     };
