@@ -4,10 +4,13 @@ on:
   pull_request:
     paths:
       - 'qa/stem-bakeoff/memory_nine_arm_gate.py'
+      - 'qa/stem-bakeoff/memory_nine_arm_training_cost.py'
+      - 'qa/stem-bakeoff/test_memory_nine_arm_training_cost.py'
       - 'qa/stem-bakeoff/test_memory_nine_arm_gate.py'
       - 'qa/stem-bakeoff/memory_nine_arm_existing_evidence.py'
       - 'qa/stem-bakeoff/test_memory_nine_arm_existing_evidence.py'
       - 'qa/stem-bakeoff/MEMORY_NINE_ARM_QUALIFICATION.md'
+      - 'docs/learning/MEMORY_A_I_CLOSURE_LEDGER_20261023.md'
       - '.github/workflows/hepta-memory-nine-arm-shadow.yml'
   workflow_dispatch:
 
@@ -38,6 +41,8 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m py_compile qa/stem-bakeoff/memory_nine_arm_gate.py \
+            qa/stem-bakeoff/memory_nine_arm_training_cost.py \
+            qa/stem-bakeoff/test_memory_nine_arm_training_cost.py \
             qa/stem-bakeoff/test_memory_nine_arm_gate.py \
             qa/stem-bakeoff/memory_nine_arm_existing_evidence.py \
             qa/stem-bakeoff/test_memory_nine_arm_existing_evidence.py
@@ -45,6 +50,8 @@ jobs:
             -p 'test_memory_nine_arm_gate.py' -v
           python3 -m unittest discover -s qa/stem-bakeoff \
             -p 'test_memory_nine_arm_existing_evidence.py' -v
+          python3 -m unittest discover -s qa/stem-bakeoff \
+            -p 'test_memory_nine_arm_training_cost.py' -v
           python3 qa/stem-bakeoff/memory_nine_arm_existing_evidence.py
       - name: No uncommitted mutation
         if: always()
