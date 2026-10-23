@@ -19,6 +19,8 @@ struct ProtocolPeer {
     hold_current_reply: AtomicBool,
     wrong_owner_reply: AtomicBool,
     published: Notify,
+    revoke_after_publication: AtomicBool,
+    verifier: Arc<TestVerifier>,
 }
 
 impl CognitiveCheckpointTransport for ProtocolPeer {
@@ -77,6 +79,11 @@ impl CognitiveCheckpointTransport for ProtocolPeer {
             }
             current.clone()
         };
+        if request.command == CognitiveCheckpointCommand::CommitPublication
+            && self.revoke_after_publication.load(Ordering::SeqCst)
+        {
+            self.verifier.revoked.store(true, Ordering::SeqCst);
+        }
         if request.command == CognitiveCheckpointCommand::CommitPublication
             && self.hold_current_reply.load(Ordering::SeqCst)
         {
@@ -187,6 +194,8 @@ impl ManagedFixture {
             hold_current_reply: AtomicBool::new(false),
             wrong_owner_reply: AtomicBool::new(false),
             published: Notify::new(),
+            revoke_after_publication: AtomicBool::new(false),
+            verifier: verifier.clone(),
         });
         let (store, checkpoint) = store
             .bind_protected_checkpoint(peer.clone(), receipt, Duration::from_secs(2))

@@ -254,3 +254,121 @@ async fn notes_retirement_managed_owner_without_bound_capability_cannot_fall_bac
     assert_eq!(target.retirements.load(Ordering::SeqCst), 0);
     assert!(fixture.store.commit_gate.is_fenced());
 }
+
+#[tokio::test]
+async fn notes_retirement_revoked_after_current_ack_keeps_application_receipt() {
+    let fixture = ManagedFixture::new().await;
+    let (_operation, target) = prepared_notes(&fixture.writer, fixture.peer.clone()).await;
+    fixture
+        .peer
+        .revoke_after_publication
+        .store(true, Ordering::SeqCst);
+    assert_eq!(
+        fixture
+            .writer
+            .reconcile_target_batch(target.as_ref(), /*limit*/ 1)
+            .await
+            .unwrap(),
+        1
+    );
+    assert_eq!(target.retirements.load(Ordering::SeqCst), 0);
+    assert!(fixture.store.commit_gate.is_fenced());
+    assert_eq!(
+        fixture.peer.receipt.lock().unwrap().head.phase,
+        CognitiveCheckpointPhase::Current
+    );
+}
+
+struct BlockingRetirement {
+    observer: Arc<Observer>,
+    entered: Notify,
+    release: Mutex<std::sync::mpsc::Receiver<()>>,
+}
+impl ProductionOutboxTarget for BlockingRetirement {
+    fn dispatch<'a>(&'a self, request: ProductionDispatchRequest) -> ProductionDispatchFuture<'a> {
+        self.observer.dispatch(request)
+    }
+}
+impl FinalUseProductionOutboxTarget for BlockingRetirement {
+    fn destination_id(&self) -> &str {
+        self.observer.destination_id()
+    }
+    fn observe_terminal<'a>(
+        &'a self,
+        request: &'a ProductionDispatchRequest,
+    ) -> ProductionTerminalObservationFuture<'a> {
+        self.observer.observe_terminal(request)
+    }
+    fn retire_notes_receipt(&self, permit: &NotesRetirementPermit) -> Result<(), String> {
+        self.entered.notify_one();
+        self.release
+            .lock()
+            .unwrap()
+            .recv_timeout(Duration::from_secs(5))
+            .unwrap();
+        self.observer.retire_notes_receipt(permit)
+    }
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn notes_retirement_holds_original_sqlite_lock_through_synchronous_metadata_ack() {
+    let fixture = ManagedFixture::new().await;
+    let (_operation, observer) = prepared_notes(&fixture.writer, fixture.peer.clone()).await;
+    let (release, receive) = std::sync::mpsc::channel();
+    let target = Arc::new(BlockingRetirement {
+        observer,
+        entered: Notify::new(),
+        release: Mutex::new(receive),
+    });
+    let writer = fixture.writer.clone();
+    let destination = target.clone();
+    let mut retirement = tokio::spawn(async move {
+        writer
+            .reconcile_target_batch(destination.as_ref(), /*limit*/ 1)
+            .await
+    });
+    tokio::time::timeout(Duration::from_secs(5), target.entered.notified())
+        .await
+        .unwrap();
+    let acknowledged_cut = fixture
+        .peer
+        .receipt
+        .lock()
+        .unwrap()
+        .head
+        .last_current
+        .clone();
+    let writer = fixture.writer.clone();
+    let mut mutation =
+        tokio::spawn(async move { writer.admit("retirement-competitor", "fixture", "{}").await });
+    assert!(
+        tokio::time::timeout(Duration::from_millis(100), &mut mutation)
+            .await
+            .is_err(),
+        "a concurrent original writer must not commit while metadata retirement holds its SQLite barrier"
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), &mut retirement)
+            .await
+            .is_err()
+    );
+    release.send(()).unwrap();
+    assert_eq!(
+        tokio::time::timeout(Duration::from_secs(5), retirement)
+            .await
+            .unwrap()
+            .unwrap()
+            .unwrap(),
+        1
+    );
+    tokio::time::timeout(Duration::from_secs(5), mutation)
+        .await
+        .unwrap()
+        .unwrap()
+        .unwrap();
+    assert_eq!(target.observer.retirements.load(Ordering::SeqCst), 1);
+    assert_ne!(
+        fixture.store.recovery_anchor().await.unwrap(),
+        acknowledged_cut
+    );
+}
