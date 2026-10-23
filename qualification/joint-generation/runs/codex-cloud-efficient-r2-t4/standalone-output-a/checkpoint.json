@@ -1,0 +1,28 @@
+{
+  "payload": {
+    "cancelled": false,
+    "prefixes": {
+      "image": "89504e470d0a1a0a0000000d49484452000000080000000808020000004b6d29dc0000002249444154789c6364646464c00698b08a6295f88955e2279c24d6287638c948b2ab005d6f030e482021260000000049454e44ae426082",
+      "text": "626c75652063726f7373207269676874"
+    },
+    "spec": {
+      "artifact_sha256": "4ae6ae5a02334d5e05463276cbe44ab53796e138216d54be1fff154cfd32e63d",
+      "budget": {
+        "compute_units": 100000,
+        "output_bytes": 4096
+      },
+      "deadline_ns": 9240141131252,
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "objective_id": "scene-transform-v1",
+      "run_id": "cloud-t4-smoke"
+    },
+    "spent": {
+      "controller": 560,
+      "generator": 30056
+    }
+  },
+  "sha256": "98cb7b8a7fe7bf3c9bf5f8305440bd44146f7085e446c42459dc580eeb7727d2"
+}
