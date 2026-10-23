@@ -262,7 +262,9 @@ def audit_rows(plan, observations, judgments):
                    "artifact_sha256", "selected_source_ids",
                    "context_sha256", "context_tokens", "generated_tokens",
                    "answer", "answer_sha256", "worker_receipt_sha256",
-                   "reader_calls", "head_calls", "latency_ns", "cpu_ns",
+                   "reader_calls", "encoder_forwards", "dense_forwards",
+                   "reranker_forwards", "graph_traversals", "typed_lookups",
+                   "router_forwards", "head_calls", "latency_ns", "cpu_ns",
                    "peak_rss_bytes"), "original observation keys")
         key = (obs["case_id"], obs["arm"])
         require(key in expected and key not in orig, "duplicate/unknown original call")
@@ -290,6 +292,8 @@ def audit_rows(plan, observations, judgments):
                 and set(obs["selected_source_ids"]) <= set(case["eligible_source_ids"]),
                 "unsupported/or withdrawn evidence used")
         for field in ("context_tokens", "generated_tokens", "reader_calls",
+                      "encoder_forwards", "dense_forwards", "reranker_forwards",
+                      "graph_traversals", "typed_lookups", "router_forwards",
                       "head_calls", "latency_ns", "cpu_ns", "peak_rss_bytes"):
             integer(obs[field], field, maximum=10**16)
         require(obs["context_tokens"] <= common["max_context_tokens"]
@@ -309,8 +313,29 @@ def audit_rows(plan, observations, judgments):
             if obs["status"] == "answered":
                 require(obs["answer"].strip() and obs["generated_tokens"] > 0,
                         "empty success-shaped original generation")
-                if key[1] in "EFGHI":
-                    require(obs["head_calls"] > 0, "trained arm skipped its Head")
+                # A valid model digest does not prove the intended retrieval
+                # architecture actually ran on this case. Never allow one
+                # expensive call to stand in for other accepted observations.
+                mechanisms = {
+                    "A": (),
+                    "B": ("dense_forwards", "reranker_forwards"),
+                    "C": ("graph_traversals",),
+                    "D": ("typed_lookups",),
+                    "E": ("encoder_forwards", "head_calls"),
+                    "F": ("encoder_forwards", "typed_lookups", "head_calls"),
+                    "G": ("encoder_forwards", "router_forwards", "head_calls"),
+                    "H": ("encoder_forwards", "router_forwards",
+                          "graph_traversals", "head_calls"),
+                    "I": ("encoder_forwards", "router_forwards",
+                          "graph_traversals", "head_calls"),
+                }
+                require(all(obs[field] > 0 for field in mechanisms[key[1]]),
+                        "accepted original answer bypassed its A-I mechanism")
+                if key[1] == "A":
+                    require(all(obs[field] == 0 for field in (
+                        "encoder_forwards", "dense_forwards", "reranker_forwards",
+                        "graph_traversals", "typed_lookups", "router_forwards",
+                        "head_calls")), "BM25 baseline used unregistered neural work")
         citations(obs["answer"], obs["selected_source_ids"])
         orig[key] = obs
 
