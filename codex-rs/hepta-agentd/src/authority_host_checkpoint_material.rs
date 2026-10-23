@@ -67,7 +67,7 @@ impl HostCognitiveCheckpoint {
         }
     }
 
-    fn material_authorizes(
+    pub(super) fn material_authorizes(
         &self,
         request: &CognitiveCheckpointRequest,
         raw: &[u8],

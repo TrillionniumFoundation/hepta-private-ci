@@ -31,10 +31,7 @@ pub(super) struct RegisteredMaterialArchive {
 /// archive constructs this value, before entering the registry dispatch fence.
 pub(super) struct PreparedCheckpointMaterial {
     request_sha256: Sha256Digest,
-    cut: CognitiveRecoveryAnchor,
-    path: PathBuf,
-    file: File,
-    metadata: std::fs::Metadata,
+    material: codex_hepta_memory::VerifiedCognitiveMaterial,
 }
 
 impl RegisteredMaterialArchive {
@@ -162,11 +159,6 @@ impl RegisteredMaterialArchive {
         request: &[u8],
         image: codex_hepta_memory::VerifiedCognitiveMaterial,
     ) -> io::Result<PreparedCheckpointMaterial> {
-        let file = std::fs::OpenOptions::new()
-            .read(true)
-            .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
-            .open(image.path())?;
-        let metadata = file.metadata()?;
         self.verify_root()?;
         // A previous uncertain attempt may have created an ancestor before
         // losing its acknowledgement. Sync each existing protected directory;
@@ -185,12 +177,9 @@ impl RegisteredMaterialArchive {
         }
         let prepared = PreparedCheckpointMaterial {
             request_sha256: Sha256Digest::for_bytes(request),
-            cut: image.anchor().clone(),
-            path: image.path().to_path_buf(),
-            file,
-            metadata,
+            material: image,
         };
-        prepared.validate(request, image.anchor())?;
+        prepared.validate(request, prepared.material.anchor())?;
         Ok(prepared)
     }
 }
@@ -200,22 +189,9 @@ impl PreparedCheckpointMaterial {
     /// the original fence. Recheck the held private inode immediately before
     /// CAS; no large copy, full hash or SQLite work occurs under that fence.
     pub(super) fn validate(&self, request: &[u8], cut: &CognitiveRecoveryAnchor) -> io::Result<()> {
-        if self.request_sha256 != Sha256Digest::for_bytes(request) || self.cut != *cut {
+        if self.request_sha256 != Sha256Digest::for_bytes(request) || self.material.anchor() != cut {
             return Err(io::Error::other("material is bound to another request or cut"));
         }
-        RootAuthorityDirectory::open(self.path.parent().ok_or_else(|| io::Error::other("material parent missing"))?)
-            .map_err(io::Error::other)?;
-        let snapshot = |metadata: &std::fs::Metadata| {
-            (metadata.dev(), metadata.ino(), metadata.uid(), metadata.mode(), metadata.nlink(),
-             metadata.len(), metadata.mtime(), metadata.mtime_nsec(), metadata.ctime(), metadata.ctime_nsec())
-        };
-        for metadata in [self.file.metadata()?, std::fs::symlink_metadata(&self.path)?] {
-            if !metadata.is_file() || metadata.uid() != 0 || metadata.mode() & 0o7777 != 0o600
-                || metadata.nlink() != 1 || snapshot(&metadata) != snapshot(&self.metadata)
-            {
-                return Err(io::Error::other("retained physical material changed"));
-            }
-        }
-        Ok(())
+        self.material.verify_unchanged().map_err(io::Error::other)
     }
 }

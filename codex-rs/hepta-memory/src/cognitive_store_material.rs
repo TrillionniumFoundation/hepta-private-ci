@@ -14,6 +14,7 @@ pub use registration::RootCognitiveMaterialRegistration;
 pub struct VerifiedCognitiveMaterial {
     path: PathBuf,
     anchor: CognitiveRecoveryAnchor,
+    retained: codex_state::ExistingSqliteRecoveryGuard,
 }
 
 impl VerifiedCognitiveMaterial {
@@ -23,6 +24,23 @@ impl VerifiedCognitiveMaterial {
 
     pub fn anchor(&self) -> &CognitiveRecoveryAnchor {
         &self.anchor
+    }
+
+    /// Metadata/identity revalidation of the same held database, parent and
+    /// sidecar descriptors. No SQLite work, full hash, Current or grant is
+    /// inferred. Full-cut/integrity verification precedes construction.
+    pub fn verify_unchanged(&self) -> Result<(), CognitiveRecoveryError> {
+        #[cfg(unix)]
+        {
+            codex_hepta_contracts::RootAuthorityDirectory::open(
+                self.path.parent().ok_or_else(|| CognitiveRecoveryError::Invalid("material parent missing".into()))?,
+            ).map_err(|error| CognitiveRecoveryError::AccessDenied(error.to_string()))?;
+            self.retained.verify_inspection_unchanged().map_err(recovery_error)
+        }
+        #[cfg(not(unix))]
+        {
+            Err(CognitiveRecoveryError::Unavailable("Root material admission requires Unix".into()))
+        }
     }
 }
 
@@ -248,6 +266,7 @@ impl CognitiveStore {
         Ok(VerifiedCognitiveMaterial {
             path,
             anchor: expected.clone(),
+            retained: guard,
         })
     }
 }
