@@ -166,7 +166,11 @@ fn empty_durable_ledger_bytes(fixture: &Fixture) -> Vec<u8> {
     fs::read(path).unwrap()
 }
 
-fn reopen_ledger_at(path: &std::path::Path, fixture: &Fixture, chain_digest: Digest32) -> LedgerWriter {
+fn reopen_ledger_at(
+    path: &std::path::Path,
+    fixture: &Fixture,
+    chain_digest: Digest32,
+) -> LedgerWriter {
     let file = OpenOptions::new().read(true).write(true).open(path).unwrap();
     let ledger = DurableLedger::recover(
         file,
@@ -414,7 +418,10 @@ fn ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded()
     assert_eq!(fs::read(&path).unwrap(), before);
 
     let path = temp.path().join("faulted-ledger");
+    #[cfg(not(windows))]
     let mut ledger = ledger_at(&path, &fixture);
+    #[cfg(windows)]
+    let ledger = ledger_at(&path, &fixture);
     #[cfg(not(windows))]
     {
         // Unix advisory locks allow a separately opened handle to simulate
