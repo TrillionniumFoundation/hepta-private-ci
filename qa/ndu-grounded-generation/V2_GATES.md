@@ -81,8 +81,10 @@ unique across train/dev/calibration/test (including v1 historical manifests),
 independent of image identity. Duplicate task IDs are refused before score
 joins; this does not prove entity or foundation-model independence.
 Historical source IDs must also be unique across the complete rosters. Input
-byte limits are checked before and after file reading, to avoid allocating
-oversized manifests. Resource overruns yield a typed denial, never a partial
+inputs are opened with a nonblocking regular-file descriptor and read at most
+16 MiB plus one byte, so a replaced file or FIFO cannot evade the allocation
+limit (symlinks are refused on platforms supporting no-follow opens). Resource
+overruns yield a typed denial, never a partial
 PASS. Direct library
 calls without `require_complete_history=True` are *diagnostics only*. It verifies
 **observable image identities only**: real-world entity identity and

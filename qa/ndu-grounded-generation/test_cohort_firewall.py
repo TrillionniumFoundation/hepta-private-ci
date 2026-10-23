@@ -3,6 +3,7 @@
 import copy
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -194,6 +195,49 @@ class CohortFirewallTests(unittest.TestCase):
             old["splits"][split]["count"] = 400
         with self.assertRaisesRegex(CohortContractError, "comparison budget"):
             check_cohort(many, [old])
+
+    @unittest.skipUnless(hasattr(os, "mkfifo") and hasattr(os, "O_NONBLOCK"),
+                         "POSIX FIFO tests require nonblocking file opens")
+    def test_cli_refuses_fifo_without_waiting_for_writer(self):
+        # Regression: Path.read_bytes() on an unguarded FIFO can hang forever.
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            os.mkfifo(root / "candidate.fifo")
+            raw = json.dumps(self.old).encode()
+            (root / "history.json").write_bytes(raw)
+            args = [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
+                    "--candidate", str(root / "candidate.fifo"),
+                    "--historical", str(root / "history.json"),
+                    "--historical-sha256", hashlib.sha256(raw).hexdigest(),
+                    "--output", str(root / "receipt.json")]
+            try:
+                result = subprocess.run(args, capture_output=True, text=True,
+                                        timeout=5)
+            except subprocess.TimeoutExpired:
+                self.fail("a special input file blocked the firewall process")
+            self.assertEqual(result.returncode, 2, result.stderr)
+            receipt = json.loads((root / "receipt.json").read_text())
+            self.assertEqual(receipt["status"], "fail")
+            self.assertIn("regular cohort manifest file required", receipt["error"])
+
+    @unittest.skipUnless(hasattr(os, "O_NOFOLLOW") and hasattr(os, "symlink"),
+                         "no-follow open is unavailable on this platform")
+    def test_cli_does_not_follow_mutable_manifest_symlink(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            (root / "real.json").write_text(json.dumps(self.new))
+            (root / "alias.json").symlink_to(root / "real.json")
+            raw = json.dumps(self.old).encode()
+            (root / "history.json").write_bytes(raw)
+            args = [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
+                    "--candidate", str(root / "alias.json"),
+                    "--historical", str(root / "history.json"),
+                    "--historical-sha256", hashlib.sha256(raw).hexdigest(),
+                    "--output", str(root / "receipt.json")]
+            result = subprocess.run(args, capture_output=True, text=True, timeout=5)
+            self.assertEqual(result.returncode, 2, result.stderr)
+            self.assertEqual(json.loads((root / "receipt.json").read_text())["status"],
+                             "fail")
 
     def test_cli_refuses_unpinned_or_incomplete_history(self):
         with tempfile.TemporaryDirectory() as td:
