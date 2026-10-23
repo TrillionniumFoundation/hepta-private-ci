@@ -183,3 +183,14 @@ pub async fn attach_production_operation_host(
     Ok(notes_identity)
 }
 
+#[cfg(test)]
+#[path = "production_composition_fixture.rs"]
+mod fixture;
+
+#[cfg(test)]
+#[path = "production_composition_tests.rs"]
+mod tests;
+
+#[cfg(test)]
+#[path = "production_composition_notes_tests.rs"]
+mod notes_tests;
