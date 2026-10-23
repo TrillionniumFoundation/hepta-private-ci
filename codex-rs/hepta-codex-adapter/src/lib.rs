@@ -9,6 +9,8 @@
 // Compatibility exports of the sole server-side extension implementation.
 use codex_hepta_prompt_extension as runtime_prompt;
 mod wire;
+mod execution_core;
+pub use execution_core::canonical_codex_intent_v1;
 
 use std::error::Error as StdError;
 use std::fmt;
