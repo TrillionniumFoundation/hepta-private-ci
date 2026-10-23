@@ -45,6 +45,10 @@ class AblationTests(unittest.TestCase):
                 self.assertEqual(a['arms'][arm]['paired_cases'], 40)
         self.assertGreater(a['arms']['A5']['mean_synthetic_quality'],
                            a['arms']['A0']['mean_synthetic_quality'])
+        self.assertEqual(a['a5_vs_a1_negative_control']['paired_cases'], 40)
+        self.assertEqual(a['a5_vs_a1_negative_control']['synthetic_quality_delta_mean'], 0.0)
+        self.assertTrue(a['a5_vs_a1_negative_control']['synthetic_quality_parity'])
+        self.assertFalse(a['a5_vs_a1_negative_control']['model_policy_superiority_established'])
 
 
     def test_policy_reads_frozen_training_only_not_future_outcome_oracle(self):
