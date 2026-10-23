@@ -216,10 +216,6 @@ def audit_trial_file(manifest: object, observer_pem: Path, meter_pem: Path, *,
                         expected_evaluator_digest=expected_evaluator_digest,
                         expected_device_digest=expected_device_digest,
                         training_cutoff=training_cutoff) for item in trials]
-    # Physical run identity must be globally unique, not merely per-arm or
-    # per-episode. Replayed signatures cannot masquerade as fresh work.
-    if len({row["run_id"] for row in rows}) != len(rows):
-        raise EvidenceRejected("duplicate physical runs across signed trial rows")
     cohorts: dict[tuple[str, str], dict[str, dict]] = {}
     episode_windows: dict[str, str] = {}
     for r in rows:
@@ -229,6 +225,10 @@ def audit_trial_file(manifest: object, observer_pem: Path, meter_pem: Path, *,
         if r["arm"] in cohorts.setdefault(k, {}):
             raise EvidenceRejected("duplicate trial arm in matched cohort")
         cohorts[k][r["arm"]] = r
+    # Physical run identity must be globally unique, not merely per-arm or
+    # per-episode. Replayed signatures cannot masquerade as fresh work.
+    if len({row["run_id"] for row in rows}) != len(rows):
+        raise EvidenceRejected("duplicate physical runs across signed trial rows")
     if any(set(v) != ARMS or len({a["input_digest"] for a in v.values()}) != 1
            or len({a["trace_digest"] for a in v.values()}) != len(ARMS)
            or len({a["run_id"] for a in v.values()}) != len(ARMS)
