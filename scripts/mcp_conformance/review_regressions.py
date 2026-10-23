@@ -678,9 +678,9 @@ def _run_review_case(
 ) -> CaseResult:
     started = time.monotonic()
     case = CaseResult(transport=f"review-{transport}:{profile}", mode=mode)
-    case_home.mkdir(parents=True, exist_ok=True)
+    case_home.mkdir(mode=0o700, parents=True, exist_ok=True)
     workspace = case_home / "workspace"
-    workspace.mkdir(exist_ok=True)
+    workspace.mkdir(mode=0o700, exist_ok=True)
     env = _isolated_environment(case_home)
     registered = False
     fixture = (
