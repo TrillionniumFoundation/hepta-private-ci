@@ -363,8 +363,8 @@ def check_cohort(candidate, history, *, max_hamming=4, require_complete_history=
             "scope": "source_id/byte/RGB/dHash only; entity and pretraining claims remain unproven"}
 
 
-def validate_output_destination(output, input_paths):
-    """Never overwrite frozen source evidence, including aliases or links.
+def validate_output_destination(output, input_paths, *, protected_image_dir=None):
+    """Never overwrite frozen source or image evidence, including aliases.
 
     Invalid output destinations cannot receive even a denial receipt. The
     caller must select a separate, ordinary path for that receipt.
@@ -376,6 +376,12 @@ def validate_output_destination(output, input_paths):
             if not output.is_file() or output.stat().st_nlink != 1:
                 raise CohortContractError("output path must be an unlinked regular file")
         resolved_output = output.resolve(strict=False)
+        if protected_image_dir is not None:
+            protected_root = Path(protected_image_dir).resolve(strict=False)
+            if resolved_output.is_relative_to(protected_root):
+                raise CohortContractError(
+                    "receipt output overlaps frozen candidate image directory"
+                )
         for source in input_paths:
             if resolved_output == source.resolve(strict=False) or (
                 output.exists() and source.exists() and output.samefile(source)
@@ -385,14 +391,18 @@ def validate_output_destination(output, input_paths):
         raise CohortContractError("cannot verify safe output path") from error
 
 
-def write_receipt_atomically(dest, result, input_paths):
+def write_receipt_atomically(
+    dest, result, input_paths, *, protected_image_dir=None
+):
     """Publish without following a late-swapped symlink or mutating a hardlink.
 
     A shared hostile parent directory is not a security boundary: keep inputs
     and receipts in separately trusted directories for a production run.
     """
     dest.parent.mkdir(parents=True, exist_ok=True)
-    validate_output_destination(dest, input_paths)
+    validate_output_destination(
+        dest, input_paths, protected_image_dir=protected_image_dir
+    )
     temporary = None
     try:
         with tempfile.NamedTemporaryFile(
@@ -402,7 +412,9 @@ def write_receipt_atomically(dest, result, input_paths):
             handle.write(json.dumps(result, sort_keys=True, indent=2) + "\n")
             handle.flush()
             os.fsync(handle.fileno())
-        validate_output_destination(dest, input_paths)
+        validate_output_destination(
+            dest, input_paths, protected_image_dir=protected_image_dir
+        )
         # rename replaces the pathname itself, not the target of a late link.
         os.replace(temporary, dest)
     finally:
@@ -423,7 +435,8 @@ def main(argv=None):
     dest = Path(args.output)
     try:
         validate_output_destination(
-            dest, [Path(args.candidate), *(Path(item) for item in args.historical)]
+            dest, [Path(args.candidate), *(Path(item) for item in args.historical)],
+            protected_image_dir=args.image_dir,
         )
     except CohortContractError as error:
         # A denial receipt cannot safely be written to an aliased output.
@@ -482,8 +495,11 @@ def main(argv=None):
         result = {"schema": "hepta.ndu-cohort-firewall.v2", "status": "fail",
                   "error": str(exc), "observable_image_identity_disjoint": False}
     try:
-        write_receipt_atomically(dest, result,
-                                 [Path(args.candidate), *(Path(item) for item in args.historical)])
+        write_receipt_atomically(
+            dest, result,
+            [Path(args.candidate), *(Path(item) for item in args.historical)],
+            protected_image_dir=args.image_dir,
+        )
     except (CohortContractError, OSError) as error:
         print(json.dumps({"status": "fail", "error": str(error),
                           "output_written": False}, sort_keys=True))
