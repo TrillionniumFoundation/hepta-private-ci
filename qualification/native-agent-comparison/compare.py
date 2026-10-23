@@ -123,13 +123,37 @@ def compare(base: object, observations: object) -> dict:
             "output_tokens_total": sum(metrics[mode]["output_tokens"]),
             "tool_calls_total": sum(metrics[mode]["tool_calls"]),
         }
+    # Keep the historic pooled summaries for compatibility, but never let a
+    # healthy 64-Cell result conceal a 4096-Cell regression in the A/B/C
+    # comparison. These are descriptive per-task statistics, NOT concurrent
+    # throughput measurements or independently authenticated host metrics.
+    scale_summaries = {}
+    for scale in SCALES:
+        by_mode = {}
+        for mode in MODES:
+            subset = [o for k, o in actual.items() if k[2] == scale and k[3] == mode]
+            by_mode[mode] = {
+                "cases": len(subset),
+                "success_rate": sum(o["task_success"] for o in subset) / len(subset),
+                "tool_correct_rate": sum(o["tool_correct"] for o in subset) / len(subset),
+                "recovery_rate": sum(o["recovery_pass"] for o in subset) / len(subset),
+                "wall_p95_ms": percentile([o["wall_ms"] for o in subset], .95),
+                "wall_p99_ms": percentile([o["wall_ms"] for o in subset], .99),
+                "peak_rss_bytes": max(o["peak_rss_bytes"] for o in subset),
+                "input_tokens_total": sum(o["input_tokens"] for o in subset),
+                "output_tokens_total": sum(o["output_tokens"] for o in subset),
+                "tool_calls_total": sum(o["tool_calls"] for o in subset),
+            }
+        scale_summaries[str(scale)] = by_mode
     return {
         "status": "STRUCTURAL_COMPARABILITY_ONLY_NOT_INDEPENDENT_EVIDENCE",
         "independent_acceptance": False,
         "physical_execution_proven": False,
+        "concurrent_throughput_proven": False,
         "task_count": len(base["tasks"]),
         "paired_case_count": len(expected) // 3,
         "mode_summaries": summary,
+        "scale_summaries": scale_summaries,
     }
 
 
