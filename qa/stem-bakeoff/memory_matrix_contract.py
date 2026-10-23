@@ -317,16 +317,38 @@ def audit(plan_path, questions_path, gold_path, predictions_directory):
     enough_groups = group_counts["evaluation"] >= plan["minimum_independent_groups"]
     has_two_future_windows = (group_counts["future_1"] >= plan["minimum_independent_groups"]
                               and group_counts["future_2"] >= plan["minimum_independent_groups"])
+    # Future observations are independent guardrails, never sources for tuning.
+    future_comparisons = [paired_stats(results, "I", baseline, window,
+                                       plan["seed"] + 100 + i * 3 + j)
+                          for i, window in enumerate(("future_1", "future_2", "ood"))
+                          if group_counts[window]
+                          for j, baseline in enumerate(("B", "C", "H"))]
+    future_non_regression = (
+        all(group_counts[window] >= plan["minimum_independent_groups"]
+            for window in ("future_1", "future_2", "ood"))
+        and len(future_comparisons) == 9
+        and all(c["delta"] >= 0 for c in future_comparisons))
+    # Slice-specific harm is not averaged away by good results on other queries.
+    slice_non_regression = all(
+        by_arm["I"][name] is not None
+        and by_arm[baseline][name] is not None
+        and by_arm["I"][name] >= by_arm[baseline][name]
+        for name in ("multi_hop_success", "abstention_on_unanswerable")
+        for baseline in ("B", "C"))
     # These are untrusted reports until independently validated model/evaluator,
     # evidence membership, real resource cost, future observations and deletion.
-    meets_diagnostic_gate = (enough_groups and has_two_future_windows and
-                             all(c["holm_p"] < .05 and c["delta"] >= plan["minimum_gain"]
-                                 for c in comparisons))
+    meets_diagnostic_gate = (enough_groups and has_two_future_windows
+                             and future_non_regression and slice_non_regression
+                             and all(c["holm_p"] < .05 and c["delta"] >= plan["minimum_gain"]
+                                     for c in comparisons))
     return {"schema": SCHEMA, "plan_sha256": plan_sha,
             "query_sha256": digest(query_raw), "gold_sha256": digest(gold_raw),
             "prediction_inventory": inventory, "rows": len(results), "group_counts": group_counts,
             "arm_metrics": by_arm, "predeclared_comparisons": comparisons,
             "diagnostic_statistical_gate": meets_diagnostic_gate,
+            "future_holdout_comparisons": future_comparisons,
+            "future_non_regression_gate": future_non_regression,
+            "critical_slice_non_regression_gate": slice_non_regression,
             "production_activation_allowed": False, "scientific_superiority_established": False,
             "missing_external_admission": ["authenticated_source_membership",
                                            "independent_blind_semantic_or_program_judge",
