@@ -174,3 +174,8 @@ No further model/policy tuning or independent confirmation is recommended for
 this failed refiner. Any later confirmation needs the parent's review of the
 complete history index, new physical provenance, once-only opening authority
 and a valid forward error budget. There is no runtime/access blocker.
+
+A later [parent-reported exact-reference note](MATHEMATICAL_REFERENCE_NOTE.md)
+records positive/zero/negative mathematical controls and the distinction between
+two refinement units and complete control cost. Those toy numbers were not
+rerun here or used as project benefit evidence; the frozen experiment is unchanged.
