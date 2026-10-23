@@ -1,0 +1,148 @@
+name: runtime.codex fast feedback
+
+on:
+  push:
+    branches:
+      - codex/runtime-codex-full-convergence-20260929
+    paths:
+      - .github/workflows/runtime-codex-fast-feedback.yml
+      - scripts/runtime-codex-*.py
+      - codex-rs/Cargo.lock
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-agent-protocol/**
+      - codex-rs/hepta-infer-core/**
+      - codex-rs/hepta-infer-worker-host/**
+      - codex-rs/hepta-codex-adapter/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-codex-fast-feedback-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  LOG_DIR: qualification/runtime-codex-fast-feedback
+
+jobs:
+  verify:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: clippy
+      - uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: x86_64-unknown-linux-gnu
+      - name: Materialize convergence candidate
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/runtime-codex-maintainer.py \
+            scripts/runtime-codex-maintainer-followup.py \
+            scripts/runtime-codex-durability-migration.py \
+            scripts/runtime-codex-durability-fixup.py \
+            scripts/runtime-codex-quarantine-migration.py \
+            scripts/runtime-codex-deadline-migration.py \
+            scripts/runtime-codex-cleanup-migration.py \
+            scripts/runtime-codex-storage-fixup.py \
+            scripts/runtime-codex-process-crash-migration.py \
+            scripts/runtime-codex-qualification-fixup.py
+          python3 scripts/runtime-codex-maintainer.py
+          python3 scripts/runtime-codex-maintainer-followup.py
+          python3 scripts/runtime-codex-durability-migration.py
+          python3 scripts/runtime-codex-durability-fixup.py
+          python3 scripts/runtime-codex-quarantine-migration.py
+          python3 scripts/runtime-codex-deadline-migration.py
+          python3 scripts/runtime-codex-cleanup-migration.py
+          python3 scripts/runtime-codex-storage-fixup.py
+          python3 scripts/runtime-codex-process-crash-migration.py
+          python3 scripts/runtime-codex-qualification-fixup.py
+          cd codex-rs
+          cargo fmt --all
+      - name: Verify candidate and preserve all failures
+        id: verify
+        shell: bash
+        run: |
+          set +e
+          mkdir -p "$LOG_DIR"
+          cd codex-rs
+
+          cargo check \
+            -p codex-hepta-agent-protocol \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-codex-adapter \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-worker-host \
+            --all-targets 2>&1 | tee "../$LOG_DIR/check.log"
+          check_status=${PIPESTATUS[0]}
+
+          cargo test --locked -p codex-hepta-agent-protocol \
+            2>&1 | tee "../$LOG_DIR/agent-protocol.log"
+          protocol_status=${PIPESTATUS[0]}
+
+          cargo test --locked -p codex-hepta-infer-core \
+            2>&1 | tee "../$LOG_DIR/infer-core.log"
+          core_status=${PIPESTATUS[0]}
+
+          cargo test --locked -p codex-hepta-agentd --lib lane_b_runtime \
+            2>&1 | tee "../$LOG_DIR/agentd-owner.log"
+          agentd_status=${PIPESTATUS[0]}
+
+          cargo test --locked -p codex-hepta-infer-worker-host \
+            2>&1 | tee "../$LOG_DIR/worker-host.log"
+          worker_status=${PIPESTATUS[0]}
+
+          cargo test --locked -p codex-hepta-infer-worker-host \
+            --test runtime_codex_crash_matrix \
+            2>&1 | tee "../$LOG_DIR/crash-matrix.log"
+          crash_status=${PIPESTATUS[0]}
+
+          cargo test --locked -p codex-hepta-agentd \
+            --test runtime_codex_process_crash \
+            2>&1 | tee "../$LOG_DIR/process-crash.log"
+          process_crash_status=${PIPESTATUS[0]}
+
+          cargo test --locked -p codex-hepta-agentd \
+            runtime_codex_product_caller_commits_one_authorized_terminal_turn \
+            2>&1 | tee "../$LOG_DIR/product-e2e.log"
+          product_e2e_status=${PIPESTATUS[0]}
+
+          cargo clippy --locked \
+            -p codex-hepta-agent-protocol \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-codex-adapter \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-worker-host \
+            --all-targets --no-deps -- -D warnings \
+            2>&1 | tee "../$LOG_DIR/clippy.log"
+          clippy_status=${PIPESTATUS[0]}
+
+          cd ..
+          git diff --binary > "$LOG_DIR/materialized.patch"
+          printf 'check=%s\nprotocol=%s\ncore=%s\nagentd=%s\nworker=%s\ncrash=%s\nprocess_crash=%s\nproduct_e2e=%s\nclippy=%s\n' \
+            "$check_status" "$protocol_status" "$core_status" "$agentd_status" \
+            "$worker_status" "$crash_status" "$process_crash_status" \
+            "$product_e2e_status" "$clippy_status" | tee "$LOG_DIR/status.txt"
+          exit 0
+      - name: Upload feedback
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-codex-fast-feedback-${{ github.run_id }}
+          path: qualification/runtime-codex-fast-feedback/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Enforce verification
+        if: always()
+        run: |
+          set -euo pipefail
+          test -f "$LOG_DIR/status.txt"
+          ! grep -Eq '=[1-9][0-9]*$' "$LOG_DIR/status.txt"
