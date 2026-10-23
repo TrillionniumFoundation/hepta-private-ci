@@ -97,6 +97,9 @@ mod workspace_acl;
 
 mod deny_read_resolver;
 
+#[cfg(any(target_os = "windows", test))]
+mod capability_registry;
+
 #[cfg(target_os = "windows")]
 mod conpty;
 
