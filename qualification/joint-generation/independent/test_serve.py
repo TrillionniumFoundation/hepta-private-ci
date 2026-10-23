@@ -144,6 +144,7 @@ class NativeServingTests(unittest.TestCase):
         self.assertEqual(first_bundle.model.digest(), self.model.digest())
         request = self.request()
         with patch("independent.evaluation.dataset", side_effect=AssertionError("dataset called")), \
+             patch("independent.evaluation.prepare_decoded_observer", side_effect=AssertionError("observer prepared")), \
              patch("independent.evaluation.outcome_table", side_effect=AssertionError("observer called")), \
              patch("independent.evaluation.decoded_metrics", side_effect=AssertionError("labels called")):
             first = infer(self.bundle, request, self.root / "first")

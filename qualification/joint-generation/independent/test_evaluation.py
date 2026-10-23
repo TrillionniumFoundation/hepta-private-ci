@@ -260,21 +260,24 @@ class EvaluationTests(unittest.TestCase):
                         {**self.plan, "decision_price": invalid}, 100000)
 
     def test_observer_is_outside_service_timers(self):
+        import data
         observed = []
         from independent import evaluation
-        original = evaluation.outcome_table
+        original = evaluation.prepare_decoded_observer
         def observer(model):
             observed.append(model.params["decoder"].copy())
             return original(model)
-        with patch.object(evaluation, "outcome_table", observer):
+        with patch.object(evaluation, "prepare_decoded_observer", observer), \
+             patch.object(data, "decoded_observations", wraps=data.decoded_observations) as observations:
             result = measure(self.model, None, "full", self.data, self.plan, 100000)
+        self.assertEqual(observations.call_count, 2)
         self.assertEqual(len(observed), 2)
         np.testing.assert_array_equal(observed[0], self.model.params["decoder"])
         np.testing.assert_array_equal(observed[1], np.roll(self.model.params["decoder"], 1, axis=0))
         self.assertTrue(np.isfinite(result["decoder_corruption_score_drop"]))
         self.assertGreater(result["cost"]["observer_cpu_ns"], 0)
         self.assertEqual(len(result["per_row_cost"]["cpu_ns"]), 4)
-        with patch.object(evaluation, "outcome_table", side_effect=AssertionError("unfunded scoring")):
+        with patch.object(evaluation, "prepare_decoded_observer", side_effect=AssertionError("unfunded scoring")):
             with self.assertRaises(BudgetExceeded):
                 measure(self.model, None, "full", self.data,
                         {**self.plan, "inference_cap_full_equivalents": .01}, 100000)
@@ -287,7 +290,7 @@ class EvaluationTests(unittest.TestCase):
                 return super().__getitem__(key)
 
         inputs = InputsOnly(full=self.data["full"])
-        with patch("independent.evaluation.outcome_table", side_effect=AssertionError("scoring")) as table:
+        with patch("independent.evaluation.prepare_decoded_observer", side_effect=AssertionError("scoring")) as table:
             with patch("independent.evaluation.decoded_metrics", side_effect=AssertionError("scoring")) as metrics:
                 result = measure(self.model, None, "low", inputs, self.plan, 100000,
                                  seed=19, observe=False)

@@ -8,6 +8,7 @@ This closed vocabulary is deliberately not a natural-image capability claim.
 import hashlib
 import itertools
 import json
+from typing import NamedTuple
 
 import numpy as np
 
@@ -107,13 +108,38 @@ def decoded_observations(model):
     return text_ids, image_ids, pixels, distances
 
 
+class DecodedObserver(NamedTuple):
+    """Local immutable decoded semantics; contains no input rows or labels."""
+
+    observations: tuple
+    reward: np.ndarray
+
+
+def prepare_decoded_observer(model):
+    """Observe one decoder once and prepare its raw reward for local reuse.
+
+    There is no global cache or reuse across models. A changed or deliberately
+    corrupted decoder must receive its own freshly prepared observer.
+    """
+    observations = tuple(np.array(value, copy=True) for value in decoded_observations(model))
+    reward = outcome_from_observations(observations)
+    for value in (*observations, reward):
+        value.flags.writeable = False
+    return DecodedObserver(observations, reward)
+
+
 def outcome_table(model):
     """Frozen external task semantics applied to decoded outputs, not proposals.
 
     Reward includes factual correctness, successful joint delivery, contradiction
     and actual pixel reconstruction quality. Values are bounded in [-0.35, 1].
     """
-    text, image, _, distances = decoded_observations(model)
+    return outcome_from_observations(decoded_observations(model))
+
+
+def outcome_from_observations(observations):
+    """The same task semantics, using already observed actual decoded outputs."""
+    text, image, _, distances = observations
     target = np.arange(CLASSES)[:, None, None]
     correct_text = text[None, :, None] == target
     correct_image = image[None, None, :] == target
@@ -124,7 +150,13 @@ def outcome_table(model):
 
 
 def decoded_metrics(model, p, q, labels):
-    text, image, pixels, distances = decoded_observations(model)
+    # The legacy metrics-only path does not prepare an unused reward table.
+    return metrics_from_observations(decoded_observations(model), p, q, labels)
+
+
+def metrics_from_observations(observations, p, q, labels):
+    """The same decoded metrics, without observing an unchanged decoder again."""
+    text, image, pixels, distances = observations
     target = np.asarray(labels)
     pt = p[np.arange(len(p)), target]
     image_correct = image[None, :] == target[:, None]

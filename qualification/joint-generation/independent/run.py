@@ -13,7 +13,7 @@ import traceback
 
 import numpy as np
 
-from data import decoded_metrics, outcome_table, templates
+from data import metrics_from_observations, prepare_decoded_observer, templates
 from independent.accounting import BudgetExceeded, WorkLedger, compare_budgets, counted_model_class
 from independent.calibration import calibration_manifest, stratified_indices
 from independent.data_v2 import dataset, manifest
@@ -191,9 +191,10 @@ def observer_work(n):
             "compare_ops": 14 * n, "div_ops": n}
 
 
-def score(model, p, q, data):
-    reward = outcome_table(model)[data["labels"]]
-    metrics = decoded_metrics(model, p, q, data["labels"])
+def score(model, p, q, data, *, observer=None):
+    observer = prepare_decoded_observer(model) if observer is None else observer
+    reward = observer.reward[data["labels"]]
+    metrics = metrics_from_observations(observer.observations, p, q, data["labels"])
     metrics["task_utility"] = np.einsum("ni,nij,nj->n", p, reward, q)
     return {key: float(value.mean()) for key, value in metrics.items()}
 
@@ -208,7 +209,9 @@ def batch_validation(model, data, ledger, *, stage="search_validation"):
     pl, ql = gen.forward_low(data["full"])
     predictions = {"full": (pf, qf), "low": (pl, ql),
                    "ensemble": ((pf + pl) / 2, (qf + ql) / 2)}
-    return {mode: score(model, p, q, data) for mode, (p, q) in predictions.items()}, predictions
+    observer = prepare_decoded_observer(model)
+    return {mode: score(model, p, q, data, observer=observer)
+            for mode, (p, q) in predictions.items()}, predictions
 
 
 def save_model(model, path, ledger, stage):
@@ -583,7 +586,7 @@ def controller_for(run, row):
 def charge_measure(report, model, n, ledger):
     used = int(round(sum(report["per_row_cost"]["work_units"]))) + report["cost"]["prepare"]["consumed_units"]
     ledger.record("selection_validation", units=used, serving_validation_rows=n)
-    for _ in range(3):
+    for _ in range(2):
         ledger.charge_kernel("selection_validation", "observer_preparation",
                              **setup_work(model.dimensions, "additive"))
     observed = observer_work(n)
@@ -602,7 +605,7 @@ def validate_selected(selected, plan, runtime_plan, run, val, ledger):
                 if "decision_price" in row else {})}, row["reference_full_cpu_ns"], seed=row["seed"])
         # measure performs normal utility, decoded metrics and a real corrupted
         # decoder negative control outside service timers. They still cost build
-        # work during validation, including their three decoder observations.
+        # work during validation, including two independent decoder observations.
         charge_measure(report, model, len(val["labels"]), ledger)
         measured[row["seed"]] = report
         # A no-critic random baseline can reinvest the saved low/critic work in

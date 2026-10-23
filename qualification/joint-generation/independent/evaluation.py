@@ -20,7 +20,7 @@ import numpy as np
 from PIL import Image
 
 from control import Controller
-from data import caption, decoded_metrics, outcome_table
+from data import caption, decoded_metrics, outcome_table, metrics_from_observations, prepare_decoded_observer
 from model import JointModel, _read_tensor
 from independent.accounting import WorkLedger
 from independent.data_v2 import dataset, manifest
@@ -252,10 +252,11 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
         p, q = np.asarray(ps), np.asarray(qs)
         observer = _Observer(generator)
         scoring_started = time.process_time_ns()
-        reward = outcome_table(observer)[labels]
-        metrics = decoded_metrics(observer, p, q, labels)
+        decoded = prepare_decoded_observer(observer)
+        reward = decoded.reward[labels]
+        metrics = metrics_from_observations(decoded.observations, p, q, labels)
         metrics["task_utility"] = np.einsum("ni,nij,nj->n", p, reward, q)
-        corrupted = outcome_table(_Observer(generator, corrupt_decoder=True))[labels]
+        corrupted = prepare_decoded_observer(_Observer(generator, corrupt_decoder=True)).reward[labels]
         corruption_drop = float((metrics["task_utility"] - np.einsum("ni,nij,nj->n", p, corrupted, q)).mean())
         observer_cpu_ns = time.process_time_ns() - scoring_started
         raw_work = np.asarray([row["work_units"] for row in costs], dtype=np.float64)

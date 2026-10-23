@@ -8,7 +8,7 @@ from independent.evaluation import output_work
 from independent.gain_head import fit_work, head_work
 from independent.inference import FrozenGenerator
 from independent.learning import setup_work, value_work
-from independent.refinement import admit_round, forecast, reserve_work
+from independent.refinement import admit_round, forecast, observer_work, reserve_work, validation_work
 from model import JointModel
 
 
@@ -72,6 +72,32 @@ class RefinementTests(unittest.TestCase):
             self.assertEqual(reserved["tail"], combine(reserved["service"], reserved["observer"]))
             self.assertGreater(WorkLedger("price").estimate_kernel(**reserved["revalidation"]), 0)
         self.assertEqual(self.model.digest(), before)
+
+    def test_observation_reuse_removes_only_duplicate_setup_from_full_reserves(self):
+        n = self.rows["validation_rows"]
+        gen = FrozenGenerator(self.model, prepare_low=False)
+        setup = setup_work(self.model.dimensions, "additive")
+        old_validation = combine(gen.full_work(n), gen.low_work(n), gen.prepare_work(),
+            {"scalar_ops": 24 * n, "div_ops": 24 * n},
+            scaled(observer_work(n), 3), scaled(setup, 6))
+        old_observation = combine(scaled(setup, 3), observer_work(n),
+                                  {"macs": 2 * n * 12 * 12, "scalar_ops": 2 * n})
+        self.assertEqual(combine(validation_work(self.model, n), scaled(setup, 5)), old_validation)
+        cases = [("supervised", mode, None) for mode in ("full", "low", "ensemble")]
+        cases += [("ndu_control", "full", plan) for plan in (None, self.affine_plan)]
+        for system, mode, plan in cases:
+            with self.subTest(system=system, mode=mode, plan=plan):
+                current = reserve_work(self.model, system, mode, **self.rows, plan=plan)
+                with patch("independent.refinement._observation_work", return_value=old_observation), \
+                        patch("independent.refinement.validation_work", return_value=old_validation):
+                    previous = reserve_work(self.model, system, mode, **self.rows, plan=plan)
+                removed = scaled(setup, 2 if system == "ndu_control" else 1)
+                self.assertEqual(combine(current["observer"], removed), previous["observer"])
+                self.assertEqual(combine(current["tail"], removed), previous["tail"])
+                self.assertEqual(combine(current["revalidation"], scaled(setup, 5)),
+                                 previous["revalidation"])
+                for key in ("service", "critic", "paired_calibration"):
+                    self.assertEqual(current[key], previous[key], key)
 
     def test_affine_plan_does_not_charge_static_fit_or_head(self):
         for mode in ("full", "low", "ensemble"):

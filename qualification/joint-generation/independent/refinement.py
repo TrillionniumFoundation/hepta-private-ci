@@ -33,7 +33,7 @@ def validation_work(model, n):
     generator = FrozenGenerator(model, prepare_low=False)
     return add_work(generator.full_work(n), generator.low_work(n), generator.prepare_work(),
         {"scalar_ops": 24 * n, "div_ops": 24 * n},
-        scale_work(observer_work(n), 3), scale_work(setup_work(model.dimensions, "additive"), 6))
+        scale_work(observer_work(n), 3), setup_work(model.dimensions, "additive"))
 
 
 def _output_work(model, n):
@@ -44,7 +44,7 @@ def _output_work(model, n):
 
 
 def _observation_work(model, n):
-    return add_work(scale_work(setup_work(model.dimensions, "additive"), 3),
+    return add_work(scale_work(setup_work(model.dimensions, "additive"), 2),
         observer_work(n), {"macs": 2 * n * 12 * 12, "scalar_ops": 2 * n})
 
 

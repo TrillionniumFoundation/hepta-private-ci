@@ -13,6 +13,44 @@ from independent import run
 from independent.accounting import BudgetExceeded, WorkLedger
 
 
+class DecodedObserverReuseTests(unittest.TestCase):
+    def test_three_mode_validation_observes_once_with_unchanged_exact_scores(self):
+        import data
+        from model import JointModel
+        model = JointModel(202, 12, 192, hidden=4, seed=1701)
+        manual = {"full": np.random.default_rng(2108).uniform(0, 1, (4, 202)),
+                  "labels": np.array([0, 2, 7, 11])}
+        ledger = WorkLedger("manual-validation")
+        before = model.digest()
+        with patch.object(data, "decoded_observations", wraps=data.decoded_observations) as observe:
+            actual, predictions = run.batch_validation(model, manual, ledger)
+        self.assertEqual(observe.call_count, 1)
+        for mode, (p, q) in predictions.items():
+            reward = data.outcome_table(model)[manual["labels"]]
+            metrics = data.decoded_metrics(model, p, q, manual["labels"])
+            metrics["task_utility"] = np.einsum("ni,nij,nj->n", p, reward, q)
+            self.assertEqual(actual[mode], {key: float(value.mean()) for key, value in metrics.items()})
+        self.assertEqual(ledger.consumed_units,
+                         ledger.estimate_kernel(**run.validation_work(model, 4)))
+        self.assertEqual(model.digest(), before)
+
+    def test_selected_observer_charge_matches_two_preparations(self):
+        from independent.inference import _sum_work
+        from independent.learning import setup_work
+        from model import JointModel
+        model = JointModel(202, 12, 192, hidden=4, seed=1701)
+        report = {"per_row_cost": {"work_units": [10, 11]},
+                  "cost": {"prepare": {"consumed_units": 5}}}
+        ledger = WorkLedger("manual-selected")
+        run.charge_measure(report, model, 2, ledger)
+        observed = run.observer_work(2)
+        observed["macs"] += 2 * 2 * 12 * 12
+        observed["scalar_ops"] += 2 * 2
+        setup = setup_work(model.dimensions, "additive")
+        self.assertEqual(ledger.consumed_units,
+                         26 + ledger.estimate_kernel(**_sum_work(setup, setup, observed)))
+
+
 class AffineControllerIntegrationTests(unittest.TestCase):
     def test_selected_head_export_records_kind_tensor_inventory_and_dispatches_reload(self):
         from independent.gain_head import AffineGainHead, KIND
