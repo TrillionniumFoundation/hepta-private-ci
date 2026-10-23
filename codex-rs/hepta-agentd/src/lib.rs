@@ -25,6 +25,7 @@ mod event_buffer;
 mod evidence_frontier;
 mod evidence_host;
 mod evidence_trust;
+mod grant_provider_worker;
 #[cfg(target_os = "linux")]
 mod hos2_device;
 mod intelligence_ingress;
