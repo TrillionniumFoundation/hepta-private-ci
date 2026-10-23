@@ -4,6 +4,8 @@ use serde_json::Value;
 use serde_json::json;
 use std::io::Read;
 use std::io::Write;
+use std::sync::Arc;
+use std::sync::mpsc;
 
 fn identity() -> RootPeerIdentity {
     let pid = std::process::id();
@@ -141,6 +143,126 @@ fn lost_ack_after_remote_commit_is_permanently_unavailable() {
         Err(AuthorityTrustError::Unavailable)
     );
     assert_eq!(worker.join().unwrap(), frontier(2));
+}
+
+#[test]
+fn invalid_or_unknown_ack_never_reopens_the_lane() {
+    let mut extra = response(1, "ack", Some(frontier(2)));
+    extra["reset"] = json!(true);
+    for reply in [
+        response(2, "ack", Some(frontier(2))),
+        response(1, "unknown", None),
+        response(1, "ack", None),
+        response(1, "ack", Some(frontier(3))),
+        extra,
+    ] {
+        let (client, mut server) = client(Duration::from_secs(2));
+        let worker = std::thread::spawn(move || {
+            receive(&mut server);
+            send(&mut server, reply);
+            assert_closed(&mut server);
+        });
+        assert_eq!(
+            client.compare_and_set("original", &frontier(1), &frontier(2)),
+            Err(AuthorityTrustError::Unavailable)
+        );
+        assert_eq!(
+            client.load("original"),
+            Err(AuthorityTrustError::Unavailable)
+        );
+        worker.join().unwrap();
+    }
+}
+
+#[test]
+fn partial_or_oversize_response_closes_without_another_request() {
+    for bytes in [
+        vec![0, 0],
+        16_385u32.to_be_bytes().to_vec(),
+        0u32.to_be_bytes().to_vec(),
+        vec![0, 0, 0, 9, b'{'],
+    ] {
+        let (client, mut server) = client(Duration::from_secs(2));
+        let worker = std::thread::spawn(move || {
+            receive(&mut server);
+            server.write_all(&bytes).unwrap();
+            server.shutdown(Shutdown::Write).unwrap();
+            assert_closed(&mut server);
+        });
+        assert_eq!(
+            client.load("original"),
+            Err(AuthorityTrustError::Unavailable)
+        );
+        assert_eq!(
+            client.load("original"),
+            Err(AuthorityTrustError::Unavailable)
+        );
+        worker.join().unwrap();
+    }
+}
+
+#[test]
+fn total_timeout_closes_without_replaying_a_waiting_operation() {
+    let (client, mut server) = client(Duration::from_millis(100));
+    let worker = std::thread::spawn(move || {
+        receive(&mut server);
+        assert_closed(&mut server); // no ACK, no new request ID
+    });
+    assert_eq!(
+        client.load("original"),
+        Err(AuthorityTrustError::Unavailable)
+    );
+    assert_eq!(
+        client.load("original"),
+        Err(AuthorityTrustError::Unavailable)
+    );
+    worker.join().unwrap();
+}
+
+#[test]
+fn owner_mismatch_emits_nothing_and_concurrent_calls_never_interleave() {
+    let (client, mut server) = client(Duration::from_secs(2));
+    assert_eq!(client.load("other"), Err(AuthorityTrustError::Invalid));
+    let client = Arc::new(client);
+    let original = Arc::clone(&client);
+    let (received, ready) = mpsc::sync_channel(1);
+    let (release, wait) = mpsc::sync_channel(1);
+    let peer = std::thread::spawn(move || {
+        assert_eq!(receive(&mut server)["request_id"], 1);
+        received.send(()).unwrap();
+        wait.recv_timeout(Duration::from_secs(2)).unwrap();
+        send(&mut server, response(1, "ack", Some(frontier(1))));
+    });
+    let worker = std::thread::spawn(move || original.load("original"));
+    ready.recv_timeout(Duration::from_secs(2)).unwrap();
+    assert_eq!(
+        client.load("original"),
+        Err(AuthorityTrustError::Unavailable)
+    );
+    release.send(()).unwrap();
+    assert_eq!(worker.join().unwrap(), Ok(frontier(1)));
+    peer.join().unwrap();
+}
+
+#[test]
+fn exhausted_request_counter_closes_before_writing() {
+    let (client, mut server) = client(Duration::from_secs(2));
+    client
+        .channel
+        .lock()
+        .unwrap()
+        .as_mut()
+        .unwrap()
+        .next_request_id = u64::MAX;
+    assert_eq!(
+        client.load("original"),
+        Err(AuthorityTrustError::Unavailable)
+    );
+    assert_eq!(
+        client.load("original"),
+        Err(AuthorityTrustError::Unavailable)
+    );
+    assert_closed(&mut server);
 }
 
 #[test]
