@@ -9,17 +9,17 @@ from memory_nine_arm_training_cost import (
 from test_memory_nine_arm_gate import fixture, h
 
 
-def create_event(phase, units, source_roots):
+def create_event(arm, phase, units, source_roots):
     record = {
-        "phase": phase,
+        "arm": arm, "phase": phase,
         "source_roots": list(source_roots),
         "optimizer_updates": 20 if phase == "head" else 2,
         "optimizer_examples": 160 if phase == "head" else 16,
         "work_units": units,
         "forward_calls": 35,
         "cpu_ns": 100000,
-        "before_sha256": h("before:" + phase),
-        "after_sha256": h("after:" + phase),
+        "before_sha256": h("before:" + arm + ":" + phase),
+        "after_sha256": h("after:" + arm + ":" + phase),
     }
     record["record_sha256"] = sha(canonical(record))
     return record
@@ -33,7 +33,7 @@ def package_for(plan):
         # Physical work must fit the same 500-unit plan across all E-I.
         per_additional = 10
         head_units = bank["total_training_budget_units"] - per_additional * (len(phases) - 1)
-        events = [create_event(phase, head_units if phase == "head" else per_additional,
+        events = [create_event(arm, phase, head_units if phase == "head" else per_additional,
                                plan["common"]["training_roots"]) for phase in phases]
         tensors = [h("physical tensor:" + arm + ":" + str(i))
                    for i in range(bank["trained_heads"])]
@@ -137,6 +137,13 @@ class PhysicalTrainingCostTests(unittest.TestCase):
         self.subject("H")["trained_head_tensor_digests"][1] = {"malformed": True}
         self.refuses("trained tensor bytes")
 
+    def test_optimizer_event_cannot_be_borrowed_from_other_arm(self):
+        event = self.subject("H")["events"][-1]
+        event["arm"] = "G"
+        event["record_sha256"] = sha(canonical({
+            k: v for k, v in event.items() if k != "record_sha256"}))
+        self.refuses("belongs to a different arm")
+
     def test_missing_arm_rejected(self):
         self.package["arms"].pop()
         self.refuses("complete E-I")
@@ -191,7 +198,7 @@ class PhysicalTrainingCostTests(unittest.TestCase):
         self.refuses("work census")
 
     def test_graph_phase_cannot_be_smuggled_into_F(self):
-        event = create_event("graph", 1, ["train:root"])
+        event = create_event("F", "graph", 1, ["train:root"])
         self.subject("F")["events"][-1] = event
         self.refuses("unregistered work phase")
 
