@@ -87,7 +87,9 @@
       "authority": "kernel.authority_final_use_consumed",
       "tests": [
         "codex-rs/hepta-memory/src/production_writer.rs",
-        "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs"
+        "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_race_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "authorized_dispatch",
@@ -492,6 +494,21 @@
     {
       "path": "docs/modules/kernel.operations/TECHNICAL.md",
       "object": "5c3b21dafcf862d4f83df6304fced9ff7e911a80"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target.rs"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_owner.rs"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/ordinary_cpu_owner.sql"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_race_tests.rs"
     }
   ]
 }

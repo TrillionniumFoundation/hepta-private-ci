@@ -14,8 +14,8 @@
   "resolvedRoots": [
     "codex-rs/hepta-infer-worker-host"
   ],
-  "stateOwnerDisposition": "Owns live provider client handles; persistent request/slot/observation facts remain in the inference.control journal. App Server owns ephemeral thread execution; artifact/cache owners retain model bytes.",
-  "terminalObserverDisposition": "The hosted native-app-server profile observes real matching turn events; the local manifest driver remains injected and does not prove physical weights/device behavior.",
+  "stateOwnerDisposition": "The native App Server path owns live provider handles while inference.control retains its request/slot/observation journal. The separate fixed ordinary CPU destination owns the trusted destination SQLite dedupe and sixteen permanent lifetime entries, including terminal tombstones, and the original in-memory Child handles; it neither owns inference.control facts nor refunds entries.",
+  "terminalObserverDisposition": "The hosted native App Server profile observes exact turn events. The separately registered ordinary destination observes only its retained original Child: timely exit zero plus durable terminal storage is an ordinary exit fact; missing owner, nonzero/late exit and uncertain durability stay indeterminate. Neither that fact nor the injected local driver proves model/device behavior, resource retirement or pool/process cold recovery.",
   "operations": [
     {
       "designOperation": "load_model",
@@ -141,5 +141,69 @@
   "technicalGuide": "docs/modules/inference.worker/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-infer-worker-host"
+  ],
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-infer-worker-host",
+    "codex-rs/hepta-infer-worker-host/BUILD.bazel",
+    "codex-rs/hepta-infer-worker-host/Cargo.toml",
+    "codex-rs/hepta-infer-worker-host/ordinary_cpu_owner.sql",
+    "codex-rs/hepta-infer-worker-host/src/lib.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_output.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_owner.rs",
+    "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_owner_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_registration.rs",
+    "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_registration_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_race_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target.rs",
+    "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target_tests.rs"
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-infer-worker-host/BUILD.bazel"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/Cargo.toml"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/ordinary_cpu_owner.sql"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/lib.rs"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_output.rs"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_owner.rs"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_owner_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_registration.rs"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_registration_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_race_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target.rs"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target_tests.rs"
+    }
   ]
 }

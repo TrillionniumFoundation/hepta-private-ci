@@ -29,15 +29,18 @@ Plane `kernel`, kind `authority`, state model `stateful` and architecture role `
 Declared exclusive target roots:
 
 - `codex-rs/hepta-contracts`
+- `codex-rs/utils/windows-private-state`
 
 Existing declared roots at this exact source snapshot:
 
 - `codex-rs/hepta-contracts`
+- `codex-rs/utils/windows-private-state`
 
 Non-authoritative implementation evidence roots:
 
 - `codex-rs/hepta-contracts`
 - `codex-rs/ext/hepta-governance`
+- `codex-rs/utils/windows-private-state`
 
 Declared roots not yet present:
 
@@ -46,6 +49,12 @@ None.
 `existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish runtime composition, operator acceptance, selection, promotion or release. Any source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
 
 ### Native source and scope
+
+The existing PN0 security owner also owns the narrow Windows OS utility root.
+Its held-file mechanisms and read-only captured-owner/SID/DACL observations are
+supporting source, with native Windows controls still pending. This registration
+does not provide a trusted private-parent factory, a FinalUse or registry backend,
+a new authority owner, broad sandbox ownership or production storage support.
 
 The registered primary source is [codex-rs/hepta-contracts/src/final_use.rs](../../../codex-rs/hepta-contracts/src/final_use.rs); the general lease owner is [authority_lease.rs](../../../codex-rs/hepta-contracts/src/authority_lease.rs), and external trust interfaces are in [authority_trust.rs](../../../codex-rs/hepta-contracts/src/authority_trust.rs). This is source navigation, not proof that every target port or production consumer exists. The canonical target → native API → product caller → test → qualification status is [TRACEABILITY.md](TRACEABILITY.md). The V1 general-lease trust model is frozen by [ADR-0001](ADR-0001-LEASE-TRUST-MODEL.md), and final-use ordering is normative in [LINEARIZATION.md](LINEARIZATION.md).
 
