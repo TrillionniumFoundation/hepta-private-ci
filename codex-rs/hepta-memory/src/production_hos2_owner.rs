@@ -106,8 +106,18 @@ impl ProductionDurableWriter {
         through: &Hos2DeliveryId,
     ) -> Result<Hos2RetirementObservation, ProductionWriterError> {
         self.verify_authority().await?;
-        let terminal_chain_sha256 = self.lease.hos2_durable_prefix(through).await?;
-        self.verify_authority().await?;
+        let mut transaction = self
+            .store
+            .observation_pool()
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+        let terminal_chain_sha256 = self
+            .lease
+            .hos2_durable_prefix(&mut transaction, through)
+            .await?;
+        self.acknowledge_bound_owner_transaction(&mut transaction)
+            .await?;
         let permit = Hos2RetirementPermit {
             through: through.clone(),
             source_owner: self.owner_agent_id().clone(),
@@ -117,13 +127,7 @@ impl ProductionDurableWriter {
         // Recheck the original live verifier after all SQLite awaits. This
         // check is the source authorization observation immediately before
         // entry, not a claim to retain an issuer lock across the device call.
-        self.authority
-            .validate_for_agent(self.store.owner_agent_id())?;
-        self.live_verifier
-            .as_ref()
-            .ok_or(ProductionWriterError::LiveVerifierRequired)?
-            .verify(&self.authority, self.store.owner_agent_id())
-            .map_err(ProductionWriterError::AuthorityRejected)?;
+        self.retirement_live_check()?;
         let observation = target
             .retire(&permit)
             .map_err(ProductionWriterError::Durability)?;
@@ -135,6 +139,10 @@ impl ProductionDurableWriter {
                 "native retirement acknowledgement is invalid".to_string(),
             ));
         }
+        transaction
+            .rollback()
+            .await
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
         Ok(observation)
     }
 }

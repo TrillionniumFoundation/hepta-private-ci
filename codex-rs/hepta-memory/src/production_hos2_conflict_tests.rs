@@ -515,7 +515,7 @@ impl ProductionAuthorityVerifier for RetirementVerifier {
         if self.revoked.load(Ordering::SeqCst) {
             return Err("original issuer revoked the source lease".to_string());
         }
-        if self.checks.fetch_add(1, Ordering::SeqCst) == 1 {
+        if self.checks.fetch_add(1, Ordering::SeqCst) == 0 {
             self.checked
                 .lock()
                 .map_err(|error| error.to_string())?
@@ -523,8 +523,8 @@ impl ProductionAuthorityVerifier for RetirementVerifier {
                 .ok_or_else(|| "missing authority-check notification".to_string())?
                 .send(())
                 .map_err(|_| "authority-check observer closed".to_string())?;
-            // A committed SQLx connection returns in a spawned task. Yield this
-            // worker's queued tasks before this fixture waits for its observer.
+            // Pause the first pre-SQLite issuer observation. The final check
+            // after the held prefix transaction must see later revocation.
             tokio::task::block_in_place(|| {
                 self.resume
                     .lock()
@@ -564,7 +564,7 @@ async fn retirement_rechecks_original_live_authority_after_sqlite_awaits() -> Te
     let mut retirement =
         tokio::spawn(async move { writer.retire_hos2_through(&target, &through).await });
     tokio::time::timeout(Duration::from_secs(5), checked_rx).await??;
-    // The prefix transaction committed before this paused issuer check.
+    // The first issuer observation is paused before any SQLite checkout.
     assert!(
         !retirement.is_finished(),
         "retirement crossed the paused issuer check before revocation"

@@ -117,3 +117,92 @@ async fn hos2_retirement_requires_bound_whole_owner_ack_before_discarding_native
     assert!(result.is_err());
     assert!(fixture.store.commit_gate.is_fenced());
 }
+
+#[tokio::test]
+async fn hos2_retirement_publishes_complete_original_prefix_and_retries_metadata_only() {
+    let fixture = ManagedFixture::new().await;
+    let (device, target) = settled_hos2(&fixture).await;
+    fixture
+        .writer
+        .retire_hos2_through(&target, &device.request.delivery)
+        .await
+        .unwrap();
+    let acknowledged = fixture.peer.receipt.lock().unwrap().clone();
+    assert_eq!(acknowledged.head.phase, CognitiveCheckpointPhase::Current);
+    assert_eq!(
+        acknowledged.head.last_current,
+        fixture.store.recovery_anchor().await.unwrap()
+    );
+    fixture
+        .writer
+        .retire_hos2_through(&target, &device.request.delivery)
+        .await
+        .unwrap();
+    assert_eq!(*fixture.peer.receipt.lock().unwrap(), acknowledged);
+    assert_eq!(device.retirements.load(Ordering::SeqCst), 2);
+}
+
+#[tokio::test]
+async fn hos2_retirement_cancelled_ack_preserves_history_until_independent_current_readback() {
+    let fixture = ManagedFixture::new().await;
+    let (device, target) = settled_hos2(&fixture).await;
+    fixture
+        .peer
+        .hold_current_reply
+        .store(true, Ordering::SeqCst);
+    let writer = fixture.writer.clone();
+    let destination = target.clone();
+    let delivery = device.request.delivery.clone();
+    let task =
+        tokio::spawn(async move { writer.retire_hos2_through(&destination, &delivery).await });
+    tokio::time::timeout(Duration::from_secs(5), fixture.peer.published.notified())
+        .await
+        .unwrap();
+    task.abort();
+    assert!(task.await.unwrap_err().is_cancelled());
+    assert_eq!(device.retirements.load(Ordering::SeqCst), 0);
+    assert!(fixture.store.commit_gate.is_fenced());
+    fixture
+        .peer
+        .hold_current_reply
+        .store(false, Ordering::SeqCst);
+    fixture.peer.wrong_owner_reply.store(true, Ordering::SeqCst);
+    assert!(
+        fixture
+            .writer
+            .retire_hos2_through(&target, &device.request.delivery)
+            .await
+            .is_err()
+    );
+    assert_eq!(device.retirements.load(Ordering::SeqCst), 0);
+    fixture
+        .peer
+        .wrong_owner_reply
+        .store(false, Ordering::SeqCst);
+    fixture
+        .writer
+        .retire_hos2_through(&target, &device.request.delivery)
+        .await
+        .unwrap();
+    assert_eq!(device.retirements.load(Ordering::SeqCst), 1);
+    assert!(fixture.writer.verify_current_authority().await.is_err());
+}
+
+#[tokio::test]
+async fn hos2_retirement_revoked_during_publication_never_enters_native_retirement() {
+    let fixture = ManagedFixture::new().await;
+    let (device, target) = settled_hos2(&fixture).await;
+    fixture
+        .peer
+        .revoke_after_publication
+        .store(true, Ordering::SeqCst);
+    assert!(
+        fixture
+            .writer
+            .retire_hos2_through(&target, &device.request.delivery)
+            .await
+            .is_err()
+    );
+    assert_eq!(device.retirements.load(Ordering::SeqCst), 0);
+    assert!(fixture.store.commit_gate.is_fenced());
+}
