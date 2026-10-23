@@ -164,46 +164,100 @@
   ],
   "sourceObjects": [
     {
-      "path": "codex-rs/hepta-infer-worker-host/BUILD.bazel"
+      "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "object": "d92b748a22b19046465bcfe0b4fd9f58cc0c09fa"
     },
     {
-      "path": "codex-rs/hepta-infer-worker-host/Cargo.toml"
+      "path": "codex-rs/hepta-infer-worker-host",
+      "object": "ba9599aa87d55d48e5db2f34ed6fd9b62640187a"
     },
     {
-      "path": "codex-rs/hepta-infer-worker-host/ordinary_cpu_owner.sql"
+      "path": "codex-rs/hepta-infer-worker-host/BUILD.bazel",
+      "object": "ff4b46aa96efa4f0910e6e56c4d4a27d745717b0"
     },
     {
-      "path": "codex-rs/hepta-infer-worker-host/src/lib.rs"
+      "path": "codex-rs/hepta-infer-worker-host/Cargo.toml",
+      "object": "516facdbf2db19fdead87c16b96715ccbe3b886e"
     },
     {
-      "path": "codex-rs/hepta-infer-worker-host/src/native_output.rs"
+      "path": "codex-rs/hepta-infer-worker-host/ordinary_cpu_owner.sql",
+      "object": "0116fe92f10d2522803399a9fddf75cee014a84f"
     },
     {
-      "path": "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs"
+      "path": "codex-rs/hepta-infer-worker-host/src/lib.rs",
+      "object": "5e4f6b7b89fcbb26366dc91afad0c390a032cf95"
     },
     {
-      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_owner.rs"
+      "path": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
+      "object": "26ee6559a9de6baf5846ea367d02e5ffb01a40d6"
     },
     {
-      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_owner_tests.rs"
+      "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
+      "object": "5ae05aaefebfc6a52bf4c6be9e1ed7b6a42f7201"
     },
     {
-      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_registration.rs"
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "object": "2e6bd4f8fe1755e2f2103ddd16c06def718276fa"
     },
     {
-      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_registration_tests.rs"
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "object": "11273540b1baddffc7b1fdd44e4397e2904f5cee"
     },
     {
-      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_race_tests.rs"
+      "path": "codex-rs/hepta-infer-worker-host/src/native_output.rs",
+      "object": "31733e9ca175ac6fac70565cf9165899edb9d8d4"
     },
     {
-      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_tests.rs"
+      "path": "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs",
+      "object": "295a627b3cbee9f935a0bff96bd09ea3948d8519"
     },
     {
-      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target.rs"
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+      "object": "d378670412d30caf71feac26064c5cd476f6f1ca"
     },
     {
-      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target_tests.rs"
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+      "object": "c3ef8bf87075cf072660074fe8e91aedb75d5f5e"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_owner.rs",
+      "object": "2dd080a206996505c6ccb18526aab77d8eb83800"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_owner_tests.rs",
+      "object": "41f8a9af435b681e39fea10aeb225283dc8ee44e"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_registration.rs",
+      "object": "6e18af182538be910290a90292f26f77be9747e4"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_registration_tests.rs",
+      "object": "2f6f68c9ed56218b59a33dbade5caabae7172ea6"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_race_tests.rs",
+      "object": "275da31919a0337931c03d407342c5f1a4d1be4c"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_tests.rs",
+      "object": "77e4c32e4067d42a5f99ec4c9a1bcbf1d87099b3"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target.rs",
+      "object": "39ade433890d9fd294159e4c5b7fc80aa45bbeba"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target_tests.rs",
+      "object": "31f2876da2d96b6b40557dbdcc82638183f4704f"
+    },
+    {
+      "path": "docs/modules/inference.worker/TECHNICAL.md",
+      "object": "5363a2a62f99f631f24375dc9bfe1d9432d252b4"
     }
-  ]
+  ],
+  "observedAtHead": {
+    "commit": "94142d7d9a6d0763c2cb642ec9d36a588996c8d7",
+    "tree": "ed0915a806b161d9ae89c25c6fa2315f9803e90e"
+  }
 }

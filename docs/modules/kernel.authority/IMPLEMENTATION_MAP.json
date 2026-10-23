@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "9049a63c7f1fbeb2d9bbba4f2fba86e1add50b4e",
-    "tree": "7dc7234fab4b2db69af4b1f774a2ea3015ebbee1"
+    "commit": "0986eb23178d77e64e42ac817982ae9d59a66c4e",
+    "tree": "111359b9e5909167f8189f91ac6e70544cbb7f48"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.authority",
@@ -11,10 +11,12 @@
   "deputy": "kernel-contracts",
   "technicalGuide": "docs/modules/kernel.authority/TECHNICAL.md",
   "declaredRoots": [
-    "codex-rs/hepta-contracts"
+    "codex-rs/hepta-contracts",
+    "codex-rs/utils/windows-private-state"
   ],
   "resolvedRoots": [
-    "codex-rs/hepta-contracts"
+    "codex-rs/hepta-contracts",
+    "codex-rs/utils/windows-private-state"
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
@@ -177,7 +179,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceRoot": [
-    "codex-rs/hepta-contracts"
+    "codex-rs/hepta-contracts",
+    "codex-rs/utils/windows-private-state"
   ],
   "traceability": "docs/modules/kernel.authority/TRACEABILITY.md",
   "trustDecision": "docs/modules/kernel.authority/ADR-0001-LEASE-TRUST-MODEL.md",
@@ -277,26 +280,36 @@
       "object": "6d60b7d6923bc0b1ef8c4f71857f903a8bf6bd52"
     },
     {
+      "path": "codex-rs/utils/windows-private-state",
+      "object": "a234e106dad6baa3398bdcba2c6a7ba9394f163f"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/BUILD.bazel",
+      "object": "53361cda070da058781628e4c0b89b3856731698"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/Cargo.toml",
+      "object": "2e15ccd7e7b2ed90bbba3dfe457bba7d033e7f02"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/lib.rs",
+      "object": "8051781fb78763e464fafa011bf954c68845f1cc"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/mechanism.rs",
+      "object": "58ad2cbeb02224595b9cb2fa70ac9123f8d549d3"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/security.rs",
+      "object": "d16e9919693ab16e575dfdbf9a4c2e48833465ec"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/security_tests.rs",
+      "object": "657082844e2c4fa66f034941a48b2d14d40e6fca"
+    },
+    {
       "path": "docs/modules/kernel.authority/TECHNICAL.md",
-      "object": "26694ea19236ed2260858c9c8ddd2bab8c420934"
-    },
-    {
-      "path": "codex-rs/utils/windows-private-state/BUILD.bazel"
-    },
-    {
-      "path": "codex-rs/utils/windows-private-state/Cargo.toml"
-    },
-    {
-      "path": "codex-rs/utils/windows-private-state/src/lib.rs"
-    },
-    {
-      "path": "codex-rs/utils/windows-private-state/src/mechanism.rs"
-    },
-    {
-      "path": "codex-rs/utils/windows-private-state/src/security.rs"
-    },
-    {
-      "path": "codex-rs/utils/windows-private-state/src/security_tests.rs"
+      "object": "e319be9c28add30b9c29b3c440cec84e090c8352"
     }
   ]
 }
