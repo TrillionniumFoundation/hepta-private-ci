@@ -153,6 +153,13 @@ def evaluate(study: Mapping):
                         _need(dr["loss"] == failure_loss and dr["quality"] == 0 and
                               dr["ambiguity"] == 1 and dr["inconsistency"] == 1,
                               "a failed/overbudget output cannot be dropped or awarded quality")
+                    else:
+                        # A recorded failure must be at least as bad as *any*
+                        # successfully decoded output. Otherwise a controller
+                        # can label a catastrophic output as failed and obtain
+                        # a smaller loss, manufacturing a CVaR improvement.
+                        _need(_number(dr["loss"], "completed loss") <= failure_loss,
+                              "completed loss exceeds registered failure ceiling")
                     for m, metric in enumerate(METRICS):
                         upper = float("inf") if metric == "loss" else 1
                         entries[k, m] = _number(dr[metric], metric, upper=upper)
