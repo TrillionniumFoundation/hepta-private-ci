@@ -1,0 +1,41 @@
+{
+  "source_commit": "df9f564dc086e722ee1f6125a2f7a5b6d1801c6b",
+  "tree": "9363a0af547df790c3883e615c7a90c62cebdad3",
+  "parent": "9e1521d2ac6d171a0c307e2ae5a3b7a1ee6cacd0",
+  "changed_files": 5,
+  "complete_leaf_count": 9255,
+  "preimages": [
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "expected": "3f4c9682e4e899c86c7ad14503c3ae222ed80cb0",
+      "actual": "3f4c9682e4e899c86c7ad14503c3ae222ed80cb0",
+      "match": true
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_monitor.rs",
+      "expected": null,
+      "actual": null,
+      "match": true
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_monitor_tests.rs",
+      "expected": null,
+      "actual": null,
+      "match": true
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_cancellation_tests.rs",
+      "expected": null,
+      "actual": null,
+      "match": true
+    },
+    {
+      "path": ".github/workflows/hepta-original-run-worker.yml",
+      "expected": null,
+      "actual": null,
+      "match": true
+    }
+  ],
+  "all_leaf_modes_and_blobs_match": true,
+  "qualification": "4 Rust source files and full-library CI source only; eight new Rust tests authored and unexecuted. 38 Python synthetic checker tests pass in both normal and optimized modes."
+}
