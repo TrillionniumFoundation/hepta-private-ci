@@ -84,3 +84,34 @@ fn secure_reopen_rejects_namespace_and_mount_identity_mismatches() -> io::Result
     );
     Ok(())
 }
+
+#[test]
+fn secure_reopen_reads_only_the_same_regular_file_from_a_private_pin() -> io::Result<()> {
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("file.txt");
+    std::fs::write(&path, b"authorized")?;
+    let original = pin_file(&path)?;
+    let identity = file_identity(&original, Arc::new(MountNamespace::capture()?))?;
+    let physical = stable_file_path(&original)?;
+    let mut readable = secure_reopen(physical.as_path(), &identity)?;
+    let mut bytes = Vec::new();
+    std::io::Read::read_to_end(&mut readable, &mut bytes)?;
+    let actual = file_identity(&readable, Arc::clone(&identity.namespace))?;
+    assert_eq!(
+        (
+            bytes,
+            actual.device,
+            actual.inode,
+            actual.mount,
+            stable_file_path(&readable)?
+        ),
+        (
+            b"authorized".to_vec(),
+            identity.device,
+            identity.inode,
+            identity.mount,
+            physical
+        )
+    );
+    Ok(())
+}

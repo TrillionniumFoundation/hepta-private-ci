@@ -400,6 +400,10 @@ responses are passed over stdin/stdout.
 
 Authorized reads keep the initial file descriptor alive while admitting a
 second descriptor against the resolved physical path and permission policy.
+The Linux implementation uses `O_PATH` for both path opens without opening an
+unchecked object for I/O. Only a private descriptor already proved regular is
+converted through its kernel proc link to a readable handle and checked again;
+the conversion never falls back to opening the caller's path.
 Linux requires a successful runtime probe of `openat2` link-resolution flags,
 descriptor paths, mount identity, and single-link regular-file checks; a kernel
 without these primitives advertises no capability and rejects the operation.

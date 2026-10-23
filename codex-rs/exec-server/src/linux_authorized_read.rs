@@ -2,7 +2,9 @@
 //!
 //! The initial descriptor pins the inode while openat2 rejects symlink and magic-link
 //! traversal during the secure reopen. Admission ends with matching namespace, mount,
-//! device/inode, physical path, regular-file type and single-link metadata. Subsequent
+//! device/inode, physical path, regular-file type and single-link metadata. Both path
+//! opens use O_PATH; only the proved private regular-file descriptor is converted
+//! through its kernel proc link to a readable handle and verified again. Subsequent
 //! reads use only that admitted descriptor. Unlike Darwin O_UNIQUE, Linux checks link
 //! count after opening; this is not a claim of identical atomic kernel semantics.
 
@@ -127,14 +129,28 @@ fn secure_reopen(path: &Path, expected: &UniqueFileIdentity) -> io::Result<File>
     let fd = rustix::fs::openat2(
         rustix::fs::CWD,
         path,
-        OFlags::RDONLY | OFlags::CLOEXEC | OFlags::NONBLOCK | OFlags::NOCTTY,
+        OFlags::PATH | OFlags::CLOEXEC,
         Mode::empty(),
         ResolveFlags::NO_SYMLINKS | ResolveFlags::NO_MAGICLINKS,
     )
     .map_err(|error| redact_file_access_error(error.into()))?;
-    let file = File::from(fd);
-    verify_identity(&file, path, expected)?;
-    Ok(file)
+    let pinned = File::from(fd);
+    verify_identity(&pinned, path, expected)?;
+    // This is an internally owned, proved regular-file descriptor, never a
+    // caller-supplied path or descriptor number. Keep it alive through conversion
+    // so the proc link cannot resolve to a reused descriptor or another inode.
+    let fd = pinned.as_raw_fd();
+    let descriptor_path = format!("/proc/thread-self/fd/{fd}");
+    let readable = File::from(
+        rustix::fs::open(
+            descriptor_path.as_str(),
+            OFlags::RDONLY | OFlags::CLOEXEC | OFlags::NONBLOCK | OFlags::NOCTTY,
+            Mode::empty(),
+        )
+        .map_err(|error| redact_file_access_error(error.into()))?,
+    );
+    verify_identity(&readable, path, expected)?;
+    Ok(readable)
 }
 
 fn pin_file(path: &Path) -> io::Result<File> {
@@ -218,8 +234,10 @@ static AVAILABLE: LazyLock<bool> = LazyLock::new(|| {
         let original = pin_file(&path)?;
         let identity = file_identity(&original, Arc::new(MountNamespace::capture()?))?;
         let physical_path = stable_file_path(&original)?;
-        let admitted = secure_reopen(physical_path.as_path(), &identity)?;
-        if physical_path.as_path() != path {
+        let mut admitted = secure_reopen(physical_path.as_path(), &identity)?;
+        let mut contents = Vec::new();
+        std::io::Read::read_to_end(&mut admitted, &mut contents)?;
+        if physical_path.as_path() != path || contents != b"probe" {
             return Ok(false);
         }
         // Exercise each kernel resolution flag directly: a later descriptor-path
@@ -228,7 +246,7 @@ static AVAILABLE: LazyLock<bool> = LazyLock::new(|| {
             rustix::fs::openat2(
                 rustix::fs::CWD,
                 path,
-                OFlags::RDONLY | OFlags::CLOEXEC | OFlags::NONBLOCK | OFlags::NOCTTY,
+                OFlags::PATH | OFlags::CLOEXEC,
                 Mode::empty(),
                 resolve,
             )
