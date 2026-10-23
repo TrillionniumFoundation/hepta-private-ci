@@ -666,7 +666,7 @@ npm, Python, build or exact-source CI gates. Complete PN0 before treating later
 PoN or model experiments as a qualified integration baseline.
 
 Cross-repository qualification follows the Chain plan's single
-[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/189c0ae529b0bdfb587b2dca0d7ae061dd5a7a17/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
+[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/3adbc2c9b443f62edda7a9b540946af28ade0342/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
 PN0 exact-source/security baseline → PN1 work security and PN2 bounded state →
 PN3 real-model closure → PN4 five-budget/effect-liability qualification →
 PN5 independent-operator WAN/discovery/availability → PN6 governed migration and
@@ -681,18 +681,28 @@ optimizer, durable journal or authority issuer. Parameter, topology, executable
 and consensus upgrades retain their separate admission and release boundaries.
 
 PN0's native pair pins Chain source
-`189c0ae529b0bdfb587b2dca0d7ae061dd5a7a17`, tree
-`d6b6eab4a60451d586824f9b73638f19e243ca22`, against unchanged default main
+`3adbc2c9b443f62edda7a9b540946af28ade0342`, tree
+`3f3db32cf256a72c48225743aadc88650fc9a95c`, against unchanged default main
 `9fedf7ecbbe07177069c030592b4e03dcffebb81`. Its source-head lane tests that source;
 its base-merge lane tests prospective main merge
-`7eacbf80b8cd3539bf17bfa985520c8b0d4febad`, with ordered parents `[9fedf7ec, 189c0ae5]`
+`f993fa726510fcdbda1dfc137ef1c24a67b61cb2`, with ordered parents `[9fedf7ec, 3adbc2c9]`
 and the original exact merge-tree checks. The separate original-integration base
 `57c1ed545d067937cbd7aaa7570d5f22123265e6` retains prospective merge
-`ec198df353635cf0c927dac11e4ba80fe5c22d61`, ordered parents `[57c1ed54, 189c0ae5]`.
+`f86b7734272b1495b0b1d541bc8ae6cb8f1fb8e5`, ordered parents `[57c1ed54, 3adbc2c9]`.
 Both prospective trees equal the source tree; their different parent identities
 and required executions remain distinct. Neither baseline replaces the other,
 and publication or a pin refresh supplies no passing execution evidence.
 The older source-bound campaign observations below remain unchanged.
+
+The paired PN2/PN3 M09 cache now uses fresh TCL2/schema2 with explicit shared
+`--cache-max-bytes`, `--cache-max-chunks` and `--cache-max-manifests` on every
+writer. Stored limits must match on reopen; repeated fetches and failed downloads
+retain their committed occupancy, while exact content retries do not charge twice.
+Serving reads the existing cache without creating or repairing it. These limits
+cover live payload, manifest wire bytes, 32-byte content keys and catalog rows;
+physical DB/WAL/SHM/temp/output bounds remain open. Disposable cache deletion or
+quota refusal cannot retire M12 paid retention, release an AuthBus reservation,
+authorize installation or qualify the three real-model upgrade rounds.
 
 PN4's source-to-destination interface carries the original verified request and
 one-shot FinalUse token in a sealed `ProductionVerifiedDispatch`. Physical targets
