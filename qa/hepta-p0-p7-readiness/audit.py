@@ -139,10 +139,19 @@ def _complete_listing(obj: dict, key: str) -> list:
     return items
 
 
-def _latest_run(runs: list, name: str, sha: str) -> dict | None:
+def _latest_run(runs: list, name: str, sha: str, pr_number: int) -> dict | None:
+    # A commit can be the head of multiple PRs. A successful run from one
+    # PR must not qualify a different PR even when workflow and SHA match.
     matching = [r for r in runs if isinstance(r, dict)
                 and r.get("name") == name and r.get("head_sha") == sha
-                and r.get("event") == "pull_request"]
+                and r.get("event") == "pull_request"
+                and isinstance(r.get("pull_requests"), list)
+                and any(isinstance(link, dict)
+                        and type(link.get("number")) is int
+                        and link["number"] == pr_number
+                        and isinstance(link.get("head"), dict)
+                        and link["head"].get("sha") == sha
+                        for link in r["pull_requests"])]
     if not matching:
         return None
     return max(matching,
@@ -167,7 +176,7 @@ def check_stage(name: str, spec: dict, get: Callable[[str], dict]) -> dict:
             f"{prefix}/actions/runs?head_sha={sha}&per_page=100"), "workflow_runs")
         for requirement in spec["checks"]:
             label = requirement["workflow"]
-            run = _latest_run(runs, label, sha)
+            run = _latest_run(runs, label, sha, pr_number)
             if run is None:
                 reasons.append(f"missing exact-SHA workflow: {label}")
                 continue
