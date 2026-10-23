@@ -30,5 +30,11 @@ conditional power limits. It has not generated data or run confirmation.
 
 The [saved-aggregate mechanism readout](mechanism_readout/REPORT.md) separates
 continuous utility gains, wrong agreement and negative-tail mass. Per-request
-probabilities/source maps were not saved. A fixed CE-anchor control-variate
-candidate has only hand-array checks; it has not been used for training.
+probabilities/source maps were not saved in that original experiment.
+
+The subsequently authorized [one-shot TRAIN reconstruction](../runs/codex-cloud-ndu-TRAIN-reinference-d1/REPORT.md)
+has completed under its [separate frozen protocol](reinfer_d1/PROTOCOL.md).
+It saves every request's probabilities and source map, 32 fixed gradient draws,
+and all four service waves. The fixed base CE-anchor control variate reduces
+descriptive gradient variance for both A and N; it has not been used for training.
+The diagnostic opening marker is consumed. Do not repeat the reconstruction.
