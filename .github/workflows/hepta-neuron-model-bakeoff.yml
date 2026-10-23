@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - "dot/neuron-bakeoff-*"
+      - "dot/neu1-prospective-windows-*"
     paths:
       - "qualification/neuron-model-bakeoff/**"
       - ".github/workflows/hepta-neuron-model-bakeoff.yml"
