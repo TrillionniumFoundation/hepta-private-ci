@@ -148,7 +148,7 @@
   ],
   "preregistration_amendment": {
     "parent_commit": "8ab573bf4b92bfa8f8022ab74c5072b846a63c4e",
-    "timing": "before any v2 development training or heldout generation",
+    "timing": "before development smoke execution and registered heldout generation; earlier implementation unit-test fixture training is nonconfirmatory",
     "reason": "independent review identified unequal optimizer-update budgets; add a matched supervised fine-tuning baseline without changing primary endpoint or thresholds"
   },
   "matched_supervised_steps": 40,
@@ -158,5 +158,11 @@
     "objective": "mean across depths and portfolios of q-weighted normalized raw reconstruction MSE, plus the same vertex anchor; equivalent up to a parameter-independent constant to convex-target reconstruction",
     "matched": "40 optimizer updates; same grid+8-vertex forward examples, same four depths, same dense Linear forward MACs",
     "not_matched": "joint adds policy compilation and recursive backward arithmetic; wall/CPU and lifetime costs reported separately"
+  },
+  "provenance_wording_correction": {
+    "after": "development smoke001",
+    "before": "any registered v2 heldout generation",
+    "change": "clarify that the matched-baseline amendment preceded smoke and heldout, not all implementation unit-fixture training",
+    "scientific_parameters_or_gates_changed": false
   }
 }

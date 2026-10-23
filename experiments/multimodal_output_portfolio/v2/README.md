@@ -18,7 +18,7 @@ The matched supervised branch minimizes normalized reconstruction under each por
 
 The external loss retains v1.1 semantics: each modality's normalized reconstruction error is clipped at two before averaging, then cross-modal nearest-prototype disagreement is added with weight 0.25. Its derivative is piecewise: contradiction is locally constant away from argmin ties, while clamping and policy changes are nonsmooth. First/last-step receipts separate the NDU-utility gradient from anchor gradients by parameter group and report selected generation depths. Parameter movement alone is not evidence that NDU supplied a refinement gradient.
 
-The pre-result protocol amendment adds the matched supervised updates. It changes neither the primary contrast's threshold nor the test outcomes: the amendment was committed before development training and before any new heldout generation.
+The pre-result protocol amendment adds the matched supervised updates. It changes neither the primary contrast's threshold nor the test outcomes: the amendment was committed before development smoke execution and before any new registered heldout generation; implementation unit-test fixtures had already been exercised.
 
 ## Reproduce
 

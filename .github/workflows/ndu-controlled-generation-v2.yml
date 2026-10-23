@@ -1,0 +1,130 @@
+name: NDU controlled generation v2
+on:
+  push:
+    branches: [research/ndu-controlled-generation-v2]
+    paths: [experiments/multimodal_output_portfolio/v2/CLOUD_RUN_REQUEST.json]
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+jobs:
+  hosted-verification:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Open hosted evidence receipt
+        run: |
+          out="$RUNNER_TEMP/ndu-controlled-v2/$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT-hosted"
+          mkdir -p "$out"
+          printf 'HEPTA_V2_OUTPUT=%s\n' "$out" >> "$GITHUB_ENV"
+          printf 'tier=hosted-cpu\nrunner=%s\nrequest_commit=%s\n' "$RUNNER_NAME" "$GITHUB_SHA" > "$out/assignment.txt"
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # repository pin
+        with:
+          ref: ${{ github.sha }}
+          path: request
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # repository pin
+        with:
+          python-version: '3.12'
+      - name: Resolve explicit implementation commit
+        id: source
+        run: |
+          cp request/experiments/multimodal_output_portfolio/v2/CLOUD_RUN_REQUEST.json "$HEPTA_V2_OUTPUT/request.json"
+          python - <<'PY' 2>&1 | tee "$HEPTA_V2_OUTPUT/request-validation.log"
+          import json, os, re
+          from pathlib import Path
+          request = json.loads((Path(os.environ['HEPTA_V2_OUTPUT']) / 'request.json').read_text())
+          sha = request.get('implementation_commit', '')
+          if request.get('schema') != 'hepta.ndu-controlled-generation.request.v2' or not re.fullmatch('[0-9a-f]{40}', sha):
+              raise ValueError('invalid request schema or explicit source commit')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('sha=' + sha + '\n')
+          print('Requested source:', sha)
+          PY
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ steps.source.outputs.sha }}
+          path: source
+          persist-credentials: false
+      - name: Hosted unit and smoke verification
+        run: bash source/experiments/multimodal_output_portfolio/v2/run_cloud.sh "$HEPTA_V2_OUTPUT" hosted-cpu "$HEPTA_V2_OUTPUT/request.json" --smoke
+      - name: Preserve hosted outcome
+        if: always()
+        env:
+          HEPTA_JOB_STATUS: ${{ job.status }}
+        run: |
+          printf 'job_status=%s\nexternal_assignment_attestation=not_a_dedicated_run\n' "$HEPTA_JOB_STATUS" > "$HEPTA_V2_OUTPUT/workflow-outcome.txt"
+          printf 'Hosted CPU verification: %s. This job is not dedicated execution.\n' "$HEPTA_JOB_STATUS" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # repository pin
+        if: always()
+        with:
+          name: ndu-controlled-v2-hosted-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/ndu-controlled-v2/${{ github.run_id }}-${{ github.run_attempt }}-hosted
+            source/experiments/multimodal_output_portfolio
+            source/.github/workflows/ndu-controlled-generation-v2.yml
+          if-no-files-found: error
+          retention-days: 30
+  dedicated-full:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on:
+      group: trillionnium-android-gpu
+      labels: [self-hosted, linux, x64]
+    timeout-minutes: 120
+    steps:
+      - name: Record claimed assignment before checkout
+        run: |
+          out="$RUNNER_TEMP/ndu-controlled-v2/$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT-dedicated"
+          mkdir -p "$out"
+          printf 'HEPTA_V2_OUTPUT=%s\n' "$out" >> "$GITHUB_ENV"
+          printf 'expected_runner=desktop\ngroup_selector=trillionnium-android-gpu\nrunner=%s\nenvironment=%s\nrequest_commit=%s\nexternal_attestation=required\n' "$RUNNER_NAME" "${RUNNER_ENVIRONMENT:-}" "$GITHUB_SHA" > "$out/assignment.txt"
+          [[ "$RUNNER_NAME" == desktop && "${RUNNER_ENVIRONMENT:-}" == self-hosted && "$RUNNER_OS" == Linux && "$RUNNER_ARCH" == X64 ]]
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: request
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Resolve explicit implementation commit
+        id: source
+        run: |
+          cp request/experiments/multimodal_output_portfolio/v2/CLOUD_RUN_REQUEST.json "$HEPTA_V2_OUTPUT/request.json"
+          python - <<'PY' 2>&1 | tee "$HEPTA_V2_OUTPUT/request-validation.log"
+          import json, os, re
+          from pathlib import Path
+          request = json.loads((Path(os.environ['HEPTA_V2_OUTPUT']) / 'request.json').read_text())
+          sha = request.get('implementation_commit', '')
+          if request.get('schema') != 'hepta.ndu-controlled-generation.request.v2' or not re.fullmatch('[0-9a-f]{40}', sha):
+              raise ValueError('invalid request schema or explicit source commit')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('sha=' + sha + '\n')
+          print('Requested source:', sha)
+          PY
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ steps.source.outputs.sha }}
+          path: source
+          persist-credentials: false
+      - name: Full protocol on assigned project runner
+        run: bash source/experiments/multimodal_output_portfolio/v2/run_cloud.sh "$HEPTA_V2_OUTPUT" dedicated-cloud "$HEPTA_V2_OUTPUT/request.json"
+      - name: Preserve dedicated outcome without self-attestation
+        if: always()
+        env:
+          HEPTA_JOB_STATUS: ${{ job.status }}
+        run: |
+          printf 'job_status=%s\nexternal_assignment_attestation=required\n' "$HEPTA_JOB_STATUS" > "$HEPTA_V2_OUTPUT/workflow-outcome.txt"
+          printf 'Dedicated job: %s. Independently reconcile Actions runner id/name/group and executed steps; local environment assertions are not attestation. A queued job has no execution evidence.\n' "$HEPTA_JOB_STATUS" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: ndu-controlled-v2-dedicated-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/ndu-controlled-v2/${{ github.run_id }}-${{ github.run_attempt }}-dedicated
+            source/experiments/multimodal_output_portfolio
+            source/.github/workflows/ndu-controlled-generation-v2.yml
+          if-no-files-found: error
+          retention-days: 30
