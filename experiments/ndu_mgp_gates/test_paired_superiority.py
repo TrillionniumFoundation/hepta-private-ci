@@ -15,6 +15,8 @@ def study_fixture(*, strong_ndu=True, bootstrap_replicates=120):
     p = {
         'seeds': seeds, 'heldout_world_ids': ids,
         'calibration_world_ids': [f'calibration-{i}' for i in range(100)],
+        'protected_world_ids': {str(s): [f'heldout-{s}-{i}' for i in range(32)
+                                           if i % 4 == 0] for s in seeds},
         'arms': list(ARMS), 'validation_selected_best': 'free_controller',
         'selection_lock_digest': H('frozen-validation-selection'),
         'model_digest': H('shared-encoder-flow'),
@@ -26,7 +28,8 @@ def study_fixture(*, strong_ndu=True, bootstrap_replicates=120):
         'max_inconsistency_increase': 0., 'max_total_cost_ratio': 1.05,
         'bootstrap_replicates': bootstrap_replicates,
         'bootstrap_seed': 3001, 'familywise_alpha': 0.05,
-        'draws_per_world': 2, 'failure_loss': 2.0, 'cost_units': 'measured_cpu_seconds',
+        'draws_per_world': 2, 'failure_loss': 2.0,
+        'cost_units': 'measured_cpu_seconds', 'episode_cost_limit': 2.0,
     }
     worlds = []
     for seed in seeds:
@@ -146,7 +149,7 @@ class PairedEvidenceTests(unittest.TestCase):
         d = study_fixture()
         for row in d['worlds']:
             row['protected_task'] = False
-        with self.assertRaisesRegex(EvidenceGap, 'no protected-task'):
+        with self.assertRaisesRegex(EvidenceGap, 'protected-task relabeling'):
             evaluate(d)
 
     def test_failed_draw_must_stay_in_denominator_as_penalty(self):
@@ -164,6 +167,56 @@ class PairedEvidenceTests(unittest.TestCase):
         d = study_fixture()
         del d['worlds'][0]['outcomes']['ndu']['decoded_draw_scores'][0]['output_witness_sha256']
         with self.assertRaisesRegex(EvidenceGap, 'metrics/witness'):
+            evaluate(d)
+
+    def test_protected_label_cannot_be_reassigned_after_lock(self):
+        d = study_fixture()
+        d['worlds'][0]['protected_task'] = False
+        with self.assertRaisesRegex(EvidenceGap, 'protected-task relabeling'):
+            evaluate(d)
+
+    def test_protected_cohort_must_be_preregistered(self):
+        d = study_fixture()
+        del d['protocol']['protected_world_ids']
+        with self.assertRaisesRegex(EvidenceGap, 'missing preregistered protected'):
+            evaluate(d)
+
+    def test_protected_manifest_cannot_name_other_seed_or_duplicates(self):
+        d = study_fixture()
+        d['protocol']['protected_world_ids']['101'] += ['heldout-211-0']
+        with self.assertRaisesRegex(EvidenceGap, 'invalid preregistered protected'):
+            evaluate(d)
+        d = study_fixture()
+        d['protocol']['protected_world_ids']['101'] += ['heldout-101-0']
+        with self.assertRaisesRegex(EvidenceGap, 'invalid preregistered protected'):
+            evaluate(d)
+
+    def test_completed_overbudget_episode_denied_despite_low_average_cost(self):
+        d = study_fixture()
+        extra = 4.0
+        cost = d['worlds'][0]['outcomes']['ndu']['measured_cost']
+        cost['controller'] += extra
+        cost['total'] += extra
+        with self.assertRaisesRegex(EvidenceGap, 'overbudget episode'):
+            evaluate(d)
+
+    def test_overbudget_failure_kept_in_full_denominator(self):
+        d = study_fixture()
+        cost = d['worlds'][0]['outcomes']['ndu']['measured_cost']
+        cost['controller'] += 4
+        cost['total'] += 4
+        for dr in d['worlds'][0]['outcomes']['ndu']['decoded_draw_scores']:
+            dr.update(status='failed', loss=2.0, quality=0, ambiguity=1,
+                      inconsistency=1)
+        rec = evaluate(d)
+        self.assertEqual(rec['worlds_per_seed'], 32)
+        self.assertFalse(rec['comparison']['static']['gates']['physical_total_cost'])
+        self.assertEqual(rec['status'], 'HOLD_NO_GO')
+
+    def test_nonpositive_common_episode_cost_limit_denied(self):
+        d = study_fixture()
+        d['protocol']['episode_cost_limit'] = 0
+        with self.assertRaisesRegex(EvidenceGap, 'episode cost ceiling'):
             evaluate(d)
 
     def test_no_real_decoder_outputs_claimed(self):
