@@ -228,6 +228,101 @@ class CellEvolutionTests(unittest.TestCase):
             rollback_snapshot(successor, self.parent, self.directory / "stale-frontier",
                               self.budget, stale)
 
+    def test_owner_observed_frontier_cannot_roll_back(self):
+        owner = OfflineEvolutionOwnerV1(self.parent, self.withdrawals)
+        bundle = cohort("owner-frontier").bundle
+        self.withdrawals.view = replace(self.withdrawals.view, epoch=2)
+        owner.predict_task(bundle)
+        self.withdrawals.view = replace(self.withdrawals.view, epoch=1)
+        with patch.object(self.parent.router._net, "forward", side_effect=AssertionError("Router ran")), \
+                patch.object(LightCellHead, "forward", side_effect=AssertionError("Head ran")):
+            with self.assertRaisesRegex(EvolutionError, "frontier rollback"):
+                owner.predict_task(bundle)
+
+    def test_owner_same_epoch_frontier_fork_is_rejected(self):
+        owner = OfflineEvolutionOwnerV1(self.parent, self.withdrawals)
+        bundle = cohort("owner-fork").bundle
+        self.withdrawals.view = replace(self.withdrawals.view, epoch=2)
+        owner.predict_task(bundle)
+        unrelated = cohort("unrelated-withdrawal").bundle.source_record_digests[0]
+        self.withdrawals.view = replace(self.withdrawals.view, revoked_source_digests=(unrelated,))
+        with patch.object(self.parent.router._net, "forward", side_effect=AssertionError("Router ran")), \
+                patch.object(LightCellHead, "forward", side_effect=AssertionError("Head ran")):
+            with self.assertRaisesRegex(EvolutionError, "same-epoch fork"):
+                owner.predict_task(bundle)
+
+    def test_owner_rejected_withdrawal_remains_latched(self):
+        bundle = cohort("owner-rejected-withdrawal").bundle
+        sources = {"ancestor": self.parent.report["source_closure"][0],
+                   "query": bundle.source_record_digests[0]}
+        for kind, source in sources.items():
+            with self.subTest(kind=kind):
+                provider = Withdrawals()
+                owner = OfflineEvolutionOwnerV1(self.parent, provider)
+                provider.revoke(source)
+                with patch.object(self.parent.router._net, "forward", side_effect=AssertionError("Router ran")), \
+                        patch.object(LightCellHead, "forward", side_effect=AssertionError("Head ran")):
+                    with self.assertRaisesRegex(EvolutionError, "withdrawn"):
+                        owner.predict_task(bundle)
+                    provider.view = WithdrawalViewV1(IDENTITY.scope_id)
+                    with self.assertRaisesRegex(EvolutionError, "frontier rollback"):
+                        owner.predict_task(bundle)
+
+    def test_withdrawn_query_rejected_before_forward(self):
+        bundle = cohort("withdrawn-query").bundle
+        retired = retire_snapshot(self.parent, "b", self.directory / "retired", self.budget, self.withdrawals)
+        self.withdrawals.revoke(bundle.source_record_digests[0])
+        for snapshot in (self.parent, retired):
+            with self.subTest(cells=len(snapshot.cells)), \
+                    patch.object(self.parent.router._net, "forward", side_effect=AssertionError("Router ran")), \
+                    patch.object(LightCellHead, "forward", side_effect=AssertionError("Head ran")):
+                with self.assertRaisesRegex(EvolutionError, "withdrawn"):
+                    snapshot.predict_task(bundle, self.withdrawals)
+
+    def test_query_revoked_during_forward_discards_and_latches(self):
+        bundle = cohort("mid-query-withdrawal").bundle
+        owner = OfflineEvolutionOwnerV1(self.parent, self.withdrawals)
+        original = self.parent.cells[0].head.predict_task
+        seen = []
+        def invoke(selected):
+            result = original(selected)
+            seen.append(len(selected.source_record_digests))
+            self.withdrawals.revoke(bundle.source_record_digests[0])
+            return result
+        with patch.object(self.parent.cells[0].head, "predict_task", side_effect=invoke):
+            with self.assertRaisesRegex(EvolutionError, "withdrawal view changed"):
+                owner.predict_task(bundle)
+        self.assertTrue(seen)
+        self.withdrawals.view = WithdrawalViewV1(IDENTITY.scope_id)
+        with patch.object(self.parent.router._net, "forward", side_effect=AssertionError("Router ran")), \
+                patch.object(LightCellHead, "forward", side_effect=AssertionError("Head ran")):
+            with self.assertRaisesRegex(EvolutionError, "frontier rollback"):
+                owner.predict_task(bundle)
+
+    def test_owner_commit_cannot_roll_back_observed_frontier(self):
+        candidate = retire_snapshot(self.parent, "b", self.directory / "candidate", self.budget, self.withdrawals)
+        owner = OfflineEvolutionOwnerV1(self.parent, self.withdrawals)
+        self.withdrawals.view = replace(self.withdrawals.view, epoch=2)
+        owner.predict_task(cohort("owner-commit-frontier").bundle)
+        self.withdrawals.view = replace(self.withdrawals.view, epoch=1)
+        with self.assertRaisesRegex(EvolutionError, "frontier rollback"):
+            owner.commit(candidate, expected_parent_manifest_sha256=self.parent.manifest_sha256)
+        self.assertEqual(owner.current.manifest_sha256, self.parent.manifest_sha256)
+
+    def test_owner_can_commit_clean_recovery_after_child_withdrawal(self):
+        successor = self.split()
+        owner = OfflineEvolutionOwnerV1(successor, self.withdrawals)
+        source = successor.cells[0].head.report["splits"]["train"]["source_record_digests"][0]
+        self.withdrawals.revoke(source)
+        bundle = cohort("owner-clean-recovery").bundle
+        with self.assertRaisesRegex(EvolutionError, "withdrawn"):
+            owner.predict_task(bundle)
+        restored = rollback_snapshot(successor, self.parent, self.directory / "clean", self.budget, self.withdrawals)
+        owner.commit(restored, expected_parent_manifest_sha256=successor.manifest_sha256)
+        output = owner.predict_task(bundle)
+        self.assertEqual(owner.current.manifest_sha256, restored.manifest_sha256)
+        self.assertEqual(output["graph_generation"], 3)
+
     def test_budget_denial_precedes_any_head_forward_and_leaves_parent_selected(self):
         owner = OfflineEvolutionOwnerV1(self.parent, self.withdrawals)
         for field in ("resident_tensor_bytes", "transition_tensor_bytes", "gradient_bytes",
