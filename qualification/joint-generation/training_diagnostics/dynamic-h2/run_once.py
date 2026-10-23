@@ -1,4 +1,4 @@
-"""Fixed H2/H3 TRAIN collection, reusing frozen T11 artifacts; never qualification."""
+"""Fixed H2/H3/H4 TRAIN collection, reusing frozen T11 artifacts; never qualification."""
 
 import time
 
@@ -15,6 +15,7 @@ import resource
 import subprocess
 import sys
 import tarfile
+import tempfile
 import traceback
 import zipfile
 
@@ -28,11 +29,11 @@ ENVIRONMENT = "ccarenv_b64_Y2NhcmVudl8wOGNhYzlkMjdjYjg4MTkxOWJkMDY0MGIyMDBhYTA5O
 
 
 def experiment_paths(experiment):
-    if type(experiment) is not str or experiment not in ("h2", "h3"):
-        raise ValueError("only fixed h2/h3 diagnostic identities are supported")
+    if type(experiment) is not str or experiment not in ("h2", "h3", "h4"):
+        raise ValueError("only fixed h2/h3/h4 diagnostic identities are supported")
     if experiment == "h2":
         return STAGE, OUTPUT
-    return ROOT / "training_diagnostics/dynamic-h3", ROOT / "runs/codex-cloud-dynamic-train-headroom-h3"
+    return ROOT / ("training_diagnostics/dynamic-" + experiment), ROOT / ("runs/codex-cloud-dynamic-train-headroom-" + experiment)
 
 
 def dependency_imports(experiment):
@@ -48,7 +49,8 @@ def dependency_imports(experiment):
     from independent.native import NativeGenerator
     from model import JointModel
     ledger = WorkLedger("H2-TRAIN-RD-not-qualification" if experiment == "h2" else
-                        "H3-TRAIN-RD-not-qualification", total_cap=4_000_000_000)
+                        "H3-TRAIN-RD-not-qualification" if experiment == "h3" else
+                        "H4-TRAIN-RD-not-qualification", total_cap=4_000_000_000)
     return (np, BudgetExceeded, WorkLedger, dataset, manifest, _controller, measure,
             output_work, FrozenGenerator, CachedObjective, NativeGenerator, JointModel, ledger)
 
@@ -61,6 +63,34 @@ def startup_smoke(experiment):
             "known_consumed_units": ledger.consumed_units, "dataset_constructions": 0,
             "model_loads": 0, "service_calls": 0, "START_consumed": False,
             "worker_cpu_ns": cpu() - CPU_START, "worker_wall_ns": time.perf_counter_ns() - WALL_START}
+
+
+
+def preflight(experiment, freeze_path=None):
+    """Real import/restore path, with opaque artifacts only and no START."""
+    started, wall = cpu(), time.perf_counter_ns()
+    stage, _ = experiment_paths(experiment)
+    report = {"schema": "hepta.headroom-metadata-preflight.v1", "experiment_id": experiment,
+              "START_consumed": False, "dataset_constructions": 0, "model_loads": 0, "service_calls": 0}
+    try:
+        dependencies = dependency_imports(experiment)
+        protocol = read(stage / "protocol.json") if freeze_path is None else source_guard(freeze_path, experiment=experiment)[1]
+        if (protocol["diagnostic_id"] != "dynamic-train-headroom-" + experiment
+                or protocol["schema"] != "hepta.TRAIN-headroom-" + experiment + ".protocol.v1"):
+            raise ValueError("fixed preflight protocol identity changed")
+        report.update(protocol=protocol, protocol_sha256=sha(stage / "protocol.json"), script_sha256=sha(__file__),
+            execution_commit=subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
+            ledger=dependencies[-1].snapshot(), cost_identity_rule="Build CPU uses round(seconds*1e9) canonical integer nanoseconds; source/artifact hashes, shapes, seeds, counts, model digests and reference are exact. Actual budget caps are never rounded or relaxed.")
+        with tempfile.TemporaryDirectory(prefix="hepta-headroom-metadata-") as directory:
+            restored = safe_restore(protocol, Path(directory))
+            report.update(T11_binding=read(Path(directory) / "T11-binding.json"),
+                restored_artifacts={name: {"sha256": sha(path), "bytes": path.stat().st_size}
+                                    for name, path in restored.items()}, outcome="completed")
+    except BaseException as error:
+        report.update(outcome="failed", error_type=type(error).__name__, error=str(error), traceback=traceback.format_exc())
+    report.update(worker_cpu_ns=cpu()-started, worker_wall_ns=time.perf_counter_ns()-wall,
+                  cost_scope="Metadata preflight R&D only, retained separately; no measurement or budget credit.")
+    return report
 
 
 def sha(path):
@@ -256,8 +286,8 @@ def collect(freeze_path, *, experiment="h2"):
         "environment_id": ENVIRONMENT, "cwd": str(ROOT), "experiment_id": experiment}
     write(stage / "START.json", start)
     result = {"schema": f"hepta.dynamic-train-headroom-{experiment}.v1", "qualification": False, "experiment_id": experiment,
-        "prior_H2_failure": protocol.get("prior_H2_failure"),
-        "prior_cost_policy": "H2 startup failure costs remain separately retained; H3 has a fresh unchanged30s/4B cap, without refund or erased research cost.",
+        "prior_H2_failure": protocol.get("prior_H2_failure"), "prior_H3_failure": protocol.get("prior_H3_failure"),
+        "prior_cost_policy": "All predecessor startup failures and costs remain separately retained; each authorized technical identity keeps the unchanged30s/4B cap, without refund or erased research cost.",
         "protocol_sha256": start["protocol_sha256"], "freeze_sha256": start["freeze_sha256"],
         "script_sha256": start["script_sha256"], "source_commit": frozen["source_commit"],
         "environment_id": ENVIRONMENT, "cwd": str(ROOT), "thread_environment": {key: os.environ.get(key)
@@ -482,14 +512,21 @@ def collect(freeze_path, *, experiment="h2"):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--experiment", choices=("h2", "h3"), default="h2")
+    parser.add_argument("--experiment", choices=("h2", "h3", "h4"), default="h2")
     parser.add_argument("--freeze", type=Path)
     parser.add_argument("--startup-smoke", action="store_true")
+    parser.add_argument("--preflight", action="store_true")
     args = parser.parse_args()
+    if args.startup_smoke and args.preflight:
+        parser.error("choose startup smoke or metadata preflight")
     if args.startup_smoke:
         if args.freeze is not None:
             parser.error("startup smoke neither reads nor consumes a freeze")
         print(json.dumps(startup_smoke(args.experiment), sort_keys=True))
+    elif args.preflight:
+        result = preflight(args.experiment, args.freeze)
+        print(json.dumps(result, sort_keys=True))
+        raise SystemExit(0 if result["outcome"] == "completed" else 1)
     else:
         stage, _ = experiment_paths(args.experiment)
         result = collect(args.freeze or stage / f"frozen-{args.experiment}.json", experiment=args.experiment)

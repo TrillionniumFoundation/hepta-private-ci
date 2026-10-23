@@ -1,0 +1,358 @@
+{
+  "archive": {
+    "original_files_path": "runs/codex-cloud-efficient-r2-t11/original-files.json",
+    "original_files_sha256": "1d2bd7650f812459a97dc48daa9fbe2a7deaf3421ce930e3a2b0a44fbc6b5fad",
+    "path": "runs/codex-cloud-efficient-r2-t11/retained-full-run.tar.gz",
+    "selection_member": "selection.json",
+    "selection_sha256": "43667a768d2b951b2bf6965c32683a5e9114fb6832a33af924ae161581b5c157",
+    "sha256": "369afeca8c5e79e7e1c835f224c4683ad0d298e832e4250c578f529b61044702"
+  },
+  "authorization": "Parent explicitly authorized H4 and the technical-only startup-recovery principle after H2/H3 zero-result failures; same36design/inputs/order/budgets/scorer required.",
+  "budgets": {
+    "artifact_bytes": 33554432,
+    "cpu_seconds": 30.0,
+    "operator_units": 4000000000,
+    "scope": "entire R&D worker plus own children/startup/imports/input reconstruction/artifact reads/content checks/all service calls/observers/final persistence; launcher overhead separately retained and counted in total R&D guard"
+  },
+  "content_check": {
+    "NC_compare_to_Q1": [
+      "full_raw_utility",
+      "low_raw_utility",
+      "full_minus_low_raw_utility"
+    ],
+    "N_full": "compute actual decoded raw expected utility for every TRAIN row and retain all three seed arrays",
+    "absolute_tolerance": 1e-12,
+    "free_label_oracle_raw": "mean(max(NC_full, NC_low)); report difference from mean(N_full)",
+    "free_label_oracle_scope": "No timing assumption; empirical raw-utility ceiling only for this TRAIN batch and these two fixed NC potential content actions with free outcome labels, not a full-lifecycle net bound or impossibility result for other models/architectures/actions/samples",
+    "no_repair": "any identity/numerical mismatch fails; do not relax tolerance or replace checkpoints",
+    "observer": "frozen decoded-output raw utility with reconstructed TRAIN labels, outside service timers but inside total R&D budget",
+    "relative_tolerance": 0.0,
+    "result_array_names": [
+      "s{seed}_NC_full",
+      "s{seed}_NC_low",
+      "s{seed}_NC_delta",
+      "s{seed}_N_full"
+    ]
+  },
+  "controllers": [
+    {
+      "member": "ndu_control-11-0.01-controller.npz",
+      "seed": 11,
+      "sha256": "a5f99e042b2d6f14aa55502171b0e283be1698b503dc3a83775ee8db3d1e362a"
+    },
+    {
+      "member": "ndu_control-23-0.01-controller.npz",
+      "seed": 23,
+      "sha256": "cadd72463ced8180d3aa69861302e13ae1b78d1cc38da7cb26f55a015eed9361"
+    },
+    {
+      "member": "ndu_control-47-0.01-controller.npz",
+      "seed": 47,
+      "sha256": "e3c21f4534d750660b79418b37db4773c675b90dcdf25b185d79a553eb51050b"
+    }
+  ],
+  "cost": {
+    "N_direct_value": "mean(N_full) - compute_price*median(N_service_cpu_ns/3072 + N_prepare_cpu_ns/H)/reference_full_cpu_ns - compute_price*(historical_N_build_cpu_seconds*1e9)/(3*H*reference_full_cpu_ns)",
+    "assumption": "oracle max(g-c,0) assumes fixed additive marginal proxy; aggregate measured cost is not per-row oracle latency or an unconditional CPU upper bound",
+    "compute_price": 0.02,
+    "historical_NC_build_cpu_seconds": 8.537556029,
+    "historical_N_build_cpu_seconds": 8.307966292,
+    "historical_build": "include old whole-system build/(3H) once in conditional comparisons; gross critic/helper already lies in NC build, never add twice",
+    "mandatory_overhead": "retain NC-go versus same-NC direct-full service+preparation contrast and content D=mean(N_full-NC_full); do not silently equate separately computed medians with median paired differences",
+    "new_decision_price": "compute_price * max(0, signed_median_incremental_cpu_ns) / reference_full_cpu_ns",
+    "new_marginal_cpu_ns": "per seed median of three signed (NC-go service CPU minus NC-stop service CPU)/3072; retain signed values, then clamp median below at zero",
+    "old_H1": "keep historical H1 prices/results immutable; new simultaneous-wave prices are separately named H3 values, not a retroactive correction",
+    "oracle_value": "mean(NC_low + max(NC_delta - H3_new_price, 0)) - Cstop - compute_price*(historical_NC_build_cpu_seconds*1e9)/(3*H*reference_full_cpu_ns)",
+    "preparation": "retain per-path per-repeat preparation CPU separately and include preparation/H in complete comparisons; exclude preparation from the marginal service estimator only",
+    "reference_full_cpu_ns": 73435.296875,
+    "selected_model_seed_count": 3,
+    "sensitivity": "retain signed marginal-price sensitivity before zero clamp and all three raw paired observations; median additivity/mixture assumptions mean the oracle is not a strict complete-CPU upper bound",
+    "service_horizon": 100000,
+    "stop_cost": "Cstop = compute_price * median(stop_service_cpu_ns/3072 + stop_prepare_cpu_ns/H) / reference_full_cpu_ns"
+  },
+  "dataset": {
+    "construction_count": 1,
+    "manifest": {
+      "group_count": 192,
+      "groups_sha256": "074e4da7f6049bda14d1536d5bdbf5a2a67124f544f416be379f243b0baf4197",
+      "inputs_sha256": "3863542c447c6b5f898f9ac14d7f9e76afb5f602ddb9798f65f20cba39cbff68",
+      "profile_sha256": "ed8d6d855015774a2b31176a3179722121017eb14dc4d53b1d95ef82f0219c95",
+      "rows": 3072,
+      "schema": "hepta.joint-generation.independent-data.v1",
+      "source_count": 192,
+      "source_ids_sha256": "871610869b1481f326c77ac534b6368e3ccd60b99066e7c5ed7e21b2a77373b0",
+      "sources_sha256": "c9272aed0e6e850b74fb244d8e4fbab7193e7c940d66fa159bad86004ecc1b95",
+      "split": "train"
+    },
+    "persistence": "save full pixels/instruction tensor, labels, source IDs and input hashes once; no validation/test construction",
+    "physical_sources": 192,
+    "profile": {
+      "background_range": [
+        0.0,
+        0.04
+      ],
+      "foreground_range": [
+        0.75,
+        1.0
+      ],
+      "instructions_per_source": 8,
+      "noise_range": [
+        0.03,
+        0.12
+      ],
+      "schema": "hepta.joint-generation.independent-data.v1",
+      "seeds": {
+        "test": 130303,
+        "train": 130101,
+        "validation": 130202
+      },
+      "sources_per_class": {
+        "test": 6,
+        "train": 16,
+        "validation": 6
+      },
+      "variants": 2,
+      "vertical_shifts": [
+        -1,
+        0,
+        1
+      ]
+    },
+    "reuse": "reuse Q1 per-row NC full/low/g/OOF predictions and identities after equivalence checks, no new OOF fit",
+    "rows": 3072,
+    "rows_per_source": 16,
+    "source_hashes": {
+      "data.py": "2e7401afac84deec2149fad89fe3a2b461046b6cd667408070c7da9ec130e0a3",
+      "independent/data_v2.py": "8f25960bf6ab43e461f7866a41c0f33742d04ba70cb62cd656b3bad478db2764"
+    },
+    "split": "train"
+  },
+  "diagnostic_id": "dynamic-train-headroom-h4",
+  "failure_accounting": {
+    "known_settled_units": "lower bound on total declared charged units if a partial private measure ledger cannot be returned",
+    "reporting": "set accounting_incomplete=true on missing partial measure; retain original failure, known lower bound, unsettled quote/scope and missing information; if no valid finite upper bound is recoverable, state this explicitly; never claim a complete ledger or successful cap verification",
+    "terminal": "any such failure stops H3 and consumes START without retry",
+    "unsettled_quote_units": "upper bound on additional unsettled units from its scoped preflight quote, not executed/settled work",
+    "when_partial_measure_unavailable": {
+      "accounting_incomplete": true
+    }
+  },
+  "failure_policy": "exclusive fixed START before reconstruction; any exception, cap breach, mismatch or interrupted/partial run is terminal, persist original error/partial costs, no retry or new output alias",
+  "identity_semantics": {
+    "exact": [
+      "source/model/library/archive/Q1/data hashes",
+      "seed/index/order/shape",
+      "integer work cap and counters",
+      "frozen protocol bytes",
+      "integer-nanosecond historical build identity"
+    ],
+    "numerical_tolerance": {
+      "content_Q1_absolute": 1e-12,
+      "content_Q1_relative": 0.0,
+      "historical_seconds_normalization": "round(seconds*1e9) on both compared CPU receipts, the source timer precision; not a gate tolerance"
+    },
+    "strict_budgets": "Actual H4 CPU>30s, actual work>4B, retained bytes>32MiB remain failures. No rounding/tolerance bypass for real budget breaches."
+  },
+  "model_seeds": [
+    11,
+    23,
+    47
+  ],
+  "models": [
+    {
+      "member": "ndu_control-11-0.01.npz",
+      "model_digest": "a710a356825664824bace9aaccc3467ab76214ac4dc3888218e23a62bb791f38",
+      "role": "NC",
+      "seed": 11,
+      "sha256": "e52eec96a9c8a0f0c7584a3b5f1ceb51296aefecb5f35f2c1fd17985d2d3e734",
+      "updates": 488
+    },
+    {
+      "member": "ndu-11-0.01.npz",
+      "model_digest": "682eb122dc91857d68b902a018f3964c2a6389f9e4501e38b514a1020787871c",
+      "role": "N",
+      "seed": 11,
+      "sha256": "bb0c6c6afc37b7bc570e18c5689ef953500b2f15daf8e5c86e56d232e3ade201",
+      "updates": 513
+    },
+    {
+      "member": "ndu_control-23-0.01.npz",
+      "model_digest": "0143471f2cdc19655f9743e165d931da7556f526d742f90f28607d10196777df",
+      "role": "NC",
+      "seed": 23,
+      "sha256": "15022326fd66116b31f5601fbeda3c143079672369ab3ca2bec4646a873b09b7",
+      "updates": 488
+    },
+    {
+      "member": "ndu-23-0.01.npz",
+      "model_digest": "398c13eed3c20b578e02d598681d59128108d1df321fed5f62fd9ec930ea1710",
+      "role": "N",
+      "seed": 23,
+      "sha256": "81ed8b4fb23cf42c819865315b39f2e40931c60e8b8a636e120c47f39ce6ad84",
+      "updates": 514
+    },
+    {
+      "member": "ndu_control-47-0.01.npz",
+      "model_digest": "bb4c4900a4f58fb9ce1c0c70cbe60e25bf4fc70d733bc0f14955bbfd24a3d7df",
+      "role": "NC",
+      "seed": 47,
+      "sha256": "1e15a7d787cb0c0d386a3dcb1dd8f0c4850879da433b0e3edb54172db98f401a",
+      "updates": 488
+    },
+    {
+      "member": "ndu-47-0.01.npz",
+      "model_digest": "5e707f4df572f4e13e71d5c85ea7532f84071370efde5560215ef3b283e16804",
+      "role": "N",
+      "seed": 47,
+      "sha256": "e01f666df8ccb280af8b1552904ded7960eaadfccd599c1d47d3b1b6c95ce597",
+      "updates": 514
+    }
+  ],
+  "native_library": {
+    "archive_member": "build/libjoint.so",
+    "path": "runs/codex-cloud-efficient-r2-t11/build/libjoint.so",
+    "reuse": "existing T11 artifact for separate R&D only; no compilation and no credit to any build",
+    "sha256": "ca84652442d6258ab67f2d553fb55742e0cc4c08222cb5e0fad02504c7ad32a0"
+  },
+  "output": "runs/codex-cloud-dynamic-train-headroom-h4",
+  "output_start_copy": "runs/codex-cloud-dynamic-train-headroom-h3/START.json",
+  "pre_START_revision": "New separately authorized H3 identity after retained H2 zero-measurement startup failure; exact same scientific sample/order/cost/evidence/budget/stopping design as final H2, no H2 lock reset",
+  "prior_H2_failure": {
+    "H3_ledger_label": "H3-TRAIN-RD-not-qualification",
+    "TRAIN_constructed": false,
+    "bad_ledger_label": "H2-TRAIN-R&D-not-qualification",
+    "bindings": {
+      "PARTIAL": {
+        "path": "training_diagnostics/dynamic-h2/PARTIAL.json",
+        "sha256": "eaaed14c1a77f4d2d5af801d6579539c82ab8cad4ef3a306ee5bcf864ae366fa"
+      },
+      "diagnostic": {
+        "path": "runs/codex-cloud-dynamic-train-headroom-h2/diagnostic.json",
+        "sha256": "eaaed14c1a77f4d2d5af801d6579539c82ab8cad4ef3a306ee5bcf864ae366fa"
+      },
+      "freeze": {
+        "path": "training_diagnostics/dynamic-h2/frozen-h2.json",
+        "sha256": "cf555cd1571d2019b6c9c2e1ca737ff9392682a0e2b19aae580425d699413e52"
+      },
+      "outer_execution": {
+        "path": "runs/codex-cloud-dynamic-h2-source-preflight/actual-worker-execution.json",
+        "sha256": "7edac8719400ea0d9c8578c15bc1b38e5072eb6797f05ea46037aac649cdbe7e"
+      },
+      "output_START": {
+        "path": "runs/codex-cloud-dynamic-train-headroom-h2/START.json",
+        "sha256": "4bd25ebd1569630a273acc059baea093e737a9926a00d1ddd348359be4cc04dc"
+      },
+      "protocol": {
+        "path": "training_diagnostics/dynamic-h2/protocol.json",
+        "sha256": "0da7509c51248832182d448f77cb323cf8bc3b23e98585795e9c3e0912a2c051"
+      },
+      "report": {
+        "path": "runs/codex-cloud-dynamic-train-headroom-h2/REPORT.md",
+        "sha256": "17c02151359a85b102751f57e10e8fbe14bb4b4b3d984da3a3ec33866ef47ae3"
+      },
+      "stage_START": {
+        "path": "training_diagnostics/dynamic-h2/START.json",
+        "sha256": "4bd25ebd1569630a273acc059baea093e737a9926a00d1ddd348359be4cc04dc"
+      }
+    },
+    "exact_error": "independent.accounting.AccountingError: invalid arm",
+    "execution_commit": "a5bec822cf5c235c52c7a6ab20bf74297a9795e8",
+    "fixed_ledger_label": "H2-TRAIN-RD-not-qualification",
+    "known_declared_units": 0,
+    "launcher_cpu_ns_before_final_receipt": 27556463,
+    "measured_service_calls": 0,
+    "models_loaded": false,
+    "original_worker_sha256": "5311a378af1753a6801438a0607f3570c9bf3256f959eebbfab41dfa60f8545e",
+    "retention": "H2 locks, freeze, failure and costs stay sealed; H3 does not resume/reset H2 and never selects among measured outcomes",
+    "source_commit": "f3c9d89bf10be3e0d7664d3ba5c3eb17cc782665",
+    "status": "terminal startup implementation failure; zero TRAIN/model/service measurements; not a scientific effect estimate",
+    "total_research_cpu_ns_before_final_receipt": 519258463,
+    "unsettled_declared_units": 0,
+    "worker_and_descendant_cpu_ns": 491702000
+  },
+  "prior_H3_failure": {
+    "TRAIN_constructions": 0,
+    "actual_research_cpu_ns": 807168997,
+    "attempted_service_calls": 0,
+    "cost_identity": "Historical phase CPU floats compare after round(seconds*1e9); NC8537556029 and N8307966292 unchanged. All true budgets remain exact/unrelaxed.",
+    "diagnostic_path": "runs/codex-cloud-dynamic-train-headroom-h3/diagnostic.json",
+    "diagnostic_sha256": "c05d77366a0d53b79ce77cbd4ff173ea1806c432660857e3f1449eec2d930e90",
+    "failure": "ValueError: historical complete build cost changed; exact binary float equality falsely rejected identical integer-nanosecond values",
+    "freeze_path": "training_diagnostics/dynamic-h3/frozen-h3.json",
+    "freeze_sha256": "829c2b8ae3bdc56e168a5185e41a8e837b042b518cb51df44e88a65387ea5928",
+    "model_object_loads": 0,
+    "model_results_observed": 0,
+    "outer_receipt_path": "runs/codex-cloud-dynamic-h3-source-preflight/actual-worker-execution.json",
+    "outer_receipt_sha256": "0b89e35ea0f54eed7e61b660273294149cd997b10c037eeca295003a3c1b730a",
+    "source_commit": "9ca2a3e7e7f318793608a311fee644e1f4fe84e8",
+    "source_repair_commit": "ef88118111",
+    "start_path": "training_diagnostics/dynamic-h3/START.json",
+    "start_sha256": "8a648ccf3fc911e036022734acafe3ec708b2ce739c7d561a2ef17e470093a3e"
+  },
+  "q1": {
+    "diagnostic_path": "runs/codex-cloud-efficient-r2-decision-diagnostic-q1/diagnostic.json",
+    "diagnostic_sha256": "2e5c518b0190ae97ce887fd20e5e36fb07f2d9562cde1fcbd8d01feb137bfb5d",
+    "predictions_path": "runs/codex-cloud-efficient-r2-decision-diagnostic-q1/predictions.npz",
+    "predictions_sha256": "dcfe04a99c3825cf4df2afc95b2c0c1a894a9723fa602abf8cf2ac7095145fdf",
+    "protocol_path": "runs/codex-cloud-efficient-r2-decision-diagnostic-q1/protocol.json",
+    "protocol_sha256": "392fe74821fddd3b61622a077342561ed68a2aad0c89be5017a4a8753145d5a2"
+  },
+  "qualification": false,
+  "recovery_authorization": {
+    "budget": "H3 retains the same fresh 30CPU-second/4B-unit/32MiB diagnostic bounds, not the unapproved reduced-budget recovery draft; separately retain H2 cost 0.519258463 seconds plus H3 actual and preflight R&D in cumulative reporting",
+    "command": "python training_diagnostics/dynamic-h2/run_once.py --experiment h3 --freeze training_diagnostics/dynamic-h3/frozen-h3.json",
+    "precondition": "freeze committed repair/runtime/protocol identity and pass actual shared dependency-import/WorkLedger --startup-smoke without dataset/artifact/model/native/service execution before the sole H3 wave",
+    "runtime_reuse": "reuse training_diagnostics/dynamic-h2/run_once.py and analyze.py; fixed --experiment h3 selects only H3 stage/output/freeze/schema/arm identity; no new training or analysis engine",
+    "scientific_execution_repair": "remove invalid ampersand from WorkLedger label; accounting grammar/prices/rules unchanged",
+    "scope": "Parent explicitly authorized one separately registered H3 after the H2 zero-measurement invalid-arm failure, following legal-label repair and real import/startup no-data smoke."
+  },
+  "runtime_binding": "training_diagnostics/dynamic-h3/frozen-h3.json must bind committed protocol_sha256, source_commit, complete shared runtime sources, shared H2 run_once.py script_sha256 and shared H2 analyze.py analysis_sha256; root supplies hashes before execution",
+  "schema": "hepta.TRAIN-headroom-h4.protocol.v1",
+  "scope_limits": [
+    "only selected T11 NDU/full necessary comparison, not an exhaustive best-static menu proof",
+    "old rowwise profile only; no codec-D1 normalization, source repair, retry or outcome replacement",
+    "TRAIN encoder already trained and checkpoint validation-selected; no independent generalization inference",
+    "no fitting, threshold/lambda/rho search, training, validation metric extraction, formal data or new qualification",
+    "D1 hard-stop slot0 failure remains final; H3 is a separately registered diagnostic"
+  ],
+  "service": {
+    "N-full": "selected static NDU weights, direct full, no unused low encoder/critic",
+    "NC-full": "same NC weights, direct full, no unused low encoder/critic",
+    "NC-go": "same NC weights and original fitted MSE controller, force continue while charging real low/critic/full",
+    "NC-stop": "same NC weights and original fitted MSE controller, force stop while charging real low/critic",
+    "batch_size": 64,
+    "calls": 36,
+    "output_codec_profile": "rowwise-png-v1",
+    "output_retention": {
+      "all_110592_output_payloads_retained": false,
+      "complete_RNG_trajectories_retained": false,
+      "cross_codec_equivalence_goal": false,
+      "full_row_evidence": [
+        "work",
+        "cpu",
+        "output_bytes",
+        "batch",
+        "preparation"
+      ],
+      "sampled_output": "first actual sampled PNG/JSON per completed call only",
+      "timing_scope": "retain original batch/preparation allocation scope; not independent per-row timing measurements"
+    },
+    "output_rows": 110592,
+    "paired_sampling": "same sample seed for all four paths within each seed/repeat",
+    "path_order": "left rotate base paths by (repeat + seed_index) modulo 4; seed_index follows model_seeds",
+    "paths": [
+      "NC-full",
+      "NC-go",
+      "NC-stop",
+      "N-full"
+    ],
+    "per_call_preparation": "fresh complete generator/controller setup; record and charge preparation then all actual sampled caption/PNG/hash/base64/JSON/output-ledger service; no output/codec cache or warmup",
+    "repeats": 3,
+    "retention": "retain all three raw observations, negative increments, outliers and exact order; each completed call retains only its first actual PNG/JSON sampled_output plus all 3072-row work/cpu/output_bytes vectors, batch/preparation vectors and original receipts and sample seed; no timing CI or best-of selection",
+    "rows_per_call": 3072,
+    "sample_seed_formula": "seed + 1009 * repeat"
+  },
+  "start_marker": "training_diagnostics/dynamic-h4/START.json",
+  "status": "protocol-only; no execution until committed source/protocol/freeze review",
+  "technical_repair_policy": "Retain every failed instance and actual R&D cost. Before any measurement/model result is observed, pure startup/import/serialization defects may be repaired under a new technical identity without asking again; never resume/delete an old START. Once results start, stop under the fixed failure policy; no selective reruns."
+}
