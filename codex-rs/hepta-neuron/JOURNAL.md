@@ -15,6 +15,16 @@ elsewhere. `File::try_lock` fences cooperating independent writers; it is
 advisory, not a hostile-writer sandbox. Only the neuron checkpoint owner writes
 this journal. New-file directory synchronization remains the host's obligation.
 
+The quota is host-declared segment geometry, not part of the V1 header or
+checkpoint digest. Before creating each segment, the host must freeze and
+independently retain its quota together with that segment's identity and chain
+order. Every reopen must supply that segment's original quota. Successor
+segments may have different quotas, each retained separately. Changing the
+quota on reopen can redefine when a retained prefix appears full; the journal
+cannot authenticate the original quota or reject every such reinterpretation.
+The host must authenticate that retained geometry before canonical chain
+recovery; the witness binds checkpoint history, not the original quota.
+
 ## Persistent format and transaction
 
 A 136-byte versioned header binds config, principal/run scope, objective and
@@ -24,11 +34,19 @@ checksum (32 bytes): 304+16*d bytes total. All numbers are big-endian; no untrus
 record length is allocated. The receipt and checkpoint are reconstructed together
 by the frozen deterministic kernel, then compared with the stored output digests.
 
+Here, receipt means the mechanism `SparseSignalReceipt`, not the full
+`NeuronRuntimeOutputV1`. Frames do not retain `tickId` or the owner's complete
+model-runtime observations, calibrated disposition and resource receipt. Native
+replay therefore cannot return that original full owner output or implement a
+historical `tickId` conflict lookup.
+
 `commit(expected_predecessor, tick)` validates before writing and uses exact
 compare-and-append. It returns success and publishes state only after `sync_data`.
-An equal retry returns the exact original receipt without another write, even
+An equal retry returns the exact original `SparseSignalReceipt` without another write, even
 after later ticks; changed content or predecessor conflicts. Missing sequences
 and clock regression reject. No last-write-wins or success-from-queue behavior.
+This guarantee belongs to `SparseJournal::commit`; it does not establish full
+owner receipt idempotency for `NeuronRuntime::tick`.
 
 Recovery validates all complete frames before truncating and syncing an
 incomplete final frame. A complete bad frame, damaged header, unknown version or
@@ -41,8 +59,14 @@ poisons the handle and requires reopen/reconciliation rather than a blind retry.
 
 At most 1024 ticks per segment: below 4.6 MB at d=256, plus one incomplete tail.
 Replay and receipt-cache memory are quota-bounded. At capacity the caller stops;
-segment rollover, compaction and cross-segment temporal continuity are not yet
-implemented. This synced disk path has no real-time latency claim. Configuration,
+bounded successor rollover preserves the exact current checkpoint as its seed.
+The HPTNSJ02 successor header is 176 bytes: the root context, global seed sequence
+and checkpoint digest, then its checksum. `start_successor` opens a successor;
+`recover_successor` also requires the separately retained acknowledgement anchor.
+Global sequences continue across segments. Exact retries and anchor queries cover
+the current segment and its seed; retain predecessor segments for earlier receipts.
+Compaction and durable V2 migration remain separate work. This synced disk path
+has no real-time latency claim. Configuration,
 selected model weights and topology remain immutable throughout a segment.
 
 The host must revoke/rebuild deleted-data-derived state before reopening it. The V1 journal remains deliberately tied to the single-population/same-width `SparseConfig` replay format. `PopulationSparseConfigV2` is a different mechanism generation and may not be written into this V1 format; durable V2 use requires an explicitly versioned store/migration.

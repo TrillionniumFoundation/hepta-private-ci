@@ -60,6 +60,8 @@ pub enum QualificationError {
     MixedHostProfile,
     MixedCandidate,
     InvalidObservationTime,
+    InvalidResourceEnvelope,
+    InvalidResourceSample,
     Arithmetic,
     ShuffledModulatorRequiresTwoGroups,
 }
@@ -76,6 +78,9 @@ pub fn summarize_resource_samples(
     samples: &[NeuronResourceSampleV1],
     envelope: &NeuronResourceEnvelopeV1,
 ) -> Result<NeuronResourceSummaryV1, QualificationError> {
+    envelope
+        .validate()
+        .map_err(|_| QualificationError::InvalidResourceEnvelope)?;
     if !(1..=MAX_RESOURCE_SAMPLES).contains(&samples.len()) {
         return Err(QualificationError::SampleCountOutOfRange);
     }
@@ -101,6 +106,16 @@ pub fn summarize_resource_samples(
     }
     if samples.iter().any(|sample| sample.observed_at_micros == 0) {
         return Err(QualificationError::InvalidObservationTime);
+    }
+
+    if samples.iter().any(|sample| {
+        let receipt = &sample.receipt;
+        receipt.checkpoint_bytes == 0
+            || (u128::from(receipt.journal_bytes_written) * 1_000_000)
+                .div_ceil(u128::from(receipt.checkpoint_bytes))
+                != u128::from(receipt.write_amplification_ppm)
+    }) {
+        return Err(QualificationError::InvalidResourceSample);
     }
 
     let mut execution = samples
@@ -136,9 +151,24 @@ pub fn summarize_resource_samples(
         left.observed_at_micros
             .cmp(&right.observed_at_micros)
             .then_with(|| {
-                left.receipt
-                    .execution_micros
-                    .cmp(&right.receipt.execution_micros)
+                (
+                    left.receipt.execution_micros,
+                    left.receipt.transient_allocation_bytes,
+                    left.receipt.checkpoint_bytes,
+                    left.receipt.journal_bytes_written,
+                    left.receipt.write_amplification_ppm,
+                    left.receipt.saturation_count,
+                    left.receipt.queue_age_micros,
+                )
+                    .cmp(&(
+                        right.receipt.execution_micros,
+                        right.receipt.transient_allocation_bytes,
+                        right.receipt.checkpoint_bytes,
+                        right.receipt.journal_bytes_written,
+                        right.receipt.write_amplification_ppm,
+                        right.receipt.saturation_count,
+                        right.receipt.queue_age_micros,
+                    ))
             })
     });
     let mut bytes = b"hepta.neuron.resource-samples.v1".to_vec();

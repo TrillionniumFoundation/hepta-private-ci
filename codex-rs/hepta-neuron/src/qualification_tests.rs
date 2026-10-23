@@ -142,3 +142,79 @@ fn eligibility_and_modulator_ablations_are_explicit_and_deterministic() {
         NeuronAblationProfileV1::NoReplay
     ));
 }
+
+#[test]
+fn sample_set_identity_is_independent_of_order_when_time_and_execution_tie() {
+    let mut second = sample(0);
+    second.receipt.transient_allocation_bytes += 1;
+    let samples = vec![sample(0), second];
+    let forward = checked(summarize_resource_samples(&samples, &envelope()));
+    let reversed = samples.into_iter().rev().collect::<Vec<_>>();
+    assert_eq!(
+        checked(summarize_resource_samples(&reversed, &envelope())),
+        forward
+    );
+}
+
+#[test]
+fn resource_qualification_rejects_invalid_declared_envelopes() {
+    let valid = envelope();
+    let mut zero_p95 = valid.clone();
+    zero_p95.p95_latency_micros = 0;
+    let mut reversed_latency = valid.clone();
+    reversed_latency.p99_latency_micros = reversed_latency.p95_latency_micros - 1;
+    let mut zero_allocation = valid.clone();
+    zero_allocation.transient_allocation_bytes = 0;
+    let mut zero_checkpoint = valid.clone();
+    zero_checkpoint.checkpoint_bytes = 0;
+    let mut excessive_amplification = valid;
+    excessive_amplification.write_amplification_ppm = 4_000_001;
+    for invalid in [
+        zero_p95,
+        reversed_latency,
+        zero_allocation,
+        zero_checkpoint,
+        excessive_amplification,
+    ] {
+        assert_eq!(
+            summarize_resource_samples(&[sample(0)], &invalid),
+            Err(QualificationError::InvalidResourceEnvelope)
+        );
+    }
+}
+
+#[test]
+fn resource_qualification_rejects_zero_checkpoint_but_allows_submicrosecond_measurements() {
+    let mut zero_checkpoint = sample(0);
+    zero_checkpoint.receipt.checkpoint_bytes = 0;
+    assert_eq!(
+        summarize_resource_samples(&[zero_checkpoint], &envelope()),
+        Err(QualificationError::InvalidResourceSample)
+    );
+    let mut fast_sample = sample(0);
+    fast_sample.receipt.execution_micros = 0;
+    assert!(
+        checked(summarize_resource_samples(&[fast_sample], &envelope()))
+            .pilot_ceiling_passed_for_supplied_samples
+    );
+}
+
+#[test]
+fn resource_qualification_rejects_inconsistent_amplification() {
+    for journal_bytes_written in [384, u64::MAX] {
+        let mut invalid = sample(0);
+        invalid.receipt.journal_bytes_written = journal_bytes_written;
+        invalid.receipt.write_amplification_ppm = 0;
+        assert_eq!(
+            summarize_resource_samples(&[invalid], &envelope()),
+            Err(QualificationError::InvalidResourceSample)
+        );
+    }
+    let mut rounded = sample(0);
+    rounded.receipt.journal_bytes_written = 385;
+    rounded.receipt.write_amplification_ppm = 751_954;
+    assert!(
+        checked(summarize_resource_samples(&[rounded], &envelope()))
+            .pilot_ceiling_passed_for_supplied_samples
+    );
+}

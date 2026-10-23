@@ -12,8 +12,10 @@ The runtime consumes `NeuronRuntimeConfigV1` and `NeuronTickInputV1`, emits `Neu
 
 ### DecisionCell host integration
 
-The existing runtime also hosts logical DecisionCell slots defined by
-`../learning/NEURAL_BIOMIMICRY_SPEC.md`. Laya is the initial backend candidate,
+The planned DecisionCell integration will host logical cell slots defined by
+`../learning/NEURAL_BIOMIMICRY_SPEC.md`. The current durable V1 owner is subject-scoped;
+it does not implement cell/organ bundle admission, cell lifecycle operations or
+DecisionCell checkpoint migration. Laya is the initial backend candidate,
 not a required public protocol. The host supplies exact effective base/organ/cell
 parameters through existing inference admission; the cell does not call providers
 or install a model itself. Shared workers serve many logical cells; checkpoint

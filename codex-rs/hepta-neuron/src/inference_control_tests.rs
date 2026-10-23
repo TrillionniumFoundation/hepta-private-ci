@@ -125,3 +125,61 @@ fn corrupted_or_indeterminate_control_receipt_fails_closed() {
         Err(NeuronModelError::Indeterminate)
     );
 }
+
+struct CountingControl {
+    calls: usize,
+}
+
+impl NeuronInferenceControlPort for CountingControl {
+    fn execute_feature(
+        &mut self,
+        _request: &NeuronFeatureRequestV1,
+    ) -> Result<NeuronFeatureReceiptV1, NeuronModelError> {
+        self.calls += 1;
+        Err(NeuronModelError::Unavailable)
+    }
+}
+
+#[test]
+fn malformed_model_requests_never_dispatch_to_inference_control() {
+    let valid = request();
+    let mut empty_output = valid.clone();
+    empty_output.expected_output_width = 0;
+    let mut wide_output = valid.clone();
+    wide_output.expected_output_width = 513;
+    let mut empty_features = valid.clone();
+    empty_features.feature_vector_q24.clear();
+    let mut wide_features = valid.clone();
+    wide_features.feature_vector_q24 = vec![0; 513];
+    let mut out_of_range_features = valid.clone();
+    out_of_range_features.feature_vector_q24[0] = 8 * Q + 1;
+    let mut missing_encoder = valid.clone();
+    missing_encoder.encoder_digest = Digest32::ZERO;
+    let mut missing_head = valid.clone();
+    missing_head.head_digest = Digest32::ZERO;
+    let mut missing_weights = valid.clone();
+    missing_weights.weights_digest = Digest32::ZERO;
+    let mut missing_input = valid.clone();
+    missing_input.input_digest = Digest32::ZERO;
+    let mut control = CountingControl { calls: 0 };
+    for malformed in [
+        empty_output,
+        wide_output,
+        empty_features,
+        wide_features,
+        out_of_range_features,
+        missing_encoder,
+        missing_head,
+        missing_weights,
+        missing_input,
+    ] {
+        let output = InferenceControlModelPort::new(&mut control).execute(&malformed);
+        assert_eq!(control.calls, 0);
+        assert_eq!(output, Err(NeuronModelError::Rejected));
+    }
+    assert_eq!(
+        InferenceControlModelPort::new(&mut control).execute(&valid),
+        Err(NeuronModelError::Unavailable)
+    );
+    assert_eq!(control.calls, 1);
+}

@@ -16,7 +16,7 @@ use codex_hepta_types::StableId;
 use crate::DeletionRebuildError;
 use crate::JournalAnchor;
 use crate::JournalError;
-use crate::SparseConfig;
+use crate::JournalScope;
 use crate::SparseSignalReceipt;
 
 const Q24: i64 = 1 << 24;
@@ -135,6 +135,20 @@ pub struct NeuronResourceEnvelopeV1 {
     pub write_amplification_ppm: u32,
 }
 
+impl NeuronResourceEnvelopeV1 {
+    pub(crate) fn validate(&self) -> Result<(), NeuronRuntimeError> {
+        if self.p95_latency_micros == 0
+            || self.p99_latency_micros < self.p95_latency_micros
+            || self.transient_allocation_bytes == 0
+            || self.checkpoint_bytes == 0
+            || !(1_000_000..=4_000_000).contains(&self.write_amplification_ppm)
+        {
+            return Err(NeuronRuntimeError::InvalidConfig);
+        }
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronRuntimeConfigV1 {
     pub config_id: StableId,
@@ -158,43 +172,8 @@ pub struct NeuronRuntimeConfigV1 {
     pub resource_envelope: NeuronResourceEnvelopeV1,
 }
 
-impl NeuronRuntimeConfigV1 {
-    pub(crate) fn validate_native(&self, native: &SparseConfig) -> Result<(), NeuronRuntimeError> {
-        for (field, digest) in [
-            ("model manifest", self.model_manifest_digest),
-            ("encoder", self.encoder_digest),
-            ("head", self.head_digest),
-            ("weights", self.weights_digest),
-            ("tokenizer", self.tokenizer_digest),
-            ("preprocessor", self.preprocessor_digest),
-            ("quantization", self.quantization_digest),
-            ("runtime", self.runtime_digest),
-            ("device", self.device_digest),
-            ("normalization", self.normalization_digest),
-            ("native config", self.native_config_digest),
-        ] {
-            if digest.is_zero() {
-                return Err(NeuronRuntimeError::EmptyDigest(field));
-            }
-        }
-        if self.generation != native.generation
-            || self.head_digest != native.model_digest
-            || self.normalization_digest != native.normalization_digest
-            || self.native_config_digest != native.digest().map_err(JournalError::Mechanism)?
-            || self.state_width != native.width
-            || !(1..=MAX_INPUT_FEATURES).contains(&self.input_feature_dimension)
-            || !(1..=MAX_MODULATORS).contains(&self.modulator_dimension)
-            || self.resource_envelope.p95_latency_micros == 0
-            || self.resource_envelope.p99_latency_micros < self.resource_envelope.p95_latency_micros
-            || self.resource_envelope.transient_allocation_bytes == 0
-            || self.resource_envelope.checkpoint_bytes == 0
-            || !(1_000_000..=4_000_000).contains(&self.resource_envelope.write_amplification_ppm)
-        {
-            return Err(NeuronRuntimeError::InvalidConfig);
-        }
-        self.calibration.validate(self.generation)
-    }
-}
+#[path = "runtime_config_digest.rs"]
+mod runtime_config_digest;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronTickInputV1 {
@@ -207,6 +186,8 @@ pub struct NeuronTickInputV1 {
     pub feature_vector_q24: Vec<i64>,
     pub objective_digest: Digest32,
     pub ndu_snapshot_digest: Digest32,
+    /// A supplied body generation must be positive. `None` is the absent-body
+    /// binding; zero remains its reserved V1 digest sentinel, not a generation.
     pub body_generation: Option<u64>,
     pub modulator_digest: Option<Digest32>,
 }
@@ -309,6 +290,7 @@ pub enum WitnessStoreError {
     NotRegular,
     Corrupt,
     ContextMismatch,
+    UnboundRuntimeConfig,
     Capacity,
     Indeterminate,
     Poisoned,
@@ -334,6 +316,31 @@ impl From<io::Error> for WitnessStoreError {
 /// returning success.
 pub trait AnchorWitnessStore {
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError>;
+
+    /// Verify the independently enrolled subject/objective scope and generation.
+    /// Default implementations lack authenticated context and fail closed.
+    fn verify_context(
+        &self,
+        _scope: JournalScope,
+        _generation: Generation,
+    ) -> Result<(), WitnessStoreError> {
+        Err(WitnessStoreError::UnboundRuntimeConfig)
+    }
+
+    /// Return the frozen owner configuration identity authenticated and durably
+    /// bound during independent witness enrollment. Do not derive it from the
+    /// configuration supplied for recovery. Unbound low-level stores cannot
+    /// acknowledge a canonical runtime, including an otherwise matching kernel.
+    fn runtime_config_digest(&self) -> Result<Digest32, WitnessStoreError> {
+        Err(WitnessStoreError::UnboundRuntimeConfig)
+    }
+
+    /// Reject known exhaustion or unusable storage before model execution and
+    /// journal mutation. The default has no capacity information; success is
+    /// advisory and never replaces the durable compare-and-swap acknowledgement.
+    fn check_capacity(&self) -> Result<(), WitnessStoreError> {
+        Ok(())
+    }
 
     fn compare_and_swap(
         &mut self,
@@ -403,6 +410,8 @@ pub enum NeuronRuntimeError {
     BootstrapRequiresEmptyJournal,
     BootstrapWitnessPresent,
     RecoveryWitnessMismatch,
+    SegmentNotFull,
+    RolloverRequiresEmptyJournal,
     PendingReconciliation,
     Model(NeuronModelError),
     Deletion(DeletionRebuildError),
@@ -478,6 +487,7 @@ pub(crate) fn validate_tick_input(input: &NeuronTickInputV1) -> Result<(), Neuro
             .any(|value| !(-H_Q24..=H_Q24).contains(value))
         || input.objective_digest.is_zero()
         || input.ndu_snapshot_digest.is_zero()
+        || input.body_generation == Some(0)
         || input.modulator_digest.is_some_and(Digest32::is_zero)
     {
         return Err(NeuronRuntimeError::InvalidInput);
@@ -544,16 +554,28 @@ pub(crate) fn calibrate(
         u64::try_from(receipt.prediction_error_q24).map_err(|_| NeuronRuntimeError::Arithmetic)?;
     let zero_confidence = profile.zero_confidence_error_q24 as u64;
     let in_domain = profile.maximum_in_domain_error_q24 as u64;
+    // Round residual penalties upward so ppm conversion cannot manufacture
+    // acceptance just beyond a confidence floor or an OOD ceiling.
     let confidence = PPM
-        .saturating_sub(error.saturating_mul(PPM) / zero_confidence)
+        .saturating_sub(error.saturating_mul(PPM).div_ceil(zero_confidence))
         .min(PPM);
-    let ood = (error.saturating_mul(PPM) / in_domain).min(PPM);
+    let ood = error.saturating_mul(PPM).div_ceil(in_domain).min(PPM);
     let confidence_ppm = confidence as u32;
     let ood_ppm = ood as u32;
+    // The receipt retains its replay-compatible floor ppm summary. Compare
+    // the actual fraction for the upper gate to avoid accepting its remainder.
+    let active_count = receipt
+        .activation_q24
+        .iter()
+        .filter(|value| **value > 0)
+        .count() as u128;
+    let width = receipt.activation_q24.len() as u128;
+    let exceeds_active_ceiling =
+        active_count * u128::from(PPM) > width * u128::from(profile.maximum_active_ppm);
     let abstain = confidence_ppm < profile.minimum_confidence_ppm
         || ood_ppm > profile.maximum_ood_ppm
         || receipt.active_fraction_ppm < profile.minimum_active_ppm
-        || receipt.active_fraction_ppm > profile.maximum_active_ppm
+        || exceeds_active_ceiling
         || receipt.projection_count > profile.maximum_projection_count;
     Ok((confidence_ppm, ood_ppm, abstain))
 }
@@ -599,3 +621,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), NeuronRuntimeErr
     bytes.extend_from_slice(raw);
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "runtime_calibration_tests.rs"]
+mod calibration_tests;

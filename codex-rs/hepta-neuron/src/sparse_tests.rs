@@ -129,6 +129,53 @@ fn saturation_and_eligibility_l1_projection_are_counted() {
 }
 
 #[test]
+fn checkpoint_payload_bound_covers_complete_retained_field_encoding() {
+    for width in [5, 256] {
+        let mut cfg = config();
+        cfg.width = width;
+        cfg.top_k = width / 5;
+        let mut tick = input(1);
+        tick.drive_q24 = vec![H; width];
+        tick.prediction_q24 = vec![-H; width];
+        let (first, _) = checked(sparse_tick(&cfg, &tick, /*previous*/ None));
+        tick.sequence = 2;
+        tick.monotonic_micros += 1;
+        let (state, _) = checked(sparse_tick(&cfg, &tick, Some(&first)));
+
+        // Independently materialize the complete mechanism payload, including
+        // retained fields omitted from the replay-compatible digest preimage.
+        let mut encoded = b"hepta.neuron.sparse-checkpoint.q24.v1".to_vec();
+        for digest in [
+            state.config,
+            state.scope,
+            state.objective,
+            state.body,
+            state.predecessor,
+            state.input,
+            state.digest,
+        ] {
+            encoded.extend_from_slice(digest.as_array());
+        }
+        encoded.extend_from_slice(&state.sequence.to_be_bytes());
+        encoded.extend_from_slice(&state.monotonic_micros.to_be_bytes());
+        encoded.extend_from_slice(&state.projection_count.to_be_bytes());
+        for values in [
+            &state.temporal,
+            &state.activation,
+            &state.activity,
+            &state.threshold,
+            &state.eligibility,
+        ] {
+            encoded.extend_from_slice(&(values.len() as u64).to_be_bytes());
+            for value in values {
+                encoded.extend_from_slice(&value.to_be_bytes());
+            }
+        }
+        assert!(encoded.len() <= state.bounded_encoded_bytes());
+    }
+}
+
+#[test]
 fn signed_multiply_rounds_half_to_even() {
     for (a, b, expected) in [
         (1, Q / 2, 0),
