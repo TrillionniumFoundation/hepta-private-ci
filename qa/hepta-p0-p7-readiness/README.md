@@ -51,3 +51,18 @@ If the runner is unavailable, source checkout fails, or GitHub API is incomplete
 ### Cross-PR run substitution regression
 
 When two open PRs share a commit SHA, GitHub Actions may list their workflows under that same SHA. An unrelated PR's success is **not** qualification evidence for the target PR. The read-only observer now requires each run's actual `pull_requests[].number` and linked `head.sha` to match the pinned PR and SHA. Empty, malformed, missing or aliased associations fail closed; a newer run for another PR cannot override a valid target-specific historical run. Synthetic tests cover these cases; exact-head CI must independently run them.
+
+### Workflow-file identity: duplicate display names
+
+GitHub Actions permits two different YAML files to declare the **same**
+`name:` string. A green lightweight workflow from
+`.github/workflows/lookalike.yml` must not stand in for a required
+`blocking-ci.yml` run even when PR number, source SHA and display name
+are identical. The observer now binds approved display names to reviewed
+workflow-file paths via `WORKFLOW_PATHS` and filters real GitHub Actions
+runs by their exact `path` **before** choosing the most recent run.
+Missing paths, unknown workflow names and lookalike paths fail closed.
+These file identities are hardcoded in reviewed source instead of being
+editable through `candidate_plan.json`. The observer still cannot
+establish that the approved workflow file itself is unchanged, or infer
+model capability, external science, or production authorization.

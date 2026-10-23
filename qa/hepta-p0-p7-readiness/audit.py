@@ -21,6 +21,15 @@ SCHEMA = "hepta.stem-ndu.p0-p7-ci-audit.v1"
 REPO = "TrillionniumFoundation/hepta-private-ci"
 STAGES = tuple(f"P{n}" for n in range(8))
 SHA = re.compile(r"[0-9a-f]{40}\Z")
+WORKFLOW_PATHS = {
+    "blocking-ci": ".github/workflows/blocking-ci.yml",
+    "Hepta native multimodal Head": ".github/workflows/hepta-native-multimodal-head.yml",
+    "Hepta shared Stem bake-off shadow checks": ".github/workflows/hepta-shared-stem-bakeoff-shadow.yml",
+    "Hepta real multimodal research": ".github/workflows/hepta-multimodal-research.yml",
+    "Hepta architecture convergence": ".github/workflows/hepta-architecture-convergence.yml",
+    "NDU four-modal portfolio research (shadow)": ".github/workflows/ndu-modality-portfolio-shadow.yml",
+}
+
 # Not a checklist the caller can delete to manufacture readiness. An external,
 # independently approved evidence mechanism must establish these separately.
 OPEN_SCIENCE = {
@@ -87,6 +96,7 @@ def validate_plan(plan: dict) -> None:
                     or not isinstance(c["workflow"], str)
                     or not 1 <= len(c["workflow"]) <= 128
                     or c["workflow"] in seen
+                    or c["workflow"] not in WORKFLOW_PATHS
                     or not isinstance(c["jobs"], list) or not c["jobs"]
                     or any(type(j) is not str or not 1 <= len(j) <= 256
                            for j in c["jobs"])
@@ -139,12 +149,13 @@ def _complete_listing(obj: dict, key: str) -> list:
     return items
 
 
-def _latest_run(runs: list, name: str, sha: str, pr_number: int) -> dict | None:
+def _latest_run(runs: list, name: str, sha: str, pr_number: int, path: str) -> dict | None:
     # A commit can be the head of multiple PRs. A successful run from one
     # PR must not qualify a different PR even when workflow and SHA match.
     matching = [r for r in runs if isinstance(r, dict)
                 and r.get("name") == name and r.get("head_sha") == sha
                 and r.get("event") == "pull_request"
+                and r.get("path") == path
                 and isinstance(r.get("pull_requests"), list)
                 and any(isinstance(link, dict)
                         and type(link.get("number")) is int
@@ -176,7 +187,7 @@ def check_stage(name: str, spec: dict, get: Callable[[str], dict]) -> dict:
             f"{prefix}/actions/runs?head_sha={sha}&per_page=100"), "workflow_runs")
         for requirement in spec["checks"]:
             label = requirement["workflow"]
-            run = _latest_run(runs, label, sha, pr_number)
+            run = _latest_run(runs, label, sha, pr_number, WORKFLOW_PATHS[label])
             if run is None:
                 reasons.append(f"missing exact-SHA workflow: {label}")
                 continue
