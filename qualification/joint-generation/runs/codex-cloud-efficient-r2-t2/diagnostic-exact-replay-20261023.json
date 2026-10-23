@@ -1,0 +1,122 @@
+{
+  "cases": [
+    {
+      "bitwise_all_parameters_equal": true,
+      "candidate": "ndu-47-0.003",
+      "max_abs_parameter_difference": 0.0,
+      "replay_digest": "c8406720ef836ecc3a54f41268c7669ec5819c4e7d5cc65eaed158642000172c",
+      "replayed_operator_units": 16149742,
+      "saved_digest": "c8406720ef836ecc3a54f41268c7669ec5819c4e7d5cc65eaed158642000172c",
+      "steps": [
+        {
+          "cpu_ns": 1894047,
+          "loss": -0.6675996154187562,
+          "moment_subnormal_count": 0
+        },
+        {
+          "cpu_ns": 1473712,
+          "loss": -0.6762214506942476,
+          "moment_subnormal_count": 0
+        },
+        {
+          "cpu_ns": 2297792,
+          "loss": -0.6652662914902789,
+          "moment_subnormal_count": 0
+        },
+        {
+          "cpu_ns": 1913990,
+          "loss": -0.6619192798766137,
+          "moment_subnormal_count": 0
+        },
+        {
+          "cpu_ns": 648392,
+          "loss": -0.6424772348497497,
+          "moment_subnormal_count": 0
+        },
+        {
+          "cpu_ns": 536809,
+          "loss": -0.6721253675163548,
+          "moment_subnormal_count": 0
+        },
+        {
+          "cpu_ns": 555061,
+          "loss": -0.7072685944899421,
+          "moment_subnormal_count": 0
+        }
+      ]
+    },
+    {
+      "bitwise_all_parameters_equal": true,
+      "candidate": "ndu-47-0.01",
+      "max_abs_parameter_difference": 0.0,
+      "replay_digest": "e1492d91b754805b1c189223dc17ccc8e92a3f8bc359b2f5ef4038564cf33f28",
+      "replayed_operator_units": 13842636,
+      "saved_digest": "e1492d91b754805b1c189223dc17ccc8e92a3f8bc359b2f5ef4038564cf33f28",
+      "steps": [
+        {
+          "cpu_ns": 641105,
+          "loss": -0.6675996154187562,
+          "moment_subnormal_count": 0
+        },
+        {
+          "cpu_ns": 731417,
+          "loss": -0.643830395885028,
+          "moment_subnormal_count": 0
+        },
+        {
+          "cpu_ns": 596305,
+          "loss": -0.6315927825645402,
+          "moment_subnormal_count": 0
+        },
+        {
+          "cpu_ns": 535211,
+          "loss": -0.6622360766443753,
+          "moment_subnormal_count": 0
+        },
+        {
+          "cpu_ns": 999771,
+          "loss": -0.6110699345566066,
+          "moment_subnormal_count": 0
+        },
+        {
+          "cpu_ns": 936154,
+          "loss": -0.6044742297646216,
+          "moment_subnormal_count": 0
+        }
+      ]
+    },
+    {
+      "bitwise_all_parameters_equal": true,
+      "candidate": "ndu_control-47-0.01",
+      "max_abs_parameter_difference": 0.0,
+      "replay_digest": "7e141adb59e2befb52666e859c49fdcae0959a43a3aa669df6c5f84205d849b5",
+      "replayed_operator_units": 2307106,
+      "saved_digest": "7e141adb59e2befb52666e859c49fdcae0959a43a3aa669df6c5f84205d849b5",
+      "steps": [
+        {
+          "cpu_ns": 732578,
+          "loss": -0.6675996154187562,
+          "moment_subnormal_count": 0
+        }
+      ]
+    }
+  ],
+  "formal_result_changed": false,
+  "formal_test_constructed": false,
+  "purpose": "Replay only retained late candidates on authorized train fold; not runner/evaluator or acceptance",
+  "schema": "hepta.bounded-exact-train-replay.v1",
+  "total_cpu_seconds": 0.28923475300000007,
+  "training_manifest": {
+    "group_count": 192,
+    "groups_sha256": "074e4da7f6049bda14d1536d5bdbf5a2a67124f544f416be379f243b0baf4197",
+    "inputs_sha256": "3863542c447c6b5f898f9ac14d7f9e76afb5f602ddb9798f65f20cba39cbff68",
+    "profile_sha256": "ed8d6d855015774a2b31176a3179722121017eb14dc4d53b1d95ef82f0219c95",
+    "rows": 3072,
+    "schema": "hepta.joint-generation.independent-data.v1",
+    "source_count": 192,
+    "source_ids_sha256": "871610869b1481f326c77ac534b6368e3ccd60b99066e7c5ed7e21b2a77373b0",
+    "sources_sha256": "c9272aed0e6e850b74fb244d8e4fbab7193e7c940d66fa159bad86004ecc1b95",
+    "split": "train"
+  },
+  "training_manifest_matches": true
+}
