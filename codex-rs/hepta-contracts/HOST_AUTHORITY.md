@@ -382,3 +382,18 @@ by this guard: uncertain cross-store outcomes require refusal and exact retained
 state reconciliation, never reset or a new blind generation.
 
 [Original pair-boundary qualification and preserved fixture failure](acceptance/2026-10-23-pair-boundary/README.md) records the 23-test scope and complete 227-test contracts result.
+
+The original host clock now reads its complete protected record on every `now`
+request and samples actual OS time after that I/O. When `observe_after_io` proves
+that actual time still fits its already durable one-second window, it returns
+that actual value without republishing the same window. The future ceiling is
+never returned as the current timestamp. Expiry, a forward wall step or a legal
+new boot still requires the original project/CAS/post-I/O renewal; Invalid state
+is refused without repair. Explicit `refresh_projection` always performs that
+original durable renewal. Both paths hold the same original serial lock.
+
+[Clock-window qualification](acceptance/2026-10-23-clock-window/README.md)
+records the original full227 plus five explicit Root tests. The original two
+slow-CAS/expired-FinalUse negatives first wait until renewal is actually needed;
+their original delay and refusal assertions remain. This scoped result does not
+qualify the new native source or a storage latency SLA.
