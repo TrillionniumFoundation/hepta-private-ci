@@ -124,6 +124,12 @@ class ParametricEvolutionTests(unittest.TestCase):
         cases = [
             (
                 [True, True, True, True],
+                [True, True, True, True],
+                [True, True, True, True],
+                "nochange",
+            ),
+            (
+                [True, True, True, True],
                 [True, False, False, False],
                 [True, True, True, False],
                 "nochange",

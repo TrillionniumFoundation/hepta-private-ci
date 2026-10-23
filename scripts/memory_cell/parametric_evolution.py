@@ -323,7 +323,7 @@ def run_evolution(
     )
     if split["correct"] >= continued["correct"] + 2 and preserved:
         chosen = "split"
-    elif continuation_preserves_parent and continued["correct"] >= sum(original):
+    elif continuation_preserves_parent and continued["correct"] > sum(original):
         chosen = "continue"
     else:
         chosen = "nochange"
@@ -350,7 +350,7 @@ def run_evolution(
         "arms": arms,
         "chosen_arm": chosen,
         "chosen_cells": arms[chosen]["cells"],
-        "selection_rule": "split gains at least two correct and preserves parent and continuation correct; otherwise continue only if parent correct items and score are preserved, else nochange",
+        "selection_rule": "split gains at least two correct and preserves parent and continuation correct; otherwise continue only with a strict score gain and parent correct items preserved, else nochange",
         "matched_parameter_bytes_and_optimizer_steps": True,
         "flops_assumed_equal": False,
         "matched_input_tokens": arms["continue"]["input_tokens"]

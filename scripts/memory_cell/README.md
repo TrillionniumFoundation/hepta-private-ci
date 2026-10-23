@@ -6,10 +6,14 @@ store source-derived updates. Reads use the decoder's unconstrained greedy
 generation. Checkpoints can be saved, verified, reloaded in a fresh interpreter,
 and managed by a persistent local owner.
 
-**Research status: `production_accepted=false`.** Local development recalled
-16/16 registered facts, versus 0/16 with the adapter disabled and 0/16 with its
-tensors shuffled. Confirmation is pending. These results support a narrow
-parameter-memory mechanism; they do not establish a compression advantage, a
+**Research status: `production_accepted=false`.** The completed local confirmation
+used frozen Python bytes verified against commit
+`1e12dbb8187a007134b83928cfc25e663899ac9a` and recalled 16/16
+registered facts, versus 0/16 with the adapter disabled and 0/16 with its tensors
+shuffled, and passed 17 mechanism gates. Its [immutable evidence report](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/6edef799c9b90a3b768b3a8b1f21d84293ab041c/qa/stem-bakeoff/evidence/20261023-parametric-memory/README.md)
+preserves the original source-identity reconciliation and raw results. Subsequent
+hardening and arrival experiments require their own evidence; this result is not
+relabeled as an execution of newer code. It establishes no compression advantage,
 general memory system, autonomous evolution, or production readiness.
 
 ## Model and reproducible commands
@@ -186,6 +190,14 @@ with equal optimizer steps and private parameter budgets. Input tokens and searc
 costs are measured separately; equal FLOPs are not assumed. Final query wording is
 kept out of candidate selection. A split is an experimental option, not a promised
 improvement or evidence that a general network emerges spontaneously.
+
+Continuation now requires a strict selection-score gain while preserving every
+parent-correct item; a tie retains the unchanged parent. The original confirmation
+used the earlier tie-to-continue rule and remains recorded as such. The legacy
+two-continuation-adapter arm can produce identical tensors because its inputs and
+seed match. The separate `../memory_cell_growth/` arrival experiment adds a
+single-adapter continuation control and explicitly charges the split arm's extra
+private storage rather than calling the parameter budgets equal.
 
 Every child retains all learned ancestor roots. Specializing on a subset does not
 erase the parent's training history. Withdrawing an inherited root therefore
