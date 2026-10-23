@@ -177,6 +177,7 @@ class BakeoffContractTests(unittest.TestCase):
         result = analyse(self.plan, self.dataset_path, self.runs)
         self.assertFalse(result["results"][model]["metric_gate"])
         self.assertEqual(result["results"][model]["maximum_slice_regression"], 1.0)
+        self.assertLess(result["results"][model]["paired_cluster_accuracy_gain_95ci"]["lower"], 0)
 
     def test_forged_abstention_is_rejected(self):
         dataset = validate_dataset(self.rows)
@@ -219,6 +220,40 @@ class BakeoffContractTests(unittest.TestCase):
         self.assertEqual(result["effective_correct_rate"], 0.5)
         self.assertEqual(result["coverage"], 0.5)
         self.assertEqual(result["selective_accuracy"], 1.0)
+
+    def test_class_imbalance_is_visible_not_hidden_by_accuracy(self):
+        dataset = {}
+        predicted = {}
+        for n in range(11):
+            rid = f"case-{n}"
+            gold = "deny" if n == 10 else "allow"
+            dataset[rid] = {
+                "gold": gold, "options": ["allow", "deny"],
+                "cluster": rid, "ood": False,
+            }
+            predicted[rid] = {
+                "probabilities": {"allow": 0.9, "deny": 0.1},
+                "abstained": False,
+            }
+        dataset["ood"] = {"ood": True, "gold": "deny",
+                          "options": ["allow", "deny"], "cluster": "ood"}
+        predicted["ood"] = {"probabilities": {"allow": 0.5, "deny": 0.5},
+                            "abstained": True}
+        score = metrics(dataset, predicted)
+        self.assertGreater(score["accuracy"], 0.9)
+        self.assertAlmostEqual(score["balanced_accuracy"], 0.5)
+        self.assertLess(score["macro_f1"], score["accuracy"])
+        self.assertEqual(score["per_class_recall"]["deny"], 0.0)
+
+    def test_paired_bootstrap_is_diagnostic_only(self):
+        result = analyse(self.plan, self.dataset_path, self.runs)
+        for model in CANDIDATES:
+            ci = result["results"][model]["paired_cluster_accuracy_gain_95ci"]
+            self.assertEqual(ci["independent_clusters"], 2)
+            self.assertEqual(ci["posture"],
+                             "diagnostic_only_not_a_preregistered_statistical_acceptance")
+            self.assertEqual(ci["lower"], 0.0)
+            self.assertEqual(ci["upper"], 0.0)
 
     def test_calibration_grid_and_normalization(self):
         examples = [
