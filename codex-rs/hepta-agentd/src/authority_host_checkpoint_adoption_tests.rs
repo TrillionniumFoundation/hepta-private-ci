@@ -1,4 +1,7 @@
 //! Real retained pidfds and root/data CAS; writer proofs remain controlled here.
+#[path = "authority_host_checkpoint_material_recovery_tests.rs"]
+mod material_recovery_tests;
+
 use super::*;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::ObjectiveSenderWriterFence;

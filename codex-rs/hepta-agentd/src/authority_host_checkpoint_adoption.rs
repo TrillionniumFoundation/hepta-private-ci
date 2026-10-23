@@ -8,6 +8,26 @@ enum Predecessor<'a> {
     Retired(&'a RetiredCheckpointPublisher),
 }
 
+enum RetainedCut<'a> {
+    CleanCurrent,
+    Physical(&'a codex_hepta_memory::VerifiedCognitiveMaterial),
+}
+
+impl RetainedCut<'_> {
+    fn validate(&self, head: &CognitiveCheckpointHead) -> Result<(), AuthorityTrustError> {
+        match self {
+            Self::CleanCurrent if head.phase == CognitiveCheckpointPhase::Current => Ok(()),
+            Self::CleanCurrent => Err(AuthorityTrustError::Invalid),
+            Self::Physical(material) => {
+                if material.anchor() != &head.last_current {
+                    return Err(AuthorityTrustError::Invalid);
+                }
+                material.verify_unchanged().map_err(|_| AuthorityTrustError::Unavailable)
+            }
+        }
+    }
+}
+
 impl Predecessor<'_> {
     fn lifetime(&self) -> &CognitiveCheckpointPeerLifetime {
         match self {
@@ -44,6 +64,7 @@ impl HostCognitiveCheckpoint {
             registration,
             successor,
             clock,
+            RetainedCut::CleanCurrent,
         )
     }
 
@@ -67,6 +88,32 @@ impl HostCognitiveCheckpoint {
             registration,
             successor,
             clock,
+            RetainedCut::CleanCurrent,
+        )
+    }
+
+    /// Root-only administrative recovery from the independently retained last
+    /// Current physical image after the old publisher's actual retirement.
+    /// Dirty/proposal bytes are never a recovery source. The trusted caller
+    /// holds the new original canonical writer dispatch fence throughout.
+    /// This does not install owner files, open a writer or release Session.
+    pub fn adopt_retained_material_after_root_restart(
+        directory: Arc<RootAuthorityDirectory>,
+        previous: &CognitiveCheckpointReceipt,
+        predecessor: &RetiredCheckpointPublisher,
+        registration: HostCognitiveCheckpointRegistration,
+        successor: &RetainedCheckpointPublisher,
+        clock: Arc<dyn AuthorityClock>,
+        material: &codex_hepta_memory::VerifiedCognitiveMaterial,
+    ) -> Result<Self, AuthorityTrustError> {
+        Self::adopt_current_with_predecessor(
+            directory,
+            previous,
+            Predecessor::Retired(predecessor),
+            registration,
+            successor,
+            clock,
+            RetainedCut::Physical(material),
         )
     }
 
@@ -77,6 +124,7 @@ impl HostCognitiveCheckpoint {
         registration: HostCognitiveCheckpointRegistration,
         successor: &RetainedCheckpointPublisher,
         clock: Arc<dyn AuthorityClock>,
+        material: RetainedCut<'_>,
     ) -> Result<Self, AuthorityTrustError> {
         validate_registration(&registration)?;
         let old = &previous.head;
@@ -90,8 +138,8 @@ impl HostCognitiveCheckpoint {
         validate_head(&old_registration, old)?;
         let old_writer = &old.writer_binding;
         let new_writer = &registration.writer_binding;
-        if old.phase != CognitiveCheckpointPhase::Current
-            || token_for(old)? != previous.token
+        material.validate(old)?;
+        if token_for(old)? != previous.token
             || old.owner_agent_id != registration.owner_agent_id
             || old.publisher_epoch.checked_add(1) != Some(registration.publisher_epoch)
             || predecessor.lifetime() != &old.peer_lifetime
@@ -126,7 +174,13 @@ impl HostCognitiveCheckpoint {
         next.last_request = None;
         next.writer_binding = new_writer.clone();
         next.peer_lifetime = registration.peer_lifetime.clone();
+        // The full old head remains the CAS predecessor. Only a separately
+        // validated protected image can promote its exact last_current; no
+        // dirty database or uncommitted proposal supplies replacement bytes.
+        next.phase = CognitiveCheckpointPhase::Current;
+        next.proposal = None;
         validate_head(&registration, &next)?;
+        material.validate(old)?;
         // Exact old head CAS, original file/directory sync and exact readback.
         // The original last_current cut is carried byte-for-byte, never rehashed
         // from a possibly modified database. A lost result must be reconciled
@@ -153,6 +207,7 @@ impl HostCognitiveCheckpoint {
         successor
             .require_alive()
             .map_err(|_| AuthorityTrustError::Unavailable)?;
+        material.validate(old).map_err(|_| AuthorityTrustError::Unavailable)?;
         Ok(Self {
             registration,
             store,

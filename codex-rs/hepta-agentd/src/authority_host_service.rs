@@ -32,6 +32,9 @@ use checkpoint::RegisteredCheckpoint;
 mod consumers;
 use consumers::RegisteredConsumers;
 
+#[path = "authority_host_cold_recovery.rs"]
+mod cold_recovery;
+
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]
 pub enum HostAuthorityLane {

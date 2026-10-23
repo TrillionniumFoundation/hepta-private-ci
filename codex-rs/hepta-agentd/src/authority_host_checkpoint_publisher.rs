@@ -114,6 +114,11 @@ fn require_same_boot(
 }
 
 impl RetainedCheckpointPublisher {
+    /// Read-only original process identity; this grants no lifetime or exit proof.
+    pub(crate) fn lifetime(&self) -> &CognitiveCheckpointPeerLifetime {
+        &self.lifetime
+    }
+
     /// Capture before the old publisher exits or the new publisher is released.
     /// The caller still enforces the dedicated UID/capability launch policy.
     pub fn capture(lifetime: CognitiveCheckpointPeerLifetime) -> Result<Self, AuthorityTrustError> {
