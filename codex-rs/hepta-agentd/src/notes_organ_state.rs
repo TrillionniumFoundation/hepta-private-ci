@@ -237,3 +237,7 @@ impl AgentdState {
         })
     }
 }
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "notes_organ_state_tests.rs"]
+mod tests;
