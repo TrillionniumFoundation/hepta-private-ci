@@ -467,6 +467,16 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
     test.submit_turn("hello")
         .await
         .expect("submit first turn prompt");
+    // TurnComplete can arrive before its terminalizer releases the exact
+    // admission fence. Observe that fence (with a finite deadline) before
+    // starting a new user turn; a transient NotIdle is not a metadata failure.
+    // This grants no admission authority and preserves the full E2E assertions.
+    test.codex
+        .observe_admission_fences_until(
+            tokio::time::Instant::now() + std::time::Duration::from_secs(10),
+        )
+        .await
+        .expect("first turn must retire its admission fence");
     let initial_request = first_request.single_request();
     let initial_header = initial_request
         .header("x-codex-turn-metadata")
