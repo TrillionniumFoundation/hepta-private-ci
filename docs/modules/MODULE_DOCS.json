@@ -56,8 +56,12 @@
         "RandomStreamManifestV1"
       ],
       "consumedContracts": [],
-      "protocols": ["RandomStreamManifestV1"],
-      "ownedDomains": ["random_stream_manifest_v1"],
+      "protocols": [
+        "RandomStreamManifestV1"
+      ],
+      "ownedDomains": [
+        "random_stream_manifest_v1"
+      ],
       "readDomains": [],
       "workPackages": [
         "ASM-0-EXTERNAL-SYSTEM-CONTRACTS",
@@ -105,7 +109,9 @@
         "ModulePort::platform.wire::context.compiler",
         "ModulePort::platform.wire::runtime.codex"
       ],
-      "consumedContracts": ["ModulePort::platform.types::platform.wire"],
+      "consumedContracts": [
+        "ModulePort::platform.types::platform.wire"
+      ],
       "protocols": [],
       "ownedDomains": [],
       "readDomains": [],
@@ -160,9 +166,14 @@
         "ModulePort::kernel.authority::secrets.heptabao",
         "VerifiedUseTokenWitnessV1"
       ],
-      "consumedContracts": ["ModulePort::platform.types::kernel.authority"],
+      "consumedContracts": [
+        "ModulePort::platform.types::kernel.authority"
+      ],
       "protocols": [],
-      "ownedDomains": ["authority_lease", "capability_revocation"],
+      "ownedDomains": [
+        "authority_lease",
+        "capability_revocation"
+      ],
       "readDomains": [],
       "workPackages": [
         "ASM-2-DEBIAN-BRIDGE-SANDBOX",
@@ -174,7 +185,9 @@
         "P0.7B-B4-CALLSITE-PROOF",
         "P0.8A-AST-RATCHET"
       ],
-      "threats": ["capability_self_mint"]
+      "threats": [
+        "capability_self_mint"
+      ]
     },
     {
       "module": "kernel.operations",
@@ -226,7 +239,10 @@
         "VerifiedUseTokenWitnessV1"
       ],
       "protocols": [],
-      "ownedDomains": ["cross_owner_outbox", "operation_ledger"],
+      "ownedDomains": [
+        "cross_owner_outbox",
+        "operation_ledger"
+      ],
       "readDomains": [],
       "workPackages": [
         "ASM-2-DEBIAN-BRIDGE-SANDBOX",
@@ -394,7 +410,9 @@
         "P0.8B-READINESS",
         "P0.8C-RESOURCE-BUDGETS"
       ],
-      "threats": ["stale_generation_callback"]
+      "threats": [
+        "stale_generation_callback"
+      ]
     },
     {
       "module": "runtime.fleet",
@@ -439,7 +457,9 @@
         "ModulePort::runtime.supervisor::runtime.fleet"
       ],
       "protocols": [],
-      "ownedDomains": ["fleet_allocation_grant"],
+      "ownedDomains": [
+        "fleet_allocation_grant"
+      ],
       "readDomains": [
         "agent_lifecycle",
         "authority_lease",
@@ -500,8 +520,12 @@
         "ModulePort::runtime.codex::runtime.agentd",
         "ModulePort::runtime.supervisor::runtime.agentd"
       ],
-      "protocols": ["IntelligenceHostEnvelopeV1"],
-      "ownedDomains": ["runtime_health_observation"],
+      "protocols": [
+        "IntelligenceHostEnvelopeV1"
+      ],
+      "ownedDomains": [
+        "runtime_health_observation"
+      ],
       "readDomains": [
         "agent_lifecycle",
         "fleet_registry",
@@ -567,9 +591,16 @@
         "ContextCompilationReceiptV1",
         "PromptDeliveryObservationV1"
       ],
-      "ownedDomains": ["thread_session"],
-      "readDomains": ["authority_lease", "capability_revocation"],
-      "workPackages": ["P0.7B-B1B-MODEL-BOUNDARY"],
+      "ownedDomains": [
+        "thread_session"
+      ],
+      "readDomains": [
+        "authority_lease",
+        "capability_revocation"
+      ],
+      "workPackages": [
+        "P0.7B-B1B-MODEL-BOUNDARY"
+      ],
       "threats": []
     },
     {
@@ -615,14 +646,20 @@
         "ModulePort::kernel.operations::auth.authbus"
       ],
       "protocols": [],
-      "ownedDomains": ["auth_policy", "quota_registry", "quota_reservation"],
+      "ownedDomains": [
+        "auth_policy",
+        "quota_registry",
+        "quota_reservation"
+      ],
       "readDomains": [
         "authority_lease",
         "capability_revocation",
         "cross_owner_outbox",
         "operation_ledger"
       ],
-      "workPackages": ["AUTHBUS-P1.3-V12"],
+      "workPackages": [
+        "AUTHBUS-P1.3-V12"
+      ],
       "threats": []
     },
     {
@@ -667,7 +704,10 @@
         "ModulePort::kernel.authority::secrets.heptabao"
       ],
       "protocols": [],
-      "ownedDomains": ["secret_lease", "secret_metadata"],
+      "ownedDomains": [
+        "secret_lease",
+        "secret_metadata"
+      ],
       "readDomains": [
         "auth_policy",
         "authority_lease",
@@ -675,8 +715,12 @@
         "quota_registry",
         "quota_reservation"
       ],
-      "workPackages": ["HEPTABAO-1-SECRET-BOUNDARY"],
-      "threats": ["secret_value_in_receipt"]
+      "workPackages": [
+        "HEPTABAO-1-SECRET-BOUNDARY"
+      ],
+      "threats": [
+        "secret_value_in_receipt"
+      ]
     },
     {
       "module": "inference.control",
@@ -742,7 +786,9 @@
         "MEM-READ-1-SNAPSHOT-PORT",
         "P0.7B-B1A-PROVIDER-BOUNDARY"
       ],
-      "threats": ["provider_raw_escape"]
+      "threats": [
+        "provider_raw_escape"
+      ]
     },
     {
       "module": "inference.worker",
@@ -836,11 +882,20 @@
         "ModulePort::cognitive.read::objective.compiler",
         "ModulePort::platform.types::objective.compiler"
       ],
-      "protocols": ["ObjectiveFunctionV1", "RunStartSnapshotV1"],
+      "protocols": [
+        "ObjectiveFunctionV1",
+        "RunStartSnapshotV1"
+      ],
       "ownedDomains": [],
       "readDomains": [],
-      "workPackages": ["OBJ-0-OBJECTIVE-CONTRACTS", "OBJ-1-OBJECTIVE-COMPILER"],
-      "threats": ["objective_substitution", "success_predicate_downgrade"]
+      "workPackages": [
+        "OBJ-0-OBJECTIVE-CONTRACTS",
+        "OBJ-1-OBJECTIVE-COMPILER"
+      ],
+      "threats": [
+        "objective_substitution",
+        "success_predicate_downgrade"
+      ]
     },
     {
       "module": "utility.ndu",
@@ -1172,19 +1227,27 @@
         "ModulePort::kernel.operations::prompt.registry",
         "ModulePort::platform.types::prompt.registry"
       ],
-      "protocols": ["PromptFactorV1", "PromptRealizationV1"],
+      "protocols": [
+        "PromptFactorV1",
+        "PromptRealizationV1"
+      ],
       "ownedDomains": [
         "prompt_factor_lifecycle",
         "prompt_factor_registry",
         "prompt_realization_registry"
       ],
-      "readDomains": ["cross_owner_outbox", "operation_ledger"],
+      "readDomains": [
+        "cross_owner_outbox",
+        "operation_ledger"
+      ],
       "workPackages": [
         "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
         "PIM-1-PROMPT-FACTOR-REGISTRY",
         "PIM-3-FACTOR-EVOLUTION"
       ],
-      "threats": ["prompt_instruction_confusion"]
+      "threats": [
+        "prompt_instruction_confusion"
+      ]
     },
     {
       "module": "prompt.optimizer",
@@ -1337,7 +1400,9 @@
       ],
       "ownedDomains": [],
       "readDomains": [],
-      "workPackages": ["CTX-1-CONTEXT-COMPILER"],
+      "workPackages": [
+        "CTX-1-CONTEXT-COMPILER"
+      ],
       "threats": [
         "context_secret_leak",
         "prompt_position_truncation",
@@ -1466,7 +1531,9 @@
         "ReplaySelectionReceiptV1",
         "SynapseV1"
       ],
-      "consumedContracts": ["ModulePort::platform.types::cognitive.types"],
+      "consumedContracts": [
+        "ModulePort::platform.types::cognitive.types"
+      ],
       "protocols": [
         "CrossModalBindingV1",
         "EngramNodeV1",
@@ -1482,7 +1549,10 @@
       ],
       "ownedDomains": [],
       "readDomains": [],
-      "workPackages": ["EMB-1-SENSOR-BUS-BODY-SCHEMA", "MEM-0-TYPES"],
+      "workPackages": [
+        "EMB-1-SENSOR-BUS-BODY-SCHEMA",
+        "MEM-0-TYPES"
+      ],
       "threats": []
     },
     {
@@ -1535,8 +1605,14 @@
         "MemoryEventV1",
         "ModalitySpanRefV1"
       ],
-      "ownedDomains": ["knowledge_fact_ledger", "memory_ledger"],
-      "readDomains": ["cross_owner_outbox", "operation_ledger"],
+      "ownedDomains": [
+        "knowledge_fact_ledger",
+        "memory_ledger"
+      ],
+      "readDomains": [
+        "cross_owner_outbox",
+        "operation_ledger"
+      ],
       "workPackages": [
         "EMB-1-SENSOR-BUS-BODY-SCHEMA",
         "MEM-1-STORE",
@@ -1630,7 +1706,9 @@
         "## 15. Definition of module completion",
         "## 17. Source implementation receipt"
       ],
-      "producedContracts": ["ModulePort::memory.retrieval::prompt.optimizer"],
+      "producedContracts": [
+        "ModulePort::memory.retrieval::prompt.optimizer"
+      ],
       "consumedContracts": [
         "DomainRead::knowledge_graph_projectionV1",
         "DomainRead::prompt_factor_graph_projectionV1",
@@ -1656,7 +1734,9 @@
         "knowledge_graph_projection",
         "prompt_factor_graph_projection"
       ],
-      "workPackages": ["MEM-2-RETRIEVAL"],
+      "workPackages": [
+        "MEM-2-RETRIEVAL"
+      ],
       "threats": []
     },
     {
@@ -1696,8 +1776,14 @@
       ],
       "protocols": [],
       "ownedDomains": [],
-      "readDomains": ["authority_lease", "capability_revocation"],
-      "workPackages": ["ASM-4-FEDERATED-ORGAN-ENROLLMENT", "MEM-3-FEDERATION"],
+      "readDomains": [
+        "authority_lease",
+        "capability_revocation"
+      ],
+      "workPackages": [
+        "ASM-4-FEDERATED-ORGAN-ENROLLMENT",
+        "MEM-3-FEDERATION"
+      ],
       "threats": []
     },
     {
@@ -1768,7 +1854,9 @@
         "prompt_factor_registry",
         "prompt_realization_registry"
       ],
-      "workPackages": ["MEM-4-KG"],
+      "workPackages": [
+        "MEM-4-KG"
+      ],
       "threats": []
     },
     {
@@ -1799,7 +1887,9 @@
         "## 15. Definition of module completion",
         "## 17. Source implementation receipt"
       ],
-      "producedContracts": ["DomainRead::compact_checkpointV1"],
+      "producedContracts": [
+        "DomainRead::compact_checkpointV1"
+      ],
       "consumedContracts": [
         "DomainRead::cross_owner_outboxV1",
         "DomainRead::operation_ledgerV1",
@@ -1816,9 +1906,16 @@
         "OutcomeSignalV1",
         "ReplaySelectionReceiptV1"
       ],
-      "ownedDomains": ["compact_checkpoint"],
-      "readDomains": ["cross_owner_outbox", "operation_ledger"],
-      "workPackages": ["MEM-5-COMPACT"],
+      "ownedDomains": [
+        "compact_checkpoint"
+      ],
+      "readDomains": [
+        "cross_owner_outbox",
+        "operation_ledger"
+      ],
+      "workPackages": [
+        "MEM-5-COMPACT"
+      ],
       "threats": []
     },
     {
@@ -1969,7 +2066,9 @@
         "## 15. Definition of module completion",
         "## 17. Source implementation receipt"
       ],
-      "producedContracts": ["BellmanOperatorArtifactV1"],
+      "producedContracts": [
+        "BellmanOperatorArtifactV1"
+      ],
       "consumedContracts": [
         "CandidateSetCompletenessReceiptV1",
         "CreditAssignmentReceiptV1",
@@ -2187,7 +2286,10 @@
         "LONG-3-UNLEARNING-NON-RESURRECTION",
         "LRN-2-CAUSAL-EVALUATION"
       ],
-      "threats": ["catastrophic_forgetting", "deleted_data_resurrection"]
+      "threats": [
+        "catastrophic_forgetting",
+        "deleted_data_resurrection"
+      ]
     },
     {
       "module": "learning.artifacts",
@@ -2389,7 +2491,9 @@
         "PLS-2-TOPOLOGY-PROPOSAL",
         "PLS-3-BOUNDED-STRUCTURAL-CANARY"
       ],
-      "threats": ["topology_self_activation"]
+      "threats": [
+        "topology_self_activation"
+      ]
     },
     {
       "module": "automation.taskflow",
@@ -2432,13 +2536,18 @@
         "OperationIntentV1"
       ],
       "protocols": [],
-      "ownedDomains": ["automation_occurrence", "automation_schedule"],
+      "ownedDomains": [
+        "automation_occurrence",
+        "automation_schedule"
+      ],
       "readDomains": [
         "cross_owner_outbox",
         "operation_ledger",
         "thread_session"
       ],
-      "workPackages": ["TASKFLOW-1-EXECUTION-BOUNDARY"],
+      "workPackages": [
+        "TASKFLOW-1-EXECUTION-BOUNDARY"
+      ],
       "threats": []
     },
     {
@@ -2486,7 +2595,10 @@
         "VerifiedUseTokenWitnessV1"
       ],
       "protocols": [],
-      "ownedDomains": ["matrix_dispatch_ledger", "matrix_ingress_projection"],
+      "ownedDomains": [
+        "matrix_dispatch_ledger",
+        "matrix_ingress_projection"
+      ],
       "readDomains": [
         "authority_lease",
         "capability_revocation",
@@ -2494,8 +2606,12 @@
         "operation_ledger",
         "runtime_health_observation"
       ],
-      "workPackages": ["MATRIX-1-CHANNEL-BOUNDARY"],
-      "threats": ["matrix_self_issued_send"]
+      "workPackages": [
+        "MATRIX-1-CHANNEL-BOUNDARY"
+      ],
+      "threats": [
+        "matrix_self_issued_send"
+      ]
     },
     {
       "module": "browser.servo",
@@ -2525,7 +2641,9 @@
         "## 15. Definition of module completion",
         "## 17. Source implementation receipt"
       ],
-      "producedContracts": ["DomainRead::browser_profile_stateV1"],
+      "producedContracts": [
+        "DomainRead::browser_profile_stateV1"
+      ],
       "consumedContracts": [
         "DomainRead::authority_leaseV1",
         "DomainRead::capability_revocationV1",
@@ -2535,14 +2653,20 @@
         "VerifiedUseTokenWitnessV1"
       ],
       "protocols": [],
-      "ownedDomains": ["browser_profile_state"],
+      "ownedDomains": [
+        "browser_profile_state"
+      ],
       "readDomains": [
         "authority_lease",
         "capability_revocation",
         "runtime_health_observation"
       ],
-      "workPackages": ["BROWSER-WEB-C1"],
-      "threats": ["browser_ungranted_network"]
+      "workPackages": [
+        "BROWSER-WEB-C1"
+      ],
+      "threats": [
+        "browser_ungranted_network"
+      ]
     },
     {
       "module": "ui.control",
@@ -2579,8 +2703,12 @@
       ],
       "protocols": [],
       "ownedDomains": [],
-      "readDomains": ["runtime_health_observation"],
-      "workPackages": ["UI-V5"],
+      "readDomains": [
+        "runtime_health_observation"
+      ],
+      "workPackages": [
+        "UI-V5"
+      ],
       "threats": []
     },
     {
@@ -2618,8 +2746,13 @@
       ],
       "protocols": [],
       "ownedDomains": [],
-      "readDomains": ["runtime_health_observation"],
-      "workPackages": ["UI-NATIVE-1-SHELL", "UI-V5"],
+      "readDomains": [
+        "runtime_health_observation"
+      ],
+      "workPackages": [
+        "UI-NATIVE-1-SHELL",
+        "UI-V5"
+      ],
       "threats": []
     },
     {
@@ -2665,8 +2798,14 @@
         "NduBoundaryConditionV1",
         "NduSummaryReceiptV1"
       ],
-      "protocols": ["NduBoundaryConditionV1", "NduSummaryReceiptV1"],
-      "ownedDomains": ["global_state_snapshot", "optimization_decision"],
+      "protocols": [
+        "NduBoundaryConditionV1",
+        "NduSummaryReceiptV1"
+      ],
+      "ownedDomains": [
+        "global_state_snapshot",
+        "optimization_decision"
+      ],
       "readDomains": [
         "fleet_allocation_grant",
         "ndu_preference_projection",
@@ -2764,7 +2903,9 @@
         "ECP-1-ENGINEERING-CONTROL-PLANE",
         "SELF-1-CODE-CANDIDATE-PIPELINE"
       ],
-      "threats": ["self_review_or_self_merge"]
+      "threats": [
+        "self_review_or_self_merge"
+      ]
     }
   ],
   "authorityFlags": {
