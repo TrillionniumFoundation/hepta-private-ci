@@ -5,7 +5,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from qualification import EvidenceError, digest, validate_protocol
+from qualification import ARMS, EvidenceError, digest, validate_protocol
 
 
 class ProtocolBindingTests(unittest.TestCase):
@@ -13,7 +13,9 @@ class ProtocolBindingTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.path = Path(self.temp.name) / "plan.json"
         self.plan = {"schema": "hepta.p0-p7.research.v1", "seeds": [7, 17, 29],
-                     "arms": ["base", "ndu"], "encoder_generation": 1,
+                     "arms": list(ARMS), "episode_budget_us": 20_000,
+                     "encoder_digest": digest(b"encoder-pinned"),
+                     "encoder_generation": 1,
                      "paired_noise_protocol": "common-random-numbers-v1"}
         self.blob = json.dumps(self.plan, sort_keys=True).encode()
         self.path.write_bytes(self.blob)
