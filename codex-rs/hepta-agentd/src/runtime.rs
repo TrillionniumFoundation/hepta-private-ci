@@ -81,7 +81,7 @@ pub async fn run(
     let intelligence_invocation = config.intelligence_invocation_provider();
     let notes_objective = config.notes_objective();
     if notes_objective.is_some()
-        && (production_operations.is_none()
+        && (production_writer_host.is_none()
             || intelligence_product.is_some()
             || intelligence_invocation.is_some())
     {
@@ -226,12 +226,23 @@ pub async fn run(
                 )
             })?;
             let (host, interval) = operations.attach(Arc::clone(recovered_host)).await?;
-            state.attach_production_operations(Arc::clone(&host))?;
-            production_writer_host = Some(Arc::clone(&host));
             Some((host, interval))
+        }
+        None if state.notes_objective.get().is_some() => {
+            let host = production_writer_host.as_ref().ok_or_else(|| {
+                AgentdError::Protocol("Notes requires its precomposed original owner".into())
+            })?;
+            Some((Arc::clone(host), GENERATION_POLL_INTERVAL))
         }
         None => None,
     };
+    if let Some((host, _)) = &production_operations {
+        if let Some(notes) = state.notes_objective.get() {
+            notes.validate_host(host)?;
+        }
+        state.attach_production_operations(Arc::clone(host))?;
+        production_writer_host = Some(Arc::clone(host));
+    }
     let cognitive_runtime = attach_federation_after_generation_fence(
         &state,
         cognitive_runtime,

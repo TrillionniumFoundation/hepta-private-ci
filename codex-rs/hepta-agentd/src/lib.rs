@@ -258,6 +258,7 @@ pub use production_composition::attach_production_operation_host;
 pub use production_writer_host::AgentdFinalUseGrantProvider;
 pub use production_writer_host::AgentdProductionOperationRuntimeConfig;
 pub use production_writer_host::AgentdProductionWriterHost;
+pub use production_writer_host::AgentdProtectedCheckpointInputs;
 pub use prompt_runtime::AgentdPromptPipelineError;
 pub use prompt_runtime::AgentdPromptPipelineOwner;
 pub use prompt_runtime::AgentdPromptRuntimeError;

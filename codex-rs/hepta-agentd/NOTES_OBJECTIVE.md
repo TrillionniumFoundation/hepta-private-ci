@@ -11,6 +11,26 @@ frozen literal Notes admission profile; the target must be the actual Notes
 application identity returned by the original Session handoff. A dedicated
 Notes profile cannot also select the general seven-owner invocation runner.
 
+The production composition entry is
+`AgentdProductionWriterHost::open_with_protected_recovery(config, authority,
+verifier, lease_id, generation, AgentdProtectedCheckpointInputs { transport,
+current_receipt, deadline })`. It first compares the complete receipt writer
+binding with the verified authority and Agentd identity, recovers exactly the
+independent Current cut, binds the protected checkpoint, and only then creates
+one original writer and read side. The receipt and fixed-peer transport are
+deployment inputs; this factory does not create a Current witness or issuer.
+
+Attach the real Session Notes handoff with `host.attach_notes_from_session`,
+register that returned target and the frozen profile with `with_notes_objective`,
+and install the same `Arc<AgentdProductionWriterHost>` using
+`with_production_writer_host`. Construct `original_objective_sender` with the
+checkpoint returned by the factory and then run the original Agentd runtime.
+The runtime accepts this precomposed Notes-only host, checks its exact destination
+and grant provider, and starts the original operation reconciler. No additional
+HOS2 destination or parallel SQLite owner is required. The trusted typed desktop
+listener must run in this host process and retain this same writer and sender;
+opening another writable database owner in the listener is not this composition.
+
 Before signing Objective ingress, the trusted compiler must prepare the exact
 original `OperationIntentV1` and payload with the installed writer. Its
 `operation_id` equals the stable Objective `run_id`. The source provenance

@@ -24,6 +24,20 @@ impl AgentdNotesObjectiveConfig {
         }
         self.target.validate().map_err(AgentdError::Invalid)
     }
+
+    pub(crate) fn validate_host(
+        &self,
+        host: &crate::AgentdProductionWriterHost,
+    ) -> Result<(), AgentdError> {
+        self.validate()?;
+        if !host.has_destination(&self.target.destination_id()) {
+            return Err(AgentdError::Invalid(
+                "Notes Objective requires its fixed Notes destination and original grant provider"
+                    .into(),
+            ));
+        }
+        Ok(())
+    }
 }
 
 impl AgentdState {

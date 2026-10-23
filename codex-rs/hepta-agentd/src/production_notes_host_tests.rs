@@ -18,6 +18,9 @@ use std::os::unix::net::UnixStream;
 #[path = "notes_objective_tests.rs"]
 mod objective_tests;
 
+#[path = "notes_objective_composition_tests.rs"]
+mod composition_tests;
+
 struct NotesHostFixture {
     directory: tempfile::TempDir,
     config: AgentdConfig,

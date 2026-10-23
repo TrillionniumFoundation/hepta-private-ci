@@ -159,6 +159,28 @@ async fn signed_notes_objective_uses_original_run_and_operation_then_recovers_lo
             )?),
             issuer.clone(),
         )?);
+        // Captured from the Desktop literal compiler, not a hand-written fake
+        // source hash. Runtime times, run id and original operation are rebound.
+        let fixture: Value = serde_json::from_str(include_str!(
+            "../tests/fixtures/notes-objective-literal-v1.json"
+        ))?;
+        let profile_json = serde_json::to_vec(&fixture["profile"])?;
+        let profile = decode_admission_profile_json_v1(&profile_json)?;
+        let profile_digest = profile.digest()?;
+        let mut config = config
+            .with_production_writer_host(host.clone())?
+            .with_notes_objective(AgentdNotesObjectiveConfig {
+                profile_digest,
+                target: target.clone(),
+            })?;
+        assert!(config.take_production_operations().is_none());
+        let notes = config.notes_objective().unwrap();
+        notes.validate_host(&host)?;
+        let mut wrong_notes = notes.clone();
+        wrong_notes.target.task_id += 1;
+        assert!(wrong_notes.validate_host(&host).is_err());
+        let configured_host = config.production_writer_host().unwrap();
+        assert!(Arc::ptr_eq(&host, &configured_host));
         let (identity, registry, _lock) = config.into_parts();
         registry.compare_and_transition(
             &identity.agent_id,
@@ -169,7 +191,7 @@ async fn signed_notes_objective_uses_original_run_and_operation_then_recovers_lo
         state.refresh_generation()?;
         state
             .attach_cognitive_store(host.cognitive_runtime().available_store().unwrap().clone())?;
-        state.attach_production_operations(host.clone())?;
+        state.attach_production_operations(configured_host)?;
         state.mark_runtime_prerequisites_ready()?;
         state.mark_app_server_ready()?;
         fs::set_permissions(
@@ -178,27 +200,13 @@ async fn signed_notes_objective_uses_original_run_and_operation_then_recovers_lo
         )?;
         let key = SigningKey::from_bytes(&[67; 32]);
         attach_test_trust(&state, &key).await?;
-        // Captured from the Desktop literal compiler, not a hand-written fake
-        // source hash. Runtime times, run id and original operation are rebound.
-        let fixture: Value = serde_json::from_str(include_str!(
-            "../tests/fixtures/notes-objective-literal-v1.json"
-        ))?;
-        let profile_json = serde_json::to_vec(&fixture["profile"])?;
-        let profile = decode_admission_profile_json_v1(&profile_json)?;
-        let profile_digest = profile.digest()?;
         let profile_file = state
             .identity()
             .home_root
             .join("notes-objective-test-profile.json");
         fs::write(&profile_file, profile_json)?;
         fs::set_permissions(&profile_file, fs::Permissions::from_mode(0o600))?;
-        state
-            .notes_objective
-            .set(AgentdNotesObjectiveConfig {
-                profile_digest,
-                target: target.clone(),
-            })
-            .unwrap();
+        state.notes_objective.set(notes).unwrap();
         let runtime =
             crate::objective_runtime::ObjectiveRuntimeHost::open(state.identity(), &profile_file)?;
         let run_id = "notes.original.run.1";
