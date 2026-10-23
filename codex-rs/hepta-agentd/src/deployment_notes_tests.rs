@@ -228,6 +228,72 @@ fn deployment_notes_policy_wrong_predecessor_or_expired_writer_cannot_change_sta
 }
 
 #[test]
+fn deployment_notes_preserves_original_objective_route_across_exact_policy_replacement() {
+    let f = Fixture::new();
+    let fleet = codex_hepta_paths::HeptaFleetRoot::parse(f._root.path().join("fleet")).unwrap();
+    let layout = fleet.layout().agent(&f.writer.registered_agent_id);
+    let identity = crate::AgentdIdentity {
+        agent_id: f.writer.registered_agent_id.clone(), layout: layout.clone(),
+        spawn_generation: f.writer.spawn_generation, fleet_root: fleet.as_path().to_path_buf(),
+        workspace: f._root.path().join("workspace"),
+        resources: codex_hepta_fleet::ResourceBudget::local_default(),
+        home_root: layout.home_root().to_path_buf(), run_root: layout.run_root().to_path_buf(),
+        control_socket: layout.agentd_control_socket().to_path_buf(),
+        app_server_socket: layout.app_server_socket().to_path_buf(),
+    };
+    let body = || crate::AuthBusObjectiveBody {
+        spawn_generation: identity.spawn_generation, run_id: "notes-objective".into(),
+        objective_revision: 1, source_envelope_json: "{}".into(),
+        runtime_body_digest: "11".repeat(32), preference_state_digest: "22".repeat(32),
+        model_tuple_digest: "33".repeat(32), prompt_registry_digest: "44".repeat(32),
+        artifact_set_digest: "55".repeat(32), authority_epoch: 1,
+    };
+    let objective_policy = DeploymentGrantPolicy {
+        subject_id: identity.agent_id.as_str().into(),
+        destination_id: DeploymentFinalUseIssuer::OBJECTIVE_DESTINATION.into(),
+        scope_sha256: crate::objective_runtime::objective_scope(&identity).into_array(),
+        lifetime_ms: 30_000,
+    };
+    let state = f.issuer.store.load(STATE_OWNER).unwrap();
+    let mut routes = state.clone();
+    routes.policies.push(objective_policy.clone());
+    f.issuer.store.compare_and_set(STATE_OWNER, &state, &routes).unwrap();
+    let proof = f.issuer.retained_writer_authorization(&f.writer).unwrap();
+    let sign_objective = || f.issuer.sign_registered_writer_objective(
+        &identity, body(), &f.writer, &f.registry.verifier(), &proof).unwrap();
+    assert_eq!(sign_objective().sequence, 2);
+    let admission = f.admission();
+    assert_eq!(admission.issue(&f.issuer, &f.binding).unwrap().unwrap().grant.grant_id,
+        "canonical-notes-issuer:1:3");
+    let second = FinalUseBinding { request_sha256: [7; 32], payload_sha256: [8; 32], ..f.binding.clone() };
+    assert_eq!(admission.issue(&f.issuer, &second).unwrap().unwrap().grant.grant_id,
+        "canonical-notes-issuer:1:4");
+    let next = NotesTargetIdentity { incarnation: "3".repeat(32), ..f.target.clone() };
+    f.issuer.replace_notes_policy(&f.writer, &f.target, 1_000, &next, 1_000).unwrap();
+    let changed = f.issuer.store.load(STATE_OWNER).unwrap();
+    assert_eq!(changed.policies.len(), 2);
+    assert_eq!(serde_json::to_vec(&changed.policies[1..]).unwrap(),
+        serde_json::to_vec(&routes.policies[1..]).unwrap());
+    assert_eq!(changed.policies[1], objective_policy);
+    let objective = sign_objective();
+    assert_eq!(objective.sequence, 5);
+    let claims = crate::authbus_objective_claims(&identity, &objective).unwrap();
+    let signature = objective.signature_hex.as_bytes().chunks_exact(2)
+        .map(|part| u8::from_str_radix(std::str::from_utf8(part).unwrap(), 16).unwrap())
+        .collect::<Vec<_>>();
+    let key = f.issuer.trust_key().unwrap();
+    ed25519_dalek::VerifyingKey::from_bytes(&key.verifying_key).unwrap()
+        .verify_strict(&claims.signing_bytes(), &ed25519_dalek::Signature::from_slice(&signature).unwrap()).unwrap();
+    assert!(admission.issue(&f.issuer, &f.binding).unwrap().is_none());
+    let next_admission = RootNotesGrantAdmission::open(&f.issuer, f.registry.clone(),
+        f.writer.clone(), &next, 1_000).unwrap();
+    let next_binding = FinalUseBinding { destination_id: next.destination_id(),
+        scope_sha256: next.scope_digest().into_array(), ..f.binding.clone() };
+    assert_eq!(next_admission.issue(&f.issuer, &next_binding).unwrap().unwrap().grant.grant_id,
+        "canonical-notes-issuer:1:6");
+}
+
+#[test]
 #[ignore = "explicit Root-only exact Notes admission on selected protected filesystem"]
 fn deployment_notes_actual_root_clock_registry_and_canonical_issuer_issue_distinct_payloads() {
     use codex_hepta_contracts::HostAuthorityClock;
