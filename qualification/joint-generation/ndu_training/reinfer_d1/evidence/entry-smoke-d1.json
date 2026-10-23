@@ -1,0 +1,48 @@
+{
+  "dataset_calls": 0,
+  "model_forward_calls": 0,
+  "quote": {
+    "gradient_units_bound": {
+      "A": 632099328,
+      "N": 633438720
+    },
+    "readout_units_each_arm": 36052992,
+    "service_units_each_arm": 1418231808,
+    "shared_reference_units_bound": 1437297240,
+    "total_each_arm": {
+      "A": 3523681368,
+      "N": 3525020760
+    }
+  },
+  "sources": {
+    "contracts.py": "544cdbebc6e79abf5e55fc4e4d1a0fc30e169c805199ad72b9b420891fd8a61d",
+    "control.py": "1b79169db91317cf80f8cd29793ea8ac4a08dd2088e05095543c139181209c4b",
+    "data.py": "2e7401afac84deec2149fad89fe3a2b461046b6cd667408070c7da9ec130e0a3",
+    "independent/accounting.py": "3deccbaee86f5142391ddd1472522e331055935d4f17c458eb050c177650509b",
+    "independent/data_v2.py": "8f25960bf6ab43e461f7866a41c0f33742d04ba70cb62cd656b3bad478db2764",
+    "independent/evaluation.py": "d4fe0415390721c54cad4e86b65e25db1a06b4c2f72b3719eb425c520c4c3632",
+    "independent/inference.py": "68438497601e2f26bd615da646c167933187a0410a557f83218025dd231e9a3a",
+    "independent/learning.py": "d3073d3fb652addde680d8aa569f32c898d782b35135e187e99fdd321a453941",
+    "independent/mixed_training.py": "4e830994cd3e707c623a59990ea63ba4c2519858fce3db30e7e31293326b4b48",
+    "independent/native.c": "0d2be36cc6d9dbf3f22efeb7ff973f5ae7b049a74fb60a676db9c0b68d6ccc62",
+    "independent/native.py": "b9919cec02efeca9383a58182bc4273c4506b23a0adddf360a954b3d6c7e2f42",
+    "independent/native_adam.py": "fd3ee0501230509c1a534c18e01d48ef515828de3ddcdba0b170809bc53e5baa",
+    "model.py": "b1892fb8568336034cd52f7e280a6dbbad5b5cc48c072edf2455815e4c817291",
+    "ndu_training/PROTOCOL.md": "3fdae12567ba0e5611cf935e7a4caf4eaa5aae8ea318db0e2e00898d9ed0f6b0",
+    "ndu_training/diagnostics.py": "5b821796dff460d75e0b436929596e3a3705cfc6b2378f49e8d5a9d964efcc2b",
+    "ndu_training/estimators.py": "94ad13fe5de4bf105319752ad17d18f70730584dc210f6e7fa69db2897e085b8",
+    "ndu_training/mechanism_readout/anchor_cv.py": "f445ed8fdd2df25ba1f26c553115094d2c26b4ff6bb3fd56fca63236e14c6a68",
+    "ndu_training/plan.json": "53d961f650133c57107d366b5eed2facd81e145bb7397e1149a002db2796dcc7",
+    "ndu_training/reinfer_d1/PROTOCOL.md": "135e100a9d80aec1fae31fa1ff399e89b5e57b2d25fd1e3d369abf605bdf65f5",
+    "ndu_training/reinfer_d1/driver.py": "2bda065550041f983086eaf299c24623bff509ca5a94f7fc45e0596c4280ba41",
+    "ndu_training/reinfer_d1/kernels.py": "57604c6c60ce28232e4d63f22741eefcfbdc0b29809efab7f4c6389bdd83c1d1",
+    "ndu_training/reinfer_d1/plan.json": "9ecda4ca91d0584a42a78a2968c7b570fb4471a87371d917c7795e56ec556a18",
+    "ndu_training/reinfer_d1/service.py": "0d6f68bff488260d0718c0a7bba915affda5382c5490b6941370185aa698df02",
+    "ndu_training/reinfer_d1/summary.py": "3e7fdc5b6a338e33baeb70ff84d52ef29f4cf2f859934b79dbfef6f9d6dabbbd",
+    "ndu_training/reinfer_d1/test_entry.py": "2916b74f2298285ef5e63dbac6b50484d5bb61ce94b22b20f3dc9b5af6202557",
+    "ndu_training/run.py": "373faa1e29c1668a1a6726fb2fc76b0f2326d0f04eb757424191a67f8d4dcccb",
+    "ndu_training/test_estimators.py": "6977fceed937eb2180cfb5627a5e8e0cf6d58bcc44a6c8dfe837cb2264ce9b88",
+    "utility.py": "bbfcbad5557107e3d9be587f55cd91889e2c1b0d6c3d87d07ec329ff54251037"
+  },
+  "status": "entry smoke passed"
+}
