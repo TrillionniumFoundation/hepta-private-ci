@@ -15,26 +15,30 @@ use tempfile::TempDir;
 
 use crate::*;
 
-fn config(path: &std::path::Path) -> SqliteConfig {
-    SqliteConfig::new_for_testing(AbsolutePathBuf::try_from(path.to_path_buf()).unwrap())
+type TestError = Box<dyn std::error::Error + Send + Sync>;
+
+fn config(path: &std::path::Path) -> Result<SqliteConfig, TestError> {
+    Ok(SqliteConfig::new_for_testing(AbsolutePathBuf::try_from(
+        path.to_path_buf(),
+    )?))
 }
 
 async fn enqueue(
     store: &HeptaEvidenceStore,
     sequence: u64,
-) -> (IssuerRegistration, AuthBusDeliveryStatus) {
+) -> Result<(IssuerRegistration, AuthBusDeliveryStatus), TestError> {
     let key = SigningKey::from_bytes(&[43; 32]);
     let issuer = IssuerRegistration {
-        issuer_id: StableId::new("issuer:relay").unwrap(),
-        key_epoch: Generation::new(1).unwrap(),
+        issuer_id: StableId::new("issuer:relay")?,
+        key_epoch: Generation::new(1)?,
         verifying_key: key.verifying_key(),
         revoked: false,
     };
     let claims = SignedMessageClaims {
         issuer_id: issuer.issuer_id.clone(),
         key_epoch: issuer.key_epoch,
-        message_id: StableId::new(format!("message:{sequence}")).unwrap(),
-        subject_id: StableId::new("subject:relay").unwrap(),
+        message_id: StableId::new(format!("message:{sequence}"))?,
+        subject_id: StableId::new("subject:relay")?,
         scope_digest: Digest32::of_bytes(b"relay route"),
         payload_digest: Digest32::of_bytes(b"relay payload"),
         sequence,
@@ -50,9 +54,8 @@ async fn enqueue(
             message.claims.scope_digest,
             b"relay payload",
         )
-        .await
-        .unwrap();
-    (issuer, status)
+        .await?;
+    Ok((issuer, status))
 }
 
 async fn claim(
@@ -60,35 +63,36 @@ async fn claim(
     issuer: &IssuerRegistration,
     delivery_id: Digest32,
     lease_ms: i64,
-) -> Result<AuthBusDelivery, AuthBusOutboxError> {
-    store
+) -> Result<Result<AuthBusDelivery, AuthBusOutboxError>, TestError> {
+    Ok(store
         .claim_authbus_delivery(
             issuer,
             AuthBusClaimRequest {
                 delivery_id,
-                subject_id: &StableId::new("subject:relay").unwrap(),
+                subject_id: &StableId::new("subject:relay")?,
                 scope_digest: Digest32::of_bytes(b"relay route"),
-                worker_id: &StableId::new("worker:relay").unwrap(),
+                worker_id: &StableId::new("worker:relay")?,
                 lease_ms,
             },
         )
-        .await
+        .await)
 }
 
 #[tokio::test]
-async fn quarantine_requires_current_fence_and_survives_reopen_without_acknowledgement() {
+async fn quarantine_requires_current_fence_and_survives_reopen_without_acknowledgement()
+-> Result<(), TestError> {
     let temp = TempDir::new().unwrap();
-    let sqlite = config(temp.path());
+    let sqlite = config(temp.path())?;
     let store = HeptaEvidenceStore::open(&sqlite).await.unwrap();
-    let (issuer, queued) = enqueue(&store, /*sequence*/ 1).await;
-    let (_, other) = enqueue(&store, /*sequence*/ 2).await;
+    let (issuer, queued) = enqueue(&store, /*sequence*/ 1).await?;
+    let (_, other) = enqueue(&store, /*sequence*/ 2).await?;
     let delivery = claim(
         &store,
         &issuer,
         queued.delivery_id,
         /*lease_ms*/ 60_000,
     )
-    .await
+    .await?
     .unwrap();
     assert_eq!(delivery.attempts, 1);
     let renewed = store
@@ -135,7 +139,7 @@ async fn quarantine_requires_current_fence_and_survives_reopen_without_acknowled
             .unwrap(),
         other
     );
-    assert_eq!(enqueue(&reopened, /*sequence*/ 1).await.1, expected);
+    assert_eq!(enqueue(&reopened, /*sequence*/ 1).await?.1, expected);
     assert!(matches!(
         claim(
             &reopened,
@@ -143,7 +147,7 @@ async fn quarantine_requires_current_fence_and_survives_reopen_without_acknowled
             queued.delivery_id,
             /*lease_ms*/ 60_000
         )
-        .await,
+        .await?,
         Err(AuthBusOutboxError::Unavailable)
     ));
     assert!(matches!(
@@ -152,16 +156,19 @@ async fn quarantine_requires_current_fence_and_survives_reopen_without_acknowled
             .await,
         Err(AuthBusOutboxError::Unavailable)
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn recovered_claim_reports_attempt_and_fences_expired_quarantine_worker() {
+async fn recovered_claim_reports_attempt_and_fences_expired_quarantine_worker()
+-> Result<(), TestError> {
     let temp = TempDir::new().unwrap();
-    let sqlite = config(temp.path());
+    let sqlite = config(temp.path())?;
     let store = HeptaEvidenceStore::open(&sqlite).await.unwrap();
-    let (issuer, queued) = enqueue(&store, /*sequence*/ 1).await;
+    let (issuer, queued) = enqueue(&store, /*sequence*/ 1).await?;
     let original = claim(&store, &issuer, queued.delivery_id, /*lease_ms*/ 1)
-        .await
+        .await?
         .unwrap();
     assert_eq!(original.attempts, 1);
     store.pool.close().await;
@@ -179,7 +186,7 @@ async fn recovered_claim_reports_attempt_and_fences_expired_quarantine_worker() 
         queued.delivery_id,
         /*lease_ms*/ 60_000,
     )
-    .await
+    .await?
     .unwrap();
     assert_eq!(
         (recovered.lease.delivery_id(), recovered.attempts),
@@ -216,23 +223,26 @@ async fn recovered_claim_reports_attempt_and_fences_expired_quarantine_worker() 
             .unwrap(),
         expected
     );
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn quarantine_rechecks_current_issuer_and_does_not_retire_other_messages() {
+async fn quarantine_rechecks_current_issuer_and_does_not_retire_other_messages()
+-> Result<(), TestError> {
     let temp = TempDir::new().unwrap();
-    let store = HeptaEvidenceStore::open(&config(temp.path()))
+    let store = HeptaEvidenceStore::open(&config(temp.path())?)
         .await
         .unwrap();
-    let (mut issuer, queued) = enqueue(&store, /*sequence*/ 1).await;
-    let (_, other) = enqueue(&store, /*sequence*/ 2).await;
+    let (mut issuer, queued) = enqueue(&store, /*sequence*/ 1).await?;
+    let (_, other) = enqueue(&store, /*sequence*/ 2).await?;
     let delivery = claim(
         &store,
         &issuer,
         queued.delivery_id,
         /*lease_ms*/ 60_000,
     )
-    .await
+    .await?
     .unwrap();
     let mut expected = store
         .authbus_delivery_status(queued.delivery_id)
@@ -281,4 +291,6 @@ async fn quarantine_rechecks_current_issuer_and_does_not_retire_other_messages()
             .unwrap(),
         other
     );
+
+    Ok(())
 }

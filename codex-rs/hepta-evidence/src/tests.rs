@@ -18,10 +18,12 @@ use crate::AppendDisposition;
 use crate::EvidenceError;
 use crate::HeptaEvidenceStore;
 
-fn sqlite_config(temp: &TempDir) -> SqliteConfig {
-    SqliteConfig::new_for_testing(
-        AbsolutePathBuf::try_from(temp.path().to_path_buf()).expect("absolute temp path"),
-    )
+type TestError = Box<dyn std::error::Error + Send + Sync>;
+
+fn sqlite_config(temp: &TempDir) -> Result<SqliteConfig, TestError> {
+    Ok(SqliteConfig::new_for_testing(AbsolutePathBuf::try_from(
+        temp.path().to_path_buf(),
+    )?))
 }
 
 fn action_for(call_id: &str, payload: &[u8]) -> ToolAction {
@@ -52,9 +54,9 @@ fn decision_for(call_id: &str, phase: PolicyPhase, payload: &[u8]) -> Governance
 }
 
 #[tokio::test]
-async fn append_is_idempotent_and_survives_reopen() {
+async fn append_is_idempotent_and_survives_reopen() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
@@ -101,12 +103,14 @@ async fn append_is_idempotent_and_survives_reopen() {
         .expect("read receipt")
         .expect("stored receipt");
     assert_eq!(stored.receipt, receipt);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn conflicting_identity_never_overwrites_evidence() {
+async fn conflicting_identity_never_overwrites_evidence() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
     let original = decision(PolicyPhase::Admission, b"first");
@@ -122,12 +126,14 @@ async fn conflicting_identity_never_overwrites_evidence() {
         .expect_err("conflict must fail");
     assert!(matches!(error, EvidenceError::IdempotencyConflict { .. }));
     assert_eq!(store.pending_action_count().await.expect("pending"), 1);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn receipt_requires_its_exact_decisions() {
+async fn receipt_requires_its_exact_decisions() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
     let receipt = GovernanceReceipt::new(
@@ -143,12 +149,14 @@ async fn receipt_requires_its_exact_decisions() {
         .expect_err("missing decision must fail");
     assert!(matches!(error, EvidenceError::Corrupt(_)));
     assert_eq!(store.pending_action_count().await.expect("pending"), 0);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn concurrent_exact_replay_produces_one_immutable_row() {
+async fn concurrent_exact_replay_produces_one_immutable_row() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let first = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("first evidence pool");
@@ -178,12 +186,14 @@ async fn concurrent_exact_replay_produces_one_immutable_row() {
             .to_string()
             .contains("governance decisions are immutable")
     );
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn concurrent_conflict_preserves_exactly_one_valid_record() {
+async fn concurrent_conflict_preserves_exactly_one_valid_record() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let first = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("first evidence pool");
@@ -216,12 +226,14 @@ async fn concurrent_conflict_preserves_exactly_one_valid_record() {
         .admission
         .expect("one admission survives");
     assert!(stored == left_record || stored == right_record);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn malformed_receipt_binding_is_rejected_before_insert() {
+async fn malformed_receipt_binding_is_rejected_before_insert() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
     let admission = decision_for("call-1", PolicyPhase::Admission, b"one");
@@ -246,12 +258,14 @@ async fn malformed_receipt_binding_is_rejected_before_insert() {
         .expect_err("cross-action authorization must fail");
     assert!(matches!(error, EvidenceError::InvalidRecord(_)));
     assert_eq!(store.pending_action_count().await.expect("pending"), 2);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn swapped_phase_and_invalid_schema_are_rejected() {
+async fn swapped_phase_and_invalid_schema_are_rejected() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
     let authorization = decision(PolicyPhase::Authorization, b"input");
@@ -277,12 +291,14 @@ async fn swapped_phase_and_invalid_schema_are_rejected() {
             .expect_err("invalid schema must fail"),
         EvidenceError::InvalidRecord(_)
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn corrupted_stored_digest_fails_closed() {
+async fn corrupted_stored_digest_fails_closed() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
@@ -323,12 +339,15 @@ async fn corrupted_stored_digest_fails_closed() {
         .await
         .expect_err("corruption must fail closed");
     assert!(matches!(error, EvidenceError::Corrupt(_)));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn noncanonical_stored_json_fails_closed_even_with_matching_digest() {
+async fn noncanonical_stored_json_fails_closed_even_with_matching_digest() -> Result<(), TestError>
+{
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
@@ -368,13 +387,16 @@ async fn noncanonical_stored_json_fails_closed_even_with_matching_digest() {
             .expect_err("noncanonical JSON must fail closed"),
         EvidenceError::Corrupt(_)
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn corrupted_projection_schema_and_phase_are_classified_as_corrupt() {
+async fn corrupted_projection_schema_and_phase_are_classified_as_corrupt() -> Result<(), TestError>
+{
     for corruption in ["schema", "phase"] {
         let temp = TempDir::new().expect("temp dir");
-        let sqlite = sqlite_config(&temp);
+        let sqlite = sqlite_config(&temp)?;
         let store = HeptaEvidenceStore::open(&sqlite)
             .await
             .expect("open evidence");
@@ -417,12 +439,15 @@ async fn corrupted_projection_schema_and_phase_are_classified_as_corrupt() {
             EvidenceError::Corrupt(_)
         ));
     }
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn receipt_read_rejects_decision_material_that_drifted_after_commit() {
+async fn receipt_read_rejects_decision_material_that_drifted_after_commit() -> Result<(), TestError>
+{
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
@@ -474,12 +499,14 @@ async fn receipt_read_rejects_decision_material_that_drifted_after_commit() {
             .expect_err("receipt must match authoritative decision rows"),
         EvidenceError::Corrupt(_)
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn immutable_triggers_reject_updates_and_deletes_for_both_tables() {
+async fn immutable_triggers_reject_updates_and_deletes_for_both_tables() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
@@ -504,12 +531,14 @@ async fn immutable_triggers_reject_updates_and_deletes_for_both_tables() {
             .expect_err("immutable table mutation must fail");
         assert!(error.to_string().contains("immutable"));
     }
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn composite_foreign_key_rejects_cross_action_receipt_projection() {
+async fn composite_foreign_key_rejects_cross_action_receipt_projection() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
@@ -538,12 +567,14 @@ async fn composite_foreign_key_rejects_cross_action_receipt_projection() {
     .await
     .expect_err("decision and receipt action ids must share one binding");
     assert!(error.to_string().contains("FOREIGN KEY constraint failed"));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn open_classifies_non_database_file_as_corrupt() {
+async fn open_classifies_non_database_file_as_corrupt() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     std::fs::write(
         sqlite.home().join("hepta_evidence_2.sqlite"),
         b"this is not a SQLite database",
@@ -555,12 +586,14 @@ async fn open_classifies_non_database_file_as_corrupt() {
         Err(error) => error,
     };
     assert!(matches!(error, EvidenceError::Corrupt(_)));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn open_existing_read_only_does_not_create_a_missing_store() {
+async fn open_existing_read_only_does_not_create_a_missing_store() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let evidence_path = sqlite.home().join("hepta_evidence_2.sqlite");
     assert!(!evidence_path.exists());
 
@@ -570,12 +603,15 @@ async fn open_existing_read_only_does_not_create_a_missing_store() {
     };
     assert!(matches!(error, EvidenceError::Unavailable(_)));
     assert!(!evidence_path.exists());
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn open_existing_read_only_reads_a_complete_store_without_mutating_it() {
+async fn open_existing_read_only_reads_a_complete_store_without_mutating_it()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let writable = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("compose evidence store");
@@ -617,12 +653,15 @@ async fn open_existing_read_only_reads_a_complete_store_without_mutating_it() {
 
     read_only.pool.close().await;
     writable.pool.close().await;
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn open_existing_read_only_rejects_a_partial_ledger_without_migrating_it() {
+async fn open_existing_read_only_rejects_a_partial_ledger_without_migrating_it()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("compose evidence store");
@@ -672,6 +711,8 @@ async fn open_existing_read_only_rejects_a_partial_ledger_without_migrating_it()
         0
     );
     raw.close().await;
+
+    Ok(())
 }
 
 #[test]
@@ -704,7 +745,7 @@ fn lineage_two_preserves_reserved_migration_checksums() {
 }
 
 #[tokio::test]
-async fn open_does_not_touch_frozen_lineage_with_channel_0004() {
+async fn open_does_not_touch_frozen_lineage_with_channel_0004() -> Result<(), TestError> {
     // SHA-384 of frozen vNext's 0004_channel_evidence.sql. The clean series
     // must never inspect or migrate this ledger through its own migration set.
     const FROZEN_VNEXT_0004_SHA384: [u8; 48] = [
@@ -715,7 +756,7 @@ async fn open_does_not_touch_frozen_lineage_with_channel_0004() {
     ];
 
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let legacy_path = sqlite.home().join("hepta_evidence_1.sqlite");
     let legacy = sqlite
         .open_durable_evidence_pool(&legacy_path)
@@ -762,12 +803,14 @@ async fn open_does_not_touch_frozen_lineage_with_channel_0004() {
 
     let legacy_after = std::fs::read(&legacy_path).expect("read frozen evidence after open");
     assert_eq!(legacy_after, legacy_before);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn open_classifies_migration_checksum_mismatch_as_corrupt() {
+async fn open_classifies_migration_checksum_mismatch_as_corrupt() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
@@ -788,12 +831,15 @@ async fn open_classifies_migration_checksum_mismatch_as_corrupt() {
         Err(error) => error,
     };
     assert!(matches!(error, EvidenceError::Corrupt(_)));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn open_rejects_missing_immutable_trigger_even_when_quick_check_is_ok() {
+async fn open_rejects_missing_immutable_trigger_even_when_quick_check_is_ok()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
@@ -818,10 +864,12 @@ async fn open_rejects_missing_immutable_trigger_even_when_quick_check_is_ok() {
         Err(error) => error,
     };
     assert!(matches!(error, EvidenceError::Corrupt(_)));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn open_requires_reserved_lineage_immutable_triggers() {
+async fn open_requires_reserved_lineage_immutable_triggers() -> Result<(), TestError> {
     for (trigger, statement) in [
         (
             "memory_mutation_shadow_no_delete",
@@ -833,7 +881,7 @@ async fn open_requires_reserved_lineage_immutable_triggers() {
         ),
     ] {
         let temp = TempDir::new().expect("temp dir");
-        let sqlite = sqlite_config(&temp);
+        let sqlite = sqlite_config(&temp)?;
         let store = HeptaEvidenceStore::open(&sqlite)
             .await
             .expect("open evidence");
@@ -859,12 +907,14 @@ async fn open_requires_reserved_lineage_immutable_triggers() {
         };
         assert!(matches!(error, EvidenceError::Corrupt(_)));
     }
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn open_rejects_foreign_key_violation_even_when_quick_check_is_ok() {
+async fn open_rejects_foreign_key_violation_even_when_quick_check_is_ok() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
@@ -912,4 +962,6 @@ async fn open_rejects_foreign_key_violation_even_when_quick_check_is_ok() {
         Err(error) => error,
     };
     assert!(matches!(error, EvidenceError::Corrupt(_)));
+
+    Ok(())
 }

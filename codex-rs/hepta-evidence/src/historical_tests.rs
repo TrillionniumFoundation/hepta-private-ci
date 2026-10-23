@@ -26,14 +26,16 @@ use crate::HistoricalEvidenceFamily;
 use crate::HistoricalEvidenceSelector;
 use crate::HistoricalEvidenceState;
 
+type TestError = Box<dyn std::error::Error + Send + Sync>;
+
 fn digest(value: &str) -> Sha256Digest {
     Sha256Digest::for_bytes(value.as_bytes())
 }
 
-fn sqlite_config(temp: &TempDir) -> SqliteConfig {
-    SqliteConfig::new_for_testing(
-        AbsolutePathBuf::try_from(temp.path().to_path_buf()).expect("absolute temp path"),
-    )
+fn sqlite_config(temp: &TempDir) -> Result<SqliteConfig, TestError> {
+    Ok(SqliteConfig::new_for_testing(AbsolutePathBuf::try_from(
+        temp.path().to_path_buf(),
+    )?))
 }
 
 fn governance_decision() -> GovernanceDecisionRecord {
@@ -80,9 +82,9 @@ fn provider_intent() -> ProviderInvocationIntent {
 }
 
 #[tokio::test]
-async fn supported_families_project_exact_pending_and_terminal_records() {
+async fn supported_families_project_exact_pending_and_terminal_records() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
 
@@ -185,7 +187,7 @@ async fn supported_families_project_exact_pending_and_terminal_records() {
     );
 
     drop(store);
-    let reopened = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let reopened = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("reopen evidence");
     assert_eq!(
@@ -204,12 +206,14 @@ async fn supported_families_project_exact_pending_and_terminal_records() {
             .expect("restart record"),
         terminal_provider
     );
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn missing_exact_ids_return_none_without_cross_family_fallback() {
+async fn missing_exact_ids_return_none_without_cross_family_fallback() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
     for (family, record_id) in [
@@ -238,12 +242,14 @@ async fn missing_exact_ids_return_none_without_cross_family_fallback() {
         )
         .is_err()
     );
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn historical_read_fails_closed_on_corrupt_authoritative_payload() {
+async fn historical_read_fails_closed_on_corrupt_authoritative_payload() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
     let governance = governance_decision();
@@ -271,12 +277,15 @@ async fn historical_read_fails_closed_on_corrupt_authoritative_payload() {
         .await
         .expect_err("corrupt evidence must not be projected");
     assert!(error.to_string().contains("corrupt"));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn provider_historical_read_fails_closed_on_corrupt_authoritative_payload() {
+async fn provider_historical_read_fails_closed_on_corrupt_authoritative_payload()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
     let provider = provider_intent();
@@ -304,4 +313,6 @@ async fn provider_historical_read_fails_closed_on_corrupt_authoritative_payload(
         .await
         .expect_err("corrupt provider evidence must not be projected");
     assert!(error.to_string().contains("corrupt"));
+
+    Ok(())
 }

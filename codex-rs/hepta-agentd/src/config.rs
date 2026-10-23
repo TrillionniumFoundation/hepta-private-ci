@@ -46,6 +46,12 @@ impl CognitiveRetrievalMode {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum EvidenceRuntimeMode {
+    Development,
+    Production,
+}
+
 fn parse_cognitive_retrieval_mode(
     value: Option<OsString>,
 ) -> Result<CognitiveRetrievalMode, AgentdError> {
@@ -77,6 +83,7 @@ pub struct AgentdConfig {
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
     evidence_trust_file: Option<PathBuf>,
+    evidence_runtime_mode: EvidenceRuntimeMode,
     automation_effect_host_file: Option<PathBuf>,
     evidence_recovery_frontier_file: Option<PathBuf>,
     evidence_recovery_frontier_trust_file: Option<PathBuf>,
@@ -200,6 +207,7 @@ impl AgentdConfig {
             _writer_lock: writer_lock,
             authbus_trust_file: None,
             evidence_trust_file: None,
+            evidence_runtime_mode: EvidenceRuntimeMode::Development,
             automation_effect_host_file: None,
             evidence_recovery_frontier_file: None,
             evidence_recovery_frontier_trust_file: None,
@@ -240,17 +248,34 @@ impl AgentdConfig {
         self.evidence_trust_file.as_deref()
     }
 
-    /// Optional restore/startup gate backed by a signed frontier and a signer
-    /// trust file from outside the Agent home rollback domain. Both files are
-    /// required together.
+    /// Development-only signed recovery gate. This can verify a legacy frontier
+    /// but never selects fail-closed production admission.
     pub fn with_evidence_recovery_frontier_files(
         mut self,
         frontier_file: PathBuf,
         signer_trust_file: PathBuf,
     ) -> Self {
+        self.evidence_runtime_mode = EvidenceRuntimeMode::Development;
         self.evidence_recovery_frontier_file = Some(frontier_file);
         self.evidence_recovery_frontier_trust_file = Some(signer_trust_file);
         self
+    }
+
+    /// Explicit fail-closed production descriptor and signer registry. No path
+    /// heuristic can select this mode after construction.
+    pub fn with_production_evidence_profile_files(
+        mut self,
+        descriptor_file: PathBuf,
+        signer_trust_file: PathBuf,
+    ) -> Self {
+        self.evidence_runtime_mode = EvidenceRuntimeMode::Production;
+        self.evidence_recovery_frontier_file = Some(descriptor_file);
+        self.evidence_recovery_frontier_trust_file = Some(signer_trust_file);
+        self
+    }
+
+    pub(crate) fn evidence_runtime_mode(&self) -> EvidenceRuntimeMode {
+        self.evidence_runtime_mode
     }
 
     pub(crate) fn evidence_recovery_frontier_files(&self) -> Option<(&Path, &Path)> {

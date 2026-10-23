@@ -1,134 +1,170 @@
 # `kernel.evidence` current implementation
 
-## Current executable contract
+## Executable boundary
 
-`codex-rs/hepta-evidence` is a SQLite-backed evidence store with canonical JSON
-hashing, governance validation, historical evidence, provider claims,
-provider intent/terminal/effect records, bounded summaries and integrity-aware
-open paths. Equal content is idempotent; reused identity with different content
-conflicts.
+`codex-rs/hepta-evidence` is the SQLite-backed authoritative qualification
+store. `codex-rs/hepta-agentd` is the named product host and
+`codex-rs/hepta-agent-protocol` owns the bounded wire selectors. The production
+runtime does not accept arbitrary role lists or raw trust bindings: verification
+uses an owner-controlled profile and sealed verified trust snapshot.
 
-The checked-in migration lineage is exactly `0001` through `0011`.
-Migration `0011` implements the append-only exact-candidate qualification
-lineage.
+Historical implementation provenance was anchored at commit
+`001e557716e884fbd47d5ab2f0ca9f47175f958e`, tree
+`6ecfb41b6e18406ea019fbffa3a972aba5cc4baf`. Current source inventory is in the
+[canonical status projection](generated/CURRENT_STATUS.md); exact execution is
+bound only by the runtime readiness artifact. Historical anchors carry no
+inherited execution or deployment authority.
 
-The native qualification facade is
-`HeptaEvidenceStore::qualification()`. It exposes:
+## Core correctness
 
-- `QualificationEvidenceStore::append_receipt`;
-- `QualificationEvidenceStore::query_claim`;
-- `QualificationEvidenceStore::verify_chain`.
+`identity_assignment.rs` implements a bounded, frame-correct assignment of
+required roles to distinct authenticated principals and distinct signing
+identities. It rejects empty or duplicate role sets, checks cardinality before
+search and enforces a work budget. Tests include the three-role Alice/Bob
+counterexample that exposed the prior backtracking corruption and exhaustive
+comparison with a cartesian oracle.
 
-Append authenticates the issuer with the existing AuthBus Ed25519 contract,
-binds candidate/tree/role to the signed subject, and advances durable replay
-state in the same SQLite transaction as the evidence insert. Verification
-preserves claim classes, evidence expiry, correction/revocation lineage and
-requires both distinct authenticated principals and distinct signing identities
-for required independent roles. Positive verification is revalidated against a
-fresh host-supplied current issuer/key/role snapshot; removed, revoked or
-key-rotated issuers cannot continue satisfying a supported claim. Corrections and ordinary
-revocations are owner-principal/role scoped; only a currently trusted `security`
-issuer may cross that boundary for emergency revocation. AuthBus message expiry
-controls admission freshness and is not reused as durable evidence expiry.
+`qualification_policy.rs` defines the closed-world
+`EvidenceVerificationProfileV1` inventory. Product requests identify a profile;
+legacy role vectors are accepted only when they exactly equal one registered
+profile. Weakened subsets, empty roles, duplicates and unknown combinations fail
+closed.
 
-A named product caller is composed in Agentd when the operator explicitly
-provides `--evidence-trust-file`. Agentd advertises `kernel.evidence@1.0`
-only when that host is attached and exposes append/query/verify through its
-bounded control socket. The trust registry supports multiple issuer principals,
-role allowlists, key epochs and current revocation; it is reloaded immediately
-before physical evidence append and again before positive chain verification.
+## Verified trust and append
 
-## Public symbols and source bindings
+`VerifiedEvidenceTrustSnapshot` and `VerifiedEvidenceIssuer` are sealed outside
+the evidence crate. Production trust schema V2 binds agent, registry generation,
+predecessor registry digest, signer policy and issuer/key/role inventory. The
+product pins the digest admitted by the signed frontier for the whole process
+generation and revalidates the owner file identity around each operation.
 
-- qualification records, authentication, chain verification and query:
-  `src/qualification.rs`;
-- store open/legacy governance append/query and migration verification:
-  `src/store.rs`;
-- public evidence records and `EvidenceError`: `src/lib.rs`;
-- provider effect storage and verification: `src/provider_effect_store.rs`;
-- schema/integrity checks: `src/schema_validation.rs`;
-- physical schema: `migrations/*.sql`;
-- Agentd product host: `codex-rs/hepta-agentd/src/evidence_host.rs`;
-- Agentd multi-issuer trust boundary:
-  `codex-rs/hepta-agentd/src/evidence_trust.rs`;
-- deterministic migration/qualification/AuthBus recovery snapshot:
-  `codex-rs/hepta-evidence/src/recovery_frontier.rs`;
-- independent signed startup/restore verifier:
-  `codex-rs/hepta-agentd/src/evidence_frontier.rs`.
+`QualificationEvidenceStore::append_receipt` authenticates the exact canonical
+envelope, binds candidate/tree/role to the AuthBus subject and commits replay,
+qualification row and publication intent in one `BEGIN IMMEDIATE` transaction.
+New rows persist the original signature and admitted trust
+generation/registry digest. `qualification_commitment.rs` commits those facts
+together with principal, key epoch, signing identity, message identity,
+sequence, expiry and recording time. Historical rows missing V2 provenance are
+never promoted into production-valid rows.
 
-The pre-existing governance `HeptaEvidenceStore::append_receipt` remains for
-backward compatibility. The target qualification operation is the
-`QualificationEvidenceStore::append_receipt` method; these two same-named
-methods have different typed receivers and cannot be confused by callers.
+## Verification and product reads
 
-## Durability and activation
+Claim verification runs in a read transaction, applies correction/revocation
+lineage and expiry, checks the pinned trust snapshot, enforces the selected
+profile and returns a bounded `EvidenceVerificationSummaryV1`.
 
-The store uses the repository SQLite durability configuration and validates
-quick-check, migration ledger, schema manifest, provider projections/effect
-rows, canonical qualification rows and foreign keys on open. A read-only
-diagnostic open neither creates nor migrates.
+Agentd exposes stable cursor paging through the `page:v1` selector with a
+maximum page size of 128. Profile verification uses `profile:v1`; malformed
+reserved selectors fail closed. The product no longer returns an unbounded
+evidence vector for a verification decision.
 
-Agentd product composition is source implemented and explicitly configuration
-gated. It does not grant selection, promotion or release authority. When the
-operator supplies both recovery-frontier files, Agentd verifies an Ed25519-signed
-external snapshot of the migration set, qualification high-water/hash frontier,
-AuthBus replay frontier and immutable store identity before attaching the
-evidence host. A valid older complete SQLite image therefore fails
-`recovery_required` against a newer signed frontier. The durable external
-CAS/checkpoint service that publishes the latest frontier, independent
-acceptance and operator activation remain separate gates.
+## Recovery snapshot and atomic acceptance
 
-## Target-only design
+`authenticated_recovery_snapshot()` computes snapshot V2 in one SQLite read
+transaction. It includes the migration set, immutable store identity,
+qualification high-water, complete authenticated-admission commitment and
+AuthBus replay frontier. Scanning is paged and bounded by row and byte limits.
 
-The following remain external/target-only rather than current repository
-claims:
+`accept_production_generation_at_snapshot()` executes under one
+`BEGIN IMMEDIATE` transaction. It recomputes and compares the expected snapshot,
+checks exact next trust generation and predecessor digest, then atomically
+accepts trust plus frontier. A changed local database, skipped registry
+generation or split acceptance fails closed.
 
-- a concrete independently retained signed monotonic checkpoint backend;
-- distributed replication;
-- production operator backup/restore ceremony evidence;
-- independent external acceptance of the exact candidate;
-- promotion/release authority.
+## Durable publication and CAS reconciliation
 
-Authenticated evaluator/reviewer roles, independent-principal enforcement and
-`IndependentDecisionReceiptV1` storage are no longer target-only source
-designs; they are implemented by the qualification facade and Agentd host.
+Migration `0014_evidence_publication.sql` adds durable publication owner,
+batch and row-intent tables. Qualification inserts create publication intent in
+the same transaction after store enrollment.
 
-## Known limits and non-claims
+`publication.rs` provides owner lease/generation fencing and the states
+`prepared`, `dispatching`, `indeterminate` and `acknowledged`. A CAS timeout or
+uncertain write is never blindly retried with a new identity. Recovery reads the
+authenticated external latest frontier:
 
-A mutex serializes provider-effect boundaries only among clones of one opened
-store; separate opens/processes still require database transactions and
-provider-owned idempotency. SQLite integrity and migration checks are not an
-external anti-rollback oracle.
+- exact proposed frontier: recover the durable acknowledgement;
+- expected predecessor: the current fenced owner may retry the same batch;
+- any other generation or identity: terminal conflict/recovery required.
 
-Agentd's evidence host authenticates evidence writers; it does not authenticate
-or manufacture promotion/release decisions. Repository-authored tests cannot
-self-issue an **independent** acceptance receipt. An external principal must
-review the exact source/merge candidate and sign that decision.
+Acknowledgement, exact-snapshot comparison, local frontier acceptance and row
+intent completion commit atomically.
 
-## Verification
+## External segmented backend
 
-Native tests in `src/qualification_tests.rs` cover EVID-01 through EVID-04,
-shared-signing-key independence rejection, current trust/key-rotation
-invalidation, authenticated replay/idempotency, correction/revocation
-non-resurrection, reopen corruption, query/traversal ceilings, concurrent
-writers and transactional replay rollback under injected insert failure. The
-real Agentd process test `tests/kernel_evidence_product.rs` covers named
-product composition, wrong tree/role, replay, expiry, stale/revoked keys,
-terminal-observer evidence, current-trust verification and signed
-recovery-frontier startup including valid-old-database rejection.
+The exported `LockedFileEvidenceFrontierBackend` is the segmented production
+adapter. It preserves the legacy active JSONL tail for compatibility, rolls it
+into immutable linked segments at 1024 records or 16 MiB, and publishes a
+self-authenticating atomic latest index. A stale or absent index is rebuilt from
+the authenticated active tail and latest segment; the index never replaces the
+record/segment chains.
 
-The dedicated qualification workflow runs the evidence package, Agentd product
-test, Lane-A truth verifier and documentation/implementation-map gates on both
-the exact PR head and deterministic synthetic merge candidate. Workflow output
-is execution evidence, not independent acceptance.
+The adapter verifies private owner-bound roots and files, rejects links and
+identity replacement, serializes each store with file locks, requires exact
+next-generation CAS and synchronizes file plus directory before success.
+Capacity telemetry reports archived/active records and bytes, headroom and
+health/elevated alerts. History is preserved; capacity recovery never means
+deleting evidence.
 
-## Integration prerequisites
+## Production backup, build and restore admission
 
-Production activation requires a private multi-issuer evidence trust registry,
-a qualified external monotonic frontier backend, backup/restore procedures and
-an independently signed exact-candidate acceptance receipt. Writers must use
-the Agentd or typed store API, preserve issuer/source provenance and bind
-records to the exact candidate and payload digests.
+`evidence_backup_manifest.rs` requires a versioned backup object with exact
+length and SHA-256, storage backend identity and durable acknowledgement. It
+opens and hashes the real object bytes while pinning file and parent-directory
+identity.
 
-See [RECOVERY_FRONTIER_V1.md](RECOVERY_FRONTIER_V1.md) and
-[`qualification/kernel-evidence/TRACEABILITY.md`](../../../qualification/kernel-evidence/TRACEABILITY.md).
+The same signed manifest binds governed build provenance: repository,
+source commit/tree, workflow run/attempt/job, artifact URL/digest, builder,
+toolchain, recipe, log and executable digest/length. It also binds a successful
+restore witness with restored object/snapshot digests and SQLite integrity-check
+digest. Production compares the current executable and signed frontier against
+these records before host publication.
+
+## Database lineage
+
+The physical file is `hepta_evidence_2.sqlite`; the checksum-bound migration set
+is `0001` through `0017`.
+
+- `0011`: immutable qualification evidence and store identity;
+- `0012`: AuthBus recovery state;
+- `0013`: immutable accepted frontiers;
+- `0014`: publication owner, batch and intent state machine;
+- `0015`: accepted monotonic trust generations;
+- `0016`: qualification signature/trust provenance;
+- `0017`: exact signed repair authorization, one-time nonce and fenced event ledger.
+
+The repair ledger has a separate explicit full-verification attachment gate.
+It does not activate an external repair backend or add an Agentd repair caller.
+See [FRONTIER_REPAIR_V1.md](FRONTIER_REPAIR_V1.md) for current bounded verification,
+expiry, dispatch, reconciliation and the remaining external-service boundary.
+
+Production first performs a read-only migration/schema/integrity preflight and
+then reopens through the restricted SQLite runtime authorizer. Runtime denies
+schema mutation, migration-ledger writes, attach/detach, extension loading and
+write-capable pragmas while typed evidence operations remain available.
+
+## Qualification scope
+
+Dedicated workflows run both the exact source and the deterministic merge of
+the immutable base and source. They execute evidence tests, Agentd product/profile
+tests, Lane-A truth, technical-document verification and implementation-map
+verification, retaining command JSON, raw logs and canonical status artifacts.
+A source reference, queued run or historical pass is not current execution
+evidence.
+
+## Remaining gates
+
+Repository-controlled implementation surfaces for tracks A–C are present.
+Track D remains incomplete until the unchanged final head has successful
+exact-source, deterministic-merge, CI and architecture receipts with retained
+artifact digests.
+
+The following remain external and false until separately witnessed:
+independent semantic/security acceptance, deployment of the external rollback
+domain, signer/trust ceremonies, target-platform capacity and power-loss tests,
+real operator backup/restore and rollback rejection, canary, promotion and
+release.
+
+## Current status
+
+See [the sole generated current-status projection](generated/CURRENT_STATUS.md).
+This specification does not duplicate it or grant execution/deployment authority.

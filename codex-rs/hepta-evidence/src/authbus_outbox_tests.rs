@@ -17,35 +17,42 @@ use crate::authbus_outbox::maintain;
 use crate::store::now_millis;
 use crate::*;
 
-fn fixture(sequence: u64, expiry: u64) -> (IssuerRegistration, SignedMessage) {
+type TestError = Box<dyn std::error::Error + Send + Sync>;
+
+fn fixture(sequence: u64, expiry: u64) -> Result<(IssuerRegistration, SignedMessage), TestError> {
     let key = SigningKey::from_bytes(&[37; 32]);
     let issuer = IssuerRegistration {
-        issuer_id: StableId::new("issuer:queue").unwrap(),
-        key_epoch: Generation::new(1).unwrap(),
+        issuer_id: StableId::new("issuer:queue")?,
+        key_epoch: Generation::new(1)?,
         verifying_key: key.verifying_key(),
         revoked: false,
     };
     let claims = SignedMessageClaims {
         issuer_id: issuer.issuer_id.clone(),
         key_epoch: issuer.key_epoch,
-        message_id: StableId::new(format!("message:{sequence}")).unwrap(),
-        subject_id: StableId::new("subject:queue").unwrap(),
+        message_id: StableId::new(format!("message:{sequence}"))?,
+        subject_id: StableId::new("subject:queue")?,
         scope_digest: Digest32::of_bytes(b"route"),
         payload_digest: Digest32::of_bytes(b"payload"),
         sequence,
         expires_at_ms: expiry,
     };
     let signature = key.sign(&claims.signing_bytes()).to_bytes();
-    (issuer, SignedMessage { claims, signature })
+    Ok((issuer, SignedMessage { claims, signature }))
 }
 
-fn config(path: &std::path::Path) -> SqliteConfig {
-    SqliteConfig::new_for_testing(AbsolutePathBuf::try_from(path.to_path_buf()).unwrap())
+fn config(path: &std::path::Path) -> Result<SqliteConfig, TestError> {
+    Ok(SqliteConfig::new_for_testing(AbsolutePathBuf::try_from(
+        path.to_path_buf(),
+    )?))
 }
 
-async fn enqueue(store: &HeptaEvidenceStore, sequence: u64) -> AuthBusDeliveryStatus {
-    let (issuer, message) = fixture(sequence, u64::MAX);
-    store
+async fn enqueue(
+    store: &HeptaEvidenceStore,
+    sequence: u64,
+) -> Result<AuthBusDeliveryStatus, TestError> {
+    let (issuer, message) = fixture(sequence, u64::MAX)?;
+    Ok(store
         .enqueue_authbus_message(
             &issuer,
             &message,
@@ -53,18 +60,17 @@ async fn enqueue(store: &HeptaEvidenceStore, sequence: u64) -> AuthBusDeliverySt
             message.claims.scope_digest,
             b"payload",
         )
-        .await
-        .unwrap()
+        .await?)
 }
 
 async fn claim(
     store: &HeptaEvidenceStore,
     id: Digest32,
     lease_ms: i64,
-) -> Result<AuthBusDelivery, AuthBusOutboxError> {
-    let (issuer, message) = fixture(1, u64::MAX);
-    let worker = StableId::new("worker:queue").unwrap();
-    store
+) -> Result<Result<AuthBusDelivery, AuthBusOutboxError>, TestError> {
+    let (issuer, message) = fixture(1, u64::MAX)?;
+    let worker = StableId::new("worker:queue")?;
+    Ok(store
         .claim_authbus_delivery(
             &issuer,
             AuthBusClaimRequest {
@@ -75,19 +81,19 @@ async fn claim(
                 lease_ms,
             },
         )
-        .await
+        .await)
 }
 
 #[tokio::test]
-async fn enqueue_commit_response_loss_is_idempotent_across_reopen() {
+async fn enqueue_commit_response_loss_is_idempotent_across_reopen() -> Result<(), TestError> {
     let temp = TempDir::new().unwrap();
-    let sqlite = config(temp.path());
+    let sqlite = config(temp.path())?;
     let first = HeptaEvidenceStore::open(&sqlite).await.unwrap();
-    let status = enqueue(&first, u64::MAX).await;
+    let status = enqueue(&first, u64::MAX).await?;
     first.pool.close().await;
     let second = HeptaEvidenceStore::open(&sqlite).await.unwrap();
-    assert_eq!(enqueue(&second, u64::MAX).await, status);
-    let (issuer, message) = fixture(u64::MAX, u64::MAX);
+    assert_eq!(enqueue(&second, u64::MAX).await?, status);
+    let (issuer, message) = fixture(u64::MAX, u64::MAX)?;
     assert_eq!(
         second
             .pending_authbus_deliveries(&message.claims.subject_id, message.claims.scope_digest, 10)
@@ -95,7 +101,7 @@ async fn enqueue_commit_response_loss_is_idempotent_across_reopen() {
             .unwrap(),
         vec![status.clone()]
     );
-    let delivery = claim(&second, status.delivery_id, 60_000).await.unwrap();
+    let delivery = claim(&second, status.delivery_id, 60_000).await?.unwrap();
     assert_eq!(delivery.message.claims, message.claims);
     assert_eq!(delivery.payload, b"payload");
     let ack = Digest32::of_bytes(b"consumer receipt");
@@ -120,15 +126,18 @@ async fn enqueue_commit_response_loss_is_idempotent_across_reopen() {
         (AuthBusDeliveryState::Acked, Some(ack))
     );
     assert!(matches!(
-        claim(&reopened, status.delivery_id, 60_000).await,
+        claim(&reopened, status.delivery_id, 60_000).await?,
         Err(AuthBusOutboxError::Unavailable)
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn failed_insert_rolls_back_replay_and_direct_admission_cannot_be_upgraded() {
+async fn failed_insert_rolls_back_replay_and_direct_admission_cannot_be_upgraded()
+-> Result<(), TestError> {
     let temp = TempDir::new().unwrap();
-    let store = HeptaEvidenceStore::open(&config(temp.path()))
+    let store = HeptaEvidenceStore::open(&config(temp.path())?)
         .await
         .unwrap();
     sqlx::query(
@@ -138,7 +147,7 @@ async fn failed_insert_rolls_back_replay_and_direct_admission_cannot_be_upgraded
     .execute(&store.pool)
     .await
     .unwrap();
-    let (issuer, message) = fixture(1, u64::MAX);
+    let (issuer, message) = fixture(1, u64::MAX)?;
     assert!(
         store
             .enqueue_authbus_message(
@@ -155,8 +164,8 @@ async fn failed_insert_rolls_back_replay_and_direct_admission_cannot_be_upgraded
         .execute(&store.pool)
         .await
         .unwrap();
-    enqueue(&store, 1).await;
-    let (issuer, message) = fixture(2, u64::MAX);
+    enqueue(&store, 1).await?;
+    let (issuer, message) = fixture(2, u64::MAX)?;
     store
         .admit_authbus_message(
             &issuer,
@@ -181,15 +190,18 @@ async fn failed_insert_rolls_back_replay_and_direct_admission_cannot_be_upgraded
             AuthBusAdmissionError::Authentication(Error::Replay)
         ))
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn payload_route_and_retained_message_identity_cannot_be_substituted() {
+async fn payload_route_and_retained_message_identity_cannot_be_substituted() -> Result<(), TestError>
+{
     let temp = TempDir::new().unwrap();
-    let store = HeptaEvidenceStore::open(&config(temp.path()))
+    let store = HeptaEvidenceStore::open(&config(temp.path())?)
         .await
         .unwrap();
-    let (issuer, message) = fixture(1, u64::MAX);
+    let (issuer, message) = fixture(1, u64::MAX)?;
     for payload in [b"different".as_slice(), &[0; 16_385]] {
         assert!(
             store
@@ -217,8 +229,8 @@ async fn payload_route_and_retained_message_identity_cannot_be_substituted() {
             .await
             .is_err()
     );
-    enqueue(&store, 1).await;
-    let (_, mut replacement) = fixture(2, u64::MAX);
+    enqueue(&store, 1).await?;
+    let (_, mut replacement) = fixture(2, u64::MAX)?;
     replacement.claims.message_id = message.claims.message_id;
     replacement.signature = SigningKey::from_bytes(&[37; 32])
         .sign(&replacement.claims.signing_bytes())
@@ -237,20 +249,24 @@ async fn payload_route_and_retained_message_identity_cannot_be_substituted() {
             EvidenceError::IdempotencyConflict { .. }
         ))
     ));
-    enqueue(&store, 2).await;
+    enqueue(&store, 2).await?;
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn two_handles_serialize_claim_and_every_new_fence_rejects_old_worker() {
+async fn two_handles_serialize_claim_and_every_new_fence_rejects_old_worker()
+-> Result<(), TestError> {
     let temp = TempDir::new().unwrap();
-    let sqlite = config(temp.path());
+    let sqlite = config(temp.path())?;
     let first = HeptaEvidenceStore::open(&sqlite).await.unwrap();
     let second = HeptaEvidenceStore::open(&sqlite).await.unwrap();
-    let id = enqueue(&first, 1).await.delivery_id;
+    let id = enqueue(&first, 1).await?.delivery_id;
     let (left, right) = tokio::join!(claim(&first, id, 60_000), claim(&second, id, 60_000));
+    let (left, right) = (left?, right?);
     assert_eq!(usize::from(left.is_ok()) + usize::from(right.is_ok()), 1);
     let original = left.ok().or_else(|| right.ok()).unwrap().lease;
-    let (issuer, _) = fixture(1, u64::MAX);
+    let (issuer, _) = fixture(1, u64::MAX)?;
     let renewed = second
         .renew_authbus_delivery(&issuer, &original, 60_000)
         .await
@@ -277,23 +293,26 @@ async fn two_handles_serialize_claim_and_every_new_fence_rejects_old_worker() {
             Err(AuthBusOutboxError::StaleLease)
         ));
     }
-    let recovered = claim(&first, id, 60_000).await.unwrap();
+    let recovered = claim(&first, id, 60_000).await?.unwrap();
     assert!(recovered.lease.fence > renewed.fence);
     second
         .ack_authbus_delivery(&issuer, &recovered.lease, Digest32::of_bytes(b"ack"))
         .await
         .unwrap();
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn expiry_and_current_revocation_are_terminal_and_never_acknowledged() {
+async fn expiry_and_current_revocation_are_terminal_and_never_acknowledged() -> Result<(), TestError>
+{
     let temp = TempDir::new().unwrap();
-    let store = HeptaEvidenceStore::open(&config(temp.path()))
+    let store = HeptaEvidenceStore::open(&config(temp.path())?)
         .await
         .unwrap();
-    let (mut issuer, message) = fixture(1, u64::MAX);
-    let id = enqueue(&store, 1).await.delivery_id;
-    let delivery = claim(&store, id, 60_000).await.unwrap();
+    let (mut issuer, message) = fixture(1, u64::MAX)?;
+    let id = enqueue(&store, 1).await?.delivery_id;
+    let delivery = claim(&store, id, 60_000).await?.unwrap();
     issuer.revoked = true;
     assert!(
         store
@@ -305,13 +324,13 @@ async fn expiry_and_current_revocation_are_terminal_and_never_acknowledged() {
         store.authbus_delivery_status(id).await.unwrap().state,
         AuthBusDeliveryState::Quarantined
     );
-    let next = enqueue(&store, 2).await.delivery_id;
+    let next = enqueue(&store, 2).await?.delivery_id;
     assert_eq!(store.quarantine_authbus_issuer(&issuer).await.unwrap(), 1);
     assert_eq!(
         store.authbus_delivery_status(next).await.unwrap().state,
         AuthBusDeliveryState::Quarantined
     );
-    let (issuer, expiring) = fixture(3, (now_millis().unwrap() + 1000) as u64);
+    let (issuer, expiring) = fixture(3, (now_millis().unwrap() + 1000) as u64)?;
     let id = store
         .enqueue_authbus_message(
             &issuer,
@@ -332,18 +351,21 @@ async fn expiry_and_current_revocation_are_terminal_and_never_acknowledged() {
         store.authbus_delivery_status(id).await.unwrap().state,
         AuthBusDeliveryState::Expired
     );
-    assert!(claim(&store, id, 60_000).await.is_err());
+    assert!(claim(&store, id, 60_000).await?.is_err());
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn expired_lease_cannot_renew_retry_or_ack_before_or_after_reclaim() {
+async fn expired_lease_cannot_renew_retry_or_ack_before_or_after_reclaim() -> Result<(), TestError>
+{
     let temp = TempDir::new().unwrap();
-    let store = HeptaEvidenceStore::open(&config(temp.path()))
+    let store = HeptaEvidenceStore::open(&config(temp.path())?)
         .await
         .unwrap();
-    let (issuer, _) = fixture(1, u64::MAX);
-    let id = enqueue(&store, 1).await.delivery_id;
-    let original = claim(&store, id, 1).await.unwrap();
+    let (issuer, _) = fixture(1, u64::MAX)?;
+    let id = enqueue(&store, 1).await?.delivery_id;
+    let original = claim(&store, id, 1).await?.unwrap();
     tokio::time::sleep(Duration::from_millis(3)).await;
     assert!(matches!(
         store
@@ -363,7 +385,7 @@ async fn expired_lease_cannot_renew_retry_or_ack_before_or_after_reclaim() {
             .await,
         Err(AuthBusOutboxError::StaleLease)
     ));
-    let recovered = claim(&store, id, 60_000).await.unwrap();
+    let recovered = claim(&store, id, 60_000).await?.unwrap();
     assert_eq!(recovered.lease.fence, original.lease.fence + 1);
     assert!(matches!(
         store
@@ -375,18 +397,20 @@ async fn expired_lease_cannot_renew_retry_or_ack_before_or_after_reclaim() {
         .ack_authbus_delivery(&issuer, &recovered.lease, Digest32::of_bytes(b"ack"))
         .await
         .unwrap();
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn delivery_attempt_budget_quarantines_without_resending_forever() {
+async fn delivery_attempt_budget_quarantines_without_resending_forever() -> Result<(), TestError> {
     let temp = TempDir::new().unwrap();
-    let store = HeptaEvidenceStore::open(&config(temp.path()))
+    let store = HeptaEvidenceStore::open(&config(temp.path())?)
         .await
         .unwrap();
-    let (issuer, _) = fixture(1, u64::MAX);
-    let id = enqueue(&store, 1).await.delivery_id;
+    let (issuer, _) = fixture(1, u64::MAX)?;
+    let id = enqueue(&store, 1).await?.delivery_id;
     for _ in 0..AUTHBUS_OUTBOX_MAX_ATTEMPTS {
-        let delivery = claim(&store, id, 60_000).await.unwrap();
+        let delivery = claim(&store, id, 60_000).await?.unwrap();
         store
             .retry_authbus_delivery(&issuer, &delivery.lease, 0)
             .await
@@ -397,25 +421,28 @@ async fn delivery_attempt_budget_quarantines_without_resending_forever() {
         (status.state, status.attempts),
         (AuthBusDeliveryState::Quarantined, 16)
     );
-    assert!(claim(&store, id, 60_000).await.is_err());
+    assert!(claim(&store, id, 60_000).await?.is_err());
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed() {
+async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed()
+-> Result<(), TestError> {
     let temp = TempDir::new().unwrap();
-    let store = HeptaEvidenceStore::open(&config(temp.path()))
+    let store = HeptaEvidenceStore::open(&config(temp.path())?)
         .await
         .unwrap();
-    let id = enqueue(&store, 1).await.delivery_id;
+    let id = enqueue(&store, 1).await?.delivery_id;
     // Fill active capacity using copies with independent fixture identities;
     // admission hashing/signatures are exercised separately, not 4096 times.
     sqlx::query("WITH RECURSIVE n(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM n WHERE x < 4095)
-        INSERT INTO authbus_outbox SELECT randomblob(32), issuer_id, key_epoch, 'fixture:' || x,
+        INSERT INTO authbus_outbox SELECT randomblob(32), 'fixture-issuer:' || x, key_epoch, 'fixture:' || x,
         subject_id, scope_digest, payload_digest, sequence, expires_at_ms, signature, payload,
         state, fence, attempts, worker_id, lease_until_ms, available_at_ms, created_at_ms,
         updated_at_ms, terminal_at_ms, acknowledgement FROM authbus_outbox, n WHERE delivery_id = ?")
         .bind(id.as_array().as_slice()).execute(&store.pool).await.unwrap();
-    let (issuer, message) = fixture(2, u64::MAX);
+    let (issuer, message) = fixture(2, u64::MAX)?;
     assert!(matches!(
         store
             .enqueue_authbus_message(
@@ -435,17 +462,17 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
             .await
             .is_err()
     );
-    let delivery = claim(&store, id, 60_000).await.unwrap();
+    let delivery = claim(&store, id, 60_000).await?.unwrap();
     store
         .ack_authbus_delivery(&issuer, &delivery.lease, Digest32::of_bytes(b"ack"))
         .await
         .unwrap();
-    enqueue(&store, 2).await;
+    enqueue(&store, 2).await?;
     assert!(matches!(
         store.authbus_delivery_status(id).await,
         Err(AuthBusOutboxError::NotFound)
     ));
-    let (issuer, old) = fixture(1, u64::MAX);
+    let (issuer, old) = fixture(1, u64::MAX)?;
     assert!(matches!(
         store
             .enqueue_authbus_message(
@@ -472,7 +499,7 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
         .await
         .unwrap();
     tx.commit().await.unwrap();
-    let (issuer, old) = fixture(1, u64::MAX);
+    let (issuer, old) = fixture(1, u64::MAX)?;
     assert!(matches!(
         store
             .enqueue_authbus_message(
@@ -487,26 +514,28 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
             AuthBusAdmissionError::Authentication(Error::Replay)
         ))
     ));
-    enqueue(&store, 3).await;
+    enqueue(&store, 3).await?;
+
+    Ok(())
 }
 
 #[tokio::test]
 #[ignore = "subprocess crash fixture"]
-async fn crash_delivery_child() {
+async fn crash_delivery_child() -> Result<(), TestError> {
     let home = std::path::PathBuf::from(std::env::var_os("HEPTA_AUTHBUS_CRASH_HOME").unwrap());
-    let store = HeptaEvidenceStore::open(&config(&home)).await.unwrap();
-    let id = enqueue(&store, 1).await.delivery_id;
-    let delivery = claim(&store, id, 1).await.unwrap();
+    let store = HeptaEvidenceStore::open(&config(&home)?).await.unwrap();
+    let id = enqueue(&store, 1).await?.delivery_id;
+    let delivery = claim(&store, id, 1).await?.unwrap();
     std::fs::write(
         home.join("delivered-id"),
         delivery.lease.delivery_id().to_string(),
     )
     .unwrap();
-    std::process::exit(73); // No pool close or transaction/session destructor.
+    std::process::exit(73) // No pool close or transaction/session destructor.
 }
 
 #[tokio::test]
-async fn actual_process_crash_after_send_before_ack_redelivers_same_id() {
+async fn actual_process_crash_after_send_before_ack_redelivers_same_id() -> Result<(), TestError> {
     let temp = TempDir::new().unwrap();
     let status = std::process::Command::new(std::env::current_exe().unwrap())
         .args([
@@ -524,14 +553,14 @@ async fn actual_process_crash_after_send_before_ack_redelivers_same_id() {
         .unwrap()
         .parse()
         .unwrap();
-    let store = HeptaEvidenceStore::open(&config(temp.path()))
+    let store = HeptaEvidenceStore::open(&config(temp.path())?)
         .await
         .unwrap();
-    let delivery = claim(&store, id, 60_000).await.unwrap();
+    let delivery = claim(&store, id, 60_000).await?.unwrap();
     assert_eq!(delivery.lease.delivery_id(), id);
     assert_eq!(delivery.lease.fence, 2);
     assert_eq!(store.authbus_delivery_status(id).await.unwrap().attempts, 2);
-    let (issuer, _) = fixture(1, u64::MAX);
+    let (issuer, _) = fixture(1, u64::MAX)?;
     store
         .ack_authbus_delivery(
             &issuer,
@@ -540,12 +569,15 @@ async fn actual_process_crash_after_send_before_ack_redelivers_same_id() {
         )
         .await
         .unwrap();
+    println!("kernel_evidence_process_crash_redelivery=verified");
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn missing_outbox_guard_is_rejected_on_reopen() {
+async fn missing_outbox_guard_is_rejected_on_reopen() -> Result<(), TestError> {
     let temp = TempDir::new().unwrap();
-    let sqlite = config(temp.path());
+    let sqlite = config(temp.path())?;
     let store = HeptaEvidenceStore::open(&sqlite).await.unwrap();
     sqlx::query("DROP TRIGGER authbus_outbox_active_no_delete")
         .execute(&store.pool)
@@ -556,15 +588,18 @@ async fn missing_outbox_guard_is_rejected_on_reopen() {
         HeptaEvidenceStore::open(&sqlite).await,
         Err(EvidenceError::Corrupt(_))
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn one_issuer_cannot_exhaust_the_global_active_outbox_across_epochs() {
+async fn one_issuer_cannot_exhaust_the_global_active_outbox_across_epochs() -> Result<(), TestError>
+{
     let temp = TempDir::new().unwrap();
-    let store = HeptaEvidenceStore::open(&config(temp.path()))
+    let store = HeptaEvidenceStore::open(&config(temp.path())?)
         .await
         .unwrap();
-    let first = enqueue(&store, 1).await;
+    let first = enqueue(&store, 1).await?;
     sqlx::query(
         "WITH RECURSIVE n(x) AS (
             SELECT 1 UNION ALL SELECT x + 1 FROM n WHERE x < ?
@@ -594,7 +629,7 @@ async fn one_issuer_cannot_exhaust_the_global_active_outbox_across_epochs() {
     .unwrap();
     assert_eq!(active, AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER);
 
-    let (issuer, message) = fixture(2, u64::MAX);
+    let (issuer, message) = fixture(2, u64::MAX)?;
     assert!(matches!(
         store
             .enqueue_authbus_message(
@@ -607,4 +642,6 @@ async fn one_issuer_cannot_exhaust_the_global_active_outbox_across_epochs() {
             .await,
         Err(AuthBusOutboxError::Capacity)
     ));
+
+    Ok(())
 }

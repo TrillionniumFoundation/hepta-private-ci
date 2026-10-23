@@ -25,10 +25,12 @@ use crate::AppendDisposition;
 use crate::EvidenceSummary;
 use crate::HeptaEvidenceStore;
 
-fn sqlite_config(temp: &TempDir) -> SqliteConfig {
-    SqliteConfig::new_for_testing(
-        AbsolutePathBuf::try_from(temp.path().to_path_buf()).expect("absolute temp path"),
-    )
+type TestError = Box<dyn std::error::Error + Send + Sync>;
+
+fn sqlite_config(temp: &TempDir) -> Result<SqliteConfig, TestError> {
+    Ok(SqliteConfig::new_for_testing(AbsolutePathBuf::try_from(
+        temp.path().to_path_buf(),
+    )?))
 }
 
 fn digest(value: &str) -> Sha256Digest {
@@ -79,9 +81,9 @@ fn provider_intent(nonce: [u8; 16]) -> ProviderInvocationIntent {
 }
 
 #[tokio::test]
-async fn empty_summary_is_explicitly_zero_for_supported_families() {
+async fn empty_summary_is_explicitly_zero_for_supported_families() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
 
@@ -89,12 +91,14 @@ async fn empty_summary_is_explicitly_zero_for_supported_families() {
         store.summary().await.expect("summary"),
         EvidenceSummary::default()
     );
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn governance_summary_moves_from_pending_to_terminal() {
+async fn governance_summary_moves_from_pending_to_terminal() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
     let decision = decision();
@@ -116,12 +120,15 @@ async fn governance_summary_moves_from_pending_to_terminal() {
     assert_eq!(terminal.governance.decisions, 1);
     assert_eq!(terminal.governance.receipts, 1);
     assert_eq!(terminal.governance.pending_actions, 0);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn provider_summary_distinguishes_pending_and_indeterminate_attempts() {
+async fn provider_summary_distinguishes_pending_and_indeterminate_attempts() -> Result<(), TestError>
+{
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
     let pending = provider_intent([7; 16]);
@@ -150,12 +157,14 @@ async fn provider_summary_distinguishes_pending_and_indeterminate_attempts() {
     assert_eq!(summary.provider.receipts, 1);
     assert_eq!(summary.provider.pending_attempts, 1);
     assert_eq!(summary.provider.indeterminate_attempts, 1);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn summary_fails_closed_when_supported_schema_is_missing() {
+async fn summary_fails_closed_when_supported_schema_is_missing() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
     sqlx::query("DROP TABLE provider_invocation_terminals")
@@ -168,4 +177,6 @@ async fn summary_fails_closed_when_supported_schema_is_missing() {
         .await
         .expect_err("missing supported schema must not project zero");
     assert!(error.to_string().contains("unavailable"));
+
+    Ok(())
 }

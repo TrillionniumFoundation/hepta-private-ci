@@ -1,0 +1,115 @@
+name: Kernel evidence trust recovery operations worker
+
+on:
+  push:
+    branches:
+      - fix/kernel-evidence-production-closure
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+concurrency:
+  group: kernel-evidence-phase-two-three-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  harden:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - name: Check out closure branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: fix/kernel-evidence-production-closure
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Check phase-one prerequisite
+        id: guard
+        shell: bash
+        run: |
+          if grep -q 'EvidenceVerificationProfileV1' codex-rs/hepta-evidence/src/qualification.rs; then
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+            echo 'Phase one has not committed yet; leaving this worker installed for the next push.'
+          fi
+
+      - uses: ./.github/actions/setup-ci
+        if: steps.guard.outputs.ready == 'true'
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        if: steps.guard.outputs.ready == 'true'
+
+      - name: Apply trust and recovery boundary hardening
+        if: steps.guard.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/kernel_evidence_phase2_hardening.py
+          cd codex-rs
+          cargo fmt --all
+          cd ..
+          git diff --check
+
+      - name: Run phase-two focused qualification
+        if: steps.guard.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo test -p codex-hepta-evidence
+          cargo test -p codex-hepta-agentd --test kernel_evidence_product
+          cargo test -p codex-hepta-agentd evidence_production
+          cargo test -p codex-hepta-agentd evidence_frontier_signers
+
+      - name: Commit phase two
+        if: steps.guard.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Hepta kernel evidence hardening'
+          git config user.email 'hepta-kernel-evidence-hardening@users.noreply.github.com'
+          git add codex-rs docs qualification scripts
+          git commit -m 'kernel.evidence: seal trust and recovery boundaries [kernel-evidence-closure]'
+
+      - name: Apply product and operations closure
+        if: steps.guard.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/kernel_evidence_phase3_operations.py
+          python3 -m unittest scripts.tests.test_kernel_evidence_archive_manifest -v
+          git diff --check
+
+      - name: Refresh maps and verify repository truth
+        if: steps.guard.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module kernel.evidence
+          python3 scripts/verify_lane_a_foundation.py verify
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-implementation-maps.py verify
+
+      - name: Commit phase three
+        if: steps.guard.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add .github codex-rs docs qualification scripts
+          git commit -m 'kernel.evidence: close product operations and archive contracts [kernel-evidence-closure]'
+
+      - name: Remove temporary worker and publish
+        if: steps.guard.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/kernel-evidence-phase-two-three.yml
+          git commit -m 'ci: remove kernel.evidence hardening worker [kernel-evidence-closure]'
+          python3 scripts/hepta-implementation-maps.py verify
+          git push origin HEAD:fix/kernel-evidence-production-closure
