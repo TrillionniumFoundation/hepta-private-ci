@@ -1,0 +1,56 @@
+{
+  "kind": "VERSIONED_READONLY_SDK_PARITY_DIAGNOSTIC_NOT_QUALIFICATION",
+  "profile": "official_reference",
+  "derived_profile": null,
+  "driver_sha256": "8fe4ce3ea3c7b776d42a7f4408707a8aa085a93a3b8ee60e05cffefe992d87db",
+  "provenance_sha256": "e74efab950cf71ca92e49cf4bb3da368cf71040a087daad3412843a7981c4807",
+  "source_manifest_sha256": "0d6e54f185fb02e05aa947f358da121367b8a364882e9b6e3f975ccd511548b1",
+  "cases_sha256": "5cbf178d8e88aa0ad18a5e04672aa81d6806430f1b02edc43bb5dec2d06db399",
+  "original_snapshot_unchanged": true,
+  "runtime_copy_observed_changes": [
+    "tokenizer/tokenizer_config.json"
+  ],
+  "source_guard_commit": "d3a8c03e58952e1e875088f36a77ff39d4b8cc1a",
+  "source_worktree_dirty": true,
+  "source_guard_sha256": "1d62d53d0ddfa48410f722abce7d5255de3cc5cf159a2ca6b7fc1d5c4e6aedc0",
+  "source_run_models_sha256": "2766cb26bad0528d175c96ab2bf96d288b4f9d9b5038cb64ddfd7bd61890fdad",
+  "packages": {
+    "laya": "0.4.14",
+    "torch": "2.8.0+cpu",
+    "transformers": "4.57.1",
+    "numpy": "2.2.6",
+    "safetensors": "0.8.0",
+    "tokenizers": "0.22.2",
+    "huggingface_hub": "0.36.2"
+  },
+  "cpu_threads": 2,
+  "cpu_affinity": [
+    0,
+    1
+  ],
+  "device": "cpu",
+  "dtype": "float32",
+  "forward_calls": 7,
+  "process_max_rss_bytes": 2507452416,
+  "public_fixture_source": "https://huggingface.co/convaiinnovations/laya-multilingual/blob/1720e3e3357cfe1e281542e223f8273b0890ca34/README.md",
+  "fixture_kind": "public model-card examples plus explicitly mechanical perturbations, no accuracy labels",
+  "calibration_code_changed": false,
+  "original_protocol_changed": false,
+  "independent_acceptance": false,
+  "all_blockers_closed": false,
+  "calibration_identity": "bd36fefcb2bbbabe184e1a2c2c00c4a9ef5333ea6be2dc7623caa08591439df2",
+  "parameters": 321908995,
+  "raw_temperature": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "effective_temperature": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "raw_buckets": {},
+  "effective_buckets": {},
+  "cpu_fallback_count": 0
+}
