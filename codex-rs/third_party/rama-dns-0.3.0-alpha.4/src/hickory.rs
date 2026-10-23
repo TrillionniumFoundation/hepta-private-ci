@@ -1,19 +1,23 @@
 //! dns using the [`hickory_resolver`] crate
 
-use std::{
-    net::{Ipv4Addr, Ipv6Addr},
-    sync::Arc,
-};
+use std::net::Ipv4Addr;
+use std::net::Ipv6Addr;
+use std::sync::Arc;
 
 pub use hickory_resolver as resolver;
-use hickory_resolver::{
-    Name, TokioResolver,
-    config::ResolverConfig,
-    name_server::TokioConnectionProvider,
-    proto::rr::rdata::{A, AAAA},
-};
+use hickory_resolver::TokioResolver;
+use hickory_resolver::config::CLOUDFLARE;
+use hickory_resolver::config::GOOGLE;
+use hickory_resolver::config::QUAD9;
+use hickory_resolver::config::ResolverConfig;
+use hickory_resolver::net::runtime::TokioRuntimeProvider;
+use hickory_resolver::proto::rr::Name;
+use hickory_resolver::proto::rr::RData;
+use hickory_resolver::proto::rr::rdata::A;
+use hickory_resolver::proto::rr::rdata::AAAA;
 
-use rama_core::error::{ErrorContext, OpaqueError};
+use rama_core::error::ErrorContext;
+use rama_core::error::OpaqueError;
 use rama_core::telemetry::tracing;
 use rama_net::address::Domain;
 use rama_utils::macros::generate_set_and_with;
@@ -22,7 +26,7 @@ use crate::DnsResolver;
 
 #[derive(Debug, Clone)]
 /// [`DnsResolver`] using the [`hickory_resolver`] crate
-pub struct HickoryDns(Arc<TokioResolver>);
+pub struct HickoryDns(Arc<Result<TokioResolver, OpaqueError>>);
 
 impl Default for HickoryDns {
     #[cfg(any(target_family = "unix", target_os = "windows"))]
@@ -67,11 +71,11 @@ impl HickoryDns {
     /// statement](https://developers.google.com/speed/public-dns/privacy) for important information
     /// about what they track, many ISP's track similar information in DNS.
     ///
-    /// To use the system configuration see: [`Self::new_system`].
+    /// To use the system configuration see: [`Self::try_new_system`].
     pub fn new_google() -> Self {
         tracing::trace!("create HickoryDns resolver using default google config");
         Self::builder()
-            .with_config(ResolverConfig::google())
+            .with_config(ResolverConfig::udp_and_tcp(&GOOGLE))
             .build()
     }
 
@@ -82,11 +86,11 @@ impl HickoryDns {
     ///
     /// Please see: <https://www.cloudflare.com/dns/>
     ///
-    /// To use the system configuration see: [`Self::new_system`].
+    /// To use the system configuration see: [`Self::try_new_system`].
     pub fn new_cloudflare() -> Self {
         tracing::trace!("create HickoryDns resolver using default cloudflare config");
         Self::builder()
-            .with_config(ResolverConfig::cloudflare())
+            .with_config(ResolverConfig::udp_and_tcp(&CLOUDFLARE))
             .build()
     }
 
@@ -98,10 +102,12 @@ impl HickoryDns {
     ///
     /// Please see: <https://www.quad9.net/faq/>
     ///
-    /// To use the system configuration see: [`Self::new_system`].
+    /// To use the system configuration see: [`Self::try_new_system`].
     pub fn new_quad9() -> Self {
         tracing::trace!("create HickoryDns resolver using default quad9 config");
-        Self::builder().with_config(ResolverConfig::quad9()).build()
+        Self::builder()
+            .with_config(ResolverConfig::udp_and_tcp(&QUAD9))
+            .build()
     }
 
     #[cfg(any(target_family = "unix", target_os = "windows"))]
@@ -116,18 +122,25 @@ impl HickoryDns {
                 tracing::debug!("failed to create HickoryDns resolver using system config: {err:?}")
             })?
             .build()
+            .context("initialize async dns resolver with system conf")?
             .into())
+    }
+
+    fn resolver(&self) -> Result<&TokioResolver, OpaqueError> {
+        self.0.as_ref().as_ref().map_err(|error| {
+            OpaqueError::from_display(format!("DNS resolver initialization failed: {error}"))
+        })
     }
 }
 
 impl From<TokioResolver> for HickoryDns {
     fn from(value: TokioResolver) -> Self {
-        Self(Arc::new(value))
+        Self(Arc::new(Ok(value)))
     }
 }
 
 #[derive(Debug, Clone, Default)]
-/// A [`Builder`] to [`build`][`Self::build`] a [`HickoryDns`] instance.
+/// A builder to [`build`][`Self::build`] a [`HickoryDns`] instance.
 pub struct HickoryDnsBuilder {
     config: Option<self::resolver::config::ResolverConfig>,
     options: Option<self::resolver::config::ResolverOpts>,
@@ -155,16 +168,35 @@ impl HickoryDnsBuilder {
     ///
     /// [`Clone`] the [`HickoryDnsBuilder`] prior to calling this method in case you
     /// still need the builder afterwards.
+    ///
+    /// An initialization failure is retained and returned by every lookup.
+    /// Use [`Self::try_build`] to observe that error before querying.
     pub fn build(self) -> HickoryDns {
+        // Preserve Alpha.4's infallible constructors without discarding an
+        // initialization error, choosing another resolver or panicking.
+        match self.try_build() {
+            Ok(resolver) => resolver,
+            Err(error) => {
+                tracing::error!("HickoryDns initialization failed: {error}");
+                HickoryDns(Arc::new(Err(error)))
+            }
+        }
+    }
+
+    /// Build a resolver, reporting Hickory initialization failures immediately.
+    pub fn try_build(self) -> Result<HickoryDns, OpaqueError> {
         let mut resolver_builder = TokioResolver::builder_with_config(
             self.config
-                .unwrap_or_else(self::resolver::config::ResolverConfig::cloudflare),
-            TokioConnectionProvider::default(),
+                .unwrap_or_else(|| ResolverConfig::udp_and_tcp(&CLOUDFLARE)),
+            TokioRuntimeProvider::default(),
         );
         if let Some(options) = self.options {
             *resolver_builder.options_mut() = options;
         }
-        HickoryDns(Arc::new(resolver_builder.build()))
+        resolver_builder
+            .build()
+            .map(Into::into)
+            .context("initialize async dns resolver")
     }
 }
 
@@ -175,15 +207,17 @@ impl DnsResolver for HickoryDns {
         let name = fqdn_from_domain(domain)?;
 
         let mut results = vec![];
-        for txt in self
-            .0
+        for record in self
+            .resolver()?
             .txt_lookup(name)
             .await
             .context("lookup TXT entry")?
-            .into_iter()
+            .answers()
         {
-            for value in txt.iter() {
-                results.push(value.to_vec());
+            if let RData::TXT(txt) = &record.data {
+                for value in txt.txt_data.iter() {
+                    results.push(value.to_vec());
+                }
             }
         }
         Ok(results)
@@ -192,24 +226,32 @@ impl DnsResolver for HickoryDns {
     async fn ipv4_lookup(&self, domain: Domain) -> Result<Vec<Ipv4Addr>, Self::Error> {
         let name = fqdn_from_domain(domain)?;
         Ok(self
-            .0
+            .resolver()?
             .ipv4_lookup(name)
             .await
             .context("lookup IPv4 address(es)")?
-            .into_iter()
-            .map(|A(ip)| ip)
+            .answers()
+            .iter()
+            .filter_map(|record| match &record.data {
+                RData::A(A(ip)) => Some(*ip),
+                _ => None,
+            })
             .collect())
     }
 
     async fn ipv6_lookup(&self, domain: Domain) -> Result<Vec<Ipv6Addr>, Self::Error> {
         let name = fqdn_from_domain(domain)?;
         Ok(self
-            .0
+            .resolver()?
             .ipv6_lookup(name)
             .await
             .context("lookup IPv6 address(es)")?
-            .into_iter()
-            .map(|AAAA(ip)| ip)
+            .answers()
+            .iter()
+            .filter_map(|record| match &record.data {
+                RData::AAAA(AAAA(ip)) => Some(*ip),
+                _ => None,
+            })
             .collect())
     }
 }
@@ -219,3 +261,7 @@ fn fqdn_from_domain(domain: Domain) -> Result<Name, OpaqueError> {
     name.set_fqdn(true);
     Ok(name)
 }
+
+#[cfg(test)]
+#[path = "hickory_tests.rs"]
+mod tests;
