@@ -38,3 +38,10 @@ It saves every request's probabilities and source map, 32 fixed gradient draws,
 and all four service waves. The fixed base CE-anchor control variate reduces
 descriptive gradient variance for both A and N; it has not been used for training.
 The diagnostic opening marker is consumed. Do not repeat the reconstruction.
+
+The subsequent [fixed complete-budget TRAIN 2×2](../runs/codex-cloud-ndu-CV-TRAIN-d2/REPORT.md)
+also completed once, after [source/protocol freeze](cv_train_d2/frozen-d2.json).
+CV's full reference/correction cost was charged only to CV systems. The primary
+strongest-A screen failed: all12 objective/sampler/seed CV-minus-plain utility
+effects were negative. Parameters, Adam states, every new row and all failed
+tradeoffs remain. Lower measured gradient variance is not training success.
