@@ -352,7 +352,10 @@ impl RuntimeTasks {
         std::panic::catch_unwind(std::panic::AssertUnwindSafe(quarantine)).map_err(|_| {
             AgentdError::Protocol("runtime quarantine callback panicked".to_string())
         })??;
-        lifecycle_warning(&entry.name, &format!("optional runtime component quarantined: {diagnostic}"));
+        lifecycle_warning(
+            &entry.name,
+            &format!("optional runtime component quarantined: {diagnostic}"),
+        );
         Ok(())
     }
 

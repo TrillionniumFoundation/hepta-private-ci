@@ -18,12 +18,26 @@ use tokio::io::AsyncBufReadExt;
 #[derive(Deserialize)]
 #[serde(tag = "type", rename_all = "camelCase", deny_unknown_fields)]
 enum Command {
-    Submit { request: AuthBusTextIngress },
-    SubmitAudio { request: Box<crate::SignedAudioObservationV1> },
-    ReconcileAudio { request: Box<crate::SignedAudioObservationV1> },
-    Attach { request: AuthBusTextIngress },
-    Reconcile { delivery_id: String, text: String },
-    CancelRecovered { delivery_id: String, text: String },
+    Submit {
+        request: AuthBusTextIngress,
+    },
+    SubmitAudio {
+        request: Box<crate::SignedAudioObservationV1>,
+    },
+    ReconcileAudio {
+        request: Box<crate::SignedAudioObservationV1>,
+    },
+    Attach {
+        request: AuthBusTextIngress,
+    },
+    Reconcile {
+        delivery_id: String,
+        text: String,
+    },
+    CancelRecovered {
+        delivery_id: String,
+        text: String,
+    },
     Interrupt,
     Reconnect,
     Stop,
@@ -42,10 +56,7 @@ fn args(state: &AgentdState) -> Result<RemoteAppServerConnectArgs, AgentdError> 
         channel_capacity: 8,
     })
 }
-async fn connect(
-    state: &AgentdState,
-    input: &SignedInput,
-) -> Result<HmiConnectionV1, AgentdError> {
+async fn connect(state: &AgentdState, input: &SignedInput) -> Result<HmiConnectionV1, AgentdError> {
     input.authenticate(state)?;
     let probe = tokio::time::timeout(
         Duration::from_secs(3),
@@ -169,11 +180,7 @@ fn submit(
         if let Err(error) = lookup {
             return json!({"type":"inputError","input":context,"error":error.to_string()});
         }
-        let result = tokio::time::timeout(
-            Duration::from_secs(5),
-            input.admit(&state),
-        )
-        .await;
+        let result = tokio::time::timeout(Duration::from_secs(5), input.admit(&state)).await;
         match result {
             Ok(Ok(receipt)) if receipt["delivery_id"] == delivery => {
                 json!({"type":"admission","input":context,"receipt":receipt})
@@ -195,11 +202,15 @@ pub(super) async fn serve<R: AsyncBufRead + Unpin>(
 ) -> Result<(), AgentdError> {
     let mut partial = Vec::new();
     let first = tokio::select! {_=cancel.cancelled()=>return Ok(()),first=tokio::time::timeout(Duration::from_secs(10),command(read,&mut partial))=>first.map_err(|_|invalid("signed initial input timed out"))??};
-    let (input,admit) = match first {
-        Some(Command::Submit {request})=>(SignedInput::Text(request),true),
-        Some(Command::SubmitAudio {request})=>(SignedInput::Audio(request),true),
-        Some(Command::Attach {request})=>(SignedInput::Text(request),false),
-        _=>return Err(invalid("first command must carry signed input or an authenticated attach for an existing thread")),
+    let (input, admit) = match first {
+        Some(Command::Submit { request }) => (SignedInput::Text(request), true),
+        Some(Command::SubmitAudio { request }) => (SignedInput::Audio(request), true),
+        Some(Command::Attach { request }) => (SignedInput::Text(request), false),
+        _ => {
+            return Err(invalid(
+                "first command must carry signed input or an authenticated attach for an existing thread",
+            ));
+        }
     };
     let mut connection = Some(connect(state, &input).await?);
     let mut requests = connection
@@ -208,8 +219,11 @@ pub(super) async fn serve<R: AsyncBufRead + Unpin>(
         .requests
         .clone();
     let authority = OwnerAuthority {
-        state:state.clone(),active:active.clone(),binding:requests.binding().clone(),
-        key_epoch:input.key_epoch(),audio_policy:input.audio_policy(),
+        state: state.clone(),
+        active: active.clone(),
+        binding: requests.binding().clone(),
+        key_epoch: input.key_epoch(),
+        audio_policy: input.audio_policy(),
     };
     let mut owner = bridge(
         connection
@@ -218,7 +232,11 @@ pub(super) async fn serve<R: AsyncBufRead + Unpin>(
         authority.clone(),
         tx.clone(),
     )?;
-    let mut pending = if admit {Some(submit(state.clone(), requests.clone(), input, tx)?)} else {None};
+    let mut pending = if admit {
+        Some(submit(state.clone(), requests.clone(), input, tx)?)
+    } else {
+        None
+    };
     emit(
         tx,
         json!({"type":"attached","binding":requests.binding(),"connectionId":requests.connection_id()}),

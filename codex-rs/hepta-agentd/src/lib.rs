@@ -5,10 +5,10 @@
 //! It does not implement a second runtime kernel or a fleet-wide message bus.
 
 mod app_runtime;
-mod authbus_checkpoint;
+mod audio_dispatch;
 mod audio_observation;
 mod audio_policy;
-mod audio_dispatch;
+mod authbus_checkpoint;
 mod authbus_dispatch;
 mod authbus_ingress;
 mod authbus_trust;
@@ -28,10 +28,10 @@ mod event_buffer;
 mod evidence_frontier;
 mod evidence_host;
 mod evidence_trust;
-mod hmi_text;
 mod hmi_input;
 #[cfg(unix)]
 mod hmi_socket;
+mod hmi_text;
 mod intelligence_ingress;
 mod intelligence_product;
 mod intuition_policy;
@@ -59,8 +59,12 @@ pub use shared_terminal_cell::SharedTerminalModelV1;
 pub mod test_support;
 mod topology_plasticity_host;
 
+pub use audio_observation::AudioObservationBodyV1;
+pub use audio_observation::AudioObservationReceiptV1;
+pub use audio_observation::AudioObservationStateV1;
+pub use audio_observation::SignedAudioObservationV1;
+pub use audio_observation::audio_observation_claims;
 pub use authbus_ingress::authbus_text_claims;
-pub use audio_observation::{AudioObservationBodyV1, AudioObservationReceiptV1, AudioObservationStateV1, SignedAudioObservationV1, audio_observation_claims};
 pub use browser_servo::BrowserFinalUseInvocation;
 pub use browser_servo::BrowserServoCall;
 pub use browser_servo::BrowserServoError;

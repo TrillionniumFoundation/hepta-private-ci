@@ -41,10 +41,14 @@ pub async fn run(
 ) -> Result<(), AgentdError> {
     let production_operations = config.take_production_operations();
     let hmi_text_enabled = config.hmi_text_enabled();
-    let hmi_audio_authority_file = config.hmi_audio_authority_file().map(std::path::Path::to_path_buf);
+    let hmi_audio_authority_file = config
+        .hmi_audio_authority_file()
+        .map(std::path::Path::to_path_buf);
     let hmi_audio_enabled = hmi_audio_authority_file.is_some();
     if hmi_audio_enabled && !hmi_text_enabled {
-        return Err(AgentdError::Invalid("audio observations require the existing HMI port".into()));
+        return Err(AgentdError::Invalid(
+            "audio observations require the existing HMI port".into(),
+        ));
     }
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let trust_file = config
@@ -314,7 +318,10 @@ pub async fn run(
             crate::authbus_dispatch::run(Arc::clone(&state), cancellation.clone()),
         )?;
         if hmi_audio_enabled {
-            tasks.spawn_required("audio-observation-relay", crate::audio_dispatch::run(Arc::clone(&state), cancellation.clone()))?;
+            tasks.spawn_required(
+                "audio-observation-relay",
+                crate::audio_dispatch::run(Arc::clone(&state), cancellation.clone()),
+            )?;
         }
         if let Some(owner) = plasticity_runtime {
             tasks.spawn_required(

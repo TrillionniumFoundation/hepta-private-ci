@@ -68,10 +68,15 @@ impl HmiOwnerAuthorityV1 for OwnerAuthority {
                 ));
             }
             match &self.audio_policy {
-                Some(digest)=>crate::audio_policy::AudioPolicy::current(&self.state)?.permits_binding(binding,digest)?,
-                None=>if binding.device_generation!=self.key_epoch || self.state.identity().spawn_generation!=binding.organ_generation {
-                    return Err(invalid("text generation permission changed"));
-                },
+                Some(digest) => crate::audio_policy::AudioPolicy::current(&self.state)?
+                    .permits_binding(binding, digest)?,
+                None => {
+                    if binding.device_generation != self.key_epoch
+                        || self.state.identity().spawn_generation != binding.organ_generation
+                    {
+                        return Err(invalid("text generation permission changed"));
+                    }
+                }
             }
             Ok(())
         };
@@ -181,7 +186,7 @@ pub(crate) async fn run(
 ) -> Result<(), AgentdError> {
     use tokio::io::AsyncWriteExt;
     use tokio::io::BufReader;
-    let (mut listener,_cleanup)=crate::hmi_socket::bind(&state,active.clone()).await?;
+    let (mut listener, _cleanup) = crate::hmi_socket::bind(&state, active.clone()).await?;
     loop {
         let socket = tokio::select! {_=cancel.cancelled()=>return Ok(()),connected=listener.accept()=>connected?};
         let (read, mut write) = tokio::io::split(socket);

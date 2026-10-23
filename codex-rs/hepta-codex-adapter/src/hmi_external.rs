@@ -137,24 +137,36 @@ impl HmiRequestsV1 {
         // Queue deletion may race the original dispatcher. Reconcile once more
         // with the same ID; an absent/cancelled input is never recreated.
         for _ in 0..2 {
-            let response=self.reconcile_owner_submission(generation,client_id,text).await?;
+            let response = self
+                .reconcile_owner_submission(generation, client_id, text)
+                .await?;
             {
-                let state=self.shared.state.lock().map_err(|_|HmiError::Fenced)?;
-                if state.fenced || generation!=self.shared.binding.organ_generation {return Err(HmiError::Fenced);}
+                let state = self.shared.state.lock().map_err(|_| HmiError::Fenced)?;
+                if state.fenced || generation != self.shared.binding.organ_generation {
+                    return Err(HmiError::Fenced);
+                }
             }
             match &response.outcome {
-                ThreadQueueReconcileOutcome::Persisted {turn_id}=>{
+                ThreadQueueReconcileOutcome::Persisted { turn_id } => {
                     self.interrupt_turn(turn_id.clone()).await?;
                     return Ok(response);
                 }
-                ThreadQueueReconcileOutcome::Queued {queued_submission,..}=>{
-                    let _:ThreadQueueDeleteResponse=self.call(ClientRequest::ThreadQueueDelete {
-                        request_id:self.id(),params:ThreadQueueDeleteParams {
-                            thread_id:self.shared.binding.thread_id.clone(),queued_submission_id:queued_submission.id.clone(),
-                        },
-                    }).await?;
+                ThreadQueueReconcileOutcome::Queued {
+                    queued_submission, ..
+                } => {
+                    let _: ThreadQueueDeleteResponse = self
+                        .call(ClientRequest::ThreadQueueDelete {
+                            request_id: self.id(),
+                            params: ThreadQueueDeleteParams {
+                                thread_id: self.shared.binding.thread_id.clone(),
+                                queued_submission_id: queued_submission.id.clone(),
+                            },
+                        })
+                        .await?;
                 }
-                ThreadQueueReconcileOutcome::Missing | ThreadQueueReconcileOutcome::Cancelled=>return Ok(response),
+                ThreadQueueReconcileOutcome::Missing | ThreadQueueReconcileOutcome::Cancelled => {
+                    return Ok(response);
+                }
             }
         }
         Err(HmiError::Busy)

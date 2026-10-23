@@ -43,7 +43,10 @@ fn main() -> anyhow::Result<()> {
                 anyhow::ensure!(authbus_trust.is_none(), "duplicate --authbus-trust-file");
                 authbus_trust = Some(path);
             } else if flag == "--hmi-audio-authority-file" {
-                anyhow::ensure!(hmi_audio_authority.is_none(), "duplicate --hmi-audio-authority-file");
+                anyhow::ensure!(
+                    hmi_audio_authority.is_none(),
+                    "duplicate --hmi-audio-authority-file"
+                );
                 hmi_audio_authority = Some(path);
             } else if flag == "--plasticity-bootstrap-descriptor" {
                 anyhow::ensure!(
