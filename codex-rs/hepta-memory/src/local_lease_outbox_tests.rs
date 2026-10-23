@@ -1081,10 +1081,32 @@ async fn unknown_reconcile_survives_reopen_and_never_claims_effect() {
         panic!("first admission must append");
     };
     assert!(!receipt.external_effect);
-    handle
+    let indeterminate = handle
         .mark_indeterminate("occurrence:unknown", "lost-local-ack")
         .await
         .expect("indeterminate");
+    let counts_before_replay = handle
+        .snapshot_counts()
+        .await
+        .expect("counts before replay");
+    assert_eq!(
+        handle
+            .mark_indeterminate("occurrence:unknown", "lost-local-ack")
+            .await
+            .expect("exact outcome replay"),
+        indeterminate
+    );
+    assert!(matches!(
+        handle
+            .mark_indeterminate("occurrence:unknown", "different-reason")
+            .await,
+        Err(LocalLeaseOutboxError::CasConflict(message))
+            if message == "outcome replay changed its reason/payload"
+    ));
+    assert_eq!(
+        handle.snapshot_counts().await.expect("counts after replay"),
+        counts_before_replay
+    );
     assert_eq!(
         handle.status("occurrence:unknown").await.expect("status"),
         LocalOutcomeState::Indeterminate

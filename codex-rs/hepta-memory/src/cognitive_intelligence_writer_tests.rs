@@ -15,6 +15,7 @@ use crate::MemoryLifecycleState;
 use crate::MemoryRevisionDraft;
 use crate::MemoryVerification;
 use crate::SourceDraft;
+use crate::StableMemoryId;
 use crate::cognitive_intelligence_writer::canonical_entity_id;
 use crate::cognitive_kg_store::MAX_PROJECTION_SCOPES;
 use crate::cognitive_test_support::agent_id;
@@ -138,6 +139,48 @@ async fn product_writer_atomically_remembers_corrects_forgets_and_blocks_resurre
             .await
             .expect("stale source rollback"),
         sources_before_stale
+    );
+
+    assert_eq!(
+        store
+            .latest_memory(&access, &first.memory.id.memory_id)
+            .await
+            .expect("stale CAS preserves the complete current revision"),
+        corrected.memory
+    );
+    let missing_id = StableMemoryId::for_key(
+        store.owner_agent_id(),
+        &CognitiveScope::AgentPrivate,
+        "never-created-memory",
+    );
+    let missing = store
+        .correct_with_kg(
+            &access,
+            &missing_id,
+            2,
+            &source("missing-correction", stale_content),
+            &revision(stale_content),
+            &KgFactSetDraft::default(),
+        )
+        .await
+        .expect_err("CAS must retain the exact target memory identity");
+    assert!(matches!(
+        missing,
+        CognitiveStoreError::Invalid(message) if message == "memory does not exist"
+    ));
+    assert_eq!(
+        sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM source_ledger")
+            .fetch_one(&store.pool)
+            .await
+            .expect("missing target rolls back its appended source"),
+        sources_before_stale
+    );
+    assert_eq!(
+        store
+            .latest_memory(&access, &first.memory.id.memory_id)
+            .await
+            .expect("wrong target cannot alter the existing memory"),
+        corrected.memory
     );
 
     let forgotten = store
