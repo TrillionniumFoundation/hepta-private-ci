@@ -10,6 +10,9 @@
 use codex_hepta_prompt_extension as runtime_prompt;
 mod wire;
 
+/// Owner-bound, bounded HMI attachment to an existing App Server thread.
+pub mod hmi;
+
 use std::error::Error as StdError;
 use std::fmt;
 

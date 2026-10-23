@@ -3,6 +3,8 @@ load("//:defs.bzl", "codex_rust_crate")
 codex_rust_crate(
     name = "hepta-codex-adapter",
     crate_name = "codex_hepta_codex_adapter",
+    # The HMI socket regressions have bounded connect/request/cleanup deadlines.
+    unit_test_timeout = "short",
     unit_test_dependency_replacements = {
         "//codex-rs/app-server-client": "//codex-rs/app-server-client:app-server-client-test-lib",
     },
