@@ -22,5 +22,4 @@ class AttributionTests(unittest.TestCase):
         with self.assertRaises(InvalidModel):
             audit_factorial([ArmRow(**{**r.__dict__, 'truth':(1 if r.training=='ndu' else 0)}) for r in rows])
 
-
 if __name__=='__main__': unittest.main()
