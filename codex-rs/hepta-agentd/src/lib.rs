@@ -6,6 +6,8 @@
 
 mod app_runtime;
 mod authbus_checkpoint;
+mod audio_observation;
+mod audio_policy;
 mod authbus_dispatch;
 mod authbus_ingress;
 mod authbus_trust;
@@ -54,6 +56,7 @@ pub mod test_support;
 mod topology_plasticity_host;
 
 pub use authbus_ingress::authbus_text_claims;
+pub use audio_observation::{AudioObservationBodyV1, AudioObservationReceiptV1, AudioObservationStateV1, SignedAudioObservationV1, audio_observation_claims};
 pub use browser_servo::BrowserFinalUseInvocation;
 pub use browser_servo::BrowserServoCall;
 pub use browser_servo::BrowserServoError;

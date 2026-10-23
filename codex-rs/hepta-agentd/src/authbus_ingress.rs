@@ -35,6 +35,7 @@ pub(crate) struct TextIngress {
     pub checkpoint: ReplayCheckpointFile,
     pub subject: StableId,
     pub scope: Digest32,
+    pub audio_authority_file: Option<PathBuf>,
 }
 
 impl TextIngress {
@@ -78,6 +79,7 @@ impl TextIngress {
             checkpoint,
             subject: subject(&identity.agent_id)?,
             scope: scope(&identity.agent_id),
+            audio_authority_file: None,
         })
     }
 
