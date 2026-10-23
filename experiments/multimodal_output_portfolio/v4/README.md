@@ -156,6 +156,15 @@ feedback it uses the remaining budget to query. Four mutually agreeing
 semantic outputs can still all be wrong; generation refinement alone does
 not update the truth posterior or turn that wrong claim into a true one.
 
+The joint solver has **per-instance** memoization and an admitted bound on
+number of newly evaluated Bellman states (default 16,384). It refuses a
+larger problem instead of silently claiming real-time high-dimensional
+optimality; the `resource_receipt()` reports visited states and compared
+actions in **logical** solver units, not actual FLOPs, CPU time or joules.
+The independent path audit also checks exact resource-budget conservation
+against every executed state transition. Resource-envelope and independent
+hardware benchmarking remain open.
+
 The new `test_joint_evidence_generation.py` covers exact modeled budget
 and time accounting, complete materialized text/audio/image/video outputs,
 shared-wrong fact errors, no hidden-truth action inputs, finite gamma=0 / 0.5 /
