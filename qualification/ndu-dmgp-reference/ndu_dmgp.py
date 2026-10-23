@@ -256,7 +256,7 @@ def credit_audit(pairs: list[dict[str, Any]], objective: str, observer: str) -> 
 def _check_manifest(manifest: dict[str, Any]) -> None:
     for key in ("objective_digest", "dataset_digest", "current_snapshot_digest", "next_snapshot_digest",
                 "critic_digest", "policy_digest", "observer_id", "actor_id", "critic_owner_id",
-                "hardware_digest", "semantic_plan_digest", "independent_metric_digest"):
+                "hardware_digest", "semantic_plan_schema_digest", "independent_metric_digest"):
         nonempty(manifest.get(key), "manifest." + key)
     require(len({manifest["actor_id"], manifest["critic_owner_id"], manifest["observer_id"]}) == 3,
             "manifest: Actor, Critic and outcome observer must be independent owners")
@@ -268,6 +268,7 @@ def _check_manifest(manifest: dict[str, Any]) -> None:
     require(manifest.get("outcome_metric_frozen") is True, "manifest: unfrozen external metric")
     require(manifest.get("split_assignment_frozen") is True, "manifest: unfrozen split")
     finite(manifest.get("max_policy_kl"), "manifest.max_policy_kl", 0, 0.1)
+    finite(manifest.get("compute_budget_units"), "manifest.compute_budget_units", 1, 1e12)
     require(manifest.get("mode") in ("reference_fixture", "observed"), "manifest: unknown evidence mode")
     if manifest["mode"] == "observed":
         nonempty(manifest.get("observer_trust_root_digest"), "manifest.observer_trust_root_digest")
@@ -284,8 +285,12 @@ def _check_run(row: dict[str, Any], manifest: dict[str, Any]) -> None:
             "run: unsupported arm or split")
     require(row.get("evaluated_arm") == row["arm"],
             "run: unlabeled policy fallback cannot be counted as the requested arm")
-    for field in ("episode_id", "group_id", "outcome_receipt_digest", "run_receipt_digest"):
+    for field in ("episode_id", "group_id", "input_digest", "semantic_plan_digest",
+                  "outcome_receipt_digest", "run_receipt_digest"):
         nonempty(row.get(field), "run." + field)
+    require(row.get("admitted_compute_budget_units") == manifest["compute_budget_units"],
+            "run: unequal precommitted compute budget across arms")
+    finite(row.get("measured_compute_units"), "run.measured_compute_units", 0, manifest["compute_budget_units"])
     require(row.get("independent_observed_outcome") is True,
             "run: self-scored or unobserved reward")
     require(row.get("hard_constraints_ok") is True, "run: hard-constraint violation")
@@ -298,7 +303,8 @@ def _check_run(row: dict[str, Any], manifest: dict[str, Any]) -> None:
     finite(row.get("policy_kl"), "run.policy_kl", 0, manifest["max_policy_kl"])
     consistency = row.get("consistency")
     require(isinstance(consistency, dict), "run: missing cross-modal independent check")
-    require(consistency.get("semantic_plan_digest") == manifest["semantic_plan_digest"],
+    require(consistency.get("semantic_plan_digest") == row["semantic_plan_digest"] and
+            consistency.get("semantic_plan_schema_digest") == manifest["semantic_plan_schema_digest"],
             "run: inconsistent shared semantic plan")
     require(consistency.get("verifier_id") == manifest["observer_id"],
             "run: consistency verifier not independent observer")
@@ -328,6 +334,8 @@ def evaluate(bundle: dict[str, Any]) -> dict[str, Any]:
     require(isinstance(rows, list), "bundle: runs must be a list")
     by: dict[tuple[str, str], dict[str, dict[str, Any]]] = defaultdict(dict)
     independent_groups: dict[tuple[str, str], str] = {}
+    shared_inputs: dict[tuple[str, str], str] = {}
+    shared_plans: dict[tuple[str, str], str] = {}
     for row in rows:
         require(isinstance(row, dict), "run: expected object")
         _check_run(row, manifest)
@@ -337,6 +345,10 @@ def evaluate(bundle: dict[str, Any]) -> dict[str, Any]:
         group_key = (row["split"], row["episode_id"])
         group = independent_groups.setdefault(group_key, row["group_id"])
         require(group == row["group_id"], "run: mismatched independent-group identity across arms")
+        original_input = shared_inputs.setdefault(group_key, row["input_digest"])
+        require(original_input == row["input_digest"], "run: unequal multimodal input across ablation arms")
+        original_plan = shared_plans.setdefault(group_key, row["semantic_plan_digest"])
+        require(original_plan == row["semantic_plan_digest"], "run: unequal shared plan across ablation arms")
     for split in REQUIRED_SPLITS:
         eps = [key for key in by if key[0] == split]
         require(len(eps) >= 30, f"{split}: at least 30 paired episodes needed")
