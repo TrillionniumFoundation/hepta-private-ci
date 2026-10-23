@@ -11,8 +11,12 @@
   "owner": "durability-kernel",
   "deputy": "architecture",
   "technicalGuide": "docs/modules/kernel.operations/TECHNICAL.md",
-  "declaredRoots": ["codex-rs/hepta-operations"],
-  "resolvedRoots": ["codex-rs/hepta-operations"],
+  "declaredRoots": [
+    "codex-rs/hepta-operations"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-operations"
+  ],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "agentd_runtime_lifecycle_source_composed_external_authority_activation_pending",
@@ -61,7 +65,9 @@
       "sourcePath": "codex-rs/hepta-memory/src/operation_claims.rs",
       "state": "durable_claim_lease_implemented_execution_pending",
       "authority": "generation_fence_attempt_lease_bound",
-      "tests": ["codex-rs/hepta-memory/src/production_writer.rs"],
+      "tests": [
+        "codex-rs/hepta-memory/src/production_writer.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "claim_outbox",
       "mappingClass": "delegated_owner_native",
@@ -125,7 +131,9 @@
       "sourcePath": "codex-rs/hepta-agentd/src/production_writer_host.rs",
       "state": "named_final_use_host_source_implemented_activation_pending",
       "authority": "externally_supplied_authority_and_grant_provider",
-      "tests": ["codex-rs/hepta-agentd/examples/h4_persistent_writer.rs"],
+      "tests": [
+        "codex-rs/hepta-agentd/examples/h4_persistent_writer.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "product_composition",
       "mappingClass": "delegated_owner_native",
@@ -143,7 +151,9 @@
       "sourcePath": "codex-rs/hepta-agentd/src/runtime.rs",
       "state": "explicit_daemon_lifecycle_source_implemented_activation_pending",
       "authority": "externally_supplied_authority_and_grant_provider",
-      "tests": ["codex-rs/hepta-agentd/src/runtime_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-agentd/src/runtime_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "product_composition",
       "mappingClass": "delegated_owner_native",
@@ -161,7 +171,9 @@
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
       "state": "second_operation_intent_consumer_source_implemented",
       "authority": "kernel.authority_final_use_consumed",
-      "tests": ["codex-rs/hepta-automation/tests/authorized_effect.rs"],
+      "tests": [
+        "codex-rs/hepta-automation/tests/authorized_effect.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "destination_apply",
       "mappingClass": "delegated_owner_native",
@@ -179,7 +191,9 @@
       "sourcePath": "codex-rs/hepta-operations/src/ledger.rs",
       "state": "reference_oracle_implemented",
       "authority": "none",
-      "tests": ["codex-rs/hepta-operations/src/ledger_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-operations/src/ledger_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "reference_operationledger",
       "mappingClass": "owner_native",
@@ -191,7 +205,9 @@
       "sourcePath": "codex-rs/hepta-operations/src/outbox.rs",
       "state": "reference_oracle_implemented",
       "authority": "none",
-      "tests": ["codex-rs/hepta-operations/src/outbox_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-operations/src/outbox_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "reference_outbox",
       "mappingClass": "owner_native",
@@ -219,7 +235,9 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": ["codex-rs/hepta-operations"],
+  "sourceRoot": [
+    "codex-rs/hepta-operations"
+  ],
   "exactSourceEvidence": {
     "kind": "path_blob_manifest_v1",
     "entries": [

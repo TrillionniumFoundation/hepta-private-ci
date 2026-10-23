@@ -10,8 +10,12 @@
   "owner": "cognitive-platform",
   "deputy": "performance",
   "technicalGuide": "docs/modules/memory.retrieval/TECHNICAL.md",
-  "declaredRoots": ["codex-rs/hepta-memory-retrieval"],
-  "resolvedRoots": ["codex-rs/hepta-memory-retrieval"],
+  "declaredRoots": [
+    "codex-rs/hepta-memory-retrieval"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-memory-retrieval"
+  ],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "source_composed_explicit_profile_not_product_qualified",
@@ -23,7 +27,9 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/v2.rs",
       "state": "source_implemented_not_product_qualified",
       "authority": "none",
-      "tests": ["codex-rs/hepta-memory-retrieval/src/v2_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "retrieve_v2",
       "mappingClass": "owner_native",
@@ -35,7 +41,9 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/generator.rs",
       "state": "source_implemented_not_product_qualified",
       "authority": "none",
-      "tests": ["codex-rs/hepta-memory-retrieval/src/generator_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generator_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "compile_cue",
       "mappingClass": "owner_native",
@@ -62,7 +70,9 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/engram.rs",
       "state": "source_implemented_not_product_qualified",
       "authority": "none",
-      "tests": ["codex-rs/hepta-memory-retrieval/src/engram_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/engram_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "engram_settle",
       "mappingClass": "owner_native",
@@ -89,7 +99,9 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/decision.rs",
       "state": "source_implemented_not_product_qualified",
       "authority": "none",
-      "tests": ["codex-rs/hepta-memory-retrieval/src/decision_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/decision_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "assignment_observation",
       "mappingClass": "owner_native",
@@ -157,7 +169,9 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": ["codex-rs/hepta-memory-retrieval"],
+  "sourceRoot": [
+    "codex-rs/hepta-memory-retrieval"
+  ],
   "compositionRoots": [
     "codex-rs/hepta-memory/src/cognitive_model.rs",
     "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",

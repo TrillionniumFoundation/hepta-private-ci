@@ -10,8 +10,12 @@
   "owner": "cognitive-platform",
   "deputy": "durability-kernel",
   "technicalGuide": "docs/modules/cognitive.store/TECHNICAL.md",
-  "declaredRoots": ["codex-rs/hepta-cognitive-store"],
-  "resolvedRoots": ["codex-rs/hepta-cognitive-store"],
+  "declaredRoots": [
+    "codex-rs/hepta-cognitive-store"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-cognitive-store"
+  ],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "normal_agentd_runtime_capability_composed_external_bootstrap_pending",
@@ -23,7 +27,9 @@
       "sourcePath": "codex-rs/hepta-cognitive-store/src/v2.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": ["codex-rs/hepta-cognitive-store/src/v2_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-cognitive-store/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "append_event_append_correction_forget_open_snapshot",
       "mappingClass": "owner_native",
@@ -55,7 +61,9 @@
       "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
       "state": "durable_snapshot_source_implemented",
       "authority": "deny_all_read",
-      "tests": ["codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "open_snapshot",
       "mappingClass": "owner_native",
@@ -130,7 +138,9 @@
       "sourcePath": "codex-rs/hepta-cognitive-store/src/v2.rs",
       "state": "source_implemented_shadow_only_not_product_composed",
       "authority": "existing_store_authority_only_no_new_authority",
-      "tests": ["codex-rs/hepta-cognitive-store/src/v2_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-cognitive-store/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "canonical_memory_event_shadow_write",
       "mappingClass": "owner_native",
@@ -239,7 +249,9 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": ["codex-rs/hepta-cognitive-store"],
+  "sourceRoot": [
+    "codex-rs/hepta-cognitive-store"
+  ],
   "sourceBaseSemantics": "exact_non_projection_source_snapshot",
   "canonicalMemoryEventMigration": {
     "state": "shadow_and_production_durable_bridge_source_integrated",

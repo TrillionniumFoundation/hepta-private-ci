@@ -8,8 +8,12 @@
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
   "sourceMaturity": "native_composition_host",
-  "declaredRoots": ["codex-rs/hepta-agentd"],
-  "resolvedRoots": ["codex-rs/hepta-agentd"],
+  "declaredRoots": [
+    "codex-rs/hepta-agentd"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-agentd"
+  ],
   "stateOwnerDisposition": "Owns only ephemeral run admission, immutable snapshot references, and runtime-health composition state.",
   "terminalObserverDisposition": "Agentd preserves dispatch-boundary uncertainty and accepts terminal state only from the delegated execution/effect owner.",
   "operations": [
@@ -306,7 +310,9 @@
   "owner": "agent-runtime",
   "deputy": "runtime-control",
   "technicalGuide": "docs/modules/runtime.agentd/TECHNICAL.md",
-  "sourceRoot": ["codex-rs/hepta-agentd"],
+  "sourceRoot": [
+    "codex-rs/hepta-agentd"
+  ],
   "currentSourceEvidence": {
     "commit": "cbb3cee084a4caf4702dd4e575cae5504486c176",
     "tree": "e22806b086240bb2015344dfb545734342c7fdb3",

@@ -8,8 +8,12 @@
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.supervisor",
   "sourceMaturity": "native_daemon",
-  "declaredRoots": ["codex-rs/hepta-supervisor"],
-  "resolvedRoots": ["codex-rs/hepta-supervisor"],
+  "declaredRoots": [
+    "codex-rs/hepta-supervisor"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-supervisor"
+  ],
   "stateOwnerDisposition": "Owns generation-fenced process lifecycle, durable bounded restart state and the unified durable release-transition journal; Fleet owns immutable release catalog/allow-revoke admission facts and user-task truth remains outside this module.",
   "terminalObserverDisposition": "The exact process driver, Agentd readiness/drain acknowledgements and current-generation observations establish lifecycle terminality; drain acknowledgement closes admission but never establishes user-task success.",
   "operations": [
@@ -370,7 +374,9 @@
   "owner": "runtime-control",
   "deputy": "fleet-runtime",
   "technicalGuide": "docs/modules/runtime.supervisor/TECHNICAL.md",
-  "sourceRoot": ["codex-rs/hepta-supervisor"],
+  "sourceRoot": [
+    "codex-rs/hepta-supervisor"
+  ],
   "sourceBaseSemantics": "historical_provenance_only_exact_candidate_derived_from_git_at_verification_time",
   "candidateIdentity": "derived_from_git_head_or_deterministic_merge_at_verification_time",
   "observedSourcePaths": [
