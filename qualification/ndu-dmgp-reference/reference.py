@@ -174,6 +174,8 @@ def cross_modal_contract(
     for pair in by_pair.values():
         audio = [e for e in pair if e.modality == "audio"]
         video = [e for e in pair if e.modality == "video"]
+        if bool(audio) != bool(video):
+            problems.append("unpaired audio-video timeline")
         if audio and video:
             for a in audio:
                 for v in video:
@@ -307,12 +309,21 @@ def portfolio_weights(
     n = len(advantage)
     if not n or n > 8 or any(not math.isfinite(x) for x in advantage):
         raise GateRejected("invalid portfolio advantages")
-    if risk_price < 0 or kl_price <= 0 or not math.isfinite(kl_price):
+    if (not math.isfinite(risk_price) or risk_price < 0
+            or kl_price <= 0 or not math.isfinite(kl_price)):
         raise GateRejected("invalid portfolio optimization profile")
     if not covariance.supported or len(covariance.matrix) != n:
         # Explicit deterministic NDU fallback when covariance is unidentified.
         winner = max(range(n), key=lambda i: (advantage[i], -i))
         return tuple(float(i == winner) for i in range(n))
+    if any(len(row) != n or any(not math.isfinite(v) for v in row)
+           for row in covariance.matrix):
+        raise GateRejected("malformed portfolio covariance")
+    if (any(covariance.matrix[i][i] < 0 for i in range(n))
+            or any(abs(covariance.matrix[i][j] - covariance.matrix[j][i]) > 1e-8
+                   for i in range(n) for j in range(n))
+            or _eigen_symmetric([list(row) for row in covariance.matrix])[-1][0] < -1e-8):
+        raise GateRejected("non-PSD or asymmetric portfolio covariance")
     weight = [1 / n] * n
     for _ in range(256):
         grad = [advantage[i] - risk_price * sum(
@@ -629,6 +640,16 @@ def next_snapshot_gate(
         base_scores = [independent_utility(objective, x) for x in baseline]
         old_cand = [independent_utility(objective, x) for x in retention_candidate]
         old_base = [independent_utility(objective, x) for x in retention_baseline]
+        if (len({r.policy_id for r in candidate}) != 1
+                or len({r.policy_id for r in baseline}) != 1
+                or {r.policy_id for r in candidate} == {r.policy_id for r in baseline}
+                or len({r.policy_id for r in retention_candidate}) != 1
+                or len({r.policy_id for r in retention_baseline}) != 1
+                or {r.policy_id for r in retention_candidate}
+                   != {r.policy_id for r in candidate}
+                or {r.policy_id for r in retention_baseline}
+                   != {r.policy_id for r in baseline}):
+            raise GateRejected("candidate/baseline policy identity mismatch")
         if ({r.episode for r in candidate} != {r.episode for r in baseline}
                 or {r.episode for r in retention_candidate}
                 != {r.episode for r in retention_baseline}
@@ -659,10 +680,15 @@ def reference_report() -> dict[str, object]:
         raise GateRejected("evaluation scenario leaked into training data")
     learned_router = fit_static_topk_router(train_scenarios, objective)
     # Only TRAIN episodes can inform conditional covariance; evaluation stays held out.
+    # Use TRAIN realized-minus-forecast residuals, never synthesized jitter
+    # over forecasts. Constant or unidentified directions must disable A4 risk.
+    # This is still SYNTHETIC supervision; it is not an external observation.
+    if any(a.observed_gain is None for s in train_scenarios for a in s.actions):
+        raise GateRejected("covariance train row lacks observed expert outcome")
     outcomes = {
-        s.episode: {a.name: a.immediate_gain + (i % 5 - 2)*.05*(j+1)
-                    for j, a in enumerate(s.actions)}
-        for i, s in enumerate(train_scenarios)
+        s.episode: {a.name: a.observed_gain - a.immediate_gain
+                    for a in s.actions}
+        for s in train_scenarios
     }
     cov = paired_covariance(outcomes, [a.name for a in scenarios[0].actions], rank=2)
     matrix = [run_shadow_arm(arm, scenario, objective, cov,

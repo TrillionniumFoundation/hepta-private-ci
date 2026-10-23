@@ -38,6 +38,9 @@ jobs:
           assert report['evaluation_episodes'] == 24
           assert report['train_eval_episodes_disjoint'] is True
           assert report['a2_fitted_train_only'] is True
+          # No fabricated covariance support: constant train residual direction.
+          assert report['covariance_supported'] is False
+          assert report['summary']['A5']['mean_synthetic_ndu'] == report['summary']['A1']['mean_synthetic_ndu']
           assert all(row['episodes'] == 24 for row in report['summary'].values())
-          print('shadow_only=true; arms=6; matched_episodes=24; promotion=false')
+          print('shadow_only=true; arms=6; matched_episodes=24; covariance_fallback=true; promotion=false')
           PY
