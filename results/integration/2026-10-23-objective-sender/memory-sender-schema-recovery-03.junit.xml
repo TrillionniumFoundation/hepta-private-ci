@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="42" skipped="0" failures="3" errors="0" uuid="5903c114-d9dc-45f0-97ca-8764903c7a5c" timestamp="2026-10-23T16:24:37.741+09:00" time="16.705">
+    <testsuite name="codex-hepta-memory" tests="42" skipped="0" errors="0" failures="3">
+        <testcase name="cognitive_store::recovery::tests::byte_identical_rename_replacement_can_recover_only_with_current_witness" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:37.743+09:00" time="0.398"/>
+        <testcase name="cognitive_store::recovery::tests::cold_read_only::cold_recovery_rejects_revision_change_and_forgetting_rollback" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:38.141+09:00" time="0.397"/>
+        <testcase name="cognitive_store::recovery::tests::cold_read_only::cold_reopen_reads_canonical_snapshot_without_mutating_source" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:38.538+09:00" time="0.278"/>
+        <testcase name="cognitive_store::recovery::tests::cold_read_only::crash_reopen_refuses_pending_wal" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:38.816+09:00" time="0.240"/>
+        <testcase name="cognitive_store::recovery::tests::cold_read_only::stable_inspection_metadata_cannot_authenticate_changed_content" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:39.056+09:00" time="0.229"/>
+        <testcase name="cognitive_store::recovery::tests::corrupt_physical_fts_cannot_obtain_a_witness_or_trigger_recovery_io" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:39.286+09:00" time="0.211"/>
+        <testcase name="cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:39.496+09:00" time="0.574"/>
+        <testcase name="cognitive_store::recovery::tests::graceful_close_retains_store_fence_until_sqlite_connections_finish" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:40.070+09:00" time="0.434"/>
+        <testcase name="cognitive_store::recovery::tests::hostile_file_identities_fail_closed_without_additional_mutation" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:40.504+09:00" time="0.615"/>
+        <testcase name="cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:41.120+09:00" time="0.132"/>
+        <testcase name="cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:41.252+09:00" time="0.598"/>
+        <testcase name="cognitive_store::recovery::tests::recovery_bounds_large_rows_before_loading_payloads_and_rejects_unknown_tables" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:41.850+09:00" time="0.222"/>
+        <testcase name="cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:42.072+09:00" time="0.233"/>
+        <testcase name="cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:42.305+09:00" time="0.144"/>
+        <testcase name="cognitive_store::schema_tests::compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:42.449+09:00" time="0.139"/>
+        <testcase name="cognitive_store_tests::h7_trajectory_schema_is_bound_and_append_only" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:42.587+09:00" time="0.099"/>
+        <testcase name="h7_trajectory_store_tests::recovery_read_observes_expired_terminal_without_appending_h7_rows" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:42.686+09:00" time="6.108"/>
+        <testcase name="intuition_shadow::tests::snapshot_policy_and_schema_bindings_reject_tampering" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:48.795+09:00" time="0.008"/>
+        <testcase name="local_lease_outbox_tests::terminal_recovery_rejects_missing_event_outbox_pair_without_appending_lease" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:48.803+09:00" time="0.192"/>
+        <testcase name="local_memory_saga::tests::queued_target_success_recovery_does_not_append_a_second_revision" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:48.995+09:00" time="0.118"/>
+        <testcase name="local_memory_saga::tests::tombstone_target_commit_recovery_after_reopen_is_idempotent" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:49.113+09:00" time="0.167"/>
+        <testcase name="production_notes::tests::exact_recovery_golden_binds_original_payload_and_full_terminal_receipt" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:49.280+09:00" time="0.010"/>
+        <testcase name="production_writer::hos2_tests::conflict_tests::known_request_rejection_disables_original_intent_at_dispatch_and_recovery" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:49.290+09:00" time="0.413"/>
+        <testcase name="production_writer::objective_sender::crash_tests::a_second_real_process_and_different_lease_still_cannot_send_retained_run" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:49.703+09:00" time="0.273"/>
+        <testcase name="production_writer::objective_sender::crash_tests::process_death_after_each_committed_cut_recovers_without_new_send_permission" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:49.977+09:00" time="0.156">
+            <failure message="thread &apos;production_writer::objective_sender::crash_tests::process_death_after_each_committed_cut_recovers_without_new_send_permission&apos; (243646) panicked at hepta-memory/src/objective_sender_crash_tests.rs:133:17" type="test failure with exit code 101">thread &apos;production_writer::objective_sender::crash_tests::process_death_after_each_committed_cut_recovers_without_new_send_permission&apos; (243646) panicked at hepta-memory/src/objective_sender_crash_tests.rs:133:17:
+original exact-cut recovery after real process exit: Indeterminate(&quot;SQLite recovery is indeterminate: the complete immutable file identity was not established&quot;)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>
+            <rerunFailure timestamp="2026-10-23T16:24:50.134+09:00" time="0.159" message="thread &apos;production_writer::objective_sender::crash_tests::process_death_after_each_committed_cut_recovers_without_new_send_permission&apos; (243653) panicked at hepta-memory/src/objective_sender_crash_tests.rs:133:17" type="test failure with exit code 101">thread &apos;production_writer::objective_sender::crash_tests::process_death_after_each_committed_cut_recovers_without_new_send_permission&apos; (243653) panicked at hepta-memory/src/objective_sender_crash_tests.rs:133:17:
+original exact-cut recovery after real process exit: Indeterminate(&quot;SQLite recovery is indeterminate: the complete immutable file identity was not established&quot;)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+                <system-out>
+running 1 test
+test production_writer::objective_sender::crash_tests::process_death_after_each_committed_cut_recovers_without_new_send_permission ... FAILED
+
+failures:
+
+failures:
+    production_writer::objective_sender::crash_tests::process_death_after_each_committed_cut_recovers_without_new_send_permission
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 324 filtered out; finished in 0.15s
+
+</system-out>
+                <system-err>
+thread &apos;production_writer::objective_sender::crash_tests::process_death_after_each_committed_cut_recovers_without_new_send_permission&apos; (243653) panicked at hepta-memory/src/objective_sender_crash_tests.rs:133:17:
+original exact-cut recovery after real process exit: Indeterminate(&quot;SQLite recovery is indeterminate: the complete immutable file identity was not established&quot;)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</system-err>
+            </rerunFailure>
+            <system-out>
+running 1 test
+test production_writer::objective_sender::crash_tests::process_death_after_each_committed_cut_recovers_without_new_send_permission ... FAILED
+
+failures:
+
+failures:
+    production_writer::objective_sender::crash_tests::process_death_after_each_committed_cut_recovers_without_new_send_permission
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 324 filtered out; finished in 0.15s
+
+</system-out>
+            <system-err>
+thread &apos;production_writer::objective_sender::crash_tests::process_death_after_each_committed_cut_recovers_without_new_send_permission&apos; (243646) panicked at hepta-memory/src/objective_sender_crash_tests.rs:133:17:
+original exact-cut recovery after real process exit: Indeterminate(&quot;SQLite recovery is indeterminate: the complete immutable file identity was not established&quot;)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</system-err>
+        </testcase>
+        <testcase name="production_writer::objective_sender::model::tests::duplicate_unknown_truncated_or_out_of_profile_originals_are_rejected" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:50.295+09:00" time="0.012"/>
+        <testcase name="production_writer::objective_sender::model::tests::every_signed_body_field_changes_the_retained_binding" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:50.308+09:00" time="0.011"/>
+        <testcase name="production_writer::objective_sender::model::tests::exact_original_utf8_and_whitespace_survive_structural_projection" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:50.319+09:00" time="0.009"/>
+        <testcase name="production_writer::objective_sender::model::tests::observations_are_bounded_exact_data_without_an_inferred_anchor" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:50.328+09:00" time="0.006"/>
+        <testcase name="production_writer::objective_sender::tests::an_unused_ticket_cannot_move_to_a_reopened_original_writer_instance" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:50.334+09:00" time="0.181"/>
+        <testcase name="production_writer::objective_sender::tests::bounded_pages_recover_exact_owner_bytes_without_caller_memory_or_send_rights" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:50.516+09:00" time="0.977"/>
+        <testcase name="production_writer::objective_sender::tests::changed_outer_route_or_restarted_generation_cannot_regrant_original_run" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:51.493+09:00" time="0.171">
+            <failure message="thread &apos;production_writer::objective_sender::tests::changed_outer_route_or_restarted_generation_cannot_regrant_original_run&apos; (243713) panicked at hepta-memory/src/objective_sender_tests.rs:57:13" type="test failure with exit code 101">thread &apos;production_writer::objective_sender::tests::changed_outer_route_or_restarted_generation_cannot_regrant_original_run&apos; (243713) panicked at hepta-memory/src/objective_sender_tests.rs:57:13:
+called `Result::unwrap()` on an `Err` value: Local(CasConflict(&quot;fencing token was already used by this lease&quot;))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>
+            <rerunFailure timestamp="2026-10-23T16:24:51.666+09:00" time="0.160" message="thread &apos;production_writer::objective_sender::tests::changed_outer_route_or_restarted_generation_cannot_regrant_original_run&apos; (243718) panicked at hepta-memory/src/objective_sender_tests.rs:57:13" type="test failure with exit code 101">thread &apos;production_writer::objective_sender::tests::changed_outer_route_or_restarted_generation_cannot_regrant_original_run&apos; (243718) panicked at hepta-memory/src/objective_sender_tests.rs:57:13:
+called `Result::unwrap()` on an `Err` value: Local(CasConflict(&quot;fencing token was already used by this lease&quot;))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+                <system-out>
+running 1 test
+test production_writer::objective_sender::tests::changed_outer_route_or_restarted_generation_cannot_regrant_original_run ... FAILED
+
+failures:
+
+failures:
+    production_writer::objective_sender::tests::changed_outer_route_or_restarted_generation_cannot_regrant_original_run
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 324 filtered out; finished in 0.15s
+
+</system-out>
+                <system-err>
+thread &apos;production_writer::objective_sender::tests::changed_outer_route_or_restarted_generation_cannot_regrant_original_run&apos; (243718) panicked at hepta-memory/src/objective_sender_tests.rs:57:13:
+called `Result::unwrap()` on an `Err` value: Local(CasConflict(&quot;fencing token was already used by this lease&quot;))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</system-err>
+            </rerunFailure>
+            <system-out>
+running 1 test
+test production_writer::objective_sender::tests::changed_outer_route_or_restarted_generation_cannot_regrant_original_run ... FAILED
+
+failures:
+
+failures:
+    production_writer::objective_sender::tests::changed_outer_route_or_restarted_generation_cannot_regrant_original_run
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 324 filtered out; finished in 0.16s
+
+</system-out>
+            <system-err>
+thread &apos;production_writer::objective_sender::tests::changed_outer_route_or_restarted_generation_cannot_regrant_original_run&apos; (243713) panicked at hepta-memory/src/objective_sender_tests.rs:57:13:
+called `Result::unwrap()` on an `Err` value: Local(CasConflict(&quot;fencing token was already used by this lease&quot;))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</system-err>
+        </testcase>
+        <testcase name="production_writer::objective_sender::tests::checkpoint_holds_original_sqlite_write_serialization_until_acknowledgement" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:51.826+09:00" time="0.147"/>
+        <testcase name="production_writer::objective_sender::tests::failed_mismatched_or_revoked_final_checkpoint_leaves_unknown_not_a_new_permit" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:51.973+09:00" time="0.441"/>
+        <testcase name="production_writer::objective_sender::tests::observations_and_local_cancellation_are_durable_and_never_rearm" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:52.414+09:00" time="0.637"/>
+        <testcase name="production_writer::objective_sender::tests::retain_binds_exact_raw_to_one_permit_without_effect_outbox_rows" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:53.052+09:00" time="0.238"/>
+        <testcase name="production_writer::objective_sender::tests::semantic_startup_audit_rejects_observation_tamper_with_original_schema_restored" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:53.289+09:00" time="0.236">
+            <failure message="thread &apos;production_writer::objective_sender::tests::semantic_startup_audit_rejects_observation_tamper_with_original_schema_restored&apos; (243754) panicked at hepta-memory/src/objective_sender_tests.rs:172:43" type="test failure with exit code 101">thread &apos;production_writer::objective_sender::tests::semantic_startup_audit_rejects_observation_tamper_with_original_schema_restored&apos; (243754) panicked at hepta-memory/src/objective_sender_tests.rs:172:43:
+called `Result::unwrap()` on an `Err` value: Database(SqliteError { code: 1, message: &quot;trigger cognitive_objective_sender_events_no_update already exists&quot; })
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>
+            <rerunFailure timestamp="2026-10-23T16:24:53.525+09:00" time="0.211" message="thread &apos;production_writer::objective_sender::tests::semantic_startup_audit_rejects_observation_tamper_with_original_schema_restored&apos; (243760) panicked at hepta-memory/src/objective_sender_tests.rs:172:43" type="test failure with exit code 101">thread &apos;production_writer::objective_sender::tests::semantic_startup_audit_rejects_observation_tamper_with_original_schema_restored&apos; (243760) panicked at hepta-memory/src/objective_sender_tests.rs:172:43:
+called `Result::unwrap()` on an `Err` value: Database(SqliteError { code: 1, message: &quot;trigger cognitive_objective_sender_events_no_update already exists&quot; })
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+                <system-out>
+running 1 test
+test production_writer::objective_sender::tests::semantic_startup_audit_rejects_observation_tamper_with_original_schema_restored ... FAILED
+
+failures:
+
+failures:
+    production_writer::objective_sender::tests::semantic_startup_audit_rejects_observation_tamper_with_original_schema_restored
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 324 filtered out; finished in 0.20s
+
+</system-out>
+                <system-err>
+thread &apos;production_writer::objective_sender::tests::semantic_startup_audit_rejects_observation_tamper_with_original_schema_restored&apos; (243760) panicked at hepta-memory/src/objective_sender_tests.rs:172:43:
+called `Result::unwrap()` on an `Err` value: Database(SqliteError { code: 1, message: &quot;trigger cognitive_objective_sender_events_no_update already exists&quot; })
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</system-err>
+            </rerunFailure>
+            <system-out>
+running 1 test
+test production_writer::objective_sender::tests::semantic_startup_audit_rejects_observation_tamper_with_original_schema_restored ... FAILED
+
+failures:
+
+failures:
+    production_writer::objective_sender::tests::semantic_startup_audit_rejects_observation_tamper_with_original_schema_restored
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 324 filtered out; finished in 0.22s
+
+</system-out>
+            <system-err>
+thread &apos;production_writer::objective_sender::tests::semantic_startup_audit_rejects_observation_tamper_with_original_schema_restored&apos; (243754) panicked at hepta-memory/src/objective_sender_tests.rs:172:43:
+called `Result::unwrap()` on an `Err` value: Database(SqliteError { code: 1, message: &quot;trigger cognitive_objective_sender_events_no_update already exists&quot; })
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</system-err>
+        </testcase>
+        <testcase name="production_writer::objective_sender::tests::stale_schema_anchor_is_refused_before_any_recovery_path_access" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:53.736+09:00" time="0.144"/>
+        <testcase name="production_writer::objective_sender::tests::timeout_and_cancelled_checkpoint_future_release_lock_but_keep_durable_fence" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:53.881+09:00" time="0.292"/>
+        <testcase name="production_writer::tests::recovery_does_not_release_production_lease_with_peer_pending" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:54.172+09:00" time="0.102"/>
+        <testcase name="shadow_model_runtime::tests::schema_gaps_remain_explicit_and_unknown_fields_reject" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:54.274+09:00" time="0.007"/>
+        <testcase name="shared_experience::tests::migration_rebuilds_exact_schema_and_source_withdrawal_never_reopens_use" classname="codex-hepta-memory" timestamp="2026-10-23T16:24:54.281+09:00" time="0.165"/>
+    </testsuite>
+</testsuites>
