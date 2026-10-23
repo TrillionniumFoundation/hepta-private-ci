@@ -144,7 +144,7 @@ def prepare_shared(plan, run, runtime_plan):
     if len(take) != plan["calibration_rows"]:
         raise ValueError("stratified calibration rows differ from frozen protocol")
     calibration_identity = calibration_manifest(train, take)
-    calibration_data = {key: value[take] for key, value in train.items()
+    calibration_data = {key: np.asarray(value)[take] for key, value in train.items()
                         if key in ("full", "labels", "source_ids", "groups")}
     (run / "build").mkdir()
     compiled = compile_native(run / "build/libjoint.so")
@@ -445,8 +445,11 @@ def train(freeze_path, out):
             "validation_decoder_corruption_reduces_score": corruption,
             "efficient_reference": reference, "cpu_budget_violations": violations,
             "selection_ready": ready, "test_opened": False,
-            "execution_location": "same enclosing configured Codex Cloud task, not self-attested",
-            "environment": {"python": sys.version, "numpy": np.__version__, "device": "CPU"}}
+            "execution_location": "selected configured Codex Cloud environment; see enclosing platform task context",
+            "environment": {"python": sys.version, "numpy": np.__version__, "device": "CPU",
+                "cwd": str(ROOT), "os": list(os.uname()),
+                "thread_environment": {key: os.environ.get(key) for key in
+                    ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS")}}}
         write_json(run / "selection.json", selection)
         print(json.dumps({"selection": str(run / "selection.json"), "ready": ready,
             "validation_mean_contrasts": contrasts, "cpu_budget_violations": violations,

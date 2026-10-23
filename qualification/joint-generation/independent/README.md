@@ -72,3 +72,11 @@ Run source tests without creating any independent test data:
 ```bash
 python -W error -m unittest discover -s independent -p 'test_*.py' -v
 ```
+
+`independent.serve.export_bundle(run, system, seed, out)` copies the exact
+selected model, optional critic and hashed native library into a standalone
+bundle. `load_bundle` and `infer` reload that bundle and accept the existing typed
+media envelope without labels or observers. The request binds the exported
+bundle digest and retains actual PNG, caption, budget receipt and checkpoint.
+This single-request smoke does not qualify the frozen batch-throughput profile;
+an export from an unready training run does not imply experimental acceptance.

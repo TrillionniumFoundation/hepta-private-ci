@@ -62,7 +62,11 @@ def load_bundle(directory):
     return model, controller, manifest
 
 
-def encode_request(request):
+def _thumbnail(image):
+    return image.reshape(4, 2, 4, 2, 3).mean(axis=(1, 3)).repeat(2, axis=0).repeat(2, axis=1)
+
+
+def encode_request(request, *, include_low=True):
     expected = {"objective_id", "run_id", "image", "instruction", "budget", "deadline_ns", "decoding"}
     if not isinstance(request, dict) or set(request) != expected:
         raise ContractError("missing or unknown request fields")
@@ -83,8 +87,10 @@ def encode_request(request):
         words = np.concatenate([np.eye(len(values))[values.index(instruction[key])] for key, values in choices.items()])
     except (ValueError, TypeError) as error:
         raise ContractError("unsupported instruction word") from error
-    thumbnail = image.reshape(4, 2, 4, 2, 3).mean(axis=(1, 3)).repeat(2, axis=0).repeat(2, axis=1)
-    return np.r_[thumbnail.reshape(-1), words][None, :], np.r_[image.reshape(-1), words][None, :]
+    full = np.r_[image.reshape(-1), words][None, :]
+    if not include_low:
+        return None, full
+    return np.r_[_thumbnail(image).reshape(-1), words][None, :], full
 
 
 def infer(directory, request, outdir):

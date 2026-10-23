@@ -4,6 +4,7 @@ from pathlib import Path
 import tempfile
 import time
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 
@@ -42,6 +43,14 @@ def audio_video():
 
 
 class MultimodalContractTests(unittest.TestCase):
+    def test_adapter_validates_without_constructing_unused_thumbnail(self):
+        media = MediaEnvelope.parse(text_image(), now_ns=1)
+        with patch("serve._thumbnail", side_effect=AssertionError("unused thumbnail")) as thumbnail:
+            request = to_legacy_request(media, expected_artifact_sha256="a" * 64, now_ns=1)
+            thumbnail.assert_not_called()
+        self.assertEqual(request["instruction"], {"color": "blue", "shape": "cross", "position": "right"})
+        np.testing.assert_array_equal(request["image"], np.zeros((8, 8, 3)))
+
     def test_wire_json_is_bounded_and_uses_the_same_payload_validation(self):
         value = text_image()
         value["streams"][1]["payload"]["pixels"] = value["streams"][1]["payload"]["pixels"].tolist()

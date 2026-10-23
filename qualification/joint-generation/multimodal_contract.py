@@ -327,7 +327,7 @@ def to_legacy_request(envelope, *, expected_artifact_sha256, now_ns):
                "decoding": {"mode": envelope.decoding_mode, "seed": envelope.decoding_seed},
                "budget": vars(envelope.budget), "deadline_ns": envelope.deadline_ns}
     from serve import encode_request
-    encode_request(request)
+    encode_request(request, include_low=False)
     return request
 
 

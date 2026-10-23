@@ -3,6 +3,7 @@ from pathlib import Path
 import tempfile
 import time
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 
@@ -49,6 +50,16 @@ class ServeTests(unittest.TestCase):
         with self.assertRaises(ContractError):
             RunSession.restore(json.loads((out / "checkpoint.json").read_text()),
                                expected_artifact_sha256=result["model_digest"], now_ns=time.monotonic_ns())
+
+    def test_full_only_encoding_preserves_input_without_thumbnail_work(self):
+        self.request["image"] = np.linspace(0, 1, 192).reshape(8, 8, 3).tolist()
+        low, expected_full = encode_request(self.request)
+        self.assertFalse(np.array_equal(low[:, :192], expected_full[:, :192]))
+        with patch("serve._thumbnail", side_effect=AssertionError("unused thumbnail")) as thumbnail:
+            skipped, full = encode_request(self.request, include_low=False)
+            thumbnail.assert_not_called()
+        self.assertIsNone(skipped)
+        np.testing.assert_array_equal(full, expected_full)
 
     def test_price_changes_action_and_bundle_binding_without_model_change(self):
         before = infer(self.bundle, self.request, Path(self.tmp.name) / "before")
