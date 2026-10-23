@@ -5,7 +5,10 @@ use std::io::Write;
 use std::os::fd::FromRawFd;
 
 fn identity() -> AgentdCognitiveCheckpointPeer {
-    let pid = std::process::id();
+    identity_for(std::process::id())
+}
+
+fn identity_for(pid: u32) -> AgentdCognitiveCheckpointPeer {
     let stat = bounded_text(&format!("/proc/{pid}/stat"), 8192).unwrap();
     AgentdCognitiveCheckpointPeer {
         pid,
@@ -26,11 +29,67 @@ fn identity() -> AgentdCognitiveCheckpointPeer {
 }
 
 fn pidfd() -> OwnedFd {
+    pidfd_for(std::process::id())
+}
+
+fn pidfd_for(pid: u32) -> OwnedFd {
     // SAFETY: pidfd_open with a live test PID and zero flags returns a fresh fd.
-    let descriptor = unsafe { libc::syscall(libc::SYS_pidfd_open, std::process::id(), 0) };
+    let descriptor = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, 0) };
     assert!(descriptor >= 0);
     // SAFETY: the successful syscall returned sole descriptor ownership.
     unsafe { OwnedFd::from_raw_fd(descriptor as i32) }
+}
+
+#[tokio::test]
+async fn original_peer_exit_refuses_even_while_a_child_retains_the_connected_descriptor() {
+    use std::io::BufRead;
+    use std::process::Command;
+    use std::process::Stdio;
+
+    let directory = tempfile::tempdir().unwrap();
+    let socket = directory.path().join("root-fixture.sock");
+    // The actual connected peer is this Python process. Its short-lived child
+    // inherits the accepted stream so EOF cannot explain immediate refusal.
+    let script = r#"
+import os, socket, subprocess, sys
+listener = socket.socket(socket.AF_UNIX)
+listener.bind(sys.argv[1]); listener.listen(1)
+print('READY', flush=True)
+stream, _ = listener.accept()
+if sys.stdin.buffer.read(1) != b'X': sys.exit(0)
+subprocess.Popen(['/bin/sleep', '0.6'], pass_fds=(stream.fileno(),),
+    stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+"#;
+    let mut child = Command::new("python3")
+        .args(["-I", "-B", "-c", script])
+        .arg(&socket)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap();
+    let pinned = pidfd_for(child.id());
+    let mut ready = String::new();
+    std::io::BufReader::new(child.stdout.take().unwrap())
+        .read_line(&mut ready)
+        .unwrap();
+    assert_eq!(ready, "READY\n");
+    let stream = UnixStream::connect(&socket).unwrap();
+    let uid = unsafe { libc::geteuid() };
+    let transport = AgentdUnixCognitiveCheckpointTransport::from_stream_for_uid(
+        stream,
+        identity_for(child.id()),
+        pinned,
+        Duration::from_secs(2),
+        Duration::from_secs(5),
+        uid,
+    )
+    .unwrap();
+    child.stdin.take().unwrap().write_all(b"X").unwrap();
+    assert!(child.wait().unwrap().success());
+    let start = Instant::now();
+    assert!(transport.exchange(&request()).await.is_err());
+    assert!(start.elapsed() < Duration::from_millis(300));
+    assert!(transport.exchange(&request()).await.is_err());
 }
 
 fn fixture(timeout: Duration) -> (AgentdUnixCognitiveCheckpointTransport, UnixStream) {
