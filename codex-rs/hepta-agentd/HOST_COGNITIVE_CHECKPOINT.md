@@ -98,3 +98,13 @@ and `-03`; formatting/lint follows these test phases without another same-phase
 test run. [Published original receipts and logs](acceptance/2026-10-23-root-authority/README.md)
 include the earlier failures and successful finish. This does not qualify the
 real service/bootstrap/live lease.
+
+The trusted initial Current publication uses global counter 1 while its publisher
+mutation sequence remains 0. This matches the original client's positive-counter
+contract; no fictitious Begin/Prepare/Commit requests are issued. Runtime open
+rejects zero-counter records instead of silently upgrading a retained head.
+A trusted clean adoption advances the global counter once and resets only the
+new publisher's local sequence. A CAS conflict remains a definite pre-write
+refusal. All storage errors other than that conflict, and every clock/pidfd
+failure after a successful CAS, return Unavailable: the exact new head may
+already be durable and must be reconciled instead of reissued.

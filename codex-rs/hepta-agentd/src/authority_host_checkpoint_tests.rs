@@ -166,7 +166,7 @@ async fn root_cycle_is_durable_exact_and_never_implicitly_reinitialized() {
     let f = Fixture::new().await;
     let read = f.request(1, CognitiveCheckpointCommand::ReadHead, None, None);
     let first = exchange(&f.backend, &read);
-    ack(&first, CognitiveCheckpointPhase::Current, 0);
+    ack(&first, CognitiveCheckpointPhase::Current, 1);
     assert_eq!(first.head.as_ref().unwrap().last_current, f.initial_cut);
     let begin = f.request(
         2,
@@ -175,7 +175,7 @@ async fn root_cycle_is_durable_exact_and_never_implicitly_reinitialized() {
         None,
     );
     let dirty = exchange(&f.backend, &begin);
-    ack(&dirty, CognitiveCheckpointPhase::Dirty, 1);
+    ack(&dirty, CognitiveCheckpointPhase::Dirty, 2);
     // Exact original raw request replays the retained ACK without another CAS.
     assert_eq!(exchange(&f.backend, &begin), dirty);
     let raw = serde_json::to_string(&begin).unwrap() + " ";
@@ -189,7 +189,7 @@ async fn root_cycle_is_durable_exact_and_never_implicitly_reinitialized() {
         Some(f.proposal()),
     );
     let publishing = exchange(&f.backend, &prepare);
-    ack(&publishing, CognitiveCheckpointPhase::Publishing, 2);
+    ack(&publishing, CognitiveCheckpointPhase::Publishing, 3);
     assert_eq!(f.reopen().load().unwrap(), publishing.head.clone().unwrap());
     let commit = f.request(
         4,
@@ -198,7 +198,7 @@ async fn root_cycle_is_durable_exact_and_never_implicitly_reinitialized() {
         None,
     );
     let current = exchange(&f.backend, &commit);
-    ack(&current, CognitiveCheckpointPhase::Current, 3);
+    ack(&current, CognitiveCheckpointPhase::Current, 4);
     assert_eq!(f.reopen().load().unwrap(), current.head.clone().unwrap());
     assert_eq!(exchange(&f.backend, &commit), current);
     assert!(
@@ -236,7 +236,7 @@ async fn root_read_ids_do_not_advance_mutation_highwater_or_revive_fenced_state(
         None,
     );
     let fenced = exchange(&f.backend, &fence);
-    ack(&fenced, CognitiveCheckpointPhase::Fenced, 1);
+    ack(&fenced, CognitiveCheckpointPhase::Fenced, 2);
     assert_eq!(fenced.head.as_ref().unwrap().last_mutation_sequence, 2);
     let begin = f.request(
         3,
@@ -249,7 +249,7 @@ async fn root_read_ids_do_not_advance_mutation_highwater_or_revive_fenced_state(
         CognitiveCheckpointStatus::Refused
     );
     let observed = exchange(&f.reopen(), &read);
-    ack(&observed, CognitiveCheckpointPhase::Fenced, 1);
+    ack(&observed, CognitiveCheckpointPhase::Fenced, 2);
     assert_eq!(observed.head.as_ref().unwrap().last_current, f.initial_cut);
 }
 
@@ -399,7 +399,7 @@ async fn root_two_independent_handles_cannot_both_win_the_same_original_cas() {
     }
     let head = f.reopen().load().unwrap();
     assert_eq!(&head, winner.head.as_ref().unwrap());
-    assert_eq!(head.counter, 1);
+    assert_eq!(head.counter, 2);
     assert_eq!(head.phase, CognitiveCheckpointPhase::Dirty);
 }
 
@@ -462,7 +462,7 @@ async fn root_trusted_successor_keeps_global_counter_separate_from_publisher_seq
         proposal: None,
     };
     let changed = exchange(&next, &request);
-    ack(&changed, CognitiveCheckpointPhase::Dirty, 2);
+    ack(&changed, CognitiveCheckpointPhase::Dirty, 3);
     assert_eq!(changed.head.as_ref().unwrap().last_mutation_sequence, 1);
     assert!(f.backend.load().is_err());
 }

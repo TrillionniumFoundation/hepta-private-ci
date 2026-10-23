@@ -86,7 +86,7 @@ impl HostCognitiveCheckpoint {
             schema_version: 1,
             owner_agent_id: registration.owner_agent_id.clone(),
             publisher_epoch: registration.publisher_epoch,
-            counter: 0,
+            counter: 1,
             last_mutation_sequence: 0,
             writer_binding: registration.writer_binding.clone(),
             peer_lifetime: registration.peer_lifetime.clone(),

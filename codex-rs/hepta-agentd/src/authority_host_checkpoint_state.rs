@@ -109,6 +109,7 @@ pub(super) fn validate_head(
     head: &CognitiveCheckpointHead,
 ) -> Result<(), AuthorityTrustError> {
     if head.schema_version != 1
+        || head.counter == 0
         || head.owner_agent_id != registration.owner_agent_id
         || head.publisher_epoch != registration.publisher_epoch
         || head.writer_binding != registration.writer_binding

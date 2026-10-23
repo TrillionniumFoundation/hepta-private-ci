@@ -64,11 +64,16 @@ impl HostCognitiveCheckpoint {
         // The original last_current cut is carried byte-for-byte, never rehashed
         // from a possibly modified database. A lost result must be reconciled
         // by opening the actual new registration, never by minting another one.
-        store.compare_and_set(STORE_OWNER, old, &next)?;
-        let after = clock.now_unix_ms()?;
+        store.compare_and_set(STORE_OWNER, old, &next).map_err(|error| match error {
+            AuthorityTrustError::Conflict => AuthorityTrustError::Conflict,
+            AuthorityTrustError::Invalid | AuthorityTrustError::Unavailable => AuthorityTrustError::Unavailable,
+        })?;
+        // A durable CAS may already have committed. Every later failure is
+        // uncertain, even when an underlying clock or pidfd reports Conflict.
+        let after = clock.now_unix_ms().map_err(|_| AuthorityTrustError::Unavailable)?;
         if after < before || after >= expiry { return Err(AuthorityTrustError::Unavailable); }
-        predecessor.require_exited()?;
-        successor.require_alive()?;
+        predecessor.require_exited().map_err(|_| AuthorityTrustError::Unavailable)?;
+        successor.require_alive().map_err(|_| AuthorityTrustError::Unavailable)?;
         Ok(Self {
             registration,
             store,
