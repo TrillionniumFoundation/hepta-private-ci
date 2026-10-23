@@ -10,8 +10,10 @@ import argparse
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import re
+import stat
 import statistics
 import sys
 
@@ -72,18 +74,70 @@ def nonnegative_int(value) -> bool:
     return type(value) is int and value >= 0
 
 
-def verify_artifact(root: Path, filename: str, expected: str, cap=64_000_000) -> None:
+def _read_pinned_artifact(root: Path, filename: str, expected: str, cap=64_000_000, *, collect=False):
+    """Verify pinned bytes through descriptor-relative, no-follow POSIX opens.
+
+    Opening each component relative to its already-open parent avoids the
+    check/open pathname race of Path.resolve/is_symlink/read_bytes. Unsupported
+    platforms fail closed instead of silently reverting to pathname reads.
+    """
     require(type(filename) is str and 0 < len(filename) <= 256, "invalid artifact path")
-    name = Path(filename)
-    require(not name.is_absolute() and all(x not in (".", "..") for x in name.parts),
-            "absolute/traversal artifact path")
-    node = root / name
-    require(node.resolve().is_relative_to(root.resolve()), "artifact escaped root")
-    require(not any(part.is_symlink() for part in (node, *node.parents) if part != root.parent),
-            "symlinked artifact path")
-    require(node.is_file() and node.stat().st_size <= cap, "artifact absent or too large")
-    require(sha(expected) and digest(node.read_bytes()) == expected,
-            "artifact SHA256 mismatch")
+    require(type(cap) is int and 0 < cap <= 64_000_000 and sha(expected),
+            "invalid artifact cap or SHA256")
+    parts = filename.split("/")
+    require(not filename.startswith("/") and "\\" not in filename and "\x00" not in filename
+            and not re.match(r"^[A-Za-z]:", filename) and len(parts) <= 32
+            and all(part not in ("", ".", "..") for part in parts),
+            "absolute/traversal/noncanonical artifact path")
+    nofollow = getattr(os, "O_NOFOLLOW", 0)
+    directory = getattr(os, "O_DIRECTORY", 0)
+    require(nofollow != 0 and directory != 0 and os.name == "posix",
+            "atomic no-follow artifact reading unsupported")
+    common_flags = getattr(os, "O_CLOEXEC", 0) | nofollow | os.O_RDONLY
+    dir_fd = None
+    file_fd = None
+    chunks = []
+    try:
+        dir_fd = os.open(root, common_flags | directory)
+        for component in parts[:-1]:
+            next_fd = os.open(component, common_flags | directory, dir_fd=dir_fd)
+            os.close(dir_fd)
+            dir_fd = next_fd
+        file_fd = os.open(parts[-1], common_flags | getattr(os, "O_NONBLOCK", 0),
+                          dir_fd=dir_fd)
+        before = os.fstat(file_fd)
+        require(stat.S_ISREG(before.st_mode) and 0 <= before.st_size <= cap,
+                "artifact absent, not regular or too large")
+        hasher = hashlib.sha256()
+        count = 0
+        while True:
+            data = os.read(file_fd, min(1_048_576, cap + 1 - count))
+            if not data:
+                break
+            count += len(data)
+            require(count <= cap, "artifact increased beyond byte cap during read")
+            hasher.update(data)
+            if collect:
+                chunks.append(data)
+        after = os.fstat(file_fd)
+        require((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns,
+                 before.st_ctime_ns) ==
+                (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns,
+                 after.st_ctime_ns) and count == after.st_size,
+                "artifact modified during evidence read")
+        require(hasher.hexdigest() == expected, "artifact SHA256 mismatch")
+        return b"".join(chunks) if collect else None
+    except OSError as error:
+        raise EvidenceError("artifact could not be safely opened or read") from error
+    finally:
+        if file_fd is not None:
+            os.close(file_fd)
+        if dir_fd is not None:
+            os.close(dir_fd)
+
+
+def verify_artifact(root: Path, filename: str, expected: str, cap=64_000_000) -> None:
+    _read_pinned_artifact(root, filename, expected, cap)
 
 
 def validate_sources(root: Path, source_manifest: dict, history: dict):
@@ -121,8 +175,20 @@ def validate_sources(root: Path, source_manifest: dict, history: dict):
 
 
 def validate_protocol(protocol, protocol_path: Path, expected_sha: str):
-    require(sha(expected_sha) and digest(protocol_path.read_bytes()) == expected_sha,
-            "protocol not independently pinned by expected SHA256")
+    require(sha(expected_sha), "protocol not independently pinned by expected SHA256")
+    contents = _read_pinned_artifact(protocol_path.parent, protocol_path.name,
+                                    expected_sha, MAX_JSON_BYTES, collect=True)
+    pinned = json.loads(contents, object_pairs_hook=strict_pairs,
+                        parse_constant=reject_constant)
+    # The bytes authenticated against the frozen SHA must describe the
+    # exact protocol that all subsequent cohort/episode checks consume.
+    # JSON canonicalization also distinguishes true, 1 and 1.0.
+    require(type(protocol) is dict and
+            json.dumps(protocol, sort_keys=True, separators=(",", ":"),
+                       allow_nan=False) ==
+            json.dumps(pinned, sort_keys=True, separators=(",", ":"),
+                       allow_nan=False),
+            "parsed protocol differs from independently pinned original bytes")
     require(protocol.get("schema") == "hepta.p0-p7.research.v1", "unknown protocol")
     require(type(protocol.get("seeds")) is list and len(protocol["seeds"]) >= 3 and
             all(nonnegative_int(x) for x in protocol["seeds"]) and
