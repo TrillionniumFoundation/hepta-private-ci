@@ -37,6 +37,9 @@ pub struct FrozenStructuralComparisonV1 {
     pub no_change_id: StableId,
     pub mutation: StructuralMutationKindV1,
     pub topology_admission_digest: Digest32,
+    pub objective_digest: Digest32,
+    pub rollback_plan_digest: Digest32,
+    pub generation: u64,
     pub frozen_plan_digest: Digest32,
     pub dataset_digest: Digest32,
     pub metric_policy_digest: Digest32,
@@ -83,7 +86,7 @@ pub struct SignedStructuralComparisonV1 {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum StructuralComparisonDispositionV1 {
-    EligibleToRequestFinalUse,
+    EligibleForIndependentStatisticalReview,
     Rejected,
 }
 
@@ -123,6 +126,9 @@ fn validate(
         || plan.candidate_id == plan.no_change_id
         || plan.predecessor_id == plan.no_change_id
         || plan.topology_admission_digest.is_zero()
+        || plan.objective_digest.is_zero()
+        || plan.rollback_plan_digest.is_zero()
+        || plan.generation == 0
         || plan.frozen_plan_digest.is_zero()
         || plan.dataset_digest.is_zero()
         || plan.metric_policy_digest.is_zero()
@@ -212,6 +218,8 @@ pub fn structural_comparison_signing_payload_v1(
     bytes.push(plan.mutation.tag());
     for d in [
         plan.topology_admission_digest,
+        plan.objective_digest,
+        plan.rollback_plan_digest,
         plan.frozen_plan_digest,
         plan.dataset_digest,
         plan.metric_policy_digest,
@@ -222,6 +230,7 @@ pub fn structural_comparison_signing_payload_v1(
         bytes.extend_from_slice(d.as_array());
     }
     for v in [
+        plan.generation,
         plan.frozen_at_unix_ms,
         plan.future_start_unix_ms,
         plan.future_end_unix_ms,
@@ -262,7 +271,9 @@ pub fn structural_comparison_signing_payload_v1(
 }
 
 /// Only signed, independently separated generator/evaluator roles can produce
-/// an eligibility result. FinalUse, selection and actual cutover remain external.
+/// a deterministic screening result. This is NOT statistical qualification.
+/// Confidence-aware held-out signed evaluation, FinalUse, selection and cutover
+/// remain external. Never promote solely on this comparator.
 pub fn assess_signed_structural_comparison_v1(
     plan: &FrozenStructuralComparisonV1,
     result: &StructuralComparisonObservationV1,
@@ -271,6 +282,26 @@ pub fn assess_signed_structural_comparison_v1(
     now: u64,
 ) -> Result<SignedStructuralComparisonDecisionV1, StructuralComparisonErrorV1> {
     let signed_payload = structural_comparison_signing_payload_v1(plan, result)?;
+    let now_ms = now
+        .checked_mul(1000)
+        .ok_or(StructuralComparisonErrorV1::InvalidObservation)?;
+    let generator_issued_ms = evidence
+        .generator_plan
+        .issued_at
+        .checked_mul(1000)
+        .ok_or(StructuralComparisonErrorV1::InvalidObservation)?;
+    let evaluator_issued_ms = evidence
+        .evaluator_observation
+        .issued_at
+        .checked_mul(1000)
+        .ok_or(StructuralComparisonErrorV1::InvalidObservation)?;
+    if verifier.objective_digest() != plan.objective_digest
+        || now_ms < plan.future_end_unix_ms
+        || generator_issued_ms > plan.frozen_at_unix_ms
+        || evaluator_issued_ms < plan.future_end_unix_ms
+    {
+        return Err(StructuralComparisonErrorV1::InvalidObservation);
+    }
     let generator = verifier.verify(
         LearningEvidenceRoleV1::Generator,
         &evidence.generator_plan,
@@ -291,7 +322,7 @@ pub fn assess_signed_structural_comparison_v1(
     Ok(SignedStructuralComparisonDecisionV1 {
         candidate_id: plan.candidate_id.clone(),
         disposition: if passes(plan, result) {
-            StructuralComparisonDispositionV1::EligibleToRequestFinalUse
+            StructuralComparisonDispositionV1::EligibleForIndependentStatisticalReview
         } else {
             StructuralComparisonDispositionV1::Rejected
         },
