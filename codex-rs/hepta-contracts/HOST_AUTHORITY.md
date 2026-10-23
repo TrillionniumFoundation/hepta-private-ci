@@ -380,3 +380,5 @@ proof, actual old-process quiescence, canonical sequence reservation/signing and
 post-I/O expiry checks. The two protected stores cannot be atomically committed
 by this guard: uncertain cross-store outcomes require refusal and exact retained
 state reconciliation, never reset or a new blind generation.
+
+[Original pair-boundary qualification and preserved fixture failure](acceptance/2026-10-23-pair-boundary/README.md) records the 23-test scope and complete 227-test contracts result.
