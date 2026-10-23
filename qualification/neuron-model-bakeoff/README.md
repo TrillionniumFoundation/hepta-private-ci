@@ -116,9 +116,15 @@ preregistered plan:
 The evaluator aborts if any of the five runs is missing, a model or artifact
 identity drifts, Head budgets differ, data leaks between partitions, OOD is
 absent, probabilities are malformed, or holdout predictions are incomplete.
-It reports accuracy, selective accuracy/coverage, multiclass normalized Brier,
-ECE (top-confidence, 15 bins), OOD false acceptance and per-language/task
-regressions. This diagnostic is not a causal or independent acceptance
+It reports raw accuracy, correct-and-accepted rate, selective
+accuracy/coverage, class-balanced recall, macro-F1, multiclass normalized
+Brier, ECE (top-confidence, 15 bins), OOD false acceptance,
+per-language/task regressions and a **diagnostic-only paired cluster
+bootstrap interval** (2,000 deterministic resamples). A high raw accuracy
+can hide total failure on a rare class; it cannot qualify by itself.
+For the two Encoder arms, it independently hashes the exact labeled
+**train partition** and rejects a mismatch across the published Head
+training receipts. This diagnostic is not a causal or independent acceptance
 decision. Correlated-cluster confidence bounds, alpha spending, power,
 retention and two real future windows remain mandatory external gates.
 
@@ -158,7 +164,7 @@ physical CAS, routing, execution or final-use authorization.
 
     python3 -m unittest discover -v -s qualification/neuron-model-bakeoff -p 'test_*.py'
 
-The 18 synthetic tests exercise negative inputs and no-authority invariants.
+The synthetic contract and loopback tests exercise negative inputs and no-authority invariants.
 They are never model accuracy, resource or live crash measurements. Real
 acceptance additionally needs signed owner-observed artifact writes,
 independent dataset provenance/holdout verification, target-host performance,
