@@ -16,7 +16,8 @@ import time
 import numpy as np
 import torch
 
-from backend import FlorenceBackend
+from backend import FlorenceBackend, MODEL_REVISION
+from hard_budget import HardBudgetPool, interrupted_episode
 from cells import FourCells
 from cohort import iter_pairs, validate_splits
 from evaluate import METHODS, cvar, evaluate, score_episode
@@ -154,6 +155,10 @@ def execute(args, phase, split, combinations):
                 "implementation_sha256": {name: sha(Path(__file__).parent / name) for name in
                     ("backend.py", "cells.py", "policies.py", "verification.py", "generation.py",
                      "experiment.py", "evaluate.py", "cohort.py", "protocol.json")}}
+    if getattr(args, "hard_budget", False):
+        # This opt-in mode changes run identity. The frozen v1 receipts are never relabeled.
+        identity["supervision"] = "externally-killed-resident-v2"
+        identity["implementation_sha256"]["hard_budget.py"] = sha(Path(__file__).parent / "hard_budget.py")
     if manifest_path.exists():
         existing = json.loads(manifest_path.read_text())
         if existing["identity"] != identity:
@@ -175,11 +180,9 @@ def execute(args, phase, split, combinations):
             if key not in seen:
                 jobs.append((observation, method, seed, risk_weight, observations[(index + 1) % len(observations)], args.budget))
     started, rows = time.perf_counter(), list(previous)
-    with ProcessPoolExecutor(max_workers=args.workers, mp_context=multiprocessing.get_context("spawn"),
-                             initializer=initialize_worker,
-                             initargs=(args.model, str(training), str(output / "artifacts"), phase)) as executor:
+    def record_episodes(episodes):
         with journal.open("a") as stream:
-            for episode in executor.map(execute_job, jobs, chunksize=1):
+            for episode in episodes:
                 episode["split"] = split
                 episode["score"] = score_episode(episode, references[episode["task_id"]])
                 stream.write(json.dumps(episode, allow_nan=False) + "\n")
@@ -189,12 +192,31 @@ def execute(args, phase, split, combinations):
                     print(json.dumps({"phase": phase, "episodes": len(rows),
                                       "total": len(pairs) * len(combinations),
                                       "failures": sum(bool(row["failures"]) for row in rows)}), flush=True)
+
+    initargs = (args.model, str(training), str(output / "artifacts"), phase)
+    supervisor_initializations = []
+    if getattr(args, "hard_budget", False):
+        with HardBudgetPool(initialize_worker, initargs, execute_job, workers=args.workers) as supervisor:
+            def guarded():
+                for index, result, receipt in supervisor.run(jobs, args.budget):
+                    if result is None:
+                        yield interrupted_episode(jobs[index], receipt, identity["checkpoint_sha256"], MODEL_REVISION)
+                    else:
+                        result["supervisor"] = receipt
+                        yield result
+            record_episodes(guarded())
+            supervisor_initializations = list(supervisor.initializations)
+    else:
+        with ProcessPoolExecutor(max_workers=args.workers, mp_context=multiprocessing.get_context("spawn"),
+                                 initializer=initialize_worker, initargs=initargs) as executor:
+            record_episodes(executor.map(execute_job, jobs, chunksize=1))
     resident = {r["resident_initialization"]["worker_pid"]: r["resident_initialization"] for r in rows}
     write_json(manifest_path, {"identity": identity, "status": "complete", "completed_unix": time.time(), "episodes": len(rows),
                               "resumed": len(previous), "this_execution_seconds": time.perf_counter() - started,
                               "journal_sha256": sha(journal),
                               "actual_episode_seconds": sum(r["actual_wall_seconds"] for r in rows),
-                              "worker_initializations": list(resident.values()),
+                              "worker_initializations": supervisor_initializations or list(resident.values()),
+                              "external_hard_wall_supervision": bool(getattr(args, "hard_budget", False)),
                               "timing_scope": "parallel worker online wall sum is not batch elapsed; initialization, IPC scheduling and independent scoring are in batch elapsed"})
     return rows, list(references.values())
 
@@ -280,6 +302,8 @@ def main():
     parser.add_argument("--work", required=True)
     parser.add_argument("--budget", type=float, default=10.0)
     parser.add_argument("--workers", type=int, default=2)
+    parser.add_argument("--hard-budget", action="store_true",
+                        help="opt-in v2 external resident-worker kill watchdog; requires a new work directory")
     args = parser.parse_args()
     if not 1 <= args.workers <= 2 or args.budget <= 0:
         parser.error("one or two workers and a positive budget are required")
