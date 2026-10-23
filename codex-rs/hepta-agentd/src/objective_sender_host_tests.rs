@@ -146,8 +146,11 @@ async fn retained_signed_body_hash_matches_original_agentd_wire_projection()
                 artifact_set_digest: "55".repeat(32),
                 authority_epoch: 13,
             };
-            let original_payload =
-                crate::objective_ingress::objective_payload(config.identity(), &body)?;
+            let original_payload = crate::objective_runtime::objective_payload(
+                config.identity(),
+                &body,
+                config.identity().spawn_generation,
+            )?;
             assert_eq!(original_payload, serde_json::to_vec(&body)?);
             let mut ingress = AuthBusObjectiveIngress {
                 issuer_id: "composition-original-issuer".to_string(),
@@ -167,8 +170,12 @@ async fn retained_signed_body_hash_matches_original_agentd_wire_projection()
             assert_eq!(retained.exact_original(), raw.as_bytes());
             ingress.body.source_envelope_json.clear();
             assert!(
-                crate::objective_ingress::objective_payload(config.identity(), &ingress.body)
-                    .is_err()
+                crate::objective_runtime::objective_payload(
+                    config.identity(),
+                    &ingress.body,
+                    config.identity().spawn_generation,
+                )
+                .is_err()
             );
             assert!(
                 ObjectiveSenderRequest::from_original(

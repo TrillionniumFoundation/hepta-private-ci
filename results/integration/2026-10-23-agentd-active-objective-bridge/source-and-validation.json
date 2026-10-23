@@ -1,0 +1,133 @@
+{
+  "source_ref": "db91f9ec316ba1472e7adf97f8415949de012469",
+  "source_tree": "81c03af04be56659d3eb4da71bf61aeac34c949f",
+  "publication_base": "5a3ffeb70afaa56c4390551f740073b68ec539e3",
+  "publication_base_tree": "7699e4f07fda871f885398aea873a01dfc05213f",
+  "publication_base_evidence": {
+    "path": "/workspace/scratch/3d6a75235bcb/work/owner-ci/publication/root-3444-ci-readback.json",
+    "bytes": 421,
+    "sha256": "8969d7b7a87d885fce56a5303eb71427c3160ea4da6e84e33f78b0a826b25ba0",
+    "git_blob": "de444acdb02ac6dea1803d3ed808bfeaf884e9b4",
+    "claim": "Parent independently read back the evidence/workflow-only successor; source pin is unchanged."
+  },
+  "original_package_executed": false,
+  "entries": [
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "mode": "100644",
+      "type": "blob",
+      "preimage": {
+        "bytes": 23152,
+        "sha256": "1687e6085d89a976e7a7f2b3e59c59bedde83b393767458ebc0497b2f6f1a338",
+        "git_blob": "2b20c8102d703b4f6dc351da1bb160053a8ffaf9"
+      },
+      "candidate": {
+        "bytes": 23163,
+        "sha256": "1c88bd5c9b95ca2912ce11eade0abd83c3ed719ea37f8f1a91da48428a95b7a9",
+        "git_blob": "367aa321893b757676fe78174f16c3924b1fd10c"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_sender_host_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "preimage": {
+        "bytes": 7803,
+        "sha256": "c76ec2b41236d80dfb5ed0670834e913810c5378d3ad74802121d9fb04f20991",
+        "git_blob": "bdc1ca768d732bec420d54608cb0c67d0d0746a2"
+      },
+      "candidate": {
+        "bytes": 7997,
+        "sha256": "976680a2e4fde14a3ff433f9c788d5b9df77cf6004ce152d047c6dd2900563ae",
+        "git_blob": "044c831c3af09f2e9f9cfe5bc0b5976ac7b44768"
+      }
+    }
+  ],
+  "verification": {
+    "static_call_checks": {
+      "scope": "source shape and call-site review; no Rust type checking or test execution",
+      "passed": true,
+      "checks": {
+        "active_module_registered": true,
+        "legacy_module_not_registered": true,
+        "existing_three_argument_signature": true,
+        "only_helper_visibility_changes": true,
+        "existing_runtime_call_unchanged": true,
+        "exactly_two_active_bridge_calls": true,
+        "no_legacy_bridge_reference": true,
+        "two_explicit_generation_arguments": true,
+        "all_three_bridge_names_preserved": true,
+        "all_assertion_counts_preserved": true,
+        "parent_recorded_source_pin_preserved": true
+      },
+      "test_names": [
+        "uninstalled_original_objective_sender_refuses_without_a_new_owner",
+        "installed_original_objective_sender_reuses_same_writer_and_live_verifier",
+        "retained_signed_body_hash_matches_original_agentd_wire_projection"
+      ],
+      "crate_root": {
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "bytes": 13707,
+        "sha256": "17d994df31d925b82b312dd66c41def5714c286d67aed853f8b540edd3530009",
+        "git_blob": "5e3c5fba361c30071afec7c969f5720b624bb662"
+      },
+      "rustfmt_receipt": {
+        "bytes": 1851,
+        "sha256": "624cbe677a2dad9ce3fc7953c71b550155d9df28221a23c41eb331229503ee94",
+        "git_blob": "54391c1e5938ac8fdb9036309337ec167da09618"
+      },
+      "original_package_executed": false
+    },
+    "formatter": {
+      "started_at": "2026-10-23T09:05:53.986008+00:00",
+      "tool": "/dev/shm/organ-3d6a75235bcb-objective-tests/rustup-home/toolchains/1.88.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+      "tool_sha256": "cf32a42bb26561ab14c74306b59b2739c5e9a9b20fd00c02f913a8589d77279e",
+      "tool_version": "rustfmt 1.8.0-stable (6b00bc3880 2025-06-23)",
+      "mode": "read-only stdin parse and formatting comparison; not original Rust 1.95 just fmt or crate type checking",
+      "original_package_executed": false,
+      "files": [
+        {
+          "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+          "command": [
+            "/dev/shm/organ-3d6a75235bcb-objective-tests/rustup-home/toolchains/1.88.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+            "--edition",
+            "2024",
+            "--emit",
+            "stdout",
+            "--config",
+            "skip_children=true"
+          ],
+          "stdin_sha256": "1c88bd5c9b95ca2912ce11eade0abd83c3ed719ea37f8f1a91da48428a95b7a9",
+          "exit_code": 0,
+          "stdout_sha256": "1c88bd5c9b95ca2912ce11eade0abd83c3ed719ea37f8f1a91da48428a95b7a9",
+          "stderr": "",
+          "formatted_equal": true,
+          "source_unchanged": true
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/objective_sender_host_tests.rs",
+          "command": [
+            "/dev/shm/organ-3d6a75235bcb-objective-tests/rustup-home/toolchains/1.88.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+            "--edition",
+            "2024",
+            "--emit",
+            "stdout",
+            "--config",
+            "skip_children=true"
+          ],
+          "stdin_sha256": "976680a2e4fde14a3ff433f9c788d5b9df77cf6004ce152d047c6dd2900563ae",
+          "exit_code": 0,
+          "stdout_sha256": "976680a2e4fde14a3ff433f9c788d5b9df77cf6004ce152d047c6dd2900563ae",
+          "stderr": "",
+          "formatted_equal": true,
+          "source_unchanged": true
+        }
+      ],
+      "finished_at": "2026-10-23T09:05:54.041225+00:00",
+      "passed": true
+    },
+    "no_cargo_or_github_calls": true,
+    "original_rust_195_fmt": "not run; toolchain released for serial UI window",
+    "original_agentd_lib_tests": "not run; CI owning-package gate required"
+  }
+}
