@@ -172,6 +172,18 @@ class ComparatorTests(unittest.TestCase):
         with self.assertRaisesRegex(ComparisonError, "timeout exceeded"):
             compare(base, receipts)
 
+    def test_contradictory_tool_outcome_cannot_count_as_success(self):
+        base, receipts = fixture()
+        receipts[0]["tool_correct"] = False
+        with self.assertRaisesRegex(ComparisonError, "task success conflicts with tool correctness"):
+            compare(base, receipts)
+        base, receipts = fixture()
+        receipts[0]["task_success"] = False
+        receipts[0]["tool_correct"] = False
+        result = compare(base, receipts)
+        self.assertEqual(result["scale_summaries"]["64"]["A"]["success_rate"], 0)
+        self.assertFalse(result["independent_acceptance"])
+
     def test_placeholder_baseline_fails_closed(self):
         base, receipts = fixture()
         base["tasks"] = []
