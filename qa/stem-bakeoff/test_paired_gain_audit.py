@@ -39,9 +39,9 @@ def fixture(cheap_all_correct=False):
                          "label":y,"split":"test", "arm":"text_image-gated",
                          "intervention":"paired","pair_block_id":item["pair_block_id"],
                          "image_group_id":f"coco2017:{image}",
-                         "confidence_threshold":.7,"prediction":y,"accepted":True,
+                         "confidence_threshold":.7,"temperature":.25,"prediction":y,"accepted":True,
                          "probabilities":[.05,.95] if y else [.95,.05],
-                         "identity":{"data_sha256":gate.DATA_SHA256}})
+                         "identity":dict(gate.PRIMARY_IDENTITY)})
     metric=gate.metrics([r['label'] for r in rows],
                         [r['cheap_prediction'] for r in rows],
                         [r['cheap_accepted'] for r in rows])
@@ -103,6 +103,37 @@ class PairedGainAuditTests(unittest.TestCase):
         for r in rows[4:8]:
             if r['image_id']==1002:r['image_sha256']=rows[0]['image_sha256']
         with self.assertRaises(gate.AuditError):gate.verified_pairs(rows,head)
+
+    def test_image_id_cannot_change_its_byte_hash_within_block(self):
+        *_,rows,head=fixture()
+        rows[0]['image_sha256']=h('forged bytes')
+        with self.assertRaises(gate.AuditError):gate.verified_pairs(rows,head)
+
+    def test_caption_id_cannot_change_its_byte_hash_within_block(self):
+        *_,rows,head=fixture()
+        rows[0]['caption_sha256']=h('forged caption bytes')
+        with self.assertRaises(gate.AuditError):gate.verified_pairs(rows,head)
+
+    def test_reused_caption_bytes_across_blocks_rejected(self):
+        *_,rows,head=fixture()
+        for r in rows[4:8]:
+            if r['caption_id']==5002:r['caption_sha256']=rows[0]['caption_sha256']
+        with self.assertRaises(gate.AuditError):gate.verified_pairs(rows,head)
+
+    def test_original_head_digest_cannot_be_switched(self):
+        *_,rows,head=fixture()
+        head[0]['identity']['head_sha256']='0'*64
+        with self.assertRaises(gate.AuditError):gate.verified_pairs(rows,head)
+
+    def test_original_prediction_reader_rejects_symlink_and_oversize(self):
+        with tempfile.TemporaryDirectory() as t:
+            p=Path(t)/'source'
+            p.write_bytes(b'x'*512_001)
+            with self.assertRaises(gate.AuditError):gate.verified_primary(p)
+            p.write_bytes(b'[]')
+            link=Path(t)/'alias'
+            link.symlink_to(p)
+            with self.assertRaises(gate.AuditError):gate.verified_primary(link)
 
     def test_duplicate_or_missing_row_is_rejected(self):
         *_,rows,head=fixture()

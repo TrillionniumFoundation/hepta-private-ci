@@ -20,6 +20,13 @@ ARCHIVE_SHA256 = "2a853d6c975b30d98a8c79348f01bb3f5b26f36793f2986826a5deed3ea445
 DATA_SHA256 = "4d7eec98a8546f8af64b0a5f2b4f192b30c6c43cb086f73f67bb0793a4509d63"
 BANK_SHA256 = "e620c7ac8264979136cf39d992ddd575ab37c71baa6a729269af41bc42ca290d"
 THRESHOLD = 0.70
+PRIMARY_IDENTITY = {
+    "data_sha256": DATA_SHA256,
+    "encoder_sha256": "f23c2a1f6efc56f54a4ab96fe637eeef21da42dab6bf084eb90cbc91e6f1f5ce",
+    "head_sha256": "72cf10b3a068c534e126bacacd457c167bd1fa775aca5e838dd00a83405dfaa1",
+    "plan_sha256": "3c9266e3dead8690ae4b58dfe28bd7c3bf77a404dbcc02f32cc7c13756780499",
+    "preprocess_sha256": "5153e1507d5f2af7f193b9e728ba1b8cd2e9d69fa13ad897943b4d622c09064e",
+}
 HEX64 = re.compile(r"[0-9a-f]{64}\Z")
 
 
@@ -57,7 +64,10 @@ def digest(v):
 
 
 def verified_primary(path):
-    raw = Path(path).read_bytes()
+    path = Path(path)
+    if (path.is_symlink() or not path.is_file() or not 0 < path.stat().st_size <= 512_000):
+        raise AuditError("original P39 prediction source must be a bounded regular file")
+    raw = path.read_bytes()
     if hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest() != ORIGINAL_PRIMARY_BLOB_SHA1:
         raise AuditError("original P39 prediction blob differs from pinned source")
     return json.loads(raw)
@@ -97,7 +107,8 @@ def verified_pairs(rows, primary):
                 or p["source_id"] in origins or p.get("schema") != "hepta.prediction-ledger.v1"
                 or p.get("split") != "test" or p.get("arm") != "text_image-gated"
                 or p.get("intervention") != "paired" or p.get("confidence_threshold") != THRESHOLD
-                or p.get("identity", {}).get("data_sha256") != DATA_SHA256):
+                or any(p.get("identity", {}).get(k) != v for k,v in PRIMARY_IDENTITY.items())
+                or p.get("temperature") != 0.25):
             raise AuditError("original Head identity, duplicates or intervention mismatch")
         origins[p["source_id"]] = p
     blocks = defaultdict(list)
@@ -140,19 +151,25 @@ def verified_pairs(rows, primary):
         data.append(observed)
     if origins or len(blocks) != 64:
         raise AuditError("missing original rows or non-independent pair blocks")
-    all_photos, all_captions, all_image_bytes = set(), set(), set()
+    all_photos, all_captions, all_image_bytes, all_text_bytes = set(), set(), set(), set()
     for group in blocks.values():
         img, cap = {r["image_id"] for r in group}, {r["caption_id"] for r in group}
         if (len(group) != 4 or len(img) != 2 or len(cap) != 2
+                or len({(r["image_id"],r["image_sha256"]) for r in group}) != 2
+                or len({r["image_sha256"] for r in group}) != 2
+                or len({(r["caption_id"],r["caption_sha256"]) for r in group}) != 2
+                or len({r["caption_sha256"] for r in group}) != 2
                 or len({(r["image_id"], r["caption_id"]) for r in group}) != 4
                 or sum(r["label"] for r in group) != 2
                 or any(sum(x["label"] for x in group if x["image_id"] == i) != 1 for i in img)
                 or any(sum(x["label"] for x in group if x["caption_id"] == i) != 1 for i in cap)
                 or img & all_photos or cap & all_captions
-                or {r["image_sha256"] for r in group} & all_image_bytes):
+                or {r["image_sha256"] for r in group} & all_image_bytes
+                or {r["caption_sha256"] for r in group} & all_text_bytes):
             raise AuditError("duplicate, overlapping or malformed source pairing")
         all_photos.update(img);all_captions.update(cap)
         all_image_bytes.update(r["image_sha256"] for r in group)
+        all_text_bytes.update(r["caption_sha256"] for r in group)
     return data
 
 
