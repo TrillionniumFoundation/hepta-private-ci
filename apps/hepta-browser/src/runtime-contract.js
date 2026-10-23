@@ -30,7 +30,11 @@ export function stableId(value, name) {
 }
 
 export function digest(value, name) {
-  if (typeof value !== "string" || !DIGEST.test(value) || value === ZERO_DIGEST) {
+  if (
+    typeof value !== "string" ||
+    !DIGEST.test(value) ||
+    value === ZERO_DIGEST
+  ) {
     throw new TypeError(`${name} must be a non-zero lowercase SHA-256 digest`);
   }
   return value;
@@ -63,8 +67,16 @@ export function canonicalOrigin(value) {
   if (url.protocol !== "https:" && url.protocol !== "http:") {
     throw new TypeError("origin must use HTTP or HTTPS");
   }
-  if (url.username || url.password || url.pathname !== "/" || url.search || url.hash) {
-    throw new TypeError("origin must not contain credentials, path, query, or fragment");
+  if (
+    url.username ||
+    url.password ||
+    url.pathname !== "/" ||
+    url.search ||
+    url.hash
+  ) {
+    throw new TypeError(
+      "origin must not contain credentials, path, query, or fragment",
+    );
   }
   return url.origin;
 }
@@ -88,11 +100,23 @@ export function parseEffectGrant(value, now, allowedOrigins) {
   const action = stableId(grant.action, "effectGrant.action");
   const destinationOrigin = canonicalOrigin(grant.destinationOrigin);
   if (!allowedOrigins.has(destinationOrigin)) {
-    throw new TypeError("effect grant destination is outside the profile grant");
+    throw new TypeError(
+      "effect grant destination is outside the profile grant",
+    );
   }
-  const finalPayloadDigest = digest(grant.finalPayloadDigest, "effectGrant.finalPayloadDigest");
-  const authorityEpoch = positiveInteger(grant.authorityEpoch, "effectGrant.authorityEpoch");
-  const expiresAtMs = futureDeadline(grant.expiresAtMs, now, "effectGrant.expiresAtMs");
+  const finalPayloadDigest = digest(
+    grant.finalPayloadDigest,
+    "effectGrant.finalPayloadDigest",
+  );
+  const authorityEpoch = positiveInteger(
+    grant.authorityEpoch,
+    "effectGrant.authorityEpoch",
+  );
+  const expiresAtMs = futureDeadline(
+    grant.expiresAtMs,
+    now,
+    "effectGrant.expiresAtMs",
+  );
   return Object.freeze({
     grantDigest,
     action,
@@ -103,7 +127,12 @@ export function parseEffectGrant(value, now, allowedOrigins) {
   });
 }
 
-export function indeterminateReceipt(profileId, operationId, semanticDigest, reason) {
+export function indeterminateReceipt(
+  profileId,
+  operationId,
+  semanticDigest,
+  reason,
+) {
   return freezeResult({
     kind: "BrowserEffectObservationV1",
     profileId,
@@ -120,7 +149,10 @@ export function admitNewOperation(state, input, now) {
   const operationId = stableId(input.operationId, "operationId");
   const typedAction = normalizeBrowserAction(input.typedAction);
   const action = stableId(typedAction.kind, "typedAction.kind");
-  const pageGeneration = nonNegativeInteger(input.pageGeneration, "pageGeneration");
+  const pageGeneration = nonNegativeInteger(
+    input.pageGeneration,
+    "pageGeneration",
+  );
   const bootstrapNavigation =
     action === "navigate" &&
     pageGeneration === 0 &&
@@ -128,7 +160,9 @@ export function admitNewOperation(state, input, now) {
     state.documentDigest === null;
   if (
     !bootstrapNavigation &&
-    (pageGeneration === 0 || pageGeneration !== state.pageGeneration || state.documentDigest === null)
+    (pageGeneration === 0 ||
+      pageGeneration !== state.pageGeneration ||
+      state.documentDigest === null)
   ) {
     throw new TypeError("stale page generation");
   }
@@ -138,17 +172,29 @@ export function admitNewOperation(state, input, now) {
   }
   const actionDestination = browserActionDestinationOrigin(typedAction);
   if (actionDestination !== null && actionDestination !== destinationOrigin) {
-    throw new TypeError("typed action destination does not match destinationOrigin");
+    throw new TypeError(
+      "typed action destination does not match destinationOrigin",
+    );
   }
-  const finalPayloadDigest = digest(input.finalPayloadDigest, "finalPayloadDigest");
+  const finalPayloadDigest = digest(
+    input.finalPayloadDigest,
+    "finalPayloadDigest",
+  );
   if (browserActionDigest(typedAction) !== finalPayloadDigest) {
     throw new TypeError("finalPayloadDigest does not bind typedAction");
   }
-  const effectGrantDigest = digest(input.effectGrantDigest, "effectGrantDigest");
-  const authorityEpoch = positiveInteger(input.authorityEpoch, "authorityEpoch");
+  const effectGrantDigest = digest(
+    input.effectGrantDigest,
+    "effectGrantDigest",
+  );
+  const authorityEpoch = positiveInteger(
+    input.authorityEpoch,
+    "authorityEpoch",
+  );
   const deadlineMs = futureDeadline(input.deadlineMs, now);
   const grant = state.effectGrants.get(effectGrantDigest);
-  if (!grant) throw new TypeError("effect grant is not registered for this profile");
+  if (!grant)
+    throw new TypeError("effect grant is not registered for this profile");
   if (now >= grant.expiresAtMs) throw new TypeError("effect grant has expired");
   if (
     grant.action !== action ||
@@ -156,7 +202,9 @@ export function admitNewOperation(state, input, now) {
     grant.finalPayloadDigest !== finalPayloadDigest ||
     grant.authorityEpoch !== authorityEpoch
   ) {
-    throw new TypeError("effect grant does not bind the final browser operation");
+    throw new TypeError(
+      "effect grant does not bind the final browser operation",
+    );
   }
   const requestSemantics = Object.freeze({
     profileId: state.profileId,

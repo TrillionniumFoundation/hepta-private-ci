@@ -647,6 +647,24 @@ separate from product composition, qualification and beneficial model evolution.
 | P1 — independent evidence and withdrawal; `LRN-2-CAUSAL-EVALUATION`, `LONG-1-TEMPORAL-HOLDOUT`, `LONG-2-RETENTION-FORGETTING`, `LONG-3-UNLEARNING-NON-RESURRECTION`                                                                | learning-platform with qualification-plane independent evaluation; artifact/ledger writers remain unchanged                                                                   | Pre-register objective, metrics, future windows, evaluator/controller separation and negative controls; retain failed/plateau/no-update rounds. Forged benchmark numbers and hash-valid poisoned weights must not qualify a release. Withdrawal/reorg/restore tests cannot resurrect a revoked artifact or repeat a committed external effect.                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | P2 — throughput after the above boundaries; `P0.8C-RESOURCE-BUDGETS`, `INFER-V4-T4`, `INFER-V4-T5`                                                                                                                                 | runtime-control and inference-platform; agent-runtime owns composition overhead                                                                                               | Measure complete task latency and throughput including fetch, hash, decoding, device transfer and Chain observation. Optimize immutable-base sharing, compatible batching, prefetch and bounded caches; preserve revocation freshness and generation fences. Compare p50/p95/p99, sustained rate, error rate and all resource ceilings under the same hardware/network/load; report cold and warm paths separately.                                                                                                                                                                                                                                                                                                                                                                                                       |
 
+PN0's dependency baseline is owned by `security-authority` with the affected
+package owners. Resolve advisories against the candidate's actual Cargo, pnpm
+and Python locks and selected features; default-branch alerts alone do not
+identify the candidate or prove runtime reachability. Apply compatible patches
+first, then separately validate API-family upgrades. Cargo changes must refresh
+the existing Bazel lock in the same change. Keep unresolved advisories and
+failed checks visible; an exception or an unused feature is not a repaired lock.
+
+The first npm security slice pins Handlebars 4.7.10 and proxy-addr 2.0.8 through
+the existing root resolution policy. Three tests in the existing TypeScript SDK
+suite exercise AST rejection, prototype-constructor denial and mapped-IPv6 proxy
+trust, with ordinary-template and correctly scoped-subnet controls. The old
+locked packages fail all three; the official patched packages pass. These are
+SDK development dependencies through ts-jest and the MCP SDK/Express graph;
+this is not evidence of a deployed exploit or closure of the remaining Cargo,
+npm, Python, build or exact-source CI gates. Complete PN0 before treating later
+PoN or model experiments as a qualified integration baseline.
+
 Cross-repository qualification follows the Chain plan's single
 [PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/6724ed1905e11d30775738ad0eb84b53d1d9ea97/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
 PN0 exact-source/security baseline → PN1 work security and PN2 bounded state →
