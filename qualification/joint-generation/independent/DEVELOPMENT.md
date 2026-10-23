@@ -106,3 +106,25 @@ seconds (exit 0). Coverage includes real native stop/continue output paths,
 complete helper inventory conservation, original optimizer/RNG object retention,
 unaffordable-round refusal, and seed-offset calibration binding. These source
 tests use hand-built fixtures rather than the formal experiment test fold.
+
+## Exact output-path optimization after t4
+
+t4 exited 2 with control CPU-net -0.004656 and raw control/random -0.000356;
+actual caps held and the formal test remained unopened. It retained an actual
+calibrated v2 export/reload, PNG and checkpoint smoke; that did not close benefit.
+
+A common output implementation now batches inverse-CDF sampling and pixel
+quantization, preserving the exact draws, boundary behavior, sampled choices,
+caption and PNG/JSON bytes. Every output still incurs real PNG encoding, hash,
+base64 and serialization. No cached output or changed PNG compression is used.
+The declared inventory increases by 40 units/request because all CDF comparisons
+and boolean reductions actually execute; the code does not call vectorization
+an arithmetic saving.
+
+Five paired manual 64-request probes retained old/new CPU ns respectively:
+21496228/10183211, 8865022/12723115, 14271004/14125451,
+20811656/23839907, 14376616/12514530. Two pairs were slower. Median paired saving
+was 145553 ns per batch, about 2.27 us/request; this noisy hand-array diagnostic
+cannot establish whole-build, controller or held-out benefit. A new source freeze
+precedes any actual training/validation use; prices, objectives, caps and gates
+remain unchanged.

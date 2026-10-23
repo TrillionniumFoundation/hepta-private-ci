@@ -108,6 +108,11 @@ The [follow-up](FOLLOWUP.md) records the padding-control and modality-contract
 gaps, the unchanged r1 result, and the independently frozen r2 work. The new
 [media adapter](MODALITY_CONTRACT.md) provides typed audio/video transport and
 synchronization boundaries while keeping those generation backends unsupported.
+The first four independent r2 training/validation builds exited 2. The latest
+cost-aligned [t4 report](runs/codex-cloud-efficient-r2-t4/REPORT.md) retains positive
+content/NDU validation means but negative effective-control CPU-net benefit.
+The independent formal r2 test remains unopened. Its calibrated standalone
+serving/reload demonstration passed without implying experimental acceptance.
 
 **The first configured Codex Cloud execution passed the frozen finite-scene
 acceptance on 2026-10-23**, using source commit

@@ -33,6 +33,25 @@ claimed to be historically unseen semantic classes. Every source's instructions
 and sensor variants stay together. The new test must remain unopened until the
 protocol, source hashes and selection are frozen and validation is ready.
 
-First-goal efficient-budget acceptance remains pending r2 evidence. Audio/video
-generation and long interactions remain subsequent work, rather than claims made
-by a transport schema or by the r1 narrow result.
+The first four r2 training/validation builds all exited 2 and never constructed
+the formal test. Their signed failures, models and costs remain in verified
+lossless archives under `runs/codex-cloud-efficient-r2-t1` through `t4`.
+
+| Build | Content A-anchor utility | NDU-additive utility | Control CPU-net vs efficient reference | Outcome |
+|---|---:|---:|---:|---|
+| t1 | +0.019041 | +0.000679 | -0.009623 | Unready |
+| t2 | — | -0.060660 | -0.145698 | Unready; two actual CPU cap breaches |
+| t3 | +0.021224 | +0.006639 | -0.004409 | Unready; caps held |
+| t4 | +0.024836 | +0.003498 | -0.004656 | Unready; caps held; raw control/random also negative |
+
+These are validation mean contrasts, not held-out confidence intervals. t4
+aligned raw critic gain and complete marginal service CPU using train-only
+calibration, and allowed every arm affordable residual training with original
+Adam/RNG state. Neither change closed the effective-control benefit gap.
+Its [report](runs/codex-cloud-efficient-r2-t4/REPORT.md) and
+[standalone smoke](runs/codex-cloud-efficient-r2-t4/standalone-smoke.json) separate
+real trainable content/export evidence from the failed scientific claim.
+
+First-goal efficient-budget acceptance remains blocked by demonstrated control
+net-benefit failure. Audio/video generation and long interactions remain unrun
+subsequent work, rather than claims made by a transport schema or by the r1 result.

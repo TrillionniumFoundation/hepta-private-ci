@@ -51,8 +51,10 @@ def output_work(classes=12, pixels=192):
     PNG/JSON/hash/base64 operations have byte counters and actual timed CPU, not
     fabricated arithmetic counts in the declared operator profile.
     """
-    return {"scalar_ops": 2 * classes + 2 * pixels,
-            "compare_ops": 2 * math.ceil(math.log2(classes + 1)) + 2 * pixels}
+    # Two RNG draws, two (k-1)-addition CDFs and two (k-1)-addition
+    # boolean-count reductions. Every CDF entry is compared, then clamped.
+    return {"scalar_ops": 4 * classes - 2 + 2 * pixels,
+            "compare_ops": 2 * classes + 2 + 2 * pixels}
 
 
 def full_reference_work(generator):
@@ -84,15 +86,18 @@ def _outputs(generator, p, q, ledger, sample_rng):
     ledger.charge_kernel("output", "sample_and_quantize",
                          **{key: n * value for key, value in output_work(k, pixels).items()})
     random_values = sample_rng.random((n, 2))
-    choices = [[min(int(np.searchsorted(np.cumsum(prob), draw)), k - 1)
-                for prob, draw in zip((pp, qq), draws)]
-               for pp, qq, draws in zip(p, q, random_values)]
+    # Counting strict inequalities preserves searchsorted's default left edge,
+    # including zero probabilities, exact CDF ties and a rounded-down final CDF.
+    choices = np.minimum(np.column_stack((
+        (np.cumsum(p, axis=1) < random_values[:, 0, None]).sum(axis=1),
+        (np.cumsum(q, axis=1) < random_values[:, 1, None]).sum(axis=1))), k - 1).tolist()
     ledger.decoder("output", rows=n, pixels=pixels)
     images = _Observer(generator).decode_images(np.asarray([row[1] for row in choices])).reshape(n, 8, 8, 3)
+    images = np.rint(np.clip(images, 0, 1) * 255).astype(np.uint8)
     outputs, sizes = [], []
     for choice, image in zip(choices, images):
         encoded = io.BytesIO()
-        Image.fromarray(np.rint(np.clip(image, 0, 1) * 255).astype(np.uint8)).save(encoded, format="PNG")
+        Image.fromarray(image).save(encoded, format="PNG")
         png = encoded.getvalue()
         receipt = {"caption": caption(choice[0]), "choices": {"text": choice[0], "image": choice[1]},
                    "png_sha256": hashlib.sha256(png).hexdigest(),

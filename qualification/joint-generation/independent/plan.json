@@ -33,6 +33,7 @@
   "refinement": "after one fixed LR/mode selection, all arms may continue their selected three-seed models using original Adam and RNG state in rotated complete seed rounds; no validation-based stopping or reselection; reserve exact future operators and training-only CPU forecasts for critic, paired calibration, selected service, changed-model revalidation and exports; actual caps remain authoritative",
   "runtime_backend": "native",
   "runtime_batch_size": 64,
+  "output_sampling_profile": "batched inverse-CDF with preserved (n,2) draw ordering, exact left-edge/clamp behavior and batch pixel quantization; actual per-request PNG, hash, base64 and JSON unchanged; declared sampling arithmetic and all-CDF comparisons charged",
   "runtime_profile": "fixed batches up to 64 requests; complete batch CPU and latency retained; not a single-request latency qualification",
   "inference_cap_full_equivalents": 2.0,
   "calibration_rows": 72,
