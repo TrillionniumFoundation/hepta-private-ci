@@ -297,3 +297,86 @@ fn crash_after_start_reconciles_but_indeterminate_never_authorizes_effect() {
         ))
     );
 }
+
+fn started_file_read_journal() -> (ExecutionJournal, ExecutionBinding, String) {
+    let (mut journal, binding, reservation_digest) = prepared(ExecutionClass::FileRead);
+    let reservation_head = journal.events().last().unwrap().digest().unwrap();
+    let head = journal
+        .append_started(
+            ExecutionStarted {
+                binding: successor(binding.clone(), &reservation_head),
+                reservation_digest,
+                approval_receipt_digest: None,
+                started_at_unix_ms: 100,
+            },
+            &Allow,
+        )
+        .unwrap();
+    (journal, binding, head)
+}
+
+#[test]
+fn output_chunk_cap_denies_extra_append_without_poisoning_terminal_transition() {
+    let (mut journal, binding, mut head) = started_file_read_journal();
+    for sequence in 1..=u32::try_from(MAX_EXECUTION_OUTPUT_CHUNKS).unwrap() {
+        head = journal
+            .append(ExecutionRecord::ExecutionOutputChunk(ExecutionOutputChunk {
+                binding: successor(binding.clone(), &head),
+                sequence,
+                byte_count: 1,
+                content_digest: digest(30),
+            }))
+            .unwrap();
+    }
+    let accepted = journal.events().to_vec();
+    let rejected = ExecutionRecord::ExecutionOutputChunk(ExecutionOutputChunk {
+        binding: successor(binding.clone(), &head),
+        sequence: u32::try_from(MAX_EXECUTION_OUTPUT_CHUNKS + 1).unwrap(),
+        byte_count: 1,
+        content_digest: digest(30),
+    });
+    assert_eq!(journal.append(rejected), Err(ExecutionError::Oversized));
+    assert_eq!(journal.events(), accepted.as_slice());
+    journal
+        .append(ExecutionRecord::ExecutionCompleted(ExecutionCompleted {
+            binding: successor(binding, &head),
+            status: CompletionStatus::Succeeded,
+            output_digest: digest(31),
+        }))
+        .unwrap();
+}
+
+#[test]
+fn total_output_byte_cap_rejects_overflow_without_discarding_prior_receipts() {
+    let (mut journal, binding, mut head) = started_file_read_journal();
+    let chunk_bytes = 16 * 1024_u32;
+    let count = u32::try_from(MAX_EXECUTION_OUTPUT_BYTES / u64::from(chunk_bytes)).unwrap();
+    for sequence in 1..=count {
+        head = journal
+            .append(ExecutionRecord::ExecutionOutputChunk(ExecutionOutputChunk {
+                binding: successor(binding.clone(), &head),
+                sequence,
+                byte_count: chunk_bytes,
+                content_digest: digest(32),
+            }))
+            .unwrap();
+    }
+    let accepted = journal.events().to_vec();
+    assert_eq!(
+        journal.append(ExecutionRecord::ExecutionOutputChunk(ExecutionOutputChunk {
+            binding: successor(binding.clone(), &head),
+            sequence: count + 1,
+            byte_count: 1,
+            content_digest: digest(32),
+        })),
+        Err(ExecutionError::Oversized)
+    );
+    assert_eq!(journal.events(), accepted.as_slice());
+    journal
+        .append(ExecutionRecord::ExecutionCompleted(ExecutionCompleted {
+            binding: successor(binding, &head),
+            status: CompletionStatus::Succeeded,
+            output_digest: digest(33),
+        }))
+        .unwrap();
+}

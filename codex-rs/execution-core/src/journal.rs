@@ -9,6 +9,12 @@ use crate::ExecutionReservation;
 use crate::ExecutionStarted;
 use crate::FinalUse;
 
+/// Volatile-journal output caps per execution operation; exhaustion is explicit.
+/// Callers must preserve an independently verifiable terminal observation rather
+/// than silently dropping output chunks when these limits are reached.
+pub const MAX_EXECUTION_OUTPUT_CHUNKS: usize = 128;
+pub const MAX_EXECUTION_OUTPUT_BYTES: u64 = 1024 * 1024;
+
 /// A separate host must verify policy, principal, lease, generation, signed
 /// FinalUse and exact payload immediately before any effect crosses the boundary.
 /// Verifying a serialized Verified tag alone is explicitly insufficient.
@@ -32,6 +38,8 @@ pub trait EffectReceiptVerifier {
 #[derive(Debug, Default)]
 pub struct ExecutionJournal {
     events: Vec<ExecutionRecord>,
+    output_chunks: usize,
+    output_bytes: u64,
 }
 
 impl ExecutionJournal {
@@ -141,6 +149,25 @@ impl ExecutionJournal {
             }
         }
 
+        // Bound the entire operation, not just each individually valid chunk.
+        // Account only after all validation and verifier calls succeed.
+        let next_output_budget = if let ExecutionRecord::ExecutionOutputChunk(chunk) = &event {
+            let chunks = self
+                .output_chunks
+                .checked_add(1)
+                .ok_or(ExecutionError::Oversized)?;
+            let bytes = self
+                .output_bytes
+                .checked_add(u64::from(chunk.byte_count))
+                .ok_or(ExecutionError::Oversized)?;
+            if chunks > MAX_EXECUTION_OUTPUT_CHUNKS || bytes > MAX_EXECUTION_OUTPUT_BYTES {
+                return Err(ExecutionError::Oversized);
+            }
+            Some((chunks, bytes))
+        } else {
+            None
+        };
+
         if let ExecutionRecord::ExecutionStarted(started) = &event {
             let verifier = verifier.ok_or(ExecutionError::VerifierRequired)?;
             let intent = intent.ok_or(ExecutionError::Sequence("intent missing"))?;
@@ -195,6 +222,10 @@ impl ExecutionJournal {
         }
 
         let digest = event.digest()?;
+        if let Some((chunks, bytes)) = next_output_budget {
+            self.output_chunks = chunks;
+            self.output_bytes = bytes;
+        }
         self.events.push(event);
         Ok(digest)
     }
