@@ -1,0 +1,72 @@
+{
+  "external_signature": false,
+  "four_output_rows_verified": 6144,
+  "generated_output_rows": 6144,
+  "independently_scored_arms": {
+    "17:ndu_risk|ndu_contextual": {
+      "mean_loss": 0.609375,
+      "modeled_cost": 4.392578125,
+      "rows": 512
+    },
+    "17:ndu_risk|static": {
+      "mean_loss": 1.083984375,
+      "modeled_cost": 4.0,
+      "rows": 512
+    },
+    "17:supervised|ndu_contextual": {
+      "mean_loss": 0.78515625,
+      "modeled_cost": 4.298828125,
+      "rows": 512
+    },
+    "17:supervised|static": {
+      "mean_loss": 1.1953125,
+      "modeled_cost": 4.0,
+      "rows": 512
+    },
+    "29:ndu_risk|ndu_contextual": {
+      "mean_loss": 0.3359375,
+      "modeled_cost": 4.7265625,
+      "rows": 512
+    },
+    "29:ndu_risk|static": {
+      "mean_loss": 0.1328125,
+      "modeled_cost": 7.0,
+      "rows": 512
+    },
+    "29:supervised|ndu_contextual": {
+      "mean_loss": 0.3359375,
+      "modeled_cost": 4.7265625,
+      "rows": 512
+    },
+    "29:supervised|static": {
+      "mean_loss": 0.1328125,
+      "modeled_cost": 7.0,
+      "rows": 512
+    },
+    "43:ndu_risk|ndu_contextual": {
+      "mean_loss": 0.83984375,
+      "modeled_cost": 4.263671875,
+      "rows": 512
+    },
+    "43:ndu_risk|static": {
+      "mean_loss": 1.158203125,
+      "modeled_cost": 4.0,
+      "rows": 512
+    },
+    "43:supervised|ndu_contextual": {
+      "mean_loss": 0.861328125,
+      "modeled_cost": 4.263671875,
+      "rows": 512
+    },
+    "43:supervised|static": {
+      "mean_loss": 1.1796875,
+      "modeled_cost": 4.0,
+      "rows": 512
+    }
+  },
+  "production_authority": false,
+  "raw_output_ledger_sha256": "6e02c6fcb2eb310cb7736396af352ff42693dead38c161c96c6cefd9eca9cae6",
+  "real_pretrained_generation": false,
+  "scope": "SYNTHETIC_EXTERNAL_OBSERVER_NOT_TRUSTED_HARDWARE",
+  "source_groups": 1536
+}
