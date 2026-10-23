@@ -29,6 +29,12 @@ pub struct HostAuthorityPeerChannel {
 }
 
 impl HostAuthorityPeerChannel {
+    /// Sample the already pinned process lifetime without reading a frame.
+    /// This creates no permission and never exposes or replaces its pidfd.
+    pub fn check_peer_lifetime(&self) -> Result<(), HostIssuerTransportError> {
+        self.owner.check(self.owner.end())
+    }
+
     pub fn from_stream(
         stream: UnixStream,
         policy: HostAuthorityPeerPolicy,
