@@ -689,6 +689,14 @@ edge re-selection still requires target-specific CI. This slice does not close
 the remaining vulnerable dependencies or the full PN0 security baseline; native
 consumer checks and the original security gates remain required.
 
+PN0's V8 canary build job uses the existing Rust release build's bounded
+90-minute CI budget. In run 39880109276, both x86_64 macOS and both aarch64 GNU
+Linux variants reached GitHub's 30-minute job limit while V8 compilation was
+still progressing without a BuildBuddy key. The full build matrix, artifact
+checks and Cargo smoke steps remain required. This infrastructure budget does
+not change runtime or model resource limits; successful exact-source CI is
+still needed to establish that the cold builds complete.
+
 ## 20. First vertical learning slice
 
 `C1-PROMPTED-MEMORY-RETRIEVAL-RANK` executes:
