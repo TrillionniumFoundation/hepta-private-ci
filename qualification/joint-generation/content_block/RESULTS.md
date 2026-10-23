@@ -106,8 +106,12 @@ confirmation p-values or formal alpha expenditures.
 | A_alt−old strong A | −.00194200 | [−.00683354,+.00247096] | −.00209432 |
 | H_alt−old strong H | −.00150486 | [−.00628366,+.00243434] | −.00158866 |
 
-A_alt-H_alt utility was positive for all three seeds. A_alt-A_joint and
-H_alt-H_joint utility were negative for all three. Maximum required greedy
+A_alt-H_alt utility was positive for all three seeds. A_alt-A_joint utility
+was negative for all three. H_alt-H_joint was mixed: seed11 **+.000893954733**,
+seed23 -.002661160182, seed47 -.002591397032 (mean -.001452867494).
+The previous report sentence claiming H was negative for every seed was a
+reporting error, corrected from the unchanged saved arrays; no model, endpoint,
+interval, budget or readiness decision was changed. Maximum required greedy
 drop.00390625 stayed within.02, and all12 corruption drops were positive;
 neither can substitute for the failed raw utility/success requirements.
 
@@ -155,3 +159,9 @@ There is no runtime/permission blocker. The failed fixed1:1 recipe is not
 expanded or retuned. Earlier refiner rejection, r2 dynamic failures and consumed
 CORE c1 formal failure remain unchanged. Further scientific design/confirmation
 is for the parent alongside NDU review; no new formal look is authorized here.
+
+The later [saved-state mechanism diagnosis](MECHANISM_DIAGNOSIS.md) corrects the
+H seed11 sign, compares all36 saved candidates, supplies TRAIN curves and
+clearly labeled final inner LR endpoints, and limits encoder-bottleneck claims
+to a hypothesis. It proposes one unrun weak head-anchor candidate under standard
+joint updates. No new model execution accompanied that analysis.
