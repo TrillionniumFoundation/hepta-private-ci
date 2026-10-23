@@ -12,6 +12,8 @@ import re
 import sys
 from pathlib import Path
 
+from paired_effects import paired_effects_by_scale
+
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 DIGEST = re.compile(r"[0-9a-f]{64}\Z")
 MODES = ("A", "B", "C")
@@ -177,6 +179,7 @@ def compare(base: object, observations: object) -> dict:
         "mode_summaries": summary,
         "scale_summaries": scale_summary,
         "scale_deltas": deltas,
+        "paired_effects_by_scale": paired_effects_by_scale(base["tasks"], actual, SCALES),
     }
 
 

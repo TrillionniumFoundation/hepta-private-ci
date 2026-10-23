@@ -3,7 +3,9 @@ import copy
 import io
 import json
 import os
+import shlex
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -69,6 +71,137 @@ class SourceGuardTests(unittest.TestCase):
             base["sources"]["runtime"][field] = "f" * 40
             with self.assertRaisesRegex(SourceGuardError, "commit/tree drift"):
                 verify_worktrees(base, self.paths)
+
+    def test_source_match_does_not_bypass_new_build_and_resource_pins(self):
+        for field in ("mode_build_digests", "resource_limits"):
+            with self.subTest(field=field):
+                base = copy.deepcopy(self.base)
+                del base[field]
+                receipt = verify_worktrees(base, self.paths)
+                self.assertFalse(receipt["experiment_pins_present"])
+                self.assertFalse(receipt["independent_acceptance"])
+
+    def test_clean_filter_is_rejected_without_executing_it(self):
+        root = Path(self.paths["hepta"])
+        (root / ".gitattributes").write_text("README.md filter=forge\n")
+        git(root, "add", ".gitattributes")
+        git(root, "commit", "-qm", "add attribute")
+        self.base["sources"]["hepta"] = {
+            "commit": git(root, "rev-parse", "HEAD"), "tree": git(root, "rev-parse", "HEAD^{tree}"),
+        }
+        marker = Path(self.temp.name) / "filter-was-executed"
+        code = ("import pathlib,sys; pathlib.Path(" + repr(str(marker))
+                + ").write_text('executed'); sys.stdout.buffer.write(b'hepta-1\\n')")
+        git(root, "config", "filter.forge.clean", shlex.quote(sys.executable) + " -c " + shlex.quote(code))
+        (root / "README.md").write_text("hepta-2\n")
+        with self.assertRaisesRegex(SourceGuardError, "configured Git filters"):
+            verify_worktrees(self.base, self.paths)
+        self.assertFalse(marker.exists())
+
+    def test_partial_clone_is_rejected_before_transport_can_execute(self):
+        root = Path(self.paths["hepta"])
+        marker = Path(self.temp.name) / "transport-was-executed"
+        code = "import pathlib; pathlib.Path(" + repr(str(marker)) + ").write_text('executed')"
+        git(root, "config", "remote.lazy.url", "ssh://invalid.example/nonexistent")
+        git(root, "config", "remote.lazy.promisor", "true")
+        git(root, "config", "core.sshCommand", shlex.quote(sys.executable) + " -c " + shlex.quote(code))
+        tree = self.base["sources"]["hepta"]["tree"]
+        (root / ".git" / "objects" / tree[:2] / tree[2:]).unlink()
+        with self.assertRaisesRegex(SourceGuardError, "partial/promisor"):
+            verify_worktrees(self.base, self.paths)
+        self.assertFalse(marker.exists())
+
+    def test_git_command_hooks_and_environment_overrides_never_execute(self):
+        root = Path(self.paths["hepta"])
+        (root / ".gitattributes").write_text("README.md diff=guard\n")
+        git(root, "add", ".gitattributes")
+        git(root, "commit", "-qm", "diff attribute")
+        self.base["sources"]["hepta"] = {
+            "commit": git(root, "rev-parse", "HEAD"), "tree": git(root, "rev-parse", "HEAD^{tree}"),
+        }
+        marker = Path(self.temp.name) / "git-command-was-executed"
+        code = "import pathlib; pathlib.Path(" + repr(str(marker)) + ").write_text('executed')"
+        command = shlex.quote(sys.executable) + " -c " + shlex.quote(code)
+        for key in ("core.fsmonitor", "diff.external", "diff.guard.textconv"):
+            git(root, "config", key, command)
+        overrides = {"GIT_EXTERNAL_DIFF": command, "GIT_CONFIG_COUNT": "1",
+                     "GIT_CONFIG_KEY_0": "core.fsmonitor", "GIT_CONFIG_VALUE_0": command}
+        with patch.dict(os.environ, overrides):
+            self.assertTrue(verify_worktrees(self.base, self.paths)["experiment_pins_present"])
+            (root / "README.md").write_text("changed\n")
+            with self.assertRaises(SourceGuardError):
+                verify_worktrees(self.base, self.paths)
+        self.assertFalse(marker.exists())
+
+    def test_replacement_refs_do_not_substitute_pinned_source(self):
+        root = Path(self.paths["hepta"])
+        original = self.base["sources"]["hepta"]["commit"]
+        (root / "README.md").write_text("replacement content\n")
+        git(root, "add", "README.md")
+        git(root, "commit", "-qm", "replacement")
+        replacement = git(root, "rev-parse", "HEAD")
+        git(root, "switch", "--detach", original)
+        git(root, "replace", original, replacement)
+        self.assertTrue(verify_worktrees(self.base, self.paths)["experiment_pins_present"])
+        self.assertEqual((root / "README.md").read_text(), "hepta-1\n")
+
+    def test_normalized_clean_status_is_not_exact_source_bytes(self):
+        root = Path(self.paths["hepta"])
+        (root / ".gitattributes").write_text("README.md text\n")
+        git(root, "add", ".gitattributes")
+        git(root, "commit", "-qm", "add text normalization")
+        self.base["sources"]["hepta"] = {
+            "commit": git(root, "rev-parse", "HEAD"), "tree": git(root, "rev-parse", "HEAD^{tree}"),
+        }
+        (root / "README.md").write_bytes(b"hepta-1\r\n")
+        git(root, "add", "README.md")
+        self.assertEqual(git(root, "diff", "--cached"), "")
+        self.assertEqual(git(root, "status", "--porcelain=v1"), "")
+        with self.assertRaisesRegex(SourceGuardError, "raw tracked source bytes"):
+            verify_worktrees(self.base, self.paths)
+
+    def test_submodule_is_rejected_before_its_filter_can_execute(self):
+        root = Path(self.paths["hepta"])
+        git(root, "-c", "protocol.file.allow=always", "submodule", "add", self.paths["runtime"], "module")
+        sub = root / "module"
+        git(sub, "config", "user.name", "Source Guard")
+        git(sub, "config", "user.email", "test@example.invalid")
+        (sub / ".gitattributes").write_text("README.md filter=forge\n")
+        git(sub, "add", ".gitattributes")
+        git(sub, "commit", "-qm", "submodule attribute")
+        git(root, "add", ".gitmodules", "module")
+        git(root, "commit", "-qm", "pin submodule")
+        self.base["sources"]["hepta"] = {
+            "commit": git(root, "rev-parse", "HEAD"), "tree": git(root, "rev-parse", "HEAD^{tree}"),
+        }
+        marker = Path(self.temp.name) / "submodule-filter-was-executed"
+        code = ("import pathlib,sys; pathlib.Path(" + repr(str(marker))
+                + ").write_text('executed'); sys.stdout.buffer.write(b'runtime-2\\n')")
+        git(sub, "config", "filter.forge.clean", shlex.quote(sys.executable) + " -c " + shlex.quote(code))
+        (sub / "README.md").write_text("runtime-x\n")
+        with self.assertRaisesRegex(SourceGuardError, "submodule source"):
+            verify_worktrees(self.base, self.paths)
+        self.assertFalse(marker.exists())
+
+    @unittest.skipIf(os.name == "nt", "requires POSIX executable permission bits")
+    def test_filemode_config_cannot_hide_executable_bit_changes(self):
+        root = Path(self.paths["hepta"])
+        source = root / "README.md"
+        git(root, "config", "core.filemode", "false")
+        source.chmod(0o755)
+        self.assertEqual(git(root, "status", "--porcelain=v1"), "")
+        with self.assertRaisesRegex(SourceGuardError, "executable bit"):
+            verify_worktrees(self.base, self.paths)
+        git(root, "update-index", "--chmod=+x", "README.md")
+        git(root, "commit", "-qm", "pin executable")
+        self.base["sources"]["hepta"] = {
+            "commit": git(root, "rev-parse", "HEAD"), "tree": git(root, "rev-parse", "HEAD^{tree}"),
+        }
+        self.assertTrue(verify_worktrees(self.base, self.paths)["experiment_pins_present"])
+        source.chmod(0o644)
+        self.assertEqual(git(root, "status", "--porcelain=v1"), "")
+        with self.assertRaisesRegex(SourceGuardError, "executable bit"):
+            verify_worktrees(self.base, self.paths)
 
     def test_staged_unstaged_untracked_denied(self):
         root = Path(self.paths["codex"])

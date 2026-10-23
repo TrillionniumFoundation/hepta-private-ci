@@ -161,3 +161,40 @@ This guard does not inspect binary reproducibility, external dependencies,
 signed model artifacts, true task results or any physical effects. In
 particular the current committed incomplete baseline must still exit
 nonzero even when all source checkouts match.
+
+## Integrated local source and paired-regression checks
+
+The P0 worktree guard from PR #3546 (source
+`5a7792b0702146af111cc3c78f28c72c5791dfa1`) and task-paired analysis from
+PR #3544 (`8a6f9e7687e6dab4e3134c9a68457acc74fa4e9f`) are composed on the
+converged P0/P5/P6 source from PR #3555
+(`6a46fba297abf1b641a8637e007595dfd2ad03c8`). No production owner, frozen
+baseline source identity, acceptance flag or authority path changes.
+
+`source_guard.py --baseline PLAN.json --hepta HEPTA_ROOT --runtime RUNTIME_ROOT
+--codex CODEX_ROOT` checks exact Git commits/trees, source roots, modified,
+staged, untracked and ignored files, concealed index flags and unsupported
+submodules. It rejects partial/promisor configurations before resolving
+objects and disables lazy fetching, so an inspection cannot invoke their
+configured transports. It rejects configured Git filters before status can execute them
+and hashes raw tracked file/symlink bytes against pinned Git blobs, so Git
+normalization cannot conceal changed source. Regular-file executable bits
+must also match their pinned Git modes even if `core.filemode=false`; hosts
+that cannot preserve those modes cannot claim an exact match. This is a local inspection, not
+an atomic attestation against concurrent filesystem modification. Source
+checkouts must remain separate from build outputs. The
+guard then calls the same current A/B/C validator, so missing executable,
+resource, task, model or host pins still produce a nonzero exit. Clean sources
+are not attestation of built binaries, dependencies, model artifacts or effects.
+
+After all A/B/C evidence checks pass, `paired_effects_by_scale` reports C minus
+A and C minus B for the same task/seed at each scale. It counts each
+reference-only pass even when an offsetting native-only pass makes aggregate
+success equal. Descriptive paired costs include CPU, GPU memory and active
+concurrency alongside wall/RSS/token/tool metrics. This does not establish
+statistical significance, independent measurement or concurrency throughput.
+
+Run the complete folder's tests, not just the donor modules. The read-only
+workflow tests both the exact PR head and GitHub's prospective merge and logs
+their actual commit/tree. Source, family isolation, cost and paired-regression
+checks must stay composed; no synthetic fixture result closes physical P0–P7.
