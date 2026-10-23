@@ -230,6 +230,12 @@ def audit_trial_file(manifest: object, observer_pem: Path, meter_pem: Path, *,
            or len({a["run_id"] for a in v.values()}) != len(ARMS)
            for v in cohorts.values()):
         raise EvidenceRejected("missing arm or unmatched inputs/physical runs across A0-A5")
+    # Distinct episode labels do not establish independence if they replay the
+    # same input. Reject cross-episode reuse across all declared splits.
+    episode_input_pairs = [(episode, next(iter(arms.values()))["input_digest"])
+                           for (_, episode), arms in cohorts.items()]
+    if len({source for _, source in episode_input_pairs}) != len(episode_input_pairs):
+        raise EvidenceRejected("reused source input across independent trial episodes")
     n = {window: sum(1 for w, _ in cohorts if w == window)
          for window in ("train", "future", "retention")}
     reasons = []
