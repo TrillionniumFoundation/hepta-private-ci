@@ -27,6 +27,9 @@ use crate::ProductionTerminalObservationFuture;
 mod read;
 pub use read::NotesDocumentState;
 pub use read::ProductionNotesObserver;
+#[path = "production_notes_previous.rs"]
+mod previous;
+pub use previous::ProductionNotesRecoveryTarget;
 
 pub const NOTES_REPLACE_TOPIC_V1: &str = "trill.notes.replace.v1";
 pub const NOTES_REQUEST_MAX_BYTES: usize = 8192;
@@ -80,6 +83,12 @@ impl NotesTargetIdentity {
     }
 }
 
+/// A narrowed recovery descriptor that cannot carry document effects.
+/// Implementations retain only the original inherited recovery endpoint.
+pub trait NotesRecoveryChannel: Send + Sync {
+    fn exchange(&self, request: &[u8]) -> Result<Vec<u8>, String>;
+}
+
 /// An already-private, inherited application channel. Implementations perform
 /// the exact write and bounded response read synchronously, without reconnect,
 /// replay, detached work, or retaining borrowed request bytes. `invalidate`
@@ -87,6 +96,11 @@ impl NotesTargetIdentity {
 pub trait NotesPrivateChannel: Send + Sync {
     fn exchange(&self, request: &[u8]) -> Result<Vec<u8>, String>;
     fn invalidate(&self);
+    /// Return a descriptor capability without access to the effect endpoint.
+    /// Legacy channels do not implicitly acquire a recovery capability.
+    fn recovery_handle(&self) -> Result<Arc<dyn NotesRecoveryChannel>, String> {
+        Err("Notes recovery-only capability was not supplied".into())
+    }
     /// A separately inherited recovery datagram lane. It accepts observation
     /// and exact durable-receipt retirement, never effect payloads. Legacy
     /// single-stream compositions explicitly have no recovery fallback.
@@ -113,7 +127,7 @@ enum ReplaceAction {
     ReplaceNote,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct NotesResponse {
     schema_version: u16,
@@ -123,7 +137,7 @@ struct NotesResponse {
     result: NotesResult,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(tag = "status", rename_all = "snake_case", deny_unknown_fields)]
 enum NotesResult {
     Applied {
@@ -140,7 +154,7 @@ enum NotesResult {
     },
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 enum NotAppliedReason {
     RevisionConflict,

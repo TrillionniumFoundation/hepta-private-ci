@@ -16,8 +16,8 @@ pub struct NotesDocumentState {
 /// dispatcher. No method can send an effect or retire an application receipt.
 #[derive(Clone)]
 pub struct ProductionNotesObserver {
-    target: NotesTargetIdentity,
-    channel: Arc<dyn NotesPrivateChannel>,
+    pub(super) target: NotesTargetIdentity,
+    pub(super) channel: Arc<dyn NotesPrivateChannel>,
 }
 
 #[derive(Deserialize)]

@@ -13,6 +13,8 @@ use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 
+#[path = "production_notes_previous_tests.rs"]
+mod previous_tests;
 #[path = "production_retained_operation_tests.rs"]
 mod retained_operation_tests;
 
