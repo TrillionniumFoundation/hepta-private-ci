@@ -38,3 +38,18 @@ owner: modality-specific Q24 projectors emit one ordered vector plus an
 explicit missing-modality mask, and source, manifest, and stem digests remain
 available for a future evidence version. The stem does not execute the model;
 its output is simply the one input vector supplied to the shared Encoder.
+
+### Driver result identity (P0 provenance hardening)
+
+The driver response must echo the exact `request_id` and `generation` in addition
+to `encoder_digest`, `input_digest` and the canonical feature digest. The
+owner checks all five bindings **before** publishing `SharedFeatureBatchV1`.
+The shared batch retains the originating request ID for downstream receipt
+composition. A valid feature checksum alone cannot authorize reuse of an output
+from another request or generation.
+
+This is an identity-contract safeguard only. Echoed identifiers and hashes do
+not prove that a pretrained Encoder forward occurred, identify the actual
+physical backend, attest the provenance ledger, or establish production
+qualification. A real external model-execution receipt remains a separate P0
+requirement.
