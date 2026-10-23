@@ -1,0 +1,30 @@
+generic exit=0
+test_forged_hash_still_cannot_claim_corrupt_media_decoded (test_decoded_media_audit.DecodedMediaAuditTests.test_forged_hash_still_cannot_claim_corrupt_media_decoded) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+test_physically_decodes_all_four_modalities_without_promotion (test_decoded_media_audit.DecodedMediaAuditTests.test_physically_decodes_all_four_modalities_without_promotion) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+test_refuses_unmatched_model_sources_or_required_modality (test_decoded_media_audit.DecodedMediaAuditTests.test_refuses_unmatched_model_sources_or_required_modality) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+test_rejects_forged_file_type_and_timeline (test_decoded_media_audit.DecodedMediaAuditTests.test_rejects_forged_file_type_and_timeline) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+test_rejects_material_substitution_even_with_same_filename (test_decoded_media_audit.DecodedMediaAuditTests.test_rejects_material_substitution_even_with_same_filename) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+test_rejects_noninteger_clock_or_obvious_bypass (test_decoded_media_audit.DecodedMediaAuditTests.test_rejects_noninteger_clock_or_obvious_bypass) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+test_rejects_unrealistic_av_skew (test_decoded_media_audit.DecodedMediaAuditTests.test_rejects_unrealistic_av_skew) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+test_symlink_and_path_traversal_fail_closed (test_decoded_media_audit.DecodedMediaAuditTests.test_symlink_and_path_traversal_fail_closed) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+test_adpcm_wav_rejected_after_rehash (test_media_type_admission.MediaTypeAdmissionTests.test_adpcm_wav_rejected_after_rehash) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+test_faststart_and_fragmented_mp4_remain_admitted (test_media_type_admission.MediaTypeAdmissionTests.test_faststart_and_fragmented_mp4_remain_admitted) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+test_jpeg_renamed_png_rejected_after_rehash (test_media_type_admission.MediaTypeAdmissionTests.test_jpeg_renamed_png_rejected_after_rehash) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+test_legitimate_pcm_wav_variants_remain_admitted (test_media_type_admission.MediaTypeAdmissionTests.test_legitimate_pcm_wav_variants_remain_admitted) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+test_matroska_renamed_mp4_rejected_after_rehash (test_media_type_admission.MediaTypeAdmissionTests.test_matroska_renamed_mp4_rejected_after_rehash) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+test_quicktime_renamed_mp4_rejected_after_rehash (test_media_type_admission.MediaTypeAdmissionTests.test_quicktime_renamed_mp4_rejected_after_rehash) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+test_fake_signature_or_missing_reference_fails_closed (test_signed_media_bridge.SignedMediaBridgeTests.test_fake_signature_or_missing_reference_fails_closed) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+test_genuine_ed25519_dual_signer_to_decoded_original_bytes (test_signed_media_bridge.SignedMediaBridgeTests.test_genuine_ed25519_dual_signer_to_decoded_original_bytes) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+test_independent_plan_pin_rejects_output_time_reregister (test_signed_media_bridge.SignedMediaBridgeTests.test_independent_plan_pin_rejects_output_time_reregister) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+test_modality_mismatch_from_signed_observer_rejected (test_signed_media_bridge.SignedMediaBridgeTests.test_modality_mismatch_from_signed_observer_rejected) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+test_new_content_digest_cannot_be_spliced_into_old_signatures (test_signed_media_bridge.SignedMediaBridgeTests.test_new_content_digest_cannot_be_spliced_into_old_signatures) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+test_observer_and_meter_must_sign_same_media (test_signed_media_bridge.SignedMediaBridgeTests.test_observer_and_meter_must_sign_same_media) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+test_refuse_signer_key_collision_and_changed_input (test_signed_media_bridge.SignedMediaBridgeTests.test_refuse_signer_key_collision_and_changed_input) ... skipped 'Codec tests require ffmpeg; dedicated CI job enforces tools'
+
+----------------------------------------------------------------------
+Ran 21 tests in 0.000s
+
+OK (skipped=21)
+
+gate exit=1
+codec-acceptance rejected: required codec tool unavailable: ffmpeg

@@ -1,0 +1,27 @@
+test_forged_hash_still_cannot_claim_corrupt_media_decoded (test_decoded_media_audit.DecodedMediaAuditTests.test_forged_hash_still_cannot_claim_corrupt_media_decoded) ... ok
+test_physically_decodes_all_four_modalities_without_promotion (test_decoded_media_audit.DecodedMediaAuditTests.test_physically_decodes_all_four_modalities_without_promotion) ... ok
+test_refuses_unmatched_model_sources_or_required_modality (test_decoded_media_audit.DecodedMediaAuditTests.test_refuses_unmatched_model_sources_or_required_modality) ... ok
+test_rejects_forged_file_type_and_timeline (test_decoded_media_audit.DecodedMediaAuditTests.test_rejects_forged_file_type_and_timeline) ... ok
+test_rejects_material_substitution_even_with_same_filename (test_decoded_media_audit.DecodedMediaAuditTests.test_rejects_material_substitution_even_with_same_filename) ... ok
+test_rejects_noninteger_clock_or_obvious_bypass (test_decoded_media_audit.DecodedMediaAuditTests.test_rejects_noninteger_clock_or_obvious_bypass) ... ok
+test_rejects_unrealistic_av_skew (test_decoded_media_audit.DecodedMediaAuditTests.test_rejects_unrealistic_av_skew) ... ok
+test_symlink_and_path_traversal_fail_closed (test_decoded_media_audit.DecodedMediaAuditTests.test_symlink_and_path_traversal_fail_closed) ... ok
+test_adpcm_wav_rejected_after_rehash (test_media_type_admission.MediaTypeAdmissionTests.test_adpcm_wav_rejected_after_rehash) ... ok
+test_faststart_and_fragmented_mp4_remain_admitted (test_media_type_admission.MediaTypeAdmissionTests.test_faststart_and_fragmented_mp4_remain_admitted) ... ok
+test_jpeg_renamed_png_rejected_after_rehash (test_media_type_admission.MediaTypeAdmissionTests.test_jpeg_renamed_png_rejected_after_rehash) ... ok
+test_legitimate_pcm_wav_variants_remain_admitted (test_media_type_admission.MediaTypeAdmissionTests.test_legitimate_pcm_wav_variants_remain_admitted) ... ok
+test_matroska_renamed_mp4_rejected_after_rehash (test_media_type_admission.MediaTypeAdmissionTests.test_matroska_renamed_mp4_rejected_after_rehash) ... ok
+test_quicktime_renamed_mp4_rejected_after_rehash (test_media_type_admission.MediaTypeAdmissionTests.test_quicktime_renamed_mp4_rejected_after_rehash) ... ok
+test_fake_signature_or_missing_reference_fails_closed (test_signed_media_bridge.SignedMediaBridgeTests.test_fake_signature_or_missing_reference_fails_closed) ... ok
+test_genuine_ed25519_dual_signer_to_decoded_original_bytes (test_signed_media_bridge.SignedMediaBridgeTests.test_genuine_ed25519_dual_signer_to_decoded_original_bytes) ... ok
+test_independent_plan_pin_rejects_output_time_reregister (test_signed_media_bridge.SignedMediaBridgeTests.test_independent_plan_pin_rejects_output_time_reregister) ... ok
+test_modality_mismatch_from_signed_observer_rejected (test_signed_media_bridge.SignedMediaBridgeTests.test_modality_mismatch_from_signed_observer_rejected) ... ok
+test_new_content_digest_cannot_be_spliced_into_old_signatures (test_signed_media_bridge.SignedMediaBridgeTests.test_new_content_digest_cannot_be_spliced_into_old_signatures) ... ok
+test_observer_and_meter_must_sign_same_media (test_signed_media_bridge.SignedMediaBridgeTests.test_observer_and_meter_must_sign_same_media) ... ok
+test_refuse_signer_key_collision_and_changed_input (test_signed_media_bridge.SignedMediaBridgeTests.test_refuse_signer_key_collision_and_changed_input) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 11.949s
+
+OK
+codec-acceptance: tests=21 skipped=0 accepted=True
