@@ -55,7 +55,8 @@
       "raw_bytes": 5148,
       "raw_sha256": "7a65b36336ad9eee3a0a394bd0f5c37f94e32edaca5e6d672b14b6c0f38d87fd",
       "published_sha256": "7a65b36336ad9eee3a0a394bd0f5c37f94e32edaca5e6d672b14b6c0f38d87fd",
-      "compressed": false
+      "compressed": false,
+      "stable_original": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-barrier-handoff-v1.json"
     },
     {
       "original": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-barrier-positive-freshness-v1.json",
@@ -560,6 +561,30 @@
       "raw_sha256": "bca16a6dc330a9488fea29f915f3ab8085e15f68938be685132c1043fa032e6a",
       "published_sha256": "443e678e79208e852d263d62c43adee967d97079f620c98fa80f2d89728d051f",
       "compressed": true
+    },
+    {
+      "original": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-barrier-handoff-v1.json",
+      "published": "owner-barrier-handoff-v1.json",
+      "raw_bytes": 5148,
+      "raw_sha256": "7a65b36336ad9eee3a0a394bd0f5c37f94e32edaca5e6d672b14b6c0f38d87fd",
+      "published_sha256": "7a65b36336ad9eee3a0a394bd0f5c37f94e32edaca5e6d672b14b6c0f38d87fd",
+      "compressed": false
+    },
+    {
+      "original": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-barrier-fmt-apply.json",
+      "published": "owner-barrier-fmt-apply.json",
+      "raw_bytes": 7849,
+      "raw_sha256": "f0f2771be4b0821c1841c42f65ec08cd12598732d2a795bec70f0786ce33a9de",
+      "published_sha256": "f0f2771be4b0821c1841c42f65ec08cd12598732d2a795bec70f0786ce33a9de",
+      "compressed": false
+    },
+    {
+      "original": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-barrier-fmt-apply.log",
+      "published": "owner-barrier-fmt-apply.log.gz",
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "published_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "compressed": true
     }
   ],
   "qualified_source": "2ff0a02710c39c5f47030eb1896585ca667484f8",
@@ -581,5 +606,8 @@
   "arbitrary_deferred_effect_adapters_qualified": false,
   "production_authority": false,
   "cold_or_dirty_recovery_qualified": false,
-  "private_keys_or_state_included": false
+  "private_keys_or_state_included": false,
+  "committed_range_format_applied_passed": true,
+  "finish_source_unchanged": true,
+  "source_format_recheck_not_semantic_test": true
 }

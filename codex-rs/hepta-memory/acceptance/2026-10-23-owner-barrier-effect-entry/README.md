@@ -3,8 +3,9 @@
 Frozen2ff0a02710 passed74/74 original-owner tests without retry. The original67
 required cases all ran and passed in this same run, including9 real SIGKILL
 scenarios in23.521s under their original60s watchdog. Scoped Memory/State fix
-completed without source changes and the explicit committed-range formatter
-check passed. Original test ELF3b74c3f8, actual source path and retained read-only
+completed without source changes. Explicit committed-range formatting was
+applied and checked successfully, with the entire changed-file SHA manifest
+unchanged; the original frozen v1 handoff is also retained. Original test ELF3b74c3f8, actual source path and retained read-only
 single-link binary were verified separately. No semantic test followed finish.
 
 The former read-only BEGIN IMMEDIATE exclusion claim was disproved by actual
