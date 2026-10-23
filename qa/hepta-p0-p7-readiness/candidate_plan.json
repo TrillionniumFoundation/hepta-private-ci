@@ -1,0 +1,191 @@
+{
+  "schema": "hepta.stem-ndu.p0-p7-ci-audit.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "stages": {
+    "P0": {
+      "pr": 3227,
+      "head_sha": "48f5a675e8ecddc1095858b2900b85422cafb599",
+      "checks": [
+        {
+          "workflow": "Hepta native multimodal Head",
+          "jobs": [
+            "retained-real-head-parity"
+          ]
+        },
+        {
+          "workflow": "blocking-ci",
+          "jobs": [
+            "Select blocking CI scope",
+            "cargo-deny / cargo-deny",
+            "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+            "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+            "repo-checks / Native Hepta paths on windows-latest"
+          ]
+        }
+      ]
+    },
+    "P1": {
+      "pr": 3125,
+      "head_sha": "7aac712474b850858d4d72b46419e39a3315d200",
+      "checks": [
+        {
+          "workflow": "Hepta shared Stem bake-off shadow checks",
+          "jobs": [
+            "native-latent-cpu-smoke",
+            "evidence-contract",
+            "real-checkpoint-text-bakeoff (granite97m)",
+            "real-checkpoint-text-bakeoff (mmbert_small)",
+            "real-checkpoint-text-bakeoff (laya_encoder_only)",
+            "real-checkpoint-text-bakeoff (embeddinggemma2_740m)"
+          ]
+        },
+        {
+          "workflow": "blocking-ci",
+          "jobs": [
+            "Select blocking CI scope",
+            "cargo-deny / cargo-deny",
+            "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+            "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+            "repo-checks / Native Hepta paths on windows-latest"
+          ]
+        }
+      ]
+    },
+    "P2": {
+      "pr": 3122,
+      "head_sha": "d904d5acd83b30754951b5fc7879f0ae51c2ec9c",
+      "checks": [
+        {
+          "workflow": "Hepta real multimodal research",
+          "jobs": [
+            "real-caption-pair-research"
+          ]
+        },
+        {
+          "workflow": "blocking-ci",
+          "jobs": [
+            "Select blocking CI scope",
+            "cargo-deny / cargo-deny",
+            "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+            "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+            "repo-checks / Native Hepta paths on windows-latest"
+          ]
+        }
+      ]
+    },
+    "P3": {
+      "pr": 2695,
+      "head_sha": "74bbcc9b0bb330649cd54d9881ae3676d3968bae",
+      "checks": [
+        {
+          "workflow": "Hepta architecture convergence",
+          "jobs": [
+            "Architecture convergence (source-head)",
+            "Architecture convergence (base-merge)",
+            "Architecture required"
+          ]
+        },
+        {
+          "workflow": "blocking-ci",
+          "jobs": [
+            "Select blocking CI scope",
+            "cargo-deny / cargo-deny",
+            "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+            "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+            "repo-checks / Native Hepta paths on windows-latest"
+          ]
+        }
+      ]
+    },
+    "P4": {
+      "pr": 3416,
+      "head_sha": "c8282ad856b9a1ea4ce4ed10a1093f434f66fd4d",
+      "checks": [
+        {
+          "workflow": "NDU four-modal portfolio research (shadow)",
+          "jobs": [
+            "finite-portfolio"
+          ]
+        },
+        {
+          "workflow": "blocking-ci",
+          "jobs": [
+            "Select blocking CI scope",
+            "cargo-deny / cargo-deny",
+            "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+            "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+            "repo-checks / Native Hepta paths on windows-latest"
+          ]
+        }
+      ]
+    },
+    "P5": {
+      "pr": 3125,
+      "head_sha": "7aac712474b850858d4d72b46419e39a3315d200",
+      "checks": [
+        {
+          "workflow": "Hepta shared Stem bake-off shadow checks",
+          "jobs": [
+            "native-latent-cpu-smoke",
+            "evidence-contract"
+          ]
+        },
+        {
+          "workflow": "blocking-ci",
+          "jobs": [
+            "Select blocking CI scope",
+            "cargo-deny / cargo-deny",
+            "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+            "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+            "repo-checks / Native Hepta paths on windows-latest"
+          ]
+        }
+      ]
+    },
+    "P6": {
+      "pr": 3125,
+      "head_sha": "7aac712474b850858d4d72b46419e39a3315d200",
+      "checks": [
+        {
+          "workflow": "Hepta shared Stem bake-off shadow checks",
+          "jobs": [
+            "native-latent-cpu-smoke",
+            "evidence-contract"
+          ]
+        },
+        {
+          "workflow": "blocking-ci",
+          "jobs": [
+            "Select blocking CI scope",
+            "cargo-deny / cargo-deny",
+            "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+            "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+            "repo-checks / Native Hepta paths on windows-latest"
+          ]
+        }
+      ]
+    },
+    "P7": {
+      "pr": 3227,
+      "head_sha": "48f5a675e8ecddc1095858b2900b85422cafb599",
+      "checks": [
+        {
+          "workflow": "Hepta native multimodal Head",
+          "jobs": [
+            "retained-real-head-parity"
+          ]
+        },
+        {
+          "workflow": "blocking-ci",
+          "jobs": [
+            "Select blocking CI scope",
+            "cargo-deny / cargo-deny",
+            "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+            "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+            "repo-checks / Native Hepta paths on windows-latest"
+          ]
+        }
+      ]
+    }
+  }
+}
