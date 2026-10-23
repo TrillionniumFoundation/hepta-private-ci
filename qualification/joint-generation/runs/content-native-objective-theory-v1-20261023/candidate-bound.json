@@ -1,0 +1,45 @@
+{
+  "all_four_rejected_without_probe": true,
+  "bound": "E joint_success <= E min(text_correct_probability,image_correct_probability) <= min(E text_correct_probability,E image_correct_probability)",
+  "families": {
+    "A": {
+      "any_marginal_preserving_joint_upper_bound": 0.9799146447525203,
+      "existing_log2_joint_success": 0.9851527986865731,
+      "log2_above_upper_by": 0.005238153934052803,
+      "marginal_preserving_fixed_head_candidate_rejected": true,
+      "mean_original_image_correct": 0.9804484378759919,
+      "mean_original_text_correct": 0.9799146447525203
+    },
+    "H": {
+      "any_marginal_preserving_joint_upper_bound": 0.9814880072677811,
+      "existing_log2_joint_success": 0.9879806206336025,
+      "log2_above_upper_by": 0.006492613365821409,
+      "marginal_preserving_fixed_head_candidate_rejected": true,
+      "mean_original_image_correct": 0.981948936419697,
+      "mean_original_text_correct": 0.9814880072677811
+    },
+    "N": {
+      "any_marginal_preserving_joint_upper_bound": 0.9834996091904004,
+      "existing_log2_joint_success": 0.988540796480534,
+      "log2_above_upper_by": 0.005041187290133586,
+      "marginal_preserving_fixed_head_candidate_rejected": true,
+      "mean_original_image_correct": 0.9839814976769011,
+      "mean_original_text_correct": 0.9834996091904004
+    },
+    "S": {
+      "any_marginal_preserving_joint_upper_bound": 0.9802634375624435,
+      "existing_log2_joint_success": 0.9863667805440116,
+      "log2_above_upper_by": 0.006103342981568116,
+      "marginal_preserving_fixed_head_candidate_rejected": true,
+      "mean_original_image_correct": 0.9807425669030837,
+      "mean_original_text_correct": 0.9802634375624435
+    }
+  },
+  "independent_review_CPU_before_receipt": 0.05719799999999999,
+  "model_forwards": 0,
+  "model_updates": 0,
+  "real_requests": 0,
+  "scope": "read-only bound on existing aggregate TRAIN means, no request or model call",
+  "source": "runs/content-joint-train-v1-20261023/quality-summary.json",
+  "source_sha256": "274b9f516eacc71842f310867557fe5ab98cb97ec56414c853df037d969a8269"
+}
