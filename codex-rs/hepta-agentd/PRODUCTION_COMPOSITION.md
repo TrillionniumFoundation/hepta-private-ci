@@ -117,3 +117,8 @@ process binding separate from one-step local lease generation and supplies a
 whole-owner Current acknowledgement without a ticket. Its 54-test component
 scope uses explicit Root fixtures; real Root service/native recovery remains a
 separate requirement.
+
+[The static V2 execution record](acceptance/2026-10-23-static-authority-v2/README.md)
+preserves the original default release build/shape success, failed Linux/data
+attempts, separate SSD reference success and actual native500ms failure. It
+does not qualify an installed production authority or recovered writer.
