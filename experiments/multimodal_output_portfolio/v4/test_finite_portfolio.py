@@ -143,5 +143,23 @@ class FinitePortfolioTests(unittest.TestCase):
             p.solve(State((0,0,0,0), budget=6))
 
 
+    def test_selective_witness_uses_new_information_only_when_valuable(self):
+        # Predeclared exploratory mechanism fixture, not an independent efficacy gate.
+        law = Model(common_flip=.03, cost_penalty=.01,
+                    witness_accuracy=.98, witness_cost=1)
+        solver = Portfolio(law)
+        root = State((0,0,0,0), budget=6)
+        self.assertEqual(solver.solve(root).action, 'video')
+        self.assertEqual(solver.solve(root.after('video',0,1)).action, 'image')
+        self.assertEqual(solver.solve(root.after('video',1,1)).action, 'witness')
+        result = evaluate_exact(solver, law, 'dynamic', 6)
+        static = evaluate_exact(Portfolio(law), law, 'static', 6)
+        self.assertGreater(result['witness_query_rate'], 0.1)
+        self.assertLess(result['witness_query_rate'], 0.9)
+        self.assertAlmostEqual(result['terminal_coverage'], 1.0, places=9)
+        self.assertLess(result['mean_external_loss'], static['mean_external_loss'])
+        self.assertLess(result['cvar90_external_loss'], static['cvar90_external_loss'])
+
+
 if __name__ == '__main__':
     unittest.main()
