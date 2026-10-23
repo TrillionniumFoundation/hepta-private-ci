@@ -18,6 +18,10 @@ CONTROLS = ARMS[1:]
 METRICS = ("loss", "quality", "ambiguity", "inconsistency")
 COST_PARTS = ("encoder", "backbone", "cell", "controller", "decoder",
               "verifier", "training_amortized")
+# Syntactic physical units only. Caller-provided labels do not authenticate meters.
+# Proxy token/MAC budgets are not interchangeable with measured expenditures.
+MEASURED_COST_UNITS = ("measured_cpu_seconds", "measured_wall_seconds",
+                       "measured_device_joules")
 
 
 class EvidenceGap(ValueError):
@@ -98,7 +102,8 @@ def evaluate(study: Mapping):
     draws = protocol.get("draws_per_world")
     _need(type(draws) is int and 1 <= draws <= 16, "unregistered draw count")
     cost_units = protocol.get("cost_units")
-    _need(isinstance(cost_units, str) and len(cost_units) > 0, "missing measured cost unit")
+    _need(cost_units in MEASURED_COST_UNITS,
+          "missing physical cost unit or proxy supplied instead of a measured unit")
     observations = study.get("worlds")
     _need(isinstance(observations, list) and len(observations) == len(flat_ids),
           "unobserved or selectively omitted heldout worlds")
@@ -227,6 +232,7 @@ def evaluate(study: Mapping):
                "worlds_per_seed": size, "draws_per_world": draws,
                "familywise_alpha": alpha, "bootstrap_replicates": boots,
                "comparator_selection": protocol["validation_selected_best"],
+               "physical_cost_units": cost_units,
                "comparison": out,
                "limitations": ["untrusted caller supplied observations and metadata",
                                "no independent observer, signature verification or prospective attestation",
