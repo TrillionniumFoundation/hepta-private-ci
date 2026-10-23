@@ -119,6 +119,10 @@ fn checkpoint_is_deterministic_and_binds_all_tick_inputs() {
     assert_ne!(original, checkpoint(&manifest, &changed));
 
     let mut changed = input.clone();
+    changed.input_digest = digest("next-input");
+    assert_ne!(original, checkpoint(&manifest, &changed));
+
+    let mut changed = input.clone();
     changed.ndu_state_digest = digest("next-ndu");
     assert_ne!(original, checkpoint(&manifest, &changed));
 
@@ -365,6 +369,13 @@ fn shadow_runtime_abstains_without_candidate_support() {
 
 #[test]
 fn shadow_runtime_rejects_wrong_frontier_cue_and_snapshot() {
+    let mut fixture = shadow_fixture(true);
+    fixture.input.source_frontier_digest = digest("stale-source");
+    assert!(matches!(
+        execute(&fixture),
+        Err(MemoryCellRuntimeErrorV1::Binding("source_frontier_digest"))
+    ));
+
     let mut fixture = shadow_fixture(true);
     fixture.input.forget_frontier_digest = digest("stale-forget");
     assert!(matches!(
