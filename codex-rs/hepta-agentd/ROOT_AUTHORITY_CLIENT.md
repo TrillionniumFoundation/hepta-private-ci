@@ -105,6 +105,10 @@ or successful production-authority receipt is part of this bundle. Actual
 deployment qualification and example bundles come from the live root launcher,
 not a fabricated cut or a user-filled recovery template.
 
+The [original wire/proof type qualification](acceptance/2026-10-23-public-bootstrap/README.md)
+binds the six-test Rust1.96 scope and finish. It does not certify a live bundle,
+receiver loader or five-lane deployment.
+
 ## Trusted writer succession
 
 `DeploymentFinalUseIssuer::rotate_writer_authorization` is a trusted launcher
