@@ -46,6 +46,7 @@ class FinitePortfolioTests(unittest.TestCase):
         losses = [(0.0, 1/11)] * 10 + [(10.0, 1/11)]
         self.assertAlmostEqual(fractional_cvar(losses), 100 / 11, places=10)
 
+
     def test_adversarial_tail_distribution_fails_closed(self):
         with self.assertRaises(InvalidModel):
             fractional_cvar([(float('nan'), 1.0)])
