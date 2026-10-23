@@ -54,6 +54,9 @@ def _checked_image(row, origin, *, allow_image_id=False):
         if not isinstance(row.get(key), str) or not rule.fullmatch(row[key]):
             raise CohortContractError(f"{origin}: missing or invalid {key}")
     return {"origin": origin, "source_id": identifier,
+            # Only a four-split manifest carries score/journal task identity.
+            # Historical image-exclusion wrappers carry source identity only.
+            **({} if allow_image_id else {"task_id": row["task_id"]}),
             **{key: row[key] for key in keys}}
 
 
@@ -142,6 +145,18 @@ def check_cohort(candidate, history, *, max_hamming=4, require_complete_history=
         historical_ids = [row["source_id"] for row in old_sources]
         if len(set(historical_ids)) != len(historical_ids):
             raise CohortContractError("duplicate identities in historical source roster")
+    # A task key is a global score/journal join identity, not just a
+    # split-local label. Reuse across source-disjoint cohorts can silently
+    # alias old and new evaluation rows even when every image hash differs.
+    historical_task_ids = set()
+    for prior in old_sources:
+        task_id = prior.get("task_id")
+        if task_id is not None:
+            if task_id in historical_task_ids:
+                raise CohortContractError("duplicate task_id across historical cohorts")
+            historical_task_ids.add(task_id)
+    if any(row["task_id"] in historical_task_ids for row in new_sources):
+        raise CohortContractError("candidate task_id aliases historical cohort")
     comparisons = (len(new_sources) * (len(new_sources) - 1) // 2
                    + len(new_sources) * len(old_sources))
     if comparisons > MAX_PAIR_COMPARISONS:
