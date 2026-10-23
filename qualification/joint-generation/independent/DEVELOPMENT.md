@@ -309,3 +309,47 @@ file write preceded a deliberately injected kernel failure. Discovery now stays
 in the charged phase while persistence uses existing final receipts, preserving
 the original error; 28 affected tests and the corrected full suite passed.
 Both failed and corrected logs remain retained. No test fold was opened.
+
+## Unit-limited t9 and folded adaptation
+
+The local-reuse build completed with exit 2. All CPU/work caps held; complete
+CPU ranged from 5.337 to 6.159 seconds. Validation A-anchor utility was
++0.023051956962, NDU-additive +0.004811200382, and control/random +0.001311078897,
+but control/static-NDU complete CPU-net remained -0.002094252134. Same-weight
+routing helped; NC/full content trailed NDU/full by 0.003729004304. NDU/control
+received 386/367 updates per seed. Candidate and residual receipts establish
+operator-allocation refusal, with CPU headroom. All three shared bases matched
+t8 bytes. The failure, exact decomposition and standalone RGB/reload smoke were
+retained before further implementation; no test fold was opened.
+
+The next candidate removes redundant encoder arithmetic in already expanded
+low-view adaptation rows. It keeps shared decoder300 and dense pretraining500
+unchanged, preserving fixed common base weights. The existing random indices,
+view mask, np.where inputs, 202-dimensional trainable encoder, heads, objective,
+optimizer and decoder remain. Each step freshly folds four repeated-pixel
+weights into a 58-feature low encoder, then expands its low encoder gradient
+back into the original parameter map. This is real-arithmetic equality with
+changed floating reduction order; mixed adapted-weight bytes can differ.
+
+The componentwise envelope is used only for pre-RNG admission. Actual mask
+geometry determines the atomic charge, including fold, replica checks, mask
+scans and gradient merge. The actual objective-step ledger delta determines
+CPU/unit forecasting; the envelope is never billed as executed work. Gather,
+scatter and copies remain inside actual CPU. Shared base training never passes
+the optional mask, while every continued-training arm uses the same profile.
+
+At n64/h32/32 low rows, the declared inventory removes 294912 encoder MACs and
+adds the actual scalar/check work: net 573952 units versus the previous dense
+step, about 24.88% of an NDU step. This is an operator estimate, not a CPU or
+content-gain measurement. Small split GEMMs and memory traffic may offset CPU
+savings; all real cost and the original gates remain decisive.
+
+The numerical tolerances in TRAINING_KERNEL.md were fixed before any numerical
+execution and were not relaxed. Five new hand-array tests and 25 affected
+learning/accounting/optimizer tests passed, plus 41 runner/forecast hand tests.
+The final complete independent suite passed 171 tests in 4.991s, exit 0. It
+covers dense/all-full bitwise behavior, mixed gradients/Adam, fresh folds,
+clipping, custom-price envelope safety, atomic rejection, unchanged RNG draws,
+whole-seed-round admission and actual-unit forecasting. A new immutable source
+freeze must precede the next actual TRAIN/validation build. No benefit, speed,
+extra updates or acceptance has yet been credited to this kernel.

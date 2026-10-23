@@ -163,3 +163,12 @@ local decoder observations, reuses one TRAIN reward index tensor, and records
 same-process numerical metadata inside charged shared CPU. Actual deleted
 observer work is removed from both charges and forecasts. Original gates,
 budgets, data, equations and output behavior remain authoritative.
+
+After the unit-limited t9 failure, the next adaptation-only kernel folds exact
+2x2 low-view replicas into 58 encoder features and pulls their gradients back
+to the original 202-dimensional parameters. Shared dense base training remains
+unchanged. Actual mask work is charged; a conservative envelope only admits an
+update before its original RNG draws. Forecasts use actual ledger increments.
+See [the kernel contract](TRAINING_KERNEL.md) for the fixed numerical checks and
+floating-order boundary. The original benefit gates still apply; this
+implementation alone does not prove that additional updates improve content.
