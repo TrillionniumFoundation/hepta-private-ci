@@ -24,6 +24,7 @@ def study_fixture(*, strong_ndu=True, bootstrap_replicates=120):
         'minimum_cvar_improvement': 0.02,
         'max_quality_drop': 0.02, 'max_ambiguity_increase': 0.,
         'max_inconsistency_increase': 0., 'max_total_cost_ratio': 1.05,
+        'max_tail_cost_ratio': 1.05,  # Registered physical CVaR90 cost ceiling.
         'bootstrap_replicates': bootstrap_replicates,
         'bootstrap_seed': 3001, 'familywise_alpha': 0.05,
         'draws_per_world': 2, 'failure_loss': 2.0, 'cost_units': 'measured_cpu_seconds',
@@ -235,6 +236,45 @@ class PairedEvidenceTests(unittest.TestCase):
                 self.assertEqual(report['status'], "HOLD_NO_GO")
                 self.assertEqual(report['authority'], "DENY_ALL")
                 self.assertFalse(report['scientific_superiority_proven'])
+
+    def test_missing_tail_cost_registration_denied(self):
+        d = study_fixture()
+        del d['protocol']['max_tail_cost_ratio']
+        with self.assertRaisesRegex(EvidenceGap, 'tail cost ratio'):
+            evaluate(d)
+
+    def test_provisional_resource_admission_requires_tail_cost_too(self):
+        d = study_fixture(bootstrap_replicates=2000)
+        # Each training seed contains 29 inexpensive (0.97) and 3 expensive
+        # (1.35) NDU episodes; unchanged learned controls cost 1.01.
+        # Overall ratio ~=0.996 and paired bootstrap upper ~=1.031 PASS,
+        # but true worst-decile cost ratio ~=1.313 must be rejected.
+        for row in d['worlds']:
+            cost = row['outcomes']['ndu']['measured_cost']
+            world_index = int(row['world_id'].rsplit('-', 1)[-1])
+            delta = .31 if world_index < 3 else -.07
+            cost['encoder'] += delta
+            cost['total'] += delta
+        review = evaluate(d)
+        for name in ('no_change', 'static', 'moe', 'risk_neutral_mpc',
+                     'fixed_risk_mpc', 'free_controller'):
+            item = review['comparison'][name]
+            self.assertLess(item['observed_cost_ratio'], 1.05)
+            self.assertLess(item['bootstrap_upper_cost_ratio'], 1.05)
+            self.assertTrue(item['gates']['physical_total_cost'])
+            self.assertGreater(item['observed_tail_cost_ratio'], 1.25)
+            self.assertFalse(item['gates']['physical_tail_cost'])
+        self.assertFalse(review['all_provisional_gates_pass'])
+        self.assertEqual(review['status'], 'HOLD_NO_GO')
+        self.assertEqual(review['authority'], 'DENY_ALL')
+
+    def test_uniform_cost_tail_is_not_automatically_rejected(self):
+        report = evaluate(study_fixture(bootstrap_replicates=2000))
+        for item in report['comparison'].values():
+            self.assertAlmostEqual(item['observed_tail_cost_ratio'],
+                                   item['observed_cost_ratio'], places=12)
+            self.assertTrue(item['gates']['physical_tail_cost'])
+        self.assertFalse(report['scientific_superiority_proven'])
 
     def test_no_real_decoder_outputs_claimed(self):
         rec = evaluate(study_fixture())
