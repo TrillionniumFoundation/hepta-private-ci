@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - codex-rs/windows-sandbox-rs/**
+      - codex-rs/utils/windows-private-state/**
       - .github/workflows/hepta-windows-delete-boundary.yml
 
 permissions:

@@ -5691,6 +5691,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "codex-utils-windows-private-state"
+version = "0.0.0"
+dependencies = [
+ "windows-sys 0.52.0",
+]
+
+[[package]]
 name = "codex-v8-poc"
 version = "0.0.0"
 dependencies = [
@@ -5748,6 +5755,7 @@ dependencies = [
  "codex-utils-cargo-bin",
  "codex-utils-pty",
  "codex-utils-string",
+ "codex-utils-windows-private-state",
  "dirs-next",
  "dunce",
  "glob",
