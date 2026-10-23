@@ -90,7 +90,15 @@ def probe(
             headers={"Content-Type": "application/json"},
         )
         started = time.perf_counter()
-        with urllib.request.urlopen(req, timeout=timeout) as response:
+        # Never follow redirect or ambient HTTP proxy from the local inference port.
+        class NoRedirect(urllib.request.HTTPRedirectHandler):
+            def redirect_request(self, request, fp, code, msg, headers, newurl):
+                raise ValueError("local inference endpoint redirected; refuse external calls")
+
+        opener = urllib.request.build_opener(
+            urllib.request.ProxyHandler({}), NoRedirect(),
+        )
+        with opener.open(req, timeout=timeout) as response:
             if response.status != 200:
                 raise ValueError("non-200 inference response")
             payload = response.read(128 * 1024 + 1)
