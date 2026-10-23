@@ -173,6 +173,26 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         },
     );
 
+    // The exact independently retained cut must be checked before any writer
+    // lease is acquired. A wrong cut must neither activate recovery nor write.
+    let mut wrong_cut = expected.clone();
+    wrong_cut.state_digest = Sha256Digest::for_bytes(b"wrong temporary recovery cut");
+    assert!(
+        AgentdProductionWriterHost::open_with_recovery(
+            &config,
+            CognitiveRecoveryRequirement::ExactCurrentCut(&wrong_cut),
+            authority.clone(),
+            Arc::clone(&verifier),
+            "agentd-product-recovery-test",
+            1,
+        )
+        .await
+        .is_err()
+    );
+    let unchanged = DurableCognitiveStore::open(&config.identity().layout).await?;
+    assert_eq!(unchanged.recovery_anchor().await?, expected);
+    drop(unchanged);
+
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,
         CognitiveRecoveryRequirement::ExactCurrentCut(&expected),
@@ -183,7 +203,16 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )
     .await?;
     let recovered_anchor = host.writer().recovery_anchor().await?;
-    assert_eq!(recovered_anchor, expected);
+    // ProductionDurableWriter::open records the host-bound lease in the
+    // recovered database. Its post-acquisition cut must therefore advance.
+    assert_ne!(recovered_anchor.state_digest, expected.state_digest);
+    assert_eq!(recovered_anchor.profile, expected.profile);
+    assert_eq!(recovered_anchor.owner_agent_id, expected.owner_agent_id);
+    assert_eq!(recovered_anchor.schema_digest, expected.schema_digest);
+    assert_eq!(host.writer().owner_agent_id(), &owner);
+    assert_eq!(host.writer().lease_id(), "agentd-product-recovery-test");
+    assert_eq!(host.writer().generation(), 1);
+    host.writer().verify_current_authority().await?;
 
     let now = i64::try_from(now_unix_seconds()?)?;
     let access = CognitiveAccess::agent_private(owner.clone());
