@@ -1,0 +1,153 @@
+{
+  "all_attempt_artifact_hashes_verified": true,
+  "attempt_002_vs_003_artifacts_bitwise_equal": {
+    "ATTRIBUTION.json": true,
+    "LICENSE-MIT-Descript.txt": true,
+    "dac-reconstructed-first-two-seconds.wav": true,
+    "discrete-codes.npy": true,
+    "input-first-two-seconds.wav": true,
+    "pip-freeze.txt": true,
+    "reconstructed-float32.npy": true
+  },
+  "attempts": {
+    "001": {
+      "receipt_sha256": "20676a100dc2b55ec702b40002958fff4925a9892a50bda7ba05886b83c21d68",
+      "script_sha256": "50d18d043a337fdef0d9cd2c327568c6d63c31ad82c664d4494ba61c6b2dff7c",
+      "status": "failed"
+    },
+    "002": {
+      "receipt_sha256": "b33d410e841105aa312eacff67fc99939bdd6410a24cf6ac13972d370926704a",
+      "script_sha256": "43710a2aa2268d90fd6a31d8df04457d4d11d4cd391963c3903b7b75b9cc0b50",
+      "status": "completed_frozen_pretrained_codec_reconstruction_only"
+    },
+    "003": {
+      "receipt_sha256": "5c2364efd05149ff5609919584fc2df593419a1e3a84d0b0aa08d07a758fe62d",
+      "script_sha256": "85ead4026bf7121d657fdb51e04bc963668b29acbd51694d341562d2d17279a7",
+      "status": "completed_frozen_pretrained_codec_reconstruction_only"
+    }
+  },
+  "boundary_probe": {
+    "code_shape": [
+      1,
+      12,
+      100
+    ],
+    "compress_decompress_loudness_or_chunk_pipeline_used": false,
+    "explanation": "This separate upstream forward probe measures the shape that the original length guard rejected; it does not edit the failed receipt.",
+    "input": "32000 literal zeros; no real audio or reference target used",
+    "loading": {
+      "constructor_kwargs": {
+        "codebook_dim": 8,
+        "codebook_size": 1024,
+        "decoder_dim": 1536,
+        "decoder_rates": [
+          8,
+          5,
+          4,
+          2
+        ],
+        "encoder_dim": 64,
+        "encoder_rates": [
+          2,
+          4,
+          5,
+          8
+        ],
+        "n_codebooks": 12,
+        "quantizer_dropout": false,
+        "sample_rate": 16000
+      },
+      "custom_safe_globals_added": false,
+      "map_location": "cpu",
+      "method": "official DAC architecture constructed from validated checkpoint metadata; strict tensor state load",
+      "missing_keys": [],
+      "state_entries": 322,
+      "strict": true,
+      "torch_load_weights_only": true,
+      "unexpected_keys": [],
+      "unsafe_loading_fallback": false
+    },
+    "original_attempt_001_output_length_recorded_in_001_receipt": false,
+    "successful_adapter_left_crop": 0,
+    "successful_adapter_right_crop": 312,
+    "successful_adapter_right_zero_pad": 320,
+    "target_dependent_alignment_or_gain_search": false,
+    "transposed_convolution_length_formula_steps": [
+      {
+        "dilation": 1,
+        "input": 100,
+        "kernel": 16,
+        "output": 800,
+        "output_padding": 0,
+        "padding": 4,
+        "stride": 8
+      },
+      {
+        "dilation": 1,
+        "input": 800,
+        "kernel": 10,
+        "output": 3999,
+        "output_padding": 0,
+        "padding": 3,
+        "stride": 5
+      },
+      {
+        "dilation": 1,
+        "input": 3999,
+        "kernel": 8,
+        "output": 15996,
+        "output_padding": 0,
+        "padding": 2,
+        "stride": 4
+      },
+      {
+        "dilation": 1,
+        "input": 15996,
+        "kernel": 4,
+        "output": 31992,
+        "output_padding": 0,
+        "padding": 1,
+        "stride": 2
+      }
+    ],
+    "upstream_forward_returned_audio_shape": [
+      1,
+      1,
+      31992
+    ],
+    "upstream_preprocessed_shape": [
+      1,
+      1,
+      32000
+    ],
+    "wall_seconds_including_load": 3.1000078429988207,
+    "warning_categories": [
+      "FutureWarning"
+    ]
+  },
+  "completed_at_utc": "2026-10-23T05:28:33.422688+00:00",
+  "independent_metrics": {
+    "mse": 0.020331324765231494,
+    "signal_power": 0.011719922931893962,
+    "snr_db": -2.392409218291085
+  },
+  "schema": "hepta.natural-audio-codec-independent-verification.v1",
+  "scope": "loading/shape/artifact/metric verification only; no quality tuning or target-blind generation",
+  "script_sha256": "bafb3623bc87dc1730a2d3ef909fd0c936fba180a1c8f3d5c9c1285c0ca7e541",
+  "status": "passed",
+  "total_wall_seconds": 3.4230748310001218,
+  "wav_headers_channels_width_rate_frames": {
+    "dac-reconstructed-first-two-seconds.wav": [
+      1,
+      2,
+      16000,
+      32000
+    ],
+    "input-first-two-seconds.wav": [
+      1,
+      2,
+      16000,
+      32000
+    ]
+  }
+}

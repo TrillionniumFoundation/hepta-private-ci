@@ -1,0 +1,161 @@
+{
+  "observed_at_utc": "2026-10-23 06:23:10 UTC",
+  "run": {
+    "id": 39899251197,
+    "path": ".github/workflows/ndu-controlled-generation-v2.yml",
+    "head_sha": "55aab1459c9079e397683acdeb382cd1b53d03c8",
+    "status": "queued",
+    "conclusion": null,
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39899251197"
+  },
+  "jobs": [
+    {
+      "id": 120236739119,
+      "name": "hosted-verification",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-23T05:20:45Z",
+      "completed_at": "2026-10-23T05:22:11Z",
+      "runner_id": 1000208946,
+      "runner_name": "GitHub Actions 1000208946",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-23T05:20:46Z",
+          "completed_at": "2026-10-23T05:20:46Z"
+        },
+        {
+          "name": "Open hosted evidence receipt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-23T05:20:46Z",
+          "completed_at": "2026-10-23T05:20:47Z"
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-23T05:20:47Z",
+          "completed_at": "2026-10-23T05:20:52Z"
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-23T05:20:52Z",
+          "completed_at": "2026-10-23T05:20:52Z"
+        },
+        {
+          "name": "Resolve explicit implementation commit",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-23T05:20:52Z",
+          "completed_at": "2026-10-23T05:20:52Z"
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-23T05:20:52Z",
+          "completed_at": "2026-10-23T05:20:57Z"
+        },
+        {
+          "name": "Hosted unit and smoke verification",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-23T05:20:57Z",
+          "completed_at": "2026-10-23T05:22:05Z"
+        },
+        {
+          "name": "Preserve hosted outcome",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-23T05:22:05Z",
+          "completed_at": "2026-10-23T05:22:05Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-23T05:22:05Z",
+          "completed_at": "2026-10-23T05:22:07Z"
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-23T05:22:07Z",
+          "completed_at": "2026-10-23T05:22:07Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-23T05:22:07Z",
+          "completed_at": "2026-10-23T05:22:07Z"
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-23T05:22:07Z",
+          "completed_at": "2026-10-23T05:22:07Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-23T05:22:07Z",
+          "completed_at": "2026-10-23T05:22:07Z"
+        }
+      ]
+    },
+    {
+      "id": 120236739358,
+      "name": "dedicated-full",
+      "status": "queued",
+      "conclusion": null,
+      "started_at": "2026-10-23T04:14:19Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "labels": [
+        "self-hosted",
+        "linux",
+        "x64"
+      ],
+      "steps": []
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12480676664,
+      "name": "ndu-controlled-v2-hosted-39899251197-1",
+      "size_in_bytes": 9115083,
+      "digest": "sha256:6ed6265f6fa493eafdc55850426e7bf4bc8f5b2685181ad08ad901573be6ca00",
+      "created_at": "2026-10-23T05:22:06Z",
+      "expires_at": "2026-11-22T05:22:05Z"
+    }
+  ],
+  "artifact_content_verified_this_observation": true,
+  "scope": "Original hosted job is now complete on a real hosted runner; the dedicated job remains queued with runner_id 0. Metadata success does not establish a scientific primary result. No administrator endpoint or queue-cause diagnosis is inferred.",
+  "verification_report": "cloud-original-hosted-verification.json"
+}

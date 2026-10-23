@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "four_actions_physically_executed": true,
+  "streams": [
+    {
+      "modality": "text",
+      "selected_action": 1,
+      "branch": 0,
+      "complete_four_outputs": true
+    },
+    {
+      "modality": "audio",
+      "selected_action": 2,
+      "branch": 1,
+      "complete_four_outputs": true
+    },
+    {
+      "modality": "image",
+      "selected_action": 3,
+      "branch": 2,
+      "complete_four_outputs": true
+    },
+    {
+      "modality": "video",
+      "selected_action": 4,
+      "branch": 1,
+      "complete_four_outputs": true
+    }
+  ],
+  "native": {
+    "sessions": 4,
+    "requests": 20,
+    "transcript_sha256": "de02f36c639ce2d11e6c0d63b5fcdedb16c8b32dd82c0905b7e3798889435130"
+  },
+  "receipt_sha256": "5f738339a706e8efa7ae024bedfdc01dcc36ad5cf1d84155e5950c5d7ce60d4d",
+  "maximum_neural_error": 0.0,
+  "maximum_compiled_utility_error": 0.0,
+  "verified_fixture_linear_macs": 5439488,
+  "audit_linear_macs": 5437440,
+  "audit_wall_seconds": 0.6275623240017012,
+  "audit_process_cpu_seconds": 0.953440397,
+  "scope": "Four real-kernel modality actions with a research native bridge; no production attestation.",
+  "auditor_sha256": "9eed39941c5cedc14d3783ba54f1e466d726001b9f325f45d1492c5549d8efaf",
+  "fixture_directory": "/dev/shm/hepta-v4/native-bridge-development-001",
+  "development_only": true
+}

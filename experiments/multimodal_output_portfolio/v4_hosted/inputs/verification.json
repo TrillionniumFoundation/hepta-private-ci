@@ -1,0 +1,24 @@
+{
+  "checks": [
+    "frozen Git tree identity",
+    "three protocol checkpoint byte identities",
+    "native build receipt byte identity",
+    "complete original fixture and source hashes",
+    "canonical paths, regular files, exact modes, unique whitelist",
+    "raw chunk concatenation, SHA256 and Git blob SHA1",
+    "ZIP CRC, exact member bytes and permissions",
+    "original inputs unchanged"
+  ],
+  "chunks": 18,
+  "manifest_sha256": "e06e58460e0d711f65920b9f1900280553a2ff39f1cef6fdc31ee7fbb495c9db",
+  "members": 78,
+  "model_executed": false,
+  "native_executed": false,
+  "schema": "hepta-v4-hosted-input-packaging-check-v1",
+  "science_commit": "7713023e604746a3947e0e0e2d31e8eaef6e48b1",
+  "status": "passed",
+  "total_uncompressed_bytes": 14720630,
+  "uploaded_or_triggered": false,
+  "zip_bytes": 9346694,
+  "zip_sha256": "6b59d4c659cef2892b6bcd580488b7487b4e8ade00256eaa74b16831d64ddd45"
+}

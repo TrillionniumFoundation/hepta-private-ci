@@ -1,0 +1,49 @@
+{
+  "schema": "hepta.original-hosted-artifact-verification.v1",
+  "passed": true,
+  "run_id": 39899251197,
+  "artifact_id": 12480676664,
+  "archive_sha256": "6ed6265f6fa493eafdc55850426e7bf4bc8f5b2685181ad08ad901573be6ca00",
+  "archive_bytes": 9115083,
+  "source_commit": "c5c6b9df0a83a9a2f95d5583b95909829a982b06",
+  "source_files_verified": 43,
+  "runtime_source_hashes_verified": 20,
+  "runtime_artifact_hashes_verified": 87,
+  "results_only_files_retained": 103,
+  "unit_tests_passed": 23,
+  "launcher": {
+    "schema": "hepta.ndu-controlled-generation.launcher.v2",
+    "stage": "complete",
+    "exit_code": 0,
+    "requested_tier": "hosted-cpu",
+    "source_sha": "c5c6b9df0a83a9a2f95d5583b95909829a982b06",
+    "environment_assertions_passed": true,
+    "dedicated_runner_verified": false,
+    "external_assignment_attestation": "not_applicable",
+    "runner": {
+      "RUNNER_NAME": "GitHub Actions 1000208946",
+      "RUNNER_ENVIRONMENT": "github-hosted",
+      "RUNNER_OS": "Linux",
+      "RUNNER_ARCH": "X64"
+    },
+    "request_commit": "55aab1459c9079e397683acdeb382cd1b53d03c8",
+    "run_id": "39899251197",
+    "run_attempt": "1"
+  },
+  "completion": {
+    "execution_completed": true,
+    "primary_passed": false,
+    "process_cpu_seconds": 48.172923772000004,
+    "seeds": [
+      5
+    ],
+    "smoke_only": true,
+    "source_unchanged": true,
+    "wall_seconds": 42.669840634999986,
+    "world_evaluations": 6048
+  },
+  "scientific_primary_passed": false,
+  "confirmation_eligible": false,
+  "scope": "Artifact/source integrity and observed hosted smoke execution; no dedicated-runner qualification or new independent scientific confirmation.",
+  "verifier_sha256": "8afe2783eb6a9904df737b9cf42bace98c1e96c967076a2d4d5cc20dadd8c5d3"
+}

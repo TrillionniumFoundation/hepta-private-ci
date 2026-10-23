@@ -1,0 +1,22 @@
+{
+  "artifact_manifest_sha256": "d3de35b5cc2f45b49963b760265a5c63012f43f1276db5a4d5c523025d6f01e9",
+  "artifact_payload_bytes": 29048,
+  "attempt_kind": "confirmation",
+  "completed_at_utc": "2026-10-23T07:02:30.998770+00:00",
+  "cost_scope": "All actual nn.Linear forwards in this attempt, including encoder checks; not total FLOPs, energy, development or independent replay work.",
+  "development": false,
+  "full_actual_linear_macs": 0,
+  "full_actual_model_work_phases": 0,
+  "output": "/dev/shm/hepta-v4/confirmation-001",
+  "peak_process_rss_kib": 199780,
+  "preregistration_commit": "f10589f3df5d2da88b2b5d92e3686441ce982461",
+  "protocol_sha256": "4f90f435e3ce419a09f42412af1fc6fe3515f3c198e5e8555115b1996c1aab0b",
+  "python_process_cpu_seconds": 0.03458476999999993,
+  "schema": "hepta.modality-allocation.execution.v4",
+  "scientific_acceptance": "pending independent audits",
+  "source_unchanged": null,
+  "started_at_utc": "2026-10-23T07:02:30.987905+00:00",
+  "status": "failed",
+  "traceback": "Traceback (most recent call last):\n  File \"/tmp/hepta-portfolio-work/experiments/multimodal_output_portfolio/v4/run.py\", line 177, in execute\n    raise RuntimeError(\"insufficient room for complete evidence and archive headroom\")\nRuntimeError: insufficient room for complete evidence and archive headroom\n",
+  "wall_seconds": 0.010855026001081569
+}

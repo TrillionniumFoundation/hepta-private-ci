@@ -1,0 +1,17 @@
+{
+  "schema": "hepta.modality-allocation.reporting-verification.v4",
+  "observed_at_utc": "2026-10-23T06:19:44.090136+00:00",
+  "command": "/tmp/hepta-output-portfolio-env/bin/python -W error -m unittest discover -s experiments/multimodal_output_portfolio/v4 -p test_allocation_reporting.py -v",
+  "exit_code": 0,
+  "tests_passed": 3,
+  "unittest_reported_seconds": 0.201,
+  "verification": "Analytically specified conditional-versus-pooled CE, paired cash-translation bootstrap, cost/world-order/seed validation; no formal generation run",
+  "source_sha256": {
+    "experiments/multimodal_output_portfolio/v4/allocation_reporting.py": "4610d4f8002277be6f3d4b49cb90ce694d7d9abccaff522d4e56db1477a003a6",
+    "experiments/multimodal_output_portfolio/v4/test_allocation_reporting.py": "a1f5ed9b17b02668420ec669312835f73ea8adce8ba99bd3896884797a1c2ccd"
+  },
+  "code_lines": {
+    "experiments/multimodal_output_portfolio/v4/allocation_reporting.py": 173,
+    "experiments/multimodal_output_portfolio/v4/test_allocation_reporting.py": 69
+  }
+}

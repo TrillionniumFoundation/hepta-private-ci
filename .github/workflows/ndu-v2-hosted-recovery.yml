@@ -1,0 +1,69 @@
+name: NDU v2 hosted recovery
+on:
+  push:
+    branches: [research/ndu-feedback-generation-v3]
+    paths: [experiments/multimodal_output_portfolio/v3/HOSTED_RECOVERY_REQUEST.json]
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+jobs:
+  hosted-recovery:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    steps:
+      - name: Open separate hosted recovery receipt
+        run: |
+          out="$RUNNER_TEMP/ndu-v2-hosted-recovery/$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$out"
+          printf 'HEPTA_V2_RECOVERY_OUTPUT=%s\n' "$out" >> "$GITHUB_ENV"
+          printf 'tier=hosted-cpu\nrunner=%s\nrequest_commit=%s\nrequest_ref=%s\noriginal_run_unchanged=39899251197\ndedicated_gate_satisfied=false\n' "$RUNNER_NAME" "$GITHUB_SHA" "$GITHUB_REF" > "$out/assignment.txt"
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # same pin as v2
+        with:
+          ref: ${{ github.sha }}
+          path: request
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /experiments/multimodal_output_portfolio/v3/HOSTED_RECOVERY_REQUEST.json
+            /experiments/multimodal_output_portfolio/v3/recover_v2_hosted.sh
+            /.github/workflows/ndu-v2-hosted-recovery.yml
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: c5c6b9df0a83a9a2f95d5583b95909829a982b06
+          path: v2-source
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /experiments/multimodal_output_portfolio/
+            /.github/workflows/ndu-controlled-generation-v2.yml
+      - name: Frozen v2 units and hosted smoke through recovery adapter
+        timeout-minutes: 10
+        run: |
+          bash request/experiments/multimodal_output_portfolio/v3/recover_v2_hosted.sh \
+            "$GITHUB_WORKSPACE/v2-source" \
+            "$GITHUB_WORKSPACE/request/experiments/multimodal_output_portfolio/v3/HOSTED_RECOVERY_REQUEST.json" \
+            "$HEPTA_V2_RECOVERY_OUTPUT"
+      - name: Preserve recovery outcome
+        if: always()
+        env:
+          HEPTA_JOB_STATUS: ${{ job.status }}
+        run: |
+          printf 'job_status=%s\noriginal_launcher_executed=false\ndedicated_gate_satisfied=false\nexternal_assignment_attestation=requires_Actions_job_record\n' "$HEPTA_JOB_STATUS" > "$HEPTA_V2_RECOVERY_OUTPUT/workflow-outcome.txt"
+          printf 'Frozen v2 hosted smoke recovery: %s. New workflow attempt; original run 39899251197 is unchanged. Dedicated desktop execution remains a separate gate.\n' "$HEPTA_JOB_STATUS" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # same pin as v2
+        if: always()
+        with:
+          name: ndu-v2-hosted-recovery-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/ndu-v2-hosted-recovery/${{ github.run_id }}-${{ github.run_attempt }}
+            v2-source/experiments/multimodal_output_portfolio
+            v2-source/.github/workflows/ndu-controlled-generation-v2.yml
+            request/experiments/multimodal_output_portfolio/v3/HOSTED_RECOVERY_REQUEST.json
+            request/experiments/multimodal_output_portfolio/v3/recover_v2_hosted.sh
+            request/.github/workflows/ndu-v2-hosted-recovery.yml
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 30
