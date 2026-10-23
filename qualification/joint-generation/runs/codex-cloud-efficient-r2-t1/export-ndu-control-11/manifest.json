@@ -1,0 +1,28 @@
+{
+  "behavior_policy": "independent-categorical-v1",
+  "controller_sha256": "a3cec26b01e33242ee89793c5ac2332b88b6b74371340aa28624ef174eacf122",
+  "input_profile": "rgb8-instruction10-v1",
+  "mode": "continuation",
+  "model_digest": "a420b3ecd67a281dcc5fc2a462ee7cd0ed26eb964e77a4e5482903f4300a290d",
+  "model_sha256": "983a21a8f5594cf8f3f6e2eb95609d2644a0276e075eece03f1314863635e768",
+  "native_abi": {
+    "machine": "x86_64",
+    "system": "Linux"
+  },
+  "native_sha256": "3ffbf298607bf1d83f7e521872dacf246648e2d29df817026437ebc9b12acc4f",
+  "provenance": {
+    "plan_sha256": "554cb219ed217aaec777bbbc75c66fb147f1ad0abc872125efd78dcbd2cf17fe",
+    "selection_ready": false,
+    "selection_sha256": "4cd46ad600a1bb922ad5d4eebc04aeb131cb17cd8e99e454e4ed770a6dac790e",
+    "source_commit": "32d17e85efc2830c05acc0edb50cda6ba16d3785"
+  },
+  "runtime": {
+    "compute_price": 0.02,
+    "inference_cap_full_equivalents": 2.0,
+    "rho": 1.5,
+    "runtime_batch_size": 64
+  },
+  "schema": "hepta.joint-generation.native-bundle.v1",
+  "seed": 11,
+  "system": "ndu_control"
+}
