@@ -40,8 +40,11 @@ def verify_row_scoring(row, expected, selected, status, category):
     }
     for name, value in expected_scores.items():
         actual = row[name]
-        if name != "support_recall" and value is not None:
-            require(type(actual) is int, f"{name} must be an integer indicator")
+        if value is not None:
+            if name == "support_recall":
+                require(type(actual) is float, "support_recall must be a float")
+            else:
+                require(type(actual) is int, f"{name} must be an integer indicator")
         require(actual == value, f"{name} changed from original evidence")
     answerability = int(accepted == (category != 5))
     require(type(row["answerability_screen_correct"]) is int
