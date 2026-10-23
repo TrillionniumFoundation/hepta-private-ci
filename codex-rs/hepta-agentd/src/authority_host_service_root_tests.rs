@@ -621,8 +621,12 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
     } else {
         config_path
     };
-    consumer_fixture::release(&mut child, &config, &registration);
-    let result = serve_host_authority_session(&config_path, &registration_path, pidfd);
+    let retained = consumer_fixture::release(&mut child, &config, &registration, &pidfd);
+    let result = match retained {
+        Some(service) => crate::authority_host_runtime::listeners::serve_lanes(
+            &service, &config, &registration, &pidfd),
+        None => serve_host_authority_session(&config_path, &registration_path, pidfd),
+    };
     let status = child.wait().unwrap();
     assert!(
         status.success(),

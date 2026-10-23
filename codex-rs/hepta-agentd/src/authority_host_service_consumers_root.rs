@@ -82,9 +82,11 @@ pub(super) fn release(
     child: &mut std::process::Child,
     config: &HostAuthorityServiceConfig,
     registration: &HostAuthorityRegistration,
-) {
-    let bytes = config.consumers.as_ref().map(|_| {
-        let bundle = bootstrap::capture(config, registration);
+    preheld_host_pidfd: &std::os::fd::OwnedFd,
+) -> Option<HostAuthorityService> {
+    let captured = config.consumers.as_ref().map(|_| {
+        let (service, bundle) = bootstrap::capture(config, registration,
+            preheld_host_pidfd.try_clone().unwrap());
         let mut sealed = crate::seal_host_authority_bootstrap(&bundle).unwrap();
         let mut bytes = Vec::new();
         std::io::Read::read_to_end(&mut sealed, &mut bytes).unwrap();
@@ -100,18 +102,19 @@ pub(super) fn release(
                 .unwrap();
             file.write_all(&bytes).unwrap();
         }
-        bytes
+        (service, bytes)
     });
     let mut stdin = child.stdin.take().unwrap();
     stdin.write_all(&[1]).unwrap();
-    if let Some(bytes) = bytes {
+    if let Some((_, bytes)) = &captured {
         // Component fixture only: copy the actual producer's sealed bytes to
         // stdin. Production transfers the sealed File itself, never this pipe.
         stdin
             .write_all(&(bytes.len() as u32).to_be_bytes())
             .unwrap();
-        stdin.write_all(&bytes).unwrap();
+        stdin.write_all(bytes).unwrap();
     }
+    captured.map(|(service, _)| service)
 }
 
 pub(super) fn assert_final(config: &HostAuthorityServiceConfig, runtime: &Path) {
