@@ -666,7 +666,7 @@ npm, Python, build or exact-source CI gates. Complete PN0 before treating later
 PoN or model experiments as a qualified integration baseline.
 
 Cross-repository qualification follows the Chain plan's single
-[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/a60f1b4b8aca55b85b98977b4a2d812695099f21/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
+[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/189c0ae529b0bdfb587b2dca0d7ae061dd5a7a17/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
 PN0 exact-source/security baseline → PN1 work security and PN2 bounded state →
 PN3 real-model closure → PN4 five-budget/effect-liability qualification →
 PN5 independent-operator WAN/discovery/availability → PN6 governed migration and
@@ -680,12 +680,18 @@ this ordering adds cross-repository evidence dependencies without a second DAG,
 optimizer, durable journal or authority issuer. Parameter, topology, executable
 and consensus upgrades retain their separate admission and release boundaries.
 
-PN0's native pair now pins Chain source `a60f1b4b` against the unchanged default
-main `9fedf7ec`. Its source-head lane tests that source; its base-merge lane tests
-prospective merge `230412d3`, with ordered parents `[9fedf7ec, a60f1b4b]` and the
-original exact merge-tree checks. The separate original-integration baseline
-`f877` with parents `[57c1ed54, a60f1b4b]` remains required. Neither baseline can
-replace the other, and a pin refresh supplies no passing execution evidence.
+PN0's native pair pins Chain source
+`189c0ae529b0bdfb587b2dca0d7ae061dd5a7a17`, tree
+`d6b6eab4a60451d586824f9b73638f19e243ca22`, against unchanged default main
+`9fedf7ecbbe07177069c030592b4e03dcffebb81`. Its source-head lane tests that source;
+its base-merge lane tests prospective main merge
+`7eacbf80b8cd3539bf17bfa985520c8b0d4febad`, with ordered parents `[9fedf7ec, 189c0ae5]`
+and the original exact merge-tree checks. The separate original-integration base
+`57c1ed545d067937cbd7aaa7570d5f22123265e6` retains prospective merge
+`ec198df353635cf0c927dac11e4ba80fe5c22d61`, ordered parents `[57c1ed54, 189c0ae5]`.
+Both prospective trees equal the source tree; their different parent identities
+and required executions remain distinct. Neither baseline replaces the other,
+and publication or a pin refresh supplies no passing execution evidence.
 The older source-bound campaign observations below remain unchanged.
 
 PN4's source-to-destination interface carries the original verified request and
@@ -822,6 +828,36 @@ capabilities against the same broad parent-delete counterexample. This is a
 primitive experiment: native results remain pending, existing failed regressions
 are retained, and candidate success grants no production sandbox admission.
 Owner support and power-loss qualification remain false.
+
+The same PN0 sandbox item retains seven source-backed blockers below. Security-authority
+coordinates the sandbox package owners; runtime-control owns the PN4 process-owner
+composition. Paths in the first six rows are under
+`codex-rs/windows-sandbox-rs/src/`. All new interface names are proposed contracts,
+not implemented factories or admission authority; this does not transfer sandbox
+ownership to `utils/windows-private-state`.
+
+| Existing responsibility and source blocker                                                                                                                                                                           | Interface correction and dependency                                                                                                                                                                                                                                                                                     | Native acceptance still required                                                                                                                                                                                                                                                                              |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| PN0 token/roles: `token.rs` uses `WRITE_RESTRICTED` and ambient restricting identities; `cap.rs` persists unbounded root/SID maps.                                                                                   | Define `FilesystemCapabilityPlan` and a bounded registry with separate read, write, desktop, child-object and network-route roles. `create_full_filesystem_token_from` takes accepted fresh base credentials and prepared ACLs, without write-only restriction or ambient user/logon/Everyone/Users fallback.           | State numeric limits and reject MAX+1, stale generations and uncertain cleanup without truncation, recycling live authority or history reset. Read back actual restricting SIDs, ordinary user/groups and privileges; flag omission does not cleanse an already restricted base token.                        |
+| PN0 setup/RX: `setup.rs`, `bin/setup_main/win.rs`, `bin/setup_main/win/setup_runtime_bin.rs`, `elevated/ipc_framed.rs` and `bin/command_runner/win.rs` skip or complete independently of restrictive read readiness. | Version setup/runner role payloads, `SpawnRequest`, `SETUP_VERSION` and exact-plan markers. `ReadAclSubjects` separates normal identity from each active restrictive RX subject; `PreparedFilesystemAclContext` comes from actual bounded setup/readback, cannot be deserialized or replaced by `ready=true`.           | Builtin/sandbox-group RX cannot skip capability RX. Require explicit read/execute on declared runtime/helper roots and bounded same-plan helper completion, not PID/mutex/log presence. Missing, stale or ungrantable loader roots reject or remain unsupported; no blanket drive grants or ambient fallback. |
+| PN0 mutation ACL: `acl.rs` generic-write deny overlaps read/synchronization rights; `token_tests.rs` requires the repaired read.                                                                                     | Add `ensure_filesystem_mutation_deny` for explicit write-data/append/EA/attributes/delete/delete-child rights, excluding generic masks (`FILE_GENERIC_WRITE`/`GENERIC_WRITE`) and shared `SYNCHRONIZE`/`READ_CONTROL` bits; review `WRITE_DAC`/`WRITE_OWNER` separately. Change only an authorized managed subject ACE. | Keep original outside broad ACLs, before-repair write, identical after-repair read, both `PermissionDenied` writes and repeated-repair/idempotence assertions. A failed read is not a deletion refusal; add actual DACL/owner mutation controls while preserving old ACL mask controls.                       |
+| PN0 default-object roles: `token.rs::set_default_dacl` grants every capability `GENERIC_ALL`; `elevated/runner_pipe.rs` has a separate parent-owned control channel.                                                 | Start with explicit `PreserveBase`. If real child IPC requires it, separately review a per-session `ChildObjectCapability` policy; read-root and network-route SIDs must never gain generic-all object rights.                                                                                                          | Inspect actual process/thread and child-created pipe/event/mutex descriptors; execute PowerShell pipelines and cross-session negatives. Preserve parent runner-pipe DACL and peer-PID checks; the child cannot reopen that control pipe.                                                                      |
+| PN0 desktop: `desktop.rs` copies all restricting SIDs into full-access desktop grants.                                                                                                                               | Require a distinct per-session `DesktopCapability` through typed private launch context; do not derive desktop authority from read-root/restricted SID enumeration. Full profiles reject default or unavailable private desktops.                                                                                       | Two sessions sharing read roots must use their own desktop and refuse the other's window/message writes. Prove real image/GUI initialization; preserve old raw-token readonly/default-desktop and network compatibility controls as separate observations.                                                    |
+| PN0 stdio: `process.rs` has a global inheritable-stdio fallback; `acl.rs::allow_null_device` mutates shared NUL ACLs.                                                                                                | `OwnedChildStdio`/closed-stdio plans duplicate only exact endpoints and always supply an explicit handle list when inheriting. Pass preopened NUL or closed endpoints; retain RAII cleanup and exclude runner/token/Job/store/ancestor handles.                                                                         | Test open/closed stdin, split/merged output, EOF, backpressure, cancellation and ConPTY. A deliberately inheritable unrelated sentinel and private/control handles must stay inaccessible; no device-wide ACL repair may manufacture success.                                                                 |
+| PN4 controlled containment: `process.rs`, `conpty/mod.rs` and `codex-rs/utils/pty/src/win/job.rs` currently select a breakaway-enabled Job.                                                                          | The controlled route uses `create_without_breakaway`, atomic `PROC_THREAD_ATTRIBUTE_JOB_LIST` assignment and the original retained process owner until terminal reconciliation. Preserve unrelated interactive descendant-lifetime contracts.                                                                           | Execute breakaway attempts, child/grandchild pipelines and cancellation/process-death cases under the original eight-second terminal bound. Actual PE/DLL/script execution is required; `FILE_EXECUTE` handle access, exit code or PID lookup does not prove launch, containment or resource return.          |
+
+First collect the existing source-head/base-merge ten-receipt results; a primitive
+pass cannot replace an original red. Continue within PN0 in dependency order:
+bounded role plan and versioned setup/runner fields, explicit RX/readiness,
+mutation deny plus full-token/default-object policy, then desktop/stdio/controlled
+Job and real direct/elevated/broker caller/WFP integration. Expose only opaque
+validated library-to-runner inputs. The ordinary legacy test must keep its actual
+spawn call, script, time limits and final tuple; its current guard refusal remains
+a failure until that complete route passes, with no test-only bypass. Sandbox
+and unsupported Windows owner guards stay closed. The independent storage order
+C2a native readback → C2b trusted parent/creation → C3/C4 consumers → C5 is unchanged;
+no token, descriptor or fixture result supplies a `PrivateDirectory`, FinalUse
+backend, registry backend, cold-recovery or resource-release qualification.
 
 The following are implementation slices of that same PN0 item, not a second
 roadmap. C2b interface names below are proposed contracts, not implemented APIs.
