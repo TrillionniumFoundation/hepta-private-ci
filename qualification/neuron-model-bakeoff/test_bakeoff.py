@@ -50,7 +50,9 @@ class BakeoffContractTests(unittest.TestCase):
                     "calibration_sha256": calibration["sha256"],
                     **({"head_sha256": head["sha256"]} if head else {})}
                    for r in self.rows if r["split"] in ("test", "future")]
-            spec = {"arm": arm, "revision": "b" * 40, "license": "fixture-only",
+            pin = bakeoff.candidate_registry()[arm]
+            spec = {"arm": arm, "revision": pin["revision"], "repository": pin["repository"],
+                    "subfolder": pin["subfolder"], "license": pin["license"],
                     "weights": weights, "tokenizer": tokenizer, "runtime": runtime,
                     "calibration": calibration,
                     "predictions": self.put_jsonl(arm + ".predictions.jsonl", obs)}
@@ -142,6 +144,16 @@ class BakeoffContractTests(unittest.TestCase):
     def test_missing_model_fails(self):
         self.manifest["models"].pop()
         with self.assertRaisesRegex(bakeoff.EvidenceError, "five candidate"):
+            self.run_eval()
+
+    def test_unpinned_candidate_revision_denied(self):
+        self.manifest["models"][0]["revision"] = "c" * 40
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "differs from committed pins"):
+            self.run_eval()
+
+    def test_swapped_model_repository_denied(self):
+        self.manifest["models"][2]["repository"] = "untrusted/publisher"
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "differs from committed pins"):
             self.run_eval()
 
     def test_changed_weights_fails_before_scoring(self):
