@@ -213,6 +213,57 @@ class CohortFirewallTests(unittest.TestCase):
             self.assertEqual(json.loads((root / "receipt.json").read_text())["status"],
                              "fail")
 
+    def test_cli_rejects_duplicate_keys_and_nonstandard_json_bytes(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            candidate = root / "candidate.json"
+            history = root / "history.json"
+            output = root / "denial.json"
+            clean_candidate = json.dumps(self.new).encode("utf-8")
+            clean_history = json.dumps(self.old).encode("utf-8")
+            nested = clean_candidate.replace(
+                b'"task_id": "task-32"',
+                b'"task_id": "forged", "task_id": "task-32"', 1,
+            )
+            ambiguous_history = clean_history.replace(
+                b'"schema": "hepta.grounded-cohort.v1"',
+                b'"schema": "forged", "schema": "hepta.grounded-cohort.v1"', 1,
+            )
+            cases = (
+                ("candidate", nested, "duplicate JSON"),
+                ("history", ambiguous_history, "duplicate JSON"),
+                ("candidate", b'{"unverified": NaN,' + clean_candidate[1:], "nonstandard JSON"),
+                ("history", b'{"unverified": Infinity,' + clean_history[1:], "nonstandard JSON"),
+                ("candidate", b'{"unverified": 1e10000,' + clean_candidate[1:], "nonfinite JSON"),
+                ("candidate", b"\\xff" + clean_candidate, "invalid cohort JSON"),
+                ("history", b"\\xff" + clean_history, "invalid cohort JSON"),
+            )
+            for side, malicious, expected_error in cases:
+                with self.subTest(side=side, error=expected_error):
+                    candidate.write_bytes(
+                        malicious if side == "candidate" else clean_candidate
+                    )
+                    history.write_bytes(
+                        malicious if side == "history" else clean_history
+                    )
+                    raw_history = history.read_bytes()
+                    result = subprocess.run(
+                        [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
+                         "--candidate", str(candidate),
+                         "--historical", str(history),
+                         "--historical-sha256", hashlib.sha256(raw_history).hexdigest(),
+                         "--output", str(output)],
+                        capture_output=True, text=True, timeout=5,
+                    )
+                    self.assertEqual(result.returncode, 2, result.stderr)
+                    denial = json.loads(output.read_text(encoding="utf-8"))
+                    self.assertEqual(denial["status"], "fail")
+                    self.assertIn(expected_error, denial["error"])
+                    self.assertEqual(candidate.read_bytes(),
+                                     malicious if side == "candidate" else clean_candidate)
+                    self.assertEqual(history.read_bytes(),
+                                     malicious if side == "history" else clean_history)
+
     def test_cli_refuses_unpinned_or_incomplete_history(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)

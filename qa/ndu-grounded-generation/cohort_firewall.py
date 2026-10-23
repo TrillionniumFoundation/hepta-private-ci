@@ -8,6 +8,7 @@ only; it cannot attest real-world entity overlap or base-model pretraining.
 import argparse
 import hashlib
 import json
+import math
 import os
 import stat
 from pathlib import Path
@@ -27,6 +28,34 @@ MAX_INPUT_BYTES = 16 * 1024 * 1024
 
 class CohortContractError(ValueError):
     pass
+
+
+def decode_unambiguous_json(raw):
+    """Reject ambiguous source evidence before normalizing a manifest."""
+    def unique_pairs(pairs):
+        result = {}
+        for name, value in pairs:
+            if name in result:
+                raise CohortContractError(f"duplicate JSON object key: {name!r}")
+            result[name] = value
+        return result
+
+    def reject_constant(value):
+        raise CohortContractError(f"nonstandard JSON number: {value}")
+
+    def finite_float(value):
+        number = float(value)
+        if not math.isfinite(number):
+            raise CohortContractError("nonfinite JSON numeric value")
+        return number
+
+    try:
+        return json.loads(raw, object_pairs_hook=unique_pairs,
+                          parse_constant=reject_constant, parse_float=finite_float)
+    except CohortContractError:
+        raise
+    except (UnicodeDecodeError, json.JSONDecodeError, RecursionError, ValueError) as error:
+        raise CohortContractError("invalid cohort JSON bytes") from error
 
 
 def _checked_image(row, origin, *, allow_image_id=False):
@@ -234,7 +263,7 @@ def main(argv=None):
                 raise CohortContractError("cohort manifest byte limit exceeded")
             return raw
 
-        candidate = json.loads(read_bounded(args.candidate))
+        candidate = decode_unambiguous_json(read_bounded(args.candidate))
         history = []
         for path, expected in zip(args.historical, args.historical_sha256):
             if not isinstance(expected, str) or not HEX256.fullmatch(expected):
@@ -242,7 +271,7 @@ def main(argv=None):
             raw = read_bounded(path)
             if hashlib.sha256(raw).hexdigest() != expected:
                 raise CohortContractError("historical SHA256 mismatch")
-            history.append(json.loads(raw))
+            history.append(decode_unambiguous_json(raw))
         result = check_cohort(candidate, history,
                               max_hamming=args.max_dhash_distance,
                               require_complete_history=True)
