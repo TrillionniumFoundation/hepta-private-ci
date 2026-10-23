@@ -45,6 +45,7 @@ use crate::protocol::FsWalkParams;
 use crate::protocol::FsWalkResponse;
 use crate::protocol::FsWriteFileParams;
 use crate::protocol::FsWriteFileResponse;
+use crate::rpc::AUTHORIZED_READ_BOUND_EXCEEDED_ERROR_CODE;
 use crate::rpc::internal_error;
 use crate::rpc::invalid_request;
 use crate::rpc::not_found;
@@ -194,8 +195,8 @@ impl FileSystemHandler {
                 )
             })?;
         // The generic ExecutorFileSystem default is not a stable-handle
-        // authorized-read implementation. On Windows/Linux (and macOS without
-        // the required kernel primitives), reject before reaching that fallback.
+        // authorized-read implementation. Without the required Linux or macOS
+        // kernel primitives, reject before reaching that fallback.
         // Keep this in lockstep with EnvironmentInfo's advertised capability.
         if !crate::local_file_system::stable_handle_authorized_read_available() {
             return Err(internal_error(
@@ -206,7 +207,18 @@ impl FileSystemHandler {
             .file_system
             .read_file_bounded_authorized(&params.path, &params.sandbox, max_bytes)
             .await
-            .map_err(map_fs_error)?;
+            .map_err(|error| match error.kind() {
+                io::ErrorKind::InvalidData
+                    if error.to_string() == "authorized file read exceeds bound" =>
+                {
+                    JSONRPCErrorError {
+                        code: AUTHORIZED_READ_BOUND_EXCEEDED_ERROR_CODE,
+                        data: None,
+                        message: "authorized file read exceeds bound".to_string(),
+                    }
+                }
+                _ => map_fs_error(error),
+            })?;
         Ok(FsReadFileResponse {
             data_base64: STANDARD.encode(bytes),
         })
