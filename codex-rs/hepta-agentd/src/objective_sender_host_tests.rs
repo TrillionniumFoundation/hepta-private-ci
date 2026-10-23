@@ -146,9 +146,11 @@ async fn retained_signed_body_hash_matches_original_agentd_wire_projection()
                 artifact_set_digest: "55".repeat(32),
                 authority_epoch: 13,
             };
-            let original_payload =
-                crate::objective_ingress::objective_payload(config.identity(), &body)?;
-            assert_eq!(original_payload, serde_json::to_vec(&body)?);
+            let original_payload = crate::objective_runtime::objective_payload(
+                config.identity(),
+                &body,
+                config.identity().spawn_generation,
+            );
             let mut ingress = AuthBusObjectiveIngress {
                 issuer_id: "composition-original-issuer".to_string(),
                 key_epoch: 3,
@@ -159,6 +161,20 @@ async fn retained_signed_body_hash_matches_original_agentd_wire_projection()
                 body,
             };
             let raw = serde_json::to_string(&ingress)?;
+            if ingress
+                .body
+                .runtime_body_digest
+                .bytes()
+                .any(|byte| byte.is_ascii_uppercase())
+            {
+                // The original shared Digest32 parser requires lowercase. Both
+                // the daemon projection and structural sender reject this case.
+                assert!(original_payload.is_err());
+                assert!(ObjectiveSenderRequest::from_original(raw, origin.clone()).is_err());
+                continue;
+            }
+            let original_payload = original_payload?;
+            assert_eq!(original_payload, serde_json::to_vec(&ingress.body)?);
             let retained = ObjectiveSenderRequest::from_original(raw.clone(), origin.clone())?;
             assert_eq!(
                 retained.identity().signed_body_sha256,
@@ -167,8 +183,12 @@ async fn retained_signed_body_hash_matches_original_agentd_wire_projection()
             assert_eq!(retained.exact_original(), raw.as_bytes());
             ingress.body.source_envelope_json.clear();
             assert!(
-                crate::objective_ingress::objective_payload(config.identity(), &ingress.body)
-                    .is_err()
+                crate::objective_runtime::objective_payload(
+                    config.identity(),
+                    &ingress.body,
+                    config.identity().spawn_generation
+                )
+                .is_err()
             );
             assert!(
                 ObjectiveSenderRequest::from_original(
