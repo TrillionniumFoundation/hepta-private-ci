@@ -1,7 +1,8 @@
 {
   "analysis_sha256": "09de39903a282c43903afa459ff0dc248044b90eac663e910394e30bb1cc6389",
-  "created_utc": "2026-10-23T16:05:43.680757+00:00",
+  "created_utc": "2026-10-23T16:09:45.019810+00:00",
   "environment_id": "ccarenv_b64_Y2NhcmVudl8wOGNhYzlkMjdjYjg4MTkxOWJkMDY0MGIyMDBhYTA5OA",
+  "preexecution_revision_reason": "Clarify per-call sample retention and incomplete interrupted-call accounting; no START or data/model/service execution occurred under candidate v1.",
   "protected_sha256": {
     "core_confirmation/core-c1-test-opened.json": "1312e8b106f6ee24c65caa880bbe41889e6878ff5cfe768d4cdbebf485a106f2",
     "core_confirmation/plan.json": "94d84d8eb1af73c4c766604b3ddbcac0be2d9a2b1638b2afa10acf8216c2762b",
@@ -83,11 +84,11 @@
     "runs/codex-cloud-core-c1-t2/test-opened.json": "1312e8b106f6ee24c65caa880bbe41889e6878ff5cfe768d4cdbebf485a106f2",
     "runs/codex-cloud-core-c1-t2/test-result.json": "6dddd2b9aed82e8214974d2182de5e44d1d778cd10d98f267a430e95c782a301"
   },
-  "protocol_sha256": "9c8e7107fe01c23974576d195e4b810a1965790a52a7fcf50953012e609f58b8",
+  "protocol_sha256": "0da7509c51248832182d448f77cb323cf8bc3b23e98585795e9c3e0912a2c051",
   "qualification_eligible": false,
   "schema": "hepta.dynamic-train-headroom-h2-freeze.v1",
-  "script_sha256": "dca830e9f03fe8e8c895f2be58723f64c366a5a43418ed1e26ae4e44d86b18f1",
-  "source_commit": "01f7ba5cf6b81dd848f7e047ba74e4f86aa17caa",
+  "script_sha256": "5311a378af1753a6801438a0607f3570c9bf3256f959eebbfab41dfa60f8545e",
+  "source_commit": "f3c9d89bf10be3e0d7664d3ba5c3eb17cc782665",
   "sources": {
     "cloud_run.py": "e5dbcb587ac47745be9350441cc4e2a6211572395519d48ccb19dcd3b847b20e",
     "contracts.py": "544cdbebc6e79abf5e55fc4e4d1a0fc30e169c805199ad72b9b420891fd8a61d",
@@ -157,5 +158,6 @@
     "test_utility.py": "dc019e559169c80be650b6f28ddc458004dda4b47ae56e75a76fd6ae2ccf8d01",
     "train.py": "b61de784b5ea74093f9fddc6356d6ade9b3625c8b680a2154651645fdb09a737",
     "utility.py": "bbfcbad5557107e3d9be587f55cd91889e2c1b0d6c3d87d07ec329ff54251037"
-  }
+  },
+  "supersedes_unexecuted_candidate": "frozen-h2-candidate-v1.json"
 }
