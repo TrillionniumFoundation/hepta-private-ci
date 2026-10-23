@@ -4,6 +4,7 @@
 
 use super::*;
 use codex_hepta_memory::CognitiveStoreError;
+use codex_hepta_paths::HeptaAgentLayout;
 use pretty_assertions::assert_eq;
 use sqlx::Connection;
 use sqlx::SqliteConnection;
@@ -15,6 +16,14 @@ struct ReadyFixture {
     authority: ProductionAuthorityLease,
     peer: Arc<ConstructionPeer>,
     initial: CognitiveCheckpointReceipt,
+}
+
+// The original configuration owns Send-only optional runtime inputs. The ready
+// callback observes just these original Sync fields, never the whole config.
+struct ReadyObservation<'a> {
+    layout: &'a HeptaAgentLayout,
+    peer: &'a ConstructionPeer,
+    initial: &'a CognitiveCheckpointReceipt,
 }
 
 impl ReadyFixture {
@@ -57,12 +66,22 @@ impl ReadyFixture {
         })
     }
 
+    fn observation(&self) -> ReadyObservation<'_> {
+        ReadyObservation {
+            layout: &self.config.identity().layout,
+            peer: &self.peer,
+            initial: &self.initial,
+        }
+    }
+}
+
+impl ReadyObservation<'_> {
     async fn assert_recovered_before_bind(&self) -> Result<(), Box<dyn Error>> {
         self.assert_no_checkpoint();
         // The original open guard is genuinely exclusive at this point. A
         // callback moved before recovery would allow this open to succeed.
         assert!(matches!(
-            CognitiveStore::open(&self.config.identity().layout).await,
+            CognitiveStore::open(self.layout).await,
             Err(CognitiveStoreError::Unavailable(reason))
                 if reason.contains("fenced by recovery")
         ));
@@ -72,13 +91,13 @@ impl ReadyFixture {
 
     fn assert_no_checkpoint(&self) {
         assert_eq!(self.peer.calls.load(Ordering::SeqCst), 0);
-        assert_eq!(*self.peer.receipt.lock().unwrap(), self.initial);
+        assert_eq!(*self.peer.receipt.lock().unwrap(), *self.initial);
     }
 
     async fn row_counts(&self) -> Result<(i64, i64), Box<dyn Error>> {
         // Read only the fixture's already-published original database. This
         // test observer does not take a store capability or run migrations.
-        let root = self.config.identity().layout.cognitive_root();
+        let root = self.layout.cognitive_root();
         let basename = fs::read_to_string(root.join(".cognitive-active-v1"))?;
         let path = root.join(basename.trim());
         assert_eq!(path.parent(), Some(root));
@@ -103,6 +122,7 @@ impl ReadyFixture {
 async fn notes_recovered_ready_runs_once_after_recovery_before_bind_and_lease()
 -> Result<(), Box<dyn Error>> {
     let fixture = ReadyFixture::new().await?;
+    let observation = fixture.observation();
     let calls = AtomicUsize::new(0);
     let (host, _protected) = AgentdProductionWriterHost::open_with_protected_recovery_and_ready(
         &fixture.config,
@@ -112,7 +132,7 @@ async fn notes_recovered_ready_runs_once_after_recovery_before_bind_and_lease()
         1,
         inputs(&fixture.peer),
         || async {
-            fixture.assert_recovered_before_bind().await.unwrap();
+            observation.assert_recovered_before_bind().await.unwrap();
             assert_eq!(calls.fetch_add(1, Ordering::SeqCst), 0);
             Ok(())
         },
@@ -120,7 +140,7 @@ async fn notes_recovered_ready_runs_once_after_recovery_before_bind_and_lease()
     .await?;
     assert_eq!(calls.load(Ordering::SeqCst), 1);
     assert!(fixture.peer.calls.load(Ordering::SeqCst) > 0);
-    assert_eq!(fixture.row_counts().await?, (1, 0));
+    assert_eq!(observation.row_counts().await?, (1, 0));
     let runtime = host.cognitive_runtime();
     let store = runtime.available_store().unwrap();
     let lease = store.inspect_local_lease_head(LEASE).await?;
@@ -143,6 +163,7 @@ async fn notes_recovered_ready_runs_once_after_recovery_before_bind_and_lease()
 async fn notes_recovered_ready_error_returns_no_writer_or_checkpoint_mutation()
 -> Result<(), Box<dyn Error>> {
     let fixture = ReadyFixture::new().await?;
+    let observation = fixture.observation();
     let calls = AtomicUsize::new(0);
     let result = AgentdProductionWriterHost::open_with_protected_recovery_and_ready(
         &fixture.config,
@@ -152,7 +173,7 @@ async fn notes_recovered_ready_error_returns_no_writer_or_checkpoint_mutation()
         1,
         inputs(&fixture.peer),
         || async {
-            fixture.assert_recovered_before_bind().await.unwrap();
+            observation.assert_recovered_before_bind().await.unwrap();
             calls.fetch_add(1, Ordering::SeqCst);
             Err(AgentdError::GenerationFenced("launch-ready refused".into()))
         },
@@ -162,8 +183,8 @@ async fn notes_recovered_ready_error_returns_no_writer_or_checkpoint_mutation()
         matches!(result, Err(AgentdError::GenerationFenced(reason)) if reason == "launch-ready refused")
     );
     assert_eq!(calls.load(Ordering::SeqCst), 1);
-    fixture.assert_no_checkpoint();
-    assert_eq!(fixture.row_counts().await?, (0, 0));
+    observation.assert_no_checkpoint();
+    assert_eq!(observation.row_counts().await?, (0, 0));
     // Inspection only: the failed factory closed its pool. This legacy open
     // is not a product fallback or a replacement protected launch attempt.
     let store = CognitiveStore::open(&fixture.config.identity().layout).await?;
@@ -189,9 +210,10 @@ async fn notes_recovered_ready_cancellation_drops_callback_without_binding_or_wr
         }
     }
     let fixture = ReadyFixture::new().await?;
+    let observation = fixture.observation();
     let drops = AtomicUsize::new(0);
     let (entered, observed) = tokio::sync::oneshot::channel();
-    let fixture_ref = &fixture;
+    let observation_ref = &observation;
     let drops_ref = &drops;
     let mut construction = Box::pin(
         AgentdProductionWriterHost::open_with_protected_recovery_and_ready(
@@ -203,7 +225,10 @@ async fn notes_recovered_ready_cancellation_drops_callback_without_binding_or_wr
             inputs(&fixture.peer),
             || async move {
                 let _drop = Dropped(drops_ref);
-                fixture_ref.assert_recovered_before_bind().await.unwrap();
+                observation_ref
+                    .assert_recovered_before_bind()
+                    .await
+                    .unwrap();
                 entered.send(()).unwrap();
                 std::future::pending::<Result<(), AgentdError>>().await
             },
@@ -215,8 +240,8 @@ async fn notes_recovered_ready_cancellation_drops_callback_without_binding_or_wr
     }
     drop(construction);
     assert_eq!(drops.load(Ordering::SeqCst), 1);
-    fixture.assert_no_checkpoint();
-    assert_eq!(fixture.row_counts().await?, (0, 0));
+    observation.assert_no_checkpoint();
+    assert_eq!(observation.row_counts().await?, (0, 0));
     // Do not reinterpret dropping the factory as a completed SQLite shutdown
     // or automatically start another recovery ceremony.
     Ok(())
