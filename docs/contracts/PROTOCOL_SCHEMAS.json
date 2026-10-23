@@ -12,6 +12,112 @@
   },
   "protocols": [
     {
+      "id": "BellmanOperatorArtifactV1",
+      "contractId": "BellmanOperatorArtifactV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_detached_signature",
+      "fields": [
+        {
+          "name": "artifactId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "applicabilityDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "sensorCoreDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "branchDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "stateTrunkDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "actionTrunkDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "rank",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "normalizationDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "trainingDatasetDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "trainingCodeDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "runtimeTupleDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "errorBudget",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "predecessorArtifactId",
+          "type": "id128",
+          "required": false,
+          "maxBytes": 128
+        },
+        {
+          "name": "rollbackDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "current_run_artifact_immutable",
+        "correction_deletion_and_revocation_lineage_preserved",
+        "qualified_operator_rank_at_most_64",
+        "complete_seven_component_error_budget_without_double_counting",
+        "normalized_errors_nonnegative_total_at_most_0_05",
+        "dominant_component_above_half_requires_independent_approval",
+        "exact_applicability_sensor_model_runtime_and_rollback_lineage"
+      ]
+    },
+    {
       "id": "ContextCompilationReceiptV1",
       "contractId": "ContextCompilationReceiptV1",
       "canonicalEncoding": "canonical_json_utf8",

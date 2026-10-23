@@ -89,6 +89,13 @@ rank. Source facts, grants, predecessor comparisons and terminality remain exact
 
 ## 4. Deterministic reference algorithm
 
+This section specifies the model-backed reference target. The current native
+`evaluate_bellman_reference` validates a complete sensor/action table and computes
+`reward + discount * continuation_value` from caller-supplied values. It does not
+simulate a diffusion, integrate a model or interpolate coordinates. Those adapters
+and their independent model evidence remain integration work; the analytic golden
+below tests the arithmetic on explicitly supplied targets.
+
 Before any neural operator exists, Hepta implements a tabulated monotone reference on the fixed sensor core:
 
 ```text
@@ -104,11 +111,22 @@ emit direct targets, action gaps, residuals and coverage diagnostics
 
 For stochastic fixtures, the reference uses a counter-based seed and a fixed number of antithetic paths per `(sensor,action)`. Sample order cannot alter results. Interpolation outside the sensor hull returns OOD rather than extrapolating.
 
-Golden vector `HBO-GV-001` uses one state dimension, sensors `[0,0.5,1]`, actions `[-0.5,0.5]`, deterministic transition `x'=clip(x+0.2a,0,1)`, reward `-(x-0.75)^2-0.1a^2`, `V_next(x)=x`, and `dt=1`. The canonical real-valued target table, ordered by sensor then action, is `[[-0.5875,-0.4875],[0.3125,0.5125],[0.8125,0.9125]]`; the greedy action is `0.5` at every sensor and the action gaps are `[0.1,0.2,0.1]`. Signed Q32 targets are `[[-2523293286,-2093796557],[1342177280,2201170739],[3489660928,3919157658]]`, with Q32 gaps `[429496730,858993459,429496730]`. The neural direct head must match this reference within the declared approximation budget.
+Golden vector `HBO-GV-001` uses one state dimension, sensors `[0,0.5,1]`, actions `[-0.5,0.5]`, deterministic transition `x'=clip(x+0.2a,0,1)`, reward `-(x-0.75)^2-0.1a^2`, `V_next(x)=x`, and `dt=1`. The real-valued target table, ordered by sensor then action, is `[[-0.5875,-0.4875],[0.3125,0.5125],[0.8125,0.9125]]`; the greedy action is `0.5` at every sensor and the real-valued action gaps are `[0.1,0.2,0.1]`.
+
+The canonical native vector quantizes each real-valued reward and continuation
+separately as `round_ties_even(value * 2^32)`, with `gamma=1` and nonterminal cells.
+Reward inputs are `[[-2523293286,-2523293286],[-375809638,-375809638],[-375809638,-375809638]]`; continuation inputs are `[[0,429496730],[1717986918,2576980378],[3865470566,4294967296]]`. Q32 multiplication rounds its scaled product to nearest, ties to even; target addition and the difference between the two action targets use checked integer arithmetic. The resulting signed Q32 targets are `[[-2523293286,-2093796556],[1342177280,2201170740],[3489660928,3919157658]]`, with exact Q32 gaps `[429496730,858993460,429496730]`. Quantizing the final real-valued target or gap once is a different computation and is not this native vector.
+
+The executable six-cell regression is
+`hbo_gv_001_uses_quantized_reward_and_continuation_inputs` in
+`codex-rs/hepta-bellman-operator/src/reference_tests.rs`. It freezes the numeric
+inputs and tests native target arithmetic, greedy actions and exact action gaps;
+it does not establish a simulator or interpolation backend. A neural direct head
+must match the canonical native reference within its declared approximation budget.
 
 ## 5. Trainable or estimated algorithm
 
-The pilot operator is a tensor-product DeepONet-style model:
+For a neural candidate, the pilot profile is a tensor-product DeepONet-style model:
 
 \[
 \widehat T(V)(x,a)=c+\sum_{r=1}^{R}B_r(V(S))\,T_r^x(x)\,T_r^a(a).
@@ -163,6 +181,41 @@ BellmanOperatorArtifactV1 {
 }
 ```
 
+The Bellman artifact schema preserves all fourteen fields above. Its exact
+canonical field names and bounds are:
+
+| Design field | Canonical field | Type and encoded bound |
+|---|---|---|
+| `artifact_id` | `artifactId` | required `id128`, 128 bytes |
+| `applicability_digest` | `applicabilityDigest` | required `sha256`, 64 bytes |
+| `sensor_core_digest` | `sensorCoreDigest` | required `sha256`, 64 bytes |
+| `branch_digest` | `branchDigest` | required `sha256`, 64 bytes |
+| `state_trunk_digest` | `stateTrunkDigest` | required `sha256`, 64 bytes |
+| `action_trunk_digest` | `actionTrunkDigest` | required `sha256`, 64 bytes |
+| `rank` | `rank` | required `u32`; qualified pilot rank at most 64 |
+| `normalization_digest` | `normalizationDigest` | required `sha256`, 64 bytes |
+| `training_dataset_digest` | `trainingDatasetDigest` | required `sha256`, 64 bytes |
+| `training_code_digest` | `trainingCodeDigest` | required `sha256`, 64 bytes |
+| `runtime_tuple_digest` | `runtimeTupleDigest` | required `sha256`, 64 bytes |
+| `error_budget` | `errorBudget` | required `bounded_object`, 16384 bytes |
+| `predecessor` | `predecessorArtifactId` | optional `id128`, 128 bytes; absent for an initial artifact |
+| `rollback_digest` | `rollbackDigest` | required `sha256`, 64 bytes |
+
+The complete canonical JSON record is bounded to 262144 encoded bytes, rejects
+unknown critical fields and binds all semantic fields except a detached signature.
+`errorBudget` must account for evidenced model, sensor, reconstruction, network,
+optimization, statistical and rollout terms without omission or double counting,
+including explicit evidenced zero terms where inapplicable. The non-negative
+total and independent dominant-component approval follow Section 7. Artifact
+identity, applicability, fixed sensor core, model/runtime tuple and rollback
+lineage must agree with the artifact owner's immutable manifest.
+
+These are canonical integration requirements. The current target-builder and
+tabular Rust artifacts, including the owner-local `HEPTTB01` payload, do not
+implement this complete JSON record. Schema registration does not supply an
+adapter, demonstrate wire conformance or implement the neural architecture;
+those source and qualification obligations remain open.
+
 The sensor core is create-only. Runtime observations may inform a proposal for a future core but may not mutate the selected core. All target rows bind the policy, objective, jump/hard snapshot, candidate set, propensity/support, outcome source and dataset lineage. Correction and deletion propagate through targets, model checkpoints and derived artifacts.
 
 ## 7. Numerical stability, complexity and resource bounds
@@ -175,7 +228,14 @@ q_S=\frac12\min_{i\ne j}\|x_i-x_j\|,\qquad
 \rho_S=h_S/q_S.
 \]
 
-The pilot sensor construction uses deterministic farthest-point insertion over a fixed candidate design. It stops at the smaller of the error target or `4096` points. Accepted cores require `rho_S <= 4`, no duplicate points, positive `q_S` and held-out OOD margin coverage.
+The native sensor constructor uses deterministic farthest-point insertion over a
+fixed candidate design and selects the requested `2..4096` points. Its reported
+fill distance is the maximum nearest-sensor distance over that finite design;
+it is not a proof of the continuous-domain supremum above. Q32 fill distance and
+mesh ratio round upward, while separation rounds downward. `hull_digest` binds
+the selected coordinates; it does not implement a convex-hull membership or OOD
+oracle. Continuous-domain coverage and held-out OOD evidence remain required for
+the qualified profile, whose mesh ratio is at most four.
 
 The complete operator error budget is explicit:
 
@@ -230,6 +290,11 @@ Property tests enforce legal-action closure, monotonicity under ordered continua
 
 The simplest sufficient learner wins: a tabular, linear or deterministic reference that meets the same bound is preferred over the neural operator.
 
+These are qualification-profile gates, not a claim that every native reference
+input enforces every threshold. In particular the native constructor accepts
+`2..4096` sensors, including the three-point arithmetic golden. Target-host
+latency, continuous coverage and future calibration require separate evidence.
+
 ## 12. Paper traceability and Hepta extensions
 
 `PAPER-HOLDER-Q-2026` is used only for six publisher-abstract statements: continuous state/action stochastic control, the uniformly elliptic diffusion setting, Hölder-regular coefficients, state-smoothing/action-Lipschitz anisotropy, tensor-product neural-operator motivation and the stiffness/resource tradeoff. Each statement is bound in `PAPER_TRACEABILITY.json` to the immutable PMLR PDF bytes, the publisher Git commit/blob, publication page, abstract sentence and normalized sentence SHA-256. The paper does not establish convergence for a practical sampled DQN stack or any Hepta runtime claim.
@@ -238,6 +303,13 @@ Quasi-uniform sensor geometry, bounded monotone/positive reconstruction, the nea
 
 ## 13. Implementation sequence and completion rule
 
-Implementation order is axis registry and applicability schema → deterministic sensor construction and geometry tests → deterministic Bellman reference → direct tensor-product model → monotone reconstruction and gain tests → OOD and error-budget accounting → action-gap head → near-greedy residual shadow → causal evaluation → immutable artifact and rollback → independent selection.
+Implementation starts with axis registry and applicability schema, deterministic
+sensor construction, geometry tests and the deterministic Bellman reference.
+The simplest sufficient candidate then undergoes OOD/error-budget accounting,
+causal evaluation, immutable artifact loading, rollback and independent selection.
+A neural profile additionally requires the direct tensor-product model, monotone
+reconstruction and gain tests, action-gap head and justified near-greedy residual
+shadow before those common gates. The full neural architecture remains a target;
+source completion of the tabular baseline does not imply it is implemented.
 
 Documentation closure means this file, the algorithm registry, paper traceability and exact CI agree. Source completion and operator efficacy remain separate. This specification does not by itself advance `O0_NONE`.

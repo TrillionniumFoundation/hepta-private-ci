@@ -25,6 +25,7 @@ pub use owner_terminal::TerminalCellError;
 pub use owner_terminal::TerminalCellProfileV1;
 pub use owner_terminal::fit_terminal_cell_from_owner_v1;
 pub use owner_terminal::freeze_terminal_cell_from_owner_v1;
+pub use owner_terminal::freeze_terminal_cell_from_signed_owner_v2;
 mod learned;
 mod loaded;
 pub use loaded::LoadedTabularOperatorV1;
@@ -213,7 +214,16 @@ pub fn build_targets(mut request: TrainingRequest) -> Result<BellmanOperatorArti
     }
 
     let count = i128::try_from(targets.len()).map_err(|_| Error::Arithmetic)?;
-    let terminal_raw = (i128::from(terminal_count) * SCALE) / count;
+    let terminal_numerator = i128::from(terminal_count) * SCALE;
+    let terminal_quotient = terminal_numerator / count;
+    let terminal_twice_remainder = (terminal_numerator % count) * 2;
+    let terminal_raw = if terminal_twice_remainder > count
+        || (terminal_twice_remainder == count && terminal_quotient % 2 != 0)
+    {
+        terminal_quotient + 1
+    } else {
+        terminal_quotient
+    };
     let regularity = RegularityProfile {
         sample_count: u32::try_from(targets.len()).map_err(|_| Error::Arithmetic)?,
         maximum_absolute_target: FixedQ32::from_raw(maximum),
@@ -243,13 +253,15 @@ pub fn train(request: TrainingRequest) -> Result<BellmanOperatorArtifact, Error>
 
 fn mul_q32(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, Error> {
     let product = i128::from(left.raw()) * i128::from(right.raw());
-    let adjusted = if product >= 0 {
-        product + SCALE / 2
+    let quotient = product / SCALE;
+    let twice_remainder = (product % SCALE).abs() * 2;
+    let rounded = if twice_remainder > SCALE || (twice_remainder == SCALE && quotient % 2 != 0) {
+        quotient + product.signum()
     } else {
-        product - SCALE / 2
+        quotient
     };
     Ok(FixedQ32::from_raw(
-        i64::try_from(adjusted / SCALE).map_err(|_| Error::Arithmetic)?,
+        i64::try_from(rounded).map_err(|_| Error::Arithmetic)?,
     ))
 }
 

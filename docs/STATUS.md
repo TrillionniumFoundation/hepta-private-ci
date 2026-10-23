@@ -14,7 +14,7 @@ Dynamic Git, branch, pull-request, CI, review, operator, selection, promotion an
 
 - Modules: **40**
 - Contracts: **205**
-- Critical protocols: **58**
+- Critical protocols: **59**
 - Durable data domains: **67**
 - Work packages: **91**
 - Module technical guides: **40**

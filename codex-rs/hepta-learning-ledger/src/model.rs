@@ -4,6 +4,9 @@ use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
+use crate::RetrievalAssignmentIntentV2;
+use crate::RetrievalPublicationConfirmedV2;
+
 /// Independent assertion that the logged candidate set is complete for the
 /// evaluated decision boundary.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -282,6 +285,8 @@ pub struct UnlearningLineageEventV1 {
 pub enum LedgerEvent {
     Decision(EpisodeDecision),
     RetrievalAssignment(RetrievalAssignmentFact),
+    RetrievalAssignmentIntentV2(RetrievalAssignmentIntentV2),
+    RetrievalPublicationConfirmedV2(RetrievalPublicationConfirmedV2),
     Outcome(OutcomeObservation),
     Credit(CreditAssignment),
     PromptDelivery(PromptDeliveryObservation),
@@ -297,6 +302,8 @@ impl LedgerEvent {
         match self {
             Self::Decision(value) => &value.record_id,
             Self::RetrievalAssignment(value) => &value.record_id,
+            Self::RetrievalAssignmentIntentV2(value) => &value.record_id,
+            Self::RetrievalPublicationConfirmedV2(value) => &value.record_id,
             Self::Outcome(value) => &value.record_id,
             Self::Credit(value) => &value.record_id,
             Self::PromptDelivery(value) => &value.record_id,

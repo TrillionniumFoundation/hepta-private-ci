@@ -51,6 +51,12 @@ pub(crate) fn decode_event(mut input: &[u8]) -> Result<LedgerEvent, DurableLedge
         .ok_or(DurableLedgerError::Corrupt)?;
     let mut reader = Reader(input);
     let event = match reader.byte()? {
+        10 => LedgerEvent::RetrievalAssignmentIntentV2(
+            crate::retrieval_publication_codec::decode_intent(&mut reader)?,
+        ),
+        11 => LedgerEvent::RetrievalPublicationConfirmedV2(
+            crate::retrieval_publication_codec::decode_confirmation(&mut reader)?,
+        ),
         0 => LedgerEvent::Decision(EpisodeDecision {
             record_id: reader.id()?,
             episode_id: reader.id()?,
@@ -294,10 +300,10 @@ pub(crate) fn decode_event(mut input: &[u8]) -> Result<LedgerEvent, DurableLedge
     Ok(event)
 }
 
-struct Reader<'a>(&'a [u8]);
+pub(crate) struct Reader<'a>(&'a [u8]);
 
 impl Reader<'_> {
-    fn take<const N: usize>(&mut self) -> Result<[u8; N], DurableLedgerError> {
+    pub(crate) fn take<const N: usize>(&mut self) -> Result<[u8; N], DurableLedgerError> {
         let Some((value, remaining)) = self.0.split_at_checked(N) else {
             return Err(DurableLedgerError::Corrupt);
         };
@@ -305,7 +311,7 @@ impl Reader<'_> {
         value.try_into().map_err(|_| DurableLedgerError::Corrupt)
     }
 
-    fn id(&mut self) -> Result<StableId, DurableLedgerError> {
+    pub(crate) fn id(&mut self) -> Result<StableId, DurableLedgerError> {
         let length = u32::from_be_bytes(self.take()?) as usize;
         if !(1..=128).contains(&length) {
             return Err(DurableLedgerError::Corrupt);
@@ -342,11 +348,11 @@ impl Reader<'_> {
         }
     }
 
-    fn digest(&mut self) -> Result<Digest32, DurableLedgerError> {
+    pub(crate) fn digest(&mut self) -> Result<Digest32, DurableLedgerError> {
         Ok(Digest32::from_array(self.take()?))
     }
 
-    fn byte(&mut self) -> Result<u8, DurableLedgerError> {
+    pub(crate) fn byte(&mut self) -> Result<u8, DurableLedgerError> {
         Ok(self.take::<1>()?[0])
     }
 
@@ -358,7 +364,7 @@ impl Reader<'_> {
         }
     }
 
-    fn optional_digest(&mut self) -> Result<Option<Digest32>, DurableLedgerError> {
+    pub(crate) fn optional_digest(&mut self) -> Result<Option<Digest32>, DurableLedgerError> {
         match self.byte()? {
             0 => Ok(None),
             1 => Ok(Some(self.digest()?)),

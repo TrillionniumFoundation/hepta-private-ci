@@ -113,3 +113,71 @@ fn world_model_rejects_duplicate_samples_and_invalid_outcomes() {
         Err(WorldModelError::InvalidOutcome)
     );
 }
+
+#[test]
+fn world_model_digest_binds_each_observation_even_when_aggregates_match() {
+    let samples = vec![
+        sample("sample-1", "state-b", 10),
+        sample("sample-2", "state-c", 20),
+    ];
+    let original = fit_transition_model(id("model"), digest("dataset"), samples.clone())
+        .expect("independent observed rows");
+    let mut swapped = samples.clone();
+    swapped[0].outcome = samples[1].outcome;
+    swapped[1].outcome = samples[0].outcome;
+    let changed = fit_transition_model(id("model"), digest("dataset"), swapped)
+        .expect("changed row assignments");
+    assert_eq!(
+        original.estimates[0].mean_outcome,
+        changed.estimates[0].mean_outcome
+    );
+    assert_eq!(
+        original.estimates[0].branches,
+        changed.estimates[0].branches
+    );
+    assert_ne!(
+        original.estimates[0].estimate_digest,
+        changed.estimates[0].estimate_digest
+    );
+    assert_ne!(original.model_digest, changed.model_digest);
+
+    let mut reordered = samples;
+    reordered.reverse();
+    assert_eq!(
+        fit_transition_model(id("model"), digest("dataset"), reordered),
+        Ok(original)
+    );
+}
+
+#[test]
+fn mutable_world_model_predictions_reject_invalid_statistics_and_bindings() {
+    let model = fit_transition_model(
+        id("model"),
+        digest("dataset"),
+        vec![
+            sample("sample-1", "state-b", 10),
+            sample("sample-2", "state-c", 20),
+        ],
+    )
+    .expect("independent observed rows");
+    for operation in 0..10 {
+        let mut invalid = model.clone();
+        match operation {
+            0 => invalid.dataset_digest = Digest32::ZERO,
+            1 => invalid.estimates[0].branches[0].count = 0,
+            2 => invalid.estimates[0].branches[0].probability = ProbabilityQ32::ONE,
+            3 => invalid.estimates[0].branches.swap(0, 1),
+            4 => invalid.estimates.push(invalid.estimates[0].clone()),
+            5 => invalid.estimates[0].mean_outcome = FixedQ32::from_raw(FixedQ32::ONE.raw() + 1),
+            6 => invalid.model_id = id("relabelled-model"),
+            7 => invalid.dataset_digest = digest("replacement-dataset"),
+            8 => invalid.estimates[0].mean_outcome = FixedQ32::from_raw(11),
+            9 => invalid.estimates[0].state_id = id("relabelled-state"),
+            _ => unreachable!(),
+        }
+        assert_eq!(
+            predict_transition(&invalid, &id("state-a"), &id("action-a")),
+            Err(WorldModelError::InvalidModel)
+        );
+    }
+}

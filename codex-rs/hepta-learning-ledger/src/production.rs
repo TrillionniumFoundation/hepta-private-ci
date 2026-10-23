@@ -565,8 +565,17 @@ impl LedgerWriter {
         &mut self,
         assignment: RetrievalAssignmentFact,
     ) -> Result<AppendReceipt, ProductionLedgerError> {
+        self.append_current_event(LedgerEvent::RetrievalAssignment(assignment))
+    }
+
+    // Private plumbing for the existing typed owner-native retrieval ports. No
+    // arbitrary-event product append handle or second writer is exposed.
+    pub(crate) fn append_current_event(
+        &mut self,
+        event: LedgerEvent,
+    ) -> Result<AppendReceipt, ProductionLedgerError> {
         let core = self.backend.core()?;
-        let predecessor = core.record_by_id(&assignment.record_id)?.map_or_else(
+        let predecessor = core.record_by_id(event.record_id())?.map_or_else(
             || {
                 core.records()
                     .last()
@@ -574,7 +583,11 @@ impl LedgerWriter {
             },
             |record| record.predecessor_chain_digest,
         );
-        self.append_retrieval_assignment(predecessor, assignment)
+        self.commit(predecessor, event)
+    }
+
+    pub(crate) fn ledger_core(&self) -> Result<&LearningLedger, ProductionLedgerError> {
+        self.backend.core().map_err(Into::into)
     }
 
     /// Revalidate a frozen dataset immediately before final artifact use.
@@ -651,7 +664,7 @@ impl LedgerWriter {
         freeze_dataset_from_ledger(&snapshot, plan, verified.principal().clone(), now)
     }
 
-    fn commit(
+    pub(crate) fn commit(
         &mut self,
         expected_predecessor: Digest32,
         event: LedgerEvent,

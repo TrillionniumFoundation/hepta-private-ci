@@ -12,7 +12,7 @@
 - Critical adaptive modules: **14**
 - Formal implementation specifications: **6**
 - Mandatory closure gates: **13**
-- Canonical adaptive protocols: **20**
+- Canonical adaptive protocols: **21**
 - Paper source locks: **4/4 verified; every used claim is locator- and SHA-256-bound**
 - Global work package: **`DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD`**
 - Specification identity: **exact Git blob bound**

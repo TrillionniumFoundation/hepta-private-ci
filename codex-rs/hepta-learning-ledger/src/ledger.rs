@@ -337,6 +337,12 @@ impl LearningLedger {
         match event {
             LedgerEvent::Decision(value) => self.validate_decision(value),
             LedgerEvent::RetrievalAssignment(value) => self.validate_retrieval_assignment(value),
+            LedgerEvent::RetrievalAssignmentIntentV2(value) => {
+                crate::retrieval_publication_validation::validate_intent(value)
+            }
+            LedgerEvent::RetrievalPublicationConfirmedV2(value) => {
+                crate::retrieval_publication_validation::validate_confirmation(self, value)
+            }
             LedgerEvent::Outcome(value) => self.validate_outcome(value),
             LedgerEvent::Credit(value) => self.validate_credit(value),
             LedgerEvent::PromptDelivery(value) => self.validate_prompt_delivery(value),
@@ -789,7 +795,9 @@ impl LearningLedger {
         self.record_kinds
             .insert(record_id, event_kind(&record.event));
         match &record.event {
-            LedgerEvent::RetrievalAssignment(_) => {}
+            LedgerEvent::RetrievalAssignment(_)
+            | LedgerEvent::RetrievalAssignmentIntentV2(_)
+            | LedgerEvent::RetrievalPublicationConfirmedV2(_) => {}
             LedgerEvent::Decision(value) => {
                 self.decisions.insert(
                     value.episode_id.clone(),
@@ -888,7 +896,13 @@ impl LearningLedger {
         match &record.event {
             LedgerEvent::Decision(_)
             | LedgerEvent::AuthenticatedDecisionV2(_)
-            | LedgerEvent::RetrievalAssignment(_) => true,
+            | LedgerEvent::RetrievalAssignment(_)
+            // Intent activity is current plan lineage, never exposure. Delivery
+            // consumers require retrieval_publication's explicit confirmed state.
+            | LedgerEvent::RetrievalAssignmentIntentV2(_) => true,
+            LedgerEvent::RetrievalPublicationConfirmedV2(value) => {
+                !self.revoked.contains(&value.intent_record_id)
+            }
             LedgerEvent::Outcome(outcome) => {
                 let indexed = self.outcomes.get(&outcome.outcome_id);
                 self.decisions
@@ -1009,6 +1023,10 @@ fn token_positions_digest(positions: &[u32]) -> Option<Digest32> {
 
 fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
     match event {
+        // These independent formats validate every digest at their own admission
+        // boundary; do not manufacture a legacy exposure fact to validate them.
+        LedgerEvent::RetrievalAssignmentIntentV2(_)
+        | LedgerEvent::RetrievalPublicationConfirmedV2(_) => {}
         LedgerEvent::RetrievalAssignment(value) => {
             for (name, digest) in [
                 ("retrieval cue", value.cue_digest),
@@ -1160,6 +1178,9 @@ fn require_digest(digest: Digest32, label: &'static str) -> Result<(), LedgerErr
 
 fn normalize_event(event: &mut LedgerEvent) -> Result<(), LedgerError> {
     match event {
+        LedgerEvent::RetrievalAssignmentIntentV2(value) => {
+            crate::retrieval_publication_validation::normalize_intent(value)?;
+        }
         LedgerEvent::RetrievalAssignment(assignment) => {
             if assignment.enumerated_candidate_digests.len() > MAX_RETRIEVAL_CANDIDATES {
                 return Err(LedgerError::RetrievalCandidateLimitExceeded);
@@ -1253,6 +1274,7 @@ fn normalize_event(event: &mut LedgerEvent) -> Result<(), LedgerError> {
         | LedgerEvent::Revocation(_)
         | LedgerEvent::AuthenticatedOutcomeV2(_)
         | LedgerEvent::UnlearningLineageV1(_)
+        | LedgerEvent::RetrievalPublicationConfirmedV2(_)
         | LedgerEvent::PromptDelivery(_) => {}
     }
     Ok(())
@@ -1270,6 +1292,8 @@ fn receipt(record: &LedgerRecord, disposition: AppendDisposition) -> AppendRecei
 #[derive(Clone, Copy)]
 enum EventKind {
     RetrievalAssignment,
+    RetrievalAssignmentIntentV2,
+    RetrievalPublicationConfirmedV2,
     PromptDelivery,
     Decision,
     Outcome,
@@ -1294,6 +1318,8 @@ const fn event_kind_code(kind: EventKind) -> u8 {
         EventKind::PromptDelivery => 8,
         // 0..=8 are reserved for the canonical decision/outcome/prompt formats.
         EventKind::RetrievalAssignment => 9,
+        EventKind::RetrievalAssignmentIntentV2 => 10,
+        EventKind::RetrievalPublicationConfirmedV2 => 11,
     }
 }
 
@@ -1301,6 +1327,10 @@ fn event_kind(event: &LedgerEvent) -> u8 {
     let kind = match event {
         LedgerEvent::Decision(_) => EventKind::Decision,
         LedgerEvent::RetrievalAssignment(_) => EventKind::RetrievalAssignment,
+        LedgerEvent::RetrievalAssignmentIntentV2(_) => EventKind::RetrievalAssignmentIntentV2,
+        LedgerEvent::RetrievalPublicationConfirmedV2(_) => {
+            EventKind::RetrievalPublicationConfirmedV2
+        }
         LedgerEvent::Outcome(_) => EventKind::Outcome,
         LedgerEvent::Credit(_) => EventKind::Credit,
         LedgerEvent::PromptDelivery(_) => EventKind::PromptDelivery,
@@ -1324,6 +1354,12 @@ pub(crate) fn encode_event(event: &LedgerEvent) -> Vec<u8> {
     match event {
         LedgerEvent::Decision(value) => push_decision(&mut bytes, value),
         LedgerEvent::RetrievalAssignment(value) => push_retrieval_assignment(&mut bytes, value),
+        LedgerEvent::RetrievalAssignmentIntentV2(value) => {
+            crate::retrieval_publication_codec::encode_intent(&mut bytes, value);
+        }
+        LedgerEvent::RetrievalPublicationConfirmedV2(value) => {
+            crate::retrieval_publication_codec::encode_confirmation(&mut bytes, value);
+        }
         LedgerEvent::Outcome(value) => push_outcome(&mut bytes, value),
         LedgerEvent::Credit(value) => push_credit(&mut bytes, value),
         LedgerEvent::PromptDelivery(value) => push_prompt_delivery(&mut bytes, value),
@@ -1537,7 +1573,7 @@ fn push_ids(bytes: &mut Vec<u8>, values: &[StableId]) {
     }
 }
 
-fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
+pub(crate) fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     let raw = value.as_str().as_bytes();
     push_len(bytes, raw.len());
     bytes.extend_from_slice(raw);
@@ -1573,7 +1609,7 @@ fn push_optional_fixed(bytes: &mut Vec<u8>, value: Option<FixedQ32>) {
     }
 }
 
-fn push_digest(bytes: &mut Vec<u8>, value: Digest32) {
+pub(crate) fn push_digest(bytes: &mut Vec<u8>, value: Digest32) {
     bytes.extend_from_slice(value.as_array());
 }
 
@@ -1587,7 +1623,7 @@ fn push_optional_digest(bytes: &mut Vec<u8>, value: Option<Digest32>) {
     }
 }
 
-fn push_len(bytes: &mut Vec<u8>, value: usize) {
+pub(crate) fn push_len(bytes: &mut Vec<u8>, value: usize) {
     let converted = u32::try_from(value).unwrap_or(u32::MAX);
     bytes.extend_from_slice(&converted.to_be_bytes());
 }

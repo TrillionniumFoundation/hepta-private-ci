@@ -14,6 +14,8 @@ pub enum LedgerError {
     RetrievalDeliveryOutsideSelection,
     RetrievalExposureStateMismatch,
     DuplicateRetrievalIndex,
+    RetrievalPublicationBindingMismatch,
+    RetrievalPublicationIntentRequired,
     DuplicateCandidate(String),
     MissingAbstainCandidate,
     SelectedCandidateMissing(String),
@@ -82,6 +84,7 @@ impl LedgerError {
             | Self::RetrievalSelectionOutsideLegal
             | Self::RetrievalDeliveryOutsideSelection
             | Self::RetrievalExposureStateMismatch
+            | Self::RetrievalPublicationBindingMismatch
             | Self::DuplicateRetrievalIndex => "LRN-E002",
             Self::EpisodeAlreadyExists(_)
             | Self::OutcomeAlreadyExists(_)
@@ -96,6 +99,7 @@ impl LedgerError {
             | Self::AuthenticatedOutcomeRequired(_)
             | Self::OutcomeRevoked(_)
             | Self::OutcomePredecessorNotFound(_) => "LRN-E004",
+            Self::RetrievalPublicationIntentRequired => "LRN-E004",
             Self::OutcomeEpisodeMismatch
             | Self::OutcomeNotTerminal
             | Self::OutcomePredecessorEpisodeMismatch
@@ -170,6 +174,11 @@ impl fmt::Display for LedgerError {
             }
             Self::RetrievalExposureStateMismatch => formatter
                 .write_str("retrieval context exposure state disagrees with delivered candidates"),
+            Self::RetrievalPublicationBindingMismatch => formatter
+                .write_str("retrieval publication identity or exact response binding mismatch"),
+            Self::RetrievalPublicationIntentRequired => {
+                formatter.write_str("retrieval publication requires the exact historical V2 intent")
+            }
             Self::DuplicateRetrievalIndex => {
                 formatter.write_str("retrieval candidate index set contains duplicates")
             }

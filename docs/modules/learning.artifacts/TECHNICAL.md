@@ -143,6 +143,7 @@ Consumed contracts:
 
 Critical protocol schemas:
 
+- `BellmanOperatorArtifactV1`
 - `DatasetSnapshotV1`
 - `EvaluationReceiptV1`
 - `LearningArtifactManifestV1`
@@ -154,6 +155,14 @@ Critical protocol schemas:
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
 Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+
+For `BellmanOperatorArtifactV1`, these wire guarantees remain integration
+requirements. Its canonical schema preserves the fourteen operator design fields
+and the complete error-budget and rollback lineage; their field correspondence is
+specified in [HOLDER_BELLMAN_SPEC Section 6](../../learning/HOLDER_BELLMAN_SPEC.md#6-data-protocol-and-lineage-schema).
+The existing tabular candidate payload and artifact manifest are separate native
+records. Persisting or pinning those records does not implement this canonical
+JSON adapter or prove full operator model/runtime conformance.
 
 ## 6. Data authority, persistence and migrations
 
@@ -455,6 +464,7 @@ This generated projection binds `learning.artifacts` to the current canonical co
 
 **Typed protocols:**
 - `AlgorithmFaultReceiptV1`
+- `BellmanOperatorArtifactV1`
 - `CandidateEvaluationReceiptV1`
 - `ConformanceReceiptV1`
 - `DatasetSnapshotV1`

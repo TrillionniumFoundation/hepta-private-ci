@@ -23,6 +23,9 @@ use crate::SignedLearningTrustDistributionV1;
 use crate::TrustedLearningSignerV1;
 use crate::activate_learning_trust;
 
+#[path = "retrieval_publication_production_tests.rs"]
+mod retrieval_publication_tests;
+
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
 fn id(value: &str) -> StableId {

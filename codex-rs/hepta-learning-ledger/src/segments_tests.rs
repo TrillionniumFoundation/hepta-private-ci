@@ -17,6 +17,9 @@ use crate::OutcomeFinality;
 use crate::OutcomeObservation;
 use crate::Revocation;
 
+#[path = "retrieval_publication_segment_tests.rs"]
+mod retrieval_publication_tests;
+
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
 fn must<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {

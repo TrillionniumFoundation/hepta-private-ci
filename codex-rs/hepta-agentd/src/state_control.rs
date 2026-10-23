@@ -25,6 +25,7 @@ use crate::LifecycleSnapshot;
 use crate::SessionIngress;
 use crate::SessionTransport;
 use crate::cognitive_context::CognitiveContextError;
+use crate::cognitive_context_delivery::PreparedContextPublication;
 
 use super::AgentdState;
 use super::poisoned_state;
@@ -41,12 +42,43 @@ const COGNITIVE_CONTROL_UNAVAILABLE_MESSAGE: &str =
     "this Agent's private cognitive control storage is unavailable";
 const COGNITIVE_READ_UNAVAILABLE_CODE: &str = "cognitive_read_unavailable";
 
+pub(crate) struct PreparedAgentdResponse {
+    pub(crate) response: AgentdResponse,
+    pub(crate) context: Option<PreparedContextPublication>,
+}
+
 impl AgentdState {
+    #[cfg(test)]
     pub(crate) async fn response(
         &self,
         request_id: u64,
         spawn_generation: u64,
         method: crate::AgentdMethod,
+    ) -> Result<AgentdResponse, AgentdError> {
+        self.prepare_response(request_id, spawn_generation, method)
+            .await
+            .map(|prepared| prepared.response)
+    }
+
+    pub(crate) async fn prepare_response(
+        &self,
+        request_id: u64,
+        spawn_generation: u64,
+        method: crate::AgentdMethod,
+    ) -> Result<PreparedAgentdResponse, AgentdError> {
+        let mut context = None;
+        let response = self
+            .response_inner(request_id, spawn_generation, method, &mut context)
+            .await?;
+        Ok(PreparedAgentdResponse { response, context })
+    }
+
+    async fn response_inner(
+        &self,
+        request_id: u64,
+        spawn_generation: u64,
+        method: crate::AgentdMethod,
+        prepared_context: &mut Option<PreparedContextPublication>,
     ) -> Result<AgentdResponse, AgentdError> {
         if spawn_generation != self.identity.spawn_generation {
             return Err(AgentdError::GenerationFenced(format!(
@@ -294,8 +326,55 @@ impl AgentdState {
                         runtime.fenced,
                     )?;
                 }
+                let result = match result {
+                    Ok(read) => {
+                        read.prepare(
+                            &store,
+                            &self.identity.agent_id,
+                            self.identity.spawn_generation,
+                            &self.cognitive_context_issuer,
+                            self.cognitive_ranker.get(),
+                            self.cognitive_retrieval_context.get(),
+                        )
+                        .await
+                    }
+                    Err(error) => Err(error),
+                };
+                let final_fence = (|| {
+                    self.refresh_generation()?;
+                    let runtime = self.runtime.lock().map_err(poisoned_state)?;
+                    require_cognitive_control_ready(
+                        runtime.lifecycle,
+                        runtime.app_server_ready,
+                        runtime.critical_stores_ready,
+                        runtime.revocation_ready,
+                        runtime.required_ports_ready,
+                        runtime.admission_open,
+                        runtime.fenced,
+                    )
+                })();
+                if let Err(error) = final_fence {
+                    if let Ok(prepared) = &result {
+                        self.cognitive_context_issuer.retract(&prepared.snapshot);
+                    }
+                    return Err(error);
+                }
+                let result = result.and_then(|prepared| {
+                    if let Err(message) = self.cognitive_context_issuer.validate(
+                        self.identity.agent_id.as_str(),
+                        self.identity.spawn_generation,
+                        &prepared.snapshot,
+                    ) {
+                        self.cognitive_context_issuer.retract(&prepared.snapshot);
+                        return Err(CognitiveContextError::ReadUnavailable(message));
+                    }
+                    Ok(prepared)
+                });
                 match result {
-                    Ok(snapshot) => AgentdPayload::CognitiveContext(snapshot),
+                    Ok(prepared) => {
+                        *prepared_context = Some(prepared.publication);
+                        AgentdPayload::CognitiveContext(prepared.snapshot)
+                    },
                     Err(CognitiveContextError::Store(error)) => {
                         return self.cognitive_error_response(
                             request_id,
@@ -349,17 +428,21 @@ impl AgentdState {
                         cognitive_control_unavailable(),
                     );
                 };
-                let result = crate::cognitive_context::revalidate_with_retrieval_context(
+                let snapshot = crate::CognitiveContextSnapshot {
+                    snapshot_digest,
+                    read_digest,
+                    omitted_records,
+                    items,
+                    plan,
+                };
+                let result = crate::cognitive_context::revalidate_issued_context(
                     store.as_ref(),
                     &self.identity.agent_id,
-                    &snapshot_digest,
-                    &read_digest,
-                    omitted_records,
-                    &items,
-                    plan.as_ref(),
-                    self.cognitive_ranker.get(),
                     self.identity.spawn_generation,
+                    &snapshot,
+                    self.cognitive_ranker.get(),
                     self.cognitive_retrieval_context.get(),
+                    &self.cognitive_context_issuer,
                 )
                 .await;
                 self.refresh_generation()?;
@@ -375,6 +458,16 @@ impl AgentdState {
                         runtime.fenced,
                     )?;
                 }
+                let result = result.and_then(|revalidation| {
+                    self.cognitive_context_issuer
+                        .validate(
+                            self.identity.agent_id.as_str(),
+                            self.identity.spawn_generation,
+                            &snapshot,
+                        )
+                        .map_err(CognitiveContextError::ReadUnavailable)?;
+                    Ok(revalidation)
+                });
                 match result {
                     Ok(revalidation) => AgentdPayload::CognitiveContextRevalidated(revalidation),
                     Err(CognitiveContextError::Store(error)) => {
@@ -993,6 +1086,79 @@ impl AgentdState {
             current_generation,
             payload,
         })
+    }
+
+    pub(crate) async fn revalidate_control_publication(
+        &self,
+        response: &AgentdResponse,
+        publication: &PreparedContextPublication,
+    ) -> Result<(), AgentdError> {
+        let AgentdPayload::CognitiveContext(snapshot) = &response.payload else {
+            return Err(AgentdError::Protocol(
+                "prepared context has another response payload".to_string(),
+            ));
+        };
+        publication.validate_snapshot(snapshot).map_err(|error| {
+            AgentdError::Protocol(format!("prepared context unavailable: {error:?}"))
+        })?;
+        self.require_context_transport_fence(response)?;
+        let store = self
+            .cognitive
+            .lock()
+            .map_err(poisoned_state)?
+            .clone()
+            .ok_or_else(|| {
+                AgentdError::Protocol(COGNITIVE_CONTROL_UNAVAILABLE_MESSAGE.to_string())
+            })?;
+        crate::cognitive_context::revalidate_issued_context(
+            &store,
+            &self.identity.agent_id,
+            self.identity.spawn_generation,
+            snapshot,
+            self.cognitive_ranker.get(),
+            self.cognitive_retrieval_context.get(),
+            &self.cognitive_context_issuer,
+        )
+        .await
+        .map_err(|error| {
+            AgentdError::Protocol(format!("prepared context unavailable: {error:?}"))
+        })?;
+        self.require_context_transport_fence(response)?;
+        publication.validate_snapshot(snapshot).map_err(|error| {
+            AgentdError::Protocol(format!("prepared context unavailable: {error:?}"))
+        })
+    }
+
+    fn require_context_transport_fence(
+        &self,
+        response: &AgentdResponse,
+    ) -> Result<(), AgentdError> {
+        self.refresh_generation()?;
+        let runtime = self.runtime.lock().map_err(poisoned_state)?;
+        require_cognitive_control_ready(
+            runtime.lifecycle,
+            runtime.app_server_ready,
+            runtime.critical_stores_ready,
+            runtime.revocation_ready,
+            runtime.required_ports_ready,
+            runtime.admission_open,
+            runtime.fenced,
+        )?;
+        if response.agent_id != self.identity.agent_id
+            || response.spawn_generation != self.identity.spawn_generation
+            || response.current_generation != runtime.current_generation
+        {
+            return Err(AgentdError::GenerationFenced(
+                "prepared response lifecycle changed".to_string(),
+            ));
+        }
+        Ok(())
+    }
+
+    pub(crate) fn retract_control_publication(&self, response: &AgentdResponse) {
+        if let AgentdPayload::CognitiveContext(snapshot) = &response.payload {
+            self.cognitive_context_issuer.retract(snapshot);
+        }
     }
 
     fn automation_result<T>(

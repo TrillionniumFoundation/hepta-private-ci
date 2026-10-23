@@ -84,6 +84,10 @@ The module itself is stateless. It owns no cache, pin registry, lease table, des
 
 The composed Agentd path builds an ID-indexed admitted-record map once, avoiding the former candidate-by-`read.records().iter().any(...)` scan. Ranking and byte budgeting happen only after owner-cut admission.
 
+Agentd additionally binds final use to a private issuance record for the exact ordered response, including its plan. Recomputing public response digests cannot authorize altered ordering or contents. This host record belongs to `runtime.agentd`, not the stateless read module; it holds only owner/body identity, receipt, content digest and the original monotonic deadline. It stores no context text. The full serialized response has a four-item and 8 KiB limit, including JSON escaping and plan fields. Owner-cut currentness is checked again after awaited provider work and immediately before return.
+
+The control transport separately records a witnessed publication intent before sending and a linked host full-write confirmation afterwards. A prepared read or intent alone proves no exposure. Unknown publication remains unknown after cancellation or recovery; actual model attachment still uses the independent inference journal. The [native V2 contract](../../../codex-rs/hepta-learning-ledger/RETRIEVAL_PUBLICATION.md) belongs to Agentd/Ledger integration and adds no state or writer to this read module.
+
 ### Shared-experience and isolated-Agent integration target
 
 Read an authorized owner cut and exact revisions for the requesting workspace/purpose. Shared-read permission does not imply training access. Expose missing/revoked/unavailable sources as coverage, enforce source-currentness at final use, and avoid denied-record existence leaks.
