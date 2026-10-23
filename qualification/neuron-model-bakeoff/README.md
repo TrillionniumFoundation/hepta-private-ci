@@ -153,6 +153,7 @@ positive_ids; corpus rows have id and text):
     python3 qualification/neuron-model-bakeoff/retrieval.py \
       --model harrier-270m --snapshot /private/hub/REPO/snapshots/ACTUAL_SHA \
       --revision ACTUAL_SHA --source-commit "$(git rev-parse HEAD)" \
+      --device cpu \
       --queries /private/eval/queries.jsonl \
       --corpus /private/eval/corpus.jsonl \
       --output /private/eval/harrier-retrieval.json
@@ -165,6 +166,12 @@ fail closed, and their name/content SHA256 are recorded in the retrieval
 receipt. Any prompt change invalidates old scores. These are upstream
 retrieval instructions, not user-provided policy authority.
 This retrieval result does not automatically establish decision superiority.
+Retrieval also verifies the model-specific cache repository, requires an explicit
+device and rejects device fallback, missing or malformed embedding rows,
+nonfinite values and non-unit vectors before ranking. Document encoding explicitly
+disables any default prompt. The receipt records selected device, loaded parameter
+precision and embedding width. These checks bind observations, not independent
+weight provenance, equal token budgets or hardware qualification.
 
 For serving, build a **real** isolated qualification-only local adapter bound
 to the Inference Control owner. The adapter must accept one POST JSON with
