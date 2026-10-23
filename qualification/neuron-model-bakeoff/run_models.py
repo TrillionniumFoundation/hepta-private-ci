@@ -17,7 +17,7 @@ from typing import Any
 
 from bakeoff import (
     CANDIDATES, MODEL_REPOS, REVISION, SCHEMA, file_hash, load_jsonl,
-    require, validate_dataset,
+    require, validate_dataset, training_partition_digest,
 )
 
 HEAD_DIM = 256
@@ -180,6 +180,7 @@ def embedding_scores(
     weights = np.zeros(HEAD_DIM, dtype=np.float32)
     training = [r for r in rows if r["split"] == "train"]
     require(bool(training), "training partition missing")
+    train_digest = training_partition_digest(training)
     rng_train = random.Random(HEAD_SEED)
     updates = 0
     for _epoch in range(HEAD_EPOCHS):
@@ -211,6 +212,7 @@ def embedding_scores(
         "head_training_steps": updates,
         "head_learning_rate": HEAD_LR, "head_l2": HEAD_L2,
         "head_seed": HEAD_SEED, "projection": "seeded_gaussian_256",
+        "head_training_dataset_sha256": train_digest,
         "projection_sha256": hashlib.sha256(projection.tobytes()).hexdigest(),
     }, head_digest
 
