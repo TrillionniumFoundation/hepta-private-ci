@@ -1,0 +1,46 @@
+{
+  "scope": "Independent Python synthetic gate tests only; no Rust/nextest/UI execution",
+  "runs": [
+    {
+      "name": "normal",
+      "argv": [
+        "python3",
+        "/workspace/scratch/3d6a75235bcb/work/makepad-composition/change/hepta/apps/hepta-control-ui/test/test_native_composition_junit.py"
+      ],
+      "started_at": "2026-10-23T10:36:25.998553+00:00",
+      "finished_at": "2026-10-23T10:36:26.056959+00:00",
+      "exit_code": 0,
+      "stdout": {
+        "path": "work/makepad-composition-root-review/normal.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "work/makepad-composition-root-review/normal.stderr",
+        "bytes": 111,
+        "sha256": "a86a150651d34bd22d6f7ab8b6ef734452b614e943f335c3fb44eb4b33c2d5c9"
+      }
+    },
+    {
+      "name": "optimized",
+      "argv": [
+        "python3",
+        "-O",
+        "/workspace/scratch/3d6a75235bcb/work/makepad-composition/change/hepta/apps/hepta-control-ui/test/test_native_composition_junit.py"
+      ],
+      "started_at": "2026-10-23T10:36:26.056980+00:00",
+      "finished_at": "2026-10-23T10:36:26.155076+00:00",
+      "exit_code": 0,
+      "stdout": {
+        "path": "work/makepad-composition-root-review/optimized.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "work/makepad-composition-root-review/optimized.stderr",
+        "bytes": 111,
+        "sha256": "22e69128faed2c5b9f76178176222e7a4635dbd31155df18e4fad6455f8ab9ea"
+      }
+    }
+  ]
+}
