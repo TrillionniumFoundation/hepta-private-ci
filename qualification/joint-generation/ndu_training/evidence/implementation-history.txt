@@ -1,0 +1,16 @@
+Implementation-only history before any TRAIN construction:
+- Initial shell probe used /workspace, which is not a Git repository. Located
+  /workspace/hepta-private-ci at f8c9419df6ddeb36ff8b522a50219981fb8d9345 instead.
+- Fetched exact requested SHA; git ls-remote independently verified PR #3451 head
+  0aca16714390ca045a53cece9644992b7990fc9c. Created isolated research branch there.
+- One source-test launch used an incorrect relative path for its preliminary rg;
+  rg exited 2 before the chained unittest command executed. No tests/data ran.
+- First actual handmade/learning/accounting suite: 30 tests passed, 0.430 seconds.
+  Full log is handmade-first.txt. No experiment dataset was constructed.
+- Added actual-parameter-gradient parity proof and failure evidence preservation.
+- Ruff initially reported E741 for local variable `l` in the runner's final
+  ledger snapshot comprehension; corrected to `ledger`. No TRAIN had run.
+- Tools: Python 3.12.14, NumPy 2.3.5, SciPy 1.17.0, git 2.52.0, ripgrep 15.2.0;
+  torch/pytest absent and not needed. Installed rust-just 1.59.0 in /tmp and
+  repository-pinned Ruff through scripts' existing uv project for formatting.
+  These setup/source-review costs are R&D, not generation-budget credits.
