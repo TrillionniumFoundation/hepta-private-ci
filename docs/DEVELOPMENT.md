@@ -684,6 +684,9 @@ PN4's source-to-destination interface carries the original verified request and
 one-shot FinalUse token in a sealed `ProductionVerifiedDispatch`. Physical targets
 must finish asynchronous preparation before consuming it at the synchronous
 worker-entry boundary; the compatibility default still validates delivery only.
+Before irreversible admission, a target checks that the sealed request came
+from its configured authority instance. This non-consuming identity comparison
+does not validate expiry or revocation; the final entry check remains required.
 Signed nonce, expiry, revocation, wrong-owner and existing lost-ack controls cover
 this interface. It does not supply a physical CPU destination, qualify legacy
 adapters, prove resource release or change the original retained-charge failure.

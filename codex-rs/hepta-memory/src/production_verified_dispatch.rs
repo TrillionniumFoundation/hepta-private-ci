@@ -28,6 +28,20 @@ impl ProductionVerifiedDispatch {
         &self.expected
     }
 
+    /// Reject a different target owner before reserving irreversible capacity.
+    /// This non-consuming identity check is not live grant validation; the
+    /// final synchronous dispatch boundary must still recheck the whole claim.
+    pub fn verify_target_authority(
+        &self,
+        authority: &FinalUseAuthority,
+    ) -> Result<(), FinalUseError> {
+        if self.authority.shares_owner(authority) {
+            Ok(())
+        } else {
+            Err(FinalUseError::BindingMismatch)
+        }
+    }
+
     /// Consume the original claim at the target's final synchronous entry.
     /// Complete asynchronous preparation first. The callback must immediately
     /// cross its fixed physical boundary and retain ownership, without await.

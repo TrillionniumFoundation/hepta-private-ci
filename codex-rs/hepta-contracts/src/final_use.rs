@@ -337,6 +337,13 @@ impl VerifiedUseToken {
 }
 
 impl FinalUseAuthority {
+    /// Compare opaque owner instances without revealing or issuing authority.
+    /// Clones share one owner; reopening identical durable state creates a new
+    /// owner and does not make its in-flight claims interchangeable.
+    pub fn shares_owner(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.0, &other.0)
+    }
+
     /// Compatibility constructor using the process system clock and no
     /// external rollback oracle. It is not a production trust composition. A
     /// production-oriented rotating-issuer host uses

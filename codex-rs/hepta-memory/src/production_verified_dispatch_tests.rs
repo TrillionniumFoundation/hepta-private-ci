@@ -174,6 +174,32 @@ fn final_boundary_rechecks_expiry_and_revocation_after_preparation() {
     }
 }
 
+#[test]
+fn owner_preflight_is_non_consuming_and_never_replaces_the_final_live_check() {
+    let fixture = Fixture::new();
+    let envelope = fixture.envelope();
+    let clone = fixture.authority.clone();
+    let other_same_key_and_visible_binding = Fixture::new();
+    assert_eq!(
+        envelope.verify_target_authority(&other_same_key_and_visible_binding.authority),
+        Err(FinalUseError::BindingMismatch)
+    );
+    assert_eq!(envelope.verify_target_authority(&clone), Ok(()));
+    assert_eq!(envelope.verify_target_authority(&fixture.authority), Ok(()));
+    fixture.clock.0.store(2_001, Ordering::SeqCst);
+    assert_eq!(
+        envelope.verify_target_authority(&fixture.authority),
+        Ok(()),
+        "identity alone does not validate the expired grant"
+    );
+    let calls = AtomicUsize::new(0);
+    assert_eq!(
+        envelope.with_dispatch_boundary(&clone, |_| calls.fetch_add(1, Ordering::SeqCst)),
+        Err(FinalUseError::Expired)
+    );
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+}
+
 struct LegacyTarget(AtomicUsize);
 
 impl ProductionOutboxTarget for LegacyTarget {
