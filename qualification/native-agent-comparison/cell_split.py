@@ -50,6 +50,11 @@ def validate_plan(plan: object) -> tuple[dict, list[dict]]:
             and 0 <= plan["min_future_group_gain"] < 1, "future gain threshold")
     require(type(plan.get("max_old_task_regression")) in (float, int)
             and 0 <= plan["max_old_task_regression"] < 1, "old task regression threshold")
+    for name in ("max_cpu_overhead_fraction", "max_rss_overhead_fraction",
+                 "max_p99_overhead_fraction"):
+        value = plan.get(name)
+        require(type(value) in (int, float) and math.isfinite(value) and 0 <= value <= 1,
+                f"pre-registered resource overhead threshold missing/invalid: {name}")
     tasks = plan.get("tasks")
     require(isinstance(tasks, list) and tasks, "frozen tasks missing")
     seen = set()
@@ -89,6 +94,7 @@ def compare(plan: object, observations: object) -> dict:
     task_by_id = {t["id"]: t for t in tasks}
     expected = {(t["id"], t["seed"], scale, arm) for t in tasks for scale in SCALES for arm in ARMS}
     actual = {}
+    receipt_digests = set()
     for item in observations:
         require(isinstance(item, dict) and item.get("schema") == "hepta.cell-split-observation.v1", "observation schema")
         key = (item.get("task_id"), item.get("seed"), item.get("scale"), item.get("arm"))
@@ -100,7 +106,10 @@ def compare(plan: object, observations: object) -> dict:
         require(item.get("limits") == plan["limits"], "unequal resource limits")
         require(item.get("idempotency_replayed") is False and type(item.get("unknown_effects")) is int and item["unknown_effects"] == 0, "unsafe effect or unknown outcome")
         require(type(item.get("success")) is bool and type(item.get("tool_correct")) is bool, "unverified outcome format")
+        require(not item["success"] or item["tool_correct"], "success conflicts with tool correctness")
         require_digest(item.get("observation_digest"), "observation")
+        require(item["observation_digest"] not in receipt_digests, "duplicate observation digest across different pairs")
+        receipt_digests.add(item["observation_digest"])
         for metric in REQUIRED_METRICS:
             value = item.get(metric)
             require(type(value) is int and 0 <= value <= plan["limits"][metric], f"invalid or over-budget {metric}")
@@ -135,12 +144,28 @@ def compare(plan: object, observations: object) -> dict:
                 "total_cpu_ms": sum(x["cpu_ms"] for x in rows),
                 "total_tokens": sum(x["input_tokens"] + x["output_tokens"] for x in rows),
             }
+        # Compare actual end-to-end costs with both matched shared-encoder
+        # controls. No utility score may conceal worse CPU/RSS/tail latency.
+        # Allowed overhead must be frozen in the plan before observations.
+        cost_guard = {
+            "cpu": by_arm["split"]["total_cpu_ms"]
+                <= min(by_arm[a]["total_cpu_ms"] for a in ("shared_head", "sparse_moe"))
+                   * (1 + plan["max_cpu_overhead_fraction"]),
+            "rss": by_arm["split"]["peak_rss_bytes"]
+                <= min(by_arm[a]["peak_rss_bytes"] for a in ("shared_head", "sparse_moe"))
+                   * (1 + plan["max_rss_overhead_fraction"]),
+            "p99": by_arm["split"]["p99_wall_ms"]
+                <= min(by_arm[a]["p99_wall_ms"] for a in ("shared_head", "sparse_moe"))
+                   * (1 + plan["max_p99_overhead_fraction"]),
+        }
         results[str(scale)] = {
             "future_group_count": len(diffs),
+            "resource_cost_guard": cost_guard,
             "future_gain_bootstrap_lower_95_one_sided": lower,
             "old_task_delta_vs_no_change": old_regression,
             "candidate_meets_structural_metrics": lower > plan["min_future_group_gain"]
-                and old_regression >= -plan["max_old_task_regression"],
+                and old_regression >= -plan["max_old_task_regression"]
+                and all(cost_guard.values()),
             "arms": by_arm,
         }
     return {
