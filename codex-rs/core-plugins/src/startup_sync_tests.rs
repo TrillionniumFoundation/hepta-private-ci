@@ -1300,6 +1300,82 @@ fn read_extracted_backup_archive_git_sha_rejects_path_traversal_ref() {
     assert!(err.contains("invalid path components"));
 }
 
+
+#[test]
+fn curated_plugins_zip_rejects_duplicate_files_without_overwriting() {
+    let output = tempdir().expect("create extraction root");
+    let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    let options = SimpleFileOptions::default();
+    writer
+        .start_file("plugins/plugin.txt", options)
+        .expect("start first file");
+    writer.write_all(b"first").expect("write first file");
+    writer
+        .start_file("plugins/plugin.txt", options)
+        .expect("start duplicate file");
+    writer.write_all(b"second").expect("write second file");
+    let bytes = writer.finish().expect("complete duplicate archive").into_inner();
+
+    let err = extract_zipball_to_dir(&bytes, output.path())
+        .expect_err("duplicate file must not replace the first one");
+    assert!(err.contains("failed to create curated plugins file"), "{err}");
+    assert_eq!(
+        std::fs::read(output.path().join("plugin.txt")).expect("original bytes"),
+        b"first"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn curated_plugins_zip_rejects_preexisting_symlink_target() {
+    let output = tempdir().expect("create extraction root");
+    let outside = output.path().join("outside.txt");
+    std::fs::write(&outside, b"keep original").expect("create outside target");
+    let destination = output.path().join("destination");
+    std::fs::create_dir_all(&destination).expect("create archive destination");
+    std::os::unix::fs::symlink(&outside, destination.join("plugin.txt"))
+        .expect("install preexisting symlink");
+
+    let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    writer
+        .start_file("plugins/plugin.txt", SimpleFileOptions::default())
+        .expect("start file");
+    writer.write_all(b"attacker").expect("write file");
+    let bytes = writer.finish().expect("complete archive").into_inner();
+
+    let err = extract_zipball_to_dir(&bytes, &destination)
+        .expect_err("archive must not follow an existing symlink");
+    assert!(err.contains("failed to create curated plugins file"), "{err}");
+    assert_eq!(
+        std::fs::read(&outside).expect("outside target intact"),
+        b"keep original"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn curated_plugins_zip_strips_privileged_and_group_writable_modes() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let output = tempdir().expect("create extraction root");
+    let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    writer
+        .start_file(
+            "plugins/plugin.sh",
+            SimpleFileOptions::default().unix_permissions(0o7777),
+        )
+        .expect("start file");
+    writer.write_all(b"echo safe").expect("write file");
+    let bytes = writer.finish().expect("complete archive").into_inner();
+
+    extract_zipball_to_dir(&bytes, output.path()).expect("extract safe file");
+    let mode = std::fs::metadata(output.path().join("plugin.sh"))
+        .expect("file metadata")
+        .permissions()
+        .mode();
+    assert_eq!(mode & 0o7777, 0o755);
+}
+
 fn curated_repo_zipball_bytes(sha: &str) -> Vec<u8> {
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);
