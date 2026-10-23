@@ -694,7 +694,11 @@ with 0.64.0 through the existing Python test dependency and uv lock. The nine
 matched generator advisories concern untrusted schema/import/reference handling;
 this developer tool is not a model-serving dependency. The maintenance entrypoint
 keeps Python 3.10 syntax, existing Enum classes, plain discriminator literals,
-required nullable account email and the existing omitted-section request value.
+required nullable account email, the existing omitted-section request value,
+and the original validation behavior for omitted empty-list defaults. An exact
+17-field AST postprocessor refuses unexpected generator shapes and preserves
+all other syntax. This preserves the existing omitted-default behavior for
+subclass validators unless callers configure validation themselves.
 The generated artifact is a mechanical regeneration exception; all 888 existing
 model/enum names, field requirements, defaults, aliases and constraints are
 compared. Inline literal titles and redundant RootModel population settings

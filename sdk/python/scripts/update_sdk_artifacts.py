@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import argparse
+import ast
+import copy
 import importlib
 import importlib.metadata
 import json
@@ -608,6 +610,118 @@ def generate_v2_all(schema_dir: Path) -> None:
     _preserve_thread_source_enum(out_path)
     _preserve_plan_type_enum(out_path)
     _normalize_generated_timestamps(out_path)
+    _preserve_default_validation(out_path)
+    run_python_module("ruff", ["format", str(out_path)], cwd=sdk_root())
+
+
+_LEGACY_LIST_DEFAULTS = {
+    ("ManagedHooksRequirements", "session_end"): "ConfiguredHookMatcherGroup",
+    ("WorkspaceWriteSandboxPolicy", "writable_roots"): "AbsolutePathBuf",
+    ("TextUserInput", "text_elements"): "TextElement",
+    ("MigrationDetails", "commands"): "CommandMigration",
+    ("MigrationDetails", "hooks"): "HookMigration",
+    ("MigrationDetails", "mcp_servers"): "McpServerMigration",
+    ("MigrationDetails", "plugins"): "PluginsMigration",
+    ("MigrationDetails", "sessions"): "SessionMigration",
+    ("MigrationDetails", "skills"): "SkillMigration",
+    ("MigrationDetails", "subagents"): "SubagentMigration",
+    ("Model", "service_tiers"): "ModelServiceTier",
+    ("ExternalAgentConfigDetectResponse", "connectors"): "ExternalAgentDetectedConnectorCandidate",
+    ("ThreadForkResponse", "instruction_sources"): "LegacyAppPathString",
+    ("ThreadResumeResponse", "instruction_sources"): "LegacyAppPathString",
+    ("ThreadStartResponse", "instruction_sources"): "LegacyAppPathString",
+    ("PluginInstalledResponse", "marketplace_load_errors"): "MarketplaceLoadErrorInfo",
+    ("PluginListResponse", "marketplace_load_errors"): "MarketplaceLoadErrorInfo",
+}
+
+
+def _preserve_default_validation(out_path: Path) -> None:
+    """Restore only the existing 17 empty-list defaults' validator semantics."""
+    source = out_path.read_bytes()
+    tree = ast.parse(source)
+    lines = source.splitlines(keepends=True)
+    offsets = [0]
+    for line in lines:
+        offsets.append(offsets[-1] + len(line))
+    edits = []
+    seen = set()
+    permitted_calls = set()
+    for model in tree.body:
+        if not isinstance(model, ast.ClassDef):
+            continue
+        for field in model.body:
+            if not isinstance(field, ast.AnnAssign) or not isinstance(field.target, ast.Name):
+                continue
+            calls = [
+                node
+                for node in ast.walk(field.annotation)
+                if isinstance(node, ast.Call)
+                and any(keyword.arg == "validate_default" for keyword in node.keywords)
+            ]
+            if not calls:
+                continue
+            identity = (model.name, field.target.id)
+            element = _LEGACY_LIST_DEFAULTS.get(identity)
+            annotation = field.annotation
+            if (
+                element is None
+                or identity in seen
+                or len(calls) != 1
+                or not isinstance(field.value, ast.List)
+                or field.value.elts
+                or not isinstance(annotation, ast.Subscript)
+                or not isinstance(annotation.value, ast.Name)
+                or annotation.value.id != "Annotated"
+                or not isinstance(annotation.slice, ast.Tuple)
+                or len(annotation.slice.elts) != 2
+            ):
+                raise RuntimeError(f"Generated default validation shape changed: {identity}")
+            call = calls[0]
+            expected_type = ast.parse(f"list[{element}] | None", mode="eval").body
+            keywords = [keyword for keyword in call.keywords if keyword.arg == "validate_default"]
+            if (
+                annotation.slice.elts[1] is not call
+                or call.args
+                or not isinstance(call.func, ast.Name)
+                or call.func.id != "Field"
+                or ast.dump(annotation.slice.elts[0]) != ast.dump(expected_type)
+                or len(keywords) != 1
+                or not isinstance(keywords[0].value, ast.Constant)
+                or keywords[0].value.value is not True
+            ):
+                raise RuntimeError(f"Generated default validation field changed: {identity}")
+            seen.add(identity)
+            permitted_calls.add(id(call))
+            replacement = copy.deepcopy(call)
+            replacement.keywords = [
+                keyword for keyword in replacement.keywords if keyword.arg != "validate_default"
+            ]
+            start = offsets[call.lineno - 1] + call.col_offset
+            end = offsets[call.end_lineno - 1] + call.end_col_offset
+            # AST columns count UTF-8 bytes, including Unicode descriptions.
+            if source[start:end].decode() != ast.get_source_segment(source.decode(), call):
+                raise RuntimeError("Generated default validation source span changed")
+            edits.append((start, end, ast.unparse(replacement).encode()))
+    all_calls = {
+        id(node)
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Call)
+        and any(keyword.arg == "validate_default" for keyword in node.keywords)
+    }
+    if seen != set(_LEGACY_LIST_DEFAULTS) or all_calls != permitted_calls:
+        raise RuntimeError("Generated default validation field coverage changed")
+    expected = copy.deepcopy(tree)
+    for node in ast.walk(expected):
+        if isinstance(node, ast.Call):
+            node.keywords = [
+                keyword for keyword in node.keywords if keyword.arg != "validate_default"
+            ]
+    rewritten = source
+    for start, end, replacement in sorted(edits, reverse=True):
+        rewritten = rewritten[:start] + replacement + rewritten[end:]
+    if ast.dump(ast.parse(rewritten)) != ast.dump(expected):
+        raise RuntimeError("Generated default validation changed unrelated syntax")
+    out_path.write_bytes(rewritten)
 
 
 def _require_nullable_chatgpt_account_email(out_path: Path) -> None:
