@@ -151,7 +151,22 @@ async fn initial_permission_cannot_substitute_another_valid_local_lease_binding(
     let changed = sqlx::query("UPDATE cognitive_objective_sender_events SET binding_json = ?, lease_sha256 = ?, event_sha256 = ? WHERE event_sequence = 1")
         .bind(forged).bind(lease.lease_sha256.as_str()).bind(digest.as_str()).execute(&mut *tx).await.unwrap();
     assert_eq!(changed.rows_affected(), 1);
-    sqlx::query(&trigger).execute(&mut *tx).await.unwrap();
+    sqlx::query(
+        "CREATE TRIGGER cognitive_objective_sender_events_no_update
+BEFORE UPDATE ON cognitive_objective_sender_events BEGIN
+    SELECT RAISE(ABORT, 'Objective sender observations are immutable');
+END;",
+    )
+    .execute(&mut *tx)
+    .await
+    .unwrap();
+    let restored: String = sqlx::query_scalar(
+        "SELECT sql FROM sqlite_schema WHERE name = 'cognitive_objective_sender_events_no_update'",
+    )
+    .fetch_one(&mut *tx)
+    .await
+    .unwrap();
+    assert_eq!(restored, trigger);
     tx.commit().await.unwrap();
     let sender = writer
         .objective_sender(checkpoint, Duration::from_secs(2))
