@@ -94,6 +94,7 @@ async fn protected_checkpoint_read_only_polling_preserves_current_and_rejects_wr
 mod crash {
     use super::*;
     use codex_hepta_paths::HeptaFleetRoot;
+    use pretty_assertions::assert_eq;
     use std::fs::File;
     use std::path::PathBuf;
     use std::process::Child;

@@ -769,7 +769,7 @@ async fn bounded_pages_recover_exact_owner_bytes_without_caller_memory_or_send_r
             .await
             .unwrap()
             .unwrap();
-        assert_eq!(looked_up, retained);
+        assert!(looked_up == retained);
         let recovered = sender.recover_pending(looked_up).await.unwrap();
         assert!(matches!(
             sender.mark_send_started(&recovered).await,
