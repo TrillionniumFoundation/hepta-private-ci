@@ -105,9 +105,13 @@ fn hash_text_field(hasher: &mut Sha256, text: &str) {
     hasher.update(text.as_bytes());
 }
 
-fn hash_transition(cursor: &NativeLoopCursorV1, next: &str, observed: &str) -> String {
+fn hash_transition(
+    cursor: &NativeLoopCursorV1,
+    next: &str,
+    observed: &NativeExternalObservationV1,
+) -> String {
     let mut hasher = Sha256::new();
-    // V2 domain makes the strengthened hash distinct from older proposals.
+    // V2 binds all observed causal data and frames variable-length fields.
     // No deployed V1 transition has been qualified or promoted.
     hasher.update(b"hepta.native-loop.external-v2\0");
     hash_text_field(&mut hasher, &cursor.binding.run_id);
@@ -116,7 +120,20 @@ fn hash_transition(cursor: &NativeLoopCursorV1, next: &str, observed: &str) -> S
     hasher.update(cursor.next_step.to_le_bytes());
     hash_text_field(&mut hasher, &cursor.state_digest);
     hash_text_field(&mut hasher, next);
-    hash_text_field(&mut hasher, observed);
+    let kind = match observed.kind {
+        NativeExternalKindV1::Model => "model",
+        NativeExternalKindV1::Tool => "tool",
+        NativeExternalKindV1::Wake => "wake",
+    };
+    hash_text_field(&mut hasher, kind);
+    if let Some(action) = &observed.action_digest {
+        hasher.update([1]);
+        hash_text_field(&mut hasher, action);
+    } else {
+        hasher.update([0]);
+    }
+    hash_text_field(&mut hasher, &observed.step_observation_digest);
+    hash_text_field(&mut hasher, &observed.observation_digest);
     format!("{:x}", hasher.finalize())
 }
 
@@ -263,7 +280,7 @@ impl NativeLoopCursorV1 {
         let mut next = self.clone();
         if observed.status == PortTerminal::Succeeded {
             next.state_digest =
-                hash_transition(self, continuation_digest, &observed.observation_digest);
+                hash_transition(self, continuation_digest, observed);
             next.next_step = self
                 .next_step
                 .checked_add(1)
