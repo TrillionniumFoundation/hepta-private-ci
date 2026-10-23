@@ -160,6 +160,31 @@ class QualifiedRustSourceBindingTests(unittest.TestCase):
             with self.subTest(source=source):
                 self.assertFalse(self.has(source))
 
+    def test_where_bounds_cannot_supply_inherent_method_bodies(self):
+        for bound in (
+            "Owner: Bound<{ fn misplaced() {} 0 }>",
+            "Owner: Bound<Nested<{ fn misplaced() {} 0 }>>",
+            "Owner: Bound<{ let _ = 3 > 2; fn misplaced() {} 0 }>",
+            "Owner: Bound<{ let _ = 1 < 2; fn misplaced() {} 0 }>",
+            "Owner: Bound<{ if 2 > 1 { fn misplaced() {} 1 } else { 0 } }>",
+            "[(); { fn misplaced() {} 0 }]: Sized",
+            "(fn(), [(); { fn misplaced() {} 0 }]): Sized",
+            "type_tokens!{ fn misplaced() {} }: Sized",
+        ):
+            with self.subTest(bound=bound):
+                source = "struct Owner; impl Owner where " + bound
+                self.assertFalse(self.has(source + " {}", "Owner::misplaced"))
+                self.assertFalse(self.has(source + " { fn run() {} }", "Owner::misplaced"))
+                self.assertTrue(self.has(source + " { fn run() {} }"))
+
+    def test_true_where_clause_keeps_exact_direct_owner_and_method(self):
+        source = "impl<T> Owner<T> where T: Store, Owner<T>: Bound<T> { fn run() {} }"
+        self.assertTrue(self.has(source))
+        self.assertTrue(self.has("mod exact { " + source + " }", "exact::Owner::run"))
+        self.assertFalse(self.has("mod other { " + source + " }", "exact::Owner::run"))
+        self.assertFalse(self.has(source, "Other::run"))
+        self.assertFalse(self.has(source, "Owner::missing"))
+
     def test_bare_symbol_observation_and_invalid_qualified_names(self):
         self.assertTrue(self.has("pub struct Owner;", "Owner"))
         for symbol in ("Owner::", "::Owner::run", "Owner / run", "Owner::run::"):

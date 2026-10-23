@@ -50,14 +50,19 @@ def _rust_qualified_symbols(source: str) -> set[str]:
     pairs = {"(": ")", "[": "]", "{": "}", "<": ">"}
 
     def close(start):
-        opening, depth = tokens[start], 1
-        for index in range(start + 1, len(tokens)):
-            if tokens[index] == opening:
-                depth += 1
-            elif tokens[index] == pairs[opening]:
-                depth -= 1
-                if not depth:
-                    return index
+        opening, index = tokens[start], start + 1
+        while index < len(tokens):
+            token = tokens[index]
+            if token == pairs[opening]:
+                return index
+            # Delimited const expressions and macro inputs are opaque even in
+            # generics: their comparison operators cannot close an outer `<`.
+            if token in {"(", "[", "{"} or (opening == "<" and token == "<"):
+                index = close(index) + 1
+            elif token in {")", "]", "}"}:
+                raise ValueError("mismatched Rust source group")
+            else:
+                index += 1
         raise ValueError("unbalanced Rust source item")
 
     found = set()
@@ -85,8 +90,14 @@ def _rust_qualified_symbols(source: str) -> set[str]:
                 if cursor < end and tokens[cursor] == "<":
                     cursor = close(cursor) + 1
                 if cursor < end and tokens[cursor] == "where":
-                    while cursor < end and tokens[cursor] not in {"{", ";"}:
-                        cursor += 1
+                    while cursor < end and tokens[cursor] != ";":
+                        token = tokens[cursor]
+                        if token in {"(", "[", "<"} or (token == "{" and tokens[cursor - 1] == "!"):
+                            cursor = close(cursor) + 1
+                        elif token == "{":
+                            break
+                        else:
+                            cursor += 1
                 if names and cursor < end and tokens[cursor] == "{":
                     closing = close(cursor)
                     items(cursor + 1, closing, modules, tuple(names))
