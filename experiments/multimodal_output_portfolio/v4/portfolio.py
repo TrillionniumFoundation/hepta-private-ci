@@ -34,22 +34,24 @@ class Config:
     sync_penalty: int = 5
 
     def __post_init__(self) -> None:
-        # The budget and horizon are exact integers. Floats/bools silently
-        # distort the action lattice, physical reserve and state transition.
-        integer_fields = (
-            self.horizon, self.max_units_per_step, self.unit_cost,
-            self.activation_cost, self.emission_cost_each, self.sync_penalty,
+        # These are *physical integer* budget units, not continuous portfolio
+        # weights. Reject bool/float and oversize inputs before optimization.
+        integer_limits = (
+            (self.horizon, 1, 3),
+            (self.max_units_per_step, 1, 4),
+            (self.unit_cost, 1, 1_000_000),
+            (self.activation_cost, 0, 1_000_000),
+            (self.emission_cost_each, 1, 1_000_000),
+            (self.sync_penalty, 0, 1_000_000),
         )
-        if (any(type(value) is not int for value in integer_fields)
+        if (any(type(value) is not int or not low <= value <= high
+                for value, low, high in integer_limits)
             or type(self.risk_aversion) not in (int, float)
-            or type(self.cost_shadow_price) not in (int, float)
-            or not 1 <= self.horizon <= 3
-            or not 1 <= self.max_units_per_step <= 4
-            or self.unit_cost <= 0 or self.activation_cost < 0
-            or self.emission_cost_each <= 0
             or not 0 <= self.risk_aversion <= 10
-            or not 0 <= self.cost_shadow_price < float("inf")
-            or self.sync_penalty < 0):
+            or not math.isfinite(self.risk_aversion)
+            or type(self.cost_shadow_price) not in (int, float)
+            or not 0 <= self.cost_shadow_price <= 1_000_000
+            or not math.isfinite(self.cost_shadow_price)):
             raise ValueError("unadmitted control profile")
 
     @property
@@ -66,7 +68,7 @@ class State:
     active_mask: int = 0
 
     def __post_init__(self) -> None:
-        if (len(self.levels) != 4
+        if (type(self.levels) is not tuple or len(self.levels) != 4
             or any(type(x) is not int or not 0 <= x <= MAX_LEVEL for x in self.levels)
             or type(self.remaining) is not int or self.remaining < 0
             or type(self.step) is not int or self.step < 0
@@ -80,7 +82,7 @@ class Allocation:
     units: tuple[int, int, int, int]
 
     def __post_init__(self) -> None:
-        if (len(self.units) != 4
+        if (type(self.units) is not tuple or len(self.units) != 4
             or any(type(x) is not int or x < 0 or x > 2 for x in self.units)):
             raise ValueError("invalid four-channel allocation")
 
@@ -178,22 +180,26 @@ def advance(state: State, action: Allocation, shock: int, cfg: Config) -> State:
 def conditional_ce(values: tuple[float, ...],
                    probabilities: tuple[float, ...], risk_aversion: float) -> float:
     if (not values or len(values) != len(probabilities)
-        or any(not math.isfinite(x) for x in values)
-        or any(not math.isfinite(p) or p < 0 for p in probabilities)
+        or any(type(x) not in (int, float) or not -1e12 <= x <= 1e12
+               or not math.isfinite(x) for x in values)
+        or any(type(p) not in (int, float) or not 0 <= p <= 1
+               or not math.isfinite(p) for p in probabilities)
         or not math.isclose(math.fsum(probabilities), 1.0,
                             rel_tol=0.0, abs_tol=1e-12)
-        or not math.isfinite(risk_aversion) or risk_aversion < 0):
+        or type(risk_aversion) not in (int, float)
+        or not 0 <= risk_aversion <= 10
+        or not math.isfinite(risk_aversion)):
         raise ValueError("invalid conditional risk law")
+    positive_mass = tuple((p, v) for p, v in zip(probabilities, values)
+                          if p > 0)
     if risk_aversion == 0:
-        return math.fsum(p * v for p, v in zip(probabilities, values))
-    # Stabilize only on the conditional support. A zero-probability low
-    # outlier is impossible, and must not force all supported terms to
-    # underflow to zero (or change the policy's value).
-    supported = [(p, v) for p, v in zip(probabilities, values) if p > 0]
-    anchor = min(v for _, v in supported)
+        return math.fsum(p * v for p, v in positive_mass)
+    # Zero-probability outcomes are outside the conditional support. Anchoring
+    # to one can underflow the whole lawful expectation and spuriously fail.
+    anchor = min(v for _, v in positive_mass)
     scaled = math.fsum(p * math.exp(-risk_aversion * (v - anchor))
-                       for p, v in supported)
-    if scaled <= 0:
+                       for p, v in positive_mass)
+    if scaled <= 0 or not math.isfinite(scaled):
         raise ValueError("unsupported numerical risk profile")
     return anchor - math.log(scaled) / risk_aversion
 
@@ -239,6 +245,10 @@ def covariance_for_action(state: State, action: Allocation,
 
 def execute(initial: State, cfg: Config, seed: int) -> dict:
     """Run a causal observed-feedback trajectory; no test truth is an input."""
+    # None would silently seed from nondeterministic host entropy. The trace
+    # must be replayable, and bool/float/string seeds are not stable integer IDs.
+    if type(seed) is not int or not 0 <= seed <= 2**63 - 1:
+        raise ValueError("invalid bounded replay seed")
     rng = random.Random(seed)
     policy = Controller(cfg)
     state = initial
