@@ -71,7 +71,9 @@ class State:
             or any(type(x) is not int or not 0 <= x <= MAX_LEVEL for x in self.levels)
             or type(self.remaining) is not int or self.remaining < 0
             or type(self.step) is not int or self.step < 0
-            or type(self.active_mask) is not int or not 0 <= self.active_mask < 16):
+            or type(self.active_mask) is not int or not 0 <= self.active_mask < 16
+            # The first decision cannot inherit an uncharged activation.
+            or (self.step == 0 and self.active_mask != 0)):
             raise ValueError("invalid public portfolio state")
 
 

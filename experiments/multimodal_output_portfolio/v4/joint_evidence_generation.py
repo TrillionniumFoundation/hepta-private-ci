@@ -37,7 +37,9 @@ class JointState:
     def __post_init__(self) -> None:
         if (type(self.p_zero) is not Fraction
             or not Fraction(0) <= self.p_zero <= Fraction(1)
-            or type(self.witness_seen) is not bool):
+            or type(self.witness_seen) is not bool
+            # A paid witness cannot precede the first recorded action.
+            or (self.generation.step == 0 and self.witness_seen)):
             raise ValueError("unsupported public belief-state")
 
 
