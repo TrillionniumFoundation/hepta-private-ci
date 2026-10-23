@@ -24,6 +24,7 @@ use http::StatusCode;
 use tokio::sync::oneshot;
 use tokio::sync::oneshot::error::TryRecvError;
 
+use super::ResponseEventSource;
 use super::map_response_events;
 use crate::model_provider_policy::ProviderAttemptOwner;
 use crate::model_provider_policy::bytes_sha256;
@@ -115,8 +116,10 @@ async fn completed_is_hidden_until_exact_terminal_is_acknowledged() {
     ]);
     let (owner, terminal_rx, acknowledge_tx) = gated_owner();
     let (mut stream, mut last_response) = map_response_events(
-        /*upstream_request_id*/ None,
-        events,
+        ResponseEventSource {
+            upstream_request_id: None,
+            events,
+        },
         test_telemetry(),
         InferenceTraceAttempt::disabled(),
         test_provider(),
@@ -167,8 +170,10 @@ async fn terminal_failure_suppresses_completed_and_last_response() {
     })]);
     let (owner, terminal_rx, acknowledge_tx) = gated_owner();
     let (mut stream, last_response) = map_response_events(
-        /*upstream_request_id*/ None,
-        events,
+        ResponseEventSource {
+            upstream_request_id: None,
+            events,
+        },
         test_telemetry(),
         InferenceTraceAttempt::disabled(),
         test_provider(),
@@ -204,8 +209,10 @@ async fn consumer_drop_records_partial_indeterminate_terminal() {
         .chain(futures::stream::pending());
     let (owner, terminal_rx, acknowledge_tx) = gated_owner();
     let (mut stream, _last_response) = map_response_events(
-        /*upstream_request_id*/ None,
-        events,
+        ResponseEventSource {
+            upstream_request_id: None,
+            events,
+        },
         test_telemetry(),
         InferenceTraceAttempt::disabled(),
         test_provider(),
@@ -240,8 +247,10 @@ async fn unauthorized_stream_error_records_rejected_before_downstream_error() {
     }))]);
     let (owner, terminal_rx, acknowledge_tx) = gated_owner();
     let (mut stream, _last_response) = map_response_events(
-        /*upstream_request_id*/ None,
-        events,
+        ResponseEventSource {
+            upstream_request_id: None,
+            events,
+        },
         test_telemetry(),
         InferenceTraceAttempt::disabled(),
         test_provider(),
@@ -269,8 +278,10 @@ async fn eof_records_partial_indeterminate_terminal() {
     let events = futures::stream::iter([Ok(ResponseEvent::OutputItemDone(item.clone()))]);
     let (owner, terminal_rx, acknowledge_tx) = gated_owner();
     let (mut stream, _last_response) = map_response_events(
-        /*upstream_request_id*/ None,
-        events,
+        ResponseEventSource {
+            upstream_request_id: None,
+            events,
+        },
         test_telemetry(),
         InferenceTraceAttempt::disabled(),
         test_provider(),
@@ -304,8 +315,10 @@ async fn terminal_acknowledgement_wait_is_not_consumer_timeout_driven() {
     })]);
     let (owner, terminal_rx, acknowledge_tx) = gated_owner();
     let (mut stream, _last_response) = map_response_events(
-        /*upstream_request_id*/ None,
-        events,
+        ResponseEventSource {
+            upstream_request_id: None,
+            events,
+        },
         test_telemetry(),
         InferenceTraceAttempt::disabled(),
         test_provider(),
