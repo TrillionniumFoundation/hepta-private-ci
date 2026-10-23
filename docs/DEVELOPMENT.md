@@ -727,6 +727,7 @@ terminal receipt, AuthBus rejection/refund or activation is provided. The
 ordinary Child route and its existing assertions remain unchanged. Existing PN4
 owners must next connect original funding and native lifetime ownership before
 any settlement or model acceptance can be qualified.
+
 Within the same PN0/PN4 boundary, AuthBus owns current settlement-issuer trust.
 `AuthBusAuthorityStore::settle` retains its registration parameter as an exact
 consistency hint, then reads the signed issuer/epoch from the durable registry
