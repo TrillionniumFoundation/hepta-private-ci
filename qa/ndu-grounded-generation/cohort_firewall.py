@@ -179,6 +179,41 @@ def verify_pinned_history_bytes(raw_documents, documents):
     return receipts
 
 
+def _open_pinned_image_directory(image_dir):
+    """Retain one image-directory FD without following any ancestor symlinks.
+
+    Resolve only lexical components: Path.resolve would follow the very links
+    this source-evidence boundary must refuse. Descriptor-relative children
+    stay bound to the opened directory even if its pathname is later replaced.
+    """
+    if not image_dir:
+        raise CohortContractError("candidate image bytes are required (--image-dir)")
+    if not (
+        hasattr(os, "O_NOFOLLOW")
+        and hasattr(os, "O_DIRECTORY")
+        and os.open in os.supports_dir_fd
+    ):
+        raise CohortContractError(
+            "secure no-follow image directory descriptors unavailable"
+        )
+    absolute = Path(os.path.abspath(os.fspath(image_dir)))
+    flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0)
+    fd = None
+    try:
+        fd = os.open(absolute.anchor, flags)
+        for component in absolute.parts[1:]:
+            next_fd = os.open(component, flags, dir_fd=fd)
+            os.close(fd)
+            fd = next_fd
+        if not stat.S_ISDIR(os.fstat(fd).st_mode):
+            raise CohortContractError("image-dir must be a directory")
+        return fd
+    except (OSError, ValueError, TypeError) as exc:
+        if fd is not None:
+            os.close(fd)
+        raise CohortContractError(
+            f"image-dir must be a no-follow directory path: {exc}"
+        ) from exc
 
 
 def verify_candidate_image_bytes(candidate, image_dir):
@@ -187,15 +222,17 @@ def verify_candidate_image_bytes(candidate, image_dir):
     Pathnames are not trusted as bytes: open each basename with O_NOFOLLOW,
     inspect the opened regular descriptor, and decode those exact bytes.
     This verifies JPEG/RGB/dHash identity, not entity or pretraining lineage.
-    The image directory and its ancestors must be operator-controlled.
+    Every directory component and the JPEG are opened without following links.
     """
-    if not image_dir:
-        raise CohortContractError("candidate image bytes are required (--image-dir)")
-    folder = Path(image_dir)
-    if folder.is_symlink() or not folder.is_dir():
-        raise CohortContractError("image-dir must be an existing non-symlink directory")
-    if not hasattr(os, "O_NOFOLLOW"):
-        raise CohortContractError("secure no-follow image descriptor unavailable")
+    directory_fd = _open_pinned_image_directory(image_dir)
+    try:
+        return _verify_candidate_image_bytes_from_fd(candidate, directory_fd)
+    finally:
+        os.close(directory_fd)
+
+
+def _verify_candidate_image_bytes_from_fd(candidate, directory_fd):
+    """Read all JPEG bytes from one already pinned directory descriptor."""
     from PIL import Image, ImageOps
     from cohort import canonical
 
@@ -226,7 +263,9 @@ def verify_candidate_image_bytes(candidate, image_dir):
                 raise CohortContractError(f"{origin}: missing/invalid image_bytes")
             flags = os.O_RDONLY | os.O_NOFOLLOW | getattr(os, "O_NONBLOCK", 0)
             try:
-                with os.fdopen(os.open(folder / name, flags), "rb") as opened:
+                with os.fdopen(
+                    os.open(name, flags, dir_fd=directory_fd), "rb"
+                ) as opened:
                     metadata = os.fstat(opened.fileno())
                     if not stat.S_ISREG(metadata.st_mode):
                         raise CohortContractError(f"{origin}: image must be a regular file")
