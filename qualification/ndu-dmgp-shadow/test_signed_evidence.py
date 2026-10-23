@@ -54,9 +54,12 @@ class SignedEvidenceTests(unittest.TestCase):
     def pair(self, *, arm="A5", episode="e1", window="future", at=101):
         identity = {"objective_digest": H, "generation": 1,
                     "episode": episode, "arm": arm, "window": window,
-                    "run_id": "run-0", "trace_digest": hashlib.sha256(
+                    "run_id": f"run:{episode}:{arm}:{window}",
+                    "trace_digest": hashlib.sha256(
                         f"{episode}:{arm}:{window}".encode()).hexdigest(),
-                    "input_digest": I, "artifact_digest": A}
+                    "input_digest": hashlib.sha256(
+                        f"input:{episode}".encode()).hexdigest(),
+                    "artifact_digest": A}
         observer = dict(identity, role="independent_observer", actor_id="actor",
                         observer_id="independent", evidence_kind="independent_observation",
                         observed_at=at, quality=.9, risk=.1,
@@ -163,6 +166,70 @@ class SignedEvidenceTests(unittest.TestCase):
             audit_trial_file(bad, self.public_obs, self.public_meter,
                              expected_objective=H, expected_evaluator_digest=P,
                              expected_device_digest=H, training_cutoff=100)
+
+
+    def test_physical_run_and_source_replay_across_episodes_rejected(self):
+        arms = ("A0", "A1", "A2", "A3", "A4", "A5")
+        first = [self.pair(arm=arm, episode="e1") for arm in arms]
+        repeated_run = [self.pair(arm=arm, episode="e2") for arm in arms]
+        stolen_run = first[0]["observer"]["payload"]["run_id"]
+        for role, key in (("observer", self.private_obs), ("meter", self.private_meter)):
+            payload = dict(repeated_run[0][role]["payload"], run_id=stolen_run)
+            repeated_run[0][role] = self.signature(payload, key)
+        with self.assertRaisesRegex(EvidenceRejected, "physical runs"):
+            self.audit(first + repeated_run)
+
+        reused_input = [self.pair(arm=arm, episode="e2") for arm in arms]
+        same_input = first[0]["observer"]["payload"]["input_digest"]
+        for row in reused_input:
+            for role, key in (("observer", self.private_obs), ("meter", self.private_meter)):
+                payload = dict(row[role]["payload"], input_digest=same_input)
+                row[role] = self.signature(payload, key)
+        with self.assertRaisesRegex(EvidenceRejected, "reused source input"):
+            self.audit(first + reused_input)
+
+    def audit(self, trials):
+        return audit_trial_file(
+            {"schema": "hepta.ndu-dmgp.signed-trials.v1", "trials": trials},
+            self.public_obs, self.public_meter,
+            expected_objective=H, expected_evaluator_digest=P,
+            expected_device_digest=H, training_cutoff=100,
+        )
+
+    def test_unmetered_or_temporally_impossible_host_work_rejected(self):
+        for field, value in (
+            ("peak_rss_bytes", 0),
+            ("energy_joules", 0),
+            ("decoder_ms", 500),
+            ("controller_ms", 500),
+            ("peak_rss_bytes", 10**1000),
+        ):
+            entry = self.pair()
+            payload = dict(entry["meter"]["payload"], **{field: value})
+            entry["meter"] = self.signature(payload, self.private_meter)
+            with self.subTest(field=field, value=str(value)[:20]):
+                with self.assertRaises(EvidenceRejected):
+                    self.verify(entry)
+
+    def test_simultaneous_heldout_uses_multiplicity_bound_not_unadjusted_se(self):
+        arms = ("A0", "A1", "A2", "A3", "A4", "A5")
+        trials = []
+        for i in range(32):
+            for arm in arms:
+                row = self.pair(arm=arm, episode=f"future-{i}")
+                quality = .99 if arm == "A5" else .01
+                obs = dict(row["observer"]["payload"], quality=quality)
+                row["observer"] = self.signature(obs, self.private_obs)
+                trials.append(row)
+        result = self.audit(trials)
+        self.assertFalse(result["production_blockers_closed"])
+        self.assertEqual(result["matched_episode_counts"]["future"], 32)
+        self.assertEqual(set(result["paired_future_quality"]), set(arms) - {"A5"})
+        for contrast in result["paired_future_quality"].values():
+            self.assertEqual(contrast["method"], "bonferroni-hoeffding")
+            self.assertFalse(contrast["independent_clusters_verified"])
+            self.assertGreater(contrast["quality_delta_familywise_lcb95"], 0)
+
 
 
 if __name__ == "__main__":
