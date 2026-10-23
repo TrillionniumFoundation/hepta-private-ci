@@ -25,6 +25,5 @@ def main():
             results['comparisons'][f'{scenario}/{mode}'] = value
     print(json.dumps(results, indent=2, sort_keys=True, allow_nan=False))
 
-
 if __name__ == '__main__':
     main()
