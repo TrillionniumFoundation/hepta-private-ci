@@ -140,3 +140,24 @@ build/resource pins as null and has no actual task/target/model observations;
 it MUST fail closed. The Python tests are synthetic contract tests, not
 real model training or physical acceptance. Model/host attestation, signed
 receipts, real 64/256/1024/4096 load, CI and P7 canary remain OPEN.
+
+## P0 physical source checkout guard (integrated from #3546)
+
+`source_guard.py` checks the **actual** three local Git source
+repositories against frozen HEAD commit/tree identities, rejects dirty
+tracked/staged/untracked/ignored files, hidden index skip flags, gitlinks
+without independent submodule pins, incorrect repository roots and unsafe
+`GIT_*` overrides. The reused source implementation originated in
+#3546 and its temporary-real-Git-repository adversarial tests now run
+in the same exact-head Python gate as A/B/C and Cell-split tests.
+
+Usage from a review-controlled verification machine:
+
+`python3 qualification/native-agent-comparison/source_guard.py --baseline qualification/native-agent-comparison/BASELINE.json --hepta /verified/hepta --runtime /verified/runtime --codex /verified/codex`
+
+Paths above are **examples**, not evidence those repositories or a
+target machine are present. Do not run against mutated build directories.
+This guard does not inspect binary reproducibility, external dependencies,
+signed model artifacts, true task results or any physical effects. In
+particular the current committed incomplete baseline must still exit
+nonzero even when all source checkouts match.
