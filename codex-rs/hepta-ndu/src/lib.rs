@@ -70,6 +70,7 @@ pub use group::MAX_GROUP_CANDIDATES_V1;
 pub use group::MAX_GROUP_CELLS_V1;
 pub use group::MAX_GROUP_ID_BYTES_V1;
 pub use group::MAX_GROUP_RUN_ID_BYTES_V1;
+pub use group::canonical_group_subject_binding_digest_v1;
 pub use group::decide_group_continuation_v1;
 pub use group::preflight_group_future_cost_v1;
 pub use model::AggregationOperator;

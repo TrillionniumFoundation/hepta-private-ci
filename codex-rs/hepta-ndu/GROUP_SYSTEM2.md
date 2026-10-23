@@ -11,7 +11,10 @@ Neuron Cells. It is deliberately deterministic and advisory.
 - 'GroupCellObservationV1' carries each Cell's head/action evidence and a
   bounded resource cost.
 - 'GroupDecisionTraceV1' binds the input, route, behavior, terminal outcome,
-  complete candidate-set digest, and every Cell observation.
+  complete candidate-set digest, and every Cell observation. Its required
+  'subject_binding_digest' seals the full owner tuple (subject class, group,
+  generation, objective, shared Encoder, utility profile and resource ceiling),
+  and stale or cross-owner traces now fail closed.
 - 'decide_group_continuation_v1' requires one legal explicit abstain candidate,
   rejects duplicate candidate IDs and duplicate Cell observations, rejects
   negative cost/risk/uncertainty, verifies subject/generation bindings,
@@ -59,6 +62,14 @@ current generation, deadline and independently controlled FinalUse boundaries.
 The old `decide_group_continuation_v1` API stays unchanged and is not silently
 promoted into this new preflight. No new scientific or production claims follow.
 
+The composed preflight validates the complete subject binding before comparing
+the supplied decision or its future-cost quote. Reusing a same-generation trace
+with another Group, Encoder, objective, utility profile, subject class, or ceiling
+therefore fails before quote admission. Deliberately rebinding a draft trace is
+not authorization: it requires a fresh advisory decision, changes the decision
+and preflight digests, and retains `AuthorityPosture::DENY_ALL`. The caller must
+still obtain independent execution authority and physical resource reservation.
+
 The candidate set is digest-bound and the trace digest is deterministic, so a
 future learned critic, Neural Differential Utility solver, or router can be
 introduced behind the same owner boundary and compared against this baseline.
@@ -83,3 +94,17 @@ This fixture is not a learned critic and does not mutate runtime state. The
 future learned critic and adaptive-depth model should be trained offline and
 promoted only after it beats this deterministic baseline on replayable utility,
 risk, resource, abstention, calibration, and OOD slices.
+
+## Full-owner trace binding (draft compatibility change)
+
+The old research trace accepted a same-subject/same-generation record when
+replayed against a different Group or Encoder. The decision digest included the
+new subject, but the incoming trace had no matching owner-tuple commitment to
+verify. The strengthened draft trace now requires an explicit canonical
+`subject_binding_digest`, checked before candidate selection. Its bytes are
+also part of the decision trace digest, so old draft receipts cannot silently
+qualify under the new schema.
+
+This is an owner-local consistency check, **not** an authenticated signature,
+real Encoder forward receipt, independent evidence observation, or runtime
+permission. Do not infer P0/P3 or production qualification from unit tests.

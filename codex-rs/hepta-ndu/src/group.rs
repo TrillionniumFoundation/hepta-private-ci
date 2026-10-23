@@ -57,6 +57,8 @@ pub struct GroupCellObservationV1 {
 pub struct GroupDecisionTraceV1 {
     pub run_id: String,
     pub subject_id: String,
+    /// Canonical full-owner binding; this digest is not an authorization signature.
+    pub subject_binding_digest: Digest32,
     pub input_digest: Digest32,
     pub generation: u64,
     pub route_digest: Digest32,
@@ -188,9 +190,7 @@ pub fn decide_group_continuation_v1(
         .try_fold(0_u64, |total, cell| total.checked_add(cell.cost_micros))
         == Some(subject.resource_ceiling_micros);
     let (selected_candidate, selected_net) = match best_non_abstain {
-        Some((candidate, net)) if !exhausted && net > 0 && net > abstain_net => {
-            (candidate, net)
-        }
+        Some((candidate, net)) if !exhausted && net > 0 && net > abstain_net => (candidate, net),
         _ => (abstain, abstain_net),
     };
 
@@ -300,6 +300,11 @@ fn validate_trace(
     }
     if trace.generation != subject.generation {
         return Err(GroupSystem2Error::TraceBindingMismatch("generation"));
+    }
+    if trace.subject_binding_digest != canonical_group_subject_binding_digest_v1(subject) {
+        return Err(GroupSystem2Error::TraceBindingMismatch(
+            "subject_binding_digest",
+        ));
     }
     for (name, digest) in [
         ("input_digest", trace.input_digest),
@@ -422,6 +427,20 @@ fn candidate_net_value(candidate: &GroupContinuationCandidateV1) -> Result<i64, 
     i64::try_from(net).map_err(|_| GroupSystem2Error::ArithmeticOverflow)
 }
 
+/// Digest over the complete owner tuple; never an attestation of external authority.
+pub fn canonical_group_subject_binding_digest_v1(subject: &GroupNduSubjectV1) -> Digest32 {
+    let mut bytes = b"hepta.ndu.group-subject-binding.v1\0".to_vec();
+    push_text_unchecked(&mut bytes, &subject.subject_id);
+    bytes.push(subject.subject_class.tag());
+    push_text_unchecked(&mut bytes, &subject.group_id);
+    bytes.extend_from_slice(&subject.generation.to_be_bytes());
+    bytes.extend_from_slice(subject.objective_digest.as_array());
+    bytes.extend_from_slice(subject.encoder_digest.as_array());
+    bytes.extend_from_slice(subject.utility_profile_digest.as_array());
+    bytes.extend_from_slice(&subject.resource_ceiling_micros.to_be_bytes());
+    Digest32::of_bytes(&bytes)
+}
+
 fn group_candidate_set_digest(
     candidates: &[GroupContinuationCandidateV1],
 ) -> Result<Digest32, GroupSystem2Error> {
@@ -454,6 +473,7 @@ fn decision_trace_digest(
     bytes.extend_from_slice(&subject.resource_ceiling_micros.to_be_bytes());
     push_text_unchecked(&mut bytes, &trace.run_id);
     push_text_unchecked(&mut bytes, &trace.subject_id);
+    bytes.extend_from_slice(trace.subject_binding_digest.as_array());
     bytes.extend_from_slice(trace.input_digest.as_array());
     bytes.extend_from_slice(&trace.generation.to_be_bytes());
     bytes.extend_from_slice(trace.route_digest.as_array());
