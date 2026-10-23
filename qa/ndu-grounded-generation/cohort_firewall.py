@@ -11,6 +11,7 @@ import json
 import math
 import os
 import stat
+import tempfile
 from pathlib import Path
 import re
 
@@ -222,6 +223,31 @@ def validate_output_destination(output, input_paths):
         raise CohortContractError("cannot verify safe output path") from error
 
 
+def write_receipt_atomically(dest, result, input_paths):
+    """Publish without following a late-swapped symlink or mutating a hardlink.
+
+    A shared hostile parent directory is not a security boundary: keep inputs
+    and receipts in separately trusted directories for a production run.
+    """
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    validate_output_destination(dest, input_paths)
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(
+                mode="w", encoding="utf-8", dir=dest.parent,
+                prefix=".hepta-ndu-firewall-", suffix=".tmp", delete=False) as handle:
+            temporary = Path(handle.name)
+            handle.write(json.dumps(result, sort_keys=True, indent=2) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        validate_output_destination(dest, input_paths)
+        # rename replaces the pathname itself, not the target of a late link.
+        os.replace(temporary, dest)
+    finally:
+        if temporary is not None and temporary.exists():
+            temporary.unlink()
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--candidate", required=True)
@@ -279,8 +305,13 @@ def main(argv=None):
     except (OSError, json.JSONDecodeError, CohortContractError) as exc:
         result = {"schema": "hepta.ndu-cohort-firewall.v2", "status": "fail",
                   "error": str(exc), "observable_image_identity_disjoint": False}
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_text(json.dumps(result, sort_keys=True, indent=2) + "\n")
+    try:
+        write_receipt_atomically(dest, result,
+                                 [Path(args.candidate), *(Path(item) for item in args.historical)])
+    except (CohortContractError, OSError) as error:
+        print(json.dumps({"status": "fail", "error": str(error),
+                          "output_written": False}, sort_keys=True))
+        return 2
     print(json.dumps({"status": result["status"], "output": str(dest)}, sort_keys=True))
     return 0 if result["status"] == "pass" else 2
 
