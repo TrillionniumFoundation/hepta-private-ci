@@ -60,6 +60,27 @@ jobs:
           cargo fmt --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-types -p codex-hepta-operations -- --check
 
+      - name: Require the fail-closed Cell regressions to be compiled
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-types -p codex-hepta-operations --lib -- --list \
+            2>&1 | tee "$RUNNER_TEMP/hepta-native-outbox-discovery.log"
+          # A green unrelated library test cannot substitute for security tests
+          # that disappeared from the test module or were filtered out.
+          for name in \
+            native_claim_obeys_durable_owner_retry_and_lease_budgets \
+            old_generation_or_foreign_outbox_claim_is_rejected \
+            rejected_native_result_cannot_hide_partial_output_or_contradict_retry_policy \
+            terminal_failure_may_reconcile_but_never_requests_fresh_native_retry
+          do
+            if ! grep -Fq -- "$name: test" "$RUNNER_TEMP/hepta-native-outbox-discovery.log"; then
+              echo "Required Cell regression is not registered: $name" >&2
+              exit 1
+            fi
+          done
+
       - name: Execute exact-source locked Rust unit tests
         shell: bash
         run: |
@@ -86,6 +107,8 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: hepta-native-outbox-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/hepta-native-outbox-tests.log
+          path: |
+            ${{ runner.temp }}/hepta-native-outbox-discovery.log
+            ${{ runner.temp }}/hepta-native-outbox-tests.log
           if-no-files-found: ignore
           retention-days: 14

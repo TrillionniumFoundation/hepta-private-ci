@@ -126,3 +126,80 @@ fn pure_cell_intent_requires_explicit_backend_binding() {
         Err(ExecutionContractError::MissingCodexBinding),
     );
 }
+
+#[test]
+fn rejected_native_result_cannot_hide_partial_output_or_contradict_retry_policy() {
+    let request = intent();
+    let mut rejected = successful_receipt(&request);
+    rejected.execution.status = ExecutionStatusV1::Rejected;
+    rejected.execution.recovery = RecoveryDispositionV1::RetryBeforeAdmission;
+    rejected.tool_outcome.terminal_observed = false;
+    rejected.tool_outcome.exit_code = None;
+    rejected.tool_outcome.stdout_digest = None;
+    rejected.tool_outcome.retryable = true;
+    rejected.execution.outcome_digest = Some(rejected.tool_outcome.outcome_digest());
+    assert_eq!(rejected.validate_against(&request), Ok(()));
+
+    for (stdout, stderr) in [
+        (Some(digest("partial stdout")), None),
+        (None, Some(digest("partial stderr"))),
+        (Some(digest("partial stdout")), Some(digest("partial stderr"))),
+    ] {
+        let mut forged = rejected.clone();
+        forged.tool_outcome.stdout_digest = stdout;
+        forged.tool_outcome.stderr_digest = stderr;
+        forged.execution.outcome_digest = Some(forged.tool_outcome.outcome_digest());
+        assert_eq!(
+            forged.validate_against(&request),
+            Err(ExecutionContractError::StatusOutcomeMismatch)
+        );
+    }
+
+    let mut no_retry = rejected.clone();
+    no_retry.tool_outcome.retryable = false;
+    no_retry.execution.outcome_digest = Some(no_retry.tool_outcome.outcome_digest());
+    assert_eq!(
+        no_retry.validate_against(&request),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+    let mut quarantined = rejected.clone();
+    quarantined.execution.recovery = RecoveryDispositionV1::Quarantine;
+    assert_eq!(
+        quarantined.validate_against(&request),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+
+    // Partial native output is admissible as indeterminate evidence, never as
+    // permission to start a new effect under a different operation identity.
+    let mut unknown = rejected;
+    unknown.execution.status = ExecutionStatusV1::Indeterminate;
+    unknown.execution.recovery = RecoveryDispositionV1::ReconcileSameOperation;
+    unknown.tool_outcome.stdout_digest = Some(digest("partial stdout"));
+    unknown.tool_outcome.retryable = false;
+    unknown.execution.outcome_digest = Some(unknown.tool_outcome.outcome_digest());
+    assert_eq!(unknown.validate_against(&request), Ok(()));
+    unknown.tool_outcome.retryable = true;
+    unknown.execution.outcome_digest = Some(unknown.tool_outcome.outcome_digest());
+    assert_eq!(
+        unknown.validate_against(&request),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+}
+
+#[test]
+fn terminal_failure_may_reconcile_but_never_requests_fresh_native_retry() {
+    let request = intent();
+    let mut failed = successful_receipt(&request);
+    failed.execution.status = ExecutionStatusV1::Failed;
+    failed.execution.recovery = RecoveryDispositionV1::ReconcileSameOperation;
+    failed.tool_outcome.exit_code = Some(9);
+    failed.execution.outcome_digest = Some(failed.tool_outcome.outcome_digest());
+    assert_eq!(failed.validate_against(&request), Ok(()));
+
+    failed.tool_outcome.retryable = true;
+    failed.execution.outcome_digest = Some(failed.tool_outcome.outcome_digest());
+    assert_eq!(
+        failed.validate_against(&request),
+        Err(ExecutionContractError::StatusOutcomeMismatch)
+    );
+}

@@ -196,3 +196,34 @@ fn terminal_receipt_must_match_exact_native_request_and_observation() {
         ))
     );
 }
+
+#[test]
+fn native_claim_obeys_durable_owner_retry_and_lease_budgets() {
+    let (intent, bytes) = fixture();
+    let mut exhausted = claim(&intent, bytes);
+    exhausted.attempts = MAX_DURABLE_OUTBOX_ATTEMPTS + 1;
+    assert_eq!(
+        check_native_cell_outbox_claim_v1(10_000, &intent, bytes, &exhausted),
+        Err(NativeCellBindingError::ForeignOrExpiredClaim)
+    );
+    exhausted.attempts = MAX_DURABLE_OUTBOX_ATTEMPTS;
+    assert_eq!(
+        check_native_cell_outbox_claim_v1(10_000, &intent, bytes, &exhausted),
+        Ok(())
+    );
+
+    // The durable lease cap applies even when the Cell has a longer deadline.
+    let mut long_cell = intent;
+    long_cell.cell.deadline_ms = 100_000;
+    let mut long_lease = claim(&long_cell, bytes);
+    long_lease.expires_at_unix_ms = 10_000 + MAX_DURABLE_LEASE_MS + 1;
+    assert_eq!(
+        check_native_cell_outbox_claim_v1(10_000, &long_cell, bytes, &long_lease),
+        Err(NativeCellBindingError::ForeignOrExpiredClaim)
+    );
+    long_lease.expires_at_unix_ms = 10_000 + MAX_DURABLE_LEASE_MS;
+    assert_eq!(
+        check_native_cell_outbox_claim_v1(10_000, &long_cell, bytes, &long_lease),
+        Ok(())
+    );
+}
