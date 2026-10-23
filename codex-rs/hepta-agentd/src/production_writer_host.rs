@@ -227,6 +227,7 @@ pub struct AgentdProductionWriterHost {
     writer: Arc<ProductionDurableWriter>,
     dispatchers: BTreeMap<String, ProductionFinalUseOutboxDispatcher>,
     grants: Option<Arc<GrantProviderWorker>>,
+    previous_notes: Option<Arc<codex_hepta_memory::ProductionNotesRecoveryTarget>>,
     // Private read-side clone of the exact recovered generation. Runtime
     // composition can reuse the same fenced owner without reopening by path or
     // exposing ProductionDurableWriter's crate-private raw-store handle.
@@ -332,6 +333,7 @@ impl AgentdProductionWriterHost {
             mutation: Some(mutation),
             dispatchers: BTreeMap::new(),
             grants: None,
+            previous_notes: None,
         })
     }
 
@@ -358,6 +360,7 @@ impl AgentdProductionWriterHost {
             writer: Arc::new(writer),
             dispatchers: BTreeMap::new(),
             grants: None,
+            previous_notes: None,
             cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(
                 runtime_store,
             )),
@@ -545,6 +548,29 @@ impl AgentdProductionWriterHost {
             .await?)
     }
 
+    /// Discover one older pending receipt through the already attached current
+    /// Notes observer. The original writer validates every retained binding.
+    /// This adds no dispatcher or grant provider and never changes the current
+    /// destination used for new Notes intents. Call on the trusted worker.
+    pub async fn attach_previous_notes_recovery(
+        mut self,
+        observer: &crate::AgentdNotesDocumentObserver,
+    ) -> Result<Self, AgentdError> {
+        if self.previous_notes.is_some()
+            || !self.has_destination(&observer.target().destination_id())
+        {
+            return Err(AgentdError::Invalid(
+                "previous Notes recovery requires its fixed current target and a single attachment"
+                    .into(),
+            ));
+        }
+        self.previous_notes = observer
+            .previous_recovery_target(self.writer.as_ref())
+            .await?
+            .map(Arc::new);
+        Ok(self)
+    }
+
     /// Bounded observer-only reconciliation. This never invokes target
     /// dispatch, so an acknowledgement-loss/restart cannot become a resend.
     pub async fn reconcile(&self, limit: usize) -> Result<usize, AgentdError> {
@@ -559,6 +585,12 @@ impl AgentdProductionWriterHost {
             ));
         }
         let mut total = 0_usize;
+        if let Some(previous) = &self.previous_notes {
+            total += self
+                .writer
+                .reconcile_target_batch(previous.as_ref(), limit)
+                .await?;
+        }
         for dispatcher in self.dispatchers.values() {
             if total >= limit {
                 break;

@@ -27,16 +27,26 @@ impl AgentdNotesDocumentObserver {
     /// Notes operation. A pending receipt, failed query or stale observation is
     /// never permission to overwrite the document or guess its revision.
     pub fn observe_document(&self) -> Result<NotesDocumentState, AgentdError> {
-        let mut nonce = [0_u8; 16];
-        std::fs::File::open("/dev/urandom")?.read_exact(&mut nonce)?;
-        let request_id = nonce
-            .iter()
-            .map(|byte| format!("{byte:02x}"))
-            .collect::<String>();
+        let request_id = fresh_nonce()?;
         self.inner
             .observe_document(&request_id)
             .map_err(AgentdError::Protocol)
     }
+
+    pub(crate) async fn previous_recovery_target(
+        &self,
+        writer: &codex_hepta_memory::ProductionDurableWriter,
+    ) -> Result<Option<codex_hepta_memory::ProductionNotesRecoveryTarget>, AgentdError> {
+        Ok(writer
+            .previous_notes_recovery_target(&self.inner, &fresh_nonce()?)
+            .await?)
+    }
+}
+
+fn fresh_nonce() -> Result<String, AgentdError> {
+    let mut nonce = [0_u8; 16];
+    std::fs::File::open("/dev/urandom")?.read_exact(&mut nonce)?;
+    Ok(nonce.iter().map(|byte| format!("{byte:02x}")).collect())
 }
 
 #[cfg(test)]

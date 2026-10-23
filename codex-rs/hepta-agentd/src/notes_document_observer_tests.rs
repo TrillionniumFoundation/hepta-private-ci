@@ -78,3 +78,57 @@ fn notes_objective_private_document_observer_correlates_fresh_nonce_and_never_wr
     peer.join().expect("document state peer")?;
     Ok(())
 }
+
+#[test]
+fn notes_objective_recovery_handle_retains_no_effect_descriptor_and_correlates_discovery()
+-> Result<(), Box<dyn Error>> {
+    use codex_hepta_memory::NotesPrivateChannel;
+    let (effect, mut application_effect) = UnixStream::pair()?;
+    let (recovery, application) = UnixDatagram::pair()?;
+    let channel = AgentdNotesChannel::from_private_channels(effect, recovery)?;
+    let recovery_only = channel.recovery_handle()?;
+    drop(channel);
+    application_effect.set_read_timeout(Some(Duration::from_secs(1)))?;
+    assert_eq!(
+        application_effect.read(&mut [0_u8; 1])?,
+        0,
+        "narrow capability must not retain the effect descriptor"
+    );
+    let request = json!({"schema_version":1,"action":"read_previous_receipt",
+        "target":{"session_instance":"1".repeat(32),"task_id":1,"incarnation":"2".repeat(32)},
+        "request_id":"3".repeat(32)});
+    let expected = request.clone();
+    let peer = std::thread::spawn(move || -> Result<(), String> {
+        application
+            .set_read_timeout(Some(Duration::from_secs(2)))
+            .map_err(|error| error.to_string())?;
+        let mut bytes = [0_u8; 8192];
+        let size = application
+            .recv(&mut bytes)
+            .map_err(|error| error.to_string())?;
+        assert_eq!(
+            serde_json::from_slice::<Value>(&bytes[..size]).unwrap(),
+            expected
+        );
+        let mut response = json!({"schema_version":1,"action":"previous_receipt",
+            "target":expected["target"],"request_id":"4".repeat(32),"pending_receipt":null});
+        application
+            .send(&serde_json::to_vec(&response).unwrap())
+            .map_err(|error| error.to_string())?;
+        response["request_id"] = expected["request_id"].clone();
+        application
+            .send(&serde_json::to_vec(&response).unwrap())
+            .map_err(|error| error.to_string())?;
+        Ok(())
+    });
+    let observed: Value =
+        serde_json::from_slice(&recovery_only.exchange(&serde_json::to_vec(&request)?)?)?;
+    assert_eq!(observed["request_id"], request["request_id"]);
+    assert!(
+        recovery_only
+            .exchange(br#"{"schema_version":1,"action":"replace_note"}"#)
+            .is_err()
+    );
+    peer.join().expect("previous receipt discovery peer")?;
+    Ok(())
+}

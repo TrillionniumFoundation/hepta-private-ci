@@ -42,6 +42,18 @@ the observation. Local edits after the read remain protected by the application'
 atomic predecessor comparison. The observer cannot dispatch effects, retire
 receipts or issue authority, and the old two-endpoint handoff remains unchanged.
 
+If the reopened application retains an older incarnation's pending receipt,
+call `host.attach_previous_notes_recovery(&observer)` on the trusted worker
+before installing the host. Nonce-bound discovery uses the same recovery
+endpoint. The original writer validates the exact prior operation, owner,
+payload, destination and applied receipt before attaching one restricted
+recovery target. Its descriptor has no effect endpoint, and it is excluded
+from dispatch and grant-provider registration. The original reconciler records
+terminal source evidence before issuing the existing exact retirement permit.
+Until retirement succeeds the current application continues to refuse new
+external edits. Missing or inconsistent source evidence never authorizes a
+reset, re-execution, or migration of the previous application identity.
+
 Before signing Objective ingress, the trusted compiler must prepare the exact
 original `OperationIntentV1` and payload with the installed writer. Its
 `operation_id` equals the stable Objective `run_id`. The source provenance
