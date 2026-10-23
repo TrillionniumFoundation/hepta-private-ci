@@ -1,6 +1,7 @@
 """Accounting tests construct tiny tensors only; no experimental datasets."""
 
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 
@@ -13,6 +14,22 @@ from model import JointModel
 
 BASE_STAGES = ("base_decoder", "base_pretrain", "base_validation")
 TRAIN_STAGES = (*BASE_STAGES, "search_train", "search_validation")
+
+
+class StageSumLedger(WorkLedger):
+    """Independent pre-cache reference: derive public totals from stage rows."""
+
+    @property
+    def consumed_units(self):
+        return sum(row["consumed_units"] for row in self._stages.values())
+
+    @property
+    def totals(self):
+        result = {"consumed_units": 0}
+        for row in self._stages.values():
+            for key, value in row.items():
+                result[key] = result.get(key, 0) + value
+        return result
 
 
 def shared_base():
@@ -32,6 +49,101 @@ def arm(name, source, *, useful_updates, update_units):
 
 
 class WorkLedgerTests(unittest.TestCase):
+    def assert_stage_totals(self, ledger):
+        snapshot = ledger.snapshot()
+        expected = {"consumed_units": 0}
+        for row in snapshot["stages"].values():
+            for key, value in row.items():
+                expected[key] = expected.get(key, 0) + value
+        self.assertEqual(ledger.totals, expected)
+        self.assertEqual(ledger.consumed_units, expected["consumed_units"])
+        copied = ledger.totals
+        copied["consumed_units"] = -1
+        self.assertEqual(ledger.totals, expected)
+
+    def test_incremental_cache_matches_stage_sum_reference_after_every_public_update(self):
+        actual, reference = WorkLedger("same", 100000), StageSumLedger("same", 100000)
+        source, source_reference = WorkLedger("source"), StageSumLedger("source")
+        for ledger in (source, source_reference):
+            ledger.charge_kernel("shared", "seed", macs=7, counts={"rows": 2})
+            ledger.record("shared_zero", units=0, observed=0)
+        for index in range(75):
+            for ledger in (actual, reference):
+                stage = "stage_" + str(index % 11)
+                if index % 2:
+                    ledger.record(stage, units=index, rows=1, optional=0)
+                else:
+                    ledger.charge_kernel(stage, "kernel_" + str(index % 3),
+                                         macs=index, exp_ops=1, counts={"rows": 2})
+            self.assert_stage_totals(actual)
+            self.assertEqual(actual.snapshot(), reference.snapshot())
+            self.assertEqual(actual.digest(), reference.digest())
+        actual.attribute_shared(source)
+        reference.attribute_shared(source_reference)
+        self.assert_stage_totals(actual)
+        self.assertEqual(actual.snapshot(), reference.snapshot())
+        self.assertEqual(actual.digest(), reference.digest())
+        self.assertEqual(source.digest(), source_reference.digest())
+        for ledger in (actual, reference):
+            before = ledger.snapshot()
+            for rejected in (lambda: ledger.record("new", units=100001, rows=1),
+                             lambda: ledger.record("new", units=0, rows=True),
+                             lambda: ledger.charge_kernel("new", "bad", macs=-1)):
+                with self.assertRaises(AccountingError):
+                    rejected()
+                self.assertEqual(ledger.snapshot(), before)
+        self.assertEqual(actual.snapshot(), reference.snapshot())
+
+    def test_late_counter_overflow_rolls_back_cache_and_stage(self):
+        ledger = WorkLedger("overflow")
+        ledger.record("first", units=0, limit=2**63 - 1)
+        before = ledger.snapshot()
+        with self.assertRaises(AccountingError):
+            ledger.record("other", units=0, new_counter=17, limit=1)
+        self.assertEqual(ledger.snapshot(), before)
+        self.assert_stage_totals(ledger)
+
+    def test_shared_global_overflow_and_hash_failure_do_not_commit_or_freeze(self):
+        target, source = WorkLedger("target"), WorkLedger("source")
+        target.record("target_only", units=0, limit=2**63 - 1)
+        source.record("source_only", units=0, new_counter=17, limit=1)
+        before, source_before = target.snapshot(), source.snapshot()
+        with self.assertRaises(AccountingError):
+            target.attribute_shared(source)
+        self.assertEqual(target.snapshot(), before)
+        self.assertEqual(source.snapshot(), source_before)
+        source.record("still_mutable", units=0, rows=1)
+        target, source = WorkLedger("target"), WorkLedger("source")
+        source.record("source", units=1, rows=1)
+        before = target.snapshot()
+        with patch.object(source, "digest", side_effect=RuntimeError("receipt hash failed")):
+            with self.assertRaisesRegex(RuntimeError, "receipt hash failed"):
+                target.attribute_shared(source)
+        self.assertEqual(target.snapshot(), before)
+        source.record("still_mutable", units=0, rows=1)
+        self.assert_stage_totals(target)
+
+    def test_empty_and_zero_shared_sources_preserve_default_total_and_identity(self):
+        for zero_stage in (False, True):
+            source, reference_source = WorkLedger("source"), StageSumLedger("source")
+            target, reference = WorkLedger("target"), StageSumLedger("target")
+            if zero_stage:
+                source.record("zero", units=0, rows=0)
+                reference_source.record("zero", units=0, rows=0)
+            expected_hash = source.digest()
+            target.attribute_shared(source)
+            reference.attribute_shared(reference_source)
+            self.assertEqual(target.snapshot(), reference.snapshot())
+            self.assertEqual(target.snapshot()["shared_sources"][0]["sha256"], expected_hash)
+            self.assertEqual(target.consumed_units, 0)
+            self.assert_stage_totals(target)
+            before = target.snapshot()
+            with self.assertRaises(AccountingError):
+                target.attribute_shared(source)
+            self.assertEqual(target.snapshot(), before)
+            with self.assertRaises(AccountingError):
+                source.record("frozen", units=0)
+
     def test_kernel_prices_and_snapshots_are_immutable(self):
         ledger = WorkLedger("arm", 1000)
         units = ledger.charge_kernel("search_train", "needed_kernel", macs=3, scalar_ops=2,

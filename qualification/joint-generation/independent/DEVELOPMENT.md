@@ -201,3 +201,31 @@ future measure this equals the old maximum. Raw samples and every forecast term
 are retained. This estimate cannot guarantee future execution times: actual full
 cost, unchanged caps, phase guards and nonzero failure rules remain decisive.
 No reward, head equation, threshold law, price, data or benefit gate changes.
+
+## Shared preparation and accounting after t7
+
+The preparation-forecast build exited 1 before completing any candidate. Its
+actual shared CPU was 9.077421498 seconds; the frozen admission guards correctly
+refused further work. No model selection, controller fit or formal test occurred.
+The raw failure remains retained. A single protocol-first cProfile diagnostic
+subsequently ran shared TRAIN/validation preparation once, including fresh native
+compilation, in 4.001949343 attributed CPU seconds. All three base files were
+byte-identical to t7. The slowdown did not reproduce; its cause remains unknown.
+This debug execution is separate development cost, not a qualification retry.
+
+The profile identified actual ledger-summary work. Incremental totals can avoid
+repeated stage summation while preserving counters, snapshots, prices, atomic
+budget rejection and source freezing. The first five-pair hand-array benchmark
+retained exact old/new model, Adam, loss and receipt equality. Pure ledger CPU
+had median paired saving 46.27%, but full 256-update CPU had median paired saving
+-2.76%, with three of five pairs slower. Its thread environment was unset and
+its twelve artificial prefix stages did not reproduce the real shared ledger.
+These limitations do not establish the cause of the negative timing or erase it.
+A single prospective corrected measurement fixes the normal one-thread profile
+and uses the retained seven-stage shared counters, without creating experiment
+data. It cannot establish whole-build benefit or historical slowdown repair.
+
+Before that diagnostic, all 151 independent source tests passed in 4.708 seconds
+(exit 0), including cache/stage-sum equivalence, late overflow rollback, shared
+digest-failure atomicity and completed-shared metadata persistence on failure.
+The test fold remains unopened; no cap, price, objective or benefit gate changes.

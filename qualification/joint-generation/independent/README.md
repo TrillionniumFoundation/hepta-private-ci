@@ -131,3 +131,18 @@ charged. Low state is reused from the same encoder evaluation, while static
 systems execute no gain head. Existing ridge artifacts remain loadable. This
 implementation is not acceptance evidence; all frozen content and dynamic gates
 still apply to the next actual build.
+
+The affine t6 build retained positive validation content/NDU and control/random
+contrasts, but failed the complete CPU-net control/static gate (-0.014405).
+The subsequent preparation-forecast t7 build exited 1 before any candidate:
+shared preparation consumed 9.077421498 CPU seconds, leaving no admissible
+training allocation under the unchanged cap. Neither result opened the test.
+A single separate diagnostic reproduced the same base model bytes in 4.002
+shared CPU seconds; it did not explain or replace t7's failure. Its raw profile
+is retained in `runs/codex-cloud-efficient-r2-shared-profile-d1/`.
+
+Incremental accounting totals are being checked as a local implementation
+optimization. The initial hand-built benchmark saved ledger CPU but its full
+256-update median was 2.76% slower. That negative result is retained; neither a
+microbenchmark nor positive training/validation contrasts establish independent
+first-goal acceptance. The r2 formal fold remains unconstructed and unopened.

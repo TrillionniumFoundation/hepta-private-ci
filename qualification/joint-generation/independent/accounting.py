@@ -78,6 +78,7 @@ class WorkLedger:
         self._total_cap = _count(total_cap, "total cap")
         self._prices = MappingProxyType(_prices(prices))
         self._stages = {}
+        self._totals = {"consumed_units": 0}
         self._kernels = {}
         self._active = []
         self._shared_tokens = set()
@@ -94,7 +95,7 @@ class WorkLedger:
 
     @property
     def consumed_units(self):
-        return sum(row["consumed_units"] for row in self._stages.values())
+        return self._totals["consumed_units"]
 
     @property
     def remaining_units(self):
@@ -102,11 +103,7 @@ class WorkLedger:
 
     @property
     def totals(self):
-        result = {"consumed_units": 0}
-        for row in self._stages.values():
-            for key, value in row.items():
-                result[key] = result.get(key, 0) + value
-        return result
+        return dict(self._totals)
 
     def _stage(self, stage):
         if stage is None:
@@ -141,9 +138,10 @@ class WorkLedger:
         after = {**before}
         totals = self.totals
         for key, value in clean.items():
-            _count(totals.get(key, 0) + value, "total " + key)
+            totals[key] = _count(totals.get(key, 0) + value, "total " + key)
             after[key] = _count(before.get(key, 0) + value, "accumulated " + key)
         self._stages[stage] = after
+        self._totals = totals
 
     def estimate_kernel(self, *, macs=0, scalar_ops=0, compare_ops=0, div_ops=0,
                         sqrt_ops=0, exp_ops=0, log_ops=0, tanh_ops=0,
@@ -265,15 +263,17 @@ class WorkLedger:
                 target = kernels.setdefault(stage, {}).setdefault(name, {})
                 for key, value in row.items():
                     target[key] = _count(target.get(key, 0) + value, "shared kernel " + key)
-        totals = {}
+        totals = {"consumed_units": 0}
         for row in merged.values():
             for key, value in row.items():
                 totals[key] = _count(totals.get(key, 0) + value, "shared total " + key)
+        source_identity = {"source": source.arm, "consumed_units": source.consumed_units,
+                           "sha256": source.digest()}
         source.freeze()
         self._stages, self._kernels = merged, kernels
+        self._totals = totals
         self._shared_tokens.add(source)
-        self._shared.append({"source": source.arm, "consumed_units": source.consumed_units,
-                             "sha256": source.digest()})
+        self._shared.append(source_identity)
 
     def snapshot(self):
         return {"schema": "hepta.independent-work-ledger.v1", "arm": self.arm,
