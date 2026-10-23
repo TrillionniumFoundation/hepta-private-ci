@@ -43,7 +43,6 @@ pub(super) async fn decode_request(
             .try_get::<String, _>("record_sha256")
             .map_err(unavailable)?
             != request_digest(&request.original, &binding_json).as_str()
-        || binding.fence.generation != request.origin.spawn_generation
     {
         return Err(corrupt());
     }
@@ -117,6 +116,17 @@ pub(super) async fn read_events(
     permit: ExistingPermit,
 ) -> Result<Vec<Event>, ObjectiveSenderError> {
     let key = request.identity.original_sha256.as_str();
+    // Process and local lease generations are independently authenticated at
+    // retention. The first permission must still carry exactly the original
+    // request's complete owner/lease binding, not a different historical fence.
+    let permit_binding: String = sqlx::query_scalar(
+        "SELECT binding_json FROM cognitive_objective_sender_requests WHERE request_sha256 = ?",
+    )
+    .bind(key)
+    .fetch_optional(&mut **tx)
+    .await
+    .map_err(unavailable)?
+    .ok_or_else(corrupt)?;
     let rows = sqlx::query("SELECT * FROM cognitive_objective_sender_events WHERE request_sha256 = ? ORDER BY event_sequence LIMIT 65")
         .bind(key).fetch_all(&mut **tx).await.map_err(unavailable)?;
     if rows.len() > MAX_EVENTS_PER_REQUEST as usize
@@ -160,7 +170,7 @@ pub(super) async fn read_events(
             || (sequence == 1
                 && (kind != EventKind::PermitIssued
                     || observation != "null"
-                    || binding.fence.generation != request.origin.spawn_generation))
+                    || binding_json != permit_binding))
             || (sequence > 1 && kind == EventKind::PermitIssued)
             || events
                 .iter()

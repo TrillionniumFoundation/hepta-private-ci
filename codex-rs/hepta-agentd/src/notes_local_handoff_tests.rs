@@ -349,6 +349,16 @@ async fn notes_local_handoff_real_clock_preserves_unknown_with_distinct_spawn_an
         Err(ObjectiveSenderError::IdentityMismatch)
     ));
     let ticket = sender.retain_before_send(request(&owner, 3)).await?;
+    let same_generation_recovered = sender.recover_pending(request(&owner, 3)).await?;
+    assert!(matches!(
+        sender.mark_send_started(&same_generation_recovered).await,
+        Err(ObjectiveSenderError::SendPermissionUnavailable)
+    ));
+    let page = sender
+        .retained_page(ObjectiveSenderRetainedPosition::Beginning)
+        .await?;
+    assert_eq!(page.requests.len(), 2);
+    assert!(page.next.is_none());
     sender.mark_send_started(&ticket).await?;
     assert!(matches!(
         sender.mark_send_started(&ticket).await,
@@ -358,6 +368,25 @@ async fn notes_local_handoff_real_clock_preserves_unknown_with_distinct_spawn_an
         writer.status("unknown-handoff").await?,
         LocalOutcomeState::Indeterminate
     );
+    // Verify the new request through the original complete recovery audit too.
+    let final_cut = peer.receipt.lock().unwrap().head.last_current.clone();
+    let layout = config.identity().layout.clone();
+    let authority = writer.authority().clone();
+    store.as_ref().clone().close().await;
+    drop(runtime);
+    drop(sender);
+    drop(writer);
+    drop(config);
+    drop(host);
+    let recovered = CognitiveStore::open_with_recovery(
+        &layout,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&final_cut),
+        &authority,
+        &ProcessVerifier { spawn: 3, local: 2 },
+    )
+    .await?;
+    assert_eq!(recovered.recovery_anchor().await?, final_cut);
+    recovered.close().await;
     // No dispatcher, target, issuer, replay or fabricated terminal result was invoked.
     Ok(())
 }

@@ -355,8 +355,10 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
     /// Objective request or ticket. This closes a startup lease transition using
     /// the same original transaction, live authority checks and checkpoint gate
     /// as sender retention. No request, event, send or cancellation permission
-    /// is created. Unknown/cancelled acknowledgement fences the whole owner;
-    /// a later readback can settle evidence but cannot reopen that generation.
+    /// is created. An uncertain or cancelled started checkpoint exchange fences
+    /// the whole owner; a later readback can settle evidence but cannot reopen
+    /// that generation. Cancellation before that exchange leaves any existing
+    /// Dirty state unacknowledged; it never supplies a clean receipt.
     pub async fn acknowledge_owner_cut(&self) -> Result<(), ObjectiveSenderError> {
         self.verify_process_binding()?;
         self.writer.verify_authority().await?;
