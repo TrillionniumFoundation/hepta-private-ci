@@ -156,6 +156,16 @@ class ComparatorTests(unittest.TestCase):
         self.assertEqual(result["scale_summaries"]["64"]["C"]["wall_p99_ms"], 150)
         self.assertFalse(result["independent_acceptance"])
 
+    def test_oversized_integer_is_bounded_not_unhandled_exception(self):
+        base, receipts = fixture()
+        receipts[0]["cpu_ms"] = 10**500
+        with self.assertRaisesRegex(ComparisonError, "CPU budget overrun"):
+            compare(base, receipts)
+        base, receipts = fixture()
+        receipts[0]["wall_ms"] = 10**500
+        with self.assertRaisesRegex(ComparisonError, "timeout exceeded"):
+            compare(base, receipts)
+
     def test_placeholder_baseline_fails_closed(self):
         base, receipts = fixture()
         base["tasks"] = []
