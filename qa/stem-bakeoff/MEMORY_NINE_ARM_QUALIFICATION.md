@@ -41,7 +41,8 @@ The gate accepts three separate JSON inputs:
    evaluator labels. Exact top-level fields: schema, common, cases, arms, policy.
    Each case contains only an immutable query/snapshot digest, its disjoint
    source-ancestor roots, a complete eligible source-ID inventory, a cohort
-   family/window and a non-answer evaluation category. It contains no answer,
+   family/window. Task categories belong to the separate blind judgments;
+   the worker-facing plan contains no answer,
    gold support IDs or reviewer output. Full raw source and source-root
    membership must be authenticated by a separate ledger owner.
 2. The **observations** array: exactly one source-bound original Reader outcome
@@ -126,7 +127,7 @@ Source digests and test names alone cannot supply these proofs.
 
 ## Remaining blockers (no false closure)
 
-1. Physically produce B's full-corpus dense+BM25+rERanker and C's independently
+1. Physically produce B's full-corpus dense+BM25+reranker and C's independently
    checked Graph-RAG evidence on the SAME cases as A and D, preserving source
    and context budgets.
 2. Physically execute original shared Encoder, trained E/F Heads and selected
