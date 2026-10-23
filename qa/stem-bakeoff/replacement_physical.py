@@ -46,12 +46,13 @@ def verify_checkpoint(name: str, spec: dict, snapshot: Path) -> dict:
     weights = snapshot / spec["weight_file"]
     if not weights.exists() or weights.stat().st_size == 0 or file_sha256(weights) != spec["weight_sha256"]:
         raise ValueError("physical checkpoint weight bytes differ from pinned SHA256")
-    if not (snapshot / "config.json").is_file():
-        raise ValueError("physical checkpoint missing config.json")
+    # No root config.json on the publisher's pinned typed-decisions revision.
+    # Laya requires a complete typed-policy artifact, not a generic HF
+    # AutoModel root config; Encoder-only arms have a different schema.
     if name.startswith("laya_"):
         required = ("rl_agent_config.json", "encoder/config.json", "tokenizer/tokenizer.json")
     else:
-        required = ("tokenizer.json",)
+        required = ("config.json", "tokenizer.json")
     for rel in required:
         item = snapshot / rel
         if item.is_symlink() or not item.is_file() or not item.stat().st_size:
