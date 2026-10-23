@@ -814,9 +814,14 @@ non-inherited full-control allow ACE for that owner; SYSTEM and Administrators
 are not implicit exceptions. A descriptor observation is not a private-owner
 capability. Cross-target compilation is not native execution: all five actual
 Windows controls, including the OWNER|DACL Group/SACL-offset readback assumption,
-remain pending until the existing workflow records them. Its nine required
+remain pending until the existing workflow records them. Its original nine required
 receipts retain the original three deletion tests, four mechanism probes and
-eight ACL controls. Owner support and power-loss qualification remain false.
+eight ACL controls. A tenth mandatory receipt exercises a `cfg(test)`-only
+all-access-restriction token candidate, with explicit read/execute and write
+capabilities against the same broad parent-delete counterexample. This is a
+primitive experiment: native results remain pending, existing failed regressions
+are retained, and candidate success grants no production sandbox admission.
+Owner support and power-loss qualification remain false.
 
 The following are implementation slices of that same PN0 item, not a second
 roadmap. C2b interface names below are proposed contracts, not implemented APIs.
