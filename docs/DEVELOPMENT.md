@@ -697,12 +697,15 @@ checks and Cargo smoke steps remain required. This infrastructure budget does
 not change runtime or model resource limits; successful exact-source CI is
 still needed to establish that the cold builds complete.
 
-The Intel macOS Bazel test job uses that same bounded 90-minute CI budget;
-other targets retain 60 minutes. Job 120216507102 reached its confirmed
+Both macOS Bazel test jobs use that same bounded 90-minute CI budget;
+the Linux targets retain 60 minutes. Job 120216507102 reached its confirmed
 60-minute limit with 63 of 588 tests completed and build actions still running.
 Its original test selection, per-test limits, failure handling and cache rules
 remain unchanged. The cancelled run is incomplete evidence, and completion on
-the successor still requires exact-source hosted CI.
+the successor still requires exact-source hosted CI. ARM macOS job
+120216507167 also exhausted 60 minutes with only 168 of 588 tests complete.
+Its five failing test targets are independent blockers, with their original
+assertions retained; the additional job time does not resolve those failures.
 
 ## 20. First vertical learning slice
 
