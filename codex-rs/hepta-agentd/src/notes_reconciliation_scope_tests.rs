@@ -90,11 +90,32 @@ async fn finite_notes_reconciler_excludes_device_grants_dispatch_and_observation
     );
     assert_eq!(host.destination_count(), 2);
     let rejected = prepare_device(&host, &owner, "device:scope:rejected", /*sequence*/ 1).await?;
+    // Match the original actual_reconciler fixture's real five-second claim.
+    // Without it dispatch creates the production thirty-second claim, whose
+    // original retry eligibility cannot occur within this test's ten seconds.
+    // This uses the owner API; neither the real clock nor its backoff changes.
+    host.writer()
+        .claim_dispatch_lease(&rejected, /*lease_duration_ms*/ 5_000)
+        .await?;
     issuer.invalid_first_signature.store(true, Ordering::SeqCst);
+    let first_dispatch = host
+        .dispatch_to_with_grant_provider(HOS2_DESTINATION_V1, rejected.clone())
+        .await;
     assert!(
-        host.dispatch_to_with_grant_provider(HOS2_DESTINATION_V1, rejected.clone())
-            .await
-            .is_err()
+        matches!(
+            &first_dispatch,
+            Err(AgentdError::ProductionWriter(
+                codex_hepta_memory::ProductionWriterError::FinalUse(
+                    codex_hepta_contracts::FinalUseError::InvalidSignature
+                )
+            ))
+        ),
+        "expected original FinalUse signature rejection, got {first_dispatch:?}"
+    );
+    assert_eq!(issuer.requests.load(Ordering::SeqCst), 1);
+    assert_eq!(
+        host.writer().status(&rejected.occurrence_key).await?,
+        LocalOutcomeState::Indeterminate
     );
     assert_eq!(primary_device.installs.load(Ordering::SeqCst), 0);
     // Prove the non-Notes row is actually eligible for the original all-target
