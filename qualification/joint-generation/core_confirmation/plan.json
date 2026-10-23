@@ -1,0 +1,190 @@
+{
+  "schema": "hepta.joint-generation.efficient-budget.v2",
+  "experiment_id": "core-c1",
+  "scope": "prospective independent physical-source synthetic text/image confirmation of content-control and NDU contributions under complete budgets",
+  "r1_policy": "sealed forever; no retraining, tuning or re-evaluation against r1 held-out",
+  "model_seeds": [
+    11,
+    23,
+    47
+  ],
+  "systems": [
+    "supervised",
+    "anchor",
+    "additive",
+    "ndu"
+  ],
+  "hidden": 32,
+  "batch_size": 64,
+  "pretrain_steps": 500,
+  "decoder_steps": 300,
+  "learning_rates": [
+    0.001,
+    0.003,
+    0.01
+  ],
+  "rho": 1.5,
+  "ce_anchor": 0.2,
+  "compute_price": 0.02,
+  "operator_units_per_system": 12000000000,
+  "cpu_seconds_per_system": 10.0,
+  "cpu_guard_seconds": 0.03,
+  "candidate_execution_order": "nine seed/LR candidate rounds per arm; four systems rotated by round index; only active per-system CPU attributed",
+  "selected_validation_order": "three seed rounds; four systems rotated by seed index; full only, no critic or random policy",
+  "formal_measurement_order": "three seed rounds; four systems rotated by seed index; exactly one full service measurement per arm/seed",
+  "cpu_failure_policy": "after each phase, preserve partial ledger and stop further work immediately if actual complete per-system CPU exceeds the unchanged cap",
+  "diagnostic_telemetry": "phase CPU/wall/main-thread CPU, rusage, process threads, bounded GC pauses and read-only container counter deltas; once-per-build same-process NumPy/loaded BLAS version, path/hash, actual threadpool, affinity, trace/profile and configured thread environment captured inside charged shared CPU; observations do not establish a process-level cause",
+  "training_allocation_profile": "lazy Adam zero moments only at each parameter's first update; unchanged gradient, clipping, arithmetic, RNG and per-parameter clocks",
+  "adaptation_kernel": "folded-mixed-encoder-v1",
+  "adaptation_kernel_scope": "candidate and selected residual training only; shared decoder300 and dense pretraining500 unchanged; existing idx/mask RNG and np.where expanded inputs preserved; each low row checked for exact 2x2 replicas; current encoder folded each step and low gradient expanded back to original 202-dimensional parameters; same real-arithmetic equations with changed floating reduction order",
+  "adaptation_work_accounting": "pre-draw admission uses a componentwise work envelope, never charged as actual work; actual mask geometry determines the complete atomic step charge; actual objective-step ledger deltas determine CPU/unit forecasts; complete seed rounds admitted before any residual RNG draws",
+  "adaptation_optimizer": "native-adam-v1",
+  "adaptation_optimizer_scope": "candidate and selected residual content updates only, all adaptation arms; shared decoder300 and dense pretraining500 retain original NumPy Adam; original gradients, Python norm and clipping, per-parameter clocks and Python power denominators; one no-fast-math, contraction-disabled C pass preserves original element expressions",
+  "adaptation_optimizer_accounting": "unchanged complete per-step operator inventory; explicit initial parameter/existing-moment finite scans charged and reserved per candidate; allocation, binding, compilation and every dispatch remain inside actual complete CPU; bitwise handmade update equivalence required, no a priori speed or content benefit",
+  "decoder_observation_profile": "one locally prepared actual decoded observation/reward per always-full validation; selected scoring shares normal reward/metrics and independently decodes the actual corrupted decoder; no global or output cache",
+  "control_reserve_units": 0,
+  "control_reserve_cpu_seconds": 0.0,
+  "tail_reserve_units": 100000000,
+  "tail_reserve_cpu_seconds": 0.3,
+  "candidate_validation_reserve_units": 120000000,
+  "candidate_validation_reserve_cpu_seconds": 0.06,
+  "refinement_policy": "selected-residual-v1",
+  "refinement_cpu_unit_safety": 2.0,
+  "refinement_service_cpu_multiplier": 1.0,
+  "preparation_forecast": "median-plus-one-observed-excess-v1",
+  "preparation_forecast_rule": "retain three actual TRAIN preparation CPU samples per seed/mode; for m future preparations estimate m*median(samples)+max(0,max(samples)-median(samples)); same formula for every arm, not a charge or cap guarantee; all actual work remains fully charged",
+  "refinement": "after one global LR selection per arm, retain selected optimizer/RNG state; use affordable complete three-seed rounds without validation stopping or reselection; actual objective-step units forecast CPU and componentwise worst inventory admits before any draw",
+  "runtime_backend": "native",
+  "runtime_batch_size": 64,
+  "output_sampling_profile": "batched inverse-CDF with preserved (n,2) draw ordering, exact left-edge/clamp behavior and batch pixel quantization; actual per-request PNG, hash, base64 and JSON unchanged; declared sampling arithmetic and all-CDF comparisons charged",
+  "runtime_profile": "fixed batches up to 64 requests; complete batch CPU and latency retained; not a single-request latency qualification",
+  "inference_cap_full_equivalents": 2.0,
+  "calibration_rows": 72,
+  "calibration_per_class": 6,
+  "calibration_salt": "hepta-core-c1-calibration-v1",
+  "calibration_repeats": 3,
+  "service_horizon": 100000,
+  "build_cpu_attribution": "entire arm build CPU including full common preparation, all three seeds and all nine LR/seed candidates, divided by three selected model seeds; each selected seed serves H=100000 requests",
+  "static_modes": [
+    "full"
+  ],
+  "data_profile": {
+    "schema": "hepta.joint-generation.independent-data.v1",
+    "seeds": {
+      "train": 304797655,
+      "validation": 3249316160,
+      "test": 227603836
+    },
+    "sources_per_class": {
+      "train": 16,
+      "validation": 6,
+      "test": 6
+    },
+    "instructions_per_source": 8,
+    "variants": 2,
+    "vertical_shifts": [
+      -1,
+      0,
+      1
+    ],
+    "foreground_range": [
+      0.75,
+      1.0
+    ],
+    "background_range": [
+      0.0,
+      0.04
+    ],
+    "noise_range": [
+      0.03,
+      0.12
+    ]
+  },
+  "selection": "global LR maximizes mean three-seed validation always-full decoded task utility minus the frozen TRAIN full-service CPU price; no mode/critic/threshold search and no residual LR reselection",
+  "calibration": "same deterministic TRAIN-only source/target-balanced 72-row matching as r2; three full-service repeats per seed, nine measures/648 real outputs; frozen reference is median per-row full CPU of first shared seed",
+  "no_padding": "only applied objective kernels execute; cached fixed decoder objective and one encoder forward per update; cheaper systems spend savings on extra updates up to the same build caps; static baselines do not fit or run an unused critic",
+  "bootstrap_replicates": 2000,
+  "bootstrap_seed": 77431,
+  "cpu_bootstrap_clusters": "fixed 64-request runtime batch cohorts crossed with model seed; raw content metrics retain physical-source clusters; CPU claims are conditional on this frozen batching profile",
+  "maximum_greedy_drop": 0.02,
+  "benefit_gate": {
+    "content_comparisons": [
+      "additive-anchor",
+      "ndu-additive"
+    ],
+    "content_modes": "always_full",
+    "content_metrics": [
+      "task_utility",
+      "joint_success",
+      "cpu_net_utility"
+    ],
+    "content_ci95_lower_gt": 0.0,
+    "cpu_net_includes_amortized_build": true,
+    "strict_build_and_inference_budget_violations": 0,
+    "decoder_corruption_must_reduce_score": true,
+    "all_seeds_reported": true,
+    "combination": "intersection-union: all six declared lower bounds >0; no alternative endpoint can substitute",
+    "greedy_retention_transitions": [
+      "anchor-to-additive",
+      "additive-to-ndu"
+    ],
+    "supervised_reference_is_qualification_gate": false
+  },
+  "validation_readiness": "all A-H and N-A validation means positive for task_utility, joint_success and complete cpu_net_utility; per-seed greedy drop <=0.02 for these two transitions; all12 corruption score drops >0; no complete build or service violations; otherwise nonzero and no test construction",
+  "test_policy": "one exclusive experiment-wide core-c1 marker and one exclusive selected-run marker before first test construction; never remove after failure; no output-directory bypass, favorable identical-source wave repeat or post-test threshold/source change",
+  "retained_artifact_bound_bytes": 33554432,
+  "qualification_scope": "core-content-ndu-confirmation",
+  "retained_prior_results": "r1 sealed forever; every r2 failure and original dynamic gate remains unchanged; r2 validation/OOF/timing R&D informed this design but does not qualify core-c1",
+  "protocol_status": "draft-for-independent-review; no freeze or execution authorized by this file",
+  "protocol_path": "core_confirmation/PROTOCOL.md",
+  "protocol_sha256": "e2f80a15ce42dc27964b5182ae4265f52271c71c9b1c3beac7938215af3bd15f",
+  "data_seed_derivation": {
+    "salt": "hepta-joint-generation-core-c1-v1",
+    "message": "UTF8(salt + U+0000 + literal split name)",
+    "formula": "1 + int.from_bytes(SHA256(message).digest()[0:8], 'big') % (2**32 - 1)",
+    "digests": {
+      "train": "7c80e65b95a9f17af5e04716902f80c0164f2decab17e5acc7c7b7314408409a",
+      "validation": "e0021162e1aa8fdc6eba46fee9551809d5533f0e31a41db86c1b256f3704e457",
+      "test": "ae942c045efcc976c020a43b5979c77f3b58e135d0053d1e08289edc760c32bc"
+    },
+    "policy": "derive once before constructing any split; do not reject or choose seeds using data or scores"
+  },
+  "reporting": {
+    "metrics": [
+      "task_utility",
+      "joint_success",
+      "greedy_joint_success",
+      "consistency",
+      "pixel_mse",
+      "net_utility",
+      "runtime_net_utility",
+      "runtime_cpu_net_utility",
+      "cpu_net_utility"
+    ],
+    "absolute_all_arm_ci95": true,
+    "paired_report_comparisons": [
+      "additive-anchor",
+      "ndu-additive",
+      "ndu-supervised"
+    ],
+    "cpu_ci_scope": "fixed 64-request batch cohorts crossed with model seed, conditional on the single frozen execution wave; not a CI over common wave CPU shocks",
+    "non_cpu_ci_clusters": "physical_source",
+    "test_rows": "retain all input bytes or exactly reconstructible frozen tensor artifact, physical IDs/hashes, every seed and per-row metric/cost arrays",
+    "research_cost_policy": "separately retain cumulative R&D, failures, diagnostics, evaluation and administrative costs; never budget credits or matched lifetime-cost claim"
+  },
+  "claims_excluded": [
+    "general NDU/FBSDE",
+    "natural images",
+    "greedy accuracy improvement without evidence",
+    "synchronous AV generation",
+    "long interactions",
+    "production or device qualification",
+    "hardware FLOP or energy equality",
+    "adaptive routing qualification",
+    "NDU superiority to full-strength supervised CE",
+    "simultaneous 95-percent coverage of every marginal CI",
+    "CPU benefit across unmeasured execution waves"
+  ],
+  "execution_environment": "saved hepta-private-ci Codex cloud environment only; no dot workspace, user computer, Actions or denial/quota bypass",
+  "artifact_binding": "pre-build committed source/protocol/plan/compiler policy; during billed build bind binary/actual environment/train-validation manifests/selected inference artifacts/complete costs; verify actual protocol bytes at training and test preflight; optimizer source/profile and update receipts, no serialized moment/RNG resume claim"
+}
