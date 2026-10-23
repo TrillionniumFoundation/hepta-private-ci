@@ -101,9 +101,11 @@ fn fixed_pending_stage_is_preserved_and_fences_all_later_use() {
     let temp = tempfile::tempdir().unwrap();
     load_or_create_cap_sids(temp.path()).unwrap();
     let before = fs::read(cap_sid_file(temp.path())).unwrap();
+    let plan = filesystem_capability_plan(temp.path(), temp.path(), &[], &[]).unwrap();
     let stage = temp.path().join("cap_sid.v2.stage");
     fs::write(&stage, b"interrupted update").unwrap();
     assert!(load_or_create_cap_sids(temp.path()).is_err());
+    assert!(validate_filesystem_capability_plan(temp.path(), &plan).is_err());
     assert_eq!(fs::read(stage).unwrap(), b"interrupted update");
     assert_eq!(fs::read(cap_sid_file(temp.path())).unwrap(), before);
 }
@@ -151,5 +153,40 @@ fn registry_and_checkpoint_links_are_refused_without_mutating_targets() {
         assert!(load_or_create_cap_sids(temp.path()).is_err());
         assert_eq!(fs::read_link(&path).unwrap(), target);
         assert_eq!(fs::read(target).unwrap(), before);
+    }
+}
+
+#[test]
+fn stale_wire_generation_and_missing_registry_cannot_validate() {
+    let temp = tempfile::tempdir().unwrap();
+    let cwd = temp.path().join("cwd");
+    let plan =
+        filesystem_capability_plan(temp.path(), &cwd, std::slice::from_ref(&cwd), &[]).unwrap();
+    validate_filesystem_capability_plan(temp.path(), &plan).unwrap();
+    let other = tempfile::tempdir().unwrap();
+    assert!(validate_filesystem_capability_plan(other.path(), &plan).is_err());
+    assert!(!cap_sid_file(other.path()).exists());
+    load_or_create_cap_sids(other.path()).unwrap();
+    assert!(validate_filesystem_capability_plan(other.path(), &plan).is_err());
+}
+
+#[test]
+fn every_legacy_namespace_object_is_preserved_without_v2_birth() {
+    for relative in [
+        ".sandbox/setup_marker.json",
+        ".sandbox/sandbox_users.json",
+        ".sandbox-secrets/sandbox_users.json",
+    ] {
+        let temp = tempfile::tempdir().unwrap();
+        let old = temp.path().join(relative);
+        fs::create_dir_all(old.parent().unwrap()).unwrap();
+        fs::write(&old, b"existing-valid-or-uncertain-state").unwrap();
+        assert!(load_or_create_cap_sids(temp.path()).is_err());
+        assert_eq!(
+            fs::read(&old).unwrap(),
+            b"existing-valid-or-uncertain-state"
+        );
+        assert!(!cap_sid_file(temp.path()).exists());
+        assert!(!temp.path().join("cap_sid.v2.lock").exists());
     }
 }

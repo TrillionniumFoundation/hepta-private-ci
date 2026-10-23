@@ -98,6 +98,8 @@ mod workspace_acl;
 mod deny_read_resolver;
 
 #[cfg(any(target_os = "windows", test))]
+mod capability_plan;
+#[cfg(any(target_os = "windows", test))]
 mod capability_registry;
 
 #[cfg(target_os = "windows")]
@@ -163,7 +165,15 @@ pub use acl::path_write_aces_need_refresh;
 #[cfg(target_os = "windows")]
 pub use audit::apply_world_writable_scan_and_denies_for_permissions;
 #[cfg(target_os = "windows")]
+pub use cap::filesystem_capability_plan;
+#[cfg(target_os = "windows")]
 pub use cap::load_or_create_cap_sids;
+#[cfg(target_os = "windows")]
+pub use cap::require_fresh_filesystem_namespace;
+#[cfg(target_os = "windows")]
+pub use cap::validate_filesystem_capability_plan;
+#[cfg(target_os = "windows")]
+pub use cap::validate_filesystem_capability_plan_roots;
 #[cfg(target_os = "windows")]
 pub use cap::workspace_cap_sid_for_cwd;
 #[cfg(target_os = "windows")]
@@ -172,6 +182,10 @@ pub use cap::workspace_write_cap_sid_for_root;
 pub use cap::workspace_write_root_contains_path;
 #[cfg(target_os = "windows")]
 pub use cap::workspace_write_root_overlaps_path;
+#[cfg(target_os = "windows")]
+pub use capability_plan::FilesystemCapabilityPlan;
+#[cfg(target_os = "windows")]
+pub use capability_plan::FilesystemCapabilityRole;
 #[cfg(target_os = "windows")]
 pub use conpty::ConptyInstance;
 #[cfg(target_os = "windows")]

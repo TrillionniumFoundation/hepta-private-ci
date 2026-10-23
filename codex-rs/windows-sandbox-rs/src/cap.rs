@@ -1,3 +1,4 @@
+use crate::capability_plan::FilesystemCapabilityPlan;
 pub use crate::capability_registry::CapSids;
 use crate::capability_registry::MAX_REGISTERED_ROOTS;
 use crate::capability_registry::REGISTRY_VERSION;
@@ -90,12 +91,25 @@ fn read_caps(path: &Path, checkpoint: &mut fs::File) -> Result<CapSids> {
     Ok(caps)
 }
 
+/// Rejects every old namespace object; never migrates or deletes prior state.
+pub fn require_fresh_filesystem_namespace(codex_home: &Path) -> Result<()> {
+    for relative in [
+        "cap_sid",
+        ".sandbox/setup_marker.json",
+        ".sandbox/sandbox_users.json",
+        ".sandbox-secrets/sandbox_users.json",
+    ] {
+        require_absent(&codex_home.join(relative))
+            .context("legacy setup requires a fresh namespace; refusing migration or reset")?;
+    }
+    Ok(())
+}
+
 fn with_registry<T>(
     codex_home: &Path,
     change: impl FnOnce(&mut CapSids) -> Result<T>,
 ) -> Result<T> {
-    require_absent(&codex_home.join("cap_sid"))
-        .context("legacy registry requires a fresh namespace")?;
+    require_fresh_filesystem_namespace(codex_home)?;
     fs::create_dir_all(codex_home)?;
     let path = cap_sid_file(codex_home);
     let stage_path = codex_home.join("cap_sid.v2.stage");
@@ -226,6 +240,87 @@ pub fn workspace_write_cap_sid_for_root(
     } else {
         writable_root_cap_sid_for_path(codex_home, root)
     }
+}
+
+/// Declares bounded roles from actual registry identities; this is not ACL readiness.
+pub fn filesystem_capability_plan(
+    codex_home: &Path,
+    cwd: &Path,
+    read: &[PathBuf],
+    write: &[PathBuf],
+) -> Result<FilesystemCapabilityPlan> {
+    let cwd = canonical_path_key(cwd);
+    with_registry(codex_home, |caps| {
+        let read: Vec<_> = read
+            .iter()
+            .map(|root| canonical_path_key(root))
+            .collect::<std::collections::BTreeSet<_>>()
+            .into_iter()
+            .collect();
+        let write: Vec<_> = write
+            .iter()
+            .map(|root| canonical_path_key(root))
+            .collect::<std::collections::BTreeSet<_>>()
+            .into_iter()
+            .collect();
+        for root in &write {
+            register_root(
+                caps,
+                root.clone(),
+                if root == &cwd {
+                    RootRole::Workspace
+                } else {
+                    RootRole::Additional
+                },
+            )?;
+        }
+        FilesystemCapabilityPlan::declare(caps, cwd, read, write)
+    })
+}
+
+/// Read-only validation cannot create a registry or a prepared ACL context.
+pub fn validate_filesystem_capability_plan(
+    codex_home: &Path,
+    plan: &FilesystemCapabilityPlan,
+) -> Result<()> {
+    require_fresh_filesystem_namespace(codex_home)?;
+    require_absent(&codex_home.join("cap_sid.v2.stage"))?;
+    let checkpoint_path = codex_home.join("cap_sid.v2.lock");
+    require_plain_file(&checkpoint_path)?;
+    let mut checkpoint = fs::OpenOptions::new()
+        .read(true)
+        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE)
+        .open(checkpoint_path)?;
+    checkpoint
+        .try_lock_shared()
+        .context("capability registry is busy or uncertain")?;
+    require_absent(&codex_home.join("cap_sid.v2.stage"))?;
+    let caps = read_caps(&cap_sid_file(codex_home), &mut checkpoint)?;
+    plan.validate_registry(&caps)
+}
+
+/// Checks the complete declared root set against the actual setup request.
+pub fn validate_filesystem_capability_plan_roots(
+    codex_home: &Path,
+    cwd: &Path,
+    read: &[PathBuf],
+    write: &[PathBuf],
+    plan: &FilesystemCapabilityPlan,
+) -> Result<()> {
+    validate_filesystem_capability_plan(codex_home, plan)?;
+    let keys = |roots: &[PathBuf]| {
+        roots
+            .iter()
+            .map(|root| canonical_path_key(root))
+            .collect::<std::collections::BTreeSet<_>>()
+            .into_iter()
+            .collect::<Vec<_>>()
+    };
+    ensure!(
+        plan.matches_roots(&canonical_path_key(cwd), &keys(read), &keys(write)),
+        "filesystem role roots differ from setup request"
+    );
+    Ok(())
 }
 
 pub fn workspace_write_root_contains_path(root: &Path, path: &Path) -> bool {
