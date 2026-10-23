@@ -713,6 +713,21 @@ the successor still requires exact-source hosted CI. ARM macOS job
 Its five failing test targets are independent blockers, with their original
 assertions retained; the additional job time does not resolve those failures.
 
+The PN0 successor addresses those 23 reported method failures: six artifact
+reader, eleven memory, two Bao HTTPS, two state recovery and two Seatbelt
+projection cases. It canonicalizes already-created trusted fixture roots and
+stabilizes direct metadata carveout ordering without removing paths, permissions,
+symlink rejection or any original assertion. Linux runs under a temporary-parent
+alias retain the original red results, then pass the learning package's 108 tests
+(with its one existing ignored test), the state/protocol packages' 516 tests
+(with no skips), and the thirteen selected memory and two Bao tests. Four
+additional protocol fixture failures discovered by that alias run were separately
+reproduced against the original production source and repaired without changing
+their assertions. These results bind each component's tested source; no combined
+native rerun or macOS success is claimed. Exact-source hosted CI remains required,
+and Windows' explicit Unix-only durable owner/FinalUse backends and directory-sync
+failures remain separate blockers. The job-time increase does not close them.
+
 The next PN0 DNS dependency candidate retains the original Rama alpha.4
 resolver trait and constructor signatures, and vendors its published `rama-dns`
 source, archive provenance and licenses.
