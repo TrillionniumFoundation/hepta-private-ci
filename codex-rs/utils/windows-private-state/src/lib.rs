@@ -6,3 +6,6 @@
 
 #[cfg(windows)]
 pub mod mechanism;
+
+#[cfg(windows)]
+pub mod security;
