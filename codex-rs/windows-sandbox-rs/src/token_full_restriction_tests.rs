@@ -6,19 +6,30 @@ use pretty_assertions::assert_eq;
 use std::io::ErrorKind;
 use std::mem::offset_of;
 use std::mem::size_of;
+use std::os::windows::io::AsRawHandle;
 use std::os::windows::io::FromRawHandle;
 use std::os::windows::io::OwnedHandle;
 use std::path::Path;
+use windows_sys::Win32::Foundation::ERROR_ACCESS_DENIED;
 use windows_sys::Win32::Foundation::ERROR_INSUFFICIENT_BUFFER;
+use windows_sys::Win32::Security::Authorization::GetSecurityInfo;
 use windows_sys::Win32::Security::LUID_AND_ATTRIBUTES;
+use windows_sys::Win32::Security::OWNER_SECURITY_INFORMATION;
 use windows_sys::Win32::Security::SE_PRIVILEGE_ENABLED;
 use windows_sys::Win32::Security::TOKEN_GROUPS;
 use windows_sys::Win32::Security::TOKEN_INFORMATION_CLASS;
 use windows_sys::Win32::Security::TokenPrivileges;
 use windows_sys::Win32::Storage::FileSystem::CreateFileW;
+use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_BACKUP_SEMANTICS;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_EXECUTE;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::OPEN_EXISTING;
+use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
+use windows_sys::Win32::Storage::FileSystem::WRITE_DAC;
+use windows_sys::Win32::Storage::FileSystem::WRITE_OWNER;
 
 // Kernel query memory is aligned, bounded, initialized and never escapes as a pointer.
 struct TokenBytes {
@@ -241,6 +252,58 @@ fn open_execute(path: &Path) -> std::io::Result<OwnedHandle> {
     Ok(unsafe { OwnedHandle::from_raw_handle(raw as *mut c_void) })
 }
 
+fn open_fixture_security(path: &Path, access: u32) -> std::io::Result<OwnedHandle> {
+    // SAFETY: this fresh owned fixture stays live; directories need backup semantics.
+    let raw = unsafe {
+        CreateFileW(
+            to_wide(path).as_ptr(),
+            access,
+            FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+            std::ptr::null(),
+            OPEN_EXISTING,
+            FILE_FLAG_BACKUP_SEMANTICS,
+            /*htemplatefile*/ 0,
+        )
+    };
+    if raw == 0 || raw == windows_sys::Win32::Foundation::INVALID_HANDLE_VALUE {
+        return Err(std::io::Error::last_os_error());
+    }
+    // SAFETY: successful CreateFileW transferred this one live handle.
+    Ok(unsafe { OwnedHandle::from_raw_handle(raw as *mut c_void) })
+}
+
+fn require_fixture_owned_by_user(path: &Path, user: &[u8]) -> Result<()> {
+    let held = open_fixture_security(path, READ_CONTROL)?;
+    let mut owner = std::ptr::null_mut();
+    let mut descriptor = std::ptr::null_mut();
+    // SAFETY: the held fixture and output pointers remain live; no ACL or owner is changed.
+    let code = unsafe {
+        GetSecurityInfo(
+            held.as_raw_handle() as HANDLE,
+            SE_FILE_OBJECT,
+            OWNER_SECURITY_INFORMATION,
+            &mut owner,
+            std::ptr::null_mut(),
+            std::ptr::null_mut(),
+            std::ptr::null_mut(),
+            &mut descriptor,
+        )
+    };
+    let same_owner = code == ERROR_SUCCESS
+        && !owner.is_null()
+        && unsafe {
+            // SAFETY: success returned a SID in descriptor; user is a validated queried SID.
+            EqualSid(owner, user.as_ptr().cast_mut().cast()) != 0
+        };
+    if !descriptor.is_null() {
+        // SAFETY: GetSecurityInfo allocated this descriptor; all borrowed SID use ended.
+        unsafe { LocalFree(descriptor as HLOCAL) };
+    }
+    anyhow::ensure!(code == ERROR_SUCCESS, "fixture owner query failed: {code}");
+    anyhow::ensure!(same_owner, "fresh fixture owner is not the base TokenUser");
+    Ok(())
+}
+
 #[test]
 fn native_full_restriction_preserves_reads_and_refuses_parent_delete() -> Result<()> {
     let fixture = tempfile::tempdir()?;
@@ -283,6 +346,19 @@ fn native_full_restriction_preserves_reads_and_refuses_parent_delete() -> Result
     }
     std::fs::write(outside.join("keep.txt"), "outside")?;
     std::fs::create_dir(outside.join("keep-dir"))?;
+    let security_targets = [
+        outside.clone(),
+        outside.join("keep.txt"),
+        outside.join("keep-dir"),
+    ];
+    let queried_user = TokenBytes::query(base.0, TokenUser)?;
+    let user = queried_user.sid(queried_user.value::<SID_AND_ATTRIBUTES>(/*offset*/ 0)?.Sid)?;
+    for path in &security_targets {
+        require_fixture_owned_by_user(path, &user)?;
+        // Unrestricted positive controls prove each exact request is valid on this fixture.
+        drop(open_fixture_security(path, WRITE_DAC)?);
+        drop(open_fixture_security(path, WRITE_OWNER)?);
+    }
     let no_read = candidate(&base, &[&cap_a, &cap_b])?;
     {
         let _impersonation = unsafe { Impersonation::enter(no_read.0)? };
@@ -340,6 +416,29 @@ fn native_full_restriction_preserves_reads_and_refuses_parent_delete() -> Result
         .map(|result| result.err().map(|error| error.kind()));
         assert_eq!(refused, [Some(ErrorKind::PermissionDenied); 4]);
         assert_eq!(outside_read, "outside");
+    }
+    {
+        let _impersonation = unsafe { Impersonation::enter(full.0)? };
+        for path in &security_targets {
+            let refused = [
+                open_fixture_security(path, WRITE_DAC),
+                open_fixture_security(path, WRITE_OWNER),
+            ]
+            .map(|result| {
+                result
+                    .err()
+                    .map(|error| (error.kind(), error.raw_os_error()))
+            });
+            assert_eq!(
+                refused,
+                [Some((
+                    ErrorKind::PermissionDenied,
+                    Some(ERROR_ACCESS_DENIED as i32)
+                )); 2],
+                "outside fixture security access: {}",
+                path.display()
+            );
+        }
     }
     assert_eq!(
         (
