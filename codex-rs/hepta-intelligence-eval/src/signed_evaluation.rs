@@ -64,7 +64,7 @@ pub fn evaluation_signing_payload_v2(
 }
 
 #[cfg(any(test, feature = "trusted-inprocess-eval"))]
-pub fn decide_with_signed_evidence_v1(
+pub(crate) fn decide_with_signed_evidence_v1(
     bundle: IndependentEvaluationBundleV1,
     evidence: &SignedEvaluationEvidenceV1,
     verifier: &LearningEvidenceVerifierV1,
@@ -82,7 +82,7 @@ pub fn decide_with_signed_evidence_v1(
     })
 }
 
-pub fn decide_with_signed_evidence_v2(
+pub(crate) fn decide_with_signed_evidence_v2(
     bundle: IndependentEvaluationBundleV1,
     roles: Vec<MetricRoleContractV2>,
     evidence: &SignedEvaluationEvidenceV1,

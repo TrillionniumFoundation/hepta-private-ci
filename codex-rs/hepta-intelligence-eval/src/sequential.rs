@@ -22,7 +22,6 @@ const MAX_STEPS: usize = 65_536;
 mod model;
 #[path = "sequential_step.rs"]
 mod step;
-
 pub use model::DepthSupport;
 pub use model::FiniteHorizonEstimand;
 pub use model::SequentialError;
@@ -42,6 +41,9 @@ use step::insufficient;
 use step::multiply;
 use step::multiply_nonzero;
 use step::validate_step;
+
+#[path = "sequential_confidence.rs"]
+mod confidence;
 
 /// Computes backward DR and per-decision IS with nearest/ties-even Q32 arithmetic.
 ///

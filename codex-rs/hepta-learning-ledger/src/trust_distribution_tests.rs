@@ -65,6 +65,10 @@ fn signed_distribution(
     signed
 }
 
+fn resign(root_key: &SigningKey, signed: &mut SignedLearningTrustDistributionV1) {
+    signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
+}
+
 #[test]
 fn trust_distribution_rotation_is_monotonic_and_content_addressed() {
     let root_key = SigningKey::from_bytes(&[99; 32]);
@@ -103,6 +107,9 @@ fn trust_distribution_rotation_is_monotonic_and_content_addressed() {
     assert_eq!(first.generation(), 1);
     assert_eq!(second.generation(), 2);
     assert_eq!(first.root_id(), &id("root"));
+    assert_eq!(first.expires_at(), 90);
+    assert!(first.is_current_at(90));
+    assert!(!first.is_current_at(91));
     assert_ne!(first.root_digest(), Digest32::ZERO);
     assert_ne!(first.distribution_digest(), second.distribution_digest());
     assert_eq!(second.verifier().authority_epoch(), 8);
@@ -195,12 +202,51 @@ fn trust_distribution_rejects_retroactive_effective_time() {
         },
     );
     signed.issued_at = 15;
-    signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
+    resign(&root_key, &mut signed);
 
     assert_eq!(
         activate_learning_trust(&root, signed, None, 50).unwrap_err(),
         LearningTrustDistributionError::DistributionWindow
     );
+}
+
+#[test]
+fn trust_distribution_cannot_outlive_scheduled_root_revocation() {
+    let root_key = SigningKey::from_bytes(&[99; 32]);
+    let mut root = root(&root_key);
+    root.revoked_at = Some(60);
+
+    let mut crossing = signed_distribution(
+        &root_key,
+        LearningTrustDistributionV1 {
+            distribution_id: id("trust-crossing-root-revocation"),
+            generation: 1,
+            effective_at: 20,
+            trust: trust(7, 1),
+        },
+    );
+    crossing.expires_at = 60;
+    resign(&root_key, &mut crossing);
+    assert_eq!(
+        activate_learning_trust(&root, crossing, None, 50).unwrap_err(),
+        LearningTrustDistributionError::DistributionWindow
+    );
+
+    let mut bounded = signed_distribution(
+        &root_key,
+        LearningTrustDistributionV1 {
+            distribution_id: id("trust-bounded-by-root-revocation"),
+            generation: 1,
+            effective_at: 20,
+            trust: trust(7, 1),
+        },
+    );
+    bounded.expires_at = 59;
+    resign(&root_key, &mut bounded);
+    let activated = activate_learning_trust(&root, bounded, None, 50).unwrap();
+    assert_eq!(activated.expires_at(), 59);
+    assert!(activated.is_current_at(59));
+    assert!(!activated.is_current_at(60));
 }
 
 #[test]

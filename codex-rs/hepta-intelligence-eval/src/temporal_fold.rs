@@ -244,6 +244,9 @@ pub fn fit_temporal_fold(
     })
 }
 
+#[path = "temporal_cross_fit.rs"]
+mod cross_fit;
+
 #[cfg(test)]
 #[path = "temporal_fold_tests.rs"]
 mod tests;

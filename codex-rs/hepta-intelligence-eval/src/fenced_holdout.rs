@@ -281,6 +281,10 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
         }
     }
 
+    pub(crate) const fn binding(&self) -> Digest32 {
+        self.binding
+    }
+
     #[must_use]
     pub fn fence(&self) -> &HoldoutWriterFenceV1 {
         &self.fence
