@@ -7,8 +7,10 @@ The cloud branch now also contains whole-turn speech aggregation, the owner
 coordinator and the correlated Pipecat JSONL media link. All 41 adapter tests
 pass, including actual byte-stream and loopback socket regression cases. Peers,
 owner authorization and model/device behavior in those tests are synthetic.
-Production owner registration, actual models and physical audio acceptance
-remain outstanding; no credentials/grants are invented by this adapter.
+Agentd now registers an optional text caller under its real AuthBus owner;
+its process qualification is described in `../hepta-agentd/HMI.md`. Actual
+production-user activation, sourced-audio registration, models and physical
+audio acceptance remain outstanding. No credentials/grants are invented.
 Exact commands, exit codes and retained failures are in the cloud workspace at
 `/workspace/pipecat-hmi-audit-20261023/`; the companion Pipecat checkout contains
 `rust/docs/HMI_CLOUD_AUDIT_20261023.md` with the complete acceptance boundaries.
@@ -156,7 +158,9 @@ Permission revocation also closes capture. Failed/unknown presentation retains
 its original scope and initiates retirement. None of these outcomes undoes
 already-committed tool effects. Current production owner registration and live
 authority/observation ports still need the actual deployment's owner hook and
-configuration; this checkout contains no accepted production HMI caller.
+configuration for audio. The optional Agentd text caller now uses its actual
+`AgentdState`, live `TextTrust`, canonical signed ingress and original Core
+client ID. It creates no audio authority or substitute observation receipt.
 
 The example has an eight-command input channel, at most one submission task and
 a 32-item nonblocking output queue. Output queue exhaustion fences the session.
