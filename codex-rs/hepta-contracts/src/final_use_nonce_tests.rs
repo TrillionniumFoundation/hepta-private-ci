@@ -285,3 +285,109 @@ fn external_frontier_rejects_lost_or_changed_claims_on_repeated_reopen() {
         }
     }
 }
+
+#[test]
+fn multi_record_recovery_rejects_loss_duplicates_and_corruption_but_preserves_nonce_set_order() {
+    for case in [
+        "drop_first",
+        "drop_middle",
+        "drop_last",
+        "duplicate_middle",
+        "zero_tail",
+        "changed_tail",
+        "partial_tail",
+        "reordered",
+    ] {
+        let (authority, signed, directory) = nonce_fixture().unwrap();
+        drop(authority);
+        let head = FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        };
+        let frontier = Arc::new(MemoryFinalUseFrontier(Mutex::new(
+            FinalUseFrontier::for_initial_head(&head).unwrap(),
+        )));
+        let open = || {
+            FinalUseAuthority::open_state_dir_with_trust(
+                directory.path(),
+                "security-owner".into(),
+                SigningKey::from_bytes(&[47; 32]).verifying_key().to_bytes(),
+                head.clone(),
+                Arc::new(FixedClock(2_000)),
+                frontier.clone(),
+            )
+        };
+        let authority = open().unwrap();
+        let mut grants = Vec::new();
+        for nonce in [5, 6, 7] {
+            let mut grant = signed.grant.clone();
+            grant.nonce = [nonce; 32];
+            let signed = SignedFinalUseGrant {
+                signature: SigningKey::from_bytes(&[47; 32])
+                    .sign(&grant.signing_bytes().unwrap())
+                    .to_bytes()
+                    .to_vec(),
+                grant,
+            };
+            drop(authority.claim(&signed, &signed.grant.binding).unwrap());
+            grants.push(signed);
+        }
+        drop(authority);
+        let path = directory.path().join("authority.claims");
+        let mut bytes = std::fs::read(&path).unwrap();
+        assert_eq!(bytes.len(), 120);
+        let expected = match case {
+            "drop_first" | "drop_middle" | "drop_last" => {
+                let offset = match case {
+                    "drop_first" => 0,
+                    "drop_middle" => 40,
+                    "drop_last" => 80,
+                    _ => unreachable!(),
+                };
+                bytes.drain(offset..offset + 40);
+                Some(FinalUseError::AntiRollbackViolation)
+            }
+            "duplicate_middle" => {
+                bytes.extend_from_within(40..80);
+                Some(FinalUseError::InvalidTrust)
+            }
+            "zero_tail" => {
+                bytes[88..120].fill(0);
+                Some(FinalUseError::InvalidTrust)
+            }
+            "changed_tail" => {
+                bytes[100] ^= 1;
+                Some(FinalUseError::AntiRollbackViolation)
+            }
+            "partial_tail" => {
+                bytes.truncate(119);
+                Some(FinalUseError::InvalidTrust)
+            }
+            "reordered" => {
+                // Frames encode an epoch and nonce set, not sequence numbers.
+                // Reordering cannot refund a nonce or change the trusted set.
+                bytes.rotate_left(40);
+                None
+            }
+            _ => unreachable!(),
+        };
+        std::fs::write(&path, &bytes).unwrap();
+        for _ in 0..2 {
+            match expected {
+                Some(error) => assert_eq!(open().unwrap_err(), error, "{case}"),
+                None => {
+                    let recovered = open().unwrap();
+                    for grant in &grants {
+                        assert_eq!(
+                            recovered.claim(grant, &grant.grant.binding).unwrap_err(),
+                            FinalUseError::AlreadyClaimed,
+                            "{case}"
+                        );
+                    }
+                }
+            }
+            assert_eq!(std::fs::read(&path).unwrap(), bytes, "{case}");
+        }
+    }
+}

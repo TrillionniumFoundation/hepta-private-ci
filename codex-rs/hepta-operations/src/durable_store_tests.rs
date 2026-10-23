@@ -136,6 +136,30 @@ async fn expired_safe_lease_can_be_taken_over_by_higher_generation() {
         first.renew_claim(&stale, Duration::from_secs(1)).await,
         Err(DurableOperationError::StaleLease)
     ));
+    first.close().await;
+    second.close().await;
+    let reopened = DurableOperationStore::open(&path).await.expect("reopen");
+    let mut wrong_generation = current.clone();
+    wrong_generation.owner_generation = generation(1);
+    assert!(matches!(
+        reopened
+            .renew_claim(&wrong_generation, Duration::from_secs(1))
+            .await,
+        Err(DurableOperationError::StaleLease)
+    ));
+    let mut wrong_fence = current.clone();
+    wrong_fence.fence = stale.fence;
+    assert!(matches!(
+        reopened
+            .renew_claim(&wrong_fence, Duration::from_secs(1))
+            .await,
+        Err(DurableOperationError::StaleLease)
+    ));
+    // A live positive control prevents expiration from making both negatives pass.
+    reopened
+        .renew_claim(&current, Duration::from_secs(1))
+        .await
+        .expect("current lease remains valid after reopen");
 }
 
 #[cfg(unix)]
@@ -376,6 +400,25 @@ async fn newer_generation_adopts_unsettled_dispatch_and_fences_predecessor() {
     assert_eq!(outbox.intent.owner_generation, generation(2));
     assert_eq!(outbox.state, DurableOutboxState::Acknowledged);
     assert_eq!(outbox.fence, adopted.writer_fence);
+
+    store.close().await;
+    let store = DurableOperationStore::open(&path)
+        .await
+        .expect("reopen successor");
+    assert_eq!(
+        store
+            .operation(&operation.scope_id, &operation.operation_id)
+            .await
+            .expect("recovered operation")
+            .expect("durable adopted row"),
+        adopted
+    );
+    assert!(matches!(
+        store
+            .renew_claim(&stale_claim, Duration::from_secs(1))
+            .await,
+        Err(DurableOperationError::StaleLease)
+    ));
 
     assert!(matches!(
         store
