@@ -95,10 +95,19 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
         ):
             raise ValueError(f"invalid repository path: {path!r}")
 
-        if path in DERIVED_ONLY_DOCS or path.startswith(
-            "qualification/module-execution-dossiers/detail/"
-        ):
+        if path in DERIVED_ONLY_DOCS:
             derived = True
+            continue
+
+        if path.startswith("qualification/module-execution-dossiers/detail/"):
+            derived = True
+            # A generated markdown dossier is prose. An unfamiliar or
+            # executable input in this directory is NOT a derived-only view.
+            # Fail closed to full native CI rather than allowing its suffix
+            # to bypass the usual unknown-source fallback.
+            if PurePosixPath(path).suffix != ".md":
+                selected.update(GROUPS)
+                full_repo = True
             continue
 
         if path in {"README.md", "CONTRIBUTING.md"} or (
