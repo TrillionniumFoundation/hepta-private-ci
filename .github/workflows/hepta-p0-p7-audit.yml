@@ -43,8 +43,13 @@ jobs:
           python qa/hepta-p0-p7/qualification.py \
             --protocol /tmp/not-present \
             --protocol-sha256 0000000000000000000000000000000000000000000000000000000000000000 \
-            --sources /tmp/not-present --history /tmp/not-present \
-            --episodes /tmp/not-present --artifacts-root /tmp \
+            --sources /tmp/not-present \
+            --sources-sha256 0000000000000000000000000000000000000000000000000000000000000000 \
+            --history /tmp/not-present \
+            --history-sha256 0000000000000000000000000000000000000000000000000000000000000000 \
+            --episodes /tmp/not-present \
+            --episodes-sha256 0000000000000000000000000000000000000000000000000000000000000000 \
+            --artifacts-root /tmp \
             > "$RUNNER_TEMP/hepta-no-evidence.json"
           result=$?
           set -e

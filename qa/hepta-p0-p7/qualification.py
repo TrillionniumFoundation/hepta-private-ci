@@ -48,6 +48,7 @@ def reject_constant(value):
 
 
 def read_json(path: Path, cap: int = MAX_JSON_BYTES):
+    """Legacy fixture reader only; evidence CLI uses pinned descriptor-safe reads."""
     require(path.is_file() and not path.is_symlink(), "missing or symlinked JSON")
     require(path.stat().st_size <= cap, "JSON exceeds byte cap")
     return json.loads(path.read_text(encoding="utf-8"),
@@ -136,6 +137,14 @@ def _read_pinned_artifact(root: Path, filename: str, expected: str, cap=64_000_0
             os.close(dir_fd)
 
 
+def read_pinned_json(path: Path, expected_sha: str, cap: int = MAX_JSON_BYTES):
+    """Read one independently SHA-pinned JSON input with no path re-open."""
+    raw = _read_pinned_artifact(path.parent, path.name, expected_sha,
+                                cap, collect=True)
+    return json.loads(raw.decode("utf-8"), object_pairs_hook=strict_pairs,
+                      parse_constant=reject_constant)
+
+
 def verify_artifact(root: Path, filename: str, expected: str, cap=64_000_000) -> None:
     _read_pinned_artifact(root, filename, expected, cap)
 
@@ -162,6 +171,7 @@ def validate_sources(root: Path, source_manifest: dict, history: dict):
         require(family not in groups or groups[family] == role,
                 "original source family split leakage")
         require(type(item.get("modalities")) is list and
+                1 <= len(item["modalities"]) <= 4 and
                 all(m in ("text", "image", "audio", "video") for m in item["modalities"]) and
                 len(set(item["modalities"])) == len(item["modalities"]), "source modalities")
         verify_artifact(root, item.get("path"), image_sha)
@@ -204,10 +214,11 @@ def validate_protocol(protocol, protocol_path: Path, expected_sha: str):
             protocol["encoder_generation"] > 0, "encoder/generation identity")
 
 
-def read_episodes(path: Path):
-    require(path.is_file() and not path.is_symlink() and
-            path.stat().st_size <= MAX_EPISODES_BYTES, "episodes missing/over cap")
-    lines = path.read_text(encoding="utf-8").splitlines()
+def read_episodes(path: Path, expected_sha: str):
+    """Read the exact frozen JSONL ledger with a bounded descriptor-safe read."""
+    raw = _read_pinned_artifact(path.parent, path.name, expected_sha,
+                                MAX_EPISODES_BYTES, collect=True)
+    lines = raw.decode("utf-8").splitlines()
     require(len(lines) <= 100_000, "episode count over cap")
     records = []
     for index, line in enumerate(lines):
@@ -223,17 +234,23 @@ def read_episodes(path: Path):
 def validate_trace(row):
     trace = row.get("decisions")
     require(type(trace) is list and len(trace) <= 16, "unbounded/missing decision trace")
-    require(len(trace) == row.get("actual_steps"), "declared capacity is not observed steps")
+    require(type(row.get("actual_steps")) is int and len(trace) == row["actual_steps"],
+            "declared capacity is not observed steps")
     if row["arm"] == "ndu" and row["valid"]:
         require(8 <= len(trace) <= 16, "completed NDU has fewer than 8 actual decisions")
+        require(type(trace[-1]) is dict and
+                trace[-1].get("action") in ("STOP", "ABSTAIN"),
+                "completed NDU must record its terminal decision")
     prev = None
-    for step in trace:
+    for index, step in enumerate(trace):
         require(type(step) is dict and all(sha(step.get(key)) for key in
                 ("pre_state_sha256", "post_state_sha256", "evidence_sha256")),
                 "missing state/evidence digest")
         require(step.get("action") in ("RECALL", "ROUTE", "DECOMPOSE", "VERIFY",
                                        "REVISE", "BACKTRACK", "STOP", "ABSTAIN"),
                 "invalid reasoning action")
+        require(step["action"] not in ("STOP", "ABSTAIN") or index == len(trace) - 1,
+                "terminal decision followed by additional actions")
         require(nonnegative_int(step.get("cost_us")) and step["cost_us"] > 0,
                 "zero/unmeasured decision cost")
         require(prev is None or step["pre_state_sha256"] == prev,
@@ -259,8 +276,10 @@ def validate_episode(root, row, by_id, protocol):
             sha(row.get("noise_digest")), "source or common-noise binding")
     owner = row.get("owner")
     require(type(owner) is dict and owner.get("encoder_digest") == protocol["encoder_digest"] and
-            owner.get("generation") == protocol["encoder_generation"] and
-            owner.get("forward_calls") == 1 and sha(owner.get("feature_digest")),
+            type(owner.get("generation")) is int and
+            owner["generation"] == protocol["encoder_generation"] and
+            type(owner.get("forward_calls")) is int and owner["forward_calls"] == 1 and
+            sha(owner.get("feature_digest")),
             "unbound or duplicated Encoder forward")
     cells = owner.get("cells")
     require(type(cells) is list and 1 <= len(cells) <= 4096 and
@@ -327,7 +346,7 @@ def report_status(by_id, protocol, rows):
         and abs(table[(sid,seed,"ndu")]["total_us"] - table[(sid,seed,arm)]["total_us"])
         / max(1, table[(sid,seed,arm)]["total_us"]) <= 0.05
         for sid in tests for seed in protocol["seeds"]
-        for arm in ARMS if arm not in ("ndu", "ndu_no_cov"))
+        for arm in ARMS if arm != "ndu")
     superior = all(ndu["quality"] > summaries[arm]["quality"]+0.01 and
                    ndu["cvar90"] < summaries[arm]["cvar90"]-0.01
                    for arm in ARMS if arm not in ("ndu", "ndu_no_cov"))
@@ -369,16 +388,21 @@ def main(argv=None):
     parser.add_argument("--protocol", type=Path, required=True)
     parser.add_argument("--protocol-sha256", required=True)
     parser.add_argument("--sources", type=Path, required=True)
+    parser.add_argument("--sources-sha256", required=True)
     parser.add_argument("--history", type=Path, required=True)
+    parser.add_argument("--history-sha256", required=True)
     parser.add_argument("--episodes", type=Path, required=True)
+    parser.add_argument("--episodes-sha256", required=True)
     parser.add_argument("--artifacts-root", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
-        protocol = read_json(args.protocol)
+        protocol = read_pinned_json(args.protocol, args.protocol_sha256)
         validate_protocol(protocol, args.protocol, args.protocol_sha256)
         root = args.artifacts_root.resolve(strict=True)
-        by_id, _ = validate_sources(root, read_json(args.sources), read_json(args.history))
-        rows = read_episodes(args.episodes)
+        sources = read_pinned_json(args.sources, args.sources_sha256)
+        history = read_pinned_json(args.history, args.history_sha256)
+        by_id, _ = validate_sources(root, sources, history)
+        rows = read_episodes(args.episodes, args.episodes_sha256)
         for row in rows:
             validate_episode(root, row, by_id, protocol)
         report = report_status(by_id, protocol, rows)
