@@ -1,6 +1,6 @@
 import unittest
 from dataclasses import replace
-from experiment import ARMS, FREEZE, Prompt, decide, gains, run, training_risk
+from experiment import ARMS, FREEZE, Prompt, decide, decide_detail, gains, run, training_risk
 from reference import Unavailable
 
 class AblationTests(unittest.TestCase):
@@ -16,6 +16,18 @@ class AblationTests(unittest.TestCase):
         self.assertEqual(decide('A0', q, risk[q.context]), ('text',))
         self.assertEqual(set(decide('A1', q, risk[q.context])), {'text','image'})
         self.assertEqual(decide('A2', q, risk[q.context]), ('image',))
+
+    def test_portfolio_executes_sampled_route_and_records_behavior_propensity(self):
+        risk = training_risk()
+        result = []
+        for i in range(10000, 10100):
+            p = Prompt(i, 'simple', 'future')
+            chosen, probability = decide_detail('A4', p, risk['simple'])
+            self.assertEqual((chosen, probability), decide_detail('A4', p, risk['simple']))
+            self.assertGreater(probability, 0)
+            self.assertLessEqual(probability, 1)
+            result.append(chosen)
+        self.assertEqual(set(result), {('text',), ('image',)})
 
     def test_reproducible_synthetic_quality_and_pairing(self):
         a, b = run(), run()
