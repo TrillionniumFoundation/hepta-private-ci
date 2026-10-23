@@ -182,8 +182,20 @@ def evaluate(study: Mapping):
         upper = np.quantile(cloud, 1 - tail_level, axis=0)
         lower = np.quantile(cloud, tail_level, axis=0)
         ratio = point[0, -1] / point[index + 1, -1]
-        protected_delta = values[0, :, :, 1] - values[index + 1, :, :, 1]
-        protected_ok = bool(np.all(protected_delta[protected] >= -1e-12))
+        # Protected tasks are a per-world hard guard, not an average statistic.
+        # A single protected-world semantic failure must not be concealed by
+        # global CVaR/mean noninferiority or by a higher quality proxy score.
+        p_ndu = values[0][protected]
+        p_control = values[index + 1][protected]
+        protected_checks = {
+            "loss": bool(np.all(p_ndu[:, 0] <= p_control[:, 0] + 1e-12)),
+            "quality": bool(np.all(p_ndu[:, 1] >= p_control[:, 1] - 1e-12)),
+            "ambiguity": bool(np.all(p_ndu[:, 2] <= p_control[:, 2] + 1e-12)),
+            "inconsistency": bool(np.all(p_ndu[:, 3] <= p_control[:, 3] + 1e-12)),
+            "physical_cost": bool(np.all(p_ndu[:, 4] <=
+                                         max_cost_ratio * p_control[:, 4] + 1e-12)),
+        }
+        protected_ok = all(protected_checks.values())
         gates = {
             "cvar90_incremental_superiority": bool(x[0] <= -min_gain and upper[0] < -min_gain),
             "factual_quality_noninferiority": bool(lower[1] >= -quality_tol),
@@ -195,7 +207,8 @@ def evaluate(study: Mapping):
         local_all &= all(gates.values())
         out[name] = {"mean_pair_difference": dict(zip(("cvar90", "quality", "ambiguity", "inconsistency", "total_cost"), x.tolist())),
                      "simultaneous_lower": lower.tolist(), "simultaneous_upper": upper.tolist(),
-                     "observed_cost_ratio": ratio, "gates": gates}
+                     "observed_cost_ratio": ratio,
+                     "protected_task_checks": protected_checks, "gates": gates}
     receipt = {"schema": "hepta-mgp-paired-review-v1", "status": "HOLD_NO_GO", "authority": "DENY_ALL",
                "source": "LOCAL_RESEARCH_UNAUTHENTICATED", "scientific_superiority_proven": False,
                "all_provisional_gates_pass": bool(local_all and boots >= 2000),
