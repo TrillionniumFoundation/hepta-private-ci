@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 import math
+import random
 import re
 import sys
 from collections import defaultdict
@@ -175,11 +176,19 @@ def metrics(dataset: dict[str, dict[str, Any]], predicted: dict[str, dict[str, A
     groups: list[list[tuple[float, float]]] = [[] for _ in range(bins)]
     correct = accepted_correct = answered = 0
     brier = 0.0
+    class_counts: dict[str, dict[str, int]] = defaultdict(lambda: {"tp": 0, "fp": 0, "fn": 0})
+    true_labels: set[str] = set()
     for rid in in_domain:
         row, pred = dataset[rid], predicted[rid]
         probs = pred["probabilities"]
         guess = max(row["options"], key=lambda x: probs[x])
         ok = guess == row["gold"]
+        true_labels.add(row["gold"])
+        if ok:
+            class_counts[guess]["tp"] += 1
+        else:
+            class_counts[guess]["fp"] += 1
+            class_counts[row["gold"]]["fn"] += 1
         correct += int(ok)
         accepted_correct += int(ok and not pred["abstained"])
         answered += int(not pred["abstained"])
@@ -187,12 +196,27 @@ def metrics(dataset: dict[str, dict[str, Any]], predicted: dict[str, dict[str, A
         confidence = probs[guess]
         groups[min(bins - 1, int(confidence * bins))].append((confidence, float(ok)))
     ece = sum(len(b) * abs(sum(x for x, _ in b) / len(b) - sum(y for _, y in b) / len(b)) for b in groups if b) / len(in_domain)
+    # Unlike overall accuracy, balanced accuracy exposes failures on rare
+    # ground-truth classes. Do not let abstentions re-label the true class.
+    recall_by_class = {
+        label: class_counts[label]["tp"] /
+        (class_counts[label]["tp"] + class_counts[label]["fn"])
+        for label in sorted(true_labels)
+    }
+    macro_f1_by_class = {
+        label: 2 * stat["tp"] / (2 * stat["tp"] + stat["fp"] + stat["fn"])
+        if 2 * stat["tp"] + stat["fp"] + stat["fn"] else 0.0
+        for label, stat in sorted(class_counts.items())
+    }
     return {
         "n_in_domain": len(in_domain), "n_ood": len(ood),
         "coverage": answered / len(in_domain), "accuracy": correct / len(in_domain),
         "effective_correct_rate": accepted_correct / len(in_domain),
         "selective_accuracy": accepted_correct / answered if answered else None,
         "brier": brier / len(in_domain), "ece": ece,
+        "balanced_accuracy": sum(recall_by_class.values()) / len(recall_by_class),
+        "per_class_recall": recall_by_class,
+        "macro_f1": sum(macro_f1_by_class.values()) / len(macro_f1_by_class),
         "ood_false_acceptance": sum(not predicted[x]["abstained"] for x in ood) / len(ood),
     }
 
@@ -210,6 +234,47 @@ def slice_accuracy(dataset: dict[str, dict[str, Any]], predicted: dict[str, dict
             for rid in members
         ) / len(members)
         for name, members in sorted(samples.items())
+    }
+
+
+def paired_cluster_accuracy_ci(
+    dataset: dict[str, dict[str, Any]],
+    baseline: dict[str, dict[str, Any]],
+    candidate: dict[str, dict[str, Any]],
+    *, repetitions: int = 2000,
+) -> dict[str, Any]:
+    """Deterministic paired *cluster*-bootstrap diagnostic, not a promotion CI."""
+    groups: dict[str, list[str]] = defaultdict(list)
+    for rid in sorted(baseline):
+        if not dataset[rid]["ood"]:
+            groups[dataset[rid]["cluster"]].append(rid)
+    require(len(groups) >= 2, "paired bootstrap requires >=2 independent holdout clusters")
+
+    def correct(rid: str, rows: dict[str, dict[str, Any]]) -> int:
+        opts = dataset[rid]["options"]
+        return int(max(opts, key=lambda label: rows[rid]["probabilities"][label]) == dataset[rid]["gold"])
+
+    stats = [
+        (
+            sum(correct(rid, baseline) for rid in group),
+            sum(correct(rid, candidate) for rid in group),
+            len(group),
+        )
+        for _, group in sorted(groups.items())
+    ]
+    rng = random.Random(1729)
+    samples = []
+    for _ in range(repetitions):
+        draw = [stats[rng.randrange(len(stats))] for _ in stats]
+        total = sum(size for _, _, size in draw)
+        samples.append(sum(c - b for b, c, _ in draw) / total)
+    samples.sort()
+    return {
+        "lower": samples[int(0.025 * repetitions)],
+        "upper": samples[min(repetitions - 1, int(0.975 * repetitions))],
+        "independent_clusters": len(stats),
+        "resamples": repetitions,
+        "posture": "diagnostic_only_not_a_preregistered_statistical_acceptance",
     }
 
 
@@ -239,6 +304,7 @@ def analyse(plan: dict[str, Any], dataset_path: Path, run_dir: Path) -> dict[str
     require(plan.get("dataset_sha256") == dataset_hash, "preregistered dataset hash mismatch")
     dataset = validate_dataset(load_jsonl(dataset_path))
     results: dict[str, Any] = {}
+    predictions_by_model: dict[str, dict[str, dict[str, Any]]] = {}
     for model in CANDIDATES:
         predictions_path = run_dir / model / "predictions.jsonl"
         run_path = run_dir / model / "run.json"
@@ -247,6 +313,7 @@ def analyse(plan: dict[str, Any], dataset_path: Path, run_dir: Path) -> dict[str
                      source_commit, frozen_threshold)
         predicted = validate_predictions(load_jsonl(predictions_path), dataset, model,
                                          frozen_threshold)
+        predictions_by_model[model] = predicted
         results[model] = {
             "all": metrics(dataset, predicted),
             "languages": slice_accuracy(dataset, predicted, "language", minimum),
@@ -259,6 +326,9 @@ def analyse(plan: dict[str, Any], dataset_path: Path, run_dir: Path) -> dict[str
     for model in CANDIDATES:
         result = results[model]
         result["accuracy_gain"] = result["all"]["accuracy"] - baseline["all"]["accuracy"]
+        result["paired_cluster_accuracy_gain_95ci"] = paired_cluster_accuracy_ci(
+            dataset, predictions_by_model[CANDIDATES[0]], predictions_by_model[model],
+        )
         result["maximum_slice_regression"] = max(
             (baseline[k][name] - result[k][name] for k in ("languages", "tasks") for name in baseline[k]),
             default=0.0,
