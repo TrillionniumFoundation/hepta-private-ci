@@ -121,6 +121,7 @@ pub struct ProductionObjectiveSender<C: ObjectiveSenderCheckpoint> {
     writer: Arc<ProductionDurableWriter>,
     checkpoint: Arc<C>,
     deadline: Duration,
+    spawn_generation: u64,
 }
 
 impl ProductionDurableWriter {
@@ -129,14 +130,40 @@ impl ProductionDurableWriter {
         checkpoint: Arc<C>,
         deadline: Duration,
     ) -> Result<ProductionObjectiveSender<C>, ObjectiveSenderError> {
-        if deadline.is_zero() || deadline > MAX_CHECKPOINT_DEADLINE {
+        self.objective_sender_for_spawn_generation(checkpoint, deadline, self.generation())
+    }
+
+    /// Bind the sender to the trusted embedding's process generation. A local
+    /// lease advances only on lease succession; a supervisor may advance its
+    /// process generation on additional lifecycle transitions. The embedding
+    /// must authenticate this process binding independently of the writer's
+    /// retained authority. This creates no sending permission or durable row.
+    pub fn objective_sender_for_spawn_generation<C: ObjectiveSenderCheckpoint>(
+        self: &Arc<Self>,
+        checkpoint: Arc<C>,
+        deadline: Duration,
+        spawn_generation: u64,
+    ) -> Result<ProductionObjectiveSender<C>, ObjectiveSenderError> {
+        if spawn_generation == 0 || deadline.is_zero() || deadline > MAX_CHECKPOINT_DEADLINE {
             return Err(ObjectiveSenderInputError::Bound.into());
         }
         self.sender_live_check()?;
+        self.live_verifier
+            .as_ref()
+            .ok_or(ProductionWriterError::LiveVerifierRequired)?
+            .verify_sender_process_binding(
+                &self.authority,
+                self.owner_agent_id(),
+                self.lease_id(),
+                self.generation(),
+                spawn_generation,
+            )
+            .map_err(ProductionWriterError::AuthorityRejected)?;
         Ok(ProductionObjectiveSender {
             writer: Arc::clone(self),
             checkpoint,
             deadline,
+            spawn_generation,
         })
     }
 
@@ -157,19 +184,36 @@ impl ProductionDurableWriter {
 }
 
 impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
+    fn verify_process_binding(&self) -> Result<(), ProductionWriterError> {
+        self.writer.sender_live_check()?;
+        self.writer
+            .live_verifier
+            .as_ref()
+            .ok_or(ProductionWriterError::LiveVerifierRequired)?
+            .verify_sender_process_binding(
+                &self.writer.authority,
+                self.writer.owner_agent_id(),
+                self.writer.lease_id(),
+                self.writer.generation(),
+                self.spawn_generation,
+            )
+            .map_err(ProductionWriterError::AuthorityRejected)
+    }
+
     /// One original transaction retains exact bytes and permanently occupies
     /// their one sending opportunity. Any later error leaves that fence intact.
-    /// This composition profile explicitly binds Agentd spawn generation to
-    /// the original writer lease generation; they are not universal synonyms.
+    /// The origin must match this capability's fixed process generation, which
+    /// can differ from the independently fenced local writer lease generation.
     pub async fn retain_before_send(
         &self,
         request: ObjectiveSenderRequest,
     ) -> Result<ObjectiveSenderTicket, ObjectiveSenderError> {
         if request.origin.agent_id != *self.writer.owner_agent_id()
-            || request.origin.spawn_generation != self.writer.generation()
+            || request.origin.spawn_generation != self.spawn_generation
         {
             return Err(ObjectiveSenderError::IdentityMismatch);
         }
+        self.verify_process_binding()?;
         self.writer.verify_current_authority().await?;
         let mut transaction = self
             .writer
@@ -205,7 +249,7 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
     ) -> Result<(), ObjectiveSenderError> {
         self.require_ticket_owner(ticket)?;
         if ticket.request.origin.agent_id != *self.writer.owner_agent_id()
-            || ticket.request.origin.spawn_generation != self.writer.generation()
+            || ticket.request.origin.spawn_generation != self.spawn_generation
         {
             return Err(ObjectiveSenderError::IdentityMismatch);
         }
@@ -214,7 +258,7 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
             .compare_exchange(UNUSED, STARTED, Ordering::SeqCst, Ordering::SeqCst)
             .map_err(|_| ObjectiveSenderError::SendPermissionUnavailable)?;
         self.writer.verify_current_authority().await?;
-        self.writer.sender_live_check()?;
+        self.verify_process_binding()?;
         Ok(())
     }
 
@@ -305,6 +349,18 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         transaction.rollback().await.map_err(unavailable)?;
         self.writer.sender_live_check()?;
         Ok(snapshot)
+    }
+
+    /// Independently acknowledge the complete original owner cut without an
+    /// Objective request or ticket. This closes a startup lease transition using
+    /// the same original transaction, live authority checks and checkpoint gate
+    /// as sender retention. No request, event, send or cancellation permission
+    /// is created. Unknown/cancelled acknowledgement fences the whole owner;
+    /// a later readback can settle evidence but cannot reopen that generation.
+    pub async fn acknowledge_owner_cut(&self) -> Result<(), ObjectiveSenderError> {
+        self.verify_process_binding()?;
+        self.writer.verify_authority().await?;
+        self.acknowledge_committed().await
     }
 
     /// Consume only this live unused local permission. A failed durable ACK
@@ -399,7 +455,7 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
             .require_current_transaction(transaction)
             .await
             .map_err(ProductionWriterError::from)?;
-        self.writer.sender_live_check()?;
+        self.verify_process_binding()?;
         Ok(model::OwnerFence {
             owner_agent_id: self.writer.owner_agent_id().clone(),
             lease_id: self.writer.lease_id().to_string(),
@@ -425,7 +481,7 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
             .map_err(unavailable)?;
         self.acknowledge_transaction(&mut transaction).await?;
         transaction.rollback().await.map_err(unavailable)?;
-        self.writer.sender_live_check()?;
+        self.verify_process_binding()?;
         Ok(())
     }
 
@@ -447,7 +503,7 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         if acknowledged != current {
             return Err(ObjectiveSenderError::AcknowledgementUnknown);
         }
-        self.writer.sender_live_check()?;
+        self.verify_process_binding()?;
         attempt.acknowledge();
         Ok(())
     }
@@ -472,3 +528,7 @@ mod gate_tests;
 #[cfg(test)]
 #[path = "cognitive_checkpoint_tests.rs"]
 mod protected_checkpoint_tests;
+
+#[cfg(test)]
+#[path = "objective_sender_generation_tests.rs"]
+mod generation_tests;

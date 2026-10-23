@@ -313,6 +313,26 @@ pub trait ProductionAuthorityVerifier: Send + Sync {
         authority: &ProductionAuthorityLease,
         expected_agent: &AgentId,
     ) -> Result<(), String>;
+
+    /// Authenticate a sender's process generation separately from the local
+    /// lease CAS generation. Existing verifiers retain the original equal-
+    /// generation profile. A verifier admitting different values must bind
+    /// both and the lease id to its independently verified live registration;
+    /// possession of a writer handle alone does not authorize a new process.
+    fn verify_sender_process_binding(
+        &self,
+        authority: &ProductionAuthorityLease,
+        expected_agent: &AgentId,
+        _local_lease_id: &str,
+        local_generation: u64,
+        spawn_generation: u64,
+    ) -> Result<(), String> {
+        self.verify(authority, expected_agent)?;
+        if spawn_generation == 0 || spawn_generation != local_generation {
+            return Err("sender process generation is not authorized by this verifier".into());
+        }
+        Ok(())
+    }
 }
 
 impl<F> ProductionAuthorityVerifier for F
