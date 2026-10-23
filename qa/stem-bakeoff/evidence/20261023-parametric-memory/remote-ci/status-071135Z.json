@@ -1,0 +1,598 @@
+{
+  "schema": "hepta.parametric-memory.remote-ci-status-followup.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "observed_start_utc": "2026-10-23 07:11:33 UTC",
+  "observed_end_utc": "2026-10-23 07:11:35 UTC",
+  "heads": [
+    {
+      "pr": 3408,
+      "sha": "1e12dbb8187a007134b83928cfc25e663899ac9a",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3408"
+    },
+    {
+      "pr": 3401,
+      "sha": "699758dca309caa1087b899d49791a2e8fd662e4",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3401"
+    },
+    {
+      "pr": 3417,
+      "sha": "cbd139ad7cfeaf0be226688f2475cdeb364aa3e1",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3417"
+    }
+  ],
+  "runs": [
+    {
+      "pr": 3408,
+      "id": 39912691480,
+      "name": "Hepta parametric memory shadow checks",
+      "event": "pull_request",
+      "head_sha": "1e12dbb8187a007134b83928cfc25e663899ac9a",
+      "head_branch": "codex/memory-parametric-cell-loop-20261023",
+      "status": "pending",
+      "conclusion": null,
+      "created_at": "2026-10-23T06:38:03Z",
+      "updated_at": "2026-10-23T06:38:04Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912691480",
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39912691480/jobs"
+    },
+    {
+      "pr": 3408,
+      "id": 39912691483,
+      "name": "v8-canary",
+      "event": "pull_request",
+      "head_sha": "1e12dbb8187a007134b83928cfc25e663899ac9a",
+      "head_branch": "codex/memory-parametric-cell-loop-20261023",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T06:38:03Z",
+      "updated_at": "2026-10-23T06:38:03Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912691483",
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39912691483/jobs"
+    },
+    {
+      "pr": 3408,
+      "id": 39912691565,
+      "name": "Hepta architecture convergence",
+      "event": "pull_request",
+      "head_sha": "1e12dbb8187a007134b83928cfc25e663899ac9a",
+      "head_branch": "codex/memory-parametric-cell-loop-20261023",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T06:38:03Z",
+      "updated_at": "2026-10-23T06:38:03Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912691565",
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39912691565/jobs"
+    },
+    {
+      "pr": 3408,
+      "id": 39912691508,
+      "name": "blocking-ci",
+      "event": "pull_request",
+      "head_sha": "1e12dbb8187a007134b83928cfc25e663899ac9a",
+      "head_branch": "codex/memory-parametric-cell-loop-20261023",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T06:38:03Z",
+      "updated_at": "2026-10-23T06:38:03Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912691508",
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39912691508/jobs"
+    },
+    {
+      "pr": 3408,
+      "id": 39912356783,
+      "name": "Hepta parametric memory shadow checks",
+      "event": "push",
+      "head_sha": "1e12dbb8187a007134b83928cfc25e663899ac9a",
+      "head_branch": "codex/memory-parametric-cell-loop-20261023",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T06:34:49Z",
+      "updated_at": "2026-10-23T06:34:49Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912356783",
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39912356783/jobs"
+    },
+    {
+      "pr": 3401,
+      "id": 39912660959,
+      "name": "v8-canary",
+      "event": "pull_request",
+      "head_sha": "699758dca309caa1087b899d49791a2e8fd662e4",
+      "head_branch": "codex/memory-parametric-frontier-20261023",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T06:37:45Z",
+      "updated_at": "2026-10-23T06:37:45Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660959",
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660959/jobs"
+    },
+    {
+      "pr": 3401,
+      "id": 39912660973,
+      "name": "Hepta shared Stem bake-off shadow checks",
+      "event": "pull_request",
+      "head_sha": "699758dca309caa1087b899d49791a2e8fd662e4",
+      "head_branch": "codex/memory-parametric-frontier-20261023",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T06:37:45Z",
+      "updated_at": "2026-10-23T06:37:45Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660973",
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660973/jobs"
+    },
+    {
+      "pr": 3401,
+      "id": 39912660881,
+      "name": "blocking-ci",
+      "event": "pull_request",
+      "head_sha": "699758dca309caa1087b899d49791a2e8fd662e4",
+      "head_branch": "codex/memory-parametric-frontier-20261023",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T06:37:45Z",
+      "updated_at": "2026-10-23T06:37:45Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660881",
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660881/jobs"
+    },
+    {
+      "pr": 3401,
+      "id": 39912660876,
+      "name": "Hepta architecture convergence",
+      "event": "pull_request",
+      "head_sha": "699758dca309caa1087b899d49791a2e8fd662e4",
+      "head_branch": "codex/memory-parametric-frontier-20261023",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T06:37:45Z",
+      "updated_at": "2026-10-23T06:37:45Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660876",
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660876/jobs"
+    },
+    {
+      "pr": 3417,
+      "id": 39916012060,
+      "name": "Hepta parametric catalog shadow checks",
+      "event": "pull_request",
+      "head_sha": "cbd139ad7cfeaf0be226688f2475cdeb364aa3e1",
+      "head_branch": "codex/memory-parametric-catalog-20261023",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T07:09:51Z",
+      "updated_at": "2026-10-23T07:09:51Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39916012060",
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39916012060/jobs"
+    },
+    {
+      "pr": 3417,
+      "id": 39916012077,
+      "name": "Hepta architecture convergence",
+      "event": "pull_request",
+      "head_sha": "cbd139ad7cfeaf0be226688f2475cdeb364aa3e1",
+      "head_branch": "codex/memory-parametric-catalog-20261023",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T07:09:51Z",
+      "updated_at": "2026-10-23T07:09:51Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39916012077",
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39916012077/jobs"
+    },
+    {
+      "pr": 3417,
+      "id": 39916012053,
+      "name": "v8-canary",
+      "event": "pull_request",
+      "head_sha": "cbd139ad7cfeaf0be226688f2475cdeb364aa3e1",
+      "head_branch": "codex/memory-parametric-catalog-20261023",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T07:09:51Z",
+      "updated_at": "2026-10-23T07:09:51Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39916012053",
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39916012053/jobs"
+    },
+    {
+      "pr": 3417,
+      "id": 39916012271,
+      "name": "blocking-ci",
+      "event": "pull_request",
+      "head_sha": "cbd139ad7cfeaf0be226688f2475cdeb364aa3e1",
+      "head_branch": "codex/memory-parametric-catalog-20261023",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T07:09:51Z",
+      "updated_at": "2026-10-23T07:09:51Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39916012271",
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39916012271/jobs"
+    }
+  ],
+  "prior_job_metadata": {
+    "observed_start_utc": "2026-10-23 06:47:07 UTC",
+    "observed_end_utc": "2026-10-23 06:47:09 UTC",
+    "snapshot": "remote_ci_snapshot_064709Z.json",
+    "is_current_job_poll": false,
+    "runs": [
+      {
+        "run_id": 39912691480,
+        "jobs": []
+      },
+      {
+        "run_id": 39912691483,
+        "jobs": [
+          {
+            "id": 120279078568,
+            "name": "metadata",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": 0,
+            "labels": [
+              "ubuntu-24.04-arm"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912691483/job/120279078568"
+          }
+        ]
+      },
+      {
+        "run_id": 39912691565,
+        "jobs": [
+          {
+            "id": 120279078962,
+            "name": "Architecture convergence (source-head)",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": 0,
+            "labels": [
+              "ubuntu-24.04-arm"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912691565/job/120279078962"
+          },
+          {
+            "id": 120279079200,
+            "name": "Architecture convergence (base-merge)",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": 0,
+            "labels": [
+              "ubuntu-24.04-arm"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912691565/job/120279079200"
+          }
+        ]
+      },
+      {
+        "run_id": 39912691508,
+        "jobs": [
+          {
+            "id": 120279078784,
+            "name": "Select blocking CI scope",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": 0,
+            "labels": [
+              "ubuntu-24.04-arm"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912691508/job/120279078784"
+          },
+          {
+            "id": 120279078951,
+            "name": "Blob size policy / Blob size policy",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": 0,
+            "labels": [
+              "ubuntu-24.04"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912691508/job/120279078951"
+          },
+          {
+            "id": 120279079858,
+            "name": "Codespell / Check for spelling errors",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": 0,
+            "labels": [
+              "ubuntu-24.04-arm"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912691508/job/120279079858"
+          }
+        ]
+      },
+      {
+        "run_id": 39912356783,
+        "jobs": [
+          {
+            "id": 120278017388,
+            "name": "parametric-memory-confirmation",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": 0,
+            "labels": [
+              "ubuntu-24.04"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912356783/job/120278017388"
+          }
+        ]
+      },
+      {
+        "run_id": 39912660959,
+        "jobs": [
+          {
+            "id": 120278982768,
+            "name": "metadata",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": 0,
+            "labels": [
+              "ubuntu-24.04-arm"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660959/job/120278982768"
+          }
+        ]
+      },
+      {
+        "run_id": 39912660973,
+        "jobs": [
+          {
+            "id": 120278982266,
+            "name": "real-checkpoint-text-bakeoff (laya_encoder_only)",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": null,
+            "labels": [
+              "ubuntu-24.04"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660973/job/120278982266"
+          },
+          {
+            "id": 120278982426,
+            "name": "native-latent-cpu-smoke",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": 0,
+            "labels": [
+              "ubuntu-24.04"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660973/job/120278982426"
+          },
+          {
+            "id": 120278982433,
+            "name": "evidence-contract",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": 0,
+            "labels": [
+              "ubuntu-24.04"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660973/job/120278982433"
+          },
+          {
+            "id": 120278982476,
+            "name": "real-checkpoint-text-bakeoff (granite97m)",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": 0,
+            "labels": [
+              "ubuntu-24.04"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660973/job/120278982476"
+          },
+          {
+            "id": 120278982510,
+            "name": "real-checkpoint-text-bakeoff (embeddinggemma2_740m)",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": null,
+            "labels": [
+              "ubuntu-24.04"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660973/job/120278982510"
+          },
+          {
+            "id": 120278982572,
+            "name": "real-checkpoint-text-bakeoff (mmbert_small)",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": 0,
+            "labels": [
+              "ubuntu-24.04"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660973/job/120278982572"
+          }
+        ]
+      },
+      {
+        "run_id": 39912660881,
+        "jobs": [
+          {
+            "id": 120278982532,
+            "name": "Select blocking CI scope",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": 0,
+            "labels": [
+              "ubuntu-24.04-arm"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660881/job/120278982532"
+          },
+          {
+            "id": 120278982804,
+            "name": "Codespell / Check for spelling errors",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": 0,
+            "labels": [
+              "ubuntu-24.04-arm"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660881/job/120278982804"
+          },
+          {
+            "id": 120278982817,
+            "name": "Blob size policy / Blob size policy",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": 0,
+            "labels": [
+              "ubuntu-24.04"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660881/job/120278982817"
+          }
+        ]
+      },
+      {
+        "run_id": 39912660876,
+        "jobs": [
+          {
+            "id": 120278982268,
+            "name": "Architecture convergence (source-head)",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": 0,
+            "labels": [
+              "ubuntu-24.04-arm"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660876/job/120278982268"
+          },
+          {
+            "id": 120278982526,
+            "name": "Architecture convergence (base-merge)",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": 0,
+            "labels": [
+              "ubuntu-24.04-arm"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660876/job/120278982526"
+          }
+        ]
+      }
+    ]
+  },
+  "catalog_job_metadata": {
+    "observed_start_utc": "2026-10-23 07:11:33 UTC",
+    "observed_end_utc": "2026-10-23 07:11:35 UTC",
+    "is_current_job_poll": true,
+    "runs": [
+      {
+        "run_id": 39916012060,
+        "total_count": 1,
+        "jobs": [
+          {
+            "id": 120289644892,
+            "name": "metadata-admission",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": null,
+            "labels": [
+              "ubuntu-24.04"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39916012060/job/120289644892",
+            "steps": []
+          }
+        ]
+      },
+      {
+        "run_id": 39916012077,
+        "total_count": 2,
+        "jobs": [
+          {
+            "id": 120289644776,
+            "name": "Architecture convergence (base-merge)",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": null,
+            "labels": [
+              "ubuntu-24.04-arm"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39916012077/job/120289644776",
+            "steps": []
+          },
+          {
+            "id": 120289645180,
+            "name": "Architecture convergence (source-head)",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": null,
+            "labels": [
+              "ubuntu-24.04-arm"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39916012077/job/120289645180",
+            "steps": []
+          }
+        ]
+      },
+      {
+        "run_id": 39916012053,
+        "total_count": 1,
+        "jobs": [
+          {
+            "id": 120289645176,
+            "name": "metadata",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": null,
+            "labels": [
+              "ubuntu-24.04-arm"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39916012053/job/120289645176",
+            "steps": []
+          }
+        ]
+      },
+      {
+        "run_id": 39916012271,
+        "total_count": 3,
+        "jobs": [
+          {
+            "id": 120289645935,
+            "name": "Select blocking CI scope",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": null,
+            "labels": [
+              "ubuntu-24.04-arm"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39916012271/job/120289645935",
+            "steps": []
+          },
+          {
+            "id": 120289646267,
+            "name": "Codespell / Check for spelling errors",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": null,
+            "labels": [
+              "ubuntu-24.04-arm"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39916012271/job/120289646267",
+            "steps": []
+          },
+          {
+            "id": 120289646294,
+            "name": "Blob size policy / Blob size policy",
+            "status": "queued",
+            "conclusion": null,
+            "runner_id": null,
+            "labels": [
+              "ubuntu-24.04"
+            ],
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39916012271/job/120289646294",
+            "steps": []
+          }
+        ]
+      }
+    ]
+  },
+  "queue_context": {
+    "latest_repository_count_poll_utc": "2026-10-23 06:47:09 UTC",
+    "last_observed_queued_run_count": 696,
+    "last_observed_in_progress_run_count": 5,
+    "is_current_repository_count_poll": false,
+    "observed_blocker": "Target jobs awaiting runner assignment; other previously inspected jobs had long queue delays.",
+    "inferred_cause": "Shared execution capacity backlog is consistent with the observations.",
+    "exact_account_or_organization_quota_confirmed": false,
+    "runner_management_access": "Not available through installed CLI or provided connector endpoints.",
+    "code_or_dependency_failure_observed": false
+  },
+  "remote_ci_passed": false,
+  "local_results_used_as_remote_pass": false,
+  "remote_actions_read_only": true
+}
+

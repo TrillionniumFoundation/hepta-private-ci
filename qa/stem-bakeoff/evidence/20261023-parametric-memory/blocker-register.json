@@ -1,0 +1,60 @@
+{
+  "all_blockers_closed": false,
+  "engineering_closed": [
+    {
+      "evidence": "confirmation-001/result.json",
+      "item": "decoder parameter write and causal controls"
+    },
+    {
+      "evidence": "confirmation-001/result.json",
+      "item": "fresh-process exact snapshot recovery"
+    },
+    {
+      "evidence": "confirmation-001/lifecycle/result.json",
+      "item": "local ownership CAS, lineage and withdrawal"
+    },
+    {
+      "evidence": "confirmation-001/network/result.json",
+      "item": "matched evolution and routed consumer path"
+    },
+    {
+      "evidence": "confirmation-001/lifecycle/result.json",
+      "item": "correction and clean-base replay recall"
+    },
+    {
+      "evidence": "catalog-admission-001/result.json",
+      "item": "unknown/stale/withdrawn typed admission"
+    },
+    {
+      "evidence": "confirmation-001/source-reconciliation.json",
+      "item": "frozen-source attribution",
+      "limit": "Python bytes frozen; original Git HEAD metadata changed during run"
+    },
+    {
+      "evidence": "checkpoint-archive.json",
+      "item": "reviewable publication and artifact retention"
+    }
+  ],
+  "external_open": [
+    {
+      "evidence": "remote-ci/status-071135Z.json",
+      "exact_capacity_cause_known": false,
+      "item": "required remote CI execution",
+      "resolution": "GitHub capacity must assign runners; inspect actual completed checks before merge",
+      "status": "queued, no observed assigned runner"
+    }
+  ],
+  "production_accepted": false,
+  "recorded_at_utc": "2026-10-23T07:11:35Z",
+  "research_claims_not_established": [
+    "compression superiority",
+    "benefit of learned division over unchanged parent",
+    "natural or general memory capability",
+    "model-intrinsic calibrated abstention",
+    "new-data-only continual learning without replay",
+    "certified parameter unlearning or physical erasure",
+    "distributed multi-host consistency and shared-memory serving",
+    "production acceptance"
+  ],
+  "schema": "hepta.parametric-memory.blocker-register.v1"
+}

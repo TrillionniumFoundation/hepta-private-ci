@@ -1,0 +1,513 @@
+{
+  "schema": "hepta.parametric-memory.remote-ci-observation.v1",
+  "observed_start_utc": "2026-10-23 06:47:07 UTC",
+  "observed_end_utc": "2026-10-23 06:47:09 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "target_head": "1e12dbb8187a007134b83928cfc25e663899ac9a",
+  "source_prs": {
+    "3401": "699758dca309caa1087b899d49791a2e8fd662e4",
+    "3408": "1e12dbb8187a007134b83928cfc25e663899ac9a"
+  },
+  "repository_run_counts": {
+    "queued": 696,
+    "in_progress": 5
+  },
+  "runs": [
+    {
+      "pr": 3408,
+      "id": 39912691480,
+      "name": "Hepta parametric memory shadow checks",
+      "event": "pull_request",
+      "head_sha": "1e12dbb8187a007134b83928cfc25e663899ac9a",
+      "status": "pending",
+      "conclusion": null,
+      "created_at": "2026-10-23T06:38:03Z",
+      "updated_at": "2026-10-23T06:38:04Z",
+      "attempt": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912691480",
+      "job_count": 0,
+      "jobs": []
+    },
+    {
+      "pr": 3408,
+      "id": 39912691483,
+      "name": "v8-canary",
+      "event": "pull_request",
+      "head_sha": "1e12dbb8187a007134b83928cfc25e663899ac9a",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T06:38:03Z",
+      "updated_at": "2026-10-23T06:38:03Z",
+      "attempt": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912691483",
+      "job_count": 1,
+      "jobs": [
+        {
+          "id": 120279078568,
+          "name": "metadata",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_name": "",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "created_at": "2026-10-23T06:38:03Z",
+          "started_at": "2026-10-23T06:38:03Z",
+          "completed_at": null,
+          "steps": []
+        }
+      ]
+    },
+    {
+      "pr": 3408,
+      "id": 39912691565,
+      "name": "Hepta architecture convergence",
+      "event": "pull_request",
+      "head_sha": "1e12dbb8187a007134b83928cfc25e663899ac9a",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T06:38:03Z",
+      "updated_at": "2026-10-23T06:38:03Z",
+      "attempt": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912691565",
+      "job_count": 2,
+      "jobs": [
+        {
+          "id": 120279078962,
+          "name": "Architecture convergence (source-head)",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_name": "",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "created_at": "2026-10-23T06:38:04Z",
+          "started_at": "2026-10-23T06:38:04Z",
+          "completed_at": null,
+          "steps": []
+        },
+        {
+          "id": 120279079200,
+          "name": "Architecture convergence (base-merge)",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_name": "",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "created_at": "2026-10-23T06:38:04Z",
+          "started_at": "2026-10-23T06:38:04Z",
+          "completed_at": null,
+          "steps": []
+        }
+      ]
+    },
+    {
+      "pr": 3408,
+      "id": 39912691508,
+      "name": "blocking-ci",
+      "event": "pull_request",
+      "head_sha": "1e12dbb8187a007134b83928cfc25e663899ac9a",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T06:38:03Z",
+      "updated_at": "2026-10-23T06:38:03Z",
+      "attempt": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912691508",
+      "job_count": 3,
+      "jobs": [
+        {
+          "id": 120279078784,
+          "name": "Select blocking CI scope",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_name": "",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "created_at": "2026-10-23T06:38:04Z",
+          "started_at": "2026-10-23T06:38:04Z",
+          "completed_at": null,
+          "steps": []
+        },
+        {
+          "id": 120279078951,
+          "name": "Blob size policy / Blob size policy",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_name": "",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "created_at": "2026-10-23T06:38:04Z",
+          "started_at": "2026-10-23T06:38:04Z",
+          "completed_at": null,
+          "steps": []
+        },
+        {
+          "id": 120279079858,
+          "name": "Codespell / Check for spelling errors",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_name": "",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "created_at": "2026-10-23T06:38:04Z",
+          "started_at": "2026-10-23T06:38:04Z",
+          "completed_at": null,
+          "steps": []
+        }
+      ]
+    },
+    {
+      "pr": 3408,
+      "id": 39912356783,
+      "name": "Hepta parametric memory shadow checks",
+      "event": "push",
+      "head_sha": "1e12dbb8187a007134b83928cfc25e663899ac9a",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T06:34:49Z",
+      "updated_at": "2026-10-23T06:34:49Z",
+      "attempt": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912356783",
+      "job_count": 1,
+      "jobs": [
+        {
+          "id": 120278017388,
+          "name": "parametric-memory-confirmation",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_name": "",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "created_at": "2026-10-23T06:34:49Z",
+          "started_at": "2026-10-23T06:34:49Z",
+          "completed_at": null,
+          "steps": []
+        }
+      ]
+    },
+    {
+      "pr": 3401,
+      "id": 39912660959,
+      "name": "v8-canary",
+      "event": "pull_request",
+      "head_sha": "699758dca309caa1087b899d49791a2e8fd662e4",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T06:37:45Z",
+      "updated_at": "2026-10-23T06:37:45Z",
+      "attempt": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660959",
+      "job_count": 1,
+      "jobs": [
+        {
+          "id": 120278982768,
+          "name": "metadata",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_name": "",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "created_at": "2026-10-23T06:37:46Z",
+          "started_at": "2026-10-23T06:37:46Z",
+          "completed_at": null,
+          "steps": []
+        }
+      ]
+    },
+    {
+      "pr": 3401,
+      "id": 39912660973,
+      "name": "Hepta shared Stem bake-off shadow checks",
+      "event": "pull_request",
+      "head_sha": "699758dca309caa1087b899d49791a2e8fd662e4",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T06:37:45Z",
+      "updated_at": "2026-10-23T06:37:45Z",
+      "attempt": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660973",
+      "job_count": 6,
+      "jobs": [
+        {
+          "id": 120278982266,
+          "name": "real-checkpoint-text-bakeoff (laya_encoder_only)",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": null,
+          "runner_name": null,
+          "runner_group_name": null,
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "created_at": "2026-10-23T06:37:46Z",
+          "started_at": "2026-10-23T06:37:46Z",
+          "completed_at": null,
+          "steps": []
+        },
+        {
+          "id": 120278982426,
+          "name": "native-latent-cpu-smoke",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_name": "",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "created_at": "2026-10-23T06:37:46Z",
+          "started_at": "2026-10-23T06:37:46Z",
+          "completed_at": null,
+          "steps": []
+        },
+        {
+          "id": 120278982433,
+          "name": "evidence-contract",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_name": "",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "created_at": "2026-10-23T06:37:46Z",
+          "started_at": "2026-10-23T06:37:46Z",
+          "completed_at": null,
+          "steps": []
+        },
+        {
+          "id": 120278982476,
+          "name": "real-checkpoint-text-bakeoff (granite97m)",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_name": "",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "created_at": "2026-10-23T06:37:46Z",
+          "started_at": "2026-10-23T06:37:46Z",
+          "completed_at": null,
+          "steps": []
+        },
+        {
+          "id": 120278982510,
+          "name": "real-checkpoint-text-bakeoff (embeddinggemma2_740m)",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": null,
+          "runner_name": null,
+          "runner_group_name": null,
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "created_at": "2026-10-23T06:37:46Z",
+          "started_at": "2026-10-23T06:37:46Z",
+          "completed_at": null,
+          "steps": []
+        },
+        {
+          "id": 120278982572,
+          "name": "real-checkpoint-text-bakeoff (mmbert_small)",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_name": "",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "created_at": "2026-10-23T06:37:46Z",
+          "started_at": "2026-10-23T06:37:46Z",
+          "completed_at": null,
+          "steps": []
+        }
+      ]
+    },
+    {
+      "pr": 3401,
+      "id": 39912660881,
+      "name": "blocking-ci",
+      "event": "pull_request",
+      "head_sha": "699758dca309caa1087b899d49791a2e8fd662e4",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T06:37:45Z",
+      "updated_at": "2026-10-23T06:37:45Z",
+      "attempt": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660881",
+      "job_count": 3,
+      "jobs": [
+        {
+          "id": 120278982532,
+          "name": "Select blocking CI scope",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_name": "",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "created_at": "2026-10-23T06:37:46Z",
+          "started_at": "2026-10-23T06:37:46Z",
+          "completed_at": null,
+          "steps": []
+        },
+        {
+          "id": 120278982804,
+          "name": "Codespell / Check for spelling errors",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_name": "",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "created_at": "2026-10-23T06:37:46Z",
+          "started_at": "2026-10-23T06:37:46Z",
+          "completed_at": null,
+          "steps": []
+        },
+        {
+          "id": 120278982817,
+          "name": "Blob size policy / Blob size policy",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_name": "",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "created_at": "2026-10-23T06:37:46Z",
+          "started_at": "2026-10-23T06:37:46Z",
+          "completed_at": null,
+          "steps": []
+        }
+      ]
+    },
+    {
+      "pr": 3401,
+      "id": 39912660876,
+      "name": "Hepta architecture convergence",
+      "event": "pull_request",
+      "head_sha": "699758dca309caa1087b899d49791a2e8fd662e4",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T06:37:45Z",
+      "updated_at": "2026-10-23T06:37:45Z",
+      "attempt": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912660876",
+      "job_count": 2,
+      "jobs": [
+        {
+          "id": 120278982268,
+          "name": "Architecture convergence (source-head)",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_name": "",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "created_at": "2026-10-23T06:37:46Z",
+          "started_at": "2026-10-23T06:37:46Z",
+          "completed_at": null,
+          "steps": []
+        },
+        {
+          "id": 120278982526,
+          "name": "Architecture convergence (base-merge)",
+          "status": "queued",
+          "conclusion": null,
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_name": "",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "created_at": "2026-10-23T06:37:46Z",
+          "started_at": "2026-10-23T06:37:46Z",
+          "completed_at": null,
+          "steps": []
+        }
+      ]
+    }
+  ],
+  "diagnosis": {
+    "target_steps_executed": false,
+    "target_runner_assigned": false,
+    "observed_failure": false,
+    "external_blocker": "shared execution capacity backlog; exact account/organization concurrency quota unavailable",
+    "evidence": "Other already inspected jobs created around 04:40 UTC only received hosted runners around 06:21 to 06:31 UTC; target has no runner and no steps.",
+    "exact_quota_confirmed": false
+  },
+  "duplicate_shadow": {
+    "keep_push_run": 39912356783,
+    "duplicate_pr_run": 39912691480,
+    "duplicate_jobs": 0,
+    "same_source_and_recipe": true,
+    "same_head_concurrency_group": true,
+    "recommended_action": "Cancel only the duplicate PR run if a supported cancellation capability becomes available; retain exact-head push run and all required checks.",
+    "action_executed": false,
+    "does_not_reduce_existing_push_queue_wait": true
+  },
+  "access_metadata": {
+    "github_cli_available": false,
+    "github_auth_environment_keys_present": [],
+    "credential_values_read_or_printed": false,
+    "runner_management_tool_available": false,
+    "runner_metadata_endpoint": "connector allowlist rejects GET actions/runners",
+    "actions_permissions_endpoint": "connector allowlist rejects GET actions/permissions",
+    "repository_rulesets_including_parents": [],
+    "classic_branch_protection": "not obtained; connector rejects encoded slash-branch path",
+    "self_hosted_runner_existence": "unknown"
+  },
+  "mutations": {
+    "code_changed": false,
+    "workflow_changed": false,
+    "runs_cancelled": false,
+    "new_runner_installed_or_registered": false,
+    "other_branch_jobs_touched": false
+  },
+  "interpretation": {
+    "remote_ci_passed": false,
+    "local_tests_substitute_for_remote_ci": false
+  },
+  "earlier_repository_run_counts": {
+    "observed_between_utc": [
+      "2026-10-23 06:39:10 UTC",
+      "2026-10-23 06:42:46 UTC"
+    ],
+    "queued": 661,
+    "in_progress": 5
+  }
+}
+

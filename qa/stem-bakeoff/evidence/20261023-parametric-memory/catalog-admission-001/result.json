@@ -1,0 +1,43 @@
+{
+  "active_generation": 2,
+  "active_manifest_sha256": "c273d4555cc0dbb105fc38a674ac6963a43cf48c58d9fced6a38e373759c2e05",
+  "all_gates_passed": true,
+  "catalog_sha256": "5255b86d987074e5f81a03973a41fd985e2d1e429f9aaefd758f67b3d5b1294e",
+  "existing_full_confirmation_source_commit": "1e12dbb8187a007134b83928cfc25e663899ac9a",
+  "fresh_worker_processes": 1,
+  "known": {
+    "entity": "Bob",
+    "expected_value": "orange",
+    "raw_exact_match": true,
+    "raw_text": "orange"
+  },
+  "metadata_has_answer_values": false,
+  "model_callback_calls": [
+    {
+      "manifest_sha256": "c273d4555cc0dbb105fc38a674ac6963a43cf48c58d9fced6a38e373759c2e05",
+      "question": "Which color did we assign to Bob?"
+    }
+  ],
+  "model_callbacks_for_unknown_stale_or_withdrawn": 0,
+  "model_intrinsic_abstention_proven": false,
+  "parameter_unlearning_proven": false,
+  "production_accepted": false,
+  "provider_authenticated": false,
+  "rejections": {
+    "stale": "catalog is stale or not bound to active checkpoint provenance",
+    "withdrawn": "withdrawn inference source"
+  },
+  "schema": "hepta.parametric-memory.catalog-integration.result.v1",
+  "source_files_unchanged": true,
+  "training_updates": 0,
+  "unknown": {
+    "Alice": {
+      "response": "unknown",
+      "status": "unknown"
+    },
+    "Zelda": {
+      "response": "unknown",
+      "status": "unknown"
+    }
+  }
+}

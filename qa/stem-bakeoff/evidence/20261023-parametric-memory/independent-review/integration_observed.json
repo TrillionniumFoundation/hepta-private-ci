@@ -1,0 +1,29 @@
+{
+  "record_kind": "transcription_of_completed_tool_stdout",
+  "exec_session_id": 41929,
+  "exit_code": 0,
+  "policy_test_methods": 1,
+  "policy_test_scenarios": 4,
+  "policy_test_seconds": 1.058,
+  "stdout_result": {
+    "clean_base_replay_verified": true,
+    "current_generation": 2,
+    "forced_nochange_dispatch": true,
+    "lifecycle_fresh_processes": 3,
+    "network_actual_fresh_processes": 6,
+    "network_arms_read": ["nochange", "continue", "split"],
+    "nochange_queries": 4,
+    "revoked_descendants_and_parent_rejected": 5,
+    "revoked_forward_calls": 0,
+    "scope": "tiny real decoder integration only, no capability claim",
+    "selection_policy_scenarios": 4
+  },
+  "limitations": [
+    "Tiny randomly initialized real decoder; no pretrained recall capability claim.",
+    "Nochange was explicitly selected for consumer-path coverage; this is not evidence that natural policy selected nochange.",
+    "The nochange policy itself was independently exercised by the four regression scenarios.",
+    "Temporary base, adapters and per-worker journals were removed when the successful test exited.",
+    "The script was executed inline, then preserved verbatim in integration_smoke.py; it was not rerun solely to save evidence.",
+    "This is local review evidence, not the source-frozen confirmation or a GitHub Actions run."
+  ]
+}
