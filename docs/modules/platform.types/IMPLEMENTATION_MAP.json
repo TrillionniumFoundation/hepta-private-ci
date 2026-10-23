@@ -2,20 +2,16 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "f7648d867e9b2c175382a62faee4e13715f61a79",
-    "tree": "e56949f8de1f0f846ba63ab1e56343420a40713b"
+    "commit": "9049a63c7f1fbeb2d9bbba4f2fba86e1add50b4e",
+    "tree": "7dc7234fab4b2db69af4b1f774a2ea3015ebbee1"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "platform.types",
   "owner": "kernel-contracts",
   "deputy": "architecture",
   "technicalGuide": "docs/modules/platform.types/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-types"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-types"
-  ],
+  "declaredRoots": ["codex-rs/hepta-types"],
+  "resolvedRoots": ["codex-rs/hepta-types"],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
@@ -29,17 +25,12 @@
       "sourcePath": "codex-rs/hepta-types/src/bounded.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-types/src/bounded_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-types/src/bounded_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "bounded_values",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "publicSymbols": [
-        "BoundedText",
-        "BoundedBytes"
-      ]
+      "publicSymbols": ["BoundedText", "BoundedBytes"]
     },
     {
       "operation": "validate_id",
@@ -47,9 +38,7 @@
       "sourcePath": "codex-rs/hepta-types/src/identity.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-types/src/identity_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-types/src/identity_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "validate_id",
       "mappingClass": "owner_native",
@@ -67,9 +56,7 @@
       "sourcePath": "codex-rs/hepta-types/src/identity.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-types/src/identity_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-types/src/identity_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "raw_authority_ingress",
       "mappingClass": "owner_native",
@@ -95,10 +82,7 @@
       "designOperation": "canonical_digest_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "publicSymbols": [
-        "canonical_encode_v1",
-        "canonical_digest_v1"
-      ]
+      "publicSymbols": ["canonical_encode_v1", "canonical_digest_v1"]
     },
     {
       "operation": "canonical_validate_v1",
@@ -115,9 +99,7 @@
       "designOperation": "canonical_validate_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "publicSymbols": [
-        "canonical_validate_v1"
-      ]
+      "publicSymbols": ["canonical_validate_v1"]
     },
     {
       "operation": "fixed_q32",
@@ -125,9 +107,7 @@
       "sourcePath": "codex-rs/hepta-types/src/fixed.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-types/src/fixed_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-types/src/fixed_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "fixed_q32",
       "mappingClass": "owner_native",
@@ -144,9 +124,7 @@
       "sourcePath": "codex-rs/hepta-types/src/registry.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-types/src/registry_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-types/src/registry_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "contract_registry_v1",
       "mappingClass": "owner_native",
@@ -163,17 +141,12 @@
       "sourcePath": "codex-rs/hepta-types/src/numeric_profile.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-types/src/numeric_profile_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-types/src/numeric_profile_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "numeric_profile_definition_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "publicSymbols": [
-        "NumericProfileV1",
-        "NumericProfileDefinitionV1"
-      ]
+      "publicSymbols": ["NumericProfileV1", "NumericProfileDefinitionV1"]
     },
     {
       "operation": "rescale_signal",
@@ -181,9 +154,7 @@
       "sourcePath": "codex-rs/hepta-types/src/numeric_conversion.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-types/src/numeric_conversion_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-types/src/numeric_conversion_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "rescale_signal",
       "mappingClass": "owner_native",
@@ -200,16 +171,12 @@
       "sourcePath": "codex-rs/hepta-types/src/numeric_conversion.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-types/src/numeric_conversion_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-types/src/numeric_conversion_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "rescale_signal_registered",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "publicSymbols": [
-        "rescale_signal_registered"
-      ]
+      "publicSymbols": ["rescale_signal_registered"]
     },
     {
       "operation": "generated_bindings_v1",
@@ -272,13 +239,11 @@
     "activation": false,
     "release": false
   },
-  "sourceRoot": [
-    "codex-rs/hepta-types"
-  ],
+  "sourceRoot": ["codex-rs/hepta-types"],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "f7648d867e9b2c175382a62faee4e13715f61a79",
-    "tree": "e56949f8de1f0f846ba63ab1e56343420a40713b"
+    "commit": "9049a63c7f1fbeb2d9bbba4f2fba86e1add50b4e",
+    "tree": "7dc7234fab4b2db69af4b1f774a2ea3015ebbee1"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",

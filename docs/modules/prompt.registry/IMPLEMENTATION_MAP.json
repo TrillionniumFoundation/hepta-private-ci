@@ -2,20 +2,16 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
-    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
+    "commit": "9049a63c7f1fbeb2d9bbba4f2fba86e1add50b4e",
+    "tree": "7dc7234fab4b2db69af4b1f774a2ea3015ebbee1"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "prompt.registry",
   "owner": "intelligence-platform",
   "deputy": "cognitive-platform",
   "technicalGuide": "docs/modules/prompt.registry/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-prompt-registry"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-prompt-registry"
-  ],
+  "declaredRoots": ["codex-rs/hepta-prompt-registry"],
+  "resolvedRoots": ["codex-rs/hepta-prompt-registry"],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
@@ -77,7 +73,5 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": [
-    "codex-rs/hepta-prompt-registry"
-  ]
+  "sourceRoot": ["codex-rs/hepta-prompt-registry"]
 }

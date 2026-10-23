@@ -3,12 +3,12 @@
   "schemaVersion": 3,
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "sourceBase": {
-    "commit": "f7648d867e9b2c175382a62faee4e13715f61a79",
-    "tree": "e56949f8de1f0f846ba63ab1e56343420a40713b"
+    "commit": "9049a63c7f1fbeb2d9bbba4f2fba86e1add50b4e",
+    "tree": "7dc7234fab4b2db69af4b1f774a2ea3015ebbee1"
   },
   "observedAtHead": {
-    "commit": "f7648d867e9b2c175382a62faee4e13715f61a79",
-    "tree": "e56949f8de1f0f846ba63ab1e56343420a40713b"
+    "commit": "9049a63c7f1fbeb2d9bbba4f2fba86e1add50b4e",
+    "tree": "7dc7234fab4b2db69af4b1f774a2ea3015ebbee1"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -60,12 +60,8 @@
   "owner": "intelligence-platform",
   "deputy": "qualification-plane",
   "technicalGuide": "docs/modules/intelligence.control/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-intelligence"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-intelligence"
-  ],
+  "declaredRoots": ["codex-rs/hepta-intelligence"],
+  "resolvedRoots": ["codex-rs/hepta-intelligence"],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "named_agentd_runner_present_daemon_route_not_composed",
@@ -80,9 +76,7 @@
       "delegatedCallees": [],
       "state": "source_implemented_named_runner_not_daemon_routed",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-intelligence/src/canonical_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-intelligence/src/canonical_tests.rs"],
       "sourcePathExists": true
     },
     {
@@ -145,9 +139,7 @@
       "delegatedCallees": [],
       "state": "source_implemented_named_runner_not_daemon_routed",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-intelligence/src/canonical_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-intelligence/src/canonical_tests.rs"],
       "sourcePathExists": true
     },
     {
@@ -159,9 +151,7 @@
       "delegatedCallees": [],
       "state": "source_implemented_named_runner_not_daemon_routed",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-intelligence/src/canonical_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-intelligence/src/canonical_tests.rs"],
       "sourcePathExists": true
     },
     {
@@ -188,9 +178,7 @@
       "delegatedCallees": [],
       "state": "source_implemented_compatibility_not_product_routed",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-intelligence/src/lib_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-intelligence/src/lib_tests.rs"],
       "sourcePathExists": true
     },
     {
@@ -202,9 +190,7 @@
       "delegatedCallees": [],
       "state": "source_implemented_compatibility_not_product_routed",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-intelligence/src/vertical_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-intelligence/src/vertical_tests.rs"],
       "sourcePathExists": true
     },
     {
@@ -216,9 +202,7 @@
       "delegatedCallees": [],
       "state": "source_implemented_compatibility_not_product_routed",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"],
       "sourcePathExists": true
     },
     {
@@ -230,9 +214,7 @@
       "delegatedCallees": [],
       "state": "source_implemented_compatibility_not_product_routed",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"],
       "sourcePathExists": true
     },
     {
@@ -259,9 +241,7 @@
       "delegatedCallees": [],
       "state": "source_implemented_compatibility_not_product_routed",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-intelligence/src/pipeline_v2_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-intelligence/src/pipeline_v2_tests.rs"],
       "sourcePathExists": true
     },
     {
@@ -603,17 +583,15 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": [
-    "codex-rs/hepta-intelligence"
-  ],
+  "sourceRoot": ["codex-rs/hepta-intelligence"],
   "sourceObjects": [
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "0e79b9af3febca1973ec6f4773763e1acc7b0dca"
+      "object": "c34e0c0df3136c0ee26e0039b18b4e4cbbe2ac06"
     },
     {
       "path": "codex-rs/Cargo.toml",
-      "object": "0a587925787abee62a324b85f3a6a7fb94706fe1"
+      "object": "317b69e9559ce96208e0822c3ff83f38ac2c2841"
     },
     {
       "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
@@ -645,7 +623,7 @@
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
-      "object": "ddfe32dd3c3e2dd9273abb6a66d10497d8ac00cd"
+      "object": "2e6bd4f8fe1755e2f2103ddd16c06def718276fa"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",

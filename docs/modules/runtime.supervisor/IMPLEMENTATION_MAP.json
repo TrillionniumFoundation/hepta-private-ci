@@ -2,18 +2,14 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "61aed9b28160e6ca20988e758e226ad0395c41d6",
-    "tree": "26957071a3e658c197a2d957305b25e6f118cace"
+    "commit": "9049a63c7f1fbeb2d9bbba4f2fba86e1add50b4e",
+    "tree": "7dc7234fab4b2db69af4b1f774a2ea3015ebbee1"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.supervisor",
   "sourceMaturity": "native_daemon",
-  "declaredRoots": [
-    "codex-rs/hepta-supervisor"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-supervisor"
-  ],
+  "declaredRoots": ["codex-rs/hepta-supervisor"],
+  "resolvedRoots": ["codex-rs/hepta-supervisor"],
   "stateOwnerDisposition": "Owns generation-fenced process lifecycle, durable bounded restart state and the unified durable release-transition journal; Fleet owns immutable release catalog/allow-revoke admission facts and user-task truth remains outside this module.",
   "terminalObserverDisposition": "The exact process driver, Agentd readiness/drain acknowledgements and current-generation observations establish lifecycle terminality; drain acknowledgement closes admission but never establishes user-task success.",
   "operations": [
@@ -374,9 +370,7 @@
   "owner": "runtime-control",
   "deputy": "fleet-runtime",
   "technicalGuide": "docs/modules/runtime.supervisor/TECHNICAL.md",
-  "sourceRoot": [
-    "codex-rs/hepta-supervisor"
-  ],
+  "sourceRoot": ["codex-rs/hepta-supervisor"],
   "sourceBaseSemantics": "historical_provenance_only_exact_candidate_derived_from_git_at_verification_time",
   "candidateIdentity": "derived_from_git_head_or_deterministic_merge_at_verification_time",
   "observedSourcePaths": [
@@ -402,19 +396,19 @@
     "docs/modules/runtime.supervisor/TECHNICAL.md"
   ],
   "observedAtHead": {
-    "commit": "61aed9b28160e6ca20988e758e226ad0395c41d6",
-    "tree": "26957071a3e658c197a2d957305b25e6f118cace",
+    "commit": "9049a63c7f1fbeb2d9bbba4f2fba86e1add50b4e",
+    "tree": "7dc7234fab4b2db69af4b1f774a2ea3015ebbee1",
     "interpretation": "final exact repository-controlled source observation for runtime.supervisor convergence: typed Agentd drain and admitted-handler barrier, durable automation classification, production unsigned-release denial when a verifier is configured, unified release transaction/re-admission, transition-aware signed terminal recovery, durable bounded explicit and automatic restart semantics, expanded readiness gates, and recovery hydration that preserves durable authority state across process faults. Product activation, deployed trust roots, target-host qualification and independent acceptance remain external."
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "sourceObjects": [
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "0e79b9af3febca1973ec6f4773763e1acc7b0dca"
+      "object": "c34e0c0df3136c0ee26e0039b18b4e4cbbe2ac06"
     },
     {
       "path": "codex-rs/Cargo.toml",
-      "object": "0a587925787abee62a324b85f3a6a7fb94706fe1"
+      "object": "317b69e9559ce96208e0822c3ff83f38ac2c2841"
     },
     {
       "path": "codex-rs/app-server",
@@ -426,7 +420,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "0430eb293f7b96dfb4c32b925cb263ade7a36210"
+      "object": "4a2376a8f509fbd360ac8ee750ae6591d6f5b129"
     },
     {
       "path": "codex-rs/hepta-automation",

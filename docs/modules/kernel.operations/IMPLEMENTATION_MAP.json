@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "61aed9b28160e6ca20988e758e226ad0395c41d6",
-    "tree": "26957071a3e658c197a2d957305b25e6f118cace"
+    "commit": "9049a63c7f1fbeb2d9bbba4f2fba86e1add50b4e",
+    "tree": "7dc7234fab4b2db69af4b1f774a2ea3015ebbee1"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "laneId": "LANE-A-FOUNDATION",
@@ -11,12 +11,8 @@
   "owner": "durability-kernel",
   "deputy": "architecture",
   "technicalGuide": "docs/modules/kernel.operations/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-operations"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-operations"
-  ],
+  "declaredRoots": ["codex-rs/hepta-operations"],
+  "resolvedRoots": ["codex-rs/hepta-operations"],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "agentd_runtime_lifecycle_source_composed_external_authority_activation_pending",
@@ -65,9 +61,7 @@
       "sourcePath": "codex-rs/hepta-memory/src/operation_claims.rs",
       "state": "durable_claim_lease_implemented_execution_pending",
       "authority": "generation_fence_attempt_lease_bound",
-      "tests": [
-        "codex-rs/hepta-memory/src/production_writer.rs"
-      ],
+      "tests": ["codex-rs/hepta-memory/src/production_writer.rs"],
       "sourcePathExists": true,
       "designOperation": "claim_outbox",
       "mappingClass": "delegated_owner_native",
@@ -131,9 +125,7 @@
       "sourcePath": "codex-rs/hepta-agentd/src/production_writer_host.rs",
       "state": "named_final_use_host_source_implemented_activation_pending",
       "authority": "externally_supplied_authority_and_grant_provider",
-      "tests": [
-        "codex-rs/hepta-agentd/examples/h4_persistent_writer.rs"
-      ],
+      "tests": ["codex-rs/hepta-agentd/examples/h4_persistent_writer.rs"],
       "sourcePathExists": true,
       "designOperation": "product_composition",
       "mappingClass": "delegated_owner_native",
@@ -151,9 +143,7 @@
       "sourcePath": "codex-rs/hepta-agentd/src/runtime.rs",
       "state": "explicit_daemon_lifecycle_source_implemented_activation_pending",
       "authority": "externally_supplied_authority_and_grant_provider",
-      "tests": [
-        "codex-rs/hepta-agentd/src/runtime_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-agentd/src/runtime_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "product_composition",
       "mappingClass": "delegated_owner_native",
@@ -171,9 +161,7 @@
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
       "state": "second_operation_intent_consumer_source_implemented",
       "authority": "kernel.authority_final_use_consumed",
-      "tests": [
-        "codex-rs/hepta-automation/tests/authorized_effect.rs"
-      ],
+      "tests": ["codex-rs/hepta-automation/tests/authorized_effect.rs"],
       "sourcePathExists": true,
       "designOperation": "destination_apply",
       "mappingClass": "delegated_owner_native",
@@ -191,9 +179,7 @@
       "sourcePath": "codex-rs/hepta-operations/src/ledger.rs",
       "state": "reference_oracle_implemented",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-operations/src/ledger_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-operations/src/ledger_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "reference_operationledger",
       "mappingClass": "owner_native",
@@ -205,9 +191,7 @@
       "sourcePath": "codex-rs/hepta-operations/src/outbox.rs",
       "state": "reference_oracle_implemented",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-operations/src/outbox_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-operations/src/outbox_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "reference_outbox",
       "mappingClass": "owner_native",
@@ -235,9 +219,7 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": [
-    "codex-rs/hepta-operations"
-  ],
+  "sourceRoot": ["codex-rs/hepta-operations"],
   "exactSourceEvidence": {
     "kind": "path_blob_manifest_v1",
     "entries": [
@@ -275,7 +257,7 @@
       },
       {
         "path": "codex-rs/hepta-memory/src/production_writer.rs",
-        "blobSha": "8b2de885a4c55db39ad46990f725c045f23ab94e"
+        "blobSha": "dbe5524be4a14d1f68bb8fc9220fc5018475d463"
       },
       {
         "path": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
@@ -320,8 +302,8 @@
     ]
   },
   "observedAtHead": {
-    "commit": "61aed9b28160e6ca20988e758e226ad0395c41d6",
-    "tree": "26957071a3e658c197a2d957305b25e6f118cace"
+    "commit": "9049a63c7f1fbeb2d9bbba4f2fba86e1add50b4e",
+    "tree": "7dc7234fab4b2db69af4b1f774a2ea3015ebbee1"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -367,15 +349,15 @@
   "sourceObjects": [
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "0e79b9af3febca1973ec6f4773763e1acc7b0dca"
+      "object": "c34e0c0df3136c0ee26e0039b18b4e4cbbe2ac06"
     },
     {
       "path": "codex-rs/Cargo.toml",
-      "object": "0a587925787abee62a324b85f3a6a7fb94706fe1"
+      "object": "317b69e9559ce96208e0822c3ff83f38ac2c2841"
     },
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "0430eb293f7b96dfb4c32b925cb263ade7a36210"
+      "object": "4a2376a8f509fbd360ac8ee750ae6591d6f5b129"
     },
     {
       "path": "codex-rs/hepta-agentd/examples/h4_persistent_writer.rs",
@@ -431,7 +413,7 @@
     },
     {
       "path": "codex-rs/hepta-contracts",
-      "object": "a77e5952e0c6ddf697e49013476a9b0bec596f76"
+      "object": "2481d3969761d3b728eb779ad07dc93f23776947"
     },
     {
       "path": "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql",
@@ -463,7 +445,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/production_writer.rs",
-      "object": "8b2de885a4c55db39ad46990f725c045f23ab94e"
+      "object": "dbe5524be4a14d1f68bb8fc9220fc5018475d463"
     },
     {
       "path": "codex-rs/hepta-operations",
@@ -491,7 +473,7 @@
     },
     {
       "path": "docs/modules/kernel.operations/TECHNICAL.md",
-      "object": "29d0c85fb5cac90b325c3c9ef62ee7de455b110c"
+      "object": "1acda6e7bdac89496275d454841f6de4ec9f5e72"
     }
   ]
 }

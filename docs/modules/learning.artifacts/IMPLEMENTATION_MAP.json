@@ -2,20 +2,16 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "5bcc5fcb8219ceba4be9627686ad66cffc3a77f7",
-    "tree": "28fad09ef84b14f85451908c13e13ad19db2f353"
+    "commit": "9049a63c7f1fbeb2d9bbba4f2fba86e1add50b4e",
+    "tree": "7dc7234fab4b2db69af4b1f774a2ea3015ebbee1"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.artifacts",
   "owner": "learning-platform",
   "deputy": "durability-kernel",
   "technicalGuide": "docs/modules/learning.artifacts/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-learning-artifacts"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-learning-artifacts"
-  ],
+  "declaredRoots": ["codex-rs/hepta-learning-artifacts"],
+  "resolvedRoots": ["codex-rs/hepta-learning-artifacts"],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "explicit_read_and_writer_service_composed",
@@ -380,9 +376,7 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": [
-    "codex-rs/hepta-learning-artifacts"
-  ],
+  "sourceRoot": ["codex-rs/hepta-learning-artifacts"],
   "productCallerBindings": [
     {
       "operation": "load_pinned_candidate",
@@ -444,11 +438,11 @@
     },
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "0e79b9af3febca1973ec6f4773763e1acc7b0dca"
+      "object": "c34e0c0df3136c0ee26e0039b18b4e4cbbe2ac06"
     },
     {
       "path": "codex-rs/Cargo.toml",
-      "object": "0a587925787abee62a324b85f3a6a7fb94706fe1"
+      "object": "317b69e9559ce96208e0822c3ff83f38ac2c2841"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
@@ -532,8 +526,8 @@
     }
   ],
   "observedAtHead": {
-    "commit": "5bcc5fcb8219ceba4be9627686ad66cffc3a77f7",
-    "tree": "28fad09ef84b14f85451908c13e13ad19db2f353"
+    "commit": "9049a63c7f1fbeb2d9bbba4f2fba86e1add50b4e",
+    "tree": "7dc7234fab4b2db69af4b1f774a2ea3015ebbee1"
   },
   "sourceObservationScope": "Current source navigation was independently re-observed at sourceBase. Source objects and observed paths bind that source snapshot; this observation does not renew historical execution, acceptance, activation or release evidence.",
   "observedSourcePaths": [

@@ -2,20 +2,16 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
-    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
+    "commit": "9049a63c7f1fbeb2d9bbba4f2fba86e1add50b4e",
+    "tree": "7dc7234fab4b2db69af4b1f774a2ea3015ebbee1"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.authority",
   "owner": "security-authority",
   "deputy": "kernel-contracts",
   "technicalGuide": "docs/modules/kernel.authority/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-contracts"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-contracts"
-  ],
+  "declaredRoots": ["codex-rs/hepta-contracts"],
+  "resolvedRoots": ["codex-rs/hepta-contracts"],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "source_composed_runtime_fleet_registered_bao_host_and_agentd_browser_not_product_activated",
@@ -42,9 +38,7 @@
       "sourcePath": "codex-rs/hepta-contracts/src/final_use_store.rs",
       "state": "source_implemented_not_product_activated",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-contracts/src/final_use_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-contracts/src/final_use_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "store",
       "mappingClass": "owner_native",
@@ -56,9 +50,7 @@
       "sourcePath": "codex-rs/hepta-contracts/src/authority_lease.rs",
       "state": "source_implemented_least_authority_handles_retired_revision_lineage_not_product_activated",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-contracts/src/authority_lease.rs"
-      ],
+      "tests": ["codex-rs/hepta-contracts/src/authority_lease.rs"],
       "sourcePathExists": true,
       "designOperation": "put_verify_revoke_prune_with_retired_revision_lineage_epoch_authority_lease",
       "mappingClass": "owner_native",
@@ -70,9 +62,7 @@
       "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
       "state": "source_implemented_registered_host_not_product_activated",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-contracts/src/final_use_control.rs"
-      ],
+      "tests": ["codex-rs/hepta-contracts/src/final_use_control.rs"],
       "sourcePathExists": true,
       "designOperation": "independent_final_use_approval_with_epoch_key_rotation",
       "mappingClass": "owner_native",
@@ -84,9 +74,7 @@
       "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
       "state": "source_implemented_registered_host_not_product_activated",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-contracts/src/final_use_control.rs"
-      ],
+      "tests": ["codex-rs/hepta-contracts/src/final_use_control.rs"],
       "sourcePathExists": true,
       "designOperation": "authenticated_fresh_revocation_ingestion_with_epoch_key_rotation",
       "mappingClass": "owner_native",
@@ -113,9 +101,7 @@
       "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
       "state": "source_implemented_transport_external",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-contracts/src/final_use_control.rs"
-      ],
+      "tests": ["codex-rs/hepta-contracts/src/final_use_control.rs"],
       "sourcePathExists": true,
       "designOperation": "verify_enrolled_node_revocation_convergence",
       "mappingClass": "owner_native_verifier",
@@ -142,9 +128,7 @@
       "sourcePath": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
       "state": "source_implemented_evidence_projection_not_authorization",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-contracts/src/verified_use_witness.rs"
-      ],
+      "tests": ["codex-rs/hepta-contracts/src/verified_use_witness.rs"],
       "sourcePathExists": true,
       "designOperation": "decision_and_audit_projection",
       "mappingClass": "owner_native",
@@ -176,9 +160,7 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": [
-    "codex-rs/hepta-contracts"
-  ],
+  "sourceRoot": ["codex-rs/hepta-contracts"],
   "traceability": "docs/modules/kernel.authority/TRACEABILITY.md",
   "trustDecision": "docs/modules/kernel.authority/ADR-0001-LEASE-TRUST-MODEL.md",
   "linearizationContract": "docs/modules/kernel.authority/LINEARIZATION.md",
@@ -190,18 +172,14 @@
       "nativeSymbol": "FleetAuthorityPort::issue",
       "sourcePath": "codex-rs/hepta-fleet/src/authority_port.rs",
       "state": "source_composed_owner_boundary_not_product_process_activated",
-      "tests": [
-        "codex-rs/hepta-fleet/src/authority_port.rs"
-      ]
+      "tests": ["codex-rs/hepta-fleet/src/authority_port.rs"]
     },
     {
       "id": "secrets.heptabao.registered_host",
       "nativeSymbol": "BaoFinalUseHost::consume_kv_v2",
       "sourcePath": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
       "state": "registered_host_source_composed_no_deployed_process_selected",
-      "tests": [
-        "codex-rs/hepta-bao-adapter/tests/final_use_host.rs"
-      ]
+      "tests": ["codex-rs/hepta-bao-adapter/tests/final_use_host.rs"]
     },
     {
       "id": "browser.servo.agentd",
@@ -234,7 +212,7 @@
     },
     {
       "path": "codex-rs/hepta-contracts",
-      "object": "a77e5952e0c6ddf697e49013476a9b0bec596f76"
+      "object": "2481d3969761d3b728eb779ad07dc93f23776947"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
@@ -246,11 +224,11 @@
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use.rs",
-      "object": "3cc75fab4185789514e4ecc7522e52f1ca59249f"
+      "object": "6e42e0484fbe776f96a225ef46ca518baaa87b3c"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
-      "object": "41b1d83586fdab55b143471dab85679c3efebbe8"
+      "object": "56c0a1a9430b9845020e43e7436736be0d8097f0"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_store.rs",

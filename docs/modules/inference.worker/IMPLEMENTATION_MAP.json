@@ -2,18 +2,14 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "540ffa2ae3a499dceff82e95dfdbe9b6685e9c9e",
-    "tree": "19cfe62879a1a6ad8ec80ff1dd6df7aad1ec0bb2"
+    "commit": "9049a63c7f1fbeb2d9bbba4f2fba86e1add50b4e",
+    "tree": "7dc7234fab4b2db69af4b1f774a2ea3015ebbee1"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
   "sourceMaturity": "durable_native_app_server_profile_and_local_driver_component",
-  "declaredRoots": [
-    "codex-rs/hepta-infer-worker-host"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-infer-worker-host"
-  ],
+  "declaredRoots": ["codex-rs/hepta-infer-worker-host"],
+  "resolvedRoots": ["codex-rs/hepta-infer-worker-host"],
   "stateOwnerDisposition": "Owns live provider client handles; persistent request/slot/observation facts remain in the inference.control journal. App Server owns ephemeral thread execution; artifact/cache owners retain model bytes.",
   "terminalObserverDisposition": "The hosted native-app-server profile observes real matching turn events; the local manifest driver remains injected and does not prove physical weights/device behavior.",
   "operations": [
@@ -139,7 +135,5 @@
   "owner": "inference-platform",
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/inference.worker/TECHNICAL.md",
-  "sourceRoot": [
-    "codex-rs/hepta-infer-worker-host"
-  ]
+  "sourceRoot": ["codex-rs/hepta-infer-worker-host"]
 }
