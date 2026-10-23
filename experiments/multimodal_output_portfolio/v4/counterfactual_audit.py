@@ -12,7 +12,7 @@ from typing import Callable
 
 from portfolio import (
     Allocation, Config, Controller, SHOCK_PROBS, STOP, State,
-    actions, advance, charge, conditional_ce, decode_all,
+    advance, charge, conditional_ce, decode_all,
     decoded_external_loss, feasible,
 )
 
@@ -234,7 +234,10 @@ def paired_nominal_shift(initial: State, cfg: Config,
     check_joint_law(shifted_law)
     frozen_open_loop, nominal_static = best_open_loop(initial, cfg, SHOCK_PROBS)
     feedback = Controller(cfg)
-    dynamic_policy = lambda s: feedback.solve(s)[0]
+
+    def dynamic_policy(s):
+        return feedback.solve(s)[0]
+
     nominal_dynamic = evaluate(initial, cfg, dynamic_policy, SHOCK_PROBS)
     # Exact finite tree parity is checked against independent materialized
     # outputs and total cost, not just the controller's recursive internal sums.
