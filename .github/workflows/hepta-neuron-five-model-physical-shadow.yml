@@ -1,0 +1,239 @@
+name: Hepta Neuron five-model physical CPU shadow
+
+on:
+  pull_request:
+    paths:
+      - qa/stem-bakeoff/replacement_physical.py
+      - qa/stem-bakeoff/test_replacement_physical.py
+      - qa/stem-bakeoff/replacement_physical_audit.py
+      - qa/stem-bakeoff/test_replacement_physical_audit.py
+      - qa/stem-bakeoff/replacement_models.json
+      - qa/stem-bakeoff/replacement_gate.py
+      - qa/stem-bakeoff/prepare_news_cohorts.py
+      - qa/stem-bakeoff/requirements-real.txt
+      - docs/learning/HEPTA_NEURON_PHYSICAL_SHADOW.md
+      - .github/workflows/hepta-neuron-five-model-physical-shadow.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-neuron-physical-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  physical-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Validate exact candidate and strict test environment
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+          python3 -m py_compile qa/stem-bakeoff/replacement_physical.py qa/stem-bakeoff/test_replacement_physical.py qa/stem-bakeoff/replacement_physical_audit.py qa/stem-bakeoff/test_replacement_physical_audit.py
+          python3 -m unittest discover -s qa/stem-bakeoff -p 'test_replacement_gate.py' -v
+          python3 -m unittest discover -s qa/stem-bakeoff -p 'test_replacement_physical_audit.py' -v
+      - name: Execute actual task-Head contract negatives
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/contracts"
+          "$RUNNER_TEMP/contracts/bin/python" -m pip install --only-binary=:all: \
+            --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          "$RUNNER_TEMP/contracts/bin/python" -m unittest discover \
+            -s qa/stem-bakeoff -p 'test_replacement_physical.py' -v
+          git diff --check
+          git diff --exit-code
+
+  five-checkpoint-probes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        candidate:
+          - laya_english_421m
+          - laya_typed_421m
+          - laya_multi_322m
+          - arctic_305m
+          - harrier_270m
+    env:
+      CANDIDATE: ${{ matrix.candidate }}
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pin exact current source; install CPU-only physical runtime
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 -m venv "$RUNNER_TEMP/physical-venv"
+          "$RUNNER_TEMP/physical-venv/bin/python" -m pip install --only-binary=:all: \
+            --index-url https://download.pytorch.org/whl/cpu \
+            'torch==2.10.0' 'torchvision==0.25.0'
+          "$RUNNER_TEMP/physical-venv/bin/python" -m pip install --only-binary=:all: \
+            -r qa/stem-bakeoff/requirements-real.txt
+      - name: Verify publisher revision, download original checkpoint bytes
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/physical-venv/bin/python" - <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          sys.path.insert(0, "qa/stem-bakeoff")
+          from huggingface_hub import snapshot_download, HfApi
+          from replacement_metadata import check_metadata
+          from replacement_gate import validate_registry
+          root = Path(os.environ["RUNNER_TEMP"])
+          registry = json.loads(Path("qa/stem-bakeoff/replacement_models.json").read_text())
+          if validate_registry(registry):
+              raise SystemExit("invalid immutable pinned five-model registry")
+          name = os.environ["CANDIDATE"]
+          spec = registry["models"][name]
+          info = HfApi().model_info(spec["repository"], revision=spec["revision"],
+                                    files_metadata=True)
+          record = {"sha": info.sha, "siblings": [
+              {"rfilename": f.rfilename, "size": f.size,
+               "lfs": None if f.lfs is None else {"sha256": f.lfs.get("sha256")}}
+              for f in info.siblings]}
+          checked = check_metadata(name, spec, record)
+          (root / "live-publisher.json").write_text(json.dumps(checked, sort_keys=True) + "\n")
+          snapshot_download(repo_id=spec["repository"], revision=spec["revision"],
+              local_dir=root / "checkpoint", allow_patterns=[
+                  "model.safetensors", "*.json", "encoder/*", "tokenizer/*",
+                  "tokenizer.model", "*.txt", "*.jinja", "*.py"])
+          from replacement_physical import verify_checkpoint
+          physical = verify_checkpoint(name, spec, root / "checkpoint")
+          (root / "physical-weight-sha256.json").write_text(
+              json.dumps(physical, sort_keys=True) + "\n")
+          PY
+      - name: Acquire byte-pinned historical source, produce disjoint cohorts
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --max-time 300 \
+            'https://archive.ics.uci.edu/static/public/359/news+aggregator.zip' \
+            --output "$RUNNER_TEMP/news.zip"
+          "$RUNNER_TEMP/physical-venv/bin/python" \
+            qa/stem-bakeoff/prepare_news_cohorts.py \
+            --archive "$RUNNER_TEMP/news.zip" \
+            --output "$RUNNER_TEMP/news-cohorts"
+      - name: Fetch immutable upstream Laya implementation for policy arms
+        if: startsWith(matrix.candidate, 'laya_')
+        run: |
+          set -euo pipefail
+          git init -q "$RUNNER_TEMP/laya-source"
+          git -C "$RUNNER_TEMP/laya-source" remote add origin \
+            https://github.com/NandhaKishorM/laya.git
+          git -C "$RUNNER_TEMP/laya-source" fetch --depth 1 origin \
+            c7527708f9f5220c669d8aa385077cd28d04708a
+          git -C "$RUNNER_TEMP/laya-source" checkout --detach FETCH_HEAD
+          test "$(git -C "$RUNNER_TEMP/laya-source" rev-parse HEAD)" = \
+            "c7527708f9f5220c669d8aa385077cd28d04708a"
+      - name: Run original weights and frozen rows, not metadata-only fixture
+        run: |
+          set -euo pipefail
+          args=(
+            --candidate "$CANDIDATE"
+            --snapshot "$RUNNER_TEMP/checkpoint"
+            --cohorts "$RUNNER_TEMP/news-cohorts"
+            --archive "$RUNNER_TEMP/news.zip"
+            --rows-per-split 8
+            --operator-accepted-terms
+            --output "$RUNNER_TEMP/physical-output.json"
+          )
+          if [[ "$CANDIDATE" == laya_* ]]; then
+            args+=(--laya-source "$RUNNER_TEMP/laya-source")
+          fi
+          "$RUNNER_TEMP/physical-venv/bin/python" \
+            qa/stem-bakeoff/replacement_physical.py "${args[$]}"
+          "$RUNNER_TEMP/physical-venv/bin/python" - <<'PY'
+          import json, os
+          from pathlib import Path
+          r = json.loads((Path(os.environ["RUNNER_TEMP"]) / "physical-output.json").read_text())
+          assert r["candidate"] == os.environ["CANDIDATE"]
+          assert r["observed_forward_calls"] == 40
+          assert r["performance"]["forward_count"] == 40
+          assert set(r["scores"]) == {"train","calibration","future_1","future_2","ood"}
+          assert r["authority"] == "DENY_ALL" and r["production_activation_allowed"] is False
+          assert r["limits"]["target_device_qualified"] is False
+          PY
+      - name: Retain original raw outputs and exact weight metadata
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuron-physical-${{ matrix.candidate }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/physical-output.json
+            ${{ runner.temp }}/physical-weight-sha256.json
+            ${{ runner.temp }}/live-publisher.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Check tracked checkout unchanged
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
+
+  cross-arm-original-output-audit:
+    needs: five-checkpoint-probes
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Download per-model original-output artifacts, preserving arm identity
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: neuron-physical-*-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/five-arm-artifacts
+          merge-multiple: false
+      - name: Keep model IDs separate and re-score original raw rows
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          root = Path(os.environ["RUNNER_TEMP"]) / "five-arm-artifacts"
+          arms = ("laya_english_421m","laya_typed_421m","laya_multi_322m",
+                  "arctic_305m","harrier_270m")
+          dst = Path(os.environ["RUNNER_TEMP"]) / "five-arm-raw"
+          dst.mkdir(exist_ok=False)
+          import shutil
+          expected_sha = os.environ["EXPECTED_SHA"]
+          for name in arms:
+              artifact = root / f"neuron-physical-{name}-{expected_sha}"
+              target = dst / name
+              target.mkdir()
+              source = artifact / "physical-output.json"
+              if source.is_file() and not source.is_symlink():
+                  shutil.copyfile(source, target / "physical-output.json")
+          PY
+          python3 qa/stem-bakeoff/replacement_physical_audit.py \
+            --input-directory "$RUNNER_TEMP/five-arm-raw" \
+            --output "$RUNNER_TEMP/five-model-original-audit.json"
+      - name: Retain cross-arm audit even if one original model failed
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuron-five-arm-original-audit-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/five-model-original-audit.json
+          if-no-files-found: warn
+          retention-days: 30

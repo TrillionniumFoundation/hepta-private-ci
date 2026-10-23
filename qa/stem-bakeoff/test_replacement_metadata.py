@@ -13,9 +13,11 @@ REGISTRY = json.loads(Path(__file__).with_name("replacement_models.json").read_t
 
 
 def fixture(spec):
+    name = next(name for name in EXPECTED if REGISTRY["models"][name] == spec)
+    parts = (("rl_agent_config.json", "encoder/config.json", "tokenizer/tokenizer.json")
+             if name.startswith("laya_") else ("config.json", "tokenizer.json"))
     return {"sha": spec["revision"], "siblings": [
-        {"rfilename": "config.json", "size": 100},
-        {"rfilename": "tokenizer.json", "size": 100},
+        *({"rfilename": part, "size": 100} for part in parts),
         {"rfilename": "model.safetensors", "size": 500000000,
          "lfs": {"sha256": spec["weight_sha256"]}}]}
 
@@ -45,17 +47,31 @@ class MetadataTests(unittest.TestCase):
     def test_wrong_lfs_denied(self):
         spec = REGISTRY["models"][EXPECTED[0]]
         r = fixture(spec)
-        r["siblings"][2]["lfs"]["sha256"] = "f" * 64
+        next(s for s in r["siblings"] if s["rfilename"] == "model.safetensors")["lfs"]["sha256"] = "f" * 64
         with self.assertRaises(ValueError):
             check_metadata(EXPECTED[0], spec, r)
 
     def test_config_and_tokenizer_required(self):
         spec = REGISTRY["models"][EXPECTED[1]]
-        for filename in ("config.json", "tokenizer.json"):
+        for filename in ("rl_agent_config.json", "encoder/config.json", "tokenizer/tokenizer.json"):
             r = fixture(spec)
             r["siblings"] = [e for e in r["siblings"] if e["rfilename"] != filename]
             with self.assertRaises(ValueError):
                 check_metadata(EXPECTED[1], spec, r)
+
+    def test_typed_publisher_has_no_root_config(self):
+        spec = REGISTRY["models"]["laya_typed_421m"]
+        r = fixture(spec)
+        self.assertNotIn("config.json", {s["rfilename"] for s in r["siblings"]})
+        self.assertEqual(check_metadata("laya_typed_421m", spec, r)["model"], "laya_typed_421m")
+
+    def test_non_laya_root_config_and_tokenizer_required(self):
+        spec = REGISTRY["models"]["harrier_270m"]
+        for filename in ("config.json", "tokenizer.json"):
+            r = fixture(spec)
+            r["siblings"] = [s for s in r["siblings"] if s["rfilename"] != filename]
+            with self.assertRaises(ValueError):
+                check_metadata("harrier_270m", spec, r)
 
     def test_duplicate_file_denied(self):
         spec = REGISTRY["models"][EXPECTED[2]]
