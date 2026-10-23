@@ -26,7 +26,8 @@ def fixture() -> dict:
         "actor_id": "actor-owner",
         "critic_owner_id": "critic-owner",
         "hardware_digest": "host-reference-digest",
-        "semantic_plan_digest": "semantic-plan-fixture",
+        "semantic_plan_schema_digest": "semantic-plan-schema-v1",
+        "compute_budget_units": 8_000_000,
         "independent_metric_digest": "external-quality-profile-digest",
         "max_policy_kl": 0.05,
         "arms": list(d.ARMS),
@@ -57,6 +58,10 @@ def fixture() -> dict:
                     "outcome_receipt_digest": f"outcome-{eps}-{arm}",
                     "run_receipt_digest": f"run-{eps}-{arm}",
                     "evaluated_arm": arm,
+                    "input_digest": f"frozen-input-{eps}",
+                    "semantic_plan_digest": f"plan-{eps}",
+                    "admitted_compute_budget_units": manifest["compute_budget_units"],
+                    "measured_compute_units": decoder + ctrl,
                     "independent_observed_outcome": True,
                     "hard_constraints_ok": True,
                     "utility": .25 + benefit + noise,
@@ -67,7 +72,8 @@ def fixture() -> dict:
                     "policy_kl": 0.001 * ai,
                     "modalities": ["text", "image"],
                     "consistency": {
-                        "semantic_plan_digest": manifest["semantic_plan_digest"],
+                        "semantic_plan_digest": f"plan-{eps}",
+                        "semantic_plan_schema_digest": manifest["semantic_plan_schema_digest"],
                         "verifier_id": manifest["observer_id"],
                         "bidirectional_checked": True,
                         "evidence_digest": f"crossmodal-evidence-{eps}-{arm}",
@@ -224,6 +230,23 @@ class QualificationTests(unittest.TestCase):
         out = d.evaluate(self.bundle)
         self.assertFalse(out["gates"]["a5_beats_a4_portfolio"])
 
+    def test_unequal_input_across_arms_rejected(self) -> None:
+        self.bundle["runs"][4]["input_digest"] = "different-input"
+        self.assert_rejects("unequal multimodal input")
+
+    def test_unequal_semantic_plan_across_arms_rejected(self) -> None:
+        self.bundle["runs"][4]["semantic_plan_digest"] = "different-plan"
+        self.bundle["runs"][4]["consistency"]["semantic_plan_digest"] = "different-plan"
+        self.assert_rejects("unequal shared plan")
+
+    def test_unequal_precommitted_budget_rejected(self) -> None:
+        self.bundle["runs"][4]["admitted_compute_budget_units"] = 10_000_000
+        self.assert_rejects("unequal precommitted")
+
+    def test_measured_budget_exceed_rejected(self) -> None:
+        self.bundle["runs"][4]["measured_compute_units"] = 9_000_000
+        self.assert_rejects("measured_compute_units")
+
     def test_covariance_context_drift_rejected(self) -> None:
         self.bundle["joint_trials"][10]["condition_digest"] = "leaked-future-conditioning"
         self.assert_rejects("mixed pre-decision")
@@ -260,6 +283,8 @@ class QualificationTests(unittest.TestCase):
             if row["arm"] == "A5":
                 row["decoder_ns"] += 3_000_000
                 row["elapsed_ns"] += 3_000_000
+                row["measured_compute_units"] = min(
+                    self.bundle["manifest"]["compute_budget_units"], row["decoder_ns"] + row["controller_ns"])
         out = d.evaluate(self.bundle)
         self.assertFalse(out["gates"]["controller_net_compute_saving"])
         self.assertFalse(out["reference_checks_passed"])
