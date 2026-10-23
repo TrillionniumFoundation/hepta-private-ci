@@ -281,7 +281,7 @@ async fn generic_terminal_outcomes_cannot_replace_notes_application_evidence() -
     let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2d19")?;
     let mut observed = Vec::new();
     let mut expected = Vec::new();
-    for route in ["reconcile_committed", "reconcile_rejected", "apply", "reject"] {
+    for route in ["reconcile_committed", "reconcile_rejected", "apply", "reject", "rollback"] {
         let fleet_path = temp.path().join(route);
         std::fs::create_dir(&fleet_path)?;
         let fleet = HeptaFleetRoot::parse(fleet_path.canonicalize()?)?;
@@ -308,6 +308,7 @@ async fn generic_terminal_outcomes_cannot_replace_notes_application_evidence() -
             }
             "apply" => writer.apply(&operation, "unverified application receipt").await,
             "reject" => writer.reject(&operation, "unverified rejection").await,
+            "rollback" => writer.rollback_occurrence(&operation, "cancel unknown effect").await,
             _ => unreachable!(),
         };
         let denied = matches!(
@@ -435,5 +436,30 @@ async fn original_final_use_rejection_preserves_notes_no_entry_settlement() -> T
         assert_eq!((target.observations.load(Ordering::SeqCst), target.retirements.load(Ordering::SeqCst)), (0, 0));
         store.close().await;
     }
+    Ok(())
+}
+
+#[tokio::test]
+async fn notes_queued_cancellation_remains_available_before_effect_boundary() -> TestResult {
+    let temp = tempfile::tempdir()?;
+    let fleet_path = temp.path().join("fleet");
+    std::fs::create_dir(&fleet_path)?;
+    let fleet = HeptaFleetRoot::parse(fleet_path.canonicalize()?)?;
+    let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2d21")?;
+    let store = CognitiveStore::open(&fleet.layout().agent(&owner)).await?;
+    let writer = ProductionDurableWriter::open_with_live_verifier(
+        store.clone(), source(&owner, 1)?, Arc::new(Verifier), LEASE, /*generation*/ 1,
+    ).await?;
+    let (payload, identity, target) = fixture()?;
+    let intent = notes_operation_intent(
+        &identity, &payload, StableId::new(owner.as_str())?, Generation::new(1)?,
+    )?;
+    let queued = writer.prepare_operation(intent, crate::NOTES_REPLACE_TOPIC_V1, payload).await?;
+    let cancelled = writer.rollback_occurrence(&queued.occurrence_key, "cancel before dispatch").await?;
+    assert_eq!(cancelled.state, LocalOutcomeState::RolledBack);
+    assert_eq!(writer.status(&queued.occurrence_key).await?, LocalOutcomeState::RolledBack);
+    assert_eq!(writer.reconcile_target_batch(&target, /*limit*/ 1).await?, 0);
+    assert_eq!((target.observations.load(Ordering::SeqCst), target.retirements.load(Ordering::SeqCst)), (0, 0));
+    store.close().await;
     Ok(())
 }
