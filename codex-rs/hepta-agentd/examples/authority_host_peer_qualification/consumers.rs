@@ -94,9 +94,7 @@ pub(super) fn qualify(
     grants: [SignedFinalUseGrant; 2],
     binding: &FinalUseBinding,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let runtime = tokio::runtime::Builder::new_current_thread()
-        .enable_all()
-        .build()?;
+    let runtime = tokio::runtime::LocalRuntime::new()?;
     // Erase the large qualification future before the runtime boundary, so
     // each runtime wrapper uses the same poll implementation.
     let qualification: Pin<Box<dyn Future<Output = Result<(), QualificationError>> + '_>> =
