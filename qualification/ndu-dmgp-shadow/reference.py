@@ -28,7 +28,11 @@ def require(condition: bool, message: str) -> None:
 
 
 def finite(*values: float) -> bool:
-    return all(isfinite(v) for v in values)
+    # Missing/boolean/nonnumeric observations are unsupported, never zero cost.
+    try:
+        return all(type(v) in (int, float) and isfinite(v) for v in values)
+    except (TypeError, ValueError, OverflowError):
+        return False
 
 
 @dataclass(frozen=True)
@@ -42,7 +46,9 @@ class Freeze:
     feature_digest: str
 
     def validate(self) -> None:
-        require(self.objective and self.generation > 0, "unbound objective/generation")
+        require(isinstance(self.objective, str) and self.objective
+                and type(self.generation) is int and self.generation > 0,
+                "unbound objective/generation")
         require(all((self.actor, self.critic, self.observer, self.critic_digest,
                      self.feature_digest)), "missing identity/digest")
         require(len({self.actor, self.critic, self.observer}) == 3,
@@ -81,7 +87,9 @@ class Outcome:
         require(finite(self.behavior_propensity)
                 and 0 < self.behavior_propensity <= 1,
                 "unbound behavior propensity")
-        require(min(self.decoder_us, self.controller_us, self.verifier_us) >= 0,
+        require(all(type(v) is int and 0 <= v <= 10**12
+                    for v in (self.decoder_us, self.controller_us,
+                              self.verifier_us)),
                 "invalid physical cost")
 
     @property
@@ -339,7 +347,15 @@ def allocate(actions: tuple[Action, ...], risk: RiskEstimate | None,
     Never linearly interpolate incompatible output tensors. Deterministic shadow
     fallback picks a cheapest admissible action when joint covariance is absent.
     """
-    require(actions and len(actions) <= 6 and budget_us >= 0, "invalid action/budget")
+    require(actions and len(actions) <= 6 and type(budget_us) is int
+            and 0 <= budget_us <= 10**12, "invalid action/budget")
+    require(all(isinstance(a.name, str) and a.name
+                and isinstance(a.modality, str)
+                and a.modality in {"text", "image", "audio", "video"}
+                and type(a.work_us) is int and 0 <= a.work_us <= 10**12
+                for a in actions)
+            and len({a.name for a in actions}) == len(actions),
+            "invalid or duplicate generation action")
     require(finite(risk_aversion, kl_weight, step) and risk_aversion >= 0
             and kl_weight >= 0 and 0 < step <= 1, "invalid preference profile")
     require(len(reference_weights) == len(actions) and
@@ -352,7 +368,24 @@ def allocate(actions: tuple[Action, ...], risk: RiskEstimate | None,
         selected = min(legal, key=lambda i: (actions[i].work_us, actions[i].name))
         return Allocation(tuple(float(i == selected) for i in range(len(actions))),
                           0.0, 0.0, "deterministic-fallback")
-    require(len(risk.means) == len(actions), "candidate/covariance dimensional drift")
+    k = len(actions)
+    require(len(risk.means) == k and len(risk.covariance) == k
+            and all(len(row) == k for row in risk.covariance),
+            "candidate/covariance dimensional drift")
+    require(all(finite(v) and -1 <= v <= 1 for v in risk.means)
+            and all(finite(v) for row in risk.covariance for v in row)
+            and all(abs(risk.covariance[i][j] - risk.covariance[j][i]) <= 1e-8
+                    for i in range(k) for j in range(k))
+            and finite(risk.condition_upper)
+            and 0 < risk.condition_upper <= 1e6
+            and type(risk.sample_count) is int
+            and risk.sample_count >= max(20, 5 * k)
+            and type(risk.rank_retained) is int
+            and 0 <= risk.rank_retained <= k
+            and isinstance(risk.context, str) and risk.context,
+            "unsupported conditional covariance profile")
+    # Shrinkage must not conceal a malformed/indefinite externally supplied matrix.
+    cholesky([list(row) for row in risk.covariance])
     require(abs(1 / step - round(1 / step)) < 1e-8 and 1 / step <= 20,
             "noncanonical finite grid")
     n = round(1 / step)
@@ -399,11 +432,18 @@ def recursive_stop_choice(state: GenerationState, actions: tuple[Action, ...],
     Real full stochastic NDU-FBSDE requires qualified owner solver and dynamics;
     this deterministic surrogate never claims to be that solver.
     """
-    require(state.generation > 0 and state.budget_us >= 0
+    require(type(state.generation) is int and state.generation > 0
+            and type(state.budget_us) is int and 0 <= state.budget_us <= 10**12
+            and type(state.remaining_steps) is int
             and 0 <= state.remaining_steps <= 8 and finite(state.quality),
             "invalid state")
-    require(0 <= continuation_discount <= 1 and cost_per_us >= 0,
+    require(finite(continuation_discount, cost_per_us)
+            and 0 <= continuation_discount <= 1 and cost_per_us >= 0,
             "invalid continuation profile")
+    require(len(actions) <= 6
+            and all(isinstance(a.name, str) and a.name
+                    and type(a.work_us) is int and 0 <= a.work_us <= 10**12
+                    for a in actions), "invalid generation action")
     legal = [a for a in actions if a.legal and a.work_us <= state.budget_us
              and a.work_us >= 0 and a.name in predicted_gains]
     require(all(finite(v) for v in predicted_gains.values()), "invalid advantage")
@@ -527,8 +567,11 @@ def compare_work(baseline: tuple[WorkReceipt, ...], candidate: tuple[WorkReceipt
             require(r.physical_work_key and r.physical_work_key not in work_ids,
                     "duplicate physical work")
             work_ids.add(r.physical_work_key)
-            require(min(r.decoder_us, r.controller_us, r.verifier_us,
-                        r.peak_rss_bytes) >= 0, "invalid metric")
+            require(all(type(v) is int and 0 <= v <= 10**12 for v in
+                        (r.decoder_us, r.controller_us, r.verifier_us,
+                         r.peak_rss_bytes))
+                    and type(r.measured_on_host) is bool,
+                    "invalid metric")
             bucket[r.case_id] = r
     require(set(bmap) == set(cmap), "unmatched physical execution")
     btimes = sorted(r.decoder_us + r.controller_us + r.verifier_us for r in baseline)
