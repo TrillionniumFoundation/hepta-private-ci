@@ -1,0 +1,341 @@
+{
+  "baseline_commit": "9da3c2b98bf427c5812cdc332d4adda1fc23bac6",
+  "checkout_head_at_review": "b9723f33f65afc1a12de1ba0afcde9691d44fe67",
+  "claims_not_established": [
+    "registered v2 heldout efficacy",
+    "global neural optimum",
+    "general stochastic FBSDE solution",
+    "learned identifiable preference dynamics",
+    "native HEPTA Rust runtime integration",
+    "latent-dependent reallocation within refinement",
+    "open-domain foundation-model performance",
+    "verified dedicated cloud execution",
+    "lifecycle-compute equivalence"
+  ],
+  "commit_status": "Implementation source freeze and its commit SHA are pending; checkout HEAD at review is the preregistration amendment, not a commit containing all reviewed source.",
+  "committed_implementation_sha": null,
+  "development_smoke_receipt_review": {
+    "artifact_directory_at_review": "/tmp/hepta-v2-development-001",
+    "audits": [
+      {
+        "action_portfolio_depth_mismatches": 0,
+        "arm": "supervised_ndu",
+        "max_value_error": 4.996003610813204e-16,
+        "states": 14298
+      },
+      {
+        "action_portfolio_depth_mismatches": 0,
+        "arm": "joint_ndu",
+        "max_value_error": 4.996003610813204e-16,
+        "states": 14298
+      },
+      {
+        "action_portfolio_depth_mismatches": 0,
+        "arm": "joint_myopic",
+        "max_value_error": 4.996003610813204e-16,
+        "states": 14298
+      },
+      {
+        "action_portfolio_depth_mismatches": 0,
+        "arm": "joint_fixed_risk",
+        "max_value_error": 3.885780586188048e-16,
+        "states": 14298
+      },
+      {
+        "action_portfolio_depth_mismatches": 0,
+        "arm": "joint_risk_neutral",
+        "max_value_error": 3.885780586188048e-16,
+        "states": 14298
+      }
+    ],
+    "execution_completed": true,
+    "execution_owner": "parent implementation agent; reviewer inspected receipts after completion",
+    "interpretation": "Development-only receipt review. Shortened training, one nonregistered seed and uncommitted implementation source do not satisfy confirmation; smoke is not a new efficacy replicate. Registered heldout worlds were neither generated nor read by this reviewer.",
+    "matched_training": {
+      "forward_linear_macs_each": 1368930816,
+      "forward_linear_macs_equal": true,
+      "initial_hashes_equal": true,
+      "lifetime_compute_matched": false,
+      "optimizer_steps_each": 3
+    },
+    "seed": 5,
+    "smoke_only": true,
+    "source_commit_recorded": "b9723f33f65afc1a12de1ba0afcde9691d44fe67",
+    "source_frozen": false,
+    "source_manifest_sha256": "d75d7ab2088842455dbdf1fc8086d925473fbfccf0b898e7b5f1cf87d49a7890",
+    "source_unchanged_during_run": true,
+    "wall_seconds": 48.218817093000325,
+    "world_evaluations": 6048
+  },
+  "earlier_development_check_source_sha256": {
+    "controlled_model.py": "e9f6877eacc593b5287b6b6f08e99e5114766c64b13638f69b9728c21a388c6a",
+    "generation_control.py": "21a19b36ac0d0bee0b21c486a33fb6d111dbfd32ff16aaeab1384b89ac0279e3",
+    "test_controlled_model.py": "b7b3619794661af4c8323887f94300847c403d4ee0786871f19773bfa245d4bf",
+    "test_generation_control.py": "2cd09ba2d63071f28f9e1201d6b3beef2890dfe1736e9a62f5d1b0a73ef6c465",
+    "v2/evaluation.py": "445f93b0f4170003a86334d54372a91f19c43193775ff4e571089f086f4edf6c",
+    "v2/protocol.json": "c1ee5ce1391d38660c1d77fa9a3e6158ce83231afcce05fd406f66ec1616f729",
+    "v2/training.py": "fa7cfe07dfbe3237c34af4fb3d4483e628a80a5ad067006e68eba43138bf7ff8"
+  },
+  "earlier_unit_tests": {
+    "assertion_outcome": "all passed",
+    "command": "PYTHONDONTWRITEBYTECODE=1 /tmp/hepta-output-portfolio-env/bin/python -W error -m unittest discover -s experiments/multimodal_output_portfolio -p test_*.py -v",
+    "process_exit_code": 0,
+    "reported_test_seconds": 0.799,
+    "shutdown_warning": "After unittest OK, Python emitted a ResourceWarning traceback for implicit TemporaryDirectory cleanup. A separate minimal AdamW construction isolated torch.distributed.nn.jit.instantiator._TEMP_DIR as the owner. Explicit cleanup in that diagnostic removed the warning. Project source was not changed or warning-filtered.",
+    "stderr_not_clean": true,
+    "test_count": 15
+  },
+  "historical_scientific_result": {
+    "ci95": [
+      -0.042590096007859485,
+      0.009442706859393172
+    ],
+    "cvar90_delta": -0.015165960928988587,
+    "v1_1_primary_gate": "failed; unchanged"
+  },
+  "independent_checks": {
+    "actual_rollout_accounting_and_label_separation": {
+      "all_trajectories_refine_twice_and_emit_all_four": true,
+      "budget": 16,
+      "changed_truth_and_hidden_report_metadata_changes_policy_receipts": false,
+      "fixture_model_seed": 941,
+      "independent_linear_hook_macs": 5591040,
+      "policy": {
+        "acquire": [
+          "audio",
+          "image"
+        ],
+        "depth": 2,
+        "weights": [
+          0.5,
+          0.25,
+          0.25
+        ]
+      },
+      "remaining_budget_min": 3,
+      "same_policy_budget_12_rejected": "generation exceeds remaining budget",
+      "scope": "Constructed development worlds and fixed policy. No scientific heldout or policy-efficacy claim.",
+      "sum_receipt_linear_macs": 5591040,
+      "unacquired_video_encoder_calls": 0,
+      "world_namespace": "review-development-v2",
+      "world_seed": 912347,
+      "worlds": 12
+    },
+    "external_tensor_vs_original_metrics": {
+      "depths": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "entries_over_1e_10": 0,
+      "fixture_model_seed": 113,
+      "interpretation": "Checks actual four-modality generated arrays, per-modality clipping and hard pairwise contradiction values; ties are not smooth-gradient evidence.",
+      "ordinary_max_abs_error": 3.9968028886505635e-15,
+      "portfolio_selection": "original quarter grid every 21st row",
+      "prototype_midpoint_tie_max_abs_error": 6.661338147750939e-16,
+      "saturated_max_abs_error": 0.0
+    },
+    "frozen_v1_and_v1_1_preservation": {
+      "final_recheck_exit_code": 0,
+      "git_diff_against_baseline_exit_code": 0,
+      "negative_confirmation_preserved": true,
+      "paths": [
+        "model.py",
+        "control.py",
+        "world.py",
+        "metrics.py",
+        "evaluate.py",
+        "audit.py",
+        "protocol.json",
+        "evidence/"
+      ]
+    },
+    "generator_parameter_to_recursive_value_gradient": {
+      "autograd": 0.1845571044720949,
+      "centered_finite_difference": 0.18455710446563242,
+      "finite_difference_step": 1e-05,
+      "fixture_model_seed": 173,
+      "gamma": 2,
+      "gradient_abs_error": 6.462469448464958e-12,
+      "grid": "8 vertices plus uniform",
+      "model_dtype": "float64",
+      "parameter": "text decoder final bias; maximum absolute gradient coordinate",
+      "root": {
+        "budget": 12,
+        "observations": [
+          0,
+          -1,
+          -1,
+          -1
+        ],
+        "preference": 0
+      },
+      "scope": "One fixed locally stable selected policy parameter path, not every trajectory, a general FBSDE derivative, or global optimization.",
+      "selected_action": "emit",
+      "selected_depth": 0,
+      "value_parity_abs_error": 2.220446049250313e-16
+    },
+    "persisted_evaluation_regression": {
+      "checks": [
+        "Actual nn.Linear hook MAC sum equals execution receipts with acquired missing rows.",
+        "Unacquired video object raises on any read or conversion, and lazy rollout succeeds.",
+        "Every trajectory emits all four output hashes and follows remaining-budget trace [16,13,11,9,7,5,3].",
+        "Changed hidden truth, reports, IDs and scenario leave output hashes and policy receipts unchanged.",
+        "The same thirteen-unit generation trajectory is rejected with a twelve-unit budget."
+      ],
+      "fixture_model_seed": 941,
+      "path": "experiments/multimodal_output_portfolio/v2/test_evaluation.py",
+      "tests": 3,
+      "world_namespace": "review-development-v2-regression",
+      "world_seed": 912347,
+      "worlds": 12
+    }
+  },
+  "initial_reviewed_at_utc": "2026-10-23T04:07:01.081391+00:00",
+  "protocol_metadata_correction_review": {
+    "change": "Clarifies that the matched-baseline amendment preceded smoke and registered heldout; earlier implementation unit-test fixture training had occurred and was nonconfirmatory.",
+    "mechanical_comparison": "After removing only amendment timing and the new provenance-wording-correction record, JSON objects are exactly equal.",
+    "protocol_sha256_after": "2a5a206024c3837223e1db83a4515a4d2ba0a0416d48c482989cc5130bdf97cf",
+    "protocol_sha256_before": "2a5a206024c3837223e1db83a4515a4d2ba0a0416d48c482989cc5130bdf97cf",
+    "scientific_parameters_or_gates_changed": false,
+    "tests_rerun_for_metadata_change": false,
+    "timing": "after development smoke001 and before any registered v2 heldout generation"
+  },
+  "review_disposition": "The 23 development assertions pass; shutdown warnings are disclosed. Source-bound source review, fair-update instrumentation, actual-cost and leakage checks support the bounded implementation mechanics. Source freeze, registered scientific results, external dedicated-runner attestation and explicitly listed broader research gates remain open.",
+  "reviewed_at_utc": "2026-10-23T04:13:07.836915+00:00",
+  "reviewer_role": "separate collaborating review agent; not an external institution or signed attestation",
+  "rollout_review": {
+    "actual_generation": "one initialization, chosen number of refinements, and one atomic four-output emission",
+    "offline_work": "Runner charges both actual all-depth candidate forwards, reports compilation and independent-oracle CPU/wall cost separately, and checks solve/generate/candidate cache misses do not grow during heldout rollout.",
+    "policy_input": "only acquired encoder reports, budget and bounded preference",
+    "remaining_required_evidence": [
+      "Source-frozen full registered execution and scientific gate assessment.",
+      "Independent external Actions receipt for dedicated project runner assignment and executed steps."
+    ],
+    "selection_order": "Validation static selections are saved and hashed before any fresh heldout generation; policies and model checkpoints are then fixed.",
+    "static_family": "raw-cost prefilter then complete acquisition/controller/generation feasibility check",
+    "truth_access": "metrics call after all outputs are generated"
+  },
+  "runtime": {
+    "device": "cpu",
+    "execution_tier": "local-development",
+    "numpy": "1.26.4",
+    "python": "3.12.14",
+    "torch": "2.5.1+cpu"
+  },
+  "schema": "hepta.controlled-generation.independent-development-review.v1",
+  "scope": "Read-only source review plus development-fixture execution. No registered heldout world was produced or inspected by this reviewer.",
+  "source_binding_scope": "Current hashes bind the final 23-test rerun and final source review. Earlier independent fixture checks retain their original source hashes separately; subsequent stable-CE, output-hash, training and launcher changes are not retroactively represented as having been executed by those earlier checks.",
+  "source_review_findings": [
+    {
+      "evidence": "Dedicated near-tie parity test passes.",
+      "finding": "Within-depth tie rules differed between planner argmax and oracle tolerance.",
+      "id": "REVIEW-01",
+      "status": "resolved in reviewed source"
+    },
+    {
+      "evidence": "Planner and copied calibration use instance-local caches; dedicated isolation test passes.",
+      "finding": "Global method LRU caches could retain all successive training planners.",
+      "id": "REVIEW-02",
+      "status": "resolved in reviewed source"
+    },
+    {
+      "evidence": "Preregistered matched supervised arm uses the same warmup parent, generator parameter groups, AdamW settings, forty updates and full-grid plus vertex forward work. Real Linear hooks and optimizer-step instrumentation pass. Recursive planning, backward arithmetic and lifecycle cost are explicitly not equated.",
+      "finding": "Initial design had 40 additional updates only for NDU training.",
+      "id": "REVIEW-03",
+      "status": "resolved within stated matching scope"
+    },
+    {
+      "evidence": "First and last updates separately record utility-only and anchor gradient norms by parameter group, excluding optimizer decay; physical-probability reached-depth distributions are recorded. The constructed depth-zero test verifies zero utility refinement gradient alongside positive anchor gradient. This is not a guarantee of nonzero refinement credit in every trained run.",
+      "finding": "Changed weight hashes alone do not show nonzero NDU utility gradient in every changed group; anchor and decay also change weights.",
+      "id": "REVIEW-04",
+      "status": "resolved as measurement and attribution safeguard"
+    },
+    {
+      "evidence": "Explicit initialize/refine/atomic-emit execution is implemented; latent-dependent within-generation reallocation is not implemented.",
+      "finding": "Depth is selected at generation commitment.",
+      "id": "REVIEW-05",
+      "status": "scope stated"
+    },
+    {
+      "evidence": "Linear MAC receipt includes actually executed initial encoding; declared remaining-budget units must retain their after-initial-text interpretation.",
+      "finding": "Initial text is outside the declared remaining-budget convention.",
+      "id": "REVIEW-06",
+      "status": "scope stated"
+    },
+    {
+      "evidence": "Hosted tier requires GitHub Actions and github-hosted environment. Dedicated launcher requires desktop/self-hosted plus the project branch/repository context; receipts explicitly retain external Actions assignment attestation as required.",
+      "finding": "A cloud tier label must not turn an ordinary local run into hosted or dedicated evidence.",
+      "id": "REVIEW-07",
+      "status": "local assertion safeguards implemented; external dedicated attestation remains open"
+    },
+    {
+      "evidence": "reporting.py explicitly labels secondary intervals descriptive and exploratory, retaining only the preregistered primary comparison as confirmatory.",
+      "finding": "Secondary confidence intervals are numerous and unadjusted.",
+      "id": "REVIEW-08",
+      "status": "scope stated"
+    }
+  ],
+  "source_sha256": {
+    ".github/workflows/ndu-controlled-generation-v2.yml": "85dbb679ce3543ad7c96456bb465a3732b071ef44e9890f879d6f935b693e477",
+    "experiments/multimodal_output_portfolio/audit.py": "c068b1dcd73d115e9dddf5df53d932ad1b0101c17913dbdf26ced504078d05a3",
+    "experiments/multimodal_output_portfolio/control.py": "dab085eb23a504a9ff30d8a40805ddb505b30f6af7dc19d80511199d20a2db46",
+    "experiments/multimodal_output_portfolio/controlled_model.py": "e9f6877eacc593b5287b6b6f08e99e5114766c64b13638f69b9728c21a388c6a",
+    "experiments/multimodal_output_portfolio/evaluate.py": "112eac9d29c088018a246867521e4b35786bc59135c550ac02cc6e2a5449e922",
+    "experiments/multimodal_output_portfolio/generation_control.py": "4e83dff514651025a33723d94763c0841475bb536352f56ed963f2caae2ac52f",
+    "experiments/multimodal_output_portfolio/metrics.py": "bf7661391fe133b1b97bfcac515cafe893dbc8fb4ff2ce00b37457c6611f87bd",
+    "experiments/multimodal_output_portfolio/model.py": "345c17f472758db755dad0c262bd40bc6fdcf5652f7e94ac34f1d84c06c6b748",
+    "experiments/multimodal_output_portfolio/run_experiment.py": "2ee9b0046d0525931d0a9599bfbd08e4644dcfe9050b4c06ae16a8ee27de9ba9",
+    "experiments/multimodal_output_portfolio/test_controlled_model.py": "b7b3619794661af4c8323887f94300847c403d4ee0786871f19773bfa245d4bf",
+    "experiments/multimodal_output_portfolio/test_generation_control.py": "cc983cf8e3e16aef0eac02544a77951855acad61860e9528bf8af10589b80f03",
+    "experiments/multimodal_output_portfolio/v2/evaluation.py": "8b9bb64992b661737c0745017bba840e35c33a09b394a680ed5b314ad47e3f16",
+    "experiments/multimodal_output_portfolio/v2/protocol.json": "2a5a206024c3837223e1db83a4515a4d2ba0a0416d48c482989cc5130bdf97cf",
+    "experiments/multimodal_output_portfolio/v2/reporting.py": "d378470c41828f91a28d91bebd2a3a500fa9facea1752e936623dcd006ab217e",
+    "experiments/multimodal_output_portfolio/v2/run.py": "8507c8d15f2f3a504a58d362fb3dd147ca1ab6cbdabe55d8086ac4ca386d9800",
+    "experiments/multimodal_output_portfolio/v2/run_cloud.sh": "85dbbf72a127dcd27b8e0b17937486606abb240cd2509463542d2914bce3e13a",
+    "experiments/multimodal_output_portfolio/v2/test_evaluation.py": "d169bfd6c5f6d0c25e2c23e0c6134830c21ed410a6b9e513e57903b451c773cc",
+    "experiments/multimodal_output_portfolio/v2/test_training.py": "261d31cba8d656ef0eec71d15783ffb25b43379c907700fc2c62c93388a4f3c7",
+    "experiments/multimodal_output_portfolio/v2/training.py": "2d8d9ff5a28292f4a0b244511d88d7d0350d28820dfa299ea56ec9866027bbcc",
+    "experiments/multimodal_output_portfolio/world.py": "8231e81ff2eda916f46503ad1f97824ffef5237c2114e76c257c5dde8dda9c9c"
+  },
+  "unit_tests": {
+    "assertion_outcome": "all passed",
+    "launcher_bash_n_exit_code": 0,
+    "reviewer_executed": true,
+    "runs": [
+      {
+        "command": "PYTHONDONTWRITEBYTECODE=1 /tmp/hepta-output-portfolio-env/bin/python -W error -m unittest discover -s experiments/multimodal_output_portfolio -p 'test_*.py' -v",
+        "process_exit_code": 0,
+        "reported_test_seconds": 0.928,
+        "stderr_not_clean": true,
+        "test_count": 16
+      },
+      {
+        "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=experiments/multimodal_output_portfolio /tmp/hepta-output-portfolio-env/bin/python -W error -m unittest discover -s experiments/multimodal_output_portfolio/v2 -p 'test_*.py' -v",
+        "process_exit_code": 0,
+        "reported_test_seconds": 0.825,
+        "stderr_not_clean": true,
+        "test_count": 7
+      }
+    ],
+    "shutdown_warning": "Both commands emitted a ResourceWarning traceback during interpreter finalization after unittest OK. An earlier independent minimal AdamW diagnostic isolated the PyTorch-owned torch.distributed.nn.jit.instantiator._TEMP_DIR. No project warning suppression or private-library cleanup was introduced. Assertion success and exit 0 do not mean clean stderr.",
+    "total_test_count": 23
+  },
+  "workflow_review": {
+    "findings": [
+      "Push-triggered request-file event is limited to the explicit research branch.",
+      "Checkout, Python setup and artifact upload use full action commit pins.",
+      "The request commit is checked out independently of the explicit implementation commit.",
+      "Launcher requires a 40-hex requested implementation SHA equal to checked-out HEAD and exact protocol SHA256 equality.",
+      "Tracked experiment and workflow source must be clean; full run checks all manifest dependencies against committed HEAD.",
+      "Both test directories run explicitly before the experiment.",
+      "Hosted smoke and dedicated full execution use independent jobs and distinct artifacts.",
+      "Launcher receipts always record dedicated_runner_verified=false and require external assignment evidence for the dedicated tier.",
+      "Failure-stage launcher and workflow outcomes are retained where the runner executes. A queued job is not execution evidence."
+    ],
+    "launcher": "experiments/multimodal_output_portfolio/v2/run_cloud.sh",
+    "scope": "Read-only source and bash syntax review; no hosted or dedicated job executed by this reviewer.",
+    "workflow": ".github/workflows/ndu-controlled-generation-v2.yml"
+  }
+}
