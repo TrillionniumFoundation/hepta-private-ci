@@ -212,33 +212,49 @@ fn same_generation_cross_group_or_encoder_trace_is_rejected() {
     let original = subject();
     let candidates = candidate_fixtures();
     let trace = make_trace(&original, &candidates);
-    let expected = Err(GroupSystem2Error::TraceBindingMismatch(
-        "subject_binding_digest",
-    ));
+    let expected = Err(GroupSystem2Error::TraceBindingMismatch("subject_binding_digest"));
 
     let mut changed = original.clone();
     changed.group_id = "group:other".to_owned();
-    assert_eq!(decide_group_continuation_v1(&changed, &trace, &candidates), expected);
+    assert_eq!(
+        decide_group_continuation_v1(&changed, &trace, &candidates),
+        expected
+    );
 
     let mut changed = original.clone();
     changed.encoder_digest = digest("other-encoder");
-    assert_eq!(decide_group_continuation_v1(&changed, &trace, &candidates), expected);
+    assert_eq!(
+        decide_group_continuation_v1(&changed, &trace, &candidates),
+        expected
+    );
 
     let mut changed = original.clone();
     changed.objective_digest = digest("other-objective");
-    assert_eq!(decide_group_continuation_v1(&changed, &trace, &candidates), expected);
+    assert_eq!(
+        decide_group_continuation_v1(&changed, &trace, &candidates),
+        expected
+    );
 
     let mut changed = original.clone();
     changed.utility_profile_digest = digest("other-profile");
-    assert_eq!(decide_group_continuation_v1(&changed, &trace, &candidates), expected);
+    assert_eq!(
+        decide_group_continuation_v1(&changed, &trace, &candidates),
+        expected
+    );
 
     let mut changed = original.clone();
     changed.subject_class = GroupSubjectClassV1::Agent;
-    assert_eq!(decide_group_continuation_v1(&changed, &trace, &candidates), expected);
+    assert_eq!(
+        decide_group_continuation_v1(&changed, &trace, &candidates),
+        expected
+    );
 
     let mut changed = original;
     changed.resource_ceiling_micros += 1;
-    assert_eq!(decide_group_continuation_v1(&changed, &trace, &candidates), expected);
+    assert_eq!(
+        decide_group_continuation_v1(&changed, &trace, &candidates),
+        expected
+    );
 }
 
 #[test]
