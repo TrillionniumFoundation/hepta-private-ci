@@ -666,7 +666,7 @@ npm, Python, build or exact-source CI gates. Complete PN0 before treating later
 PoN or model experiments as a qualified integration baseline.
 
 Cross-repository qualification follows the Chain plan's single
-[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/3adbc2c9b443f62edda7a9b540946af28ade0342/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
+[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/4e49725f1b457a422dbb12f620101903c21599d7/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
 PN0 exact-source/security baseline → PN1 work security and PN2 bounded state →
 PN3 real-model closure → PN4 five-budget/effect-liability qualification →
 PN5 independent-operator WAN/discovery/availability → PN6 governed migration and
@@ -681,14 +681,14 @@ optimizer, durable journal or authority issuer. Parameter, topology, executable
 and consensus upgrades retain their separate admission and release boundaries.
 
 PN0's native pair pins Chain source
-`3adbc2c9b443f62edda7a9b540946af28ade0342`, tree
-`3f3db32cf256a72c48225743aadc88650fc9a95c`, against unchanged default main
+`4e49725f1b457a422dbb12f620101903c21599d7`, tree
+`0c2c1cfddc42b23b6f45ad6b4e75bb3dd486d7e6`, against unchanged default main
 `9fedf7ecbbe07177069c030592b4e03dcffebb81`. Its source-head lane tests that source;
 its base-merge lane tests prospective main merge
-`f993fa726510fcdbda1dfc137ef1c24a67b61cb2`, with ordered parents `[9fedf7ec, 3adbc2c9]`
+`18d120f344b6b180bfc5e0165ab30f83af0b4d5f`, with ordered parents `[9fedf7ec, 4e49725f]`
 and the original exact merge-tree checks. The separate original-integration base
 `57c1ed545d067937cbd7aaa7570d5f22123265e6` retains prospective merge
-`f86b7734272b1495b0b1d541bc8ae6cb8f1fb8e5`, ordered parents `[57c1ed54, 3adbc2c9]`.
+`b9722e6b58c55767becb72e891d0611ebbe860c8`, ordered parents `[57c1ed54, 4e49725f]`.
 Both prospective trees equal the source tree; their different parent identities
 and required executions remain distinct. Neither baseline replaces the other,
 and publication or a pin refresh supplies no passing execution evidence.
@@ -898,8 +898,9 @@ no token, descriptor or fixture result supplies a `PrivateDirectory`, FinalUse
 backend, registry backend, cold-recovery or resource-release qualification.
 
 The following are implementation slices of that same PN0 item, not a second
-roadmap. Except for the read-only volume inspection below, C2b interface names
-remain proposed contracts, not implemented APIs.
+roadmap. The read-only volume and live-principal observation APIs below are
+implemented mechanisms. Trusted namespace, protected creation and the opaque
+role interfaces in this table remain proposed contracts.
 
 | Existing slice                       | Module responsibility and interface change                                                                                                                                                                                                                                         | Dependency and acceptance                                                                                                                                                                                                                             |
 | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -908,7 +909,7 @@ remain proposed contracts, not implemented APIs.
 | C4: registry and real runtime caller | `hepta-prompt-registry` consumes lock, bounded mutable payload/journal, input and stage roles. Fleet/Agentd passes qualified home/run guards and converts the actual `prompt-runtime` store as well.                                                                               | Depends on C2b and the existing owner integration order. Retain [registry V3 and recovery rules](modules/prompt.registry/TECHNICAL.md#native-storage-v3-immutable-payload-extents); Windows permission/sync no-ops cannot qualify the pipeline.       |
 | C5: existing native qualification    | The existing Windows workflow and four native shards test source-head and base-merge candidates and the original consumer suites.                                                                                                                                                  | After the corresponding implementations, require complete native receipts, lock/process-death, recovery and controlled-run evidence. Safe mechanisms alone do not close sandbox isolation, power-loss persistence or whole-project qualification.     |
 
-The next existing C2b primitive is `CapturedPrincipal::capture_effective` plus
+C2b also provides the observation API `CapturedPrincipal::capture_effective` plus
 `revalidate_effective`: it retains only a query handle to the actual effective
 token and compares kernel-read token instance, modification and authentication
 IDs, token type, usable impersonation level and the bounded original SID. Thread
