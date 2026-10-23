@@ -34,14 +34,22 @@ class Config:
     sync_penalty: int = 5
 
     def __post_init__(self) -> None:
-        if (self.horizon < 1 or self.horizon > 3
+        # The budget and horizon are exact integers. Floats/bools silently
+        # distort the action lattice, physical reserve and state transition.
+        integer_fields = (
+            self.horizon, self.max_units_per_step, self.unit_cost,
+            self.activation_cost, self.emission_cost_each, self.sync_penalty,
+        )
+        if (any(type(value) is not int for value in integer_fields)
+            or type(self.risk_aversion) not in (int, float)
+            or type(self.cost_shadow_price) not in (int, float)
+            or not 1 <= self.horizon <= 3
             or not 1 <= self.max_units_per_step <= 4
             or self.unit_cost <= 0 or self.activation_cost < 0
             or self.emission_cost_each <= 0
-            or not math.isfinite(self.risk_aversion)
-            or self.risk_aversion < 0 or self.risk_aversion > 10
-            or not math.isfinite(self.cost_shadow_price)
-            or self.cost_shadow_price < 0 or self.sync_penalty < 0):
+            or not 0 <= self.risk_aversion <= 10
+            or not 0 <= self.cost_shadow_price < float("inf")
+            or self.sync_penalty < 0):
             raise ValueError("unadmitted control profile")
 
     @property
@@ -172,14 +180,19 @@ def conditional_ce(values: tuple[float, ...],
     if (not values or len(values) != len(probabilities)
         or any(not math.isfinite(x) for x in values)
         or any(not math.isfinite(p) or p < 0 for p in probabilities)
-        or not math.isclose(sum(probabilities), 1.0, abs_tol=1e-12)
+        or not math.isclose(math.fsum(probabilities), 1.0,
+                            rel_tol=0.0, abs_tol=1e-12)
         or not math.isfinite(risk_aversion) or risk_aversion < 0):
         raise ValueError("invalid conditional risk law")
     if risk_aversion == 0:
-        return sum(p * v for p, v in zip(probabilities, values))
-    anchor = min(values)
-    scaled = sum(p * math.exp(-risk_aversion * (v - anchor))
-                 for p, v in zip(probabilities, values))
+        return math.fsum(p * v for p, v in zip(probabilities, values))
+    # Stabilize only on the conditional support. A zero-probability low
+    # outlier is impossible, and must not force all supported terms to
+    # underflow to zero (or change the policy's value).
+    supported = [(p, v) for p, v in zip(probabilities, values) if p > 0]
+    anchor = min(v for _, v in supported)
+    scaled = math.fsum(p * math.exp(-risk_aversion * (v - anchor))
+                       for p, v in supported)
     if scaled <= 0:
         raise ValueError("unsupported numerical risk profile")
     return anchor - math.log(scaled) / risk_aversion
