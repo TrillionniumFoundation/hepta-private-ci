@@ -171,6 +171,7 @@ def validate_sources(root: Path, source_manifest: dict, history: dict):
         require(family not in groups or groups[family] == role,
                 "original source family split leakage")
         require(type(item.get("modalities")) is list and
+                1 <= len(item["modalities"]) <= 4 and
                 all(m in ("text", "image", "audio", "video") for m in item["modalities"]) and
                 len(set(item["modalities"])) == len(item["modalities"]), "source modalities")
         verify_artifact(root, item.get("path"), image_sha)
@@ -233,17 +234,22 @@ def read_episodes(path: Path, expected_sha: str):
 def validate_trace(row):
     trace = row.get("decisions")
     require(type(trace) is list and len(trace) <= 16, "unbounded/missing decision trace")
-    require(len(trace) == row.get("actual_steps"), "declared capacity is not observed steps")
+    require(type(row.get("actual_steps")) is int and len(trace) == row["actual_steps"],
+            "declared capacity is not observed steps")
     if row["arm"] == "ndu" and row["valid"]:
         require(8 <= len(trace) <= 16, "completed NDU has fewer than 8 actual decisions")
+        require(trace[-1].get("action") in ("STOP", "ABSTAIN"),
+                "completed NDU must record its terminal decision")
     prev = None
-    for step in trace:
+    for index, step in enumerate(trace):
         require(type(step) is dict and all(sha(step.get(key)) for key in
                 ("pre_state_sha256", "post_state_sha256", "evidence_sha256")),
                 "missing state/evidence digest")
         require(step.get("action") in ("RECALL", "ROUTE", "DECOMPOSE", "VERIFY",
                                        "REVISE", "BACKTRACK", "STOP", "ABSTAIN"),
                 "invalid reasoning action")
+        require(step["action"] not in ("STOP", "ABSTAIN") or index == len(trace) - 1,
+                "terminal decision followed by additional actions")
         require(nonnegative_int(step.get("cost_us")) and step["cost_us"] > 0,
                 "zero/unmeasured decision cost")
         require(prev is None or step["pre_state_sha256"] == prev,
@@ -269,8 +275,10 @@ def validate_episode(root, row, by_id, protocol):
             sha(row.get("noise_digest")), "source or common-noise binding")
     owner = row.get("owner")
     require(type(owner) is dict and owner.get("encoder_digest") == protocol["encoder_digest"] and
-            owner.get("generation") == protocol["encoder_generation"] and
-            owner.get("forward_calls") == 1 and sha(owner.get("feature_digest")),
+            type(owner.get("generation")) is int and
+            owner["generation"] == protocol["encoder_generation"] and
+            type(owner.get("forward_calls")) is int and owner["forward_calls"] == 1 and
+            sha(owner.get("feature_digest")),
             "unbound or duplicated Encoder forward")
     cells = owner.get("cells")
     require(type(cells) is list and 1 <= len(cells) <= 4096 and
