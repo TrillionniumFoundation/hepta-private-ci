@@ -113,6 +113,9 @@ class SourceClusterTailTests(unittest.TestCase):
         self.assertEqual(report["declared_unique_original_source_ids"], 2)
         self.assertEqual(report["declared_source_ids_reused_across_seeds"], 2)
         self.assertFalse(report["sampling_unit_independence_verified"])
+        self.assertIsNone(report["independent_sampling_unit"])
+        self.assertEqual(report["within_seed_weighting_unit"],
+                         "original_source_within_training_seed")
         self.assertFalse(report["independent_outcome_attestation_verified"])
         self.assertFalse(report["scientific_superiority_established"])
 
