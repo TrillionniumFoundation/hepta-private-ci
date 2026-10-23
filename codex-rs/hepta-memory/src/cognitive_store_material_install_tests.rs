@@ -279,16 +279,9 @@ async fn owner_factory_child() {
     );
     assert_eq!(u64::from_str_radix(value("CapEff:"), 16).unwrap(), 0);
     assert_eq!(value("NoNewPrivs:"), "1");
+    assert!(value("Groups:").is_empty());
     let root_source = PathBuf::from(std::env::var_os("HEPTA_TEST_OWNER_INSTALL_SOURCE").unwrap());
     assert!(std::fs::read(root_source.join("cognitive_1.sqlite3")).is_err());
-    for fd in std::fs::read_dir("/proc/self/fd").unwrap() {
-        if let Ok(path) = std::fs::read_link(fd.unwrap().path()) {
-            assert!(
-                !path.starts_with(&root_source),
-                "Root source descriptor leaked"
-            );
-        }
-    }
     let cut: CognitiveRecoveryAnchor =
         serde_json::from_str(&std::env::var("HEPTA_TEST_OWNER_INSTALL_CUT").unwrap()).unwrap();
     let fleet = HeptaFleetRoot::parse(PathBuf::from(
@@ -296,6 +289,18 @@ async fn owner_factory_child() {
     ))
     .unwrap();
     let layout = fleet.layout().agent(&cut.owner_agent_id);
+    for fd in std::fs::read_dir("/proc/self/fd").unwrap() {
+        if let Ok(path) = std::fs::read_link(fd.unwrap().path()) {
+            assert!(
+                !path.starts_with(layout.cognitive_root()),
+                "owner database or lock descriptor leaked"
+            );
+            assert!(
+                !path.starts_with(&root_source),
+                "Root source descriptor leaked"
+            );
+        }
+    }
     let installed = PathBuf::from(std::env::var_os("HEPTA_TEST_OWNER_INSTALL_PATH").unwrap());
     let authority = recovery_authority(&cut.owner_agent_id);
     let result = CognitiveStore::open_with_recovery(
