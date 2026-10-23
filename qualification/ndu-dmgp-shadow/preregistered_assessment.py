@@ -36,7 +36,8 @@ class PairedProtocol:
                 and 32 <= self.min_future_episodes <= 4096,
                 "unregistered work or future support bound")
         require(type(self.cost_per_us) in (int, float)
-                and isfinite(self.cost_per_us) and self.cost_per_us >= 0,
+                and isfinite(self.cost_per_us) and self.cost_per_us >= 0
+                and isfinite(4.0 + 2.0 * self.cost_per_us * self.max_total_us),
                 "invalid resource price")
         require(type(self.familywise_alpha) in (int, float)
                 and isfinite(self.familywise_alpha)
