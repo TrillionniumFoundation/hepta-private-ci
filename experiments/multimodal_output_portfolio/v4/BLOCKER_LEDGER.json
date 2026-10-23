@@ -9,10 +9,10 @@
   "original_research_goal_fully_validated": false,
   "development_integrity_passed": true,
   "development_strong_sibling_observed": true,
-  "registered_v4_confirmation_completed": false,
-  "registered_v4_mechanism_gate_closed": false,
-  "registered_v4_primary_superiority_passed": false,
-  "status_semantics": "Historical closures retain their original named scope. Implementation, development, receipt consistency, formal mechanism and confirmatory superiority are separate. The failed formal attempt contains no scientific result.",
+  "registered_v4_confirmation_completed": true,
+  "registered_v4_mechanism_gate_closed": true,
+  "registered_v4_primary_superiority_passed": true,
+  "status_semantics": "Historical v3 closures and negative findings remain unchanged. The 2026-10-23 10:47 UTC GitHub-hosted run independently audited the frozen v4 three-seed finite synthetic mechanism and registered superiority; neither a natural-data target-blind generator nor dedicated hardware, independent human observer, physical resource certification, new end-to-end training, general FBSDE or production admission is implied. Failed local confirmation-001 and all prior negative experiments remain preserved.",
   "items": [
     {
       "id": "C01",
@@ -106,7 +106,7 @@
       "remaining_acceptance": "A new prospectively frozen experiment with enough training seeds and strict paired superiority, if the phenomenon exists.",
       "reason": "CI upper endpoint is 0; seeds 17/29 are identical to myopic. Do not tune on this confirmation set or reinterpret equality as superiority.",
       "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded.",
-      "v4_update": "Development dynamic-minus-myopic J interval [-0.004097383720769757,0.01681630999955308] includes zero. No v4 confirmation was executed; original v3 status is unchanged."
+      "v4_update": "V4 registered secondary dynamic-minus-myopic sampled J +0.0274095641, descriptive unadjusted interval [0.0241286166,0.0308788385], and mean external loss difference -0.03512025486; this v4 synthetic secondary result does not rewrite original v3 R01 status or establish natural continuation benefit."
     },
     {
       "id": "R02",
@@ -146,18 +146,20 @@
     {
       "id": "R05",
       "goal": "Dynamic output-portfolio reallocation within generation",
-      "status": "implemented_and_development_verified_confirmation_blocked",
+      "status": "closed_for_registered_v4_finite_synthetic_confirmation_only",
       "evidence": [
         "protocol.json",
         "THEORY.md",
         "RESULTS.md",
         "evidence/review_development.json",
         "evidence/review_bridge_fixture.json",
-        "evidence/review_failed_confirmation_preflight.json"
+        "evidence/review_failed_confirmation_preflight.json",
+        "evidence/hosted-confirmation-002-review.json"
       ],
-      "remaining_acceptance": "Complete all registered seeds/arms under the unchanged protocol, independently verify all outputs/costs/actions, and observe the strong different-second-REFINE sibling for each of seeds 17,29,43.",
-      "reason": "Four actual modality states/actions, full outputs, native ownership and an executed cross-modality sibling passed complete development replay. Confirmation-001 stopped at capacity preflight with zero model work, so the required three-checkpoint mechanism gate has not closed.",
-      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded."
+      "remaining_acceptance": "For broader natural-science and production claims: source-disjoint target-blind real four-decoder generation, independently evaluated quality, matched true compute/energy, new training and 2x2 causal attribution, robust shift, and qualified NeuronRuntime; none are closed here.",
+      "reason": "Frozen science 7713023e was actually executed on GitHub-hosted CPU for checkpoints 17/29/43 and all four arms: 12,288 native sessions, 63,534 requests, 100 producer file hashes, exact outputs/costs/actions audit and strong feedback siblings for each seed. Independent downloaded-archive manifest validation and loss recomputation agreed. Paired dynamic-minus-committed sampled J=+0.03986064694, CI=[0.03509747538,0.04474663765], and external-loss difference=-0.03757526462. Only the registered synthetic mechanism/superiority scope is closed.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded.",
+      "v4_update": "Registered three-checkpoint hosted confirmation-002 completed SUCCESS at 2026-10-23T10:47:09Z; the original local confirmation-001 remains an authentic capacity-preflight failure with zero model work."
     },
     {
       "id": "C07",
@@ -317,14 +319,24 @@
     {
       "id": "E04",
       "goal": "Complete registered v4 confirmation and its independent full audit",
-      "status": "blocked_by_measured_shared_storage_capacity",
+      "status": "closed_for_registered_hosted_confirmation_route_only",
       "evidence": [
         "evidence/confirmation_preflight_failure.json",
         "evidence/confirmation_storage.json",
-        "evidence/review_failed_confirmation_preflight.json"
+        "evidence/review_failed_confirmation_preflight.json",
+        "evidence/hosted-confirmation-002-review.json"
       ],
-      "remaining_acceptance": "At startup provide the unchanged full capacity reservation: 1,741,789,184 bytes on one filesystem, or 870,894,592 bytes on each of two distinct evidence/archive filesystems; then run a fresh confirmation attempt and audit all registered seeds/arms. Capacity alone does not close the other research claims.",
-      "reason": "Actual confirmation-001 recorded output 222,228,480 bytes and archive 205,242,368 bytes free, a combined 1,314,318,336 byte shortfall. It stopped before source capture/model/native execution and produced zero scientific samples."
+      "remaining_acceptance": "Original local output/archive filesystem still needs new capacity if local reproduction is required. Dedicated self-hosted desktop runner E02, full repository required CI, independent external observer, real natural tasks and production integration remain separate.",
+      "reason": "Hosted attempt 39919197831 passed unchanged 1,741,789,184-byte shared-filesystem reservation and then completed 17/29/43 seeds, full neural/native execution and first-party independent audit. Archive SHA-256 and 121 hosted/100 producer file digests externally rechecked. Original confirmation-001 shortfall 1,314,318,336 bytes and zero scientific outputs is preserved, not overwritten."
     }
-  ]
+  ],
+  "registered_v4_hosted_confirmation": {
+    "github_run": 39919197831,
+    "github_job": 120300045436,
+    "scientific_source": "7713023e604746a3947e0e0e2d31e8eaef6e48b1",
+    "github_request_sha": "812fd5e124e8c34a001627ae47b0e9aae399b7cc",
+    "artifact_sha256": "2c8e4f1f5841e661bda7d50c9904e635c0346fce8b1a22e250d4444fdc3c919e",
+    "independent_archive_readonly_check": "evidence/hosted-confirmation-002-review.json",
+    "scope": "registered_three_checkpoint_finite_synthetic_frozen_protocol_only"
+  }
 }
