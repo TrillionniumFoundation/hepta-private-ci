@@ -26,6 +26,14 @@ MAX_PAIR_COMPARISONS = 2_000_000
 MAX_VIOLATIONS = 4096
 MAX_INPUT_BYTES = 16 * 1024 * 1024
 
+# Immutable identities from the originally completed negative-v1 evidence.
+# Caller-provided SHA256 is only an integrity check for arbitrary supplied
+# bytes; it cannot establish that the actual frozen history was provided.
+ORIGINAL_HISTORICAL_SHA256 = {
+    "hepta.grounded-cohort.v1": "71168c26fffdd913d71a69d8708cec957f55dc2bece112c9c50153fbf31de75d",
+    "hepta.ndu.historical-exclusions.v1": "4c2b88f85c9ef5fea08790775a652798a72e9281bed1534561f14c681e7bba9d",
+}
+
 
 class CohortContractError(ValueError):
     pass
@@ -57,6 +65,31 @@ def decode_unambiguous_json(raw):
         raise
     except (UnicodeDecodeError, json.JSONDecodeError, RecursionError, ValueError) as error:
         raise CohortContractError("invalid cohort JSON bytes") from error
+
+
+def verify_frozen_history_pins(raw_documents, documents):
+    """Bind original history to the published, preregistered raw bytes.
+
+    This remains an image-provenance guard, not independent signer custody,
+    entity/pretraining disjointness, real learning efficacy or authority.
+    """
+    if len(raw_documents) != 2 or len(documents) != 2:
+        raise CohortContractError("v2 requires both original v1 and historical exclusions")
+    seen = set()
+    for index, (raw, document) in enumerate(zip(raw_documents, documents)):
+        if not isinstance(raw, bytes) or not isinstance(document, dict):
+            raise CohortContractError(f"history:{index}: invalid original history input")
+        schema = document.get("schema")
+        if (not isinstance(schema, str) or schema not in ORIGINAL_HISTORICAL_SHA256
+                or schema in seen):
+            raise CohortContractError(
+                f"history:{index}: duplicated or unknown original history schema"
+            )
+        if hashlib.sha256(raw).hexdigest() != ORIGINAL_HISTORICAL_SHA256[schema]:
+            raise CohortContractError(f"history:{index}: original frozen SHA256 mismatch")
+        seen.add(schema)
+    if seen != set(ORIGINAL_HISTORICAL_SHA256):
+        raise CohortContractError("original historical evidence set is incomplete")
 
 
 def _checked_image(row, origin, *, allow_image_id=False):
@@ -283,6 +316,13 @@ def main(argv=None):
                           "output_written": False}, sort_keys=True))
         return 2
     try:
+        # The original v2 identity firewall preregisters dHash distance <=4.
+        # A caller must not weaken this floor while retaining a PASS receipt.
+        # Direct check_cohort() lower thresholds remain diagnostic only.
+        if not 4 <= args.max_dhash_distance <= 64:
+            raise CohortContractError(
+                "v2 CLI requires --max-dhash-distance between 4 and 64"
+            )
         if len(args.historical) != len(args.historical_sha256):
             raise CohortContractError("each historical manifest requires an out-of-band SHA256")
 
@@ -306,6 +346,7 @@ def main(argv=None):
 
         candidate = decode_unambiguous_json(read_bounded(args.candidate))
         history = []
+        raw_histories = []
         for path, expected in zip(args.historical, args.historical_sha256):
             if not isinstance(expected, str) or not HEX256.fullmatch(expected):
                 raise CohortContractError("invalid externally supplied historical SHA256")
@@ -313,10 +354,13 @@ def main(argv=None):
             if hashlib.sha256(raw).hexdigest() != expected:
                 raise CohortContractError("historical SHA256 mismatch")
             history.append(decode_unambiguous_json(raw))
+            raw_histories.append(raw)
+        verify_frozen_history_pins(raw_histories, history)
         result = check_cohort(candidate, history,
                               max_hamming=args.max_dhash_distance,
                               require_complete_history=True)
         result["caller_pinned_historical_bytes"] = True
+        result["original_frozen_histories_verified"] = True
     except (OSError, json.JSONDecodeError, CohortContractError) as exc:
         result = {"schema": "hepta.ndu-cohort-firewall.v2", "status": "fail",
                   "error": str(exc), "observable_image_identity_disjoint": False}
