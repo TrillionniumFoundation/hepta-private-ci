@@ -362,6 +362,10 @@ def portfolio_weights(
             weight = nxt
             break
         weight = nxt
+    else:
+        # Bounded iteration is not convergence: an unstable fixed point must
+        # not publish an apparently optimal allocation.
+        raise GateRejected("portfolio fixed-point solver did not converge")
     return tuple(weight)
 
 
