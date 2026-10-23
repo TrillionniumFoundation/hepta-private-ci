@@ -300,6 +300,44 @@ class CohortFirewallTests(unittest.TestCase):
                     self.assertEqual(history.read_bytes(),
                                      malicious if side == "history" else clean_history)
 
+    def test_giant_duplicate_json_key_cannot_amplify_denial_receipt(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            candidate = root / "candidate.json"
+            history = root / "history.json"
+            output = root / "denial.json"
+            huge_name = "x" * 250_000
+            malicious = json.dumps({huge_name: 1})[:-1]
+            malicious += "," + json.dumps(huge_name) + ":2}"
+            candidate.write_text(malicious, encoding="utf-8")
+            history.write_bytes(b"{}")
+            original = candidate.read_bytes()
+            denied = subprocess.run(
+                [
+                    sys.executable,
+                    str(Path(__file__).parent / "cohort_firewall.py"),
+                    "--candidate",
+                    str(candidate),
+                    "--historical",
+                    str(history),
+                    "--historical-sha256",
+                    hashlib.sha256(history.read_bytes()).hexdigest(),
+                    "--output",
+                    str(output),
+                ],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            self.assertEqual(denied.returncode, 2, denied.stderr)
+            receipt = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(receipt["status"], "fail")
+            self.assertIn("duplicate JSON object key", receipt["error"])
+            self.assertIn("[truncated]", receipt["error"])
+            self.assertLess(len(receipt["error"]), 512)
+            self.assertLess(output.stat().st_size, 2048)
+            self.assertEqual(candidate.read_bytes(), original)
+
     def test_cli_refuses_unpinned_or_incomplete_history(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)

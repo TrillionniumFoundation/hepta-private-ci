@@ -53,7 +53,12 @@ def decode_unambiguous_json(raw):
         result = {}
         for name, value in pairs:
             if name in result:
-                raise CohortContractError(f"duplicate JSON object key: {name!r}")
+                # The JSON key is untrusted evidence. Printing it whole can
+                # turn a bounded input into a huge denial receipt/log entry.
+                preview = repr(name[:64])
+                if len(name) > 64:
+                    preview += "... [truncated]"
+                raise CohortContractError(f"duplicate JSON object key: {preview}")
             result[name] = value
         return result
 
