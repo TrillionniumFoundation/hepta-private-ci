@@ -15,6 +15,9 @@ use std::time::UNIX_EPOCH;
 
 const LEASE: &str = "notes-real-clock-handoff";
 
+#[path = "notes_recovered_ready_tests.rs"]
+mod recovered_ready_tests;
+
 struct ProcessVerifier {
     spawn: u64,
     local: u64,
