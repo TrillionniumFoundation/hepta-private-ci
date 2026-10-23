@@ -57,6 +57,26 @@ use crate::local_lease_outbox::legacy_dispatch_operation_digest;
 use crate::operation_claims;
 use crate::operation_claims::DurableDispatchClaim;
 
+#[path = "objective_sender.rs"]
+mod objective_sender;
+pub use objective_sender::ObjectiveSenderCheckpoint;
+pub use objective_sender::ObjectiveSenderCheckpointError;
+pub use objective_sender::ObjectiveSenderError;
+pub use objective_sender::ObjectiveSenderIdentity;
+pub use objective_sender::ObjectiveSenderInputError;
+pub use objective_sender::ObjectiveSenderObservation;
+pub use objective_sender::ObjectiveSenderObservationKind;
+pub use objective_sender::ObjectiveSenderOrigin;
+pub use objective_sender::ObjectiveSenderRequest;
+pub use objective_sender::ObjectiveSenderRetainedCursor;
+pub use objective_sender::ObjectiveSenderRetainedPage;
+pub use objective_sender::ObjectiveSenderRetainedPosition;
+pub use objective_sender::ObjectiveSenderSnapshot;
+pub use objective_sender::ObjectiveSenderTicket;
+pub use objective_sender::ObjectiveSenderWriterFence;
+pub use objective_sender::ProductionObjectiveSender;
+pub(crate) use objective_sender::verify_sender_store;
+
 #[path = "production_reauthorization.rs"]
 mod reauthorization;
 pub(crate) use reauthorization::PreBoundaryRejected;
