@@ -22,5 +22,5 @@ an exact retired predecessor and a live successor in the same epoch. Callbacks
 must not reenter the registry or wait on remote operations. These results provide
 no issuer rotation, Root service wire, restart recovery or production authority.
 
-[Manifest and byte hashes](publication.json) covers all ten original receipt/log
+[Manifest and byte hashes](publication.json) covers all eleven original receipt/log
 members, including failures. Compressed logs round-trip to their original bytes.
