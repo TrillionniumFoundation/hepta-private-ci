@@ -14,6 +14,8 @@ def fixture():
             "source_digest": h(31), "model_profile_digest": h(32), "target_profile_digest": h(33),
             "objective_digest": h(34), "evaluation_code_digest": h(35), "bootstrap_seed": 19,
             "min_future_group_gain": 0, "max_old_task_regression": 0,
+            "max_cpu_overhead_fraction": 0, "max_rss_overhead_fraction": 0,
+            "max_p99_overhead_fraction": 0,
             "limits": {"wall_ms": 10000, "cpu_ms": 10000, "peak_rss_bytes": 100000000,
                        "input_tokens": 1000, "output_tokens": 1000, "tool_calls": 20},
             "tasks": tasks}
@@ -29,7 +31,7 @@ def fixture():
                      "evaluation_code_digest": h(35), "limits": copy.deepcopy(plan["limits"]),
                      "idempotency_replayed": False, "unknown_effects": 0,
                      "success": arm == "split" or t["split"] == "test", "tool_correct": True,
-                     "observation_digest": h(44), "wall_ms": 100, "cpu_ms": 50,
+                     "observation_digest": h(44000 + len(receipts)), "wall_ms": 100, "cpu_ms": 50,
                      "peak_rss_bytes": 4000, "input_tokens": 100, "output_tokens": 10,
                      "tool_calls": 1}
                 receipts.append(r)
@@ -41,6 +43,7 @@ class CellComparisonTest(unittest.TestCase):
         plan, rows = fixture()
         result = compare(plan, rows)
         self.assertTrue(result["all_scales_meet_structural_metrics"])
+        self.assertTrue(all(result["scales"]["4096"]["resource_cost_guard"].values()))
         self.assertFalse(result["independent_acceptance"])
         self.assertEqual(result["status"], "HOLD_NO_GO_INDEPENDENT_EVIDENCE_REQUIRED")
 
@@ -85,6 +88,44 @@ class CellComparisonTest(unittest.TestCase):
             if r["task_id"] == "old-0" and r["arm"] == "split":
                 r["success"] = False
         self.assertFalse(compare(p, rows)["all_scales_meet_structural_metrics"])
+
+    def test_resource_regressions_block_cell_split_even_with_future_gain(self):
+        for field, value, cost in [
+            ("cpu_ms", 500, "cpu"),
+            ("peak_rss_bytes", 8000, "rss"),
+            ("wall_ms", 500, "p99"),
+        ]:
+            plan, rows = fixture()
+            for row in rows:
+                if row["arm"] == "split" and row["scale"] == 4096:
+                    row[field] = value
+            measured = compare(plan, rows)
+            self.assertTrue(measured["scales"]["64"]["candidate_meets_structural_metrics"])
+            self.assertFalse(measured["scales"]["4096"]["resource_cost_guard"][cost])
+            self.assertFalse(measured["scales"]["4096"]["candidate_meets_structural_metrics"])
+            self.assertFalse(measured["all_scales_meet_structural_metrics"])
+            self.assertFalse(measured["independent_acceptance"])
+
+    def test_cost_overhead_must_be_pre_registered(self):
+        plan, rows = fixture()
+        del plan["max_cpu_overhead_fraction"]
+        with self.assertRaisesRegex(GateError, "pre-registered resource overhead"):
+            compare(plan, rows)
+        plan, rows = fixture()
+        plan["max_rss_overhead_fraction"] = float("nan")
+        with self.assertRaisesRegex(GateError, "pre-registered resource overhead"):
+            compare(plan, rows)
+
+    def test_duplicate_receipt_and_contradictory_outcome_denied(self):
+        plan, rows = fixture()
+        rows[1]["observation_digest"] = rows[0]["observation_digest"]
+        with self.assertRaisesRegex(GateError, "duplicate observation digest"):
+            compare(plan, rows)
+        plan, rows = fixture()
+        rows[0]["success"] = True
+        rows[0]["tool_correct"] = False
+        with self.assertRaisesRegex(GateError, "success conflicts with tool correctness"):
+            compare(plan, rows)
 
     def test_no_fixture_is_no_go(self):
         p, rows = fixture()
