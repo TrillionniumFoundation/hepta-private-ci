@@ -67,6 +67,9 @@ def probe(
     stop = threading.Event()
     rss_peak: list[int] = []
     gpu_peak: list[int] = []
+    http_inflight_lock = threading.Lock()
+    client_http_inflight = 0
+    client_http_inflight_peak = 0
 
     def monitor() -> None:
         while not stop.is_set():
@@ -78,6 +81,7 @@ def probe(
             stop.wait(0.1)
 
     def request(index: int) -> tuple[float, int]:
+        nonlocal client_http_inflight, client_http_inflight_peak
         request_id = f"cell-qualification-{cells}-{index}"
         cell_id = f"cell-{index}"
         data = json.dumps({
@@ -98,13 +102,20 @@ def probe(
         opener = urllib.request.build_opener(
             urllib.request.ProxyHandler({}), NoRedirect(),
         )
-        with opener.open(req, timeout=timeout) as response:
-            if response.status != 200:
-                raise ValueError("non-200 inference response")
-            payload = response.read(128 * 1024 + 1)
-            if len(payload) > 128 * 1024:
-                raise ValueError("oversized inference response")
-            record = json.loads(payload)
+        with http_inflight_lock:
+            client_http_inflight += 1
+            client_http_inflight_peak = max(client_http_inflight_peak, client_http_inflight)
+        try:
+            with opener.open(req, timeout=timeout) as response:
+                if response.status != 200:
+                    raise ValueError("non-200 inference response")
+                payload = response.read(128 * 1024 + 1)
+                if len(payload) > 128 * 1024:
+                    raise ValueError("oversized inference response")
+                record = json.loads(payload)
+        finally:
+            with http_inflight_lock:
+                client_http_inflight -= 1
         elapsed = (time.perf_counter() - started) * 1000
         if (
             record.get("request_id") != request_id
@@ -140,7 +151,10 @@ def probe(
     seconds = time.perf_counter() - started
     return {
         "schema": "hepta.neuron.model-scale.observation.v1",
-        "logical_cells": cells, "concurrently_active": active,
+        "logical_cells": cells, "configured_active_workers": active,
+        "client_http_inflight_peak": client_http_inflight_peak,
+        "server_active_inference_peak": None,
+        "concurrently_active": None,  # not observable from client HTTP concurrency alone
         "generation": generation, "model_digest": model_digest,
         "successes": len(durations), "failures": len(errors),
         "failure_examples": errors[:5],
@@ -152,6 +166,9 @@ def probe(
         },
         "queue_age_us_p99": percentile(queue_ages, 0.99) if queue_ages else None,
         "throughput_rps": len(durations) / seconds,
+        "p99_at_least_100_samples": len(durations) >= 100,
+        "resource_measurements_complete": bool(rss_peak),
+        "measurement_scope": "client_http_timing_not_attested_server_execution",
         "server_pid": pid,
         "server_rss_peak_bytes": max(rss_peak) if rss_peak else None,
         "host_total_gpu_memory_peak_bytes": max(gpu_peak) if gpu_peak else None,
