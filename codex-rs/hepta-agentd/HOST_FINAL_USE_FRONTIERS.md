@@ -3,8 +3,12 @@
 `HostConsumerFrontier` adapts each of the two existing consumer frontier stores
 for the original `FinalUseAuthority`. It uses the original
 `HostAuthorityFrontierStore<FinalUseFrontier>`, not a second nonce or effect
-ledger. The trusted launcher fixes the two distinct owner IDs and creates one
-backend object per owner. Requests cannot choose a directory or owner.
+ledger. The trusted launcher fixes two separate storage directories and one backend
+object per consumer slot. Each backend owner ID must match the original
+FinalUseAuthority signer ID. Under one canonical issuer the two IDs are the
+same: the original consumer also checks each grant against that signer ID.
+Separate actual directory identities preserve the two independent stores.
+Requests cannot choose a directory or owner.
 
 The trusted fresh path calls `initialize_fresh` with the actual initial
 revocation head from the same canonical issuer. Existing or partial state is a
@@ -50,3 +54,10 @@ formatting passed with an empty final source diff. The clock is controlled in
 these cases; service wire, production authorization and recovery remain separate
 requirements. [Original receipts, logs and complete source snapshots](acceptance/2026-10-23-consumer-frontier/publication.json)
 retain the evidence and boundaries.
+
+The initial five backend tests use independent owner namespaces and do not by
+themselves prove this original same-issuer consumer composition. Service
+qualification must exercise both original FinalUseAuthority instances and their
+Root frontier clients using the same canonical signer ID with distinct actual
+storage directories. Different slot labels must not become different grant
+signer IDs.
