@@ -56,6 +56,23 @@ class JointEvidenceGenerationTests(unittest.TestCase):
                     self.assertLessEqual(audit['mean_modeled_cost'], 10)
                     self.assertGreater(audit['distinct_decoded_hashes'], 0)
 
+    def test_solver_state_budget_rejects_before_unbounded_expansion(self):
+        state = mode_state('hard', self.start, 10)
+        ctl = JointController(self.cfg, max_states=16)
+        with self.assertRaisesRegex(RuntimeError, "state budget exceeded"):
+            ctl.solve(state)
+        receipt = ctl.resource_receipt()
+        self.assertEqual(receipt['visited_states'], 16)
+        self.assertLessEqual(receipt['cached_states'], 16)
+        self.assertGreaterEqual(receipt['compared_actions'], 16)
+        with self.assertRaises(ValueError):
+            JointController(self.cfg, max_states=1.5)
+        with self.assertRaises(ValueError):
+            JointController(self.cfg, max_states=True)
+        good = JointController(self.cfg, max_states=2000)
+        self.assertTrue(math.isfinite(good.solve(state)[1]))
+        self.assertLessEqual(good.resource_receipt()['visited_states'], 2000)
+
     def test_no_query_is_a_nested_subset_not_a_strong_baseline(self):
         state = mode_state('hard', self.start, 10)
         full = JointController(self.cfg)
