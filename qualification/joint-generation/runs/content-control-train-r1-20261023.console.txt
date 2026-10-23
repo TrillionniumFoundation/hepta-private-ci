@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/hepta-private-ci/qualification/joint-generation/content_control/run.py", line 305, in <module>
+    exit_code = build(args.out, args.freeze)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/content_control/run.py", line 130, in build
+    objective, rng = CachedObjective("S", model), np.random.default_rng(seed + 1000)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/learning.py", line 145, in __init__
+    raise ValueError("plain JointModel required; automatic instrumentation would double charge")
+ValueError: plain JointModel required; automatic instrumentation would double charge

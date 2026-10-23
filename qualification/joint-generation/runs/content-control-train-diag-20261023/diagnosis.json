@@ -1,0 +1,605 @@
+{
+  "ce_anchor": 0.2,
+  "cpu_seconds_before_receipt": 0.30861440399999995,
+  "data": {
+    "group_count": 192,
+    "groups_sha256": "a85f6fcc50533af2dba42daaa2d314c9f9090c5f57e9ef6c5222e95a7a65187a",
+    "inputs_sha256": "08bd1748eb8454b907d881afa621e286000c54dcab21c437cd0a0f7f4f2975f1",
+    "profile_sha256": "eecbcaac4adaf3e54584189baf3ebe678575902d524efd8e4bb42f88127ba6c8",
+    "rows": 3072,
+    "schema": "hepta.joint-generation.independent-data.v1",
+    "source_count": 192,
+    "source_ids_sha256": "144f2ecc41286b1db96f762e5bfaa60a4bf29fbe9b10e973e39e3f410a6aedf3",
+    "sources_sha256": "3d9de41826956de04a01d2c63989fddb9bc00e0ab564af09184c6c94e029bae6",
+    "split": "train"
+  },
+  "kernel_ledger": {
+    "arm": "old-train-diagnosis",
+    "consumed_units": 451549836,
+    "hardware_flops_or_latency": false,
+    "kernels": {
+      "diagnosis": {
+        "model_forward": {
+          "calls": 9,
+          "compare_ops": 608256,
+          "consumed_units": 418369536,
+          "div_ops": 663552,
+          "exp_ops": 663552,
+          "log_ops": 0,
+          "macs": 199950336,
+          "pow_ops": 0,
+          "scalar_ops": 2820096,
+          "sort_items": 0,
+          "sqrt_ops": 0,
+          "tanh_ops": 884736
+        },
+        "objective_A": {
+          "calls": 9,
+          "compare_ops": 55296,
+          "consumed_units": 26625096,
+          "div_ops": 1327122,
+          "exp_ops": 0,
+          "log_ops": 55296,
+          "macs": 7962624,
+          "pow_ops": 0,
+          "scalar_ops": 4893696,
+          "sort_items": 0,
+          "sqrt_ops": 0,
+          "tanh_ops": 0
+        },
+        "objective_H": {
+          "calls": 9,
+          "compare_ops": 55296,
+          "consumed_units": 5308452,
+          "div_ops": 663561,
+          "exp_ops": 0,
+          "log_ops": 55296,
+          "macs": 0,
+          "pow_ops": 0,
+          "scalar_ops": 2156544,
+          "sort_items": 0,
+          "sqrt_ops": 0,
+          "tanh_ops": 0
+        },
+        "objective_cache": {
+          "calls": 9,
+          "compare_ops": 59616,
+          "consumed_units": 1246752,
+          "div_ops": 22032,
+          "exp_ops": 20736,
+          "log_ops": 0,
+          "macs": 0,
+          "pow_ops": 0,
+          "scalar_ops": 933120,
+          "sort_items": 0,
+          "sqrt_ops": 0,
+          "tanh_ops": 0
+        }
+      }
+    },
+    "prices": {
+      "compare_ops": 1,
+      "div_ops": 4,
+      "exp_ops": 8,
+      "log_ops": 8,
+      "macs": 2,
+      "pow_ops": 8,
+      "scalar_ops": 1,
+      "sort_items": 1,
+      "sqrt_ops": 4,
+      "tanh_ops": 8
+    },
+    "remaining_units": 9223372036403225971,
+    "schema": "hepta.independent-work-ledger.v1",
+    "shared_sources": [],
+    "stages": {
+      "diagnosis": {
+        "consumed_units": 451549836,
+        "decoder_elements": 20736,
+        "model_forward_calls": 9,
+        "model_forward_macs": 199950336,
+        "model_forward_rows": 27648,
+        "objective_cache_builds": 9,
+        "objective_cache_cells": 15552,
+        "op_compare_ops": 778464,
+        "op_div_ops": 2676267,
+        "op_exp_ops": 684288,
+        "op_log_ops": 110592,
+        "op_macs": 207912960,
+        "op_pow_ops": 0,
+        "op_scalar_ops": 10803456,
+        "op_sort_items": 0,
+        "op_sqrt_ops": 0,
+        "op_tanh_ops": 884736
+      }
+    },
+    "total_cap": 9223372036854775807,
+    "totals": {
+      "consumed_units": 451549836,
+      "decoder_elements": 20736,
+      "model_forward_calls": 9,
+      "model_forward_macs": 199950336,
+      "model_forward_rows": 27648,
+      "objective_cache_builds": 9,
+      "objective_cache_cells": 15552,
+      "op_compare_ops": 778464,
+      "op_div_ops": 2676267,
+      "op_exp_ops": 684288,
+      "op_log_ops": 110592,
+      "op_macs": 207912960,
+      "op_pow_ops": 0,
+      "op_scalar_ops": 10803456,
+      "op_sort_items": 0,
+      "op_sqrt_ops": 0,
+      "op_tanh_ops": 884736
+    },
+    "unit_profile": "declared-priced-operator-work-v1"
+  },
+  "plan_sha256": "94d84d8eb1af73c4c766604b3ddbcac0be2d9a2b1638b2afa10acf8216c2762b",
+  "provenance": {
+    "additive": {
+      "candidate_count": 9,
+      "complete_cpu_seconds": 9.595203997,
+      "complete_operator_units": 9293559091,
+      "selected": [
+        {
+          "learning_rate": 0.01,
+          "model_file": "additive-11-0.01.npz",
+          "seed": 11,
+          "updates": 462
+        },
+        {
+          "learning_rate": 0.01,
+          "model_file": "additive-23-0.01.npz",
+          "seed": 23,
+          "updates": 432
+        },
+        {
+          "learning_rate": 0.01,
+          "model_file": "additive-47-0.01.npz",
+          "seed": 47,
+          "updates": 249
+        }
+      ]
+    },
+    "additive-11-0.01.npz": "d9e6ea9939ac76a65ffb69556028a58184627b83d34f4498b9ac6096635fcd64",
+    "additive-23-0.01.npz": "0f620021789ac2fd63aa11957176dbcdf5cb32729c352ada0971b1a9e7c342f3",
+    "additive-47-0.01.npz": "9db820da5f2dbe7d87205621b91f52654cf1ad2ebf721f29b9b3cbd47add429d",
+    "anchor": {
+      "candidate_count": 9,
+      "complete_cpu_seconds": 9.616731124000003,
+      "complete_operator_units": 10421593721,
+      "selected": [
+        {
+          "learning_rate": 0.01,
+          "model_file": "anchor-11-0.01.npz",
+          "seed": 11,
+          "updates": 533
+        },
+        {
+          "learning_rate": 0.01,
+          "model_file": "anchor-23-0.01.npz",
+          "seed": 23,
+          "updates": 459
+        },
+        {
+          "learning_rate": 0.01,
+          "model_file": "anchor-47-0.01.npz",
+          "seed": 47,
+          "updates": 388
+        }
+      ]
+    },
+    "anchor-11-0.01.npz": "cc40abddaa8ba09ee0ffb205a8bda5b89ff494d026074a8992dcf871722d56e5",
+    "anchor-23-0.01.npz": "6822943130fa0e51287ed151f0eac8df490a70e2f4ec7d92982d9283a53e2c04",
+    "anchor-47-0.01.npz": "c39a89ab271bddd15daeda5bf4ed8cca839bf13a949a3781f050d70344fa76af",
+    "base-11.npz": "79f893ad885f36216978e7ba6dbc19838eeeaf7c9b32eeee1df252c3f77a4bc4",
+    "base-23.npz": "497d59b48ae4bd34fa0a435a3319ce899a520314c738a0a83e84b0375c6fb90e",
+    "base-47.npz": "e5a8cd002821de43e364ebe8660043979980942a714dda3e9c9663a365128c78",
+    "runs/codex-cloud-core-c1-t2/additive-build.json": "ef7b2740247d038604acd70bd491ba47bfe032e1b8d3b621a4abefb06a54d290",
+    "runs/codex-cloud-core-c1-t2/anchor-build.json": "c51697d22026b230c5310a7804ea47d5aad560379ddcd63cb21993480a8bd059"
+  },
+  "rows": [
+    {
+      "file": "base-11.npz",
+      "mean_target_probability": 0.9152067397485347,
+      "seed": 11,
+      "strata": [
+        {
+          "cosine": 0.8903430417186698,
+          "opposed_row_fraction": 0.0,
+          "rows": 24,
+          "target_probability_range": [
+            0.1,
+            0.5
+          ],
+          "utility_to_ce_logit_norm": 1.6215142179608872
+        },
+        {
+          "cosine": 0.9575361451517979,
+          "opposed_row_fraction": 0.0,
+          "rows": 752,
+          "target_probability_range": [
+            0.5,
+            0.9
+          ],
+          "utility_to_ce_logit_norm": 5.412419887748969
+        },
+        {
+          "cosine": 0.9988682875038941,
+          "opposed_row_fraction": 0.0,
+          "rows": 2296,
+          "target_probability_range": [
+            0.9,
+            1.0000001
+          ],
+          "utility_to_ce_logit_norm": 8.471218481773265
+        }
+      ],
+      "utility_range": [
+        -0.29865213338163504,
+        0.9999855525835049
+      ]
+    },
+    {
+      "file": "anchor-11-0.01.npz",
+      "mean_target_probability": 0.9916577248745021,
+      "seed": 11,
+      "strata": [
+        {
+          "cosine": 0.9423708081034197,
+          "opposed_row_fraction": 0.0,
+          "rows": 4,
+          "target_probability_range": [
+            0.1,
+            0.5
+          ],
+          "utility_to_ce_logit_norm": 1.573209799906318
+        },
+        {
+          "cosine": 0.9575754653639819,
+          "opposed_row_fraction": 0.0,
+          "rows": 36,
+          "target_probability_range": [
+            0.5,
+            0.9
+          ],
+          "utility_to_ce_logit_norm": 5.43587386963635
+        },
+        {
+          "cosine": 0.9979729970362728,
+          "opposed_row_fraction": 0.0,
+          "rows": 3032,
+          "target_probability_range": [
+            0.9,
+            1.0000001
+          ],
+          "utility_to_ce_logit_norm": 8.634682135007228
+        }
+      ],
+      "utility_range": [
+        -0.29865213338163504,
+        0.9999855525835049
+      ]
+    },
+    {
+      "file": "base-23.npz",
+      "mean_target_probability": 0.9104676037642423,
+      "seed": 23,
+      "strata": [
+        {
+          "cosine": 0.8483397801585166,
+          "opposed_row_fraction": 0.0,
+          "rows": 11,
+          "target_probability_range": [
+            0.1,
+            0.5
+          ],
+          "utility_to_ce_logit_norm": 1.4408877712295796
+        },
+        {
+          "cosine": 0.9593677034892335,
+          "opposed_row_fraction": 0.0,
+          "rows": 871,
+          "target_probability_range": [
+            0.5,
+            0.9
+          ],
+          "utility_to_ce_logit_norm": 5.395296601352092
+        },
+        {
+          "cosine": 0.9988975331215386,
+          "opposed_row_fraction": 0.0,
+          "rows": 2190,
+          "target_probability_range": [
+            0.9,
+            1.0000001
+          ],
+          "utility_to_ce_logit_norm": 8.456798524634717
+        }
+      ],
+      "utility_range": [
+        -0.2986499825961936,
+        0.9999856174074078
+      ]
+    },
+    {
+      "file": "anchor-23-0.01.npz",
+      "mean_target_probability": 0.9899437191514844,
+      "seed": 23,
+      "strata": [
+        {
+          "cosine": 0.905647489339249,
+          "opposed_row_fraction": 0.0,
+          "rows": 4,
+          "target_probability_range": [
+            0.1,
+            0.5
+          ],
+          "utility_to_ce_logit_norm": 1.3158466563525262
+        },
+        {
+          "cosine": 0.945880978609274,
+          "opposed_row_fraction": 0.0,
+          "rows": 39,
+          "target_probability_range": [
+            0.5,
+            0.9
+          ],
+          "utility_to_ce_logit_norm": 5.04860467496658
+        },
+        {
+          "cosine": 0.9980673487913444,
+          "opposed_row_fraction": 0.0,
+          "rows": 3029,
+          "target_probability_range": [
+            0.9,
+            1.0000001
+          ],
+          "utility_to_ce_logit_norm": 8.660881272178182
+        }
+      ],
+      "utility_range": [
+        -0.2986499825961936,
+        0.9999856174074078
+      ]
+    },
+    {
+      "file": "base-47.npz",
+      "mean_target_probability": 0.9066640561057645,
+      "seed": 47,
+      "strata": [
+        {
+          "cosine": 0.9002963563043627,
+          "opposed_row_fraction": 0.0,
+          "rows": 26,
+          "target_probability_range": [
+            0.1,
+            0.5
+          ],
+          "utility_to_ce_logit_norm": 1.483962769621858
+        },
+        {
+          "cosine": 0.9581102364645805,
+          "opposed_row_fraction": 0.0,
+          "rows": 874,
+          "target_probability_range": [
+            0.5,
+            0.9
+          ],
+          "utility_to_ce_logit_norm": 5.4026859434770955
+        },
+        {
+          "cosine": 0.998919623901688,
+          "opposed_row_fraction": 0.0,
+          "rows": 2172,
+          "target_probability_range": [
+            0.9,
+            1.0000001
+          ],
+          "utility_to_ce_logit_norm": 8.446739619825257
+        }
+      ],
+      "utility_range": [
+        -0.2986496712198585,
+        0.999985604112157
+      ]
+    },
+    {
+      "file": "anchor-47-0.01.npz",
+      "mean_target_probability": 0.9841079114434926,
+      "seed": 47,
+      "strata": [
+        {
+          "cosine": 0.796563275569631,
+          "opposed_row_fraction": 0.0,
+          "rows": 10,
+          "target_probability_range": [
+            0.1,
+            0.5
+          ],
+          "utility_to_ce_logit_norm": 1.201729042813513
+        },
+        {
+          "cosine": 0.9621797496040089,
+          "opposed_row_fraction": 0.0,
+          "rows": 95,
+          "target_probability_range": [
+            0.5,
+            0.9
+          ],
+          "utility_to_ce_logit_norm": 5.149464276921961
+        },
+        {
+          "cosine": 0.9979661669001826,
+          "opposed_row_fraction": 0.0,
+          "rows": 2967,
+          "target_probability_range": [
+            0.9,
+            1.0000001
+          ],
+          "utility_to_ce_logit_norm": 8.59573107352558
+        }
+      ],
+      "utility_range": [
+        -0.2986496712198585,
+        0.999985604112157
+      ]
+    },
+    {
+      "file": "additive-11-0.01.npz",
+      "mean_target_probability": 0.9935285086575248,
+      "seed": 11,
+      "strata": [
+        {
+          "cosine": 0.7799386761663208,
+          "opposed_row_fraction": 0.0,
+          "rows": 2,
+          "target_probability_range": [
+            0,
+            0.1
+          ],
+          "utility_to_ce_logit_norm": 0.03594332636310282
+        },
+        {
+          "cosine": 0.881784614687219,
+          "opposed_row_fraction": 0.0,
+          "rows": 6,
+          "target_probability_range": [
+            0.1,
+            0.5
+          ],
+          "utility_to_ce_logit_norm": 0.8919779621605002
+        },
+        {
+          "cosine": 0.949196274003129,
+          "opposed_row_fraction": 0.0,
+          "rows": 30,
+          "target_probability_range": [
+            0.5,
+            0.9
+          ],
+          "utility_to_ce_logit_norm": 4.818185188316938
+        },
+        {
+          "cosine": 0.9978040623071981,
+          "opposed_row_fraction": 0.0,
+          "rows": 3034,
+          "target_probability_range": [
+            0.9,
+            1.0000001
+          ],
+          "utility_to_ce_logit_norm": 8.49063148379223
+        }
+      ],
+      "utility_range": [
+        -0.29865213338163504,
+        0.9999855525835049
+      ]
+    },
+    {
+      "file": "additive-23-0.01.npz",
+      "mean_target_probability": 0.9954487331109462,
+      "seed": 23,
+      "strata": [
+        {
+          "cosine": -0.9988403893650246,
+          "opposed_row_fraction": 1.0,
+          "rows": 1,
+          "target_probability_range": [
+            0,
+            0.1
+          ],
+          "utility_to_ce_logit_norm": 0.00534746173848004
+        },
+        {
+          "cosine": 0.9225291813910383,
+          "opposed_row_fraction": 0.0,
+          "rows": 3,
+          "target_probability_range": [
+            0.1,
+            0.5
+          ],
+          "utility_to_ce_logit_norm": 1.3260623132268556
+        },
+        {
+          "cosine": 0.948352471535275,
+          "opposed_row_fraction": 0.0,
+          "rows": 21,
+          "target_probability_range": [
+            0.5,
+            0.9
+          ],
+          "utility_to_ce_logit_norm": 5.094617541384014
+        },
+        {
+          "cosine": 0.9976835578787494,
+          "opposed_row_fraction": 0.0,
+          "rows": 3047,
+          "target_probability_range": [
+            0.9,
+            1.0000001
+          ],
+          "utility_to_ce_logit_norm": 8.747243517618076
+        }
+      ],
+      "utility_range": [
+        -0.2986499825961936,
+        0.9999856174074078
+      ]
+    },
+    {
+      "file": "additive-47-0.01.npz",
+      "mean_target_probability": 0.9873163235233265,
+      "seed": 47,
+      "strata": [
+        {
+          "cosine": 0.03332833391787808,
+          "opposed_row_fraction": 0.3333333333333333,
+          "rows": 3,
+          "target_probability_range": [
+            0,
+            0.1
+          ],
+          "utility_to_ce_logit_norm": 0.17243785891834898
+        },
+        {
+          "cosine": 0.7288288242202302,
+          "opposed_row_fraction": 0.0,
+          "rows": 14,
+          "target_probability_range": [
+            0.1,
+            0.5
+          ],
+          "utility_to_ce_logit_norm": 0.8538851733473204
+        },
+        {
+          "cosine": 0.9503265212151345,
+          "opposed_row_fraction": 0.0,
+          "rows": 46,
+          "target_probability_range": [
+            0.5,
+            0.9
+          ],
+          "utility_to_ce_logit_norm": 4.598493808911406
+        },
+        {
+          "cosine": 0.9981511648229268,
+          "opposed_row_fraction": 0.0,
+          "rows": 3009,
+          "target_probability_range": [
+            0.9,
+            1.0000001
+          ],
+          "utility_to_ce_logit_norm": 8.567684488865446
+        }
+      ],
+      "utility_range": [
+        -0.2986496712198585,
+        0.999985604112157
+      ]
+    }
+  ],
+  "scope": "CORE TRAIN diagnostic only; no formal input/result read",
+  "unpriced_work": "input generation, public validation, probability strata, norm/cosine diagnostics, IO/hash/JSON; all included in actual CPU"
+}

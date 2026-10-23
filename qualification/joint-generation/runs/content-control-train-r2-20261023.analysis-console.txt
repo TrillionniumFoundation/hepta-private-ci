@@ -1,0 +1,335 @@
+{
+  "arms": {
+    "A": {
+      "means": {
+        "consistency": 0.9828226996923227,
+        "greedy_joint_success": 0.9891493055555555,
+        "joint_success": 0.9746241060317082,
+        "pixel_mse": 0.000567718234067553,
+        "task_utility": 0.9759983567193097,
+        "cpu_net_utility": 0.9639175888737231
+      },
+      "build_cpu": 5.409933440999998,
+      "units": 11664058551,
+      "selected": {
+        "lr": 0.01,
+        "path": "full"
+      },
+      "reference_cpu_ns": 173939.703125
+    },
+    "A_R": {
+      "means": {
+        "consistency": 0.9777314279794628,
+        "greedy_joint_success": 0.9856770833333334,
+        "joint_success": 0.966800444943955,
+        "pixel_mse": 0.0006723760909451326,
+        "task_utility": 0.9686188358792897,
+        "cpu_net_utility": 0.9561335006251918
+      },
+      "build_cpu": 8.345216788999998,
+      "units": 10621075206,
+      "selected": {
+        "lr": 0.01,
+        "path": "TI"
+      },
+      "reference_cpu_ns": 173939.703125
+    },
+    "H": {
+      "means": {
+        "consistency": 0.9800989402444853,
+        "greedy_joint_success": 0.9891493055555555,
+        "joint_success": 0.9718837535496964,
+        "pixel_mse": 0.0006505827131175105,
+        "task_utility": 0.9733570267361861,
+        "cpu_net_utility": 0.9618206949136313
+      },
+      "build_cpu": 5.023574262000006,
+      "units": 11664350313,
+      "selected": {
+        "lr": 0.01,
+        "path": "full"
+      },
+      "reference_cpu_ns": 173939.703125
+    },
+    "H_R": {
+      "means": {
+        "consistency": 0.978758032575718,
+        "greedy_joint_success": 0.9852430555555555,
+        "joint_success": 0.9676408715272645,
+        "pixel_mse": 0.0006483857519882129,
+        "task_utility": 0.9694408355821,
+        "cpu_net_utility": 0.9565279346933471
+      },
+      "build_cpu": 8.127059989000006,
+      "units": 11658601814,
+      "selected": {
+        "lr": 0.01,
+        "path": "TI"
+      },
+      "reference_cpu_ns": 173939.703125
+    },
+    "S": {
+      "means": {
+        "consistency": 0.9800986906186183,
+        "greedy_joint_success": 0.9891493055555555,
+        "joint_success": 0.9718833517782232,
+        "pixel_mse": 0.0006506004871021028,
+        "task_utility": 0.9733566311950818,
+        "cpu_net_utility": 0.9615524788990988
+      },
+      "build_cpu": 5.043679068000003,
+      "units": 11664350313,
+      "selected": {
+        "lr": 0.01,
+        "path": "full"
+      },
+      "reference_cpu_ns": 173939.703125
+    }
+  },
+  "comparisons": {
+    "A-H": {
+      "task_utility": {
+        "mean": 0.0026413299831235526,
+        "ci95": [
+          0.001072289903981017,
+          0.00412074260894173
+        ],
+        "seeds": [
+          11,
+          23,
+          47
+        ],
+        "clusters": 48,
+        "cluster_kind": "physical_source",
+        "physical_source_groups": 48,
+        "replicates": 2000
+      },
+      "joint_success": {
+        "mean": 0.002740352482012021,
+        "ci95": [
+          0.0010527061139321066,
+          0.0043142098312231435
+        ],
+        "seeds": [
+          11,
+          23,
+          47
+        ],
+        "clusters": 48,
+        "cluster_kind": "physical_source",
+        "physical_source_groups": 48,
+        "replicates": 2000
+      },
+      "greedy_joint_success": {
+        "mean": 0.0,
+        "ci95": [
+          -0.003472222222222222,
+          0.00390625
+        ],
+        "seeds": [
+          11,
+          23,
+          47
+        ],
+        "clusters": 48,
+        "cluster_kind": "physical_source",
+        "physical_source_groups": 48,
+        "replicates": 2000
+      }
+    },
+    "A_R-H_R": {
+      "task_utility": {
+        "mean": -0.000821999702810222,
+        "ci95": [
+          -0.0019696005975968984,
+          0.0002539900917541284
+        ],
+        "seeds": [
+          11,
+          23,
+          47
+        ],
+        "clusters": 48,
+        "cluster_kind": "physical_source",
+        "physical_source_groups": 48,
+        "replicates": 2000
+      },
+      "joint_success": {
+        "mean": -0.0008404265833093514,
+        "ci95": [
+          -0.002061046804870749,
+          0.00031114941104715534
+        ],
+        "seeds": [
+          11,
+          23,
+          47
+        ],
+        "clusters": 48,
+        "cluster_kind": "physical_source",
+        "physical_source_groups": 48,
+        "replicates": 2000
+      },
+      "greedy_joint_success": {
+        "mean": 0.00043402777777777775,
+        "ci95": [
+          0.0,
+          0.0026041666666666665
+        ],
+        "seeds": [
+          11,
+          23,
+          47
+        ],
+        "clusters": 48,
+        "cluster_kind": "physical_source",
+        "physical_source_groups": 48,
+        "replicates": 2000
+      }
+    },
+    "A_R-A": {
+      "task_utility": {
+        "mean": -0.00737952084001987,
+        "ci95": [
+          -0.011805796188462734,
+          -0.003258257411712588
+        ],
+        "seeds": [
+          11,
+          23,
+          47
+        ],
+        "clusters": 48,
+        "cluster_kind": "physical_source",
+        "physical_source_groups": 48,
+        "replicates": 2000
+      },
+      "joint_success": {
+        "mean": -0.007823661087753238,
+        "ci95": [
+          -0.012584676333652083,
+          -0.0034532652303371123
+        ],
+        "seeds": [
+          11,
+          23,
+          47
+        ],
+        "clusters": 48,
+        "cluster_kind": "physical_source",
+        "physical_source_groups": 48,
+        "replicates": 2000
+      },
+      "greedy_joint_success": {
+        "mean": -0.003472222222222222,
+        "ci95": [
+          -0.009114583333333334,
+          0.002170138888888889
+        ],
+        "seeds": [
+          11,
+          23,
+          47
+        ],
+        "clusters": 48,
+        "cluster_kind": "physical_source",
+        "physical_source_groups": 48,
+        "replicates": 2000
+      }
+    },
+    "A_R-S": {
+      "task_utility": {
+        "mean": -0.004737795315792042,
+        "ci95": [
+          -0.00874212508148564,
+          -0.0009185293404338903
+        ],
+        "seeds": [
+          11,
+          23,
+          47
+        ],
+        "clusters": 48,
+        "cluster_kind": "physical_source",
+        "physical_source_groups": 48,
+        "replicates": 2000
+      },
+      "joint_success": {
+        "mean": -0.005082906834268264,
+        "ci95": [
+          -0.009394990688108961,
+          -0.0009759872439890878
+        ],
+        "seeds": [
+          11,
+          23,
+          47
+        ],
+        "clusters": 48,
+        "cluster_kind": "physical_source",
+        "physical_source_groups": 48,
+        "replicates": 2000
+      },
+      "greedy_joint_success": {
+        "mean": -0.003472222222222222,
+        "ci95": [
+          -0.009125434027777778,
+          0.0013020833333333333
+        ],
+        "seeds": [
+          11,
+          23,
+          47
+        ],
+        "clusters": 48,
+        "cluster_kind": "physical_source",
+        "physical_source_groups": 48,
+        "replicates": 2000
+      }
+    }
+  },
+  "crossing": {
+    "paths": [
+      "TT",
+      "TI",
+      "IT",
+      "II",
+      "J"
+    ],
+    "per_seed_source_oracle_gap": [
+      0.0002405917610039827,
+      7.102013941823193e-05,
+      8.705922501855284e-05
+    ],
+    "per_seed_row_oracle_gap": [
+      0.00034548053254114183,
+      0.00021259404420004987,
+      0.00019401774379288462
+    ],
+    "source_winner_counts": [
+      {
+        "TT": 0,
+        "TI": 30,
+        "IT": 18,
+        "II": 0,
+        "J": 0
+      },
+      {
+        "TT": 0,
+        "TI": 36,
+        "IT": 12,
+        "II": 0,
+        "J": 0
+      },
+      {
+        "TT": 0,
+        "TI": 32,
+        "IT": 15,
+        "II": 0,
+        "J": 1
+      }
+    ],
+    "oracle_semantics": "uses labels; not an observable/achievable routing gain",
+    "initial_gate_trained": false
+  }
+}
