@@ -1,6 +1,7 @@
 """Hand-authored arrays only: service accounting, net definitions and bootstrap."""
 
 import base64
+import copy
 import hashlib
 import json
 from pathlib import Path
@@ -30,6 +31,76 @@ class EvaluationTests(unittest.TestCase):
 
     def critic(self):
         return Controller(12, np.zeros(31), np.ones(31), np.zeros(31), 1., np.array([1., 1.]))
+
+    def decision_fixture(self, deltas=(-1000., 2000., 3000.), *, seed=11):
+        from independent.evaluation import SYSTEMS
+        target = "raw-decoded-task-utility"
+        ratio = max(0., float(np.median(deltas))) / 100000
+        seed_index = [11, 23, 47].index(seed)
+        pairs = [{"repeat": index, "order": ["stop", "continue"] if (index + seed_index) % 2 == 0 else ["continue", "stop"],
+                  "sample_seed": seed + 1009 * index, "stop": {"rows": 72, "cpu_ns": 7200000},
+                  "continue": {"rows": 72, "cpu_ns": 7200000 + 72 * delta}}
+                 for index, delta in enumerate(deltas)]
+        calibration = {"schema": "hepta.joint-generation.controller-cost-calibration.v1",
+                       "gain_objective": target, "model_digest": "a" * 64, "seed": seed,
+                       "calibration_inputs_sha256": "b" * 64,
+                       "paired_cpu_deltas_ns_per_request": list(deltas), "pairs": pairs,
+                       "median_incremental_cpu_ns_per_request": float(np.median(deltas)),
+                       "nonnegative_incremental_cpu_ns_per_request": max(0., float(np.median(deltas))),
+                       "reference_full_cpu_ns": 100000, "cost_ratio": ratio,
+                       "compute_price": .02, "decision_price": .02 * ratio}
+        row = {"system": "ndu_control", "seed": seed, "model_digest": "a" * 64,
+               "reference_full_cpu_ns": 100000, "gain_objective": target,
+               "cost_ratio": ratio, "decision_price": .02 * ratio,
+               "controller_calibration": calibration}
+        return {"plan": {"controller": {"gain_target": target}, "compute_price": .02,
+                         "calibration_rows": 72, "calibration_repeats": 3, "model_seeds": [11, 23, 47],
+                         "cpu_seconds_per_system": 1.0, "operator_units_per_system": 1000},
+                "common": {"calibration_identity": {"inputs_sha256": "b" * 64}},
+                "selection_ready": True, "cpu_budget_violations": [], "selected": [row],
+                "system_cost": {name: {"cpu_seconds": .1} for name in SYSTEMS},
+                "budgets": {name: {"total_cap": 1000} for name in SYSTEMS}}
+
+    def test_controller_cost_binding_recomputes_paired_median_and_zero_clamp(self):
+        from independent.evaluation import _controller_decision_binding
+        for deltas, decision in (((-1000., 2000., 3000.), .0004), ((-4000., -3000., -2000.), 0.)):
+            selection = self.decision_fixture(deltas)
+            row = selection["selected"][0]
+            _controller_decision_binding(row, selection)
+            self.assertEqual(row["decision_price"], decision)
+
+    def test_controller_cost_binding_accepts_counterbalanced_seed23(self):
+        from independent.evaluation import _controller_decision_binding
+        selection = self.decision_fixture(seed=23)
+        row = selection["selected"][0]
+        self.assertEqual([pair["order"] for pair in row["controller_calibration"]["pairs"]],
+                         [["continue", "stop"], ["stop", "continue"], ["continue", "stop"]])
+        _controller_decision_binding(row, selection)
+
+    def test_tampered_controller_cost_binding_rejects_before_all_data(self):
+        changes = [("decision_price", .02), ("gain_objective", "entropic"), ("seed", 23),
+                   ("model_digest", "c" * 64), ("calibration_inputs_sha256", "c" * 64),
+                   ("cost_ratio", .5), ("reference_full_cpu_ns", 200000),
+                   ("median_incremental_cpu_ns_per_request", 2001.),
+                   ("paired_cpu_deltas_ns_per_request", [1000., 2000., 3000.])]
+        for name, value in changes:
+            with self.subTest(field=name), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                selection = copy.deepcopy(self.decision_fixture())
+                row = selection["selected"][0]
+                target = row if name in ("decision_price", "gain_objective") else row["controller_calibration"]
+                target[name] = value
+                marker, plan_path = root / "global-opened.json", root / "plan.json"
+                plan_path.write_text(json.dumps(selection["plan"]))
+                selection["plan_sha256"] = hashlib.sha256(plan_path.read_bytes()).hexdigest()
+                (root / "selection.json").write_text(json.dumps(selection))
+                with patch("independent.evaluation.GLOBAL_MARKER", marker), patch("independent.evaluation.PLAN_PATH", plan_path):
+                    with patch("independent.evaluation.dataset", side_effect=AssertionError("sealed")) as data:
+                        with self.assertRaises(ValueError):
+                            run_evaluation(root)
+                        data.assert_not_called()
+                self.assertFalse(marker.exists())
+                self.assertFalse((root / "test-opened.json").exists())
 
     def test_actual_output_and_cpu_net_include_build_without_changing_weights(self):
         before = self.model.digest()
@@ -70,6 +141,38 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(first["maximum_forwards_per_request"], 2)
         self.assertEqual(first["model_forwards"], 8)
         self.assertEqual(first["cost"]["operator_totals"]["critic_decisions"], 4)
+
+    def test_decision_price_changes_routes_without_changing_net_price(self):
+        from independent.native import compile_native
+        critic = Controller(12, np.zeros(31), np.ones(31), np.zeros(31), .01, np.array([.01, .01]))
+        with tempfile.TemporaryDirectory() as temporary:
+            library = Path(temporary) / "libprice.so"
+            compile_native(library)
+            for backend in ("python", "native"):
+                plan = {**self.plan, "runtime_backend": backend, "runtime_batch_size": 4,
+                        "native_library": str(library)}
+                for decision_price, forwards in ((.001, 8), (.02, 4)):
+                    result = measure(self.model, critic, "continuation", self.data,
+                                     {**plan, "decision_price": decision_price}, 100000)
+                    self.assertEqual(result["model_forwards"], forwards)
+                    self.assertEqual(result["cost"]["decision_price"], decision_price)
+                    self.assertEqual(result["cost"]["compute_price"], .02)
+                    self.assertEqual(result["cost"]["operator_totals"]["critic_decisions"], 4)
+                    self.assertEqual(sum(result["per_row_cost"]["work_units"]),
+                                     result["cost"]["operator_totals"]["consumed_units"])
+                    task = np.asarray(result["per_row"]["task_utility"])
+                    expected_cpu_penalty = .02 * (np.asarray(result["per_row_cost"]["cpu_ns"])
+                        + result["cost"]["prepare_cpu_ns"] / plan["service_horizon"]) / 100000
+                    np.testing.assert_allclose(task - np.asarray(result["per_row"]["runtime_cpu_net_utility"]),
+                                               expected_cpu_penalty, atol=1e-15)
+                    expected_work_penalty = .02 * (np.asarray(result["per_row_cost"]["work_units"])
+                        + result["cost"]["prepare"]["consumed_units"] / plan["service_horizon"]) / result["cost"]["reference_full_work_units"]
+                    np.testing.assert_allclose(task - np.asarray(result["per_row"]["runtime_net_utility"]),
+                                               expected_work_penalty, atol=1e-15)
+        for invalid in (-1, float("nan"), float("inf"), True):
+            with self.subTest(invalid=invalid), self.assertRaisesRegex(ValueError, "decision price"):
+                measure(self.model, critic, "continuation", self.data,
+                        {**self.plan, "decision_price": invalid}, 100000)
 
     def test_observer_is_outside_service_timers(self):
         observed = []

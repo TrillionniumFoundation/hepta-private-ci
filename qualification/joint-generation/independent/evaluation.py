@@ -114,7 +114,8 @@ def _service(generator, controller, mode, x, ledger, sample_rng, route_rng, plan
         ledger.charge_kernel("inference", "two_view_average", scalar_ops=24, div_ops=24)
         p, q = (pl + pf) / 2, (ql + qf) / 2
     elif mode == "continuation":
-        p, q, _ = generator.continuation(x, controller, price=plan["compute_price"], ledger=ledger)
+        p, q, _ = generator.continuation(x, controller,
+            price=plan.get("decision_price", plan["compute_price"]), ledger=ledger)
     else:
         probability = plan.get("random_full_probability")
         _positive(probability, "frozen random full probability", allow_zero=True)
@@ -143,6 +144,7 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
         raise ValueError("explicit observer boolean required")
     reference = _positive(reference_full_cpu_ns, "full CPU reference")
     price = _positive(plan["compute_price"], "compute price", allow_zero=True)
+    decision_price = _positive(plan.get("decision_price", price), "decision price", allow_zero=True)
     horizon = _positive(plan.get("service_horizon", 100000), "service horizon")
     build_cpu = _positive(plan.get("build_cpu_ns", 0), "build CPU", allow_zero=True)
     build_work = _positive(plan.get("build_work_units", 0), "build work", allow_zero=True)
@@ -199,7 +201,7 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
                     raise ValueError("random probability exceeds one")
                 mask = route_rng.random(n) < probability
             p, q, receipt = generator.batch(chunk, mode, critic=controller if mode == "continuation" else None,
-                price=price, ledger=ledger, random_full_mask=mask, per_request_cap=cap - output_units)
+                price=decision_price, ledger=ledger, random_full_mask=mask, per_request_cap=cap - output_units)
             generation_done_cpu = time.process_time_ns()
             outputs, sizes = _outputs(generator, p, q, ledger, sample_rng)
             output_done_cpu = time.process_time_ns()
@@ -266,6 +268,7 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
             "cost": {"operator_totals": totals, "prepare": preparation.snapshot(),
                      "prepare_cpu_ns": prepare_cpu_ns, "prepare_wall_ns": prepare_wall_ns,
                      "build_cpu_ns": build_cpu, "build_work_units": build_work,
+                     "compute_price": price, "decision_price": decision_price,
                      "service_horizon": horizon, "reference_full_cpu_ns": reference,
                      "reference_full_work_units": reference_units, "request_cap_units": cap,
                      "cpu_ns": sum(row["cpu_ns"] for row in batches), "wall_ns": sum(row["wall_ns"] for row in batches),
@@ -328,6 +331,64 @@ def _controller(path):
     return Controller.from_arrays(arrays)
 
 
+def _controller_decision_binding(row, selection):
+    """Verify the prospective raw-gain law against train-only CPU receipts."""
+    plan = selection["plan"]
+    target = "raw-decoded-task-utility"
+    calibration = row.get("controller_calibration")
+    if (row.get("gain_objective") != target or not isinstance(calibration, dict)
+            or calibration.get("schema") != "hepta.joint-generation.controller-cost-calibration.v1"
+            or calibration.get("gain_objective") != target):
+        raise ValueError("controller raw gain objective or calibration receipt changed")
+    if calibration.get("model_digest") != row["model_digest"]:
+        raise ValueError("controller calibration content identity changed")
+    if calibration.get("seed") != row["seed"]:
+        raise ValueError("controller calibration model seed changed")
+    inputs = selection["common"]["calibration_identity"]["inputs_sha256"]
+    if calibration.get("calibration_inputs_sha256") != inputs:
+        raise ValueError("controller calibration training inputs changed")
+    deltas = calibration.get("paired_cpu_deltas_ns_per_request")
+    pairs = calibration.get("pairs")
+    repeats = plan["calibration_repeats"]
+    if (not isinstance(deltas, list) or len(deltas) != repeats
+            or not isinstance(pairs, list) or len(pairs) != repeats
+            or any(type(value) not in (int, float) or not math.isfinite(value) for value in deltas)):
+        raise ValueError("invalid paired controller calibration CPU")
+    seed_index = plan["model_seeds"].index(row["seed"])
+    for index, (pair, delta) in enumerate(zip(pairs, deltas)):
+        expected_order = ["stop", "continue"] if (index + seed_index) % 2 == 0 else ["continue", "stop"]
+        if (pair.get("repeat") != index or pair.get("order") != expected_order
+                or pair.get("sample_seed") != row["seed"] + 1009 * index):
+            raise ValueError("controller calibration paired measurement order changed")
+        stop, continuation = pair["stop"], pair["continue"]
+        rows = plan["calibration_rows"]
+        if (type(stop.get("rows")) is not int or stop["rows"] != rows
+                or type(continuation.get("rows")) is not int or continuation["rows"] != rows):
+            raise ValueError("controller calibration paired row count changed")
+        actual_delta = (_positive(continuation["cpu_ns"], "continuation calibration CPU")
+                        - _positive(stop["cpu_ns"], "stop calibration CPU")) / rows
+        if not math.isclose(delta, actual_delta, rel_tol=1e-10, abs_tol=1e-9):
+            raise ValueError("controller calibration paired CPU difference changed")
+    reference = _positive(row["reference_full_cpu_ns"], "frozen full CPU reference")
+    median = float(np.median(deltas))
+    incremental = max(0.0, median)
+    ratio = incremental / reference
+    price = _positive(plan["compute_price"], "global compute price", allow_zero=True)
+    expected = {"reference_full_cpu_ns": reference,
+                "median_incremental_cpu_ns_per_request": median,
+                "nonnegative_incremental_cpu_ns_per_request": incremental,
+                "cost_ratio": ratio, "compute_price": price, "decision_price": price * ratio}
+    for name, value in expected.items():
+        observed = calibration.get(name)
+        if (type(observed) not in (int, float) or not math.isfinite(observed)
+                or not math.isclose(observed, value, rel_tol=1e-10, abs_tol=1e-12)):
+            raise ValueError("controller calibration formula changed: " + name)
+    for name, value in (("cost_ratio", ratio), ("decision_price", price * ratio)):
+        if not math.isclose(_positive(row[name], "frozen " + name, allow_zero=True), value,
+                            rel_tol=1e-10, abs_tol=1e-12):
+            raise ValueError("controller decision price binding changed: " + name)
+
+
 def _frozen(run):
     selection_path = _artifact(run, "selection.json")
     selection = json.loads(selection_path.read_text())
@@ -349,6 +410,13 @@ def _frozen(run):
             or any(type(row["total_cap"]) is not int or row["total_cap"] != cap
                    for row in budgets.values())):
         raise ValueError("complete build budget cap must equal the frozen plan")
+    gain_target = plan.get("controller", {}).get("gain_target")
+    if gain_target is not None:
+        if gain_target != "raw-decoded-task-utility":
+            raise ValueError("unsupported controller gain objective")
+        for row in selection["selected"]:
+            if row["system"] == "ndu_control":
+                _controller_decision_binding(row, selection)
     required = {"model.py", "utility.py", "data.py", "control.py", "independent/inference.py",
                 "independent/accounting.py", "independent/evaluation.py", "independent/data_v2.py",
                 "independent/run.py", "independent/learning.py"}
@@ -467,6 +535,8 @@ def run_evaluation(run):
     for row, model, critic in bundles:
         runtime = {**plan, "build_cpu_ns": row["build_cpu_ns"],
                    "build_work_units": selection["budgets"][row["system"]]["consumed_units"] / len(plan["model_seeds"])}
+        if row["system"] == "ndu_control" and "decision_price" in row:
+            runtime["decision_price"] = row["decision_price"]
         if plan["runtime_backend"] == "native":
             runtime["native_library"] = str(run / selection["native_library"])
         full = measure(model, None, "full", test, runtime, row["reference_full_cpu_ns"], seed=row["seed"])
