@@ -16,5 +16,5 @@ jobs:
       - name: Run bounded finite risk and resource regressions (no GPU/downloads)
         working-directory: experiments/multimodal_output_portfolio/v4
         run: |
-          python3 -m unittest -v test_portfolio.py
-          python3 -m compileall -q portfolio.py test_portfolio.py
+          python3 -m unittest discover -v -p "test_*.py"
+          python3 -m compileall -q portfolio.py test_portfolio.py test_reallocation.py
