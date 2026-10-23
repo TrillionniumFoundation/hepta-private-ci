@@ -36,11 +36,18 @@ latency qualification. CPU confidence intervals cluster fixed service cohorts,
 while raw content confidence intervals cluster physical sources.
 
 Validation fixes each efficient static mode and the efficient reference system.
+Runtime calibration uses a deterministic training-only matching: 72 distinct
+physical sources, six per source class and six per target class, interleaved
+across all twelve classes. It does not use the class-ordered first training rows.
 The controller is compared with that reference using CPU-priced utility,
 including the complete build cost amortized over 100000 requests per selected
 seed. Raw joint success, quality retention, operator-priced utility and isolated
 controller comparisons remain visible. A failed gate cannot be replaced by an
 improvement on a different metric.
+
+The no-critic random single-view comparison is a cheaper quality baseline. It
+does not isolate adaptation from the controller's extra continuation opportunity;
+the primary system claim rests on the complete CPU-net effective-baseline gate.
 
 The optional input-only router has structural/unit coverage but is not searched
 or qualified by this protocol. Its cost is not concealed inside r2 or charged to

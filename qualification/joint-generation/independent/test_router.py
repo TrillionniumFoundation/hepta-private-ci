@@ -4,8 +4,8 @@ from unittest.mock import patch
 
 import numpy as np
 
-from router import (InputRouter, feature_work, fit_work, input_features, make_thumbnail,
-                    prediction_work, priced_units, thumbnail_work)
+from independent.router import (InputRouter, feature_work, fit_work, input_features, make_thumbnail,
+                                prediction_work, priced_units, thumbnail_work)
 
 
 class BudgetLedger:
@@ -62,8 +62,8 @@ class InputRouterTests(unittest.TestCase):
             dot_sizes.append(left.size)
             return actual_dot(left, right)
 
-        with patch("router.np.dot", side_effect=counted_dot), \
-                patch("router.np.linalg.solve", side_effect=AssertionError("unpriced solver")):
+        with patch("independent.router.np.dot", side_effect=counted_dot), \
+                patch("independent.router.np.linalg.solve", side_effect=AssertionError("unpriced solver")):
             model = InputRouter.fit(low, full, gains, regularization=0.01, ledger=ledger)
         self.assertEqual(sum(dot_sizes), fit_work(64)["macs"] - 64 * (31 * 31 + 31))
         normalized = (features - model.mean) / model.scale
@@ -82,7 +82,7 @@ class InputRouterTests(unittest.TestCase):
         model = InputRouter.fit(low, full, np.array([-0.2, 0.1, 0.2, -0.1]))
         required = priced_units(feature_work(4)) + priced_units(prediction_work(4)) + 4
         ledger = BudgetLedger(required - 1)
-        with patch("router._features", side_effect=AssertionError("no unpaid feature work")):
+        with patch("independent.router._features", side_effect=AssertionError("no unpaid feature work")):
             with self.assertRaisesRegex(ValueError, "budget exceeded"):
                 model.route(low, full, ledger=ledger)
             fit_ledger = BudgetLedger(priced_units(feature_work(4)) + priced_units(fit_work(4)) - 1)

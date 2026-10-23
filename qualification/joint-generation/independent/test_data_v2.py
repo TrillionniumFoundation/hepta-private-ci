@@ -5,7 +5,7 @@ from unittest.mock import patch
 import numpy as np
 
 from data import attributes
-from data_v2 import dataset, default_profile, manifest
+from independent.data_v2 import dataset, default_profile, manifest
 
 
 class IndependentDataTests(unittest.TestCase):
@@ -61,7 +61,7 @@ class IndependentDataTests(unittest.TestCase):
         self.assertNotEqual(manifest(first)["inputs_sha256"], manifest(other)["inputs_sha256"])
 
     def test_test_construction_is_rejected_before_any_random_generation(self):
-        with patch("data_v2.np.random.default_rng", side_effect=AssertionError("must stay sealed")):
+        with patch("independent.data_v2.np.random.default_rng", side_effect=AssertionError("must stay sealed")):
             with self.assertRaisesRegex(ValueError, "test split sealed"):
                 dataset("test", self.profile)
 
