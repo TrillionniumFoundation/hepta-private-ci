@@ -113,6 +113,17 @@ resident bytes, energy or target-host latency**. They do not make a CPU-heavy
 exhaustive optimizer production-suitable; a learned bounded policy head or
 precomputed finite lookup and independent physical benchmarks remain required.
 
+`benchmark_solver.py` runs a separate, explicitly named-host **solver-only**
+cold-Controller benchmark using 12 repeated samples on three predeclared
+synthetic states. It reports wall and process CPU p50/p95/p99 where available,
+exact node/branch counts, and a separate `tracemalloc` allocation pass.
+The CI job emits a source-hashed JSON receipt in its logs. The first actions
+and values must be identical across repetitions. The p95 <= 2 ms reference
+is recorded as a diagnostic, **not silently used as a passing production
+admission**. There is no encoder, trained model, decoder, CUDA, target-device
+energy or end-to-end queueing cost in these measurements; runs across
+uncontrolled hosts are not directly comparable.
+
 ## Next independently measured scientific experiment
 
 Replace the synthetic proxy-state/decoder fixtures with a source-pinned **real** shared Encoder plus four output decoders, observed partial latents, actual Neural/Cell feature invocation and all separately paid decoder/verifier/selection costs. Preregister source-disjoint natural tasks, multiple training seeds and common random-number draws, then compare same-information/static, MoE, risk-neutral MPC, fixed-risk MPC, dynamic NDU and best-of-N with independent decoded-output scoring and risk/coverage/cost thresholds. Train/inference factorial ablations are essential to determine whether NDU changes learned generation rather than only selecting an existing candidate. Do not enable or deploy any output-portfolio policy based only on this code.
