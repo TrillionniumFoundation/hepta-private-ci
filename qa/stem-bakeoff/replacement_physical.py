@@ -204,6 +204,10 @@ def run(name: str, registry: dict, snapshot: Path, cohorts_dir: Path, archive: P
         model_kwargs = {"local_files_only": True, "trust_remote_code": False,
                         "output_loading_info": True, "dtype": torch.float32}
         if name == "arctic_305m":
+            # This pinned public GTE checkpoint ships custom modeling/config code.
+            # Execute only in the unprivileged, no-secret research worker. Code audit
+            # and native-runtime conformance remain separate production blockers.
+            model_kwargs["trust_remote_code"] = True
             model_kwargs["add_pooling_layer"] = False
         encoder, loading_info = AutoModel.from_pretrained(snapshot, **model_kwargs)
         if loading_info.get("missing_keys") or loading_info.get("mismatched_keys"):
