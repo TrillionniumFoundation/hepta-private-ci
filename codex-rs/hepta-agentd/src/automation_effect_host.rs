@@ -729,7 +729,8 @@ mod tests {
             let root = temp.path().canonicalize().checked("canonical temp root")?;
             let fleet_path = root.join("fleet");
             let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).checked("fleet root")?;
-            let registry = FleetRegistry::initialize(fleet_root.clone()).checked("fleet registry")?;
+            let registry =
+                FleetRegistry::initialize(fleet_root.clone()).checked("fleet registry")?;
             let workspace = root.join("workspace");
             fs::create_dir(&workspace).checked("workspace")?;
             let workspace = workspace.canonicalize().checked("canonical workspace")?;
@@ -737,11 +738,15 @@ mod tests {
             let resources = ResourceBudget::local_default();
             let manifest = AgentManifest::new(
                 agent_id.clone(),
-                WorkspaceBinding::new(workspace.clone(), &fleet_root).checked("workspace binding")?,
+                WorkspaceBinding::new(workspace.clone(), &fleet_root)
+                    .checked("workspace binding")?,
                 resources.clone(),
             )
             .checked("manifest")?;
-            let layout = registry.register(manifest).checked("register agent")?.layout;
+            let layout = registry
+                .register(manifest)
+                .checked("register agent")?
+                .layout;
             let identity = AgentdIdentity {
                 agent_id: agent_id.clone(),
                 layout: layout.clone(),
@@ -1030,8 +1035,8 @@ mod tests {
         fs::set_permissions(&host_file, fs::Permissions::from_mode(0o600))
             .checked("host file permissions")?;
 
-        let host =
-            AgentdAutomationEffectHost::open(&fixture.identity, &host_file).checked("effect host")?;
+        let host = AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
+            .checked("effect host")?;
         let grant = signed_final_use(&intent, now_ms, &final_use_signer)?;
         let receipt = host
             .execute(
