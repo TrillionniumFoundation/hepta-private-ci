@@ -179,8 +179,6 @@ def verify_pinned_history_bytes(raw_documents, documents):
     return receipts
 
 
-
-
 def _open_pinned_image_directory(image_dir):
     """Retain one image-directory FD without following any ancestor symlinks.
 
