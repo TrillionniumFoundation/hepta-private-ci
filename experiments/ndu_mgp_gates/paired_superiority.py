@@ -88,6 +88,11 @@ def evaluate(study: Mapping):
     ambiguity_tol = _number(protocol.get("max_ambiguity_increase"), "ambiguity tolerance", upper=0.05)
     inconsistency_tol = _number(protocol.get("max_inconsistency_increase"), "inconsistency tolerance", upper=0.05)
     max_cost_ratio = _number(protocol.get("max_total_cost_ratio"), "cost ratio", lower=1, upper=1.1)
+    noise_seed = protocol.get("paired_noise_seed")
+    _need(type(noise_seed) is int and 0 <= noise_seed < 2**64,
+          "missing frozen common-randomness seed")
+    _need(protocol.get("paired_noise_protocol") == "common-random-numbers-v1",
+          "missing paired sampling protocol")
     boots = protocol.get("bootstrap_replicates")
     _need(type(boots) is int and 100 <= boots <= 20000, "invalid bootstrap size")
     _need(type(protocol.get("bootstrap_seed")) is int, "missing preregistered bootstrap seed")
@@ -129,8 +134,16 @@ def evaluate(study: Mapping):
                       "missing raw-decoded draw scoring")
                 entries = np.zeros((draws, len(METRICS)))
                 for k, dr in enumerate(drows):
-                    _need(isinstance(dr, dict) and set(dr) == set(METRICS + ("status", "output_witness_sha256")),
-                          "incomplete decoded draw metrics/witness")
+                    _need(isinstance(dr, dict) and set(dr) == set(METRICS + ("status", "output_witness_sha256", "draw_randomness_sha256")),
+                          "incomplete decoded draw metrics/witness/randomness")
+                    # This equality is a structural common-random-numbers contract.
+                    # The registered seed/world/draw plan must be identical for
+                    # all seven arms. Authenticating the actual generator RNG is
+                    # still the independent observer's job, not this parser.
+                    common_draw = sha256((f"hepta.mgp.paired-draw.v1\0{noise_seed}\0"
+                                          f"{seed}\0{world_id}\0{k}").encode()).hexdigest()
+                    _need(dr["draw_randomness_sha256"] == common_draw,
+                          "mismatched heldout stochastic draw or missing shared RNG receipt")
                     _need(dr["status"] in ("completed", "failed"), "invalid draw status")
                     _need(isinstance(dr["output_witness_sha256"], str) and
                           len(dr["output_witness_sha256"]) == 64 and
@@ -200,11 +213,13 @@ def evaluate(study: Mapping):
                "source": "LOCAL_RESEARCH_UNAUTHENTICATED", "scientific_superiority_proven": False,
                "all_provisional_gates_pass": bool(local_all and boots >= 2000),
                "all_registered_worlds_seen": True, "registered_seeds": len(seeds),
+               "common_randomness_plan_structurally_matched": True,
                "worlds_per_seed": size, "draws_per_world": draws,
                "familywise_alpha": alpha, "bootstrap_replicates": boots,
                "comparator_selection": protocol["validation_selected_best"],
                "comparison": out,
                "limitations": ["untrusted caller supplied observations and metadata",
+                               "matching declared RNG digests does not attest actual draw provenance",
                                "no independent observer, signature verification or prospective attestation",
                                "does not execute a pretrained encoder, model, decoder or GPU inference",
                                "does not satisfy any P0-P4 production final-use gate"]}
