@@ -51,10 +51,10 @@ impl HostAuthorityWriterRegistration {
         let lease = verifier
             .read_lease(&self.authority_lease.lease_id)
             .map_err(root::lease_error)?
-            .ok_or_else(|| io::Error::other("writer lease missing"))?
+            .ok_or_else(|| io::Error::new(io::ErrorKind::PermissionDenied, "writer lease missing"))?
             .lease;
         if lease != self.authority_lease {
-            return Err(io::Error::other("writer lease changed"));
+            return Err(io::Error::new(io::ErrorKind::PermissionDenied, "writer lease changed"));
         }
         let token = verifier
             .verify_use(&lease.lease_id, lease.revision, &lease.binding)
@@ -78,6 +78,32 @@ impl HostAuthorityWriterRegistration {
 }
 
 impl DeploymentFinalUseIssuer {
+    /// The caller holds both original lease tokens through this local signing
+    /// boundary. Check the exact retained proof under the same issuer lock as
+    /// the original policy, durable sequence reservation and signature.
+    pub(super) fn issue_registered_final_use(
+        &self,
+        binding: &FinalUseBinding,
+        registration: &HostAuthorityWriterRegistration,
+        proof: &HostSignedWriterAuthorizationV1,
+        expiry: u64,
+    ) -> io::Result<Option<SignedFinalUseGrant>> {
+        self.issue_until_checked(
+            binding,
+            Some(registration.authority_lease.authority_epoch),
+            expiry,
+            |state| {
+                if state.writer_authorization.as_ref() != Some(proof) {
+                    return Err(io::Error::new(
+                        io::ErrorKind::PermissionDenied,
+                        "registered writer proof changed",
+                    ));
+                }
+                self.validate_writer_proof(state, registration, proof)
+            },
+        )
+    }
+
     /// Explicit trusted-root registration, once per retained writer identity.
     /// It uses the original lease verifier and this issuer's shared durable
     /// sequence/key. A different registration is never implicitly substituted.

@@ -44,6 +44,10 @@ use root::ProtectedLease;
 mod writer;
 pub use writer::HostAuthorityWriterRegistration;
 
+#[path = "deployment_notes.rs"]
+mod notes;
+pub use notes::RootNotesGrantAdmission;
+
 const STATE_OWNER: &str = "local-final-use-issuer";
 const EXCHANGE_DEADLINE: Duration = Duration::from_secs(2);
 
@@ -287,11 +291,22 @@ impl DeploymentFinalUseIssuer {
         epoch: Option<u64>,
         expiry: u64,
     ) -> io::Result<Option<SignedFinalUseGrant>> {
+        self.issue_until_checked(binding, epoch, expiry, |_| Ok(()))
+    }
+
+    fn issue_until_checked(
+        &self,
+        binding: &FinalUseBinding,
+        epoch: Option<u64>,
+        expiry: u64,
+        check: impl FnOnce(&IssuerState) -> io::Result<()>,
+    ) -> io::Result<Option<SignedFinalUseGrant>> {
         let _guard = self
             .request_lock
             .lock()
             .map_err(|_| io::Error::other("issuer fenced"))?;
         let state = self.store.load(STATE_OWNER).map_err(io::Error::other)?;
+        check(&state)?;
         if epoch.is_some_and(|epoch| epoch != state.head.authority_epoch) {
             return Err(io::Error::other("original lease/issuer epoch mismatch"));
         }

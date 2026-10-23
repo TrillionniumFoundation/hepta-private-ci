@@ -137,6 +137,8 @@ pub use deployment_issuer::DeploymentGrantPolicy;
 pub use deployment_issuer::DeploymentIssuerObserver;
 #[cfg(target_os = "linux")]
 pub use deployment_issuer::HostAuthorityWriterRegistration;
+#[cfg(target_os = "linux")]
+pub use deployment_issuer::RootNotesGrantAdmission;
 mod error;
 mod event_buffer;
 mod evidence_frontier;
