@@ -126,6 +126,7 @@ class QualificationTests(unittest.TestCase):
         out = d.evaluate(self.bundle)
         self.assertTrue(out["reference_checks_passed"])
         self.assertFalse(out["production_qualified"])
+        self.assertEqual(len(out["production_blockers"]), 6)
         self.assertEqual(len(out["comparisons_vs_A0"]), 5)
         self.assertEqual(out["covariance"]["rank"], 2)
         self.assertEqual(out["covariance"]["n"], 56)
