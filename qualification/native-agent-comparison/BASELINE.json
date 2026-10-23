@@ -32,8 +32,16 @@
     "max_output_tokens": 4096,
     "timeout_ms": 120000,
     "max_rss_bytes": 2147483648,
-    "max_tool_calls": 64
+    "max_tool_calls": 64,
+    "max_cpu_ms": null,
+    "max_gpu_memory_bytes": null,
+    "max_active_concurrency": null
   },
   "tasks": [],
-  "acceptance": "HOLD_NO_GO_UNTIL_REAL_TASKS_MODEL_TARGET_AND_INDEPENDENT_EVIDENCE"
+  "acceptance": "HOLD_NO_GO_UNTIL_REAL_TASKS_MODEL_TARGET_AND_INDEPENDENT_EVIDENCE",
+  "mode_build_digests": {
+    "A": null,
+    "B": null,
+    "C": null
+  }
 }

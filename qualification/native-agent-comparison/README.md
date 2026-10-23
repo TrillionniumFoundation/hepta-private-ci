@@ -106,3 +106,58 @@ throughput. Those physical measurements and signed original-source evidence
 remain **OPEN** P6 acceptance blockers. All result values are synthetic/
 untrusted unless authenticated by a separate owner; the comparator always
 returns `independent_acceptance=false` and `physical_execution_proven=false`.
+
+## P0/P5/P6 reproducible build identity and resource Pareto gate (source-only)
+
+In addition to frozen Git SHA **commit and tree**, every A/B/C arm must
+declare a unique-content-addressed build/configuration manifest in
+`mode_build_digests`. Each observation must bind the three source trees,
+the exact mode's build manifest, and a nonzero unique observation digest.
+This catches structural substitution and receipt reuse; it does **not**
+authenticate the submitter, binary or run. The actual build and physical
+tool/model traces still require independently verified evidence.
+
+A/B/C observations must now carry `cpu_ms`, `peak_gpu_memory_bytes`
+(zero is valid for a CPU-only run), `active_concurrency`, and the
+pre-registered resource limits, in addition to RSS, wall time, token and
+tool metrics. Both historic pooled summaries and four per-scale summaries
+remain. `scale_deltas` describes B−A / C−A success, recovery, p99 wall,
+CPU, RSS and GPU differences. Neither per-task measurements nor these
+deltas establish concurrent 4096-Cell throughput:
+`concurrent_throughput_proven=false` remains unconditional.
+
+Six-strategy Cell-split scoring now requires three frozen tolerances in its
+plan (`max_cpu_overhead_fraction`, `max_rss_overhead_fraction`,
+`max_p99_overhead_fraction`). For **every** scale, the split's measured
+end-to-end cost must be within those limits against the cheaper of the
+same-budget shared-head and sparse-MoE controls. The original
+future-family independence, holdout, and old-task negative-transfer
+checks remain mandatory. Reused observation digests or a claimed task
+success paired with `tool_correct=false` are rejected before scoring.
+
+The committed `BASELINE.json` explicitly leaves all missing physical
+build/resource pins as null and has no actual task/target/model observations;
+it MUST fail closed. The Python tests are synthetic contract tests, not
+real model training or physical acceptance. Model/host attestation, signed
+receipts, real 64/256/1024/4096 load, CI and P7 canary remain OPEN.
+
+## P0 physical source checkout guard (integrated from #3546)
+
+`source_guard.py` checks the **actual** three local Git source
+repositories against frozen HEAD commit/tree identities, rejects dirty
+tracked/staged/untracked/ignored files, hidden index skip flags, gitlinks
+without independent submodule pins, incorrect repository roots and unsafe
+`GIT_*` overrides. The reused source implementation originated in
+#3546 and its temporary-real-Git-repository adversarial tests now run
+in the same exact-head Python gate as A/B/C and Cell-split tests.
+
+Usage from a review-controlled verification machine:
+
+`python3 qualification/native-agent-comparison/source_guard.py --baseline qualification/native-agent-comparison/BASELINE.json --hepta /verified/hepta --runtime /verified/runtime --codex /verified/codex`
+
+Paths above are **examples**, not evidence those repositories or a
+target machine are present. Do not run against mutated build directories.
+This guard does not inspect binary reproducibility, external dependencies,
+signed model artifacts, true task results or any physical effects. In
+particular the current committed incomplete baseline must still exit
+nonzero even when all source checkouts match.
