@@ -160,6 +160,26 @@ still copies sealed bytes over stdin. Production sealed-FD transfer and fresh
 Root material initialization remain separate deployment stages. This capture
 source stage has no new runtime qualification receipt yet.
 
+The ignored Root parent
+`authority_host_service::tests::root::recovery::original_registry_rotation_recovers_material_then_captures_and_serves`
+adds a source-only composition regression: original protected factory, actual
+Registry revocation, canonical proof rotation, an independently retained original
+CStore image and actual old/new UID60001 process lifetimes feed
+`with_recovered_checkpoint`, then the same object captures and serves five lanes.
+A wrong cached proof must return no service and leave the previous full head
+unchanged. The owned child checks the original proof/feed and two original
+frontier clients, while its production verifier remains inactive. It does not
+install a recovered business owner or consume an effect grant.
+
+Run only that parent as Root. Its ignored `recovery::client` helper is launched
+by the parent after dropping to UID60001; it is not a Root top-level test. A
+trusted test runner may supply `HEPTA_HOST_AUTHORITY_QUALIFICATION_LIBTEST_BIN`
+as a protected executable copy of the same libtest image. The existing required
+bind/source environment remains mandatory. This fixture's stdin key prelude and
+copied sealed bytes are component transport, not production sealed-FD reception.
+Compilation, actual Root execution and scoped finish remain pending for this
+new regression source; no earlier qualification is transferred to it.
+
 ## Trusted writer succession
 
 `DeploymentFinalUseIssuer::rotate_writer_authorization` is a trusted launcher

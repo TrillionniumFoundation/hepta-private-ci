@@ -32,6 +32,9 @@ use std::time::Instant;
 #[path = "authority_host_service_consumers_root.rs"]
 mod consumer_fixture;
 
+#[path = "authority_host_recovery_root_tests.rs"]
+mod recovery;
+
 fn expiry_qualification() -> bool {
     [
         "HEPTA_SERVICE_EXPECT_EXPIRED_FEED",
