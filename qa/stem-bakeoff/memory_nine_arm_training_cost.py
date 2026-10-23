@@ -21,8 +21,6 @@ PHASES = {
     "H": ("head", "router", "graph"),
     "I": ("head", "router", "graph", "evolution"),
 }
-MAX_EVENTS_PER_ARM = 64
-
 def verify_training_receipts(plan, package):
     """Recompute complete staged E-I work and fail on mismatched lineages.
 
@@ -78,9 +76,11 @@ def verify_training_receipts(plan, package):
         tensors = record["trained_head_tensor_digests"]
         require(type(tensors) is list and len(tensors) == bank["trained_heads"],
                 "E-I true trained Head slot census")
-        require(len(set(tensors)) == len(tensors), "aliased trained Head tensors")
         for token in tensors:
             digest(token, "trained tensor bytes")
+        require(len(set(tensors)) == len(tensors), "aliased trained Head tensors")
+        require(record["weight_inventory_sha256"] == sha(canonical(tensors)),
+                "physical Head tensor inventory does not match stored digest")
         for field in ("observed_encoder_forwards", "artifact_bytes", "peak_rss_bytes"):
             integer(record[field], field, minimum=1, maximum=10**16)
         require(record["peak_rss_bytes"] <= bank["resident_budget_bytes"],
@@ -137,6 +137,10 @@ def verify_training_receipts(plan, package):
                 head_steps += event["optimizer_updates"]
                 head_examples += event["optimizer_examples"]
         require(phases == set(PHASES[arm]), "missing required actual learning phase")
+        require(record["journal_sha256"] == sha(canonical(events)),
+                "training journal event inventory does not match stored digest")
+        require(bank["training_receipt_sha256"] == sha(canonical(record)),
+                "physical complete E-I training receipt differs from plan")
         require(work == bank["total_training_budget_units"],
                 "E-I optimizer and topology work not at equal frozen budget")
         require(head_steps == bank["head_optimizer_steps"]
