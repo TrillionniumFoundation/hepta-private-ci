@@ -742,9 +742,25 @@ pass on Linux against each component's tested source; that does not compile or
 execute the Windows branches. Both file and directory sync errors still propagate,
 and the existing negative assertions remain intact. Six focused core/queue tests
 also pass on Linux with preserved tracing context, deterministic test timers and
-private, quoted hook fixtures. Exact-source Windows native CI is pending,
+private, quoted hook fixtures. Two guardian tests retain actual early outcomes and
+bounded persistence warnings on failure; both pass on Linux with their original
+assertions and five-second request observation intact. These diagnostics do not
+resolve the original Windows failures. Exact-source Windows native CI is pending,
 including the separate unsupported private-owner backend boundary;
 these handle repairs do not qualify owner SID/DACL checks or FinalUse durability.
+
+Within this existing PN0 boundary, low-level OS tools must own a held,
+non-inheritable root, relative leaf opens rejecting reparse points and hard links,
+atomic creation with the current SID and strict DACL, validation through the same
+held handles, and exact staged-handle rename with file and parent flushes. A small
+shared OS utility is a candidate dependency, not an implemented or qualified
+backend; the contracts owner must not acquire a reverse dependency on the broad
+sandbox stack. `hepta-contracts` retains exclusive ownership of the FinalUse
+journal, replay checks and Unknown state; `hepta-prompt-registry` retains its
+existing claim/payload journal. Neither gains another authority or relaxes an
+unsupported-platform guard. Complete the safe OS primitives and SID/DACL negative
+controls before connecting either owner, then qualify the current four Windows
+shards and native owner tests with every original consumer assertion retained.
 
 The next PN0 DNS dependency candidate retains the original Rama alpha.4
 resolver trait and constructor signatures, and vendors its published `rama-dns`
