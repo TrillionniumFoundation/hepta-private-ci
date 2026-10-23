@@ -5,7 +5,7 @@ from dataclasses import replace
 
 from reference import (Covariance, GateRejected, MediaEvent, MODALITIES, Objective,
                        Observation, cross_modal_contract, next_snapshot_gate,
-                       portfolio_weights)
+                       portfolio_weights, reference_report)
 
 
 def objective():
@@ -20,6 +20,14 @@ def obs(episode, split, policy, quality=1.):
 
 
 class NativeShadowHardeningTests(unittest.TestCase):
+    def test_a4_does_not_invent_risk_variance_from_forecast_noise(self):
+        report = reference_report()
+        # The synthetic audio expert has exactly constant forecast error.
+        # Conditional residual covariance is unidentifiable and must fall back.
+        self.assertFalse(report["covariance_supported"])
+        self.assertEqual(report["summary"]["A5"]["mean_synthetic_ndu"],
+                         report["summary"]["A1"]["mean_synthetic_ndu"])
+
     def test_risk_profile_nonfinite_asymmetric_or_indefinite_rejected(self):
         c = Covariance(True, ((1., 0.), (0., 1.)), 30, 1., 2, "test")
         with self.assertRaises(GateRejected):
