@@ -1,0 +1,196 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+   Compiling parking_lot v0.12.5
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.15.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+   Compiling typenum v1.20.1
+   Compiling generic-array v0.14.7
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling digest v0.10.7
+   Compiling getrandom v0.4.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+   Compiling serde_json v1.0.154
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+   Compiling mio v1.2.4
+   Compiling tokio v1.53.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.2` which wasn't produced by cargo metadata
+   Compiling futures-util v0.3.34
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+   Compiling sha2 v0.10.9
+   Compiling tinystr v0.8.4
+   Compiling sha1 v0.10.7
+   Compiling icu_locale_core v2.3.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+   Compiling icu_provider v2.3.1
+   Compiling gix-utils v0.3.6
+   Compiling tokio-util v0.7.20
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.63` which wasn't produced by cargo metadata
+   Compiling prodash v31.0.1
+   Compiling rustix v1.1.5
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+   Compiling gix-features v0.46.2
+   Compiling icu_normalizer v2.3.0
+   Compiling icu_properties v2.3.0
+   Compiling linux-raw-sys v0.12.1
+   Compiling idna_adapter v1.2.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.8.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.46.0` which wasn't produced by cargo metadata
+   Compiling futures-executor v0.3.34
+   Compiling uuid v1.28.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#faster-hex@0.10.1` which wasn't produced by cargo metadata
+   Compiling idna v1.1.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-epoch@0.9.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ahash@0.8.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+   Compiling url v2.5.8
+   Compiling futures v0.3.34
+warn: removing stray hash file in order to continue: /tmp/hepta-native-rustup/update-hashes/1.95.0-x86_64-unknown-linux-gnu
+info: syncing channel updates for 1.95.0-x86_64-unknown-linux-gnu
+info: latest update on 2026-04-16 for version 1.95.0 (59807616e 2026-04-14)
+info: downloading 3 components
+warn: the missing active toolchain `1.95.0-x86_64-unknown-linux-gnu` has been auto-installed
+warn: this might cause rustup commands to take longer time to finish than expected
+info: you may opt out with `RUSTUP_AUTO_INSTALL=0` or `rustup set auto-install disable`
+   Compiling getrandom v0.2.17
+   Compiling aws-lc-rs v1.18.2
+   Compiling rama-utils v0.3.0-alpha.4
+   Compiling ring v0.17.14
+   Compiling sha1-checked v0.10.0
+   Compiling flume v0.12.0
+   Compiling tokio-graceful v0.2.2
+   Compiling rama-core v0.3.0-alpha.4
+   Compiling gix-hash v0.23.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+   Compiling rama-http-types v0.3.0-alpha.4
+   Compiling num-integer v0.1.47
+   Compiling rustls v0.23.46
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+   Compiling rama-net v0.3.0-alpha.4
+   Compiling num-bigint v0.4.8
+   Compiling zerovec v0.11.8
+   Compiling rustls-webpki v0.103.15
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.104` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustversion@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#httparse@1.10.1` which wasn't produced by cargo metadata
+   Compiling gix-hashtable v0.13.0
+   Compiling tempfile v3.27.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl-sys@0.9.117` which wasn't produced by cargo metadata
+   Compiling gix-object v0.58.0
+   Compiling h2 v0.4.20
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rayon-core@1.13.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#syn@1.0.109` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-deque@0.8.8` which wasn't produced by cargo metadata
+   Compiling schemars v0.8.22
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ref-cast@1.0.27` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#typeid@1.0.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.7.17` which wasn't produced by cargo metadata
+   Compiling potential_utf v0.1.6
+   Compiling tokio-stream v0.1.19
+   Compiling rand v0.10.3
+   Compiling moka v0.12.16
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl@0.10.81` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#erased-serde@0.4.10` which wasn't produced by cargo metadata
+   Compiling lock_free_hashtable v0.1.4
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#allocative@0.3.6` which wasn't produced by cargo metadata
+   Compiling asn1-rs v0.7.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.2` which wasn't produced by cargo metadata
+   Compiling quickcheck v1.1.0
+   Compiling heapless v0.7.17
+   Compiling hickory-proto v0.25.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#logos-codegen@0.15.1` which wasn't produced by cargo metadata
+   Compiling icu_collections v2.3.0
+   Compiling ts-rs v11.1.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.28.0` which wasn't produced by cargo metadata
+   Compiling gix-fs v0.19.2
+   Compiling arrayvec v0.7.8
+   Compiling hickory-resolver v0.25.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-http-headers@0.3.0-alpha.4` which wasn't produced by cargo metadata
+   Compiling dashmap v6.2.1
+   Compiling blake3 v1.8.2
+   Compiling allocative v0.3.6
+   Compiling postcard v1.1.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#oid-registry@0.8.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#native-tls@0.2.18` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7` which wasn't produced by cargo metadata
+   Compiling codex-utils-absolute-path v0.0.0 (/dev/shm/organ-3d6a75235bcb-hepta3398/source/codex-rs/utils/absolute-path)
+   Compiling sorted_vector_map v0.2.1
+   Compiling static_interner v0.1.3
+   Compiling hyper v1.12.0
+   Compiling rustls-native-certs v0.8.5
+   Compiling tokio-rustls v0.26.6
+   Compiling schemafy_core v0.5.2
+   Compiling pagable v0.4.2
+   Compiling rama-http-headers v0.3.0-alpha.4
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#cookie@0.18.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+   Compiling schemafy_lib v0.5.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#encoding_rs@0.8.42` which wasn't produced by cargo metadata
+   Compiling hyper-util v0.1.21
+   Compiling oid-registry v0.8.1
+   Compiling rama-dns v0.3.0-alpha.4
+   Compiling gix-tempfile v21.0.2
+   Compiling der-parser v10.0.0
+   Compiling tower v0.5.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+   Compiling rama-http v0.3.0-alpha.4
+   Compiling der v0.7.10
+   Compiling clap_builder v4.6.7
+   Compiling starlark_map v0.14.2
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_fallback_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-safe@7.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#memoffset@0.9.1` which wasn't produced by cargo metadata
+   Compiling x509-parser v0.18.1
+   Compiling gix-lock v21.0.2
+   Compiling flate2 v1.1.10
+   Compiling rama-tcp v0.3.0-alpha.4
+   Compiling tokio-native-tls v0.3.1
+   Compiling schemafy v0.5.2
+   Compiling cookie v0.18.2
+   Compiling lsp-types v0.97.0
+   Compiling tokio-test v0.4.6
+   Compiling publicsuffix v2.3.0
+   Compiling fd-lock v4.0.4
+   Compiling yasna v0.6.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+   Compiling rustyline v14.0.0
+   Compiling tracing-subscriber v0.3.23
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_decimal_data@2.3.0` which wasn't produced by cargo metadata
+   Compiling rcgen v0.14.10
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.37.0` which wasn't produced by cargo metadata
+   Compiling clap v4.6.7
+   Compiling cookie_store v0.22.1
+   Compiling starlark_syntax v0.14.2
+   Compiling rama-http-core v0.3.0-alpha.4
+   Compiling png v0.18.1
+   Compiling debugserver-types v0.5.0
+   Compiling hyper-tls v0.6.0
+   Compiling spki v0.7.3
+   Compiling tower-http v0.6.11
+   Compiling hyper-rustls v0.27.10
+   Compiling gix-commitgraph v0.35.0
+   Compiling codex-utils-rustls-provider v0.0.0 (/dev/shm/organ-3d6a75235bcb-hepta3398/source/codex-rs/utils/rustls-provider)
+   Compiling rama-unix v0.3.0-alpha.4
+   Compiling rama-udp v0.3.0-alpha.4
+   Compiling gix-quote v0.7.2
+   Compiling opentelemetry v0.31.0
+   Compiling starlark v0.14.2

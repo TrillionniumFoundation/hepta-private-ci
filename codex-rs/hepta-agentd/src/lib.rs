@@ -249,6 +249,8 @@ pub use plasticity_runtime::plasticity_runtime_channel_v1;
 #[cfg(target_os = "linux")]
 pub use production_authority::AgentdFinalUseHostInputs;
 #[cfg(target_os = "linux")]
+pub use production_composition::AgentdProductionHostAttachment;
+#[cfg(target_os = "linux")]
 pub use production_composition::AgentdProductionHostInputs;
 #[cfg(target_os = "linux")]
 pub use production_composition::AgentdProductionNotesInputs;

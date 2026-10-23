@@ -1,0 +1,97 @@
+{
+  "purpose": "diagnostic exact built crash fixture, not a new owning-package gate",
+  "root": "/workspace/scratch/3d6a75235bcb/work/objective-owner/validation/crash-diagnostic-809oefdf",
+  "command": [
+    "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/deps/codex_hepta_memory-6ded303ad4b73964",
+    "--exact",
+    "production_writer::objective_sender::crash_tests::objective_sender_subprocess_fixture",
+    "--ignored",
+    "--nocapture"
+  ],
+  "binary_sha256": "5ef425a171bd5238b2b77ac9f0985a38e7821433b0f2881f1e5295417e01d4f2",
+  "exit_code": 72,
+  "stdout": "\nrunning 1 test\n",
+  "stderr": "",
+  "objects": [
+    {
+      "path": "fleet",
+      "mode": "0o755",
+      "uid": 0,
+      "links": 3,
+      "bytes": 4096,
+      "symlink": false
+    },
+    {
+      "path": "fleet/agents",
+      "mode": "0o755",
+      "uid": 0,
+      "links": 3,
+      "bytes": 4096,
+      "symlink": false
+    },
+    {
+      "path": "fleet/agents/00000000-0000-4000-8000-0000000000e7",
+      "mode": "0o755",
+      "uid": 0,
+      "links": 3,
+      "bytes": 4096,
+      "symlink": false
+    },
+    {
+      "path": "fleet/agents/00000000-0000-4000-8000-0000000000e7/cognitive",
+      "mode": "0o700",
+      "uid": 0,
+      "links": 2,
+      "bytes": 4096,
+      "symlink": false
+    },
+    {
+      "path": "fleet/agents/00000000-0000-4000-8000-0000000000e7/cognitive/.cognitive-store.lock",
+      "mode": "0o600",
+      "uid": 0,
+      "links": 1,
+      "bytes": 0,
+      "symlink": false
+    },
+    {
+      "path": "fleet/agents/00000000-0000-4000-8000-0000000000e7/cognitive/.hepta-production-writer-1c69fcde5993755fc84d309c5e451772d8e5078015146609bc3bfe521431eb4c.lock",
+      "mode": "0o644",
+      "uid": 0,
+      "links": 1,
+      "bytes": 0,
+      "symlink": false
+    },
+    {
+      "path": "fleet/agents/00000000-0000-4000-8000-0000000000e7/cognitive/cognitive_1.sqlite3",
+      "mode": "0o600",
+      "uid": 0,
+      "links": 1,
+      "bytes": 4096,
+      "symlink": false
+    },
+    {
+      "path": "fleet/agents/00000000-0000-4000-8000-0000000000e7/cognitive/cognitive_1.sqlite3-shm",
+      "mode": "0o644",
+      "uid": 0,
+      "links": 1,
+      "bytes": 32768,
+      "symlink": false
+    },
+    {
+      "path": "fleet/agents/00000000-0000-4000-8000-0000000000e7/cognitive/cognitive_1.sqlite3-wal",
+      "mode": "0o644",
+      "uid": 0,
+      "links": 1,
+      "bytes": 1194832,
+      "symlink": false
+    },
+    {
+      "path": "independent-test-cut-1.json",
+      "mode": "0o644",
+      "uid": 0,
+      "links": 1,
+      "bytes": 726,
+      "symlink": false
+    }
+  ]
+}

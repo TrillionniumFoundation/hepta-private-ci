@@ -14,6 +14,8 @@ use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_memory::CognitiveRecoveryAnchor;
 use codex_hepta_memory::CognitiveStore;
+use codex_hepta_memory::ObjectiveSenderCheckpointError;
+use codex_hepta_memory::ObjectiveSenderWriterFence;
 use codex_hepta_memory::ProductionAuthorityToken;
 use codex_hepta_memory::ProductionDispatchFuture;
 use codex_hepta_memory::ProductionDispatchRequest;
@@ -107,6 +109,61 @@ impl AuthorityFrontierStore<FinalUseFrontier> for Frontier {
     }
 }
 
+#[derive(Clone, Copy)]
+pub(super) enum CheckpointMode {
+    Accept,
+    Refuse,
+    Hold,
+    Mismatch,
+    ExpireAfterAck,
+    UnavailableAfterAck,
+    RevokeAfterAck,
+}
+
+pub(super) struct Checkpoint {
+    pub mode: Mutex<CheckpointMode>,
+    pub seen: Mutex<Vec<(CognitiveRecoveryAnchor, ObjectiveSenderWriterFence)>>,
+    clock: Arc<Clock>,
+    verifier: Arc<Verifier>,
+}
+
+impl ObjectiveSenderCheckpoint for Checkpoint {
+    async fn acknowledge_current(
+        &self,
+        current: &CognitiveRecoveryAnchor,
+        writer: &ObjectiveSenderWriterFence,
+    ) -> Result<CognitiveRecoveryAnchor, ObjectiveSenderCheckpointError> {
+        let mode = *self.mode.lock().unwrap();
+        self.seen
+            .lock()
+            .unwrap()
+            .push((current.clone(), writer.clone()));
+        match mode {
+            CheckpointMode::Accept => {}
+            CheckpointMode::Refuse => return Err(ObjectiveSenderCheckpointError::Refused),
+            CheckpointMode::Hold => std::future::pending::<()>().await,
+            CheckpointMode::Mismatch => {
+                let mut other = current.clone();
+                other.state_digest = Sha256Digest::for_bytes(b"wrong-bootstrap-cut");
+                return Ok(other);
+            }
+            CheckpointMode::ExpireAfterAck => {
+                self.clock.now_ms.store(EXPIRES * 1_000, Ordering::SeqCst);
+            }
+            CheckpointMode::UnavailableAfterAck => {
+                self.clock.unavailable.store(true, Ordering::SeqCst);
+            }
+            CheckpointMode::RevokeAfterAck => {
+                self.verifier.reject_at_call.store(
+                    self.verifier.calls.load(Ordering::SeqCst) + 1,
+                    Ordering::SeqCst,
+                );
+            }
+        }
+        Ok(current.clone())
+    }
+}
+
 pub(super) struct Target {
     pub metadata_calls: AtomicUsize,
     pub effects: AtomicUsize,
@@ -172,6 +229,7 @@ pub(super) struct Probes {
     pub verifier: Arc<Verifier>,
     pub target: Arc<Target>,
     pub frontier: Arc<Frontier>,
+    pub checkpoint: Arc<Checkpoint>,
 }
 
 pub(super) struct Fixture {
@@ -233,7 +291,14 @@ impl Fixture {
 
     pub fn inputs(
         &self,
-    ) -> Result<(AgentdProductionHostInputs<'_>, Probes, UnixStream), Box<dyn Error>> {
+    ) -> Result<
+        (
+            AgentdProductionHostInputs<'_, Checkpoint>,
+            Probes,
+            UnixStream,
+        ),
+        Box<dyn Error>,
+    > {
         let state_directory = self.directory.path().join(format!(
             "final-use-{}",
             self.next_inputs.fetch_add(1, Ordering::SeqCst)
@@ -270,9 +335,17 @@ impl Fixture {
             denied: AtomicBool::new(false),
             loads: AtomicUsize::new(0),
         });
+        let checkpoint = Arc::new(Checkpoint {
+            mode: Mutex::new(CheckpointMode::Accept),
+            seen: Mutex::new(Vec::new()),
+            clock: clock.clone(),
+            verifier: verifier.clone(),
+        });
         let (issuer_stream, peer) = UnixStream::pair()?;
         let inputs = AgentdProductionHostInputs {
             current_cut: CognitiveRecoveryRequirement::ExactCurrentCut(&self.cut),
+            checkpoint: Arc::clone(&checkpoint),
+            checkpoint_deadline: Duration::from_secs(1),
             authority: self.authority.clone(),
             verifier: verifier.clone(),
             lease_id: "composition-fixture-lease".to_string(),
@@ -308,6 +381,7 @@ impl Fixture {
                 verifier,
                 target,
                 frontier,
+                checkpoint,
             },
             peer,
         ))
