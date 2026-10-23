@@ -80,6 +80,56 @@ fn identity_replay_is_idempotent_and_drift_conflicts() {
 }
 
 #[test]
+fn successful_selection_replay_survives_later_revocation() {
+    let objective = digest("objective");
+    let subject = digest("subject");
+    let projection = digest("projection");
+    let selection_identity = digest("selection-identity");
+    let mut journal = NduProjectionJournalV1::new();
+    must(journal.append_projection(
+        NduProjectionKindV1::Preference,
+        digest("projection-identity"),
+        objective,
+        subject,
+        projection,
+    ));
+    let selected = must(journal.select_projection(
+        selection_identity,
+        objective,
+        subject,
+        projection,
+    ));
+    must(journal.revoke_projection(
+        digest("revocation-identity"),
+        objective,
+        subject,
+        projection,
+    ));
+
+    let replayed = must(journal.select_projection(
+        selection_identity,
+        objective,
+        subject,
+        projection,
+    ));
+    assert_eq!(replayed, selected);
+    assert_eq!(journal.entries().len(), 3);
+    assert_eq!(journal.selected_projection_digest(objective, subject), None);
+
+    assert_eq!(
+        journal
+            .select_projection(
+                digest("new-selection-identity"),
+                objective,
+                subject,
+                projection,
+            )
+            .expect_err("new selection must honor the current revocation frontier"),
+        NduProjectionJournalError::RevokedProjection
+    );
+}
+
+#[test]
 fn revocation_prevents_projection_resurrection() {
     let objective = digest("objective");
     let subject = digest("subject");
