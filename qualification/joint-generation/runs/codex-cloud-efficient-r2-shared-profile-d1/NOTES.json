@@ -1,0 +1,39 @@
+{
+  "actual_completed_calls": {
+    "dataset": {
+      "test": 0,
+      "train": 1,
+      "validation": 1
+    },
+    "original_measure": 27,
+    "prepare_shared": 1,
+    "service_requests": 1944
+  },
+  "base_archive_comparison": [
+    {
+      "byte_identical": true,
+      "diagnostic_sha256": "f6b75f2639fe5d14475d0d68634bc637fbaabf12346102426a202923d8166c47",
+      "seed": 11,
+      "t7_sha256": "f6b75f2639fe5d14475d0d68634bc637fbaabf12346102426a202923d8166c47"
+    },
+    {
+      "byte_identical": true,
+      "diagnostic_sha256": "640aeaaaa82ca4be068b6680d1d919b03c7650f22a3e6139e44dce2591492083",
+      "seed": 23,
+      "t7_sha256": "640aeaaaa82ca4be068b6680d1d919b03c7650f22a3e6139e44dce2591492083"
+    },
+    {
+      "byte_identical": true,
+      "diagnostic_sha256": "4b9f25a39c2849f2ebd27989c9d1a6ef91f1c3163d78d813e17ab21713d54400",
+      "seed": 47,
+      "t7_sha256": "4b9f25a39c2849f2ebd27989c9d1a6ef91f1c3163d78d813e17ab21713d54400"
+    }
+  ],
+  "conclusion": "T7 9.077421498s shared CPU slowdown not reproduced in exactly one prospective diagnostic; cause remains unknown. Instrumented timings cannot establish uninstrumented qualification cost.",
+  "cprofile_timer": "default elapsed timer: cumulative rows overlap and subprocess waiting is included; not exclusive process CPU",
+  "qualification": false,
+  "reexecuted_shared": false,
+  "schema": "hepta.shared-profile-interpretation.v1",
+  "static_opportunity": "Existing model.apply_gradients eagerly creates zeros_like default arrays even when Adam moments exist; profile reports 21600 zeros_like calls, .094104177s cumulative. This is an optimization candidate, not an established cause of T7 slowdown; no source edit made.",
+  "supersedes_t7": false
+}
