@@ -168,10 +168,13 @@ impl Fixture {
             spawn_generation:starting.generation, owner_epoch:1, local_lease_id:"root-wrapper-local-writer".into(), local_lease_generation:1,
             authority_lease:AuthorityLease { schema_version:1, lease_id:"root-wrapper-writer-1".into(), revision:1, authority_epoch:1,
                 binding:AuthorityLeaseBinding { principal_id:owner.to_string(), operation_class:"runtime.agentd.production_writer".into(),
-                    destination_id:layout.cognitive_root().display().to_string(),
+                    // The original lease destination is a bounded owner ID.
+                    // Its complete fixed filesystem path remains in the scope.
+                    destination_id:format!("cognitive.owner:{owner}"),
                     scope_sha256:Sha256::digest(serde_json::to_vec(&(owner.clone(), layout.cognitive_root())).unwrap()).into(),
                     payload_sha256:Sha256::digest(serde_json::to_vec(&original_cut).unwrap()).into() },
                 issued_at_unix_ms:now, expires_at_unix_ms:now+60000 } };
+        old_writer.authority_lease.validate().unwrap();
         leases.put_lease(old_writer.authority_lease.clone(), /*expected_revision*/ 0).unwrap();
         let old_proof = issuer.register_writer_authorization(&old_writer, &leases.verifier()).unwrap();
         assert_eq!(old_proof.claims.sequence, 1);
