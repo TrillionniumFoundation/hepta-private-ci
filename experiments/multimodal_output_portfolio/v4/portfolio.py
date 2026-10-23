@@ -196,10 +196,14 @@ def conditional_ce(values: tuple[float, ...],
     # Restrict compensated arithmetic to the near-neutral limit, leaving
     # the frozen ordinary-risk evaluation path bit-for-bit unchanged.
     span = max(v for _, v in supported) - anchor
-    if risk_aversion < 1e-250:
+    # A tiny coefficient alone does not imply negligible entropic risk:
+    # payoff scales may be inversely large. Only replace by the mean when
+    # the risk-weighted support span is numerically indistinguishable from 0.
+    scaled_span = risk_aversion * span if math.isfinite(span) else math.inf
+    if scaled_span < 1e-250:
         total = math.fsum(p for p, _ in supported)
         return math.fsum(v * (p / total) for p, v in supported)
-    if math.isfinite(span) and risk_aversion * span <= 1e-4:
+    if scaled_span <= 1e-4:
         total = math.fsum(p for p, _ in supported)
         delta = math.fsum(
             (p / total) * math.expm1(-risk_aversion * (v - anchor))
