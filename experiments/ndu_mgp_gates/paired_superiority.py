@@ -94,6 +94,11 @@ def evaluate(study: Mapping):
     ambiguity_tol = _number(protocol.get("max_ambiguity_increase"), "ambiguity tolerance", upper=0.05)
     inconsistency_tol = _number(protocol.get("max_inconsistency_increase"), "inconsistency tolerance", upper=0.05)
     max_cost_ratio = _number(protocol.get("max_total_cost_ratio"), "cost ratio", lower=1, upper=1.1)
+    # A mean cost ratio (even with a tight paired bootstrap) can hide a
+    # reliable, sparse physical latency/energy tail. Require a separately
+    # registered worst-10%-mass tail cost bound in identical measured units.
+    max_tail_cost_ratio = _number(protocol.get("max_tail_cost_ratio"),
+                                  "tail cost ratio", lower=1, upper=1.1)
     boots = protocol.get("bootstrap_replicates")
     _need(type(boots) is int and 100 <= boots <= 20000, "invalid bootstrap size")
     _need(type(protocol.get("bootstrap_seed")) is int, "missing preregistered bootstrap seed")
@@ -208,6 +213,13 @@ def evaluate(study: Mapping):
         lower = np.quantile(cloud, tail_level, axis=0)
         ratio = point[0, -1] / point[index + 1, -1]
         upper_cost_ratio = float(np.quantile(bootstrap_cost_ratios[:, index], 1 - tail_level))
+        # Preserve seed grouping: aggregate each seed's empirical CVaR90 of
+        # observed total physical cost, then average the registered seeds.
+        # This tail *ratio* is an extra resource gate, not the mean ratio or
+        # its bootstrap CI and never a substitute for absolute host limits.
+        ndu_tail_cost = float(np.mean([cvar90(costs) for costs in values[0, :, :, -1]]))
+        base_tail_cost = float(np.mean([cvar90(costs) for costs in values[index + 1, :, :, -1]]))
+        tail_cost_ratio = ndu_tail_cost / base_tail_cost
         protected_delta = values[0, :, :, 1] - values[index + 1, :, :, 1]
         protected_ok = bool(np.all(protected_delta[protected] >= -1e-12))
         gates = {
@@ -217,6 +229,7 @@ def evaluate(study: Mapping):
             "consistency_noninferiority": bool(upper[3] <= inconsistency_tol),
             "physical_total_cost": bool(ratio <= max_cost_ratio and
                                         upper_cost_ratio <= max_cost_ratio),
+            "physical_tail_cost": bool(tail_cost_ratio <= max_tail_cost_ratio),
             "protected_task_no_regression": protected_ok,
         }
         local_all &= all(gates.values())
@@ -224,6 +237,7 @@ def evaluate(study: Mapping):
                      "simultaneous_lower": lower.tolist(), "simultaneous_upper": upper.tolist(),
                      "observed_cost_ratio": ratio,
                      "bootstrap_upper_cost_ratio": upper_cost_ratio,
+                     "observed_tail_cost_ratio": tail_cost_ratio,
                      "gates": gates}
     receipt = {"schema": "hepta-mgp-paired-review-v1", "status": "HOLD_NO_GO", "authority": "DENY_ALL",
                "source": "LOCAL_RESEARCH_UNAUTHENTICATED", "scientific_superiority_proven": False,
