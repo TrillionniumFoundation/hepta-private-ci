@@ -187,6 +187,38 @@ class CellProcessInferenceTests(unittest.TestCase):
         self.assertEqual(result["router_forward_calls"], 0)
         self.assertTrue(all(r["actual_calls"] == ["a"] for r in result["routes"]))
 
+    def test_mid_commit_source_revocation_cannot_publish_unacknowledged_successor(self):
+        source = self.parent.report["source_closure"][0]
+
+        class RevokingProvider(Withdrawals):
+            def __init__(self):
+                super().__init__()
+                self.armed = False
+                self.reads = 0
+
+            def __call__(self):
+                if self.armed:
+                    self.reads += 1
+                    if self.reads == 3:
+                        self.revoke(source)
+                return self.view
+
+        provider = RevokingProvider()
+        owner = SnapshotProcessOwnerV1(self.parent, provider)
+        provider.armed = True
+        # Read 1: host preflight. Read 2: owner validation.
+        # Read 3: final host gate, still before the owner CAS publication.
+        with self.assertRaisesRegex(EvolutionError, "withdrawn"):
+            owner.commit(self.retired, expected_parent_manifest_sha256=self.parent.manifest_sha256)
+        self.assertEqual(provider.reads, 3)
+        self.assertIs(owner.current, self.parent)
+        with self.assertRaisesRegex(EvolutionError, "withdrawn"):
+            owner.capture()
+        # A forged earlier view must not make the rejected successor usable.
+        provider.view = WithdrawalViewV1(IDENTITY.scope_id)
+        with self.assertRaisesRegex(EvolutionError, "frontier"):
+            owner.capture()
+
     def test_wrong_feature_scope_is_rejected_before_any_worker_forward(self):
         pool = self.pool()
         bad = cohort("different-scope", identity=replace(IDENTITY, scope_id="another-owner")).bundle
