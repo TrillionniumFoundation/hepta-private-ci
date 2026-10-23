@@ -1,0 +1,49 @@
+{
+  "corrected_original_material_checks": {
+    "actual_joint_tamper_rejected": "Receipt frozen identity mismatch: splits",
+    "changed_CSV_rejected_before_any_freeze_artifact": true,
+    "new_custody_sha256": "7930031639707cb4b5163b4a334e6a289fc5cb143c8a2c7d4f81e2da26a9c09c",
+    "no_model_loaded_or_head_retrained": true,
+    "numpy_version": "2.3.5",
+    "original_archive_CSV_prepare_replays_plan_rows_exactly": true,
+    "original_frozen_features_accepted": true,
+    "original_results_sha256": "3826aa6cc18d6c62687074e673f383d43764c9e7bbd6ec91d42afe0a60643226",
+    "shapes": {
+      "conformal": [
+        160,
+        640
+      ],
+      "head_train": [
+        320,
+        640
+      ],
+      "temperature": [
+        160,
+        640
+      ],
+      "test": [
+        320,
+        640
+      ]
+    }
+  },
+  "no_new_model_inference_or_head_training": true,
+  "original_preflight_proof": {
+    "accepted_test_array_sha256": "1e09151b80fb11817e0cb675b342b45715a3517a8055f2ee5521688fd8a701dd",
+    "accepts_modified_features_with_self_consistent_receipt": true,
+    "altered_feature_sha256": "2baf3b0053b2703c714437124d3ccdd3e72d62d8a17c873c529f6d805a61ae09",
+    "change": "Negate test feature row0 and update NPZ/hash plus receipt split hash. Shape/dtype/unit norm preserved.",
+    "frozen_expected_test_array_sha256": "8439d95a9a42c8b39243d00d4c66a5500e8833c98ef478eabc20c96c7f7e37a5",
+    "no_new_results_receipt": true,
+    "original_feature_sha256": "efd68909845d2810167a9a2048d1e07e0eed5012b446e6e9713511bcb1e9a9dc",
+    "proof_scope": "Exact published preflight AST only; no training/model load; current runtime has no torch",
+    "published_analyze_sha256": "04022172b59233a386bd4c60bf83fe86c3e432a925808a705936716e61c8b566",
+    "unchanged_plan_and_rows": true
+  },
+  "tests": {
+    "normal": 24,
+    "normal_log_sha256": "696e68b181e52450a9693d9010ede5cbae20e4fd2ebfd855707cbf0d9b53fe26",
+    "optimized_log_sha256": "86193ed1976fb4292ef75fbe8b616f5bf4d9fc2d57b9e27038ea27fe03c99408",
+    "optimized_test_runner": 24
+  }
+}
