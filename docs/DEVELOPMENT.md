@@ -680,6 +680,12 @@ this ordering adds cross-repository evidence dependencies without a second DAG,
 optimizer, durable journal or authority issuer. Parameter, topology, executable
 and consensus upgrades retain their separate admission and release boundaries.
 
+The paired Chain PN1 campaign still fails its original CPU-depletion requirement:
+honest confirmation and measured accounting succeed, but the fixed hostile input
+does not exhaust paid credit under the existing challenge limit and refill policy.
+These PN0 repairs retain that failure and every original assertion; no inferred
+charge, reduced budget or replacement workload qualifies the original campaign.
+
 PN0's first compatible dependency patch candidate updates OpenSSL to 0.10.81,
 cmov to 0.5.4, gix-packetline to 0.21.5, gix-sec to 0.13.3 and quinn-proto to
 0.11.15, with their required compatible helpers, through the existing Cargo and
