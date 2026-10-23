@@ -1,9 +1,15 @@
 # Hepta HMI session attachment
 
-Status: source prepared, not activated. Cargo compilation, authored socket tests,
-Clippy, formatting and Bazel lock regeneration have not run on this source.
-The configured project Codex cloud environment is not currently accessible from
-this session. No substitute runtime or physical audio acceptance is claimed.
+Status: restored and checked in the saved project Codex cloud environment on
+2026-10-23, not activated. The original `3741d927` candidate failed compilation
+with two E0695 errors; the local audit branch corrects the event-loop labels.
+All-target Cargo checking, all 24 adapter tests (including the three HMI socket
+fixtures), scoped Clippy and Bazel module-lock regeneration have now run.
+The tests use synthetic protocol peers. Actual authenticated owner wiring,
+model/device integration and physical audio acceptance remain outstanding.
+Exact commands, exit codes and retained failures are in the cloud workspace at
+`/workspace/pipecat-hmi-audit-20261023/`; the companion Pipecat checkout contains
+`rust/docs/HMI_CLOUD_AUDIT_20261023.md` with the complete acceptance boundaries.
 
 `hmi::HmiConnectionV1` attaches an existing authenticated channel owner to an
 exact App Server thread. It never creates a thread, conversation database, model

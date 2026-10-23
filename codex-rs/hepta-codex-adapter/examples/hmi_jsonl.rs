@@ -3,14 +3,18 @@
 //! The existing authenticated channel owner supplies CONFIG and authorizes every
 //! input. A config file is not an authentication, device grant or memory receipt.
 
-use std::io::{BufRead, Read};
-use tokio::io::AsyncWriteExt;
-use std::time::Duration;
-use codex_app_server_client::{RemoteAppServerConnectArgs, RemoteAppServerEndpoint};
+use codex_app_server_client::RemoteAppServerConnectArgs;
+use codex_app_server_client::RemoteAppServerEndpoint;
 use codex_app_server_protocol::ThreadQueueReconcileMode;
-use codex_hepta_codex_adapter::hmi::{HmiBindingV1, HmiConnectionV1};
+use codex_hepta_codex_adapter::hmi::HmiBindingV1;
+use codex_hepta_codex_adapter::hmi::HmiConnectionV1;
 use serde::Deserialize;
-use serde_json::{Value, json};
+use serde_json::Value;
+use serde_json::json;
+use std::io::BufRead;
+use std::io::Read;
+use std::time::Duration;
+use tokio::io::AsyncWriteExt;
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -22,14 +26,24 @@ struct Config {
 impl Config {
     fn args(&self) -> Result<RemoteAppServerConnectArgs, Box<dyn std::error::Error>> {
         let endpoint = match (&self.socket_path, &self.websocket_url) {
-            (Some(path), None) => RemoteAppServerEndpoint::UnixSocket { socket_path: path.as_str().try_into()? },
-            (None, Some(url)) => RemoteAppServerEndpoint::WebSocket { websocket_url: url.clone(),
-                auth_token: std::env::var("HEPTA_HMI_AUTH_TOKEN").ok() },
+            (Some(path), None) => RemoteAppServerEndpoint::UnixSocket {
+                socket_path: path.as_str().try_into()?,
+            },
+            (None, Some(url)) => RemoteAppServerEndpoint::WebSocket {
+                websocket_url: url.clone(),
+                auth_token: std::env::var("HEPTA_HMI_AUTH_TOKEN").ok(),
+            },
             _ => return Err("configure exactly one existing owner endpoint".into()),
         };
-        Ok(RemoteAppServerConnectArgs { endpoint, client_name: "hepta-hmi-jsonl".into(),
-            client_version: env!("CARGO_PKG_VERSION").into(), experimental_api: true,
-            mcp_server_openai_form_elicitation: false, opt_out_notification_methods: Vec::new(), channel_capacity: 16 })
+        Ok(RemoteAppServerConnectArgs {
+            endpoint,
+            client_name: "hepta-hmi-jsonl".into(),
+            client_version: env!("CARGO_PKG_VERSION").into(),
+            experimental_api: true,
+            mcp_server_openai_form_elicitation: false,
+            opt_out_notification_methods: Vec::new(),
+            channel_capacity: 16,
+        })
     }
 }
 
@@ -37,8 +51,16 @@ impl Config {
 #[serde(tag = "type", rename_all = "camelCase", deny_unknown_fields)]
 enum Command {
     #[serde(rename_all = "camelCase")]
-    Submit { generation: u64, sequence: u64, request_id: String, text: String, mode: ThreadQueueReconcileMode },
-    Interrupt { generation: u64 },
+    Submit {
+        generation: u64,
+        sequence: u64,
+        request_id: String,
+        text: String,
+        mode: ThreadQueueReconcileMode,
+    },
+    Interrupt {
+        generation: u64,
+    },
     Reconnect,
     Stop,
 }
@@ -47,8 +69,11 @@ struct Output {
     queue: tokio::sync::mpsc::Sender<Vec<u8>>,
 }
 impl Output {
-    fn emit(&self, requests: &codex_hepta_codex_adapter::hmi::HmiRequestsV1, value: Value)
-        -> Result<(), Box<dyn std::error::Error>> {
+    fn emit(
+        &self,
+        requests: &codex_hepta_codex_adapter::hmi::HmiRequestsV1,
+        value: Value,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         let mut bytes = serde_json::to_vec(&value)?;
         bytes.push(b'\n');
         if self.queue.try_send(bytes).is_err() {
@@ -60,19 +85,33 @@ impl Output {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let runtime = tokio::runtime::Builder::new_multi_thread().enable_all().build()?;
+    let runtime = tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()?;
     let result = runtime.block_on(run());
     runtime.shutdown_timeout(Duration::from_secs(1));
     result
 }
 
 async fn run() -> Result<(), Box<dyn std::error::Error>> {
-    let path = std::env::args().nth(1).ok_or("expected owner config path")?;
+    let path = std::env::args()
+        .nth(1)
+        .ok_or("expected owner config path")?;
     let mut bytes = Vec::new();
-    std::fs::File::open(path)?.take(65537).read_to_end(&mut bytes)?;
-    if bytes.len() > 65536 { return Err("owner config too large".into()); }
+    std::fs::File::open(path)?
+        .take(65537)
+        .read_to_end(&mut bytes)?;
+    if bytes.len() > 65536 {
+        return Err("owner config too large".into());
+    }
     let config: Config = serde_json::from_slice(&bytes)?;
-    let mut connection = HmiConnectionV1::connect(config.args()?, config.binding.clone(), 128, Duration::from_secs(10)).await?;
+    let mut connection = HmiConnectionV1::connect(
+        config.args()?,
+        config.binding.clone(),
+        128,
+        Duration::from_secs(10),
+    )
+    .await?;
     let (writer_queue, mut output_queue) = tokio::sync::mpsc::channel::<Vec<u8>>(32);
     let mut writer = tokio::spawn(async move {
         let mut stdout = tokio::io::stdout();
@@ -82,7 +121,9 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         }
         Ok::<(), Box<dyn std::error::Error + Send + Sync>>(())
     });
-    let output = Output { queue: writer_queue };
+    let output = Output {
+        queue: writer_queue,
+    };
     let (sender, mut receiver) = tokio::sync::mpsc::channel(8);
     std::thread::spawn(move || {
         let mut input = std::io::stdin().lock();
@@ -90,8 +131,15 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             let mut line = String::new();
             match (&mut input).take(131073).read_line(&mut line) {
                 Ok(0) => break,
-                Ok(_) if line.len() <= 131072 => if sender.blocking_send(Ok(line)).is_err() { break; },
-                _ => { let _ = sender.blocking_send(Err("invalid or oversized command")); break; }
+                Ok(_) if line.len() <= 131072 => {
+                    if sender.blocking_send(Ok(line)).is_err() {
+                        break;
+                    }
+                }
+                _ => {
+                    let _ = sender.blocking_send(Err("invalid or oversized command"));
+                    break;
+                }
             }
         }
     });
@@ -145,7 +193,12 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     while submissions.join_next().await.is_some() {}
     connection.events.shutdown().await?;
     drop(output);
-    if tokio::time::timeout(Duration::from_secs(1), &mut writer).await.is_err() { writer.abort(); }
+    if tokio::time::timeout(Duration::from_secs(1), &mut writer)
+        .await
+        .is_err()
+    {
+        writer.abort();
+    }
     // main uses shutdown_timeout because Tokio's OS stdio worker is not safely
     // abortable. Supervision may terminate this standalone process afterwards.
     Ok(())

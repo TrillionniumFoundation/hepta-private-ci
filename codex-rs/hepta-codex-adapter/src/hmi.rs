@@ -8,26 +8,43 @@
 use std::fmt;
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::sync::atomic::{AtomicI64, Ordering};
+use std::sync::atomic::AtomicI64;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 
-use codex_app_server_client::{AppServerEvent, RemoteAppServerClient, RemoteAppServerConnectArgs,
-    RemoteAppServerRequestHandle, TypedRequestError};
-use codex_app_server_protocol::{ClientRequest, RequestId, ServerNotification, ThreadItem,
-    ThreadQueueReconcileMode, ThreadQueueReconcileOutcome, ThreadQueueReconcileParams,
-    ThreadQueueReconcileResponse, ThreadResumeParams, ThreadResumeResponse,
-    TurnInterruptParams, TurnInterruptResponse, TurnStatus, UserInput, ThreadQueueDeleteParams, ThreadQueueDeleteResponse};
+use codex_app_server_client::AppServerEvent;
+use codex_app_server_client::RemoteAppServerClient;
+use codex_app_server_client::RemoteAppServerConnectArgs;
+use codex_app_server_client::RemoteAppServerRequestHandle;
+use codex_app_server_client::TypedRequestError;
+use codex_app_server_protocol::ClientRequest;
+use codex_app_server_protocol::RequestId;
+use codex_app_server_protocol::ServerNotification;
+use codex_app_server_protocol::ThreadItem;
+use codex_app_server_protocol::ThreadQueueDeleteParams;
+use codex_app_server_protocol::ThreadQueueDeleteResponse;
+use codex_app_server_protocol::ThreadQueueReconcileMode;
+use codex_app_server_protocol::ThreadQueueReconcileOutcome;
+use codex_app_server_protocol::ThreadQueueReconcileParams;
+use codex_app_server_protocol::ThreadQueueReconcileResponse;
+use codex_app_server_protocol::ThreadResumeParams;
+use codex_app_server_protocol::ThreadResumeResponse;
+use codex_app_server_protocol::TurnInterruptParams;
+use codex_app_server_protocol::TurnInterruptResponse;
+use codex_app_server_protocol::TurnStatus;
+use codex_app_server_protocol::UserInput;
 use codex_hepta_types::Digest32;
 use codex_protocol::user_input::user_input_payload_sha256;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 const MAX_TEXT_BYTES: usize = 64 * 1024;
 const MAX_ITEMS: usize = 32;
 
-#[path = "hmi_requests.rs"]
-mod requests;
 #[path = "hmi_events.rs"]
 mod events;
+#[path = "hmi_requests.rs"]
+mod requests;
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -55,7 +72,9 @@ pub enum HmiError {
     Protocol(String),
 }
 impl fmt::Display for HmiError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result { write!(f, "{self:?}") }
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 impl std::error::Error for HmiError {}
 
@@ -77,7 +96,12 @@ pub struct HmiOutputScopeV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub enum HmiTerminalStatusV1 { Completed, Failed, Interrupted, Unknown }
+pub enum HmiTerminalStatusV1 {
+    Completed,
+    Failed,
+    Interrupted,
+    Unknown,
+}
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -127,60 +151,122 @@ struct Shared {
 
 /// Cloneable narrow requests; the caller must retain the authenticated owner.
 #[derive(Clone)]
-pub struct HmiRequestsV1 { handle: RemoteAppServerRequestHandle, shared: Arc<Shared> }
+pub struct HmiRequestsV1 {
+    handle: RemoteAppServerRequestHandle,
+    shared: Arc<Shared>,
+}
 
 /// Sole receiver for the bounded connection; one owner drains it continuously.
-pub struct HmiEventsV1 { client: RemoteAppServerClient, shared: Arc<Shared>, ended: bool }
+pub struct HmiEventsV1 {
+    client: RemoteAppServerClient,
+    shared: Arc<Shared>,
+    ended: bool,
+}
 
-pub struct HmiConnectionV1 { pub requests: HmiRequestsV1, pub events: HmiEventsV1 }
+pub struct HmiConnectionV1 {
+    pub requests: HmiRequestsV1,
+    pub events: HmiEventsV1,
+}
 
 impl HmiConnectionV1 {
     /// Attach only to the exact existing thread. No thread/start or model request
     /// occurs here. The host must authenticate the endpoint and current grant.
-    pub async fn connect(args: RemoteAppServerConnectArgs, binding: HmiBindingV1,
-        event_capacity: usize, deadline: Duration) -> Result<Self, HmiError> {
-        if binding.organ_generation == 0 || binding.device_generation == 0 || deadline.is_zero() || deadline > Duration::from_secs(60)
-            || [&binding.principal_id, &binding.device_id, &binding.organ_id, &binding.logical_session_id,
-                &binding.thread_id, &binding.app_server_session_id, &binding.codex_home,
-                &binding.app_server_version].iter().any(|value| value.is_empty() || value.len() > 4096) {
+    pub async fn connect(
+        args: RemoteAppServerConnectArgs,
+        binding: HmiBindingV1,
+        event_capacity: usize,
+        deadline: Duration,
+    ) -> Result<Self, HmiError> {
+        if binding.organ_generation == 0
+            || binding.device_generation == 0
+            || deadline.is_zero()
+            || deadline > Duration::from_secs(60)
+            || [
+                &binding.principal_id,
+                &binding.device_id,
+                &binding.organ_id,
+                &binding.logical_session_id,
+                &binding.thread_id,
+                &binding.app_server_session_id,
+                &binding.codex_home,
+                &binding.app_server_version,
+            ]
+            .iter()
+            .any(|value| value.is_empty() || value.len() > 4096)
+        {
             return Err(HmiError::Invalid("binding or deadline"));
         }
-        let client = tokio::time::timeout(deadline,
-            RemoteAppServerClient::connect_with_bounded_events(args, event_capacity))
-            .await.map_err(|_| HmiError::Deadline)?
-            .map_err(|error| HmiError::Transport(error.to_string()))?;
+        let client = tokio::time::timeout(
+            deadline,
+            RemoteAppServerClient::connect_with_bounded_events(args, event_capacity),
+        )
+        .await
+        .map_err(|_| HmiError::Deadline)?
+        .map_err(|error| HmiError::Transport(error.to_string()))?;
         if client.codex_home() != Some(binding.codex_home.as_str())
-            || client.server_version() != Some(binding.app_server_version.as_str()) {
+            || client.server_version() != Some(binding.app_server_version.as_str())
+        {
             let _ = tokio::time::timeout(deadline, client.shutdown()).await;
             return Err(HmiError::Identity);
         }
-        let shared = Arc::new(Shared { binding, connection_id: client.connection_id(),
-            timeout: deadline, request_id: AtomicI64::new(1), state: Mutex::new(State {
-                fenced: false, epoch: 1, output_enabled: false, cancel_requested: false, queued_id: None, sequence: 0, pending: None, active_turn: None,
-                items: Vec::new(), terminal: None,
-            }) });
-        let requests = HmiRequestsV1 { handle: client.request_handle(), shared: shared.clone() };
-        let response: Result<ThreadResumeResponse, HmiError> = requests.call(ClientRequest::ThreadResume {
-            request_id: requests.id(), params: ThreadResumeParams {
-                thread_id: requests.shared.binding.thread_id.clone(), exclude_turns: true,
-                ..Default::default()
-            },
-        }).await;
-        let valid = response.as_ref().is_ok_and(|response|
+        let shared = Arc::new(Shared {
+            binding,
+            connection_id: client.connection_id(),
+            timeout: deadline,
+            request_id: AtomicI64::new(1),
+            state: Mutex::new(State {
+                fenced: false,
+                epoch: 1,
+                output_enabled: false,
+                cancel_requested: false,
+                queued_id: None,
+                sequence: 0,
+                pending: None,
+                active_turn: None,
+                items: Vec::new(),
+                terminal: None,
+            }),
+        });
+        let requests = HmiRequestsV1 {
+            handle: client.request_handle(),
+            shared: shared.clone(),
+        };
+        let response: Result<ThreadResumeResponse, HmiError> = requests
+            .call(ClientRequest::ThreadResume {
+                request_id: requests.id(),
+                params: ThreadResumeParams {
+                    thread_id: requests.shared.binding.thread_id.clone(),
+                    exclude_turns: true,
+                    ..Default::default()
+                },
+            })
+            .await;
+        let valid = response.as_ref().is_ok_and(|response| {
             response.thread.id == shared.binding.thread_id
                 && response.thread.session_id == shared.binding.app_server_session_id
-                && !response.thread.ephemeral);
+                && !response.thread.ephemeral
+        });
         if !valid {
             let _ = tokio::time::timeout(deadline, client.shutdown()).await;
             return Err(response.err().unwrap_or(HmiError::Identity));
         }
-        Ok(Self { requests, events: HmiEventsV1 { client, shared, ended: false } })
+        Ok(Self {
+            requests,
+            events: HmiEventsV1 {
+                client,
+                shared,
+                ended: false,
+            },
+        })
     }
 
     /// Fence every old handle, reattach/resubscribe the same thread, and leave
     /// output closed until a fresh admission is explicitly observed. No replay.
-    pub async fn reconnect(self, args: RemoteAppServerConnectArgs, event_capacity: usize)
-        -> Result<Self, HmiError> {
+    pub async fn reconnect(
+        self,
+        args: RemoteAppServerConnectArgs,
+        event_capacity: usize,
+    ) -> Result<Self, HmiError> {
         let binding = self.requests.shared.binding.clone();
         let deadline = self.requests.shared.timeout;
         self.requests.revoke()?;
@@ -190,24 +276,51 @@ impl HmiConnectionV1 {
 }
 
 fn output_scope(shared: &Shared, state: &State) -> HmiOutputScopeV1 {
-    HmiOutputScopeV1 { principal_id: shared.binding.principal_id.clone(), device_id: shared.binding.device_id.clone(),
-        device_generation: shared.binding.device_generation, organ_id: shared.binding.organ_id.clone(),
-        logical_session_id: shared.binding.logical_session_id.clone(), utterance_sequence: state.sequence,
-        utterance_id: state.pending.as_ref().map(|(client_id, _)| client_id.clone()),
-        organ_generation: shared.binding.organ_generation, connection_id: shared.connection_id,
-        output_epoch: state.epoch, turn_id: state.active_turn.clone() }
+    HmiOutputScopeV1 {
+        principal_id: shared.binding.principal_id.clone(),
+        device_id: shared.binding.device_id.clone(),
+        device_generation: shared.binding.device_generation,
+        organ_id: shared.binding.organ_id.clone(),
+        logical_session_id: shared.binding.logical_session_id.clone(),
+        utterance_sequence: state.sequence,
+        utterance_id: state
+            .pending
+            .as_ref()
+            .map(|(client_id, _)| client_id.clone()),
+        organ_generation: shared.binding.organ_generation,
+        connection_id: shared.connection_id,
+        output_epoch: state.epoch,
+        turn_id: state.active_turn.clone(),
+    }
 }
 
 fn terminal_is_known(state: &State) -> bool {
-    state.terminal.as_ref().is_some_and(|event| matches!(&event.kind,
-        HmiEventKindV1::Terminal { outcome } if outcome.status != HmiTerminalStatusV1::Unknown))
+    state.terminal.as_ref().is_some_and(|event| {
+        matches!(&event.kind,
+        HmiEventKindV1::Terminal { outcome } if outcome.status != HmiTerminalStatusV1::Unknown)
+    })
 }
 
-fn terminal(state: &mut State, scope: HmiOutputScopeV1, status: HmiTerminalStatusV1,
-    error: Option<String>) -> HmiEventV1 {
-    let outcome = HmiTerminalV1 { status, generated_text: state.items.iter().map(|(_, text)| text.as_str()).collect::<Vec<_>>().join("\n"),
-        error: error.map(|text| text.chars().take(4096).collect()) };
-    let event = HmiEventV1 { scope, kind: HmiEventKindV1::Terminal { outcome } };
+fn terminal(
+    state: &mut State,
+    scope: HmiOutputScopeV1,
+    status: HmiTerminalStatusV1,
+    error: Option<String>,
+) -> HmiEventV1 {
+    let outcome = HmiTerminalV1 {
+        status,
+        generated_text: state
+            .items
+            .iter()
+            .map(|(_, text)| text.as_str())
+            .collect::<Vec<_>>()
+            .join("\n"),
+        error: error.map(|text| text.chars().take(4096).collect()),
+    };
+    let event = HmiEventV1 {
+        scope,
+        kind: HmiEventKindV1::Terminal { outcome },
+    };
     state.terminal = Some(event.clone());
     event
 }
