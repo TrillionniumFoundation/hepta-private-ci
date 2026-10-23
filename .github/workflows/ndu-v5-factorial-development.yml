@@ -26,6 +26,8 @@ jobs:
         working-directory: experiments/multimodal_output_portfolio/v5
         run: |
           python3 -m unittest discover -v -p 'test_*.py'
-          python3 -m compileall -q factorial.py test_factorial.py audit_development.py
+          python3 -m compileall -q factorial.py test_factorial.py audit_development.py independent_observer.py test_independent_observer.py audit_independent.py
           python3 -m json.tool SOURCE_LOCK.json > /dev/null
+          python3 -m json.tool AUDIT_LOCK.json > /dev/null
           python3 audit_development.py
+          python3 audit_independent.py
