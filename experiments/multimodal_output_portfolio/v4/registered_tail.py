@@ -24,7 +24,8 @@ def fractional_upper_tail(values: list[float] | tuple[float, ...]) -> float:
 
     Elements have equal mass within the supplied *sampling unit*. Callers
     decide that unit before evaluation (here: independent source strata),
-    rather than treating correlated model draws as independent sources.
+    rather than treating correlated model draws as independent sources. The
+    source identities are supplied by the caller and not authenticated.
     """
     if (type(values) not in (list, tuple) or not values
         or any(type(x) not in (int, float) or not isfinite(x) for x in values)):
@@ -45,7 +46,7 @@ def describe_source_cluster_tail(
     """Preserve four-arm pairing and report tail losses/costs per original source.
 
     There are two different estimands:
-    * source-mean CVaR90: worst decile of independent source-mean losses;
+    * source-mean CVaR90: worst decile of declared source-mean losses;
     * draw-tail CVaR90: worst-decile source strata after retaining the
       worst within-world draw decile, rather than averaging away rare errors.
 
@@ -147,7 +148,8 @@ def describe_source_cluster_tail(
         "retained_failed_arm_rows": admitted["retained_failed_arm_rows"],
         "physical_cost_unit": admitted["physical_cost_unit"],
         "risk_level": "upper-tail-90-percent",
-        "independent_sampling_unit": "original_source_within_training_seed",
+        "independent_sampling_unit": None,
+        "within_seed_weighting_unit": "original_source_within_training_seed",
         "tail_convention": "fractional_10_percent",
         **result,
         "independent_outcome_attestation_verified": False,
