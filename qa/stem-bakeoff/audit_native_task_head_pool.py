@@ -124,7 +124,8 @@ def check_child(data, summary, count, artifact, request_sha, references):
         process = observed_process
         peak = memory["post_exec_peak_rss_bytes"]
         require(0 <= memory["rss_anon_bytes"] <= memory["rss_bytes"] <= peak <= MEMORY_BYTES
-                and prior_peak <= peak and memory["virtual_bytes"] <= MEMORY_BYTES, "resident/peak/virtual budget")
+                and memory["rss_bytes"] > 0 and prior_peak <= peak
+                and 0 < memory["virtual_bytes"] <= MEMORY_BYTES, "resident/peak/virtual budget")
         prior_peak = peak
     require(all(data[key] is False for key in FALSE_CLAIMS), "native scope or authority upgraded")
     require(data["mode"] == "SHADOW_ONLY" and data["authority"] == "DENY_ALL" and data["energy_joules"] is None, "native research scope")
