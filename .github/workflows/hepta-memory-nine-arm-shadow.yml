@@ -5,6 +5,8 @@ on:
     paths:
       - 'qa/stem-bakeoff/memory_nine_arm_gate.py'
       - 'qa/stem-bakeoff/test_memory_nine_arm_gate.py'
+      - 'qa/stem-bakeoff/memory_nine_arm_existing_evidence.py'
+      - 'qa/stem-bakeoff/test_memory_nine_arm_existing_evidence.py'
       - 'qa/stem-bakeoff/MEMORY_NINE_ARM_QUALIFICATION.md'
       - '.github/workflows/hepta-memory-nine-arm-shadow.yml'
   workflow_dispatch:
@@ -36,9 +38,14 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m py_compile qa/stem-bakeoff/memory_nine_arm_gate.py \
-            qa/stem-bakeoff/test_memory_nine_arm_gate.py
+            qa/stem-bakeoff/test_memory_nine_arm_gate.py \
+            qa/stem-bakeoff/memory_nine_arm_existing_evidence.py \
+            qa/stem-bakeoff/test_memory_nine_arm_existing_evidence.py
           python3 -m unittest discover -s qa/stem-bakeoff \
             -p 'test_memory_nine_arm_gate.py' -v
+          python3 -m unittest discover -s qa/stem-bakeoff \
+            -p 'test_memory_nine_arm_existing_evidence.py' -v
+          python3 qa/stem-bakeoff/memory_nine_arm_existing_evidence.py
       - name: No uncommitted mutation
         if: always()
         run: |
