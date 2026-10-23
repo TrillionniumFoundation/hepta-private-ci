@@ -132,6 +132,12 @@ class ComparatorTests(unittest.TestCase):
         with self.assertRaisesRegex(ComparisonError, "executable and configuration manifests"):
             compare(base, receipts)
 
+    def test_abc_variants_must_not_reuse_one_build_configuration(self):
+        base, receipts = fixture()
+        base["mode_build_digests"]["C"] = base["mode_build_digests"]["A"]
+        with self.assertRaisesRegex(ComparisonError, "executable and configuration manifests"):
+            compare(base, receipts)
+
     def test_cpu_gpu_and_active_concurrency_are_measured_and_bounded(self):
         for field, value, reason in [
             ("cpu_ms", 90000, "CPU budget overrun"),
