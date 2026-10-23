@@ -211,7 +211,8 @@ def safe_restore(protocol, out):
                      if value["seed"] == row["seed"] and value["system"] == "ndu_control")
         if match["controller_file"] != row["member"] or match["controller_sha256"] != row["sha256"]:
             raise ValueError("frozen selected T11 controller changed")
-    if any(selected["system_cost"][system]["cpu_seconds"] != protocol["cost"][key]
+    # Phase CPU floats accumulate sub-nanosecond representation error.
+    if any(round(selected["system_cost"][system]["cpu_seconds"] * 1e9) != round(protocol["cost"][key] * 1e9)
            for system, key in (("ndu_control", "historical_NC_build_cpu_seconds"),
                                ("ndu", "historical_N_build_cpu_seconds"))):
         raise ValueError("historical complete build cost changed")

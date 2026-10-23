@@ -16,7 +16,7 @@ w = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(w)
 
 
-def fixture(root):
+def fixture(root, nc_cpu=8.):
     protocol = {"models": [], "controllers": [], "cost": {"reference_full_cpu_ns": 7.,
         "historical_NC_build_cpu_seconds": 8., "historical_N_build_cpu_seconds": 6.}}
     blobs, selected = {}, []
@@ -41,7 +41,7 @@ def fixture(root):
     blobs["build/native.so"] = b"opaque native bytes, never loaded"
     blobs["selection.json"] = json.dumps({"selected": selected,
         "common": {"reference_full_cpu_ns": 7.},
-        "system_cost": {"ndu_control": {"cpu_seconds": 8.}, "ndu": {"cpu_seconds": 6.}},
+        "system_cost": {"ndu_control": {"cpu_seconds": nc_cpu}, "ndu": {"cpu_seconds": 6.}},
         "validation_canary_not_for_persistence": "forbidden-statistics-canary"}).encode()
     archive, index = root / "archive.tar.gz", root / "index.json"
     with tarfile.open(archive, "w:gz") as tar:
@@ -68,6 +68,15 @@ class BoundaryTests(unittest.TestCase):
             self.assertFalse((out / "reused-t11/selection.json").exists())
             self.assertNotIn("forbidden-statistics-canary", (out / "T11-binding.json").read_text())
             self.assertEqual(json.loads((out / "T11-binding.json").read_text())["complete_build_cpu_seconds"], {"NC": 8., "N": 6.})
+
+    def test_same_nanosecond_float_representation_is_accepted(self):
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name); out = root / "out"; out.mkdir()
+            protocol = fixture(root, nc_cpu=8.000000000000005)
+            with patch.object(w, "ROOT", root):
+                w.safe_restore(protocol, out)
+            receipt = json.loads((out / "T11-binding.json").read_text())
+            self.assertEqual(round(receipt["complete_build_cpu_seconds"]["NC"] * 1e9), 8000000000)
 
     def test_historical_build_constant_mismatch_is_rejected(self):
         with tempfile.TemporaryDirectory() as name:
