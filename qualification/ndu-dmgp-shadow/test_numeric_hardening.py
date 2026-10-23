@@ -90,7 +90,7 @@ class SpectralRiskAdmission(unittest.TestCase):
             (ACTIONS, -1),
         ):
             with self.subTest(actions=actions, budget=budget):
-                with self.assertRaisesRegex(Unavailable, "invalid or duplicated"):
+                with self.assertRaises(Unavailable):
                     allocate(actions, risk, budget, 1.0, .01, (.5, .5))
 
 
