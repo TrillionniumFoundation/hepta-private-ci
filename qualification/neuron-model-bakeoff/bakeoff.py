@@ -94,6 +94,27 @@ def records(path: Path) -> list[dict]:
     return out
 
 
+def candidate_registry() -> dict[str, dict]:
+    """Read the committed candidate source pins; a manifest cannot silently substitute a model."""
+    path = Path(__file__).resolve().parent / "CANDIDATES.json"
+    config = load_json(path)
+    require(config.get("schema") == "hepta.neuron-bakeoff.candidate-source-pins.v1",
+            "registered source-pin schema mismatch")
+    models = config.get("models")
+    require(type(models) is list and len(models) == len(ARMS), "fixed model roster required")
+    pins = {}
+    for model in models:
+        require(type(model) is dict and model.get("arm") in ARMS and model["arm"] not in pins,
+                "duplicate/unregistered candidate in pinned roster")
+        require(type(model.get("revision")) is str and HEX40.fullmatch(model["revision"]) is not None,
+                "pinned model revision must be SHA40")
+        require(all(type(model.get(k)) is str for k in ("repository", "subfolder", "license")),
+                "pinned source identity incomplete")
+        pins[model["arm"]] = model
+    require(set(pins) == set(ARMS), "incomplete fixed model roster")
+    return pins
+
+
 def validate_dataset(data: list[dict]) -> dict:
     ids, split_groups = set(), defaultdict(set)
     seen_splits = set()
@@ -321,6 +342,7 @@ def evaluate(root: Path, manifest: dict, trusted_key: Path | None = None) -> dic
     require(type(manifest.get("source_commit")) is str and HEX40.fullmatch(manifest["source_commit"]),
             "exact source SHA required")
     dataset = validate_dataset(records(artifact(root, manifest["dataset"])))
+    pinned_sources = candidate_registry()
     model_specs = manifest.get("models")
     require(type(model_specs) is list and len(model_specs) == len(ARMS), "all five candidate arms required")
     predictions = {}
@@ -332,6 +354,9 @@ def evaluate(root: Path, manifest: dict, trusted_key: Path | None = None) -> dic
         require(arm not in predictions, "duplicate model arm")
         require(type(spec.get("revision")) is str and HEX40.fullmatch(spec["revision"]),
                 f"{arm}: pinned revision required")
+        pin = pinned_sources[arm]
+        require(all(spec.get(k) == pin[k] for k in ("repository", "subfolder", "revision", "license")),
+                f"{arm}: model source revision, subfolder or license differs from committed pins")
         for field in ("weights", "tokenizer", "runtime", "calibration"):
             artifact(root, spec[field])
         require(type(spec.get("license")) is str and spec["license"], "license review required")
