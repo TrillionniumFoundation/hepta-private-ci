@@ -126,6 +126,13 @@ async fn public_outcome_strings_cannot_create_native_terminal_provenance_or_reti
     assert!(
         fixture
             .writer
+            .rollback_occurrence(OPERATION, "cancel unknown native effect")
+            .await
+            .is_err()
+    );
+    assert!(
+        fixture
+            .writer
             .retire_hos2_through(&fixture.target, &request.delivery)
             .await
             .is_err()
@@ -292,5 +299,17 @@ async fn lost_effect_ack_blocks_retirement_until_original_observer_persists_full
         }
     );
     assert_eq!(fixture.device.calls.load(Ordering::SeqCst), 1);
+    Ok(())
+}
+
+#[tokio::test]
+async fn queued_native_cancellation_remains_available_before_effect_boundary() -> TestResult {
+    let directory = tempfile::tempdir()?;
+    let fixture = Fixture::open(directory.path()).await?;
+    fixture.prepare(OPERATION, /*sequence*/ 1).await?;
+    let cancelled = fixture.writer.rollback_occurrence(OPERATION, "cancel before dispatch").await?;
+    assert_eq!(cancelled.state, LocalOutcomeState::RolledBack);
+    assert_eq!(fixture.writer.status(OPERATION).await?, LocalOutcomeState::RolledBack);
+    assert_eq!((fixture.device.calls.load(Ordering::SeqCst), fixture.device.retire_calls.load(Ordering::SeqCst)), (0, 0));
     Ok(())
 }
