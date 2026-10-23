@@ -1,4 +1,5 @@
 import copy
+import itertools
 import unittest
 from unittest.mock import patch
 
@@ -72,6 +73,93 @@ class RefinementTests(unittest.TestCase):
             self.assertEqual(reserved["tail"], combine(reserved["service"], reserved["observer"]))
             self.assertGreater(WorkLedger("price").estimate_kernel(**reserved["revalidation"]), 0)
         self.assertEqual(self.model.digest(), before)
+
+    def test_cached_static_reserves_one_actual_prepare_and_sampler_without_rowwise_decode(self):
+        from independent.output_codec import preparation_work, request_work
+        plan = {"output_codec_profile": "local-png-codebook-v1", "static_modes": ["full"]}
+        gen = FrozenGenerator(self.model, prepare_low=False)
+        for n in (1, 73, 768):
+            for mode in ("full", "low", "ensemble"):
+                generation = gen.full_work(n) if mode == "full" else combine(gen.low_work(n), gen.prepare_work())
+                if mode == "ensemble":
+                    generation = combine(generation, gen.full_work(n), {"scalar_ops": 24 * n, "div_ops": 24 * n})
+                expected = combine(generation, preparation_work(), request_work(n))
+                for system in ("supervised", "anchor", "additive", "ndu"):
+                    with self.subTest(n=n, mode=mode, system=system), \
+                            patch("independent.output_codec.prepare_codec", side_effect=AssertionError("forecast encoded PNG")), \
+                            patch("independent.refinement.controller_work", side_effect=AssertionError("unused controller")):
+                        rows = {**self.rows, "validation_rows": n}
+                        actual = reserve_work(self.model, system, mode, **rows, plan=plan)
+                    self.assertEqual(actual["service"], expected)
+                    self.assertEqual(actual["tail"], combine(expected, actual["observer"]))
+                    self.assertEqual((actual["critic"], actual["paired_calibration"]), ({}, {}))
+                    self.assertEqual(actual["revalidation"], validation_work(self.model, n, ["full"]))
+
+    def test_cached_full_reserve_matches_executed_handmade_measure_and_costs_more_for_one_row(self):
+        import numpy as np
+        from independent.evaluation import measure
+        for n in (1, 73):
+            full = np.zeros((n, 202))
+            full[:, :192] = np.linspace(0, 1, n * 192).reshape(n, 192)
+            full[:, [192, 196, 199]] = 1
+            plan = {"output_codec_profile": "local-png-codebook-v1", "static_modes": ["full"],
+                "compute_price": .02, "service_horizon": 100000, "runtime_backend": "python",
+                "runtime_batch_size": 64, "inference_cap_full_equivalents": 2}
+            reserved = reserve_work(self.model, "ndu", "full", **{**self.rows, "validation_rows": n}, plan=plan)
+            with patch("independent.evaluation.time.process_time_ns", side_effect=itertools.count(1000, 100).__next__), \
+                    patch("independent.evaluation.time.perf_counter_ns", side_effect=itertools.count(2000, 100).__next__):
+                actual = measure(self.model, None, "full", {"full": full}, plan, 100000, seed=11, observe=False)
+            billed = sum(actual["per_row_cost"]["work_units"]) + actual["cost"]["prepare"]["consumed_units"]
+            quote = WorkLedger("exact-cached-quote").estimate_kernel(**reserved["service"])
+            self.assertEqual(billed, quote)
+            self.assertEqual(actual["cost"]["prepare"]["totals"]["png_encodes"], 12)
+            self.assertEqual(actual["cost"]["operator_totals"].get("decoder_elements", 0), 0)
+            self.assertGreater(actual["cost"]["output_codec_storage"]["retained_encoded_ascii_bytes"], 0)
+            rowwise = reserve_work(self.model, "ndu", "full", **{**self.rows, "validation_rows": n})
+            old_quote = WorkLedger("rowwise-quote").estimate_kernel(**rowwise["service"])
+            if n == 1:
+                self.assertGreater(quote, old_quote)
+            else:
+                self.assertLess(quote, old_quote)
+
+    def test_explicit_rowwise_preserves_all_legacy_reserves_and_controller_cache_rejects(self):
+        for system in ("supervised", "ndu_control"):
+            for mode in ("full", "low", "ensemble"):
+                expected = reserve_work(self.model, system, mode, **self.rows)
+                actual = reserve_work(self.model, system, mode, **self.rows,
+                    plan={"output_codec_profile": "rowwise-png-v1"})
+                self.assertEqual(actual, expected)
+        with patch("independent.refinement.controller_work", side_effect=AssertionError("unsupported fit quoted")):
+            with self.assertRaisesRegex(ValueError, "controller/codebook"):
+                reserve_work(self.model, "ndu_control", "full", **self.rows,
+                    plan={"output_codec_profile": "local-png-codebook-v1"})
+        for invalid in (None, True, "unknown"):
+            with self.subTest(profile=invalid), self.assertRaisesRegex(ValueError, "output codec"):
+                reserve_work(self.model, "ndu", "full", **self.rows,
+                    plan={"output_codec_profile": invalid})
+
+    def test_cached_forecast_uses_internal_train_monitor_rows_and_billed_prepare_samples(self):
+        selected, candidates, common, plan, inventories = fixtures()
+        plan.update(output_codec_profile="local-png-codebook-v1", static_modes=["full"],
+                    preparation_forecast="median-plus-one-observed-excess-v1",
+                    experiment_id="codec-train-d1", training_diagnostic={"monitor_sources_per_class": 4})
+        plan["data_profile"].update(sources_per_class={"validation": 6}, instructions_per_source=8, variants=2)
+        for row in selected:
+            row["mode"] = "full"
+            common["calibrations"][row["seed"]]["prepare_cpu_samples_ns"] = {"full": [100, 200, 300]}
+            common["calibrations"][row["seed"]]["prepare_cpu_ns"]["full"] = 300
+        ledger = WorkLedger("cached-internal-monitor", total_cap=1000000)
+        before = ledger.snapshot()
+        receipt = forecast("ndu", selected, candidates, common, plan, inventories, ledger)
+        self.assertEqual([row["requests"] for row in receipt["service_profiles"]], [768] * 3)
+        self.assertEqual([row["measures"] for row in receipt["service_profiles"]], [1] * 3)
+        self.assertEqual([row["prepare_cpu_forecast_ns"] for row in receipt["service_profiles"]], [300] * 3)
+        self.assertAlmostEqual(receipt["preparation_cpu_seconds"], 3 * 300 * 1.5 / 1e9)
+        self.assertEqual(ledger.snapshot(), before)
+        for invalid in (None, {}, {"monitor_sources_per_class": True}, {"monitor_sources_per_class": 0}):
+            with self.subTest(diagnostic=invalid), self.assertRaisesRegex(ValueError, "TRAIN-only monitor geometry"):
+                forecast("ndu", selected, candidates, common,
+                         {**plan, "training_diagnostic": invalid}, inventories, ledger)
 
     def test_observation_reuse_removes_only_duplicate_setup_from_full_reserves(self):
         n = self.rows["validation_rows"]

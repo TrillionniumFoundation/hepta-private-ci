@@ -47,8 +47,26 @@ def validation_work(model, n, modes=None):
         scale_work(observer_work(n), len(modes)), setup_work(model.dimensions, "additive"))
 
 
-def _output_work(model, n):
+def _codec_profile(plan):
+    profile = ({} if plan is None else plan).get("output_codec_profile", "rowwise-png-v1")
+    if type(profile) is not str or profile not in ("rowwise-png-v1", "local-png-codebook-v1"):
+        raise ValueError("unsupported output codec in residual forecast")
+    return profile
+
+
+def _output_work(model, n, plan=None):
+    """One measure's output preparation and actual per-row arithmetic.
+
+    Codebook PNG/hash/base64/storage have byte counters and complete measured
+    preparation CPU, rather than fabricated scalar prices. The inventory here
+    reserves actual finite checks, twelve learned decodes and quantization once,
+    then only useful categorical sampling for each request. It executes none.
+    """
     pixels = model.dimensions[2]
+    if _codec_profile(plan) == "local-png-codebook-v1":
+        from independent.output_codec import preparation_work, request_work
+        return add_work(preparation_work(model.dimensions[1], pixels),
+                        request_work(n, model.dimensions[1]))
     return add_work(scale_work(output_work(model.dimensions[1], pixels), n),
         {"scalar_ops": 3 * n * pixels, "compare_ops": 2 * n * pixels,
          "exp_ops": n * pixels, "div_ops": n * pixels})
@@ -89,7 +107,7 @@ def _service_work(model, generator, n, mode, plan=None):
         prepare = generator.prepare_work()
     else:
         raise ValueError("unsupported frozen residual service mode")
-    return add_work(generation, prepare, _output_work(model, n))
+    return add_work(generation, prepare, _output_work(model, n, plan))
 
 
 def reserve_work(model, system, mode, *, train_rows, validation_rows,
@@ -98,6 +116,8 @@ def reserve_work(model, system, mode, *, train_rows, validation_rows,
     if any(type(n) is not int or n <= 0 for n in
            (train_rows, validation_rows, calibration_rows, calibration_repeats)):
         raise ValueError("positive frozen row counts and repeats required")
+    if system == "ndu_control" and _codec_profile(plan) != "rowwise-png-v1":
+        raise ValueError("controller/codebook residual inventory is unsupported")
     generator = FrozenGenerator(model, prepare_low=False)
     observation = _observation_work(model, validation_rows)
     service = _service_work(model, generator, validation_rows, mode, plan)
@@ -191,7 +211,15 @@ def forecast(system, selected, candidates, common, plan, inventories, ledger):
     n = len(selected)
     priced = {key: n * ledger.estimate_kernel(**work) for key, work in inventories.items()}
     profiles, service_cpu, preparation_cpu = [], 0.0, 0.0
-    val_rows = plan["data_profile"]["sources_per_class"]["validation"] * 12 * (
+    monitor_sources = plan["data_profile"]["sources_per_class"]["validation"]
+    if plan.get("experiment_id") == "codec-train-d1":
+        diagnostic = plan.get("training_diagnostic")
+        if (not isinstance(diagnostic, dict)
+                or type(diagnostic.get("monitor_sources_per_class")) is not int
+                or not 1 <= diagnostic["monitor_sources_per_class"] <= 256):
+            raise ValueError("explicit bounded TRAIN-only monitor geometry required")
+        monitor_sources = diagnostic["monitor_sources_per_class"]
+    val_rows = monitor_sources * 12 * (
         plan["data_profile"]["instructions_per_source"] * plan["data_profile"]["variants"])
     for row in selected:
         calibration = common["calibrations"][row["seed"]]

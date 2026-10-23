@@ -170,8 +170,10 @@ def freeze(receipt, *, experiment=None):
     head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     identity = sources()
     bound = {str(profile.plan_path.relative_to(ROOT)): sha(profile.plan_path)}
-    if profile.name == "core-c1":
+    if profile.family == "core-content":
         bound[plan["protocol_path"]] = plan["protocol_sha256"]
+    if not profile.can_evaluate:
+        bound[plan["diagnostic_driver"]["path"]] = plan["diagnostic_driver"]["sha256"]
     for name, digest in {**identity, **bound}.items():
         committed = subprocess.check_output([
             "git", "show", head + ":qualification/joint-generation/" + name], cwd=ROOT)
@@ -198,6 +200,13 @@ def check_freeze(path, *, experiment=None):
     if frozen["plan"] != json.loads(profile.plan_path.read_text()):
         raise ValueError("frozen plan bytes/meaning differ")
     return frozen
+
+
+def dataset_manifest(data):
+    if "training_diagnostic" not in data:
+        return manifest(data)
+    from independent.training_diagnostic import data_manifest
+    return data_manifest(data, manifest)
 
 
 def plain_copy(model):
@@ -290,7 +299,7 @@ def save_model(model, path, ledger, stage):
 def calibration_indices(data, plan):
     if "calibration_matching" not in plan:
         return stratified_indices(data, plan["calibration_per_class"], plan["calibration_salt"])
-    if (plan.get("experiment_id") != "core-c1"
+    if (plan.get("experiment_id") not in ("core-c1", "codec-train-d1")
             or plan["calibration_matching"] != "global-balanced-margins-v1"):
         raise ValueError("unsupported experiment calibration matching")
     return global_balanced_indices(data, plan["calibration_per_class"], plan["calibration_salt"])
@@ -302,8 +311,14 @@ def prepare_shared(plan, run, runtime_plan):
 
     started = cpu_clock()
     shared = WorkLedger("shared-build", total_cap=plan["operator_units_per_system"])
-    train = dataset("train", plan["data_profile"])
-    val = dataset("validation", plan["data_profile"])
+    provider = None
+    if plan.get("experiment_id") == "codec-train-d1":
+        from independent.training_diagnostic import TrainOnlyProvider
+        provider = TrainOnlyProvider(plan, run, shared, dataset, manifest)
+        train, val = provider("train"), provider("validation")
+    else:
+        train = dataset("train", plan["data_profile"])
+        val = dataset("validation", plan["data_profile"])
     if (set(train["source_ids"]) & set(val["source_ids"])
             or set(train["input_hashes"]) & set(val["input_hashes"])):
         raise ValueError("independent training/validation leakage")
@@ -345,7 +360,13 @@ def prepare_shared(plan, run, runtime_plan):
                                  "output_encoding_and_ledger_cpu_ns": []}
             for repeat in range(plan["calibration_repeats"]):
                 measured = measure(model, None, mode, calibration_data, runtime_plan, 1.0,
-                                   seed=seed, observe=False)
+                                   seed=seed, observe=False,
+                                   **({"capture_outputs": True} if provider is not None else {}))
+                output_evidence = None
+                if provider is not None:
+                    from independent.training_diagnostic import retain_outputs
+                    output_evidence = retain_outputs(measured.pop("_diagnostic_output_trace"),
+                                                     run, seed, mode, repeat, shared)
                 # Retain every timing/work sample, including outliers, without
                 # duplicating generated PNG/base64 payloads or measuring again.
                 raw_repeats[mode].append({"repeat": repeat, "sampling_seed": seed,
@@ -353,7 +374,8 @@ def prepare_shared(plan, run, runtime_plan):
                     "per_row_cost": measured["per_row_cost"], "cost": measured["cost"],
                     "model_forwards": measured["model_forwards"],
                     "maximum_forwards_per_request": measured["maximum_forwards_per_request"],
-                    "budget_violations": measured["budget_violations"]})
+                    "budget_violations": measured["budget_violations"],
+                    **({"output_evidence": output_evidence} if output_evidence is not None else {})})
                 cpu_samples.extend(measured["per_row_cost"]["cpu_ns"])
                 work_samples.extend(measured["per_row_cost"]["work_units"])
                 preparation_samples.append(measured["cost"]["prepare_cpu_ns"])
@@ -380,6 +402,7 @@ def prepare_shared(plan, run, runtime_plan):
     return shared, bases, train, val, {"bases": base_rows, "calibrations": calibrations,
         "calibration_identity": calibration_identity,
         "native_compile": compiled, "_calibration_data": calibration_data,
+        **({"training_diagnostic": provider.receipt} if provider is not None else {}),
         "cpu_seconds": cpu_clock() - started}
 
 
@@ -455,6 +478,11 @@ def _train_system_candidates(system, plan, run, shared, bases, train, val, commo
                 **({"optimizer": optimizer} if optimizer is not None else {}))
             guard("candidate_setup_complete", current)
             rng = np.random.default_rng(seed + 9000)
+            prefix = None
+            if plan.get("experiment_id") == "codec-train-d1":
+                from independent.training_diagnostic import PrefixRecorder
+                prefix = PrefixRecorder(plan["training_diagnostic"]["prefix_checkpoint_steps"])
+                current["prefix_checkpoints"] = prefix.checkpoints
             step_units = ledger.estimate_kernel(**adaptation_step_work(model.dimensions, system, plan))
             step_start, cpu_start, steps = ledger.consumed_units, cpu_clock(), 0
             last_step_cpu, maximum_step_cpu, objective_cpu = 0.0, 0.0, 0.0
@@ -483,8 +511,10 @@ def _train_system_candidates(system, plan, run, shared, bases, train, val, commo
                             "main_thread_cpu_seconds": time.thread_time() - before_thread,
                             "observed_threads": len(list(Path("/proc/self/task").iterdir()))})
                     steps += 1
+                    if prefix is not None:
+                        prefix.update(steps, idx, full, model, losses[-1], rng, ledger)
                     current["updates"] = steps
-                    guard("candidate_train_step_complete", current, ended)
+                    guard("candidate_train_step_complete", current, ended if prefix is None else None)
             if steps == 0:
                 raise ValueError("no complete update admitted")
             train_cpu = cpu_clock() - cpu_start
@@ -502,6 +532,16 @@ def _train_system_candidates(system, plan, run, shared, bases, train, val, commo
             progress["phase"] = "candidate_export"
             with traced_phase(telemetry, "candidate_export", system=system, candidate=name):
                 artifact = save_model(model, run / (name + ".npz"), ledger, "search_export")
+                prefix_artifact = None
+                if prefix is not None:
+                    terminal = prefix.terminal(steps, model, rng, ledger)
+                    path = run / (name + "-prefix.json")
+                    write_json(path, {"candidate": name, "checkpoints": prefix.checkpoints,
+                                      "terminal_updates": steps, "complete": steps >= 32,
+                                      "incomplete_terminal_state": terminal})
+                    ledger.record("search_export", serialized_bytes=path.stat().st_size,
+                                  hashed_bytes=path.stat().st_size)
+                    prefix_artifact = {"file": path.name, "sha256": sha(path), "bytes": path.stat().st_size}
             guard("candidate_export_complete", current)
             row = {"system": system, "seed": seed, "learning_rate": lr, "name": name,
                 "updates": steps, "mean_training_loss": float(np.mean(losses)),
@@ -516,6 +556,10 @@ def _train_system_candidates(system, plan, run, shared, bases, train, val, commo
                 "validation_cpu_seconds": validation_cpu,
                 "serialization_cpu_seconds": artifact["serialization_cpu_seconds"],
                 "slow_steps": slow_steps,
+                **({"prefix_checkpoints": prefix.checkpoints,
+                    "prefix_artifact": prefix_artifact,
+                    "prefix_equivalence_complete": [entry["step"] for entry in prefix.checkpoints] == [1, 32]}
+                   if prefix is not None else {}),
                 "validation": validation, "model_file": artifact["file"],
                 "model_sha256": artifact["sha256"], "model_digest": artifact["digest"],
                 "reference_full_cpu_ns": ref}
@@ -697,7 +741,12 @@ def validate_selected(selected, plan, runtime_plan, run, val, ledger):
         model = JointModel.load(run / row["model_file"])
         report = measure(model, controller_for(run, row), row["mode"], val,
             {**runtime_plan, **({"decision_price": row["decision_price"]}
-                if "decision_price" in row else {})}, row["reference_full_cpu_ns"], seed=row["seed"])
+                if "decision_price" in row else {})}, row["reference_full_cpu_ns"], seed=row["seed"],
+            **({"capture_outputs": True} if plan.get("experiment_id") == "codec-train-d1" else {}))
+        if plan.get("experiment_id") == "codec-train-d1":
+            from independent.training_diagnostic import retain_outputs
+            report["output_evidence"] = retain_outputs(report.pop("_diagnostic_output_trace"), run,
+                row["seed"], row["mode"], 0, ledger, namespace=row["system"], stage="selection_validation")
         # measure performs normal utility, decoded metrics and a real corrupted
         # decoder negative control outside service timers. They still cost build
         # work during validation, including two independent decoder observations.
@@ -720,11 +769,20 @@ def validate_selected(selected, plan, runtime_plan, run, val, ledger):
     return measured
 
 
-def train(freeze_path, out, *, experiment=None):
+def train(freeze_path, out, *, experiment=None, variant=None, build_index=None, reference_receipt=None):
     profile = _experiment(experiment)
     start = cpu_clock()
     frozen = check_freeze(freeze_path, experiment=experiment)
-    plan = frozen["plan"]
+    frozen_plan = frozen["plan"]
+    plan, diagnostic = frozen_plan, None
+    if not profile.can_evaluate:
+        from independent.training_diagnostic import begin_slot, runtime_context
+        plan, diagnostic = runtime_context(frozen_plan, frozen, sha(freeze_path),
+                                            variant, build_index, reference_receipt)
+        diagnostic["slot_receipt"] = begin_slot(frozen_plan, frozen, sha(freeze_path),
+                                               out, variant, build_index)
+    elif any(value is not None for value in (variant, build_index, reference_receipt)):
+        raise ValueError("diagnostic runtime options require the fixed TRAIN-only profile")
     run = Path(out).resolve()
     run.mkdir(parents=True, exist_ok=False)
     runtime_plan = {**plan}
@@ -743,6 +801,10 @@ def train(freeze_path, out, *, experiment=None):
         common["numerical_runtime"] = runtime_identity
         common["cpu_seconds"] = cpu_clock() - start
         common["reference_full_cpu_ns"] = common["calibrations"][plan["model_seeds"][0]]["cpu_ns"]["full"]
+        if diagnostic is not None:
+            common["observed_reference_full_cpu_ns"] = common["reference_full_cpu_ns"]
+            if diagnostic["reference_binding"] is not None:
+                common["reference_full_cpu_ns"] = diagnostic["reference_binding"]["receipt"]["reference_full_cpu_ns"]
         guard_cpu_budget("shared", plan, run, shared,
                          {"cpu_seconds": common["cpu_seconds"]}, [], "shared_preparation_complete")
         tasks = {}
@@ -832,7 +894,7 @@ def train(freeze_path, out, *, experiment=None):
             static = [name for name in plan["systems"] if name != "ndu_control"]
             reference = max(static, key=lambda name: np.mean([
                 report["means"]["cpu_net_utility"] for report in val_measures[name].values()]))
-            if profile.name == "core-c1":
+            if profile.family == "core-content":
                 from independent.core_claims import validation_summary
                 summary = validation_summary(selected, val_measures, plan)
                 contrasts = summary["contrasts"]
@@ -892,20 +954,25 @@ def train(freeze_path, out, *, experiment=None):
                  and corruption and maximum_greedy_drop <= plan["maximum_greedy_drop"])
         service_violations = sum(report["budget_violations"] for reports in val_measures.values()
                                  for report in reports.values())
-        if profile.name == "core-c1":
+        if profile.family == "core-content":
             ready = ready and service_violations == 0
         for system in plan["systems"]:
             write_json(run / (system + "-build.json"), {"ledger": ledgers[system].snapshot(),
                 "cost": system_cost[system],
                 "all_candidates": [row for row in all_candidates if row["system"] == system],
                 "selected": [row for row in selected if row["system"] == system]})
-        selection = {"schema": "hepta.joint-generation.efficient-selection.v2", "plan": plan,
+        if diagnostic is not None:
+            diagnostic["prefix_equivalence_complete"] = all(
+                row["prefix_equivalence_complete"] for row in all_candidates)
+            ready = ready and diagnostic["prefix_equivalence_complete"]
+        selection = {"schema": "hepta.joint-generation.efficient-selection.v2", "plan": frozen_plan,
+            **({"training_diagnostic": diagnostic, "qualification_eligible": False} if diagnostic is not None else {}),
             "experiment_id": profile.name,
             "plan_sha256": frozen["plan_sha256"], "sources": frozen["sources"],
             "source_commit": frozen["source_commit"], "freeze_sha256": sha(freeze_path),
             "execution_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
             "native_library": "build/libjoint.so", "native_library_sha256": sha(run / "build/libjoint.so"),
-            "datasets": {"train": manifest(train_data), "validation": manifest(val)},
+            "datasets": {"train": dataset_manifest(train_data), "validation": dataset_manifest(val)},
             "common": common, "all_validation_candidates": all_candidates, "selected": selected,
             "execution_schedule": schedule,
             "budgets": {name: ledger.snapshot() for name, ledger in ledgers.items()},
@@ -935,7 +1002,7 @@ def train(freeze_path, out, *, experiment=None):
                     "schema": "hepta.joint-generation.shared-build.v1",
                     "common": {key: value for key, value in common.items() if key != "_calibration_data"},
                     "ledger": shared.snapshot(),
-                    "datasets": {"train": manifest(train_data), "validation": manifest(val)},
+                    "datasets": {"train": dataset_manifest(train_data), "validation": dataset_manifest(val)},
                     "source_commit": frozen["source_commit"], "sources": frozen.get("sources"),
                     "plan_sha256": frozen.get("plan_sha256"), "freeze_sha256": sha(freeze_path),
                     "test_opened": profile.marker_path.exists(),
@@ -984,6 +1051,9 @@ def main():
     t = actions.add_parser("train")
     t.add_argument("--freeze", required=True)
     t.add_argument("--out", required=True)
+    t.add_argument("--variant", choices=("rowwise-png-v1", "local-png-codebook-v1"))
+    t.add_argument("--build-index", type=int)
+    t.add_argument("--reference-receipt")
     e = actions.add_parser("evaluate")
     e.add_argument("--run", required=True)
     for action in (f, t, e):
@@ -993,7 +1063,9 @@ def main():
         freeze(args.receipt, experiment=args.experiment)
         return 0
     if args.action == "train":
-        return train(args.freeze, args.out, experiment=args.experiment)
+        options = {key: getattr(args, key) for key in ("variant", "build_index", "reference_receipt")
+                   if getattr(args, key) is not None}
+        return train(args.freeze, args.out, experiment=args.experiment, **options)
     from independent.evaluation import run_evaluation
     result = run_evaluation(args.run, experiment=args.experiment)
     return 0 if result["benefit_verified"] else 1
