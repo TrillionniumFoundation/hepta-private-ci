@@ -215,6 +215,27 @@ class PairedEvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(EvidenceGap, 'metrics/witness'):
             evaluate(d)
 
+    def test_proxy_cost_units_are_not_physical_measurements(self):
+        for proxy in ("estimated_MAC", "proxy_token_units", "budget_units",
+                      "FLOPs", "", None):
+            with self.subTest(unit=proxy):
+                d = study_fixture()
+                d['protocol']['cost_units'] = proxy
+                with self.assertRaisesRegex(EvidenceGap, "physical cost unit"):
+                    evaluate(d)
+
+    def test_known_measured_unit_names_still_require_independent_evidence(self):
+        for unit in ("measured_cpu_seconds", "measured_wall_seconds",
+                     "measured_device_joules"):
+            with self.subTest(unit=unit):
+                d = study_fixture()
+                d['protocol']['cost_units'] = unit
+                report = evaluate(d)
+                self.assertEqual(report['physical_cost_units'], unit)
+                self.assertEqual(report['status'], "HOLD_NO_GO")
+                self.assertEqual(report['authority'], "DENY_ALL")
+                self.assertFalse(report['scientific_superiority_proven'])
+
     def test_no_real_decoder_outputs_claimed(self):
         rec = evaluate(study_fixture())
         self.assertIn('untrusted caller', rec['limitations'][0])
