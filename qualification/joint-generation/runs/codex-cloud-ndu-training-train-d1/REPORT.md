@@ -11,9 +11,12 @@ CORE c1 formal result remains failed and consumed; r2 remains unconfirmed.
   Initial cloud checkout was `f8c9419df6ddeb36ff8b522a50219981fb8d9345`, not research.
 - Exact starting commit `0aca16714390ca045a53cece9644992b7990fc9c` was fetched and
   independently matched to PR #3451's head using Git branch transport.
-- Branch: `research/ndu-training-budget-20261023`. The original
-  `codex/joint-generation-prototype-20261023` still resolved to `0aca167…`
-  after this run. No other experiment source was modified.
+- Branch: `research/ndu-training-budget-20261023`. The first post-run probe of
+  `codex/joint-generation-prototype-20261023` resolved to `0aca167…`; a later
+  final remote probe observed `2e7b08c86b2694727d7c989113a59ccfc8779a72`.
+  This concurrent remote drift was not used as a research starting point.
+  This task's pushes targeted only its independent research branch, and no
+  other experiment source in this checkout was modified.
 - Numerical/protocol commit `7dc5718f30`, runner commit `5c03061859`, prospective
   freeze commit `456ef38b3b`. See [the immutable source receipt](../../ndu_training/frozen-train-d1.json)
   and [protocol, including future confirmation draft](../../ndu_training/PROTOCOL.md).
