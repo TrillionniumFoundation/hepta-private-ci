@@ -44,6 +44,12 @@ A freeze-ready plan must explicitly set `kind=frozen_experiment_plan`,
 `registered_before_utc`, and a preregistered `abstention_threshold`
 strictly between zero and one. Template values cannot pass evaluation.
 Each model run must bind the **same** source commit and threshold.
+The plan's `model_artifacts` map must independently freeze **all five**
+40-character repository revisions and 64-character *observed-model-inventory*
+weight/tokenizer digests before future-test analysis. A new runner revision
+or a silently changed safetensors/tokenizer fails the comparison. This is
+an identity check and not proof that an independent Artifact CAS owner
+authenticated the files.
 The evaluator independently recomputes abstention from each published
 probability vector; changing an `abstained` boolean cannot improve
 selective accuracy or OOD acceptance. Reported `accuracy` is raw
