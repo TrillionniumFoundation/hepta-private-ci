@@ -1,0 +1,41 @@
+name: Hepta Neuron Cell bakeoff contract
+
+on:
+  pull_request:
+    paths:
+      - 'tools/hepta-cell-bakeoff/**'
+      - '.github/workflows/hepta-cell-bakeoff.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evidence-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile source (no model/provider/network)
+        run: python3 -m py_compile tools/hepta-cell-bakeoff/{bakeoff,run_live,test_bakeoff}.py
+      - name: Run evidence and rejection tests
+        working-directory: tools/hepta-cell-bakeoff
+        run: python3 -m unittest -v test_bakeoff.py
+      - name: Validate preregistration remains intentionally unqualified
+        working-directory: tools/hepta-cell-bakeoff
+        run: |
+          python3 - <<'PY'
+          import bakeoff
+          from pathlib import Path
+          try:
+              bakeoff.load_plan(Path('plan.template.json'))
+          except bakeoff.EvidenceError:
+              pass
+          else:
+              raise SystemExit('FAIL: unpinned model template accepted')
+          PY
