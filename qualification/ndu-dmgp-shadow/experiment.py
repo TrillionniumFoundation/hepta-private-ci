@@ -112,13 +112,17 @@ def decide_detail(arm: str, prompt: Prompt,
     """Chosen generation actions and exact executed behavior propensity."""
     require(prompt.context in ('simple', 'complex')
             and prompt.split in ('train', 'future'), 'invalid evaluation context')
-    signal = next(item for item in frozen_training_signals()
-                  if item.context == prompt.context)
-    g = {'text': signal.text_advantage, 'image': signal.image_advantage}
+    # Fixed controls must never pay the cost of fitting an adaptive policy.
     if arm == 'A0':
         return ('text',), 1.0
     if arm == 'A1':
         return ('text', 'image'), 1.0
+    # A4 consumes the independently frozen train covariance directly; it
+    # needs no A2/A3/A5 advantage fit at inference time.
+    if arm in ('A2', 'A3', 'A5'):
+        signal = next(item for item in frozen_training_signals()
+                      if item.context == prompt.context)
+        g = {'text': signal.text_advantage, 'image': signal.image_advantage}
     if arm == 'A2':
         return (max(('text', 'image'), key=lambda a: (g[a], a)),), 1.0
     if arm == 'A3':
@@ -164,6 +168,9 @@ def decide(arm: str, prompt: Prompt, risk: object) -> tuple[str, ...]:
 
 
 def run() -> dict:
+    # Training and one-time compilation happen BEFORE evaluating inference
+    # latency, never on the first arm/episode inside the timed loop.
+    _ = frozen_training_signals()
     risk = training_risk()
     results = {arm: [] for arm in ARMS}
     for prompt in prompts('future', 40):
