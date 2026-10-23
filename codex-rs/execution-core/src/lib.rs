@@ -8,12 +8,18 @@
 #![forbid(unsafe_code)]
 
 mod journal;
+mod native_loop;
 mod record;
 pub mod ports;
 
 pub use journal::EffectReceiptVerifier;
 pub use journal::ExecutionJournal;
 pub use journal::ExecutionVerifier;
+pub use native_loop::NativeExternalKindV1;
+pub use native_loop::NativeExternalObservationV1;
+pub use native_loop::NativeLoopCursorV1;
+pub use native_loop::NativeLoopObserver;
+pub use native_loop::NativeLoopPhaseV1;
 pub use record::ApprovalRequest;
 pub use record::CompletionStatus;
 pub use record::Currentness;
