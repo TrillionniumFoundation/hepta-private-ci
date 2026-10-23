@@ -9,10 +9,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from fractions import Fraction
-from functools import lru_cache
 import hashlib
 import json
-import math
 from typing import Callable
 
 from portfolio import (
@@ -20,7 +18,7 @@ from portfolio import (
     charge, conditional_ce, decode_all, decoded_external_loss, feasible,
 )
 from information_acquisition import (
-    MODES, WITNESS_ACCURACY, all_outputs, map_label, posterior,
+    WITNESS_ACCURACY, all_outputs, map_label, posterior,
     prior_from_public, score_raw_outputs, witness_probability,
 )
 
@@ -94,20 +92,41 @@ class JointController:
     """Exact finite conditional entropic Bellman controller, research only."""
 
     def __init__(self, cfg: Config, *, allow_query: bool = True,
-                 query_cost: int = 1):
-        if type(allow_query) is not bool or type(query_cost) is not int or query_cost < 1:
+                 query_cost: int = 1, max_states: int = 16_384):
+        if (type(allow_query) is not bool or type(query_cost) is not int
+            or query_cost < 1 or type(max_states) is not int
+            or not 1 <= max_states <= 250_000):
             raise ValueError("unadmitted joint control options")
         self.cfg = cfg
         self.allow_query = allow_query
         self.query_cost = query_cost
+        self.max_states = max_states
+        # Local to the owner instance: no shared global memo across episodes.
+        self._memo: dict[JointState, tuple[str | Allocation, float]] = {}
+        self._state_evaluations = 0
+        self._candidate_evaluations = 0
 
-    @lru_cache(maxsize=250_000)
+    def resource_receipt(self) -> dict:
+        # Algorithmic work units, NOT physical wall/CPU/energy measurements.
+        return {"visited_states": self._state_evaluations,
+                "compared_actions": self._candidate_evaluations,
+                "cached_states": len(self._memo),
+                "max_states": self.max_states,
+                "units": "logical_bellman_evaluations_not_physical_cost"}
+
     def solve(self, s: JointState) -> tuple[str | Allocation, float]:
         if s.generation.step > self.cfg.horizon:
             raise ValueError("generation horizon exceeded")
+        previous = self._memo.get(s)
+        if previous is not None:
+            return previous
+        if self._state_evaluations >= self.max_states:
+            raise RuntimeError("joint NDU solver state budget exceeded")
+        self._state_evaluations += 1
         candidates = admitted_actions(s, self.cfg,
                                       allow_query=self.allow_query,
                                       query_cost=self.query_cost)
+        self._candidate_evaluations += len(candidates)
         best, best_value = EMIT, terminal_value(s, self.cfg)
         for action in candidates[1:]:
             if action == QUERY:
@@ -127,6 +146,7 @@ class JointController:
                                       self.cfg.risk_aversion))
             if value > best_value + 1e-12:
                 best, best_value = action, value
+        self._memo[s] = (best, best_value)
         return best, best_value
 
 
@@ -183,6 +203,8 @@ def full_outcome_audit(initial: JointState, cfg: Config,
             raw = materialize_four(s)
             loss = independent_fixture_score(raw, truth, cfg)
             paid = spent + cfg.emission_reserve
+            if spent != initial.generation.remaining - s.generation.remaining:
+                raise AssertionError("modeled cost and transition budget disagree")
             if paid > initial.generation.remaining:
                 raise AssertionError("actual execution overdrew the physical budget")
             digest = hashlib.sha256(json.dumps(
