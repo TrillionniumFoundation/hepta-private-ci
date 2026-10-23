@@ -1,0 +1,4313 @@
+{
+  "all_observed_depth_distributions": [
+    {
+      "arm": "supervised_static",
+      "budget": 8,
+      "cvar90": 1.2033018408822946,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 397536.0,
+      "mean_loss": 0.33922379579504286,
+      "mean_quality": 0.62255859375,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 8,
+      "cvar90": 1.2110869025931532,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 371118.0,
+      "mean_loss": 0.34763402647879443,
+      "mean_quality": 0.6160481770833334,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_static",
+      "budget": 8,
+      "cvar90": 0.9112218275283274,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 381868.3333333333,
+      "mean_loss": 0.286408993212955,
+      "mean_quality": 0.6241861979166666,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 8,
+      "cvar90": 0.9431523731373117,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 335616.0,
+      "mean_loss": 0.30942300682852303,
+      "mean_quality": 0.6217447916666666,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 8,
+      "cvar90": 0.9431523731373117,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 335616.0,
+      "mean_loss": 0.30942300682852303,
+      "mean_quality": 0.6217447916666666,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 8,
+      "cvar90": 0.9431523731373117,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 335616.0,
+      "mean_loss": 0.30942300682852303,
+      "mean_quality": 0.6217447916666666,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 8,
+      "cvar90": 0.9431523731373117,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 335616.0,
+      "mean_loss": 0.30942300682852303,
+      "mean_quality": 0.6217447916666666,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 12,
+      "cvar90": 0.7001959213019764,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 573085.0,
+      "mean_loss": 0.10027682112240839,
+      "mean_quality": 0.8776041666666666,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 12,
+      "cvar90": 0.6801189165045364,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 526786.3333333334,
+      "mean_loss": 0.10615245548330406,
+      "mean_quality": 0.8587239583333334,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_static",
+      "budget": 12,
+      "cvar90": 0.5805986039267607,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 573085.0,
+      "mean_loss": 0.11926730969415039,
+      "mean_quality": 0.8776041666666666,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 12,
+      "cvar90": 0.5818064097324265,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 524343.0,
+      "mean_loss": 0.12183373756909192,
+      "mean_quality": 0.8743489583333334,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 12,
+      "cvar90": 0.5768865456869214,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 524057.0,
+      "mean_loss": 0.12022863690701781,
+      "mean_quality": 0.876953125,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 12,
+      "cvar90": 0.58433668271134,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 525236.3333333334,
+      "mean_loss": 0.1204959887417612,
+      "mean_quality": 0.8756510416666666,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 12,
+      "cvar90": 0.6998435796845063,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 522552.0,
+      "mean_loss": 0.11753442503896107,
+      "mean_quality": 0.8782552083333334,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 16,
+      "cvar90": 0.7001959213019764,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 573085.0,
+      "mean_loss": 0.10027682112240839,
+      "mean_quality": 0.8776041666666666,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 16,
+      "cvar90": 0.6717061488890569,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 525726.3333333334,
+      "mean_loss": 0.10330953880962901,
+      "mean_quality": 0.86328125,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_static",
+      "budget": 16,
+      "cvar90": 0.610384027198425,
+      "depth_counts": [
+        0,
+        1536,
+        0,
+        0
+      ],
+      "mean_linear_macs": 581277.0,
+      "mean_loss": 0.10902716567947511,
+      "mean_quality": 0.8776041666666666,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 16,
+      "cvar90": 0.5687218147784027,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 524411.3333333334,
+      "mean_loss": 0.11914921439939759,
+      "mean_quality": 0.8776041666666666,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 16,
+      "cvar90": 0.5768865456869214,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 524185.3333333333,
+      "mean_loss": 0.12028573856997478,
+      "mean_quality": 0.876953125,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 16,
+      "cvar90": 0.571302234435213,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 525149.6666666666,
+      "mean_loss": 0.11693394614084136,
+      "mean_quality": 0.880859375,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 16,
+      "cvar90": 0.6786236463514994,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 524380.3333333334,
+      "mean_loss": 0.11502440696211931,
+      "mean_quality": 0.8802083333333334,
+      "scenario": "test_iid",
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 8,
+      "cvar90": 1.298061369062925,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 399872.0,
+      "mean_loss": 0.9152283215697453,
+      "mean_quality": 0.09375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 8,
+      "cvar90": 1.1306290817404194,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 370619.3333333333,
+      "mean_loss": 0.4823049874677863,
+      "mean_quality": 0.3427734375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_static",
+      "budget": 8,
+      "cvar90": 0.6634907950023976,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 383488.0,
+      "mean_loss": 0.45648879623399785,
+      "mean_quality": 0.09375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 8,
+      "cvar90": 0.9882802358591242,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 333824.0,
+      "mean_loss": 0.709544754518873,
+      "mean_quality": 0.09375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 8,
+      "cvar90": 0.9882802358591242,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 333824.0,
+      "mean_loss": 0.709544754518873,
+      "mean_quality": 0.09375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 8,
+      "cvar90": 0.9882802358591242,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 333824.0,
+      "mean_loss": 0.709544754518873,
+      "mean_quality": 0.09375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 8,
+      "cvar90": 0.9882802358591242,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 333824.0,
+      "mean_loss": 0.709544754518873,
+      "mean_quality": 0.09375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 12,
+      "cvar90": 0.7931662862481105,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 580608.0,
+      "mean_loss": 0.5303886456719558,
+      "mean_quality": 0.09375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 12,
+      "cvar90": 1.298061369062925,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.9152283215697453,
+      "mean_quality": 0.09375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_static",
+      "budget": 12,
+      "cvar90": 0.6634907950023976,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 580608.0,
+      "mean_loss": 0.45648879623399785,
+      "mean_quality": 0.09375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 12,
+      "cvar90": 0.9882802358591242,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.709544754518873,
+      "mean_quality": 0.09375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 12,
+      "cvar90": 0.9882802358591242,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.709544754518873,
+      "mean_quality": 0.09375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 12,
+      "cvar90": 0.9882802358591242,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.709544754518873,
+      "mean_quality": 0.09375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 12,
+      "cvar90": 0.9882802358591242,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.709544754518873,
+      "mean_quality": 0.09375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 16,
+      "cvar90": 0.7931662862481105,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 580608.0,
+      "mean_loss": 0.5303886456719558,
+      "mean_quality": 0.09375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 16,
+      "cvar90": 1.298061369062925,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.9152283215697453,
+      "mean_quality": 0.09375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_static",
+      "budget": 16,
+      "cvar90": 0.6979674371015148,
+      "depth_counts": [
+        0,
+        768,
+        0,
+        0
+      ],
+      "mean_linear_macs": 588800.0,
+      "mean_loss": 0.47374262878728907,
+      "mean_quality": 0.09375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 16,
+      "cvar90": 0.9882802358591242,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.709544754518873,
+      "mean_quality": 0.09375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 16,
+      "cvar90": 0.9882802358591242,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.709544754518873,
+      "mean_quality": 0.09375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 16,
+      "cvar90": 0.9882802358591242,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.709544754518873,
+      "mean_quality": 0.09375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 16,
+      "cvar90": 0.9882802358591242,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.709544754518873,
+      "mean_quality": 0.09375,
+      "scenario": "correlation_shift",
+      "seed": 17,
+      "worlds": 768
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 8,
+      "cvar90": 1.2842623136613143,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 399872.0,
+      "mean_loss": 0.9883151352915135,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 8,
+      "cvar90": 1.2842623136613143,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 370813.3333333333,
+      "mean_loss": 0.9883151352915135,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_static",
+      "budget": 8,
+      "cvar90": 0.9831245550636746,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 383488.0,
+      "mean_loss": 0.7664002055354165,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 8,
+      "cvar90": 0.9831245550636746,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 333824.0,
+      "mean_loss": 0.7664002055354165,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 8,
+      "cvar90": 0.9831245550636746,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 333824.0,
+      "mean_loss": 0.7664002055354165,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 8,
+      "cvar90": 0.9831245550636746,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 333824.0,
+      "mean_loss": 0.7664002055354165,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 8,
+      "cvar90": 0.9831245550636746,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 333824.0,
+      "mean_loss": 0.7664002055354165,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 12,
+      "cvar90": 1.2842623136613143,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 580608.0,
+      "mean_loss": 0.9883151352915135,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 12,
+      "cvar90": 1.2842623136613143,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.9883151352915135,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_static",
+      "budget": 12,
+      "cvar90": 0.9831245550636746,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 580608.0,
+      "mean_loss": 0.7664002055354165,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 12,
+      "cvar90": 0.9831245550636746,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7664002055354165,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 12,
+      "cvar90": 0.9831245550636746,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7664002055354165,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 12,
+      "cvar90": 0.9831245550636746,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7664002055354165,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 12,
+      "cvar90": 0.9831245550636746,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7664002055354165,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 16,
+      "cvar90": 1.2842623136613143,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 580608.0,
+      "mean_loss": 0.9883151352915135,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 16,
+      "cvar90": 1.2842623136613143,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.9883151352915135,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_static",
+      "budget": 16,
+      "cvar90": 1.0677557278202605,
+      "depth_counts": [
+        0,
+        384,
+        0,
+        0
+      ],
+      "mean_linear_macs": 588800.0,
+      "mean_loss": 0.8217090847127683,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 16,
+      "cvar90": 0.9831245550636746,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7664002055354165,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 16,
+      "cvar90": 0.9831245550636746,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7664002055354165,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 16,
+      "cvar90": 0.9831245550636746,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7664002055354165,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 16,
+      "cvar90": 0.9831245550636746,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7664002055354165,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 17,
+      "worlds": 384
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 8,
+      "cvar90": 1.239082486578457,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 397710.0,
+      "mean_loss": 0.34842331429998435,
+      "mean_quality": 0.6256510416666666,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 8,
+      "cvar90": 1.2352187674866908,
+      "depth_counts": [
+        1509,
+        27,
+        0,
+        0
+      ],
+      "mean_linear_macs": 382483.6666666667,
+      "mean_loss": 0.3478749946598824,
+      "mean_quality": 0.6212565104166666,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_static",
+      "budget": 8,
+      "cvar90": 0.9323873299667511,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 397710.0,
+      "mean_loss": 0.2935028529928607,
+      "mean_quality": 0.6259765625,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 8,
+      "cvar90": 0.9529909392415041,
+      "depth_counts": [
+        1523,
+        13,
+        0,
+        0
+      ],
+      "mean_linear_macs": 341572.0,
+      "mean_loss": 0.30796486233765796,
+      "mean_quality": 0.6266276041666666,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 8,
+      "cvar90": 0.9529909392415041,
+      "depth_counts": [
+        1523,
+        13,
+        0,
+        0
+      ],
+      "mean_linear_macs": 341572.0,
+      "mean_loss": 0.30796486233765796,
+      "mean_quality": 0.6266276041666666,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 8,
+      "cvar90": 0.9504636611560388,
+      "depth_counts": [
+        1523,
+        13,
+        0,
+        0
+      ],
+      "mean_linear_macs": 346680.6666666667,
+      "mean_loss": 0.30508200530545065,
+      "mean_quality": 0.6272786458333334,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 8,
+      "cvar90": 0.9529909392415041,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 335618.0,
+      "mean_loss": 0.30959899634473464,
+      "mean_quality": 0.6259765625,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 12,
+      "cvar90": 0.6967318481701654,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 572091.6666666666,
+      "mean_loss": 0.09666427232050394,
+      "mean_quality": 0.8854166666666666,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 12,
+      "cvar90": 0.6759180418472728,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 523651.0,
+      "mean_loss": 0.09644685801582381,
+      "mean_quality": 0.8776041666666666,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_static",
+      "budget": 12,
+      "cvar90": 0.5794270483688971,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 572091.6666666666,
+      "mean_loss": 0.11639836218999804,
+      "mean_quality": 0.8854166666666666,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 12,
+      "cvar90": 0.5695290958962935,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 523020.6666666667,
+      "mean_loss": 0.11778733372929623,
+      "mean_quality": 0.8834635416666666,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 12,
+      "cvar90": 0.5687645196977474,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 523641.0,
+      "mean_loss": 0.1180566363632665,
+      "mean_quality": 0.8828125,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 12,
+      "cvar90": 0.5736750384677648,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 523344.0,
+      "mean_loss": 0.11546189728846495,
+      "mean_quality": 0.8841145833333334,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 12,
+      "cvar90": 0.7293019501727246,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 522532.0,
+      "mean_loss": 0.1145594874305858,
+      "mean_quality": 0.884765625,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 16,
+      "cvar90": 0.6967318481701654,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 636075.6666666666,
+      "mean_loss": 0.09666427232050394,
+      "mean_quality": 0.8854166666666666,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 16,
+      "cvar90": 0.6698058153631536,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 523999.0,
+      "mean_loss": 0.0962177783714866,
+      "mean_quality": 0.876953125,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_static",
+      "budget": 16,
+      "cvar90": 0.6059555205982661,
+      "depth_counts": [
+        0,
+        1536,
+        0,
+        0
+      ],
+      "mean_linear_macs": 644267.6666666666,
+      "mean_loss": 0.10720191648671086,
+      "mean_quality": 0.8854166666666666,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 16,
+      "cvar90": 0.5610027366291017,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 523527.0,
+      "mean_loss": 0.11670827174227998,
+      "mean_quality": 0.8841145833333334,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 16,
+      "cvar90": 0.5638672375742689,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 524155.3333333333,
+      "mean_loss": 0.11698432668927439,
+      "mean_quality": 0.884765625,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 16,
+      "cvar90": 0.5703405335187129,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 525616.0,
+      "mean_loss": 0.11495827211773596,
+      "mean_quality": 0.8841145833333334,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 16,
+      "cvar90": 0.7306625412775487,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 524454.0,
+      "mean_loss": 0.11535560260976452,
+      "mean_quality": 0.8828125,
+      "scenario": "test_iid",
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 8,
+      "cvar90": 1.3033143716193853,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 399872.0,
+      "mean_loss": 0.9053470469700301,
+      "mean_quality": 0.1015625,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 8,
+      "cvar90": 0.7951354669889795,
+      "depth_counts": [
+        702,
+        66,
+        0,
+        0
+      ],
+      "mean_linear_macs": 384192.0,
+      "mean_loss": 0.32512818144019057,
+      "mean_quality": 0.5016276041666666,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_static",
+      "budget": 8,
+      "cvar90": 0.9817786196539362,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 399872.0,
+      "mean_loss": 0.7012478905165241,
+      "mean_quality": 0.1015625,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 8,
+      "cvar90": 0.9778173768917361,
+      "depth_counts": [
+        745,
+        23,
+        0,
+        0
+      ],
+      "mean_linear_macs": 340794.6666666667,
+      "mean_loss": 0.6395385739165885,
+      "mean_quality": 0.14583333333333334,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 8,
+      "cvar90": 0.9778173768917361,
+      "depth_counts": [
+        745,
+        23,
+        0,
+        0
+      ],
+      "mean_linear_macs": 340794.6666666667,
+      "mean_loss": 0.6395385739165885,
+      "mean_quality": 0.14583333333333334,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 8,
+      "cvar90": 0.9717599901794276,
+      "depth_counts": [
+        745,
+        23,
+        0,
+        0
+      ],
+      "mean_linear_macs": 346550.0,
+      "mean_loss": 0.5903161257021827,
+      "mean_quality": 0.18489583333333334,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 8,
+      "cvar90": 0.9817786196539362,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 333824.0,
+      "mean_loss": 0.7012478905165241,
+      "mean_quality": 0.1015625,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 12,
+      "cvar90": 0.8174391799403945,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 580608.0,
+      "mean_loss": 0.5253757453388902,
+      "mean_quality": 0.1015625,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 12,
+      "cvar90": 1.3033143716193853,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.9053470469700301,
+      "mean_quality": 0.1015625,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_static",
+      "budget": 12,
+      "cvar90": 0.671890408253729,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 580608.0,
+      "mean_loss": 0.4514695714531105,
+      "mean_quality": 0.1015625,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 12,
+      "cvar90": 0.9817786196539362,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7012478905165241,
+      "mean_quality": 0.1015625,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 12,
+      "cvar90": 0.9817786196539362,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7012478905165241,
+      "mean_quality": 0.1015625,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 12,
+      "cvar90": 0.9817786196539362,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7012478905165241,
+      "mean_quality": 0.1015625,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 12,
+      "cvar90": 0.9817786196539362,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7012478905165241,
+      "mean_quality": 0.1015625,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 16,
+      "cvar90": 0.8174391799403945,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 646656.0,
+      "mean_loss": 0.5253757453388902,
+      "mean_quality": 0.1015625,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 16,
+      "cvar90": 1.3033143716193853,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.9053470469700301,
+      "mean_quality": 0.1015625,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_static",
+      "budget": 16,
+      "cvar90": 0.7065317394091554,
+      "depth_counts": [
+        0,
+        768,
+        0,
+        0
+      ],
+      "mean_linear_macs": 654848.0,
+      "mean_loss": 0.46611219813163407,
+      "mean_quality": 0.1015625,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 16,
+      "cvar90": 0.9817786196539362,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7012478905165241,
+      "mean_quality": 0.1015625,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 16,
+      "cvar90": 0.9817786196539362,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7012478905165241,
+      "mean_quality": 0.1015625,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 16,
+      "cvar90": 0.9817786196539362,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7012478905165241,
+      "mean_quality": 0.1015625,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 16,
+      "cvar90": 0.9817786196539362,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7012478905165241,
+      "mean_quality": 0.1015625,
+      "scenario": "correlation_shift",
+      "seed": 29,
+      "worlds": 768
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 8,
+      "cvar90": 1.314035528085026,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 399872.0,
+      "mean_loss": 1.030496503516115,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 8,
+      "cvar90": 1.314035528085026,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 383488.0,
+      "mean_loss": 1.030496503516115,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_static",
+      "budget": 8,
+      "cvar90": 0.9878042382652965,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 399872.0,
+      "mean_loss": 0.7898865121217516,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 8,
+      "cvar90": 0.9878042382652965,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 338609.3333333333,
+      "mean_loss": 0.7898865121217516,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 8,
+      "cvar90": 0.9878042382652965,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 338609.3333333333,
+      "mean_loss": 0.7898865121217516,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 8,
+      "cvar90": 0.9878042382652965,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 344688.0,
+      "mean_loss": 0.7898865121217516,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 8,
+      "cvar90": 0.9878042382652965,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 333824.0,
+      "mean_loss": 0.7898865121217516,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 12,
+      "cvar90": 1.314035528085026,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 580608.0,
+      "mean_loss": 1.030496503516115,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 12,
+      "cvar90": 1.314035528085026,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 1.030496503516115,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_static",
+      "budget": 12,
+      "cvar90": 0.9878042382652965,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 580608.0,
+      "mean_loss": 0.7898865121217516,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 12,
+      "cvar90": 0.9878042382652965,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7898865121217516,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 12,
+      "cvar90": 0.9878042382652965,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7898865121217516,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 12,
+      "cvar90": 0.9878042382652965,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7898865121217516,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 12,
+      "cvar90": 0.9878042382652965,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7898865121217516,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 16,
+      "cvar90": 1.314035528085026,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 646656.0,
+      "mean_loss": 1.030496503516115,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 16,
+      "cvar90": 1.314035528085026,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 1.030496503516115,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_static",
+      "budget": 16,
+      "cvar90": 1.0668947589832332,
+      "depth_counts": [
+        0,
+        384,
+        0,
+        0
+      ],
+      "mean_linear_macs": 654848.0,
+      "mean_loss": 0.8432568464057916,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 16,
+      "cvar90": 0.9878042382652965,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7898865121217516,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 16,
+      "cvar90": 0.9878042382652965,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7898865121217516,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 16,
+      "cvar90": 0.9878042382652965,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7898865121217516,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 16,
+      "cvar90": 0.9878042382652965,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7898865121217516,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 29,
+      "worlds": 384
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 8,
+      "cvar90": 1.2261938507647545,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 381569.3333333333,
+      "mean_loss": 0.3463618882699744,
+      "mean_quality": 0.6227213541666666,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 8,
+      "cvar90": 1.2262725749569359,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 382070.6666666667,
+      "mean_loss": 0.3511557825763673,
+      "mean_quality": 0.61328125,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_static",
+      "budget": 8,
+      "cvar90": 0.9286135199734626,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 381569.3333333333,
+      "mean_loss": 0.29412839316133893,
+      "mean_quality": 0.6223958333333334,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 8,
+      "cvar90": 0.9478584619336039,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 335737.0,
+      "mean_loss": 0.3133126180359669,
+      "mean_quality": 0.6207682291666666,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 8,
+      "cvar90": 0.9478584619336039,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 335737.0,
+      "mean_loss": 0.3133126180359669,
+      "mean_quality": 0.6207682291666666,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 8,
+      "cvar90": 0.9458080673415494,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 341524.6666666667,
+      "mean_loss": 0.3101226270210928,
+      "mean_quality": 0.6220703125,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 8,
+      "cvar90": 0.9478584619336039,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 335737.0,
+      "mean_loss": 0.3133126180359669,
+      "mean_quality": 0.6207682291666666,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 12,
+      "cvar90": 0.7109220864190856,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 572786.0,
+      "mean_loss": 0.09950999675626354,
+      "mean_quality": 0.8815104166666666,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 12,
+      "cvar90": 0.6791381588673122,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 523934.0,
+      "mean_loss": 0.10317312214686192,
+      "mean_quality": 0.8639322916666666,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_static",
+      "budget": 12,
+      "cvar90": 0.5917534564556908,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 572786.0,
+      "mean_loss": 0.11783831994576255,
+      "mean_quality": 0.8815104166666666,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 12,
+      "cvar90": 0.5810656436338731,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 523129.6666666667,
+      "mean_loss": 0.11905902667497402,
+      "mean_quality": 0.8815104166666666,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 12,
+      "cvar90": 0.5810656436338731,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 523129.6666666667,
+      "mean_loss": 0.11905902667497402,
+      "mean_quality": 0.8815104166666666,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 12,
+      "cvar90": 0.5846157426088507,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 524160.3333333333,
+      "mean_loss": 0.11757272156287735,
+      "mean_quality": 0.8821614583333334,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 12,
+      "cvar90": 0.7122826940483676,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 522606.3333333333,
+      "mean_loss": 0.11420313253395993,
+      "mean_quality": 0.8828125,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 16,
+      "cvar90": 0.7109220864190856,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 572786.0,
+      "mean_loss": 0.09950999675626354,
+      "mean_quality": 0.8815104166666666,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 16,
+      "cvar90": 0.6751819951153931,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 523530.3333333333,
+      "mean_loss": 0.10245374930520956,
+      "mean_quality": 0.8645833333333334,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_static",
+      "budget": 16,
+      "cvar90": 0.6245397467774063,
+      "depth_counts": [
+        0,
+        1536,
+        0,
+        0
+      ],
+      "mean_linear_macs": 644876.0,
+      "mean_loss": 0.10762033281285151,
+      "mean_quality": 0.8811848958333334,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 16,
+      "cvar90": 0.5793770672632871,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 522939.3333333333,
+      "mean_loss": 0.11844779911995311,
+      "mean_quality": 0.8828125,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 16,
+      "cvar90": 0.5810656436338731,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 523194.3333333333,
+      "mean_loss": 0.11893293580153368,
+      "mean_quality": 0.8815104166666666,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 16,
+      "cvar90": 0.5935184777988355,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 526223.3333333334,
+      "mean_loss": 0.11743817206898954,
+      "mean_quality": 0.880859375,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 16,
+      "cvar90": 0.7116222924060605,
+      "depth_counts": [
+        1536,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 524136.6666666667,
+      "mean_loss": 0.1141066757068458,
+      "mean_quality": 0.8821614583333334,
+      "scenario": "test_iid",
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 8,
+      "cvar90": 0.8277519177173674,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 383488.0,
+      "mean_loss": 0.5348382125696995,
+      "mean_quality": 0.09635416666666667,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 8,
+      "cvar90": 0.8138674184079463,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 383488.0,
+      "mean_loss": 0.35084717671974514,
+      "mean_quality": 0.4397786458333333,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_static",
+      "budget": 8,
+      "cvar90": 0.6830300454581181,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 383488.0,
+      "mean_loss": 0.4600886643417333,
+      "mean_quality": 0.09635416666666667,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 8,
+      "cvar90": 0.9754981394338188,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 333824.0,
+      "mean_loss": 0.7118342692875808,
+      "mean_quality": 0.09635416666666667,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 8,
+      "cvar90": 0.9754981394338188,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 333824.0,
+      "mean_loss": 0.7118342692875808,
+      "mean_quality": 0.09635416666666667,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 8,
+      "cvar90": 0.9727081533380324,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 339191.3333333333,
+      "mean_loss": 0.6641276647520648,
+      "mean_quality": 0.13541666666666666,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 8,
+      "cvar90": 0.9754981394338188,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 333824.0,
+      "mean_loss": 0.7118342692875808,
+      "mean_quality": 0.09635416666666667,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 12,
+      "cvar90": 1.2894690700085751,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 580608.0,
+      "mean_loss": 0.9141929175751672,
+      "mean_quality": 0.09635416666666667,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 12,
+      "cvar90": 1.2894690700085751,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.9141929175751672,
+      "mean_quality": 0.09635416666666667,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_static",
+      "budget": 12,
+      "cvar90": 0.9754981394338188,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 580608.0,
+      "mean_loss": 0.7118342692875808,
+      "mean_quality": 0.09635416666666667,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 12,
+      "cvar90": 0.9754981394338188,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7118342692875808,
+      "mean_quality": 0.09635416666666667,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 12,
+      "cvar90": 0.9754981394338188,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7118342692875808,
+      "mean_quality": 0.09635416666666667,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 12,
+      "cvar90": 0.9754981394338188,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7118342692875808,
+      "mean_quality": 0.09635416666666667,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 12,
+      "cvar90": 0.9754981394338188,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7118342692875808,
+      "mean_quality": 0.09635416666666667,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 16,
+      "cvar90": 1.2894690700085751,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 580608.0,
+      "mean_loss": 0.9141929175751672,
+      "mean_quality": 0.09635416666666667,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 16,
+      "cvar90": 1.2894690700085751,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.9141929175751672,
+      "mean_quality": 0.09635416666666667,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_static",
+      "budget": 16,
+      "cvar90": 1.073396923633334,
+      "depth_counts": [
+        0,
+        768,
+        0,
+        0
+      ],
+      "mean_linear_macs": 654848.0,
+      "mean_loss": 0.7669706266900244,
+      "mean_quality": 0.09635416666666667,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 16,
+      "cvar90": 0.9754981394338188,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7118342692875808,
+      "mean_quality": 0.09635416666666667,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 16,
+      "cvar90": 0.9754981394338188,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7118342692875808,
+      "mean_quality": 0.09635416666666667,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 16,
+      "cvar90": 0.9754981394338188,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7118342692875808,
+      "mean_quality": 0.09635416666666667,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 16,
+      "cvar90": 0.9754981394338188,
+      "depth_counts": [
+        768,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7118342692875808,
+      "mean_quality": 0.09635416666666667,
+      "scenario": "correlation_shift",
+      "seed": 43,
+      "worlds": 768
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 8,
+      "cvar90": 1.3023974733388242,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 383488.0,
+      "mean_loss": 1.009495784904601,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 8,
+      "cvar90": 1.3023974733388242,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 383488.0,
+      "mean_loss": 1.009495784904601,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_static",
+      "budget": 8,
+      "cvar90": 0.9783255449965055,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 383488.0,
+      "mean_loss": 0.7838481636275428,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 8,
+      "cvar90": 0.9783255449965055,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 333824.0,
+      "mean_loss": 0.7838481636275428,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 8,
+      "cvar90": 0.9783255449965055,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 333824.0,
+      "mean_loss": 0.7838481636275428,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 8,
+      "cvar90": 0.9783255449965055,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 339514.6666666667,
+      "mean_loss": 0.7838481636275428,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 8,
+      "cvar90": 0.9783255449965055,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 333824.0,
+      "mean_loss": 0.7838481636275428,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 12,
+      "cvar90": 1.3023974733388242,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 580608.0,
+      "mean_loss": 1.009495784904601,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 12,
+      "cvar90": 1.3023974733388242,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 1.009495784904601,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_static",
+      "budget": 12,
+      "cvar90": 0.9783255449965055,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 580608.0,
+      "mean_loss": 0.7838481636275428,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 12,
+      "cvar90": 0.9783255449965055,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7838481636275428,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 12,
+      "cvar90": 0.9783255449965055,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7838481636275428,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 12,
+      "cvar90": 0.9783255449965055,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7838481636275428,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 12,
+      "cvar90": 0.9783255449965055,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7838481636275428,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    },
+    {
+      "arm": "supervised_static",
+      "budget": 16,
+      "cvar90": 1.3023974733388242,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 580608.0,
+      "mean_loss": 1.009495784904601,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    },
+    {
+      "arm": "supervised_ndu",
+      "budget": 16,
+      "cvar90": 1.3023974733388242,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 1.009495784904601,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_static",
+      "budget": 16,
+      "cvar90": 1.0765843173233391,
+      "depth_counts": [
+        0,
+        384,
+        0,
+        0
+      ],
+      "mean_linear_macs": 654848.0,
+      "mean_loss": 0.8462891201884103,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_ndu",
+      "budget": 16,
+      "cvar90": 0.9783255449965055,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7838481636275428,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_myopic",
+      "budget": 16,
+      "cvar90": 0.9783255449965055,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7838481636275428,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_fixed_risk",
+      "budget": 16,
+      "cvar90": 0.9783255449965055,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7838481636275428,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    },
+    {
+      "arm": "joint_risk_neutral",
+      "budget": 16,
+      "cvar90": 0.9783255449965055,
+      "depth_counts": [
+        384,
+        0,
+        0,
+        0
+      ],
+      "mean_linear_macs": 530944.0,
+      "mean_loss": 0.7838481636275428,
+      "mean_quality": 0.0,
+      "scenario": "all_shared_wrong",
+      "seed": 43,
+      "worlds": 384
+    }
+  ],
+  "all_oracle_receipts": [
+    {
+      "action_portfolio_depth_mismatches": 0,
+      "arm": "supervised_ndu",
+      "max_value_error": 3.3306690738754696e-15,
+      "passed": true,
+      "process_cpu_seconds": 4.928574249999997,
+      "seed": 17,
+      "selection_improvement_tolerance": 1e-12,
+      "states": 14298,
+      "wall_seconds": 4.929441251999378
+    },
+    {
+      "action_portfolio_depth_mismatches": 0,
+      "arm": "joint_ndu",
+      "max_value_error": 2.609024107869118e-15,
+      "passed": true,
+      "process_cpu_seconds": 5.557864463999991,
+      "seed": 17,
+      "selection_improvement_tolerance": 1e-12,
+      "states": 14298,
+      "wall_seconds": 5.558402847999787
+    },
+    {
+      "action_portfolio_depth_mismatches": 0,
+      "arm": "joint_myopic",
+      "max_value_error": 2.609024107869118e-15,
+      "passed": true,
+      "process_cpu_seconds": 7.5425875690000055,
+      "seed": 17,
+      "selection_improvement_tolerance": 1e-12,
+      "states": 14298,
+      "wall_seconds": 7.543136878000041
+    },
+    {
+      "action_portfolio_depth_mismatches": 0,
+      "arm": "joint_fixed_risk",
+      "max_value_error": 2.1094237467877974e-15,
+      "passed": true,
+      "process_cpu_seconds": 5.500896587,
+      "seed": 17,
+      "selection_improvement_tolerance": 1e-12,
+      "states": 14298,
+      "wall_seconds": 5.501412339999661
+    },
+    {
+      "action_portfolio_depth_mismatches": 0,
+      "arm": "joint_risk_neutral",
+      "max_value_error": 1.6653345369377348e-15,
+      "passed": true,
+      "process_cpu_seconds": 4.702910793000001,
+      "seed": 17,
+      "selection_improvement_tolerance": 1e-12,
+      "states": 14298,
+      "wall_seconds": 4.707137931000034
+    },
+    {
+      "action_portfolio_depth_mismatches": 0,
+      "arm": "supervised_ndu",
+      "max_value_error": 3.7192471324942744e-15,
+      "passed": true,
+      "process_cpu_seconds": 5.515726900999994,
+      "seed": 29,
+      "selection_improvement_tolerance": 1e-12,
+      "states": 14298,
+      "wall_seconds": 5.5161908749996655
+    },
+    {
+      "action_portfolio_depth_mismatches": 0,
+      "arm": "joint_ndu",
+      "max_value_error": 2.831068712794149e-15,
+      "passed": true,
+      "process_cpu_seconds": 5.875233519999995,
+      "seed": 29,
+      "selection_improvement_tolerance": 1e-12,
+      "states": 14298,
+      "wall_seconds": 5.877261037999233
+    },
+    {
+      "action_portfolio_depth_mismatches": 0,
+      "arm": "joint_myopic",
+      "max_value_error": 2.831068712794149e-15,
+      "passed": true,
+      "process_cpu_seconds": 7.398837036000003,
+      "seed": 29,
+      "selection_improvement_tolerance": 1e-12,
+      "states": 14298,
+      "wall_seconds": 7.399548240000513
+    },
+    {
+      "action_portfolio_depth_mismatches": 0,
+      "arm": "joint_fixed_risk",
+      "max_value_error": 2.3869795029440866e-15,
+      "passed": true,
+      "process_cpu_seconds": 5.073323142999982,
+      "seed": 29,
+      "selection_improvement_tolerance": 1e-12,
+      "states": 14298,
+      "wall_seconds": 5.073674804999428
+    },
+    {
+      "action_portfolio_depth_mismatches": 0,
+      "arm": "joint_risk_neutral",
+      "max_value_error": 2.1094237467877974e-15,
+      "passed": true,
+      "process_cpu_seconds": 5.320437126000002,
+      "seed": 29,
+      "selection_improvement_tolerance": 1e-12,
+      "states": 14298,
+      "wall_seconds": 5.321882566000568
+    },
+    {
+      "action_portfolio_depth_mismatches": 0,
+      "arm": "supervised_ndu",
+      "max_value_error": 3.3861802251067274e-15,
+      "passed": true,
+      "process_cpu_seconds": 5.9667536259999565,
+      "seed": 43,
+      "selection_improvement_tolerance": 1e-12,
+      "states": 14298,
+      "wall_seconds": 5.967314395000358
+    },
+    {
+      "action_portfolio_depth_mismatches": 0,
+      "arm": "joint_ndu",
+      "max_value_error": 2.7755575615628914e-15,
+      "passed": true,
+      "process_cpu_seconds": 5.812720637999973,
+      "seed": 43,
+      "selection_improvement_tolerance": 1e-12,
+      "states": 14298,
+      "wall_seconds": 5.819039638000504
+    },
+    {
+      "action_portfolio_depth_mismatches": 0,
+      "arm": "joint_myopic",
+      "max_value_error": 2.7755575615628914e-15,
+      "passed": true,
+      "process_cpu_seconds": 7.1422716870000045,
+      "seed": 43,
+      "selection_improvement_tolerance": 1e-12,
+      "states": 14298,
+      "wall_seconds": 7.142967024999962
+    },
+    {
+      "action_portfolio_depth_mismatches": 0,
+      "arm": "joint_fixed_risk",
+      "max_value_error": 1.9984014443252818e-15,
+      "passed": true,
+      "process_cpu_seconds": 5.492420261999996,
+      "seed": 43,
+      "selection_improvement_tolerance": 1e-12,
+      "states": 14298,
+      "wall_seconds": 5.492898743000296
+    },
+    {
+      "action_portfolio_depth_mismatches": 0,
+      "arm": "joint_risk_neutral",
+      "max_value_error": 1.7763568394002505e-15,
+      "passed": true,
+      "process_cpu_seconds": 4.833489560000032,
+      "seed": 43,
+      "selection_improvement_tolerance": 1e-12,
+      "states": 14298,
+      "wall_seconds": 4.8338826920007705
+    }
+  ],
+  "audit_script_path": "experiments/multimodal_output_portfolio/v2/evidence/audit_confirmation.py",
+  "audit_script_sha256": "c0641c6ac1531f5791bbbe69a44b30c2debac16b55bfba8ce0ac00624d8fd45c",
+  "execution_scope": {
+    "dedicated_execution_verified": false,
+    "distinct_seed_scenario_worlds": 8064,
+    "groups": 189,
+    "smoke_only": false,
+    "source_unchanged_receipt": true,
+    "tier": "local-cpu",
+    "world_evaluations": 169344
+  },
+  "independent_primary": {
+    "baseline": "supervised_static",
+    "budget": 12,
+    "candidate": "joint_ndu",
+    "cvar90": {
+      "bootstrap_replicates": 1000,
+      "ci_high": -0.10822164404187705,
+      "ci_low": -0.1405695603308352,
+      "estimate": -0.12514956887621143,
+      "independent_seed_worlds": true,
+      "paired": true
+    },
+    "definition": "mean across seeds of within-seed upper-tail CVaR90(candidate) minus CVaR90(baseline)",
+    "gates": {
+      "cvar_ci_upper_below_zero": true,
+      "cvar_reduction_at_least_0_02": true,
+      "independent_oracle_parity": true,
+      "linear_mac_ratio_at_most_1_05": true,
+      "output_and_budget_contracts": true,
+      "quality_noninferiority_point_margin_0_02": true,
+      "three_registered_seeds": true
+    },
+    "mean_linear_mac_ratio": 0.9141603387578464,
+    "method": "CSV-only aligned arrays; ascending weighted-tail estimator and separately implemented paired seed/world percentile bootstrap. Experiment metrics/reporting modules were not imported.",
+    "primary_passed": true,
+    "quality_mean": {
+      "bootstrap_replicates": 1000,
+      "ci_high": 0.0013075086805555854,
+      "ci_low": -0.00477430555555558,
+      "estimate": -0.0017361111111110865,
+      "independent_seed_worlds": true,
+      "paired": true
+    },
+    "reported_result_absolute_differences": {
+      "ci_high": 8.326672684688674e-17,
+      "ci_low": 0.0,
+      "estimate": 0.0,
+      "linear_mac_ratio": 3.3306690738754696e-16,
+      "quality_ci_high": 0.0,
+      "quality_ci_low": 0.0,
+      "quality_estimate": 0.0
+    },
+    "scenario": "test_iid"
+  },
+  "integrity_issues": [],
+  "integrity_review_passed": true,
+  "limitations": [
+    "Only three training seeds; percentile intervals provide limited training-variability evidence.",
+    "All 15 oracle receipts are checked; this review does not rerun the oracle computation.",
+    "Exact saved-weight generation and independent metric replay cover the two primary arms at budget12, all three seeds; every row receives trace, cost and paired-ID checks.",
+    "Selection ordering is established from frozen source control flow and retained log/hash evidence, not an external trusted timestamp service.",
+    "Linear MAC matching is not backward, optimizer, controller, wall-time or lifecycle compute equivalence.",
+    "Utility gradient evidence at updates1and40 does not prove nonzero credit in every group at every update.",
+    "Native HEPTA runtime, general stochastic FBSDE, learned identified preference, latent-dependent refinement feedback, natural-data foundation-model performance and dedicated execution remain separate gates."
+  ],
+  "paired_evidence": [
+    {
+      "arms_and_budgets_checked": 21,
+      "ordered_world_id_and_truth_sha256": "5acb8d12c431c288a60de39f50e962287a29f2715acdd916405082833de65dc3",
+      "scenario": "test_iid",
+      "seed": 17
+    },
+    {
+      "arms_and_budgets_checked": 21,
+      "ordered_world_id_and_truth_sha256": "f699fa57df75bb8acd25058c334874faa61eb394424eab5a7cfdd8a1017c5442",
+      "scenario": "correlation_shift",
+      "seed": 17
+    },
+    {
+      "arms_and_budgets_checked": 21,
+      "ordered_world_id_and_truth_sha256": "6515f42f04e1ebd46ce73ca26e5677175e0f6769f5b6666047f9f96c35fa8fe6",
+      "scenario": "all_shared_wrong",
+      "seed": 17
+    },
+    {
+      "arms_and_budgets_checked": 21,
+      "ordered_world_id_and_truth_sha256": "7afd6de9958e816f1547367ddaf1ff84270122b5bca49dd1b28da2175b142957",
+      "scenario": "test_iid",
+      "seed": 29
+    },
+    {
+      "arms_and_budgets_checked": 21,
+      "ordered_world_id_and_truth_sha256": "e667bd094d5dcb72d0bfea7c3779ce70b3b45927825c6589fc44a6ea59319f9a",
+      "scenario": "correlation_shift",
+      "seed": 29
+    },
+    {
+      "arms_and_budgets_checked": 21,
+      "ordered_world_id_and_truth_sha256": "2ae255ee534f181e8826e6517d0ce6cabf8ed31a7a91d6bc9fc104f1f90b7efb",
+      "scenario": "all_shared_wrong",
+      "seed": 29
+    },
+    {
+      "arms_and_budgets_checked": 21,
+      "ordered_world_id_and_truth_sha256": "4e6514a5baf9b363a6c56bfa72f75e65a28c09973b7238c9f04e86778f7e4465",
+      "scenario": "test_iid",
+      "seed": 43
+    },
+    {
+      "arms_and_budgets_checked": 21,
+      "ordered_world_id_and_truth_sha256": "207c5ab1b309cfbda37045d89767c8336ed0f34e5499637220eb273d33a8b941",
+      "scenario": "correlation_shift",
+      "seed": 43
+    },
+    {
+      "arms_and_budgets_checked": 21,
+      "ordered_world_id_and_truth_sha256": "9718c5c6777c367471539f3ca0ee222d68c8e55faf51d4c954a89f4f15cf6c6f",
+      "scenario": "all_shared_wrong",
+      "seed": 43
+    }
+  ],
+  "per_world_trace_and_cost_failures": {
+    "acquisition_order": 0,
+    "emission_contract": 0,
+    "empty_support_uniform": 0,
+    "event_budget": 0,
+    "initial_event": 0,
+    "initialization_order": 0,
+    "linear_macs": 0,
+    "metric_identity": 0,
+    "portfolio_index": 0,
+    "portfolio_support": 0,
+    "refinement_order": 0,
+    "report_range": 0,
+    "terminal_state": 0,
+    "world_id": 0
+  },
+  "post_audit_interpretation": {
+    "all_iid_budget12_arm_summaries": {
+      "joint_fixed_risk": {
+        "cvar90": 0.5808758212626518,
+        "depth_counts": [
+          4608,
+          0,
+          0,
+          0
+        ],
+        "mean_linear_macs": 524246.88888888893,
+        "mean_loss": 0.11784353586436784,
+        "mean_quality": 0.8806423611111112
+      },
+      "joint_myopic": {
+        "cvar90": 0.5755722363395139,
+        "depth_counts": [
+          4608,
+          0,
+          0,
+          0
+        ],
+        "mean_linear_macs": 523609.22222222225,
+        "mean_loss": 0.11911476664841945,
+        "mean_quality": 0.8804253472222222
+      },
+      "joint_ndu": {
+        "cvar90": 0.5774670497541977,
+        "depth_counts": [
+          4608,
+          0,
+          0,
+          0
+        ],
+        "mean_linear_macs": 523497.7777777778,
+        "mean_loss": 0.1195600326577874,
+        "mean_quality": 0.8797743055555555
+      },
+      "joint_risk_neutral": {
+        "cvar90": 0.7138094079685328,
+        "depth_counts": [
+          4608,
+          0,
+          0,
+          0
+        ],
+        "mean_linear_macs": 522563.44444444444,
+        "mean_loss": 0.11543234833450226,
+        "mean_quality": 0.8819444444444445
+      },
+      "joint_static": {
+        "cvar90": 0.5839263695837829,
+        "depth_counts": [
+          4608,
+          0,
+          0,
+          0
+        ],
+        "mean_linear_macs": 572654.2222222221,
+        "mean_loss": 0.11783466394330366,
+        "mean_quality": 0.8815104166666666
+      },
+      "supervised_ndu": {
+        "cvar90": 0.6783917057397071,
+        "depth_counts": [
+          4608,
+          0,
+          0,
+          0
+        ],
+        "mean_linear_macs": 524790.4444444445,
+        "mean_loss": 0.10192414521532993,
+        "mean_quality": 0.8667534722222222
+      },
+      "supervised_static": {
+        "cvar90": 0.7026166186304091,
+        "depth_counts": [
+          4608,
+          0,
+          0,
+          0
+        ],
+        "mean_linear_macs": 572654.2222222221,
+        "mean_loss": 0.09881703006639196,
+        "mean_quality": 0.8815104166666666
+      }
+    },
+    "basis": "Descriptive calculations from the audited per-arm summaries, gradient receipts, and original CSV omission rows. These notes were added after the main audit; no new primary endpoint, policy selection or experiment execution.",
+    "generation_depth": {
+      "all_evaluation_depth_counts": [
+        161079,
+        8265,
+        0,
+        0
+      ],
+      "iid_budget12_depth_counts_by_arm": {
+        "joint_fixed_risk": [
+          4608,
+          0,
+          0,
+          0
+        ],
+        "joint_myopic": [
+          4608,
+          0,
+          0,
+          0
+        ],
+        "joint_ndu": [
+          4608,
+          0,
+          0,
+          0
+        ],
+        "joint_risk_neutral": [
+          4608,
+          0,
+          0,
+          0
+        ],
+        "joint_static": [
+          4608,
+          0,
+          0,
+          0
+        ],
+        "supervised_ndu": [
+          4608,
+          0,
+          0,
+          0
+        ],
+        "supervised_static": [
+          4608,
+          0,
+          0,
+          0
+        ]
+      },
+      "interpretation": "Every primary-world arm uses depth0. The primary comparison therefore does not establish beneficial iterative refinement, and its MAC reduction comes from input acquisition work rather than different generation depths."
+    },
+    "mean_tail_tradeoff": {
+      "baseline_mean_loss": 0.09881703006639196,
+      "candidate_mean_loss": 0.1195600326577874,
+      "interpretation": "CVaR improves while mean external loss and the ambiguity proxy worsen. Omission is a prototype-margin proxy, not an absent modality. This is not uniform quality dominance.",
+      "mean_loss_delta": 0.020743002591395443,
+      "omission_ambiguity_proxy_delta": 0.038302951388888895
+    },
+    "postprocessing_process_cpu_seconds": 1.343749263,
+    "postprocessing_wall_seconds": 1.0652031740000893,
+    "preregistered_primary_pass_is_preserved": true,
+    "secondary_iid_cvar_point_differences": {
+      "joint_fixed_risk": -0.0034087715084540893,
+      "joint_myopic": 0.0018948134146837825,
+      "joint_risk_neutral": -0.13634235821433505,
+      "joint_static": -0.006459319829585142,
+      "supervised_ndu": -0.10092465598550937,
+      "supervised_static": -0.12514956887621143
+    },
+    "secondary_interpretation": "Joint NDU does not beat joint myopic on the CVaR point estimate, and its tail benefit over joint static is small. The primary pass does not establish the added value of long-horizon continuation or of bounded preference updates.",
+    "shift_and_common_error": {
+      "budget12_summaries": {
+        "all_shared_wrong": {
+          "joint_fixed_risk": {
+            "cvar90": 0.9830847794418256,
+            "depth_counts": [
+              1152,
+              0,
+              0,
+              0
+            ],
+            "mean_linear_macs": 530944.0,
+            "mean_loss": 0.780044960428237,
+            "mean_quality": 0.0
+          },
+          "joint_myopic": {
+            "cvar90": 0.9830847794418256,
+            "depth_counts": [
+              1152,
+              0,
+              0,
+              0
+            ],
+            "mean_linear_macs": 530944.0,
+            "mean_loss": 0.780044960428237,
+            "mean_quality": 0.0
+          },
+          "joint_ndu": {
+            "cvar90": 0.9830847794418256,
+            "depth_counts": [
+              1152,
+              0,
+              0,
+              0
+            ],
+            "mean_linear_macs": 530944.0,
+            "mean_loss": 0.780044960428237,
+            "mean_quality": 0.0
+          },
+          "joint_risk_neutral": {
+            "cvar90": 0.9830847794418256,
+            "depth_counts": [
+              1152,
+              0,
+              0,
+              0
+            ],
+            "mean_linear_macs": 530944.0,
+            "mean_loss": 0.780044960428237,
+            "mean_quality": 0.0
+          },
+          "joint_static": {
+            "cvar90": 0.9830847794418256,
+            "depth_counts": [
+              1152,
+              0,
+              0,
+              0
+            ],
+            "mean_linear_macs": 580608.0,
+            "mean_loss": 0.780044960428237,
+            "mean_quality": 0.0
+          },
+          "supervised_ndu": {
+            "cvar90": 1.3002317716950549,
+            "depth_counts": [
+              1152,
+              0,
+              0,
+              0
+            ],
+            "mean_linear_macs": 530944.0,
+            "mean_loss": 1.0094358079040766,
+            "mean_quality": 0.0
+          },
+          "supervised_static": {
+            "cvar90": 1.3002317716950549,
+            "depth_counts": [
+              1152,
+              0,
+              0,
+              0
+            ],
+            "mean_linear_macs": 580608.0,
+            "mean_loss": 1.0094358079040766,
+            "mean_quality": 0.0
+          }
+        },
+        "correlation_shift": {
+          "joint_fixed_risk": {
+            "cvar90": 0.9818523316489597,
+            "depth_counts": [
+              2304,
+              0,
+              0,
+              0
+            ],
+            "mean_linear_macs": 530944.0,
+            "mean_loss": 0.7075423047743259,
+            "mean_quality": 0.09722222222222222
+          },
+          "joint_myopic": {
+            "cvar90": 0.9818523316489597,
+            "depth_counts": [
+              2304,
+              0,
+              0,
+              0
+            ],
+            "mean_linear_macs": 530944.0,
+            "mean_loss": 0.7075423047743259,
+            "mean_quality": 0.09722222222222222
+          },
+          "joint_ndu": {
+            "cvar90": 0.9818523316489597,
+            "depth_counts": [
+              2304,
+              0,
+              0,
+              0
+            ],
+            "mean_linear_macs": 530944.0,
+            "mean_loss": 0.7075423047743259,
+            "mean_quality": 0.09722222222222222
+          },
+          "joint_risk_neutral": {
+            "cvar90": 0.9818523316489597,
+            "depth_counts": [
+              2304,
+              0,
+              0,
+              0
+            ],
+            "mean_linear_macs": 530944.0,
+            "mean_loss": 0.7075423047743259,
+            "mean_quality": 0.09722222222222222
+          },
+          "joint_static": {
+            "cvar90": 0.7702931142299817,
+            "depth_counts": [
+              2304,
+              0,
+              0,
+              0
+            ],
+            "mean_linear_macs": 580608.0,
+            "mean_loss": 0.539930878991563,
+            "mean_quality": 0.09722222222222222
+          },
+          "supervised_ndu": {
+            "cvar90": 1.2969482702302952,
+            "depth_counts": [
+              2304,
+              0,
+              0,
+              0
+            ],
+            "mean_linear_macs": 530944.0,
+            "mean_loss": 0.9115894287049809,
+            "mean_quality": 0.09722222222222222
+          },
+          "supervised_static": {
+            "cvar90": 0.9666915120656934,
+            "depth_counts": [
+              2304,
+              0,
+              0,
+              0
+            ],
+            "mean_linear_macs": 580608.0,
+            "mean_loss": 0.6566524361953378,
+            "mean_quality": 0.09722222222222222
+          }
+        }
+      },
+      "interpretation": "On correlation shift joint NDU has worse CVaR than joint static, and correctness is about0.0972 for every arm. With all sensors sharing the wrong report, every arm has zero semantic correctness despite smaller reconstruction loss for joint-trained generators. General robustness and recovery of unavailable information are not established."
+    },
+    "utility_refinement_credit": {
+      "interpretation": "At sampled updates1and40, seeds17and29 have zero utility-only refinement gradient. Seed43 has a tiny nonzero value at update1 and zero at40. Initial-latent and decoder gradients are nonzero. Anchor-driven refinement weight changes cannot be presented as NDU refinement credit.",
+      "recorded_norms": [
+        {
+          "seed": 17,
+          "utility_refinement_gradient_l2": [
+            {
+              "step": 1,
+              "value": 0.0
+            },
+            {
+              "step": 40,
+              "value": 0.0
+            }
+          ]
+        },
+        {
+          "seed": 29,
+          "utility_refinement_gradient_l2": [
+            {
+              "step": 1,
+              "value": 0.0
+            },
+            {
+              "step": 40,
+              "value": 0.0
+            }
+          ]
+        },
+        {
+          "seed": 43,
+          "utility_refinement_gradient_l2": [
+            {
+              "step": 1,
+              "value": 7.052653991728527e-06
+            },
+            {
+              "step": 40,
+              "value": 0.0
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "primary_saved_weight_and_metric_replays": [
+    {
+      "all_four_output_hashes_match": true,
+      "arm": "joint_ndu",
+      "max_abs_metric_differences": {
+        "contradiction": 0.0,
+        "loss": 0.0,
+        "omission": 0.0,
+        "quality": 0.0,
+        "raw_error": 0.0
+      },
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "all_four_output_hashes_match": true,
+      "arm": "supervised_static",
+      "max_abs_metric_differences": {
+        "contradiction": 0.0,
+        "loss": 0.0,
+        "omission": 0.0,
+        "quality": 0.0,
+        "raw_error": 0.0
+      },
+      "seed": 17,
+      "worlds": 1536
+    },
+    {
+      "all_four_output_hashes_match": true,
+      "arm": "joint_ndu",
+      "max_abs_metric_differences": {
+        "contradiction": 0.0,
+        "loss": 0.0,
+        "omission": 0.0,
+        "quality": 0.0,
+        "raw_error": 0.0
+      },
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "all_four_output_hashes_match": true,
+      "arm": "supervised_static",
+      "max_abs_metric_differences": {
+        "contradiction": 0.0,
+        "loss": 0.0,
+        "omission": 0.0,
+        "quality": 0.0,
+        "raw_error": 0.0
+      },
+      "seed": 29,
+      "worlds": 1536
+    },
+    {
+      "all_four_output_hashes_match": true,
+      "arm": "joint_ndu",
+      "max_abs_metric_differences": {
+        "contradiction": 0.0,
+        "loss": 0.0,
+        "omission": 0.0,
+        "quality": 0.0,
+        "raw_error": 0.0
+      },
+      "seed": 43,
+      "worlds": 1536
+    },
+    {
+      "all_four_output_hashes_match": true,
+      "arm": "supervised_static",
+      "max_abs_metric_differences": {
+        "contradiction": 0.0,
+        "loss": 0.0,
+        "omission": 0.0,
+        "quality": 0.0,
+        "raw_error": 0.0
+      },
+      "seed": 43,
+      "worlds": 1536
+    }
+  ],
+  "review_execution_cost": {
+    "process_cpu_seconds": 8.278922481,
+    "scope": "Separate post-run audit including NumPy/Torch imports; excludes final review JSON serialization. Not part of original experiment training or inference cost.",
+    "wall_seconds": 7.116957361999994
+  },
+  "reviewed_at_utc": "2026-10-23T04:19:23.121363+00:00",
+  "reviewer_role": "separate collaborating agent; independent calculations, not external signed attestation",
+  "run_directory_at_review": "/tmp/hepta-v2-confirmation-001",
+  "schema": "hepta.controlled-generation.independent-confirmation-review.v1",
+  "scientific_disposition": "Passes the preregistered bounded primary gate.",
+  "scope": "Read-only completed evidence audit. No training, policy reselection, empirical tuning, source edit, or heldout rerun.",
+  "selection_freeze_receipts": [
+    {
+      "frozen_selection_sha256": "ae632484e18adc2b9525a0632284bbb5361e0a23fe1e2a6286b681580ae3c59d",
+      "logged_before_all_scenario_completion_events": true,
+      "seed": 17,
+      "unchanged_at_end": true
+    },
+    {
+      "frozen_selection_sha256": "b78314b74218c90e4a68613f81be0d8c75c446a1f71eed92ab091bdae21b5765",
+      "logged_before_all_scenario_completion_events": true,
+      "seed": 29,
+      "unchanged_at_end": true
+    },
+    {
+      "frozen_selection_sha256": "b9d6cb995914d422d61a702983d380ba83ab5ee14c7861fb65e2cb67e61297c7",
+      "logged_before_all_scenario_completion_events": true,
+      "seed": 43,
+      "unchanged_at_end": true
+    }
+  ],
+  "source_commit": "c5c6b9df0a83a9a2f95d5583b95909829a982b06",
+  "source_integrity": {
+    "artifact_files": 241,
+    "combined_sha256": "71267995018c9d65e5da1ab19f2ac4044cb5efc442ade6813ead6c0318ea9748",
+    "commit_and_current_bytes_checked": true,
+    "current_old_experiment_modified_or_deleted_paths": [],
+    "manifest_files": 20,
+    "old_experiment_modified_or_deleted_paths": [],
+    "source_frozen_at_execution": true,
+    "unmanifested_artifacts": []
+  },
+  "training_fairness_and_credit": [
+    {
+      "calibration_unchanged": true,
+      "encoders_unchanged": true,
+      "forward_linear_macs_each": 18252410880,
+      "gradient_attribution": [
+        {
+          "anchor_gradient_l2": {
+            "all": 0.003181044454226562,
+            "decoders": 0.0027991304360315238,
+            "decoders.audio": 0.0007095292392323379,
+            "decoders.image": 0.0013141498506559716,
+            "decoders.text": 0.0021526364514596707,
+            "decoders.video": 0.0009853252937281226,
+            "initial_latent": 0.001189911943021529,
+            "refinement": 0.0009316770844569844,
+            "shared_refinement": 0.0015112619302581327
+          },
+          "step": 1,
+          "utility_gradient_l2": {
+            "all": 0.10457879575225636,
+            "decoders": 0.07482349395822042,
+            "decoders.audio": 0.0167971494317585,
+            "decoders.image": 0.03667207507836131,
+            "decoders.text": 0.05324773480228488,
+            "decoders.video": 0.03370828780812806,
+            "initial_latent": 0.07306277624670653,
+            "refinement": 0.0,
+            "shared_refinement": 0.07306277624670653
+          }
+        },
+        {
+          "anchor_gradient_l2": {
+            "all": 0.04395066439698613,
+            "decoders": 0.03389279019027965,
+            "decoders.audio": 0.007434692840747789,
+            "decoders.image": 0.01630397402435003,
+            "decoders.text": 0.02454395758342397,
+            "decoders.video": 0.015007369736314703,
+            "initial_latent": 0.026407035356442683,
+            "refinement": 0.009252467656672692,
+            "shared_refinement": 0.027981059201791992
+          },
+          "step": 40,
+          "utility_gradient_l2": {
+            "all": 0.004099109824924747,
+            "decoders": 0.0032575178230237886,
+            "decoders.audio": 0.0013253196398619442,
+            "decoders.image": 0.0010620945603795023,
+            "decoders.text": 0.00251740198466905,
+            "decoders.video": 0.001178809828560335,
+            "initial_latent": 0.002488228082286056,
+            "refinement": 0.0,
+            "shared_refinement": 0.002488228082286056
+          }
+        }
+      ],
+      "identical_initial_checkpoint": true,
+      "lifetime_compute_matched": false,
+      "optimizer_updates_each": 40,
+      "physical_probability_policy_distribution": [
+        {
+          "depth_probabilities": [
+            0.9999999999999999,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "expected_evidence_acquisitions": 1.0751113873276648,
+          "root_action_probabilities": {
+            "audio": 0.0,
+            "generate": 0.0,
+            "image": 0.03265510159965413,
+            "video": 0.967344898400346
+          },
+          "step": 1
+        },
+        {
+          "depth_probabilities": [
+            0.9999999999999988,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "expected_evidence_acquisitions": 1.0523025051640484,
+          "root_action_probabilities": {
+            "audio": 0.0,
+            "generate": 0.0,
+            "image": 0.03265510159965413,
+            "video": 0.967344898400346
+          },
+          "step": 40
+        }
+      ],
+      "seed": 17
+    },
+    {
+      "calibration_unchanged": true,
+      "encoders_unchanged": true,
+      "forward_linear_macs_each": 18252410880,
+      "gradient_attribution": [
+        {
+          "anchor_gradient_l2": {
+            "all": 0.004041108175847814,
+            "decoders": 0.0030498383402861973,
+            "decoders.audio": 0.0005191022371746658,
+            "decoders.image": 0.0013914254039686432,
+            "decoders.text": 0.002321401461287957,
+            "decoders.video": 0.0013065517096390639,
+            "initial_latent": 0.002090599444122548,
+            "refinement": 0.0016304708986237281,
+            "shared_refinement": 0.0026512339366838934
+          },
+          "step": 1,
+          "utility_gradient_l2": {
+            "all": 0.10145283945468557,
+            "decoders": 0.0713550190385839,
+            "decoders.audio": 0.016512184681811645,
+            "decoders.image": 0.03465667021762104,
+            "decoders.text": 0.05019532715490662,
+            "decoders.video": 0.033139566084506446,
+            "initial_latent": 0.07211892880112358,
+            "refinement": 0.0,
+            "shared_refinement": 0.07211892880112358
+          }
+        },
+        {
+          "anchor_gradient_l2": {
+            "all": 0.04871250274483559,
+            "decoders": 0.036732953323437775,
+            "decoders.audio": 0.008346832761665363,
+            "decoders.image": 0.017419405501521854,
+            "decoders.text": 0.0268608832881335,
+            "decoders.video": 0.015959245084447723,
+            "initial_latent": 0.029763240613377557,
+            "refinement": 0.011736591157314333,
+            "shared_refinement": 0.03199371913053805
+          },
+          "step": 40,
+          "utility_gradient_l2": {
+            "all": 0.0059717970836760175,
+            "decoders": 0.004569811342613244,
+            "decoders.audio": 0.0016786569315962413,
+            "decoders.image": 0.0017690570880383616,
+            "decoders.text": 0.003463990741710876,
+            "decoders.video": 0.0017136194950113986,
+            "initial_latent": 0.003844370520842746,
+            "refinement": 0.0,
+            "shared_refinement": 0.003844370520842746
+          }
+        }
+      ],
+      "identical_initial_checkpoint": true,
+      "lifetime_compute_matched": false,
+      "optimizer_updates_each": 40,
+      "physical_probability_policy_distribution": [
+        {
+          "depth_probabilities": [
+            1.0000000000000002,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "expected_evidence_acquisitions": 1.0543441057789305,
+          "root_action_probabilities": {
+            "audio": 0.0,
+            "generate": 0.0,
+            "image": 0.03387105490704713,
+            "video": 0.9661289450929529
+          },
+          "step": 1
+        },
+        {
+          "depth_probabilities": [
+            0.9999999999999994,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "expected_evidence_acquisitions": 1.050769803525964,
+          "root_action_probabilities": {
+            "audio": 0.0,
+            "generate": 0.0,
+            "image": 0.03387105490704713,
+            "video": 0.9661289450929529
+          },
+          "step": 40
+        }
+      ],
+      "seed": 29
+    },
+    {
+      "calibration_unchanged": true,
+      "encoders_unchanged": true,
+      "forward_linear_macs_each": 18252410880,
+      "gradient_attribution": [
+        {
+          "anchor_gradient_l2": {
+            "all": 0.003054104783594968,
+            "decoders": 0.0025519689988127234,
+            "decoders.audio": 0.0005089925230067234,
+            "decoders.image": 0.0011916583639265874,
+            "decoders.text": 0.001965625463385107,
+            "decoders.video": 0.0009847534025330183,
+            "initial_latent": 0.0013527315344810068,
+            "refinement": 0.0009925359710847336,
+            "shared_refinement": 0.0016777992306222023
+          },
+          "step": 1,
+          "utility_gradient_l2": {
+            "all": 0.10377870338709481,
+            "decoders": 0.07499500058378515,
+            "decoders.audio": 0.016880910689360335,
+            "decoders.image": 0.03502412778203742,
+            "decoders.text": 0.05532022079465531,
+            "decoders.video": 0.03243869003517058,
+            "initial_latent": 0.0717340164385401,
+            "refinement": 7.052653991728527e-06,
+            "shared_refinement": 0.07173401678523704
+          }
+        },
+        {
+          "anchor_gradient_l2": {
+            "all": 0.043657126149013945,
+            "decoders": 0.03357162837509071,
+            "decoders.audio": 0.0070006986118885724,
+            "decoders.image": 0.015975419915391247,
+            "decoders.text": 0.0249063603862449,
+            "decoders.video": 0.014230376718067183,
+            "initial_latent": 0.02622349640705733,
+            "refinement": 0.009550846455931171,
+            "shared_refinement": 0.02790860856144071
+          },
+          "step": 40,
+          "utility_gradient_l2": {
+            "all": 0.009166761845979412,
+            "decoders": 0.006852845440846496,
+            "decoders.audio": 0.002344835272073649,
+            "decoders.image": 0.002873071210872042,
+            "decoders.text": 0.005072643754317045,
+            "decoders.video": 0.002734407676630615,
+            "initial_latent": 0.006088352166618917,
+            "refinement": 0.0,
+            "shared_refinement": 0.006088352166618917
+          }
+        }
+      ],
+      "identical_initial_checkpoint": true,
+      "lifetime_compute_matched": false,
+      "optimizer_updates_each": 40,
+      "physical_probability_policy_distribution": [
+        {
+          "depth_probabilities": [
+            0.9999946624820526,
+            5.337517947404098e-06,
+            0.0,
+            0.0
+          ],
+          "expected_evidence_acquisitions": 1.062222282269299,
+          "root_action_probabilities": {
+            "audio": 0.03095276696930394,
+            "generate": 0.0,
+            "image": 0.0,
+            "video": 0.9690472330306961
+          },
+          "step": 1
+        },
+        {
+          "depth_probabilities": [
+            1.0000000000000002,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "expected_evidence_acquisitions": 1.0425748787049047,
+          "root_action_probabilities": {
+            "audio": 0.03095276696930394,
+            "generate": 0.0,
+            "image": 0.0,
+            "video": 0.9690472330306961
+          },
+          "step": 40
+        }
+      ],
+      "seed": 43
+    }
+  ]
+}
