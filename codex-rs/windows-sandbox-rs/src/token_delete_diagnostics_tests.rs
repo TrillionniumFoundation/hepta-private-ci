@@ -276,7 +276,16 @@ fn workspace_delete_permission_routes_diagnostic_matrix() -> Result<()> {
             OutsideLabel::PreexistingLow,
         ),
     ];
+    // Observe all native routes before evaluating the full matrix. In
+    // particular, a privileged base-token control must not prevent collection
+    // of the restricted results for the remaining DELETE_CHILD combinations.
+    // No failed assertion is ignored: every expectation is checked below.
     let mut denied = Vec::new();
+    let mut observed_control = Vec::new();
+    let mut expected_control_results = Vec::new();
+    let mut observed_control_denials = Vec::new();
+    let mut expected_control_denials = Vec::new();
+    let mut outside_reads = Vec::new();
     for (name, parent_right, object_right, label) in routes {
         let outside = fixture.path().join(name);
         std::fs::create_dir(&outside)?;
@@ -353,21 +362,21 @@ fn workspace_delete_permission_routes_diagnostic_matrix() -> Result<()> {
                 }
             }
         }
-        assert_eq!(
-            control.each_ref().map(|outcome| outcome.succeeded),
-            [expected_control; 2]
-        );
+        observed_control.extend(control.iter().map(|outcome| outcome.succeeded));
+        expected_control_results.extend([expected_control; 2]);
         if !expected_control {
-            assert_eq!(
-                control.each_ref().map(|outcome| outcome.win32_error),
-                [Some(5); 2]
-            );
+            observed_control_denials.extend(control.iter().map(|outcome| outcome.win32_error));
+            expected_control_denials.extend([Some(5); 2]);
         }
-        assert_eq!(outside_read, "outside");
+        outside_reads.push(outside_read);
         denied.extend(restricted.into_iter().map(|outcome| outcome.win32_error));
     }
-    // Gather every route before asserting; an actual delete escape remains a
-    // failing security regression, not an informational green test.
+    // Keep the original fail-closed assertions, but run them after every
+    // native route has produced evidence. A DELETE escape or unexpectedly
+    // privileged control still fails this security regression.
+    assert_eq!(observed_control, expected_control_results);
+    assert_eq!(observed_control_denials, expected_control_denials);
+    assert_eq!(outside_reads, vec!["outside"; routes.len()]);
     assert_eq!(denied, vec![Some(5); routes.len() * 2]);
     Ok(())
 }
