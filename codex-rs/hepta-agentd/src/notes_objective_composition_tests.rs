@@ -10,6 +10,7 @@ use codex_hepta_memory::CognitiveCheckpointPhase;
 use codex_hepta_memory::CognitiveCheckpointReceipt;
 use codex_hepta_memory::CognitiveCheckpointRequest;
 use codex_hepta_memory::CognitiveCheckpointResponse;
+use codex_hepta_memory::CognitiveCheckpointRetainedProposal;
 use codex_hepta_memory::CognitiveCheckpointRetainedRequest;
 use codex_hepta_memory::CognitiveCheckpointStatus;
 use codex_hepta_memory::CognitiveCheckpointToken;
@@ -49,8 +50,37 @@ impl CognitiveCheckpointTransport for ConstructionPeer {
                     Sha256Digest::for_bytes(&serde_json::to_vec(&current.head).unwrap());
             }
             CognitiveCheckpointCommand::PreparePublication
-            | CognitiveCheckpointCommand::CommitPublication
-            | CognitiveCheckpointCommand::FencePublisher => {
+            | CognitiveCheckpointCommand::CommitPublication => {
+                assert_eq!(request.expected, Some(current.token.clone()));
+                let predecessor_token = current.token.clone();
+                if request.command == CognitiveCheckpointCommand::PreparePublication {
+                    assert_eq!(current.head.phase, CognitiveCheckpointPhase::Dirty);
+                    let proposal = request.proposal.unwrap();
+                    current.head.phase = CognitiveCheckpointPhase::Publishing;
+                    current.head.proposal = Some(CognitiveCheckpointRetainedProposal {
+                        request_id: request.request_id.clone(),
+                        cut: proposal.cut,
+                        writer_fence: proposal.writer_fence,
+                    });
+                } else {
+                    assert_eq!(current.head.phase, CognitiveCheckpointPhase::Publishing);
+                    current.head.last_current = current.head.proposal.take().unwrap().cut;
+                    current.head.phase = CognitiveCheckpointPhase::Current;
+                }
+                current.head.counter += 1;
+                current.head.last_mutation_sequence =
+                    u64::from_str_radix(&request.request_id[16..], 16).unwrap();
+                current.head.last_request = Some(CognitiveCheckpointRetainedRequest {
+                    request_id: request.request_id.clone(),
+                    request_sha256: Sha256Digest::for_bytes(bytes),
+                    command: request.command,
+                    predecessor_token,
+                });
+                current.token.counter = current.head.counter;
+                current.token.head_sha256 =
+                    Sha256Digest::for_bytes(&serde_json::to_vec(&current.head).unwrap());
+            }
+            CognitiveCheckpointCommand::FencePublisher => {
                 return Err(ObjectiveSenderCheckpointError::Refused);
             }
         }
@@ -307,3 +337,6 @@ async fn notes_objective_session_registration_returns_observer_for_the_same_priv
     peer.join().expect("registered Notes observer peer")?;
     Ok(())
 }
+
+#[path = "notes_local_handoff_tests.rs"]
+mod local_handoff_tests;
