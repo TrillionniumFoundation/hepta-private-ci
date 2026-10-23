@@ -1,27 +1,51 @@
 import assert from "node:assert/strict";
-import { mkdtemp, open, readFile, rm, stat } from "node:fs/promises";
+import {
+  appendFile,
+  mkdtemp,
+  open,
+  readFile,
+  rename,
+  rm,
+  stat,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import test from "node:test";
+import { spawnSync } from "node:child_process";
 
 import { FileBrowserOperationJournal } from "../src/journal.js";
 
 function record(operationId = "operation.1") {
   return {
-    profileId: "profile.1", generation: 1, operationId,
-    requestDigest: "1".repeat(64), semanticDigest: "2".repeat(64),
-    status: "indeterminate", terminalObserved: false, outcomeDigest: null,
+    profileId: "profile.1",
+    generation: 1,
+    operationId,
+    requestDigest: "1".repeat(64),
+    semanticDigest: "2".repeat(64),
+    status: "indeterminate",
+    terminalObserved: false,
+    outcomeDigest: null,
   };
 }
 
 async function fixture(t, nested = false) {
   const root = await mkdtemp(join(tmpdir(), "hepta-journal-durability-"));
   t.after(() => rm(root, { recursive: true, force: true }));
-  const path = join(root, ...(nested ? ["owner", "generation"] : []), "operations.jsonl");
+  const path = join(
+    root,
+    ...(nested ? ["owner", "generation"] : []),
+    "operations.jsonl",
+  );
   const probe = await open(join(root, "prototype-probe"), "w", 0o600);
   const prototype = Object.getPrototypeOf(probe);
   await probe.close();
-  return { root, path, prototype, journal: new FileBrowserOperationJournal(path) };
+  return {
+    root,
+    path,
+    prototype,
+    journal: new FileBrowserOperationJournal(path),
+  };
 }
 
 function identity(info) {
@@ -33,7 +57,10 @@ function observeSync(t, prototype, before = async () => {}) {
   const sync = prototype.sync;
   t.mock.method(prototype, "sync", async function () {
     const info = await this.stat();
-    const event = { kind: info.isDirectory() ? "directory" : "file", id: identity(info) };
+    const event = {
+      kind: info.isDirectory() ? "directory" : "file",
+      id: identity(info),
+    };
     events.push(event);
     await before(event, events);
     return sync.call(this);
@@ -42,7 +69,9 @@ function observeSync(t, prototype, before = async () => {}) {
 }
 
 function ioFailure() {
-  return Object.assign(new Error("injected journal durability failure"), { code: "EIO" });
+  return Object.assign(new Error("injected journal durability failure"), {
+    code: "EIO",
+  });
 }
 
 test("dispatch awaits the file barrier followed by its parent-directory barrier", async (t) => {
@@ -50,7 +79,10 @@ test("dispatch awaits the file barrier followed by its parent-directory barrier"
   const events = observeSync(t, prototype);
   await journal.recordDispatch(record());
   const parentId = identity(await stat(root));
-  assert.deepEqual(events.slice(-2).map((event) => event.kind), ["file", "directory"]);
+  assert.deepEqual(
+    events.slice(-2).map((event) => event.kind),
+    ["file", "directory"],
+  );
   assert.equal(events.at(-1).id, parentId);
 });
 
@@ -58,7 +90,11 @@ test("new nested parents and their directory entries are synchronized", async (t
   const { root, path, prototype, journal } = await fixture(t, true);
   const events = observeSync(t, prototype);
   await journal.recordDispatch(record());
-  const synchronized = new Set(events.filter((event) => event.kind === "directory").map((event) => event.id));
+  const synchronized = new Set(
+    events
+      .filter((event) => event.kind === "directory")
+      .map((event) => event.id),
+  );
   for (const directory of [root, join(root, "owner"), dirname(path)]) {
     assert.ok(synchronized.has(identity(await stat(directory))), directory);
   }
@@ -70,7 +106,10 @@ test("successful parent initialization is not repeated on every append", async (
   await journal.recordDispatch(record());
   events.length = 0;
   await journal.recordDispatch(record("operation.2"));
-  assert.deepEqual(events.map((event) => event.kind), ["file", "directory"]);
+  assert.deepEqual(
+    events.map((event) => event.kind),
+    ["directory", "file", "directory"],
+  );
 });
 
 test("a file-sync failure fences queued writes, retries and ordinary reads", async (t) => {
@@ -83,7 +122,8 @@ test("a file-sync failure fences queued writes, retries and ordinary reads", asy
     }
   });
   const results = await Promise.allSettled([
-    journal.recordDispatch(record()), journal.recordDispatch(record("operation.2")),
+    journal.recordDispatch(record()),
+    journal.recordDispatch(record("operation.2")),
   ]);
   assert.equal(results[0].status, "rejected");
   assert.equal(results[0].reason.code, "EIO");
@@ -91,8 +131,14 @@ test("a file-sync failure fences queued writes, retries and ordinary reads", asy
   assert.match(results[1].reason.message, /owner recovery/);
   const bytes = await readFile(path);
   await assert.rejects(journal.recordDispatch(record()), /owner recovery/);
-  await assert.rejects(journal.getOperation("profile.1", 1, "operation.1"), /owner recovery/);
-  await assert.rejects(journal.listOperations("profile.1", 1), /owner recovery/);
+  await assert.rejects(
+    journal.getOperation("profile.1", 1, "operation.1"),
+    /owner recovery/,
+  );
+  await assert.rejects(
+    journal.listOperations("profile.1", 1),
+    /owner recovery/,
+  );
   assert.deepEqual(await readFile(path), bytes);
 });
 
@@ -110,7 +156,14 @@ test("a directory-sync failure after writing cannot become successful dedupe", a
   await assert.rejects(journal.recordDispatch(record()), { code: "EIO" });
   const bytes = await readFile(path);
   await assert.rejects(journal.recordDispatch(record()), /owner recovery/);
-  await assert.rejects(journal.recordObservation({ ...record(), terminalObserved: true, status: "succeeded" }), /owner recovery/);
+  await assert.rejects(
+    journal.recordObservation({
+      ...record(),
+      terminalObserved: true,
+      status: "succeeded",
+    }),
+    /owner recovery/,
+  );
   assert.deepEqual(await readFile(path), bytes);
 });
 
@@ -138,29 +191,61 @@ test("a short failed write is fenced and a fresh reader rejects its torn tail", 
   });
   await assert.rejects(journal.recordDispatch(record()), { code: "EIO" });
   const bytes = await readFile(path);
-  await assert.rejects(journal.recordDispatch(record("operation.2")), /owner recovery/);
-  await assert.rejects(new FileBrowserOperationJournal(path).getOperation("profile.1", 1, "operation.1"), /incomplete/);
+  await assert.rejects(
+    journal.recordDispatch(record("operation.2")),
+    /owner recovery/,
+  );
+  await assert.rejects(
+    new FileBrowserOperationJournal(path).getOperation(
+      "profile.1",
+      1,
+      "operation.1",
+    ),
+    /owner recovery/,
+  );
+  // This fixture owns the failed writer; only explicit owner recovery can
+  // remove its stale lock, after which the torn tail still fails integrity.
+  await rm(`${path}.writer-lock`, { recursive: true });
+  await assert.rejects(
+    new FileBrowserOperationJournal(path).getOperation(
+      "profile.1",
+      1,
+      "operation.1",
+    ),
+    /incomplete/,
+  );
   assert.deepEqual(await readFile(path), bytes);
 });
 
 test("semantic rejection before writing does not fence unrelated work", async (t) => {
   const { journal } = await fixture(t);
   await journal.recordDispatch(record());
-  await assert.rejects(journal.recordDispatch({ ...record(), semanticDigest: "3".repeat(64) }), /semantics/);
+  await assert.rejects(
+    journal.recordDispatch({ ...record(), semanticDigest: "3".repeat(64) }),
+    /semantics/,
+  );
   await journal.recordDispatch(record("operation.2"));
-  assert.deepEqual(await journal.getOperation("profile.1", 1, "operation.2"), record("operation.2"));
+  assert.deepEqual(
+    await journal.getOperation("profile.1", 1, "operation.2"),
+    record("operation.2"),
+  );
 });
 
 test("ENOENT from a directory barrier is not mistaken for an absent journal", async (t) => {
   const { path, prototype, journal } = await fixture(t, true);
   observeSync(t, prototype, async (event) => {
     if (event.kind === "directory") {
-      throw Object.assign(new Error("injected directory race"), { code: "ENOENT" });
+      throw Object.assign(new Error("injected directory race"), {
+        code: "ENOENT",
+      });
     }
   });
   await assert.rejects(journal.recordDispatch(record()), { code: "ENOENT" });
   await assert.rejects(stat(path), { code: "ENOENT" });
-  await assert.rejects(journal.listOperations("profile.1", 1), /owner recovery/);
+  await assert.rejects(
+    journal.listOperations("profile.1", 1),
+    /owner recovery/,
+  );
 });
 
 test("failed terminal persistence cannot be exposed as an ordinary success", async (t) => {
@@ -169,11 +254,19 @@ test("failed terminal persistence cannot be exposed as an ordinary success", asy
   observeSync(t, prototype, async (event) => {
     if (event.kind === "file") throw ioFailure();
   });
-  await assert.rejects(journal.recordObservation({
-    ...record(), status: "succeeded", terminalObserved: true,
-    outcomeDigest: "3".repeat(64),
-  }), { code: "EIO" });
-  await assert.rejects(journal.getOperation("profile.1", 1, "operation.1"), /owner recovery/);
+  await assert.rejects(
+    journal.recordObservation({
+      ...record(),
+      status: "succeeded",
+      terminalObserved: true,
+      outcomeDigest: "3".repeat(64),
+    }),
+    { code: "EIO" },
+  );
+  await assert.rejects(
+    journal.getOperation("profile.1", 1, "operation.1"),
+    /owner recovery/,
+  );
 });
 
 test("a close failure after a write also fences the live owner", async (t) => {
@@ -194,5 +287,220 @@ test("a close failure after a write also fences the live owner", async (t) => {
     return sync.call(this);
   });
   await assert.rejects(journal.recordDispatch(record()), { code: "EIO" });
-  await assert.rejects(journal.recordDispatch(record("operation.2")), /owner recovery/);
+  await assert.rejects(
+    journal.recordDispatch(record("operation.2")),
+    /owner recovery/,
+  );
+});
+
+test("a second process cannot cross admission while the first writer is synchronizing", async (t) => {
+  const { path, prototype, journal } = await fixture(t);
+  const source = new URL("../src/journal.js", import.meta.url).href;
+  let attempted = false;
+  observeSync(t, prototype, async (event) => {
+    if (event.kind !== "file" || attempted) return;
+    attempted = true;
+    const code = `import { FileBrowserOperationJournal } from ${JSON.stringify(source)};
+      try {
+        await new FileBrowserOperationJournal(${JSON.stringify(path)}).recordDispatch(${JSON.stringify(record())});
+        process.exit(1);
+      } catch (error) {
+        process.stderr.write(error.message);
+        process.exit(73);
+      }`;
+    const child = spawnSync(
+      process.execPath,
+      ["--input-type=module", "-e", code],
+      {
+        encoding: "utf8",
+        timeout: 15000,
+      },
+    );
+    assert.equal(child.status, 73, child.stderr);
+    assert.match(child.stderr, /writer lock is held/);
+  });
+  await journal.recordDispatch(record());
+  assert.equal(attempted, true);
+  assert.deepEqual(
+    await journal.getOperation("profile.1", 1, "operation.1"),
+    record(),
+  );
+});
+
+test("abrupt writer exit leaves a lock that a fresh process does not steal", async (t) => {
+  const { root, path } = await fixture(t);
+  const source = new URL("../src/journal.js", import.meta.url).href;
+  const code = `import { open } from "node:fs/promises";
+    import { FileBrowserOperationJournal } from ${JSON.stringify(source)};
+    const probe = await open(${JSON.stringify(join(root, "child-probe"))}, "w", 0o600);
+    const prototype = Object.getPrototypeOf(probe);
+    await probe.close();
+    const sync = prototype.sync;
+    prototype.sync = async function () {
+      if ((await this.stat()).isFile()) process.exit(73);
+      return sync.call(this);
+    };
+    await new FileBrowserOperationJournal(${JSON.stringify(path)}).recordDispatch(${JSON.stringify(record())});`;
+  const child = spawnSync(
+    process.execPath,
+    ["--input-type=module", "-e", code],
+    {
+      encoding: "utf8",
+      timeout: 15000,
+    },
+  );
+  assert.equal(child.status, 73, child.stderr);
+  const reopened = new FileBrowserOperationJournal(path);
+  await assert.rejects(
+    reopened.getOperation("profile.1", 1, "operation.1"),
+    /writer lock is held/,
+  );
+  await assert.rejects(
+    reopened.recordDispatch(record("operation.2")),
+    /writer lock is held/,
+  );
+});
+
+test("complete-looking bytes after failed sync cannot be blessed by a different journal instance", async (t) => {
+  const { path, prototype, journal } = await fixture(t);
+  observeSync(t, prototype, async (event) => {
+    if (event.kind === "file") throw ioFailure();
+  });
+  await assert.rejects(journal.recordDispatch(record()), { code: "EIO" });
+  const reopened = new FileBrowserOperationJournal(path);
+  await assert.rejects(
+    reopened.getOperation("profile.1", 1, "operation.1"),
+    /owner recovery/,
+  );
+  await assert.rejects(reopened.recordDispatch(record()), /owner recovery/);
+});
+
+test("a journal replaced during fsync cannot acknowledge a dispatch in a detached file", async (t) => {
+  const { path, prototype, journal } = await fixture(t);
+  let replaced = false;
+  observeSync(t, prototype, async (event) => {
+    if (event.kind !== "file" || replaced) return;
+    replaced = true;
+    await rename(path, `${path}.detached`);
+    await writeFile(path, "", { mode: 0o600 });
+  });
+  await assert.rejects(
+    journal.recordDispatch(record()),
+    /file identity changed/,
+  );
+  await assert.rejects(
+    new FileBrowserOperationJournal(path).getOperation(
+      "profile.1",
+      1,
+      "operation.1",
+    ),
+    /owner recovery/,
+  );
+  assert.equal(await readFile(path, "utf8"), "");
+  assert.match(await readFile(`${path}.detached`, "utf8"), /operation.1/);
+});
+
+test("growth during a bounded snapshot read is rejected and cannot allocate beyond the statted length", async (t) => {
+  const { path, prototype, journal } = await fixture(t);
+  await journal.recordDispatch(record());
+  const before = await readFile(path);
+  const read = prototype.read;
+  let mutated = false;
+  t.mock.method(
+    prototype,
+    "read",
+    async function (buffer, offset, length, position) {
+      assert.ok(buffer.length <= before.length + 1);
+      if (!mutated) {
+        mutated = true;
+        await appendFile(path, before);
+      }
+      return read.call(this, buffer, offset, length, position);
+    },
+  );
+  const reopened = new FileBrowserOperationJournal(path);
+  await assert.rejects(
+    reopened.getOperation("profile.1", 1, "operation.1"),
+    /changed while reading/,
+  );
+  assert.equal(mutated, true);
+  await assert.rejects(
+    journal.getOperation("profile.1", 1, "operation.1"),
+    /owner recovery/,
+  );
+});
+
+test("a FIFO substituted at the journal path fails before blocking on a reader", async (t) => {
+  if (process.platform === "win32") return t.skip("Unix named pipe boundary");
+  const { path } = await fixture(t);
+  const fifo = spawnSync("mkfifo", ["-m", "600", path], {
+    encoding: "utf8",
+    timeout: 2000,
+  });
+  if (fifo.error?.code === "ENOENT") return t.skip("mkfifo unavailable");
+  assert.equal(fifo.status, 0, fifo.stderr);
+  const source = new URL("../src/journal.js", import.meta.url).href;
+  const code = `import { FileBrowserOperationJournal } from ${JSON.stringify(source)};
+    try {
+      await new FileBrowserOperationJournal(${JSON.stringify(path)}).getOperation("profile.1", 1, "operation.1");
+      process.exit(1);
+    } catch (error) {
+      process.stderr.write(error.message);
+      process.exit(73);
+    }`;
+  const child = spawnSync(
+    process.execPath,
+    ["--input-type=module", "-e", code],
+    {
+      encoding: "utf8",
+      timeout: 2000,
+    },
+  );
+  assert.equal(child.error, undefined, child.error?.message);
+  assert.equal(child.status, 73, child.stderr);
+  assert.match(child.stderr, /regular file/);
+});
+
+test("writer lock is durably installed before an uncertain append", async (t) => {
+  const { root, path, prototype, journal } = await fixture(t);
+  await journal.recordDispatch(record());
+  const events = observeSync(t, prototype, async (event) => {
+    if (event.kind === "file") throw ioFailure();
+  });
+  await assert.rejects(journal.recordDispatch(record("operation.2")), {
+    code: "EIO",
+  });
+  assert.deepEqual(
+    events.map((event) => event.kind),
+    ["directory", "file"],
+  );
+  assert.equal(events[0].id, identity(await stat(root)));
+  assert.equal((await stat(`${path}.writer-lock`)).isDirectory(), true);
+  t.mock.restoreAll();
+  await assert.rejects(
+    new FileBrowserOperationJournal(path).listOperations("profile.1", 1),
+    /writer lock/,
+  );
+});
+
+test("failed writer-lock barrier prevents append and retains recovery fence", async (t) => {
+  const { path, prototype, journal } = await fixture(t);
+  await journal.recordDispatch(record());
+  const bytes = await readFile(path);
+  const events = observeSync(t, prototype, async () => {
+    throw ioFailure();
+  });
+  await assert.rejects(journal.recordDispatch(record("operation.2")), {
+    code: "EIO",
+  });
+  assert.deepEqual(
+    events.map((event) => event.kind),
+    ["directory"],
+  );
+  assert.deepEqual(await readFile(path), bytes);
+  t.mock.restoreAll();
+  await assert.rejects(
+    new FileBrowserOperationJournal(path).listOperations("profile.1", 1),
+    /writer lock/,
+  );
 });

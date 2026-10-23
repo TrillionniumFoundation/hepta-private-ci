@@ -1,7 +1,7 @@
 # browser.servo: implementation design
 
 Parent: `docs/modules/browser.servo/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
-Status: hardened durable browser effect owner and isolated-worker host boundary implemented; the current-pin Servo worker artifact and independent target qualification remain open. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: durable browser effect owner, isolated-worker host, current-pin Servo embedder source and private Agentd source caller are present; successful native build/artifact and independent target qualification remain open. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -33,9 +33,13 @@ Before a browser effect can cross the worker boundary:
 
 `FileBrowserOperationJournal` is append-only, checksum-bound, bounded and fsynced. Terminal operations may be evicted from the in-memory cache after a bounded retention window because their durable tombstones remain authoritative for replay. A reused operation ID with changed immutable semantics is rejected.
 
+Terminal results cannot regress, records are immutable scalar snapshots and replay rejects invalid UTF-8, malformed digests and incomplete trailing lines. The file and parent entries are synced before effect dispatch. Same-path instances share a serialization tail and an atomic `<journal>.writer-lock` excludes another process. A crash/uncertain write retains the lock without automatic stealing: the owner must confirm the prior writer stopped, inspect/reconcile the durable prefix and unresolved effects, sync the reviewed state, then explicitly clear the lock. No recovery path authorizes redispatch. Replay caching requires reliable local `dev/ino/size/mtimeNs/ctimeNs`; external changes force validated replay.
+
 ## 4. Deterministic algorithm and scheduling
 
 Profile `open/observe/grant/act/reconcile/close` transitions serialize by profile identity. Concurrent calls for one operation cannot both enter worker dispatch.
+
+Persisted/live reconciliation shares the profile lock and synchronizes terminal durable results into the live cache. Historical replay validates the original immutable semantics, and a dispatched effect consumes its page snapshot. Late authority callbacks after cancellation cannot enter dispatch; action/profile/grant expiry jointly bound the final dispatch deadline.
 
 New effects require live profile/effect authority. Reconciliation is observational and deliberately remains available after the original grant or action deadline expires; expiry/revocation denies a new effect but does not erase the owner obligation to settle an already-dispatched one.
 
@@ -49,7 +53,13 @@ All driver calls have bounded host deadlines. Dispatch receives an AbortSignal; 
 
 `apps/hepta-browser/src/worker-driver.js` implements an exact-artifact-digest-bound subprocess driver. It has no TCP/WebDriver control API. The supplied Linux launcher uses Bubblewrap with `--unshare-all`, no `--share-net`, a cleared environment, hidden ambient home/run/tmp state, a private writable profile mount and parent-death cleanup.
 
-This is a concrete host path, not a claim that the pinned Servo artifact exists. The repository still lacks the current-pin Hepta-owned Servo worker executable and its independent runtime evidence.
+The Linux launcher starts from an empty tmpfs root with a runtime-library/font/TLS allowlist rather than binding the host root. This is a concrete host path, not a claim that a qualified Servo artifact exists. Current-pin Rust worker source and its event/render loop are in `apps/hepta-browser/servo-worker/`; native compilation, artifact and independent runtime evidence remain separate gates. No direct external egress is enabled, including access to admitted origins.
+
+`agentd-protocol.js`, `agentd-service.js` and `agentd-service-main.js` provide a private inherited parent service. The current Agentd tree contains `BrowserServoPort`, `ChildBrowserTransport` and the one-shot `hepta-agentd-browser` executable. The parent handshake holds final-use authority through durable intent and the local worker-pipe write, then acknowledges that boundary separately from remote terminality. Named source composition does not establish a persistent product session, daemon activation or qualified native execution.
+
+Malformed worker responses/EOF/pipe errors permanently close the channel; pending requests are bounded at 1024 and direct driver calls require a bounded `AbortSignal`. The parent queue is limited to 64 frames/4 MiB and expired authority reads are cancelled. Native transport read/write deadlines and port poisoning fence incomplete exchanges. Worker source pre-reserves operations, binds page/document/result ownership and caps operation/event queues at 4096/16; real current-pin compilation/execution is still required. The service digest now covers the complete recipe-produced static JavaScript `.mjs` bundle. The pinned build/input/recipe/npm-lock receipt and target rebuild compare the entire import closure, while new Rust source executes a private snapshot of the same opened, verified bytes. An isolated actual-source harness, with the actual contracts path and every dependency name/version/source matched to the repository `Cargo.lock`, passed an offline test build, 27 default tests (one ignored), the separately invoked actual Rust-port-to-Node-owner fixture and scoped Rust 1.95.0 Clippy. The fixture confirmed signed first dispatch, revocation, same-request historical replay and changed-deadline rejection with one authority entry and one dispatch. Complete Agentd all-target and real Servo/target-host qualification remain unproved. Node/Bubblewrap/OS/runtime bytes are external trusted installation dependencies, and observed executable hashes do not qualify them. The AST loader guard is not an arbitrary reflective JavaScript sandbox. Worker executables are staged in a private artifact directory without a writable profile alias.
+
+Parent EOF cancels pending/active authority, and actual driver entry rechecks cancellation/deadline after awaited journal persistence. Private v1 canonical JSON uses UTF-8 key-byte order and finite JavaScript-safe integers, not RFC JCS. Historical `{ok,result,replay}` observation evidence binds original profile/principal/generation/operation/request/semantic identity and grants zero authority; matching caller/service payload versions are required. A loaded journal owner's prefix anchor detects live deletion/rollback/rewrite; erasure before its first admitted load still requires an external trusted history anchor.
 
 ## 6. Capacity and performance profile
 
@@ -74,7 +84,9 @@ These source tests establish repository semantics only. The real Servo artifact,
 - **State machine:** [apps/hepta-browser/src/runtime-host.js](../../../apps/hepta-browser/src/runtime-host.js) owns profile serialization, final-use linearization, dynamic grant admission, no-redispatch semantics and recovery.
 - **Typed payloads:** [apps/hepta-browser/src/action.js](../../../apps/hepta-browser/src/action.js) and [apps/hepta-browser/src/bridge.js](../../../apps/hepta-browser/src/bridge.js).
 - **Durability:** [apps/hepta-browser/src/journal.js](../../../apps/hepta-browser/src/journal.js) provides memory and private file journals; persisted indeterminate effects can be reconciled after host loss.
-- **Worker boundary:** [apps/hepta-browser/src/worker-protocol.js](../../../apps/hepta-browser/src/worker-protocol.js) and [apps/hepta-browser/src/worker-driver.js](../../../apps/hepta-browser/src/worker-driver.js) provide private framed transport, artifact binding and the Linux Bubblewrap host path.
+- **Worker boundary:** [apps/hepta-browser/src/worker-protocol.js](../../../apps/hepta-browser/src/worker-protocol.js) and [apps/hepta-browser/src/worker-driver.js](../../../apps/hepta-browser/src/worker-driver.js) provide private framed transport, artifact binding and the Linux Bubblewrap host path; `apps/hepta-browser/servo-worker/src/main.rs` contains the current-pin embedding/event/render source.
+- **Parent composition:** `apps/hepta-browser/src/agentd-service.js` implements the challenge/dispatch-boundary service; `codex-rs/hepta-agentd/src/browser_servo.rs` and `src/bin/hepta-agentd-browser.rs` provide the Agentd-owned source caller.
+- **Service packaging:** `apps/hepta-browser/scripts/build-service.mjs`, `package-lock.json`, `test/service-build.test.js` and `test/worker-evidence.test.js` cover standalone output, source-input/digest binding and independent source reconstruction; Rust snapshot source is in `codex-rs/hepta-agentd/src/browser_servo_artifact.rs`.
 - **Focused tests:** `apps/hepta-browser/test/browser.test.js`, `action.test.js`, `bridge.test.js`, `runtime.test.js`, `journal.test.js`, `worker-protocol.test.js`, `worker-driver.test.js`.
 - **Operating references:** [apps/hepta-browser/README.md](../../../apps/hepta-browser/README.md), [docs/modules/browser.servo/SERVO_WORKER.md](../../../docs/modules/browser.servo/SERVO_WORKER.md), [docs/modules/browser.servo/IMPLEMENTATION_MAP.json](../../../docs/modules/browser.servo/IMPLEMENTATION_MAP.json).
 
@@ -82,11 +94,16 @@ These source tests establish repository semantics only. The real Servo artifact,
 
 The following are still open and must not be represented as completed by this source change:
 
-1. build the Hepta-owned Servo worker against the exact current pin and independently verify its source/topology/features;
+1. successfully compile the existing Hepta-owned Servo worker source against the exact current pin and reviewed lock, independently verifying the source/topology/features;
 2. produce reproducible build/toolchain receipts, worker digest, symbols and SBOM;
-3. connect the real Servo WebView/event/render loop to the private protocol;
+3. execute and qualify the existing Servo WebView/event/render-loop source through the private protocol, beyond start/stop smoke;
 4. implement final credential-reference resolution without logging/exporting raw credential bytes;
 5. qualify real Linux namespace/no-egress/listener/descendant cleanup behavior, then provide equivalent macOS and Windows isolation;
 6. prove real cross-profile cookie/cache/storage isolation;
 7. prove real stale-element behavior and terminal navigation/download/business reconciliation;
-8. compose a named non-test `runtime.agentd`/product caller and obtain the separate activation/deployment/independent-acceptance evidence.
+8. qualify the existing named `runtime.agentd` caller, compose persistent product sessions and a live revocation owner, and obtain the separate activation/deployment/independent-acceptance evidence;
+9. implement separately authorized network delivery for actual web access; top-level origin admission alone is not a complete redirect/subresource/script-request policy.
+10. complete Agentd all-target native checks beyond the passing locked isolated source harness, qualify the trusted Node/Bubblewrap/OS/runtime installation and supply an external history anchor where first-admission erasure must be detected;
+11. implement and prove atomic renderer-pipeline document admission and execution-time deadline enforcement; current URL/document/load-completion guards and 13 pure state tests do not establish those properties.
+
+The current audit is [docs/modules/browser.servo/AUDIT.md](../../../docs/modules/browser.servo/AUDIT.md). Workflow presence and deterministic fixture results do not replace exact-source native or target-host receipts.
