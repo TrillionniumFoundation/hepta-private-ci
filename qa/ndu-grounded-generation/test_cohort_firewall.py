@@ -184,6 +184,103 @@ class CohortFirewallTests(unittest.TestCase):
                 self.assertEqual(receipt["status"], "fail")
                 self.assertIn(expected_error, receipt["error"])
 
+    def test_cli_refuses_direct_frozen_input_output_aliases(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            candidate = root / "candidate.json"
+            history = root / "history.json"
+            candidate.write_text(json.dumps(self.new))
+            history.write_text(json.dumps(self.old))
+            original_candidate = candidate.read_bytes()
+            original_history = history.read_bytes()
+            args = [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
+                    "--candidate", str(candidate),
+                    "--historical", str(history),
+                    "--historical-sha256", hashlib.sha256(original_history).hexdigest(),
+                    "--output"]
+            for destination in (candidate, history):
+                with self.subTest(destination=destination.name):
+                    result = subprocess.run(args + [str(destination)],
+                                            capture_output=True, text=True)
+                    self.assertEqual(result.returncode, 2, result.stderr)
+                    denial = json.loads(result.stdout)
+                    self.assertEqual(denial["status"], "fail")
+                    self.assertFalse(denial["output_written"])
+                    self.assertIn("aliases frozen input", denial["error"])
+                    self.assertEqual(candidate.read_bytes(), original_candidate)
+                    self.assertEqual(history.read_bytes(), original_history)
+
+    def test_cli_refuses_symlink_and_hardlink_output_targets(self):
+        if sys.platform == "win32":
+            self.skipTest("symlink fixture requires a POSIX host")
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            candidate = root / "candidate.json"
+            history = root / "history.json"
+            candidate.write_text(json.dumps(self.new))
+            history.write_text(json.dumps(self.old))
+            original = history.read_bytes()
+            alias = root / "receipt.json"
+            args = [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
+                    "--candidate", str(candidate),
+                    "--historical", str(history),
+                    "--historical-sha256", hashlib.sha256(original).hexdigest(),
+                    "--output", str(alias)]
+            alias.symlink_to(history)
+            denied = subprocess.run(args, capture_output=True, text=True)
+            self.assertEqual(denied.returncode, 2, denied.stderr)
+            self.assertIn("symlink", json.loads(denied.stdout)["error"])
+            self.assertEqual(history.read_bytes(), original)
+            alias.unlink()
+            alias.hardlink_to(history)
+            denied = subprocess.run(args, capture_output=True, text=True)
+            self.assertEqual(denied.returncode, 2, denied.stderr)
+            self.assertIn("unlinked regular file", json.loads(denied.stdout)["error"])
+            self.assertEqual(history.read_bytes(), original)
+
+    def test_cli_refuses_output_alias_through_symlinked_directory(self):
+        if sys.platform == "win32":
+            self.skipTest("symlink fixture requires a POSIX host")
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            candidate = root / "candidate.json"
+            history = root / "history.json"
+            candidate.write_text(json.dumps(self.new))
+            history.write_text(json.dumps(self.old))
+            before = candidate.read_bytes()
+            (root / "alias-dir").symlink_to(root, target_is_directory=True)
+            denied = subprocess.run(
+                [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
+                 "--candidate", str(candidate),
+                 "--historical", str(history),
+                 "--historical-sha256", hashlib.sha256(history.read_bytes()).hexdigest(),
+                 "--output", str(root / "alias-dir" / "candidate.json")],
+                capture_output=True, text=True,
+            )
+            self.assertEqual(denied.returncode, 2, denied.stderr)
+            self.assertIn("aliases frozen input", json.loads(denied.stdout)["error"])
+            self.assertEqual(candidate.read_bytes(), before)
+
+    def test_cli_still_writes_separate_denial_receipts(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            candidate = root / "candidate.json"
+            history = root / "history.json"
+            destination = root / "receipt.json"
+            candidate.write_text("{}")
+            history.write_text("{}")
+            before = (candidate.read_bytes(), history.read_bytes())
+            args = [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
+                    "--candidate", str(candidate),
+                    "--historical", str(history),
+                    "--historical-sha256", hashlib.sha256(before[1]).hexdigest(),
+                    "--output", str(destination)]
+            for _ in range(2):
+                denied = subprocess.run(args, capture_output=True, text=True)
+                self.assertEqual(denied.returncode, 2, denied.stderr)
+                self.assertEqual(json.loads(destination.read_text())["status"], "fail")
+                self.assertEqual((candidate.read_bytes(), history.read_bytes()), before)
+
 
 if __name__ == "__main__":
     unittest.main()
