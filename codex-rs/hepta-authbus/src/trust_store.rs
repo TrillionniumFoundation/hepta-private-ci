@@ -188,15 +188,10 @@ impl AuthBusAuthorityStore {
         issuer_id: &StableId,
         key_epoch: Generation,
     ) -> Result<SettlementIssuerRegistration, AuthBusAuthorityError> {
-        let record = self
-            .issuer_record(IssuerPurpose::Settlement, issuer_id, key_epoch)
-            .await?;
-        Ok(SettlementIssuerRegistration {
-            issuer_id: record.issuer_id,
-            key_epoch: record.key_epoch,
-            verifying_key: record.verifying_key,
-            revoked: record.state != IssuerLifecycleState::Active,
-        })
+        let mut tx = begin(&self.pool).await?;
+        let issuer = load_settlement_issuer(&mut tx, issuer_id, key_epoch).await?;
+        tx.commit().await.map_err(storage)?;
+        Ok(issuer)
     }
 
     pub async fn observe_trusted_time_attestation(
@@ -216,6 +211,20 @@ impl AuthBusAuthorityStore {
         tx.commit().await.map_err(storage)?;
         Ok(sample)
     }
+}
+
+pub(crate) async fn load_settlement_issuer(
+    tx: &mut Transaction<'_, Sqlite>,
+    issuer_id: &StableId,
+    key_epoch: Generation,
+) -> Result<SettlementIssuerRegistration, AuthBusAuthorityError> {
+    let record = load_issuer(tx, IssuerPurpose::Settlement, issuer_id, key_epoch).await?;
+    Ok(SettlementIssuerRegistration {
+        issuer_id: record.issuer_id,
+        key_epoch: record.key_epoch,
+        verifying_key: record.verifying_key,
+        revoked: record.state != IssuerLifecycleState::Active,
+    })
 }
 
 async fn insert_issuer(

@@ -93,6 +93,30 @@ async fn configured() -> (
     (root, store, decision, reservation)
 }
 
+async fn registered(
+    key: &SigningKey,
+) -> (
+    TempDir,
+    AuthBusAuthorityStore,
+    PolicyDecision,
+    QuotaReservation,
+) {
+    let fixture = configured().await;
+    fixture
+        .1
+        .enroll_issuer(
+            crate::IssuerPurpose::Settlement,
+            crate::IssuerSpec {
+                issuer_id: id("issuer:settlement"),
+                key_epoch: Generation::new(1).expect("generation"),
+                verifying_key: key.verifying_key(),
+            },
+        )
+        .await
+        .expect("enroll actual settlement issuer");
+    fixture
+}
+
 fn issuer(key: &SigningKey) -> SettlementIssuerRegistration {
     SettlementIssuerRegistration {
         issuer_id: id("issuer:settlement"),
@@ -148,7 +172,8 @@ async fn dispatch_rejects_effect_digest_drift_before_crossing_the_boundary() {
 
 #[tokio::test]
 async fn completed_settlement_is_conservative_and_idempotent() {
-    let (_root, store, _decision, reservation) = configured().await;
+    let key = SigningKey::from_bytes(&[9; 32]);
+    let (_root, store, _decision, reservation) = registered(&key).await;
     let dispatched = store
         .mark_dispatch_attempted(
             &reservation.reservation_id,
@@ -158,7 +183,6 @@ async fn completed_settlement_is_conservative_and_idempotent() {
         )
         .await
         .expect("mark dispatch");
-    let key = SigningKey::from_bytes(&[9; 32]);
     let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_600);
     let settled = store
         .settle(&issuer(&key), &signed, sample(6, 1_600))
@@ -203,7 +227,8 @@ async fn completed_settlement_is_conservative_and_idempotent() {
 
 #[tokio::test]
 async fn unknown_expired_effect_keeps_reserve_until_signed_terminal_evidence() {
-    let (_root, store, _decision, reservation) = configured().await;
+    let key = SigningKey::from_bytes(&[10; 32]);
+    let (_root, store, _decision, reservation) = registered(&key).await;
     let dispatched = store
         .mark_dispatch_attempted(
             &reservation.reservation_id,
@@ -228,7 +253,6 @@ async fn unknown_expired_effect_keeps_reserve_until_signed_terminal_evidence() {
         .expect("quota snapshot");
     assert_eq!((held.available, held.reserved, held.consumed), (3, 7, 0));
 
-    let key = SigningKey::from_bytes(&[10; 32]);
     let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 5_200);
     store
         .settle(&issuer(&key), &signed, sample(7, 5_200))
@@ -339,7 +363,8 @@ async fn sqlite_rejects_illegal_state_jump_and_live_row_deletion() {
 
 #[tokio::test]
 async fn terminal_compaction_preserves_operation_idempotency_without_lifetime_capacity_use() {
-    let (_root, store, decision, reservation) = configured().await;
+    let key = SigningKey::from_bytes(&[33; 32]);
+    let (_root, store, decision, reservation) = registered(&key).await;
     let dispatched = store
         .mark_dispatch_attempted(
             &reservation.reservation_id,
@@ -349,7 +374,6 @@ async fn terminal_compaction_preserves_operation_idempotency_without_lifetime_ca
         )
         .await
         .expect("mark dispatch");
-    let key = SigningKey::from_bytes(&[33; 32]);
     let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_600);
     store
         .settle(&issuer(&key), &signed, sample(6, 1_600))
@@ -384,3 +408,6 @@ async fn terminal_compaction_preserves_operation_idempotency_without_lifetime_ca
         .expect("quota snapshot");
     assert_eq!((quota.available, quota.reserved, quota.consumed), (5, 0, 5));
 }
+
+#[path = "settlement_issuer_tests.rs"]
+mod issuer_boundary;
