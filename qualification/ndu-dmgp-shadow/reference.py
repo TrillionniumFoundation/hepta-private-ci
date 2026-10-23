@@ -93,6 +93,7 @@ def paired_future_evaluation(rows: tuple[Outcome, ...], freeze: Freeze,
     This 2.5-SE exploratory bound is not a distribution-free confidence guarantee.
     A production gate must use the repository's registered future-window profile.
     """
+    require(min_episodes >= 20, "cannot lower preregistered future support")
     require(finite(cost_per_us) and cost_per_us >= 0, "invalid cost scalarization")
     groups: dict[str, dict[str, Outcome]] = {}
     work: set[str] = set()
@@ -147,11 +148,15 @@ def verify_cross_modal(plan: SemanticPlan, claims: tuple[Claim, ...],
     require(plan.modalities and len(set(plan.modalities)) == len(plan.modalities)
             and plan.events and plan.tolerance_ms >= 0, "invalid plan")
     expected: dict[str, tuple[str, int, int]] = {}
+    prior_end = -1
     for event, entity, start, end in plan.events:
-        require(event and entity and start >= 0 and end > start and event not in expected,
-                "invalid/noncanonical plan event")
+        require(event and entity and start >= prior_end and end > start
+                and event not in expected, "invalid/noncanonical plan event")
         expected[event] = (entity, start, end)
+        prior_end = end
     seen = set()
+    bound_claims = []
+    by_event: dict[str, list[tuple[int, int]]] = {}
     for claim in claims:
         require(claim.modality in plan.modalities and claim.event in expected,
                 "reverse audit: hallucinated modality/event")
@@ -160,6 +165,10 @@ def verify_cross_modal(plan: SemanticPlan, claims: tuple[Claim, ...],
         key = (claim.modality, claim.event)
         require(key not in seen, "duplicate claim")
         seen.add(key)
+        bound_claims.append((claim.modality, claim.event, claim.entity,
+                             claim.start_ms, claim.end_ms, claim.observer,
+                             claim.evidence_digest))
+        by_event.setdefault(claim.event, []).append((claim.start_ms, claim.end_ms))
         entity, start, end = expected[claim.event]
         require(claim.entity == entity and claim.start_ms >= 0
                 and claim.end_ms > claim.start_ms, "entity/timeline conflict")
@@ -168,8 +177,17 @@ def verify_cross_modal(plan: SemanticPlan, claims: tuple[Claim, ...],
                 "temporal alignment violation")
     required = set(product(plan.modalities, expected))
     require(seen == required, "forward audit: missing modality/event")
+    for bounds in by_event.values():
+        require(max(v[0] for v in bounds) - min(v[0] for v in bounds)
+                <= plan.tolerance_ms
+                and max(v[1] for v in bounds) - min(v[1] for v in bounds)
+                <= plan.tolerance_ms, "cross-modal pairwise time drift")
     return digest({"plan": plan.events, "modalities": plan.modalities,
-                   "claims": sorted(seen), "generation": freeze.generation})
+                   "tolerance_ms": plan.tolerance_ms,
+                   "claims": sorted(bound_claims),
+                   "objective": freeze.objective,
+                   "feature_digest": freeze.feature_digest,
+                   "generation": freeze.generation})
 
 
 @dataclass(frozen=True)
@@ -458,6 +476,7 @@ def global_credit(coalitions: Mapping[frozenset[str], float],
     freeze.validate()
     require(observer == freeze.observer and randomized and min_support >= 20,
             "unidentified intervention/observer support")
+    require(0 <= max_interaction <= 0.1, "unregistered interaction tolerance")
     n = len(cells)
     require(1 <= n <= 4 and len(set(cells)) == n, "invalid bounded coalition")
     require(set(coalitions) == {frozenset(cells[i] for i in range(n) if mask & (1 << i))
@@ -519,8 +538,10 @@ def compare_work(baseline: tuple[WorkReceipt, ...], candidate: tuple[WorkReceipt
             "decoder_saved_us": float(saved_decoder),
             "extra_controller_us": float(extra_controller),
             "peak_rss_bytes": float(max(r.peak_rss_bytes for r in candidate)),
-            "production_efficiency_evidence": measured and saved_decoder > extra_controller
-            and ctimes[p95idx] < btimes[p95idx]}
+            "unverified_host_metric_candidate": measured and saved_decoder > extra_controller
+            and ctimes[p95idx] < btimes[p95idx],
+            # Boolean caller declarations cannot authenticate a hardware host.
+            "production_efficiency_evidence": False}
 
 
 def closure_audit(train: tuple[tuple[float, float, float], ...],
