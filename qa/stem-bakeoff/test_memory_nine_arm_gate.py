@@ -10,8 +10,8 @@ import tempfile
 import unittest
 
 from memory_nine_arm_gate import (
-    ARMS, PROFILE, Refused, audit, canonical, create_only, independent_components,
-    sha, validate_plan,
+    ARMS, CONTRASTS, PRIMARY_CONTRASTS, PROFILE, Refused, audit, canonical,
+    create_only, independent_components, sha, validate_plan,
 )
 
 
@@ -231,6 +231,40 @@ class NineArmGateTests(unittest.TestCase):
         self.assertEqual(len(independent_components(validate_plan(p), "future_a")), 1)
         report = check(p, o, j)
         self.assertEqual(report["effective_future_source_components"], 3)
+
+    def test_family_identity_collapses_disjoint_source_roots(self):
+        p, o, j = fixture()
+        # Both cases come from the same family but expose different root pins.
+        # They cannot count as two independent sources.
+        p["cases"][1]["family_id"] = p["cases"][0]["family_id"]
+        self.assertEqual(len(independent_components(validate_plan(p), "future_a")), 1)
+        report = check(p, o, j)
+        self.assertEqual(report["effective_future_source_components"], 3)
+        self.assertFalse(report["descriptive_quality_gate"])
+
+    def test_cross_window_source_id_reuse_refused(self):
+        p, o, j = fixture()
+        # Distinct root digests cannot conceal reuse of the same actual evidence.
+        p["cases"][2]["eligible_source_ids"] = p["cases"][0]["eligible_source_ids"]
+        with self.assertRaisesRegex(Refused, "source ID cross-window reuse"):
+            check(p, o, j)
+
+    def test_cross_window_query_reuse_refused(self):
+        p, o, j = fixture()
+        p["cases"][2]["question_sha256"] = p["cases"][0]["question_sha256"]
+        with self.assertRaisesRegex(Refused, "identical question cross-window reuse"):
+            check(p, o, j)
+
+    def test_all_eleven_predeclared_contrasts_and_primary_subset(self):
+        self.assertEqual(len(CONTRASTS), 11)
+        self.assertEqual(len(PRIMARY_CONTRASTS), 8)
+        self.assertEqual(CONTRASTS["hybrid_vs_bm25"], ("B", "A"))
+        self.assertEqual(CONTRASTS["graph_vs_bm25"], ("C", "A"))
+        self.assertEqual(CONTRASTS["typed_vs_graph"], ("D", "C"))
+        p, o, j = fixture()
+        results = check(p, o, j)
+        self.assertEqual(set(results["contrasts"]), set(CONTRASTS))
+        self.assertFalse(results["superiority_established"])
 
     def test_source_first_gold_cannot_enter_plan(self):
         p, o, j = fixture()
