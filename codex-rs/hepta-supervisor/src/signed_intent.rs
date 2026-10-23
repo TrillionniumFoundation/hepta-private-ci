@@ -276,6 +276,19 @@ pub fn write_recovery_directive(
     write_atomic_json(run_root, SIGNED_INTENT_RECOVERY_FILE, directive)
 }
 
+/// Removes a consumed recovery directive and synchronizes the containing
+/// directory so a restart cannot observe an acknowledged directive merely
+/// because the unlink was still buffered.
+pub fn clear_recovery_directive(run_root: &Path) -> Result<(), SignedIntentError> {
+    let path = run_root.join(SIGNED_INTENT_RECOVERY_FILE);
+    match std::fs::remove_file(path) {
+        Ok(()) => sync_directory(run_root)?,
+        Err(error) if error.kind() == ErrorKind::NotFound => {}
+        Err(error) => return Err(error.into()),
+    }
+    Ok(())
+}
+
 fn write_atomic_json<T: Serialize>(
     run_root: &Path,
     file_name: &str,
@@ -298,6 +311,17 @@ fn write_atomic_json<T: Serialize>(
     file.sync_all()?;
     drop(file);
     publish::publish(&temp, &final_path)?;
+    Ok(())
+}
+
+#[cfg(unix)]
+fn sync_directory(path: &Path) -> Result<(), SignedIntentError> {
+    std::fs::File::open(path)?.sync_all()?;
+    Ok(())
+}
+
+#[cfg(not(unix))]
+fn sync_directory(_path: &Path) -> Result<(), SignedIntentError> {
     Ok(())
 }
 

@@ -390,7 +390,10 @@ jobs:
             # Keep host-loaded proc macros and native libraries on one Windows
             # ABI while preserving the complete Bazel clippy target set.
             bazel_wrapper_args+=(--windows-msvc-host-platform)
-            bazel_clippy_args+=(--platforms=//:windows_x86_64_msvc)
+            bazel_clippy_args+=(
+              --platforms=//:windows_x86_64_msvc
+              --skip_incompatible_explicit_targets
+            )
           fi
 
           bazel_target_lines="$(./scripts/list-bazel-clippy-targets.sh "${bazel_target_list_args[@]}")"

@@ -621,7 +621,7 @@ impl AgentdState {
                         store,
                         &intent,
                         &wire_payload,
-                        &signed_grant,
+                        signed_grant.as_ref(),
                         &command_id,
                         now_ms()?,
                     )

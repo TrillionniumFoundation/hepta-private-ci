@@ -16,6 +16,7 @@ use std::time::Duration;
 
 use codex_hepta_automation::AuthorizedEffectDriver;
 use codex_hepta_automation::AuthorizedEffectDriverError;
+use codex_hepta_automation::AuthorizedEffectExecution;
 use codex_hepta_automation::AuthorizedEffectIntent;
 use codex_hepta_automation::AuthorizedEffectOutcome;
 use codex_hepta_automation::AuthorizedEffectPending;
@@ -257,15 +258,17 @@ impl AgentdAutomationEffectHost {
         };
         store
             .execute_authorized_taskflow_effect(
-                &self.authority,
                 &mut driver,
-                intent,
-                wire_payload,
-                &fence,
-                signed_grant,
-                &binding,
-                command_id,
-                now_ms,
+                AuthorizedEffectExecution {
+                    authority: &self.authority,
+                    intent,
+                    wire_payload,
+                    fence: &fence,
+                    signed_grant,
+                    expected_binding: &binding,
+                    command_id,
+                    now_ms,
+                },
             )
             .await
             .map_err(|error| {
@@ -316,7 +319,7 @@ impl AgentdAutomationEffectHost {
                 AuthorizedEffectRecoveryResult::Observed(receipt)
                     if receipt.observation != Some(TaskFlowStepObservation::Indeterminate) =>
                 {
-                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt));
+                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(*receipt));
                 }
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     return Ok(AgentdAutomationEffectReconcileOutcome::ProvenAbsent);
@@ -346,7 +349,7 @@ impl AgentdAutomationEffectHost {
                         ))
                     })? {
                     AuthorizedEffectRecoveryResult::Observed(receipt) => {
-                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt))
+                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(*receipt))
                     }
                     AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
                         "status lookup cannot manufacture provider absence".to_string(),

@@ -1,0 +1,56 @@
+name: MemoryCell persistent stem mechanics
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/stem_cell*.py"
+      - "scripts/memory_cell/test_stem_cell*.py"
+      - ".github/workflows/hepta-memory-stem-mechanics.yml"
+permissions:
+  contents: read
+concurrency:
+  group: memory-stem-mechanics-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+jobs:
+  mechanics:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Install pinned research dependencies
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-mechanics
+          python3 -m venv /tmp/stem-python
+          /tmp/stem-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/stem-python/bin/pip install -r scripts/memory_cell/requirements.txt ruff==0.15.8
+          /tmp/stem-python/bin/pip freeze > /tmp/stem-mechanics/environment.txt
+      - name: Complete Python regression set
+        env:
+          OMP_NUM_THREADS: "2"
+          MKL_NUM_THREADS: "2"
+        run: |
+          set -euo pipefail
+          /tmp/stem-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/stem-mechanics/tests.log
+      - name: Static diagnostics
+        run: |
+          set -euo pipefail
+          /tmp/stem-python/bin/ruff check --select F,E9 scripts/memory_cell/stem_cell*.py scripts/memory_cell/test_stem_cell*.py 2>&1 | tee /tmp/stem-mechanics/lint.log
+          /tmp/stem-python/bin/ruff format --diff scripts/memory_cell/stem_cell*.py scripts/memory_cell/test_stem_cell*.py > /tmp/stem-mechanics/format.patch || true
+      - name: Retain exact source and all failures
+        if: always()
+        run: |
+          mkdir -p /tmp/stem-mechanics/source
+          git rev-parse HEAD > /tmp/stem-mechanics/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-mechanics/tested-tree.txt
+          cp scripts/memory_cell/stem_cell*.py scripts/memory_cell/test_stem_cell*.py /tmp/stem-mechanics/source/
+          (cd /tmp/stem-mechanics && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-mechanics
+          path: /tmp/stem-mechanics
+          if-no-files-found: error

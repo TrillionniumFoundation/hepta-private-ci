@@ -1,0 +1,79 @@
+name: MemoryCell Qwen2 completion projection conformance
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/source_completion_loss.py"
+      - "scripts/memory_cell/experience_memory.py"
+      - "scripts/memory_cell/experience_write_trial.py"
+      - "scripts/memory_cell/test_source_completion_*.py"
+      - ".github/workflows/hepta-memory-source-loss-conformance.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  pinned-qwen-peft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Lock original CPU and Transformer environment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source-loss-receipt
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/source-loss-input.zip
+          python3 - <<'PY'
+          import hashlib, zipfile
+          from pathlib import Path
+          raw = Path('/tmp/source-loss-input.zip').read_bytes()
+          assert 0 < len(raw) < 64 * 1024 * 1024
+          assert hashlib.sha256(raw).hexdigest() == '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          with zipfile.ZipFile('/tmp/source-loss-input.zip') as archive:
+              data = archive.read('environment.txt')
+              assert 0 < len(data) < 64 * 1024
+              Path('/tmp/source-loss-receipt/expected-environment.txt').write_bytes(data)
+          PY
+          python3 -m venv /tmp/source-loss-env
+          /tmp/source-loss-env/bin/pip install 'torch==2.5.1' --index-url https://download.pytorch.org/whl/cpu
+          /tmp/source-loss-env/bin/pip install -r /tmp/source-loss-receipt/expected-environment.txt
+          /tmp/source-loss-env/bin/pip freeze > /tmp/source-loss-receipt/environment.txt
+          diff -u /tmp/source-loss-receipt/expected-environment.txt /tmp/source-loss-receipt/environment.txt
+      - name: Actual autograd, paired optimizer and pinned HF/PEFT interfaces
+        run: |
+          set -euo pipefail
+          /tmp/source-loss-env/bin/python -m unittest discover -s scripts/memory_cell -p 'test_source_completion_loss.py' -v 2>&1 | tee /tmp/source-loss-receipt/unit.log
+          /tmp/source-loss-env/bin/python -m unittest discover -s scripts/memory_cell -p 'test_source_completion_hf.py' -v 2>&1 | tee /tmp/source-loss-receipt/qwen-peft.log
+          /tmp/source-loss-env/bin/python -m unittest discover -s scripts/memory_cell -p 'test_source_completion_writer.py' -v 2>&1 | tee /tmp/source-loss-receipt/writer.log
+          /tmp/source-loss-env/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/source-loss-receipt/full-suite.log
+      - name: Check source formatting without skipping other repository gates
+        run: |
+          set -euo pipefail
+          /tmp/source-loss-env/bin/pip install 'ruff==0.15.13'
+          /tmp/source-loss-env/bin/ruff format --check scripts/memory_cell/source_completion_loss.py scripts/memory_cell/test_source_completion_loss.py scripts/memory_cell/test_source_completion_hf.py scripts/memory_cell/experience_memory.py scripts/memory_cell/experience_write_trial.py scripts/memory_cell/test_source_completion_writer.py 2>&1 | tee /tmp/source-loss-receipt/format.log
+      - name: Preserve exact SHA, source, failures and environment
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source-loss-receipt/source
+          cp scripts/memory_cell/source_completion_loss.py scripts/memory_cell/test_source_completion*.py scripts/memory_cell/experience_memory.py scripts/memory_cell/experience_write_trial.py /tmp/source-loss-receipt/source/
+          git rev-parse HEAD > /tmp/source-loss-receipt/tested-commit.txt
+          (cd /tmp/source-loss-receipt && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-loss-conformance
+          path: /tmp/source-loss-receipt
+          if-no-files-found: error

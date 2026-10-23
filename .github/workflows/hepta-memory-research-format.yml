@@ -1,0 +1,65 @@
+name: MemoryCell isolated research formatting candidate
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - ".github/workflows/hepta-memory-research-format.yml"
+permissions:
+  contents: read
+jobs:
+  format-candidate:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/codex/memory-cell-evidence-20261008'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - name: Prepare only a separate AST-equivalent formatting candidate
+        env:
+          BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          python3 - <<'PY'
+          import ast, json
+          from pathlib import Path
+          names = [
+              'research_disposition.py', 'test_research_disposition.py',
+              'source_write_schedule.py', 'test_source_write_schedule.py',
+              'test_source_write_training.py', 'experience_memory.py',
+          ]
+          names = ['scripts/memory_cell/' + n for n in names]
+          Path('/tmp/research-format-ast.json').write_text(json.dumps({n: ast.dump(ast.parse(Path(n).read_text())) for n in names}))
+          PY
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --base "$BASE"
+          python3 - <<'PY'
+          import ast, json, subprocess
+          from pathlib import Path
+          before = json.loads(Path('/tmp/research-format-ast.json').read_text())
+          allowed = set(before) | {
+              '.github/workflows/hepta-memory-research-format.yml',
+              '.github/workflows/hepta-memory-source-preflight.yml',
+              '.github/workflows/hepta-memory-historical-task-inspection.yml',
+          }
+          changed = subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines()
+          if set(changed) - allowed:
+              raise ValueError('out-of-scope formatter change')
+          for name, previous in before.items():
+              if ast.dump(ast.parse(Path(name).read_text())) != previous:
+                  raise ValueError('formatter changed executable Python')
+          if changed:
+              subprocess.run(['git', 'add', '--', *changed], check=True)
+          PY
+          git rm .github/workflows/hepta-memory-research-format.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'style(memory-cell): format research checks and remove temporary writer'
+          git push origin "HEAD:refs/heads/codex/memory-research-format-${GITHUB_RUN_ID}"
+          echo "REVIEW_CANDIDATE_SHA=$(git rev-parse HEAD)"

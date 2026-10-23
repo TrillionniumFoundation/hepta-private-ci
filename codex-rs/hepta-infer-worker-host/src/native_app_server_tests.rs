@@ -398,23 +398,29 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
 }
 
 #[test]
-fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start() {
+fn cognitive_final_use_revalidation_precedes_the_typed_turn_start_boundary() {
+    // This structural guard complements the actual mutation-race test below.
+    // Physical success is proved by observed requests there, not by this scan.
     let source = include_str!("native_app_server.rs");
-    let durable_dispatch = source
+    let (caller, boundary) = source
+        .split_once("async fn send_authorized_turn_start(")
+        .expect("typed final-use boundary");
+    let dispatch = caller
         .find("control.dispatch_native_with_pre_effect_abort(")
-        .expect("durable native dispatch");
-    let revalidation = source
+        .expect("durable dispatch");
+    let revalidation = caller
         .find("owner.revalidate_cognitive_context(snapshot).await")
-        .expect("final-use cognitive revalidation");
-    let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
-    let durable_stop = source
-        .find("control.abort_native_before_effect(")
-        .expect("durable pre-turn stop");
-    assert!(durable_dispatch < revalidation);
-    assert!(revalidation < turn_start);
-    assert!(durable_stop < turn_start);
+        .expect("source-owner final-use revalidation");
+    let entry = caller
+        .find("verified_use.enter(&authority_binding)")
+        .expect("kernel final-use entry");
+    let send = caller
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
+        .expect("typed physical send");
+    assert!(dispatch < revalidation && revalidation < entry && entry < send);
+    assert!(boundary.contains("_entered: EnteredUseToken"));
+    assert!(boundary.contains(".request_typed_observed(ClientRequest::TurnStart"));
+    assert!(!caller.contains(".request_typed_observed(ClientRequest::TurnStart"));
 }
 
 #[cfg(unix)]
@@ -450,8 +456,15 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    // core_test_support registers the real exec/fs arg0 helpers in this harness.
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        std::env::current_exe()?,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
@@ -487,9 +500,15 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         .await?;
     assert!(
         accepted.succeeded(),
-        "fresh context must reach a successful real TurnStart"
+        "fresh context must reach a successful real TurnStart: {accepted:?}"
     );
-    assert!(accepted.output.contains("fresh context accepted"));
+    assert!(
+        accepted.output.contains("fresh context accepted"),
+        "verified final text missing: status={:?}; output={:?}; stop={:?}",
+        accepted.status,
+        accepted.output,
+        accepted.stop_reason,
+    );
     let accepted_record = durable
         .native_record(ACCEPT_REQUEST_ID)
         .cloned()
@@ -763,4 +782,81 @@ fn final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift() {
         )
         .is_err()
     );
+}
+
+#[test]
+fn terminal_summary_recovers_missing_delta_without_a_second_turn() {
+    let mut output = output();
+    let mut event = terminal("thread-a", "turn-a", TurnStatus::Completed);
+    if let ServerNotification::TurnCompleted(ref mut notification) = event {
+        notification.turn.items_view = TurnItemsView::Summary;
+        notification.turn.items.push(ThreadItem::AgentMessage {
+            id: "message-final".to_string(),
+            text: "verified complete answer".to_string(),
+            phase: None,
+            memory_citation: None,
+            delivery: None,
+        });
+    }
+    assert!(observe_for_test(&mut output, event.clone()).unwrap());
+    assert_eq!(output.output, "verified complete answer");
+    assert_eq!(output.status, NativeRunStatus::Completed);
+    assert!(output.terminal_observed);
+    assert_eq!(output.owner_authority, NativeOwnerAuthority::Unverified);
+    assert!(!output.succeeded());
+    // A duplicate summary must not concatenate the same answer again.
+    let before = output.clone();
+    assert!(observe_for_test(&mut output, event).unwrap());
+    assert_eq!(output, before);
+}
+
+#[test]
+fn terminal_summary_rejects_oversize_and_foreign_transport_before_mutation() {
+    let mut event = terminal("thread-a", "turn-a", TurnStatus::Completed);
+    if let ServerNotification::TurnCompleted(ref mut notification) = event {
+        notification.turn.items.push(ThreadItem::AgentMessage {
+            id: "message-final".to_string(),
+            text: "x".repeat(MAX_OUTPUT_BYTES + 1),
+            phase: None,
+            memory_citation: None,
+            delivery: None,
+        });
+    }
+    let mut output = output();
+    let before = output.clone();
+    assert!(observe_for_test(&mut output, event.clone()).is_err());
+    assert_eq!(output, before);
+    let foreign = RemoteAppServerObservedEvent::from_test_event(
+        AppServerEvent::ServerNotification(Box::new(event)),
+        8,
+        Some("test-app-server".to_string()),
+        Some("/home/agent".to_string()),
+    );
+    assert!(observe_event(&mut output, &foreign, &binding()).is_err());
+    assert_eq!(output, before);
+}
+
+#[test]
+fn terminal_summary_does_not_duplicate_streamed_content_or_restore_lost_authority() {
+    let mut output = output();
+    output.output = "already streamed".to_string();
+    output.owner_authority = NativeOwnerAuthority::Lost {
+        reason: "revoked".to_string(),
+    };
+    let mut event = terminal("thread-a", "turn-a", TurnStatus::Completed);
+    if let ServerNotification::TurnCompleted(ref mut notification) = event {
+        notification.turn.items.push(ThreadItem::AgentMessage {
+            id: "message-final".to_string(),
+            text: "last message summary".to_string(),
+            phase: None,
+            memory_citation: None,
+            delivery: None,
+        });
+    }
+    assert!(observe_for_test(&mut output, event).unwrap());
+    assert_eq!(output.output, "already streamed");
+    assert_eq!(output.status, NativeRunStatus::Completed);
+    assert_eq!(output.boundary_status, NativeBoundaryStatus::Quarantined);
+    assert!(output.terminal_observed);
+    assert!(!output.succeeded());
 }

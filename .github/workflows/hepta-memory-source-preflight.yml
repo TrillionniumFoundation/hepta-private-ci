@@ -1,0 +1,91 @@
+name: MemoryCell source-write coverage before model training
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/source_write_schedule.py"
+      - "scripts/memory_cell/test_source_write_schedule.py"
+      - "scripts/memory_cell/experience_memory.py"
+      - ".github/workflows/hepta-memory-source-preflight.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Read only the existing frozen source artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir /tmp/write-preflight
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/write-source.zip
+          python3 - <<'PY'
+          import hashlib, zipfile
+          from pathlib import Path
+          raw = Path('/tmp/write-source.zip').read_bytes()
+          assert len(raw) < 64 * 1024 * 1024
+          assert hashlib.sha256(raw).hexdigest() == '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          with zipfile.ZipFile('/tmp/write-source.zip') as z:
+              for name, destination, limit in (
+                  ('environment.txt', '/tmp/write-preflight/environment.txt', 65536),
+                  ('observations/sources.json', '/tmp/write-preflight/sources.json', 4 * 1024 * 1024),
+              ):
+                  assert z.namelist().count(name) == 1 and z.getinfo(name).file_size <= limit
+                  Path(destination).write_bytes(z.read(name))
+          PY
+          python3 -m venv /tmp/preflight-python
+          /tmp/preflight-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/preflight-python/bin/pip install -r /tmp/write-preflight/environment.txt
+          /tmp/preflight-python/bin/pip freeze > /tmp/write-preflight/actual-environment.txt
+          diff -u /tmp/write-preflight/environment.txt /tmp/write-preflight/actual-environment.txt
+      - name: Full regression suite and unchanged repository formatting
+        env:
+          BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
+        run: |
+          set -euo pipefail
+          /tmp/preflight-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/write-preflight/tests.log
+          export PATH="/tmp/preflight-python/bin:$PATH"
+          git fetch --no-tags --depth=1 origin "$BASE"
+          set +e
+          just fmt --check --base "$BASE" > /tmp/write-preflight/format.log 2>&1
+          status=$?
+          set -e
+          cat /tmp/write-preflight/format.log
+          if [ "$status" -ne 0 ]; then
+            uv run --frozen --project scripts ruff format --diff scripts/memory_cell/source_write_schedule.py scripts/memory_cell/test_source_write_schedule.py scripts/memory_cell/experience_memory.py scripts/memory_cell/research_disposition.py scripts/memory_cell/test_research_disposition.py > /tmp/write-preflight/format.diff || true
+            cat /tmp/write-preflight/format.diff
+          fi
+          exit "$status"
+      - name: Measure actual pinned-tokenizer exposure without loading a model
+        run: |
+          set -euo pipefail
+          /tmp/preflight-python/bin/python scripts/memory_cell/source_write_schedule.py /tmp/write-preflight/sources.json /tmp/write-preflight/result --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 2>&1 | tee /tmp/write-preflight/preflight.log
+      - name: Preserve source and diagnostics, not tokenizer or model bytes
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/write-preflight/source
+          cp scripts/memory_cell/source_write_schedule.py scripts/memory_cell/test_source_write_schedule.py scripts/memory_cell/experience_memory.py /tmp/write-preflight/source/
+          git rev-parse HEAD > /tmp/write-preflight/tested-commit.txt
+          rm -rf /tmp/write-preflight/result/tokenizer
+          (cd /tmp/write-preflight && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-write-preflight
+          path: /tmp/write-preflight
+          if-no-files-found: error
