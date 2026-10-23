@@ -12,6 +12,7 @@ use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::RootCognitiveMaterialRegistration;
 use codex_hepta_memory::VerifiedCognitiveMaterial;
 use codex_hepta_paths::HeptaAgentLayout;
+use pretty_assertions::assert_eq;
 use sha2::Digest;
 use sha2::Sha256;
 use std::os::fd::OwnedFd;

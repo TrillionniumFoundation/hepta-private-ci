@@ -6,6 +6,7 @@ use crate::AgentdRootWriterTrust;
 use codex_hepta_contracts::AuthorityTrustError;
 use codex_hepta_contracts::RootFinalUseFrontierClient;
 use codex_hepta_contracts::RootPeerIdentity;
+use pretty_assertions::assert_eq;
 use std::os::fd::OwnedFd;
 
 #[test]
