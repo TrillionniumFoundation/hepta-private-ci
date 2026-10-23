@@ -51,7 +51,8 @@ The gate accepts three separate JSON inputs:
 2. The **observations** array: exactly one source-bound original Reader outcome
    for every (case, arm). It includes original answer bytes and their recomputed
    SHA256, source selection, ordered citations [E1] etc., model and artifact
-   digests, source/forget frontiers, Head and Reader physical call counts,
+   digests, source/forget frontiers, per-question physical Encoder, Dense,
+   Reranker, Graph, typed-lookup, Router, Head and Reader call counters,
    generated/context token counts and actual CPU/RSS/latency counters. The
    gate checks these claims but cannot attest that the model really ran.
 3. The **judgments** array, produced only after the complete answers are sealed
@@ -91,7 +92,17 @@ From the repository root:
       --report NEW_CREATE_ONLY_REVIEW.json
 
 The report is create-only and fsynced. An incomplete/mismatched input exits
-with an error without writing a success-shaped report. Never edit the sealed
+with an error without writing a success-shaped report.
+
+An **answered** B row must show nonzero Dense and Reranker forwards;
+C must show graph traversal; D must show a typed lookup; E/F must show
+shared Encoder and trained Head calls (F also a typed lookup); G/H/I must
+show Encoder, learned Router and Head calls (H/I also graph traversals).
+Unrelated work must not be credited to A's BM25-only baseline. A truly
+abstained/unavailable row remains in the denominator and is not forced
+through unnecessary neural computation. Physical counters are still
+self-reported until an independently authenticated execution journal and
+model/worker attestation verify them. Never edit the sealed
 original Reader answers to make a score pass.
 
 ### Statistical admission
@@ -153,7 +164,9 @@ Source digests and test names alone cannot supply these proofs.
    topology CAS/rollback and actual multi-host trust. None is granted here.
 
 The unit fixtures are **deliberately synthetic negative/contract tests**, not
-a neural experiment. The additional same-family/different-root, repeated
+a neural experiment. Seven additional mechanism checks prevent a single
+completed case from bypassing B's Reranker, C/H's graph, D's typed lookup
+or G's Router, while preserving a legitimate early abstention. The additional same-family/different-root, repeated
 cross-window source-ID, and repeated exact-question negative tests prevent
 pseudo-independent family counts. Do not count successful CI unit tests as
 memory quality.
