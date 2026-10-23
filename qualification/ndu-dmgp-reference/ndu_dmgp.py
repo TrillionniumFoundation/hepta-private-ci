@@ -116,6 +116,8 @@ def low_rank_covariance(samples: list[dict[str, Any]], width: int, max_rank: int
     weights: list[float] = []
     conditioning: str | None = None
     for trial in samples:
+        require(trial.get("split") == "train",
+                "covariance: evaluation/future leakage into conditional risk training")
         group = nonempty(trial.get("group_id"), "covariance.group_id")
         require(group not in seen, "covariance: reused independent group")
         seen.add(group)
@@ -378,8 +380,12 @@ def evaluate(bundle: dict[str, Any]) -> dict[str, Any]:
     p95 = {arm: sorted(entry[arm]["elapsed_ns"] for entry in future)[math.ceil(.95 * len(future))-1]
            for arm in ARMS}
     peak_rss = {arm: max(entry[arm]["peak_rss_bytes"] for entry in future) for arm in ARMS}
-    cov = low_rank_covariance(bundle.get("joint_trials", []),
-                              int(manifest.get("joint_action_width", 0)))
+    joint_trials = bundle.get("joint_trials", [])
+    require(isinstance(joint_trials, list), "covariance: joint trials must be a list")
+    evaluation_groups = set(independent_groups.values())
+    require(evaluation_groups.isdisjoint({row.get("group_id") for row in joint_trials}),
+            "covariance: training/evaluation group leakage")
+    cov = low_rank_covariance(joint_trials, int(manifest.get("joint_action_width", 0)))
     closure = closure_audit(bundle.get("closure_probe", []))
     credit = credit_audit(bundle.get("credit_pairs", []), manifest["objective_digest"], manifest["observer_id"])
     gates = {
