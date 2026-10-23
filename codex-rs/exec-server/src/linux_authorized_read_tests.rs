@@ -2,6 +2,27 @@ use super::*;
 use codex_protocol::models::PermissionProfile;
 use pretty_assertions::assert_eq;
 
+#[test]
+fn path_pin_supports_identity_proof_without_opening_for_read() -> io::Result<()> {
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("file.txt");
+    std::fs::write(&path, b"authorized")?;
+    let mut original = pin_file(&path)?;
+    let mut bytes = Vec::new();
+    let error = std::io::Read::read_to_end(&mut original, &mut bytes)
+        .expect_err("the initial path pin must not permit reads");
+    file_identity(&original, Arc::new(MountNamespace::capture()?))?;
+    assert_eq!(
+        (
+            error.raw_os_error(),
+            bytes,
+            stable_file_path(&original)?.into_path_buf()
+        ),
+        (Some(libc::EBADF), Vec::new(), std::fs::canonicalize(path)?)
+    );
+    Ok(())
+}
+
 #[tokio::test]
 async fn kernel_probe_and_advertised_capability_support_the_real_bounded_read() -> io::Result<()> {
     assert!(

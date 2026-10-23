@@ -10,7 +10,6 @@ use std::fs::File;
 use std::io;
 use std::os::fd::AsRawFd;
 use std::os::unix::fs::MetadataExt;
-use std::os::unix::fs::OpenOptionsExt;
 use std::path::Path;
 use std::sync::Arc;
 use std::sync::LazyLock;
@@ -138,13 +137,16 @@ fn secure_reopen(path: &Path, expected: &UniqueFileIdentity) -> io::Result<File>
     Ok(file)
 }
 
+fn pin_file(path: &Path) -> io::Result<File> {
+    // O_PATH pins the object without opening it for I/O before authorization.
+    rustix::fs::open(path, OFlags::PATH | OFlags::CLOEXEC, Mode::empty())
+        .map(File::from)
+        .map_err(|error| redact_file_access_error(error.into()))
+}
+
 fn admit(path: &Path, sandbox: &FileSystemSandboxContext) -> io::Result<File> {
     let namespace = Arc::new(MountNamespace::capture()?);
-    let original = std::fs::OpenOptions::new()
-        .read(true)
-        .custom_flags(libc::O_NONBLOCK | libc::O_CLOEXEC | libc::O_NOCTTY)
-        .open(path)
-        .map_err(redact_file_access_error)?;
+    let original = pin_file(path)?;
     let identity = file_identity(&original, namespace)?;
     let physical_path = stable_file_path(&original)?;
     authorize_stable_file_path(physical_path.as_path(), sandbox)?;
@@ -213,7 +215,7 @@ static AVAILABLE: LazyLock<bool> = LazyLock::new(|| {
         let alias = probe_dir.join("alias");
         let link = probe_dir.join("symlink");
         std::fs::write(&path, b"probe")?;
-        let original = File::open(&path)?;
+        let original = pin_file(&path)?;
         let identity = file_identity(&original, Arc::new(MountNamespace::capture()?))?;
         let physical_path = stable_file_path(&original)?;
         let admitted = secure_reopen(physical_path.as_path(), &identity)?;
