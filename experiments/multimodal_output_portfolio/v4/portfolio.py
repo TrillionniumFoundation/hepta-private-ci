@@ -68,7 +68,7 @@ class State:
     active_mask: int = 0
 
     def __post_init__(self) -> None:
-        if (len(self.levels) != 4
+        if (type(self.levels) is not tuple or len(self.levels) != 4
             or any(type(x) is not int or not 0 <= x <= MAX_LEVEL for x in self.levels)
             or type(self.remaining) is not int or self.remaining < 0
             or type(self.step) is not int or self.step < 0
@@ -82,7 +82,7 @@ class Allocation:
     units: tuple[int, int, int, int]
 
     def __post_init__(self) -> None:
-        if (len(self.units) != 4
+        if (type(self.units) is not tuple or len(self.units) != 4
             or any(type(x) is not int or x < 0 or x > 2 for x in self.units)):
             raise ValueError("invalid four-channel allocation")
 
@@ -245,6 +245,10 @@ def covariance_for_action(state: State, action: Allocation,
 
 def execute(initial: State, cfg: Config, seed: int) -> dict:
     """Run a causal observed-feedback trajectory; no test truth is an input."""
+    # None would silently seed from nondeterministic host entropy. The trace
+    # must be replayable, and bool/float/string seeds are not stable integer IDs.
+    if type(seed) is not int or not 0 <= seed <= 2**63 - 1:
+        raise ValueError("invalid bounded replay seed")
     rng = random.Random(seed)
     policy = Controller(cfg)
     state = initial
