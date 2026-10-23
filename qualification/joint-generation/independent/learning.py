@@ -226,7 +226,7 @@ class CachedObjective:
             loss -= value.mean()
         return float(loss), dt, di
 
-    def step(self, model, x, labels, lr, *, ledger=None, stage="search_train"):
+    def step(self, model, x, labels, lr, *, ledger=None, stage="search_train", full_mask=None):
         if tuple(model.dimensions) != self.dimensions or hasattr(model, "ledger"):
             raise ValueError("plain matching content model required")
         x, y = model._input(x), np.asarray(labels)
@@ -244,20 +244,32 @@ class CachedObjective:
         counts.update(model_forward_macs=len(x) * (d * h + 2 * h * k),
                       model_backward_macs=len(x) * (d * h + 4 * h * k),
                       optimizer_elements=d * h + h + 2 * h * k + 2 * k)
+        mixed = None
+        work = _step_work(self.dimensions, self.arm, len(x))
+        if full_mask is not None:
+            from independent.mixed_training import MixedEncoderBatch, mixed_step_work
+            mixed = MixedEncoderBatch(x, full_mask)
+            work = mixed_step_work(self.dimensions, self.arm, len(x), mixed.low_count)
+            saved_macs = 144 * h * mixed.low_count
+            counts["model_forward_macs"] -= saved_macs
+            counts["model_backward_macs"] -= saved_macs
+            counts.update(encoder_full_rows=mixed.full_count, encoder_low_rows=mixed.low_count,
+                encoder_fold_builds=int(mixed.low_count > 0),
+                encoder_gradient_merges=int(mixed.full_count > 0 and mixed.low_count > 0))
         if self.arm in ("A", "N"):
             counts.update(joint_utility_calls=1, joint_utility_cells=len(x) * self.dimensions[1]**2)
             counts[("additive" if self.arm == "A" else "entropic") + "_gradient_calls"] = 1
-        _charge(ledger, stage, "efficient_" + self.arm,
-                _step_work(self.dimensions, self.arm, len(x)), counts)
+        _charge(ledger, stage, "efficient_" + self.arm, work, counts)
         # x was checked above. These are the unchanged model equations, using
         # the same shared softmax implementation without rechecking x or the
         # categorical distributions immediately produced from it.
-        hidden = np.tanh(x @ model.params["encoder"] + model.params["bias"])
+        hidden = (np.tanh(x @ model.params["encoder"] + model.params["bias"]) if mixed is None
+                  else mixed.hidden(model.params["encoder"], model.params["bias"]))
         p = softmax(hidden @ model.params["text"] + model.params["text_bias"])
         q = softmax(hidden @ model.params["image"] + model.params["image_bias"])
         loss, dt, di = self._policy_gradients_checked(p, q, y)
         dh = (dt @ model.params["text"].T + di @ model.params["image"].T) * (1 - hidden * hidden)
-        gradients = {"encoder": x.T @ dh, "bias": dh.sum(0),
+        gradients = {"encoder": x.T @ dh if mixed is None else mixed.encoder_gradient(dh), "bias": dh.sum(0),
             "text": hidden.T @ dt, "text_bias": dt.sum(0),
             "image": hidden.T @ di, "image_bias": di.sum(0)}
         model.apply_gradients(gradients, lr)
