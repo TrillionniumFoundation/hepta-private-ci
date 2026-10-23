@@ -87,5 +87,26 @@ instant invalidation. Tests use new real keys and original FinalUse/lease owners
 to verify signatures, replay denial, changed binding denial and both revocation
 paths without entering an effect.
 
-The private endpoint, runtime loader and authenticated cognitive current-cut
-protocol remain separate requirements.
+## Private Linux issuer channel
+
+`HostIssuerSession` accepts an already connected Unix stream and a root-launcher
+policy that pins the actual UID/PID and an existing lease ID/revision. Linux
+SO_PEERCRED must match before any request is read. The original Agentd's u32-BE
+JSON request/response format is preserved, with a 16 KiB request and 64 KiB
+response bound. Only a full denial keeps the channel reusable. Invalid frames,
+uncertain exchanges and elapsed deadlines permanently close it. There is one
+exchange at a time and no discovery, reconnect, retry or administrative lease
+endpoint. The launcher must control descriptor inheritance/transfer and retain
+the peer lifecycle; matching a stale numeric PID alone is insufficient.
+
+Socket I/O uses one deadline capped at thirty seconds. This does not cancel
+kernel filesystem I/O inside the issuer. After such an operation returns, an
+expired deadline cannot emit a successful grant. A root-only test launches a
+real nonprivileged UID with empty supplementary groups and NoNewPrivileges,
+checks SO_PEERCRED, denies root-directory access and verifies the resulting
+grant with original FinalUse. A login administrator with sudo is not a confined
+writer; deployment needs a dedicated non-login UID without sudo permission.
+
+The runtime loader, authenticated clock/head feed and cognitive current-cut
+protocol remain separate requirements. These tests do not attach a production
+CognitiveStore writer or establish full crash recovery.

@@ -13,6 +13,8 @@ pub mod authbus_b5;
 mod authbus_tests;
 #[cfg(target_os = "linux")]
 mod authority_host_clock;
+#[cfg(target_os = "linux")]
+mod authority_host_issuer_transport;
 #[cfg(unix)]
 mod authority_host_store;
 pub mod authority_lease;
@@ -33,6 +35,14 @@ mod verified_use_witness;
 
 #[cfg(target_os = "linux")]
 pub use authority_host_clock::HostAuthorityClock;
+#[cfg(target_os = "linux")]
+pub use authority_host_issuer_transport::HostIssuerPeer;
+#[cfg(target_os = "linux")]
+pub use authority_host_issuer_transport::HostIssuerSession;
+#[cfg(target_os = "linux")]
+pub use authority_host_issuer_transport::HostIssuerSessionPolicy;
+#[cfg(target_os = "linux")]
+pub use authority_host_issuer_transport::HostIssuerTransportError;
 #[cfg(unix)]
 pub use authority_host_store::HostAuthorityFrontierStore;
 #[cfg(unix)]

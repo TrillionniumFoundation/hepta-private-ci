@@ -13,6 +13,9 @@ use pretty_assertions::assert_eq;
 #[path = "authority_host_issuer_race_tests.rs"]
 mod race_tests;
 
+#[path = "authority_host_transport_tests.rs"]
+mod transport_tests;
+
 struct Fixture {
     _directory: tempfile::TempDir,
     root: Arc<RootAuthorityDirectory>,
@@ -27,6 +30,10 @@ impl Fixture {
     fn new() -> Self {
         let directory = tempfile::tempdir().unwrap();
         let root = test_directory(directory.path());
+        Self::with_directory(directory, root)
+    }
+
+    fn with_directory(directory: tempfile::TempDir, root: Arc<RootAuthorityDirectory>) -> Self {
         let clock: Arc<dyn AuthorityClock> =
             Arc::new(HostAuthorityClock::initialize(root.clone(), "issuer-clock".into()).unwrap());
         let issuer = HostFinalUseIssuer::initialize(
