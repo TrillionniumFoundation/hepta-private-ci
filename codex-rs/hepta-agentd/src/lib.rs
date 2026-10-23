@@ -46,6 +46,10 @@ mod plasticity_learning_producer;
 mod plasticity_owner_evidence;
 mod plasticity_process_bootstrap;
 mod plasticity_runtime;
+#[cfg(target_os = "linux")]
+mod production_authority;
+#[cfg(target_os = "linux")]
+mod production_composition;
 mod production_writer_host;
 mod prompt_runtime;
 mod qualification_writer;
@@ -242,6 +246,14 @@ pub use plasticity_runtime::PlasticityRuntimeCallErrorV1;
 pub use plasticity_runtime::PlasticityRuntimeHandleV1;
 pub use plasticity_runtime::PlasticityRuntimeOwnerV1;
 pub use plasticity_runtime::plasticity_runtime_channel_v1;
+#[cfg(target_os = "linux")]
+pub use production_authority::AgentdFinalUseHostInputs;
+#[cfg(target_os = "linux")]
+pub use production_composition::AgentdProductionHostInputs;
+#[cfg(target_os = "linux")]
+pub use production_composition::AgentdProductionNotesInputs;
+#[cfg(target_os = "linux")]
+pub use production_composition::attach_production_operation_host;
 pub use production_writer_host::AgentdFinalUseGrantProvider;
 pub use production_writer_host::AgentdProductionOperationRuntimeConfig;
 pub use production_writer_host::AgentdProductionWriterHost;

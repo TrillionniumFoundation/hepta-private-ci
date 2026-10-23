@@ -1,0 +1,240 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-10-23T07:15:34.519665+00:00",
+  "baseline_head": "16418ddc3416a38a122b883cee46e2d3583cbd41",
+  "baseline_tree": "43fde98e9ea789b81b941e48bb65300c76c4292c",
+  "scope": "Original full workspace resolution and actual original owning-package compilation attempts. Factory, Notes, grant-provider worker and full Agentd tests have not executed in these attempts. This does not claim production qualification.",
+  "supersedes_environment_diagnosis": "The previous partial-workspace aws-auth manifest failure and offline missing dependency were resolved by the complete pinned source and working approved network. The latest blocker is measured local build capacity. All historical receipts are preserved.",
+  "previous_environment_receipt": {
+    "filename": "owner-environment-progress.json",
+    "bytes": 116410,
+    "sha256": "a70195c19b5f8d8e2f921c9aace2e327b41de34cae42e355e31f74c2de33fce2"
+  },
+  "original_source_inventory": {
+    "filename": "head3398-tree.json",
+    "bytes": 1320502,
+    "sha256": "04cd4c3c691cf4dacee120164f0c0176f65938f69342ab5eb1e6e76444cf80f8",
+    "ref_tree": "43fde98e9ea789b81b941e48bb65300c76c4292c",
+    "entries_verified": 9111
+  },
+  "target_dependency_graph": {
+    "command": [
+      "cargo",
+      "tree",
+      "--locked",
+      "-p",
+      "codex-hepta-agentd",
+      "--target",
+      "x86_64-unknown-linux-gnu",
+      "--edges",
+      "normal,build,dev",
+      "--prefix",
+      "none",
+      "--format",
+      "{p}"
+    ],
+    "exit_code": 0,
+    "unique_package_lines": 1019,
+    "display_lines": 4872,
+    "scope": "normal/build/dev package graph; not exact rustc compilation units and not whole-workspace cache completeness"
+  },
+  "unchanged_product_inputs": [
+    "original Cargo.lock",
+    "original workspace members",
+    "original Cargo profiles",
+    "published source and strict tests during all five Agentd attempts"
+  ],
+  "environment_changes": [
+    "Use existing system OpenSSL headers/libraries through openssl-sys-supported explicit variables; no fake pkg-config or dependency substitution.",
+    "rustup repaired the same required Rust 1.95.0 during resume-2; exact stderr and repeated tool versions retained. RUSTUP_AUTO_INSTALL=0 in subsequent attempts.",
+    "Resource thresholds are local execution budgets, not changes to product profiles or CI gates.",
+    "Only this task private build outputs outside the exact memory package graph were removed for a serial memory package test window. Their hashes are retained; Agentd must recompile those outputs."
+  ],
+  "current_unexecuted_tests": {
+    "production_composition_tests": 7,
+    "production_composition_notes_tests": 5,
+    "original_final_use_issuer_tests": 7,
+    "original_grant_provider_worker_tests": 1
+  },
+  "publication_format": "The unmodified complete execution bundle is preserved in ordered UTF-8 parts. Concatenate in this order to recover the exact original JSON bytes.",
+  "complete_bundle": {
+    "filename": "owner-complete-workspace-execution.full.json",
+    "bytes": 470289,
+    "sha256": "7d7e1b5b3b631082216cf353f1e75532fb5aa3c49d7cfee1514f1ad9dc00eb69",
+    "git_blob": "bc3c1f4ed856af9941b104042720a08f87d47a3a",
+    "parts": [
+      {
+        "path": "owner-workspace-raw/part-01.txt",
+        "bytes": 24000,
+        "sha256": "18ae05ce479d1eb309db367bcbd6c5d5e50fe4a4b931192e0983d433d36b5539",
+        "git_blob": "ed312a668286afb6d2f607b3bc7649da9f5a3855"
+      },
+      {
+        "path": "owner-workspace-raw/part-02.txt",
+        "bytes": 24000,
+        "sha256": "ef94f484915330396b3debd8675301b8a90e4edb25f81260e9a389abcc2ef61f",
+        "git_blob": "9a43c83830acbd864cf1aebe8329710739be6c24"
+      },
+      {
+        "path": "owner-workspace-raw/part-03.txt",
+        "bytes": 24000,
+        "sha256": "a9e02131986a6ff4a7eb066e5bad945e1f24bccf1e8fda9321e9268489929fd0",
+        "git_blob": "e8b5dcc9cfb27f16456bfa68d79482c17ae2dd50"
+      },
+      {
+        "path": "owner-workspace-raw/part-04.txt",
+        "bytes": 24000,
+        "sha256": "5ee6e938d6fe47a78854f93c354d67d5fca12c090511132efa4a35aa3504bec8",
+        "git_blob": "a0b600f7ef9ff665970ad766657761c84148430d"
+      },
+      {
+        "path": "owner-workspace-raw/part-05.txt",
+        "bytes": 24000,
+        "sha256": "b73b1d165b94681d83f235afc5229cf299b707f8388c7c61339560b6fb2a847b",
+        "git_blob": "3d9e6e03991f2f0eb453b4163f1ca8abd31f04e3"
+      },
+      {
+        "path": "owner-workspace-raw/part-06.txt",
+        "bytes": 24000,
+        "sha256": "89694036834ebbea93ede0952d9fbcb27fedaeb846344af51eb56cb568453d9f",
+        "git_blob": "22274e8f395689513fecb6a728c303c1a60d28e8"
+      },
+      {
+        "path": "owner-workspace-raw/part-07.txt",
+        "bytes": 24000,
+        "sha256": "a4e7781905ca8cef12b4c710950ae037d08ca6a3b9655e1a99b81e95943adb40",
+        "git_blob": "2f59aabd9440c23c5ef2bcc742d6b12971abe1ed"
+      },
+      {
+        "path": "owner-workspace-raw/part-08.txt",
+        "bytes": 24000,
+        "sha256": "1e7d2bb5cc7798190e497fd74508d75c90936f2859ade4dc2ff455fabdef3065",
+        "git_blob": "dc0f52a8c0643fa29208edf1ce84bd1c047d3b10"
+      },
+      {
+        "path": "owner-workspace-raw/part-09.txt",
+        "bytes": 24000,
+        "sha256": "27140cae47acdbdf5b681327868932988d886b30c6c10186dff8faaf69c0d254",
+        "git_blob": "55689c61a2894f33b77b0b8e2e8cc0ac98b15a41"
+      },
+      {
+        "path": "owner-workspace-raw/part-10.txt",
+        "bytes": 24000,
+        "sha256": "ea479ef413569cbcc7b204970521e07f916b7cb097507f54e37b1ffd35163851",
+        "git_blob": "7fb06fbd96581b2224b27a6fe95a48bf9f605446"
+      },
+      {
+        "path": "owner-workspace-raw/part-11.txt",
+        "bytes": 24000,
+        "sha256": "e54800bdfd3782db398b49fd7c57ca3dc7970204bf0ce264b4aa291f173b1044",
+        "git_blob": "e109a35cb75b55d6381a22efa8ba84a9e59592aa"
+      },
+      {
+        "path": "owner-workspace-raw/part-12.txt",
+        "bytes": 24000,
+        "sha256": "13aeea4c6b4a2ed579346b1e36fe3774587282de8311ff40de4fad007d83cb1d",
+        "git_blob": "bc7e52b69af71ba929717d043a16cbbd4cc423d6"
+      },
+      {
+        "path": "owner-workspace-raw/part-13.txt",
+        "bytes": 24000,
+        "sha256": "0c35a950e257d35ffb1187185042a145ea2f7c7f6d396c648150108409525043",
+        "git_blob": "4300ceece5d9769be70ecb29328ec16b61a1840d"
+      },
+      {
+        "path": "owner-workspace-raw/part-14.txt",
+        "bytes": 24000,
+        "sha256": "c0694fbc209dc263956f57eac9def5b49209d3d7fed816652d6add72ed31bdc5",
+        "git_blob": "dec7073e0d6df01ae9cdb73af636d4fd167527a2"
+      },
+      {
+        "path": "owner-workspace-raw/part-15.txt",
+        "bytes": 24000,
+        "sha256": "90981fc741c5f6eca5fc7e3e587430055137327cae749024fdf4c93db192880c",
+        "git_blob": "0079c406d5536c90422ab61fd9c2a1202c457222"
+      },
+      {
+        "path": "owner-workspace-raw/part-16.txt",
+        "bytes": 24000,
+        "sha256": "f2815998f11c4e05aa533e77043cbcc6395d80e36ff3ab9d4f44157dd588391b",
+        "git_blob": "97c61974cc41c979de089948350c78ce39eb019c"
+      },
+      {
+        "path": "owner-workspace-raw/part-17.txt",
+        "bytes": 24000,
+        "sha256": "1d199ea20b63ec1722565ac514cc17e913b6afb003877093247508cfd0b10b30",
+        "git_blob": "d0e49d3481174753d23a1eecf2abd9cf83ca30e9"
+      },
+      {
+        "path": "owner-workspace-raw/part-18.txt",
+        "bytes": 24000,
+        "sha256": "3b46181b19849f4cee1ff9eb382c73652fe99cdd958a0bd4d7ca348ce206ebd3",
+        "git_blob": "688d060e3e499521c637a1b8fcb79730890ba677"
+      },
+      {
+        "path": "owner-workspace-raw/part-19.txt",
+        "bytes": 24000,
+        "sha256": "b8ff2a5ebaff84f304a74046e56d6a1b7c45de095f418cbff1d0b6ddfca0a2ed",
+        "git_blob": "a1a8968dbde6bafbf722aca7787805d4f6323430"
+      },
+      {
+        "path": "owner-workspace-raw/part-20.txt",
+        "bytes": 14289,
+        "sha256": "c3dab328d52828dadba00d921507d27eedefac0ecac586dbf2e319f8732be4d0",
+        "git_blob": "deba8012c794dc32f0081c749158ae9614e76d85"
+      }
+    ]
+  },
+  "raw_receipts": [
+    {
+      "filename": "owner-complete-source-materialization.json",
+      "bytes": 1011,
+      "sha256": "c92b2932034209c8a9adfd9ff9cdfd289a331c82b04d58c11c0958a006d4d1c6"
+    },
+    {
+      "filename": "original-online-target-tree.json",
+      "bytes": 202002,
+      "sha256": "9290a307375861c21de532ab31b1eea4c038f8ca24750ccb0a6908a10a85f55f"
+    },
+    {
+      "filename": "original-system-openssl.json",
+      "bytes": 2304,
+      "sha256": "f5c52e696e454d1bf850d5a511e532e8280eb4d10fdfdc8af374360e6dd2f1a8"
+    },
+    {
+      "filename": "original-online-composition-tests.json",
+      "bytes": 34457,
+      "sha256": "bf5dd7a8f16b94cfe4b209dd174e84862b7813a8a3f768c62126c1ca4d7ef752"
+    },
+    {
+      "filename": "original-online-composition-tests-resume-1.json",
+      "bytes": 25830,
+      "sha256": "a4af1206f3a23a146bff4940f92ad62922b3b15ecf887a8c62cc0ddfa9a13dbe"
+    },
+    {
+      "filename": "original-online-composition-tests-resume-2.json",
+      "bytes": 37888,
+      "sha256": "6ee87ffa810b9b8b52209cc31a2c880469ee69df4eb2bea9dc9bf05684864ab9"
+    },
+    {
+      "filename": "original-online-composition-tests-resume-3.json",
+      "bytes": 29017,
+      "sha256": "46b90378f0887d5165a8601947075c87c54869f10e6333a0ddb6903088c65515"
+    },
+    {
+      "filename": "original-online-composition-tests-resume-4.json",
+      "bytes": 28317,
+      "sha256": "ca43e330da8a0a0ad6c0b466414f829a48a0d15511364b27bd797d5597b221ec"
+    },
+    {
+      "filename": "memory-target-dependency-graph.json",
+      "bytes": 57636,
+      "sha256": "b3031658dad4daddd50ae0d3ddcd8aca3327e88686c0fff29caf8f488d245067"
+    },
+    {
+      "filename": "owner-target-memory-window-cleanup.json",
+      "bytes": 31910,
+      "sha256": "031b714045a9e06159e642de8d16ce4887c98f146dbe96d3da9b3fe71b0bfa68"
+    }
+  ]
+}
