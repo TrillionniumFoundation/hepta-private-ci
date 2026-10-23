@@ -26,6 +26,15 @@ def fake(name):
         calibration_nll_grid={"1.0": .3})
     required = (("rl_agent_config.json", "encoder/config.json", "tokenizer/tokenizer.json")
                 if name.startswith("laya_") else ("config.json", "tokenizer.json"))
+    compat = (dict(isolation="private_tokenizer_copy_original_weight_symlink",
+                   original_tokenizer_inventory_sha256=H,
+                   effective_tokenizer_inventory_sha256=H,
+                   original_tokenizer_config_sha256=H,
+                   effective_tokenizer_config_sha256=H,
+                   registered_config_rewrite=False,
+                   original_weight_sha256=spec["weight_sha256"],
+                   no_original_snapshot_mutation_observed=True)
+              if name.startswith("laya_") else None)
     return dict(schema="hepta.neuron.replacement-physical-shadow.v1",
                 candidate=name, checkpoint=dict(
                     repository=spec["repository"], revision=spec["revision"],
@@ -39,7 +48,8 @@ def fake(name):
                 performance=dict(device="cpu", forward_count=40,
                     original_forward_latency_ms=[1.0] * 40,
                     load_ms=200., forward_latency_p50_ms=1.,
-                    raw_forward_throughput_per_second=1.0),
+                    raw_forward_throughput_per_second=1.0,
+                    laya_tokenizer_compat=compat),
                 limits=dict(historical_2014_dataset=True, target_device_qualified=False,
                     prospective_holdout=False, independent_observer_attested=False,
                     retrieval_quality_measured=False, multilingual_quality_measured=False),
@@ -89,6 +99,25 @@ class PhysicalAuditTests(unittest.TestCase):
         cases = samples()
         del cases["laya_typed_421m"]["checkpoint"]["component_sha256"]["tokenizer/tokenizer.json"]
         self.assertEqual(assess(REGISTRY, cases)["raw_shadow_preflight"], "BLOCKED")
+
+    def test_publisher_weight_must_match_private_laya_view(self):
+        case = fake("laya_english_421m")
+        case["performance"]["laya_tokenizer_compat"]["original_weight_sha256"] = H
+        errors = audit_arm("laya_english_421m", case,
+                           REGISTRY["models"]["laya_english_421m"])
+        self.assertTrue(any("original-weight" in x for x in errors))
+
+    def test_missing_or_forged_laya_compatibility_receipt_denied(self):
+        case = fake("laya_multi_322m")
+        del case["performance"]["laya_tokenizer_compat"]
+        errors = audit_arm("laya_multi_322m", case,
+                           REGISTRY["models"]["laya_multi_322m"])
+        self.assertTrue(any("isolated Laya" in x for x in errors))
+        case = fake("laya_typed_421m")
+        case["performance"]["laya_tokenizer_compat"]["registered_config_rewrite"] = True
+        errors = audit_arm("laya_typed_421m", case,
+                           REGISTRY["models"]["laya_typed_421m"])
+        self.assertTrue(any("inconsistent tokenizer" in x for x in errors))
 
     def test_training_budget_or_token_row_drift_rejected(self):
         cases = samples()
