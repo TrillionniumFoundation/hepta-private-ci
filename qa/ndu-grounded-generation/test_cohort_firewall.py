@@ -693,7 +693,9 @@ class CohortFirewallTests(unittest.TestCase):
             candidate = manifest(10000)
             self._four_original_jpegs(candidate, actual / "images")
             (root / "alias").symlink_to(actual, target_is_directory=True)
-            with self.assertRaisesRegex(CohortContractError, "no-follow directory path"):
+            with self.assertRaisesRegex(
+                CohortContractError, "no-follow directory path"
+            ):
                 cohort_firewall.verify_candidate_image_bytes(
                     candidate, root / "alias" / "images"
                 )
@@ -711,7 +713,9 @@ class CohortFirewallTests(unittest.TestCase):
             actual = root / "images"
             actual.mkdir()
             (root / "alias").symlink_to(actual, target_is_directory=True)
-            with self.assertRaisesRegex(CohortContractError, "no-follow directory path"):
+            with self.assertRaisesRegex(
+                CohortContractError, "no-follow directory path"
+            ):
                 cohort_firewall._open_pinned_image_directory(root / "alias")
 
     @unittest.skipUnless(
