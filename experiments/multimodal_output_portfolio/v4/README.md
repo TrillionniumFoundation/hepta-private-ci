@@ -218,7 +218,7 @@ original frozen CVaR, pooling, matching or cost calculations.
 
 The difference of two CVaR values is **not** the CVaR of their paired
 difference. Both are reported without conflating their interpretations.
-The 90% level and independent grouping unit are frozen in code; no heldout
+The 90% level and within-seed weighting unit are frozen in code; no heldout
 test can select a more flattering tail threshold after outcome inspection.
 
 \`test_registered_tail.py\` proves in synthetic adversarial fixtures that
