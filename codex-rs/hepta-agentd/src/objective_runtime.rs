@@ -331,7 +331,7 @@ impl ObjectiveRuntimeHost {
     }
 }
 
-fn objective_payload(
+pub(crate) fn objective_payload(
     identity: &AgentdIdentity,
     body: &AuthBusObjectiveBody,
     current_generation: u64,
@@ -370,6 +370,17 @@ fn objective_body_payload(body: &AuthBusObjectiveBody) -> Result<Vec<u8>, Agentd
     Ok(bytes)
 }
 
+/// Build the exact preimage claims used by original Objective admission.
+/// This validates the structured body and binds the original owner/route; it
+/// neither signs, admits, advances replay state nor grants effect authority.
+pub fn authbus_objective_claims(
+    identity: &AgentdIdentity,
+    request: &AuthBusObjectiveIngress,
+) -> Result<SignedMessageClaims, AgentdError> {
+    let payload = objective_payload(identity, &request.body, identity.spawn_generation)?;
+    objective_claims(identity, request, &payload)
+}
+
 fn objective_claims(
     identity: &AgentdIdentity,
     request: &AuthBusObjectiveIngress,
@@ -391,7 +402,7 @@ fn objective_claims(
     })
 }
 
-fn objective_scope(identity: &AgentdIdentity) -> Digest32 {
+pub(crate) fn objective_scope(identity: &AgentdIdentity) -> Digest32 {
     let mut bytes = b"hepta:agentd:signed-objective:v1\0".to_vec();
     bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
     Digest32::of_bytes(&bytes)

@@ -52,6 +52,7 @@ mod notes_bootstrap;
 #[cfg(unix)]
 mod notes_channel;
 mod objective_runtime;
+pub use objective_runtime::authbus_objective_claims;
 mod plasticity_anchor_journal;
 mod plasticity_host;
 mod plasticity_learning_producer;

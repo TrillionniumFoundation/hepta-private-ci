@@ -33,6 +33,9 @@ use serde::Serialize;
 
 use crate::DeploymentFrontierStore;
 
+#[path = "deployment_authbus.rs"]
+mod authbus;
+
 const STATE_OWNER: &str = "local-final-use-issuer";
 const EXCHANGE_DEADLINE: Duration = Duration::from_secs(2);
 
