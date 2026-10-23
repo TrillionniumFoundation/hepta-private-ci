@@ -1,0 +1,44 @@
+name: Hepta Memory A-I matrix shadow contract
+
+on:
+  pull_request:
+    paths:
+      - 'qa/stem-bakeoff/memory_matrix_contract.py'
+      - 'qa/stem-bakeoff/test_memory_matrix_contract.py'
+      - 'docs/learning/MEMORY_A_I_MATRIX_V1.md'
+      - '.github/workflows/hepta-memory-ai-matrix-shadow.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-ai-shadow-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  strict-census-and-gates:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact source identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+      - name: Verify frozen A-I matrix and forged-receipt rejections
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s qa/stem-bakeoff -p 'test_memory_matrix_contract.py' -v
+          python3 -m py_compile qa/stem-bakeoff/memory_matrix_contract.py qa/stem-bakeoff/test_memory_matrix_contract.py
+      - name: Confirm no repository mutation
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
