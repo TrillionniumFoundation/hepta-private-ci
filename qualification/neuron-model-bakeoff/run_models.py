@@ -42,11 +42,19 @@ def inventory_digest(paths: list[Path], root: Path) -> str:
     return h.hexdigest()
 
 
-def model_inventory(root: Path) -> dict[str, str]:
-    weights = list(root.rglob("*.safetensors"))
+def model_inventory(root: Path, *, exclude_bundled_laya: bool = False) -> dict[str, str]:
+    # The English checkpoint is in the root of a bundled Hub repository.
+    # Never hash the sibling multilingual/typed weights as if the English
+    # model consumed them; every arm needs its own consumed-artifact identity.
+    def selected(path: Path) -> bool:
+        return not exclude_bundled_laya or path.relative_to(root).parts[0] not in (
+            "multilingual", "typed-decisions",
+        )
+
+    weights = [p for p in root.rglob("*.safetensors") if selected(p)]
     tokenizers = [
         p for p in root.rglob("*")
-        if p.is_file() and (
+        if p.is_file() and selected(p) and (
             p.name.startswith("tokenizer") or p.name in (
                 "vocab.txt", "vocab.json", "merges.txt", "sentencepiece.bpe.model",
             )
@@ -56,6 +64,14 @@ def model_inventory(root: Path) -> dict[str, str]:
         "weights": inventory_digest(weights, root),
         "tokenizer": inventory_digest(tokenizers, root),
     }
+
+
+def validate_snapshot_repository(root: Path, model: str, revision: str) -> None:
+    require(root.is_dir() and root.parent.name == "snapshots" and root.name == revision,
+            "snapshot must be exact local Hugging Face cache snapshots/<revision>")
+    expected = "models--" + MODEL_REPOS[model].replace("/", "--")
+    require(root.parent.parent.name == expected,
+            "checkpoint repository mismatch: model arm cannot use another repo snapshot")
 
 
 def normalize(values: dict[str, float]) -> dict[str, float]:
@@ -245,8 +261,7 @@ def main() -> int:
         commit = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
         require(commit == a.source_commit, "source commit drift")
         root = a.snapshot.resolve(strict=True)
-        require(root.is_dir() and root.parent.name == "snapshots" and root.name == a.revision,
-                "snapshot must be local Hugging Face cache snapshots/<exact SHA>")
+        validate_snapshot_repository(root, a.model, a.revision)
         require(0 < a.abstention_threshold < 1, "invalid preregistered abstention threshold")
         import torch
 
@@ -260,7 +275,7 @@ def main() -> int:
             ),
             "requested accelerator unavailable; no automatic fallback",
         )
-        inventory = model_inventory(root)
+        inventory = model_inventory(root, exclude_bundled_laya=(a.model == "laya-english-421m"))
         data = load_jsonl(a.dataset)
         validate_dataset(data)
         require(all(isinstance(r.get("state"), str) and isinstance(r.get("question"), str)
