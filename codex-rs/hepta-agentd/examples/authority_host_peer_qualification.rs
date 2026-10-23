@@ -164,7 +164,7 @@ mod qualification {
             ));
             println!(
                 "{}",
-                serde_json::json!({"qualification":"root_authority_expired_lease_v1","uid":60001,"feed_refused":true,"final_use_denied":true,"production_ready":false})
+                serde_json::json!({"qualification":if writer_proof {"root_authority_expired_lease_v2"} else {"root_authority_expired_lease_v1"},"uid":60001,"feed_refused":true,"final_use_denied":true,"production_ready":false})
             );
             return Ok(());
         }
@@ -351,7 +351,7 @@ mod qualification {
         );
         println!(
             "{}",
-            serde_json::json!({"qualification":"root_authority_original_peer_v1","uid":60001,"no_new_privileges":true,"capabilities_clear":true,"feed_elapsed_ms":feed_ms,"objective_sequence":1,"final_use_sequence":2,"checkpoint_ack":false,"production_ready":false})
+            serde_json::json!({"qualification":"root_authority_original_peer_v1","uid":60001,"no_new_privileges":true,"capabilities_clear":true,"feed_elapsed_ms":feed_ms,"objective_sequence":ingress.sequence,"final_use_sequence":grant.grant.grant_id.rsplit(':').next().ok_or("missing sequence")?.parse::<u64>()?,"checkpoint_ack":false,"production_ready":false})
         );
         Ok(())
     }
