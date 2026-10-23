@@ -71,9 +71,15 @@ PR #3484 without replacing its tighter shadow physical-counter ceiling.
 - The preregistered comparison in `preregistered_assessment.py` accepts
   structurally validated `Outcome` rows **but does not verify signatures**.
   The independent signature verifier in `signed_evidence.py` is a
-  distinct offline evidence port. Their outputs must not be spliced together
-  to claim qualified model training, physical cost evidence, independence or
-  production rollout; a fully bound bridge remains a separate gate.
+  distinct offline evidence port. A read-only prospective bridge is now provided
+  by `signed_paired_assessment.py`: it requires a separately signed registrar
+  protocol, externally pinned models/objective, distinct Ed25519 signer keys,
+  matched unique future source clusters, six genuinely separate signed execution
+  receipts, and bounded physical time/energy/risk before reporting familywise
+  net-NDU comparisons. Do not splice unsigned `Outcome` rows into signed reports.
+  This is an admission mechanism, not proof of observer/registrar key custody,
+  perceptual ground truth, physical meter calibration, statistical independence,
+  model-training efficacy or production authority.
 - The spectral and preregistration adversarial tests are included in the same
   `unittest discover` run as signed evidence, prospective causal credit,
   closure and A0–A5 negative controls. Only a completed exact-head workflow
