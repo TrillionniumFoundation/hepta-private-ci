@@ -67,6 +67,19 @@ def evaluate(study: Mapping):
           "need >=3 distinct registered seeds")
     _need(isinstance(world_ids, dict) and set(world_ids) == {str(s) for s in seeds},
           "heldout world manifest must cover every registered seed")
+    protected_manifest = protocol.get("protected_world_ids")
+    _need(isinstance(protected_manifest, dict) and
+          set(protected_manifest) == set(world_ids),
+          "missing preregistered protected-task cohort")
+    protected_sets = {}
+    for registered_seed in seeds:
+        ids = protected_manifest[str(registered_seed)]
+        source = world_ids[str(registered_seed)]
+        _need(isinstance(ids, list) and len(ids) >= 2 and
+              all(isinstance(x, str) for x in ids) and
+              len(set(ids)) == len(ids) and set(ids).issubset(source),
+              "invalid preregistered protected-task identities")
+        protected_sets[registered_seed] = set(ids)
     counts = [len(world_ids[str(s)]) for s in seeds]
     _need(len(set(counts)) == 1 and counts[0] >= 32, "need >=32 matched worlds per seed")
     flat_ids = [k for s in seeds for k in world_ids[str(s)]]
@@ -95,6 +108,8 @@ def evaluate(study: Mapping):
     failure_loss = _number(protocol.get("failure_loss"), "registered failure loss", lower=1)
     draws = protocol.get("draws_per_world")
     _need(type(draws) is int and 1 <= draws <= 16, "unregistered draw count")
+    episode_cost_limit = _number(protocol.get("episode_cost_limit"),
+                                 "preregistered total episode cost ceiling", lower=1e-9)
     cost_units = protocol.get("cost_units")
     _need(isinstance(cost_units, str) and len(cost_units) > 0, "missing measured cost unit")
     observations = study.get("worlds")
@@ -113,6 +128,8 @@ def evaluate(study: Mapping):
             _need(isinstance(context, str) and len(context) == 64, "missing public input identity")
             protected[i, j] = row.get("protected_task") is True
             _need(type(row.get("protected_task")) is bool, "protected status missing")
+            _need(protected[i, j] == (world_id in protected_sets[seed]),
+                  "protected-task relabeling or unregistered cohort")
             outcomes = row.get("outcomes")
             _need(isinstance(outcomes, dict) and set(outcomes) == set(ARMS),
                   "missing required matched control or NDU")
@@ -150,6 +167,13 @@ def evaluate(study: Mapping):
                 total = _number(cost["total"], "total", lower=1e-12)
                 _need(abs(subtotal - total) <= max(1e-9, total * 1e-7),
                       "physical cost ledger not reconciled")
+                # An overbudget execution is an outcome, not an omission. It
+                # remains in the denominator with the registered failed loss.
+                # A completed output that exceeded a HARD common resource
+                # ceiling is inadmissible even if aggregate mean cost is low.
+                if total > episode_cost_limit + max(1e-9, episode_cost_limit * 1e-7):
+                    _need(all(dr["status"] == "failed" for dr in drows),
+                          "overbudget episode must be marked failed in every draw")
                 values[arm_idx[name], i, j, :len(METRICS)] = entries.mean(axis=0)
                 values[arm_idx[name], i, j, -1] = total
     _need(bool(np.any(protected)), "no protected-task evaluation coverage")
@@ -199,7 +223,10 @@ def evaluate(study: Mapping):
     receipt = {"schema": "hepta-mgp-paired-review-v1", "status": "HOLD_NO_GO", "authority": "DENY_ALL",
                "source": "LOCAL_RESEARCH_UNAUTHENTICATED", "scientific_superiority_proven": False,
                "all_provisional_gates_pass": bool(local_all and boots >= 2000),
-               "all_registered_worlds_seen": True, "registered_seeds": len(seeds),
+               "all_registered_worlds_seen": True,
+               "protected_cohort_matches_registration": True,
+               "registered_episode_cost_ceiling": episode_cost_limit,
+               "registered_seeds": len(seeds),
                "worlds_per_seed": size, "draws_per_world": draws,
                "familywise_alpha": alpha, "bootstrap_replicates": boots,
                "comparator_selection": protocol["validation_selected_best"],
