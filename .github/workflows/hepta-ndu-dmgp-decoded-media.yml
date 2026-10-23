@@ -7,6 +7,7 @@ on:
       - "qualification/ndu-dmgp-shadow/test_decoded_media_audit.py"
       - "qualification/ndu-dmgp-shadow/signed_media_bridge.py"
       - "qualification/ndu-dmgp-shadow/test_signed_media_bridge.py"
+      - "qualification/ndu-dmgp-shadow/test_media_type_admission.py"
       - ".github/workflows/hepta-ndu-dmgp-decoded-media.yml"
   workflow_dispatch:
 
@@ -33,7 +34,7 @@ jobs:
           ffmpeg -version | head -1
           ffprobe -version | head -1
       - name: Compile read-only media audit and adversarial tests
-        run: python3 -m py_compile qualification/ndu-dmgp-shadow/decoded_media_audit.py qualification/ndu-dmgp-shadow/test_decoded_media_audit.py qualification/ndu-dmgp-shadow/signed_media_bridge.py qualification/ndu-dmgp-shadow/test_signed_media_bridge.py
+        run: python3 -m py_compile qualification/ndu-dmgp-shadow/decoded_media_audit.py qualification/ndu-dmgp-shadow/test_decoded_media_audit.py qualification/ndu-dmgp-shadow/signed_media_bridge.py qualification/ndu-dmgp-shadow/test_signed_media_bridge.py qualification/ndu-dmgp-shadow/test_media_type_admission.py
       - name: Actually decode text, PNG, PCM WAV and MP4; enforce negative evidence
         run: python3 -m unittest discover -s qualification/ndu-dmgp-shadow -p 'test_*media*.py' -v
       - name: Do not promote decoded fixture test to model/authority evidence
