@@ -74,6 +74,7 @@ pub enum IterationLedgerError {
     EvidenceAlreadyUsed(String),
     EmptyEvidenceDigest,
     EvidenceTimestampMissing,
+    EvidenceTimeWindow,
     EvidenceCandidateMismatch,
     IndependentActorConflict(String),
     EvidenceKindMismatch,
@@ -150,11 +151,6 @@ impl IterationLedgerV1 {
         candidate
             .validate(&self.envelope)
             .map_err(IterationLedgerError::InvalidCandidate)?;
-        if candidate.predecessor.as_ref() == Some(&candidate.candidate_id) {
-            return Err(IterationLedgerError::InvalidCandidate(
-                "candidate cannot roll back to itself".into(),
-            ));
-        }
         self.candidates
             .insert(candidate.candidate_id.clone(), candidate);
         Ok(())
@@ -180,6 +176,11 @@ impl IterationLedgerV1 {
         self.validate_evidence(candidate_id, &current, next, &receipt)?;
         validate_iteration_transition(current.state, next)
             .map_err(IterationLedgerError::InvalidTransition)?;
+        let mut successor = current.clone();
+        successor.state = next;
+        successor
+            .validate(&self.envelope)
+            .map_err(IterationLedgerError::InvalidCandidate)?;
         if let Some(previous) = self.evidence.get(&receipt.evidence_id) {
             if previous != &receipt {
                 return Err(IterationLedgerError::EvidenceIdentityConflict(
@@ -206,7 +207,7 @@ impl IterationLedgerV1 {
                 candidate_id.to_string(),
             ));
         };
-        entry.state = next;
+        *entry = successor;
         Ok(event)
     }
 
@@ -225,6 +226,18 @@ impl IterationLedgerV1 {
         }
         if receipt.observed_unix_seconds == 0 {
             return Err(IterationLedgerError::EvidenceTimestampMissing);
+        }
+        if receipt.observed_unix_seconds > self.envelope.expiry_unix_seconds
+            || self
+                .events
+                .iter()
+                .rev()
+                .find(|event| &event.candidate_id == candidate_id)
+                .is_some_and(|event| {
+                    receipt.observed_unix_seconds < event.evidence.observed_unix_seconds
+                })
+        {
+            return Err(IterationLedgerError::EvidenceTimeWindow);
         }
         if requires_independent_actor(next) && receipt.actor_id == current.generator_identity {
             return Err(IterationLedgerError::IndependentActorConflict(
@@ -305,6 +318,10 @@ const fn requires_independent_actor(next: IterationCandidateStateV1) -> bool {
         IterationCandidateStateV1::StaticallyValidated | IterationCandidateStateV1::SandboxTested
     )
 }
+
+#[cfg(test)]
+#[path = "iteration_adversarial_tests.rs"]
+mod adversarial_tests;
 
 #[cfg(test)]
 mod tests {

@@ -43,6 +43,53 @@ Scoped withdrawal and lifecycle state also have canonical create-only adapters:
 Their receipts bind file digest, byte count, record count and chain head;
 withdrawal receipts additionally bind the withdrawal scope digest.
 
+## Complete V3 admission sidecars
+
+`admission_storage.rs` adds `HEPTAA03` without changing `HEPTAR01`, `HEPTAH01`
+or payload bytes. Its public surfaces are:
+
+```text
+admission_snapshot_receipt_v3(&WithdrawalBoundArtifactAdmissionV3, binding)
+write_artifact_admission_snapshot_beneath(root, relative, &admission, binding)
+read_artifact_admission_snapshot(File, ArtifactAdmissionSnapshotReceiptV3)
+read_artifact_admission_snapshot_bound(File, binding, scope, manifest_digest, admission_digest)
+validate_admission_registry_projection_v3(&ArtifactManifest, &admission)
+```
+
+The owner names a sidecar `admissions/{manifest_digest}.admission`. The canonical
+newline-terminated encoding stores the binding; withdrawal scope/head;
+admitted-at time; admission/manifest digests; artifact/kind/generation/provenance;
+counted dataset, lineage and predecessor lists; an explicit optional rollback
+tag; all payload/training/runtime/device/objective/compatibility/schema/
+normalization fields; producer; creation/expiry times; and `DENY_ALL`.
+It rejects additional fields, alternate numeric/newline encodings, unordered or
+duplicate closure inputs and authority escalation. A 128 KiB total limit,
+128-byte field-line limit and the V2 64/1,024/64 collection ceilings bound parsing
+and allocation before semantic replay.
+
+`ArtifactAdmissionSnapshotReceiptV3` binds storage binding, withdrawal scope,
+manifest digest, admission digest, file digest and encoded byte count. A bound
+reader obtains its four semantic pins from the independently witnessed registry,
+original registration checkpoint and owner scope. It verifies the whole semantic
+digest and canonical bytes before returning a new file receipt. The observed file
+length controls the read budget only. Deriving trusted pins from suspect bytes
+remains forbidden.
+
+Sidecar recovery checks historical validity at `admitted_at`; final publication
+and runtime use check expiry and the live withdrawal frontier separately. Sidecar
+writes validate before creation. Existing bytes return `AlreadyExists`; the
+owner may only read/verify the exact expected evidence and synchronize the file
+and containing directory before advancing its checkpoint. A different admission
+for the same manifest path is a conflict, never permission to overwrite it.
+
+V1-only files remain readable through compatibility APIs. A strict CURRENT reader
+requires every sidecar and exact projection. Missing historical evidence requires
+`LearningArtifactOwnerHost::backfill_artifact_admission` with the original trusted
+admission and matching registration checkpoint. It cannot be fabricated from a V1
+support digest or inferred as dataset-independent provenance.
+
+## V1 snapshot and payload encoding
+
 `write_registry_snapshot` writes one new empty target and syncs it before
 returning a `RegistrySnapshotReceipt`. `read_registry_snapshot` requires that
 exact externally retained receipt, checks bytes and history, then rebuilds the
@@ -118,6 +165,44 @@ under its writer fence before treating the phase as durable. A crash before
 witness publication may leave durable bytes or a registry generation, but never
 a valid acknowledged publication.
 
+The named owner implementation also publishes restrictions and withdrawal
+frontiers through the separate `owner_state.rs` / `owner_state_storage.rs` saga:
+`Prepared -> SnapshotsDurable -> WitnessDurable -> Acknowledged`. Registry and
+scoped withdrawal snapshots are durable before signed CURRENT and terminal
+acknowledgement. Recovery preserves the exact operation, predecessor floors,
+receipts and original lease, and fences unrelated writes until reconciliation.
+The new saga is additive; it does not reinterpret a V1 artifact-publication
+checkpoint as a restriction checkpoint.
+
+`LearningArtifactOwnerService::open_v2` requires the inner V1 owner configuration
+and an independent `required_withdrawal_head_digest` in
+`LearningArtifactOwnerServiceConfigV2`. Restart proves that withdrawal floor as
+well as the independent CURRENT floor; a same-directory restored history is not
+a source for either trusted floor. The compatibility
+`install_withdrawal_frontier` accepts only an identical no-op. An advancement
+must use `prepare_state_registry` and `publish_state` or returns
+`DurableStatePublicationRequired`.
+
+The externally trusted head signer also signs
+`LearningArtifactStatePublishRequestV1::authorization_signing_bytes()` within
+its explicit authorization interval. This domain-separated signature covers
+the full state intent and next withdrawal frontier, including a no-op registry
+delta whose signed CURRENT head is unchanged. Current requests check expiry;
+historical checkpoint replay checks the original authorized-at time.
+
+Acknowledged first-publication withdrawal-bootstrap retries likewise recover the
+original receipt using its historical signature and exact durable snapshot. They
+survive authorization/lease expiry and live authority-floor rotation without
+changing the live frontier. An altered request or corrupt/missing snapshot still
+fails closed. Every new bootstrap operation requires current writer and head-signer
+authorization; historical replay creates no new mutation authority.
+
+On Unix, the native owner synchronizes the root directory layout at startup and
+each file's containing directory after writes and exact reconciliation. Direct
+low-level adapters retain the caller's directory-sync obligation. Other targets
+require the selected platform's directory-durability implementation and execution
+qualification. This does not change trusted-path or restart-floor inputs.
+
 `create_new` protects the final path component from an existence-check race.
 `create_beneath_trusted_root` additionally rejects lexical escape and symlink
 ancestors under a canonical trusted root. Neither API is an `openat2`-style
@@ -143,3 +228,18 @@ This specification alone does not claim source implementation, execution,
 independent acceptance or release. It adds no production caller,
 selection, promotion, merge, filesystem credential or runtime authority. All
 external evidence and release gates remain unchanged.
+
+## Admission/recovery hardening
+
+A host-local admission mutex complements the OS lifetime fence. New publications
+must name actual CURRENT, and no second unfinished artifact/state operation is
+accepted. Every resumed durability claim revalidates payload bytes and, for later
+phases, exact registry/admission and witness bytes before another effect. The
+protocol also binds every projected manifest field, canonical operation event ID,
+and complete registry/witness byte receipts. Terminal service retries remain
+historical acknowledgements, not evidence that retained payload bytes still exist.
+
+Namespace reservations, orphan counting, supported limits and the distinction
+between count budgets and real free space are documented in the technical guide,
+Section 10. The early checkpoint still requires the externally retained exact
+request. A partial immutable final file is not silently overwritten or repaired.

@@ -57,6 +57,7 @@ use crate::PlasticityOwnerEvidencePolicyV1;
 use crate::PlasticityRuntimeBootstrapV1;
 use crate::bootstrap_agentd_plasticity_writer_v1;
 use crate::bootstrap_agentd_topology_writer_v1;
+use crate::plasticity_artifact_current::CurrentArtifactsDescriptorV1;
 use crate::reopen_agentd_plasticity_writer_v1;
 use crate::reopen_agentd_topology_writer_v1;
 use crate::resume_agentd_plasticity_writer_v1;
@@ -97,6 +98,8 @@ struct ArtifactSnapshotDescriptorV1 {
     update_rule_artifact_id: String,
     mutation_policy_artifact_id: String,
     broadcast_artifact_id: String,
+    #[serde(default)]
+    current: Option<CurrentArtifactsDescriptorV1>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -292,6 +295,16 @@ pub fn load_plasticity_process_bootstrap_v1(
 
     let objective_digest = digest(&descriptor.objective_digest, "objective digest")?;
     let artifacts = load_artifacts(&descriptor.artifacts)?;
+    let current_config = descriptor.artifacts.current.as_ref().ok_or_else(|| {
+        AgentdError::Invalid(
+            "plasticity bootstrap migration required: add artifacts.current with the independent artifact-owner CURRENT path and public trust"
+                .to_string(),
+        )
+    })?;
+    let frozen_receipt = artifact_snapshot_receipt(&descriptor.artifacts)?;
+    let current_artifacts =
+        current_config.provider(descriptor.artifacts.path.clone(), frozen_receipt)?;
+    current_artifacts.current(descriptor.artifacts.observed_at)?;
     let ledger = load_ledger(&descriptor.ledger)?;
     let dataset = build_dataset_receipt(&descriptor.dataset)?;
     if dataset.snapshot.objective_digest != objective_digest {
@@ -420,14 +433,24 @@ pub fn load_plasticity_process_bootstrap_v1(
         parameter_anchor_store,
         topology_writer,
         topology_anchor_store,
-    )
+    )?
+    .with_current_artifacts(current_artifacts, frozen_receipt)
 }
 
 fn load_artifacts(
     descriptor: &ArtifactSnapshotDescriptorV1,
 ) -> Result<ArtifactRegistry, AgentdError> {
     require_absolute_regular_file(&descriptor.path, "artifact registry snapshot")?;
-    let receipt = RegistrySnapshotReceipt {
+    let receipt = artifact_snapshot_receipt(descriptor)?;
+    read_registry_snapshot(File::open(&descriptor.path)?, receipt).map_err(|error| {
+        AgentdError::Invalid(format!("invalid artifact registry snapshot: {error}"))
+    })
+}
+
+fn artifact_snapshot_receipt(
+    descriptor: &ArtifactSnapshotDescriptorV1,
+) -> Result<RegistrySnapshotReceipt, AgentdError> {
+    Ok(RegistrySnapshotReceipt {
         binding: digest(&descriptor.receipt.binding, "artifact snapshot binding")?,
         head_digest: digest(&descriptor.receipt.head_digest, "artifact snapshot head")?,
         file_digest: digest(
@@ -436,9 +459,6 @@ fn load_artifacts(
         )?,
         records: descriptor.receipt.records,
         encoded_bytes: descriptor.receipt.encoded_bytes,
-    };
-    read_registry_snapshot(File::open(&descriptor.path)?, receipt).map_err(|error| {
-        AgentdError::Invalid(format!("invalid artifact registry snapshot: {error}"))
     })
 }
 
@@ -752,7 +772,7 @@ fn open_topology_writer(
 fn validate_process_path_separation(
     descriptor: &ProcessBootstrapDescriptorV1,
 ) -> Result<(), AgentdError> {
-    let paths = [
+    let mut paths = vec![
         descriptor.ledger.path.as_path(),
         descriptor.neuron.journal_path.as_path(),
         descriptor.parameter_registry.registry_path.as_path(),
@@ -760,6 +780,10 @@ fn validate_process_path_separation(
         descriptor.topology_registry.registry_path.as_path(),
         descriptor.topology_registry.anchor_path.as_path(),
     ];
+    paths.push(descriptor.artifacts.path.as_path());
+    if let Some(current) = &descriptor.artifacts.current {
+        paths.push(current.current_head_path.as_path());
+    }
     for (index, left) in paths.iter().enumerate() {
         for right in paths.iter().skip(index + 1) {
             if left == right {

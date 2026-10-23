@@ -26,6 +26,11 @@ use codex_hepta_learning_artifacts::ArtifactEvent;
 use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::ArtifactManifest;
 use codex_hepta_learning_artifacts::ArtifactRegistry;
+use codex_hepta_learning_artifacts::CreateOnlyArtifactFile;
+use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
+use codex_hepta_learning_artifacts::StateChange;
+use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
+use codex_hepta_learning_artifacts::write_registry_snapshot;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::CandidateSetCompleteness;
 use codex_hepta_learning_ledger::DatasetFreezeRequestV1;
@@ -70,16 +75,19 @@ use ed25519_dalek::SigningKey;
 use tempfile::TempDir;
 use tokio_util::sync::CancellationToken;
 
+use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdPlasticityAnchorStoreV1;
 use crate::AgentdState;
 use crate::ConcretePlasticityOwnerEvidenceResolverV1;
 use crate::PlasticityArtifactOwnerBindingV1;
+use crate::PlasticityCurrentArtifactsV1;
 use crate::PlasticityDynamicOwnerEvidenceResolverV1;
 use crate::PlasticityDynamicSignalBindingV1;
 use crate::PlasticityOwnerEvidenceKindV1;
 use crate::PlasticityOwnerEvidencePolicyV1;
 use crate::PlasticityRuntimeBootstrapV1;
+use crate::PlasticityRuntimeCallErrorV1;
 use crate::bootstrap_agentd_plasticity_writer_v1;
 use crate::bootstrap_agentd_topology_writer_v1;
 use crate::plasticity_eligibility_digest_v1;
@@ -869,8 +877,43 @@ fn runtime_files(root: &Path) -> RuntimeFiles {
     }
 }
 
+struct LiveArtifactFixture {
+    current: Mutex<Option<(PathBuf, RegistrySnapshotReceipt)>>,
+}
+
+impl PlasticityCurrentArtifactsV1 for LiveArtifactFixture {
+    fn current(&self, _now: u64) -> Result<VerifiedCurrentRegistryViewV1, AgentdError> {
+        let (path, receipt) = self
+            .current
+            .lock()
+            .expect("current fixture lock")
+            .clone()
+            .ok_or_else(|| AgentdError::Invalid("independent CURRENT unavailable".to_string()))?;
+        crate::cognitive_ranker::verified_fixture_current_view(
+            File::open(path)?,
+            receipt,
+            Digest32::ZERO,
+        )
+        .map_err(AgentdError::Invalid)
+    }
+}
+
 #[tokio::test]
 async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
+    exercise_lifetime_current_failure(CurrentFailure::Revoked).await;
+}
+
+#[tokio::test]
+async fn agentd_lifetime_current_unavailable_fences_both_proposal_writers() {
+    exercise_lifetime_current_failure(CurrentFailure::Unavailable).await;
+}
+
+enum CurrentFailure {
+    Revoked,
+    Unavailable,
+}
+
+async fn exercise_lifetime_current_failure(failure: CurrentFailure) {
     let daemon = AgentdFixture::new();
     let runtime_root = tempfile::tempdir().expect("runtime root");
     let files = runtime_files(runtime_root.path());
@@ -897,6 +940,16 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         digest("plasticity-objective"),
         selected_artifact_digest,
     );
+    let artifact_snapshot_path = runtime_root.path().join("artifact-current.snapshot");
+    let artifact_receipt = write_registry_snapshot(
+        CreateOnlyArtifactFile::create(&artifact_snapshot_path).expect("create artifact snapshot"),
+        &sources.artifacts,
+        digest("artifact-current-binding"),
+    )
+    .expect("persist independent artifact snapshot");
+    let current_artifacts = Arc::new(LiveArtifactFixture {
+        current: Mutex::new(Some((artifact_snapshot_path.clone(), artifact_receipt))),
+    });
     let signing = SigningFixture::new();
     let verifier = signing.verifier(sources.objective_digest);
     let request = signed_request(&sources, &ledger, &signing, &verifier);
@@ -931,7 +984,9 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         topology_writer,
         topology_anchor_store,
     )
-    .expect("runtime bootstrap");
+    .expect("runtime bootstrap")
+    .with_current_artifacts(current_artifacts.clone(), artifact_receipt)
+    .expect("attach independent artifact CURRENT");
     let state = daemon.state();
     let owner = crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, Some(bootstrap))
         .expect("compose daemon plasticity owner");
@@ -1005,7 +1060,9 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         topology_writer,
         topology_anchor_store,
     )
-    .expect("restart bootstrap");
+    .expect("restart bootstrap")
+    .with_current_artifacts(current_artifacts.clone(), artifact_receipt)
+    .expect("reattach independent artifact CURRENT");
     let restarted_owner = crate::plasticity_runtime::compose_plasticity_runtime_v1(
         &restarted_state,
         Some(restarted_bootstrap),
@@ -1019,7 +1076,7 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     );
 
     let second = restarted_state
-        .submit_parameter_plasticity_v1(request, 50)
+        .submit_parameter_plasticity_v1(request.clone(), 50)
         .await
         .expect("idempotent replay after restart");
     assert_eq!(second.registry.sequence, 1);
@@ -1030,7 +1087,7 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     );
 
     let second_topology = restarted_state
-        .submit_topology_plasticity_v1(topology_request, 50)
+        .submit_topology_plasticity_v1(topology_request.clone(), 50)
         .await
         .expect("idempotent topology replay after restart");
     assert_eq!(second_topology.durable.sequence, 1);
@@ -1041,6 +1098,64 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     assert_eq!(
         second_topology.next_registry_anchor,
         first_topology.next_registry_anchor
+    );
+
+    // An independently published revocation must fence this frozen generation
+    // before either proposal writer or its owner-evidence resolver is invoked.
+    let parameter_bytes = fs::read(&files.parameter_registry).expect("parameter history");
+    let topology_bytes = fs::read(&files.topology_registry).expect("topology history");
+    let mut revoked = sources.artifacts.clone();
+    revoked
+        .append(ArtifactEvent::Revoke(StateChange {
+            event_id: id("event:baseline-revoked-during-runtime"),
+            artifact_id: id("artifact:baseline"),
+            evaluator_id: id("independent:revocation-owner"),
+            reason_digest: digest("source:withdrawal"),
+        }))
+        .expect("revoke baseline independently");
+    let revoked_path = runtime_root.path().join("artifact-revoked.snapshot");
+    let revoked_receipt = write_registry_snapshot(
+        CreateOnlyArtifactFile::create(&revoked_path).expect("create revoked snapshot"),
+        &revoked,
+        artifact_receipt.binding,
+    )
+    .expect("persist revoked CURRENT snapshot");
+    *current_artifacts
+        .current
+        .lock()
+        .expect("publish fixture CURRENT") = match failure {
+        CurrentFailure::Revoked => Some((revoked_path, revoked_receipt)),
+        CurrentFailure::Unavailable => None,
+    };
+    assert!(matches!(
+        restarted_state
+            .submit_parameter_plasticity_v1(request.clone(), 51)
+            .await,
+        Err(PlasticityRuntimeCallErrorV1::ArtifactCurrentRequired(_))
+    ));
+    assert!(matches!(
+        restarted_state
+            .submit_topology_plasticity_v1(topology_request, 51)
+            .await,
+        Err(PlasticityRuntimeCallErrorV1::ArtifactCurrentRequired(_))
+    ));
+    *current_artifacts
+        .current
+        .lock()
+        .expect("restore old fixture CURRENT") = Some((artifact_snapshot_path, artifact_receipt));
+    assert!(matches!(
+        restarted_state
+            .submit_parameter_plasticity_v1(request, 52)
+            .await,
+        Err(PlasticityRuntimeCallErrorV1::ArtifactCurrentRequired(_))
+    ));
+    assert_eq!(
+        fs::read(&files.parameter_registry).expect("parameter history"),
+        parameter_bytes
+    );
+    assert_eq!(
+        fs::read(&files.topology_registry).expect("topology history"),
+        topology_bytes
     );
 
     restarted_cancellation.cancel();

@@ -16,6 +16,7 @@ use codex_hepta_intelligence::ParameterPlasticityProductRequestV1;
 use codex_hepta_intelligence::TopologyPlasticityProductReceiptV1;
 use codex_hepta_intelligence::TopologyPlasticityProductRequestV1;
 use codex_hepta_learning_artifacts::ArtifactRegistry;
+use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
 use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use tokio::sync::mpsc;
@@ -29,8 +30,10 @@ use crate::AgentdState;
 use crate::AgentdTopologyAnchorStoreV1;
 use crate::AgentdTopologyHostErrorV1;
 use crate::AgentdTopologyWriterV1;
+use crate::PlasticityCurrentArtifactsV1;
 use crate::PlasticityOwnerEvidencePolicyV1;
 use crate::PlasticityOwnerEvidenceResolverV1;
+use crate::plasticity_artifact_current::FrozenPlasticityArtifactsV1;
 use crate::propose_agentd_plasticity_v1;
 use crate::propose_agentd_topology_plasticity_v1;
 
@@ -40,6 +43,7 @@ const MAX_PLASTICITY_RUNTIME_QUEUE: usize = 64;
 pub enum PlasticityRuntimeCallErrorV1 {
     Unavailable,
     Closed,
+    ArtifactCurrentRequired(AgentdError),
     Parameter(AgentdPlasticityHostErrorV1),
     Topology(AgentdTopologyHostErrorV1),
 }
@@ -130,6 +134,7 @@ pub struct PlasticityRuntimeBootstrapV1 {
     parameter_anchor_store: AgentdPlasticityAnchorStoreV1,
     topology_writer: AgentdTopologyWriterV1,
     topology_anchor_store: AgentdTopologyAnchorStoreV1,
+    current_artifacts: Option<FrozenPlasticityArtifactsV1>,
 }
 
 impl PlasticityRuntimeBootstrapV1 {
@@ -158,13 +163,36 @@ impl PlasticityRuntimeBootstrapV1 {
             parameter_anchor_store,
             topology_writer,
             topology_anchor_store,
+            current_artifacts: None,
         })
+    }
+
+    /// Attach the independent CURRENT source and receipt for this generation.
+    /// Existing construction callers migrate by chaining this method before
+    /// attaching the bootstrap. No frozen snapshot is a currentness fallback.
+    pub fn with_current_artifacts(
+        mut self,
+        provider: Arc<dyn PlasticityCurrentArtifactsV1>,
+        frozen_receipt: RegistrySnapshotReceipt,
+    ) -> Result<Self, AgentdError> {
+        self.current_artifacts = Some(FrozenPlasticityArtifactsV1::new(
+            provider,
+            frozen_receipt,
+            &self.artifacts,
+        )?);
+        Ok(self)
     }
 
     pub(crate) fn into_channel(
         self,
     ) -> Result<(PlasticityRuntimeHandleV1, PlasticityRuntimeOwnerV1), AgentdError> {
-        plasticity_runtime_channel_v1(
+        let current_artifacts = self.current_artifacts.ok_or_else(|| {
+            AgentdError::Invalid(
+                "plasticity requires an independent CURRENT provider; attach with_current_artifacts before runtime bootstrap"
+                    .to_string(),
+            )
+        })?;
+        let (handle, mut owner) = plasticity_runtime_channel_v1(
             self.capacity,
             self.artifacts,
             self.ledger,
@@ -175,7 +203,9 @@ impl PlasticityRuntimeBootstrapV1 {
             self.parameter_anchor_store,
             self.topology_writer,
             self.topology_anchor_store,
-        )
+        )?;
+        owner.current_artifacts = Some(current_artifacts);
+        Ok((handle, owner))
     }
 }
 
@@ -191,6 +221,8 @@ pub struct PlasticityRuntimeOwnerV1 {
     parameter_anchor_store: AgentdPlasticityAnchorStoreV1,
     topology_writer: AgentdTopologyWriterV1,
     topology_anchor_store: AgentdTopologyAnchorStoreV1,
+    current_artifacts: Option<FrozenPlasticityArtifactsV1>,
+    artifact_current_failed: bool,
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -221,6 +253,8 @@ pub fn plasticity_runtime_channel_v1(
             parameter_anchor_store,
             topology_writer,
             topology_anchor_store,
+            current_artifacts: None,
+            artifact_current_failed: false,
         },
     ))
 }
@@ -268,6 +302,44 @@ pub(crate) fn spawn_plasticity_runtime_v1(
 }
 
 impl PlasticityRuntimeOwnerV1 {
+    /// Add CURRENT verification to owners constructed through the compatibility
+    /// channel API. An owner without this attachment cannot admit proposals.
+    pub fn with_current_artifacts(
+        mut self,
+        provider: Arc<dyn PlasticityCurrentArtifactsV1>,
+        frozen_receipt: RegistrySnapshotReceipt,
+    ) -> Result<Self, AgentdError> {
+        self.current_artifacts = Some(FrozenPlasticityArtifactsV1::new(
+            provider,
+            frozen_receipt,
+            &self.artifacts,
+        )?);
+        Ok(self)
+    }
+
+    fn verify_artifact_current(&mut self, now: u64) -> Result<(), PlasticityRuntimeCallErrorV1> {
+        if self.artifact_current_failed {
+            return Err(PlasticityRuntimeCallErrorV1::ArtifactCurrentRequired(
+                AgentdError::GenerationFenced(
+                    "plasticity CURRENT refresh failed; refresh and rebootstrap required"
+                        .to_string(),
+                ),
+            ));
+        }
+        self.artifact_current_failed = true;
+        let current = self.current_artifacts.as_mut().ok_or_else(|| {
+            PlasticityRuntimeCallErrorV1::ArtifactCurrentRequired(AgentdError::Invalid(
+                "plasticity requires with_current_artifacts with an independent CURRENT provider"
+                    .to_string(),
+            ))
+        })?;
+        current
+            .verify(now)
+            .map_err(PlasticityRuntimeCallErrorV1::ArtifactCurrentRequired)?;
+        self.artifact_current_failed = false;
+        Ok(())
+    }
+
     pub(crate) async fn run(
         mut self,
         state: Arc<AgentdState>,
@@ -296,6 +368,10 @@ impl PlasticityRuntimeOwnerV1 {
                         let _ = response.send(Err(PlasticityRuntimeCallErrorV1::Unavailable));
                         continue;
                     }
+                    if let Err(error) = self.verify_artifact_current(now) {
+                        let _ = response.send(Err(error));
+                        continue;
+                    }
                     let result = propose_agentd_plasticity_v1(
                         *request,
                         &self.artifacts,
@@ -317,6 +393,10 @@ impl PlasticityRuntimeOwnerV1 {
                 } => {
                     if !ready {
                         let _ = response.send(Err(PlasticityRuntimeCallErrorV1::Unavailable));
+                        continue;
+                    }
+                    if let Err(error) = self.verify_artifact_current(now) {
+                        let _ = response.send(Err(error));
                         continue;
                     }
                     let result = propose_agentd_topology_plasticity_v1(
