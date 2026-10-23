@@ -83,8 +83,24 @@ fn registered_material_refuses_zero_source_before_filesystem_access() -> anyhow:
         )
         .is_err()
     );
+    assert!(
+        super::super::RootSqliteMaterialRegistration::bind_registered(
+            &source,
+            &home.join("absent.sqlite"),
+            /*registered_uid*/ 0,
+        )
+        .is_err()
+    );
     let actual = super::super::OwnerRule::CurrentUser.expected_uid()?;
     if actual != 0 {
+        assert!(
+            super::super::RootSqliteMaterialRegistration::bind_registered(
+                &source,
+                &home.join("absent.sqlite"),
+                actual,
+            )
+            .is_err()
+        );
         assert!(
             RootSqliteMaterialSource::bind_registered(
                 &source,
@@ -277,6 +293,29 @@ fn root_registration_keeps_inode_while_new_capture_admits_changed_contents() -> 
     std::fs::set_permissions(&fixture.database, std::fs::Permissions::from_mode(0o600))?;
     std::os::unix::fs::chown(&fixture.database, Some(REGISTERED_UID), None)?;
     assert!(registered.verify_registered().is_err());
+    assert!(registered.bind_capture(&fixture.destination).is_err());
+
+    let fixture = Fixture::root_owned()?;
+    let registered = super::super::RootSqliteMaterialRegistration::bind_registered(
+        &fixture.source,
+        &fixture.database,
+        REGISTERED_UID,
+    )?;
+    let old_parent = fixture.root.join("retired-parent");
+    std::fs::rename(fixture.source.home(), &old_parent)?;
+    std::fs::create_dir(fixture.source.home())?;
+    std::fs::set_permissions(
+        fixture.source.home(),
+        std::fs::Permissions::from_mode(0o700),
+    )?;
+    std::os::unix::fs::chown(fixture.source.home(), Some(REGISTERED_UID), None)?;
+    std::fs::copy(old_parent.join("cognitive.sqlite"), &fixture.database)?;
+    std::fs::set_permissions(&fixture.database, std::fs::Permissions::from_mode(0o600))?;
+    std::os::unix::fs::chown(&fixture.database, Some(REGISTERED_UID), None)?;
+    assert!(
+        registered.verify_registered().is_err(),
+        "a replaced parent is not registered"
+    );
     assert!(registered.bind_capture(&fixture.destination).is_err());
     Ok(())
 }
