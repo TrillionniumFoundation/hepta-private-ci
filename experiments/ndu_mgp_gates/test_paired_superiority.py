@@ -27,6 +27,8 @@ def study_fixture(*, strong_ndu=True, bootstrap_replicates=120):
         'bootstrap_replicates': bootstrap_replicates,
         'bootstrap_seed': 3001, 'familywise_alpha': 0.05,
         'draws_per_world': 2, 'failure_loss': 2.0, 'cost_units': 'measured_cpu_seconds',
+        'hard_per_world_total_cost_limit': 1.5,
+        'min_protected_worlds_per_seed': 4,
     }
     worlds = []
     for seed in seeds:
@@ -142,11 +144,53 @@ class PairedEvidenceTests(unittest.TestCase):
         rec = evaluate(d)
         self.assertFalse(rec['comparison']['free_controller']['gates']['protected_task_no_regression'])
 
+    def test_missing_registered_hard_world_budget_rejected(self):
+        d = study_fixture()
+        del d['protocol']['hard_per_world_total_cost_limit']
+        with self.assertRaisesRegex(EvidenceGap, 'hard per-world cost'):
+            evaluate(d)
+
+    def test_reject_weak_protected_coverage_registration(self):
+        d = study_fixture()
+        d['protocol']['min_protected_worlds_per_seed'] = 1
+        with self.assertRaisesRegex(EvidenceGap, 'at least 10%'):
+            evaluate(d)
+
+    def test_each_seed_requires_protected_sample_coverage(self):
+        d = study_fixture()
+        # Earlier acceptance required only one protected example across all
+        # seeds, yielding no evidence about two of the three training seeds.
+        for row in d['worlds']:
+            row['protected_task'] = row['world_id'] == 'heldout-101-0'
+        with self.assertRaisesRegex(EvidenceGap, 'insufficient protected-task coverage'):
+            evaluate(d)
+
+    def test_overbudget_hard_prompt_cannot_hide_in_aggregate_cost(self):
+        d = study_fixture()
+        # One NDU call exceeds the common 1.5s budget while compensating the
+        # elapsed CPU reported for every other call. Mean-cost ratio remains
+        # within 1.05 against all controls; the per-prompt hard gate MUST fail.
+        addition = 1.2
+        for index, row in enumerate(d['worlds']):
+            receipt = row['outcomes']['ndu']['measured_cost']
+            if index == 0:
+                receipt['controller'] += addition
+                receipt['total'] += addition
+            else:
+                credit = addition / (len(d['worlds']) - 1)
+                receipt['encoder'] -= credit
+                receipt['total'] -= credit
+        result = evaluate(d)
+        self.assertTrue(result['comparison']['free_controller']['gates']['physical_total_cost'])
+        self.assertFalse(result['comparison']['free_controller']['gates']['hard_per_world_total_cost'])
+        self.assertGreater(result['max_observed_arm_world_total_cost'][0], 1.5)
+        self.assertEqual(result['status'], 'HOLD_NO_GO')
+
     def test_missing_protected_coverage_rejected(self):
         d = study_fixture()
         for row in d['worlds']:
             row['protected_task'] = False
-        with self.assertRaisesRegex(EvidenceGap, 'no protected-task'):
+        with self.assertRaisesRegex(EvidenceGap, 'insufficient protected-task coverage'):
             evaluate(d)
 
     def test_failed_draw_must_stay_in_denominator_as_penalty(self):
