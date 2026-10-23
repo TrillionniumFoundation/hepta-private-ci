@@ -92,9 +92,9 @@ def assess_signed_paired(
         raise EvidenceRejected("unbounded preregistered net utility range")
     modalities = p.get("required_modalities")
     if (not isinstance(modalities, list) or not modalities
-            or len(modalities) != len(set(modalities))
             or any(type(m) is not str or m not in ("text", "audio", "image", "video")
-                   for m in modalities)):
+                   for m in modalities)
+            or len(modalities) != len(set(modalities))):
         raise EvidenceRejected("invalid preregistered required outputs")
     roster = p.get("future_roster")
     if not isinstance(roster, list) or not 32 <= len(roster) <= 256:
