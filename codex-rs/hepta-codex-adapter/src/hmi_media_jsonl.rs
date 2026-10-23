@@ -425,4 +425,6 @@ impl<R> Drop for HmiJsonlMediaEventsV1<R> {
     }
 }
 
-
+#[cfg(test)]
+#[path = "hmi_media_jsonl_tests.rs"]
+mod tests;
