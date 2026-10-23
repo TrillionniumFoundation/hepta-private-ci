@@ -118,6 +118,7 @@ def evaluate(study: Mapping):
     size = counts[0]
     values = np.empty((len(ARMS), len(seeds), size, len(METRICS) + 1))
     protected = np.zeros((len(seeds), size), dtype=bool)
+    over_budget = np.zeros((len(ARMS), len(seeds), size), dtype=bool)
     arm_idx = {a: i for i, a in enumerate(ARMS)}
     for i, seed in enumerate(seeds):
         for j, world_id in enumerate(world_ids[str(seed)]):
@@ -171,7 +172,9 @@ def evaluate(study: Mapping):
                 # remains in the denominator with the registered failed loss.
                 # A completed output that exceeded a HARD common resource
                 # ceiling is inadmissible even if aggregate mean cost is low.
-                if total > episode_cost_limit + max(1e-9, episode_cost_limit * 1e-7):
+                over_budget[arm_idx[name], i, j] = (
+                    total > episode_cost_limit + max(1e-9, episode_cost_limit * 1e-7))
+                if over_budget[arm_idx[name], i, j]:
                     _need(all(dr["status"] == "failed" for dr in drows),
                           "overbudget episode must be marked failed in every draw")
                 values[arm_idx[name], i, j, :len(METRICS)] = entries.mean(axis=0)
@@ -213,7 +216,8 @@ def evaluate(study: Mapping):
             "factual_quality_noninferiority": bool(lower[1] >= -quality_tol),
             "ambiguity_noninferiority": bool(upper[2] <= ambiguity_tol),
             "consistency_noninferiority": bool(upper[3] <= inconsistency_tol),
-            "physical_total_cost": bool(ratio <= max_cost_ratio),
+            "physical_total_cost": bool(ratio <= max_cost_ratio and
+                                        not np.any(over_budget[[0, index + 1]])),
             "protected_task_no_regression": protected_ok,
         }
         local_all &= all(gates.values())
@@ -226,6 +230,8 @@ def evaluate(study: Mapping):
                "all_registered_worlds_seen": True,
                "protected_cohort_matches_registration": True,
                "registered_episode_cost_ceiling": episode_cost_limit,
+               "overbudget_episode_counts": {name: int(over_budget[arm_idx[name]].sum())
+                                             for name in ARMS},
                "registered_seeds": len(seeds),
                "worlds_per_seed": size, "draws_per_world": draws,
                "familywise_alpha": alpha, "bootstrap_replicates": boots,
