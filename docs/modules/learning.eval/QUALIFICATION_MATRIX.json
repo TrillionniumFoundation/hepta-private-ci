@@ -1,0 +1,48 @@
+{
+  "authority": "DENY_ALL",
+  "bootstrapScope": {
+    "moduleImplementationIncluded": false,
+    "productExecutionQualified": false,
+    "trustedControlPlaneOnly": true
+  },
+  "externalClaims": {
+    "activationAuthorized": false,
+    "independentAcceptanceIssued": false,
+    "releaseAuthorized": false,
+    "sourceQualifiedByThisBootstrap": false,
+    "targetHostQualified": false
+  },
+  "module": "learning.eval",
+  "releasePosture": "NO_GO",
+  "schema": "hepta.learning-eval.qualification-matrix.v1",
+  "sourceFacts": {
+    "auxiliaryControlPlaneByteIdentitySourcePresent": true,
+    "candidateExecutionReadOnlyWorkflowSourcePresent": true,
+    "closedWorldLearningEvalWorkflowInventorySourcePresent": true,
+    "completeProducerJobInventorySourcePresent": true,
+    "compatibilityFixtureIsolationSourcePresent": true,
+    "duplicateJsonAndNonfiniteRejectionSourcePresent": true,
+    "exactFilteredTestDiscoveryGuardSourcePresent": true,
+    "hardenedTrustedReporterEntrypointSourcePresent": true,
+    "localDeterministicEvidenceSourcePresent": true,
+    "machineAuditIndexPresent": true,
+    "mainOnlyAttestationIsolationSourcePresent": true,
+    "markdownLinkFixtureRegressionsSourcePresent": true,
+    "normalizedProducerConclusionSourcePresent": true,
+    "prePatchCurrentScopeRevalidationSourcePresent": true,
+    "secretBearingExceptionPayloadRedactionSourcePresent": true,
+    "secretBearingExceptionPayloadRegressionSourcePresent": true,
+    "sourceStatusCompanionConsistencySourcePresent": true,
+    "stalePrHeadReportRejectionSourcePresent": true,
+    "strictAllowlistedArtifactInventorySourcePresent": true,
+    "trustedDefaultBranchWorkflowRunReporterSourcePresent": true,
+    "trustedReporterRegressionCount": 60,
+    "untrustedArtifactValidationSourcePresent": true
+  },
+  "workflowClaims": {
+    "bootstrapQualifiedByThisRun": false,
+    "exactHeadExecuted": false,
+    "orderedParentSyntheticMergeExecuted": false,
+    "sourceQualifiedByThisRun": false
+  }
+}

@@ -1,0 +1,429 @@
+name: Hepta learning.eval convergence
+
+on:
+  push:
+    branches:
+      - main
+      - fix/learning-eval-full-convergence-20260926
+  pull_request:
+  workflow_dispatch:
+
+# Every job that executes candidate source is deliberately read-only. PR body
+# updates are performed by the default-branch workflow_run reporter.
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-learning-eval-convergence-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  EVIDENCE_ROOT: .hepta-evidence/learning-eval
+
+jobs:
+  identity-recorder:
+    name: identity-recorder
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+      - name: Bind immutable candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$EVIDENCE_ROOT/identity"
+          sha="$(git rev-parse HEAD)"
+          tree="$(git rev-parse HEAD^{tree})"
+          test "$sha" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
+          printf 'sha=%s\ntree=%s\n' "$sha" "$tree" | tee "$EVIDENCE_ROOT/identity/source.env"
+      - name: Test evidence recorders, documentation and source truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/test_hepta_learning_eval_exact.py -v 2>&1 | tee "$EVIDENCE_ROOT/identity/exact-recorder-tests.log"
+          python3 scripts/test_hepta_nextest_require.py -v 2>&1 | tee "$EVIDENCE_ROOT/identity/nextest-recorder-tests.log"
+          python3 scripts/test_hepta_learning_eval_exact_entry.py -v 2>&1 | tee "$EVIDENCE_ROOT/identity/exact-entry-tests.log"
+          python3 scripts/test_hepta_learning_eval_compat_fixture.py -v 2>&1 | tee "$EVIDENCE_ROOT/identity/compat-fixture-tests.log"
+          python3 scripts/test_hepta_learning_eval_evidence.py -v 2>&1 | tee "$EVIDENCE_ROOT/identity/evidence-summary-tests.log"
+          python3 scripts/test_hepta_learning_eval_doc_contract.py -v 2>&1 | tee "$EVIDENCE_ROOT/identity/doc-contract-tests.log"
+          python3 scripts/test_hepta_learning_eval_trusted_report.py -v 2>&1 | tee "$EVIDENCE_ROOT/identity/trusted-report-tests.log"
+          python3 scripts/hepta-learning-eval-status.py verify 2>&1 | tee "$EVIDENCE_ROOT/identity/status.log"
+          python3 scripts/hepta-learning-eval-doc-contract.py 2>&1 | tee "$EVIDENCE_ROOT/identity/doc-contract.log"
+          python3 scripts/hepta-learning-eval-compat-fixture.py \
+            --check-only --evidence "$EVIDENCE_ROOT/identity/compat-fixture.json"
+          python3 scripts/hepta-learning-eval-target-host.py self-test 2>&1 | tee "$EVIDENCE_ROOT/identity/target-host-verifier.log"
+      - name: Retain identity evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-identity-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/learning-eval/identity/
+          if-no-files-found: warn
+          retention-days: 30
+
+  compile-default:
+    name: compile-default
+    needs: identity-recorder
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+      - name: Compile default production surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$EVIDENCE_ROOT/compile-default"
+          bash scripts/hepta-learning-eval-api-surface.sh 2>&1 | tee "$EVIDENCE_ROOT/compile-default/api-surface.log"
+          cargo check --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd \
+            --all-targets 2>&1 | tee "$EVIDENCE_ROOT/compile-default/cargo-check.log"
+      - name: Retain default compile evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-compile-default-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/learning-eval/compile-default/
+          if-no-files-found: warn
+          retention-days: 30
+
+  compile-compatibility:
+    name: compile-compatibility
+    needs: identity-recorder
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+      - name: Compile owning crate and execute isolated trusted fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$EVIDENCE_ROOT/compile-compatibility"
+          cargo check --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-intelligence-eval --all-targets \
+            --features trusted-inprocess-eval \
+            2>&1 | tee "$EVIDENCE_ROOT/compile-compatibility/cargo-check.log"
+          python3 scripts/hepta-learning-eval-compat-fixture.py \
+            --evidence "$EVIDENCE_ROOT/compile-compatibility/fixture.json" \
+            2>&1 | tee "$EVIDENCE_ROOT/compile-compatibility/fixture.log"
+      - name: Retain compatibility compile evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-compile-compatibility-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/learning-eval/compile-compatibility/
+          if-no-files-found: warn
+          retention-days: 30
+
+  consumer-tests:
+    name: consumer-tests
+    needs: identity-recorder
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest@0.9.103
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+      - name: Discover and execute every filtered qualification test
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$EVIDENCE_ROOT/consumer-tests"
+          mkdir -p "$out"
+          require() {
+            local package="$1" filter="$2" label="$3"
+            python3 scripts/hepta-nextest-require.py \
+              --manifest-path codex-rs/Cargo.toml \
+              --package "$package" --filter "$filter" --label "$label" \
+              --evidence "$out/$label.json"
+          }
+          require codex-hepta-intelligence-eval signed_qualification_e2e owner-signed-e2e
+          require codex-hepta-intelligence evaluated_shadow intelligence-shadow-consumer
+          require codex-hepta-intelligence plasticity_product intelligence-plasticity-consumer
+          require codex-hepta-agentd signed_candidate_passes_only_with_bound_owner_run_context_and_root_trust agentd-current-owner-context-root-trust
+          require codex-hepta-agentd multi_outcome_consumer_rejects_context_owner_and_signature_substitution agentd-multi-outcome-binding
+      - name: Retain consumer evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-consumers-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/learning-eval/consumer-tests/
+          if-no-files-found: warn
+          retention-days: 30
+
+  fault-recovery-tests:
+    name: fault-recovery-tests
+    needs: identity-recorder
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+      - name: Owner, process-fault, recovery and capacity qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$EVIDENCE_ROOT/fault-recovery"
+          mkdir -p "$out"
+          (cd codex-rs && just test --locked -p codex-hepta-intelligence-eval --test-threads=1) \
+            2>&1 | tee "$out/owner-tests.log"
+          python3 scripts/hepta-nextest-require.py \
+            --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-intelligence-eval \
+            --test cold_recovery_e2e \
+            --filter cold_process_recovery_uses_only_persisted_inputs_and_current_trust \
+            --label cold-process-persisted-inputs-current-trust \
+            --evidence "$out/cold-recovery-e2e.json" \
+            2>&1 | tee "$out/cold-recovery-e2e.log"
+          bash scripts/hepta-learning-eval-faults.sh \
+            --json "$out/faults.json" --log "$out/faults.log"
+          cargo run --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-intelligence-eval \
+            --bin learning_eval_storage_profile -- \
+            --attempts 1024 --fences 512 --output "$out/storage-profile.json" \
+            2>&1 | tee "$out/storage-profile.log"
+          python3 - "$out/storage-profile.json" <<'PY'
+          import json, pathlib, sys
+          value = json.loads(pathlib.Path(sys.argv[1]).read_text())
+          assert value['schema'] == 'hepta.learning-eval.storage-profile.v1'
+          assert value['attempts']['attemptCount'] == 1024
+          assert value['attempts']['eventCount'] == 7168
+          assert value['holdout']['fenceTransitions'] == 512
+          assert value['holdout']['anchorPreserved'] is True
+          assert value['holdout']['afterBytes'] < value['holdout']['beforeBytes']
+          PY
+      - name: Retain fault and recovery evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-fault-recovery-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/learning-eval/fault-recovery/
+          if-no-files-found: warn
+          retention-days: 30
+
+  format-lint:
+    name: format-lint
+    needs: identity-recorder
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - name: Strict lint, format and immutable source check
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$EVIDENCE_ROOT/format-lint"
+          mkdir -p "$out"
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd \
+            --all-targets -- -D warnings 2>&1 | tee "$out/clippy.log"
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-intelligence-eval \
+            --package codex-hepta-intelligence \
+            --package codex-hepta-agentd -- --check 2>&1 | tee "$out/fmt.log"
+          git diff --check 2>&1 | tee "$out/diff-check.log"
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Retain lint evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-format-lint-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/learning-eval/format-lint/
+          if-no-files-found: warn
+          retention-days: 30
+
+  coverage:
+    name: coverage
+    needs: identity-recorder
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-llvm-cov@0.9.1
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: llvm-tools-preview
+      - name: Enforce default-production coverage and retain compatibility coverage separately
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$EVIDENCE_ROOT/coverage"
+          mkdir -p "$out"
+          cargo llvm-cov --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-intelligence-eval --all-targets --no-default-features \
+            --fail-under-lines 85 --json --output-path "$out/coverage.json"
+          cargo llvm-cov --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-intelligence-eval \
+            --features trusted-inprocess-eval --test operator_claim \
+            --json --output-path "$out/compatibility-coverage.json"
+          python3 - "$out/coverage.json" "$out/compatibility-coverage.json" <<'PY'
+          import json, pathlib, sys
+          production = json.loads(pathlib.Path(sys.argv[1]).read_text())['data'][0]['totals']['lines']
+          compatibility = json.loads(pathlib.Path(sys.argv[2]).read_text())['data'][0]['totals']['lines']
+          count, covered = int(production['count']), int(production['covered'])
+          compat_count = int(compatibility['count'])
+          assert count > 0 and 0 <= covered <= count and covered * 100 >= count * 85
+          assert compat_count > 0
+          print(json.dumps({
+              'defaultProduction': {
+                  'count': count,
+                  'covered': covered,
+                  'percent': production['percent'],
+                  'thresholdPct': 85,
+              },
+              'compatibility': {
+                  'count': compat_count,
+                  'covered': int(compatibility['covered']),
+                  'percent': compatibility['percent'],
+                  'gating': False,
+              },
+          }, sort_keys=True))
+          PY
+      - name: Retain coverage evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-coverage-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/learning-eval/coverage/
+          if-no-files-found: warn
+          retention-days: 30
+
+  aggregate:
+    name: immutable-qualification-summary
+    if: always()
+    needs:
+      - identity-recorder
+      - compile-default
+      - compile-compatibility
+      - consumer-tests
+      - fault-recovery-tests
+      - format-lint
+      - coverage
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    concurrency:
+      group: learning-eval-source-summary-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: false
+    env:
+      IDENTITY_RESULT: ${{ needs.identity-recorder.result }}
+      DEFAULT_RESULT: ${{ needs.compile-default.result }}
+      COMPAT_RESULT: ${{ needs.compile-compatibility.result }}
+      CONSUMER_RESULT: ${{ needs.consumer-tests.result }}
+      RECOVERY_RESULT: ${{ needs.fault-recovery-tests.result }}
+      LINT_RESULT: ${{ needs.format-lint.result }}
+      COVERAGE_RESULT: ${{ needs.coverage.result }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+      - id: summary
+        name: Emit scoped commit-addressed source summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$EVIDENCE_ROOT/aggregate"
+          tree="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-learning-eval-aggregate.py write \
+            --source-commit "$SOURCE_SHA" --source-tree "$tree" \
+            --repository "$GITHUB_REPOSITORY" \
+            --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --job "identityRecorder=$IDENTITY_RESULT" \
+            --job "compileDefault=$DEFAULT_RESULT" \
+            --job "compileCompatibility=$COMPAT_RESULT" \
+            --job "consumerTests=$CONSUMER_RESULT" \
+            --job "faultRecoveryTests=$RECOVERY_RESULT" \
+            --job "formatLint=$LINT_RESULT" \
+            --job "coverage=$COVERAGE_RESULT" \
+            --output "$out"
+          qualified="$(python3 - "$out/qualification-summary.json" <<'PY'
+          import json, pathlib, sys
+          value = json.loads(pathlib.Path(sys.argv[1]).read_text())
+          print(str(value['claims']['sourceQualifiedByThisRun']).lower())
+          PY
+          )"
+          echo "qualified=$qualified" >> "$GITHUB_OUTPUT"
+      - name: Retain aggregate evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-aggregate-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/learning-eval/aggregate/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source qualification result
+        if: always()
+        run: python3 scripts/hepta-learning-eval-aggregate.py verify "$EVIDENCE_ROOT/aggregate/qualification-summary.json"
+
+  attest-source-summary:
+    name: attest-source-summary
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.aggregate.result == 'success'
+    needs: aggregate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - name: Download immutable source summary
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: learning-eval-aggregate-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-attestation/source
+      - name: Attest successful immutable source summary
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        with:
+          subject-path: .hepta-attestation/source/qualification-summary.json

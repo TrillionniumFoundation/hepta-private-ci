@@ -1,0 +1,195 @@
+name: Hepta learning.eval exact trees
+
+on:
+  push:
+    branches:
+      - main
+      - fix/learning-eval-full-convergence-20260926
+    paths:
+      - 'codex-rs/hepta-intelligence-eval/**'
+      - 'codex-rs/hepta-intelligence/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-types/**'
+      - 'codex-rs/hepta-learning-ledger/**'
+      - 'codex-rs/Cargo.*'
+      - 'scripts/*learning*eval*'
+      - 'scripts/hepta-nextest-require.py'
+      - 'scripts/test_hepta_nextest_require.py'
+      - 'scripts/*rust_identifiers*'
+      - 'docs/modules/learning.eval/**'
+      - 'qualification/lane-e/**'
+      - '.github/workflows/hepta-learning-eval-*.yml'
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-intelligence-eval/**'
+      - 'codex-rs/hepta-intelligence/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-types/**'
+      - 'codex-rs/hepta-learning-ledger/**'
+      - 'codex-rs/Cargo.*'
+      - 'scripts/*learning*eval*'
+      - 'scripts/hepta-nextest-require.py'
+      - 'scripts/test_hepta_nextest_require.py'
+      - 'scripts/*rust_identifiers*'
+      - 'docs/modules/learning.eval/**'
+      - 'qualification/lane-e/**'
+      - '.github/workflows/hepta-learning-eval-*.yml'
+  workflow_dispatch:
+
+# Candidate and synthetic-merge code execute with read-only repository access.
+# PR body updates are delegated to the trusted default-branch workflow_run bridge.
+permissions:
+  contents: read
+
+concurrency:
+  group: learning-eval-exact-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+jobs:
+  qualify-exact:
+    name: exact-${{ matrix.kind }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        kind: ${{ fromJSON(github.event_name == 'pull_request' && '["head","merge"]' || '["head"]') }}
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ matrix.kind == 'merge' && github.sha || (github.event.pull_request.head.sha || github.sha) }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      TREE_KIND: ${{ matrix.kind }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.TESTED_SHA }}
+
+      - name: Test exact evidence, discovery, fixture, reporter and documentation recorders
+        run: |
+          set -euo pipefail
+          python3 scripts/test_hepta_learning_eval_exact.py -v
+          python3 scripts/test_hepta_nextest_require.py -v
+          python3 scripts/test_hepta_learning_eval_exact_entry.py -v
+          python3 scripts/test_hepta_learning_eval_compat_fixture.py -v
+          python3 scripts/test_hepta_learning_eval_evidence.py -v
+          python3 scripts/test_hepta_learning_eval_doc_contract.py -v
+          python3 scripts/test_hepta_learning_eval_trusted_report.py -v
+          python3 scripts/hepta-learning-eval-doc-contract.py
+
+      - name: Install qualification tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103,cargo-llvm-cov@0.9.1
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt,llvm-tools-preview
+
+      - name: Qualify exact immutable tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(--source-commit "$TESTED_SHA" --candidate-commit "$SOURCE_SHA" --kind "$TREE_KIND")
+          if [[ -n "$BASE_SHA" ]]; then
+            args+=(--base-commit "$BASE_SHA")
+          fi
+          python3 scripts/hepta-learning-eval-exact-entry.py "${args[@]}"
+
+      - name: Retain passed or failed exact-tree evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-exact-${{ matrix.kind }}-${{ env.TESTED_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/learning-eval/${{ matrix.kind }}/
+          if-no-files-found: warn
+          retention-days: 30
+
+  exact-summary:
+    name: exact-matrix-summary
+    if: always()
+    needs: qualify-exact
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    concurrency:
+      group: learning-eval-exact-summary-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: false
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      MERGE_SHA: ${{ github.event_name == 'pull_request' && github.sha || '' }}
+      MATRIX_RESULT: ${{ needs.qualify-exact.result }}
+      EVIDENCE_ROOT: .hepta-evidence/learning-eval/exact-summary
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+      - name: Emit scoped exact matrix summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          tree="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-learning-eval-exact-summary.py \
+            --source-commit "$SOURCE_SHA" --source-tree "$tree" \
+            --base-commit "$BASE_SHA" --merge-commit "$MERGE_SHA" \
+            --event-name "${{ github.event_name }}" --matrix-result "$MATRIX_RESULT" \
+            --repository "$GITHUB_REPOSITORY" \
+            --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --output "$EVIDENCE_ROOT"
+      - name: Retain exact matrix summary
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-exact-summary-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/learning-eval/exact-summary/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exact matrix result
+        if: always()
+        run: |
+          python3 - "$EVIDENCE_ROOT/exact-summary.json" <<'PY'
+          import json, pathlib, sys
+          value = json.loads(pathlib.Path(sys.argv[1]).read_text())
+          claims = value['claims']
+          assert claims['exactHeadExecuted'] is True
+          if value['eventName'] == 'pull_request':
+              assert claims['orderedParentSyntheticMergeExecuted'] is True
+          PY
+
+  attest-exact-summary:
+    name: attest-exact-summary
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.exact-summary.result == 'success'
+    needs: exact-summary
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      attestations: write
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+    steps:
+      - name: Download exact head evidence
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: learning-eval-exact-head-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-attestation/exact-head
+      - name: Download exact matrix summary
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: learning-eval-exact-summary-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-attestation/exact-summary
+      - name: Attest exact head receipt
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        with:
+          subject-path: .hepta-attestation/exact-head/convergence.json
+      - name: Attest exact matrix summary
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        with:
+          subject-path: .hepta-attestation/exact-summary/exact-summary.json
