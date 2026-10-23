@@ -1,0 +1,127 @@
+{
+  "actions_used_for_execution": false,
+  "agent_instructions": "repository AGENTS.md read; repository .agents/skills absent; /workspace/.agents empty",
+  "alternate_environment_used": false,
+  "api_access": {
+    "identity": {
+      "argv": [
+        "gh",
+        "api",
+        "user",
+        "--jq",
+        "{login: .login, id: .id}"
+      ],
+      "error": "Get \"https://api.github.com/user\": Forbidden",
+      "exit_code": 1,
+      "state": "denied; not retried; account identity unverified"
+    },
+    "pr": {
+      "argv": [
+        "gh",
+        "pr",
+        "view",
+        "3451",
+        "--repo",
+        "TrillionniumFoundation/hepta-private-ci",
+        "--json",
+        "number,state,url,headRefName,headRefOid,baseRefName,isDraft"
+      ],
+      "error": "Post \"https://api.github.com/graphql\": Forbidden",
+      "exit_code": 1,
+      "state": "denied; not retried; PR metadata unverified"
+    }
+  },
+  "branch": "codex/joint-generation-prototype-20261023",
+  "browser_login_attempted": false,
+  "checkout_note": "remote is configured to track main only; switch --track failed while populating the target index; verified index exactly matched target and completed switch --no-track without resetting or dropping content",
+  "commands": [
+    {
+      "argv": [
+        "python",
+        "cloud_run.py",
+        "--out",
+        "runs/codex-cloud-20261023-r1"
+      ],
+      "count": 1,
+      "cwd": "/workspace/hepta-private-ci/qualification/joint-generation",
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "ls-remote",
+        "--heads",
+        "origin",
+        "codex/joint-generation-prototype-20261023"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "fetch",
+        "--no-tags",
+        "origin",
+        "refs/heads/codex/joint-generation-prototype-20261023:refs/remotes/origin/codex/joint-generation-prototype-20261023"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "switch",
+        "--no-track",
+        "-c",
+        "codex/joint-generation-prototype-20261023",
+        "57d2c7aa5880dd761b4c43f79d0f6f16b26b72e7"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "environment_ready_evidence": "wait_for_environment returned status ready in enclosing delegated Codex task before exec_command",
+  "execution_cwd": "/workspace/hepta-private-ci/qualification/joint-generation",
+  "gh": "gh version 2.46.0 (2025-01-13 Debian 2.46.0-3)",
+  "git": "git version 2.52.0",
+  "git_branch_transport": "ls-remote and fetch succeeded in the same configured environment",
+  "held_out_evaluation_count": 1,
+  "identity_caveat": "execution location is established by enclosing environment/task logs, not by this self-recorded JSON",
+  "initial_branch": "work",
+  "initial_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "initial_worktree_clean": true,
+  "merge_performed": false,
+  "numpy": "2.3.5",
+  "permissions_changed": false,
+  "pillow": "12.3.0",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "preexisting_run_search": "before execution, no test-opened.json, selection.json or cloud-run.json found in /workspace; target runs directory absent",
+  "production_activation": false,
+  "python": "3.12.14",
+  "python_executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+  "remote_head_before_run": "57d2c7aa5880dd761b4c43f79d0f6f16b26b72e7",
+  "remote_url": "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+  "reported_environment_id": "ccarenv_b64_Y2NhcmVudl8wOGNhYzlkMjdjYjg4MTkxOWJkMDY0MGIyMDBhYTA5OA",
+  "repository": "/workspace/hepta-private-ci",
+  "schema": "hepta.joint-generation.codex-execution-context.v1",
+  "source_commit": "57d2c7aa5880dd761b4c43f79d0f6f16b26b72e7",
+  "source_stages": [
+    "45505fd0a1",
+    "81879d802f",
+    "57d2c7aa58"
+  ],
+  "test_policy": "closed after this execution; do not re-evaluate under another directory",
+  "thread_evidence": {
+    "declared": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "observed": [
+      {
+        "api": "openblas",
+        "threads": 1
+      }
+    ],
+    "single_thread_verified": true
+  },
+  "workspace": "/workspace"
+}

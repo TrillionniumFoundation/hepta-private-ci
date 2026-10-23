@@ -103,8 +103,22 @@ latency but are not fully represented by MAC counts.
 
 ## Current status
 
-Source and preparation checks are available. **Codex Cloud execution, final
-held-out benefit, and this first goal's acceptance remain pending until that
-environment actually runs the commands and retains their receipts.** Local
-preparation results are not Codex Cloud receipts. Synchronous audio/video,
-long-term interaction and production integration remain outside this first goal.
+**The first configured Codex Cloud execution passed the frozen finite-scene
+acceptance on 2026-10-23**, using source commit
+`57d2c7aa5880dd761b4c43f79d0f6f16b26b72e7`. The exact runner exited 0; all 30
+cloud unit tests passed. All three seeds were retained, both content-comparison
+confidence intervals and same-content matched-random dynamic intervals passed,
+decoder corruption reduced utility, and budget violations were zero. All nine
+selected encoders and both content heads changed from their shared bases.
+
+See the [execution report](runs/codex-cloud-20261023-r1/REPORT.md) for complete
+receipts, lifecycle costs, confidence intervals, exported bundles, and an external
+RGB serving/reload demonstration. These results concern the finite sampling law;
+they do not establish greedy accuracy improvement or equal hardware latency.
+GitHub API identity/PR queries returned `Forbidden`; Git branch transport worked,
+and those access failures remain recorded.
+
+**The held-out split is now opened. Do not rerun the runner/evaluator or use a new
+directory to repeat it.** Keep the exclusive marker and all results. Synchronous
+audio/video, long-term interaction, natural images and production integration
+remain outside this first goal and need separately frozen experiments.

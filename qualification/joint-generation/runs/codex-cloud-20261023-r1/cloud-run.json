@@ -1,0 +1,39 @@
+{
+  "benefit_verified": true,
+  "bundles": [
+    "bundles/supervised-11-0.01",
+    "bundles/supervised-23-0.01",
+    "bundles/supervised-47-0.01",
+    "bundles/additive-11-0.01",
+    "bundles/additive-23-0.01",
+    "bundles/additive-47-0.01",
+    "bundles/ndu-11-0.01",
+    "bundles/ndu-23-0.01",
+    "bundles/ndu-47-0.01"
+  ],
+  "ended_unix_ns": 1792745880779739465,
+  "execution_location": "verify against the enclosing Codex Cloud task log; not self-attested",
+  "production_activation": false,
+  "runner_sha256": "e5dbcb587ac47745be9350441cc4e2a6211572395519d48ccb19dcd3b847b20e",
+  "schema": "hepta.joint-generation.cloud-run.v1",
+  "source_commit": "57d2c7aa5880dd761b4c43f79d0f6f16b26b72e7",
+  "started_unix_ns": 1792745859801202601,
+  "steps": [
+    {
+      "exit_code": 0,
+      "log_sha256": "8df679488afdb1708ed42906c67c1e4a31e007bd7ad13a3958fceeb491399678",
+      "step": "unit"
+    },
+    {
+      "exit_code": 0,
+      "log_sha256": "2699f5e4464b93b95bd235ddd8012604d8fc82f028df9bb1346856eab50e90ca",
+      "step": "train"
+    },
+    {
+      "exit_code": 0,
+      "log_sha256": "86e6208c3bda3a1372523a47792805c013cd7b0b5fdeb2c377fe64e04658ba23",
+      "step": "evaluate"
+    }
+  ],
+  "test_result_sha256": "2220c311c1c4ed663fa49bd6032215c79191e0c1e92e0a0caff7212c0bd524fd"
+}
