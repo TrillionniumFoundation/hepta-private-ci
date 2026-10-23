@@ -1,0 +1,40 @@
+name: Hepta NDU budgeted bandit diagnostic
+
+on:
+  pull_request:
+    paths:
+      - "qualification/ndu-budgeted-bandit/**"
+      - ".github/workflows/hepta-ndu-budgeted-bandit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-bandit-reproduction:
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify exact submitted source
+        env:
+          SOURCE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_HEAD"
+          echo "verified-source-head=$SOURCE_HEAD"
+          python3 --version
+      - name: Compile and test routing, budget and evidence guards
+        run: |
+          python3 -m compileall -q qualification/ndu-budgeted-bandit
+          python3 -m unittest discover -s qualification/ndu-budgeted-bandit -p 'test_*.py' -v
+      - name: Reexecute every fixed seed in isolated temporary output
+        run: |
+          ROOT=qualification/ndu-budgeted-bandit
+          RUN_DIR=$(mktemp -d)
+          cp "$ROOT/diagnostic.py" "$ROOT/PROTOCOL.md" "$RUN_DIR/"
+          python3 "$RUN_DIR/diagnostic.py" > "$RUN_DIR/run.log"
+          python3 "$ROOT/verify_reproduction.py" "$RUN_DIR/results.json"
+          git diff --exit-code
