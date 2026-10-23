@@ -674,6 +674,8 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Adapt the original Rama alpha.4 DNS edge to maintained Hickory 0.26.3.
+rama-dns = { path = "third_party/rama-dns-0.3.0-alpha.4" }
 # Backport the upstream maintained TOML parser migration for age localization.
 i18n-config = { path = "third_party/i18n-config-0.4.8" }
 # Replace the unmaintained event-handler type map without changing store/crypto code.

@@ -704,6 +704,31 @@ Its original test selection, per-test limits, failure handling and cache rules
 remain unchanged. The cancelled run is incomplete evidence, and completion on
 the successor still requires exact-source hosted CI.
 
+The next PN0 DNS dependency candidate retains the original Rama alpha.4
+resolver trait and constructor signatures, and vendors its published `rama-dns`
+source, archive provenance and licenses.
+Only the resolver adapter and its dependency edge move to Hickory 0.26.3;
+the foreign Hickory builder/configuration types now use that version. Original
+clone/boxed/global behavior, initialization errors and explicit resolver
+configuration retain their boundaries. The generated graph contains no Hickory
+0.25 path. After checking the frozen RustSec database and the full strict policy,
+this candidate removes only `RUSTSEC-2026-0118` and `RUSTSEC-2026-0119` from both
+synchronized ignore lists. Its existing third-party `async-trait` wrapper moves
+from `hickory-proto` to `hickory-net` with the upstream runtime/UDP code; the ban
+and first-party restrictions stay in force. Scoped real UDP/TCP and production
+network-proxy tests, exact-source CI and Windows checks remain required. Other
+PN0 dependencies and exceptions remain open; this adapter creates no additional
+DNS executor or release authority.
+
+The vendored `rama-dns` directory is a non-workspace Cargo patch, materialized
+by the existing `@crates` generator. Its exact `.bazelignore` entry follows the
+other non-workspace patches: recursive workspace discovery must not load its
+vendored BUILD against workspace-only `DEP_DATA`. The generated external target
+remains a dependency of `network-proxy` through `rama-tcp`; no workspace test
+target is excluded. The original candidate's Bazel loading failures occurred
+before test execution. Target discovery and configured analysis validate this
+boundary repair; they do not replace native tests or exact-source hosted CI.
+
 ## 20. First vertical learning slice
 
 `C1-PROMPTED-MEMORY-RETRIEVAL-RANK` executes:
