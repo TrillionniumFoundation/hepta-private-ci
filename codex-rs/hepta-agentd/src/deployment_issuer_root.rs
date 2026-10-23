@@ -14,7 +14,11 @@ pub(super) struct ProtectedLease {
 }
 
 impl ProtectedLease {
-    fn new(verifier: AuthorityLeaseVerifier, id: String, revision: u64) -> io::Result<Self> {
+    pub(super) fn new(
+        verifier: AuthorityLeaseVerifier,
+        id: String,
+        revision: u64,
+    ) -> io::Result<Self> {
         if id.is_empty() || id.len() > 128 || revision == 0 {
             return Err(io::Error::other("invalid pinned original lease"));
         }
@@ -65,7 +69,7 @@ impl ProtectedLease {
     }
 }
 
-fn lease_error(error: AuthorityLeaseError) -> io::Error {
+pub(super) fn lease_error(error: AuthorityLeaseError) -> io::Error {
     match error {
         AuthorityLeaseError::LeaseNotFound
         | AuthorityLeaseError::Revoked

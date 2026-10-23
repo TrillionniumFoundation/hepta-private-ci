@@ -40,6 +40,10 @@ mod authbus;
 mod root;
 use root::ProtectedLease;
 
+#[path = "deployment_writer.rs"]
+mod writer;
+pub use writer::HostAuthorityWriterRegistration;
+
 const STATE_OWNER: &str = "local-final-use-issuer";
 const EXCHANGE_DEADLINE: Duration = Duration::from_secs(2);
 
@@ -60,6 +64,8 @@ struct IssuerState {
     policies: Vec<DeploymentGrantPolicy>,
     head: FinalUseRevocations,
     sequence: u64,
+    #[serde(default)]
+    writer_authorization: Option<crate::HostSignedWriterAuthorizationV1>,
 }
 
 /// Independent signer; private key bytes are neither serialized nor logged.
@@ -191,6 +197,7 @@ impl DeploymentFinalUseIssuer {
                     revoked_grant_ids: BTreeSet::new(),
                 },
                 sequence: 0,
+                writer_authorization: None,
             },
         )?;
         File::open(directory)?.sync_all()?;

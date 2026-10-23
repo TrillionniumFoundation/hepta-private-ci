@@ -235,3 +235,16 @@ consumer frontier adapter. A fresh two-second no-effect qualification lease,
 observed after three seconds, must close the feed without a response prefix and
 deny the original FinalUse request. Restoring the earlier head/clock-only handler
 makes this actual dedicated-peer regression fail. All original bounds remain.
+
+The canonical issuer also has an explicit trusted-root writer registration API.
+It requires a separate original lease whose operation is
+`runtime.agentd.production_writer`; a per-effect FinalUse lease is rejected.
+The exact Agent, spawn, owner epoch, original local lease identity/generation
+and complete registry lease are signed in the shared typed domain. The original
+issuer counter is durably reserved before signing, and the complete proof is
+retained in that same issuer state before return. Expiry during either durable
+write refuses publication without refunding the sequence. Repeated exact
+registration returns the retained proof; different registration cannot overwrite
+it. This stage supplies no peer signing RPC, automatic renewal, genesis or cut.
+The original registry's global revision remains observation metadata: unrelated
+lease changes advance it without invalidating the exact registered writer lease.

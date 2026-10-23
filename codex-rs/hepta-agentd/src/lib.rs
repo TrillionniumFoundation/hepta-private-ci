@@ -75,6 +75,8 @@ pub use deployment_issuer::DeploymentFinalUseIssuer;
 pub use deployment_issuer::DeploymentGrantPolicy;
 #[cfg(target_os = "linux")]
 pub use deployment_issuer::DeploymentIssuerObserver;
+#[cfg(target_os = "linux")]
+pub use deployment_issuer::HostAuthorityWriterRegistration;
 mod error;
 mod event_buffer;
 mod evidence_frontier;
