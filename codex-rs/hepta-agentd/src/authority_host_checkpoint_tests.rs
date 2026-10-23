@@ -466,3 +466,32 @@ async fn root_trusted_successor_keeps_global_counter_separate_from_publisher_seq
     assert_eq!(changed.head.as_ref().unwrap().last_mutation_sequence, 1);
     assert!(f.backend.load().is_err());
 }
+
+#[tokio::test]
+#[ignore = "explicit root-owned data-bind qualification"]
+async fn root_retained_current_reads_full_original_cut_without_spending_sequence() {
+    let f = Fixture::new().await;
+    let before = f.backend.load().unwrap();
+    assert_eq!(f.backend.retained_current_for_root().unwrap(), before);
+    assert_eq!(f.backend.retained_current_for_root().unwrap(), before);
+    let request = f.request(1, CognitiveCheckpointCommand::BeginWrites,
+        Some(token_for(&before).unwrap()), None);
+    let dirty = exchange(&f.backend, &request);
+    ack(&dirty, CognitiveCheckpointPhase::Dirty, 2);
+    assert_eq!(f.backend.retained_current_for_root(), Err(AuthorityTrustError::Invalid));
+    assert_eq!(f.backend.load().unwrap(), dirty.head.unwrap());
+}
+
+#[tokio::test]
+#[ignore = "explicit root-owned data-bind qualification"]
+async fn root_retained_current_cannot_bypass_post_io_expiry_or_permanent_unknown() {
+    let f = Fixture::new().await;
+    let original = f.backend.load().unwrap();
+    f.clock.reads.store(0, Ordering::SeqCst);
+    f.clock.expire_on.store(1, Ordering::SeqCst);
+    assert_eq!(f.backend.retained_current_for_root(), Err(AuthorityTrustError::Unavailable));
+    f.clock.expire_on.store(0, Ordering::SeqCst);
+    assert_eq!(f.backend.retained_current_for_root(), Err(AuthorityTrustError::Unavailable));
+    // A valid generic record cannot revive this permanently fenced object.
+    assert_eq!(f.backend.load().unwrap(), original);
+}
