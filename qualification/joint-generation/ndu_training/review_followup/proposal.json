@@ -1,0 +1,85 @@
+{
+  "design": {
+    "blocks": 32,
+    "build_cpu_cap_both_systems_total": 640,
+    "build_cpu_cap_each_system_total": 320,
+    "build_units_cap_both_systems_total": 768000000000,
+    "comparison_budget_note": "10s/12B is per original three-seed/two-candidate SYSTEM BLOCK, never per individual model",
+    "formal_rows": 12288,
+    "formal_service_cpu_cap_both_systems": 3600,
+    "formal_service_cpu_cap_each_system": 1800,
+    "independent_training_seed_tuples": 96,
+    "linear_forecast_primary_service_cpu_range_only": [
+      1357.9384258559999,
+      2285.218627584
+    ],
+    "models_per_system_per_block": 6,
+    "observed_d1_service_cpu_range_seconds_per_output": [
+      7.194616666666667e-05,
+      0.00012107523958333333
+    ],
+    "primary_service_outputs": 18874368,
+    "primary_service_units_at_existing_one_forward_profile": 363067342848,
+    "primary_service_units_upper_cap_two_full_equivalents": 726134685696,
+    "prospective_total_attributed_cpu_cap": 4540,
+    "shared_statistical_and_manifest_cpu_cap": 300,
+    "source_cohorts_of_four": 192,
+    "sources": 768,
+    "timing_waves": 4
+  },
+  "execution_authorized": false,
+  "fixed_conditions": {
+    "additive_comparators": [
+      "A-stratified",
+      "A-iid"
+    ],
+    "candidate_of_interest": "N-stratified",
+    "ce_anchor": 0.2,
+    "greedy_max_per_seed_drop_limit": 0.02,
+    "joint_build_block_count": 32,
+    "learning_rate": 0.003,
+    "model_seed_tuple_count": 96,
+    "rho": 1.5,
+    "sampler_candidates": [
+      "iid",
+      "stratified"
+    ]
+  },
+  "ndu_inference_candidate": {
+    "block_and_source_cohort_resampling": true,
+    "bootstrap_replicates": 99999,
+    "comparison_endpoint_count": 6,
+    "implementation_and_statistical_review_pending": true,
+    "mc_error_budget_total": 0.0005,
+    "mc_order_cdf": 0.9999169145207123,
+    "mc_order_statistic_ascending": 98927,
+    "previous_order_cdf": 0.9999063068703439,
+    "source_only_inference_allowed": false,
+    "statistical_tail_alpha": 0.012
+  },
+  "new_data_constructed": false,
+  "new_formal_or_validation_opened": false,
+  "new_models_trained": false,
+  "new_predictions_generated": false,
+  "required_before_execution": [
+    "cross-task complete historical/selection ledger",
+    "three final deployable comparator/claim lists and shared prospective alpha approval",
+    "explicit total research budget approval",
+    "power assumptions and source/timing uncertainty review",
+    "statistical implementation, MC order and handmade calibration",
+    "one-shot physical-source and global/run marker freeze"
+  ],
+  "schema": "hepta.ndu-confirmation-planning.v1",
+  "scope": "fixed synthetic two-modality twelve-code model",
+  "shared_claim_alpha_request": {
+    "content_control": 0.00625,
+    "current_candidate_confirmation_looks": 1,
+    "dynamic_control": 0.00625,
+    "historical_total_fwer_claim": null,
+    "historical_uniform_alpha_ledger_exists": false,
+    "ndu": 0.0125,
+    "parent_approval_of_other_claims_required": true,
+    "prospective_sum": 0.025
+  },
+  "status": "draft_for_parent_merge_only"
+}

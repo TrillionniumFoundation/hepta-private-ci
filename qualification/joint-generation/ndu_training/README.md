@@ -21,3 +21,9 @@ runner refuses overwriting it. No validation/formal evaluation command exists.
 Read saved results and `audit.json` instead of reconstructing experiment data.
 The next step is parent review of the three independent research contributions
 and their complete history, followed by any explicitly frozen follow-up decision.
+
+The subsequent [review response](review_followup/REVIEW_RESPONSE.md) independently
+recomputes all 72 saved parameter deltas and adds source-hash-bound unit-test logs.
+The [confirmation proposal](review_followup/CONFIRMATION_PROPOSAL_V1.md) specifies
+a fixed multi-seed/source/timing design, its explicit research-budget increase and
+conditional power limits. It has not generated data or run confirmation.
