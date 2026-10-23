@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.p41-integrated-native-formatter-triage.v1",
+  "date_utc": "2026-10-23",
+  "source": "github-actions-native",
+  "original_pr": 3426,
+  "original_run_id": 39921328328,
+  "original_job_id": 120380753007,
+  "original_source_head_sha": "de01c346d65a964f741ce1901b8c10ed5c580e6d",
+  "base_for_isolated_patch": "5fbb4474d851d8592224b9ecb883d12500cc1412",
+  "failing_checks": [
+    "Bazel/Starlark formatter (codex-rs/hepta-agentd/BUILD.bazel)",
+    "cargo fmt -- --config imports_granularity=Item --check"
+  ],
+  "verified_current_source_blobs_pre_patch": {
+    "codex-rs/cli/src/doctor.rs": "a0f04fa7f89d12d6a463523db38a35002bf54915",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs": "ccb783e3ffc0c190121439a8ab5cc11f9cd2a0fe",
+    "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs": "103ba9e363deac29647a474844b9638d4eb4415a",
+    "codex-rs/hepta-agentd/BUILD.bazel": "9b269e2c06580f513fcbbd406428dd00329a470c"
+  },
+  "changes": {
+    "rustfmt_exact_native_diff_hunks": 7,
+    "files": [
+      "codex-rs/cli/src/doctor.rs",
+      "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"
+    ],
+    "starlark_format_candidate": "move integration_test_dependency_replacements before integration_test_timeout and unit_test_dependency_replacements, preserving existing comments and test-only target mapping; buildifier exact postimage not locally reproduced"
+  },
+  "qualification": {
+    "native_post_patch_checks_run": false,
+    "architecture_required_success": false,
+    "blocking_ci_required_success": false,
+    "hosted_buildifier_verified": false,
+    "safety_gates_relaxed": false,
+    "unit_assertions_changed": false,
+    "rust_dependency_changed": false,
+    "prod_activation_allowed": false,
+    "authority": "DENY_ALL",
+    "mode": "SHADOW_ONLY",
+    "release": "HOLD_NO_GO"
+  },
+  "note": "The observed original build-test job failed before this isolated patch. Source blob identity confirms its Rustfmt hunks remained in integrated base. Formatting-only repair candidate must pass current exact-head hosted buildifier, cargo fmt, and applicable original owning gates before any blocker status changes."
+}
