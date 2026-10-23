@@ -53,7 +53,7 @@ class SpectralRiskAdmission(unittest.TestCase):
             (((1.0, .2), (.3, 1.0)), "asymmetric"),
             (((1.0, nan), (nan, 1.0)), "nonfinite"),
             (((1.0, inf), (inf, 1.0)), "nonfinite"),
-            (((1.0, 2.0),), "geometry"),
+            (((1.0, 2.0), (2.0,)), "geometry"),
         ]:
             with self.subTest(covariance=covariance):
                 with self.assertRaisesRegex(Unavailable, reason):
