@@ -172,13 +172,20 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
             derived = True
             continue
 
-        if (
-            path.startswith("scripts/hepta")
-            or path.startswith("scripts/test_hepta")
+        # Only direct Python helpers may take the derived-only fast path.
+        # A nested module or non-Python executable whose name happens to
+        # begin with hepta/test_hepta must retain the full native fallback.
+        if PurePosixPath(path).suffix == ".py" and (
+            (
+                len(parts) == 2
+                and (
+                    path.startswith("scripts/hepta")
+                    or path.startswith("scripts/test_hepta")
+                )
+            )
             or (
                 len(parts) == 3
                 and path.startswith("scripts/tests/test_hepta")
-                and PurePosixPath(path).suffix == ".py"
             )
         ):
             derived = True
