@@ -172,10 +172,17 @@ request_id/cell_id/generation/model_digest/mode and return exactly bound IDs,
 terminal_observed, success, output_digest and queue_age_us. It must not
 perform tools/effects; no retries for uncertain requests. Model identity
 comes from the independent Artifact CAS owner, not from request assertions.
-Run scale.py against loopback with its real serving PID and selected active
-concurrency. Server RSS is a single PID; GPU metric is whole-host, not
-per-process, so separate isolation evidence is still needed. Load-time and
-crash/adapter miss costs are **not fabricated**.
+Run scale.py against loopback with its real serving PID and selected
+thread-pool concurrency. The new `configured_active_workers` field is a
+requested limit, while `client_http_inflight_peak` measures overlapping
+HTTP requests in the probe process. **Neither proves actual concurrently
+executing inference Cells on the server**: `server_active_inference_peak`
+and legacy `concurrently_active` remain null until independent server-side
+instrumentation is connected. A 64-request cohort can report descriptive
+p99 but `p99_at_least_100_samples=false`; it cannot pass an evidence-grade
+p99 sample gate. Server RSS is a single PID; GPU metric is whole-host,
+not per-process, so separate isolation evidence is still needed.
+Load-time and crash/adapter miss costs are **not fabricated**.
 
 Lifecycle.py requires ten exact signed events with separate pinned
 artifact_owner/supervisor/router/observer Ed25519 keys, monotonic sequence,
