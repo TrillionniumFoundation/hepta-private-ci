@@ -17,6 +17,7 @@ pub(super) struct RequiredMaterialStartup {
 #[repr(u8)]
 enum StartupState {
     Pending,
+    Installing,
     Registering,
     Confirmed,
     Failed,
@@ -32,7 +33,21 @@ impl RequiredMaterialStartup {
         Ok(state)
     }
 
-    fn verify_directory(&self) -> io::Result<()> {
+    pub(super) fn begin_install(&self) -> io::Result<()> {
+        self.state.compare_exchange(StartupState::Pending as u8, StartupState::Installing as u8,
+            Ordering::AcqRel, Ordering::Acquire)
+            .map(|_| ()).map_err(|_| io::Error::other("material install requires pending startup"))
+    }
+
+    pub(super) fn installed(&self) {
+        self.state.store(StartupState::Pending as u8, Ordering::Release);
+    }
+
+    pub(super) fn fail(&self) {
+        self.state.store(StartupState::Failed as u8, Ordering::Release);
+    }
+
+    pub(super) fn verify_directory(&self) -> io::Result<()> {
         codex_hepta_contracts::RootAuthorityDirectory::open(&self.root).map_err(io::Error::other)?;
         let actual = std::fs::symlink_metadata(&self.root)?;
         let retained = self.directory.metadata()?;
@@ -72,6 +87,11 @@ impl HostAuthorityService {
             Ordering::AcqRel, Ordering::Acquire)
             .map_err(|_| io::Error::other("recovered owner readiness was already attempted"))?;
         let result = (|| {
+            if self.checkpoint.as_ref().and_then(|checkpoint| checkpoint.recovered.as_ref())
+                .is_some_and(|recovered| !recovered.installed.load(Ordering::Acquire))
+            {
+                return Err(io::Error::other("original recovered owner material was not installed"));
+            }
             startup.verify_directory()?;
             self.register_material_archive_for_root(&startup.root)?;
             startup.verify_directory()?;

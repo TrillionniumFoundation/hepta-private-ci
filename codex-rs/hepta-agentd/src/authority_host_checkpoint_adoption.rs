@@ -126,55 +126,10 @@ impl HostCognitiveCheckpoint {
         clock: Arc<dyn AuthorityClock>,
         material: RetainedCut<'_>,
     ) -> Result<Self, AuthorityTrustError> {
-        validate_registration(&registration)?;
+        let next = Self::successor_head(previous, &predecessor, &registration, successor, &material)?;
         let old = &previous.head;
-        let old_registration = HostCognitiveCheckpointRegistration {
-            owner_agent_id: old.owner_agent_id.clone(),
-            publisher_epoch: old.publisher_epoch,
-            writer_binding: old.writer_binding.clone(),
-            peer_lifetime: old.peer_lifetime.clone(),
-        };
-        validate_registration(&old_registration)?;
-        validate_head(&old_registration, old)?;
-        let old_writer = &old.writer_binding;
         let new_writer = &registration.writer_binding;
-        material.validate(old)?;
-        if token_for(old)? != previous.token
-            || old.owner_agent_id != registration.owner_agent_id
-            || old.publisher_epoch.checked_add(1) != Some(registration.publisher_epoch)
-            || predecessor.lifetime() != &old.peer_lifetime
-            || successor.lifetime != registration.peer_lifetime
-            || old.peer_lifetime == registration.peer_lifetime
-            || old.peer_lifetime.uid != registration.peer_lifetime.uid
-            || old.peer_lifetime.boot_id != registration.peer_lifetime.boot_id
-            || old_writer.lease_id != new_writer.lease_id
-            || old_writer.generation.checked_add(1) != Some(new_writer.generation)
-            || (old_writer.authority_epoch, old_writer.owner_epoch)
-                >= (new_writer.authority_epoch, new_writer.owner_epoch)
-            || old_writer.authority_grant_digest == new_writer.authority_grant_digest
-            || old_writer.fencing_token_digest == new_writer.fencing_token_digest
-        {
-            return Err(AuthorityTrustError::Invalid);
-        }
-        predecessor.require_retired()?;
-        successor.require_alive()?;
         let store = HostAuthorityFrontierStore::open(directory, STORE_OWNER.into())?;
-        let mut next = old.clone();
-        next.publisher_epoch = registration.publisher_epoch;
-        next.counter = old
-            .counter
-            .checked_add(1)
-            .ok_or(AuthorityTrustError::Invalid)?;
-        next.last_mutation_sequence = 0;
-        next.last_request = None;
-        next.writer_binding = new_writer.clone();
-        next.peer_lifetime = registration.peer_lifetime.clone();
-        // The full old head remains the CAS predecessor. Only a separately
-        // validated protected image can promote its exact last_current; no
-        // dirty database or uncommitted proposal supplies replacement bytes.
-        next.phase = CognitiveCheckpointPhase::Current;
-        next.proposal = None;
-        validate_head(&registration, &next)?;
         material.validate(old)?;
         let before = clock.now_unix_ms()?;
         let expiry = new_writer.expires_at_unix_seconds * 1000;
@@ -218,6 +173,116 @@ impl HostCognitiveCheckpoint {
             exchange_lock: Mutex::new(()),
         })
     }
+    // One original complete transition definition for both adoption and later
+    // fixed-owner installation. Installation may only recheck this exact head;
+    // it does not synthesize another token, CAS, epoch or counter.
+    fn successor_head(
+        previous: &CognitiveCheckpointReceipt,
+        predecessor: &Predecessor<'_>,
+        registration: &HostCognitiveCheckpointRegistration,
+        successor: &RetainedCheckpointPublisher,
+        material: &RetainedCut<'_>,
+    ) -> Result<CognitiveCheckpointHead, AuthorityTrustError> {
+        validate_registration(registration)?;
+        let old = &previous.head;
+        let old_registration = HostCognitiveCheckpointRegistration {
+            owner_agent_id: old.owner_agent_id.clone(),
+            publisher_epoch: old.publisher_epoch,
+            writer_binding: old.writer_binding.clone(),
+            peer_lifetime: old.peer_lifetime.clone(),
+        };
+        validate_registration(&old_registration)?;
+        validate_head(&old_registration, old)?;
+        let old_writer = &old.writer_binding;
+        let new_writer = &registration.writer_binding;
+        material.validate(old)?;
+        if token_for(old)? != previous.token
+            || old.owner_agent_id != registration.owner_agent_id
+            || old.publisher_epoch.checked_add(1) != Some(registration.publisher_epoch)
+            || predecessor.lifetime() != &old.peer_lifetime
+            || successor.lifetime != registration.peer_lifetime
+            || old.peer_lifetime == registration.peer_lifetime
+            || old.peer_lifetime.uid != registration.peer_lifetime.uid
+            || old.peer_lifetime.boot_id != registration.peer_lifetime.boot_id
+            || old_writer.lease_id != new_writer.lease_id
+            || old_writer.generation.checked_add(1) != Some(new_writer.generation)
+            || (old_writer.authority_epoch, old_writer.owner_epoch)
+                >= (new_writer.authority_epoch, new_writer.owner_epoch)
+            || old_writer.authority_grant_digest == new_writer.authority_grant_digest
+            || old_writer.fencing_token_digest == new_writer.fencing_token_digest
+        {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        predecessor.require_retired()?;
+        successor.require_alive()?;
+        let mut next = old.clone();
+        next.publisher_epoch = registration.publisher_epoch;
+        next.counter = old
+            .counter
+            .checked_add(1)
+            .ok_or(AuthorityTrustError::Invalid)?;
+        next.last_mutation_sequence = 0;
+        next.last_request = None;
+        next.writer_binding = new_writer.clone();
+        next.peer_lifetime = registration.peer_lifetime.clone();
+        // The full old head remains the CAS predecessor. Only a separately
+        // validated protected image can promote its exact last_current; no
+        // dirty database or uncommitted proposal supplies replacement bytes.
+        next.phase = CognitiveCheckpointPhase::Current;
+        next.proposal = None;
+        validate_head(registration, &next)?;
+        Ok(next)
+    }
+
+    /// Keep the original exchange lock through physical publication and the
+    /// caller's final canonical/lifetime/time checks. The caller already holds
+    /// the original Registry fence and must not re-enter either lock from the
+    /// finalizer. No wire exposes this operation.
+    pub(crate) fn install_recovered_material_for_root(
+        &self,
+        previous: &CognitiveCheckpointReceipt,
+        predecessor: &RetiredCheckpointPublisher,
+        successor: &RetainedCheckpointPublisher,
+        material: codex_hepta_memory::VerifiedCognitiveMaterial,
+        layout: &codex_hepta_paths::HeptaAgentLayout,
+        validate_after: impl FnOnce(&codex_hepta_memory::InstalledCognitiveMaterial, u64, u64)
+            -> Result<(), AuthorityTrustError>,
+    ) -> Result<codex_hepta_memory::InstalledCognitiveMaterial, AuthorityTrustError> {
+        let _guard = self.exchange_lock.lock().map_err(|_| self.close())?;
+        let result = (|| {
+            if self.closed.load(Ordering::Acquire) {
+                return Err(AuthorityTrustError::Unavailable);
+            }
+            let expected = Self::successor_head(
+                previous, &Predecessor::Retired(predecessor), &self.registration,
+                successor, &RetainedCut::Physical(&material),
+            )?;
+            if self.load()? != expected || layout.agent_id() != &expected.owner_agent_id {
+                return Err(AuthorityTrustError::Invalid);
+            }
+            let before = self.clock.now_unix_ms()?;
+            let expiry = self.registration.writer_binding.expires_at_unix_seconds * 1000;
+            if before >= expiry {
+                return Err(AuthorityTrustError::Unavailable);
+            }
+            let installed = material.install_for_registered_owner(layout, &expected.last_current)
+                .map_err(|_| AuthorityTrustError::Unavailable)?;
+            // Publication may already be durable. Later uncertainty is always
+            // Unknown; never delete or retry the new image or changed pointer.
+            if self.load()? != expected {
+                return Err(AuthorityTrustError::Unavailable);
+            }
+            predecessor.require_retired()?;
+            installed.verify_unchanged().map_err(|_| AuthorityTrustError::Unavailable)?;
+            validate_after(&installed, before, expiry)?;
+            // Only this nonblocking held-pidfd poll follows the finalizer's
+            // protected clock, while both original locks remain held.
+            successor.require_alive()?;
+            Ok(installed)
+        })();
+        result.map_err(|_| self.close())
+    }
+
 }
 
 #[cfg(test)]

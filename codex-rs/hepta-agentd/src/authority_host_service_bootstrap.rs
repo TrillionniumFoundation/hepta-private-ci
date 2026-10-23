@@ -51,7 +51,7 @@ impl RegisteredBootstrap {
         self.owner.check_alive().map_err(io::Error::other)
     }
 
-    fn verify_processes(&self) -> io::Result<()> {
+    pub(super) fn verify_processes(&self) -> io::Result<()> {
         self.check_serving()?;
         process::verify_root(&self.root)?;
         process::verify_consumer(&self.consumer)?;

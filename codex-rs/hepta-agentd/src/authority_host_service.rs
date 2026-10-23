@@ -38,6 +38,8 @@ pub use bootstrap::HostAuthorityBootstrapLocations;
 
 #[path = "authority_host_cold_recovery.rs"]
 mod cold_recovery;
+#[path = "authority_host_material_install.rs"]
+mod material_install;
 #[path = "authority_host_material_startup.rs"]
 mod material_startup;
 use material_startup::RequiredMaterialStartup;

@@ -39,6 +39,11 @@ impl HostAuthorityService {
             registration, successor, material,
         )?;
         self.checkpoint = Some(RegisteredCheckpoint { backend, peer,
+            recovered: Some(checkpoint::RecoveredCheckpointInstall {
+                previous: previous.clone(),
+                attempted: std::sync::atomic::AtomicBool::new(false),
+                installed: std::sync::atomic::AtomicBool::new(false),
+            }),
             material: std::sync::OnceLock::new(),
             material_attempted: std::sync::atomic::AtomicBool::new(false),
         });

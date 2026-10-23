@@ -17,6 +17,15 @@ pub(super) struct RegisteredCheckpoint {
     pub(super) peer: CognitiveCheckpointPeerLifetime,
     pub(super) material: std::sync::OnceLock<RegisteredMaterialArchive>,
     pub(super) material_attempted: std::sync::atomic::AtomicBool,
+    pub(super) recovered: Option<RecoveredCheckpointInstall>,
+}
+
+// Ephemeral receipt retained by the one trusted recovery composition. This is
+// not serialized, cloned, remotely selectable or an independent authority head.
+pub(super) struct RecoveredCheckpointInstall {
+    pub(super) previous: codex_hepta_memory::CognitiveCheckpointReceipt,
+    pub(super) attempted: std::sync::atomic::AtomicBool,
+    pub(super) installed: std::sync::atomic::AtomicBool,
 }
 
 impl RegisteredCheckpoint {
@@ -26,6 +35,7 @@ impl RegisteredCheckpoint {
         clock: Arc<HostAuthorityClock>,
     ) -> io::Result<Self> {
         Ok(Self {
+            recovered: None,
             material: std::sync::OnceLock::new(),
             material_attempted: std::sync::atomic::AtomicBool::new(false),
             peer: registration.peer_lifetime.clone(),
