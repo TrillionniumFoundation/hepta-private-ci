@@ -116,7 +116,7 @@ def describe_registered_factorial(
             if r.external_loss != cohort.failed_output_loss:
                 raise ValueError("incomplete output is missing fixed failure loss")
             failed += 1
-        raw_groups[(r.seed, r.original_source, r.arm)].append(r)
+        raw_groups[(r.seed, r.original_source, r.world, r.arm)].append(r)
         normalized.append(replace(r, complete=True))
     # The existing source/draw/randomness/scorer/decoder checker still owns the
     # inner four-arm pairing; normalization is only after enforcing the
@@ -127,8 +127,10 @@ def describe_registered_factorial(
     if set(match["pairs"]) != set(cohort.keys):
         raise ValueError("unregistered, missing or selectively omitted world/draw")
     seed_sources = defaultdict(set)
-    for seed, source, _world, _draw in cohort.keys:
+    source_worlds = defaultdict(set)
+    for seed, source, world, _draw in cohort.keys:
         seed_sources[seed].add(source)
+        source_worlds[(seed, source)].add(world)
 
     balanced_loss, balanced_cost = {}, {}
     for arm in ARMS:
@@ -138,11 +140,19 @@ def describe_registered_factorial(
             per_source_loss = []
             per_source_cost = []
             for source in sorted(sources):
-                group = raw_groups[(seed, source, arm)]
-                if not group:
-                    raise ValueError("registered seed/source arm missing")
-                per_source_loss.append(fsum(r.external_loss for r in group) / len(group))
-                per_source_cost.append(fsum(r.physical_cost for r in group) / len(group))
+                world_losses = []
+                world_costs = []
+                for world in sorted(source_worlds[(seed, source)]):
+                    group = raw_groups[(seed, source, world, arm)]
+                    if not group:
+                        raise ValueError("registered seed/source/world arm missing")
+                    world_losses.append(fsum(r.external_loss for r in group) / len(group))
+                    world_costs.append(fsum(r.physical_cost for r in group) / len(group))
+                # Each registered world contributes once regardless of draw
+                # multiplicity; each original source and seed also contributes
+                # once at its own level of the hierarchy.
+                per_source_loss.append(fsum(world_losses) / len(world_losses))
+                per_source_cost.append(fsum(world_costs) / len(world_costs))
             per_seed_loss.append(fsum(per_source_loss) / len(per_source_loss))
             per_seed_cost.append(fsum(per_source_cost) / len(per_source_cost))
         balanced_loss[arm] = fsum(per_seed_loss) / len(per_seed_loss)
@@ -159,6 +169,7 @@ def describe_registered_factorial(
         "registered_world_draws": len(cohort.keys),
         "retained_failed_arm_rows": failed,
         "training_seeds": len(seed_sources),
+        "balancing_hierarchy": "training_seed/original_source/world/draw",
         "original_source_strata": len({(seed, source)
                                        for seed, sources in seed_sources.items()
                                        for source in sources}),
