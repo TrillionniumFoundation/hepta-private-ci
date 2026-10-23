@@ -316,7 +316,28 @@ impl SqliteConfig {
     where
         F: Fn() -> bool + Send + Sync + 'static,
     {
+        self.open_coordinated_durable_evidence_pool(path, commit_allowed, || std::future::ready(()))
+            .await
+    }
+
+    /// Asynchronously coordinate both new and reused connections before owner
+    /// code receives them. The hook is still the final synchronous commit
+    /// boundary. Checkout may conservatively invalidate a recovery witness even
+    /// for a later read; it must never re-enter this pool or block an executor.
+    pub async fn open_coordinated_durable_evidence_pool<F, C, Fut>(
+        &self,
+        path: &Path,
+        commit_allowed: F,
+        before_checkout: C,
+    ) -> Result<SqlitePool, Error>
+    where
+        F: Fn() -> bool + Send + Sync + 'static,
+        C: Fn() -> Fut + Send + Sync + 'static,
+        Fut: std::future::Future<Output = ()> + Send + 'static,
+    {
         let commit_allowed = Arc::new(commit_allowed);
+        let before_checkout = Arc::new(before_checkout);
+        let before_reuse = Arc::clone(&before_checkout);
         let options = SqliteConnectOptions::new()
             .filename(path)
             .create_if_missing(true)
@@ -329,12 +350,21 @@ impl SqliteConfig {
             .max_connections(5)
             .after_connect(move |connection, _metadata| {
                 let commit_allowed = Arc::clone(&commit_allowed);
+                let before_checkout = Arc::clone(&before_checkout);
                 Box::pin(async move {
                     connection
                         .lock_handle()
                         .await?
                         .set_commit_hook(move || commit_allowed());
+                    before_checkout().await;
                     Ok(())
+                })
+            })
+            .before_acquire(move |_connection, _metadata| {
+                let before_checkout = Arc::clone(&before_reuse);
+                Box::pin(async move {
+                    before_checkout().await;
+                    Ok(true)
                 })
             })
             .connect_with(options)

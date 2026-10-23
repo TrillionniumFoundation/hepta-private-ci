@@ -693,7 +693,14 @@ impl ProductionDurableWriter {
         if self.live_verifier.is_none() {
             return Err(ProductionWriterError::LiveVerifierRequired);
         }
-        self.verify_authority().await
+        self.verify_authority().await?;
+        // An asynchronous pool checkout may discover that protected Dirty
+        // invalidation is unknown. Do not return a live write capability after
+        // that checkout has synchronously fenced this entire owner.
+        self.store
+            .commit_gate
+            .require_open()
+            .map_err(|_| ProductionWriterError::CheckpointFenced)
     }
 
     /// Whether this entire store generation stopped accepting commits after

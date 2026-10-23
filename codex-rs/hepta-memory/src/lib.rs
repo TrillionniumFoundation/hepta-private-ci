@@ -3,7 +3,10 @@
 pub use codex_hepta_memory_federation::FederatedCoverageV2;
 pub use codex_hepta_memory_federation::FederatedFailureCoverageV2;
 
+mod cognitive_checkpoint;
 mod cognitive_checkpoint_wire;
+pub use cognitive_checkpoint::CognitiveCheckpointTransport;
+pub use cognitive_checkpoint::ProtectedCognitiveCheckpoint;
 pub use cognitive_checkpoint_wire::COGNITIVE_CHECKPOINT_FRAME_LIMIT;
 pub use cognitive_checkpoint_wire::CognitiveCheckpointCommand;
 pub use cognitive_checkpoint_wire::CognitiveCheckpointHead;
