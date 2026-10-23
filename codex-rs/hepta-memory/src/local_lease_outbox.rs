@@ -50,6 +50,13 @@ const GENESIS_LEASE_SHA256: &[u8] = b"hepta-memory:local-lease:genesis:v1";
 const GENESIS_EVENT_SHA256: &[u8] = b"hepta-memory:local-event:genesis:v1";
 const GENESIS_OUTBOX_SHA256: &[u8] = b"hepta-memory:local-outbox:genesis:v1";
 
+/// Exact state transition and replay policy for one owner-scoped journal write.
+struct OutcomeTransitionPolicy<'a> {
+    allowed: &'a [LocalOutcomeState],
+    resulting_state: LocalOutcomeState,
+    allow_exact_replay: bool,
+}
+
 #[derive(Debug, Error)]
 pub enum LocalLeaseOutboxError {
     #[error(transparent)]
@@ -2581,9 +2588,11 @@ impl LocalLeaseOutbox {
                 occurrence_key,
                 kind,
                 payload,
-                allowed,
-                resulting_state,
-                allow_exact_replay,
+                OutcomeTransitionPolicy {
+                    allowed,
+                    resulting_state,
+                    allow_exact_replay,
+                },
             )
             .await?;
         transaction
@@ -2608,9 +2617,11 @@ impl LocalLeaseOutbox {
             occurrence_key,
             "reconcile_committed",
             receipt,
-            &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
-            LocalOutcomeState::Committed,
-            /*allow_exact_replay*/ true,
+            OutcomeTransitionPolicy {
+                allowed: &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
+                resulting_state: LocalOutcomeState::Committed,
+                allow_exact_replay: true,
+            },
         )
         .await
     }
@@ -2621,9 +2632,7 @@ impl LocalLeaseOutbox {
         occurrence_key: String,
         kind: &str,
         payload: String,
-        allowed: &[LocalOutcomeState],
-        resulting_state: LocalOutcomeState,
-        allow_exact_replay: bool,
+        policy: OutcomeTransitionPolicy<'_>,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
         validate_text(&payload, "outcome payload", /*max_bytes*/ 65_536)?;
@@ -2658,9 +2667,9 @@ impl LocalLeaseOutbox {
             &self.owner_agent_id,
         )
         .await?;
-        if !allowed.contains(&current) {
+        if !policy.allowed.contains(&current) {
             match (
-                allow_exact_replay,
+                policy.allow_exact_replay,
                 find_transition(
                     transaction,
                     &self.lease_id,
@@ -2674,7 +2683,7 @@ impl LocalLeaseOutbox {
                     return Ok(LocalOutcomeReceipt {
                         lease_id: self.lease_id.clone(),
                         occurrence_key,
-                        state: resulting_state,
+                        state: policy.resulting_state,
                         event_id: existing.event_id,
                         external_effect: false,
                     });
@@ -2695,7 +2704,7 @@ impl LocalLeaseOutbox {
         )
         .await?
         {
-            if !allow_exact_replay {
+            if !policy.allow_exact_replay {
                 return Err(LocalLeaseOutboxError::IllegalTransition(
                     "dispatch claim was already consumed".to_string(),
                 ));
@@ -2708,7 +2717,7 @@ impl LocalLeaseOutbox {
             return Ok(LocalOutcomeReceipt {
                 lease_id: self.lease_id.clone(),
                 occurrence_key,
-                state: resulting_state,
+                state: policy.resulting_state,
                 event_id: existing.event_id,
                 external_effect: false,
             });
@@ -2749,7 +2758,7 @@ impl LocalLeaseOutbox {
         Ok(LocalOutcomeReceipt {
             lease_id: self.lease_id.clone(),
             occurrence_key,
-            state: resulting_state,
+            state: policy.resulting_state,
             event_id,
             external_effect: false,
         })
