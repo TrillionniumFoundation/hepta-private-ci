@@ -34,3 +34,7 @@ No tool or physical action execution is permitted. No signatures, final-use auth
 ## Additional 2026-10-23 local adversarial controls
 
 Four new tests reject a mismatched NDU draw RNG, absent preregistration, absent control draw witness, and verify the new field never grants scientific authority. The original 15 P1 tests become 19; the local standalone suite (P1+raw decoder checks+evidence denial) recorded 45/45 passes. These fixtures are synthetic, not independent model outputs or evidence that a real diffusion/omnimodal NDU implementation wins.
+
+## Failure-penalty correctness (2026-10-23)
+
+- A failed output cannot become a *better* outcome than an extreme completed output: every successful draw's external loss must be at most the preregistered `failure_loss` ceiling; otherwise the study is inadmissible. In the counterexample, allowing a completed loss 1000 alongside a failure penalty of 2 would reward recoding catastrophe as failure. This is now a hard reject, not clipping or a posthoc threshold update.
