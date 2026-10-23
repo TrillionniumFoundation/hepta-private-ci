@@ -710,6 +710,16 @@ checks and Cargo smoke steps remain required. This infrastructure budget does
 not change runtime or model resource limits; successful exact-source CI is
 still needed to establish that the cold builds complete.
 
+PN0's separate Windows V8 source-build job uses the same bounded 90-minute
+CI budget. On source `2a098b36`, jobs
+[120336831595](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39911485825/job/120336831595)
+and [120336831651](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39911485825/job/120336831651)
+both reached the original 30-minute limit during upstream V8 compilation.
+Neither reached artifact staging or Cargo smoke linking. Their cancellations
+remain failed completion evidence. Both original targets, source and artifact
+checks, sandbox feature and smoke linking remain required on the successor;
+this CI build budget changes no per-test or kernel/model runtime deadline.
+
 Both macOS Bazel test jobs use that same bounded 90-minute CI budget;
 the Linux targets retain 60 minutes. Job 120216507102 reached its confirmed
 60-minute limit with 63 of 588 tests completed and build actions still running.
