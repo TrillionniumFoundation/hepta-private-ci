@@ -235,6 +235,39 @@ class CohortFirewallTests(unittest.TestCase):
                 cohort_firewall.verify_frozen_history_pins(
                     [raw_v1, raw_wrapper], [{"schema": []}, wrapper])
 
+
+    def test_cli_denies_weakened_perceptual_collision_threshold(self):
+        # A caller-supplied distance of 0 or 3 must not turn near-duplicate
+        # images into a source-disjoint success under the published v2 gate.
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            candidate = root / "candidate.json"
+            history = root / "history.json"
+            output = root / "denial.json"
+            candidate.write_text("{}")
+            history.write_text("{}")
+            original_bytes = (candidate.read_bytes(), history.read_bytes())
+            base = [
+                sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
+                "--candidate", str(candidate),
+                "--historical", str(history),
+                "--historical-sha256", hashlib.sha256(original_bytes[1]).hexdigest(),
+                "--output", str(output),
+            ]
+            for value in ("-1", "0", "3", "65"):
+                with self.subTest(value=value):
+                    run = subprocess.run(
+                        base + ["--max-dhash-distance", value],
+                        capture_output=True, text=True, timeout=5,
+                    )
+                    self.assertEqual(run.returncode, 2, run.stderr)
+                    denial = json.loads(output.read_text(encoding="utf-8"))
+                    self.assertEqual(denial["status"], "fail")
+                    self.assertIn("--max-dhash-distance between 4 and 64", denial["error"])
+                    self.assertEqual(
+                        (candidate.read_bytes(), history.read_bytes()), original_bytes,
+                    )
+
     def test_cli_denies_complete_forged_history_with_matching_caller_hashes(self):
         # Before the guard, 256+384 source-disjoint replacement rows plus
         # matching caller hashes could give a false historical PASS.

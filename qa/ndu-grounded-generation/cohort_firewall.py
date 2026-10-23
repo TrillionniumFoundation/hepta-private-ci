@@ -82,7 +82,9 @@ def verify_frozen_history_pins(raw_documents, documents):
         schema = document.get("schema")
         if (not isinstance(schema, str) or schema not in ORIGINAL_HISTORICAL_SHA256
                 or schema in seen):
-            raise CohortContractError(f"history:{index}: duplicated or unknown original history schema")
+            raise CohortContractError(
+                f"history:{index}: duplicated or unknown original history schema"
+            )
         if hashlib.sha256(raw).hexdigest() != ORIGINAL_HISTORICAL_SHA256[schema]:
             raise CohortContractError(f"history:{index}: original frozen SHA256 mismatch")
         seen.add(schema)
@@ -314,6 +316,13 @@ def main(argv=None):
                           "output_written": False}, sort_keys=True))
         return 2
     try:
+        # The original v2 identity firewall preregisters dHash distance <=4.
+        # A caller must not weaken this floor while retaining a PASS receipt.
+        # Direct check_cohort() lower thresholds remain diagnostic only.
+        if not 4 <= args.max_dhash_distance <= 64:
+            raise CohortContractError(
+                "v2 CLI requires --max-dhash-distance between 4 and 64"
+            )
         if len(args.historical) != len(args.historical_sha256):
             raise CohortContractError("each historical manifest requires an out-of-band SHA256")
 
