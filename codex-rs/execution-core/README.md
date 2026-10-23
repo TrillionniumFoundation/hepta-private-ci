@@ -38,3 +38,23 @@ currentness, FinalUse posture, idempotency key and rollback reference.
 
 Until these steps have real execution receipts and accepted CI gates, this is
 an **ABI foundation**, not a production cutover or a closed Phase 2-5.
+
+## Shadow native Agent Loop cursor (P4 staging)
+
+`shadow_loop.rs` adds a strict, bounded, **volatile** Agentd integration seam.
+It consumes the existing `AgentStepRequestV1`/`AgentStepObservationV1`
+contract, permits one pending proposal at a time and refuses additional
+steps until a separately provided `ShadowStepCommitVerifier` confirms the
+exact owner state transition and independently observed tool/model terminal
+outcome. Unknown effects are sticky `Indeterminate` and never retryable
+from this cursor. Waiting runs require a separately verified wake.
+
+This module never opens a provider, dispatches a tool, mints FinalUse,
+persists run ownership, verifies signatures on its own or attests source/
+model/physical identity. A test verifier returning `Ok(())` is intentionally
+**not** a qualified production verifier. A real Agentd integration must
+durably store the step intent and commitment before publication, require
+the independent Final-use issuer for physical effects, reconcile lost
+acknowledgements and fail closed on generation/revocation drift. The
+existing Codex App Server remains authoritative until an independent
+full P2/P4 physical cutover qualification succeeds.

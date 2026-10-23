@@ -10,6 +10,10 @@
 mod journal;
 mod record;
 pub mod ports;
+pub mod shadow_loop;
+pub use shadow_loop::{
+    ShadowAgentLoopV1, ShadowLoopPhaseV1, ShadowStepCommitV1, ShadowStepCommitVerifier,
+};
 
 pub use journal::EffectReceiptVerifier;
 pub use journal::ExecutionJournal;
