@@ -27,6 +27,16 @@ a new preregistered experiment revision.
 
 `python3 qualification/native-agent-comparison/compare.py BASELINE.json real-observations.json`
 
+The A/B/C checker also requires a separately content-addressed build/configuration
+manifest for each mode (`mode_build_digests`), exact source **trees** in every
+observation (`source_trees`), and unique receipt digests. Observations must
+report physical CPU time, GPU peak memory (zero is valid for a GPU-free run),
+active concurrency, wall p95/p99, memory, token and tool costs. The comparator
+reports all four scales individually and explicit B-versus-A and C-versus-A
+performance deltas; pooling all scales must never hide a 4096-Cell regression.
+These are **claimed values until authenticated independently**, not evidence of
+a physical runner or signature verification.
+
 The committed `BASELINE.json` intentionally has no task fixtures or real
 model/target identities. The CLI **must fail closed** on this baseline.
 The local test suite exercises synthetic fixtures solely to verify the
