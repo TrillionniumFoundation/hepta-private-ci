@@ -7,6 +7,7 @@ use crate::authority_host_config::*;
 use crate::authority_host_runtime::*;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::AuthorityFrontierStore;
+use codex_hepta_contracts::RootAuthorityDirectory;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentManifest;
@@ -19,6 +20,7 @@ use std::fs::OpenOptions;
 use std::io::Read;
 use std::io::Write;
 use std::os::fd::FromRawFd;
+use std::os::unix::fs::DirBuilderExt;
 use std::os::unix::fs::MetadataExt;
 use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::fs::PermissionsExt;
@@ -26,6 +28,20 @@ use std::path::Path;
 use std::process::Command;
 use std::time::Duration;
 use std::time::Instant;
+
+#[path = "authority_host_service_consumers_root.rs"]
+mod consumer_fixture;
+
+fn expiry_qualification() -> bool {
+    [
+        "HEPTA_SERVICE_EXPECT_EXPIRED_FEED",
+        "HEPTA_SERVICE_EXPECT_EXPIRED_OBJECTIVE",
+        "HEPTA_SERVICE_EXPECT_EXPIRED_CHECKPOINT",
+        "HEPTA_SERVICE_EXPECT_EXPIRED_CONSUMER",
+    ]
+    .iter()
+    .any(|name| std::env::var_os(name).is_some())
+}
 
 const CLIENT: &str = "authority_host_service::tests::root::protected_service_client";
 fn write_json(path: &Path, value: &impl Serialize) {
@@ -235,6 +251,9 @@ fn protected_service_client() {
 fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
     // SAFETY: geteuid has no borrowed memory or pointer arguments.
     assert_eq!(unsafe { libc::geteuid() }, 0);
+    if std::env::var_os("HEPTA_SERVICE_CONSUMERS").is_some() {
+        assert!(std::env::var_os("HEPTA_SERVICE_CHECKPOINT").is_some());
+    }
     let parent = std::path::PathBuf::from(
         std::env::var_os("HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT").unwrap(),
     );
@@ -272,6 +291,24 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
         workspace,
         resources: ResourceBudget::local_default(),
     };
+    // The original owner creates and coherently captures a genuinely fresh
+    // store before any protected clock/lease starts. No suspect DB is imported.
+    let checkpoint_cut = std::env::var_os("HEPTA_SERVICE_CHECKPOINT").map(|_| {
+        assert!(std::env::var_os("HEPTA_SERVICE_WRITER_PROOF").is_some());
+        tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap()
+            .block_on(async {
+                let store =
+                    codex_hepta_memory::CognitiveStore::open(&identity.identity().unwrap().layout)
+                        .await
+                        .unwrap();
+                let cut = store.recovery_anchor().await.unwrap();
+                store.close().await;
+                cut
+            })
+    });
     let metadata = std::fs::metadata(&parent).unwrap();
     let required_bind = HostAuthorityBindIdentity {
         mountpoint: parent,
@@ -283,7 +320,7 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
     let bootstrap = root.join("bootstrap.json");
     write_json(
         &bootstrap,
-        &serde_json::json!({"schema_version":1,"required_bind":required_bind,"signer_id":"root-service-qualification","policies":[DeploymentGrantPolicy {subject_id:owner.to_string(),destination_id:b.destination_id.clone(),scope_sha256:b.scope_sha256,lifetime_ms:30000},DeploymentGrantPolicy {subject_id:owner.to_string(),destination_id:DeploymentFinalUseIssuer::OBJECTIVE_DESTINATION.into(),scope_sha256:*crate::objective_runtime::objective_scope(&identity.identity().unwrap()).as_array(),lifetime_ms:300000}],"lease_id":"root-service-qualification","lease_binding":AuthorityLeaseBinding {principal_id:b.subject_id,operation_class:"runtime.agentd.production_operation".into(),destination_id:b.destination_id,scope_sha256:b.scope_sha256,payload_sha256:b.payload_sha256},"lease_lifetime_ms":if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_FEED").is_some() || std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_OBJECTIVE").is_some() {2000} else {60000}}),
+        &serde_json::json!({"schema_version":1,"required_bind":required_bind,"signer_id":"root-service-qualification","policies":[DeploymentGrantPolicy {subject_id:owner.to_string(),destination_id:b.destination_id.clone(),scope_sha256:b.scope_sha256,lifetime_ms:30000},DeploymentGrantPolicy {subject_id:owner.to_string(),destination_id:DeploymentFinalUseIssuer::OBJECTIVE_DESTINATION.into(),scope_sha256:*crate::objective_runtime::objective_scope(&identity.identity().unwrap()).as_array(),lifetime_ms:300000}],"lease_id":"root-service-qualification","lease_binding":AuthorityLeaseBinding {principal_id:b.subject_id,operation_class:"runtime.agentd.production_operation".into(),destination_id:b.destination_id,scope_sha256:b.scope_sha256,payload_sha256:b.payload_sha256},"lease_lifetime_ms":if expiry_qualification() {2000} else {60000}}),
     );
     let state = root.join("authority");
     let initialized = initialize_host_authority(&state, &bootstrap).unwrap();
@@ -297,7 +334,11 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
     let runtime_c = std::ffi::CString::new(runtime.path().as_os_str().as_encoded_bytes()).unwrap();
     assert_eq!(unsafe { libc::chown(runtime_c.as_ptr(), 0, 60001) }, 0);
     std::fs::set_permissions(runtime.path(), std::fs::Permissions::from_mode(0o2710)).unwrap();
-    let mut child = Command::new("/usr/bin/setpriv")
+    if std::env::var_os("HEPTA_SERVICE_CONSUMERS").is_some() {
+        consumer_fixture::create_local(runtime.path());
+    }
+    let mut command = Command::new("/usr/bin/setpriv");
+    command
         .args([
             "--reuid=60001",
             "--regid=60001",
@@ -331,9 +372,11 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
             "HEPTA_SERVICE_PUBLIC_KEY",
             serde_json::to_string(&initialized.verifying_key).unwrap(),
         )
-        .env("HEPTA_SERVICE_PID", std::process::id().to_string())
-        .spawn()
-        .unwrap();
+        .env("HEPTA_SERVICE_PID", std::process::id().to_string());
+    command.env("HEPTA_SERVICE_SIGNER_ID", &initialized.signer_id);
+    let _root_peer_fd = std::env::var_os("HEPTA_SERVICE_CONSUMERS")
+        .map(|_| consumer_fixture::root_peer_fd(&mut command));
+    let mut child = command.spawn().unwrap();
     // Retain the child and pin its real instance before any connection exists.
     // SAFETY: pidfd_open takes a live retained Child PID and no memory pointers.
     let raw = unsafe { libc::syscall(libc::SYS_pidfd_open, child.id(), 0) };
@@ -374,6 +417,8 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
     };
     let mut config = HostAuthorityServiceConfig {
         schema_version: 1,
+        checkpoint_state_dir: None,
+        consumers: None,
         state_dir: state,
         required_bind,
         signer_id: initialized.signer_id,
@@ -405,14 +450,7 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
                         payload_sha256: [7; 32],
                     },
                     issued_at_unix_ms: now,
-                    expires_at_unix_ms: now
-                        + if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_FEED").is_some()
-                            || std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_OBJECTIVE").is_some()
-                        {
-                            2000
-                        } else {
-                            60000
-                        },
+                    expires_at_unix_ms: now + if expiry_qualification() { 2000 } else { 60000 },
                 },
             })
         } else {
@@ -422,6 +460,8 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
             observation: runtime.path().join("observation.sock"),
             issuer: runtime.path().join("issuer.sock"),
             checkpoint: runtime.path().join("checkpoint.sock"),
+            device_frontier: None,
+            notes_frontier: None,
         },
         peer_uid: 60001,
         peer_gid: 60001,
@@ -498,14 +538,8 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
             .unwrap()
             .as_millis() as u64;
         writer.authority_lease.issued_at_unix_ms = now;
-        writer.authority_lease.expires_at_unix_ms = now
-            + if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_FEED").is_some()
-                || std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_OBJECTIVE").is_some()
-            {
-                2000
-            } else {
-                60000
-            };
+        writer.authority_lease.expires_at_unix_ms =
+            now + if expiry_qualification() { 2000 } else { 60000 };
         let active = root.join("service-active.json");
         write_json(&active, &config);
         active
@@ -515,33 +549,117 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
     if config.writer.is_some() {
         let first = register_host_writer_authorization(&config_path).unwrap();
         assert_eq!(first.claims.sequence, 1);
-        if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_FEED").is_none()
-            && std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_OBJECTIVE").is_none()
-        {
+        if !expiry_qualification() {
             assert_eq!(
                 register_host_writer_authorization(&config_path).unwrap(),
                 first
             );
         }
     }
-    child.stdin.take().unwrap().write_all(&[1]).unwrap();
+    let config_path = if let Some(cut) = checkpoint_cut {
+        let (clock, leases, issuer) = open_registered_issuer(&config).unwrap();
+        let service = HostAuthorityService::from_registered_owner(
+            issuer.clone(),
+            clock.clone(),
+            registration.registered_identity.identity().unwrap(),
+        )
+        .unwrap()
+        .with_registered_writer(config.writer.clone().unwrap(), leases.verifier())
+        .unwrap();
+        let peer = codex_hepta_memory::CognitiveCheckpointPeerLifetime {
+            uid: 60001,
+            pid: registration.peer_pid,
+            boot_id: registration.boot_id.clone(),
+            process_start_ticks: registration.process_start_ticks,
+        };
+        let registered = service
+            .writer
+            .as_ref()
+            .unwrap()
+            .checkpoint_registration(&issuer, registration.publisher_epoch, peer)
+            .unwrap();
+        let directory = config.state_dir.join("checkpoint");
+        std::fs::DirBuilder::new()
+            .mode(0o700)
+            .create(&directory)
+            .unwrap();
+        let backend = crate::HostCognitiveCheckpoint::initialize_fresh(
+            RootAuthorityDirectory::open(&directory).unwrap(),
+            registered.clone(),
+            cut,
+            clock,
+        )
+        .unwrap();
+        drop(backend);
+        config.checkpoint_state_dir = Some(directory);
+        let path = root.join("service-checkpoint.json");
+        write_json(&path, &config);
+        // A whole-writer binding from a different original authority/token
+        // cannot open this protected head, even for the same publisher/peer.
+        let mut wrong = registered;
+        wrong.writer_binding.fencing_token_digest =
+            codex_hepta_contracts::Sha256Digest::for_bytes(b"wrong-token");
+        assert!(
+            crate::HostCognitiveCheckpoint::open(
+                RootAuthorityDirectory::open(config.checkpoint_state_dir.as_ref().unwrap())
+                    .unwrap(),
+                wrong,
+                service.clock,
+            )
+            .is_err()
+        );
+        path
+    } else {
+        config_path
+    };
+    let config_path = if std::env::var_os("HEPTA_SERVICE_CONSUMERS").is_some() {
+        assert!(config.writer.is_some());
+        consumer_fixture::initialize(&mut config);
+        let path = root.join("service-consumers.json");
+        write_json(&path, &config);
+        path
+    } else {
+        config_path
+    };
+    consumer_fixture::release(&mut child, &config, &registration);
     let result = serve_host_authority_session(&config_path, &registration_path, pidfd);
     let status = child.wait().unwrap();
     assert!(
         status.success(),
         "dedicated original-wire client failed: {status}; service={result:?}"
     );
-    // The deliberately absent checkpoint head closes that lane as Unavailable.
+    // An absent head or the final closed-DTO negative closes its lane without ACK.
     assert!(result.is_err());
+    if let Some(directory) = &config.checkpoint_state_dir {
+        let head = codex_hepta_contracts::HostAuthorityFrontierStore::<
+            codex_hepta_memory::CognitiveCheckpointHead,
+        >::open(
+            RootAuthorityDirectory::open(directory).unwrap(),
+            "root-cognitive-checkpoint-v1".into(),
+        )
+        .unwrap()
+        .load("root-cognitive-checkpoint-v1")
+        .unwrap();
+        let expected = if expiry_qualification() {
+            (codex_hepta_memory::CognitiveCheckpointPhase::Current, 1)
+        } else {
+            (codex_hepta_memory::CognitiveCheckpointPhase::Fenced, 3)
+        };
+        assert_eq!((head.phase, head.counter), expected);
+    }
+    if config.consumers.is_some() {
+        consumer_fixture::assert_final(&config, runtime.path());
+    }
     let retained = crate::DeploymentFrontierStore::<serde_json::Value>::open_protected(
         &config.state_dir.join("issuer"),
     )
     .unwrap();
     let mut sequence = if config.writer.is_some() { 1 } else { 0 };
-    if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_FEED").is_none()
-        && std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_OBJECTIVE").is_none()
-    {
+    if !expiry_qualification() {
         sequence += if config.writer.is_some() { 2 } else { 1 };
+        if config.consumers.is_some() {
+            sequence += 1;
+        }
     }
     assert_eq!(
         retained.load("local-final-use-issuer").unwrap()["sequence"],

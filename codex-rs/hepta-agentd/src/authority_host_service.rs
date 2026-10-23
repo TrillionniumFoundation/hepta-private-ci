@@ -25,6 +25,12 @@ use crate::DeploymentFinalUseIssuer;
 #[path = "authority_host_writer.rs"]
 mod writer;
 use writer::RegisteredWriter;
+#[path = "authority_host_checkpoint_lane.rs"]
+mod checkpoint;
+use checkpoint::RegisteredCheckpoint;
+#[path = "authority_host_consumers.rs"]
+mod consumers;
+use consumers::RegisteredConsumers;
 
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]
@@ -32,9 +38,11 @@ pub enum HostAuthorityLane {
     Observation,
     Issuer,
     Checkpoint,
+    DeviceConsumerFrontier,
+    NotesConsumerFrontier,
 }
 
-/// Three lanes share this exact original issuer/key/head/sequence. The clock
+/// All lanes share this exact original issuer/key/head/sequence. The clock
 /// and registered identity are retained by the root launcher, not supplied in
 /// requests. Missing checkpoint registration never initializes a cut.
 pub struct HostAuthorityService {
@@ -43,6 +51,8 @@ pub struct HostAuthorityService {
     identity: AgentdIdentity,
     writer: Option<RegisteredWriter>,
     notes: Option<crate::RootNotesGrantAdmission>,
+    checkpoint: Option<RegisteredCheckpoint>,
+    consumers: Option<RegisteredConsumers>,
 }
 
 impl HostAuthorityService {
@@ -60,6 +70,8 @@ impl HostAuthorityService {
             identity,
             writer: None,
             notes: None,
+            checkpoint: None,
+            consumers: None,
         })
     }
 
@@ -94,6 +106,48 @@ impl HostAuthorityService {
         Ok(self)
     }
 
+    /// Open the existing protected checkpoint for this verified writer and
+    /// trusted launcher's actual peer lifetime. Missing state never initializes.
+    pub fn with_registered_checkpoint(
+        mut self,
+        directory: Arc<codex_hepta_contracts::RootAuthorityDirectory>,
+        publisher_epoch: u64,
+        peer: codex_hepta_memory::CognitiveCheckpointPeerLifetime,
+    ) -> io::Result<Self> {
+        let writer = self
+            .writer
+            .as_ref()
+            .ok_or_else(|| io::Error::other("registered writer required"))?;
+        let registration = writer.checkpoint_registration(&self.issuer, publisher_epoch, peer)?;
+        self.checkpoint = Some(RegisteredCheckpoint::open(
+            directory,
+            registration,
+            self.clock.clone(),
+        )?);
+        Ok(self)
+    }
+
+    /// Open both existing original consumer stores with fixed root namespaces.
+    /// The trusted launcher supplies these fields; no wire initializes an owner.
+    pub fn with_registered_consumers(
+        mut self,
+        protected_state: &std::path::Path,
+        config: &crate::HostAuthorityConsumersConfig,
+    ) -> io::Result<Self> {
+        let writer = self
+            .writer
+            .as_ref()
+            .ok_or_else(|| io::Error::other("registered writer required"))?;
+        self.consumers = Some(RegisteredConsumers::open(
+            protected_state,
+            config,
+            &self.issuer.trust_key()?.key_id,
+            self.clock.clone(),
+            writer.registration.authority_lease.expires_at_unix_ms,
+        )?);
+        Ok(self)
+    }
+
     /// Serve one pre-accepted root-launcher channel until EOF or uncertainty.
     /// Independent lane threads keep observation out of an issuer work queue;
     /// underlying durability stalls still legitimately expire feed freshness.
@@ -108,9 +162,16 @@ impl HostAuthorityService {
             HostAuthorityLane::Observation => 16 * 1024,
             HostAuthorityLane::Issuer => 64 * 1024,
             HostAuthorityLane::Checkpoint => 32 * 1024,
+            HostAuthorityLane::DeviceConsumerFrontier
+            | HostAuthorityLane::NotesConsumerFrontier => 16 * 1024,
         };
         policy.request_bound = bound;
         policy.response_bound = bound;
+        if matches!(lane, HostAuthorityLane::Checkpoint)
+            && let Some(checkpoint) = &self.checkpoint
+        {
+            checkpoint.validate_peer(policy.peer).map_err(unavailable)?;
+        }
         let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)?;
         while channel.exchange(|bytes| self.handle(lane, bytes))? {}
         Ok(())
@@ -124,9 +185,36 @@ impl HostAuthorityService {
         match lane {
             HostAuthorityLane::Observation => self.observe(bytes),
             HostAuthorityLane::Issuer => self.issue(bytes),
-            // Until an independently registered protected head exists there is
-            // no legitimate witness, implicit genesis or successful response.
-            HostAuthorityLane::Checkpoint => Err(HostIssuerTransportError::Unavailable),
+            HostAuthorityLane::Checkpoint => self
+                .writer
+                .as_ref()
+                .ok_or(HostIssuerTransportError::Unavailable)?
+                .exchange_checkpoint(
+                    &self.issuer,
+                    &self.clock,
+                    &self
+                        .checkpoint
+                        .as_ref()
+                        .ok_or(HostIssuerTransportError::Unavailable)?
+                        .backend,
+                    bytes,
+                ),
+            HostAuthorityLane::DeviceConsumerFrontier
+            | HostAuthorityLane::NotesConsumerFrontier => {
+                let consumers = self
+                    .consumers
+                    .as_ref()
+                    .ok_or(HostIssuerTransportError::Unavailable)?;
+                let backend = if matches!(lane, HostAuthorityLane::DeviceConsumerFrontier) {
+                    &consumers.device
+                } else {
+                    &consumers.notes
+                };
+                self.writer
+                    .as_ref()
+                    .ok_or(HostIssuerTransportError::Unavailable)?
+                    .exchange_consumer(&self.issuer, &self.clock, backend, bytes)
+            }
         }
     }
 

@@ -65,6 +65,10 @@ pub use authority_host_bootstrap::HostAuthorityPublicConsumersV1;
 #[cfg(target_os = "linux")]
 pub use authority_host_bootstrap::HostAuthorityPublicIssuerKeyV1;
 #[cfg(target_os = "linux")]
+pub use authority_host_config::HostAuthorityConsumerConfig;
+#[cfg(target_os = "linux")]
+pub use authority_host_config::HostAuthorityConsumersConfig;
+#[cfg(target_os = "linux")]
 pub use authority_host_config::HostAuthorityRegisteredIdentity;
 #[cfg(target_os = "linux")]
 mod authority_host_runtime;
