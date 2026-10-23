@@ -1110,6 +1110,14 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
     Ok(())
 }
 
+// Do not trust mode bits supplied by a downloaded archive. The ZIP Unix
+// mode can contain file-type, setuid, setgid and sticky bits; group/world
+// write access is also unnecessary for the curated plugin snapshot.
+#[cfg(unix)]
+fn safe_curated_zip_file_mode(archive_mode: u32) -> u32 {
+    archive_mode & 0o755
+}
+
 #[cfg(unix)]
 fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> Result<(), String> {
     use std::os::unix::fs::PermissionsExt;
@@ -1117,7 +1125,11 @@ fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> 
     let Some(mode) = entry.unix_mode() else {
         return Ok(());
     };
-    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode)).map_err(|err| {
+    std::fs::set_permissions(
+        output_path,
+        std::fs::Permissions::from_mode(safe_curated_zip_file_mode(mode)),
+    )
+    .map_err(|err| {
         format!(
             "failed to set permissions on curated plugins file {}: {err}",
             output_path.display()
