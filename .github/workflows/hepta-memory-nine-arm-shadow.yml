@@ -1,0 +1,46 @@
+name: Hepta memory A-I prospective audit (shadow only)
+
+on:
+  pull_request:
+    paths:
+      - 'qa/stem-bakeoff/memory_nine_arm_gate.py'
+      - 'qa/stem-bakeoff/test_memory_nine_arm_gate.py'
+      - 'qa/stem-bakeoff/MEMORY_NINE_ARM_QUALIFICATION.md'
+      - '.github/workflows/hepta-memory-nine-arm-shadow.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-nine-arm-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  fail-closed-protocol:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact checked-out source
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          git diff --check
+      - name: Audit nine-arm refusal and frozen input shape
+        run: |
+          set -euo pipefail
+          python3 -m py_compile qa/stem-bakeoff/memory_nine_arm_gate.py \
+            qa/stem-bakeoff/test_memory_nine_arm_gate.py
+          python3 -m unittest discover -s qa/stem-bakeoff \
+            -p 'test_memory_nine_arm_gate.py' -v
+      - name: No uncommitted mutation
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
