@@ -6,6 +6,12 @@
 
 mod app_runtime;
 #[cfg(target_os = "linux")]
+mod authority_host_checkpoint;
+#[cfg(target_os = "linux")]
+pub use authority_host_checkpoint::HostCognitiveCheckpoint;
+#[cfg(target_os = "linux")]
+pub use authority_host_checkpoint::HostCognitiveCheckpointRegistration;
+#[cfg(target_os = "linux")]
 mod authority_host_wire;
 #[cfg(target_os = "linux")]
 pub use authority_host_wire::HOST_AUTHORITY_OBSERVATION_V2;
