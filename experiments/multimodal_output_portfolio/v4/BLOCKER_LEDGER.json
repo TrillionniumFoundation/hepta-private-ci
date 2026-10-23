@@ -1,0 +1,330 @@
+{
+  "schema": "hepta.ndu-v4.blocker-ledger.v1",
+  "updated_at": "2026-10-23",
+  "implementation_commit": "7713023e604746a3947e0e0e2d31e8eaef6e48b1",
+  "scientific_preregistration_commit": "f10589f3df5d2da88b2b5d92e3686441ce982461",
+  "protocol_sha256": "4f90f435e3ce419a09f42412af1fc6fe3515f3c198e5e8555115b1996c1aab0b",
+  "inherited_v3_ledger_commit": "cb27b419fe6d77ca155d36f772a618cbe940a6a5",
+  "all_blockers_closed": false,
+  "original_research_goal_fully_validated": false,
+  "development_integrity_passed": true,
+  "development_strong_sibling_observed": true,
+  "registered_v4_confirmation_completed": false,
+  "registered_v4_mechanism_gate_closed": false,
+  "registered_v4_primary_superiority_passed": false,
+  "status_semantics": "Historical closures retain their original named scope. Implementation, development, receipt consistency, formal mechanism and confirmatory superiority are separate. The failed formal attempt contains no scientific result.",
+  "items": [
+    {
+      "id": "C01",
+      "goal": "Finite time-consistent NDU control",
+      "status": "closed_for_registered_scope",
+      "evidence": [
+        "../v3/THEORY.md",
+        "../v3/risk.py",
+        "../v3/test_risk.py",
+        "../v3/evidence/review_confirmation.json"
+      ],
+      "remaining_acceptance": null,
+      "reason": "Backward induction is exact over the declared finite action/law support and history-rectangular ambiguity model; floating-point and support limits remain explicit.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded."
+    },
+    {
+      "id": "C02",
+      "goal": "Executed state-dependent generation and useful refinement",
+      "status": "closed_for_registered_scope",
+      "evidence": [
+        "../v3/evidence/review_confirmation.json",
+        "../v3/RESULTS.md"
+      ],
+      "remaining_acceptance": null,
+      "reason": "Primary paired difference -0.27833614794504397 with strictly negative CI; 50.4232% refine and 54 observed groups contain both actions.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded."
+    },
+    {
+      "id": "C03",
+      "goal": "Direct NDU training credit to the new refiner",
+      "status": "closed_for_registered_scope",
+      "evidence": [
+        "../v3/evidence/review_confirmation.json",
+        "../v3/feedback_training.py"
+      ],
+      "remaining_acceptance": null,
+      "reason": "90/90 recorded utility-only steps have finite nonzero refiner gradients. Encoders, initial map and decoders are frozen during this stage.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded."
+    },
+    {
+      "id": "C04",
+      "goal": "Actual native action/budget/output lifecycle",
+      "status": "closed_for_registered_scope",
+      "evidence": [
+        "../v3/evidence/native_verification.json",
+        "../v3/evidence/native_build_final.json",
+        "../v3/evidence/native_parity_development.json",
+        "../v3/evidence/review_confirmation.json"
+      ],
+      "remaining_acceptance": null,
+      "reason": "80 native tests; 24576 formal sessions and 126322 requests bind to executed Torch latents/outputs. This is a research bridge, not the production feature driver.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded.",
+      "v4_update": "The separate new Rust bridge additionally passed six targeted native tests and complete development replay of 256 sessions/1152 requests, plus four real-action fixture sessions/20 requests. It is still a research bridge."
+    },
+    {
+      "id": "C05",
+      "goal": "Independent replay and reproducible evidence",
+      "status": "closed_for_registered_scope",
+      "evidence": [
+        "../v3/evidence/audit_confirmation.py",
+        "../v3/evidence/review_confirmation.json",
+        "../v3/evidence/review_development.json",
+        "../v3/evidence/audit_source_control.py",
+        "../v3/evidence/review_source_control.json"
+      ],
+      "remaining_acceptance": null,
+      "reason": "All formal raw-output and metric replays match; failed development is retained. Gradient source/records are reviewed, not independently retrained.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded.",
+      "v4_update": "Full v4 development has independent source/artifact/native/NN/control/statistics replay; failed formal preflight has a separate consistency review. No completed v4 formal run is implied."
+    },
+    {
+      "id": "C06",
+      "goal": "Joint source-dependence model",
+      "status": "closed_for_registered_scope",
+      "evidence": [
+        "../v3/source_control.py",
+        "../v3/THEORY.md",
+        "../v3/evidence/review_source_control.json"
+      ],
+      "remaining_acceptance": null,
+      "reason": "Three declared joint calibration regimes and all 6561 public histories replace a product-of-marginals model. No arbitrary-shift guarantee.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded."
+    },
+    {
+      "id": "R01",
+      "goal": "Strict continuation advantage over myopic control",
+      "status": "not_established",
+      "evidence": [
+        "../v3/evidence/review_confirmation.json"
+      ],
+      "remaining_acceptance": "A new prospectively frozen experiment with enough training seeds and strict paired superiority, if the phenomenon exists.",
+      "reason": "CI upper endpoint is 0; seeds 17/29 are identical to myopic. Do not tune on this confirmation set or reinterpret equality as superiority.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded.",
+      "v4_update": "Development dynamic-minus-myopic J interval [-0.004097383720769757,0.01681630999955308] includes zero. No v4 confirmation was executed; original v3 status is unchanged."
+    },
+    {
+      "id": "R02",
+      "goal": "Robust control dominates nominal expected loss",
+      "status": "not_established",
+      "evidence": [
+        "../v3/evidence/review_confirmation.json"
+      ],
+      "remaining_acceptance": "A separately justified robustness objective and new heldout evidence; expected-loss dominance is not a general theorem.",
+      "reason": "Mean loss is worse by 0.0454762 nominal and 0.0076120 under shift. Worst-case optimization need not improve the nominal mean.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded."
+    },
+    {
+      "id": "R03",
+      "goal": "Adaptive witness policy adds value over witness alone",
+      "status": "not_established",
+      "evidence": [
+        "../v3/RESULTS.md",
+        "../v3/evidence/review_source_control.json"
+      ],
+      "remaining_acceptance": "A new prospectively designed cost/information model where selective querying provides measurable benefit relative to witness-only.",
+      "reason": "All support histories query; outputs/losses equal witness-only and online Linear MACs are about 1.91-1.95 times higher. New evidence is useful; NDU-specific querying advantage is absent here.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded."
+    },
+    {
+      "id": "R04",
+      "goal": "Recover shared-wrong truth without new information",
+      "status": "not_achievable_under_declared_information_model",
+      "evidence": [
+        "../v3/THEORY.md",
+        "../v3/test_risk.py"
+      ],
+      "remaining_acceptance": "Change the information set with a genuinely informative independently justified source, or narrow the claim.",
+      "reason": "The symmetric eight-class shared-wrong construction implies a 1/7 top-1 upper bound. More optimization cannot remove this information bound.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded."
+    },
+    {
+      "id": "R05",
+      "goal": "Dynamic output-portfolio reallocation within generation",
+      "status": "implemented_and_development_verified_confirmation_blocked",
+      "evidence": [
+        "protocol.json",
+        "THEORY.md",
+        "RESULTS.md",
+        "evidence/review_development.json",
+        "evidence/review_bridge_fixture.json",
+        "evidence/review_failed_confirmation_preflight.json"
+      ],
+      "remaining_acceptance": "Complete all registered seeds/arms under the unchanged protocol, independently verify all outputs/costs/actions, and observe the strong different-second-REFINE sibling for each of seeds 17,29,43.",
+      "reason": "Four actual modality states/actions, full outputs, native ownership and an executed cross-modality sibling passed complete development replay. Confirmation-001 stopped at capacity preflight with zero model work, so the required three-checkpoint mechanism gate has not closed.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded."
+    },
+    {
+      "id": "C07",
+      "goal": "Identifiable synthetic risk coefficient",
+      "status": "closed_for_registered_scope",
+      "evidence": [
+        "../v3/preference.py",
+        "../v3/THEORY.md",
+        "../v3/evidence/review_confirmation.json"
+      ],
+      "remaining_acceptance": null,
+      "reason": "Nine fixed-scale Gaussian/logistic profiles have max absolute coefficient error 0.064635; fitted gamma is passed to the actual finite policy.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded."
+    },
+    {
+      "id": "R06",
+      "goal": "Real or endogenous dynamic preference identification",
+      "status": "not_established",
+      "evidence": [
+        "../v3/THEORY.md",
+        "../v3/NATURAL_DATA_PLAN.md"
+      ],
+      "remaining_acceptance": "Observed real preference data, identifiable scale/noise model, exogenous interventions or justified dynamics, and independent predictive validation.",
+      "reason": "No real preference data or coupled preference process has been fitted; synthetic gamma recovery does not provide this evidence.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded."
+    },
+    {
+      "id": "C08",
+      "goal": "Entropic BSDE analytic verification",
+      "status": "closed_for_registered_scope",
+      "evidence": [
+        "../v3/risk.py",
+        "../v3/THEORY.md"
+      ],
+      "remaining_acceptance": null,
+      "reason": "Gaussian analytic U and Z and binomial discretization checked; initial error 0.000312311 at 512 steps.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded."
+    },
+    {
+      "id": "R07",
+      "goal": "General controlled nonlinear coupled FBSDE solver",
+      "status": "not_implemented",
+      "evidence": [
+        "../v3/THEORY.md"
+      ],
+      "remaining_acceptance": "Specify admissibility, regularity, terminal integrability and coupling; implement a solver and independently validate a nontrivial family.",
+      "reason": "Current solution is an analytic decoupled special case. Z is a martingale coefficient, not a neural parameter gradient.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded."
+    },
+    {
+      "id": "R08",
+      "goal": "Global optimum of neural training or end-to-end all-modal weights",
+      "status": "not_established",
+      "evidence": [
+        "../v3/feedback_training.py",
+        "../v3/THEORY.md"
+      ],
+      "remaining_acceptance": "For global claims, a valid structural theorem/certificate; for practical claims, new controlled evidence and intended encoder/decoder utility-gradient coverage.",
+      "reason": "Finite policy optimality does not imply global nonconvex weight optimality; v3 trains the new refiner only. Historical v2 and v3 parameter updates cannot be concatenated into one end-to-end proof.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded."
+    },
+    {
+      "id": "C09",
+      "goal": "Real captured media to typed four-input tensors",
+      "status": "closed_for_registered_scope",
+      "evidence": [
+        "../natural_io/evidence/ingestion-001.json",
+        "../natural_io/README.md"
+      ],
+      "remaining_acceptance": null,
+      "reason": "One licensed 10.483-second real audiovisual recording, sampled image, and existing human description were decoded and integrity checked. Text bytes are not a semantic text encoder.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded."
+    },
+    {
+      "id": "N02",
+      "goal": "Natural pretrained codec interfaces",
+      "status": "closed_for_fixture_interfaces_only",
+      "evidence": [
+        "../natural_io/evidence/codec-001.json",
+        "../natural_io/evidence/text-interface-001.json",
+        "../natural_io/evidence/review-text-interface-001.json",
+        "../natural_io/evidence/audio-codec-001.json",
+        "../natural_io/evidence/audio-codec-002.json",
+        "../natural_io/evidence/audio-codec-003.json",
+        "../natural_io/evidence/audio-codec-independent-verification.json",
+        "../natural_io/README.md",
+        "../v3/NATURAL_DATA_PLAN.md"
+      ],
+      "remaining_acceptance": null,
+      "reason": "Pinned pretrained TAESD image/independent-video-frame roundtrips, T5 encoder/decoder/bounded text generation and DAC integer-code audio reconstruction executed on one licensed fixture. Visible image detail loss, echoed text and audio SNR -2.392409 dB are retained. Audio failure/intermediate attempts are preserved. This closes the named interface contract only; no temporal video model, semantic-quality threshold, shared target-blind generator or natural NDU training is validated.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded."
+    },
+    {
+      "id": "N03",
+      "goal": "Natural target-blind four-output generation and NDU benefit",
+      "status": "not_implemented",
+      "evidence": [
+        "../v3/NATURAL_DATA_PLAN.md"
+      ],
+      "remaining_acceptance": "Licensed paired corpus and source-group split; pretrained adapters; target-blind generator; utility-only gradients and actual feedback; independent matched evaluation.",
+      "reason": "One recorded clip and synthetic weights do not support source-disjoint natural generalization. GPU is not the only missing input.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded."
+    },
+    {
+      "id": "N04",
+      "goal": "All-modal foundation-model scale and broad validation",
+      "status": "not_established",
+      "evidence": [
+        "../v3/NATURAL_DATA_PLAN.md"
+      ],
+      "remaining_acceptance": "Broad independent natural tasks/data, intended trainable encoders/decoders, resource receipts and quality/generalization evidence.",
+      "reason": "The finite eight-concept model is a mechanism experiment, not an all-modal foundation model.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded."
+    },
+    {
+      "id": "E01",
+      "goal": "Hosted execution recovery",
+      "status": "closed_for_hosted_smoke_only",
+      "evidence": [
+        "evidence/cloud-status-20261023.json",
+        "evidence/cloud-original-hosted-verification.json",
+        "../v3/evidence/cloud-recovery-observation.json",
+        "evidence/cloud-status-final-20261023.json"
+      ],
+      "remaining_acceptance": "Dedicated execution and v3 remote reproduction remain separate.",
+      "reason": "Both the recovery hosted smoke and the original ubuntu-24.04 hosted job completed and their actual result archives were verified. Original hosted job 120236739119 ran 23 tests / 6,048 smoke evaluations; scientific primary=false and confirmation_eligible=false. Dedicated and v3/v4 remote confirmation remain separate.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded.",
+      "v4_latest_external_observation": "2026-10-23 07:12:38 UTC: original hosted job completed/success; dedicated job queued with runner_id0. No queue cause inferred."
+    },
+    {
+      "id": "E02",
+      "goal": "Dedicated desktop runner execution",
+      "status": "blocked_external",
+      "evidence": [
+        "../v3/evidence/cloud-diagnosis.json",
+        "../v3/evidence/cloud-recovery-observation.json",
+        "evidence/cloud-status-final-20261023.json"
+      ],
+      "remaining_acceptance": "An authorized online idle runner in trillionnium-android-gpu with self-hosted/linux/x64 labels, repository access and a completed original dedicated job receipt.",
+      "reason": "Accessible connector has no runner administration/service endpoint. Queue state alone does not identify offline/billing/label/permission cause.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded.",
+      "v4_latest_external_observation": "2026-10-23 07:12:38 UTC: original hosted job completed/success; dedicated job queued with runner_id0. No queue cause inferred."
+    },
+    {
+      "id": "E03",
+      "goal": "Production NeuronRuntime model-port integration",
+      "status": "not_implemented",
+      "evidence": [
+        "../v3/evidence/review_source_control.json",
+        "../v3/NATURAL_DATA_PLAN.md",
+        "../v3/PRODUCTION_INTEGRATION.md"
+      ],
+      "remaining_acceptance": "Implement and bind an actual NeuronFeatureDriver; supply legitimately loaded model assets, execution-derived receipts and independent authorization/attestation; exercise real owner startup/tick before registry promotion.",
+      "reason": "Actual native research bridge is not an authenticated production driver. Nonzero digests or a test-only port cannot substitute for executed weights and authorization.",
+      "inherited_scope": "Original v3 ledger at cb27b419fe6d77ca155d36f772a618cbe940a6a5 unless a v4 update is explicitly recorded."
+    },
+    {
+      "id": "E04",
+      "goal": "Complete registered v4 confirmation and its independent full audit",
+      "status": "blocked_by_measured_shared_storage_capacity",
+      "evidence": [
+        "evidence/confirmation_preflight_failure.json",
+        "evidence/confirmation_storage.json",
+        "evidence/review_failed_confirmation_preflight.json"
+      ],
+      "remaining_acceptance": "At startup provide the unchanged full capacity reservation: 1,741,789,184 bytes on one filesystem, or 870,894,592 bytes on each of two distinct evidence/archive filesystems; then run a fresh confirmation attempt and audit all registered seeds/arms. Capacity alone does not close the other research claims.",
+      "reason": "Actual confirmation-001 recorded output 222,228,480 bytes and archive 205,242,368 bytes free, a combined 1,314,318,336 byte shortfall. It stopped before source capture/model/native execution and produced zero scientific samples."
+    }
+  ]
+}
