@@ -303,6 +303,34 @@ class MemoryNineArmAcceptanceTests(unittest.TestCase):
                            self.artifacts, self.attempts, self.seal_path,
                            "unused", require_original=False)
 
+    def test_seal_resource_counters_cannot_be_rewritten_before_scoring(self):
+        self._validate()
+        seal(self.plan, self.public, self.manifests, self.artifacts,
+             self.attempts, self.seal_path, require_original=False)
+        forged = read_json(self.seal_path)
+        forged["resource_totals"]["B"]["dense_forwards"] = 0
+        self.seal_path.write_bytes(canonical(forged) + b"\n")
+        with patch("memory_nine_arm_acceptance.load_source",
+                   side_effect=AssertionError("gold opened before seal census")):
+            with self.assertRaisesRegex(AdmissionError, "postseal resource census"):
+                adjudicate(self.plan, self.public, self.manifests, self.artifacts,
+                           self.attempts, self.seal_path, "unused",
+                           require_original=False)
+
+    def test_seal_question_count_fabrication_rejected(self):
+        self._validate()
+        seal(self.plan, self.public, self.manifests, self.artifacts,
+             self.attempts, self.seal_path, require_original=False)
+        forged = read_json(self.seal_path)
+        forged["question_arm_rows"] += 1
+        self.seal_path.write_bytes(canonical(forged) + b"\n")
+        with patch("memory_nine_arm_acceptance.load_source",
+                   side_effect=AssertionError("gold opened before seal census")):
+            with self.assertRaisesRegex(AdmissionError, "postseal resource census"):
+                adjudicate(self.plan, self.public, self.manifests, self.artifacts,
+                           self.attempts, self.seal_path, "unused",
+                           require_original=False)
+
     def test_duplicate_json_key_rejected_without_parser_last_write_wins(self):
         file = self.root / "double.json"
         file.write_text('{"arm":"A","arm":"I"}')
