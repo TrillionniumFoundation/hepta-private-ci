@@ -157,6 +157,20 @@ class RiskIdentificationTests(unittest.TestCase):
         damaged = replace(c, matrix=((math.nan, 0., 0.),) + c.matrix[1:])
         with self.assertRaises(GateRejected):
             portfolio_weights((1., 2., 3.), damaged)
+        with self.assertRaises(GateRejected):
+            c.risk((math.nan, 0., 1.))
+        with self.assertRaises(GateRejected):
+            c.risk((.5, .4, .2))
+        nonsymmetric = replace(c, matrix=((1., 3., 0.),
+                                           (0., 1., 0.),
+                                           (0., 0., 1.)))
+        with self.assertRaises(GateRejected):
+            portfolio_weights((1., 2., 3.), nonsymmetric)
+        indefinite = replace(c, matrix=((1., 3., 0.),
+                                         (3., 1., 0.),
+                                         (0., 0., 1.)))
+        with self.assertRaises(GateRejected):
+            portfolio_weights((1., 2., 3.), indefinite)
 
 
 class CreditClosureTests(unittest.TestCase):
