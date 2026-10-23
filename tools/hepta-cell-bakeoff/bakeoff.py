@@ -7,11 +7,15 @@ certifies signatures, or promotes an artifact.
 from __future__ import annotations
 
 import argparse
+import base64
+import binascii
 import hashlib
 import json
 import math
 import random
 import statistics
+import subprocess
+import tempfile
 from collections import defaultdict
 from pathlib import Path
 
@@ -86,7 +90,11 @@ def load_plan(path: Path) -> dict:
     require({m["name"] for m in head_arms} == {"arctic-305m", "harrier-270m"}, "encoder head arms mismatch")
     budgets = {(m.get("head_steps"), m.get("head_seed"), m.get("head_optimizer"), m.get("head_lr"), m.get("train_data_sha256"))
                for m in head_arms}
-    require(len(budgets) == 1 and next(iter(budgets))[0] is not None, "encoder heads require equal training budget")
+    require(len(budgets) == 1 and all(type(m.get("head_steps")) is int and 1 <= m["head_steps"] <= 100000
+                                     and type(m.get("head_seed")) is int and m.get("head_optimizer") == "sgd"
+                                     and type(m.get("head_lr")) in (int, float) and 0 < m["head_lr"] <= 1
+                                     and is_hex(m.get("train_data_sha256")) for m in head_arms),
+            "encoder heads require equal training budget and pinned train data")
     require(isinstance(plan.get("registered_before_utc"), str) and plan["registered_before_utc"],
             "missing preregistration timestamp")
     return plan
@@ -238,7 +246,7 @@ def check_resources(rows: list[dict], models: list[dict]) -> tuple[dict, list[st
                 "p95_latency_ms", "p99_latency_ms", "load_latency_ms", "host_id", "driver_receipt")
     for row in rows:
         model, scale = row.get("model"), row.get("logical_cells")
-        require(model in {m["name"] for m in models} and scale in SCALES, "invalid resource model/scale")
+        require(model in {m["name"] for m in models} and type(scale) is int and scale in SCALES, "invalid resource model/scale")
         require(scale not in by_model[model], "duplicate resource model/scale")
         for field in required:
             require(field in row and row[field] is not None, f"missing measured {field}")
@@ -246,6 +254,8 @@ def check_resources(rows: list[dict], models: list[dict]) -> tuple[dict, list[st
         for field in required[:0] + required[1:7]:
             require(type(row[field]) in (int, float) and math.isfinite(row[field]) and row[field] >= 0,
                     f"invalid resource {field}")
+        require(all(isinstance(row[f], str) and row[f] for f in ("host_id", "driver_receipt")),
+                "empty host/driver identity")
         require(row["p99_latency_ms"] >= row["p95_latency_ms"], "latency quantile inversion")
         require(row.get("origin") == "observed-target-host", "resources must be target-host observations")
         by_model[model][scale] = row
@@ -255,8 +265,69 @@ def check_resources(rows: list[dict], models: list[dict]) -> tuple[dict, list[st
     return by_model, blockers
 
 
+def check_lifecycle(path: Path, plan: dict, trusted_key: Path | None, trusted_key_sha256: str | None):
+    """Verify detached Ed25519 bytes only; external owner reality remains unproved."""
+    blockers = []
+    events = jsonl(path)
+    owners = {"artifact-cas": "learning.artifacts", "generation-fence": "runtime.agentd",
+              "signed-final-use": "kernel.authority", "rollback": "learning.artifacts",
+              "restart-recovery": "runtime.agentd", "old-generation-rejected": "runtime.agentd"}
+    observed = defaultdict(set)
+    model_pins = {m["name"]: m for m in plan["models"]}
+    verify = trusted_key is not None and is_hex(trusted_key_sha256)
+    if verify:
+        require(trusted_key.is_file() and digest(trusted_key) == trusted_key_sha256,
+                "owner key fingerprint mismatch")
+    else:
+        blockers.append("lifecycle-ed25519-key-or-independent-trust-anchor-missing")
+    for row in events:
+        payload = row.get("payload")
+        require(isinstance(payload, dict), "lifecycle receipt has no payload")
+        name, event = payload.get("model"), payload.get("event")
+        require(name in model_pins and event in owners, "unknown model/lifecycle event")
+        require(payload.get("issuer") == owners[event], "wrong lifecycle signing owner")
+        require(payload.get("source_head") == plan["source_head"] and
+                payload.get("weights_sha256") == model_pins[name]["weights_sha256"],
+                "lifecycle model/source mismatch")
+        require(isinstance(payload.get("receipt_id"), str) and payload["receipt_id"],
+                "lifecycle missing receipt identity")
+        require(type(payload.get("generation")) is int and payload["generation"] >= 0,
+                "invalid lifecycle generation")
+        require(event not in observed[name], "duplicate lifecycle event")
+        observed[name].add(event)
+        if verify:
+            try:
+                sig = base64.b64decode(row["signature_b64"], validate=True)
+            except (KeyError, ValueError, binascii.Error) as exc:
+                raise EvidenceError("invalid lifecycle signature encoding") from exc
+            require(len(sig) == 64, "invalid Ed25519 signature length")
+            message = json.dumps(payload, ensure_ascii=True, sort_keys=True,
+                                 separators=(",", ":")).encode("utf-8")
+            with tempfile.TemporaryDirectory() as directory:
+                payload_file = Path(directory) / "payload.json"
+                sig_file = Path(directory) / "receipt.sig"
+                payload_file.write_bytes(message)
+                sig_file.write_bytes(sig)
+                cmd = ["openssl", "pkeyutl", "-verify", "-pubin", "-inkey", str(trusted_key.resolve()),
+                       "-rawin", "-in", str(payload_file), "-sigfile", str(sig_file)]
+                try:
+                    verified = subprocess.run(cmd, capture_output=True, check=False, timeout=5)
+                except (OSError, subprocess.TimeoutExpired) as exc:
+                    raise EvidenceError("owner-signature verifier unavailable") from exc
+                require(verified.returncode == 0, "invalid owner Ed25519 signature")
+    for model in MODEL_NAMES:
+        if set(owners) != observed[model]:
+            blockers.append(f"lifecycle-events-unproven:{model}")
+    # Signature integrity does not establish the issuer's actual use of Hepta CAS,
+    # final-use authority, process crash, or hardware. Never authorize here.
+    blockers.append("owner-receipt-replay-and-real-world-effect-not-independently-verified")
+    return blockers, bool(verify)
+
+
 def evaluate(plan: dict, data_path: Path, predictions_path: Path,
-             resource_path: Path | None = None, lifecycle_path: Path | None = None) -> dict:
+             resource_path: Path | None = None, lifecycle_path: Path | None = None,
+             trusted_key: Path | None = None, trusted_key_sha256: str | None = None,
+             retrieval_gold: Path | None = None, retrieval_observations: Path | None = None) -> dict:
     require(digest(data_path) == plan["dataset_sha256"], "dataset digest mismatch")
     data = validate_data(jsonl(data_path))
     raw = validate_predictions(jsonl(predictions_path), data, plan)
@@ -300,29 +371,34 @@ def evaluate(plan: dict, data_path: Path, predictions_path: Path,
             m = scores[model][window]
             if m["ood_false_acceptance"] is None or m["ood_false_acceptance"] > 0.005:
                 blockers.append(f"ood-floor-not-proved:{model}:{window}")
+    retrieval_scores = None
+    if retrieval_gold is not None and retrieval_observations is not None:
+        import retrieval
+        retrieval_scores, retrieval_blockers = retrieval.evaluate(jsonl(retrieval_gold),
+                                                                 jsonl(retrieval_observations), plan, data)
+        blockers.extend(retrieval_blockers)
+    else:
+        blockers.append("missing-future-retrieval-gold-or-live-observations")
     resource_summary = None
     if resource_path is not None:
         resource_summary, resource_blockers = check_resources(jsonl(resource_path), plan["models"])
         blockers.extend(resource_blockers)
     else:
         blockers.append("no-observed-64-256-1024-4096-cell-resource-evidence")
+    verified_signature_integrity = False
     if lifecycle_path is None:
         blockers.append("missing-external-cas-fence-rollback-restart-attestation")
     else:
-        events = jsonl(lifecycle_path)
-        required = {"artifact-cas", "generation-fence", "signed-final-use", "rollback", "restart-recovery", "old-generation-rejected"}
-        for model in MODEL_NAMES:
-            observed = {r.get("event") for r in events if r.get("model") == model}
-            if not required.issubset(observed):
-                blockers.append(f"lifecycle-events-unproven:{model}")
-        # A JSON declaration is not cryptographic verification of an independent issuer.
-        blockers.append("external-signature-trust-root-and-live-receipt-verification-required")
+        more, verified_signature_integrity = check_lifecycle(lifecycle_path, plan, trusted_key, trusted_key_sha256)
+        blockers.extend(more)
     blockers.append("independent-host-and-dataset-provenance-not-authenticated")
     return {"schema": SCHEMA, "authority": "research-only-no-model-selection-or-release",
             "source_head": plan["source_head"], "dataset_sha256": plan["dataset_sha256"],
             "predictions_sha256": digest(predictions_path), "temperature_fit_calibration_only": ts,
             "scores": scores, "paired_comparisons": comparisons,
+            "retrieval_scores": retrieval_scores,
             "resource_coverage": ({k: sorted(v) for k, v in resource_summary.items()} if resource_summary is not None else None),
+            "owner_signature_integrity_verified": verified_signature_integrity,
             "blockers": sorted(set(blockers)), "production_qualified": False}
 
 
@@ -333,11 +409,17 @@ def main() -> int:
     parser.add_argument("--predictions", type=Path, required=True)
     parser.add_argument("--resources", type=Path)
     parser.add_argument("--lifecycle", type=Path)
+    parser.add_argument("--retrieval-gold", type=Path)
+    parser.add_argument("--retrieval-observations", type=Path)
+    parser.add_argument("--trusted-owner-key", type=Path)
+    parser.add_argument("--trusted-owner-key-sha256")
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--fail-on-blockers", action="store_true")
     args = parser.parse_args()
     try:
-        report = evaluate(load_plan(args.plan), args.dataset, args.predictions, args.resources, args.lifecycle)
+        report = evaluate(load_plan(args.plan), args.dataset, args.predictions, args.resources,
+                          args.lifecycle, args.trusted_owner_key, args.trusted_owner_key_sha256,
+                          args.retrieval_gold, args.retrieval_observations)
         args.out.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         print(json.dumps({"report": str(args.out), "production_qualified": False,
                           "blocker_count": len(report["blockers"])}, sort_keys=True))

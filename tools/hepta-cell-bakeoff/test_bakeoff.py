@@ -1,10 +1,14 @@
 import json
+import base64
+import shutil
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
 
 import bakeoff
 import run_live
+import retrieval
 
 
 def h64(c):
@@ -36,7 +40,7 @@ class BakeoffTests(unittest.TestCase):
                      "tokenizer_sha256": h64('c'), "runtime_sha256": h64('d'),
                      "head_sha256": h64('e'), "license_review": "approved",
                      "parameters": 421000000 if i < 2 else 270000000,
-                     "head_steps": 100, "head_seed": 42, "head_optimizer": "adamw",
+                     "head_steps": 100, "head_seed": 42, "head_optimizer": "sgd", "head_lr": 0.1,
                      "train_data_sha256": h64('f')}
             self.models.append(model)
         self.plan = {"schema": bakeoff.SCHEMA, "baseline": "laya-english",
@@ -155,16 +159,76 @@ class BakeoffTests(unittest.TestCase):
         self.assertIn("resource-missing-scales:laya-english", blockers)
         self.assertIn("resource-missing-scales:harrier-270m", blockers)
 
-    def test_uncertainty_report_not_authorizing_even_with_event_strings(self):
-        events = [{"model": model, "event": event} for model in bakeoff.MODEL_NAMES
-                  for event in ("artifact-cas", "generation-fence", "signed-final-use",
-                                "rollback", "restart-recovery", "old-generation-rejected")]
+    def test_retrieval_heldout_quality_is_scored_independently(self):
+        decision = bakeoff.validate_data(self.data)
+        gold = [{"query_id": "q1", "source_group": "ret-1", "split": "future_1",
+                 "timestamp": 700, "candidate_ids": ["a", "b"], "relevant": {"a": 3}},
+                {"query_id": "q2", "source_group": "ret-2", "split": "future_2",
+                 "timestamp": 800, "candidate_ids": ["a", "b"], "relevant": {"b": 1}}]
+        rows = [{"model": model, "query_id": gold_row["query_id"], "revision": h40('a'),
+                 "weights_sha256": h64('b'), "ranked_ids": [key for key in gold_row["candidate_ids"]
+                                                          if key in gold_row["relevant"]] +
+                                                          [key for key in gold_row["candidate_ids"]
+                                                           if key not in gold_row["relevant"]],
+                 "origin": "live-model-observation"}
+                for model in retrieval.ENCODERS for gold_row in gold]
+        scores, blockers = retrieval.evaluate(gold, rows, self.plan, decision)
+        self.assertEqual(scores["arctic-305m"]["future_1"]["ndcg_at_10"], 1.0)
+        self.assertEqual(scores["harrier-270m"]["future_2"]["mrr_at_10"], 1.0)
+        self.assertIn("retrieval-independent-groups-insufficient:future_1", blockers)
+        rows[0]["ranked_ids"] = ["a", "a"]
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "invalid retrieval ranking"):
+            retrieval.evaluate(gold, rows, self.plan, decision)
+
+    def test_encoder_fit_rejects_future_label_visibility(self):
+        gold = self.folder / "training.jsonl"
+        self._write(gold, self.data)
+        self.models[-1]["train_data_sha256"] = bakeoff.digest(gold)
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "fit only permits train rows"):
+            run_live.fit_encoder_head(self.models[-1], self.folder, gold, self.folder / "head.json", False)
+
+    def test_unsigned_lifecycle_event_claims_are_blocked(self):
+        owners = {"artifact-cas": "learning.artifacts", "generation-fence": "runtime.agentd",
+                  "signed-final-use": "kernel.authority", "rollback": "learning.artifacts",
+                  "restart-recovery": "runtime.agentd", "old-generation-rejected": "runtime.agentd"}
+        events = [{"payload": {"model": model, "event": event, "issuer": issuer,
+                               "source_head": self.plan["source_head"], "weights_sha256": h64('b'),
+                               "receipt_id": f"{model}-{event}", "generation": 3}}
+                  for model in bakeoff.MODEL_NAMES for event, issuer in owners.items()]
         lifecycle = self.folder / "events.jsonl"
         self._write(lifecycle, events)
         report = bakeoff.evaluate(bakeoff.load_plan(self._plan_file()), self.dataset_file,
                                   self.pred_file, lifecycle_path=lifecycle)
+        self.assertFalse(report["owner_signature_integrity_verified"])
+        self.assertIn("lifecycle-ed25519-key-or-independent-trust-anchor-missing", report["blockers"])
         self.assertFalse(report["production_qualified"])
-        self.assertIn("external-signature-trust-root-and-live-receipt-verification-required", report["blockers"])
+
+    @unittest.skipUnless(shutil.which("openssl"), "OpenSSL CLI unavailable")
+    def test_ed25519_signature_integrity_and_tampering(self):
+        key, public = self.folder / "private.pem", self.folder / "issuer.pub.pem"
+        subprocess.run(["openssl", "genpkey", "-algorithm", "ED25519", "-out", str(key)],
+                       check=True, capture_output=True)
+        subprocess.run(["openssl", "pkey", "-in", str(key), "-pubout", "-out", str(public)],
+                       check=True, capture_output=True)
+        payload = {"model": "laya-english", "event": "artifact-cas", "issuer": "learning.artifacts",
+                   "source_head": self.plan["source_head"], "weights_sha256": h64('b'),
+                   "receipt_id": "real-test-signature", "generation": 1}
+        message = self.folder / "message.json"
+        message.write_text(json.dumps(payload, sort_keys=True, separators=(",", ":")), encoding="utf-8")
+        signature = self.folder / "signature.bin"
+        subprocess.run(["openssl", "pkeyutl", "-sign", "-inkey", str(key), "-rawin",
+                        "-in", str(message), "-out", str(signature)], check=True, capture_output=True)
+        row = {"payload": payload, "signature_b64": base64.b64encode(signature.read_bytes()).decode("ascii")}
+        receipt = self.folder / "signed.jsonl"
+        self._write(receipt, [row])
+        blockers, verified = bakeoff.check_lifecycle(receipt, self.plan, public, bakeoff.digest(public))
+        self.assertTrue(verified)
+        self.assertIn("owner-receipt-replay-and-real-world-effect-not-independently-verified", blockers)
+        row["payload"]["receipt_id"] = "payload-was-tampered"
+        self._write(receipt, [row])
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "invalid owner Ed25519 signature"):
+            bakeoff.check_lifecycle(receipt, self.plan, public, bakeoff.digest(public))
+
 
 
 if __name__ == "__main__":

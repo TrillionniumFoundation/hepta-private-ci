@@ -61,27 +61,34 @@ def load_encoder(root: Path, *, reviewed_remote_code: bool):
     return SentenceTransformer(str(root), trust_remote_code=reviewed_remote_code)
 
 
-def vector(model, value):
+def vectors(model, inputs):
     import numpy as np
-    v = np.asarray(model.encode([value], convert_to_numpy=True)[0], dtype=np.float64)
-    bakeoff.require(v.ndim == 1 and 1 <= v.size <= 2048 and np.isfinite(v).all(), "bad embedding")
-    norm = np.linalg.norm(v)
-    bakeoff.require(norm > 1e-12, "empty embedding")
-    return v / norm
+    bakeoff.require(isinstance(inputs, list) and 1 <= len(inputs) <= 2049,
+                    "invalid encoder batch")
+    v = np.asarray(model.encode(inputs, batch_size=32, convert_to_numpy=True), dtype=np.float64)
+    bakeoff.require(v.ndim == 2 and v.shape[0] == len(inputs) and
+                    1 <= v.shape[1] <= 2048 and np.isfinite(v).all(), "bad embeddings")
+    norms = np.linalg.norm(v, axis=1)
+    bakeoff.require(np.all(norms > 1e-12), "empty embedding")
+    return v / norms[:, None]
 
 
 def option_features(model, state: str, options: list[str]):
-    import numpy as np
-    source = vector(model, state)
-    return np.stack([source * vector(model, option) for option in options])
+    items = vectors(model, [state, *options])
+    return items[1:] * items[0]
 
 
 def fit_encoder_head(entry: dict, root: Path, gold: Path, out: Path, reviewed_remote_code: bool):
     import numpy as np
     bakeoff.require(bakeoff.digest(gold) == entry.get("train_data_sha256"), "training corpus SHA mismatch")
-    data = bakeoff.validate_data(bakeoff.jsonl(gold))
-    train = [r for r in data.values() if r["split"] == "train"]
-    bakeoff.require(train and all(isinstance(r.get("state"), str) for r in train), "train split has no states")
+    train = bakeoff.jsonl(gold)
+    # The fit process never receives calibration/future labels or other split rows.
+    bakeoff.require(all(r.get("split") == "train" for r in train), "fit only permits train rows")
+    bakeoff.require(len({r.get("id") for r in train}) == len(train), "duplicate training id")
+    bakeoff.require(all(isinstance(r.get("state"), str) and r["state"] for r in train),
+                    "train split has no states")
+    bakeoff.require(all(isinstance(r.get("options"), list) and r.get("label") in r["options"]
+                        for r in train), "invalid training labels")
     bakeoff.require(entry.get("head_optimizer") == "sgd", "fixed-budget reference supports only SGD")
     steps, seed, lr = entry.get("head_steps"), entry.get("head_seed"), entry.get("head_lr")
     bakeoff.require(type(steps) is int and 1 <= steps <= 100000, "missing bounded training steps")
@@ -156,14 +163,50 @@ def run_predictions(entry: dict, root: Path, rows: list[dict], out: Path,
     print(json.dumps({"observations": len(rows), "output": str(out), "sha256": bakeoff.digest(out)}))
 
 
+def run_retrieval(entry: dict, root: Path, rows: list[dict], out: Path, reviewed_remote_code: bool):
+    import numpy as np
+    bakeoff.require(entry["kind"] == "encoder-head", "retrieval requires encoder backend")
+    encoder = load_encoder(root, reviewed_remote_code=reviewed_remote_code)
+    unique_ids = set()
+    with out.open("w", encoding="utf-8") as stream:
+        for row in rows:
+            bakeoff.require(set(row) == {"query_id", "query", "candidates", "split"},
+                            "retrieval blind input contains gold or hidden metadata")
+            uid = row["query_id"]
+            bakeoff.require(isinstance(uid, str) and uid not in unique_ids, "invalid retrieval query id")
+            bakeoff.require(row["split"] in ("future_1", "future_2"), "retrieval split not future")
+            bakeoff.require(isinstance(row["query"], str) and 0 < len(row["query"]) <= 32768,
+                            "invalid retrieval query")
+            candidates = row["candidates"]
+            bakeoff.require(isinstance(candidates, list) and 2 <= len(candidates) <= 2048 and
+                            all(isinstance(x.get("id"), str) and isinstance(x.get("text"), str)
+                                for x in candidates) and
+                            len(set(x["id"] for x in candidates)) == len(candidates),
+                            "invalid retrieval candidates")
+            unique_ids.add(uid)
+            start = time.perf_counter_ns()
+            embeddings = vectors(encoder, [row["query"], *[x["text"] for x in candidates]])
+            sims = [(float(score), candidate["id"]) for score, candidate in
+                    zip(embeddings[1:] @ embeddings[0], candidates)]
+            bakeoff.require(all(np.isfinite(s) for s, _ in sims), "invalid retrieval similarity")
+            rank = [uid for _, uid in sorted(sims, key=lambda x: (-x[0], x[1]))[:10]]
+            record = {"query_id": uid, "model": entry["name"], "revision": entry["revision"],
+                      "weights_sha256": entry["weights_sha256"], "ranked_ids": rank,
+                      "latency_ms": (time.perf_counter_ns() - start) / 1_000_000,
+                      "origin": "live-model-observation"}
+            stream.write(json.dumps(record, sort_keys=True) + "\n")
+    print(json.dumps({"retrieval_queries": len(unique_ids), "file": str(out), "sha256": bakeoff.digest(out)}))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("mode", choices=("fit", "predict"))
+    parser.add_argument("mode", choices=("fit", "predict", "retrieve"))
     parser.add_argument("--plan", type=Path, required=True)
     parser.add_argument("--model", choices=bakeoff.MODEL_NAMES, required=True)
     parser.add_argument("--checkpoint", type=Path, required=True)
     parser.add_argument("--gold", type=Path, help="training data, allowed only for fit")
     parser.add_argument("--blind", type=Path, help="no gold labels allowed")
+    parser.add_argument("--retrieval-blind", type=Path, help="no relevance labels allowed")
     parser.add_argument("--head", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--allow-reviewed-remote-code", action="store_true")
@@ -171,15 +214,24 @@ def main():
     try:
         raw_plan = json.loads(args.plan.read_text(encoding="utf-8"))
         entry = next(m for m in raw_plan["models"] if m["name"] == args.model)
-        if args.mode == "predict":
+        if args.mode in ("predict", "retrieve"):
             bakeoff.load_plan(args.plan)
-            bakeoff.require(args.gold is None and args.blind is not None, "predict requires blind-only data")
+            bakeoff.require(args.gold is None, "inference cannot receive gold labels")
+            if args.mode == "predict":
+                bakeoff.require(args.blind is not None and args.retrieval_blind is None,
+                                "predict requires decision blind input")
+            else:
+                bakeoff.require(args.retrieval_blind is not None and args.blind is None,
+                                "retrieve requires retrieval blind input")
         else:
-            bakeoff.require(args.blind is None and args.gold is not None and entry["kind"] == "encoder-head",
-                            "fit only supports encoder-head train split")
+            bakeoff.require(args.blind is None and args.retrieval_blind is None and args.gold is not None
+                            and entry["kind"] == "encoder-head", "fit only supports encoder train split")
         root = verified_local_model(args.checkpoint, entry)
         if args.mode == "fit":
             fit_encoder_head(entry, root, args.gold, args.output, args.allow_reviewed_remote_code)
+        elif args.mode == "retrieve":
+            run_retrieval(entry, root, bakeoff.jsonl(args.retrieval_blind), args.output,
+                          args.allow_reviewed_remote_code)
         else:
             run_predictions(entry, root, blind_rows(args.blind), args.output, args.head,
                             args.allow_reviewed_remote_code)

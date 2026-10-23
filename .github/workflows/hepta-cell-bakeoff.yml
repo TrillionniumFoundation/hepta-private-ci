@@ -22,7 +22,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Compile source (no model/provider/network)
-        run: python3 -m py_compile tools/hepta-cell-bakeoff/{bakeoff,run_live,test_bakeoff}.py
+        run: python3 -m py_compile tools/hepta-cell-bakeoff/{bakeoff,run_live,retrieval,test_bakeoff}.py
       - name: Run evidence and rejection tests
         working-directory: tools/hepta-cell-bakeoff
         run: python3 -m unittest -v test_bakeoff.py
