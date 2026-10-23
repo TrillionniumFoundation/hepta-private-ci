@@ -1,0 +1,255 @@
+{
+  "recorded_at": "2026-10-23T10:41:10.944945+00:00",
+  "script": {
+    "path": "/workspace/scratch/3d6a75235bcb/work/checkpoint-current/validation/freeze_validation_v2.py",
+    "bytes": 7301,
+    "sha256": "08dcbc4fd9750d8a11b0c1590be4b3c0e259731303241d450d62ab43d906f475"
+  },
+  "candidate_manifest": {
+    "path": "/workspace/scratch/3d6a75235bcb/work/checkpoint-current/publication/manifest-v2.json",
+    "bytes": 5539,
+    "sha256": "09413d3a8fc09d14e81a78202a4cd7baa051a0ef3610c6d51132811b1580f78e"
+  },
+  "candidate_base_commit": "45f1e7d471c9e0720ce2c149da92629f785a01a4",
+  "candidate_base_tree": "62e0c4a173763426a0a6d4e5c3d1fb8df7ce653d",
+  "source_identity_scope": "Original full 9111-blob workspace plus recorded source overlays; not a complete Git checkout of 45f and its historical evidence files",
+  "original_9111_blob_manifest_sha256": "44c99a55d1e841359264a8047f7650412531ba7916bfb8ea9d7e63e613598fbd",
+  "source_overlay_identity": {
+    "path": "/workspace/scratch/3d6a75235bcb/work/checkpoint-current/validation/overlay-identity-v2.json",
+    "bytes": 18049,
+    "sha256": "8e162f1040233b9c68a3da0bd0de6298733cd9ab49a4c56e908d1bd798074af8"
+  },
+  "source_overlay_path_count": 25,
+  "final_full_source_verification": {
+    "original_blob_count": 9111,
+    "candidate_paths": 25,
+    "unrecorded_differences": [],
+    "generated_test_artifacts": [
+      {
+        "path": "codex-rs/target/nextest/local/junit.xml",
+        "sha256": "b87003780f097ea1668c961e41388e2da75d3e8dd8cf400a39ec7f1cc9930ca5",
+        "bytes": 66854
+      }
+    ],
+    "local_validation_metadata": [
+      {
+        "path": ".git",
+        "sha256": "4f704d09f2ad0e013bdcd78858e5bf7c97a66a7e881777facc4f8ab0fb2a1652",
+        "bytes": 92,
+        "purpose": "external exact-base validation Git metadata"
+      }
+    ]
+  },
+  "mode_checked_file_count": 9123,
+  "full_mode_manifest_canonical_sha256": "8870c3186eacb9cced0f2713a7c9728ea5afc9b918187eb4da4683dd66207e30",
+  "final_candidate_files": [
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender.rs",
+      "mode": "100644",
+      "sha256": "79878e82e618dff0c2a84f0ba9424537a217dc5f53df97c1f5da963bf88ce9b0",
+      "git_blob": "fe3be44196377039070c62c228d5c2e642560ac0",
+      "bytes": 19493
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_tests.rs",
+      "mode": "100644",
+      "sha256": "e6fff8a7ec11a4b7d0a6bb5ae045b42105caf40f8fdbefdb79984eaa335e909d",
+      "git_blob": "bdc6765e6f6c48d78963f1ace5a23cdd6f97e309",
+      "bytes": 36875
+    },
+    {
+      "path": "codex-rs/hepta-memory/OBJECTIVE_SENDER.md",
+      "mode": "100644",
+      "sha256": "9723db8d03669ecb5d62a081085c9cc6a42330e476cd65c71b72f7b0a0762b2f",
+      "git_blob": "8faa71aa7028f5310f044bb315a511d534a54662",
+      "bytes": 23688
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_composition.rs",
+      "mode": "100644",
+      "sha256": "5005f6b39625bb0f8436d9bc5a27c0692310e475b556463828119d6d63bac890",
+      "git_blob": "98d3eb96a51c136c2af99685bf761d1de6d20b8f",
+      "bytes": 11143
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "mode": "100644",
+      "sha256": "e13a2d90efa1d956e85fd7c77dd6bae8947b1ec159475b2bb7f7720e50ec8ef2",
+      "git_blob": "f6e8b4126a03ad8d1202d2a27bbfee30f4b9fcc3",
+      "bytes": 13799
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_composition_fixture.rs",
+      "mode": "100644",
+      "sha256": "74d020455de084963070380d732708aacfa8a29c314993788823aca4984301d3",
+      "git_blob": "b22a2c2a6faf9843e491b43f721bc624c0a196fe",
+      "bytes": 13962
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_composition_tests.rs",
+      "mode": "100644",
+      "sha256": "a24023a3aec303a52bdf2f11a352f1fa0a93049d86da47cbc14de64e28a952bd",
+      "git_blob": "d86bb5d3112667f7f28a54e3589e8f6d7501ea03",
+      "bytes": 12342
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_composition_notes_tests.rs",
+      "mode": "100644",
+      "sha256": "7387334530fd4c51ca8408c1fa18d6612503faad2ef6192e0d833da2cb4968d9",
+      "git_blob": "d335fa8cd5d6ed2518add57f1b0dd152012b72f1",
+      "bytes": 11945
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_sender_host_tests.rs",
+      "mode": "100644",
+      "sha256": "494762786fd9afaa67fed97f925cdd644d4d6d2c6d365cf81da54448dc68e956",
+      "git_blob": "75d19f1f6aaf7a690fc88b1df3ced4ba30c1e488",
+      "bytes": 8296
+    },
+    {
+      "path": "codex-rs/hepta-agentd/PRODUCTION_COMPOSITION.md",
+      "mode": "100644",
+      "sha256": "4f2672cfee80cb7acee0f8915dc633be4ec81bb6e9ead167885a46f27a54ad2f",
+      "git_blob": "d7ee8b649f464c5d4f178bb9a7ef299a2df1ac39",
+      "bytes": 11749
+    }
+  ],
+  "Cargo_lock_sha256": "83651f11dea7f58dc96f3d119c120ab2bd8019e418979ab091ef49de7cceb9e8",
+  "gates": [
+    {
+      "receipt": {
+        "path": "/workspace/scratch/3d6a75235bcb/work/checkpoint-current/validation/checkpoint-memory-all-03.json",
+        "bytes": 19095,
+        "sha256": "e5c973410899ae35f78e2e63c8840a9de17963685a25eaf11a0a60679f71b4fb"
+      },
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--build-jobs",
+        "1",
+        "--test-threads",
+        "1",
+        "-p",
+        "codex-hepta-memory",
+        "--lib"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "/workspace/scratch/3d6a75235bcb/work/checkpoint-current/validation/checkpoint-memory-all-03.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/workspace/scratch/3d6a75235bcb/work/checkpoint-current/validation/checkpoint-memory-all-03.stderr",
+        "bytes": 58590,
+        "sha256": "a49232d441bbeecfbcd4461641fc73d209641203954e268b2c0b5b41762a7cdd"
+      },
+      "warning_summaries": [
+        "warning: `codex-utils-pty` (lib) generated 1 warning"
+      ],
+      "nextest_summary_lines": [
+        "     Summary [ 110.740s] 327 tests run: 327 passed (1 slow), 8 skipped"
+      ]
+    },
+    {
+      "receipt": {
+        "path": "/workspace/scratch/3d6a75235bcb/work/checkpoint-current/validation/checkpoint-fix-02.json",
+        "bytes": 16647,
+        "sha256": "ac88469321fa1b261935f27bbdd7a10153f241e90af84166f6d08e125d1ad518"
+      },
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-memory",
+        "--locked",
+        "--profile",
+        "dev-small",
+        "--lib"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "/workspace/scratch/3d6a75235bcb/work/checkpoint-current/validation/checkpoint-fix-02.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/workspace/scratch/3d6a75235bcb/work/checkpoint-current/validation/checkpoint-fix-02.stderr",
+        "bytes": 13472,
+        "sha256": "3995b16c281b1b3315cb5bcfe0ac37ea2f6e5ef1f927903c0d96c66514f625df"
+      },
+      "warning_summaries": [
+        "warning: `codex-utils-pty` (lib) generated 1 warning",
+        "warning: `codex-hepta-memory` (lib test) generated 26 warnings",
+        "warning: `codex-hepta-memory` (lib) generated 2 warnings (2 duplicates)"
+      ],
+      "nextest_summary_lines": []
+    },
+    {
+      "receipt": {
+        "path": "/workspace/scratch/3d6a75235bcb/work/checkpoint-current/validation/checkpoint-format-final-02.json",
+        "bytes": 15647,
+        "sha256": "7e611d47ca739596a0f2dd3ea64966aea8c42bc72df66f625cdf3c5b7d5d42d3"
+      },
+      "command": [
+        "just",
+        "fmt",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "/workspace/scratch/3d6a75235bcb/work/checkpoint-current/validation/checkpoint-format-final-02.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/workspace/scratch/3d6a75235bcb/work/checkpoint-current/validation/checkpoint-format-final-02.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "warning_summaries": [],
+      "nextest_summary_lines": []
+    }
+  ],
+  "junit": {
+    "path": "/workspace/scratch/3d6a75235bcb/work/checkpoint-current/validation/checkpoint-memory-all-03.junit.xml",
+    "bytes": 66854,
+    "sha256": "b87003780f097ea1668c961e41388e2da75d3e8dd8cf400a39ec7f1cc9930ca5"
+  },
+  "memory_tests_run": 327,
+  "memory_tests_passed": 327,
+  "memory_tests_failed": 0,
+  "original_tests_skipped_reported_by_nextest": 8,
+  "new_checkpoint_tests_passed": [
+    "production_writer::objective_sender::tests::checkpoint_current_cancelled_future_releases_lock_without_creating_sender_state",
+    "production_writer::objective_sender::tests::checkpoint_current_holds_the_original_write_lock_through_acknowledgement",
+    "production_writer::objective_sender::tests::checkpoint_current_invalid_deadline_and_terminal_leases_never_call_the_publisher",
+    "production_writer::objective_sender::tests::checkpoint_current_refusal_timeout_mismatch_and_live_revocation_preserve_the_cut",
+    "production_writer::objective_sender::tests::checkpoint_current_without_a_request_uses_the_original_fence_and_changes_no_rows"
+  ],
+  "original_memory_test_binaries": [
+    {
+      "path": "/dev/shm/organ-3d6a75235bcb-hepta3398/target/dev-small/deps/codex_hepta_memory-6ded303ad4b73964",
+      "bytes": 46699432,
+      "sha256": "e90c6cc53c59d92d92bc935e45d93035e2b6916f2eeb88b8bfdc92cc469708ae",
+      "mode": "0o755",
+      "still_present_and_equal": true
+    }
+  ],
+  "original_full_lib_tests_ran_without_filter": true,
+  "clippy_was_original_scoped_just_fix": true,
+  "clippy_warnings_denied": false,
+  "quality_gates_rewrote_source_or_lock": false,
+  "Agentd_factory_Notes_bridge_tests_executed_here": false,
+  "production_checkpoint_backend_implemented_or_qualified_here": false,
+  "qualification_limits": [
+    "Full original memory package on the recorded source overlay and original lock; not a complete Git 45f checkout of all historical evidence files.",
+    "No Agentd/Notes/native UI/device end-to-end qualification follows from the memory package gate.",
+    "Checkpoint test providers remain test-only; independently trusted latest-cut reads and a production durable publisher are still required.",
+    "The public checkpoint covers one active-writer cut under the original lock, not all later mutations or terminal-lease retirement.",
+    "Deadlines retain their documented cooperative bounded/nonblocking embedding assumptions."
+  ]
+}
