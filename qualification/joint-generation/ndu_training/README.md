@@ -45,3 +45,6 @@ CV's full reference/correction cost was charged only to CV systems. The primary
 strongest-A screen failed: all12 objective/sampler/seed CV-minus-plain utility
 effects were negative. Parameters, Adam states, every new row and all failed
 tradeoffs remain. Lower measured gradient variance is not training success.
+The [accounting erratum](../runs/codex-cloud-ndu-CV-TRAIN-d2/ERRATUM-20261023.md)
+clarifies the shared CV-file hash CPU leak and the before-receipt timing boundary;
+the original evidence remains unchanged.
