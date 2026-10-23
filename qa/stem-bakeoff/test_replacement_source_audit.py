@@ -83,5 +83,17 @@ class SourceBindingTests(unittest.TestCase):
                                                self.cohorts, 4096)["source_binding_preflight"], "BLOCKED")
 
 
+    def test_workflow_uses_full_argv_and_source_replay(self):
+        from pathlib import Path
+        workflow = (Path(__file__).resolve().parents[2] / ".github/workflows" /
+                    "hepta-neuron-five-model-physical-shadow.yml").read_text()
+        self.assertIn('"    unittest.main()
+ + '{args[@]}"', workflow)
+        self.assertNotIn('"    unittest.main()
+ + '{args[$]}"', workflow)
+        self.assertIn("replacement_source_audit.py", workflow)
+        self.assertIn("test_replacement_source_audit.py", workflow)
+
+
 if __name__ == "__main__":
     unittest.main()
