@@ -28,11 +28,11 @@ Requires only Python >=3.10 standard library:
 
 ```bash
 cd experiments/multimodal_output_portfolio/v4
-python3 -m unittest -v test_portfolio.py
-python3 -m compileall -q portfolio.py test_portfolio.py
+python3 -m unittest discover -v -p "test_*.py"
+python3 -m compileall -q portfolio.py test_portfolio.py test_reallocation.py
 ```
 
-The tests include state-conditional reallocation, nonconvex cross-output penalty and joint portfolio action, positive covariance from a shared shock, strict total-physical-budget and fixed switch charging, stable entropic risk, an **independent exact `fractions.Fraction` risk-neutral Bellman reference**, causal noise timing, terminal four-output emission, and fail-closed invalid states/actions. The return trace includes `trace_sha256` and `output_sha256` bound to canonical local JSON. These are **integrity hashes, not signatures or independent outcome attestations**. No CI pass is inferred from local tests.
+The 10 tests include a complete three-decision feedback trajectory that switches from image/video to audio to text after observed shocks with nonzero activation costs, state-conditional reallocation, nonconvex cross-output penalty and joint portfolio action, positive covariance from a shared shock, strict total-physical-budget and fixed switch charging, stable entropic risk, an **independent exact `fractions.Fraction` risk-neutral Bellman reference**, causal noise timing, terminal four-output emission, and fail-closed invalid states/actions. The return trace includes `trace_sha256` and `output_sha256` bound to canonical local JSON. These are **integrity hashes, not signatures or independent outcome attestations**. No CI pass is inferred from local tests.
 
 ## Next independently measured scientific experiment
 
