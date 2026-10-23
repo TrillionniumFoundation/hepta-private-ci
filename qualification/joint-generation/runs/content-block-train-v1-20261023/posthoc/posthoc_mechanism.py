@@ -186,11 +186,13 @@ report={"scope":"post hoc read-only analysis; no new inference, gradient calcula
 (out/"mechanism-analysis.json").write_text(json.dumps(report,indent=2,sort_keys=True)+"\n")
 with (out/"all36-training-inner-budget.csv").open("w",newline="") as stream:
     fields=("group","seed","lr","updates","encoder_updates","train_first32","train_previous32","train_last32", "unit_quota_utilization","CPU_quota_utilization","inner_utility","inner_joint_success","encoder_delta_l2","heads_delta_l2")
-    writer=csv.DictWriter(stream,fieldnames=fields)
+    writer=csv.DictWriter(stream,fieldnames=fields,lineterminator="\n")
     writer.writeheader()
     for record in records.values():
         row={k:record[k] for k in fields if k in record}
         row.update(inner_utility=record["inner"]["task_utility"],inner_joint_success=record["inner"]["joint_success"],
                    encoder_delta_l2=record["blocks"]["encoder"]["delta_l2"],heads_delta_l2=record["blocks"]["heads"]["delta_l2"])
         writer.writerow(row)
+for path in out.glob("*.svg"):
+    path.write_text("\n".join(line.rstrip() for line in path.read_text().splitlines())+"\n")
 print(json.dumps({"candidate_records":len(records),"per_seed":per_seed,"analysis_cpu":report["analysis_cpu_before_receipt"]}))
