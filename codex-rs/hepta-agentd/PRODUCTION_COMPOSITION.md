@@ -109,3 +109,5 @@ This entry point neither signs AuthBus Objective requests nor supplies their
 sender-side durable retain-before-send lifecycle.
 
 The [protected original FinalUse consumer frontier adapter](HOST_FINAL_USE_FRONTIERS.md) preserves the two fixed original owners. Its Root/data qualification does not imply service wire or recovered-writer qualification.
+
+[Original fleet and restart durability qualification](acceptance/2026-10-23-fleet-durability/README.md) records bounded independent fixture work and canonical restart no-op synchronization; four case successes do not qualify the complete aggregate.
