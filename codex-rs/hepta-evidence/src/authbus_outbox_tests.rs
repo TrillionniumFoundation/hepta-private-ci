@@ -1,3 +1,5 @@
+#![cfg(unix)]
+
 use std::time::Duration;
 
 use codex_hepta_authbus::Error;
@@ -19,12 +21,12 @@ use crate::*;
 
 fn fixture(sequence: u64, expiry: u64) -> (IssuerRegistration, SignedMessage) {
     let key = SigningKey::from_bytes(&[37; 32]);
-    let issuer = IssuerRegistration {
-        issuer_id: StableId::new("issuer:queue").unwrap(),
-        key_epoch: Generation::new(1).unwrap(),
-        verifying_key: key.verifying_key(),
-        revoked: false,
-    };
+    let issuer = crate::authbus_test_support::message_registration(
+        StableId::new("issuer:queue").unwrap(),
+        Generation::new(1).unwrap(),
+        key.verifying_key(),
+        false,
+    );
     let claims = SignedMessageClaims {
         issuer_id: issuer.issuer_id.clone(),
         key_epoch: issuer.key_epoch,
@@ -294,7 +296,12 @@ async fn expiry_and_current_revocation_are_terminal_and_never_acknowledged() {
     let (mut issuer, message) = fixture(1, u64::MAX);
     let id = enqueue(&store, 1).await.delivery_id;
     let delivery = claim(&store, id, 60_000).await.unwrap();
-    issuer.revoked = true;
+    issuer = crate::authbus_test_support::message_registration(
+        issuer.issuer_id.clone(),
+        issuer.key_epoch,
+        issuer.verifying_key,
+        true,
+    );
     assert!(
         store
             .ack_authbus_delivery(&issuer, &delivery.lease, Digest32::of_bytes(b"ack"))
@@ -462,10 +469,12 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
     ));
     // Retire the fixture epoch, release only terminal capacity, and still reject
     // the consumed old sequence after all terminal rows are old enough to prune.
-    let revoked = IssuerRegistration {
-        revoked: true,
-        ..issuer
-    };
+    let revoked = crate::authbus_test_support::message_registration(
+        issuer.issuer_id.clone(),
+        issuer.key_epoch,
+        issuer.verifying_key,
+        true,
+    );
     store.quarantine_authbus_issuer(&revoked).await.unwrap();
     let mut tx = store.pool.begin_with("BEGIN IMMEDIATE").await.unwrap();
     maintain(&mut tx, now_millis().unwrap() + 86_400_001)

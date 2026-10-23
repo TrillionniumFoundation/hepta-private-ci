@@ -153,6 +153,8 @@ pub enum AuthBusAuthorityError {
     CorruptState(&'static str),
     #[error("AuthBus authority storage is unavailable: {0}")]
     Storage(String),
+    #[error("another AuthBus authority owner is already active")]
+    OwnerAlreadyActive,
     #[error("AuthBus authority record was not found")]
     NotFound,
     #[error("AuthBus authority record already exists")]

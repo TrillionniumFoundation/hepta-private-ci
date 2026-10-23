@@ -1,0 +1,15 @@
+{
+  "schema": "hepta.authbus.dashboard.v1",
+  "module": "auth.authbus",
+  "title": "AuthBus Authority",
+  "refreshSeconds": 30,
+  "panels": [
+    {"title": "Readiness", "signals": ["authbus_checkpoint_dirty", "authbus_recovery_required", "authbus_owner_fence_held"]},
+    {"title": "Reservation lifecycle", "signals": ["authbus_active_reservations", "authbus_expired_active_reservations", "authbus_indeterminate_reservations", "authbus_oldest_active_reservation_age_ms"]},
+    {"title": "Quota conservation", "signals": ["authbus_quota_available", "authbus_quota_reserved", "authbus_quota_consumed", "authbus_quota_utilization_basis_points"]},
+    {"title": "Issuer trust", "signals": ["authbus_active_issuer_epochs", "authbus_revoked_issuer_epochs", "authbus_verification_failures_total"]},
+    {"title": "Checkpoint and maintenance", "signals": ["authbus_checkpoint_generation", "authbus_maintenance_runs_total", "authbus_maintenance_failures_total", "authbus_sweep_rows_total"]},
+    {"title": "Latency", "signals": ["authbus_authorize_duration_ms", "authbus_transaction_duration_ms", "authbus_checkpoint_publish_duration_ms"]}
+  ],
+  "labelPolicy": "bounded enums only; no raw principal, message, reservation, policy or secret identifiers"
+}

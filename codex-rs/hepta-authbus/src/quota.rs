@@ -1,5 +1,6 @@
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+use serde::Serialize;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ReservationState {
@@ -67,4 +68,13 @@ pub struct QuotaReservation {
     pub terminal_evidence: Option<Digest32>,
     pub observed_cost: Option<u64>,
     pub settlement_digest: Option<Digest32>,
+}
+
+/// Result of one bounded reservation-lifecycle maintenance pass.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+pub struct ExpiredReservationSweep {
+    pub examined: u32,
+    pub expired_held: u32,
+    pub marked_indeterminate: u32,
+    pub remaining: bool,
 }

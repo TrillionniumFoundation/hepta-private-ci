@@ -175,12 +175,7 @@ impl AuthBusAuthorityStore {
         let record = self
             .issuer_record(IssuerPurpose::Message, issuer_id, key_epoch)
             .await?;
-        Ok(IssuerRegistration {
-            issuer_id: record.issuer_id,
-            key_epoch: record.key_epoch,
-            verifying_key: record.verifying_key,
-            revoked: record.state != IssuerLifecycleState::Active,
-        })
+        IssuerRegistration::from_record(&record)
     }
 
     pub async fn settlement_issuer(
@@ -191,12 +186,7 @@ impl AuthBusAuthorityStore {
         let record = self
             .issuer_record(IssuerPurpose::Settlement, issuer_id, key_epoch)
             .await?;
-        Ok(SettlementIssuerRegistration {
-            issuer_id: record.issuer_id,
-            key_epoch: record.key_epoch,
-            verifying_key: record.verifying_key,
-            revoked: record.state != IssuerLifecycleState::Active,
-        })
+        SettlementIssuerRegistration::from_record(&record)
     }
 
     pub async fn observe_trusted_time_attestation(
@@ -266,7 +256,7 @@ async fn load_active_issuer(
     issuer_from_row(&row)
 }
 
-async fn load_issuer(
+pub(crate) async fn load_issuer(
     tx: &mut Transaction<'_, Sqlite>,
     purpose: IssuerPurpose,
     issuer_id: &StableId,

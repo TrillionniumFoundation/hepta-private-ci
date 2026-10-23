@@ -1,4 +1,6 @@
-use codex_hepta_authbus::AuthBusAuthorityStore;
+#![cfg(unix)]
+
+use codex_hepta_authbus::AuthBusAuthorityHost;
 use codex_hepta_authbus::Error;
 use codex_hepta_authbus::IssuerPurpose;
 use codex_hepta_authbus::IssuerRegistration;
@@ -11,6 +13,7 @@ use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use std::os::unix::fs::PermissionsExt;
 use tempfile::TempDir;
 
 use super::*;
@@ -22,12 +25,12 @@ fn config(temp: &TempDir) -> SqliteConfig {
 
 fn fixture(sequence: u64) -> (SigningKey, IssuerRegistration, SignedMessage) {
     let key = SigningKey::from_bytes(&[77; 32]);
-    let issuer = IssuerRegistration {
-        issuer_id: StableId::new("issuer:rollback").unwrap(),
-        key_epoch: Generation::new(7).unwrap(),
-        verifying_key: key.verifying_key(),
-        revoked: false,
-    };
+    let issuer = crate::authbus_test_support::message_registration(
+        StableId::new("issuer:rollback").unwrap(),
+        Generation::new(7).unwrap(),
+        key.verifying_key(),
+        false,
+    );
     let claims = SignedMessageClaims {
         issuer_id: issuer.issuer_id.clone(),
         key_epoch: issuer.key_epoch,
@@ -175,9 +178,19 @@ async fn issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resur
         .unwrap();
     external = pending;
 
-    let authority = AuthBusAuthorityStore::open(&temp.path().join("authbus-authority.sqlite"))
-        .await
-        .unwrap();
+    let database_root = temp.path().join("authority-database");
+    let checkpoint_root = temp.path().join("authority-witness");
+    for path in [&database_root, &checkpoint_root] {
+        std::fs::create_dir(path).unwrap();
+        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700)).unwrap();
+    }
+    let authority = AuthBusAuthorityHost::bootstrap(
+        &database_root.join("authority.sqlite"),
+        checkpoint_root.join("checkpoint.json"),
+        "evidence-retirement-fixture",
+    )
+    .await
+    .unwrap();
     authority
         .enroll_issuer(
             IssuerPurpose::Message,

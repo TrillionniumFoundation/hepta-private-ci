@@ -1,0 +1,19 @@
+{
+  "uid": "hepta-authbus-authority",
+  "title": "Hepta AuthBus Authority",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": false,
+  "tags": ["hepta", "auth.authbus"],
+  "time": {"from": "now-6h", "to": "now"},
+  "refresh": "30s",
+  "templating": {"list": [{"name": "datasource", "type": "datasource", "query": "prometheus", "label": "Prometheus"}]},
+  "panels": [
+    {"id": 1, "type": "timeseries", "title": "Checkpoint and recovery", "datasource": {"type": "prometheus", "uid": "${datasource}"}, "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}, "targets": [{"refId": "A", "expr": "hepta_authbus_checkpoint_generation"}, {"refId": "B", "expr": "hepta_authbus_checkpoint_dirty"}, {"refId": "C", "expr": "hepta_authbus_recovery_required"}]},
+    {"id": 2, "type": "timeseries", "title": "Reservation lifecycle", "datasource": {"type": "prometheus", "uid": "${datasource}"}, "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}, "targets": [{"refId": "A", "expr": "hepta_authbus_active_reservations"}, {"refId": "B", "expr": "hepta_authbus_expired_active_reservations"}, {"refId": "C", "expr": "hepta_authbus_indeterminate_reservations"}]},
+    {"id": 3, "type": "timeseries", "title": "Aggregate quota (inspect units separately)", "datasource": {"type": "prometheus", "uid": "${datasource}"}, "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}, "targets": [{"refId": "A", "expr": "hepta_authbus_quota_available"}, {"refId": "B", "expr": "hepta_authbus_quota_reserved"}, {"refId": "C", "expr": "hepta_authbus_quota_consumed"}, {"refId": "D", "expr": "hepta_authbus_quota_utilization_basis_points"}]},
+    {"id": 4, "type": "timeseries", "title": "Issuer lifecycle", "datasource": {"type": "prometheus", "uid": "${datasource}"}, "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}, "targets": [{"refId": "A", "expr": "hepta_authbus_active_issuer_epochs"}, {"refId": "B", "expr": "hepta_authbus_revoked_issuer_epochs"}, {"refId": "C", "expr": "hepta_authbus_retired_issuer_epochs"}]},
+    {"id": 5, "type": "timeseries", "title": "Report and reservation age (ms)", "datasource": {"type": "prometheus", "uid": "${datasource}"}, "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}, "targets": [{"refId": "A", "expr": "time() * 1000 - hepta_authbus_observed_at_ms"}, {"refId": "B", "expr": "hepta_authbus_oldest_active_reservation_age_ms"}]},
+    {"id": 6, "type": "timeseries", "title": "Collector transport health (not supplied by AuthBus)", "datasource": {"type": "prometheus", "uid": "${datasource}"}, "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}, "targets": [{"refId": "A", "expr": "up{job=\"hepta-authbus\"}"}]}
+  ]
+}
