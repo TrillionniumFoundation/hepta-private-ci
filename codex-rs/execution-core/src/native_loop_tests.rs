@@ -176,11 +176,17 @@ fn completion_is_a_candidate_until_verified_by_independent_observer() {
         candidate.accept_completion(&digest(9), &Deny, 2),
         Err(PortError::Denied)
     ));
+    let cancelled = candidate.request_cancel();
+    assert!(matches!(cancelled.phase(), NativeLoopPhaseV1::Cancelled));
+    assert!(cancelled
+        .accept_completion(&digest(9), &TrustedFixture, 2)
+        .is_err());
     let done = candidate
         .accept_completion(&digest(9), &TrustedFixture, 2)
         .unwrap();
     assert!(matches!(done.phase(), NativeLoopPhaseV1::Completed { .. }));
     assert!(done.next_request(2).is_err());
+    assert!(matches!(done.request_cancel().phase(), NativeLoopPhaseV1::Completed { .. }));
 }
 
 #[test]
