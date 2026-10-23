@@ -199,6 +199,7 @@ class EvolutionSnapshotV1:
         if type(bundle) is not FeatureBundleV1:
             raise EvolutionError("typed frozen features required")
         bundle.require_identity(self.identity)
+        check_sources(bundle.source_record_digests, self.identity, lambda: before)
         if self.router is not None:
             output = self.router.predict_task(bundle, self.cells,
                 budget_units=min(self.budget.inference_cost_units_per_row,
@@ -371,9 +372,9 @@ def rollback_snapshot(current, parent_snapshot, directory, budget, withdrawal_pr
 
 
 class OfflineEvolutionOwnerV1:
-    """In-process research dispatch only; durable production publication is external."""
+    """Retains observed withdrawals in-process; durable source authority is external."""
     def __init__(self, snapshot, withdrawal_provider):
-        snapshot.require_current(withdrawal_provider)
+        self._frontier = asdict(snapshot.require_current(withdrawal_provider))
         self._current = snapshot
         self._provider = withdrawal_provider
         self._budget = asdict(snapshot.budget)
@@ -383,6 +384,12 @@ class OfflineEvolutionOwnerV1:
     def current(self):
         return self._current
 
+    def _observe(self, identity):
+        # Latch before source checks so rejected requests cannot erase a withdrawal.
+        view = check_sources((), identity, self._provider, self._frontier)
+        self._frontier = asdict(view)
+        return view
+
     def commit(self, candidate, *, expected_parent_manifest_sha256):
         with self._lock:
             if (self._current.manifest_sha256 != expected_parent_manifest_sha256
@@ -391,9 +398,10 @@ class OfflineEvolutionOwnerV1:
                 raise EvolutionError("stale snapshot compare-and-swap")
             if any(value > self._budget[key] for key, value in asdict(candidate.budget).items()):
                 raise EvolutionError("candidate raised the owner's fixed budget")
-            candidate.require_current(self._provider)
+            candidate.require_current(lambda: self._observe(self._current.identity))
             self._current = candidate
 
     def predict_task(self, bundle):
         with self._lock:
-            return self._current.predict_task(bundle, self._provider)
+            snapshot = self._current
+            return snapshot.predict_task(bundle, lambda: self._observe(snapshot.identity))
