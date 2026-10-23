@@ -7,9 +7,11 @@ and can include other threads; it is not exclusive collector CPU.
 
 from collections import deque
 import gc
+import hashlib
 import os
 from pathlib import Path
 import resource
+import sys
 import threading
 import time
 
@@ -33,6 +35,56 @@ def _counter_file(path):
         result[key] = int(value)
     if not result:
         raise ValueError("empty counter file")
+    return result
+
+
+def numerical_runtime():
+    """Observe the actual numerical process once inside charged shared CPU.
+
+    This does not configure threads, affinity, NumPy or the loaded libraries.
+    Optional discovery failures stay visible rather than breaking model work.
+    Boundary task counts do not measure transient thread peaks.
+    """
+    import numpy as np
+
+    started = _stamp()
+    errors, libraries = {}, []
+    try:
+        from threadpoolctl import threadpool_info
+        pools = threadpool_info()
+        for index, pool in enumerate(pools[:16]):
+            row = {key: pool.get(key) for key in ("user_api", "internal_api", "prefix", "filepath",
+                "version", "num_threads", "threading_layer", "architecture")}
+            try:
+                checksum = hashlib.sha256()
+                with Path(pool["filepath"]).open("rb") as stream:
+                    for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                        checksum.update(chunk)
+                row["sha256"] = checksum.hexdigest()
+            except (OSError, ValueError, KeyError, TypeError) as error:
+                errors["library_" + str(index)] = repr(error)
+            libraries.append(row)
+        truncated = len(pools) > 16
+    except (ImportError, OSError, RuntimeError, ValueError) as error:
+        errors["threadpool_discovery"] = repr(error)
+        truncated = False
+    try:
+        affinity = sorted(os.sched_getaffinity(0))
+        tasks = len(list(Path("/proc/self/task").iterdir()))
+    except (OSError, AttributeError) as error:
+        affinity, tasks = None, None
+        errors["process_observation"] = repr(error)
+    result = {"schema": "hepta.numerical-runtime.v1", "python": sys.version,
+        "python_executable": sys.executable, "numpy_version": np.__version__,
+        "numpy_path": np.__file__, "numpy_geterr": np.geterr(),
+        "threadpools": libraries, "threadpools_truncated": truncated,
+        "cpu_affinity": affinity, "observed_process_threads": tasks,
+        "trace_active": sys.gettrace() is not None, "profile_active": sys.getprofile() is not None,
+        "thread_environment": {key: os.environ.get(key) for key in
+            ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS", "PYTHONDONTWRITEBYTECODE")},
+        "errors": errors, "scope": "same-process boundary observation; no configuration changes or peak-thread claim"}
+    ended = _stamp()
+    result["sampling"] = {"cpu_ns": ended[0] - started[0], "wall_ns": ended[1] - started[1]}
     return result
 
 

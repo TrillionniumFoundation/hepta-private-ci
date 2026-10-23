@@ -636,11 +636,15 @@ def train(freeze_path, out):
     all_candidates, selected, ledgers, system_cost, val_measures = [], [], {}, {}, {}
     shared = common = train_data = val = None
     shared_prepared = False
+    runtime_identity = None
     try:
+        from independent.telemetry import numerical_runtime
+        runtime_identity = numerical_runtime()
         with traced_phase(telemetry, "shared_preparation"):
             shared, bases, train_data, val, common = prepare_shared(plan, run, runtime_plan)
             shared_prepared = True
             calibration_data = common.pop("_calibration_data", None)
+        common["numerical_runtime"] = runtime_identity
         common["cpu_seconds"] = cpu_clock() - start
         common["reference_full_cpu_ns"] = common["calibrations"][plan["model_seeds"][0]]["cpu_ns"]["full"]
         guard_cpu_budget("shared", plan, run, shared,
@@ -805,6 +809,7 @@ def train(freeze_path, out):
             "selection_ready": ready, "test_opened": False,
             "execution_location": "selected configured Codex Cloud environment; see enclosing platform task context",
             "environment": {"python": sys.version, "numpy": np.__version__, "device": "CPU",
+                "numerical_runtime": runtime_identity,
                 "cwd": str(ROOT), "os": list(os.uname()),
                 "thread_environment": {key: os.environ.get(key) for key in
                     ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS")}}}
@@ -852,6 +857,7 @@ def train(freeze_path, out):
             write_json(run / "telemetry.json", {"schema": "hepta.joint-generation.phase-telemetry.v1",
                 "source_commit": frozen["source_commit"], "freeze_sha256": sha(freeze_path),
                 "phases": telemetry, "execution_schedule": schedule,
+                "numerical_runtime": runtime_identity,
                 "scope": "diagnostic observations; capture overhead included while the arm is active",
                 "test_opened": MARKER.exists()}, exclusive=False)
         except Exception as error:

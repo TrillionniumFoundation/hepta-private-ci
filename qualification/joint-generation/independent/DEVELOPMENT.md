@@ -258,3 +258,54 @@ established, and no subsequent qualification attempt was made. This diagnostic's
 setup/execution and administrative persistence are separately retained R&D cost,
 not a credit against any qualified build or an assertion of matched cumulative
 research budgets.
+
+## Bounded launch diagnosis and local reuse after t8
+
+One precommitted two-pair AB/BA TRAIN-side probe compared direct launch with the
+idle Python parent used by t8. All four fresh shared builds were retained:
+direct A1 2.600737883s, nested B1 2.106176126s, nested B2 2.468531881s, direct A2
+2.595229415s. Every start/end numerical snapshot agreed, and all 344 span
+boundaries observed one task, OpenBLAS 0.3.30 with one configured thread and the
+same affinity/backend bytes. All twelve base files and four native libraries
+matched t8. Nested launch was faster in both pairs; these two pairs do not
+establish causation, but do not support blaming the idle parent for t8. Its own
+process CPU already exceeded ten seconds before adding compiler children.
+Source verification and imports were recorded separately from shared work;
+this did not reproduce the full train/check_freeze entrypoint or its boundaries.
+
+The four diagnostic shared phases cost 9.770675305 CPU seconds and 14445486948
+declared units. Recorded cumulative worker CPU was 11.732311824 seconds, with
+0.001457611 seconds of nested-parent own CPU separately recorded. All fast and
+slow samples were kept in a per-file-verified lossless archive. These are R&D
+costs, never credits against a qualified build or an assertion of matched
+cumulative research budgets. No qualification ran during this diagnosis.
+
+Three concrete implementation changes now precede a fresh source freeze:
+
+- Adam looks up existing moments before allocating zeros. The unchanged shared
+  schedule previously allocated 21600 zero arrays; only the initial 48 are
+  needed. This avoids 21552 arrays, 26298096 zero elements, about 210MB cumulative
+  allocation traffic (not peak memory). The earlier profile's zeros_like time
+  was only 0.094s, so this is not an explanation of the multi-second slowdown.
+- Each three-mode validation prepares one local actual decoder observation and
+  reward rather than six repeated preparations. Selected scoring prepares the
+  normal observation once and actually decodes the corrupted decoder separately
+  (three preparations become two). The same semantic formulas are shared with
+  legacy wrappers. Deleted arithmetic is also removed from actual charges and
+  future inventories; no outputs, PNGs or input-dependent content are cached.
+- Low/full TRAIN critic targets reuse one indexed reward tensor, avoiding a
+  second identical roughly 3.54MB copy per selected seed. Both actual utility
+  computations and their arithmetic charges remain.
+
+These are small, equation-preserving savings; no claim is made that they close
+the content opportunity-cost or effective-control benefit gap. Once-per-build
+same-process numerical metadata is now captured inside charged shared CPU and
+retained with selection/telemetry, including optional discovery errors. It
+observes backend/thread configuration without changing it.
+
+Final verification passed 49 root tests (0.276s) and 157 independent tests
+(4.594s), exit 0. The first independent check had one error: a new diagnostic
+file write preceded a deliberately injected kernel failure. Discovery now stays
+in the charged phase while persistence uses existing final receipts, preserving
+the original error; 28 affected tests and the corrected full suite passed.
+Both failed and corrected logs remain retained. No test fold was opened.

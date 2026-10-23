@@ -1,6 +1,7 @@
 """Counter/parser and manual GC callback boundaries; no model or dataset."""
 
 import gc
+import hashlib
 import json
 from pathlib import Path
 import tempfile
@@ -11,6 +12,32 @@ from independent import telemetry as t
 
 
 class TelemetryTests(unittest.TestCase):
+    def test_same_process_numerical_metadata_fingerprints_loaded_library_without_configuration(self):
+        import threadpoolctl
+        with tempfile.TemporaryDirectory() as directory:
+            library = Path(directory) / "manual-library"
+            library.write_bytes(b"manual numerical library fixture")
+            pool = {"internal_api": "manual", "num_threads": 1, "filepath": str(library),
+                    "version": "fixture", "architecture": "manual"}
+            with patch.object(threadpoolctl, "threadpool_info", return_value=[pool]):
+                observed = t.numerical_runtime()
+            self.assertEqual(observed["threadpools"][0]["sha256"], hashlib.sha256(library.read_bytes()).hexdigest())
+            self.assertEqual(observed["threadpools"][0]["num_threads"], 1)
+            self.assertEqual(pool, {"internal_api": "manual", "num_threads": 1,
+                "filepath": str(library), "version": "fixture", "architecture": "manual"})
+            self.assertFalse(observed["threadpools_truncated"])
+            self.assertEqual(observed["errors"], {})
+            json.dumps(observed, allow_nan=False)
+
+    def test_optional_backend_discovery_failure_is_retained_without_aborting_model_work(self):
+        import threadpoolctl
+        with patch.object(threadpoolctl, "threadpool_info", side_effect=RuntimeError("manual unavailable backend")):
+            observed = t.numerical_runtime()
+        self.assertEqual(observed["threadpools"], [])
+        self.assertIn("manual unavailable backend", observed["errors"]["threadpool_discovery"])
+        self.assertIn("numpy_version", observed)
+        json.dumps(observed, allow_nan=False)
+
     def test_capture_and_real_read_only_delta_are_json(self):
         before, after = t.capture(), t.capture()
         delta = t.difference(before, after)

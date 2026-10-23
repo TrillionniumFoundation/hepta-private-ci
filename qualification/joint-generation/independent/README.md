@@ -153,3 +153,13 @@ completed. Full shared receipts are retained. The corrected one-thread,
 seven-stage diagnostic had mixed update timings (4.12% median paired saving,
 0.15% aggregate saving); it did not predict or establish whole-build benefit.
 No identical-source repeat or formal evaluation followed this failure.
+
+A predeclared two-pair launch diagnostic subsequently retained all four fresh
+shared executions and actual NumPy/BLAS/threadpool identities. All model/library
+bytes matched t8; shared CPU was 2.1–2.6 seconds and did not reproduce its
+slowdown. This did not establish a fix or replace the failure. The next source
+revision instead removes identified discarded Adam allocations and repeated
+local decoder observations, reuses one TRAIN reward index tensor, and records
+same-process numerical metadata inside charged shared CPU. Actual deleted
+observer work is removed from both charges and forecasts. Original gates,
+budgets, data, equations and output behavior remain authoritative.
