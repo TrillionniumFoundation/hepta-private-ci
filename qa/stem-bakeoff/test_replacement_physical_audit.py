@@ -24,10 +24,13 @@ def fake(name):
         head_parameters=512, optimizer="AdamW", seed=7, steps=200,
         learning_rate=.05, calibration_temperature=1.0,
         calibration_nll_grid={"1.0": .3})
+    required = (("rl_agent_config.json", "encoder/config.json", "tokenizer/tokenizer.json")
+                if name.startswith("laya_") else ("config.json", "tokenizer.json"))
     return dict(schema="hepta.neuron.replacement-physical-shadow.v1",
                 candidate=name, checkpoint=dict(
                     repository=spec["repository"], revision=spec["revision"],
-                    loaded_weight_sha256=spec["weight_sha256"], weight_bytes=200000000),
+                    loaded_weight_sha256=spec["weight_sha256"], weight_bytes=200000000,
+                    component_sha256={part: H for part in required}),
                 loaded_parameter_count=270000000,
                 execution_kind="full_policy" if name.startswith("laya_") else "encoder_plus_new_task_head",
                 observed_forward_calls=40, source_archive_sha256=H,
@@ -80,6 +83,11 @@ class PhysicalAuditTests(unittest.TestCase):
         self.assertEqual(assess(REGISTRY, cases)["raw_shadow_preflight"], "BLOCKED")
         cases = samples()
         cases[EXPECTED[0]]["production_activation_allowed"] = True
+        self.assertEqual(assess(REGISTRY, cases)["raw_shadow_preflight"], "BLOCKED")
+
+    def test_missing_physical_tokenizer_digest_is_not_model_identity(self):
+        cases = samples()
+        del cases["laya_typed_421m"]["checkpoint"]["component_sha256"]["tokenizer/tokenizer.json"]
         self.assertEqual(assess(REGISTRY, cases)["raw_shadow_preflight"], "BLOCKED")
 
     def test_training_budget_or_token_row_drift_rejected(self):
