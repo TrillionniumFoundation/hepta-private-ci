@@ -56,3 +56,71 @@ A5 is **not an FBSDE solver** and its lookahead uses a synthetic forecast model;
 **Leakage rule:** training and evaluation episodes remain disjoint. Synthetic labels are not externally verified; training this toy router does not certify real learning, independent outcome truth or causal credit.
 
 **Stop rule:** production blockers remain open until the user-requested real host, real task dataset, external outcome observer and signed execution artifacts exist, all canonical numerical/security gates pass, and independent acceptance is recorded. The reference runner never reports a production pass and has no capability to promote artifacts.
+
+
+## P0-P5 incremental evidence admission (stacked shadow research)
+
+The new admission.py is **shadow-only** and does not replace canonical
+UtilityContributionV1, NduEvaluationReceiptV2, NeuronTickInputV1, artifact
+selection, or native final-use owners.
+
+- **P0 / independent utility:** RunEvidence binds the frozen objective,
+  run/episode/arm/split, generation, input, encoder, decoder registry, selected
+  snapshot, frozen Critic and consistency digest. Separate observer and host
+  meter identities must sign the same canonical evidence digest, covering all
+  quality, risk, resource and timing fields. Missing verifier, role overlap,
+  invalid signatures, nonfinite metering and budget breaches are denied.
+- **P1 / multimodal integrity:** required output modalities must be emitted.
+  A consistency evidence digest is bound. One-sided audio/video timeline pairs
+  are denied. Perceptual and semantic correctness are still unverified.
+- **P2 / conditional covariance:** fit only fully paired chronological train
+  observations from the same task stratum and frozen tuple; future samples
+  cannot estimate covariance. The bounded existing PSD/shrinkage reference is
+  reused. Portfolio return covariance is NOT the FBSDE driver covariance.
+- **P3 / actual overhead:** separate wall, encoder, decoder and controller
+  time, RSS, VRAM, compute units and energy fields are checked. This adapter
+  does not manufacture missing real GPU or Decoder measurements.
+- **P4 / frozen learning evidence:** A0-A5 records must share exact objective,
+  selected snapshot, Encoder, Decoder registry and Critic identities. Distinct
+  candidate/baseline policy IDs cannot be spliced between future and
+  retention observations. Training and next-generation artifact promotion
+  are not implemented by this adapter.
+- **P5 / global credit:** existing credit_conservation and closure_audit are
+  only structural references. Actual counterfactual Cell attribution and
+  cross-organ state sufficiency require independently supported evidence.
+
+### Simultaneous matched A0-A5 acceptance
+
+compare_a0_a5 requires all six arms on every episode, at least 32 matched
+future episode IDs, a preregistered NDU absolute bound B, alpha, minimum gain
+and overhead ceiling. It rejects missing/duplicated arm rows and pooling
+incompatible strata or immutable model/critic identities.
+
+For independently sampled episodes with U bounded in [-B,B], the paired
+difference D = U(A5) - U(Ai) is in [-2B,2B]. Its conservative one-sided
+Bonferroni-Hoeffding simultaneous lower bound for each i in A0..A4 is:
+
+    LCB_i = mean(D_i) - 4*B*sqrt(log(5/alpha)/(2*n))
+
+The comparator requires every LCB to exceed the preregistered minimum gain
+and the observed controller/wall fraction to stay below the ceiling.
+The bound assumes independent episodes, a valid preregistered numerical
+range and no evaluation-set selection. Matching IDs does not establish
+episode independence or causal effects.
+
+The eight tests in test_admission.py use HMAC **test-only** fixture keys.
+They demonstrate that a mutation changes a bound payload but do NOT
+demonstrate production authentication. A caller-provided verifier is not
+a production trust root. A deployed implementation must use independent,
+deployed verifier owners and real signed host plus observer measurements.
+
+Run the whole reference suite with:
+
+    python3 -m unittest discover -s qualification/ndu-dmgp-reference -p 'test_*.py' -v
+
+Even if a comparison is statistically positive, the dataclass always reports
+production_blockers_closed=false and production_authority=false. The
+original 24-episode synthetic A0-A5 report is unaffected and still has
+A5 == A1 on synthetic NDU. All six production blockers remain OPEN until
+actual qualified Decoder, data, observer, Cell/Circuit and authority evidence
+exists. Deployment posture remains SHADOW_ONLY / DENY_ALL.
