@@ -57,6 +57,8 @@ pub struct GroupCellObservationV1 {
 pub struct GroupDecisionTraceV1 {
     pub run_id: String,
     pub subject_id: String,
+    /// Canonical full-owner binding; this digest is not an authorization signature.
+    pub subject_binding_digest: Digest32,
     pub input_digest: Digest32,
     pub generation: u64,
     pub route_digest: Digest32,
@@ -87,6 +89,17 @@ pub struct GroupSystem2DecisionV1 {
     pub authority: AuthorityPosture,
 }
 
+/// Advisory quote check. This does not reserve owner resources or grant
+/// permission to run: a real owner must independently reserve and charge.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct GroupBudgetPreflightV1 {
+    pub selected_candidate_id: String,
+    pub requested_future_micros: u64,
+    pub remaining_micros: u64,
+    pub preflight_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum GroupSystem2Error {
     EmptyId(&'static str),
@@ -109,6 +122,10 @@ pub enum GroupSystem2Error {
     NegativeRisk,
     ResourceCeilingExceeded { used: u64, ceiling: u64 },
     CandidateSetDigestMismatch,
+    DecisionMismatch,
+    ZeroFutureCost,
+    AbstainFutureCost,
+    FutureCostExceedsRemaining { requested: u64, remaining: u64 },
     ArithmeticOverflow,
 }
 
@@ -173,9 +190,7 @@ pub fn decide_group_continuation_v1(
         .try_fold(0_u64, |total, cell| total.checked_add(cell.cost_micros))
         == Some(subject.resource_ceiling_micros);
     let (selected_candidate, selected_net) = match best_non_abstain {
-        Some((candidate, net)) if !exhausted && net > 0 && net > abstain_net => {
-            (candidate, net)
-        }
+        Some((candidate, net)) if !exhausted && net > 0 && net > abstain_net => (candidate, net),
         _ => (abstain, abstain_net),
     };
 
@@ -184,6 +199,69 @@ pub fn decide_group_continuation_v1(
         selected_candidate_id: selected_candidate.candidate_id.clone(),
         net_value_q32: selected_net,
         trace_digest,
+        authority: AuthorityPosture::DENY_ALL,
+    })
+}
+
+/// Recompute the entire advisory decision before checking a quoted *next*
+/// invocation against the remaining physical microsecond budget.
+/// This is not an execution permit and does not atomically reserve anything.
+/// The physical execution owner must separately bind generation, reserve its
+/// actual worst-case work and charge real work before any model/tool call.
+pub fn preflight_group_future_cost_v1(
+    subject: &GroupNduSubjectV1,
+    trace: &GroupDecisionTraceV1,
+    candidates: &[GroupContinuationCandidateV1],
+    decision: &GroupSystem2DecisionV1,
+    requested_future_micros: u64,
+) -> Result<GroupBudgetPreflightV1, GroupSystem2Error> {
+    let recomputed = decide_group_continuation_v1(subject, trace, candidates)?;
+    if decision != &recomputed {
+        return Err(GroupSystem2Error::DecisionMismatch);
+    }
+    let consumed = trace
+        .cells
+        .iter()
+        .try_fold(0_u64, |sum, cell| sum.checked_add(cell.cost_micros))
+        .ok_or(GroupSystem2Error::ArithmeticOverflow)?;
+    let remaining = subject
+        .resource_ceiling_micros
+        .checked_sub(consumed)
+        .ok_or(GroupSystem2Error::ArithmeticOverflow)?;
+    let selected = candidates
+        .iter()
+        .find(|candidate| candidate.candidate_id == recomputed.selected_candidate_id)
+        .ok_or(GroupSystem2Error::DecisionMismatch)?;
+    if selected.abstain {
+        if requested_future_micros != 0 {
+            return Err(GroupSystem2Error::AbstainFutureCost);
+        }
+    } else {
+        if requested_future_micros == 0 {
+            return Err(GroupSystem2Error::ZeroFutureCost);
+        }
+        if requested_future_micros > remaining {
+            return Err(GroupSystem2Error::FutureCostExceedsRemaining {
+                requested: requested_future_micros,
+                remaining,
+            });
+        }
+    }
+
+    // Domain-separated binding covers the decision, consumed work, remaining
+    // budget, quote and chosen candidate. It is an integrity hash, not a signer.
+    let mut bytes = b"hepta.ndu.group-budget-preflight.v1\0".to_vec();
+    bytes.extend_from_slice(recomputed.trace_digest.as_array());
+    bytes.extend_from_slice(&subject.resource_ceiling_micros.to_be_bytes());
+    bytes.extend_from_slice(&consumed.to_be_bytes());
+    bytes.extend_from_slice(&remaining.to_be_bytes());
+    bytes.extend_from_slice(&requested_future_micros.to_be_bytes());
+    push_text_unchecked(&mut bytes, &recomputed.selected_candidate_id);
+    Ok(GroupBudgetPreflightV1 {
+        selected_candidate_id: recomputed.selected_candidate_id,
+        requested_future_micros,
+        remaining_micros: remaining,
+        preflight_digest: Digest32::of_bytes(&bytes),
         authority: AuthorityPosture::DENY_ALL,
     })
 }
@@ -222,6 +300,11 @@ fn validate_trace(
     }
     if trace.generation != subject.generation {
         return Err(GroupSystem2Error::TraceBindingMismatch("generation"));
+    }
+    if trace.subject_binding_digest != canonical_group_subject_binding_digest_v1(subject) {
+        return Err(GroupSystem2Error::TraceBindingMismatch(
+            "subject_binding_digest",
+        ));
     }
     for (name, digest) in [
         ("input_digest", trace.input_digest),
@@ -344,6 +427,20 @@ fn candidate_net_value(candidate: &GroupContinuationCandidateV1) -> Result<i64, 
     i64::try_from(net).map_err(|_| GroupSystem2Error::ArithmeticOverflow)
 }
 
+/// Digest over the complete owner tuple; never an attestation of external authority.
+pub fn canonical_group_subject_binding_digest_v1(subject: &GroupNduSubjectV1) -> Digest32 {
+    let mut bytes = b"hepta.ndu.group-subject-binding.v1\0".to_vec();
+    push_text_unchecked(&mut bytes, &subject.subject_id);
+    bytes.push(subject.subject_class.tag());
+    push_text_unchecked(&mut bytes, &subject.group_id);
+    bytes.extend_from_slice(&subject.generation.to_be_bytes());
+    bytes.extend_from_slice(subject.objective_digest.as_array());
+    bytes.extend_from_slice(subject.encoder_digest.as_array());
+    bytes.extend_from_slice(subject.utility_profile_digest.as_array());
+    bytes.extend_from_slice(&subject.resource_ceiling_micros.to_be_bytes());
+    Digest32::of_bytes(&bytes)
+}
+
 fn group_candidate_set_digest(
     candidates: &[GroupContinuationCandidateV1],
 ) -> Result<Digest32, GroupSystem2Error> {
@@ -376,6 +473,7 @@ fn decision_trace_digest(
     bytes.extend_from_slice(&subject.resource_ceiling_micros.to_be_bytes());
     push_text_unchecked(&mut bytes, &trace.run_id);
     push_text_unchecked(&mut bytes, &trace.subject_id);
+    bytes.extend_from_slice(trace.subject_binding_digest.as_array());
     bytes.extend_from_slice(trace.input_digest.as_array());
     bytes.extend_from_slice(&trace.generation.to_be_bytes());
     bytes.extend_from_slice(trace.route_digest.as_array());
