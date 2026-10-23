@@ -729,6 +729,17 @@ target is excluded. The original candidate's Bazel loading failures occurred
 before test execution. Target discovery and configured analysis validate this
 boundary repair; they do not replace native tests or exact-source hosted CI.
 
+PN0's separate tar parser slice pins the official 0.4.46 patch for
+[GHSA-3pv8-6f4r-ffg2](https://github.com/composefs/tar-rs/security/advisories/GHSA-3pv8-6f4r-ffg2)
+and refreshes the original Cargo and Bazel locks. The actual plugin archive
+consumer now tests a PAX size header followed by a GNU longname and file, with
+complete following-file extraction, byte-limit, path and link controls. The
+0.4.45 consumer failed three of six scoped tests at a parser checksum error;
+this was not a demonstrated path escape. The patched Linux consumer passed all
+433 library tests. The extractor, path/link checks, limits and advisory policy
+are unchanged. Compatible Windows dependency edge re-selection still needs
+target-specific CI, and this parser slice does not close the full PN0 baseline.
+
 ## 20. First vertical learning slice
 
 `C1-PROMPTED-MEMORY-RETRIEVAL-RANK` executes:
