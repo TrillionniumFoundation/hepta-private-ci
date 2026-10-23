@@ -32,6 +32,91 @@ class EvaluationTests(unittest.TestCase):
     def critic(self):
         return Controller(12, np.zeros(31), np.ones(31), np.zeros(31), 1., np.array([1., 1.]))
 
+    def affine_fixture(self):
+        from independent.accounting import WorkLedger
+        from independent.gain_head import AffineGainHead, KIND
+        _, hidden, _, _ = self.model._forward(self.data["full"])
+        config = {"gain_head": KIND, "ridge_regularization": .001}
+        head, fitted = AffineGainHead.fit(hidden, self.data["full"][:, 192:], np.full(4, .1),
+                                         config, 11, WorkLedger("handmade-affine-fit"))
+        selection = self.decision_fixture()
+        selection["plan"].update(hidden=4)
+        selection["plan"]["controller"].update(config)
+        selection["datasets"] = {"train": {"rows": 4}}
+        row = selection["selected"][0]
+        row.update(critic_kind=KIND, gain_head_kind=KIND)
+        row["controller_calibration"].update(critic_kind=KIND, gain_head_fit=fitted,
+            raw_target={"rows": 4, "values_sha256": fitted["target"]["sha256"]})
+        return head, selection
+
+    def test_affine_artifact_dispatch_binds_fit_and_actual_parameters(self):
+        from independent.evaluation import _controller, _controller_decision_binding, _gain_head_binding
+        from independent.gain_head import AffineGainHead
+        head, selection = self.affine_fixture()
+        row = selection["selected"][0]
+        _controller_decision_binding(row, selection)
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "head.npz"
+            np.savez_compressed(path, **head.to_arrays())
+            loaded = _controller(path)
+            _gain_head_binding(loaded, row["controller_calibration"], hidden_dim=4, seed=11,
+                               config=selection["plan"]["controller"], training_rows=4)
+            self.assertIsInstance(loaded, AffineGainHead)
+            changed = AffineGainHead(4, loaded.mean, loaded.scale, loaded.weights + .01,
+                                     loaded.intercept, loaded.bounds)
+            with self.assertRaisesRegex(ValueError, "fitted parameters"):
+                _gain_head_binding(changed, row["controller_calibration"], hidden_dim=4, seed=11)
+            arrays = dict(head.to_arrays()); arrays["gh_hidden_dim"] = np.array([5], dtype=np.int64)
+            np.savez_compressed(path, **arrays)
+            with self.assertRaises(ValueError):
+                _controller(path)
+
+    def test_affine_fit_spec_tampering_rejects_before_any_dataset(self):
+        for field in ("row_kind", "receipt_kind", "ridge", "work", "hidden", "seed"):
+            with self.subTest(field=field), tempfile.TemporaryDirectory() as temporary:
+                _, selection = self.affine_fixture()
+                row = selection["selected"][0]
+                receipt = row["controller_calibration"]
+                if field == "row_kind": row["gain_head_kind"] = "probability-ridge-v1"
+                elif field == "receipt_kind": receipt["critic_kind"] = "probability-ridge-v1"
+                elif field == "ridge": receipt["gain_head_fit"]["ridge_regularization"] = .01
+                elif field == "work": receipt["gain_head_fit"]["work"]["macs"] += 1
+                elif field == "hidden": receipt["gain_head_fit"]["hidden_dim"] = 5
+                else: receipt["gain_head_fit"]["seed"] = 23
+                root = Path(temporary)
+                plan_path, marker = root / "plan.json", root / "opened.json"
+                plan_path.write_text(json.dumps(selection["plan"]))
+                selection["plan_sha256"] = hashlib.sha256(plan_path.read_bytes()).hexdigest()
+                (root / "selection.json").write_text(json.dumps(selection))
+                with patch("independent.evaluation.PLAN_PATH", plan_path), patch("independent.evaluation.GLOBAL_MARKER", marker):
+                    with patch("independent.evaluation.dataset", side_effect=AssertionError("sealed")) as data:
+                        with self.assertRaisesRegex(ValueError, "gain-head|critic kind"):
+                            run_evaluation(root)
+                        data.assert_not_called()
+                self.assertFalse(marker.exists())
+                self.assertFalse((root / "test-opened.json").exists())
+
+    def test_affine_native_measure_matches_python_routes_and_head_specific_work(self):
+        from independent.native import compile_native
+        head, _ = self.affine_fixture()
+        before = self.model.digest()
+        with tempfile.TemporaryDirectory() as temporary:
+            library = Path(temporary) / "affine.so"
+            compile_native(library)
+            for price, forwards in ((.02, 8), (.2, 4)):
+                plan = {**self.plan, "decision_price": price}
+                python = measure(self.model, head, "continuation", self.data, plan, 100000, seed=11)
+                native = measure(self.model, head, "continuation", self.data,
+                    {**plan, "runtime_backend": "native", "native_library": str(library), "runtime_batch_size": 4},
+                    100000, seed=11)
+                self.assertEqual((native["model_forwards"], python["model_forwards"]), (forwards, forwards))
+                self.assertEqual(native["sampled_output"], python["sampled_output"])
+                self.assertEqual(native["per_row_cost"]["work_units"], python["per_row_cost"]["work_units"])
+                self.assertEqual(native["cost"]["operator_totals"]["critic_decisions"], 4)
+                self.assertEqual(native["cost"]["compute_price"], .02)
+                self.assertEqual(native["budget_violations"], 0)
+        self.assertEqual(before, self.model.digest())
+
     def decision_fixture(self, deltas=(-1000., 2000., 3000.), *, seed=11):
         from independent.evaluation import SYSTEMS
         target = "raw-decoded-task-utility"

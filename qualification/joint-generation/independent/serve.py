@@ -20,7 +20,7 @@ from contracts import ContractError, RunSession, RunSpec, digest
 from model import JointModel
 from multimodal_contract import MediaEnvelope, UnsupportedCapability, to_legacy_request
 from independent.accounting import WorkLedger
-from independent.evaluation import SYSTEMS, _artifact, _controller, _outputs, full_reference_work, sha256
+from independent.evaluation import SYSTEMS, _artifact, _controller, _gain_head_binding, _outputs, full_reference_work, sha256
 from independent.inference import FrozenGenerator, units
 from independent.native import NativeGenerator
 
@@ -112,6 +112,19 @@ def export_bundle(run, system, seed, out):
         controller = _file(run, row["controller_file"], 65536, row["controller_sha256"])
     calibrated = row["mode"] == "continuation"
     receipt = row.get("controller_calibration")
+    if controller is not None:
+        loaded = _controller(controller)
+        config = plan.get("controller", {})
+        kind = getattr(loaded, "kind", "probability-ridge-v1")
+        if config.get("gain_head") is not None and (
+                row.get("critic_kind") != kind or row.get("gain_head_kind") != kind):
+            raise ContractError("selected gain-head kind differs from exported artifact")
+        content = JointModel.load(model)
+        try:
+            _gain_head_binding(loaded, receipt, hidden_dim=content.dimensions[3], seed=seed,
+                config=config, training_rows=selection.get("datasets", {}).get("train", {}).get("rows"))
+        except ValueError as error:
+            raise ContractError(str(error)) from error
     train_hash = selection["common"]["calibration_identity"]["inputs_sha256"] if calibrated else None
     manifest = {"schema": SCHEMA, "system": system, "seed": seed, "mode": row["mode"],
         "model_sha256": row["model_sha256"], "model_digest": row["model_digest"],
@@ -183,6 +196,14 @@ def load_bundle(directory):
         controller = _controller(_file(directory, "controller.npz", 65536, manifest["controller_sha256"]))
         if controller.classes != 12:
             raise ContractError("selected critic class mismatch")
+        if manifest["schema"] == SCHEMA:
+            try:
+                _gain_head_binding(controller, manifest["provenance"]["controller_calibration"],
+                                   hidden_dim=model.dimensions[3], seed=manifest["seed"])
+            except ValueError as error:
+                raise ContractError(str(error)) from error
+        elif getattr(controller, "kind", "probability-ridge-v1") != "probability-ridge-v1":
+            raise ContractError("affine gain heads require a calibrated v2 bundle")
     elif manifest["controller_sha256"] is not None or (directory / "controller.npz").exists():
         raise ContractError("static policy must not carry an unused critic")
     identity = _canonical_sha(manifest)
@@ -201,7 +222,8 @@ def infer(directory, envelope, outdir):
     _, full = encode_request(request, include_low=False)
     runtime, mode = bundle.manifest["runtime"], bundle.manifest["mode"]
     probe = FrozenGenerator(bundle.model, prepare_low=False)
-    fu, lu, cu = (units(work) for work in (probe.full_work(1), probe.low_work(1), probe.critic_work(1)))
+    fu, lu, cu = (units(work) for work in (probe.full_work(1), probe.low_work(1),
+                                        probe.critic_work(1, bundle.controller)))
     output_units = full_reference_work(probe) - fu
     prepare_units = units(probe.prepare_work()) if mode != "full" else 0
     inference_units = fu if mode == "full" else lu if mode == "low" else fu + lu + (cu if mode == "continuation" else units({"scalar_ops": 24, "div_ops": 24}))

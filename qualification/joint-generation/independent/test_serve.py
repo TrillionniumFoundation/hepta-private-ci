@@ -65,6 +65,66 @@ class NativeServingTests(unittest.TestCase):
             "nonnegative_incremental_cpu_ns_per_request": ratio * 1000.,
             "compute_price": .02, "cost_ratio": ratio, "decision_price": decision_price}
 
+    def affine_bundle(self, decision_price=.02):
+        from independent.accounting import WorkLedger
+        from independent.gain_head import AffineGainHead, KIND
+        full = np.zeros((4, 202)); full[:, 192] = full[:, 196] = full[:, 199] = 1
+        _, hidden, _, _ = self.model._forward(full)
+        config = {"gain_head": KIND, "ridge_regularization": .001}
+        head, fitted = AffineGainHead.fit(hidden, full[:, 192:], np.full(4, .1), config,
+                                         11, WorkLedger("manual-serving-fit"))
+        np.savez_compressed(self.run / "affine.npz", **head.to_arrays())
+        receipt = self.calibration(decision_price)
+        receipt.update(critic_kind=KIND, gain_head_fit=fitted,
+                       raw_target={"rows": 4, "values_sha256": fitted["target"]["sha256"]})
+        row = self.selection["selected"][0]
+        row.update(controller_file="affine.npz", controller_sha256=digest((self.run / "affine.npz").read_bytes()),
+                   decision_price=decision_price, cost_ratio=decision_price/.02,
+                   controller_calibration=receipt, critic_kind=KIND, gain_head_kind=KIND)
+        self.selection["plan"]["controller"] = config
+        self.selection["datasets"] = {"train": {"rows": 4}}
+        (self.run / "selection.json").write_text(json.dumps(self.selection))
+        target = self.root / ("affine-" + str(decision_price))
+        artifact = export_bundle(self.run, "ndu_control", 11, target)
+        return head, target, artifact
+
+    def test_affine_v2_native_replay_binds_kind_and_actual_controller_cost(self):
+        from independent.inference import units
+        for price, continued in ((.02, True), (.2, False)):
+            head, target, artifact = self.affine_bundle(price)
+            bundle = load_bundle(target)
+            self.assertEqual(bundle.controller.kind, head.kind)
+            self.assertEqual(bundle.manifest["provenance"]["controller_calibration"]["critic_kind"], head.kind)
+            request = self.request(); request["artifact_sha256"] = artifact
+            with patch("independent.evaluation.dataset", side_effect=AssertionError("no data")), \
+                    patch.object(Controller, "predict_gain", side_effect=AssertionError("legacy features")):
+                first = infer(target, request, self.root / ("affine-out-" + str(price)))
+                second = infer(target, request, self.root / ("affine-replay-" + str(price)))
+            self.assertEqual(first["choices"], second["choices"])
+            self.assertEqual(first["image_sha256"], second["image_sha256"])
+            self.assertEqual(first["route"]["continued"], [continued])
+            self.assertEqual(first["spent"]["controller"], units(head.work(1)))
+            self.assertEqual(first["frozen_runtime"]["compute_price"], .02)
+            self.assertEqual(first["spent"]["controller"] + first["spent"]["generator"],
+                             first["preparation"]["consumed_units"] + first["runtime_cost"]["consumed_units"])
+
+    def test_affine_receipt_kind_and_fit_parameters_reject_before_native_loading(self):
+        _, target, _ = self.affine_bundle()
+        original = load_bundle(target).manifest
+        for field in ("kind", "weights", "normalizer", "hidden"):
+            changed = self.root / ("affine-tamper-" + field); shutil.copytree(target, changed)
+            manifest = copy.deepcopy(original)
+            receipt = manifest["provenance"]["controller_calibration"]
+            if field == "kind": receipt["critic_kind"] = "probability-ridge-v1"
+            elif field == "hidden": receipt["gain_head_fit"]["hidden_dim"] = 5
+            else: receipt["gain_head_fit"][field + "_sha256"] = "c" * 64
+            manifest["provenance"]["controller_calibration_sha256"] = digest(
+                json.dumps(receipt, sort_keys=True, separators=(",", ":"), allow_nan=False).encode())
+            (changed / "manifest.json").write_text(json.dumps(manifest))
+            with self.subTest(field=field), patch("independent.serve.NativeGenerator", side_effect=AssertionError("C loaded")):
+                with self.assertRaises(ContractError):
+                    load_bundle(changed)
+
     def request(self):
         image = np.zeros((8, 8, 3)); image[2:6, 1:4, 0] = 1
         timing = {"clock_id": "manual:1", "sync_group": "manual:1", "start_ns": 1, "end_ns": 2}

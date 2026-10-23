@@ -166,8 +166,10 @@ def measure(model, controller, mode, data, plan, reference_full_cpu_ns, *, seed=
         if (labels.shape != (len(full),) or labels.dtype.kind not in "iu"
                 or np.any(labels < 0) or np.any(labels >= 12)):
             raise ValueError("bounded scoring labels required")
-    if mode == "continuation" and not isinstance(controller, Controller):
-        raise ValueError("continuation needs the frozen probability critic")
+    if mode == "continuation":
+        from independent.gain_head import AffineGainHead
+        if not isinstance(controller, (Controller, AffineGainHead)):
+            raise ValueError("continuation needs a frozen compatible gain predictor")
     before = model.digest()
     preparation = WorkLedger("service-prepare")
     prepared_cpu, prepared_wall = time.process_time_ns(), time.perf_counter_ns()
@@ -321,19 +323,78 @@ def _artifact(run, name, *, basename=True):
 
 
 def _controller(path):
-    expected = {"ctrl_version", "ctrl_classes", "ctrl_mean", "ctrl_scale",
-                "ctrl_weights", "ctrl_intercept", "ctrl_bounds"}
+    from independent.gain_head import load_controller
     with zipfile.ZipFile(path) as archive:
+        affine = "gain_head_version.npy" in archive.namelist()
+        expected = ({"gain_head_version", "gh_classes", "gh_hidden_dim", "gh_mean", "gh_scale",
+                     "gh_weights", "gh_intercept", "gh_bounds"} if affine else
+                    {"ctrl_version", "ctrl_classes", "ctrl_mean", "ctrl_scale",
+                     "ctrl_weights", "ctrl_intercept", "ctrl_bounds"})
         if (set(archive.namelist()) != {name + ".npy" for name in expected}
                 or len(archive.namelist()) != len(expected)
                 or sum(row.file_size for row in archive.infolist()) > 65536):
             raise ValueError("unbounded critic inventory")
         arrays = {}
+        if affine:
+            arrays["gh_hidden_dim"] = _read_tensor(archive, "gh_hidden_dim", (1,), "integer")
+            hidden = int(arrays["gh_hidden_dim"][0])
+            if not 1 <= hidden <= 512:
+                raise ValueError("unbounded affine gain state")
         for name in expected:
-            shape = (31,) if name in ("ctrl_mean", "ctrl_scale", "ctrl_weights") else ((2,) if name == "ctrl_bounds" else (1,))
+            if affine:
+                shape = (hidden + 10,) if name in ("gh_mean", "gh_scale", "gh_weights") else ((2,) if name == "gh_bounds" else (1,))
+                integer = name in ("gain_head_version", "gh_classes", "gh_hidden_dim")
+            else:
+                shape = (31,) if name in ("ctrl_mean", "ctrl_scale", "ctrl_weights") else ((2,) if name == "ctrl_bounds" else (1,))
+                integer = name in ("ctrl_version", "ctrl_classes")
             arrays[name] = _read_tensor(archive, name, shape,
-                "integer" if name in ("ctrl_version", "ctrl_classes") else "float64")
-    return Controller.from_arrays(arrays)
+                "integer" if integer else "float64")
+    return load_controller(arrays)
+
+
+def _gain_head_binding(critic, calibration, *, hidden_dim, seed, config=None, training_rows=None):
+    """Bind the affine artifact, its actual fit receipt and the frozen head spec."""
+    from independent.gain_head import KIND, fit_work
+    actual_kind = getattr(critic, "kind", "probability-ridge-v1") if critic is not None else None
+    kind = (config or {}).get("gain_head", calibration.get("critic_kind", "probability-ridge-v1"))
+    if actual_kind is not None and actual_kind != kind:
+        raise ValueError("loaded critic kind differs from its frozen receipt/spec")
+    if calibration.get("critic_kind", "probability-ridge-v1") != kind:
+        raise ValueError("calibrated critic kind changed")
+    if kind != KIND:
+        if kind != "probability-ridge-v1":
+            raise ValueError("unsupported gain-head kind")
+        return
+    fitted = calibration.get("gain_head_fit")
+    if (not isinstance(fitted, dict) or fitted.get("schema") != "hepta.joint-generation.gain-head-fit.v1"
+            or fitted.get("kind") != kind or fitted.get("hidden_dim") != hidden_dim
+            or fitted.get("input_dim") != hidden_dim + 10 or fitted.get("seed") != seed
+            or type(fitted.get("rows")) is not int or not 1 <= fitted["rows"] <= 65536
+            or (training_rows is not None and fitted["rows"] != training_rows)):
+        raise ValueError("gain-head fitted geometry or training identity changed")
+    spec = config or {"gain_head": kind, "ridge_regularization": fitted.get("ridge_regularization")}
+    if fitted.get("ridge_regularization") != spec["ridge_regularization"]:
+        raise ValueError("gain-head fitted ridge specification changed")
+    work = fit_work(hidden_dim, fitted["rows"], spec)
+    if (fitted.get("work") != work or fitted.get("accounting_units") != WorkLedger("gain-fit-binding").estimate_kernel(**work)):
+        raise ValueError("gain-head fit work receipt changed")
+    raw_target = calibration.get("raw_target")
+    if raw_target is not None and (raw_target.get("rows") != fitted["rows"]
+            or raw_target.get("values_sha256") != fitted.get("target", {}).get("sha256")):
+        raise ValueError("gain-head fitted raw targets differ from calibration")
+    if critic is None:
+        return
+    if critic.hidden_dim != hidden_dim:
+        raise ValueError("gain-head state does not match content encoder")
+    normalizer = hashlib.sha256(np.asarray(critic.mean, dtype="<f8").tobytes()
+                               + np.asarray(critic.scale, dtype="<f8").tobytes()).hexdigest()
+    weights = hashlib.sha256(np.asarray(critic.weights, dtype="<f8").tobytes()).hexdigest()
+    target = fitted.get("target", {})
+    if (fitted.get("normalizer_sha256") != normalizer or fitted.get("weights_sha256") != weights
+            or not math.isclose(target.get("mean", math.nan), critic.intercept, rel_tol=1e-12, abs_tol=1e-12)
+            or not np.allclose([target.get("min", math.nan), target.get("max", math.nan)],
+                               critic.bounds, rtol=1e-12, atol=1e-12)):
+        raise ValueError("gain-head fitted parameters or target support changed")
 
 
 def _controller_decision_binding(row, selection):
@@ -349,6 +410,12 @@ def _controller_decision_binding(row, selection):
         raise ValueError("controller calibration content identity changed")
     if calibration.get("seed") != row["seed"]:
         raise ValueError("controller calibration model seed changed")
+    config = plan.get("controller", {})
+    if config.get("gain_head") is not None:
+        if row.get("critic_kind") != config["gain_head"] or row.get("gain_head_kind") != config["gain_head"]:
+            raise ValueError("selected gain-head kind changed")
+        _gain_head_binding(None, calibration, hidden_dim=plan["hidden"], seed=row["seed"],
+                           config=config, training_rows=selection["datasets"]["train"]["rows"])
     inputs = selection["common"]["calibration_identity"]["inputs_sha256"]
     if calibration.get("calibration_inputs_sha256") != inputs:
         raise ValueError("controller calibration training inputs changed")
@@ -427,6 +494,8 @@ def _frozen(run):
                 "independent/run.py", "independent/learning.py"}
     if plan["runtime_backend"] == "native":
         required.update(("independent/native.py", "independent/native.c"))
+    if plan.get("controller", {}).get("gain_head") is not None:
+        required.add("independent/gain_head.py")
     source_paths = list(ROOT.glob("*.py")) + list((ROOT / "independent").glob("*.py"))
     source_paths += list((ROOT / "independent").glob("*.c"))
     actual_sources = {str(path.relative_to(ROOT)) for path in source_paths}
@@ -485,6 +554,9 @@ def _frozen(run):
             if sha256(path) != row["controller_sha256"]:
                 raise ValueError("critic artifact changed")
             critic = _controller(path)
+            _gain_head_binding(critic, row.get("controller_calibration", {}), hidden_dim=model.dimensions[3],
+                seed=row["seed"], config=plan.get("controller", {}),
+                training_rows=selection["datasets"]["train"]["rows"])
             probability = _positive(row["random_full_probability"], "frozen random probability", allow_zero=True)
             if probability > 1:
                 raise ValueError("frozen random probability outside [0,1]")

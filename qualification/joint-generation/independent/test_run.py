@@ -13,6 +13,26 @@ from independent import run
 from independent.accounting import BudgetExceeded, WorkLedger
 
 
+class AffineControllerIntegrationTests(unittest.TestCase):
+    def test_selected_head_export_records_kind_tensor_inventory_and_dispatches_reload(self):
+        from independent.gain_head import AffineGainHead, KIND
+        from model import JointModel
+        model = JointModel(202, 12, 192, hidden=4, seed=9)
+        head = AffineGainHead(4, np.zeros(14), np.ones(14), np.zeros(14), .1, np.array([.1, .1]))
+        row = {"seed": 11, "name": "manual", "reference_full_cpu_ns": 100000}
+        states = {11: {"model": model, "objective": SimpleNamespace(reward=np.zeros((12, 12, 12)))}}
+        ledger = WorkLedger("manual-head-export")
+        plan = {"rho": 1.5, "controller": {"gain_head": KIND, "ridge_regularization": .001}}
+        with tempfile.TemporaryDirectory() as temporary:
+            with patch("independent.controller_cost.fit_and_calibrate", return_value=(head, .002, {"cost_ratio": .1})) as fit:
+                run.fit_selected_controls([row], plan, {}, Path(temporary), {}, ledger, states, {})
+            loaded = run.controller_for(Path(temporary), row)
+            self.assertEqual((row["critic_kind"], row["gain_head_kind"], loaded.kind), (KIND, KIND, KIND))
+            self.assertEqual(ledger.totals["serialized_tensors"], 8)
+            self.assertIs(fit.call_args.args[0], model)
+            np.testing.assert_array_equal(loaded.weights, head.weights)
+
+
 class FrozenRunnerTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -244,7 +264,7 @@ class ResidualContinuationTests(unittest.TestCase):
             return {mode: {"task_utility": float(model.marker)} for mode in plan["static_modes"]}, None
 
         with patch.object(run, "cpu_clock", lambda: now[0]), \
-                patch.object(run, "reserve_work", return_value={}), \
+                patch.object(run, "reserve_work", return_value={}) as reserve, \
                 patch.object(run, "forecast", side_effect=lambda *args: dict(receipt)), \
                 patch.object(run, "step_work", return_value={"scalar_ops": 1}), \
                 patch.object(run, "traced_phase", side_effect=lambda *args, **kwargs: nullcontext()), \
@@ -253,6 +273,7 @@ class ResidualContinuationTests(unittest.TestCase):
                 patch.object(run, "choose_global", side_effect=AssertionError("no reselection")):
             run.refine_content(selected, progress, ledgers, costs, plan, common, train,
                                {"labels": ()}, Path("/unused"), [], [])
+        self.assertTrue(all(call.kwargs["plan"] is plan for call in reserve.call_args_list))
         self.assertEqual(order[:6], [("supervised", 11), ("ndu", 11), ("ndu", 23),
                                      ("supervised", 23), ("supervised", 47), ("ndu", 47)])
         self.assertEqual(order[6], ("ndu", 11))

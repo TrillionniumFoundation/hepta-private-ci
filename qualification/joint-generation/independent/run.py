@@ -452,13 +452,16 @@ def fit_selected_controls(selected, plan, runtime_plan, run, train, ledger, stat
             calibration_data, plan, runtime_plan, ledger, row["reference_full_cpu_ns"],
             row["seed"], raw_reward=state["objective"].reward)
         name = row["name"] + "-controller.npz"
-        np.savez_compressed(run / name, **controller.to_arrays())
+        arrays = controller.to_arrays()
+        np.savez_compressed(run / name, **arrays)
         ledger.record("critic_export", serialized_bytes=(run / name).stat().st_size,
-                      serialized_tensors=7)
+                      serialized_tensors=len(arrays))
         row.update(mode="continuation", controller_type="continuation", controller_file=name,
                    controller_sha256=sha(run / name), gain_objective="raw-decoded-task-utility",
                    decision_price=decision_price, cost_ratio=receipt["cost_ratio"],
                    controller_calibration=receipt, rho=plan["rho"])
+        kind = getattr(controller, "kind", "probability-ridge-v1")
+        row.update(critic_kind=kind, gain_head_kind=kind)
     return cpu_clock() - started
 
 
@@ -479,7 +482,8 @@ def refine_content(selected, progress, ledgers, costs, plan, common, train, val,
                 first = models[rows[system][0]["seed"]]["model"]
                 inventories = reserve_work(first, system, rows[system][0]["mode"],
                     train_rows=len(train["labels"]), validation_rows=len(val["labels"]),
-                    calibration_rows=plan["calibration_rows"], calibration_repeats=plan["calibration_repeats"])
+                    calibration_rows=plan["calibration_rows"], calibration_repeats=plan["calibration_repeats"],
+                    plan=plan)
                 cost["refinement"] = forecast(system, rows[system], state["candidates"],
                                                 common, plan, inventories, ledger)
                 cost["refinement"].update(initial_remaining_units=ledger.remaining_units,
@@ -570,9 +574,8 @@ def refine_content(selected, progress, ledgers, costs, plan, common, train, val,
 def controller_for(run, row):
     if row["controller_file"] is None:
         return None
-    from control import Controller
-    with np.load(run / row["controller_file"], allow_pickle=False) as arrays:
-        return Controller.from_arrays(arrays)
+    from independent.evaluation import _controller
+    return _controller(run / row["controller_file"])
 
 
 def charge_measure(report, model, n, ledger):
