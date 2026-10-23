@@ -66,6 +66,8 @@ From the repository root:
       --observer-public-key /trusted/observer.pem \
       --meter-public-key /trusted/meter.pem \
       --expected-objective-digest REGISTERED_SHA256 \
+      --expected-evaluator-digest REGISTERED_EVALUATOR_SHA256 \
+      --expected-device-digest REGISTERED_DEVICE_SHA256 \
       --training-cutoff REGISTERED_TIME
 
 The verifier binds objective, generation, episode, arm, run, trace, input
