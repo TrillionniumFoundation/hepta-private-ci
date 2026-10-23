@@ -345,7 +345,7 @@ def report_status(by_id, protocol, rows):
         and abs(table[(sid,seed,"ndu")]["total_us"] - table[(sid,seed,arm)]["total_us"])
         / max(1, table[(sid,seed,arm)]["total_us"]) <= 0.05
         for sid in tests for seed in protocol["seeds"]
-        for arm in ARMS if arm not in ("ndu", "ndu_no_cov"))
+        for arm in ARMS if arm != "ndu")
     superior = all(ndu["quality"] > summaries[arm]["quality"]+0.01 and
                    ndu["cvar90"] < summaries[arm]["cvar90"]-0.01
                    for arm in ARMS if arm not in ("ndu", "ndu_no_cov"))
