@@ -22,6 +22,7 @@ use codex_hepta_memory::RetrievalCandidateIdentityV1;
 use codex_hepta_memory::RetrievalExecutionContextV1;
 use codex_hepta_memory::RetrievalRequest;
 use codex_hepta_memory::RevalidationStatus;
+use codex_hepta_memory::execute_owner_memory_cell_observation;
 use codex_hepta_memory::execute_owner_observation;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -45,6 +46,7 @@ pub(crate) enum CognitiveContextError {
     ReadUnavailable(String),
     RetrievalContextUnavailable,
     RetrievalLearningUnavailable,
+    MemoryCellPersistenceUnavailable,
 }
 
 impl From<CognitiveStoreError> for CognitiveContextError {
@@ -74,6 +76,7 @@ pub(crate) async fn read(
         None,
         None,
         None,
+        None,
     )
     .await
 }
@@ -98,6 +101,7 @@ pub(crate) async fn read_with_retrieval_context(
         current_retrieval,
         None,
         None,
+        None,
     )
     .await
 }
@@ -111,6 +115,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
     current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     learning_sink: Option<&std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
+    memory_cell_persistence: Option<&std::sync::Arc<crate::AgentdMemoryCellPersistenceHostV1>>,
     request_id: Option<u64>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
     if query.is_empty() || query.len() > 2048 || !(1..=4).contains(&limit) {
@@ -132,7 +137,11 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     if learning_sink.is_some() && retrieval_context.is_none() {
         return Err(CognitiveContextError::RetrievalLearningUnavailable);
     }
+    if memory_cell_persistence.is_some() && retrieval_context.is_none() {
+        return Err(CognitiveContextError::MemoryCellPersistenceUnavailable);
+    }
     let mut pending_assignment = None;
+    let mut pending_checkpoint = None;
 
     let cut = store.lane_c_snapshot(&access, &scope, now).await?;
     let observation = store
@@ -170,14 +179,33 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         let lease_expires_unix_ms = acquired_at_unix_ms.checked_add(5_000).ok_or_else(|| {
             CognitiveStoreError::Unavailable("retrieval context lease overflow".to_string())
         })?;
-        let execution = execute_owner_observation(
-            &observation,
-            &cut,
-            context,
-            Digest32::of_bytes(query.as_bytes()),
-            acquired_at_unix_ms,
-            lease_expires_unix_ms,
-        )?;
+        let execution = if let Some(host) = memory_cell_persistence {
+            let session = host
+                .prepare(&cut, context, now)
+                .await
+                .map_err(|_| CognitiveContextError::MemoryCellPersistenceUnavailable)?;
+            let executed = execute_owner_memory_cell_observation(
+                &observation,
+                &cut,
+                &session.prepared,
+                Digest32::of_bytes(query.as_bytes()),
+                acquired_at_unix_ms,
+                lease_expires_unix_ms,
+            )
+            .map_err(|_| CognitiveContextError::MemoryCellPersistenceUnavailable)?;
+            let execution = executed.execution().clone();
+            pending_checkpoint = Some((session, executed));
+            execution
+        } else {
+            execute_owner_observation(
+                &observation,
+                &cut,
+                context,
+                Digest32::of_bytes(query.as_bytes()),
+                acquired_at_unix_ms,
+                lease_expires_unix_ms,
+            )?
+        };
         let selection_order = execution
             .recall
             .packet
@@ -421,6 +449,11 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
             return Err(CognitiveContextError::RetrievalContextUnavailable);
         }
     }
+    if let (Some(host), Some((session, executed))) = (memory_cell_persistence, pending_checkpoint) {
+        host.persist(session, executed, now_seconds()?)
+            .await
+            .map_err(|_| CognitiveContextError::MemoryCellPersistenceUnavailable)?;
+    }
     if let Some(sink) = learning_sink {
         let assignment =
             pending_assignment.ok_or(CognitiveContextError::RetrievalLearningUnavailable)?;
@@ -474,6 +507,20 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         .await
         .map_err(|_| CognitiveContextError::RetrievalLearningUnavailable)?
         .map_err(|_| CognitiveContextError::RetrievalLearningUnavailable)?;
+    }
+    if memory_cell_persistence.is_some() {
+        store
+            .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
+            .await?;
+        if let (Some(current), Some(expected)) =
+            (current_retrieval, expected_retrieval_context_digest)
+            && load_retrieval_context(current, owner, body_generation)
+                .await?
+                .binding_digest()
+                != expected
+        {
+            return Err(CognitiveContextError::RetrievalContextUnavailable);
+        }
     }
     Ok(response)
 }

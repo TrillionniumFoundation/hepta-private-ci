@@ -2,7 +2,7 @@
 //!
 //! No database, schema or writer is added. One SQLite read transaction binds
 //! revisions, citations, heads and source/projection frontiers. Only verified,
-//! currently valid heads are exposed as facts; tombstones remain visible.
+//! currently valid heads are exposed as typed records; tombstones remain visible.
 
 use std::collections::BTreeMap;
 
@@ -37,6 +37,7 @@ use crate::CognitiveScope;
 use crate::CognitiveStore;
 use crate::CognitiveStoreError;
 use crate::cognitive_store::unavailable;
+use crate::typed_memory_storage::RevisionAdmissionV1;
 
 const MAX_REVISIONS: usize = 16_384;
 const MAX_CITATIONS: usize = 65_536;
@@ -48,8 +49,8 @@ pub const MAX_LANE_C_SNAPSHOT_PAGE_HEADS: usize = 512;
 pub const MAX_LANE_C_PAGE_ANCESTRY_REVISIONS: usize = 16_384;
 pub const MAX_LANE_C_PAGE_CITATIONS: usize = 65_536;
 const LANE_C_HEAD_DIGEST_BATCH: i64 = 1_024;
-/// The current durable SQLite memory schema has no persisted kind discriminator.
-/// Its admitted memory revisions therefore project only as Fact until a schema migration adds one.
+/// Backward-compatible default for untyped legacy revisions. Snapshot paths
+/// read the immutable persisted discriminator and admission for every row.
 pub const DURABLE_SQLITE_MEMORY_KIND: MemoryKind = MemoryKind::Fact;
 
 /// Owner-observed frontiers in one exact scope. Counters count immutable rows;
@@ -469,6 +470,7 @@ impl CognitiveStore {
                 })?;
             let mut revision_query = QueryBuilder::<Sqlite>::new(
                 "SELECT r.memory_id, r.revision, r.content_sha256, r.verification,
+                        r.owner_agent_id, r.memory_kind, r.typed_admission_sha256, r.typed_admission_json,
                         r.lifecycle, r.valid_from_unix_seconds, r.valid_to_unix_seconds,
                         r.supersedes_revision, h.revision AS head_revision
                  FROM memory_revisions r LEFT JOIN memory_heads h ON h.memory_id = r.memory_id
@@ -590,11 +592,15 @@ impl CognitiveStore {
                     return Err(corrupt("tombstoned memory resurrection"));
                 }
                 let digest: String = row.try_get("content_sha256").map_err(unavailable)?;
+                let kind = RevisionAdmissionV1::from_row(&row)?.kind.memory_kind();
+                if prior.is_some_and(|record| record.kind != kind) {
+                    return Err(corrupt("memory kind changed across revision ancestry"));
+                }
                 let record = MemoryRecord {
                     record_id,
                     revision: Revision::new(u64::try_from(revision).map_err(corrupt)?)
                         .map_err(corrupt)?,
-                    kind: MemoryKind::Fact,
+                    kind,
                     content_digest: digest.parse().map_err(corrupt)?,
                     predecessor_digest: prior.map(MemoryRecord::record_digest),
                     citations: citations
@@ -669,6 +675,23 @@ impl CognitiveStore {
         scope: &CognitiveScope,
         now_unix_seconds: i64,
     ) -> Result<DurableCognitiveSnapshot, CognitiveStoreError> {
+        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let snapshot = self
+            .lane_c_snapshot_tx(&mut transaction, access, scope, now_unix_seconds)
+            .await?;
+        transaction.commit().await.map_err(unavailable)?;
+        Ok(snapshot)
+    }
+
+    /// Acquire the same bounded owner cut while a composite operation holds
+    /// its transaction, so a concurrent forget cannot split validation/write.
+    pub(crate) async fn lane_c_snapshot_tx(
+        &self,
+        transaction: &mut sqlx::Transaction<'_, Sqlite>,
+        access: &CognitiveAccess,
+        scope: &CognitiveScope,
+        now_unix_seconds: i64,
+    ) -> Result<DurableCognitiveSnapshot, CognitiveStoreError> {
         self.authorize(access, scope)?;
         if now_unix_seconds < 0 {
             return Err(CognitiveStoreError::Invalid(
@@ -676,9 +699,9 @@ impl CognitiveStore {
             ));
         }
         let (scope_kind, workspace) = scope.database_parts();
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
         let rows = sqlx::query(
             "SELECT r.memory_id, r.revision, r.content_sha256, r.verification,
+                    r.owner_agent_id, r.memory_kind, r.typed_admission_sha256, r.typed_admission_json,
                     r.lifecycle, r.valid_from_unix_seconds, r.valid_to_unix_seconds,
                     r.supersedes_revision, h.revision AS head_revision
              FROM memory_revisions r LEFT JOIN memory_heads h ON h.memory_id = r.memory_id
@@ -689,7 +712,7 @@ impl CognitiveStore {
         .bind(scope_kind)
         .bind(workspace)
         .bind((MAX_REVISIONS + 1) as i64)
-        .fetch_all(&mut *transaction)
+        .fetch_all(&mut **transaction)
         .await
         .map_err(unavailable)?;
         if rows.len() > MAX_REVISIONS {
@@ -707,7 +730,7 @@ impl CognitiveStore {
         )
         .bind(self.owner_agent_id.as_str()).bind(scope_kind).bind(workspace)
         .bind((MAX_CITATIONS + 1) as i64)
-        .fetch_all(&mut *transaction).await.map_err(unavailable)?;
+        .fetch_all(&mut **transaction).await.map_err(unavailable)?;
         if citation_rows.len() > MAX_CITATIONS {
             return Err(CognitiveStoreError::Unavailable(
                 "Lane C citation capacity exceeded".to_string(),
@@ -729,7 +752,7 @@ impl CognitiveStore {
         let source_count: i64 = sqlx::query_scalar(
             "SELECT count(*) FROM (SELECT 1 FROM source_ledger WHERE owner_agent_id = ? AND scope_kind = ? AND workspace_sha256 IS ? LIMIT 65537)",
         ).bind(self.owner_agent_id.as_str()).bind(scope_kind).bind(workspace)
-            .fetch_one(&mut *transaction).await.map_err(unavailable)?;
+            .fetch_one(&mut **transaction).await.map_err(unavailable)?;
         if source_count > MAX_SOURCES {
             return Err(CognitiveStoreError::Unavailable(
                 "Lane C source capacity exceeded".to_string(),
@@ -743,13 +766,13 @@ impl CognitiveStore {
         .bind(self.owner_agent_id.as_str())
         .bind(scope_kind)
         .bind(workspace)
-        .fetch_one(&mut *transaction)
+        .fetch_one(&mut **transaction)
         .await
         .map_err(unavailable)?;
         let graph_generation: Option<i64> =
             sqlx::query_scalar("SELECT generation FROM kg_projection WHERE projection_scope = ?")
                 .bind(scope.projection_key())
-                .fetch_optional(&mut *transaction)
+                .fetch_optional(&mut **transaction)
                 .await
                 .map_err(unavailable)?;
         let memory_frontier = rows.len() as u64;
@@ -797,11 +820,15 @@ impl CognitiveStore {
                 return Err(corrupt("tombstoned memory resurrection"));
             }
             let digest: String = row.try_get("content_sha256").map_err(unavailable)?;
+            let kind = RevisionAdmissionV1::from_row(&row)?.kind.memory_kind();
+            if prior.is_some_and(|record| record.kind != kind) {
+                return Err(corrupt("memory kind changed across revision ancestry"));
+            }
             let record = MemoryRecord {
                 record_id,
                 revision: Revision::new(u64::try_from(revision).map_err(corrupt)?)
                     .map_err(corrupt)?,
-                kind: DURABLE_SQLITE_MEMORY_KIND,
+                kind,
                 content_digest: digest.parse().map_err(corrupt)?,
                 predecessor_digest: prior.map(MemoryRecord::record_digest),
                 citations: citations
@@ -855,7 +882,6 @@ impl CognitiveStore {
             heads,
         )
         .map_err(corrupt)?;
-        transaction.commit().await.map_err(unavailable)?;
         let scope_id = StableId::new(format!(
             "cognitive:{}:{}",
             self.owner_agent_id.as_str(),

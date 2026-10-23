@@ -295,6 +295,7 @@ impl AgentdState {
                     self.cognitive_ranker.get(),
                     self.cognitive_retrieval_context.get(),
                     self.cognitive_retrieval_learning.get(),
+                    self.memory_cell_persistence.get(),
                     Some(request_id),
                 )
                 .await;
@@ -339,6 +340,12 @@ impl AgentdState {
                         AgentdPayload::Error {
                             code: "cognitive_retrieval_learning_unavailable".to_string(),
                             message: "retrieval assignment could not be durably recorded by the learning ledger owner".to_string(),
+                        }
+                    }
+                    Err(CognitiveContextError::MemoryCellPersistenceUnavailable) => {
+                        AgentdPayload::Error {
+                            code: "memory_cell_persistence_unavailable".to_string(),
+                            message: "MemoryCell checkpoint or its independent host witness is unavailable; explicit recovery required".to_string(),
                         }
                     }
                 }
@@ -426,6 +433,12 @@ impl AgentdState {
                         AgentdPayload::Error {
                             code: "cognitive_retrieval_learning_unavailable".to_string(),
                             message: "retrieval assignment could not be durably recorded by the learning ledger owner".to_string(),
+                        }
+                    }
+                    Err(CognitiveContextError::MemoryCellPersistenceUnavailable) => {
+                        AgentdPayload::Error {
+                            code: "memory_cell_persistence_unavailable".to_string(),
+                            message: "MemoryCell checkpoint or its independent host witness is unavailable; explicit recovery required".to_string(),
                         }
                     }
                 }

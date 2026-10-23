@@ -35,6 +35,9 @@ use crate::CurrentMemoryRetrievalContext;
 use crate::cognitive_context::CognitiveContextError;
 use crate::cognitive_context::read_with_retrieval_context;
 
+#[path = "memory_cell_persistence_tests.rs"]
+mod persistence;
+
 #[derive(Clone)]
 struct SwitchingContext {
     owner: AgentId,

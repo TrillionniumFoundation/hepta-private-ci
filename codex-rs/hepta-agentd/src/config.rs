@@ -88,6 +88,7 @@ pub struct AgentdConfig {
     cognitive_retrieval_mode: CognitiveRetrievalMode,
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
+    memory_cell_persistence: Option<std::sync::Arc<crate::AgentdMemoryCellPersistenceHostV1>>,
     plasticity_bootstrap: Option<crate::PlasticityRuntimeBootstrapV1>,
     intuition_policy_host: Option<std::sync::Arc<crate::AgentdIntuitionPolicyHostV1>>,
     intelligence_product_runner: Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
@@ -211,6 +212,7 @@ impl AgentdConfig {
             cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
+            memory_cell_persistence: None,
             plasticity_bootstrap: None,
             intuition_policy_host: None,
             intelligence_product_runner: None,
@@ -442,6 +444,42 @@ impl AgentdConfig {
         &self,
     ) -> Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>> {
         self.cognitive_retrieval_learning.clone()
+    }
+
+    /// Opt into graph/RecallPacket persistence on the same independently
+    /// recovered writer. The attached context provider must authenticate the
+    /// manifest/NDU state and durably retain exact checkpoint/recovery pins.
+    pub fn with_memory_cell_persistence(mut self) -> Result<Self, AgentdError> {
+        if self.memory_cell_persistence.is_some() {
+            return Err(AgentdError::Invalid(
+                "MemoryCell persistence already configured".into(),
+            ));
+        }
+        let host = self.production_writer_host.as_ref().ok_or_else(|| {
+            AgentdError::Invalid(
+                "MemoryCell persistence requires the recovered production writer host".into(),
+            )
+        })?;
+        let current = self.cognitive_retrieval_context.as_ref().ok_or_else(|| {
+            AgentdError::Invalid(
+                "MemoryCell persistence requires the authenticated retrieval context".into(),
+            )
+        })?;
+        let persistence = crate::AgentdMemoryCellPersistenceHostV1::new(
+            host.writer(),
+            std::sync::Arc::clone(current),
+        )
+        .map_err(AgentdError::Invalid)?;
+        self.memory_cell_persistence = Some(std::sync::Arc::new(persistence));
+        Ok(self)
+    }
+
+    /// Retain this handle when the embedding needs to inspect or acknowledge a
+    /// checkpoint committed before external witness retention failed.
+    pub fn memory_cell_persistence(
+        &self,
+    ) -> Option<std::sync::Arc<crate::AgentdMemoryCellPersistenceHostV1>> {
+        self.memory_cell_persistence.clone()
     }
 
     /// Attach one explicitly constructed governed plasticity bootstrap envelope.

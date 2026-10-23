@@ -57,6 +57,15 @@ use crate::local_lease_outbox::legacy_dispatch_operation_digest;
 use crate::operation_claims;
 use crate::operation_claims::DurableDispatchClaim;
 
+#[path = "memory_cell_state_store.rs"]
+mod memory_cell_state_store;
+pub use memory_cell_state_store::ProductionMemoryCellStateCapability;
+
+#[path = "production_typed_memory.rs"]
+mod production_typed_memory;
+pub use production_typed_memory::ProductionTypedMemoryCapabilityV1;
+pub use production_typed_memory::TypedMemoryAdmissionReceiptV1;
+
 /// Schema version of the externally-authorized H4 writer boundary.
 pub const PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION: u32 = 1;
 /// Stable provenance namespace for production writer receipts.

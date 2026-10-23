@@ -29,6 +29,12 @@ use crate::SignedCurrentArtifactHeadV1;
 use crate::VerifiedCurrentRegistryViewV1;
 use crate::WithdrawalBoundArtifactAdmissionV3;
 
+#[path = "owner_read.rs"]
+mod owner_read;
+pub use owner_read::ArtifactReadErrorV1;
+pub use owner_read::ArtifactReadPinsV1;
+pub use owner_read::VerifiedArtifactReadV1;
+
 #[derive(Clone, Debug)]
 pub struct LearningArtifactOwnerServiceConfigV1 {
     pub root: PathBuf,

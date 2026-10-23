@@ -2,6 +2,7 @@
 
 #![forbid(unsafe_code)]
 
+mod checkpoint_codec;
 mod decision;
 mod engram;
 mod generation_bound;
@@ -21,6 +22,13 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+pub use checkpoint_codec::MAX_ENGRAM_CHECKPOINT_BYTES_V1;
+pub use checkpoint_codec::MAX_RECALL_CHECKPOINT_BYTES_V1;
+pub use checkpoint_codec::MemoryCheckpointCodecErrorV1;
+pub use checkpoint_codec::decode_engram_checkpoint_v1;
+pub use checkpoint_codec::decode_recall_checkpoint_v1;
+pub use checkpoint_codec::encode_engram_checkpoint_v1;
+pub use checkpoint_codec::encode_recall_checkpoint_v1;
 pub use decision::AssignmentErrorV1;
 pub use decision::RetrievalAssignmentCompletenessV1;
 pub use decision::RetrievalAssignmentObservationV1;

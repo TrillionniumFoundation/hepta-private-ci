@@ -45,6 +45,13 @@ use crate::framing::frame_part;
 mod read_only;
 pub use read_only::RecoveredCognitiveReadOnly;
 
+#[path = "cognitive_schema_upgrade.rs"]
+mod schema_upgrade;
+pub use schema_upgrade::CognitiveSchemaUpgradeHostV1;
+pub use schema_upgrade::CognitiveSchemaUpgradeTransitionV1;
+pub use schema_upgrade::CognitiveSchemaUpgradeWitnessV1;
+pub use schema_upgrade::PreparedCognitiveSchemaUpgradeV1;
+
 const PROFILE: &str = "hepta:cognitive:exact-current-cut:v1";
 const MAX_ROWS: i64 = 262_144;
 const MAX_BYTES: i64 = 128 * 1024 * 1024;
@@ -146,11 +153,11 @@ impl CognitiveStore {
                     "cognitive recovery root does not exist".to_string(),
                 )
             })?;
-        if canonical_root != root {
-            return Err(CognitiveRecoveryError::Indeterminate(
-                "cognitive recovery root is redirected".to_string(),
-            ));
-        }
+        // canonical_path_without_redirection already checks each component
+        // and rejects redirections (including Windows reparse points). The
+        // returned spelling may legitimately have a Windows verbatim prefix
+        // while the requested native path does not; raw PathBuf inequality
+        // is therefore not a second redirect check.
         let exclusive_guard = CognitiveStoreOpenGuard::acquire_exclusive(&canonical_root)
             .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
         let source_path = resolve_active_database_path(&canonical_root)
@@ -367,7 +374,22 @@ async fn capture(
     connection: &mut SqliteConnection,
     owner: &AgentId,
 ) -> Result<CognitiveRecoveryAnchor, CognitiveStoreError> {
-    let mut schema = REQUIRED_SCHEMA_OBJECTS.to_vec();
+    capture_profile(
+        connection,
+        owner,
+        REQUIRED_SCHEMA_OBJECTS,
+        REQUIRED_SCHEMA_ORACLE_SHA256,
+    )
+    .await
+}
+
+async fn capture_profile(
+    connection: &mut SqliteConnection,
+    owner: &AgentId,
+    objects: &[(&str, &str)],
+    expected_oracle: &str,
+) -> Result<CognitiveRecoveryAnchor, CognitiveStoreError> {
+    let mut schema = objects.to_vec();
     schema.sort_unstable_by_key(|(name, _)| *name);
     let mut schema_hasher = Sha256::new();
     frame_part(
@@ -405,7 +427,7 @@ async fn capture(
         frame_part(&mut schema_hasher, sql.as_bytes());
     }
     let schema_digest = Sha256Digest::from_sha256_output(schema_hasher.finalize());
-    if schema_digest.as_str() != REQUIRED_SCHEMA_ORACLE_SHA256 {
+    if schema_digest.as_str() != expected_oracle {
         return Err(CognitiveStoreError::Corrupt(
             "cognitive recovery schema mismatch".to_string(),
         ));

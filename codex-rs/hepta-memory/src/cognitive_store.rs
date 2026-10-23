@@ -52,6 +52,10 @@ mod recovery;
 pub use recovery::CognitiveRecoveryAnchor;
 pub use recovery::CognitiveRecoveryError;
 pub use recovery::CognitiveRecoveryRequirement;
+pub use recovery::CognitiveSchemaUpgradeHostV1;
+pub use recovery::CognitiveSchemaUpgradeTransitionV1;
+pub use recovery::CognitiveSchemaUpgradeWitnessV1;
+pub use recovery::PreparedCognitiveSchemaUpgradeV1;
 pub use recovery::RecoveredCognitiveReadOnly;
 
 const COGNITIVE_DB_FILENAME: &str = "cognitive_1.sqlite3";
@@ -61,6 +65,12 @@ const COGNITIVE_RECOVERED_DB_PREFIX: &str = "cognitive_recovered_v1_";
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
+    ("cognitive_memory_cell_checkpoints", "table"),
+    ("cognitive_memory_cell_checkpoints_no_update", "trigger"),
+    ("cognitive_memory_cell_checkpoints_no_delete", "trigger"),
+    ("cognitive_memory_cell_heads", "table"),
+    ("cognitive_memory_cell_heads_no_delete", "trigger"),
+    ("cognitive_memory_cell_heads_monotonic", "trigger"),
     ("shared_experience_use_events", "table"),
     ("shared_experience_use_no_update", "trigger"),
     ("shared_experience_use_no_delete", "trigger"),
@@ -74,6 +84,7 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("memory_revisions", "table"),
     ("memory_revisions_no_update", "trigger"),
     ("memory_revisions_no_delete", "trigger"),
+    ("memory_revisions_kind_predecessor", "trigger"),
     ("memory_citations", "table"),
     ("memory_citations_no_update", "trigger"),
     ("memory_citations_no_delete", "trigger"),
@@ -200,7 +211,7 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("cognitive_operation_dispatch_claims_expiry_lookup", "index"),
 ];
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "046f23bab5d4c779735c762159c79e61cfe3a6a8a35e18ff8ec4f40e5c4e2be2";
+    "9d1d514b78f8066e2738c698877980cc7bc8cd76c019b4db79e22520d2456453";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {
@@ -345,6 +356,13 @@ impl CognitiveStore {
 
     pub fn path(&self) -> &Path {
         &self.path
+    }
+
+    /// Drain the shared SQLite pool before releasing this handle's owner lock.
+    /// Hosts must first stop admissions and release other store/writer handles;
+    /// dropping a pool alone does not wait for its final WAL checkpoint.
+    pub async fn close(self) {
+        self.pool.close().await;
     }
 
     pub fn owner_agent_id(&self) -> &AgentId {

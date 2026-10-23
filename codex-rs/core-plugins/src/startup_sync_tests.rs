@@ -1423,16 +1423,31 @@ fn extract_zipball_masks_special_permission_bits() {
 
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);
-    let entry_mode = 0o107755;
-    // unix_permissions() masks special bits before the archive is written.
-    let options = SimpleFileOptions::default()
-        .system(System::Unix)
-        .external_attributes(entry_mode << 16);
+    let entry_mode: u32 = 0o107755;
+    let options = SimpleFileOptions::default().system(System::Unix);
     writer
         .start_file("root/plugin", options)
         .expect("start executable entry");
     writer.write_all(b"plugin").expect("write plugin");
-    let bytes = writer.finish().expect("finish zip").into_inner();
+    let mut bytes = writer.finish().expect("finish zip").into_inner();
+    // Put the adversarial mode in the actual archive. ZipArchive::unix_mode
+    // deliberately masks special bits, so fixture authenticity must be checked
+    // on the central-directory bytes before that sanitizing reader is used.
+    let central_directory = bytes
+        .windows(4)
+        .position(|signature| signature == b"PK\x01\x02")
+        .expect("central directory header");
+    bytes[central_directory + 38..central_directory + 42]
+        .copy_from_slice(&(entry_mode << 16).to_le_bytes());
+    assert_eq!(
+        u32::from_le_bytes(
+            bytes[central_directory + 38..central_directory + 42]
+                .try_into()
+                .expect("external attributes"),
+        ) >> 16,
+        entry_mode,
+        "archive bytes must preserve SUID/SGID/sticky bits before decoding",
+    );
     {
         let mut archive =
             ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read permission fixture");
@@ -1441,8 +1456,8 @@ fn extract_zipball_masks_special_permission_bits() {
             .expect("read executable entry");
         assert_eq!(
             entry.unix_mode(),
-            Some(entry_mode),
-            "fixture must preserve SUID/SGID/sticky bits before extraction"
+            Some(entry_mode & !0o7000),
+            "ZIP reader masks special bits before filesystem extraction"
         );
     }
     let destination = tempdir().expect("destination");

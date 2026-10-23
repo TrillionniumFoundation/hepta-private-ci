@@ -265,9 +265,9 @@ pub fn write_intent(
     write_atomic_json(run_root, SIGNED_INTENT_FILE, intent)
 }
 
-/// Publishes an explicit operator recovery directive bound to one exact intent
-/// digest. The directive never asserts successful completion; the only
-/// repository-controlled recovery action is fail-closed abort.
+/// Publishes a legacy unsigned operator directive bound to one exact intent
+/// digest. This does not authorize production recovery or clear its quarantine;
+/// production recovery requires an independently signed recovery decision.
 pub fn write_recovery_directive(
     run_root: &Path,
     directive: &SignedIntentRecoveryDirective,

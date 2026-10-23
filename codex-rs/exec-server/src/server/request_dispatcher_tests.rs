@@ -148,6 +148,7 @@ fn request_span_uses_bounded_name_wire_method_and_inbound_trace_parent() {
 async fn request_queue_waits_for_dispatcher_admission_before_recording_telemetry() {
     let span_exporter = InMemorySpanExporter::default();
     let tracer_provider = SdkTracerProvider::builder()
+        .with_sampler(opentelemetry_sdk::trace::Sampler::AlwaysOn)
         .with_simple_exporter(span_exporter.clone())
         .build();
     let subscriber = tracing_subscriber::registry().with(

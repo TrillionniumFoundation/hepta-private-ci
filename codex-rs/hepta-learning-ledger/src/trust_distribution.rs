@@ -18,6 +18,9 @@ use crate::LearningEvidenceTrustV1;
 use crate::LearningEvidenceVerifierV1;
 use crate::SignedEvidenceError;
 
+#[path = "current_trust.rs"]
+mod current_trust;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct LearningTrustRootV1 {
     pub root_id: StableId,
@@ -64,6 +67,8 @@ pub struct ActivatedLearningTrustV1 {
     generation: u64,
     effective_at: u64,
     distribution_digest: Digest32,
+    expires_at: u64,
+    root_revoked_at: Option<u64>,
     verifier: LearningEvidenceVerifierV1,
 }
 
@@ -176,6 +181,8 @@ pub fn activate_learning_trust(
         generation: distribution.generation,
         effective_at: distribution.effective_at,
         distribution_digest,
+        expires_at: signed.expires_at,
+        root_revoked_at: root.revoked_at,
         verifier,
     })
 }

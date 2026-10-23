@@ -2,6 +2,10 @@ load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
     name = "hepta-intelligence",
+    compile_data = [
+        "//codex-rs/hepta-learning-artifacts:tests/fixtures/p37-head/head.bundle",
+        "//codex-rs/hepta-learning-artifacts:tests/fixtures/p37-head/weights.npz",
+    ],
     crate_name = "codex_hepta_intelligence",
     unit_test_dependency_replacements = {
         "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",

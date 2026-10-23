@@ -1,5 +1,8 @@
 //! Candidate checkpoint digest invariants, without a writer or model.
 
+#[path = "checkpoint_codec_roundtrip_tests.rs"]
+mod checkpoint_roundtrip;
+
 use std::collections::BTreeSet;
 
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;

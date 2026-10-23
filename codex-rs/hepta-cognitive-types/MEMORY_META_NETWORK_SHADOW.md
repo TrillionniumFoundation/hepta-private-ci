@@ -107,7 +107,8 @@ source_frontier_digest / forget_frontier_digest` to a caller-supplied
 `FnMut(&MemoryMetaEvidenceLookupV1) -> bool` verifier. The wrapper fails the
 **entire** batch on any rejection; it never falls back to the unverified
 path. No deferred Cell runs or receives a fabricated evidence certificate.
-Three focused tests cover late-Cell denial before an invalid retrieval,
+Focused tests separately cover late-Cell denial with valid generated
+inputs, invalid-generator rejection before any external owner callback,
 tuple binding on acceptance, and empty-support abstention.
 
 **Trust boundary:** that callback must be implemented by an independently
