@@ -1,0 +1,127 @@
+//! Presentation attachment to an already authorized external queue owner.
+use super::*;
+
+impl HmiRequestsV1 {
+    /// Current context may report an interrupted/failed terminal even though its
+    /// output admission is closed. It cannot publish text from a fenced handle.
+    pub fn permits_owner_context(&self, scope: &HmiOutputScopeV1) -> Result<bool, HmiError> {
+        let state = self.shared.state.lock().map_err(|_| HmiError::Fenced)?;
+        Ok(!state.fenced
+            && (output_scope(&self.shared, &state) == *scope
+                || state
+                    .terminal
+                    .as_ref()
+                    .is_some_and(|event| event.scope == *scope)))
+    }
+    /// Arm observation before the existing owner dispatches its exact Core client
+    /// ID. This performs no admission, authentication, persistence or replay.
+    /// The caller must authenticate first and use its original durable ingress.
+    /// A duplicate never reopens output, including after interruption.
+    pub fn observe_owner_submission(
+        &self,
+        generation: u64,
+        sequence: u64,
+        client_id: &str,
+        text: &str,
+    ) -> Result<(), HmiError> {
+        let (_, digest) = owner_input(client_id, text)?;
+        let mut state = self.shared.state.lock().map_err(|_| HmiError::Fenced)?;
+        if state.fenced || generation != self.shared.binding.organ_generation {
+            return Err(HmiError::Fenced);
+        }
+        if state.pending.as_ref() == Some(&(client_id.into(), digest.clone())) {
+            return Ok(());
+        }
+        if sequence == 0 || sequence <= state.sequence {
+            return Err(HmiError::Invalid("utterance sequence"));
+        }
+        if state.pending.is_some() && !terminal_is_known(&state) {
+            return Err(HmiError::Busy);
+        }
+        state.epoch = state.epoch.checked_add(1).ok_or(HmiError::Fenced)?;
+        state.sequence = sequence;
+        state.pending = Some((client_id.into(), digest));
+        state.output_enabled = true;
+        state.cancel_requested = false;
+        state.queued_id = None;
+        state.active_turn = None;
+        state.items.clear();
+        state.terminal = None;
+        state.speech_taken = false;
+        Ok(())
+    }
+
+    /// Read-only recovery of that external owner's exact ID and canonical text.
+    /// Never creates a queue row or opens an output gate on a new connection.
+    pub async fn reconcile_owner_submission(
+        &self,
+        generation: u64,
+        client_id: &str,
+        text: &str,
+    ) -> Result<ThreadQueueReconcileResponse, HmiError> {
+        let (input, digest) = owner_input(client_id, text)?;
+        {
+            let state = self.shared.state.lock().map_err(|_| HmiError::Fenced)?;
+            if state.fenced || generation != self.shared.binding.organ_generation {
+                return Err(HmiError::Fenced);
+            }
+        }
+        let response: ThreadQueueReconcileResponse = self
+            .call(ClientRequest::ThreadQueueReconcile {
+                request_id: self.id(),
+                params: ThreadQueueReconcileParams {
+                    thread_id: self.shared.binding.thread_id.clone(),
+                    input: input.clone(),
+                    client_user_message_id: client_id.into(),
+                    expected_payload_sha256: digest.clone(),
+                    mode: ThreadQueueReconcileMode::ReconcileOnly,
+                },
+            })
+            .await?;
+        let valid = response.client_user_message_id == client_id
+            && response.payload_sha256 == digest
+            && match &response.outcome {
+                ThreadQueueReconcileOutcome::Queued {
+                    queued_submission,
+                    created,
+                } => {
+                    !created
+                        && !queued_submission.id.is_empty()
+                        && queued_submission.client_user_message_id == client_id
+                        && queued_submission.input == input
+                }
+                ThreadQueueReconcileOutcome::Persisted { turn_id } => !turn_id.is_empty(),
+                ThreadQueueReconcileOutcome::Missing | ThreadQueueReconcileOutcome::Cancelled => {
+                    true
+                }
+            };
+        if !valid {
+            self.revoke()?;
+            return Err(HmiError::Identity);
+        }
+        Ok(response)
+    }
+}
+fn owner_input(client_id: &str, text: &str) -> Result<(Vec<UserInput>, String), HmiError> {
+    if client_id.is_empty()
+        || client_id.len() > 256
+        || client_id.chars().any(char::is_control)
+        || text.trim().is_empty()
+        || text.len() > MAX_TEXT_BYTES
+    {
+        return Err(HmiError::Invalid("owner input"));
+    }
+    let input = vec![UserInput::Text {
+        text: text.into(),
+        text_elements: Vec::new(),
+    }];
+    let digest = user_input_payload_sha256(
+        &input
+            .iter()
+            .cloned()
+            .map(UserInput::into_core)
+            .collect::<Vec<_>>(),
+    )
+    .map_err(|e| HmiError::Protocol(e.to_string()))?;
+    Ok((input, digest))
+}

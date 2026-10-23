@@ -11,6 +11,10 @@ enum Retirement {
     OutputOnly,
     RevokeCapture,
 }
+enum OutputMode {
+    Speech,
+    Text,
+}
 
 /// Install inside the current owner. Drain Hepta/media events concurrently with
 /// admission futures (as with HmiRequestsV1); this object starts no detached work.
@@ -23,6 +27,7 @@ pub struct HmiOwnerBridgeV1<A, M, O> {
     observations: O,
     input: Mutex<InputState>,
     input_slot: tokio::sync::Semaphore,
+    output_mode: OutputMode,
 }
 impl<A: HmiOwnerAuthorityV1, M: HmiOwnerMediaV1, O: HmiOwnerObservationsV1>
     HmiOwnerBridgeV1<A, M, O>
@@ -33,8 +38,29 @@ impl<A: HmiOwnerAuthorityV1, M: HmiOwnerMediaV1, O: HmiOwnerObservationsV1>
         media: M,
         observations: O,
     ) -> Result<Self, HmiError> {
+        Self::attach_mode(requests, authority, media, observations, OutputMode::Speech)
+    }
+    /// A text channel has no capture or speech authority. Its existing owner
+    /// still supplies live authorization and deterministic local retirement.
+    pub fn attach_text(
+        requests: HmiRequestsV1,
+        authority: A,
+        media: M,
+        observations: O,
+    ) -> Result<Self, HmiError> {
+        Self::attach_mode(requests, authority, media, observations, OutputMode::Text)
+    }
+    fn attach_mode(
+        requests: HmiRequestsV1,
+        authority: A,
+        media: M,
+        observations: O,
+        output_mode: OutputMode,
+    ) -> Result<Self, HmiError> {
         authority.check_current(requests.binding())?;
-        if media.connection_id() != requests.connection_id() || media.capture_generation() == 0 {
+        if media.connection_id() != requests.connection_id()
+            || (matches!(output_mode, OutputMode::Speech) && media.capture_generation() == 0)
+        {
             return Err(HmiError::Identity);
         }
         Ok(Self {
@@ -44,6 +70,7 @@ impl<A: HmiOwnerAuthorityV1, M: HmiOwnerMediaV1, O: HmiOwnerObservationsV1>
             observations,
             input: Mutex::new(InputState::default()),
             input_slot: tokio::sync::Semaphore::new(1),
+            output_mode,
         })
     }
     fn current(&self) -> Result<(), HmiError> {
@@ -273,6 +300,9 @@ impl<A: HmiOwnerAuthorityV1, M: HmiOwnerMediaV1, O: HmiOwnerObservationsV1>
                     }
                     if outcome.status != HmiTerminalStatusV1::Completed {
                         return Err(HmiError::Fenced);
+                    }
+                    if matches!(self.output_mode, OutputMode::Text) {
+                        return Ok(None);
                     }
                     let Some(request) = self
                         .requests
