@@ -119,6 +119,18 @@ class PhysicalAuditTests(unittest.TestCase):
                            REGISTRY["models"]["laya_typed_421m"])
         self.assertTrue(any("inconsistent tokenizer" in x for x in errors))
 
+    def test_tok_config_and_inventory_rewrite_must_agree(self):
+        case = fake("laya_english_421m")
+        case["performance"]["laya_tokenizer_compat"]["effective_tokenizer_config_sha256"] = None
+        errors = audit_arm("laya_english_421m", case,
+                           REGISTRY["models"]["laya_english_421m"])
+        self.assertTrue(any("inconsistent tokenizer" in x for x in errors))
+        case = fake("laya_multi_322m")
+        case["performance"]["laya_tokenizer_compat"]["effective_tokenizer_config_sha256"] = "b" * 64
+        case["performance"]["laya_tokenizer_compat"]["registered_config_rewrite"] = True
+        errors = audit_arm("laya_multi_322m", case, REGISTRY["models"]["laya_multi_322m"])
+        self.assertTrue(any("inconsistent tokenizer" in x for x in errors))
+
     def test_training_budget_or_token_row_drift_rejected(self):
         cases = samples()
         cases["harrier_270m"]["head_training"]["steps"] = 10
