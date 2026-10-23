@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.p41-macos-cold-recovery-fixture-review.v1",
+  "date_utc": "2026-10-23",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_parent": "5fbb4474d851d8592224b9ecb883d12500cc1412",
+  "original_failing_combination": {
+    "pr": 3426,
+    "head": "de01c346d65a964f741ce1901b8c10ed5c580e6d",
+    "run": 39921328328,
+    "job": 120380753536,
+    "platform": "macos-15-intel x86_64-apple-darwin",
+    "job_terminal": "cancelled",
+    "test_failures_observed_before_cancellation": [
+      {
+        "label": "//codex-rs/hepta-memory:hepta-memory-unit-tests",
+        "test": "cognitive_store::recovery::tests::cold_read_only::crash_reopen_refuses_pending_wal",
+        "observed": "child CognitiveStore::open at line 183 rejected noncanonical/symlinked per-agent cognitive root, child exit not expected 73",
+        "raw_log": "hepta-memory/src/cognitive_store_recovery_read_only_tests.rs:183/205"
+      },
+      {
+        "label": "//codex-rs/exec-server:exec-server-http_request-test",
+        "test": "exec_server_http_request_honors_optional_timeout",
+        "observed": "Error: HTTP header should contain colon:",
+        "raw_log": "9 passed; 1 failed"
+      }
+    ]
+  },
+  "change": {
+    "file": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+    "type": "test-fixture-path-only",
+    "detail": "Canonicalize the already seeded fleet directory before sending CHILD_ROOT to the subprocess. Parent and child continue to use the same on-disk owner; production canonical/symlink rejection is unchanged.",
+    "preserves": [
+      "original expected child exit code 73",
+      "pending WAL must exist",
+      "read-only recovery must return Indeterminate",
+      "unchanged production path validation",
+      "all positive and negative test assertions"
+    ]
+  },
+  "verification": {
+    "source_static": "exact one source-call replacement verified at write",
+    "owning_macos_bazel": "PENDING",
+    "original_two_macos_failures": "OPEN",
+    "original_windows_delete": "OPEN",
+    "plugin_ttl": "OPEN",
+    "composed_ci": "OPEN",
+    "policy_episodes": "OPEN",
+    "target_device_p95_p99_energy": "OPEN"
+  },
+  "scope": "SHADOW_ONLY / DENY_ALL / HOLD_NO_GO; not validated on target macOS runner; no dependency or production permission change"
+}
