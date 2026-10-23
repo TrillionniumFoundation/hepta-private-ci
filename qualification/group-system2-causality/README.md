@@ -20,12 +20,15 @@ Three strictly typed, canonical SHA256-bound stages:
 
 1. **PREDECISION:** immutable public input/Encoder generation, source frontier,
    subject run, declared legal candidate/action roster, cost ceiling, depth,
-   required outputs and distinct actor/evaluator identities. Unknown fields
+   required outputs, reserved emission budget and distinct actor/evaluator
+   identities. Unknown fields
    (including terminal truth and later result fields) fail closed.
 2. **EXECUTED:** must bind the exact earlier predecision digest; records every
    selected action, candidate, step index, evidence observation hash, success or
-   failure and **charged cost**. STOP/ABSTAIN are terminal. All steps including
-   failures count against one bounded episode cost; missing outputs remain
+   failure and **charged cost**. STOP/ABSTAIN are terminal. Mandatory output
+   emission costs are positive, charged separately and cannot borrow the
+   preregistered reserved output budget. All steps including failures count
+   against one bounded episode cost; missing outputs remain
    incomplete, not silently dropped or given free quality.
 3. **POSTSCORE:** an actor-distinct *declared* evaluator adds terminal result,
    external evidence hash, independent outcome hash and quality only after
@@ -46,8 +49,8 @@ python3 -O -m unittest discover -s qualification/group-system2-causality -p 'tes
 python3 -m compileall -q qualification/group-system2-causality
 ```
 
-Local source-identical runs on Python 3.13 passed **18/18** ordinary and
-**18/18** optimized assertions. Check GitHub Actions on this exact child head;
+Local source-identical runs on Python 3.13 passed **23/23** ordinary and
+**23/23** optimized assertions. Check GitHub Actions on this exact child head;
 no queued, cancelled, inherited or earlier-run status is claimed to pass.
 
 ### What this does *not* close
@@ -56,7 +59,7 @@ no queued, cancelled, inherited or earlier-run status is claimed to pass.
   is *not independently authenticated*; a single party may have forged both
   actor and evaluator receipts. External signed owner and observer evidence,
   actual monotonic event timestamps and immutable source snapshots remain open.
-- "physical_cost_claim" is the sum of supplied cost values, **not a hardware
+- "physical_cost_claim" sums claimed step plus decoder-emission costs, **not a hardware
   attestation**. True host/GPU/queue/energy accounting requires separate
   instrumented and trusted observers.
 - This code does **not** demonstrate multi-hop reasoning, a trained System 2,
