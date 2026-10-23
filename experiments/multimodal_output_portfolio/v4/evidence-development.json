@@ -1,0 +1,83 @@
+{
+  "comparisons": {
+    "nominal/dynamic": {
+      "any_refinement_rate": 1.000000000000002,
+      "cvar90_external_loss": 0.6121700864000034,
+      "mean_external_loss": 0.14132590848,
+      "mean_symbolic_cost_units": 6.000000000000005,
+      "models_are_synthetic": true,
+      "solver_states": 560,
+      "terminal_coverage": 1.000000000000002,
+      "witness_query_rate": 0.0
+    },
+    "nominal/myopic": {
+      "any_refinement_rate": 0.0,
+      "cvar90_external_loss": 0.6968160000000001,
+      "mean_external_loss": 0.1940000000000002,
+      "mean_symbolic_cost_units": 6.000000000000008,
+      "models_are_synthetic": true,
+      "solver_states": 0,
+      "terminal_coverage": 1.0000000000000027,
+      "witness_query_rate": 1.0000000000000027
+    },
+    "nominal/static": {
+      "any_refinement_rate": 0.9999999999999957,
+      "cvar90_external_loss": 0.6062816383999998,
+      "mean_external_loss": 0.1556308684800002,
+      "mean_symbolic_cost_units": 6.000000000000013,
+      "models_are_synthetic": true,
+      "solver_states": 0,
+      "terminal_coverage": 0.9999999999999957,
+      "witness_query_rate": 0.0
+    },
+    "shared_cause_shift/dynamic": {
+      "any_refinement_rate": 0.9999999999999974,
+      "cvar90_external_loss": 0.6550224127999968,
+      "mean_external_loss": 0.1697085849599999,
+      "mean_symbolic_cost_units": 5.999999999999998,
+      "models_are_synthetic": true,
+      "solver_states": 560,
+      "terminal_coverage": 0.9999999999999974,
+      "witness_query_rate": 0.0
+    },
+    "shared_cause_shift/myopic": {
+      "any_refinement_rate": 0.0,
+      "cvar90_external_loss": 0.6968160000000001,
+      "mean_external_loss": 0.19400000000000026,
+      "mean_symbolic_cost_units": 6.000000000000011,
+      "models_are_synthetic": true,
+      "solver_states": 0,
+      "terminal_coverage": 1.000000000000001,
+      "witness_query_rate": 1.000000000000001
+    },
+    "shared_cause_shift/static": {
+      "any_refinement_rate": 1.000000000000002,
+      "cvar90_external_loss": 0.6391847168000014,
+      "mean_external_loss": 0.1775105049599997,
+      "mean_symbolic_cost_units": 5.9999999999999885,
+      "models_are_synthetic": true,
+      "solver_states": 0,
+      "terminal_coverage": 1.000000000000002,
+      "witness_query_rate": 0.0
+    }
+  },
+  "cost_unit": "declared symbolic units, not physical time, FLOPs or energy",
+  "evidence_level": "exploratory_synthetic_only",
+  "four_outputs": [
+    "text-symbol",
+    "audio-symbol",
+    "image-symbol",
+    "video-symbol"
+  ],
+  "independent_evaluation": "enumerated 32 truth/common-cause worlds and 16 public reports",
+  "not_claimed": [
+    "natural multimodal generation",
+    "true FBSDE solver",
+    "global learning optimum",
+    "independent real training attribution",
+    "real-world distribution-shift robustness",
+    "production authorization"
+  ],
+  "schema": "hepta.ndu.output-portfolio.finite-symbolic.v4",
+  "source_correlation": "hidden-common-flip + independent sensor errors"
+}
