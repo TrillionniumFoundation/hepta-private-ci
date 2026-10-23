@@ -147,3 +147,17 @@ positive content/NDU means remain uncertain. The core test is permanently
 consumed. R2's unopened test and stronger failed dynamic gate stay separate.
 Further work must have a TRAIN/validation justification and a new prospective
 scientific protocol; another test opening cannot substitute for this failure.
+No later formal test opening is authorized at this stage. Any proposed future
+confirmation must first retain the full prior research/confirmation history,
+specify statistical error control across repeated confirmations, and receive
+preopening review. Audio/video generation remains deferred.
+
+The subsequent [saved TRAIN-receipt diagnosis](runs/codex-cloud-core-c1-training-receipt-diagnostic/REPORT.md)
+read the original calibration and telemetry only. Seed 11 stayed slow across all
+three repeats; the execution-wave cause remains unknown. Output encoding plus
+its ledger accounted for 76.69%–83.99% of calibration service CPU. Source showed
+the same frozen twelve-code learned decoder repeatedly decoding/PNG-encoding
+sampled codes. This supports testing a local decoder-bound codec table, with all
+preparation/storage and per-row sampling/JSON work accounted. That component share
+is neither measured PNG-only saving nor evidence of content benefit. The new
+implementation stays opt-in; existing qualification plans/results remain unchanged.
