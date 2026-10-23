@@ -341,11 +341,10 @@ async fn notes_retirement_holds_original_sqlite_lock_through_synchronous_metadat
     let writer = fixture.writer.clone();
     let mut mutation =
         tokio::spawn(async move { writer.admit("retirement-competitor", "fixture", "{}").await });
+    let before_release = tokio::time::timeout(Duration::from_millis(100), &mut mutation).await;
     assert!(
-        tokio::time::timeout(Duration::from_millis(100), &mut mutation)
-            .await
-            .is_err(),
-        "a concurrent original writer must not commit while metadata retirement holds its SQLite barrier"
+        before_release.is_err(),
+        "a concurrent original writer must not commit while metadata retirement holds its SQLite barrier: {before_release:?}"
     );
     assert!(
         tokio::time::timeout(Duration::from_millis(20), &mut retirement)

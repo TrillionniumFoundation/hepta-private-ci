@@ -183,19 +183,16 @@ async fn verified_terminal(
 impl LocalLeaseOutbox {
     /// The exact current writer reads every member of the requested prefix
     /// from its original database. No cursor or caller receipt is trusted.
+    /// The caller retains this transaction through protected publication and
+    /// synchronous native retirement; this verifier never releases its lock.
     pub(crate) async fn hos2_durable_prefix(
         &self,
+        transaction: &mut Transaction<'_, Sqlite>,
         through: &Hos2DeliveryId,
     ) -> Result<Sha256Digest, LocalLeaseOutboxError> {
         let frontier = through.sequence().map_err(LocalLeaseOutboxError::Invalid)?;
         let (boot, space) = namespace(through)?;
-        let mut transaction = self
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
-        let lease = self.current_lease(&mut transaction).await?;
+        let lease = self.current_lease(transaction).await?;
         ensure_current_active(&lease, self)?;
         let pairs: Vec<(String, String)> = sqlx::query_as(
             "SELECT lease_id, occurrence_key FROM cognitive_local_outbox
@@ -209,7 +206,7 @@ impl LocalLeaseOutbox {
         .bind(space)
         .bind(format!("{frontier:016x}"))
         .bind((MAX_OUTBOX_ROWS + 1) as i64)
-        .fetch_all(&mut *transaction)
+        .fetch_all(&mut **transaction)
         .await
         .map_err(crate::cognitive_store::unavailable)?;
         if pairs.len() > MAX_OUTBOX_ROWS || u64::try_from(pairs.len()).ok() != Some(frontier) {
@@ -222,13 +219,9 @@ impl LocalLeaseOutbox {
         digest.update(through.boot_id);
         digest.update(through.space_id);
         for (index, (source_lease, operation)) in pairs.iter().enumerate() {
-            let (payload, event_digest) = verified_terminal(
-                &mut transaction,
-                &self.owner_agent_id,
-                source_lease,
-                operation,
-            )
-            .await?;
+            let (payload, event_digest) =
+                verified_terminal(transaction, &self.owner_agent_id, source_lease, operation)
+                    .await?;
             if payload.delivery.boot_id != through.boot_id
                 || payload.delivery.space_id != through.space_id
                 || payload
@@ -246,10 +239,6 @@ impl LocalLeaseOutbox {
         }
         let digest = Sha256Digest::parse(format!("{:x}", digest.finalize()))
             .map_err(LocalLeaseOutboxError::Corrupt)?;
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
         Ok(digest)
     }
 }

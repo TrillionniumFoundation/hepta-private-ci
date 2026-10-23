@@ -297,8 +297,8 @@ impl<T: CognitiveCheckpointTransport> ObjectiveSenderCheckpoint
             return Ok(committed.clone());
         }
         if receipt.head.phase == CognitiveCheckpointPhase::Current {
-            // The original sender holds BEGIN IMMEDIATE on a physically
-            // READONLY connection. A fresh, identical protected head confirms
+            // The original sender holds a real BEGIN IMMEDIATE writer lock
+            // on its lock-only connection. An identical protected head confirms
             // this cut without invalidating it or incrementing any counter.
             if receipt.head.last_current != *committed
                 || self.read_head(&receipt).await? != *receipt

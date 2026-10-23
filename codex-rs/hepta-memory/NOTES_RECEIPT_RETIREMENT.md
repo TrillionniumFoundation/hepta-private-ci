@@ -10,6 +10,9 @@ pre-effect paths sharing this barrier remain blockers pending a real fix and
 actual competing-writer acceptance. No physical Current/recovery safety is
 claimed from this barrier.
 
+The [actual competing-writer counterexample](acceptance/2026-10-23-retirement-counterexample/README.md)
+retains both failing phases, original source deltas and exact binary hashes.
+
 The managed durable writer must retain an application receipt until the exact
 terminal operation and its whole-owner recovery cut have been acknowledged as
 Current. Losing that receipt earlier could make a recoverable local operation

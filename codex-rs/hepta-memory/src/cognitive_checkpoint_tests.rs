@@ -229,6 +229,10 @@ impl ManagedFixture {
 }
 
 #[cfg(test)]
+#[path = "cognitive_checkpoint_barrier_tests.rs"]
+mod barrier_tests;
+
+#[cfg(test)]
 #[path = "cognitive_checkpoint_observation_tests.rs"]
 mod observation_tests;
 
@@ -371,3 +375,11 @@ async fn protected_checkpoint_mismatched_dirty_ack_never_opens_commit_permission
 
 #[path = "cognitive_checkpoint_notes_retirement_tests.rs"]
 mod notes_retirement_tests;
+
+#[cfg(unix)]
+#[path = "cognitive_checkpoint_hos2_retirement_tests.rs"]
+mod hos2_retirement_tests;
+
+#[cfg(unix)]
+#[path = "cognitive_checkpoint_effect_entry_tests.rs"]
+mod effect_entry_tests;
