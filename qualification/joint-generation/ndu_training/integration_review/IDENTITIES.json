@@ -1,0 +1,476 @@
+{
+  "applicable_common_implementations": {
+    "independent/inference.py": "68438497601e2f26bd615da646c167933187a0410a557f83218025dd231e9a3a",
+    "independent/mixed_training.py": "4e830994cd3e707c623a59990ea63ba4c2519858fce3db30e7e31293326b4b48",
+    "independent/native.py": "b9919cec02efeca9383a58182bc4273c4506b23a0adddf360a954b3d6c7e2f42",
+    "independent/native_adam.py": "fd3ee0501230509c1a534c18e01d48ef515828de3ddcdba0b170809bc53e5baa",
+    "ndu_training/estimators.py": "94ad13fe5de4bf105319752ad17d18f70730584dc210f6e7fa69db2897e085b8"
+  },
+  "budget_rule": "10 CPU s/12B is per complete multi-seed/candidate SYSTEM;not per model;candidate methods from separate experiments cannot be merged for free",
+  "dynamic_diagnostic_only": {
+    "controllers": [
+      {
+        "member": "ndu_control-11-0.01-controller.npz",
+        "seed": 11,
+        "sha256": "a5f99e042b2d6f14aa55502171b0e283be1698b503dc3a83775ee8db3d1e362a"
+      },
+      {
+        "member": "ndu_control-23-0.01-controller.npz",
+        "seed": 23,
+        "sha256": "cadd72463ced8180d3aa69861302e13ae1b78d1cc38da7cb26f55a015eed9361"
+      },
+      {
+        "member": "ndu_control-47-0.01-controller.npz",
+        "seed": 47,
+        "sha256": "e3c21f4534d750660b79418b37db4773c675b90dcdf25b185d79a553eb51050b"
+      }
+    ],
+    "historical_NC_build_CPU": 8.537556029000005,
+    "historical_NC_units_reported_in_H4": 11901341862,
+    "models": [
+      {
+        "member": "ndu_control-11-0.01.npz",
+        "model_digest": "a710a356825664824bace9aaccc3467ab76214ac4dc3888218e23a62bb791f38",
+        "role": "NC",
+        "seed": 11,
+        "sha256": "e52eec96a9c8a0f0c7584a3b5f1ceb51296aefecb5f35f2c1fd17985d2d3e734",
+        "updates": 488
+      },
+      {
+        "member": "ndu_control-23-0.01.npz",
+        "model_digest": "0143471f2cdc19655f9743e165d931da7556f526d742f90f28607d10196777df",
+        "role": "NC",
+        "seed": 23,
+        "sha256": "15022326fd66116b31f5601fbeda3c143079672369ab3ca2bec4646a873b09b7",
+        "updates": 488
+      },
+      {
+        "member": "ndu_control-47-0.01.npz",
+        "model_digest": "bb4c4900a4f58fb9ce1c0c70cbe60e25bf4fc70d733bc0f14955bbfd24a3d7df",
+        "role": "NC",
+        "seed": 47,
+        "sha256": "1e15a7d787cb0c0d386a3dcb1dd8f0c4850879da433b0e3edb54172db98f401a",
+        "updates": 488
+      }
+    ],
+    "no_new_dynamic_candidate": true,
+    "status": "H4 does not support enlarging same full/low critic;proxy negative mean is not a strict complete-cost impossibility theorem"
+  },
+  "exclusions": [
+    {
+      "id": "r1",
+      "status": "narrow pass retained;waste-padded controls do not establish effective-best full-system superiority"
+    },
+    {
+      "id": "r2 and H4 same full/low critic",
+      "status": "not superior to effective static NDU;held-out remains unopened;no same-setup expansion"
+    },
+    {
+      "id": "CORE c1",
+      "status": "consumed failed confirmation;all six intervals cross zero;never reopen/tune/subset"
+    },
+    {
+      "id": "content residual refiner and1:1 heads-only alternate",
+      "snapshot": "60c09723f784a90c249874a95e5da50ee93219f3",
+      "status": "TRAIN rejected;keep strong dense/joint controls"
+    },
+    {
+      "id": "codec D1 ABBA",
+      "snapshot": "1d858c66eec4c89d5f5d399154c2cc19e538209b",
+      "status": "slot0 actual10.022472113s cap failure;codebook treatments not run;lifecycle benefit unmeasured"
+    },
+    {
+      "id": "CE-anchor CV d2",
+      "snapshot": "1b2092090d1de813c3ab71c2f84e7461d5bfbef3",
+      "status": "all12 CV-minus-plain raw effects negative;strongest-A primary failed;keep evidence and hash-CPU erratum"
+    },
+    {
+      "id": "NumPy fused CV d3",
+      "snapshot": "1b2092090d1de813c3ab71c2f84e7461d5bfbef3",
+      "status": "raw numerical FAIL retained;hybrid fixed-panel checks pass but CPU slower;no new performance/training"
+    },
+    {
+      "id": "native12 target interpretation",
+      "snapshot": "60c09723f784a90c249874a95e5da50ee93219f3",
+      "status": "separate content-owner work;prior native portfolio final S/H/N CPU fail;do not import developmental means as a qualified paired comparison"
+    }
+  ],
+  "families": {
+    "D1-A-iid": {
+      "CE": 0.2,
+      "LR": 0.003,
+      "all_seeds_required": true,
+      "budget_group": "D1-A",
+      "candidate_program": "3 seeds x2 samplers,6 candidates in EACH A/N 10s/12B system",
+      "evidence_commit": "1b2092090d1de813c3ab71c2f84e7461d5bfbef3",
+      "inference_law": "independent p(x) tensor q(x), original decoder",
+      "models": [
+        {
+          "parameter_digest_recorded": "39d152113ad91847c7ec6125e344b3c865e5c8a6664e991ecd5704413e2442a7",
+          "path": "runs/codex-cloud-ndu-training-train-d1/final-A-iid-11.npz",
+          "seed": 11,
+          "sha256_recorded": "30337c7223d1022750c937d4251d9df75de0c44a455c74c9101734a881e0df4b",
+          "updates": 626
+        },
+        {
+          "parameter_digest_recorded": "19bab14c60044aba0198ec8a81196173327e7ee15ba32cf67194c3d5e99f55da",
+          "path": "runs/codex-cloud-ndu-training-train-d1/final-A-iid-23.npz",
+          "seed": 23,
+          "sha256_recorded": "98118527595b664328a5f2b6e1cb80bb551609521d4d9a507b23cac23d4f2d6e",
+          "updates": 626
+        },
+        {
+          "parameter_digest_recorded": "705a23064c933e71165c962917c1d56139414a504b7b61d93e56c548f60ad69f",
+          "path": "runs/codex-cloud-ndu-training-train-d1/final-A-iid-47.npz",
+          "seed": 47,
+          "sha256_recorded": "e3ea7f5d93873ffb44ed560ef9599fda8ac3fc27a81f9581aa4b6d8cea841a62",
+          "updates": 626
+        }
+      ],
+      "purpose": "retain both sampler alternatives; stratified is mean-TRAIN incumbent, not an independent confirmation",
+      "rho": 1.5,
+      "same_system_budget_is_repeated_as_metadata_only": true,
+      "source_commit": "5c030618599b96bb5ba75a18e4e9837838adda29",
+      "source_freeze": "ndu_training/frozen-train-d1.json",
+      "training_and_score_scope": "all3072 TRAIN rows,192 physical sources; no inner holdout in this d1 recipe",
+      "whole_group_cpu": 9.152018194999986,
+      "whole_group_units": 11662222245
+    },
+    "D1-A-stratified": {
+      "CE": 0.2,
+      "LR": 0.003,
+      "all_seeds_required": true,
+      "budget_group": "D1-A",
+      "candidate_program": "3 seeds x2 samplers,6 candidates in EACH A/N 10s/12B system",
+      "evidence_commit": "1b2092090d1de813c3ab71c2f84e7461d5bfbef3",
+      "inference_law": "independent p(x) tensor q(x), original decoder",
+      "models": [
+        {
+          "parameter_digest_recorded": "9ba40cd5f45c7f2ba1c3547bb39b937311792ac8ac54fa7b9224f8166b8c03a0",
+          "path": "runs/codex-cloud-ndu-training-train-d1/final-A-stratified-11.npz",
+          "seed": 11,
+          "sha256_recorded": "d19751755cea3049d79d521bb51fa6bf641f5ce41c4c9da92f766745456f33a4",
+          "updates": 626
+        },
+        {
+          "parameter_digest_recorded": "188b051fb258f56a73a8eff2559b56dced2531517b16075b63def7fe143bbe44",
+          "path": "runs/codex-cloud-ndu-training-train-d1/final-A-stratified-23.npz",
+          "seed": 23,
+          "sha256_recorded": "f06e0b60ec171112cd917f999a96adbd1286982256db4f08550efbf4ff578941",
+          "updates": 626
+        },
+        {
+          "parameter_digest_recorded": "7c18125d4872d3908cde41fc1cb715d55f29704df865171ee68019e63c8fe954",
+          "path": "runs/codex-cloud-ndu-training-train-d1/final-A-stratified-47.npz",
+          "seed": 47,
+          "sha256_recorded": "f008534104800ab1a41f52caf9695cd6c1f2cdf6fa792669c24d2824948c5369",
+          "updates": 626
+        }
+      ],
+      "purpose": "retain both sampler alternatives; stratified is mean-TRAIN incumbent, not an independent confirmation",
+      "rho": 1.5,
+      "same_system_budget_is_repeated_as_metadata_only": true,
+      "source_commit": "5c030618599b96bb5ba75a18e4e9837838adda29",
+      "source_freeze": "ndu_training/frozen-train-d1.json",
+      "training_and_score_scope": "all3072 TRAIN rows,192 physical sources; no inner holdout in this d1 recipe",
+      "whole_group_cpu": 9.152018194999986,
+      "whole_group_units": 11662222245
+    },
+    "D1-N-iid": {
+      "CE": 0.2,
+      "LR": 0.003,
+      "all_seeds_required": true,
+      "budget_group": "D1-N",
+      "candidate_program": "3 seeds x2 samplers,6 candidates in EACH A/N 10s/12B system",
+      "evidence_commit": "1b2092090d1de813c3ab71c2f84e7461d5bfbef3",
+      "inference_law": "independent p(x) tensor q(x), original decoder",
+      "models": [
+        {
+          "parameter_digest_recorded": "4229fd4c2ee0ee443ee9d19b918771f7fc0787d9f085aa62ce5777c3568a38bb",
+          "path": "runs/codex-cloud-ndu-training-train-d1/final-N-iid-11.npz",
+          "seed": 11,
+          "sha256_recorded": "8ebf1206fb0e7806cb9784efdac0a435746745e664547ff8900a4bc44b4920d5",
+          "updates": 623
+        },
+        {
+          "parameter_digest_recorded": "1e4202f19c8ca92b0d3500f965d6813c9c1959e4ea965c1010726936c3822665",
+          "path": "runs/codex-cloud-ndu-training-train-d1/final-N-iid-23.npz",
+          "seed": 23,
+          "sha256_recorded": "bd84944831bd44b443e85907cc66b5c2882a54ee424447ba5c9be2221c2f6154",
+          "updates": 623
+        },
+        {
+          "parameter_digest_recorded": "ff05bb6ebb28175beb08f5e5972ca0e4cad4c34e35642f5f8ddea45833938dc2",
+          "path": "runs/codex-cloud-ndu-training-train-d1/final-N-iid-47.npz",
+          "seed": 47,
+          "sha256_recorded": "92ad286367bf41cfaff37f688d14331f8d6b9fd8eebbd121f498bdb3b7abe16e",
+          "updates": 623
+        }
+      ],
+      "purpose": "retain both sampler alternatives; stratified is mean-TRAIN incumbent, not an independent confirmation",
+      "rho": 1.5,
+      "same_system_budget_is_repeated_as_metadata_only": true,
+      "source_commit": "5c030618599b96bb5ba75a18e4e9837838adda29",
+      "source_freeze": "ndu_training/frozen-train-d1.json",
+      "training_and_score_scope": "all3072 TRAIN rows,192 physical sources; no inner holdout in this d1 recipe",
+      "whole_group_cpu": 9.16033641299999,
+      "whole_group_units": 11657544633
+    },
+    "D1-N-stratified": {
+      "CE": 0.2,
+      "LR": 0.003,
+      "all_seeds_required": true,
+      "budget_group": "D1-N",
+      "candidate_program": "3 seeds x2 samplers,6 candidates in EACH A/N 10s/12B system",
+      "evidence_commit": "1b2092090d1de813c3ab71c2f84e7461d5bfbef3",
+      "inference_law": "independent p(x) tensor q(x), original decoder",
+      "models": [
+        {
+          "parameter_digest_recorded": "0895f2f0014b3ccf999b632013fe71a03ab91a84cfcdf61e57a85d48a925c117",
+          "path": "runs/codex-cloud-ndu-training-train-d1/final-N-stratified-11.npz",
+          "seed": 11,
+          "sha256_recorded": "09e2013a8ae1187a03c4b5a8145fba71c8a4aa75c9aa919104af51681dae0d1f",
+          "updates": 623
+        },
+        {
+          "parameter_digest_recorded": "8ad6e855d0a72125f42332559a3b442d470dee594292a94acccbb4c12fa06480",
+          "path": "runs/codex-cloud-ndu-training-train-d1/final-N-stratified-23.npz",
+          "seed": 23,
+          "sha256_recorded": "126deac3ff3bbb0750da5765b6a3ff3dfc3646760dc0d3778a6548294f713ff8",
+          "updates": 623
+        },
+        {
+          "parameter_digest_recorded": "c84e7b36905613f4059cd4755e5df52dc6991b9f9713b9b768801ca5d953dbcd",
+          "path": "runs/codex-cloud-ndu-training-train-d1/final-N-stratified-47.npz",
+          "seed": 47,
+          "sha256_recorded": "a830681122740966e0c91c6fd919d37f6b2c50684b7ac0f8805c6edea6c95f1b",
+          "updates": 623
+        }
+      ],
+      "purpose": "retain both sampler alternatives; stratified is mean-TRAIN incumbent, not an independent confirmation",
+      "rho": 1.5,
+      "same_system_budget_is_repeated_as_metadata_only": true,
+      "source_commit": "5c030618599b96bb5ba75a18e4e9837838adda29",
+      "source_freeze": "ndu_training/frozen-train-d1.json",
+      "training_and_score_scope": "all3072 TRAIN rows,192 physical sources; no inner holdout in this d1 recipe",
+      "whole_group_cpu": 9.16033641299999,
+      "whole_group_units": 11657544633
+    },
+    "T11-static-N-full": {
+      "H4_execution_commit": "065e18814106f763317f0fedaffa6996ba865f02",
+      "H4_source_commit": "9adc3743a60ab613a0e4cb1ed105e1b5169186aa",
+      "all_seeds_required": true,
+      "archive": {
+        "original_files_path": "runs/codex-cloud-efficient-r2-t11/original-files.json",
+        "original_files_sha256": "1d2bd7650f812459a97dc48daa9fbe2a7deaf3421ce930e3a2b0a44fbc6b5fad",
+        "path": "runs/codex-cloud-efficient-r2-t11/retained-full-run.tar.gz",
+        "selection_member": "selection.json",
+        "selection_sha256": "43667a768d2b951b2bf6965c32683a5e9114fb6832a33af924ae161581b5c157",
+        "sha256": "369afeca8c5e79e7e1c835f224c4683ad0d298e832e4250c578f529b61044702"
+      },
+      "complete_build_CPU": 8.307966292000007,
+      "complete_build_units_reported_in_H4": 11958840147,
+      "evidence_commit": "1d858c66eec4c89d5f5d399154c2cc19e538209b",
+      "models": [
+        {
+          "member": "ndu-11-0.01.npz",
+          "model_digest": "682eb122dc91857d68b902a018f3964c2a6389f9e4501e38b514a1020787871c",
+          "role": "N",
+          "seed": 11,
+          "sha256": "bb0c6c6afc37b7bc570e18c5689ef953500b2f15daf8e5c86e56d232e3ade201",
+          "updates": 513
+        },
+        {
+          "member": "ndu-23-0.01.npz",
+          "model_digest": "398c13eed3c20b578e02d598681d59128108d1df321fed5f62fd9ec930ea1710",
+          "role": "N",
+          "seed": 23,
+          "sha256": "81ed8b4fb23cf42c819865315b39f2e40931c60e8b8a636e120c47f39ce6ad84",
+          "updates": 514
+        },
+        {
+          "member": "ndu-47-0.01.npz",
+          "model_digest": "5e707f4df572f4e13e71d5c85ea7532f84071370efde5560215ef3b283e16804",
+          "role": "N",
+          "seed": 47,
+          "sha256": "e01f666df8ccb280af8b1552904ded7960eaadfccd599c1d47d3b1b6c95ce597",
+          "updates": 514
+        }
+      ],
+      "report": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1d858c66eec4c89d5f5d399154c2cc19e538209b/qualification/joint-generation/runs/codex-cloud-dynamic-train-headroom-h4/REPORT.md",
+      "role": "strong effective static NDU/full reference for dynamic comparison;not a paired A/N training proof",
+      "scope": "H4 fixed3072 TRAIN rows,192 sources;original T11 build/selection retained"
+    },
+    "content-dense-A": {
+      "all_seeds_required": true,
+      "candidate_program": "3 seeds x3 original LRs,9 fully paid candidates per family; no new scan",
+      "complete_CPU_without_reconcile": 5.409933440999998,
+      "complete_units_without_reconcile": 11664058551,
+      "evidence_commit": "60c09723f784a90c249874a95e5da50ee93219f3",
+      "fixed_selected_LR": 0.01,
+      "models": [
+        {
+          "path": "runs/content-control-train-r2-20261023/A-11-0.01/model.npz",
+          "seed": 11,
+          "sha256_recorded": "1feacc1c643e382f429c5cfe520684208011796e5918f4fca2b3c67a3d959505",
+          "updates": 387
+        },
+        {
+          "path": "runs/content-control-train-r2-20261023/A-23-0.01/model.npz",
+          "seed": 23,
+          "sha256_recorded": "8d28adfbd98bd29942656d91483987d605a3cee31950791f3228f314e0c8c086",
+          "updates": 387
+        },
+        {
+          "path": "runs/content-control-train-r2-20261023/A-47-0.01/model.npz",
+          "seed": 47,
+          "sha256_recorded": "847d42e4cc0879766137761c746578859190b0ede7179329bf336fb219925b35",
+          "updates": 387
+        }
+      ],
+      "role": "strong dense content control; existing models also anchor the fixed-model decoding probe",
+      "scope": "144 physical fit sources/48 inner TRAIN sources,2304/768 rows; inner rows were used in selection",
+      "source_commit": "fbaac5b9262c6d622356bd50b94dc65cc5d1eeb3",
+      "source_freeze": "content_control/frozen-train-v2.json"
+    },
+    "content-dense-H": {
+      "all_seeds_required": true,
+      "candidate_program": "3 seeds x3 original LRs,9 fully paid candidates per family; no new scan",
+      "complete_CPU_without_reconcile": 5.023574262000006,
+      "complete_units_without_reconcile": 11664350313,
+      "evidence_commit": "60c09723f784a90c249874a95e5da50ee93219f3",
+      "fixed_selected_LR": 0.01,
+      "models": [
+        {
+          "path": "runs/content-control-train-r2-20261023/H-11-0.01/model.npz",
+          "seed": 11,
+          "sha256_recorded": "77baab23cb40665818f4ba04710671982e2049a82f1aeb968766830f6a81bd8b",
+          "updates": 396
+        },
+        {
+          "path": "runs/content-control-train-r2-20261023/H-23-0.01/model.npz",
+          "seed": 23,
+          "sha256_recorded": "e500ba305bebbcba79bd2f41f2ea47fc5af1af9d6da78fff10aaa69747b5a5b8",
+          "updates": 396
+        },
+        {
+          "path": "runs/content-control-train-r2-20261023/H-47-0.01/model.npz",
+          "seed": 47,
+          "sha256_recorded": "f1f38e1a3f6f2911a6d58d65e45ceefaddff03bada5ff2f60ae50c2e75fe8c15",
+          "updates": 396
+        }
+      ],
+      "role": "strong dense content control; existing models also anchor the fixed-model decoding probe",
+      "scope": "144 physical fit sources/48 inner TRAIN sources,2304/768 rows; inner rows were used in selection",
+      "source_commit": "fbaac5b9262c6d622356bd50b94dc65cc5d1eeb3",
+      "source_freeze": "content_control/frozen-train-v2.json"
+    },
+    "content-standard-joint-A": {
+      "all_seeds_required": true,
+      "candidate_program": "9 original LR/seed candidates,unchanged10s/12B cap",
+      "complete_CPU": 6.1315849129999975,
+      "complete_units": 11645004069,
+      "evidence_commit": "60c09723f784a90c249874a95e5da50ee93219f3",
+      "models": [
+        {
+          "parameter_digest_recorded": "38547b5d111d6413147c4966f331a74d4e2dfbc39ed7ea7af040def86d17c0dc",
+          "path": "runs/content-block-train-v1-20261023/A_joint-11-0.01/model.npz",
+          "seed": 11,
+          "sha256_recorded": "ccca57551167a21e201073280ea88b329cfeb7a1928a2fc04df35a093dc303ed",
+          "updates": 386
+        },
+        {
+          "parameter_digest_recorded": "5ad093d1c7786bdd8ad26e5a47dee89c50042f60d3b3f4da93b9646848f68b24",
+          "path": "runs/content-block-train-v1-20261023/A_joint-23-0.01/model.npz",
+          "seed": 23,
+          "sha256_recorded": "9953caef998df902ceb65739e2ac4c518569068305cdcbb6f9db5b0051162c5c",
+          "updates": 386
+        },
+        {
+          "parameter_digest_recorded": "0c3299aae651b523017400ccf41fcc162459c8c57a829369641a4cbdc6c14122",
+          "path": "runs/content-block-train-v1-20261023/A_joint-47-0.01/model.npz",
+          "seed": 47,
+          "sha256_recorded": "30daa4a296411fd6a1d77373d637520f29fe1ed98046dd8c4674b1698a580071",
+          "updates": 386
+        }
+      ],
+      "role": "retain effective standard-joint A; do not replace with failed heads-only alternate",
+      "scope": "standard joint encoder+both-head updates, not alternating and not native12",
+      "source_commit": "356acf5624312e8f9e01dd6f44fcba18a365b2cc"
+    }
+  },
+  "fixed_model_decoder": {
+    "complete_cost_after_saved_evidence_audit": {
+      "A": {
+        "audit_active_CPU": 0.2397470690000001,
+        "audit_added_CPU": 0.488017937,
+        "audit_scheduler_CPU": 0.0006944109999999504,
+        "audit_shared_CPU": 0.247576457,
+        "combined_added_CPU": 1.5274524790000008,
+        "combined_added_units": 183603672,
+        "combined_complete_CPU": 6.937385919999999,
+        "combined_complete_units": 11847662223,
+        "original_added_CPU": 1.0394345420000008
+      },
+      "H": {
+        "audit_active_CPU": 0.25872450099999994,
+        "audit_added_CPU": 0.506995369,
+        "audit_scheduler_CPU": 0.0006944109999999504,
+        "audit_shared_CPU": 0.247576457,
+        "combined_added_CPU": 1.5671764390000005,
+        "combined_added_units": 183606120,
+        "combined_complete_CPU": 6.590750701000006,
+        "combined_complete_units": 11847956433,
+        "original_added_CPU": 1.0601810700000005
+      }
+    },
+    "complete_system_reallocation_compared": false,
+    "cost_scope": "cumulative per-family costs including original dense build;do NOT add them again to dense build costs",
+    "freeze_execution_commit_prefix": "cfb61bc44148",
+    "greedy_contract": "original per-head argmax pair then same repair;not joint MAP",
+    "id": "diagonal-support-log2-primary",
+    "input_legal": "only p,q and initial sampled code pair;no labels,R,observer or target",
+    "joint_law": "Q_x(z)=sum_(t,i) p_t q_i 1[f_x(t,i)=z]; T and Q have same terminal law",
+    "limits": [
+      "no NDU-family execution in this probe",
+      "both-wrong and wrong-agreement increase despite joint and head-truth gains",
+      "single64-fit-row cohort;zero primary sampled repairs",
+      "component timer omits per-profile recurrent guard/setup/return overhead;not complete recurrent CPU-net proof",
+      "same terminal law forbids calling T-over-Q quality a dynamic gain"
+    ],
+    "model_families": [
+      "content-dense-H",
+      "content-dense-A"
+    ],
+    "observed_actual_service_requests": 2304,
+    "policy": "D(c)=p(c)q(c);repair initial disagreeing pair only for strict support ratio>2;zero/ties KEEP",
+    "report": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/60c09723f784a90c249874a95e5da50ee93219f3/qualification/joint-generation/content_reconcile/RESULTS.md",
+    "snapshot_commit": "60c09723f784a90c249874a95e5da50ee93219f3",
+    "source_commit_prefix": "33ced6062ebf",
+    "source_files_sha256": {
+      "content_reconcile/CALLS.json": "5d1278a79ef11e45f341ca49120448e47fdb15d47bd31e4afa31b2818cd05633",
+      "content_reconcile/PROTOCOL.md": "d18443171537b49b7451e7a29098f49bc04755494abe156450e6c05ee637d45e",
+      "content_reconcile/analyze.py": "e2171e76a99bb81cf730f37fd1640894cc8ad29dbb57db6fc1d885b410058c96",
+      "content_reconcile/policy.py": "09ccf11532cc70b42792c95d6ccdfd671679ec844b4719e6aac1b8953455d963",
+      "content_reconcile/run.py": "43952906e65973b5448c5ae0cfd67add4be3ba34c54541484b45ca48e9b034d1",
+      "content_reconcile/scoring.py": "676c5b0828b2d2217d698e35027bab13ec697b2bde3b28a24895e11619f500f4",
+      "content_reconcile/service.py": "b5df06dd4eef133328055b3c1193dc4cb763d1680889e1e3940a7b7ffcfbdb95",
+      "content_reconcile/test_probe.py": "56bd9240b7bce9d64ca3a9d25e68aab5f7a7e6e1e5db81dcf5f4411eb1cd4e52"
+    },
+    "source_freeze": "content_reconcile/frozen-probe-v1.json",
+    "thresholds_seen": {
+      "identity": "infinity",
+      "primary": "log2",
+      "secondary": "0"
+    }
+  },
+  "global_best_model_claim": false,
+  "hash_verification_scope": "SHA256s copied from pinned source manifests/receipts;no weights,archives or data tensors loaded or recomputed in this consolidation",
+  "new_training_or_benchmark_authorized": false,
+  "scope": "completed finite text/image 12-code research only; metadata consolidation, no new execution",
+  "snapshot_commits": {
+    "content": "60c09723f784a90c249874a95e5da50ee93219f3",
+    "dynamic_read_only_prototype": "1d858c66eec4c89d5f5d399154c2cc19e538209b",
+    "ndu": "1b2092090d1de813c3ab71c2f84e7461d5bfbef3"
+  }
+}

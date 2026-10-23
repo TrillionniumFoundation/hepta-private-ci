@@ -53,3 +53,9 @@ The [hand-only exact-fusion probe](../runs/codex-cloud-ndu-fused-pullback-HAND-d
 retains an unconditional Adam numerical FAIL and tests fixed fallbacks without
 new TRAIN. Guarded panel checks pass, but measured CPU is slower; no new training
 candidate is justified by this NumPy implementation's current performance.
+
+The [completed-research integration decisions](integration_review/DECISIONS.md)
+pin all reusable model/source identities, common-optimization requirements,
+excluded candidates and outstanding whole-system confirmation gaps. The current
+decision is no additional CV/performance/TRAIN run; independent positives are
+not combined into a joint-success claim.
