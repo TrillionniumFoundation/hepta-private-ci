@@ -123,6 +123,17 @@ class AcceptanceProtocolTests(unittest.TestCase):
         with self.assertRaises(ProtocolError):
             adjudicate(self.p, self.r, self.g)
 
+    def test_reused_source_across_families_rejected(self):
+        self.p["tasks"][1]["allowed_source_ids"] = self.p["tasks"][0]["allowed_source_ids"]
+        with self.assertRaisesRegex(ProtocolError, "source reused"):
+            adjudicate(self.p, self.r, self.g)
+
+    def test_future_family_cannot_span_two_windows(self):
+        first = next(t for t in self.p["tasks"] if t["task_id"] == "f001_00")
+        first["future_window"] = "future-2"
+        with self.assertRaisesRegex(ProtocolError, "multiple future windows"):
+            adjudicate(self.p, self.r, self.g)
+
     def test_training_on_heldout_family_rejected(self):
         self.p["arm_manifests"]["G"]["learned_from_families"] = ["f001"]
         with self.assertRaisesRegex(ProtocolError, "trained from"):
@@ -132,6 +143,11 @@ class AcceptanceProtocolTests(unittest.TestCase):
         row = next(r for r in self.r if r["arm"] == "I")
         row["measured"]["encoder_calls"] = 2
         with self.assertRaisesRegex(ProtocolError, "shared frozen Encoder"):
+            adjudicate(self.p, self.r, self.g)
+
+    def test_zero_measured_cpu_rejected(self):
+        self.r[0]["measured"]["cpu_ns"] = 0
+        with self.assertRaisesRegex(ProtocolError, "nonphysical zero"):
             adjudicate(self.p, self.r, self.g)
 
     def test_graph_must_run(self):

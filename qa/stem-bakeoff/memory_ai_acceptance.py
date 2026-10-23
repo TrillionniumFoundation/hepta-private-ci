@@ -132,7 +132,8 @@ def validate_plan(plan):
          "evolution must match static Meta-Graph parameter and training budgets")
     tasks = plan.get("tasks")
     need(isinstance(tasks, list) and tasks, "no sealed task census")
-    ids, family_split, eval_families, windows = set(), {}, set(), set()
+    ids, family_split, family_window, source_family, eval_families, windows = (
+        set(), {}, {}, {}, set(), set())
     for t in tasks:
         need(isinstance(t, dict), "invalid task")
         tid, family, split = t.get("task_id"), t.get("family_id"), t.get("split")
@@ -140,7 +141,10 @@ def validate_plan(plan):
         need(isinstance(family, str) and family, "invalid family id")
         need(split in ("train", "calibration", "evaluation"), "invalid split")
         need(family_split.setdefault(family, split) == split, "source-family leakage across splits")
-        sorted_unique(t.get("allowed_source_ids"), "allowed_source_ids")
+        source_ids = sorted_unique(t.get("allowed_source_ids"), "allowed_source_ids")
+        for src in source_ids:
+            need(source_family.setdefault(src, family) == family,
+                 "source reused across supposedly independent families")
         sha(t.get("source_snapshot_sha256"), "task source snapshot")
         need(t["source_snapshot_sha256"] == plan["source_snapshot_sha256"], "task source snapshot drift")
         need(isinstance(t.get("tags"), list) and
@@ -148,6 +152,8 @@ def validate_plan(plan):
              and len(t["tags"]) == len(set(t["tags"])), "unknown or duplicate slice tags")
         if split == "evaluation":
             need(isinstance(t.get("future_window"), str) and t["future_window"], "future window absent")
+            need(family_window.setdefault(family, t["future_window"]) == t["future_window"],
+                 "same source family assigned to multiple future windows")
             eval_families.add(family)
             windows.add(t["future_window"])
         else:
@@ -172,7 +178,10 @@ def validate_gold(gold, ctx):
         tid = g.get("task_id")
         need(tid in ctx["eval_ids"] and tid not in result, "duplicate/unregistered gold")
         need(type(g.get("answerable")) is bool, "answerability not independently declared")
-        answers = sorted_unique(g.get("accepted_answers"), "gold accepted_answers", allow_empty=not g["answerable"])
+        answers = g.get("accepted_answers")
+        need(isinstance(answers, list) and all(isinstance(s, str) and s and len(s) <= 8192
+                                                for s in answers)
+             and answers == sorted(set(answers)), "invalid canonical accepted answers")
         refs = sorted_unique(g.get("required_support_ids"), "gold required_support_ids", allow_empty=not g["answerable"])
         need(bool(answers) == g["answerable"] and bool(refs) == g["answerable"],
              "answerable case must specify independently frozen answer and sources")
@@ -217,6 +226,8 @@ def validate_predictions(plan, ctx, predictions):
             if key in lim:
                 need(r[key] <= lim[key], f"{a} exceeded {key} resource ceiling")
         need(r["reader_calls"] == 1, "different Reader call budget or missing Reader execution")
+        need(all(r[k] > 0 for k in ("context_tokens", "wall_ns", "cpu_ns", "peak_rss_bytes")),
+             "nonphysical zero-resource execution receipt")
         need(len(selected) <= lim.get("selected_source_count", 1_000_000),
              "selected evidence count over ceiling")
         if a in "CHI":
@@ -268,9 +279,9 @@ def adjudicate(plan, predictions, gold):
     ctx = validate_plan(plan)
     truth = validate_gold(gold, ctx)
     rows = validate_predictions(plan, ctx, predictions)
-    scored, per_arm = {}, {}
+    scored, per_arm, window_scored = {}, {}, {}
     for a in ARMS:
-        entries, by_family, by_slice = [], [], defaultdict(list)
+        entries, by_family, by_slice, by_window_family = [], [], defaultdict(list), defaultdict(list)
         for tid in sorted(ctx["eval_ids"]):
             r, g, t = rows[(a, tid)], truth[tid], ctx["task_map"][tid]
             if g["answerable"]:
@@ -282,12 +293,17 @@ def adjudicate(plan, predictions, gold):
                 success = int(r["abstained"])
             entries.append(success)
             by_family.append((t["family_id"], success))
+            by_window_family[t["future_window"]].append((t["family_id"], success))
             for tag in t["tags"]:
                 by_slice[tag].append(success)
             if not g["answerable"]:
                 by_slice["negative"].append(success)
         groups = family_macro(by_family, ctx["eval_families"])
         scored[a] = groups
+        window_scored[a] = {
+            window: family_macro(vals, {f for f, _ in vals})
+            for window, vals in by_window_family.items()
+        }
         per_arm[a] = {"macro_grounded_success": statistics.mean(groups.values()),
                       "micro_grounded_success": statistics.mean(entries),
                       "evaluated_tasks": len(entries),
@@ -324,6 +340,13 @@ def adjudicate(plan, predictions, gold):
         ratio = per_arm[candidate]["mean_cpu_ns"] / max(1, per_arm[control]["mean_cpu_ns"])
         wall_ratio = per_arm[candidate]["mean_wall_ns"] / max(1, per_arm[control]["mean_wall_ns"])
         negative = []
+        window_effects = {}
+        for window in sorted(ctx["windows"]):
+            x, y = window_scored[candidate][window], window_scored[control][window]
+            need(set(x) == set(y), "future-window pairing changed")
+            window_effects[window] = statistics.mean(x[f] - y[f] for f in x)
+            if window_effects[window] <= 0:
+                negative.append("future_window:" + window)
         for tag in ("multi_hop", "ood", "negative"):
             x, y = per_arm[candidate]["slice_success"].get(tag), per_arm[control]["slice_success"].get(tag)
             if x is not None and y is not None and x - y < -policy["max_slice_regression"]:
@@ -334,6 +357,7 @@ def adjudicate(plan, predictions, gold):
         contrasts[f"{candidate}-{control}"] = {
             "paired_family_effect": effect, "multiplicity_adjusted_lower_bound": lower,
             "cpu_cost_ratio": ratio, "wall_cost_ratio": wall_ratio,
+            "window_effects": window_effects,
             "regressed_slices": negative, "passes": passed}
         if not passed:
             blockers.append(f"{candidate}-{control}: no independently qualified net gain")
