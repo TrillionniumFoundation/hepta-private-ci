@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.neuron-bakeoff.candidate-source-pins.v1",
+  "selected_at_utc": "2026-10-23",
+  "posture": "source-revisions-only; actual weights/tokenizer/runtime digests and host qualification OPEN",
+  "models": [
+    {
+      "arm": "laya-english",
+      "repository": "convaiinnovations/laya",
+      "subfolder": ".",
+      "revision": "7b928d828b7b0e022f929d9bd2e44165aa270148",
+      "license": "apache-2.0",
+      "weights_sha256": null
+    },
+    {
+      "arm": "laya-typed",
+      "repository": "convaiinnovations/laya",
+      "subfolder": "typed-decisions",
+      "revision": "7b928d828b7b0e022f929d9bd2e44165aa270148",
+      "license": "apache-2.0",
+      "weights_sha256": null
+    },
+    {
+      "arm": "laya-multilingual",
+      "repository": "convaiinnovations/laya",
+      "subfolder": "multilingual",
+      "revision": "7b928d828b7b0e022f929d9bd2e44165aa270148",
+      "license": "apache-2.0",
+      "weights_sha256": null
+    },
+    {
+      "arm": "arctic-head",
+      "repository": "Snowflake/snowflake-arctic-embed-m-v2.0",
+      "subfolder": ".",
+      "revision": "78fe1aae637a5bec38ec168e3ce03c6e299edaf3",
+      "license": "apache-2.0",
+      "weights_sha256": null
+    },
+    {
+      "arm": "harrier-head",
+      "repository": "microsoft/harrier-oss-v1-270m",
+      "subfolder": ".",
+      "revision": "31de22b673913c7d658c0f03f792d77c2dcf8ebd",
+      "license": "mit",
+      "weights_sha256": null
+    }
+  ],
+  "notes": [
+    "Do not promote any model from this file; download approved artifacts outside GitHub and record exact component digests in immutable evidence manifest.",
+    "Arctic intentionally uses the explicitly captured historical source revision for a reproducible research cohort, not a claim that it is the latest or best revision.",
+    "Use the same frozen task, abstention protocol and honest end-to-end resource accounting for each arm."
+  ]
+}
