@@ -241,15 +241,38 @@ class MemoryNineArmAcceptanceTests(unittest.TestCase):
         for row in self.rows:
             if row["arm"] == "B":
                 row["runtime"]["dense_forwards"] = 0
-        with self.assertRaisesRegex(AdmissionError, "physically absent: B"):
+        with self.assertRaisesRegex(AdmissionError, "per-question mechanism: B"):
             self._validate()
 
     def test_fake_graph_does_not_pass_as_physical_c(self):
         for row in self.rows:
             if row["arm"] == "C":
                 row["runtime"]["graph_traversals"] = 0
-        with self.assertRaisesRegex(AdmissionError, "physically absent: C"):
+        with self.assertRaisesRegex(AdmissionError, "per-question mechanism: C"):
             self._validate()
+
+    def test_one_b_row_cannot_borrow_other_rows_reranker_work(self):
+        row = next(x for x in self.rows if x["arm"] == "B")
+        row["runtime"]["reranker_forwards"] = 0
+        with self.assertRaisesRegex(AdmissionError, "per-question mechanism: B"):
+            self._validate()
+
+    def test_one_h_row_cannot_borrow_other_rows_graph_work(self):
+        row = next(x for x in self.rows if x["arm"] == "H")
+        row["runtime"]["graph_traversals"] = 0
+        with self.assertRaisesRegex(AdmissionError, "per-question mechanism: H"):
+            self._validate()
+
+    def test_valid_early_abstention_does_not_require_graph_execution(self):
+        row = next(x for x in self.rows if x["arm"] == "H")
+        row["status"] = "abstained"
+        row["answer"] = ""
+        row["runtime"]["graph_traversals"] = 0
+        row["runtime"]["reader_forwards"] = 0
+        row["runtime"]["reader_output_tokens"] = 0
+        rows, totals = self._validate()
+        self.assertEqual(len(rows), len(ARMS) * len(self.queries))
+        self.assertEqual(totals["H"]["graph_traversals"], len(self.queries) - 1)
 
     def test_fake_learning_steps_rejected_for_head_router_and_graph(self):
         for arm, field in (("E", "head_training_steps"),
