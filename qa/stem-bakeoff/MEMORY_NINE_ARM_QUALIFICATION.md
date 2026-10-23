@@ -170,3 +170,48 @@ or G's Router, while preserving a legitimate early abstention. The additional sa
 cross-window source-ID, and repeated exact-question negative tests prevent
 pseudo-independent family counts. Do not count successful CI unit tests as
 memory quality.
+
+
+## Added physically reconciled E-I learning-work fence (research candidate)
+
+An A-I result cannot become \`eligible_for_external_authenticity_review\` merely
+because **planned** total Head parameters, optimizer steps and budgets match.
+The independent audit now accepts \`--training-receipts FILE.json\`. Without
+it, \`physical_e_i_training_cost_gate=false\` and a blocker is retained, even
+if the nine-row answer and blinded-judgment fixtures look perfect.
+
+The training file is \`hepta.memory.a-i.physical-training-cost.v1\` and binds
+the exact canonical source-first plan digest. There must be one E/F/G/H/I
+receipt each, tied to the same immutable Encoder/source/forget frontiers and
+the exact original per-arm artifact. Its complete physical Head-tensor
+inventory, permitted training/replay ancestor closure, physical Encoder
+forward count and resident budget are checked before its work events.
+
+Each original event (Head, learned Router, learned Graph or Evolution) declares
+its source roots, optimizer updates/examples, before/after tensor digest,
+forward calls, CPU time and charged training work. The verifier independently
+recomputes the canonical event digest, checks exact phase census and sums the
+*original* per-operator work against **each arm's previously frozen total
+training budget**. E/F cannot borrow Router/Graph work; G must show learned
+Router work; H must additionally show learned Graph work; I must show both
+distinct Split and Merge transition receipts and its H parent. An actual
+no-change tensor digest cannot count as a learned update. H/I have to match
+their physical Head continuation steps.
+
+This is a **strict source/budget arithmetic gate**, not verification of
+external signatures, correct optimizer semantics, actual GPU forwards,
+hardware FLOPs or physical multi-host execution. Producer-supplied hashes are
+not evidence-owner signatures. The test suite has synthetic examples only;
+no actual same-cohort E-I MemoryCell training was executed or admitted by
+this change. Resource and full-lifecycle cost verification and the two genuinely
+prospective source windows remain separate blockers.
+
+Run the complete local source-contract checks from repository root:
+
+\`\`\`sh
+python3 -m unittest discover -s qa/stem-bakeoff -p 'test_memory_nine_arm_gate.py' -v
+python3 -m unittest discover -s qa/stem-bakeoff -p 'test_memory_nine_arm_training_cost.py' -v
+\`\`\`
+
+Passing either test suite is not scientific superiority. Remain
+**DRAFT / SHADOW_ONLY / DENY_ALL / HOLD_NO_GO**.
