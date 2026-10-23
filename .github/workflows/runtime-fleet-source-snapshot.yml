@@ -1,0 +1,40 @@
+name: runtime.fleet source snapshot
+
+on:
+  push:
+    branches:
+      - codex/runtime-fleet-durable-owner-v1-20260927
+    paths:
+      - .github/workflows/runtime-fleet-source-snapshot.yml
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Package immutable source snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          tar --exclude=.git -czf "$RUNNER_TEMP/runtime-fleet-source-$GITHUB_SHA.tar.gz" \
+            codex-rs .github scripts docs
+          sha256sum "$RUNNER_TEMP/runtime-fleet-source-$GITHUB_SHA.tar.gz" \
+            > "$RUNNER_TEMP/runtime-fleet-source-$GITHUB_SHA.sha256"
+      - name: Upload immutable source snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-fleet-source-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/runtime-fleet-source-${{ github.sha }}.tar.gz
+            ${{ runner.temp }}/runtime-fleet-source-${{ github.sha }}.sha256
+          if-no-files-found: error
+          retention-days: 1
