@@ -91,6 +91,7 @@ pub struct GroupSystem2DecisionV1 {
 pub enum GroupSystem2Error {
     EmptyId(&'static str),
     IdTooLarge(&'static str),
+    InvalidId(&'static str),
     ZeroDigest(&'static str),
     ZeroGeneration,
     TraceBindingMismatch(&'static str),
@@ -310,8 +311,13 @@ fn validate_id(name: &'static str, value: &str) -> Result<(), GroupSystem2Error>
     if value.len() > MAX_GROUP_ID_BYTES_V1 {
         return Err(GroupSystem2Error::IdTooLarge(name));
     }
-    if value.bytes().any(|byte| byte == 0) {
-        return Err(GroupSystem2Error::EmptyId(name));
+    // Stable identifiers must not carry control text, path separators, or
+    // visually ambiguous non-ASCII characters into receipt and trace fields.
+    if !value
+        .bytes()
+        .all(|byte| byte.is_ascii_alphanumeric() || b"._:-".contains(&byte))
+    {
+        return Err(GroupSystem2Error::InvalidId(name));
     }
     Ok(())
 }
