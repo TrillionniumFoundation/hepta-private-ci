@@ -70,3 +70,36 @@ runs, valid held-out results, source/host attestations or evidence that Cell
 division produces AGI. A distinct authenticated evaluator must authenticate
 the actual source, model, corpus, measurements and producer identities before
 any selection or production promotion.
+
+## P0 exact local Git source guard (shadow / non-authorizing)
+
+Use the source checker before invoking an A/B/C comparison on a named, locally
+available trio of repositories:
+
+```sh
+python3 qualification/native-agent-comparison/source_guard.py \
+  --baseline qualification/native-agent-comparison/BASELINE.json \
+  --hepta /path/to/hepta-private-ci \
+  --runtime /path/to/hepta-runtime \
+  --codex /path/to/codex
+```
+
+It matches **HEAD commit and tree** against the frozen P0 manifest for all
+three repositories, rejects dirty/staged/visible-untracked worktrees,
+assume-unchanged/skip-worktree index entries, unpinned submodule gitlinks,
+environment-level Git overrides and wrong repository roots. It calls the
+existing strict baseline validator for model, host, task and budget pins.
+If the frozen plan still contains missing fields, the command exits nonzero.
+
+```sh
+python3 -m unittest discover -s qualification/native-agent-comparison -p 'test_*.py' -v
+```
+
+**Nonclaims:** Git source matching cannot attest the *built* executable, the
+dependency cache, ignored generated build inputs, model weights, source of
+task/oracle data, independent result provenance, machine resource usage or
+physical effects. The receipt explicitly retains false values for
+`actual_built_source_attested`, `independent_acceptance`
+and `physical_execution_proven`. It is diagnostic source
+qualification only. Real A/B/C runs still require signed host/build attestations,
+independent outcomes, actual matched-budget measurements and effect reconciliation.

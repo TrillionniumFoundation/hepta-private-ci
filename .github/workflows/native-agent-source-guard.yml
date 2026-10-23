@@ -1,0 +1,30 @@
+name: Native Agent P0 source guard (non-authorizing)
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/native-agent-comparison/**'
+      - '.github/workflows/native-agent-source-guard.yml'
+  push:
+    branches:
+      - research/native-abc-worktree-guard-20261023-gpt6
+    paths:
+      - 'qualification/native-agent-comparison/**'
+      - '.github/workflows/native-agent-source-guard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  git-worktree-source-guard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Run offline source-guard regressions
+        run: python3 -m unittest discover -s qualification/native-agent-comparison -p 'test_*.py' -v
+      - name: Check Python syntax
+        run: python3 -m py_compile qualification/native-agent-comparison/source_guard.py qualification/native-agent-comparison/test_source_guard.py
