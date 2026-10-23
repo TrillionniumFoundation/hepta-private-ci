@@ -12,6 +12,7 @@ pub(super) fn registration(temp: &TempDir) -> OrdinaryCpuRegistration {
             source_digest: Digest32::of_bytes(b"registered-test-worker-source"),
             worker_id: StableId::new("fixed-ordinary-worker").expect("worker"),
             profile_id: StableId::new("ordinary-test-profile").expect("profile"),
+            working_directory: temp.path().to_path_buf(),
             observer_deadline: Duration::from_secs(8),
         },
         temp.path().join("fixed-worker"),
@@ -226,6 +227,63 @@ fn every_bound_intent_field_and_fixed_payload_is_recomputed() {
         assert!(
             registration.validate(&changed).is_err(),
             "accepted substituted registered {field}"
+        );
+    }
+}
+
+#[test]
+fn fixed_working_directory_is_bounded_and_changes_the_complete_intent() {
+    let temp = TempDir::new().expect("temp");
+    let original = registration(&temp);
+    let request = request(&original, "fixed-cwd-effect");
+    let mut binding = registration(&temp).binding;
+    binding.working_directory = temp.path().join("other-fixed-directory");
+    let changed = OrdinaryCpuRegistration::new(
+        binding,
+        original.program.clone(),
+        original.arguments.clone(),
+    )
+    .expect("different fixed cwd");
+    assert_ne!(
+        changed.payload_json().expect("payload"),
+        request.payload_json
+    );
+    assert_ne!(
+        changed
+            .operation(StableId::new("fixed-cwd-effect").expect("id"))
+            .expect("intent"),
+        original
+            .operation(StableId::new("fixed-cwd-effect").expect("id"))
+            .expect("intent"),
+    );
+    assert!(changed.validate(&request).is_err());
+    let mut invalid = vec![
+        PathBuf::from("relative-cwd"),
+        temp.path().join("a".repeat(4097)),
+        temp.path().join("invalid\0cwd"),
+    ];
+    #[cfg(unix)]
+    {
+        use std::ffi::OsString;
+        use std::os::unix::ffi::OsStringExt;
+        invalid.push(temp.path().join(OsString::from_vec(vec![0xff])));
+    }
+    #[cfg(windows)]
+    {
+        use std::ffi::OsString;
+        use std::os::windows::ffi::OsStringExt;
+        invalid.push(temp.path().join(OsString::from_wide(&[0xd800])));
+    }
+    for working_directory in invalid {
+        let mut binding = registration(&temp).binding;
+        binding.working_directory = working_directory;
+        assert!(
+            OrdinaryCpuRegistration::new(
+                binding,
+                original.program.clone(),
+                original.arguments.clone(),
+            )
+            .is_err()
         );
     }
 }

@@ -18,6 +18,7 @@ pub(super) fn registration(temp: &TempDir) -> OrdinaryCpuRegistration {
             source_digest: Digest32::of_bytes(b"registered-test-worker-source"),
             worker_id: StableId::new("fixed-ordinary-worker").expect("worker"),
             profile_id: StableId::new("ordinary-test-profile").expect("profile"),
+            working_directory: temp.path().to_path_buf(),
             observer_deadline: Duration::from_secs(8),
         },
         temp.path().join("fixed-worker"),

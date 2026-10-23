@@ -22,6 +22,7 @@ pub struct OrdinaryCpuBinding {
     pub source_digest: Digest32,
     pub worker_id: StableId,
     pub profile_id: StableId,
+    pub working_directory: PathBuf,
     pub observer_deadline: Duration,
 }
 
@@ -43,6 +44,13 @@ impl OrdinaryCpuRegistration {
         if !program.is_absolute()
             || program.as_os_str().len() > 4096
             || program.as_os_str().as_encoded_bytes().contains(&0)
+            || !binding.working_directory.is_absolute()
+            || binding.working_directory.as_os_str().len() > 4096
+            || binding
+                .working_directory
+                .as_os_str()
+                .as_encoded_bytes()
+                .contains(&0)
             || arguments.len() > 8
             || arguments
                 .iter()
@@ -54,8 +62,8 @@ impl OrdinaryCpuRegistration {
         {
             return Err("invalid or unbounded ordinary CPU registration".to_owned());
         }
-        if program.to_str().is_none() {
-            return Err("ordinary CPU program must have an exact UTF-8 spelling".to_owned());
+        if program.to_str().is_none() || binding.working_directory.to_str().is_none() {
+            return Err("ordinary CPU paths must have exact UTF-8 spellings".to_owned());
         }
         Ok(Self {
             binding,
@@ -65,8 +73,12 @@ impl OrdinaryCpuRegistration {
     }
 
     pub fn payload_json(&self) -> Result<String, String> {
-        let command_bytes =
-            serde_json::to_vec(&(&self.program, &self.arguments)).map_err(|e| e.to_string())?;
+        let command_bytes = serde_json::to_vec(&(
+            &self.program,
+            &self.arguments,
+            &self.binding.working_directory,
+        ))
+        .map_err(|e| e.to_string())?;
         Ok(serde_json::json!({
             "schema_version": 1,
             "scope": "ordinary_child_exit_only",

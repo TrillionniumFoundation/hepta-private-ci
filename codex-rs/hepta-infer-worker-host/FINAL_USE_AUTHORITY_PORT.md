@@ -8,7 +8,7 @@ or release.
 The existing PN3/PN4 work also has an authority-free
 `OrdinaryCpuRegistration` prerequisite. It derives one exact bounded payload and
 the complete canonical `OperationIntentV1` from trusted host metadata: subject,
-scope, policy generation, source/profile/worker identity, fixed program/arguments
+scope, policy generation, source/profile/worker identity, fixed program/arguments/cwd
 and an observer deadline of at most eight seconds. Requests carry that fixed
 payload rather than an executable path or argument list. Registration and
 semantic validation do not enter a worker or consume FinalUse authority. The
