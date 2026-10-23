@@ -69,7 +69,11 @@ class BlockingCiFanInTests(unittest.TestCase):
 
     def test_failure_and_cancellation_never_count_as_skipped(self):
         for outcome in ("failure", "cancelled"):
-            for native, full in (("false", "false"), ("true", "false"), ("true", "true")):
+            for native, full in (
+                ("false", "false"),
+                ("true", "false"),
+                ("true", "true"),
+            ):
                 allowed = allowed_skipped(native, full)
                 job = next(iter(sorted(allowed)))
                 needs = needs_with_skips(allowed)
