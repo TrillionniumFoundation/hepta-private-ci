@@ -56,6 +56,7 @@ fn make_trace(
     GroupDecisionTraceV1 {
         run_id: "run:demo".to_owned(),
         subject_id: subject.subject_id.clone(),
+        subject_binding_digest: canonical_group_subject_binding_digest_v1(subject),
         input_digest: digest("input"),
         generation: subject.generation,
         route_digest: digest("route"),
@@ -203,6 +204,56 @@ fn duplicate_cell_observations_fail_closed() {
     assert_eq!(
         decide_group_continuation_v1(&subject, &trace, &candidates),
         Err(GroupSystem2Error::DuplicateCellId("cell:0".to_owned()))
+    );
+}
+
+#[test]
+fn same_generation_cross_group_or_encoder_trace_is_rejected() {
+    let original = subject();
+    let candidates = candidate_fixtures();
+    let trace = make_trace(&original, &candidates);
+    let expected = Err(GroupSystem2Error::TraceBindingMismatch(
+        "subject_binding_digest",
+    ));
+
+    let mut changed = original.clone();
+    changed.group_id = "group:other".to_owned();
+    assert_eq!(decide_group_continuation_v1(&changed, &trace, &candidates), expected);
+
+    let mut changed = original.clone();
+    changed.encoder_digest = digest("other-encoder");
+    assert_eq!(decide_group_continuation_v1(&changed, &trace, &candidates), expected);
+
+    let mut changed = original.clone();
+    changed.objective_digest = digest("other-objective");
+    assert_eq!(decide_group_continuation_v1(&changed, &trace, &candidates), expected);
+
+    let mut changed = original.clone();
+    changed.utility_profile_digest = digest("other-profile");
+    assert_eq!(decide_group_continuation_v1(&changed, &trace, &candidates), expected);
+
+    let mut changed = original.clone();
+    changed.subject_class = GroupSubjectClassV1::Agent;
+    assert_eq!(decide_group_continuation_v1(&changed, &trace, &candidates), expected);
+
+    let mut changed = original;
+    changed.resource_ceiling_micros += 1;
+    assert_eq!(decide_group_continuation_v1(&changed, &trace, &candidates), expected);
+}
+
+#[test]
+fn valid_owner_trace_is_replayable_but_missing_binding_is_rejected() {
+    let owner = subject();
+    let candidates = candidate_fixtures();
+    let mut trace = make_trace(&owner, &candidates);
+    let first = must(decide_group_continuation_v1(&owner, &trace, &candidates));
+    assert_eq!(first.selected_candidate_id, "continue");
+    trace.subject_binding_digest = Digest32::ZERO;
+    assert_eq!(
+        decide_group_continuation_v1(&owner, &trace, &candidates),
+        Err(GroupSystem2Error::TraceBindingMismatch(
+            "subject_binding_digest",
+        ))
     );
 }
 
