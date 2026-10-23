@@ -39,8 +39,7 @@ impl ProductionDurableWriter {
         let attempt = self.store.commit_gate.transition_attempt();
         let transaction = self
             .store
-            .observation_pool()
-            .begin_with("BEGIN IMMEDIATE")
+            .begin_checkpoint_barrier()
             .await
             .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
         let mut entry = BoundEffectEntry {
