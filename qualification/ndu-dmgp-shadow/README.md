@@ -86,3 +86,29 @@ named numerical/replay regression gate. **All six independent-real-evidence
 production blockers remain open**, as do decoder execution, external outcome
 truth, OOD conditional risk calibration, native owner ports and qualified
 future/retention evidence.
+
+
+## Independent-outcome inference cannot be certified by a synthetic reference
+
+`preregistered_assessment.py` is an additional read-only, **assumption-labeled**
+A0–A5 familywise comparison. All six arms must be present on each matched
+future episode; source IDs may not be reused across episodes; work IDs are
+unique; all observed utility and cost rows are bound to one frozen objective,
+generation and critic. External operators must preregister the cost per
+microsecond, per-execution maximum time, familywise error level (at most .05)
+and at least 32 future paired episodes. It rejects train leakage, missing arms,
+pseudoreplication by repeated source IDs, forged floating resource counters
+and observed work above the frozen ceiling.
+
+The report computes NDU-minus-cost pair contrasts, with a Bonferroni-Hoeffding
+lower bound for simultaneous A5-vs-A0..A4 tests. This algebra is distribution
+free **conditional on independent, bounded observational clusters**. Those
+premises are not established by a signed field, a hash, a local test or a model
+forecast. The result therefore explicitly sets:
+`external_independence_authenticated=false`,
+`external_observation_signed=false`,
+`physical_decoder_meter_attested=false`,
+`production_blockers_closed=false` and
+`no_promotion_authority=true`, even when the synthetic lower bounds are
+positive. This is not a replacement for independent trusted observer and host
+meter signatures, registered NDU aggregation or future-window acceptance.
