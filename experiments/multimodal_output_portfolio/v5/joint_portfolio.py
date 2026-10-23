@@ -275,11 +275,28 @@ class JointController:
     """Finite nonanticipative Bellman solver, not a neural FBSDE solver."""
 
     def __init__(self, cfg: Profile, max_expansions: int = 100000):
-        if type(max_expansions) is not int or max_expansions < 1:
+        if type(cfg) is not Profile:
+            raise ValueError("invalid immutable NDU profile")
+        # A per-instance cache must never retain unrelated episodes/subjects.
+        # Bound both the number of evaluated states and retained cache entries.
+        if (type(max_expansions) is not int
+            or not 1 <= max_expansions <= 100000):
             raise ValueError("invalid finite solver work cap")
-        self.cfg = cfg
+        self._cfg = cfg
         self.max_expansions = max_expansions
         self.value_expansions = 0
+        # A class-method @lru_cache keys on 'self' and retains every completed
+        # controller until shared eviction. This instance-owned cache is
+        # garbage-collectable together with its immutable control profile.
+        self._solve_cached = lru_cache(maxsize=max_expansions)(
+            self._solve_uncached
+        )
+
+    @property
+    def cfg(self) -> Profile:
+        # No public setter: cached Bellman values cannot be silently
+        # reinterpreted against a different objective/risk configuration.
+        return self._cfg
 
     def select_with_fallback(self, state: PublicState):
         """Explicit bounded-work advisory; never claim fallback is optimal."""
@@ -303,8 +320,10 @@ class JointController:
             self.cfg.gamma,
         )
 
-    @lru_cache(maxsize=100000)
     def solve(self, state: PublicState):
+        return self._solve_cached(state)
+
+    def _solve_uncached(self, state: PublicState):
         if self.value_expansions >= self.max_expansions:
             raise SolverBudgetExceeded("finite value search cap exceeded")
         self.value_expansions += 1

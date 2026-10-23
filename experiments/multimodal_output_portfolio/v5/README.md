@@ -55,6 +55,27 @@ physical budget: the number of expansions is a computational complexity
 counter, not measured CPU time, energy or actual GPU usage. Tests cover
 both exact-small-state and exhausted-budget dispositions.
 
+## Independent solver-cache lifecycle and profile version fence
+
+The Bellman controller now uses a **per-instance bounded memoization cache**.
+The previous class-level `@lru_cache` included `self` in every key, potentially
+retaining completed episodes and their cost/preference profiles across unrelated
+controller lifetimes. The cache is scoped to one controller and its frozen
+`Profile`, so deleting the instance permits garbage collection. A new
+admission ceiling requires 1–100,000 cache misses and at most that many
+retained values per owner. Exhaustion still takes the explicit nonoptimal
+`BUDGETED_STOP_FALLBACK` route; it must not be reported as an optimal action.
+
+The public `cfg` property is read-only. A new controller is required to
+evaluate a different coefficient, budget profile, objective or model generation;
+already-computed value rows must never be relabeled for a new profile. Five
+new regression tests check completed-instance collection, read-only profile,
+cross-profile score separation, cache/work bounds and invalid constructors.
+This is **Python memory-lifecycle correctness**, not physical model-generation
+or deployment latency evidence. Ordinary Python reflection is not a trusted
+authority boundary; production hosts must independently enforce model/profile
+version and effect authorization.
+
 ## Falsification and explicit assumptions
 
 An *intentionally adverse* observation-law shift freezes the controller's
