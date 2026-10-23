@@ -46,7 +46,8 @@
     "updated": "initial latent, shared refinement, all four decoders",
     "objective": "negative calibration-marginal mean initial recursive utility at budget12, gamma2, P0=0; same terminal external loss as evaluation",
     "policy": "reselect finite exact policy each update; differentiate that selected policy with identical loss tensor",
-    "gradient_boundary": "piecewise pathwise derivative; hard argmin contradiction is locally constant away ties, clamping and action ties are nonsmooth; no global convergence claim"
+    "gradient_boundary": "piecewise pathwise derivative; hard argmin contradiction is locally constant away ties, clamping and action ties are nonsmooth; no global convergence claim",
+    "gradient_evidence": "first and last update: separate NDU-utility and anchor gradient norms by parameter group; committed policy depth distribution under calibration; parameter movement alone does not prove NDU credit"
   },
   "max_depth": 3,
   "budgets_after_initial_text": [
@@ -114,7 +115,7 @@
     ]
   },
   "secondary": [
-    "joint_ndu minus supervised_ndu isolates NDU-conditioned parameter update",
+    "joint_ndu minus supervised_ndu compares NDU-conditioned parameter update with matched supervised updates",
     "joint_ndu minus joint_static isolates dynamic control",
     "joint_ndu minus joint_myopic probes continuation effect",
     "joint_ndu minus joint_fixed_risk probes bounded preference effect",
@@ -144,5 +145,18 @@
     "general stochastic FBSDE solver",
     "natural-data all-modal foundation-model validation",
     "verified dedicated project runner execution"
-  ]
+  ],
+  "preregistration_amendment": {
+    "parent_commit": "8ab573bf4b92bfa8f8022ab74c5072b846a63c4e",
+    "timing": "before any v2 development training or heldout generation",
+    "reason": "independent review identified unequal optimizer-update budgets; add a matched supervised fine-tuning baseline without changing primary endpoint or thresholds"
+  },
+  "matched_supervised_steps": 40,
+  "matched_supervised_training": {
+    "initial_checkpoint": "identical 100-step depth-supervised warmup as joint arm",
+    "optimizer_and_groups": "same as joint_training",
+    "objective": "mean across depths and portfolios of q-weighted normalized raw reconstruction MSE, plus the same vertex anchor; equivalent up to a parameter-independent constant to convex-target reconstruction",
+    "matched": "40 optimizer updates; same grid+8-vertex forward examples, same four depths, same dense Linear forward MACs",
+    "not_matched": "joint adds policy compilation and recursive backward arithmetic; wall/CPU and lifetime costs reported separately"
+  }
 }
