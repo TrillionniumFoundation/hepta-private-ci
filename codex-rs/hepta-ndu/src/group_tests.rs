@@ -103,6 +103,55 @@ fn non_positive_continuation_abstains() {
 }
 
 #[test]
+fn legal_abstain_with_higher_net_prevents_worse_positive_continuation() {
+    let subject = subject();
+    let mut candidates = candidate_fixtures();
+    // Continuation has +17, but legal abstention has +40 in this
+    // candidate set. Positive net alone must not override abstention.
+    candidates[1].continuation_value_q32 = 50;
+    let result = must(decide_group_continuation_v1(
+        &subject,
+        &make_trace(&subject, &candidates),
+        &candidates,
+    ));
+    assert_eq!(result.selected_candidate_id, "abstain");
+    assert_eq!(result.net_value_q32, 40);
+    assert_eq!(result.authority, AuthorityPosture::DENY_ALL);
+}
+
+#[test]
+fn equal_net_preference_fails_closed_to_abstain() {
+    let subject = subject();
+    let mut candidates = candidate_fixtures();
+    candidates[1].continuation_value_q32 = 27;
+    let result = must(decide_group_continuation_v1(
+        &subject,
+        &make_trace(&subject, &candidates),
+        &candidates,
+    ));
+    assert_eq!(result.selected_candidate_id, "abstain");
+    assert_eq!(result.net_value_q32, 17);
+}
+
+#[test]
+fn malformed_abstain_net_cannot_hide_behind_positive_continuation() {
+    let subject = subject();
+    let mut candidates = candidate_fixtures();
+    // This i128 net cannot be represented in the Q32 i64 contract.
+    // Old selection did not evaluate abstain when continuation won.
+    candidates[1].current_value_q32 = i64::MIN;
+    candidates[1].continuation_value_q32 = i64::MAX;
+    assert_eq!(
+        decide_group_continuation_v1(
+            &subject,
+            &make_trace(&subject, &candidates),
+            &candidates,
+        ),
+        Err(GroupSystem2Error::ArithmeticOverflow)
+    );
+}
+
+#[test]
 fn candidate_set_digest_is_bound_and_deterministic() {
     let subject = subject();
     let candidates = candidate_fixtures();
