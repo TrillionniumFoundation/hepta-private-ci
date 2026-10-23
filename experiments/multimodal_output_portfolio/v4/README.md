@@ -242,3 +242,27 @@ a valid deterministic EMIT baseline. This closes at most a **finite synthetic
 source-replay integrity** weakness after the exact-HEAD scoped checks pass.
 Original witness-calibration shift failures and all
 `SHADOW_ONLY / DENY_ALL / HOLD_NO_GO` scientific and production blockers remain.
+
+## Near-neutral entropic-risk numerical continuity (isolated source fix)
+
+The finite v4 profile permits arbitrarily small positive risk coefficients.
+Before the isolated near-neutral correction, admissible payoffs `[-10,-3]`,
+probabilities `[0.4,0.6]`, and `gamma=1e-16` evaluated to approximately
+`-5.559107901499373` rather than the high-precision reference `-5.8`.
+The difference is floating-point cancellation before division by `gamma`,
+not an NDU improvement. It can perturb a finite Bellman action ranking.
+
+The local finite utility helper uses a compensated `expm1/log1p` evaluation
+only when the risk-weighted supported payoff span is near zero, with an
+explicit risk-neutral limit for extremely subnormal risk coefficients.
+Ordinary registered risk coefficients still take the original calculation.
+Four new focused tests use a 90-digit independent `decimal` oracle, zero
+mass, tolerated probability roundoff, and ordinary-risk parity. The existing
+exact-source shadow workflow discovers these tests; its actual result must
+be checked at the new HEAD, not inherited from a parent.
+
+This is source-level **finite synthetic arithmetic**, not new natural
+four-modality generation, verified evidence independence, real physical
+resource metering, P0–P5 scientific closure, or NeuronRuntime admission.
+Preserve all adverse experiments, required CI gates, and
+**DRAFT / SHADOW_ONLY / DENY_ALL / HOLD_NO_GO**.
