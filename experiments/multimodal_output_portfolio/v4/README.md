@@ -164,11 +164,13 @@ observed cost and must carry the prespecified failure loss. A completed output
 cannot exceed that loss ceiling simply by switching its status flag.
 
 The reporting path keeps the old pooled mean as a **diagnostic only** and also
-computes an equal-training-seed / equal-original-source average (with per-source
-draw means). A synthetic adversarial fixture deliberately reverses the apparent
+computes an equal-training-seed / equal-original-source / equal-world average
+(with per-world draw means). A synthetic adversarial fixture deliberately reverses the apparent
 effect: 100 favorable repeated draws from one source per seed outweigh one
 adverse source in the pooled score, whereas balanced source weighting correctly
-shows the registered contrast is adverse. It additionally rejects changed
+shows the registered contrast is adverse. A separate adversarial test repeats
+this reversal **within one source**, where one world has 99 favorable draws
+and a second world has one adverse draw; equal-world weighting detects it. It additionally rejects changed
 random draws, decoders and scoring identities.
 
 All roster entries, digests, real physical costs and failure classifications
