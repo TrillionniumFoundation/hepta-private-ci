@@ -1,0 +1,85 @@
+{
+  "schema": "hepta.modality-allocation.failed-preflight-audit.v4",
+  "audit_kind": "failed_confirmation_storage_preflight_consistency",
+  "receipt_consistency_passed": true,
+  "formal_integrity_passed": false,
+  "scientific_acceptance": "not_executed",
+  "attempt_status": "failed",
+  "attempt_kind": "confirmation",
+  "mechanism_gate_passed": false,
+  "primary_superiority_passed": false,
+  "run_path": "/dev/shm/hepta-v4/confirmation-001",
+  "run_receipt_sha256": "8e585cac847d6fdc72bebf696718b91f12cf928d3b09c25b739c5971bfe4977e",
+  "artifact_manifest_sha256": "d3de35b5cc2f45b49963b760265a5c63012f43f1276db5a4d5c523025d6f01e9",
+  "storage_sha256": "ac01c648f5e091df98bad7989b7fbdea907ab067c9a6a7267ab9fd47a08c3b08",
+  "protocol_sha256": "4f90f435e3ce419a09f42412af1fc6fe3515f3c198e5e8555115b1996c1aab0b",
+  "files_verified": 4,
+  "file_inventory": {
+    "artifacts.json": {
+      "bytes": 254,
+      "sha256": "d3de35b5cc2f45b49963b760265a5c63012f43f1276db5a4d5c523025d6f01e9"
+    },
+    "protocol.json": {
+      "bytes": 28233,
+      "sha256": "4f90f435e3ce419a09f42412af1fc6fe3515f3c198e5e8555115b1996c1aab0b"
+    },
+    "run-receipt.json": {
+      "bytes": 1365,
+      "sha256": "8e585cac847d6fdc72bebf696718b91f12cf928d3b09c25b739c5971bfe4977e"
+    },
+    "storage.json": {
+      "bytes": 815,
+      "sha256": "ac01c648f5e091df98bad7989b7fbdea907ab067c9a6a7267ab9fd47a08c3b08"
+    }
+  },
+  "artifact_payload_bytes": 29048,
+  "source_manifest_present": false,
+  "seed_evidence_present": false,
+  "native_execution_present": false,
+  "source_unchanged_record": null,
+  "model_forward_linear_macs": 0,
+  "model_work_phases": 0,
+  "failure_reason": "insufficient room for complete evidence and archive headroom",
+  "storage_passed": false,
+  "storage_reservations": {
+    "output": {
+      "directory": "/dev/shm/hepta-v4/confirmation-001",
+      "free_bytes": 222228480,
+      "required_free_bytes": 870894592,
+      "st_dev": 26,
+      "shortfall_bytes": 648666112
+    },
+    "archive": {
+      "directory": "/workspace/scratch/f837bdde9335/deliverables",
+      "free_bytes": 205242368,
+      "required_free_bytes": 870894592,
+      "required_is_shared_with_output": false,
+      "st_dev": 27,
+      "shortfall_bytes": 665652224
+    }
+  },
+  "total_required_unique_filesystem_bytes": 1741789184,
+  "total_recorded_shortfall_bytes": 1314318336,
+  "storage_scope": "Retained start observations and arithmetic verified; current free space is not used to reconstruct history.",
+  "code_observed_at_audit": {
+    "head": "7713023e604746a3947e0e0e2d31e8eaef6e48b1",
+    "run_py_sha256": "c5baf04ab3259b604a9395564a833cf91c779e1cb6e3d77c06ba604d74f65ef9",
+    "committed_blob_sha1": "1ec359add02a4613c37ee64be774df0b04a31a2b",
+    "current_bytes_match_commit": true,
+    "capacity_raise_line": 177,
+    "subsequent_call_lines": {
+      "source_manifest": 178,
+      "NativeBridge": 208,
+      "AllocationModel": 222
+    },
+    "scope": "Retrospective current-code alignment only. The failed attempt did not capture a start source manifest; this is not contemporaneous source attestation."
+  },
+  "reviewed_at_utc": "2026-10-23T07:06:13.755260+00:00",
+  "auditor_script_sha256": "d58cbe703379696359af079ba3196c26884f7d9e6f9e603c95bfa1a9268e45d9",
+  "audit_work": {
+    "model_forward_linear_macs": 0,
+    "wall_seconds": 0.017184226999233942,
+    "python_process_cpu_seconds": 0.011969101000000003
+  },
+  "claim_scope": "The four retained files consistently show rejection at the unchanged capacity preflight. No formal scientific samples, native sessions, or outcome estimates were produced. Development evidence remains separate."
+}

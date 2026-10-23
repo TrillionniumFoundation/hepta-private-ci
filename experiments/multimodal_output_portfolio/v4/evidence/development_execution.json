@@ -1,0 +1,26 @@
+{
+  "artifact_manifest_sha256": "6f2ca2670e4166d3d0ebbc4cece2469b641c19bafcfbb5d04047083d6c46c702",
+  "artifact_payload_bytes": 33785096,
+  "attempt_kind": "development",
+  "completed_at_utc": "2026-10-23T06:58:17.063858+00:00",
+  "completed_seeds": [
+    5
+  ],
+  "cost_scope": "All actual nn.Linear forwards in this attempt, including encoder checks; not total FLOPs, energy, development or independent replay work.",
+  "development": true,
+  "full_actual_linear_macs": 1792401408,
+  "full_actual_model_work_phases": 6,
+  "output": "/dev/shm/hepta-v4/development-001",
+  "peak_process_rss_kib": 773044,
+  "planning_and_online_linear_macs_subtotal": 1792352256,
+  "preregistration_commit": "f10589f3df5d2da88b2b5d92e3686441ce982461",
+  "protocol_sha256": "4f90f435e3ce419a09f42412af1fc6fe3515f3c198e5e8555115b1996c1aab0b",
+  "python_process_cpu_seconds": 7.337457505,
+  "schema": "hepta.modality-allocation.execution.v4",
+  "scientific_acceptance": "pending independent audits",
+  "separately_metered_encoder_contract_linear_macs": 49152,
+  "source_unchanged": true,
+  "started_at_utc": "2026-10-23T06:58:13.408721+00:00",
+  "status": "completed",
+  "wall_seconds": 3.655115413999738
+}

@@ -1,0 +1,72 @@
+{
+  "schema": "hepta.v4.blocked-delivery-packager-independent-review.v1",
+  "passed": true,
+  "reviewed_packager_sha256": "1143c5760a0c5604d8ecf19fa34fe7f2bce34f601e17b779e30743e18f102c7b",
+  "scope": "development-with-blocked-confirmation only",
+  "code_review": {
+    "development_receipt_review_and_all_manifest_payloads_bound": true,
+    "failed_exact_four_files_and_corresponding_review_bound": true,
+    "temporary_failure_checker_hash_bound": true,
+    "no_completed_formal_or_formal_source_allowed": true,
+    "mandatory_archive_scope_json_and_text_keep_formal_flags_false": true,
+    "packaging_rechecks_per_file_sha256_bytes_modes_and_input_inventory": true
+  },
+  "actual_inventory_files_before_this_review": 254,
+  "actual_inventory_bytes_before_this_review": 88403780,
+  "actual_delivery_scope": {
+    "delivery_scope": "development-with-blocked-confirmation",
+    "development_source_commit": "7713023e604746a3947e0e0e2d31e8eaef6e48b1",
+    "formal_source_commit": null,
+    "formal_confirmation_completed": false,
+    "formal_integrity_passed": false,
+    "formal_scientific_acceptance": "not_executed",
+    "formal_mechanism_gate_passed": false,
+    "formal_primary_superiority_passed": false,
+    "scientific_acceptance": "development evidence only; formal confirmation not executed beyond storage preflight",
+    "formal_source_binding": "not recorded by failed preflight; no formal implementation execution claim",
+    "verified_development_receipt_sha256": "f89c100037f1aec567ed5c516335fbba79a5067a96699bff46ac40bdd9b31b52",
+    "verified_development_review_sha256": "1e335708311f96ae72c497f7ff011630c543c834d70e15b5c5ce1c2fe1495d70",
+    "verified_failed_receipt_sha256": "8e585cac847d6fdc72bebf696718b91f12cf928d3b09c25b739c5971bfe4977e",
+    "verified_failed_storage_sha256": "ac01c648f5e091df98bad7989b7fbdea907ab067c9a6a7267ab9fd47a08c3b08",
+    "verified_failure_review_sha256": "289897798b87b6e8b2960ff62800a8582e1ffcc151b3a66fd0377acf8cda387e",
+    "verified_failure_checker_sha256": "d58cbe703379696359af079ba3196c26884f7d9e6f9e603c95bfa1a9268e45d9",
+    "formal_model_forward_linear_macs": 0
+  },
+  "negative_cases": [
+    {
+      "case": "dev_payload_hash_changed",
+      "rejected": true,
+      "reason": "development artifact content differs: seed-5/tree.npz"
+    },
+    {
+      "case": "missing_failure_review",
+      "rejected": true,
+      "reason": "corresponding independent failed-preflight consistency review required"
+    },
+    {
+      "case": "completed_formal_present",
+      "rejected": true,
+      "reason": "blocked scope requires explicit development/failed runs and no completed formal confirmation"
+    },
+    {
+      "case": "missing_failure_checker",
+      "rejected": true,
+      "reason": "the independent failed-preflight checker must be included"
+    },
+    {
+      "case": "formal_source_supplied",
+      "rejected": true,
+      "reason": "blocked scope requires explicit development/failed runs and no completed formal confirmation"
+    }
+  ],
+  "actual_scope_calls": 6,
+  "package_function_called": false,
+  "zip_created": false,
+  "models_executed": false,
+  "model_forward_linear_macs": 0,
+  "source_or_evidence_modified": false,
+  "release_commit_parameter_used_for_scope_check": "7713023e604746a3947e0e0e2d31e8eaef6e48b1",
+  "release_commit_scope": "Current observed Git HEAD used only as a scope parameter; this review does not certify the final release commit or authorize packaging.",
+  "wall_seconds": 0.16269990500040876,
+  "python_process_cpu_seconds": 0.16036667000000002
+}

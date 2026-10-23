@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.v4.final-cloud-observation.v1",
+  "observed_at_utc": "2026-10-23 07:12:38 UTC",
+  "run_id": 39899251197,
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39899251197",
+  "jobs": [
+    {
+      "id": 120236739119,
+      "name": "hosted-verification",
+      "status": "completed",
+      "conclusion": "success",
+      "runner_id": 1000208946,
+      "runner_name": "GitHub Actions 1000208946",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "started_at": "2026-10-23T05:20:45Z",
+      "completed_at": "2026-10-23T05:22:11Z"
+    },
+    {
+      "id": 120236739358,
+      "name": "dedicated-full",
+      "status": "queued",
+      "conclusion": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "labels": [
+        "self-hosted",
+        "linux",
+        "x64"
+      ],
+      "started_at": "2026-10-23T04:14:19Z",
+      "completed_at": null
+    }
+  ],
+  "hosted_result_verification": "cloud-original-hosted-verification.json",
+  "scope": "Original hosted smoke completed and its artifact contents were verified. Dedicated job remains queued with runner_id 0. This observation does not identify the administrative cause or demonstrate v4 remote confirmation."
+}
