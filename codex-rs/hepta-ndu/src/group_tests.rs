@@ -176,3 +176,58 @@ fn trace_identity_and_generation_mismatch_fail_closed() {
         Err(GroupSystem2Error::TraceBindingMismatch("generation"))
     );
 }
+
+#[test]
+fn stable_group_ids_reject_control_and_noncanonical_tokens() {
+    for invalid in ["bad\nline", "bad\tfield", "bad/route", "bad id", "bad\u{202e}"] {
+        let candidates = candidate_fixtures();
+
+        let mut invalid_subject = subject();
+        invalid_subject.subject_id = invalid.to_owned();
+        assert_eq!(
+            decide_group_continuation_v1(
+                &invalid_subject,
+                &make_trace(&invalid_subject, &candidates),
+                &candidates,
+            ),
+            Err(GroupSystem2Error::InvalidId("subject_id"))
+        );
+
+        let mut invalid_subject = subject();
+        invalid_subject.group_id = invalid.to_owned();
+        assert_eq!(
+            decide_group_continuation_v1(
+                &invalid_subject,
+                &make_trace(&invalid_subject, &candidates),
+                &candidates,
+            ),
+            Err(GroupSystem2Error::InvalidId("group_id"))
+        );
+
+        let valid_subject = subject();
+        let mut invalid_trace = make_trace(&valid_subject, &candidates);
+        invalid_trace.run_id = invalid.to_owned();
+        assert_eq!(
+            decide_group_continuation_v1(&valid_subject, &invalid_trace, &candidates),
+            Err(GroupSystem2Error::InvalidId("run_id"))
+        );
+
+        let mut invalid_trace = make_trace(&valid_subject, &candidates);
+        invalid_trace.cells[0].cell_id = invalid.to_owned();
+        assert_eq!(
+            decide_group_continuation_v1(&valid_subject, &invalid_trace, &candidates),
+            Err(GroupSystem2Error::InvalidId("cell_id"))
+        );
+
+        let mut invalid_candidates = candidates.clone();
+        invalid_candidates[0].candidate_id = invalid.to_owned();
+        assert_eq!(
+            decide_group_continuation_v1(
+                &valid_subject,
+                &make_trace(&valid_subject, &candidates),
+                &invalid_candidates,
+            ),
+            Err(GroupSystem2Error::InvalidId("candidate_id"))
+        );
+    }
+}
