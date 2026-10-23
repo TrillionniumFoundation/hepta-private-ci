@@ -52,9 +52,8 @@ other canonical CI helpers retain their main implementations.
 The gateway build reads the exact release channel in
 `codex-rs/rust-toolchain.toml`, rejects moving aliases, invokes that toolchain and
 checks the compiler reports the selected release. Its build receipt hashes the
-same tracked toolchain manifest before and after compilation. The main base
-pins Rust1.95.0; the source stack's Rust1.96.0 pin is not imported. Standalone UI
-checks still select Rust1.95.0, and Makepad retains its separately verified
+same tracked toolchain manifest before and after compilation. The backend now pins Rust1.96.0 for Rama0.3 compatibility; the main import base
+used Rust1.95.0. Standalone UI checks still select Rust1.95.0, and Makepad retains its separately verified
 `nightly-2026-10-02` compiler. No host or Desktop OS pin changes.
 
 `scripts/hepta_ci_dependencies.py` on main provides the existing owners, edges,

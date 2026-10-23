@@ -262,7 +262,8 @@ The source candidate is checked by `.github/workflows/hepta-consolidated-source.
 
 The owning standalone workspace is now `apps/hepta-control-ui/rust`, with
 explicit Rust1.95.0 UI tooling. The gateway follows the canonical backend
-`rust-toolchain.toml` pin, also Rust1.95.0 at the 2026-10-19 main import base; the
+`rust-toolchain.toml` pin, now Rust1.96.0 for Rama0.3 compatibility (Rust1.95.0 at
+the 2026-10-19 main import base); the
 historical port record describes its older backend pin. The shared
 Makepad renderer, typed bounded core, exact lock, SDK transformations, resource
 provenance and actual-host regressions are selectively imported; see the module

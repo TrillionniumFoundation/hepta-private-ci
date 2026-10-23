@@ -53,7 +53,7 @@ requires exact `nightly-2026-10-02`, rust-src, and
 `rustc 1.101.0-nightly (c36f14571 2026-10-01)`. Hosted UI checks retain
 just1.58.0/nextest0.9.146. Select the UI toolchain explicitly. The gateway builder
 reads and verifies the canonical `codex-rs/rust-toolchain.toml` release pin, which
-is Rust1.95.0 at this import's main base. Its source receipt includes that manifest
+is now Rust1.96.0 for Rama0.3 compatibility (Rust1.95.0 at the import base). Its source receipt includes that manifest
 and the backend lock. The UI workflow does not rewrite either toolchain manifest.
 
 The builder verifies SDK patches, lockfiles, generated bridge and source/resource

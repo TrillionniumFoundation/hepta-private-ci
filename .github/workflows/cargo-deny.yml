@@ -28,12 +28,12 @@ jobs:
       - uses: ./.github/actions/setup-ci-build
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
 
       - name: Run cargo-deny
         uses: EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246 # v2
         with:
-          rust-version: 1.95.0
+          rust-version: 1.96.0
           manifest-path: ./codex-rs/Cargo.toml
 
       - name: Check for a clean worktree

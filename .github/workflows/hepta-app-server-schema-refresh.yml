@@ -75,7 +75,7 @@ jobs:
       - uses: ./.github/actions/setup-ci
 
       - name: Install the repository Rust toolchain
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
         with:
           toolchain: ${{ steps.source.outputs.toolchain }}
           components: ${{ steps.source.outputs.components }}
