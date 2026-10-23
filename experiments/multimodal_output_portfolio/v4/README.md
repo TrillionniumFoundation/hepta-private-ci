@@ -47,6 +47,12 @@ posture, while addressing two source-reproducible fail-closed defects:
 - `Config` now rejects booleans, fractional physical units, oversize integer
   budget/synchronization parameters, nonfinite or out-of-range risk and cost
   prices **at admission**, before generating any noncanonical cost/utility trace.
+- `State.levels` and `Allocation.units` must be immutable, exact tuples.
+  A mutable list previously passed construction but could change after validation
+  or fail only when the cached Bellman controller tried to hash it.
+- `execute` now admits only a bounded nonnegative integer RNG seed, rather
+  than accepting `None` (nondeterministic entropy) or noncanonical seed types.
+  Existing valid-seed trajectories and protocol output shapes are unchanged.
 - `conditional_ce` computes its numerical anchor only over **positive-probability
   outcomes**. A zero-mass, arbitrarily bad branch must not underflow the entire
   lawful conditional expectation and spuriously reject a legal action.
