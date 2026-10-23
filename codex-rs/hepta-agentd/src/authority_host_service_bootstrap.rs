@@ -90,6 +90,16 @@ impl HostAuthorityService {
     /// genesis, authority mint, sequence spend, recovery hash or reset. Unknown
     /// backends remain closed; the generic protected store is never reopened.
     pub fn capture_public_bootstrap(&self) -> io::Result<HostAuthorityPublicBootstrapV1> {
+        self.capture_public_bootstrap_before_return(|| Ok(()))
+    }
+
+    // The private completion is nonblocking and may not re-enter Registry or a
+    // backend. Required-startup Ready is published here, before the original
+    // Registry fence is released, after every existing final validation.
+    pub(super) fn capture_public_bootstrap_before_return(
+        &self,
+        complete: impl FnOnce() -> io::Result<()>,
+    ) -> io::Result<HostAuthorityPublicBootstrapV1> {
         let bootstrap = self.bootstrap.as_ref()
             .ok_or_else(|| io::Error::other("Root bootstrap registration required"))?;
         let writer = self.writer.as_ref().ok_or_else(|| io::Error::other("writer required"))?;
@@ -154,6 +164,7 @@ impl HostAuthorityService {
             validate_observation_lease(&writer.registration.authority_lease, &revocations,
                 self.clock.now_unix_ms().map_err(io::Error::other)?)?;
             bootstrap.check_serving()?;
+            complete()?;
             Ok(bundle)
         })
     }

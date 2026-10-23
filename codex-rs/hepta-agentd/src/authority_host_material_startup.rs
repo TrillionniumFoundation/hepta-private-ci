@@ -99,8 +99,11 @@ impl HostAuthorityService {
             // and the final protected clock are checked after blocking I/O.
             // Capture makes no sequence, ticket or permission and retains no
             // second issuer. The existing public bootstrap does not change.
-            self.capture_public_bootstrap()?;
-            startup.state.store(StartupState::Confirmed as u8, Ordering::Release);
+            self.capture_public_bootstrap_before_return(|| {
+                startup.state.compare_exchange(StartupState::Registering as u8, StartupState::Confirmed as u8,
+                    Ordering::AcqRel, Ordering::Acquire)
+                    .map(|_| ()).map_err(|_| io::Error::other("material readiness was permanently fenced"))
+            })?;
             Ok(())
         })();
         if result.is_err() {
