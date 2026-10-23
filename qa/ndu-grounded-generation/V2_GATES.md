@@ -71,6 +71,45 @@ and missing historical evidence cause explicit nonzero exits. It verifies
 **observable image identities only**: real-world entity identity and
 foundation-model pretraining overlap remain outside what hashes can prove.
 
+### Mandatory pinned history custody (subsequent hardening)
+
+The **CLI** now requires *both* immutable historical files, not merely one
+caller-supplied manifest. The exact raw SHA256 receipts are:
+
+| Archived historical member | SHA256 | Sources |
+| --- | --- | ---: |
+| `cohort/manifest.json` (v1) | `71168c26fffdd913d71a69d8708cec957f55dc2bece112c9c50153fbf31de75d` | 256 |
+| `code/historical_exclusions.json` (pre-v1 wrapper) | `4c2b88f85c9ef5fea08790775a652798a72e9281bed1534561f14c681e7bba9d` | 384 |
+
+These receipts were independently recomputed from the original
+`hepta-ndu-evidence-v1-20261022.zip` archive, whose SHA256 is
+`2ac7d46df01fb3e24cd1004cef75ad0efd4076b5f1c9556b560e97546ffaceb5`.
+The CLI rejects missing, duplicate, modified or substituted historical
+documents and records the verified source totals. Pass the **exact archived
+bytes**, not a reformatted JSON export; the two `--historical` flags may be
+supplied in either order. The standalone `check_cohort` function remains a
+pure unit-test/research helper and does **not** establish historical custody by
+itself. Do not use its return value as a release authorization.
+
+### Mandatory candidate image-byte custody
+
+The production CLI also requires `--image-dir` and **every** candidate row
+must provide `image_filename` (safe local JPEG basename),
+`image_size: [width,height]`, `image_bytes`, `image_sha256`,
+`decoded_rgb_sha256` and `dhash64`. It uses the original frozen
+`cohort.image_fingerprint` algorithm to read **each original JPEG file**,
+check format/dimensions, count all bytes and recompute the exact original
+bytes SHA256, EXIF-transposed RGB SHA256 and 64-bit horizontal dHash.
+Forged fingerprints, swapped JPEG bytes, unsafe paths and symlinks are
+rejected. A missing `--image-dir` cannot produce a PASS. Unit tests use
+four tiny local synthetic JPEG fixtures, not a scientific evidence cohort.
+
+This closes the omitted/substituted-history loophole **and** the
+manifest-only fingerprint-spoofing loophole for this CLI. It still does
+**not** authenticate the legal image origin, independently establish entity
+identity disjointness, rule out foundation-model pretraining contamination
+or run a new v2 learning experiment. These remain separate blockers.
+
 A required negative control was run with the *v1 candidate manifest itself*
 and both historical data sources. All **256/256** reused v1 sources were
 caught, with no internal false assumption that test data could be recycled.
@@ -85,6 +124,8 @@ Run from a checkout of the stacked gate PR, after unpacking the original
 ```bash
 python -m unittest discover -s qa/ndu-grounded-generation -p 'test_cohort_firewall.py' -v
 python -m unittest discover -s qa/ndu-grounded-generation -p 'test_capability_gate.py' -v
+python -m unittest discover -s qa/ndu-grounded-generation -p 'test_pinned_history_custody.py' -v
+python -m unittest discover -s qa/ndu-grounded-generation -p 'test_candidate_image_custody.py' -v
 python qa/ndu-grounded-generation/capability_gate.py \
   --bundle-root /path/to/v1/hepta-ndu-evidence-v1-20261022 \
   --output /tmp/v1-audit.json
@@ -93,11 +134,12 @@ python qa/ndu-grounded-generation/cohort_firewall.py \
   --candidate /path/to/a/new/v2/cohort/manifest.json \
   --historical /path/to/v1/hepta-ndu-evidence-v1-20261022/cohort/manifest.json \
   --historical qa/ndu-grounded-generation/historical_exclusions.json \
+  --image-dir /path/to/a/new/v2/cohort/original-jpegs \
   --output /tmp/v2-cohort-firewall.json
 # EXPECT EXIT STATUS 0 only if identity overlap is absent.
 ```
 
-These 16 standard-library tests require no model weights or downloading.
+The original 16 standard-library tests require no model weights or downloading. New history-custody unit tests use the standard library; candidate-image-custody tests additionally use the pinned Pillow dependency already installed by scoped CI. Neither constitutes a new model trial.
 
 Independent integrity replay of the original immutable evidence remains a
 separate prerequisite:
