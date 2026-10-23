@@ -55,7 +55,10 @@ def _fingerprint(row, *, historical=False):
     image_id = row.get("image_id")
     if type(image_id) is not int or image_id < 0:
         raise ExclusionError("invalid original COCO image_id")
-    if not historical and row.get("source_id") != f"coco:val2017:{image_id}":
+    if (
+        (not historical or "source_id" in row)
+        and row.get("source_id") != f"coco:val2017:{image_id}"
+    ):
         raise ExclusionError("cohort source_id and original image_id disagree")
     for name in FINGERPRINT_KEYS:
         pattern = HEX64 if name == "dhash64" else HEX256

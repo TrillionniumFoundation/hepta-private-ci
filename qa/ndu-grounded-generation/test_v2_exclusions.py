@@ -89,6 +89,15 @@ class V2SourceExclusionTests(unittest.TestCase):
         with self.assertRaisesRegex(ExclusionError, "disagree"):
             build_registry(a, b)
 
+    def test_historical_original_image_identity_alias_rejected(self):
+        historical, cohort = mock_input()
+        historical["source_sample"]["images"][0]["source_id"] = "coco:val2017:999999"
+        with self.assertRaisesRegex(ExclusionError, "disagree"):
+            build_registry(historical, cohort)
+
+        historical["source_sample"]["images"][0]["source_id"] = "coco:val2017:0"
+        self.assertEqual(len(build_registry(historical, cohort)["source_sample"]["images"]), 640)
+
     def test_incomplete_old_384_rejected(self):
         a, b = mock_input()
         a["source_sample"]["images"].pop()
