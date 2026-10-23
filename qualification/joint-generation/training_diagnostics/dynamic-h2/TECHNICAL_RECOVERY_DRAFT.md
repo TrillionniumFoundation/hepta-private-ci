@@ -47,3 +47,15 @@ new formal confirmation and spends no alpha. The core/strong-dynamic scientific
 claims remain unconfirmed. The present missing direct NC/full and static NDU
 TRAIN terms prevent the requested current-weight complete-cost boundary judgment;
 H1 alone cannot establish either feasibility or impossibility.
+
+
+## Subsequent parent decision and result
+
+The parent later explicitly authorized a separate H3 identity with the same
+36 calls/design/budgets and separate retention of H2 startup cost. That decision
+superseded this draft's unapproved combined-30s recovery proposal; the H3 cap
+remained30s and prior H2 cost was reported separately and cumulatively. H2 was
+never resumed. The H3 startup/identity failure and exact cost-representation
+repair are retained in `runs/codex-cloud-dynamic-train-headroom-h3/REPORT.md`.
+H3 is also consumed, with no TRAIN/model/measurement run; this draft grants no
+further recovery authorization.

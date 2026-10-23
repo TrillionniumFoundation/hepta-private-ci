@@ -176,6 +176,16 @@ requires explicit amendment of that once-only rule and preservation of prior
 startup cost before the unexecuted collection can proceed. No core/dynamic
 acceptance or model-family impossibility follows from this startup error.
 
+The parent explicitly authorized the independent [H3 collection](runs/codex-cloud-dynamic-train-headroom-h3/REPORT.md)
+after real no-data startup smoke. It also exited **1 before TRAIN/model
+loading or any of the 36 service calls**: exact float equality rejected original
+build costs differing from their frozen decimal representation by less than
+0.00001 nanoseconds. The binding now compares canonical nanoseconds; a real
+archive metadata-only check passes. H3 itself remains consumed and failed;
+there is still no current-weight headroom measurement. H2+H3 actual startup
+research costs, 1.326427460 CPU seconds, remain recorded. The new source repair
+does not authorize another collection or change any scientific threshold.
+
 **The first configured Codex Cloud execution passed the frozen finite-scene
 acceptance on 2026-10-23**, using source commit
 `57d2c7aa5880dd761b4c43f79d0f6f16b26b72e7`. The exact runner exited 0; all 30

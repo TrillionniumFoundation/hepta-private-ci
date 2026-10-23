@@ -399,3 +399,16 @@ failure remain consumed; the one-line label repair and regression do not
 constitute a successful repeat or a scientific result. A technical recovery
 amendment is only proposed, not executed. This administrative startup failure
 creates no formal alpha allocation, reset or independent evidence.
+
+
+The parent-authorized H3 technical recovery kept H2 consumed and all planned
+36 measurements unchanged. Real dependency startup smoke passed, but H3's sole
+collection exited 1 during original-archive identity checking, before TRAIN
+construction, model tensor loading, probes or measurements. Its guard falsely
+required binary float equality for historical costs that match exactly when
+expressed as integer nanoseconds (NC8537556029, N8307966292). The subsequent
+canonical-nanosecond binding correction and real metadata-only archive smoke
+supply no model/utility result and do not reopen H3. Actual startup research
+cost remains H2 0.519258463 s plus H3 0.807168997 s. Retain this technical
+selection/error history in any later development or confirmation registration.
+No formal alpha or new independent evidence was created by these failures.
