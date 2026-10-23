@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from bakeoff import (
     CANDIDATES, MODEL_REPOS, SCHEMA, EvidenceError, analyse,
-    file_hash, validate_dataset, validate_predictions, metrics,
+    file_hash, validate_dataset, validate_predictions, metrics, training_partition_digest,
 )
 from run_models import calibrate, choose_temperature, normalize
 
@@ -98,6 +98,7 @@ class BakeoffContractTests(unittest.TestCase):
                     "head_l2": 0.005, "head_seed": 1729,
                     "projection": "seeded_gaussian_256",
                     "projection_sha256": "c" * 64,
+                    "head_training_dataset_sha256": training_partition_digest(self.rows),
                 },
             }))
 
@@ -118,6 +119,14 @@ class BakeoffContractTests(unittest.TestCase):
         manifest["digests"]["head"] = "UNPINNED"
         path.write_text(json.dumps(manifest))
         with self.assertRaisesRegex(EvidenceError, "head digest"):
+            analyse(self.plan, self.dataset_path, self.runs)
+
+    def test_encoder_head_training_corpus_mismatch_fails(self):
+        path = self.runs / CANDIDATES[-1] / "run.json"
+        data = json.loads(path.read_text())
+        data["profile"]["head_training_dataset_sha256"] = "f" * 64
+        path.write_text(json.dumps(data))
+        with self.assertRaisesRegex(EvidenceError, "head training partition digest mismatch"):
             analyse(self.plan, self.dataset_path, self.runs)
 
     def test_dataset_drift_fails(self):
