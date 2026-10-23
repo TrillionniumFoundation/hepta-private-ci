@@ -1,0 +1,90 @@
+name: Hepta parametric catalog shadow checks
+
+on:
+  pull_request:
+    paths:
+      - scripts/memory_cell_catalog/**
+      - scripts/memory_cell/parametric_owner.py
+      - scripts/memory_cell/tensor_contract.py
+      - .github/workflows/hepta-parametric-catalog-shadow.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-parametric-catalog-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONPATH: scripts/memory_cell:scripts/memory_cell_catalog
+  OMP_NUM_THREADS: "2"
+  MKL_NUM_THREADS: "2"
+
+jobs:
+  metadata-admission:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && github.head_ref == 'codex/memory-parametric-catalog-20261023')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Verify and record exact source identity
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          mkdir -p "$RUNNER_TEMP/catalog-metadata"
+          python - <<'PY'
+          import json, os, platform, subprocess
+          from pathlib import Path
+          record = {
+              "source_sha": os.environ["SOURCE_SHA"],
+              "tree_sha": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "event_name": os.environ["GITHUB_EVENT_NAME"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "python": platform.python_version(),
+              "platform": platform.platform(),
+              "mode": "SHADOW_ONLY",
+              "production_activation_allowed": False,
+          }
+          (Path(os.environ["RUNNER_TEMP"]) / "catalog-metadata" / "source.json").write_text(
+              json.dumps(record, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+      - name: Install pinned CPU fixture runtime
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1' 2>&1 | tee "$RUNNER_TEMP/catalog-metadata/install.log"
+          python -m pip install --only-binary=:all: 'numpy==1.26.4' 'safetensors==0.6.2' 2>&1 | tee -a "$RUNNER_TEMP/catalog-metadata/install.log"
+          python -m pip check
+          python -m pip freeze > "$RUNNER_TEMP/catalog-metadata/runtime.txt"
+      - name: Run catalog admission tests without a pretrained model
+        run: |
+          set -euo pipefail
+          python -B -m unittest discover -s scripts/memory_cell_catalog -p 'test_metadata_catalog.py' -v 2>&1 | tee "$RUNNER_TEMP/catalog-metadata/catalog-tests.log"
+      - name: Preserve source and test evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: parametric-catalog-shadow-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/catalog-metadata/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Confirm source tree unchanged
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
