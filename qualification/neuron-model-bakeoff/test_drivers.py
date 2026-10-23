@@ -2,8 +2,13 @@
 from __future__ import annotations
 
 import unittest
+import tempfile
+from pathlib import Path
+import json
 
-from run_laya import choice_question, result_row
+import bakeoff
+
+from run_laya import choice_question, result_row, load_calibration, apply_extra_temperature
 from run_heads import row_texts
 
 
@@ -40,6 +45,29 @@ class DriverContractTests(unittest.TestCase):
                        rss=123, host_id="local", device="cpu", weights_sha256="a" * 64,
                        calibration_sha256="b" * 64,
                        threshold=.5, gpu_allocator_peak=None)
+
+    def test_laya_precommitted_calibration_is_bound_to_split(self):
+        rows = [{"case_id": "cal-only", "split": "calibration", "label": "a"}]
+        profile = {"schema": "hepta.neuron-bakeoff.laya-calibration.v1",
+                   "weights_sha256": "a" * 64, "temperature": 1.5, "threshold": 0.85,
+                   "calibration_split_sha256": bakeoff.sha_bytes(bakeoff.canonical(rows))}
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "calibration.json"
+            path.write_text(json.dumps(profile))
+            self.assertEqual(load_calibration(path, rows, "a" * 64, .85), 1.5)
+            with self.assertRaisesRegex(ValueError, "model weights identity"):
+                load_calibration(path, rows, "b" * 64, .85)
+            with self.assertRaisesRegex(ValueError, "threshold"):
+                load_calibration(path, rows, "a" * 64, .8)
+            with self.assertRaisesRegex(ValueError, "split digest drift"):
+                load_calibration(path, [dict(rows[0], label="b")], "a" * 64, .85)
+
+    def test_laya_extra_temperature_is_stable_and_rejects_invalid(self):
+        x = apply_extra_temperature({"a": .8, "b": .2}, 2.0)
+        self.assertAlmostEqual(x["a"] + x["b"], 1.)
+        self.assertLess(x["a"], .8)
+        with self.assertRaisesRegex(ValueError, "invalid original"):
+            apply_extra_temperature({"a": float("nan"), "b": 1.0}, 1.0)
 
     def test_encoder_prompt_labels_mismatch_rejected(self):
         bad = dict(self.row, criteria={"x": "not one of the labels"})
