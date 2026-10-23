@@ -178,6 +178,13 @@ grant, drives one controlled mock Responses provider request, and verifies the
 durable terminal correlation. That is repository product-composition evidence,
 not real-provider or target-host qualification.
 
+The fixture supplies the actual workspace `codex` executable through the Cargo
+binary resolver or Bazel unit-test runfiles, and uses Agentd's existing runtime
+prerequisite check before control admission. The test harness executable cannot
+replace the CLI. Native output reads bounded complete agent-message text from
+the validated exact terminal turn, replacing partial deltas without duplicating
+them; missing terminal text preserves the observed stream.
+
 Before production activation, independently establish the deployed issuer,
 signing-key custody, socket/peer ACLs, trusted time and revocation distribution,
 target-host Agentd/App Server identity, real provider terminal stream, any
