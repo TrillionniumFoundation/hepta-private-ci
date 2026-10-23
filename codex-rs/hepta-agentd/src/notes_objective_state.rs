@@ -212,7 +212,8 @@ impl AgentdState {
                 .dispatch_to_with_grant_provider(&config.target.destination_id(), queued)
                 .await;
         } else if retained.state == LocalOutcomeState::Indeterminate {
-            host.reconcile(1).await?;
+            host.reconcile_for_destination(&config.target.destination_id(), /*limit*/ 1)
+                .await?;
         }
         let state = writer.status(run_id).await?;
         let mut runs = self.runs.lock().map_err(poisoned_state)?;

@@ -14,6 +14,9 @@ use pretty_assertions::assert_eq;
 use serde_json::Value;
 use serde_json::json;
 
+#[path = "notes_reconciliation_scope_tests.rs"]
+mod reconciliation_scope_tests;
+
 struct Application {
     target: NotesTargetIdentity,
     effects: AtomicUsize,

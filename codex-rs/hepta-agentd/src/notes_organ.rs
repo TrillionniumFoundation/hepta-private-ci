@@ -73,7 +73,7 @@ pub async fn run_notes_organ(
     })?;
     state
         .notes_objective
-        .set(notes)
+        .set(notes.clone())
         .map_err(|_| AgentdError::Invalid("Notes Objective was already attached".into()))?;
     state.attach_production_operations(Arc::clone(&host))?;
     state.check_notes_organ_authority()?;
@@ -110,9 +110,10 @@ pub async fn run_notes_organ(
     let startup = (|| {
         tasks.spawn_required("notes-control", control.run_notes())?;
         tasks.spawn_required(
-            "production-operation-reconciler",
-            crate::runtime::run_production_operation_reconciler(
+            "notes-operation-reconciler",
+            crate::runtime::run_notes_operation_reconciler(
                 host,
+                notes,
                 INTERVAL,
                 cancellation.clone(),
             ),

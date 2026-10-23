@@ -430,8 +430,44 @@ where
     Ok(cognitive_runtime)
 }
 
+enum OperationReconcileProfile {
+    Full,
+    Notes(crate::AgentdNotesObjectiveConfig),
+}
+
 pub(crate) async fn run_production_operation_reconciler(
     host: Arc<crate::AgentdProductionWriterHost>,
+    interval: Duration,
+    cancellation: CancellationToken,
+) -> Result<(), AgentdError> {
+    run_operation_reconciler(
+        host,
+        OperationReconcileProfile::Full,
+        interval,
+        cancellation,
+    )
+    .await
+}
+
+pub(crate) async fn run_notes_operation_reconciler(
+    host: Arc<crate::AgentdProductionWriterHost>,
+    notes: crate::AgentdNotesObjectiveConfig,
+    interval: Duration,
+    cancellation: CancellationToken,
+) -> Result<(), AgentdError> {
+    notes.validate_host(&host)?;
+    run_operation_reconciler(
+        host,
+        OperationReconcileProfile::Notes(notes),
+        interval,
+        cancellation,
+    )
+    .await
+}
+
+async fn run_operation_reconciler(
+    host: Arc<crate::AgentdProductionWriterHost>,
+    profile: OperationReconcileProfile,
     interval: Duration,
     cancellation: CancellationToken,
 ) -> Result<(), AgentdError> {
@@ -441,8 +477,19 @@ pub(crate) async fn run_production_operation_reconciler(
         if cancellation.is_cancelled() {
             return Ok(());
         }
-        host.reauthorize_pending(/*limit*/ 256).await?;
-        host.reconcile(/*limit*/ 256).await?;
+        match &profile {
+            OperationReconcileProfile::Full => {
+                host.reauthorize_pending(/*limit*/ 256).await?;
+                host.reconcile(/*limit*/ 256).await?;
+            }
+            OperationReconcileProfile::Notes(notes) => {
+                let destination = notes.target.destination_id();
+                host.reauthorize_pending_for_destination(&destination, /*limit*/ 256)
+                    .await?;
+                host.reconcile_for_destination(&destination, /*limit*/ 256)
+                    .await?;
+            }
+        }
         tokio::select! {
             _ = cancellation.cancelled() => return Ok(()),
             _ = tokio::time::sleep(interval) => {}
