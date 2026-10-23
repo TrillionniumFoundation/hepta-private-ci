@@ -263,3 +263,37 @@ fn external_runtime_shadow_abi_has_identical_digest() {
         "9ef6afcc1658e9d022a321e0d2decaac71445433c96591a7c1c9afbc5b07f9a9"
     );
 }
+
+#[test]
+fn crash_after_start_reconciles_but_indeterminate_never_authorizes_effect() {
+    let (mut journal, binding, reservation_digest) = prepared(ExecutionClass::FileRead);
+    let last = journal.events().last().unwrap().digest().unwrap();
+    let started = ExecutionStarted {
+        binding: successor(binding.clone(), &last),
+        reservation_digest,
+        approval_receipt_digest: None,
+        started_at_unix_ms: 100,
+    };
+    let head = journal.append_started(started, &Allow).unwrap();
+    let reconciled = ExecutionReconciled {
+        binding: successor(binding.clone(), &head),
+        status: ReconciliationStatus::Indeterminate,
+        observation_digest: digest(19),
+    };
+    let head = journal
+        .append(ExecutionRecord::ExecutionReconciled(reconciled))
+        .unwrap();
+    assert_eq!(
+        journal.append_effect_receipt(
+            EffectReceipt {
+                binding: successor(binding, &head),
+                effect_digest: digest(20),
+                verifier_receipt_digest: digest(21),
+            },
+            &Allow
+        ),
+        Err(ExecutionError::Sequence(
+            "cannot attest an effect after no-effect or indeterminate reconciliation"
+        ))
+    );
+}

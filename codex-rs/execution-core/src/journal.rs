@@ -96,10 +96,13 @@ impl ExecutionJournal {
             | (Some(ExecutionRecord::ExecutionOutputChunk(_)), ExecutionRecord::ExecutionOutputChunk(_))
             | (Some(ExecutionRecord::ExecutionStarted(_)), ExecutionRecord::ExecutionCompleted(_))
             | (Some(ExecutionRecord::ExecutionOutputChunk(_)), ExecutionRecord::ExecutionCompleted(_))
+            | (Some(ExecutionRecord::ExecutionIntent(_)), ExecutionRecord::ExecutionCancelled(_))
             | (Some(ExecutionRecord::ExecutionReservation(_)), ExecutionRecord::ExecutionCancelled(_))
             | (Some(ExecutionRecord::ApprovalRequest(_)), ExecutionRecord::ExecutionCancelled(_))
             | (Some(ExecutionRecord::ExecutionStarted(_)), ExecutionRecord::ExecutionCancelled(_))
             | (Some(ExecutionRecord::ExecutionOutputChunk(_)), ExecutionRecord::ExecutionCancelled(_))
+            | (Some(ExecutionRecord::ExecutionStarted(_)), ExecutionRecord::ExecutionReconciled(_))
+            | (Some(ExecutionRecord::ExecutionOutputChunk(_)), ExecutionRecord::ExecutionReconciled(_))
             | (Some(ExecutionRecord::ExecutionCompleted(_)), ExecutionRecord::ExecutionReconciled(_))
             | (Some(ExecutionRecord::ExecutionCancelled(_)), ExecutionRecord::ExecutionReconciled(_))
             | (Some(ExecutionRecord::ExecutionCompleted(_)), ExecutionRecord::EffectReceipt(_))
@@ -177,6 +180,15 @@ impl ExecutionJournal {
         }
 
         if let ExecutionRecord::EffectReceipt(receipt) = &event {
+            if previous.is_some_and(|previous| matches!(
+                previous,
+                ExecutionRecord::ExecutionReconciled(reconciled)
+                    if reconciled.status != crate::ReconciliationStatus::EffectObserved
+            )) {
+                return Err(ExecutionError::Sequence(
+                    "cannot attest an effect after no-effect or indeterminate reconciliation",
+                ));
+            }
             receipt_verifier
                 .ok_or(ExecutionError::VerifierRequired)?
                 .verify_effect(receipt)?;
