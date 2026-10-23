@@ -32,22 +32,29 @@ async fn private_material_rejects_unregistered_schema_before_check_expressions()
     let candidate_layout = layout(&temp, &owner);
     let (store, _, _) = seeded(&temp, &owner).await;
     let cut = store.recovery_anchor().await.unwrap();
+    let mut corruptor = store.observation_pool().acquire().await.unwrap();
     sqlx::query("CREATE TABLE unregistered_material (value TEXT CHECK(value = 'allowed'))")
-        .execute(store.observation_pool())
+        .execute(&mut *corruptor)
         .await
         .unwrap();
     sqlx::query("PRAGMA ignore_check_constraints = ON")
-        .execute(store.observation_pool())
+        .execute(&mut *corruptor)
         .await
         .unwrap();
     sqlx::query("INSERT INTO unregistered_material VALUES ('rejected')")
-        .execute(store.observation_pool())
+        .execute(&mut *corruptor)
         .await
         .unwrap();
     sqlx::query("PRAGMA ignore_check_constraints = OFF")
-        .execute(store.observation_pool())
+        .execute(&mut *corruptor)
         .await
         .unwrap();
+    let retained: String = sqlx::query_scalar("SELECT value FROM unregistered_material")
+        .fetch_one(&mut *corruptor)
+        .await
+        .unwrap();
+    assert_eq!(retained, "rejected");
+    drop(corruptor);
     store.observation_pool().close().await;
     drop(store);
     let config = SqliteConfig::from_sqlite_home(
