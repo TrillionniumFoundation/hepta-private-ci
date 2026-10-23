@@ -240,6 +240,29 @@ A statistically powered natural-data confirmation, common physical budget,
 reliable independent witness, real 2×2 model training, and protected-task
 quality remain OPEN. **RESEARCH_ONLY / DENY_ALL / HOLD_NO_GO** stays fixed.
 
+## Independent offline compiled-policy optimality audit
+
+A compiled PolicySnapshot is a fast finite lookup, but its checksum, legal actions
+and reachable-state coverage alone do **not** certify that its selected actions
+are optimal. An alternative, internally consistent early-STOP table can be
+serialized with a fresh SHA-256 and still pass structural loading. That hash
+is neither a signature nor a Bellman optimality proof.
+
+`independent_optimality.py` provides a separate, strictly bounded **offline**
+reference that enumerates all legal four-modality allocations, computes
+successor states without the Controller transition helper, and implements its
+own entropic certainty equivalent and toy terminal loss. It compares every
+stored reachable action and utility with the exact reference, including the
+canonical tie rule. Modified early-STOP and changed-value negative cases are
+retained in `test_independent_optimality.py`. Reference-state and branch
+caps fail closed. A passing receipt is valid only for the declared finite
+toy profile and source version; it does not authenticate a snapshot,
+authorize model dispatch, or establish real model/global neural optimality.
+
+This audit runs **offline before** adoption of a generated policy table.
+The online `rollout_snapshot` remains an O(1) lookup and never calls
+the independent oracle. Both results must be verified for the same source SHA.
+
 ## Next independently measured scientific experiment
 
 Replace the synthetic proxy-state/decoder fixtures with a source-pinned **real** shared Encoder plus four output decoders, observed partial latents, actual Neural/Cell feature invocation and all separately paid decoder/verifier/selection costs. Preregister source-disjoint natural tasks, multiple training seeds and common random-number draws, then compare same-information/static, MoE, risk-neutral MPC, fixed-risk MPC, dynamic NDU and best-of-N with independent decoded-output scoring and risk/coverage/cost thresholds. Train/inference factorial ablations are essential to determine whether NDU changes learned generation rather than only selecting an existing candidate. Do not enable or deploy any output-portfolio policy based only on this code.
