@@ -154,6 +154,11 @@ class ScopeTests(unittest.TestCase):
             "docs/../foo.md",
             "docs\\foo.md",
             "docs/a\0.md",
+            "docs/a\nb.md",
+            "docs/a\rb.md",
+            "docs/a\tb.md",
+            "docs/a\x7fb.md",
+            "docs/control-plane/\nOBJECTIVES.json",
         ]:
             with self.subTest(path=path), self.assertRaises(ValueError):
                 select([path])

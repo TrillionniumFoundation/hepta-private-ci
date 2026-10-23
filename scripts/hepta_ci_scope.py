@@ -91,7 +91,7 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
             or path.startswith("/")
             or ".." in parts
             or "\\" in path
-            or "\x00" in path
+            or any(ord(char) < 32 or ord(char) == 127 for char in path)
         ):
             raise ValueError(f"invalid repository path: {path!r}")
 
