@@ -5,7 +5,7 @@ import tempfile
 from pathlib import Path
 import unittest
 
-from audit import AuditError, REPO, SCHEMA, STAGES, audit, read_json, validate_plan
+from audit import AuditError, REPO, SCHEMA, STAGES, WORKFLOW_PATHS, audit, read_json, validate_plan
 
 
 class MockGitHub:
@@ -23,7 +23,7 @@ def fixtures():
         specs[stage] = {"pr": k + 101, "head_sha": sha,
                         "checks": [
                             {"workflow": "blocking-ci", "jobs": ["native-security"]},
-                            {"workflow": "focused", "jobs": ["task-check"]},
+                            {"workflow": "Hepta architecture convergence", "jobs": ["task-check"]},
                         ]}
     plan = {"schema": SCHEMA, "repository": REPO, "stages": specs}
     db = {}
@@ -35,7 +35,9 @@ def fixtures():
         runs = []
         for idx, requirement in enumerate(s["checks"]):
             ident = 1000 + k * 10 + idx
-            runs.append({"name": requirement["workflow"], "head_sha": s["head_sha"],
+            runs.append({"name": requirement["workflow"],
+                         "path": WORKFLOW_PATHS[requirement["workflow"]],
+                         "head_sha": s["head_sha"],
                          "event": "pull_request", "status": "completed", "conclusion": "success",
                          "id": ident, "run_attempt": 1, "run_started_at": "2026-10-22T10:00:00Z",
                          "pull_requests": [{"number": s["pr"],
@@ -159,6 +161,57 @@ class AdmissionTests(unittest.TestCase):
         report = audit(plan, MockGitHub(db).get)
         self.assertEqual(report["stages"][0]["ci_preflight"], "PASS")
         self.assertFalse(report["all_blockers_closed"])
+
+
+    def test_same_name_different_yaml_cannot_forge_p0_success(self):
+        plan, db = fixtures()
+        sha = plan["stages"]["P0"]["head_sha"]
+        path = f"/repos/{REPO}/actions/runs?head_sha={sha}&per_page=100"
+        db[path]["workflow_runs"][0]["path"] = ".github/workflows/lookalike.yml"
+        result = audit(plan, MockGitHub(db).get)
+        self.assertEqual(result["stages"][0]["ci_preflight"], "BLOCKED")
+        self.assertIn("missing exact-SHA workflow",
+                      " ".join(result["stages"][0]["ci_blockers"]))
+
+    def test_missing_or_ambiguous_workflow_path_is_not_a_pass(self):
+        plan, original = fixtures()
+        sha = plan["stages"]["P2"]["head_sha"]
+        path = f"/repos/{REPO}/actions/runs?head_sha={sha}&per_page=100"
+        for wrong in (None, "", True, 42, ".github/workflows/blocking-ci.yaml",
+                      ".github/workflows/../blocking-ci.yml",
+                      ".github/workflows/fake.yml"):
+            db = copy.deepcopy(original)
+            db[path]["workflow_runs"][0]["path"] = wrong
+            with self.subTest(wrong=wrong):
+                report = audit(plan, MockGitHub(db).get)
+                self.assertEqual(report["stages"][2]["ci_preflight"], "BLOCKED")
+
+    def test_newer_name_collision_does_not_replace_authentic_workflow(self):
+        plan, db = fixtures()
+        sha = plan["stages"]["P1"]["head_sha"]
+        path = f"/repos/{REPO}/actions/runs?head_sha={sha}&per_page=100"
+        newer = copy.deepcopy(db[path]["workflow_runs"][0])
+        newer.update(id=99999, path=".github/workflows/lookalike.yml",
+                     run_started_at="2026-10-24T10:00:00Z")
+        db[path]["workflow_runs"].append(newer)
+        db[path]["total_count"] += 1
+        result = audit(plan, MockGitHub(db).get)
+        self.assertEqual(result["stages"][1]["ci_preflight"], "PASS")
+        self.assertFalse(result["all_blockers_closed"])
+
+    def test_unknown_workflow_name_fails_even_if_blocking_ci_remains(self):
+        plan, _ = fixtures()
+        plan["stages"]["P0"]["checks"][1]["workflow"] = "blocking-ci-lookalike"
+        with self.assertRaises(AuditError):
+            validate_plan(plan)
+
+    def test_pinned_candidate_plan_has_only_approved_workflow_names(self):
+        plan = read_json(Path(__file__).with_name("candidate_plan.json"))
+        validate_plan(plan)
+        self.assertTrue(all(
+            requirement["workflow"] in WORKFLOW_PATHS
+            for stage in plan["stages"].values()
+            for requirement in stage["checks"]))
 
     def test_other_sha_workflow_is_not_reused(self):
         plan, db = fixtures()
