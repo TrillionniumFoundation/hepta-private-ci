@@ -1,0 +1,91 @@
+name: Hepta native Cell durable-outbox exact-head Rust
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-operations/**"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-contracts/**"
+      - "codex-rs/state/**"
+      - "codex-rs/utils/absolute-path/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - ".github/workflows/hepta-native-cell-outbox-exact.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-native-outbox-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-native-outbox:
+    name: Native Cell durable-outbox Rust checks (non-authorizing)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - name: Checkout exact immutable candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+
+      - name: Install pinned repository Rust compiler and components
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: clippy,rustfmt
+
+      - name: Check pure Cell contract and durable-outbox formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-types -p codex-hepta-operations -- --check
+
+      - name: Execute exact-source locked Rust unit tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-types -p codex-hepta-operations --lib -- --nocapture \
+            2>&1 | tee "$RUNNER_TEMP/hepta-native-outbox-tests.log"
+          # Cargo exit code 0 with zero tests is not native functional evidence.
+          grep -Eq 'test result: ok[.] [1-9][0-9]* passed; 0 failed;' \
+            "$RUNNER_TEMP/hepta-native-outbox-tests.log"
+
+      - name: Enforce locked Clippy on both direct owners
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
+            --all-targets -p codex-hepta-types -p codex-hepta-operations \
+            -- -D warnings
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain real native test transcript
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: hepta-native-outbox-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-native-outbox-tests.log
+          if-no-files-found: ignore
+          retention-days: 14

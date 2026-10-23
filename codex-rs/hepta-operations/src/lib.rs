@@ -18,6 +18,7 @@ mod error;
 mod exact_claim;
 mod ledger;
 mod model;
+mod native_cell_binding;
 mod outbox;
 mod sqlite;
 
@@ -56,6 +57,10 @@ pub use model::OperationRecord;
 pub use model::OperationState;
 pub use model::ReconciliationOutcome;
 pub use model::ReferenceAuthorityWitness;
+pub use native_cell_binding::NativeCellBindingError;
+pub use native_cell_binding::bind_native_cell_to_durable_outbox_v1;
+pub use native_cell_binding::check_native_cell_outbox_claim_v1;
+pub use native_cell_binding::check_native_cell_receipt_v1;
 pub use outbox::MAX_MODEL_OUTBOX_ATTEMPTS;
 pub use outbox::MAX_MODEL_OUTBOX_RECORDS;
 pub use outbox::Outbox;
