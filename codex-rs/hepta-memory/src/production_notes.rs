@@ -23,6 +23,11 @@ use crate::ProductionTargetOutcome;
 use crate::ProductionTerminalObservation;
 use crate::ProductionTerminalObservationFuture;
 
+#[path = "production_notes_read.rs"]
+mod read;
+pub use read::NotesDocumentState;
+pub use read::ProductionNotesObserver;
+
 pub const NOTES_REPLACE_TOPIC_V1: &str = "trill.notes.replace.v1";
 pub const NOTES_REQUEST_MAX_BYTES: usize = 8192;
 pub const NOTES_RESPONSE_MAX_BYTES: usize = 2048;
