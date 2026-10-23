@@ -1,0 +1,83 @@
+name: Hepta memory population shadow checks
+
+on:
+  push:
+    branches:
+      - codex/memory-population-final-20261023
+    paths:
+      - scripts/memory_cell_population/**
+      - scripts/memory_cell_router/**
+      - scripts/memory_cell_codec/**
+      - .github/workflows/hepta-memory-population-shadow.yml
+  pull_request:
+    paths:
+      - scripts/memory_cell_population/**
+      - scripts/memory_cell_router/**
+      - scripts/memory_cell_codec/**
+      - .github/workflows/hepta-memory-population-shadow.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-memory-population-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
+  TOKENIZERS_PARALLELISM: "false"
+  HF_HUB_DISABLE_TELEMETRY: "1"
+  OPENBLAS_NUM_THREADS: "2"
+  OMP_NUM_THREADS: "2"
+  MKL_NUM_THREADS: "2"
+
+jobs:
+  memory-population-mechanisms:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/codex/memory-population-final-20261023') ||
+      (github.event_name == 'pull_request' && github.head_ref == 'codex/memory-population-final-20261023')
+    # Offline tiny-decoder checks fit the single-CPU container's 15-minute limit.
+    # The full pretrained study is separately costed outside this mechanism job.
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Record exact source and install pinned CPU runtime
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          mkdir -p "$RUNNER_TEMP/population-checks"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/population-checks/source.txt"
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1'
+          python -m pip install --only-binary=:all: -r scripts/memory_cell/requirements.txt
+          python -m pip check
+          python -m pip freeze > "$RUNNER_TEMP/population-checks/runtime.txt"
+      - name: Run offline router, codec and population mechanism gates
+        run: |
+          set -euo pipefail
+          bash scripts/memory_cell_population/run_tests.sh 2>&1 | tee "$RUNNER_TEMP/population-checks/tests.log"
+      - name: Preserve positive and negative check evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-population-checks-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/population-checks/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Confirm checked source unchanged
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
