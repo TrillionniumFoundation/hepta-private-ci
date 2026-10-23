@@ -195,6 +195,12 @@ class PairedEvidenceTests(unittest.TestCase):
         self.assertEqual(rec['status'], 'HOLD_NO_GO')
         self.assertTrue(any('does not attest' in x for x in rec['limitations']))
 
+    def test_completed_loss_cannot_exceed_failure_penalty(self):
+        d = study_fixture()
+        d['worlds'][0]['outcomes']['static']['decoded_draw_scores'][0]['loss'] = 1000.0
+        with self.assertRaisesRegex(EvidenceGap, 'completed loss exceeds registered failure ceiling'):
+            evaluate(d)
+
     def test_no_real_decoder_outputs_claimed(self):
         rec = evaluate(study_fixture())
         self.assertIn('untrusted caller', rec['limitations'][0])
