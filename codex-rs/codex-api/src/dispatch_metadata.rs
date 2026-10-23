@@ -16,6 +16,9 @@ use http::HeaderValue;
 pub struct RequestDispatchMetadata {
     transport_invoked: Arc<AtomicBool>,
     expected_headers: Arc<Vec<(HeaderName, Option<HeaderValue>)>>,
+    /// Internal opt-in for an observed, single-attempt Responses request.
+    /// This preserves observed request bytes; it issues no send authorization.
+    pub(crate) observed_request: bool,
 }
 
 impl RequestDispatchMetadata {
@@ -34,6 +37,7 @@ impl RequestDispatchMetadata {
         Self {
             transport_invoked: Arc::new(AtomicBool::new(false)),
             expected_headers: Arc::new(expected_headers),
+            observed_request: false,
         }
     }
 

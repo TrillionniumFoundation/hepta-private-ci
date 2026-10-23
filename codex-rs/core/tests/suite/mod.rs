@@ -97,6 +97,7 @@ mod mcp_tool_exposure;
 mod mcp_turn_metadata;
 mod memory_provider_policy;
 mod model_overrides;
+mod model_provider_encoded_request;
 mod model_provider_policy;
 mod model_provider_policy_compaction;
 mod model_provider_policy_http_ephemeral;

@@ -29,6 +29,40 @@ struct SchemaObjectSpec {
 
 const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
     SchemaObjectSpec {
+        name: "provider_encoded_requests_v1",
+        object_type: "table",
+        table_name: "provider_encoded_requests_v1",
+        required_sql_fragments: &[
+            "references provider_invocation_intents(attempt_id)",
+            "length(body_sha256) = 64",
+            "typeof(body_sha256) = 'text'",
+            "body_sha256 not glob '*[^0-9a-f]*'",
+            "byte_length > 0",
+            "typeof(byte_length) = 'integer'",
+            "without rowid",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "provider_encoded_requests_v1_no_update",
+        object_type: "trigger",
+        table_name: "provider_encoded_requests_v1",
+        required_sql_fragments: &[
+            "before update on provider_encoded_requests_v1",
+            "raise(abort",
+            "encoded provider request is immutable",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "provider_encoded_requests_v1_no_delete",
+        object_type: "trigger",
+        table_name: "provider_encoded_requests_v1",
+        required_sql_fragments: &[
+            "before delete on provider_encoded_requests_v1",
+            "raise(abort",
+            "encoded provider request is immutable",
+        ],
+    },
+    SchemaObjectSpec {
         name: "authbus_outbox",
         object_type: "table",
         table_name: "authbus_outbox",

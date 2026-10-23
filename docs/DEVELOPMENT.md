@@ -638,6 +638,29 @@ inside the named existing packages and their Development/Activation/Evidence
 DAGs. Source presence, a documentation pass and a controlled experiment remain
 separate from product composition, qualification and beneficial model evolution.
 
+The existing `INT-2-AGENTD-CODEX-COMPOSITION` and P0/PN3/I10 work now includes a
+send-integrity prerequisite in the explicit observed, single-attempt Responses
+path: authentication cannot replace its prepared bytes, destination, framing or
+timeout before dispatch. Ordinary unobserved provider behavior is unchanged.
+Core installs an attempt-local observer only for an explicitly required lease;
+the embedding capability defaults absent. This does not implement a real HF
+provider or selected-model FinalUse. Keep the canonical App Server model-call
+spine, original durable operation and actual selected/load-attempt readback
+obligations. Outer resource closure remains UNKNOWN, and the guard supplies no
+three-round, real-model or I10 acceptance.
+
+The provider lease, original Core supervisor and terminal owner now bind one
+versioned encoded request row per original attempt. An explicit App Server host
+selects Enforce; missing/unavailable required capability refuses sends, with no
+Shadow fallback. The profile supports HTTP turns only. A callback is not a
+loaded-model/CURRENT fact or a permit held through dispatch; these and the real
+HF provider remain open before product or real-model acceptance.
+
+Separately, Chain `f7795a3d` passed only its fixed ROOT supplemental cohort under
+the original quotas (21 business blocks, three confirmations, cache off); the
+earlier c61 and original campaign failures remain. That source is not this
+plan's fixed Chain pair and supplies neither PN1 qualification nor model rounds.
+
 | Severity / existing work                                                                                                                                                                                                           | Accountable modules and owners                                                                                                                                                | Required interface change and exit condition                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | P0 — real neural upgrade loop; `NEU-1-LOCAL-MODEL-BAKEOFF`, `LRN-1-DURABLE-EPISODE-LEDGER`, `LRN-2-CAUSAL-EVALUATION`, `ART-1-LEARNING-ARTIFACT-REGISTRY`, `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK`, `INT-2-AGENTD-CODEX-COMPOSITION` | `learning.*` / `neuron.runtime`: learning-platform; `intelligence.control`: intelligence-platform; `runtime.agentd`: agent-runtime; inference-platform owns loading/execution | Extend the existing manifest/evaluation/runtime-receipt adapters with registered versions for exact installed parent, full release closure and next-task readback. A named ordinary product caller completes three rounds on one real pretrained neural model; each round starts from the actually installed parent. Evaluate on named reproducible tasks, perform cross-node fetch/load, local selection and next-task use. Public or previously seen tasks are valid for engineering tests; unseen data and independent data custody are not prerequisites. No-update is valid; three beneficial releases require three separately measured, installed improvements on the declared tasks. See [Lane E sequence](lane-e/END_TO_END_LEARNING_SEQUENCE.md#8-real-neural-model-upgrade-through-the-ordinary-product-path). |

@@ -262,6 +262,11 @@ The current tabular fit path in Section 2 remains useful reference evidence;
 it cannot certify this neural target. A hash-derived encoder, scripted answer
 lookup, synthetic GPU receipt or reference-only caller cannot satisfy it.
 
+The [inference.control local-text contract](../modules/inference.control/TECHNICAL.md)
+adds bounded exact UTF-8 request and untrusted readback/observation data only.
+Its hashes and shape checks precede a real tokenizer/worker composition; they
+execute no model and close neither I10 nor any three-round acceptance step.
+
 Use one identified pretrained neural backbone and bounded trainable head/adapter
 with a real backend, exact weights, tokenizer, tensor layout, precision, runtime,
 device and training code. Run at least three complete rounds; retain the complete
@@ -337,3 +342,24 @@ this controlled result does not establish decentralized public qualification.
 Reorg, withdrawal, lost acknowledgement, stale generation, restart after route
 publication and unavailable replicas must preserve one logical operation,
 reject revoked bytes and reconcile Unknown effects before any unsafe retry.
+
+Within the same P0/PN3/I10 work, the explicit observed, single-attempt Responses
+transport preserves its actual prepared request across authentication and rejects
+changes before sending. Its [API controls](../../codex-rs/codex-api/tests/clients/observed_integrity.rs)
+exercise encoding/compression, mutation refusals and the original dispatch witness;
+they use transport fixtures, not a model. An explicit App Server Enforce host now
+routes the actual complete encoded body through the same attempt lease,
+supervisor and terminal owner; the default embedding remains off. Missing or
+unavailable required hosts refuse, and unsupported kinds/transports cannot send.
+This does not implement a local HF provider, selected-model FinalUse,
+selected-weight loading or next-task use. A successful host callback does not
+prove CURRENT/load facts or hold a withdrawal-safe permit through dispatch.
+Those must remain on the existing App Server/provider spine, with the same-run
+owner and actual load-attempt/closure/tokenizer/decoding bindings. Outer resource
+closure remains UNKNOWN; no three-round or I10 result follows from this guard.
+
+The separately frozen Chain `f7795a3d` ROOT supplemental cohort passed its narrow
+predicate with original quotas, 21 business blocks, three confirmations and cache
+off ([source and limits](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/3b2ed68bd1159e5ca074f4ed07c661c2c425d521/docs/protocol/pon-nakamoto-v1/details/ADMISSION_SECURITY.md#fixed-seed-root-supplemental-cohort)).
+The c61 and original campaign failures remain; this is outside the fixed paired
+source and supplies no PN1 qualification or real-model upgrade round.

@@ -22,6 +22,8 @@ pub(crate) struct HeptaGovernanceExtension<F> {
     pub(crate) mode: GovernanceMode,
     pub(crate) state_db: Option<Arc<StateRuntime>>,
     pub(crate) evidence: tokio::sync::OnceCell<Arc<HeptaEvidenceStore>>,
+    pub(crate) provider_request_required: bool,
+    pub(crate) provider_request_host: Option<crate::ProviderRequestEnforcementHost>,
 }
 
 impl<F> HeptaGovernanceExtension<F> {
@@ -32,7 +34,7 @@ impl<F> HeptaGovernanceExtension<F> {
     ) where
         F: Fn(&C) -> bool,
     {
-        if !(self.enabled)(config) {
+        if !self.provider_request_required && !(self.enabled)(config) {
             thread_store.insert(GovernanceState::disabled());
             return;
         }
@@ -49,7 +51,10 @@ impl<F> HeptaGovernanceExtension<F> {
                 .cloned(),
             None => Err(Arc::from("Codex state runtime is unavailable")),
         };
-        thread_store.insert(GovernanceState::enabled(self.mode, evidence));
+        let mut state = GovernanceState::enabled(self.mode, evidence);
+        state.provider_request_required = self.provider_request_required;
+        state.provider_request_host = self.provider_request_host.clone();
+        thread_store.insert(state);
     }
 }
 
@@ -134,11 +139,35 @@ pub fn install_with_mode<C, F>(
     C: Sync + 'static,
     F: Fn(&C) -> bool + Send + Sync + 'static,
 {
+    install_with_provider_request_enforcement(
+        registry, state_db, mode, /*required*/ false, /*host*/ None, enabled,
+    );
+}
+
+/// Explicit embedding profile; required without a host fails closed. Ordinary
+/// installation remains Shadow and never infers this capability from config.
+pub fn install_with_provider_request_enforcement<C, F>(
+    registry: &mut ExtensionRegistryBuilder<C>,
+    state_db: Option<Arc<StateRuntime>>,
+    mode: GovernanceMode,
+    required: bool,
+    host: Option<crate::ProviderRequestEnforcementHost>,
+    enabled: F,
+) where
+    C: Sync + 'static,
+    F: Fn(&C) -> bool + Send + Sync + 'static,
+{
     let extension = Arc::new(HeptaGovernanceExtension {
         enabled,
-        mode,
+        mode: if required {
+            GovernanceMode::Enforce
+        } else {
+            mode
+        },
         state_db,
         evidence: tokio::sync::OnceCell::new(),
+        provider_request_required: required,
+        provider_request_host: if required { host } else { None },
     });
     registry.thread_lifecycle_contributor(extension.clone());
     registry.tool_policy_contributor(extension.clone());

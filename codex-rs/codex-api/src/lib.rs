@@ -7,6 +7,7 @@ pub(crate) mod endpoint;
 pub(crate) mod error;
 pub(crate) mod files;
 pub(crate) mod images;
+mod observed_request_integrity;
 pub(crate) mod provider;
 pub(crate) mod rate_limits;
 pub(crate) mod requests;

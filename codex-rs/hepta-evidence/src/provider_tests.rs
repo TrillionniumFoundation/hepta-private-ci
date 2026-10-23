@@ -19,6 +19,9 @@ use crate::HeptaEvidenceStore;
 use crate::ProviderBindingState;
 use crate::ProviderIntentClaimDisposition;
 
+#[path = "provider_encoded_request_tests.rs"]
+mod encoded_request;
+
 fn sqlite_config(temp: &TempDir) -> SqliteConfig {
     SqliteConfig::new_for_testing(
         AbsolutePathBuf::try_from(temp.path().to_path_buf()).expect("absolute temp path"),

@@ -11,6 +11,7 @@ mod governance_validation;
 mod historical;
 mod provider_claim;
 mod provider_effect_store;
+mod provider_encoded_request;
 mod provider_insert;
 mod provider_record;
 mod provider_store;

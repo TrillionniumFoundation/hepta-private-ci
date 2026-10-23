@@ -49,6 +49,9 @@ pub(crate) struct HeptaExtensionBindings {
     pub(crate) qualification_turn_writer:
         Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
     pub(crate) prompt_runtime_host: Option<codex_hepta_prompt_extension::PromptRuntimeHost>,
+    pub(crate) provider_request_enforcement_required: bool,
+    pub(crate) provider_request_enforcement_host:
+        Option<codex_hepta_governance::ProviderRequestEnforcementHost>,
 }
 
 impl HeptaExtensionBindings {
@@ -61,6 +64,8 @@ impl HeptaExtensionBindings {
             qualification_turn_writer_enabled: false,
             qualification_turn_writer: None,
             prompt_runtime_host: None,
+            provider_request_enforcement_required: false,
+            provider_request_enforcement_host: None,
         }
     }
 
@@ -143,6 +148,8 @@ where
         qualification_turn_writer_enabled: hepta_qualification_turn_writer_enabled,
         qualification_turn_writer: hepta_qualification_turn_writer,
         prompt_runtime_host: hepta_prompt_runtime_host,
+        provider_request_enforcement_required,
+        provider_request_enforcement_host,
     } = hepta.validated();
     let mut builder = ExtensionRegistryBuilder::<Config>::with_event_sink(Arc::clone(&event_sink));
     if let Some(queue_service) = queue_service {
@@ -169,11 +176,18 @@ where
         git_attribution_base_url,
         http_client_factory,
     );
-    codex_hepta_governance::install(&mut builder, state_db.clone(), |config: &Config| {
-        config
-            .features
-            .enabled(codex_features::Feature::HeptaGovernance)
-    });
+    codex_hepta_governance::install_with_provider_request_enforcement(
+        &mut builder,
+        state_db.clone(),
+        codex_hepta_governance::GovernanceMode::Shadow,
+        provider_request_enforcement_required,
+        provider_request_enforcement_host,
+        |config: &Config| {
+            config
+                .features
+                .enabled(codex_features::Feature::HeptaGovernance)
+        },
+    );
     if let Some(host) = hepta_prompt_runtime_host {
         codex_hepta_prompt_extension::install_prompt_runtime(&mut builder, host);
     }

@@ -237,6 +237,9 @@ fn completed() -> ModelProviderTerminal {
     }
 }
 
+#[path = "provider_request_tests.rs"]
+mod encoded_request;
+
 fn unary_completed() -> ModelProviderTerminal {
     ModelProviderTerminal::CompletedUnary {
         response_items_sha256: api_digest(b"compacted-items"),

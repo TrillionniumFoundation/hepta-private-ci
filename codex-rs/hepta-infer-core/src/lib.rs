@@ -6,7 +6,20 @@
 
 /// Reusable state machine; does not install a second runtime owner.
 pub mod durable_control;
+mod local_text;
 mod neuron_feature;
+
+pub use local_text::LoadedRootReadbackV1;
+pub use local_text::LocalTextContractError;
+pub use local_text::LocalTextGenerationPolicyV1;
+pub use local_text::LocalTextInputV1;
+pub use local_text::LocalTextObservationV1;
+pub use local_text::LocalTextObservedStatusV1;
+pub use local_text::LocalTextReleaseBindingV1;
+pub use local_text::LocalTextRequestV1;
+pub use local_text::local_text_observation_digest_v1;
+pub use local_text::local_text_request_digest_v1;
+pub use local_text::validate_local_text_observation_shape_v1;
 
 pub use neuron_feature::NeuronFeatureContractError;
 pub use neuron_feature::NeuronFeatureObservationV1;

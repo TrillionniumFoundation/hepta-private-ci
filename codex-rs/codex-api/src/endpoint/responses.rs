@@ -122,6 +122,18 @@ impl<T: HttpTransport> ResponsesClient<T> {
             encoded_body_observer,
         } = options;
 
+        let retry_mode = match (encoded_body_observer.as_ref(), retry_mode) {
+            (Some(_), StreamRetryMode::SingleTransportAttempt(mut metadata)) => {
+                metadata.observed_request = true;
+                StreamRetryMode::SingleTransportAttempt(metadata)
+            }
+            (Some(_), StreamRetryMode::ProviderDefault) => {
+                return Err(ApiError::Stream(
+                    "observed Responses requests require a single transport attempt".to_string(),
+                ));
+            }
+            (None, mode) => mode,
+        };
         let body = EncodedJsonBody::encode(&request)
             .map_err(|e| ApiError::Stream(format!("failed to encode responses request: {e}")))?;
         if let Some(observer) = encoded_body_observer.as_ref() {

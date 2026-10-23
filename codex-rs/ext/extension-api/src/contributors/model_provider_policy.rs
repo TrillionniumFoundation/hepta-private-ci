@@ -155,6 +155,26 @@ pub enum ModelProviderTerminal {
 ///
 /// The consuming receiver ensures the host cannot finish the same lease twice.
 pub trait ModelProviderAttemptLease: Send {
+    /// Only an explicitly enforcing lease requests exact encoded-body binding.
+    fn encoded_body_required(&self) -> bool {
+        false
+    }
+
+    /// Bind the whole canonical encoded body to this original physical attempt.
+    /// Raw body bytes and credentials must never cross this policy seam.
+    fn bind_encoded_body_v1<'a>(
+        &'a mut self,
+        _sha256: ModelProviderSha256Digest,
+        _byte_length: u64,
+    ) -> ModelProviderPolicyFuture<'a, ()> {
+        Box::pin(async {
+            Err(ModelProviderPolicyError::new(
+                "model_provider_encoded_body_unsupported",
+                "lease cannot bind an encoded request",
+            ))
+        })
+    }
+
     fn finish(
         self: Box<Self>,
         terminal: ModelProviderTerminal,
