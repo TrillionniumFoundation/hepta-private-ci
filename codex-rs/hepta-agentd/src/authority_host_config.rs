@@ -78,6 +78,7 @@ pub struct HostAuthorityServiceConfig {
     pub expected_verifying_key: [u8; 32],
     pub lease_id: String,
     pub lease_revision: u64,
+    pub writer: Option<crate::HostAuthorityWriterRegistration>,
     pub sockets: HostAuthoritySocketPaths,
     pub peer_uid: u32,
     pub peer_gid: u32,

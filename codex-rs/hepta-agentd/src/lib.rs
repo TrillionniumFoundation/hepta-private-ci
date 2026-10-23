@@ -41,6 +41,8 @@ mod authority_host_service;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::initialize_host_authority;
 #[cfg(target_os = "linux")]
+pub use authority_host_runtime::register_host_writer_authorization;
+#[cfg(target_os = "linux")]
 pub use authority_host_runtime::serve_host_authority_session;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityLane;

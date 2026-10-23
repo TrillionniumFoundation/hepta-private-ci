@@ -171,6 +171,61 @@ pub fn serve_host_authority_session(
     {
         return Err(io::Error::other("invalid service registration"));
     }
+    verify_process(&registration, config.peer_uid)?;
+    let (clock, leases, issuer) = open_registered_issuer(&config)?;
+    let service = HostAuthorityService::from_registered_owner(
+        issuer,
+        clock,
+        registration.registered_identity.identity()?,
+    )?;
+    let service = if let Some(writer) = &config.writer {
+        service.with_registered_writer(writer.clone(), leases.verifier())?
+    } else {
+        service
+    };
+    serve_lanes(&service, &config, &registration, &owner_pidfd)
+}
+
+/// Explicit root administration authorizes a new original registry writer
+/// lease and retains its canonical signed proof. Runtime never calls this.
+/// Existing lease/proof identity must match exactly; nothing is reset/renewed.
+pub fn register_host_writer_authorization(
+    config_file: &Path,
+) -> io::Result<crate::HostSignedWriterAuthorizationV1> {
+    let config: HostAuthorityServiceConfig = read_root_json(config_file)?;
+    let writer = config
+        .writer
+        .as_ref()
+        .ok_or_else(|| io::Error::other("writer registration required"))?;
+    writer.validate()?;
+    let (_, leases, issuer) = open_registered_issuer(&config)?;
+    match leases
+        .read_lease(&writer.authority_lease.lease_id)
+        .map_err(io::Error::other)?
+    {
+        Some(current) if current.lease != writer.authority_lease => {
+            return Err(io::Error::other("existing original writer lease differs"));
+        }
+        Some(_) => {}
+        None => {
+            leases
+                .put_lease(writer.authority_lease.clone(), 0)
+                .map_err(io::Error::other)?;
+        }
+    }
+    issuer.register_writer_authorization(writer, &leases.verifier())
+}
+
+fn open_registered_issuer(
+    config: &HostAuthorityServiceConfig,
+) -> io::Result<(
+    Arc<HostAuthorityClock>,
+    AuthorityLeaseRegistry,
+    Arc<DeploymentFinalUseIssuer>,
+)> {
+    if config.schema_version != 1 || config.lease_revision == 0 {
+        return Err(io::Error::other("invalid service config"));
+    }
     config.required_bind.verify()?;
     if !config
         .state_dir
@@ -178,7 +233,6 @@ pub fn serve_host_authority_session(
     {
         return Err(io::Error::other("state outside required bind"));
     }
-    verify_process(&registration, config.peer_uid)?;
     let root = RootAuthorityDirectory::open(&config.state_dir).map_err(io::Error::other)?;
     let clock = Arc::new(
         HostAuthorityClock::open(root.clone(), CLOCK_OWNER.into()).map_err(io::Error::other)?,
@@ -209,12 +263,7 @@ pub fn serve_host_authority_session(
     if key.key_id != config.signer_id || key.verifying_key != config.expected_verifying_key {
         return Err(io::Error::other("issuer public key pin mismatch"));
     }
-    let service = HostAuthorityService::from_registered_owner(
-        issuer,
-        clock,
-        registration.registered_identity.identity()?,
-    )?;
-    serve_lanes(&service, &config, &registration, &owner_pidfd)
+    Ok((clock, leases, issuer))
 }
 
 fn read_existing_private(path: &Path) -> io::Result<()> {

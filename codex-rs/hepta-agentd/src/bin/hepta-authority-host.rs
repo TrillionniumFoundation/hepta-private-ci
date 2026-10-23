@@ -5,7 +5,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     use std::os::fd::AsFd;
     use std::path::PathBuf;
     let mut args = std::env::args_os().skip(1);
-    let command = args.next().ok_or("initialize or serve-session required")?;
+    let command = args
+        .next()
+        .ok_or("initialize, register-writer or serve-session required")?;
     let mut options = std::collections::BTreeMap::new();
     let mut pidfd_stdin = false;
     while let Some(option) = args.next() {
@@ -35,6 +37,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         let initialized = codex_hepta_agentd::initialize_host_authority(&state, &bootstrap)?;
         println!("{}", serde_json::to_string(&initialized)?);
+    } else if command == "register-writer" {
+        let config = take("--config")?;
+        if !options.is_empty() || pidfd_stdin {
+            return Err("unknown register-writer option".into());
+        }
+        let proof = codex_hepta_agentd::register_host_writer_authorization(&config)?;
+        println!("{}", serde_json::to_string(&proof)?);
     } else if command == "serve-session" {
         let config = take("--config")?;
         let registration = take("--registration")?;

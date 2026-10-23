@@ -397,6 +397,42 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
         expected_verifying_key: initialized.verifying_key,
         lease_id: initialized.lease_id,
         lease_revision: 1,
+        writer: if std::env::var_os("HEPTA_SERVICE_WRITER_PROOF").is_some() {
+            assert!(std::env::var_os("HEPTA_HOST_AUTHORITY_QUALIFICATION_CLIENT_BIN").is_some());
+            let now = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_millis() as u64;
+            Some(crate::HostAuthorityWriterRegistration {
+                registered_agent_id: registration.registered_identity.agent_id.clone(),
+                spawn_generation: registration.registered_identity.spawn_generation,
+                owner_epoch: 1,
+                local_lease_id: "original-local-writer-qualification".into(),
+                local_lease_generation: 1,
+                authority_lease: codex_hepta_contracts::authority_lease::AuthorityLease {
+                    schema_version: 1,
+                    lease_id: "root-writer-qualification".into(),
+                    revision: 1,
+                    authority_epoch: 1,
+                    binding: AuthorityLeaseBinding {
+                        principal_id: registration.registered_identity.agent_id.to_string(),
+                        operation_class: "runtime.agentd.production_writer".into(),
+                        destination_id: "qualification.no-effect.cognitive-owner".into(),
+                        scope_sha256: [6; 32],
+                        payload_sha256: [7; 32],
+                    },
+                    issued_at_unix_ms: now,
+                    expires_at_unix_ms: now
+                        + if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_FEED").is_some() {
+                            2000
+                        } else {
+                            60000
+                        },
+                },
+            })
+        } else {
+            None
+        },
         sockets: HostAuthoritySocketPaths {
             observation: runtime.path().join("observation.sock"),
             issuer: runtime.path().join("issuer.sock"),
@@ -411,6 +447,23 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
     let registration_path = root.join("registered-spawn.json");
     write_json(&config_path, &config);
     write_json(&registration_path, &registration);
+    if config.writer.is_some() {
+        // Open-only runtime must reject before the explicit Root registration.
+        assert!(
+            serve_host_authority_session(
+                &config_path,
+                &registration_path,
+                pidfd.try_clone().unwrap()
+            )
+            .is_err()
+        );
+        let first = register_host_writer_authorization(&config_path).unwrap();
+        assert_eq!(first.claims.sequence, 1);
+        assert_eq!(
+            register_host_writer_authorization(&config_path).unwrap(),
+            first
+        );
+    }
     let mut wrong_key = config.clone();
     wrong_key.expected_verifying_key[0] ^= 1;
     let wrong_key_path = root.join("wrong-key.json");

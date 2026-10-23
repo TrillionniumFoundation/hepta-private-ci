@@ -10,6 +10,8 @@ mod qualification {
     use codex_hepta_agentd::AgentdUnixFinalUseGrantProvider;
     use codex_hepta_agentd::AuthBusObjectiveBody;
     use codex_hepta_agentd::AuthBusObjectiveIngress;
+    use codex_hepta_agentd::HostAuthorityObservationResponseV2;
+    use codex_hepta_agentd::HostWriterAuthorizationReadResponseV1;
     use codex_hepta_agentd::authbus_objective_claims;
     use codex_hepta_contracts::AgentId;
     use codex_hepta_contracts::FinalUseBinding;
@@ -123,11 +125,14 @@ mod qualification {
         let mut observation = connect(&runtime.join("observation.sock"), root_pid);
         let mut issuer = connect(&runtime.join("issuer.sock"), root_pid);
         let mut checkpoint = connect(&runtime.join("checkpoint.sock"), root_pid);
+        let writer_proof = std::env::var_os("HEPTA_SERVICE_WRITER_PROOF").is_some();
         if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_FEED").is_some() {
             std::thread::sleep(Duration::from_secs(3));
-            let request = serde_json::to_vec(
-                &serde_json::json!({"schema_version":1,"operation":"runtime.authority.observation.v1"}),
-            )?;
+            let request = serde_json::to_vec(&if writer_proof {
+                serde_json::json!({"schema_version":2,"operation":"runtime.authority.observation.v2"})
+            } else {
+                serde_json::json!({"schema_version":1,"operation":"runtime.authority.observation.v1"})
+            })?;
             observation.write_all(&(request.len() as u32).to_be_bytes())?;
             observation.write_all(&request)?;
             let mut first = [0];
@@ -162,6 +167,65 @@ mod qualification {
                 serde_json::json!({"qualification":"root_authority_expired_lease_v1","uid":60001,"feed_refused":true,"final_use_denied":true,"production_ready":false})
             );
             return Ok(());
+        }
+        if writer_proof {
+            let read = serde_json::from_value::<HostWriterAuthorizationReadResponseV1>(exchange(
+                &mut observation,
+                &serde_json::json!({"schema_version":1,"operation":"runtime.authority.writer_authorization.v1"}),
+                16 * 1024,
+            ))?;
+            let public: [u8; 32] =
+                serde_json::from_str(&std::env::var("HEPTA_SERVICE_PUBLIC_KEY")?)?;
+            let key = ed25519_dalek::VerifyingKey::from_bytes(&public)?;
+            let signature = read
+                .proof
+                .signature_hex
+                .as_bytes()
+                .chunks_exact(2)
+                .map(|chunk| u8::from_str_radix(std::str::from_utf8(chunk).unwrap(), 16).unwrap())
+                .collect::<Vec<_>>();
+            key.verify(
+                &read.proof.claims.signing_bytes()?,
+                &ed25519_dalek::Signature::from_slice(&signature)?,
+            )?;
+            assert_eq!(read.proof.claims.sequence, 1);
+            let before = Instant::now();
+            let feed: HostAuthorityObservationResponseV2 = serde_json::from_value(exchange(
+                &mut observation,
+                &serde_json::json!({"schema_version":2,"operation":"runtime.authority.observation.v2"}),
+                16 * 1024,
+            ))?;
+            let fresh_ms = before.elapsed().as_millis();
+            assert!(before.elapsed() <= Duration::from_millis(500));
+            assert_eq!(
+                feed.writer.writer_authorization_sha256,
+                read.proof.sha256()?
+            );
+            assert_eq!(
+                feed.writer.authority_lease,
+                read.proof.claims.authority_lease
+            );
+            assert_eq!(
+                feed.writer.authority_lease_sha256,
+                read.proof.claims.authority_lease_sha256
+            );
+            assert_eq!(feed.writer.owner_epoch, read.proof.claims.owner_epoch);
+            assert_eq!(feed.writer.local_lease_id, read.proof.claims.local_lease_id);
+            assert_eq!(
+                feed.writer.local_lease_generation,
+                read.proof.claims.local_lease_generation
+            );
+            assert!(feed.writer.store_revision > 1);
+            let again: HostWriterAuthorizationReadResponseV1 = serde_json::from_value(exchange(
+                &mut observation,
+                &serde_json::json!({"schema_version":1,"operation":"runtime.authority.writer_authorization.v1"}),
+                16 * 1024,
+            ))?;
+            assert_eq!(again, read);
+            println!(
+                "{}",
+                serde_json::json!({"qualification":"root_authority_writer_observation_v2","uid":60001,"read_before_feed_ms":fresh_ms,"retained_proof_sequence":1,"production_ready":false})
+            );
         }
         let start = Instant::now();
         let observation = exchange(
@@ -213,7 +277,7 @@ mod qualification {
             64 * 1024,
         );
         let ingress: AuthBusObjectiveIngress = serde_json::from_value(signed["ingress"].clone())?;
-        assert_eq!(ingress.sequence, 1);
+        assert_eq!(ingress.sequence, if writer_proof { 2 } else { 1 });
         let layout = HeptaFleetRoot::parse(identity.fleet_root.clone())?
             .layout()
             .agent(&identity.agent_id);
@@ -264,7 +328,12 @@ mod qualification {
             Err(AgentdFinalUseIssuerError::Denied)
         ));
         let grant = provider.request_grant(&binding)?;
-        assert!(grant.grant.grant_id.ends_with(":2"));
+        assert!(
+            grant
+                .grant
+                .grant_id
+                .ends_with(if writer_proof { ":3" } else { ":2" })
+        );
         key.verify(
             &grant.grant.signing_bytes()?,
             &ed25519_dalek::Signature::from_slice(&grant.signature)?,

@@ -248,3 +248,26 @@ registration returns the retained proof; different registration cannot overwrite
 it. This stage supplies no peer signing RPC, automatic renewal, genesis or cut.
 The original registry's global revision remains observation metadata: unrelated
 lease changes advance it without invalidating the exact registered writer lease.
+
+The root0600 service configuration can optionally register `writer`, with the
+exact `HostAuthorityWriterRegistration` fields. The explicit administrator command
+`hepta-authority-host register-writer --config /protected/service.json` installs
+that new original writer lease in the existing protected registry and retains the
+proof using the same canonical issuer. An existing different lease or proof is
+refused. `serve-session` only opens this registration; absent proof/lease or a
+mismatched Agent/spawn refuses startup. It never invokes registration itself.
+
+On the observation stream, `runtime.authority.writer_authorization.v1` returns
+that exact retained proof; it does not sign or spend another sequence.
+`runtime.authority.observation.v2` returns the shared V2 DTO, including the exact
+original writer lease, its digest and original registry global revision. Both
+operations hold the original writer lease dispatch fence through local reads and
+the final post-I/O clock observation. They share the original 16KiB bound; an
+oversized complete head is refused without truncation. V1 remains available.
+
+This service extension is not qualified as available on the persistent host yet.
+The initial two actual data-bind qualification attempts refused during the older
+initialization path, before writer registration: the fixed one-second protected
+clock horizon was exceeded by actual filesystem synchronization. Those failures
+remain evidence, not successful writer or current-cut receipts. No horizon,
+request deadline, feed freshness or production readiness claim was relaxed.

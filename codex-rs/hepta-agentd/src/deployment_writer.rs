@@ -27,7 +27,7 @@ pub struct HostAuthorityWriterRegistration {
 }
 
 impl HostAuthorityWriterRegistration {
-    fn validate(&self) -> io::Result<()> {
+    pub(crate) fn validate(&self) -> io::Result<()> {
         if self.spawn_generation == 0
             || self.owner_epoch == 0
             || self.local_lease_generation == 0

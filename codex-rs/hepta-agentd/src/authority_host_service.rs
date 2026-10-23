@@ -22,6 +22,10 @@ use crate::AuthBusObjectiveBody;
 use crate::AuthBusObjectiveIngress;
 use crate::DeploymentFinalUseIssuer;
 
+#[path = "authority_host_writer.rs"]
+mod writer;
+use writer::RegisteredWriter;
+
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]
 pub enum HostAuthorityLane {
@@ -37,6 +41,7 @@ pub struct HostAuthorityService {
     issuer: Arc<DeploymentFinalUseIssuer>,
     clock: Arc<HostAuthorityClock>,
     identity: AgentdIdentity,
+    writer: Option<RegisteredWriter>,
 }
 
 impl HostAuthorityService {
@@ -52,7 +57,24 @@ impl HostAuthorityService {
             issuer,
             clock,
             identity,
+            writer: None,
         })
+    }
+
+    /// Open a previously root-provisioned original writer proof. This does not
+    /// create a lease/proof, select a peer identity or activate a publisher.
+    pub fn with_registered_writer(
+        mut self,
+        registration: crate::HostAuthorityWriterRegistration,
+        leases: codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier,
+    ) -> io::Result<Self> {
+        self.writer = Some(RegisteredWriter::open(
+            &self.issuer,
+            &self.identity,
+            registration,
+            leases,
+        )?);
+        Ok(self)
     }
 
     /// Serve one pre-accepted root-launcher channel until EOF or uncertainty.
@@ -93,7 +115,14 @@ impl HostAuthorityService {
 
     fn observe(&self, bytes: &[u8]) -> Result<Vec<u8>, HostIssuerTransportError> {
         let request: ObservationRequest = decode(bytes)?;
-        if request.schema_version != 1 || request.operation != "runtime.authority.observation.v1" {
+        if request.operation != "runtime.authority.observation.v1" {
+            return self
+                .writer
+                .as_ref()
+                .ok_or(HostIssuerTransportError::Unavailable)?
+                .observe(&self.issuer, &self.clock, &self.identity, &request);
+        }
+        if request.schema_version != 1 {
             return Err(HostIssuerTransportError::InvalidRequest);
         }
         self.issuer
