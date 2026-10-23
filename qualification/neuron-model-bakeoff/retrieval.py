@@ -26,14 +26,17 @@ def ranked_metrics(ranked: list[str], positives: set[str], k: int = 10) -> tuple
 
 
 def retrieval_query_kwargs(model_name: str, prompts: object) -> dict[str, str]:
-    """Use the upstream's query-only training instruction, not a document prompt."""
-    if model_name != "harrier-270m":
-        return {}
+    """Apply each encoder's reviewed upstream query-only retrieval instruction."""
+    prompt = {
+        "harrier-270m": "web_search_query",
+        "arctic-embed-305m": "query",
+    }.get(model_name)
+    require(prompt is not None, "unknown retrieval model")
     require(isinstance(prompts, dict) and
-            isinstance(prompts.get("web_search_query"), str) and
-            bool(prompts["web_search_query"]),
-            "Harrier query-side web_search_query instruction unavailable")
-    return {"prompt_name": "web_search_query"}
+            isinstance(prompts.get(prompt), str) and
+            bool(prompts[prompt]),
+            f"{model_name} query-side {prompt} instruction unavailable")
+    return {"prompt_name": prompt}
 
 
 def main() -> int:
