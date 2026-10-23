@@ -5,6 +5,7 @@ latency and decoder operation below is explicitly simulated. Controller CPU
 bookkeeping is measured but cannot be compared to real GPU decode latency.
 """
 from dataclasses import dataclass
+from hashlib import sha256
 from math import cos, sin
 from time import perf_counter_ns
 import json
@@ -62,22 +63,35 @@ def training_risk() -> dict[str, object]:
     return result
 
 
-def decide(arm: str, prompt: Prompt, risk: object) -> tuple[str, ...]:
+def decide_detail(arm: str, prompt: Prompt,
+                  risk: object) -> tuple[tuple[str, ...], float]:
+    """Chosen generation actions and exact executed behavior propensity."""
     g = gains(prompt)
     if arm == 'A0':
-        return ('text',)
+        return ('text',), 1.0
     if arm == 'A1':
-        return ('text', 'image')
+        return ('text', 'image'), 1.0
     if arm == 'A2':
-        return ('image',) if prompt.context == 'complex' else ('text',)
+        return (('image',) if prompt.context == 'complex' else ('text',)), 1.0
     if arm == 'A3':
         return (max(('text','image'),
-                    key=lambda a: (g[a] - COST[a]*1e-5, a)),)
+                    key=lambda a: (g[a] - COST[a]*1e-5, a)),), 1.0
     if arm == 'A4':
         actions = (Action('text', 'text', COST['text']),
                    Action('image', 'image', COST['image']))
-        weights = allocate(actions, risk, 2600, 1.5, .002, (.5,.5))
-        return (actions[max(range(2), key=lambda i: (weights.weights[i], -i))].name,)
+        weights = allocate(actions, risk, 2600, 1.5, .08, (.5,.5))
+        # Deterministic counter-based draw, independent of outcome labels.
+        # The receipt stores the ACTUAL categorical behavior propensity, not
+        # the model's raw output probability or its highest-weight route.
+        seed = sha256(f'{FREEZE.objective}:{prompt.episode}:A4:policy-v1'.encode()).digest()
+        u = int.from_bytes(seed[:8], 'big') / 2**64
+        cumulative = 0.0
+        for i, w in enumerate(weights.weights):
+            cumulative += w
+            if u < cumulative or i == len(weights.weights) - 1:
+                require(w > 0, 'zero-propensity route forbidden')
+                return (actions[i].name,), w
+        raise AssertionError('unreachable portfolio simplex')
     if arm == 'A5':
         actions = tuple(Action(a, a, COST[a]) for a in ('text','image'))
         state = GenerationState(1, 2600, 2, .45)
@@ -85,7 +99,7 @@ def decide(arm: str, prompt: Prompt, risk: object) -> tuple[str, ...]:
         first, _ = recursive_stop_choice(state, actions, g, cost_per_us=1e-5,
                                          pair_gain=pair)
         if first == 'stop':
-            return ()
+            return (), 1.0
         state2 = GenerationState(1, 2600-COST[first], 1, .45+g[first])
         next_actions = tuple(a for a in actions if a.name != first)
         # Already-earned synergy enters the one-step successor estimate.
@@ -93,8 +107,12 @@ def decide(arm: str, prompt: Prompt, risk: object) -> tuple[str, ...]:
                       for a in next_actions}
         second, _ = recursive_stop_choice(state2, next_actions, next_gains,
                                           cost_per_us=1e-5)
-        return (first,) if second == 'stop' else (first, second)
+        return ((first,) if second == 'stop' else (first, second)), 1.0
     raise ValueError('unknown arm')
+
+
+def decide(arm: str, prompt: Prompt, risk: object) -> tuple[str, ...]:
+    return decide_detail(arm, prompt, risk)[0]
 
 
 def run() -> dict:
@@ -103,7 +121,7 @@ def run() -> dict:
     for prompt in prompts('future', 40):
         for arm in ARMS:
             t0 = perf_counter_ns()
-            chosen = decide(arm, prompt, risk[prompt.context])
+            chosen, propensity = decide_detail(arm, prompt, risk[prompt.context])
             controller_us = max(0, (perf_counter_ns() - t0 + 999) // 1000)
             results[arm].append(Outcome(
                 str(prompt.episode), arm, FREEZE.objective, FREEZE.generation,
@@ -111,7 +129,7 @@ def run() -> dict:
                 f'simulated-prompt-{prompt.episode}', 'future',
                 independent_synthetic_score(prompt, chosen),
                 500 + sum(COST[a] for a in chosen), controller_us, 50,
-                f'simulation:{prompt.episode}:{arm}'))
+                f'simulation:{prompt.episode}:{arm}', propensity))
     output = {'kind': 'synthetic-shadow-only', 'model_training': False,
               'neural_decoding': False, 'gpu_benchmark': False,
               'objective': FREEZE.objective, 'episodes': 40, 'arms': {}}
@@ -120,7 +138,9 @@ def run() -> dict:
         output['arms'][arm] = {
             'mean_synthetic_quality': round(sum(r.observed_utility for r in rows)/len(rows), 6),
             'mean_simulated_decoder_us': round(sum(r.decoder_us for r in rows)/len(rows), 3),
-            'mean_local_controller_us': round(sum(r.controller_us for r in rows)/len(rows), 3)}
+            'mean_local_controller_us': round(sum(r.controller_us for r in rows)/len(rows), 3),
+            'mean_realized_route_propensity': round(
+                sum(r.behavior_propensity for r in rows)/len(rows), 6)}
         if arm != 'A0':
             gain, lcb, count = paired_future_evaluation(
                 tuple(results['A0'] + rows), FREEZE, 'A0', arm, 1e-5)
