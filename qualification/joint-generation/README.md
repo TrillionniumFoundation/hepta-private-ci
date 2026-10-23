@@ -103,6 +103,12 @@ latency but are not fully represented by MAC counts.
 
 ## Current status
 
+**The broader first goal remains open for efficient total-budget evidence.**
+The [follow-up](FOLLOWUP.md) records the padding-control and modality-contract
+gaps, the unchanged r1 result, and the independently frozen r2 work. The new
+[media adapter](MODALITY_CONTRACT.md) provides typed audio/video transport and
+synchronization boundaries while keeping those generation backends unsupported.
+
 **The first configured Codex Cloud execution passed the frozen finite-scene
 acceptance on 2026-10-23**, using source commit
 `57d2c7aa5880dd761b4c43f79d0f6f16b26b72e7`. The exact runner exited 0; all 30
