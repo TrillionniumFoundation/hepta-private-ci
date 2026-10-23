@@ -189,6 +189,25 @@ class MemoryMatrixContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "budget overrun"):
             self.run_audit()
 
+    def test_future_harm_is_exposed_without_cherry_picking(self):
+        # Make I fail a future group while leaving its entire evaluation untouched.
+        record = next(r for r in self.predictions["I"] if r["query_id"] == "future_1-0")
+        record["answer"] = "wrong"
+        self.save_predictions()
+        receipt = self.run_audit()
+        self.assertFalse(receipt["future_non_regression_gate"])
+        self.assertTrue(any(x["delta"] < 0 for x in receipt["future_holdout_comparisons"]
+                            if x["split"] == "future_1"))
+        self.assertFalse(receipt["scientific_superiority_established"])
+
+    def test_multi_hop_safety_harm_is_exposed(self):
+        record = next(r for r in self.predictions["I"] if r["query_id"] == "evaluation-0")
+        record["answer"] = "wrong"
+        self.save_predictions()
+        receipt = self.run_audit()
+        self.assertFalse(receipt["critical_slice_non_regression_gate"])
+        self.assertFalse(receipt["diagnostic_statistical_gate"])
+
     def test_empty_future_window_is_not_promoted(self):
         # The observed test is small and cannot support independent longitudinal claims.
         receipt = self.run_audit()
