@@ -3,12 +3,12 @@
   "schemaVersion": 3,
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "3c516ec10e753a2709000da45e581cd66a30ef55",
+    "tree": "725ab65211bfda92dc55f349afd7a3315e2d6f1a"
   },
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "3c516ec10e753a2709000da45e581cd66a30ef55",
+    "tree": "725ab65211bfda92dc55f349afd7a3315e2d6f1a"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -277,6 +277,18 @@
       "operation": "compile_and_publish_objective_run_v1",
       "designOperation": "compile_and_publish_objective_run_v1",
       "nativeSymbol": "compile_and_publish_objective_run_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/objective_run.rs",
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "state": "source_navigation_only_product_binding_not_proved",
+      "delegatedCallees": [],
+      "tests": [],
+      "authority": "none"
+    },
+    {
+      "operation": "compile_and_publish_validated_objective_run_v1",
+      "designOperation": "compile_and_publish_validated_objective_run_v1",
+      "nativeSymbol": "compile_and_publish_validated_objective_run_v1",
       "sourcePath": "codex-rs/hepta-intelligence/src/objective_run.rs",
       "sourcePathExists": true,
       "mappingClass": "owner_native",
@@ -569,15 +581,15 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "object": "1781996175ec7f16f44b9f58ac3e2c2bd41358af"
+      "object": "feb57130ea1dc2fc4e87cd01f3d1ecdeec5b6972"
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
-      "object": "4f25f9d81eef9931f46ebabc01778cec297f5dee"
+      "object": "06837461d5bb489fc53b0e25f1cdbfd23d9bf84a"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state.rs",
-      "object": "0a17007f64bbbded6b8acfe9c1a79e7023b0054f"
+      "object": "dbd6c335a8acbf892314fc91eaa9d1cb6894893b"
     },
     {
       "path": "codex-rs/hepta-context-compiler",
@@ -589,15 +601,15 @@
     },
     {
       "path": "codex-rs/hepta-intelligence",
-      "object": "c382c211dc34b0c3abaf87aec27e7e353bae418e"
+      "object": "698f889fb752c7979a967bee5cbf3c7cacf176b4"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval",
-      "object": "0e61e82c7e344d7c2b1b07f70ab752fd2867e149"
+      "object": "e6fb17e502750521eafa4238d29d024f5fa44c72"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/canonical.rs",
-      "object": "c610f073b47939acf15e7e76aad59883ac13fad4"
+      "object": "824ad9212287656b7f49faf4c4c26509af72e163"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/canonical_tests.rs",
@@ -617,7 +629,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/lib.rs",
-      "object": "ac161c19df7b828fbca02d39ebfdb6661982e6d4"
+      "object": "4368f40c94cb6deec4100cf84d67491f62181ac4"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/lib_tests.rs",
@@ -633,7 +645,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/objective_run.rs",
-      "object": "a2f361edbf1e0f8fd1024d085edcd71b4f2396f0"
+      "object": "ed1d31c7843696643a7abc2a41473f4515246495"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
@@ -693,19 +705,19 @@
     },
     {
       "path": "codex-rs/hepta-ndu",
-      "object": "bb334a5a301a5d3988b0b5c660d914f5d1c7d01a"
+      "object": "09209f55fcbf590b1c5bfaa071818ac2359809dd"
     },
     {
       "path": "codex-rs/hepta-neuron",
-      "object": "2e0cb699ff6d11dd63e996040d935153f4e63f57"
+      "object": "c8a74a3012db3798b0a0c938ec60f60e136ad493"
     },
     {
       "path": "codex-rs/hepta-objective",
-      "object": "e89450f622d12e85f516df691291e349f42cd8fc"
+      "object": "2033543686824b8d3a0e961e01182b1c8c8f3355"
     },
     {
       "path": "codex-rs/hepta-prompt-optimizer",
-      "object": "030b8b3f7a2f5ce89921926e4b038feedef65c66"
+      "object": "957c132402cfd8ef9c92451076a3735265999110"
     },
     {
       "path": "docs/modules/intelligence.control/TECHNICAL.md",

@@ -159,6 +159,34 @@ impl FleetHarness {
     }
 
     #[allow(dead_code)]
+    pub(crate) fn start_with_objective_files(
+        &mut self,
+        agent: &AgentFixture,
+        authbus_trust_file: &Path,
+        authbus_checkpoint_file: &Path,
+        objective_profile_file: &Path,
+        objective_checkpoint_file: &Path,
+    ) -> Result<()> {
+        let command = AgentCommand::new(
+            agentd_binary()?,
+            vec![
+                "--authbus-trust-file".into(),
+                authbus_trust_file.as_os_str().to_owned(),
+                "--authbus-checkpoint-file".into(),
+                authbus_checkpoint_file.as_os_str().to_owned(),
+                "--objective-profile-file".into(),
+                objective_profile_file.as_os_str().to_owned(),
+                "--objective-checkpoint-file".into(),
+                objective_checkpoint_file.as_os_str().to_owned(),
+            ],
+        )?;
+        self.supervisor
+            .start(&agent.agent_id, command, Instant::now())?;
+        self.started = true;
+        Ok(())
+    }
+
+    #[allow(dead_code)]
     pub(crate) fn start_with_evidence_trust_file(
         &mut self,
         agent: &AgentFixture,

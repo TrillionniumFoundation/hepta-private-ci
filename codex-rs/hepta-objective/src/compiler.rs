@@ -48,22 +48,24 @@ pub(crate) fn compile(
     }
 
     let forbidden: BTreeSet<_> = source.forbidden_actions.iter().cloned().collect();
-    let mut removed_action_ids = Vec::new();
-    let mut legal_actions = Vec::new();
-    let mut requested_forbidden = Vec::new();
-    let allowed_actions = std::mem::take(&mut source.allowed_actions);
-    for action in allowed_actions {
-        if forbidden.contains(&action.id) {
-            removed_action_ids.push(action.id.clone());
-            requested_forbidden.push(action.id);
-        } else {
-            legal_actions.push(action);
-        }
-    }
-    if !requested_forbidden.is_empty() {
-        return Ok(Err(conflict_receipt(&source, requested_forbidden)));
+    // Each allowed/forbidden overlap is independently sufficient to prove that
+    // the requested action set is inconsistent. Because allowed actions were
+    // canonically sorted above, selecting the first overlap produces a stable
+    // inclusion-minimal singleton rather than publishing every independent
+    // overlap as one non-minimal conflict core.
+    if let Some(conflicting_action) = source
+        .allowed_actions
+        .iter()
+        .find(|action| forbidden.contains(&action.id))
+    {
+        return Ok(Err(conflict_receipt(
+            &source,
+            vec![conflicting_action.id.clone()],
+        )));
     }
 
+    let removed_action_ids = Vec::new();
+    let mut legal_actions = std::mem::take(&mut source.allowed_actions);
     let abstain = abstain_id()?;
     if !legal_actions.iter().any(|action| action.id == abstain) {
         legal_actions.push(ActionClass {
@@ -79,7 +81,7 @@ pub(crate) fn compile(
     } else {
         CompileDisposition::Compiled
     };
-    let hard_constraint_digest = digest_constraints(&source.constraints);
+    let hard_constraint_digest = canonical_native_hard_constraint_digest_v1(&source.constraints);
     let semantic_digest = digest_objective(&source, &legal_actions, hard_constraint_digest);
     let objective = ObjectiveFunction {
         request_id: source.request_id,
@@ -291,7 +293,12 @@ fn encode_conflict_semantics(
     bytes
 }
 
-fn digest_constraints(constraints: &[Constraint]) -> Digest32 {
+/// Recompute the native hard-constraint identity from the full constraint
+/// payload, in the canonical order emitted by the compiler.
+///
+/// Projection validation must use this rather than trust the digest field in a
+/// caller-supplied `ObjectiveFunction`.
+pub(crate) fn canonical_native_hard_constraint_digest_v1(constraints: &[Constraint]) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(CONSTRAINT_DIGEST_DOMAIN);
     push_len(&mut bytes, constraints.len());

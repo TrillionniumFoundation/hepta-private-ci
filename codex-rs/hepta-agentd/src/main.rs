@@ -23,6 +23,7 @@ fn main() -> anyhow::Result<()> {
         let mut plasticity_bootstrap_descriptor: Option<PathBuf> = None;
         let mut plasticity_bootstrap_descriptor_digest: Option<Digest32> = None;
         let mut objective_profile = None;
+        let mut objective_checkpoint = None;
         let mut authbus_checkpoint = None;
         let mut evidence_trust = None;
         let mut automation_effect_host = None;
@@ -80,6 +81,12 @@ fn main() -> anyhow::Result<()> {
                     "duplicate --objective-profile-file"
                 );
                 objective_profile = Some(path);
+            } else if flag == "--objective-checkpoint-file" {
+                anyhow::ensure!(
+                    objective_checkpoint.is_none(),
+                    "duplicate --objective-checkpoint-file"
+                );
+                objective_checkpoint = Some(path);
             } else if flag == "--automation-effect-host-file" {
                 anyhow::ensure!(
                     automation_effect_host.is_none(),
@@ -145,8 +152,14 @@ fn main() -> anyhow::Result<()> {
         if let Some(path) = automation_effect_host {
             config = config.with_automation_effect_host_file(path.into());
         }
-        if let Some(path) = objective_profile {
-            config = config.with_objective_profile_file(path.into());
+        anyhow::ensure!(
+            objective_profile.is_some() == objective_checkpoint.is_some(),
+            "--objective-profile-file and --objective-checkpoint-file must be configured together"
+        );
+        if let (Some(profile), Some(checkpoint)) = (objective_profile, objective_checkpoint) {
+            config = config
+                .with_objective_profile_file(profile.into())
+                .with_objective_checkpoint_file(checkpoint.into());
         }
         if let Some(path) = evidence_trust {
             config = config.with_evidence_trust_file(path.into());

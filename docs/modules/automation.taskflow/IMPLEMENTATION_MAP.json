@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "84bf8dca9181fc6543a4b7dcee1269d90f2f9773",
+    "tree": "0d98df4e806fd7043cb2bde52528df68b1fb2ddc"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -62,8 +62,7 @@
           "symbol": "pub async fn automation_create_calendar_v2(",
           "ownerModule": "runtime.agentd"
         }
-      ],
-      "sourceBlob": "efd8ce9d853b5fc17f7f71b639aea3f778c0fc6e"
+      ]
     },
     {
       "designOperation": "materialize_due",
@@ -91,8 +90,7 @@
       "operation": "materialize_due",
       "nativeSymbol": "pub async fn tick(",
       "sourcePath": "codex-rs/hepta-automation/src/scheduler.rs",
-      "sourcePathExists": true,
-      "sourceBlob": "4cd695be9113d4e8cd0d4100fa7451ef95be2351"
+      "sourcePathExists": true
     },
     {
       "designOperation": "claim_occurrence",
@@ -128,8 +126,7 @@
       "operation": "claim_occurrence",
       "nativeSymbol": "pub async fn materialize_occurrence(",
       "sourcePath": "codex-rs/hepta-automation/src/lifecycle.rs",
-      "sourcePathExists": true,
-      "sourceBlob": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+      "sourcePathExists": true
     },
     {
       "designOperation": "execute_step",
@@ -184,8 +181,7 @@
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
       "sourcePathExists": true,
       "productCallers": [],
-      "productCompositionState": "async_bridge_source_composed_named_independent_authority_provider_host_pending",
-      "sourceBlob": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+      "productCompositionState": "async_bridge_source_composed_named_independent_authority_provider_host_pending"
     }
   ],
   "repositoryControlledGaps": [],
@@ -231,8 +227,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "84bf8dca9181fc6543a4b7dcee1269d90f2f9773",
+    "tree": "0d98df4e806fd7043cb2bde52528df68b1fb2ddc"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -316,7 +312,7 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "90409d9839266b2992986bb98343f41f40bed4ae"
+      "object": "0a936d2353e7e39ef95da3c861992ece27481243"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
@@ -352,11 +348,11 @@
     },
     {
       "path": "codex-rs/hepta-automation/tests/automation.rs",
-      "object": "59e1f81d0efb3633a32edfbe37bdf599852919c2"
+      "object": "2d465dd4fb81e2d81ac32a7a7515386889d533aa"
     },
     {
       "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
-      "object": "7e590c4e400adbfd86cb630728bbde0b6f845a47"
+      "object": "967c69e9754735aa163bcc1f1697a93b697d8c2e"
     },
     {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",

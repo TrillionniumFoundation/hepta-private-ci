@@ -42,7 +42,7 @@ use crate::AgentdPayload;
 use crate::LifecycleSnapshot;
 use crate::RunPhase;
 
-fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
+pub(crate) fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     #[cfg(unix)]
@@ -554,6 +554,10 @@ async fn current_durable_run_start_requires_live_owner_trust() {
             supplied_source_digest: Digest32::of_bytes(b"source"),
             intent_digest: Digest32::of_bytes(b"intent"),
             admitted_source_digest: Digest32::of_bytes(b"admitted source"),
+            objective_admission_proof: Some(fixture_admission_proof(
+                Digest32::of_bytes(b"profile"),
+                Digest32::of_bytes(b"admitted source"),
+            )),
             observed_at_unix_micros: now_ms * 1_000,
             deadline_unix_micros: (now_ms + 60_000) * 1_000,
             authority: AuthorityPosture::DENY_ALL,
@@ -651,6 +655,27 @@ async fn final_use_revalidation_rejects_stale_spawn_generation_before_store_acce
         )
         .await;
     assert!(matches!(result, Err(AgentdError::GenerationFenced(_))));
+}
+
+// Historical integrity evidence for the owner-store fixture, not an opaque
+// compiler admission capability. Production obtains these bytes from the compiler.
+fn fixture_admission_proof(
+    profile: codex_hepta_types::Digest32,
+    source: codex_hepta_types::Digest32,
+) -> codex_hepta_learning_ledger::RunStartAdmissionProofV1 {
+    let mut bytes = b"hepta.objective.admission-proof.v1".to_vec();
+    for identity in [
+        codex_hepta_types::Digest32::of_bytes(b"fixture-envelope"),
+        profile,
+        codex_hepta_types::Digest32::of_bytes(b"fixture-context"),
+        codex_hepta_types::Digest32::of_bytes(b"fixture-compiler-contract"),
+        source,
+    ] {
+        bytes.extend_from_slice(identity.as_array());
+    }
+    let digest = codex_hepta_types::Digest32::of_bytes(&bytes);
+    codex_hepta_learning_ledger::RunStartAdmissionProofV1::from_canonical_bytes(&bytes, digest)
+        .unwrap_or_else(|error| panic!("fixture proof: {error:?}"))
 }
 
 #[cfg(not(unix))]

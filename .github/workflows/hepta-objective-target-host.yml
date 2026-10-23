@@ -1,0 +1,334 @@
+name: Hepta objective target-host qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact 40-character objective candidate commit
+        required: true
+        type: string
+      host_profile_id:
+        description: Registered deployment host profile identifier
+        required: true
+        type: string
+      ordinary_samples:
+        description: Ordinary admission/compile sample count
+        required: true
+        default: "1000"
+        type: string
+      conflict_samples:
+        description: 256-atom/257-oracle conflict sample count
+        required: true
+        default: "64"
+        type: string
+      product_samples:
+        description: Signed daemon round-trip sample count
+        required: true
+        default: "32"
+        type: string
+      execution_samples:
+        description: Physical provider execution sample count
+        required: true
+        default: "4"
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_RELEASE_DEBUG: "0"
+
+jobs:
+  package-candidate:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    outputs:
+      candidate_tree: ${{ steps.identity.outputs.candidate_tree }}
+      bundle_sha256: ${{ steps.identity.outputs.bundle_sha256 }}
+      trusted_measure_digest: ${{ steps.identity.outputs.trusted_measure_digest }}
+      artifact_digest: ${{ steps.upload.outputs.artifact-digest }}
+    steps:
+      - name: Check out protected trusted tooling
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: trusted
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check out candidate on unprivileged hosted runner
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          path: candidate
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate identity and trusted qualification tooling
+        id: identity
+        shell: bash
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          [[ "${CANDIDATE_SHA}" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git -C candidate rev-parse HEAD)" = "${CANDIDATE_SHA}"
+          CANDIDATE_TREE="$(git -C candidate rev-parse HEAD^{tree})"
+          test -z "$(git -C candidate status --porcelain)"
+          for tool in \
+            hepta-implementation-maps.py \
+            hepta-objective-current-state.py \
+            hepta-objective-release-gate.py \
+            hepta-objective-target-measure.py
+          do
+            cmp "trusted/scripts/${tool}" "candidate/scripts/${tool}"
+          done
+          (
+            cd candidate
+            python3 scripts/hepta-implementation-maps.py verify \
+              --module objective.compiler \
+              --expected-sha "${CANDIDATE_SHA}" \
+              --expected-tree "${CANDIDATE_TREE}"
+            python3 scripts/hepta-objective-current-state.py verify
+            python3 scripts/hepta-objective-release-gate.py verify-source
+          )
+          mkdir -p "${RUNNER_TEMP}/objective-candidate"
+          REF="refs/hepta-objective-candidate/${CANDIDATE_SHA}"
+          git -C candidate update-ref "${REF}" "${CANDIDATE_SHA}"
+          git -C candidate bundle create \
+            "${RUNNER_TEMP}/objective-candidate/candidate.bundle" "${REF}"
+          git -C candidate update-ref -d "${REF}"
+          BUNDLE_SHA256="$(
+            sha256sum "${RUNNER_TEMP}/objective-candidate/candidate.bundle" | cut -d' ' -f1
+          )"
+          TRUSTED_MEASURE_DIGEST="$(
+            sha256sum trusted/scripts/hepta-objective-target-measure.py | cut -d' ' -f1
+          )"
+          cat > "${RUNNER_TEMP}/objective-candidate/identity.json" <<JSON
+          {
+            "schema": "hepta.objective-target-candidate-bundle.v1",
+            "candidateCommit": "${CANDIDATE_SHA}",
+            "candidateTree": "${CANDIDATE_TREE}",
+            "bundleSha256": "${BUNDLE_SHA256}",
+            "trustedWorkflowCommit": "$(git -C trusted rev-parse HEAD)",
+            "trustedWorkflowTree": "$(git -C trusted rev-parse HEAD^{tree})",
+            "trustedMeasureDigest": "${TRUSTED_MEASURE_DIGEST}"
+          }
+          JSON
+          printf '%s  candidate.bundle\n' "${BUNDLE_SHA256}" \
+            > "${RUNNER_TEMP}/objective-candidate/SHA256SUMS"
+          printf 'candidate_tree=%s\n' "${CANDIDATE_TREE}" >> "${GITHUB_OUTPUT}"
+          printf 'bundle_sha256=%s\n' "${BUNDLE_SHA256}" >> "${GITHUB_OUTPUT}"
+          printf 'trusted_measure_digest=%s\n' "${TRUSTED_MEASURE_DIGEST}" >> "${GITHUB_OUTPUT}"
+
+      - name: Upload exact candidate bundle
+        id: upload
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: objective-target-candidate-${{ inputs.candidate_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/objective-candidate
+          if-no-files-found: error
+          retention-days: 7
+
+  attest-candidate:
+    needs: package-candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - name: Download inert candidate bundle for attestation
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: objective-target-candidate-${{ inputs.candidate_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/objective-candidate
+
+      - name: Attest candidate bundle provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        with:
+          subject-path: ${{ runner.temp }}/objective-candidate/candidate.bundle
+
+  target-host:
+    needs: [package-candidate, attest-candidate]
+    runs-on: [self-hosted, objective-target-host-ephemeral]
+    environment: objective-target-host-qualification
+    timeout-minutes: 180
+    permissions:
+      contents: read
+    steps:
+      - name: Check out protected trusted tooling only
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: trusted
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Download attested candidate bundle
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: objective-target-candidate-${{ inputs.candidate_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/objective-candidate
+
+      - name: Verify bundle and create isolated candidate checkout
+        shell: bash
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          CANDIDATE_TREE: ${{ needs.package-candidate.outputs.candidate_tree }}
+          BUNDLE_SHA256: ${{ needs.package-candidate.outputs.bundle_sha256 }}
+          TRUSTED_MEASURE_DIGEST: ${{ needs.package-candidate.outputs.trusted_measure_digest }}
+        run: |
+          set -euo pipefail
+          cd "${RUNNER_TEMP}/objective-candidate"
+          sha256sum --check SHA256SUMS
+          test "$(sha256sum candidate.bundle | cut -d' ' -f1)" = "${BUNDLE_SHA256}"
+          git clone --no-checkout candidate.bundle "${RUNNER_TEMP}/candidate"
+          git -C "${RUNNER_TEMP}/candidate" checkout --detach "${CANDIDATE_SHA}"
+          test "$(git -C "${RUNNER_TEMP}/candidate" rev-parse HEAD^{tree})" = "${CANDIDATE_TREE}"
+          test -z "$(git -C "${RUNNER_TEMP}/candidate" status --porcelain)"
+          test "$(
+            sha256sum "${GITHUB_WORKSPACE}/trusted/scripts/hepta-objective-target-measure.py" | cut -d' ' -f1
+          )" = "${TRUSTED_MEASURE_DIGEST}"
+          cmp \
+            "${GITHUB_WORKSPACE}/trusted/scripts/hepta-objective-target-measure.py" \
+            "${RUNNER_TEMP}/candidate/scripts/hepta-objective-target-measure.py"
+          printf 'CANDIDATE_SHA=%s\nCANDIDATE_TREE=%s\n' \
+            "${CANDIDATE_SHA}" "${CANDIDATE_TREE}" >> "${GITHUB_ENV}"
+          printf 'CARGO_HOME=%s\n' "${RUNNER_TEMP}/cargo-home" >> "${GITHUB_ENV}"
+          printf 'CARGO_TARGET_DIR=%s\n' "${RUNNER_TEMP}/cargo-target" >> "${GITHUB_ENV}"
+          printf 'TMPDIR=%s\n' "${RUNNER_TEMP}/tmp" >> "${GITHUB_ENV}"
+          mkdir -p \
+            "${RUNNER_TEMP}/cargo-home" \
+            "${RUNNER_TEMP}/cargo-target" \
+            "${RUNNER_TEMP}/tmp" \
+            "${RUNNER_TEMP}/objective-target-host"
+
+      - name: Measure exact candidate on disposable host
+        shell: bash
+        env:
+          HOST_PROFILE_ID: ${{ inputs.host_profile_id }}
+          ORDINARY_SAMPLES: ${{ inputs.ordinary_samples }}
+          CONFLICT_SAMPLES: ${{ inputs.conflict_samples }}
+          PRODUCT_SAMPLES: ${{ inputs.product_samples }}
+          EXECUTION_SAMPLES: ${{ inputs.execution_samples }}
+        run: |
+          set -euo pipefail
+          cd "${RUNNER_TEMP}/candidate"
+          python3 scripts/hepta-objective-target-measure.py \
+            --expected-sha "${CANDIDATE_SHA}" \
+            --host-profile-id "${HOST_PROFILE_ID}" \
+            --ordinary-samples "${ORDINARY_SAMPLES}" \
+            --conflict-samples "${CONFLICT_SAMPLES}" \
+            --product-samples "${PRODUCT_SAMPLES}" \
+            --execution-samples "${EXECUTION_SAMPLES}" \
+            --output "${RUNNER_TEMP}/objective-target-host/evidence.json"
+          test "$(git rev-parse HEAD)" = "${CANDIDATE_SHA}"
+          test "$(git rev-parse HEAD^{tree})" = "${CANDIDATE_TREE}"
+          test -z "$(git status --porcelain)"
+
+      - name: Produce provenance-bound unsigned acceptance template
+        shell: bash
+        env:
+          HOST_PROFILE_ID: ${{ inputs.host_profile_id }}
+          BUNDLE_SHA256: ${{ needs.package-candidate.outputs.bundle_sha256 }}
+          ARTIFACT_DIGEST: ${{ needs.package-candidate.outputs.artifact_digest }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ["RUNNER_TEMP"]) / "objective-target-host"
+          evidence_path = root / "evidence.json"
+          evidence_bytes = evidence_path.read_bytes()
+          evidence = json.loads(evidence_bytes)
+          digest = hashlib.sha256(evidence_bytes).hexdigest()
+          if evidence["sourceCommit"] != os.environ["CANDIDATE_SHA"]:
+              raise SystemExit("target-host evidence candidate mismatch")
+          if evidence["sourceTree"] != os.environ["CANDIDATE_TREE"]:
+              raise SystemExit("target-host evidence tree mismatch")
+          if evidence["hostProfileId"] != os.environ["HOST_PROFILE_ID"]:
+              raise SystemExit("target-host evidence profile mismatch")
+          envelope = {
+              "schema": "hepta.objective-target-host-envelope.v2",
+              "schemaVersion": 2,
+              "module": "objective.compiler",
+              "candidateCommit": os.environ["CANDIDATE_SHA"],
+              "candidateTree": os.environ["CANDIDATE_TREE"],
+              "hostProfileId": os.environ["HOST_PROFILE_ID"],
+              "workflowRunId": int(os.environ["GITHUB_RUN_ID"]),
+              "workflowRunAttempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
+              "runnerName": os.environ["RUNNER_NAME"],
+              "runnerEnvironment": os.environ["RUNNER_ENVIRONMENT"],
+              "ephemeralRunnerRequired": True,
+              "candidateBundleSha256": os.environ["BUNDLE_SHA256"],
+              "candidateArtifactDigest": os.environ["ARTIFACT_DIGEST"],
+              "measurementDigest": digest,
+              "storageQualificationProved": False,
+              "resourceBudgetsAccepted": False,
+              "activationGranted": False,
+              "releaseGranted": False,
+          }
+          template = {
+              "schema": "hepta.objective-release-receipt.v1",
+              "schemaVersion": 1,
+              "module": "objective.compiler",
+              "kind": "target_host_qualification",
+              "candidateCommit": os.environ["CANDIDATE_SHA"],
+              "candidateTree": os.environ["CANDIDATE_TREE"],
+              "releasePolicyDigest": "SET_FROM_PROTECTED_RELEASE_POLICY",
+              "issuer": "SET_BY_TARGET_HOST_QUALIFICATION_AUTHORITY",
+              "issuedAt": "SET_BY_TARGET_HOST_QUALIFICATION_AUTHORITY",
+              "evidenceDigest": digest,
+              "accepted": False,
+              "dependencies": {},
+              "payload": {
+                  "hostProfileId": os.environ["HOST_PROFILE_ID"],
+                  "measurementDigest": digest,
+                  "storageQualificationDigest": "SET_BY_STORAGE_QUALIFICATION_AUTHORITY",
+                  "worstCase257OracleCallsMeasured": True,
+                  "resourceBudgetsAccepted": False,
+                  "storageDurabilityAccepted": False,
+              },
+              "receiptDigest": "COMPUTE_ONLY_AFTER_EXTERNAL_ACCEPTANCE",
+          }
+          (root / "measurement-envelope.json").write_text(
+              json.dumps(envelope, sort_keys=True, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          (root / "target-host-receipt-template.json").write_text(
+              json.dumps(template, sort_keys=True, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          (root / "SHA256SUMS").write_text(
+              f"{digest}  evidence.json\n", encoding="utf-8"
+          )
+          PY
+
+      - name: Retain exact target-host evidence
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: objective-target-host-${{ inputs.candidate_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/objective-target-host
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Destroy disposable candidate and writable caches
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf \
+            "${RUNNER_TEMP}/candidate" \
+            "${RUNNER_TEMP}/objective-candidate" \
+            "${RUNNER_TEMP}/cargo-home" \
+            "${RUNNER_TEMP}/cargo-target" \
+            "${RUNNER_TEMP}/tmp"

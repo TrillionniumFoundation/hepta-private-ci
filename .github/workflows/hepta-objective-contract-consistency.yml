@@ -1,0 +1,62 @@
+name: Hepta objective contract consistency
+
+on:
+  pull_request:
+    paths:
+      - codex-rs/hepta-objective/**
+      - codex-rs/hepta-intelligence/src/objective_run.rs
+      - codex-rs/hepta-learning-ledger/src/run_start.rs
+      - docs/contracts/OBJECTIVE_ERRORS.json
+      - docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md
+      - docs/modules/objective.compiler/**
+      - scripts/hepta-objective-contract-consistency.py
+      - scripts/test_hepta_objective_contract_consistency.py
+      - .github/workflows/hepta-objective-contract-consistency.yml
+  push:
+    branches:
+      - work/objective-compiler-production-convergence-20260927
+      - main
+    paths:
+      - codex-rs/hepta-objective/**
+      - codex-rs/hepta-intelligence/src/objective_run.rs
+      - codex-rs/hepta-learning-ledger/src/run_start.rs
+      - docs/contracts/OBJECTIVE_ERRORS.json
+      - docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md
+      - docs/modules/objective.compiler/**
+      - scripts/hepta-objective-contract-consistency.py
+      - scripts/test_hepta_objective_contract_consistency.py
+      - .github/workflows/hepta-objective-contract-consistency.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: objective-contract-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify canonical contract against exact checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          SOURCE_TREE="$(git rev-parse HEAD^{tree})"
+          python3 -m py_compile scripts/hepta-objective-contract-consistency.py
+          python3 -m unittest -v scripts.test_hepta_objective_contract_consistency
+          python3 scripts/hepta-objective-contract-consistency.py self-test
+          python3 scripts/hepta-objective-contract-consistency.py verify \
+            --expected-sha "${SOURCE_SHA}" \
+            --expected-tree "${SOURCE_TREE}"
+          git diff --check
+          test -z "$(git status --porcelain)"

@@ -1,0 +1,83 @@
+name: Hepta objective focused regression
+
+on:
+  push:
+    branches:
+      - work/objective-compiler-production-convergence-20260927
+    paths:
+      - codex-rs/hepta-objective/**
+      - codex-rs/hepta-learning-ledger/**
+      - codex-rs/hepta-intelligence/**
+      - codex-rs/hepta-agentd/**
+      - scripts/hepta-objective-qualify-exact.py
+      - scripts/hepta-objective-evidence-project.py
+      - scripts/test_hepta_objective_evidence_project.py
+      - .github/workflows/hepta-objective-focused-regression.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: objective-focused-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  TMPDIR: /private/tmp
+
+jobs:
+  native-focused:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact source without retained credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Execute existing compiler and destination-owner tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import importlib.util
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          root = Path.cwd()
+          spec = importlib.util.spec_from_file_location('exact', root / 'scripts/hepta-objective-qualify-exact.py')
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          source = module.git(root, 'rev-parse', 'HEAD')
+          tree = module.git(root, 'rev-parse', 'HEAD^{tree}')
+          if source != os.environ['SOURCE_SHA'] or module.git(root, 'status', '--porcelain'):
+              raise SystemExit('focused regression source is not immutable')
+          out = Path(os.environ['RUNNER_TEMP']) / 'objective-focused'
+          out.mkdir()
+          selected = {'format', 'objective-default', 'objective-compatibility', 'durable-run-start', 'publication'}
+          checks = []
+          for name, command in module.commands():
+              if name in selected:
+                  check = module.run_command(root / 'codex-rs', out, name, command, 900)
+                  checks.append(check)
+                  print(json.dumps(check), flush=True)
+          command = ['cargo', 'clippy', '--locked', '-p', 'codex-hepta-objective', '-p', 'codex-hepta-learning-ledger', '--all-targets', '--no-deps', '--', '-D', 'warnings']
+          checks.append(module.run_command(root / 'codex-rs', out, 'strict-clippy-compiler-ledger', command, 900))
+          clean = module.git(root, 'rev-parse', 'HEAD') == source and module.git(root, 'rev-parse', 'HEAD^{tree}') == tree and not module.git(root, 'status', '--porcelain')
+          passed = clean and len(checks) == 6 and all(c['status'] == 'completed' and type(c['exitCode']) is int and c['exitCode'] == 0 for c in checks)
+          receipt = {'schema': 'hepta.objective-focused-regression.v1', 'sourceCommit': source, 'sourceTree': tree, 'runId': os.environ['GITHUB_RUN_ID'], 'checks': checks, 'sourceClean': clean, 'checksPassed': passed, 'scope': 'focused_native_regressions_not_full_or_independent_qualification', 'fullQualificationGranted': False, 'nativeFfiQualificationGranted': False, 'targetHostAccepted': False, 'activationGranted': False, 'releaseGranted': False}
+          (out / 'receipt.json').write_text(json.dumps(receipt, indent=2, sort_keys=True) + '\n')
+          raise SystemExit(0 if passed else 1)
+          PY
+      - name: Preserve every observed check and failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: objective-focused-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/objective-focused
+          if-no-files-found: error
+          retention-days: 14

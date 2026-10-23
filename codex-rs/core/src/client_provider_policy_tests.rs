@@ -117,8 +117,10 @@ async fn completed_is_hidden_until_exact_terminal_is_acknowledged() {
     let (mut stream, mut last_response) = map_response_events(
         /*upstream_request_id*/ None,
         events,
-        test_telemetry(),
-        InferenceTraceAttempt::disabled(),
+        super::ResponseEventTelemetry {
+            session_telemetry: test_telemetry(),
+            inference_trace_attempt: InferenceTraceAttempt::disabled(),
+        },
         test_provider(),
         Some(owner),
         /*redact_provider_errors*/ false,
@@ -169,8 +171,10 @@ async fn terminal_failure_suppresses_completed_and_last_response() {
     let (mut stream, last_response) = map_response_events(
         /*upstream_request_id*/ None,
         events,
-        test_telemetry(),
-        InferenceTraceAttempt::disabled(),
+        super::ResponseEventTelemetry {
+            session_telemetry: test_telemetry(),
+            inference_trace_attempt: InferenceTraceAttempt::disabled(),
+        },
         test_provider(),
         Some(owner),
         /*redact_provider_errors*/ false,
@@ -206,8 +210,10 @@ async fn consumer_drop_records_partial_indeterminate_terminal() {
     let (mut stream, _last_response) = map_response_events(
         /*upstream_request_id*/ None,
         events,
-        test_telemetry(),
-        InferenceTraceAttempt::disabled(),
+        super::ResponseEventTelemetry {
+            session_telemetry: test_telemetry(),
+            inference_trace_attempt: InferenceTraceAttempt::disabled(),
+        },
         test_provider(),
         Some(owner),
         /*redact_provider_errors*/ false,
@@ -242,8 +248,10 @@ async fn unauthorized_stream_error_records_rejected_before_downstream_error() {
     let (mut stream, _last_response) = map_response_events(
         /*upstream_request_id*/ None,
         events,
-        test_telemetry(),
-        InferenceTraceAttempt::disabled(),
+        super::ResponseEventTelemetry {
+            session_telemetry: test_telemetry(),
+            inference_trace_attempt: InferenceTraceAttempt::disabled(),
+        },
         test_provider(),
         Some(owner),
         /*redact_provider_errors*/ false,
@@ -271,8 +279,10 @@ async fn eof_records_partial_indeterminate_terminal() {
     let (mut stream, _last_response) = map_response_events(
         /*upstream_request_id*/ None,
         events,
-        test_telemetry(),
-        InferenceTraceAttempt::disabled(),
+        super::ResponseEventTelemetry {
+            session_telemetry: test_telemetry(),
+            inference_trace_attempt: InferenceTraceAttempt::disabled(),
+        },
         test_provider(),
         Some(owner),
         /*redact_provider_errors*/ false,
@@ -306,8 +316,10 @@ async fn terminal_acknowledgement_wait_is_not_consumer_timeout_driven() {
     let (mut stream, _last_response) = map_response_events(
         /*upstream_request_id*/ None,
         events,
-        test_telemetry(),
-        InferenceTraceAttempt::disabled(),
+        super::ResponseEventTelemetry {
+            session_telemetry: test_telemetry(),
+            inference_trace_attempt: InferenceTraceAttempt::disabled(),
+        },
         test_provider(),
         Some(owner),
         /*redact_provider_errors*/ false,

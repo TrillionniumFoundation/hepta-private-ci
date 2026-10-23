@@ -1,0 +1,155 @@
+{
+  "schema": "hepta.objective-release-policy.v1",
+  "schemaVersion": 1,
+  "module": "objective.compiler",
+  "receiptSchema": "hepta.objective-release-receipt.v1",
+  "receiptKinds": [
+    {
+      "kind": "exact_head_qualification",
+      "fileName": "exact-head.json",
+      "dependsOn": [],
+      "requiredPayloadFields": [
+        "checkRuns",
+        "sourceMapDigest",
+        "currentStateDigest"
+      ]
+    },
+    {
+      "kind": "synthetic_merge_qualification",
+      "fileName": "synthetic-merge.json",
+      "dependsOn": [
+        "exact_head_qualification"
+      ],
+      "requiredPayloadFields": [
+        "baseCommit",
+        "mergeCommit",
+        "mergeTree",
+        "checkRunId",
+        "allChecksPassed"
+      ]
+    },
+    {
+      "kind": "target_host_qualification",
+      "fileName": "target-host.json",
+      "dependsOn": [
+        "exact_head_qualification",
+        "synthetic_merge_qualification"
+      ],
+      "requiredPayloadFields": [
+        "hostProfileId",
+        "measurementDigest",
+        "storageQualificationDigest",
+        "worstCase257OracleCallsMeasured",
+        "resourceBudgetsAccepted",
+        "storageDurabilityAccepted"
+      ]
+    },
+    {
+      "kind": "independent_review",
+      "fileName": "independent-review.json",
+      "dependsOn": [
+        "exact_head_qualification",
+        "target_host_qualification"
+      ],
+      "requiredPayloadFields": [
+        "reviewerRole",
+        "reviewScopeDigest",
+        "independent",
+        "noUnresolvedBlockingFindings"
+      ]
+    },
+    {
+      "kind": "canary",
+      "fileName": "canary.json",
+      "dependsOn": [
+        "exact_head_qualification",
+        "synthetic_merge_qualification",
+        "target_host_qualification",
+        "independent_review"
+      ],
+      "requiredPayloadFields": [
+        "environment",
+        "windowStartedAt",
+        "windowEndedAt",
+        "observedRequests",
+        "hardConstraintViolations",
+        "rollbackDrillDigest",
+        "latencyBudgetsSatisfied",
+        "errorBudgetsSatisfied"
+      ]
+    },
+    {
+      "kind": "rollback_authority",
+      "fileName": "rollback-authority.json",
+      "dependsOn": [
+        "exact_head_qualification",
+        "target_host_qualification"
+      ],
+      "requiredPayloadFields": [
+        "authorityRole",
+        "rollbackTargetCommit",
+        "procedureDigest",
+        "drillReceiptDigest",
+        "ready"
+      ]
+    },
+    {
+      "kind": "promotion",
+      "fileName": "promotion.json",
+      "dependsOn": [
+        "canary",
+        "rollback_authority"
+      ],
+      "requiredPayloadFields": [
+        "fromEnvironment",
+        "toEnvironment",
+        "approvedByRole",
+        "canaryReceiptDigest",
+        "approved"
+      ]
+    },
+    {
+      "kind": "release_authority",
+      "fileName": "release-authority.json",
+      "dependsOn": [
+        "promotion",
+        "rollback_authority",
+        "independent_review"
+      ],
+      "requiredPayloadFields": [
+        "authorityRole",
+        "targetEnvironment",
+        "approvalId",
+        "promotionReceiptDigest",
+        "rollbackAuthorityReceiptDigest",
+        "approved"
+      ]
+    }
+  ],
+  "distinctIssuers": [
+    [
+      "independent_review",
+      "release_authority"
+    ],
+    [
+      "canary",
+      "promotion"
+    ],
+    [
+      "target_host_qualification",
+      "independent_review"
+    ]
+  ],
+  "sourceTruthBeforeRelease": {
+    "productionImplementation": false,
+    "accepted": false,
+    "activated": false,
+    "released": false
+  },
+  "releaseTruthAfterAllReceipts": {
+    "productionImplementation": true,
+    "accepted": true,
+    "activated": true,
+    "released": true
+  }
+}

@@ -1,0 +1,49 @@
+name: Hepta objective read-only release surface
+
+on:
+  pull_request:
+    paths:
+      - scripts/hepta-objective-release-surface.py
+      - scripts/test_hepta_objective_release_surface.py
+      - scripts/hepta-objective-materialize-closure.py
+      - ".github/workflows/*objective*.yml"
+      - ".github/workflows/*objective*.yaml"
+  push:
+    branches:
+      - main
+      - work/objective-compiler-production-convergence-20260927
+    paths:
+      - scripts/hepta-objective-release-surface.py
+      - scripts/test_hepta_objective_release_surface.py
+      - scripts/hepta-objective-materialize-closure.py
+      - ".github/workflows/*objective*.yml"
+      - ".github/workflows/*objective*.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: objective-release-surface-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact source without retained credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify objective qualification cannot author repository source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/hepta-objective-release-surface.py
+          python3 -m unittest -v scripts.test_hepta_objective_release_surface
+          python3 scripts/hepta-objective-release-surface.py verify
+          git diff --check
+          test -z "$(git status --porcelain)"

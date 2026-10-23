@@ -311,6 +311,16 @@ impl SqliteConfig {
             .await
     }
 
+    /// Open an authoritative operation/destination owner with its existing
+    /// four-connection, WAL/FULL, foreign-key and five-second busy policy.
+    /// Callers own migrations, integrity checks and awaited closure on failure.
+    pub async fn open_operation_owner_pool(path: &Path) -> Result<SqlitePool, Error> {
+        SqlitePoolOptions::new()
+            .max_connections(4)
+            .connect_with(operation_owner_options(path))
+            .await
+    }
+
     /// Checkpoint a private recovery candidate after all validation handles close.
     ///
     /// The owner must hold its recovery fence and pass a newly materialized copy,
@@ -380,4 +390,15 @@ impl SqliteConfig {
             .connect_with(options)
             .await
     }
+}
+
+fn operation_owner_options(path: &Path) -> SqliteConnectOptions {
+    SqliteConnectOptions::new()
+        .filename(path)
+        .create_if_missing(true)
+        .journal_mode(SqliteJournalMode::Wal)
+        .synchronous(SqliteSynchronous::Full)
+        .foreign_keys(true)
+        .busy_timeout(Duration::from_secs(5))
+        .log_statements(LevelFilter::Off)
 }

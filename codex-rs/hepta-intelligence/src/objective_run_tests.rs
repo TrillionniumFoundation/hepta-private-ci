@@ -346,6 +346,26 @@ fn authenticated_objective_is_durable_before_product_receipt_returns() {
     .expect("recover");
     let durable = reopened.get(&id("run-1")).expect("read").expect("record");
     assert_eq!(durable.snapshot, receipt.run_start);
+    let proof = durable
+        .admission
+        .objective_admission_proof
+        .as_ref()
+        .expect("durable proof");
+    assert_eq!(proof.digest(), receipt.objective_admission_proof_digest);
+    assert_eq!(Digest32::of_bytes(proof.canonical_bytes()), proof.digest());
+    assert_eq!(proof.profile_digest(), receipt.admission.profile_digest);
+    assert_eq!(
+        proof.admitted_source_digest(),
+        receipt.admission.admitted_source_digest
+    );
+    assert_eq!(
+        proof.compiler_contract_digest(),
+        ValidatedAdmissionProfileV1::from_profile(&profile)
+            .expect("profile")
+            .reuse_key()
+            .compiler_contract_digest
+    );
+
     assert_eq!(
         durable.admission.admitted_source_digest,
         receipt.admission.admitted_source_digest
@@ -459,6 +479,24 @@ fn compiler_conflict_is_durably_published_without_runtime_snapshot() {
         .expect("read conflict")
         .expect("durable conflict");
     assert_eq!(durable.conflict_digest, conflict.conflict_digest);
+    let retained_proof = durable
+        .admission
+        .objective_admission_proof
+        .as_ref()
+        .expect("conflict proof");
+    assert_eq!(
+        Digest32::of_bytes(retained_proof.canonical_bytes()),
+        retained_proof.digest()
+    );
+    assert_eq!(
+        retained_proof.profile_digest(),
+        durable.admission.profile_digest
+    );
+    assert_eq!(
+        retained_proof.admitted_source_digest(),
+        durable.admission.admitted_source_digest
+    );
+
     assert_eq!(
         Digest32::of_bytes(&durable.conflict_receipt_bytes),
         conflict.conflict_digest
@@ -484,5 +522,100 @@ fn compiler_conflict_is_durably_published_without_runtime_snapshot() {
             assert_eq!(replay.chain_digest, publication.chain_digest);
         }
         other => panic!("expected idempotent durable conflict, got {other:?}"),
+    }
+}
+
+#[test]
+fn product_publication_retains_q32_extrema_and_proof_without_coercion() {
+    for comparator in [
+        ObjectiveConstraintComparatorV1::Equal,
+        ObjectiveConstraintComparatorV1::LessThanOrEqual,
+        ObjectiveConstraintComparatorV1::GreaterThanOrEqual,
+    ] {
+        for bound in [i64::MIN, -1, 0, 1, i64::MAX] {
+            let fixture = Fixture::new();
+            let mut journal = DurableRunStartJournal::create(
+                fixture.file(),
+                digest("principal-run-start-scope"),
+                16,
+            )
+            .expect("journal");
+            let profile = profile();
+            let mut source = envelope();
+            source.structured_intent.constraints[0].comparator = comparator;
+            source.structured_intent.constraints[0].bound_q32 = bound;
+            source.intent_digest = canonical_objective_intent_digest_v1(&source).expect("intent");
+            let current = context(&profile, &source);
+            let published = compile_and_publish_objective_run_v1(
+                &source,
+                &profile,
+                &current,
+                bindings("run.scalar", Digest32::ZERO),
+                &mut journal,
+            )
+            .expect("publish exact scalar");
+            let retained = journal
+                .get(&id("run.scalar"))
+                .expect("read")
+                .expect("publication");
+            let canonical = decode_objective_function_v1(&retained.objective_function_v1_bytes)
+                .expect("strict wire validator");
+            assert_eq!(
+                canonical.protocol_digest(),
+                retained.objective_function_v1_digest
+            );
+            let native = published
+                .objective
+                .objective
+                .constraints
+                .iter()
+                .find(|value| value.id.as_str() == "latency.ceiling")
+                .expect("native scalar");
+            assert_eq!(native.bound.raw(), bound);
+            assert_eq!(
+                retained
+                    .admission
+                    .objective_admission_proof
+                    .as_ref()
+                    .expect("proof")
+                    .digest(),
+                published.objective_admission_proof_digest
+            );
+            assert!(!published.authority.grants_any());
+        }
+    }
+}
+
+#[test]
+fn unsupported_scalar_operators_never_publish_a_run_or_partial_proof() {
+    let fixture = Fixture::new();
+    let mut journal =
+        DurableRunStartJournal::create(fixture.file(), digest("principal-run-start-scope"), 16)
+            .expect("journal");
+    let initial = journal.head_digest();
+    let profile = profile();
+    for comparator in [
+        ObjectiveConstraintComparatorV1::NotEqual,
+        ObjectiveConstraintComparatorV1::LessThan,
+        ObjectiveConstraintComparatorV1::GreaterThan,
+        ObjectiveConstraintComparatorV1::In,
+        ObjectiveConstraintComparatorV1::NotInSet,
+    ] {
+        let mut source = envelope();
+        source.structured_intent.constraints[0].comparator = comparator;
+        source.intent_digest = canonical_objective_intent_digest_v1(&source).expect("intent");
+        assert!(
+            compile_and_publish_objective_run_v1(
+                &source,
+                &profile,
+                &context(&profile, &source),
+                bindings("run.rejected", initial),
+                &mut journal,
+            )
+            .is_err()
+        );
+        assert_eq!(journal.head_digest(), initial);
+        assert!(journal.records().expect("records").is_empty());
+        assert!(journal.conflicts().expect("conflicts").is_empty());
     }
 }

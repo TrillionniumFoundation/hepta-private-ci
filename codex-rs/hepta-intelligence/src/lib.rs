@@ -69,6 +69,7 @@ pub use objective_run::ObjectiveRunBindingsV1;
 pub use objective_run::ObjectiveRunError;
 pub use objective_run::PublishedObjectiveRunV1;
 pub use objective_run::compile_and_publish_objective_run_v1;
+pub use objective_run::compile_and_publish_validated_objective_run_v1;
 
 mod plasticity_product;
 

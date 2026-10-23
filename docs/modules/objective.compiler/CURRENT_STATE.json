@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.objective-compiler-current-state.v2",
+  "schemaVersion": 2,
+  "module": "objective.compiler",
+  "implementationState": {
+    "core": "source_complete",
+    "productComposition": "source_composed_durable_proof_bound_not_activated",
+    "semanticHardening": "source_complete_pending_exact_candidate_receipts",
+    "qualificationEvidence": "dynamic_receipt_projection_required",
+    "independentAcceptance": "external_receipt_required",
+    "canaryPromotionRollback": "source_policy_not_activated"
+  },
+  "truth": {
+    "productionImplementation": false,
+    "accepted": false,
+    "activated": false,
+    "released": false
+  },
+  "evidenceProjection": {
+    "schema": "hepta.objective-evidence-projection.v2",
+    "producer": "scripts/hepta-objective-evidence-project.py",
+    "dynamicClaims": [
+      "sourceHeadQualification",
+      "syntheticMergeQualification",
+      "targetHostMeasurement"
+    ],
+    "manualPassFieldsForbidden": true
+  },
+  "requiredChecks": [
+    "Hepta objective admission qualification",
+    "Hepta objective product composition / source-head",
+    "Hepta objective product composition / synthetic-merge",
+    "Hepta Lane D semantic conformance",
+    "objective.compiler current-state projection",
+    "Agentd objective product E2E",
+    "strict objective clippy",
+    "objective release guard"
+  ],
+  "externalGates": [
+    "selected deployment target-host measurement and resource-policy acceptance",
+    "independent semantic and security review",
+    "operator acceptance",
+    "canary observation",
+    "promotion approval",
+    "rollback authority validation",
+    "release authority approval"
+  ]
+}

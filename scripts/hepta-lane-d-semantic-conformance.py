@@ -8,6 +8,7 @@ import json
 import os
 import re
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -196,13 +197,7 @@ def verify_truth_boundary(row: dict[str, Any], mapping: dict[str, Any]) -> None:
             )
 
 
-def verify() -> int:
-    for path in REQUIRED_DOCS:
-        need((ROOT / path).is_file(), f"missing document {path}")
-    for module in MODULES:
-        verify_map(module)
-
-    objective_map = load(MAPS["objective.compiler"])
+def verify_objective_product_operations(objective_map: dict) -> None:
     objective_operations = {
         operation["operation"] for operation in objective_map["operations"]
     }
@@ -213,7 +208,10 @@ def verify() -> int:
         "admit_objective_v1",
         "compile_admitted_objective_v1",
         "check_feasibility_v1",
-        "encode_objective_function_v1",
+        "encode_authenticated_objective_function_v1",
+        "validate_admission_profile_v1",
+        "compile_authoritative_objective_v1",
+        "encode_proof_bearing_objective_function_v1",
         "decode_objective_function_v1",
     }
     need(
@@ -225,9 +223,9 @@ def verify() -> int:
         == [
             "decode_source_envelope_json_v1",
             "validate_structure",
-            "admit_objective_v1",
-            "compile_admitted_objective_v1",
-            "encode_objective_function_v1",
+            "validate_admission_profile_v1",
+            "compile_authoritative_objective_v1",
+            "encode_proof_bearing_objective_function_v1",
             "decode_objective_function_v1",
         ],
         "objective.compiler canonical product operation order",
@@ -240,6 +238,32 @@ def verify() -> int:
     need(
         wrapper.get("productRole") == "compatibility_not_canonical_product_path",
         "objective.compiler convenience wrapper product-role drift",
+    )
+
+
+def verify() -> int:
+    for path in REQUIRED_DOCS:
+        need((ROOT / path).is_file(), f"missing document {path}")
+    for module in MODULES:
+        verify_map(module)
+
+    objective_map = load(MAPS["objective.compiler"])
+    verify_objective_product_operations(objective_map)
+    contract = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts/hepta-objective-contract-consistency.py"),
+            "verify",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    need(
+        contract.returncode == 0,
+        "objective canonical contract verification failed: "
+        + (contract.stderr or contract.stdout).strip(),
     )
 
     objective = (
@@ -293,12 +317,6 @@ def verify() -> int:
         )
 
     headings = {
-        "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md": [
-            "## 4. Deterministic compilation algorithm",
-            "## 5. State machine and persistence",
-            "## 11. Coding-entry checklist",
-            "## Appendix A. Closed gap and protocol mapping",
-        ],
         "docs/readiness/NDU_SYSTEM_EXECUTION.md": [
             "## 2. Cross-organ utility contract",
             "## 3. Multi-objective feasibility and Pareto policy",

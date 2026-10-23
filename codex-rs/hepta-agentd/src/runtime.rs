@@ -56,6 +56,15 @@ pub async fn run(
     let objective_profile_file = config
         .objective_profile_file()
         .map(std::path::Path::to_path_buf);
+    let objective_checkpoint_file = config
+        .objective_checkpoint_file()
+        .map(std::path::Path::to_path_buf);
+    if objective_profile_file.is_some() != objective_checkpoint_file.is_some() {
+        return Err(AgentdError::Invalid(
+            "objective profile and independent RunStart checkpoint must be configured together"
+                .to_string(),
+        ));
+    }
     if objective_profile_file.is_some() && trust_file.is_none() {
         return Err(AgentdError::Invalid(
             "objective profile requires explicit AuthBus trust configuration".to_string(),
@@ -162,22 +171,30 @@ pub async fn run(
             "kernel evidence recovery frontier requires --evidence-trust-file".to_string(),
         ));
     }
-    if let Some(path) = objective_profile_file {
-        state.refresh_generation()?;
-        let host = Arc::new(crate::objective_runtime::ObjectiveRuntimeHost::open(
-            &identity, &path,
-        )?);
-        let current_generation = state.current_generation()?;
-        host.reconcile(
-            &state,
-            current_generation,
-            crate::authbus_ingress::now_ms()?,
-        )?;
-        state
-            .objective_runtime
-            .set(host)
-            .map_err(|_| AgentdError::Protocol("objective runtime already attached".to_string()))?;
-        state.refresh_generation()?;
+    match (objective_profile_file, objective_checkpoint_file) {
+        (Some(profile), Some(checkpoint)) => {
+            state.refresh_generation()?;
+            let host = Arc::new(crate::objective_runtime::ObjectiveRuntimeHost::open(
+                &identity, &profile, checkpoint,
+            )?);
+            let current_generation = state.current_generation()?;
+            host.reconcile(
+                &state,
+                current_generation,
+                crate::authbus_ingress::now_ms()?,
+            )?;
+            state.objective_runtime.set(host).map_err(|_| {
+                AgentdError::Protocol("objective runtime already attached".to_string())
+            })?;
+            state.refresh_generation()?;
+        }
+        (None, None) => {}
+        _ => {
+            return Err(AgentdError::Invalid(
+                "objective profile and independent RunStart checkpoint must be configured together"
+                    .to_string(),
+            ));
+        }
     }
     let cognitive_runtime = match production_writer_host.as_ref() {
         Some(host) => {

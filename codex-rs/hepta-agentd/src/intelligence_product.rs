@@ -85,7 +85,7 @@ use codex_hepta_objective::CompileDisposition;
 use codex_hepta_objective::ObjectiveAdmissionContextV1;
 use codex_hepta_objective::ObjectiveAdmissionProfileV1;
 use codex_hepta_objective::ObjectiveSourceEnvelopeV1;
-use codex_hepta_objective::admit_and_compile_objective_v1;
+use codex_hepta_objective::preflight_validate_objective_v1;
 use codex_hepta_prompt_optimizer::OptimizationRequest;
 use codex_hepta_prompt_optimizer::optimize;
 use codex_hepta_types::AuthorityPosture;
@@ -234,6 +234,7 @@ struct AgentdOwnerPortsV1 {
     objective_envelope: Option<ObjectiveSourceEnvelopeV1>,
     objective_profile: Option<ObjectiveAdmissionProfileV1>,
     objective_context: Option<ObjectiveAdmissionContextV1>,
+    objective_publication: Option<ObjectivePublicationValidationV1>,
     utility_contributions: Option<ContributionSet>,
     utility_profile: Option<UtilityProfile>,
     utility_scalarization: Option<Option<ScalarizationProfile>>,
@@ -249,6 +250,61 @@ struct AgentdOwnerPortsV1 {
     selected_candidate: Option<StableId>,
 }
 
+/// Owner-local evidence copied only from an already-durable compiled RunStart.
+/// Neither the wire request nor the public standalone runner can construct or
+/// install this binding. Historical proof bytes are integrity evidence; this
+/// wrapper grants no admission, publication or effect capability.
+struct ObjectivePublicationValidationV1 {
+    run_id: StableId,
+    admission: codex_hepta_learning_ledger::RunStartAdmissionBindingV1,
+    objective_digest: Digest32,
+    objective_revision: u64,
+}
+
+impl ObjectivePublicationValidationV1 {
+    fn from_run_start(
+        record: &codex_hepta_learning_ledger::RunStartRecordV1,
+    ) -> Result<Self, AgentdIntelligenceProductError> {
+        let invalid = || {
+            AgentdIntelligenceProductError::Run(crate::AgentRunError::InvalidRunStart(
+                "canonical objective publication",
+            ))
+        };
+        let proof = record
+            .admission
+            .objective_admission_proof
+            .as_ref()
+            .ok_or_else(invalid)?;
+        if record.objective_function_v1_digest.is_zero()
+            || Digest32::of_bytes(&record.objective_function_v1_bytes)
+                != record.objective_function_v1_digest
+        {
+            return Err(invalid());
+        }
+        let protocol = codex_hepta_objective::decode_objective_function_v1(
+            &record.objective_function_v1_bytes,
+        )
+        .map_err(|_| invalid())?;
+        if record.disposition
+            != codex_hepta_learning_ledger::RunStartObjectiveDispositionV1::Compiled
+            || record.admission.authority.grants_any()
+            || record.objective_semantic_bytes.is_empty()
+            || Digest32::of_bytes(&record.objective_semantic_bytes)
+                != record.snapshot.objective_digest
+            || proof.profile_digest() != record.admission.profile_digest
+            || proof.admitted_source_digest() != record.admission.admitted_source_digest
+        {
+            return Err(invalid());
+        }
+        Ok(Self {
+            run_id: record.snapshot.run_id.clone(),
+            admission: record.admission.clone(),
+            objective_digest: record.snapshot.objective_digest,
+            objective_revision: protocol.revision(),
+        })
+    }
+}
+
 impl AgentdOwnerPortsV1 {
     fn new(
         value: AgentdIntelligenceOwnerInputsV1,
@@ -258,6 +314,7 @@ impl AgentdOwnerPortsV1 {
             objective_envelope: Some(value.objective_envelope),
             objective_profile: Some(value.objective_profile),
             objective_context: Some(value.objective_context),
+            objective_publication: None,
             utility_contributions: Some(value.utility_contributions),
             utility_profile: Some(value.utility_profile),
             utility_scalarization: Some(value.utility_scalarization),
@@ -354,8 +411,51 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
             "objective context",
         )?;
         let started = Instant::now();
-        let outcome = admit_and_compile_objective_v1(&envelope, &profile, &context)
-            .map_err(|_| Self::reject(input.stage, "objective admission"))?;
+        if let Some(publication) = self.objective_publication.take() {
+            // Recheck this invocation's authenticated source and current
+            // admission without solving its already-compiled hard problem.
+            // The destination publication remains the compilation authority;
+            // an ephemeral admission proof is only compared and then dropped.
+            let frozen = codex_hepta_objective::ValidatedAdmissionProfileV1::new(profile)
+                .map_err(|_| Self::reject(input.stage, "objective frozen profile"))?;
+            let admitted =
+                codex_hepta_objective::admit_validated_objective_v1(&envelope, &frozen, &context)
+                    .map_err(|_| Self::reject(input.stage, "objective publication admission"))?;
+            let historical = publication
+                .admission
+                .objective_admission_proof
+                .as_ref()
+                .ok_or_else(|| Self::reject(input.stage, "objective historical proof"))?;
+            let current = admitted.proof();
+            if admitted.receipt().authority.grants_any()
+                || publication.admission.profile_id != frozen.profile().profile_id
+                || publication.admission.profile_revision != frozen.reuse_key().profile_revision
+                || publication.admission.profile_digest != frozen.profile_digest()
+                || publication.run_id != input.run_id
+                || publication.objective_revision != context.revision.get()
+                || publication.objective_digest != input.objective_digest
+                || historical.source_envelope_digest() != current.source_envelope_digest()
+                || historical.profile_digest() != current.profile_digest()
+                || historical.compiler_contract_digest() != current.compiler_contract_digest()
+                || historical.admitted_source_digest() != current.admitted_source_digest()
+                || publication.admission.admitted_source_digest != current.admitted_source_digest()
+            {
+                return Err(Self::reject(input.stage, "objective publication binding"));
+            }
+            Self::within_budget(input, started)?;
+            return Self::receipt(
+                input,
+                "objective.compiler",
+                publication.objective_digest,
+                CanonicalPortDecisionV1::Continue,
+            );
+        }
+        // This stage checks the existing publication; it does not publish a new
+        // RunStart or manufacture effect authority from a compiler proof. A
+        // standalone invocation has no durable publication and stays diagnostic.
+        let outcome = preflight_validate_objective_v1(&envelope, &profile, &context)
+            .map_err(|_| Self::reject(input.stage, "objective preflight"))?
+            .into_outcome();
         Self::within_budget(input, started)?;
         if outcome.receipt.authority.grants_any() {
             return Err(Self::reject(input.stage, "objective authority"));
@@ -569,6 +669,15 @@ pub struct PreparedAgentdIntelligenceRunV1 {
 }
 
 impl PreparedAgentdIntelligenceRunV1 {
+    /// Freeze the authenticated objective's deadline across asynchronous owner
+    /// preparation and exact retries. The worker budget bounds computation,
+    /// while the destination's immutable admission bounds the run lifetime.
+    pub(crate) fn bind_to_objective_deadline(&mut self, deadline_unix_micros: u64) {
+        let deadline_ms = deadline_unix_micros / 1_000;
+        self.run_snapshot.deadline_ms = deadline_ms;
+        self.context_attachment.deadline_ms = deadline_ms;
+    }
+
     #[must_use]
     pub fn run_snapshot(&self) -> crate::AgentRunSnapshot {
         self.run_snapshot.clone()
@@ -736,7 +845,7 @@ impl StdError for AgentdIntelligenceLedgerError {}
 
 #[cfg(test)]
 #[path = "intelligence_product_tests.rs"]
-mod tests;
+pub(crate) mod tests;
 
 #[cfg(test)]
 #[path = "intelligence_evaluation_tests.rs"]

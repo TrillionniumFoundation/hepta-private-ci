@@ -131,6 +131,64 @@ fn core_is_permutation_invariant_and_removes_irrelevant_atoms() {
 }
 
 #[test]
+fn cached_satisfiability_preserves_witness_and_spends_no_second_oracle_budget() {
+    let registered = registry(vec![
+        (
+            "x",
+            RegisteredDomainV1::Scalar {
+                lower: FixedQ32::from_raw(-10),
+                upper: FixedQ32::from_raw(10),
+            },
+        ),
+        (
+            "unused-enum",
+            RegisteredDomainV1::Enumeration(
+                (0..128)
+                    .map(|index| id(&format!("value-{index:03}")))
+                    .collect(),
+            ),
+        ),
+    ]);
+    for upper in [1, 3] {
+        let atoms = [
+            atom("a", "x", interval(0, upper)),
+            atom("b", "x", interval(2, 3)),
+        ];
+        let candidate: Vec<_> = atoms.iter().collect();
+        let expected = if upper == 3 {
+            let mut domains = registered.axes.clone();
+            domains.get_mut(&id("x")).expect("registered x").domain = RegisteredDomainV1::Scalar {
+                lower: FixedQ32::from_raw(2),
+                upper: FixedQ32::from_raw(3),
+            };
+            Some(FeasibleAssignmentV1 {
+                domains,
+                required_actions: BTreeSet::new(),
+                unforced_actions: BTreeSet::new(),
+            })
+        } else {
+            None
+        };
+        let mut oracle = OracleSessionV1::new(
+            &registered,
+            DeterministicOracleBudgetV1 {
+                max_calls: 1,
+                max_work_units: 2,
+                max_cache_entries: 1,
+            },
+        );
+
+        assert_eq!(oracle.solve(&candidate), Ok(expected.clone()));
+        for _ in 0..3 {
+            assert_eq!(oracle.is_feasible(&candidate), Ok(expected.is_some()));
+        }
+        assert_eq!((oracle.calls, oracle.work_units), (1, 2));
+        assert_eq!(oracle.is_feasible(&candidate[..1]), Err(()));
+        assert_eq!((oracle.calls, oracle.work_units), (1, 2));
+    }
+}
+
+#[test]
 fn finite_enum_inclusion_and_exclusion_are_intersected() {
     let registered = registry(vec![(
         "color",

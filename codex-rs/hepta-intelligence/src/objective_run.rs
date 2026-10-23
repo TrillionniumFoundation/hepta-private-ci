@@ -11,6 +11,7 @@ use std::error::Error;
 use std::fmt;
 
 use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
+use codex_hepta_learning_ledger::RunStartAdmissionProofV1;
 use codex_hepta_learning_ledger::RunStartAppendReceipt;
 use codex_hepta_learning_ledger::RunStartAuthenticationV1;
 use codex_hepta_learning_ledger::RunStartConflictRecordV1;
@@ -28,11 +29,11 @@ use codex_hepta_objective::ObjectiveCompileReceipt;
 use codex_hepta_objective::ObjectiveConflictReceipt;
 use codex_hepta_objective::ObjectiveFunctionV1Error;
 use codex_hepta_objective::ObjectiveSourceEnvelopeV1;
-use codex_hepta_objective::admit_objective_v1;
+use codex_hepta_objective::ValidatedAdmissionProfileV1;
 use codex_hepta_objective::canonical_native_objective_conflict_bytes_v1;
 use codex_hepta_objective::canonical_native_objective_semantic_bytes_v1;
-use codex_hepta_objective::compile_admitted_objective_v1;
-use codex_hepta_objective::encode_objective_function_v1;
+use codex_hepta_objective::compile_authoritative_objective_v1;
+use codex_hepta_objective::encode_proof_bearing_objective_function_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -60,6 +61,9 @@ pub struct PublishedObjectiveRunV1 {
     pub run_start: RunStartSnapshotV1,
     pub publication: RunStartAppendReceipt,
     pub objective_function_v1_digest: Digest32,
+    /// Proof binding source envelope, frozen profile, authenticated admission
+    /// context, compiler contract and admitted native source identity.
+    pub objective_admission_proof_digest: Digest32,
     pub authority: AuthorityPosture,
 }
 
@@ -110,8 +114,40 @@ pub fn compile_and_publish_objective_run_v1(
     bindings: ObjectiveRunBindingsV1,
     journal: &mut dyn RunStartJournal,
 ) -> Result<PublishedObjectiveRunV1, ObjectiveRunError> {
-    let admitted = admit_objective_v1(envelope, profile, context)?;
-    let outcome = compile_admitted_objective_v1(admitted)?;
+    let validated_profile = ValidatedAdmissionProfileV1::from_profile(profile)?;
+    compile_and_publish_validated_objective_run_v1(
+        envelope,
+        &validated_profile,
+        context,
+        bindings,
+        journal,
+    )
+}
+
+/// Product entrypoint for a process-generation-frozen validated profile.
+///
+/// Static profile validation and indexes are reused. The supplied admission
+/// context is still authenticated and checked for source identity, freshness,
+/// deadline and exact profile binding on every invocation. The destination
+/// journal remains the only durable run-start owner.
+pub fn compile_and_publish_validated_objective_run_v1(
+    envelope: &ObjectiveSourceEnvelopeV1,
+    profile: &ValidatedAdmissionProfileV1,
+    context: &ObjectiveAdmissionContextV1,
+    bindings: ObjectiveRunBindingsV1,
+    journal: &mut dyn RunStartJournal,
+) -> Result<PublishedObjectiveRunV1, ObjectiveRunError> {
+    let proof_bearing = compile_authoritative_objective_v1(envelope, profile, context)?;
+    let protocol = if proof_bearing.outcome().compile_result.is_ok() {
+        Some(encode_proof_bearing_objective_function_v1(
+            &proof_bearing,
+            envelope,
+            profile,
+        )?)
+    } else {
+        None
+    };
+    let (outcome, admission_proof) = proof_bearing.into_parts();
     let receipt = outcome.receipt;
     let deadline_unix_micros = receipt
         .deadline_unix_micros
@@ -123,6 +159,10 @@ pub fn compile_and_publish_objective_run_v1(
         supplied_source_digest: receipt.supplied_source_digest,
         intent_digest: receipt.intent_digest,
         admitted_source_digest: receipt.admitted_source_digest,
+        objective_admission_proof: Some(RunStartAdmissionProofV1::from_canonical_bytes(
+            &admission_proof.canonical_bytes(),
+            admission_proof.proof_digest(),
+        )?),
         observed_at_unix_micros: receipt.observed_at_unix_micros,
         deadline_unix_micros,
         authority: receipt.authority,
@@ -160,8 +200,9 @@ pub fn compile_and_publish_objective_run_v1(
             RunStartStoreError::ObjectiveDigestMismatch,
         ));
     }
-    let objective_function_v1 =
-        encode_objective_function_v1(&objective, envelope, profile, &receipt)?;
+    let objective_function_v1 = protocol.ok_or(ObjectiveFunctionV1Error::ProjectionMismatch(
+        "compiled objective requires a proof-bound protocol artifact",
+    ))?;
     if objective_function_v1.native_semantic_digest() != objective.objective.semantic_digest {
         return Err(ObjectiveRunError::Protocol(
             ObjectiveFunctionV1Error::ProjectionMismatch("native semantic identity"),
@@ -206,6 +247,7 @@ pub fn compile_and_publish_objective_run_v1(
         run_start,
         publication,
         objective_function_v1_digest: objective_function_v1.protocol_digest(),
+        objective_admission_proof_digest: admission_proof.proof_digest(),
         authority: AuthorityPosture::DENY_ALL,
     })
 }

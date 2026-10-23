@@ -873,8 +873,10 @@ async fn dropped_response_stream_traces_cancelled_partial_output() -> anyhow::Re
     let (mut stream, _) = super::map_response_events(
         /*upstream_request_id*/ None,
         api_stream,
-        test_session_telemetry(),
-        attempt,
+        super::ResponseEventTelemetry {
+            session_telemetry: test_session_telemetry(),
+            inference_trace_attempt: attempt,
+        },
         test_model_provider(),
         /*provider_attempt*/ None,
         /*redact_provider_errors*/ false,
@@ -926,8 +928,10 @@ async fn response_stream_records_last_model_feedback_ids() {
     let (mut stream, _) = super::map_response_events(
         Some("req-123".to_string()),
         api_stream,
-        test_session_telemetry(),
-        InferenceTraceAttempt::disabled(),
+        super::ResponseEventTelemetry {
+            session_telemetry: test_session_telemetry(),
+            inference_trace_attempt: InferenceTraceAttempt::disabled(),
+        },
         test_model_provider(),
         /*provider_attempt*/ None,
         /*redact_provider_errors*/ false,
@@ -1062,8 +1066,10 @@ async fn ephemeral_unauthorized_and_stream_errors_are_redacted() -> anyhow::Resu
     let (mut stream, _) = super::map_response_events(
         /*upstream_request_id*/ None,
         api_stream,
-        test_session_telemetry(),
-        attempt,
+        super::ResponseEventTelemetry {
+            session_telemetry: test_session_telemetry(),
+            inference_trace_attempt: attempt,
+        },
         provider,
         /*provider_attempt*/ None,
         /*redact_provider_errors*/ true,
@@ -1246,8 +1252,10 @@ async fn dropped_backpressured_response_stream_traces_cancelled_partial_output()
     let (stream, _) = super::map_response_events(
         /*upstream_request_id*/ None,
         api_stream,
-        test_session_telemetry(),
-        attempt,
+        super::ResponseEventTelemetry {
+            session_telemetry: test_session_telemetry(),
+            inference_trace_attempt: attempt,
+        },
         test_model_provider(),
         /*provider_attempt*/ None,
         /*redact_provider_errors*/ false,

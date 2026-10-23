@@ -13,7 +13,8 @@ doctest = false
 [features]
 default = []
 # Explicitly qualification-only compatibility surface. Product code must use
-# admit_objective_v1 + compile_admitted_objective_v1.
+# ValidatedAdmissionProfileV1 + compile_authoritative_objective_v1; diagnostics
+# must use preflight_validate_objective_v1 and must not publish its result.
 qualification-legacy-compile = []
 
 [lints]
