@@ -176,7 +176,7 @@ def main() -> int:
                     "original_tokenizer_inventory_sha256"]
                 observation["effective_tokenizer_inventory_sha256"] = isolation[
                     "effective_tokenizer_inventory_sha256"]
-                output.write(json.dumps(observation, ensure_ascii=False, allow_nan=False) + "\\n")
+                output.write(json.dumps(observation, ensure_ascii=False, allow_nan=False) + "\n")
                 output.flush()
                 os.fsync(output.fileno())
         if file_sha(weight_path) != args.weights_sha256:
