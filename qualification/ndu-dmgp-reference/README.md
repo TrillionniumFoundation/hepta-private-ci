@@ -73,10 +73,11 @@ selection, or native final-use owners.
 - **P1 / multimodal integrity:** required output modalities must be emitted.
   A consistency evidence digest is bound. One-sided audio/video timeline pairs
   are denied. Perceptual and semantic correctness are still unverified.
-- **P2 / conditional covariance:** fit only fully paired chronological train
-  observations from the same task stratum and frozen tuple; future samples
-  cannot estimate covariance. The bounded existing PSD/shrinkage reference is
-  reused. Portfolio return covariance is NOT the FBSDE driver covariance.
+- **P2 / policy-arm covariance prototype:** fit paired chronological train
+  A0-A5 policy-arm observations within one frozen stratum; future rows cannot
+  estimate covariance. This is **NOT the decoder-expert covariance required by
+  A4**, and is NOT the NDU FBSDE driver covariance. A4 requires separately
+  signed joint per-expert potential outcomes or justified supported estimates.
 - **P3 / actual overhead:** separate wall, encoder, decoder and controller
   time, RSS, VRAM, compute units and energy fields are checked. This adapter
   does not manufacture missing real GPU or Decoder measurements.
