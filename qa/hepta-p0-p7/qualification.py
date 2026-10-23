@@ -74,7 +74,7 @@ def nonnegative_int(value) -> bool:
     return type(value) is int and value >= 0
 
 
-def verify_artifact(root: Path, filename: str, expected: str, cap=64_000_000) -> None:
+def _read_pinned_artifact(root: Path, filename: str, expected: str, cap=64_000_000, *, collect=False):
     """Verify pinned bytes through descriptor-relative, no-follow POSIX opens.
 
     Opening each component relative to its already-open parent avoids the
@@ -96,6 +96,7 @@ def verify_artifact(root: Path, filename: str, expected: str, cap=64_000_000) ->
     common_flags = getattr(os, "O_CLOEXEC", 0) | nofollow | os.O_RDONLY
     dir_fd = None
     file_fd = None
+    chunks = []
     try:
         dir_fd = os.open(root, common_flags | directory)
         for component in parts[:-1]:
@@ -116,6 +117,8 @@ def verify_artifact(root: Path, filename: str, expected: str, cap=64_000_000) ->
             count += len(data)
             require(count <= cap, "artifact increased beyond byte cap during read")
             hasher.update(data)
+            if collect:
+                chunks.append(data)
         after = os.fstat(file_fd)
         require((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns,
                  before.st_ctime_ns) ==
@@ -123,6 +126,7 @@ def verify_artifact(root: Path, filename: str, expected: str, cap=64_000_000) ->
                  after.st_ctime_ns) and count == after.st_size,
                 "artifact modified during evidence read")
         require(hasher.hexdigest() == expected, "artifact SHA256 mismatch")
+        return b"".join(chunks) if collect else None
     except OSError as error:
         raise EvidenceError("artifact could not be safely opened or read") from error
     finally:
@@ -130,6 +134,10 @@ def verify_artifact(root: Path, filename: str, expected: str, cap=64_000_000) ->
             os.close(file_fd)
         if dir_fd is not None:
             os.close(dir_fd)
+
+
+def verify_artifact(root: Path, filename: str, expected: str, cap=64_000_000) -> None:
+    _read_pinned_artifact(root, filename, expected, cap)
 
 
 def validate_sources(root: Path, source_manifest: dict, history: dict):
@@ -167,8 +175,20 @@ def validate_sources(root: Path, source_manifest: dict, history: dict):
 
 
 def validate_protocol(protocol, protocol_path: Path, expected_sha: str):
-    require(sha(expected_sha) and digest(protocol_path.read_bytes()) == expected_sha,
-            "protocol not independently pinned by expected SHA256")
+    require(sha(expected_sha), "protocol not independently pinned by expected SHA256")
+    contents = _read_pinned_artifact(protocol_path.parent, protocol_path.name,
+                                    expected_sha, MAX_JSON_BYTES, collect=True)
+    pinned = json.loads(contents, object_pairs_hook=strict_pairs,
+                        parse_constant=reject_constant)
+    # The bytes authenticated against the frozen SHA must describe the
+    # exact protocol that all subsequent cohort/episode checks consume.
+    # JSON canonicalization also distinguishes true, 1 and 1.0.
+    require(type(protocol) is dict and
+            json.dumps(protocol, sort_keys=True, separators=(",", ":"),
+                       allow_nan=False) ==
+            json.dumps(pinned, sort_keys=True, separators=(",", ":"),
+                       allow_nan=False),
+            "parsed protocol differs from independently pinned original bytes")
     require(protocol.get("schema") == "hepta.p0-p7.research.v1", "unknown protocol")
     require(type(protocol.get("seeds")) is list and len(protocol["seeds"]) >= 3 and
             all(nonnegative_int(x) for x in protocol["seeds"]) and
