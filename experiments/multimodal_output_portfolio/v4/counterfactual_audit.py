@@ -139,7 +139,8 @@ def empirical_cvar90(losses: list[float], probabilities: list[float]) -> float:
 def evaluate(initial: State, cfg: Config,
              policy: Callable[[State], Allocation],
              law: tuple[float, float, float] = SHOCK_PROBS) -> dict:
-    if initial.step != 0 or initial.remaining < cfg.emission_reserve:
+    if (not isinstance(initial, State) or initial.step != 0
+        or initial.remaining < cfg.emission_reserve):
         raise ValueError("unfunded four-modal emission")
     records = [(rollout(initial, cfg, path, policy), prob)
                for path, prob in scenarios(cfg.horizon, law)]
@@ -148,7 +149,8 @@ def evaluate(initial: State, cfg: Config,
 
 def evaluate_dependence(initial: State, cfg: Config,
                         policy: Callable[[State], Allocation], regime) -> dict:
-    if initial.step != 0 or initial.remaining < cfg.emission_reserve:
+    if (not isinstance(initial, State) or initial.step != 0
+        or initial.remaining < cfg.emission_reserve):
         raise ValueError("unfunded or noninitial four-modal emission")
     records = [(rollout(initial, cfg, path, policy), prob)
                for path, prob in dependent_scenarios(cfg.horizon, regime)]

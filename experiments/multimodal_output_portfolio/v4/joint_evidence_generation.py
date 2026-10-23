@@ -35,7 +35,10 @@ class JointState:
     witness_seen: bool = False
 
     def __post_init__(self) -> None:
-        if (type(self.p_zero) is not Fraction
+        # Structural lookalikes have not passed State admission. Preserve
+        # ordinary State subclasses that inherit its validation.
+        if (not isinstance(self.generation, State)
+            or type(self.p_zero) is not Fraction
             or not Fraction(0) <= self.p_zero <= Fraction(1)
             or type(self.witness_seen) is not bool
             # A paid witness cannot precede the first recorded action.
@@ -190,7 +193,8 @@ def full_outcome_audit(initial: JointState, cfg: Config,
     is used to draw witness likelihoods and independently score terminal media;
     it is not passed into the policy's observation/state object.
     """
-    if initial.generation.step != 0 or initial.generation.remaining < cfg.emission_reserve:
+    if (not isinstance(initial, JointState) or initial.generation.step != 0
+        or initial.generation.remaining < cfg.emission_reserve):
         raise ValueError("invalid first decision boundary")
     if type(query_cost) is not int or query_cost < 1:
         raise ValueError("invalid query budget")
