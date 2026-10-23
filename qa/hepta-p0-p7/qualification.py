@@ -116,7 +116,17 @@ def validate_sources(root: Path, source_manifest: dict, history: dict):
         groups[family] = role
         split_count[role] += 1
     require(all(value > 0 for value in split_count.values()), "missing source split")
-    require(split_count["test"] >= 128, "fewer than 128 original heldout sources")
+    # Multiple views/files from one original recording or entity are NOT
+    # independent heldout sources. Count the registered original groups, not
+    # the number of source rows (which may contain many derived frames).
+    declared_heldout_groups = {
+        item["original_group"] for item in by_id.values()
+        if item["split"] == "test"
+    }
+    require(len(declared_heldout_groups) >= 128,
+            "fewer than 128 distinct declared original heldout groups")
+    # This checks only caller-declared group IDs; identity/provenance and
+    # near-duplicate independence still require an external verifier.
     return by_id, split_count
 
 
@@ -275,7 +285,14 @@ def report_status(by_id, protocol, rows):
         [x["action"] for x in table[(sid,seed,"ndu_no_cov")]["decisions"]]
         for sid in tests for seed in protocol["seeds"])
     # Data checks are never converted into model promotion or production authority.
-    return {"schema": "hepta.p0-p7.audit.v1", "source_groups": len(tests),
+    distinct_test_groups = {
+        by_id[sid]["original_group"] for sid in tests
+    }
+    return {"schema": "hepta.p0-p7.audit.v1",
+            "source_groups": len(distinct_test_groups),
+            "heldout_source_files": len(tests),
+            "declared_source_group_provenance_verified": False,
+            "independent_source_clustered_inference_verified": False,
             "seeds": len(protocol["seeds"]), "episode_count": len(rows),
             "descriptive": summaries,
             "mechanism_checks": {"shared_encoder_receipt_consistent": True,
