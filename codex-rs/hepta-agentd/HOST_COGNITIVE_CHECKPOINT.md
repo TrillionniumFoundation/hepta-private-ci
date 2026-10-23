@@ -58,3 +58,18 @@ by themselves qualify the service wire, real live authorization, physical power
 loss or a production writer/effect/recovery loop. The service remains unavailable
 until its trusted bootstrap and original live-lease handler actually attach this
 backend and pass their separate integration tests.
+
+Recorded local qualification (2026-10-23): source `3f023c18717a578d1beb9027eb61919b5f2ba4be`
+passed all seven explicit root/data tests through the original `just test`
+entry, 5.443s, 273 other tests skipped by the explicit filter. This includes
+actual file disappearance/restoration without reviving the uncertain object,
+post-CAS expiry, exact replay/reopen and the two-handle publication race. All
+tracked inputs were byte-identical before/after. The earlier `792626129` run
+is retained as five passed/one failed: its new race fixture incorrectly required
+only Conflict, overlooking original nonblocking-lock refusal and a winning
+higher request sequence. Source `c36023c964` then passed seven tests; the final
+semantic phase removed the redundant post-CAS public load and passed seven
+again. Original clock/transport deadlines were not changed. Raw evidence lives
+in `/data/asterinas-audit-build.8tdrjboi/root-checkpoint-qualification-01`, `-02`
+and `-03`; formatting/lint follows these test phases without another same-phase
+test run. This does not qualify the real service/bootstrap/live lease.
