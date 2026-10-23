@@ -195,6 +195,20 @@ def run() -> dict:
             output['arms'][arm]['paired_net_gain'] = round(gain, 6)
             output['arms'][arm]['paired_exploratory_lcb'] = round(lcb, 6)
             output['arms'][arm]['paired_cases'] = count
+    # A negative control against a *cheaper* fixed two-modality strategy.
+    # Observed equality is a registered synthetic limitation, never a win.
+    paired_a1_a5 = tuple(zip(results['A1'], results['A5']))
+    deltas = tuple(b.observed_utility - a.observed_utility
+                   for a, b in paired_a1_a5)
+    output['a5_vs_a1_negative_control'] = {
+        'paired_cases': len(deltas),
+        'synthetic_quality_delta_mean': round(mean(deltas), 9),
+        'synthetic_quality_parity': all(abs(d) <= 1e-12 for d in deltas),
+        'controller_cost_measured_on_target': False,
+        'real_multimodal_quality_observed': False,
+        'model_policy_superiority_established': False,
+        'training_revision': 'v2-train-only-realized-simulator',
+    }
     return output
 
 
