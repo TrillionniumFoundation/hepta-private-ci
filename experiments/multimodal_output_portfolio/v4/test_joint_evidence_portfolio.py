@@ -106,6 +106,46 @@ class JointEvidencePortfolioTests(unittest.TestCase):
         self.assertEqual(query_next(state, 1, 1, cfg).belief_zero,
                          Fraction(1, 50))
 
+    def test_miscalibrated_shared_wrong_witness_reverses_advantage(self):
+        # This is a new environment law: the sensor is wrong 49/50 of the
+        # time, but the FROZEN nominal policy still believes it is 49/50
+        # accurate. More nominal information can cause worse actual quality.
+        cfg = Config(horizon=1, risk_aversion=1, cost_shadow_price=0.05)
+        state = public_state("hard", (2,2,2,2), 5)
+        adaptive = JointController(cfg)
+        no_query = JointController(cfg, allow_query=False)
+        nominal = offline_audit(state, adaptive)
+        shifted = offline_audit(
+            state, adaptive,
+            observed_witness_accuracy=Fraction(1, 50))
+        static_shift = offline_audit(
+            state, no_query,
+            observed_witness_accuracy=Fraction(1, 50))
+        self.assertAlmostEqual(nominal["mean_external_loss"], 0.24)
+        self.assertAlmostEqual(shifted["mean_external_loss"], 11.76)
+        self.assertAlmostEqual(static_shift["mean_external_loss"], 6)
+        self.assertLess(shifted["full_path_utility"],
+                        static_shift["full_path_utility"])
+        self.assertLess(shifted["full_path_utility"],
+                        nominal["full_path_utility"])
+        self.assertTrue(shifted["off_nominal_witness_law"])
+        self.assertTrue(shifted["four_outputs_every_path"])
+        self.assertTrue(shifted["all_budget_feasible"])
+        # Unlike nominal full-path parity, the shifted environment should
+        # NOT be passed off as an NDU model calibration certificate.
+        self.assertNotAlmostEqual(
+            adaptive.solve(state)[1], shifted["full_path_utility"],
+            places=4)
+
+    def test_shift_audit_rejects_invalid_witness_likelihood(self):
+        state = public_state("hard", (2,2,2,2), 5)
+        controller = JointController(Config())
+        for bad in (0.5, True, Fraction(-1, 10), Fraction(11, 10)):
+            with self.subTest(bad=bad):
+                with self.assertRaises(ValueError):
+                    offline_audit(state, controller,
+                                  observed_witness_accuracy=bad)
+
     def test_invalid_data_authority_and_actions_reject(self):
         cfg = Config()
         with self.assertRaises(ValueError):
