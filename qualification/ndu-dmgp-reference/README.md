@@ -44,6 +44,47 @@ All arms use the same **24 held-out evaluation scenarios**, budget, action set, 
 
 A5 is **not an FBSDE solver** and its lookahead uses a synthetic forecast model; it is only a discrete dynamic-control reference. All six are evaluations, not actual model training. The fixed A1 route may match or beat A5; a reference-level difference is no efficacy claim.
 
+## Signed independent-observer and host-meter evidence (advisory only)
+
+The separate signed_evidence.py offline tool checks **detached Ed25519
+signatures** on paired observations and resource receipts for every A0-A5
+trial. The trusted observer and host-meter public keys, the expected frozen
+objective digest and the time split cutoff must be supplied **out of band**,
+not read from the submitted evidence. The two keys must be distinct.
+
+Envelope format: JSON object with exactly two properties: payload
+(a JSON object including role and the trial identity) and signature_b64
+(an Ed25519 signature on canonical JSON payload bytes encoded as base64).
+Canonical encoding is Python json.dumps(payload, sort_keys=True,
+ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8").
+A trial has observer and meter envelope members; the top-level manifest
+identifies schema hepta.ndu-dmgp.signed-trials.v1 and contains trials[].
+
+From the repository root:
+
+    python3 qualification/ndu-dmgp-reference/signed_evidence.py REAL_TRIALS.json \
+      --observer-public-key /trusted/observer.pem \
+      --meter-public-key /trusted/meter.pem \
+      --expected-objective-digest REGISTERED_SHA256 \
+      --expected-evaluator-digest REGISTERED_EVALUATOR_SHA256 \
+      --expected-device-digest REGISTERED_DEVICE_SHA256 \
+      --training-cutoff REGISTERED_TIME
+
+The verifier binds objective, generation, episode, arm, run, trace, input
+and artifact identities across independently signed records, checks frozen
+split ordering and sample pairing, and rejects missing semantic or meter
+evidence. For numerical diagnostics it requires at least 24 matched
+episodes in each of train/future/retention. A paired A5 quality comparison
+is **not** a general NDU superiority claim.
+
+A signature authenticates bytes under a pinned public key; it does
+**not** establish real device measurements, truthful semantic judgements,
+a causally independent organization, trained models, identified conditional
+covariance, Cell causal credit, Markov sufficiency or production admission.
+The verifier always emits production_blockers_closed=false and
+no_promotion_authority=true. CI keys and data are ephemeral test fixtures;
+the tests must never be used as actual production evidence.
+
 ## Production evidence needed before closing blockers
 
 1. Create a compatible versioned **Feature/Generation Proposal** contract bound to selected Encoder/Decoder/Head, tokenizer/preprocessor, objective, NDU snapshot, subject, generation, trajectory and remaining budget. Reuse existing owner admission. Do not extend a V1 wire format invisibly.

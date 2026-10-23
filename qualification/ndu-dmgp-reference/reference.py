@@ -56,6 +56,8 @@ class Objective:
                 raise GateRejected(f"negative {key}")
         if self.budget_units <= 0:
             raise GateRejected("zero budget")
+        if self.max_action_risk > 1:
+            raise GateRejected("risk ceiling exceeds registered [0,1] range")
 
     @property
     def digest(self) -> str:
@@ -171,9 +173,15 @@ def cross_modal_contract(
         problems.append("source entities lost in output reconstruction")
     if source_tags - reconstructed_tags:
         problems.append("source semantic tags lost in output reconstruction")
+    av_events = [e for e in events if e.modality in ("audio", "video")]
+    has_both = {"audio", "video"}.issubset({e.modality for e in av_events})
+    if has_both and any(not e.pair_id for e in av_events):
+        problems.append("unpaired audio-video output")
     for pair in by_pair.values():
         audio = [e for e in pair if e.modality == "audio"]
         video = [e for e in pair if e.modality == "video"]
+        if has_both and (audio or video) and (not audio or not video):
+            problems.append("unpaired audio-video output")
         if audio and video:
             for a in audio:
                 for v in video:
@@ -183,6 +191,10 @@ def cross_modal_contract(
                         problems.append("audio-video temporal misalignment")
                     if not a.entity_ids.intersection(v.entity_ids):
                         problems.append("audio-video entity disagreement")
+    if has_both and checked == 0:
+        problems.append("missing audio-video pairing evidence")
+    if not has_both and any(e.pair_id for e in av_events):
+        problems.append("orphan audio-video pair identifier")
     if max_av_skew_ms < 0:
         problems.append("invalid skew profile")
     return ConsistencyResult(not problems, tuple(sorted(set(problems))), checked)
@@ -200,10 +212,19 @@ class Covariance:
     def risk(self, weights: Sequence[float]) -> float:
         if not self.supported or len(weights) != len(self.matrix):
             raise GateRejected("unsupported covariance dimension")
-        return max(0.0, sum(
-            weights[i] * self.matrix[i][j] * weights[j]
-            for i in range(len(weights)) for j in range(len(weights))
-        ))
+        if (any(not math.isfinite(v) or v < 0 for v in weights)
+                or abs(sum(weights) - 1.) > 1e-6):
+            raise GateRejected("invalid simplex allocation")
+        if (any(len(row) != len(weights) or any(not math.isfinite(v) for v in row)
+                for row in self.matrix)
+                or any(abs(self.matrix[i][j] - self.matrix[j][i]) > 1e-8
+                       for i in range(len(weights)) for j in range(i + 1, len(weights)))):
+            raise GateRejected("invalid covariance shape or symmetry")
+        value = sum(weights[i] * self.matrix[i][j] * weights[j]
+                    for i in range(len(weights)) for j in range(len(weights)))
+        if not math.isfinite(value) or value < -1e-9:
+            raise GateRejected("non-PSD portfolio risk")
+        return max(0., value)
 
 
 def _eigen_symmetric(matrix: list[list[float]]) -> list[tuple[float, list[float]]]:
@@ -289,6 +310,12 @@ def paired_covariance(
         for i in range(k):
             approx[i][i] += diag[i]
         shrunk = approx
+        final_eigs = _eigen_symmetric(shrunk)
+        if final_eigs[-1][0] < floor / 2:
+            return bad("invalid low-rank reconstruction eigenvalue floor")
+        cond = final_eigs[0][0] / final_eigs[-1][0]
+        if cond > 1e6:
+            return bad("ill-conditioned low-rank reconstruction")
     return Covariance(True, tuple(tuple(row) for row in shrunk), n, cond, r, "supported")
 
 
@@ -307,8 +334,19 @@ def portfolio_weights(
     n = len(advantage)
     if not n or n > 8 or any(not math.isfinite(x) for x in advantage):
         raise GateRejected("invalid portfolio advantages")
-    if risk_price < 0 or kl_price <= 0 or not math.isfinite(kl_price):
+    if (risk_price < 0 or not math.isfinite(risk_price)
+            or kl_price <= 0 or not math.isfinite(kl_price)):
         raise GateRejected("invalid portfolio optimization profile")
+    if covariance.supported and (len(covariance.matrix) != n or
+                                 any(len(row) != n or
+                                     any(not math.isfinite(v) for v in row)
+                                     for row in covariance.matrix)):
+        raise GateRejected("invalid covariance matrix profile")
+    if covariance.supported:
+        if (any(abs(covariance.matrix[i][j] - covariance.matrix[j][i]) > 1e-8
+                for i in range(n) for j in range(i + 1, n))
+                or _eigen_symmetric([list(row) for row in covariance.matrix])[-1][0] < -1e-9):
+            raise GateRejected("non-symmetric or non-PSD covariance profile")
     if not covariance.supported or len(covariance.matrix) != n:
         # Explicit deterministic NDU fallback when covariance is unidentified.
         winner = max(range(n), key=lambda i: (advantage[i], -i))
@@ -324,6 +362,10 @@ def portfolio_weights(
             weight = nxt
             break
         weight = nxt
+    else:
+        # Bounded iteration is not convergence: an unstable fixed point must
+        # not publish an apparently optimal allocation.
+        raise GateRejected("portfolio fixed-point solver did not converge")
     return tuple(weight)
 
 
@@ -425,12 +467,20 @@ class Scenario:
     def value(self, chosen: Sequence[str], resource_price: float, risk_price: float, *,
               observed: bool = False) -> float:
         lookup = {a.name: a for a in self.actions}
-        base = sum((lookup[name].observed_gain if observed and lookup[name].observed_gain is not None
+        if observed:
+            if any(lookup[name].observed_gain is None for name in chosen):
+                raise GateRejected("missing observed generation outcome; forecast is not evidence")
+            if any(x in chosen and y in chosen
+                   and (self.observed_synergy is None or (x, y) not in self.observed_synergy)
+                   for x, y in self.synergy):
+                raise GateRejected("missing observed interaction outcome; forecast is not evidence")
+        base = sum((lookup[name].observed_gain if observed
                     else lookup[name].immediate_gain)
                    - resource_price*lookup[name].compute_units
                    - risk_price*lookup[name].risk for name in chosen)
-        synergy = (self.observed_synergy if observed and self.observed_synergy is not None
-                   else self.synergy)
+        synergy = self.observed_synergy if observed else self.synergy
+        if synergy is None:
+            synergy = {}
         return base + sum(bonus for (x, y), bonus in synergy.items()
                           if x in chosen and y in chosen)
 
@@ -632,8 +682,18 @@ def next_snapshot_gate(
         if ({r.episode for r in candidate} != {r.episode for r in baseline}
                 or {r.episode for r in retention_candidate}
                 != {r.episode for r in retention_baseline}
-                or {r.episode for r in candidate} & {r.episode for r in retention_candidate}):
-            raise GateRejected("unmatched or overlapping future/retention episodes")
+                or {r.episode for r in candidate} & {r.episode for r in retention_candidate}
+                or any(len({r.episode for r in rows}) != len(rows)
+                       for rows in (candidate, baseline, retention_candidate, retention_baseline))):
+            raise GateRejected("unmatched, duplicated or overlapping future/retention episodes")
+        if (any(len({r.policy_id for r in rows}) != 1 for rows in
+                (candidate, baseline, retention_candidate, retention_baseline))
+                or {r.policy_id for r in candidate} != {r.policy_id for r in retention_candidate}
+                or {r.policy_id for r in baseline} != {r.policy_id for r in retention_baseline}
+                or {r.policy_id for r in candidate} == {r.policy_id for r in baseline}):
+            raise GateRejected("ambiguous or mismatched frozen candidate/baseline policy")
+        if {r.observer_id for r in all_rows} & {r.actor_id for r in all_rows}:
+            raise GateRejected("observer and actor roles overlap across all windows")
         if ({r.observer_id for r in candidate} & {r.actor_id for r in candidate}
                 or {r.observer_id for r in baseline} & {r.actor_id for r in baseline}):
             raise GateRejected("observer and actor roles overlap")

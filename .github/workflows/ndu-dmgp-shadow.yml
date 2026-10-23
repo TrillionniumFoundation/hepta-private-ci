@@ -19,7 +19,9 @@ jobs:
         with:
           persist-credentials: false
       - name: Compile Python reference
-        run: python3 -m py_compile qualification/ndu-dmgp-reference/reference.py qualification/ndu-dmgp-reference/test_reference.py
+        run: python3 -m py_compile qualification/ndu-dmgp-reference/reference.py qualification/ndu-dmgp-reference/test_reference.py qualification/ndu-dmgp-reference/signed_evidence.py qualification/ndu-dmgp-reference/test_signed_evidence.py
+      - name: Verify pinned-key signature tooling
+        run: openssl version
       - name: Adversarial shadow gate tests
         run: python3 -m unittest discover -s qualification/ndu-dmgp-reference -p 'test_*.py' -v
       - name: Run six matched synthetic ablation arms

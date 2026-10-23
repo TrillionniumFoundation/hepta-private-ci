@@ -96,6 +96,21 @@ class ModalConsistencyTests(unittest.TestCase):
         self.assertIn("invalid event timeline", result.violations)
 
 
+    def test_unpaired_audio_video_rejected_even_with_valid_tags(self):
+        mismatched_pair = self.events[:2] + (
+            replace(self.events[2], pair_id="audio-unmatched"), self.events[3],
+        )
+        result = self.check(mismatched_pair)
+        self.assertFalse(result.supported)
+        self.assertIn("unpaired audio-video output", result.violations)
+        no_pair = self.events[:2] + (
+            replace(self.events[2], pair_id=""), replace(self.events[3], pair_id=""),
+        )
+        result = self.check(no_pair)
+        self.assertFalse(result.supported)
+        self.assertIn("missing audio-video pairing evidence", result.violations)
+
+
 class RiskIdentificationTests(unittest.TestCase):
     def samples(self, n=30):
         return {f"e{i}": {"text": (i % 7)*.2+i*.002,
@@ -133,6 +148,34 @@ class RiskIdentificationTests(unittest.TestCase):
             portfolio_weights((1., math.nan, 0.), c)
         self.assertFalse(paired_covariance(self.samples(),
                                           ("text", "image", "audio"), rank=4).supported)
+
+
+    def test_nonfinite_risk_price_and_corrupt_covariance_reject(self):
+        c = paired_covariance(self.samples(), ("text", "image", "audio"))
+        with self.assertRaises(GateRejected):
+            portfolio_weights((1., 2., 3.), c, risk_price=math.inf)
+        damaged = replace(c, matrix=((math.nan, 0., 0.),) + c.matrix[1:])
+        with self.assertRaises(GateRejected):
+            portfolio_weights((1., 2., 3.), damaged)
+        with self.assertRaises(GateRejected):
+            c.risk((math.nan, 0., 1.))
+        with self.assertRaises(GateRejected):
+            c.risk((.5, .4, .2))
+        nonsymmetric = replace(c, matrix=((1., 3., 0.),
+                                           (0., 1., 0.),
+                                           (0., 0., 1.)))
+        with self.assertRaises(GateRejected):
+            portfolio_weights((1., 2., 3.), nonsymmetric)
+        indefinite = replace(c, matrix=((1., 3., 0.),
+                                         (3., 1., 0.),
+                                         (0., 0., 1.)))
+        with self.assertRaises(GateRejected):
+            portfolio_weights((1., 2., 3.), indefinite)
+        extreme = Covariance(True, ((100., 0., 0.),
+                                    (0., 100., 0.),
+                                    (0., 0., 100.)), 30, 1., 3, "forced")
+        with self.assertRaisesRegex(GateRejected, "did not converge"):
+            portfolio_weights((1., 2., 3.), extreme)
 
 
 class CreditClosureTests(unittest.TestCase):
@@ -200,6 +243,18 @@ class FutureGateTests(unittest.TestCase):
         self.assertFalse(self.gate(candidate=self.cand[:2])[0])
         wrong = [replace(o, episode=f"other-{i}") for i, o in enumerate(self.cand)]
         self.assertFalse(self.gate(candidate=wrong)[0])
+
+
+    def test_duplicate_future_rows_and_policy_drift_rejected(self):
+        duplicated = [self.cand[0]] + self.cand[:-1]
+        self.assertFalse(self.gate(candidate=duplicated)[0])
+        mixed = list(self.cand)
+        mixed[0] = replace(mixed[0], policy_id="other-policy")
+        self.assertFalse(self.gate(candidate=mixed)[0])
+        changed_retention = [replace(r, policy_id="another-model") for r in self.old_c]
+        self.assertFalse(self.gate(retention_candidate=changed_retention)[0])
+        all_overlap = [replace(r, actor_id="independent") for r in self.old_c]
+        self.assertFalse(self.gate(retention_candidate=all_overlap)[0])
 
 
 class ExperimentTests(unittest.TestCase):
@@ -298,6 +353,23 @@ class ExperimentTests(unittest.TestCase):
                          choose_action("A5", no_oracle, (), 2., j, unsupported))
         self.assertNotEqual(run_shadow_arm("A5", scenario, j, unsupported)["synthetic_ndu"],
                             run_shadow_arm("A5", no_oracle, j, unsupported)["synthetic_ndu"])
+
+
+    def test_forecast_cannot_masquerade_as_realized_gain_or_interaction(self):
+        basic = (
+            GenerationAction("text", "text", 1., 3., .1),
+            GenerationAction("image", "image", 1., 3., .1, observed_gain=2.),
+        )
+        scene = Scenario("missing-observation", basic, {("text", "image"): 2.}, 2., 2,
+                         {("text", "image"): 1.})
+        with self.assertRaisesRegex(GateRejected, "missing observed generation outcome"):
+            scene.value(("text", "image"), .1, .3, observed=True)
+        both = replace(scene, actions=(replace(basic[0], observed_gain=1.), basic[1]),
+                       observed_synergy=None)
+        with self.assertRaisesRegex(GateRejected, "missing observed interaction outcome"):
+            both.value(("text", "image"), .1, .3, observed=True)
+        # Predictions remain legal for planning; only observed scoring is fail-closed.
+        self.assertTrue(math.isfinite(scene.value(("text", "image"), .1, .3)))
 
 
 if __name__ == "__main__":
