@@ -55,6 +55,9 @@ use sync::sync_cognitive_directory;
 mod gate;
 pub(crate) use gate::CognitiveCommitGate;
 
+#[path = "cognitive_checkpoint_bind.rs"]
+mod checkpoint_bind;
+
 #[path = "cognitive_store_recovery.rs"]
 mod recovery;
 pub use recovery::CognitiveRecoveryAnchor;
@@ -255,6 +258,7 @@ pub struct CognitiveStore {
 pub(crate) struct CognitiveStoreOpenGuard {
     _file: File,
     _path: PathBuf,
+    exclusive: bool,
 }
 
 impl CognitiveStoreOpenGuard {
@@ -305,6 +309,7 @@ impl CognitiveStoreOpenGuard {
         Ok(Arc::new(Self {
             _file: file,
             _path: path,
+            exclusive: false,
         }))
     }
 
@@ -318,6 +323,7 @@ impl CognitiveStoreOpenGuard {
         Ok(Self {
             _file: file,
             _path: path,
+            exclusive: true,
         })
     }
 }
@@ -350,7 +356,7 @@ impl CognitiveStore {
         let commit_gate = CognitiveCommitGate::default();
         let connection_gate = commit_gate.clone();
         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-            .open_durable_evidence_pool_guarded(&path, move || !connection_gate.is_fenced())
+            .open_durable_evidence_pool_guarded(&path, move || connection_gate.commit_allowed())
             .await
             .map_err(unavailable)?;
         MIGRATOR.run(&pool).await.map_err(classify_migrate_error)?;

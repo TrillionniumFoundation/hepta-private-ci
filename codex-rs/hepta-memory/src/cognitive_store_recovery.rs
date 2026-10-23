@@ -173,7 +173,7 @@ impl CognitiveStore {
             let connection_gate = commit_gate.clone();
             let pool = config
                 .open_durable_evidence_pool_guarded(&candidate, move || {
-                    !connection_gate.is_fenced()
+                    connection_gate.commit_allowed()
                 })
                 .await
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
@@ -247,7 +247,7 @@ impl CognitiveStore {
             let connection_gate = commit_gate.clone();
             let pool = config
                 .open_durable_evidence_pool_guarded(&candidate, move || {
-                    !connection_gate.is_fenced()
+                    connection_gate.commit_allowed()
                 })
                 .await
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;

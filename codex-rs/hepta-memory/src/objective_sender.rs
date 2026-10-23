@@ -46,8 +46,11 @@ const MAX_CHECKPOINT_DEADLINE: Duration = Duration::from_secs(5);
 /// constructor. An implementation must durably authenticate and retain the exact
 /// CURRENT owner/schema/state cut and fence stale publishers. There is no default
 /// implementation. Never re-enter this CognitiveStore: the future runs while its
-/// original BEGIN IMMEDIATE write lock is held. Cancellation must release all
-/// external resources and must not later publish a stale cut in the background.
+/// original BEGIN IMMEDIATE write lock is held. Cancellation must release
+/// caller-owned resources and invalidate the transport. Already accepted host
+/// I/O may finish only under the protected publisher CAS while the entire owner
+/// remains fenced; it must never publish a stale cut. No hard cancellation of
+/// external filesystem sync is implied.
 /// Each future poll must be bounded and nonblocking. The Tokio deadline is
 /// cooperative, not a preemptive wall-clock limit.
 /// An uncertain result also fences every commit through this owner pool before
@@ -465,3 +468,7 @@ mod crash_tests;
 #[cfg(test)]
 #[path = "objective_sender_gate_tests.rs"]
 mod gate_tests;
+
+#[cfg(test)]
+#[path = "cognitive_checkpoint_tests.rs"]
+mod protected_checkpoint_tests;
