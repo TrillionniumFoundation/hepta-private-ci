@@ -454,4 +454,6 @@ impl<A: HmiOwnerAuthorityV1, M: HmiOwnerMediaV1, O: HmiOwnerObservationsV1>
     }
 }
 
-
+#[cfg(test)]
+#[path = "hmi_owner_tests.rs"]
+mod tests;
