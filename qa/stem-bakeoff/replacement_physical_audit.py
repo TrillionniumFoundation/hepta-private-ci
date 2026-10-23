@@ -45,6 +45,12 @@ def audit_arm(name: str, result: Any, spec: dict) -> list[str]:
             or type(ck.get("weight_bytes")) is not int
             or ck["weight_bytes"] < 100_000_000):
         errors.append(f"{name}: checkpoint original-weight pin missing or mismatched")
+    required_components = (("rl_agent_config.json", "encoder/config.json", "tokenizer/tokenizer.json")
+                           if name.startswith("laya_") else ("config.json", "tokenizer.json"))
+    components = ck.get("component_sha256") if isinstance(ck, dict) else None
+    if (not isinstance(components, dict) or set(components) != set(required_components)
+            or any(not _sha(digest) for digest in components.values())):
+        errors.append(f"{name}: tokenizer/config component hashes not physically bound")
     kind = "full_policy" if name.startswith("laya_") else "encoder_plus_new_task_head"
     if result["execution_kind"] != kind:
         errors.append(f"{name}: encoder-only result cannot stand in for full policy")
