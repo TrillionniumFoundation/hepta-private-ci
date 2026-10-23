@@ -10,6 +10,9 @@ use crate::authority_lease::AuthorityLeaseFrontier;
 use crate::authority_lease::AuthorityLeaseRegistry;
 use pretty_assertions::assert_eq;
 
+#[path = "authority_host_issuer_race_tests.rs"]
+mod race_tests;
+
 struct Fixture {
     _directory: tempfile::TempDir,
     root: Arc<RootAuthorityDirectory>,

@@ -162,6 +162,14 @@ impl HostFinalUseIssuer {
             .map_err(HostIssuerError::Lease)?
             .ok_or(HostIssuerError::Lease(AuthorityLeaseError::LeaseNotFound))?
             .lease;
+        // The requested revision may become current between read_lease and
+        // verify_use. Expiry/epoch must come from that exact revision; the
+        // original lease owner makes same-revision contents immutable.
+        if lease.revision != lease_revision {
+            return Err(HostIssuerError::Lease(
+                AuthorityLeaseError::RevisionMismatch,
+            ));
+        }
         let token = leases
             .verify_use(lease_id, lease_revision, &expected)
             .map_err(HostIssuerError::Lease)?;
