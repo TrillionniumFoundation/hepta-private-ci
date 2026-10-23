@@ -53,7 +53,7 @@ def validate_plan(plan: object) -> tuple[dict, list[dict]]:
     for name in ("max_cpu_overhead_fraction", "max_rss_overhead_fraction",
                  "max_p99_overhead_fraction"):
         value = plan.get(name)
-        require(type(value) in (int, float) and math.isfinite(value) and 0 <= value <= 1,
+        require(type(value) in (int, float) and 0 <= value <= 1 and math.isfinite(value),
                 f"pre-registered resource overhead threshold missing/invalid: {name}")
     tasks = plan.get("tasks")
     require(isinstance(tasks, list) and tasks, "frozen tasks missing")
