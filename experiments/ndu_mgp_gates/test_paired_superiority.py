@@ -142,6 +142,41 @@ class PairedEvidenceTests(unittest.TestCase):
         rec = evaluate(d)
         self.assertFalse(rec['comparison']['free_controller']['gates']['protected_task_no_regression'])
 
+    def test_protected_loss_regression_rejected_despite_global_tail_gain(self):
+        d = study_fixture()
+        for dr in d['worlds'][0]['outcomes']['ndu']['decoded_draw_scores']:
+            dr['loss'] = 0.60
+        rec = evaluate(d)
+        self.assertTrue(rec['comparison']['free_controller']['gates']['cvar90_incremental_superiority'])
+        self.assertFalse(rec['comparison']['free_controller']['gates']['protected_task_no_regression'])
+
+    def test_protected_inconsistency_regression_is_not_hidden_by_global_mean(self):
+        d = study_fixture()
+        for dr in d['worlds'][0]['outcomes']['ndu']['decoded_draw_scores']:
+            dr['inconsistency'] = 0.08
+        rec = evaluate(d)
+        self.assertFalse(rec['comparison']['free_controller']['gates']['protected_task_no_regression'])
+
+    def test_each_seed_requires_protected_coverage(self):
+        d = study_fixture()
+        for row in d['worlds']:
+            if row['seed'] == 211:
+                row['protected_task'] = False
+        with self.assertRaisesRegex(EvidenceGap, 'protected-task coverage'):
+            evaluate(d)
+
+    def test_proxy_mac_not_accepted_as_measured_total_cost(self):
+        d = study_fixture()
+        d['protocol']['cost_units'] = 'synthetic_mac_proxy'
+        with self.assertRaisesRegex(EvidenceGap, 'physical cost unit'):
+            evaluate(d)
+
+    def test_nonhex_identity_digest_rejected(self):
+        d = study_fixture()
+        d['protocol']['selection_lock_digest'] = 'G'*64
+        with self.assertRaisesRegex(EvidenceGap, 'selection lock'):
+            evaluate(d)
+
     def test_missing_protected_coverage_rejected(self):
         d = study_fixture()
         for row in d['worlds']:
