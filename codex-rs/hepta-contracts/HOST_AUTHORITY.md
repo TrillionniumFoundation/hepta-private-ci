@@ -54,6 +54,18 @@ The tests' ordinary-UID directory helper is private to their test module. It
 does not relax the production root-directory constructor. Subprocess entry
 tests are marked ignored and are launched explicitly by their parent cases.
 
-This backend is one deployment prerequisite. A real clock, issuer, private
-endpoint, runtime loader and authenticated cognitive current-cut protocol are
-separate requirements and are not implied by these filesystem tests.
+## Linux protected clock
+
+`HostAuthorityClock` stores a separate, explicitly registered clock frontier.
+It samples the running kernel's boot ID, CLOCK_BOOTTIME and CLOCK_REALTIME.
+BOOTTIME includes suspended time. Each timestamp is CAS-persisted and fsynced
+before being returned. A wall-clock reading below the retained highwater,
+backwards BOOTTIME within one boot, invalid samples or arithmetic overflow
+fail closed. After reboot, realtime must reach the previous boot's highwater;
+opening never resets that value. It cannot detect a whole-host snapshot that
+restores both the protected frontier and OS time. Root and the OS remain trusted.
+
+Clock tests cover actual Linux sampling and reopen, a retained future watermark
+that refuses to reopen without rewriting state, and projection/reboot/rollback
+boundaries. The issuer, private endpoint, runtime loader and authenticated
+cognitive current-cut protocol remain separate requirements.

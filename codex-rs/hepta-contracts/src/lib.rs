@@ -11,6 +11,8 @@ pub mod authbus_b5;
 #[cfg(test)]
 #[path = "authbus_tests.rs"]
 mod authbus_tests;
+#[cfg(target_os = "linux")]
+mod authority_host_clock;
 #[cfg(unix)]
 mod authority_host_store;
 pub mod authority_lease;
@@ -29,6 +31,8 @@ mod receipt;
 mod stable_id;
 mod verified_use_witness;
 
+#[cfg(target_os = "linux")]
+pub use authority_host_clock::HostAuthorityClock;
 #[cfg(unix)]
 pub use authority_host_store::HostAuthorityFrontierStore;
 #[cfg(unix)]

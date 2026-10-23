@@ -75,6 +75,29 @@ fn register_cas_reopen_and_identity_checks() {
     assert_eq!(reopened.load(OWNER), Ok(2));
 }
 
+#[cfg(target_os = "linux")]
+#[test]
+fn actual_host_clock_reopens_and_refuses_a_retained_future_highwater() {
+    use crate::AuthorityClock;
+    use crate::HostAuthorityClock;
+    let directory = tempfile::tempdir().unwrap();
+    let root = test_directory(directory.path());
+    let clock = HostAuthorityClock::initialize(root.clone(), "host-clock".into()).unwrap();
+    let first = clock.now_unix_ms().unwrap();
+    drop(clock);
+    let clock = HostAuthorityClock::open(root.clone(), "host-clock".into()).unwrap();
+    assert!(clock.now_unix_ms().unwrap() >= first);
+    assert!(HostAuthorityClock::initialize(root.clone(), "host-clock".into()).is_err());
+
+    let future = serde_json::json!({ "boot_id": "previous-boot", "boottime_ns": 0,
+        "unix_ns": u64::MAX });
+    let store =
+        HostAuthorityFrontierStore::initialize(root.clone(), "future-clock".into(), future.clone())
+            .unwrap();
+    assert!(HostAuthorityClock::open(root, "future-clock".into()).is_err());
+    assert_eq!(store.load("future-clock"), Ok(future));
+}
+
 #[test]
 fn stale_temporary_write_is_replaced_but_symlink_is_not_followed() {
     let directory = tempfile::tempdir().unwrap();
