@@ -242,13 +242,12 @@ impl HostCognitiveCheckpoint {
                 return unknown();
             }
         }
-        match self.load() {
-            Ok(observed) if observed == next => self.ack_after_io(request, observed),
-            _ => {
-                self.close();
-                unknown()
-            }
-        }
+        // This concrete original store returns Ok only after file+directory
+        // sync and exact next readback under the same publication lock. A new
+        // public load would redundantly sync and introduce a separate busy-lock
+        // window after the successful mutation. Time is still checked after
+        // the complete original durable CAS, before any ACK is constructed.
+        self.ack_after_io(request, next)
     }
 
     fn ack_after_io(

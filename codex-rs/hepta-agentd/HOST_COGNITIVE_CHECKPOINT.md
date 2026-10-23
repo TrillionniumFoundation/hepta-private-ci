@@ -26,8 +26,13 @@ valid. Only mutations advance persistent highwater; stale mutation IDs are
 refused. An exact replay of the last mutation returns its durable result without
 another write; changing even JSON whitespace under that ID is refused.
 
-ACK requires original durable CAS, original durable readback of the complete
-expected result and a post-I/O clock check before the original writer expiry.
+ACK requires original durable CAS, its exact readback of the complete expected
+result under the same original publication lock, and a post-I/O clock check
+before the original writer expiry. The concrete original store performs that
+file/directory sync and readback before returning success; the handler does not
+open a second public-load window after a successful mutation. Before this
+request has mutated anything, a busy original publication lock is a definite
+Conflict refusal. After a CAS/storage uncertainty, the result remains Unknown.
 The server token is a domain-separated hash of the complete typed head; clients
 treat it as opaque. IO uncertainty, post-I/O expiry or an unexpected readback
 returns Unknown without a head/token and permanently closes this backend object.
