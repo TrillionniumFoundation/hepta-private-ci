@@ -27,6 +27,7 @@ def study_fixture(*, strong_ndu=True, bootstrap_replicates=120):
         'bootstrap_replicates': bootstrap_replicates,
         'bootstrap_seed': 3001, 'familywise_alpha': 0.05,
         'draws_per_world': 2, 'failure_loss': 2.0, 'cost_units': 'measured_cpu_seconds',
+        'paired_noise_seed': 110123, 'paired_noise_protocol': 'common-random-numbers-v1',
     }
     worlds = []
     for seed in seeds:
@@ -59,7 +60,10 @@ def study_fixture(*, strong_ndu=True, bootstrap_replicates=120):
                         {'loss': loss, 'quality': quality,
                          'ambiguity': ambiguity, 'inconsistency': inconsistency,
                          'status': 'completed',
-                         'output_witness_sha256': H(f'{wid}-{name}-draw-{k}')}
+                         'output_witness_sha256': H(f'{wid}-{name}-draw-{k}'),
+                         'draw_randomness_sha256': sha256((
+                             f'hepta.mgp.paired-draw.v1\0{p["paired_noise_seed"]}\0'
+                             f'{seed}\0{wid}\0{k}').encode()).hexdigest()}
                         for k in range(2)],
                     'measured_cost': {**parts, 'total': sum(parts.values())},
                 }
@@ -166,10 +170,41 @@ class PairedEvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(EvidenceGap, 'metrics/witness'):
             evaluate(d)
 
+    def test_unmatched_noise_draws_cannot_fake_paired_gain(self):
+        d = study_fixture()
+        d['worlds'][0]['outcomes']['ndu']['decoded_draw_scores'][1]['draw_randomness_sha256'] = H('lucky_noise')
+        with self.assertRaisesRegex(EvidenceGap, 'mismatched heldout stochastic draw'):
+            evaluate(d)
+
+    def test_unregistered_noise_seed_cannot_be_inferred_after_holdout(self):
+        d = study_fixture()
+        del d['protocol']['paired_noise_seed']
+        with self.assertRaisesRegex(EvidenceGap, 'missing frozen common-randomness seed'):
+            evaluate(d)
+
+    def test_malformed_noise_witness_cannot_be_dropped(self):
+        d = study_fixture()
+        del d['worlds'][0]['outcomes']['static']['decoded_draw_scores'][0]['draw_randomness_sha256']
+        with self.assertRaisesRegex(EvidenceGap, 'metrics/witness/randomness'):
+            evaluate(d)
+
+    def test_shared_randomness_is_not_independent_attestation(self):
+        d = study_fixture()
+        rec = evaluate(d)
+        self.assertTrue(rec['common_randomness_plan_structurally_matched'])
+        self.assertEqual(rec['status'], 'HOLD_NO_GO')
+        self.assertTrue(any('does not attest' in x for x in rec['limitations']))
+
+    def test_completed_loss_cannot_exceed_failure_penalty(self):
+        d = study_fixture()
+        d['worlds'][0]['outcomes']['static']['decoded_draw_scores'][0]['loss'] = 1000.0
+        with self.assertRaisesRegex(EvidenceGap, 'completed loss exceeds registered failure ceiling'):
+            evaluate(d)
+
     def test_no_real_decoder_outputs_claimed(self):
         rec = evaluate(study_fixture())
         self.assertIn('untrusted caller', rec['limitations'][0])
-        self.assertIn('does not execute', rec['limitations'][2])
+        self.assertTrue(any('does not execute' in text for text in rec['limitations']))
         self.assertEqual(len(rec['input_sha256']), 64)
 
 

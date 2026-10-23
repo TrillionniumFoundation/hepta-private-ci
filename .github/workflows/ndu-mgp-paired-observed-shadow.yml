@@ -5,8 +5,8 @@ on:
     branches: [research/ndu-mgp-p1-paired-actual-output-20261022]
   pull_request:
     paths:
-      - 'experiments/ndu_mgp_gates/**'
-      - '.github/workflows/ndu-mgp-paired-observed-shadow.yml'
+      - experiments/ndu_mgp_gates/**
+      - .github/workflows/ndu-mgp-paired-observed-shadow.yml
   workflow_dispatch:
 
 permissions:
@@ -32,7 +32,7 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/mgp-paired-venv"
           "$RUNNER_TEMP/mgp-paired-venv/bin/python" -m pip install \
             --disable-pip-version-check --no-cache-dir 'numpy==1.26.4'
-      - name: Execute exact-head 15 adversarial P1 checks and original five gates
+      - name: Execute exact-head 20 adversarial P1 checks and original five gates
         shell: bash
         run: |
           set -euo pipefail
