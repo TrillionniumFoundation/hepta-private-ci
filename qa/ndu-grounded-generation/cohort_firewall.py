@@ -6,6 +6,7 @@ only; it cannot attest real-world entity overlap or base-model pretraining.
 """
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -13,6 +14,20 @@ import re
 HEX256 = re.compile(r"^[0-9a-f]{64}$")
 HEX64 = re.compile(r"^[0-9a-f]{16}$")
 SPLITS = ("train", "dev", "calibration", "test")
+
+# Immutable source identities from the completed negative v1 experiment.
+# A hash of a user-provided JSON manifest is not meaningful evidence unless
+# compared with a reference that was pinned before selecting v2 sources.
+PINNED_HISTORIES = {
+    "hepta.grounded-cohort.v1": {
+        "sha256": "71168c26fffdd913d71a69d8708cec957f55dc2bece112c9c50153fbf31de75d",
+        "sources": 256,
+    },
+    "hepta.ndu.historical-exclusions.v1": {
+        "sha256": "4c2b88f85c9ef5fea08790775a652798a72e9281bed1534561f14c681e7bba9d",
+        "sources": 384,
+    },
+}
 
 
 class CohortContractError(ValueError):
@@ -68,6 +83,45 @@ def load_sources(document, origin, *, historical=False):
     return sources
 
 
+def verify_pinned_histories(raw_documents):
+    """Require both authentic, *complete* historical cohorts at the CLI boundary.
+
+    Checking only the supplied historical rows would allow a caller to omit
+    inconvenient past images and receive a misleading disjointness PASS.
+    Raw-byte SHA256 protects all 256 v1 identities and all 384 older images
+    against omission, substitution, or changed identity claims.
+    """
+    if len(raw_documents) != len(PINNED_HISTORIES):
+        raise CohortContractError("require both pinned v1 and pre-v1 historical inputs")
+    lookup = {item["sha256"]: (schema, item["sources"])
+              for schema, item in PINNED_HISTORIES.items()}
+    documents, receipts, seen = {}, {}, set()
+    for index, data in enumerate(raw_documents):
+        if not isinstance(data, bytes):
+            raise CohortContractError(f"history:{index}: expected raw file bytes")
+        digest = hashlib.sha256(data).hexdigest()
+        if digest not in lookup:
+            raise CohortContractError(f"history:{index}: unpinned or modified historical evidence")
+        schema, expected_count = lookup[digest]
+        if schema in seen:
+            raise CohortContractError(f"history:{index}: duplicate pinned history")
+        try:
+            document = json.loads(data)
+        except (ValueError, UnicodeDecodeError) as exc:
+            raise CohortContractError(f"history:{index}: invalid historical JSON") from exc
+        if document.get("schema") != schema:
+            raise CohortContractError(f"history:{index}: historical schema mismatch")
+        count = len(load_sources(document, f"history:{index}", historical=True))
+        if count != expected_count:
+            raise CohortContractError(f"history:{index}: historical source-count mismatch")
+        seen.add(schema)
+        documents[schema] = document
+        receipts[schema] = {"sha256": digest, "sources": count}
+    if seen != set(PINNED_HISTORIES):
+        raise CohortContractError("historical evidence set is incomplete")
+    return [documents[schema] for schema in PINNED_HISTORIES], receipts
+
+
 def collision(first, second, distance):
     keys = ("source_id", "image_sha256", "decoded_rgb_sha256")
     exact = [key for key in keys if first[key] == second[key]]
@@ -119,8 +173,12 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         candidate = json.loads(Path(args.candidate).read_text())
-        history = [json.loads(Path(p).read_text()) for p in args.historical]
+        history, receipts = verify_pinned_histories(
+            [Path(p).read_bytes() for p in args.historical])
         result = check_cohort(candidate, history, max_hamming=args.max_dhash_distance)
+        result["pinned_history_receipts"] = receipts
+        result["pinned_history_source_total"] = sum(
+            row["sources"] for row in receipts.values())
     except (OSError, json.JSONDecodeError, CohortContractError) as exc:
         result = {"schema": "hepta.ndu-cohort-firewall.v2", "status": "fail",
                   "error": str(exc), "observable_image_identity_disjoint": False}
