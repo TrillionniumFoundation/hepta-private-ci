@@ -9,7 +9,12 @@ if (P/'plan.json').exists() or (P/'features.npz').exists(): raise RuntimeError('
 H=lambda b:hashlib.sha256(b).hexdigest()
 def save(name,x):
     p=P/name;p.write_text(json.dumps(x,indent=2,sort_keys=True)+'\n');return H(p.read_bytes())
-assert H((P/'ag_news_csv.tar.gz').read_bytes())=='4e2fc37d369e6e317a8b62d0d2f11d379f8c3dde60c07c35a46b069a246498ad'
+if H((P/'ag_news_csv.tar.gz').read_bytes())!='4e2fc37d369e6e317a8b62d0d2f11d379f8c3dde60c07c35a46b069a246498ad':
+    raise ValueError('Original archive mismatch')
+# Independent member hashes verified against the original author archive.
+for name,expected in {'train.csv':'76a0a2d2f92b286371fe4d4044640910a04a803fdd2538e0f3f29a5c6f6b672e','test.csv':'521465c2428ed7f02f8d6db6ffdd4b5447c1c701962353eb2c40d548c3c85699'}.items():
+    if H((P/name).read_bytes())!=expected:
+        raise ValueError('Original CSV member mismatch: '+name)
 allgroups={}; stats={}
 for split in ['train','test']:
     groups=defaultdict(list)

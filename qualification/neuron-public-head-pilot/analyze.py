@@ -55,21 +55,20 @@ def paired_interval(d):
     means=d[rng.integers(0,len(d),size=(5000,len(d)))].mean(1)
     return {'mean':float(d.mean()),'bootstrap95':np.quantile(means,[.025,.975]).tolist(),'replicates':5000}
 def main():
-    import torch
     global P
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output-dir',type=Path,required=True,help='Prepared directory with frozen features and extraction receipt')
     args=parser.parse_args()
     P=args.output_dir.resolve()
     if not __debug__: raise RuntimeError('optimized Python forbidden')
-    torch.set_num_threads(2);torch.set_num_interop_threads(1);torch.use_deterministic_algorithms(True);torch.manual_seed(20261023)
     assert not (P/'results.json').exists(), 'never overwrite results'
-    assert H(P/'plan.json')=='48ff3c003067370449254daefcf465c4960fbc01a39dae5b83d98123d3aec55c'
-    plan=json.loads((P/'plan.json').read_text());manifest=json.loads((P/'rows.json').read_text());extraction=json.loads((P/'extraction.json').read_text())
-    assert H(P/'rows.json')==plan['rows_sha256'] and extraction['plan_sha256']==H(P/'plan.json')
-    assert H(P/'features.npz')==extraction['features_file_sha256']
-    data=np.load(P/'features.npz',allow_pickle=False);X={k:np.asarray(data[k],dtype=np.float64) for k in manifest};y={k:np.array([r['label'] for r in rows],dtype=np.int64) for k,rows in manifest.items()}
-    for k,z in X.items(): assert z.shape==(len(y[k]),640) and np.isfinite(z).all() and np.allclose(np.linalg.norm(z,axis=1),1,atol=1e-5)
+    from custody import validate_inputs
+    import custody
+    plan,manifest,extraction,X=validate_inputs(P)
+    y={k:np.array([r['label'] for r in rows],dtype=np.int64) for k,rows in manifest.items()}
+    # Reject identity drift before importing a training runtime or fitting.
+    import torch
+    torch.set_num_threads(2);torch.set_num_interop_threads(1);torch.use_deterministic_algorithms(True);torch.manual_seed(20261023)
     train=X['head_train'];labels=y['head_train'];centroid=np.stack([train[labels==k].mean(0) for k in range(4)]);centroid/=np.linalg.norm(centroid,axis=1,keepdims=True)
     t=time.monotonic();xt=torch.from_numpy(train);yt=torch.from_numpy(labels);W=torch.zeros((640,4),dtype=torch.float64,requires_grad=True);b=torch.zeros(4,dtype=torch.float64,requires_grad=True);optimizer=torch.optim.Adam([W,b],lr=.1);curve=[]
     for step in range(200):
@@ -81,7 +80,7 @@ def main():
     meanX=train.mean(0);onehot=np.eye(4)[labels];meanY=onehot.mean(0);Z=train-meanX;Y=onehot-meanY
     rw=np.linalg.solve(Z.T@Z+np.eye(640),Z.T@Y);rb=meanY-meanX@rw
     all_logits={'centroid':{k:v@centroid.T for k,v in X.items()},'logistic':{k:v@lw+lb for k,v in X.items()},'ridge':{k:v@rw+rb for k,v in X.items()}}
-    results={'profile':plan['profile'],'plan_sha256':H(P/'plan.json'),'rows_sha256':H(P/'rows.json'),'feature_sha256':H(P/'features.npz'),'extraction_sha256':H(P/'extraction.json'),'analysis_driver_sha256':H(__file__),'training':training,'heads':{}}
+    results={'profile':plan['profile'],'plan_sha256':H(P/'plan.json'),'rows_sha256':H(P/'rows.json'),'feature_sha256':H(P/'features.npz'),'extraction_sha256':H(P/'extraction.json'),'analysis_driver_sha256':H(__file__),'custody_driver_sha256':H(custody.__file__),'training':training,'heads':{}}
     uc=np.random.default_rng(20261024).random(len(y['conformal']));ut=np.random.default_rng(20261025).random(len(y['test']))
     retained={'centroid':centroid,'logistic_W':lw,'logistic_b':lb,'ridge_W':rw,'ridge_b':rb,'calibration_uniform':uc,'test_uniform':ut}
     for head,logits in all_logits.items():
