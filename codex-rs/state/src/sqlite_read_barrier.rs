@@ -1,5 +1,10 @@
 //! Lock-only access to an existing owner database, never a second writer.
 
+#![expect(
+    clippy::disallowed_methods,
+    reason = "this is part of the centralized SQLite connection shim"
+)]
+
 use crate::SqliteConfig;
 use log::LevelFilter;
 use sqlx::ConnectOptions;

@@ -14,6 +14,9 @@ impl CognitiveStore {
             return barrier.begin().await.map_err(unavailable);
         }
         if self.commit_gate.is_managed() {
+            // A managed owner with no serialization capability must never
+            // continue writing after it failed to acknowledge its whole cut.
+            drop(self.commit_gate.transition_attempt());
             return Err(CognitiveStoreError::Unavailable(
                 "managed owner has no checkpoint serialization connection".to_string(),
             ));
