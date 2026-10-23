@@ -12,6 +12,7 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 #[path = "native_control.rs"]
 pub mod native;
@@ -176,6 +177,8 @@ pub struct DurableInferenceControl {
     capacity: usize,
     journal_bytes: u64,
     poisoned: bool,
+    // Fresh on every open; retained local proofs cannot outlive their owner.
+    pre_effect_owner: Arc<()>,
 }
 
 impl DurableInferenceControl {
@@ -253,6 +256,7 @@ impl DurableInferenceControl {
             capacity,
             journal_bytes,
             poisoned: false,
+            pre_effect_owner: Arc::new(()),
         })
     }
 

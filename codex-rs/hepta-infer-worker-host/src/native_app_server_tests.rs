@@ -1,6 +1,8 @@
 use super::*;
 use codex_app_server_client::RemoteAppServerObservedEvent;
 use codex_app_server_protocol::AgentMessageDeltaNotification;
+use codex_app_server_protocol::ItemCompletedNotification;
+use codex_app_server_protocol::ThreadItem;
 use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
@@ -46,7 +48,12 @@ fn observe_for_test(
     notification: ServerNotification,
 ) -> std::result::Result<bool, String> {
     let binding = binding();
-    observe_event(output, &observed(notification), &binding)
+    observe_event(
+        output,
+        &mut NativeTextObservation::default(),
+        &observed(notification),
+        &binding,
+    )
 }
 
 fn output() -> NativeRunOutput {
@@ -80,6 +87,162 @@ fn terminal(thread: &str, turn: &str, status: TurnStatus) -> ServerNotification 
             duration_ms: None,
         },
     })
+}
+
+fn message_item(id: &str, text: &str) -> ThreadItem {
+    ThreadItem::AgentMessage {
+        id: id.to_string(),
+        text: text.to_string(),
+        phase: None,
+        memory_citation: None,
+        delivery: None,
+    }
+}
+
+fn completed_message(thread: &str, turn: &str, id: &str, text: &str) -> ServerNotification {
+    ServerNotification::ItemCompleted(ItemCompletedNotification {
+        thread_id: thread.to_string(),
+        turn_id: turn.to_string(),
+        item: message_item(id, text),
+        completed_at_ms: 1,
+    })
+}
+
+fn summary(items: Vec<ThreadItem>) -> ServerNotification {
+    let ServerNotification::TurnCompleted(mut completed) =
+        terminal("thread-a", "turn-a", TurnStatus::Completed)
+    else {
+        unreachable!()
+    };
+    completed.turn.items = items;
+    completed.turn.items_view = TurnItemsView::Summary;
+    ServerNotification::TurnCompleted(completed)
+}
+
+#[test]
+fn completed_items_and_terminal_summary_deduplicate_by_exact_message_identity() {
+    let mut output = output();
+    let mut text = NativeTextObservation::default();
+    let binding = binding();
+    let events = [
+        completed_message("thread-b", "turn-a", "first", "foreign"),
+        completed_message("thread-a", "turn-b", "first", "foreign"),
+        ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
+            thread_id: "thread-a".to_string(),
+            turn_id: "turn-a".to_string(),
+            item_id: "first".to_string(),
+            delta: "he".to_string(),
+        }),
+        completed_message("thread-a", "turn-a", "first", "hello"),
+        completed_message("thread-a", "turn-a", "second", "hello"),
+    ];
+    for event in events {
+        assert!(!observe_event(&mut output, &mut text, &observed(event), &binding).unwrap());
+    }
+    assert!(
+        observe_event(
+            &mut output,
+            &mut text,
+            &observed(summary(vec![message_item("second", "hello")])),
+            &binding,
+        )
+        .unwrap()
+    );
+    assert_eq!(output.output, "hellohello");
+    assert!(output.terminal_observed);
+    assert_eq!(output.boundary_status, NativeBoundaryStatus::Succeeded);
+}
+
+#[test]
+fn terminal_summary_alone_retains_text_and_overflow_keeps_physical_terminal() {
+    let mut normal = output();
+    assert!(
+        observe_event(
+            &mut normal,
+            &mut NativeTextObservation::default(),
+            &observed(summary(vec![message_item("first", "summary only")])),
+            &binding(),
+        )
+        .unwrap()
+    );
+    assert_eq!(normal.output, "summary only");
+    assert_eq!(normal.boundary_status, NativeBoundaryStatus::Succeeded);
+    for previous in [
+        NativeBoundaryStatus::Indeterminate,
+        NativeBoundaryStatus::Cancelled,
+        NativeBoundaryStatus::TimedOut,
+        NativeBoundaryStatus::Quarantined,
+    ] {
+        let mut output = output();
+        output.boundary_status = previous;
+        output.observed_output_tokens = Some(7);
+        let mut text = NativeTextObservation::default();
+        let oversized = "雪".repeat(MAX_OUTPUT_BYTES);
+        assert!(
+            observe_event(
+                &mut output,
+                &mut text,
+                &observed(summary(vec![
+                    message_item("first", "prefix"),
+                    message_item("second", &oversized),
+                ])),
+                &binding(),
+            )
+            .unwrap()
+        );
+        assert!(output.terminal_observed);
+        assert_eq!(output.status, NativeRunStatus::Completed);
+        assert!(output.codex_terminal_correlation_digest.is_some());
+        assert_eq!(output.observed_output_tokens, Some(7));
+        assert_eq!(
+            output.output,
+            format!("prefix{}", &oversized[..output.output.len() - 6])
+        );
+        assert!(output.output.len() <= MAX_OUTPUT_BYTES);
+        assert_eq!(
+            output.boundary_status,
+            if previous == NativeBoundaryStatus::Indeterminate {
+                NativeBoundaryStatus::Quarantined
+            } else {
+                previous
+            }
+        );
+        assert_eq!(
+            output.stop_reason.as_deref(),
+            Some("output byte limit exceeded")
+        );
+    }
+}
+
+#[test]
+fn contradictory_completed_text_stays_denied_through_terminal_grace() {
+    let mut output = output();
+    let mut text = NativeTextObservation::default();
+    let binding = binding();
+    text.delta(&mut output.output, "first", "seen").unwrap();
+    let reason = observe_event(
+        &mut output,
+        &mut text,
+        &observed(completed_message("thread-a", "turn-a", "first", "changed")),
+        &binding,
+    )
+    .unwrap_err();
+    output.boundary_status = NativeBoundaryStatus::Quarantined;
+    output.stop_reason = Some(reason.clone());
+    assert!(
+        observe_event(
+            &mut output,
+            &mut text,
+            &observed(summary(vec![message_item("first", "changed")])),
+            &binding,
+        )
+        .unwrap()
+    );
+    assert_eq!(output.output, "seen");
+    assert_eq!(output.boundary_status, NativeBoundaryStatus::Quarantined);
+    assert_eq!(output.stop_reason.as_ref(), Some(&reason));
+    assert_eq!(output.status, NativeRunStatus::Completed);
+    assert!(output.terminal_observed);
 }
 
 #[test]
@@ -118,7 +281,7 @@ fn lost_turn_start_ack_reconciles_only_the_exact_in_progress_thread() {
     )
     .unwrap()
     .expect("exact turn/started must reconcile");
-    assert_eq!(recovered.id, "turn-recovered");
+    assert_eq!(recovered, StableId::new("turn-recovered").unwrap());
 
     assert!(
         exact_reconciled_turn(
@@ -397,26 +560,6 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     assert!(!output.succeeded());
 }
 
-#[test]
-fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start() {
-    let source = include_str!("native_app_server.rs");
-    let durable_dispatch = source
-        .find("control.dispatch_native_with_pre_effect_abort(")
-        .expect("durable native dispatch");
-    let revalidation = source
-        .find("owner.revalidate_cognitive_context(snapshot).await")
-        .expect("final-use cognitive revalidation");
-    let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
-    let durable_stop = source
-        .find("control.abort_native_before_effect(")
-        .expect("durable pre-turn stop");
-    assert!(durable_dispatch < revalidation);
-    assert!(revalidation < turn_start);
-    assert!(durable_stop < turn_start);
-}
-
 #[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone() -> Result<()> {
@@ -450,8 +593,15 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    // core_test_support installs the real Codex helper dispatch in this harness.
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        std::env::current_exe()?,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
@@ -459,9 +609,10 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let authority_directory = tempfile::tempdir()?;
     let (authorizer, issuer) = crate::final_use_authorizer::tests::independent_test_authorizer(
         authority_directory.path(),
-        3,
+        5,
     )
     .await?;
+    let authorizer: Arc<dyn TurnStartAuthorizer> = Arc::new(authorizer);
     let driver = AppServerModelDriver::new(NativeWorkerConfig {
         agentd_socket: host.control_socket().to_path_buf(),
         agent_id: host.agent_id().clone(),
@@ -469,7 +620,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         model: MODEL.to_string(),
         timeout: Duration::from_secs(20),
     })?
-    .with_turn_start_authorizer(Arc::new(authorizer));
+    .with_turn_start_authorizer(Arc::clone(&authorizer));
     let journal = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}.journal"));
     let mut durable = DurableInferenceControl::open(&journal, 8)?;
 
@@ -489,7 +640,10 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         accepted.succeeded(),
         "fresh context must reach a successful real TurnStart"
     );
-    assert!(accepted.output.contains("fresh context accepted"));
+    assert!(
+        accepted.output.contains("fresh context accepted"),
+        "unexpected observed native output: {accepted:?}"
+    );
     let accepted_record = durable
         .native_record(ACCEPT_REQUEST_ID)
         .cloned()
@@ -625,6 +779,180 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
             .as_deref()
             .is_some_and(|reason| reason.contains("cognitive final-use revalidation failed"))
     );
+    // The owner check precedes this hook. Let the original execution deadline
+    // expire while final cognitive revalidation is pending, after the dispatch
+    // journal write and before any physical turn/start.
+    host.seed_verified_memory(
+        "worker-final-use-deadline",
+        "verified grapefruit deadline marker",
+    )
+    .await?;
+    let deadline_driver = AppServerModelDriver::new(NativeWorkerConfig {
+        agentd_socket: host.control_socket().to_path_buf(),
+        agent_id: host.agent_id().clone(),
+        generation: 1,
+        model: MODEL.to_string(),
+        timeout: Duration::from_secs(3),
+    })?
+    .with_turn_start_authorizer(Arc::clone(&authorizer));
+    let deadline_hook = Arc::new(FinalRevalidationTestHook {
+        reached: tokio::sync::Notify::new(),
+        release: tokio::sync::Notify::new(),
+    });
+    install_final_revalidation_test_hook(Arc::clone(&deadline_hook));
+    let deadline_cancellation = CancellationToken::new();
+    let deadline_worker = deadline_driver.run(
+        &mut durable,
+        NativeAdmission {
+            request_id: "cognitive-final-use-deadline".to_string(),
+            maximum_in_flight: 1,
+        },
+        "answer before the deadline".to_string(),
+        Some("grapefruit".to_string()),
+        &deadline_cancellation,
+    );
+    let delayed_revalidation = async {
+        deadline_hook.reached.notified().await;
+        tokio::time::sleep(Duration::from_millis(3300)).await;
+        deadline_hook.release.notify_one();
+    };
+    let (deadline_result, ()) = tokio::time::timeout(Duration::from_secs(15), async {
+        tokio::join!(deadline_worker, delayed_revalidation)
+    })
+    .await?;
+    assert!(deadline_result.is_err());
+    let deadline_stopped = durable
+        .native_record("cognitive-final-use-deadline")
+        .cloned()
+        .ok_or("missing pre-effect deadline record")?;
+    assert_eq!(deadline_stopped.state, NativeReservationState::Released);
+    assert!(deadline_stopped.dispatch.is_some());
+    assert_eq!(deadline_stopped.turn_id, None);
+    assert_eq!(deadline_stopped.observation, None);
+    assert!(
+        deadline_stopped
+            .pre_dispatch_stop
+            .as_deref()
+            .is_some_and(|reason| { reason.contains("deadline elapsed before effect entry") })
+    );
+
+    // An authoritative owner cancellation is independent of the local token.
+    // Issue it while final owner revalidation is suspended after the
+    // intelligence run has reached Dispatched; physical turn/start must stop.
+    host.seed_verified_memory(
+        "worker-owner-cancel",
+        "verified papaya owner cancellation marker",
+    )
+    .await?;
+    let owner = AgentdClient::new(
+        host.control_socket().to_path_buf(),
+        host.agent_id().clone(),
+        1,
+    )?;
+    let owner_status = owner
+        .run_status_observed("worker-owner-cancel".to_string())
+        .await?;
+    assert!(owner_status.run.is_none());
+    let owner_generation = owner_status.current_generation;
+    assert_ne!(
+        owner_generation, 1,
+        "Running has a distinct lifecycle epoch"
+    );
+    let owner_deadline = unix_time_ms()? + 60_000;
+    let mut owner_fence_material = b"hepta:agentd:objective-fence:v1\0".to_vec();
+    owner_fence_material.extend_from_slice(host.agent_id().as_str().as_bytes());
+    owner_fence_material.extend_from_slice(&1_u64.to_be_bytes());
+    owner_fence_material.extend_from_slice(&owner_generation.to_be_bytes());
+    let owner_fence_digest = Digest32::of_bytes(&owner_fence_material).to_string();
+    let owner_snapshot = codex_hepta_agentd::AgentRunSnapshot {
+        run_id: "worker-owner-cancel".to_string(),
+        request_digest: "1".repeat(64),
+        objective_digest: "2".repeat(64),
+        body_digest: "3".repeat(64),
+        artifact_set_digest: "4".repeat(64),
+        authority_epoch: 1,
+        generation: owner_generation,
+        fence_digest: owner_fence_digest.clone(),
+        deadline_ms: owner_deadline,
+    };
+    let admitted = owner.run_start(owner_snapshot).await?;
+    let attached = owner
+        .run_attach_context(
+            admitted.revision,
+            codex_hepta_agentd::AgentContextAttachment {
+                run_id: "worker-owner-cancel".to_string(),
+                request_digest: "1".repeat(64),
+                objective_digest: "2".repeat(64),
+                body_digest: "3".repeat(64),
+                artifact_set_digest: "4".repeat(64),
+                authority_epoch: 1,
+                generation: owner_generation,
+                fence_digest: owner_fence_digest,
+                deadline_ms: owner_deadline,
+                context_digest: "6".repeat(64),
+                compilation_receipt_digest: "7".repeat(64),
+            },
+        )
+        .await?;
+    let owner_cancel_hook = Arc::new(FinalRevalidationTestHook {
+        reached: tokio::sync::Notify::new(),
+        release: tokio::sync::Notify::new(),
+    });
+    install_final_revalidation_test_hook(Arc::clone(&owner_cancel_hook));
+    let local_token = CancellationToken::new();
+    let owner_cancel_worker = driver.run_intelligence(
+        &mut durable,
+        NativeAdmission {
+            request_id: "worker-owner-cancel".to_string(),
+            maximum_in_flight: 1,
+        },
+        "answer until the owner cancels".to_string(),
+        /*context_query*/ None,
+        NativeIntelligenceRunBinding {
+            run_id: "worker-owner-cancel".to_string(),
+            expected_revision: attached.revision,
+            context_digest: "6".repeat(64),
+            envelope_digest: "7".repeat(64),
+        },
+        &local_token,
+    );
+    let cancel_at_owner = async {
+        owner_cancel_hook.reached.notified().await;
+        let run = owner
+            .run_status("worker-owner-cancel".to_string())
+            .await?
+            .ok_or("missing dispatched owner cancellation run")?;
+        assert_eq!(run.phase, AgentRunPhase::Dispatched);
+        let cancelled = owner
+            .run_cancel(
+                run.run_id,
+                run.revision,
+                "operator cancellation".to_string(),
+            )
+            .await;
+        owner_cancel_hook.release.notify_one();
+        Ok::<_, Box<dyn std::error::Error + Send + Sync>>(cancelled?)
+    };
+    let (cancelled_result, owner_cancellation) =
+        tokio::time::timeout(Duration::from_secs(15), async {
+            tokio::join!(owner_cancel_worker, cancel_at_owner)
+        })
+        .await?;
+    owner_cancellation?;
+    assert!(!local_token.is_cancelled());
+    assert!(cancelled_result.is_err());
+    let owner_cancel_stopped = durable
+        .native_record("worker-owner-cancel")
+        .cloned()
+        .ok_or("missing durable owner-cancelled pre-effect record")?;
+    assert_eq!(owner_cancel_stopped.state, NativeReservationState::Released);
+    assert_eq!(owner_cancel_stopped.turn_id, None);
+    assert_eq!(owner_cancel_stopped.observation, None);
+    assert_eq!(
+        owner_cancel_stopped.pre_dispatch_stop.as_deref(),
+        Some(LOCAL_CANCELLED)
+    );
+
     let physical_provider_requests = server.received_requests().await.unwrap_or_default();
     assert_eq!(
         physical_provider_requests
@@ -645,6 +973,14 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     assert_eq!(
         reopened.native_record(CORRECTION_REQUEST_ID),
         Some(&correction_stopped)
+    );
+    assert_eq!(
+        reopened.native_record("cognitive-final-use-deadline"),
+        Some(&deadline_stopped)
+    );
+    assert_eq!(
+        reopened.native_record("worker-owner-cancel"),
+        Some(&owner_cancel_stopped)
     );
     drop(reopened);
     let _ = std::fs::remove_file(&journal);

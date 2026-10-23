@@ -3,8 +3,8 @@
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
-use sha2::Digest;
-use sha2::Sha256;
+use codex_hepta_types::IdProfileV1;
+use codex_hepta_types::StableId;
 use tokio_util::sync::CancellationToken;
 
 use super::AppServerModelDriver;
@@ -20,15 +20,13 @@ pub struct NativeAdmission {
     pub maximum_in_flight: usize,
 }
 
-/// Exact Agentd intelligence handoff that must already be attached before a
-/// physical App Server turn can start.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct NativeIntelligenceRunBinding {
-    pub run_id: String,
-    pub expected_revision: u64,
-    pub context_digest: String,
-    pub envelope_digest: String,
-}
+pub use super::input::NativeIntelligenceRunBinding;
+use super::input::bounded_diagnostic;
+pub(super) use super::input::digest;
+use super::input::native_source_payload_digest;
+use super::input::validate_native_composition;
+use super::recovery::preserve_recovery_evidence;
+use super::recovery::reconcile_with_cancellation;
 
 impl AppServerModelDriver {
     /// Reserves before any provider call, journals dispatch before `turn/start`,
@@ -93,6 +91,8 @@ impl AppServerModelDriver {
         {
             return Err("context query must contain 1..2048 bytes".into());
         }
+        validate_native_composition(&context_query, intelligence)?;
+        StableId::with_profile(&admission.request_id, IdProfileV1::Stable)?;
         let request = NativeRequest {
             request_id: admission.request_id,
             principal_id: self.config.agent_id.to_string(),
@@ -125,20 +125,34 @@ impl AppServerModelDriver {
             {
                 return Ok(output.clone());
             }
-            if let Some(reconciled) = self.reconcile_existing(&record, &prompt).await? {
+            let (record, recovery) = reconcile_with_cancellation(
+                control,
+                &record.request.request_id,
+                cancellation,
+                |record| async move {
+                    self.reconcile_existing(&record, &prompt, intelligence, cancellation)
+                        .await
+                },
+            )
+            .await?;
+            if let Some(reconciled) = recovery {
                 let settled = control.settle_native(&record.request.request_id, reconciled)?;
                 return settled.observation.ok_or_else(|| {
                     "durable reconciliation omitted its normalized observation".into()
                 });
             }
-            if let Some(output) = record.observation {
-                return Ok(output);
+            if let Some(mut output) = record.observation.clone() {
+                preserve_recovery_evidence(&record, &mut output)?;
+                let settled = control.settle_native(&record.request.request_id, output)?;
+                return settled.observation.ok_or_else(|| {
+                    "durable recovery fallback omitted its normalized observation".into()
+                });
             }
             let dispatch = record
                 .dispatch
                 .as_ref()
                 .ok_or("missing durable dispatch binding")?;
-            let output = NativeRunOutput {
+            let mut output = NativeRunOutput {
                 thread_id: dispatch.thread_id.clone(),
                 turn_id: record.turn_id.clone().unwrap_or_default(),
                 model: record.request.model.clone(),
@@ -155,6 +169,7 @@ impl AppServerModelDriver {
                 ),
                 codex_terminal_correlation_digest: None,
             };
+            preserve_recovery_evidence(&record, &mut output)?;
             control.settle_native(&record.request.request_id, output.clone())?;
             return Ok(output);
         }
@@ -185,47 +200,13 @@ impl AppServerModelDriver {
                     .is_some_and(|record| record.state == NativeReservationState::Reserved)
                 {
                     // Only Reserved proves turn/start could not have happened.
-                    let reason: String = error.to_string().chars().take(1024).collect();
+                    let reason = bounded_diagnostic(format_args!("{error}"));
                     control.stop_native_before_dispatch(&request_id, reason)?;
                 }
                 Err(error)
             }
         }
     }
-}
-
-fn native_source_payload_digest(
-    prompt: &str,
-    context_query: &Option<String>,
-    socket: &std::path::Path,
-    timeout_ms: u128,
-    intelligence: Option<&NativeIntelligenceRunBinding>,
-) -> Result<String> {
-    let bytes = match intelligence {
-        None => serde_json::to_vec(&(
-            "hepta.native-request.v1",
-            prompt,
-            context_query,
-            socket,
-            timeout_ms,
-        ))?,
-        Some(binding) => serde_json::to_vec(&(
-            "hepta.native-intelligence-request.v2",
-            prompt,
-            context_query,
-            socket,
-            timeout_ms,
-            &binding.run_id,
-            binding.expected_revision,
-            &binding.context_digest,
-            &binding.envelope_digest,
-        ))?,
-    };
-    Ok(digest(&bytes))
-}
-
-pub(super) fn digest(bytes: &[u8]) -> String {
-    format!("{:x}", Sha256::digest(bytes))
 }
 
 #[cfg(test)]

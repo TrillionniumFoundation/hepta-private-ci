@@ -164,6 +164,57 @@ async fn forged_grant_never_reaches_effect_entry() -> Result<()> {
 }
 
 #[tokio::test]
+async fn invalid_binding_is_rejected_before_contacting_issuer() -> Result<()> {
+    let directory = tempfile::tempdir()?;
+    let signer = SigningKey::from_bytes(&[47; 32]);
+    let authorizer = UnixFinalUseAuthorizer::from_config(config(
+        directory.path(),
+        directory.path().join("absent-issuer.sock"),
+        signer.verifying_key().to_bytes(),
+    ))?;
+    for invalid_field in 0..6 {
+        let mut invalid = binding(11);
+        match invalid_field {
+            0 => invalid.subject_id = "a".repeat(129),
+            1 => invalid.destination_id = "b".repeat(129),
+            2 => invalid.subject_id = "agent#invalid".to_string(),
+            3 => invalid.request_sha256 = [0; 32],
+            4 => invalid.scope_sha256 = [0; 32],
+            5 => invalid.payload_sha256 = [0; 32],
+            _ => unreachable!(),
+        }
+        let error = authorizer
+            .request_grant(&invalid)
+            .await
+            .expect_err("invalid binding must be rejected");
+        if error.to_string() != "invalid final-use binding" {
+            return Err("invalid binding reached issuer socket validation".into());
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn kernel_slash_identifier_profile_remains_accepted() -> Result<()> {
+    let mut expected = binding(11);
+    expected.subject_id = "agent/1".to_string();
+    expected.destination_id = "provider/native".to_string();
+    validate_final_use_binding(&expected)?;
+    FinalUseGrant {
+        schema_version: 1,
+        signer_id: "authority-owner".to_string(),
+        authority_epoch: 9,
+        grant_id: "grant-slash-profile".to_string(),
+        nonce: [12; 32],
+        binding: expected,
+        not_before_unix_ms: 0,
+        expires_at_unix_ms: 60_000,
+    }
+    .signing_bytes()?;
+    Ok(())
+}
+
+#[tokio::test]
 async fn endpoint_denial_updates_head_and_old_head_cannot_roll_back() -> Result<()> {
     let directory = tempfile::tempdir()?;
     let (listener, socket) = listener(directory.path(), "revocation.sock").await?;
@@ -211,6 +262,27 @@ fn connected_issuer_peer_uid_must_match_configured_owner() {
         .checked_add(1)
         .unwrap_or_else(|| owner.saturating_sub(1));
     assert!(validate_issuer_peer_uid(other, owner).is_err());
+}
+
+#[test]
+fn fifo_config_without_writer_is_rejected_without_blocking() -> Result<()> {
+    let directory = tempfile::tempdir()?;
+    let fifo = directory.path().join("authority-config.fifo");
+    let status = std::process::Command::new("mkfifo").arg(&fifo).status()?;
+    if !status.success() {
+        return Err("could not create FIFO configuration fixture".into());
+    }
+    let (sender, receiver) = std::sync::mpsc::channel();
+    let reader = std::thread::spawn(move || {
+        let _ = sender.send(read_private_config(&fifo).is_err());
+    });
+    if !receiver.recv_timeout(Duration::from_secs(1))? {
+        return Err("FIFO configuration was accepted".into());
+    }
+    reader
+        .join()
+        .map_err(|_| "FIFO configuration reader panicked")?;
+    Ok(())
 }
 
 /// Bounded test issuer over the production Unix protocol. Only this separate

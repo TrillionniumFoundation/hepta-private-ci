@@ -45,6 +45,15 @@ use crate::MemoryFederationScopeKind;
 use crate::ObjectiveStartOutcome;
 use crate::SessionIngress;
 
+/// A typed run response together with its owning Agentd's observed lifecycle epoch.
+/// This is an observation, not a grant of execution authority.
+pub struct AgentRunObservation<T> {
+    pub current_generation: u64,
+    pub run: T,
+}
+
+pub type AgentRunStatusObservation = AgentRunObservation<Option<AgentRunReceipt>>;
+
 pub struct AgentdClient {
     socket_path: PathBuf,
     expected_agent_id: AgentId,
@@ -409,7 +418,22 @@ impl AgentdClient {
         phase: AgentRunPhase,
         terminal_observed: bool,
     ) -> Result<AgentRunReceipt, AgentdError> {
-        match self
+        Ok(self
+            .run_observe_terminal_observed(run_id, expected_revision, phase, terminal_observed)
+            .await?
+            .run)
+    }
+
+    /// Retain the lifecycle epoch from the same terminal settlement response.
+    /// A historical physical terminal may commit while its owner is draining.
+    pub async fn run_observe_terminal_observed(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+        phase: AgentRunPhase,
+        terminal_observed: bool,
+    ) -> Result<AgentRunObservation<AgentRunReceipt>, AgentdError> {
+        let response = self
             .send(AgentdRequest::run_observe_terminal(
                 self.request_id(),
                 self.spawn_generation,
@@ -418,27 +442,52 @@ impl AgentdClient {
                 phase,
                 terminal_observed,
             ))
-            .await?
-            .payload
-        {
-            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            .await?;
+        match response.payload {
+            AgentdPayload::RunReceipt(receipt) => {
+                self.observe_run(response.current_generation, receipt)
+            }
             payload => unexpected(payload),
         }
     }
 
     pub async fn run_status(&self, run_id: String) -> Result<Option<AgentRunReceipt>, AgentdError> {
-        match self
+        Ok(self.run_status_observed(run_id).await?.run)
+    }
+
+    /// Observe the run and lifecycle generation from the same validated control
+    /// response. The client transport remains bound to its process spawn.
+    pub async fn run_status_observed(
+        &self,
+        run_id: String,
+    ) -> Result<AgentRunStatusObservation, AgentdError> {
+        let response = self
             .send(AgentdRequest::run_status(
                 self.request_id(),
                 self.spawn_generation,
                 run_id,
             ))
-            .await?
-            .payload
-        {
-            AgentdPayload::RunStatus { run } => Ok(run),
+            .await?;
+        match response.payload {
+            AgentdPayload::RunStatus { run } => self.observe_run(response.current_generation, run),
             payload => unexpected(payload),
         }
+    }
+
+    fn observe_run<T>(
+        &self,
+        current_generation: u64,
+        run: T,
+    ) -> Result<AgentRunObservation<T>, AgentdError> {
+        if current_generation < self.spawn_generation {
+            return Err(AgentdError::Protocol(
+                "observed Agentd lifecycle generation precedes its process spawn".to_string(),
+            ));
+        }
+        Ok(AgentRunObservation {
+            current_generation,
+            run,
+        })
     }
 
     pub async fn run_release_closed(

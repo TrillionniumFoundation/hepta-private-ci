@@ -53,7 +53,9 @@ async fn signed_evaluation_completes_existing_owner_preparation_and_run_admissio
         .expect("runner")
         .with_evaluation_trust(trust)
         .expect("host-root trust");
-    let mut coordinator = product_test_coordinator();
+    let mut composition = product_test_coordinator().composition().clone();
+    composition.supervisor_generation = 2;
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition).expect("running owner");
     let outcome = runner
         .prepare_and_admit(&mut coordinator, value.request, value.inputs)
         .await
@@ -69,6 +71,27 @@ async fn signed_evaluation_completes_existing_owner_preparation_and_run_admissio
     assert!(!prepared.envelope.authority.grants_any());
     assert_eq!(run_receipt.run_id, prepared.run_snapshot().run_id);
     assert_eq!(run_receipt.phase, crate::RunPhase::ContextAttached);
+    // Fixed SHA-256 oracle for the objective-fence v1 domain, agent.product,
+    // process spawn 1, and independently promoted lifecycle generation 2.
+    let fence = "8a52087cdc1ffae0741a1d8a1c4a85132d9e6a6391f94d3046f1c467d8c71321";
+    assert_eq!(
+        (
+            prepared.run_snapshot().generation,
+            prepared.run_snapshot().fence_digest,
+            prepared.context_attachment().generation,
+            prepared.context_attachment().fence_digest,
+            run_receipt.generation,
+            run_receipt.fence_digest,
+        ),
+        (
+            2,
+            fence.to_string(),
+            2,
+            fence.to_string(),
+            2,
+            fence.to_string()
+        )
+    );
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
