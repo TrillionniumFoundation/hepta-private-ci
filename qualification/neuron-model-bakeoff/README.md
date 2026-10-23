@@ -39,6 +39,42 @@ For the two embedding models, `run_heads.py` supports `train`, `calibrate`, and 
 
 The JSONL dataset requires `case_id`, `group_id`, `split`, `state`, `question`, `labels` (ordered strings), `label`, `language`, `task_family`, `ood` (boolean), and optionally `criteria` (label-to-description map). Every split is mandatory; group IDs must not appear in multiple splits. Every prediction must bind its actual selected calibration SHA256; Encoder Head predictions also bind the trained Head SHA256. The stage-3 head training manifest requires `steps`, `batch_size`, `examples_seen`, `seed`, `target_dim=256`, `optimizer_sha256`, and `training_dataset_sha256` computed over canonical sorted train rows. The Head *must not* read gold labels during eval.
 
+## Phase 5: mandatory raw target-host request spans
+
+The resource verifier previously accepted a summary with arbitrary p99,
+throughput and `execution_kind=observed-real-model`. That is **not** a
+physical measurement. The tightened gate now requires a SHA256-referenced
+**JSONL raw trace per arm and scale**. Every declared logical Cell must
+appear with its own `cell_id`; requests must be at least `max(100, scale)`.
+The model must remain bound to the evaluated weights digest and the exact
+host/device identity. Summary request count, queue-inclusive p95/p99,
+throughput, load duration, process RSS peak, optional CUDA GPU memory and
+observed in-flight concurrency are all **recomputed** from raw records.
+Summary-only, incomplete Cell coverage, forged p99, missing CUDA memory or
+model-identity drift fail the contract gate.
+
+Each workload row additionally includes `device`, `model_weights_sha256`,
+`load_started_ns`, `load_completed_ns`, `peak_gpu_bytes`, and
+`trace: {"path": "...", "sha256": "..."}`. Each raw JSONL record contains
+`request_id`, `cell_id`, `arm`, `host_id`, `device`,
+`model_weights_sha256`, `submitted_ns`, `started_ns`,
+`completed_ns`, `rss_bytes`, `gpu_peak_bytes`.
+Timestamps are monotonic nanoseconds on the same measured host.
+`submitted_ns` must be recorded before queuing, `started_ns` when a
+worker actually starts the request, and `completed_ns` after real model
+completion. Do not submit client-only loopback timestamps as server
+admission evidence. All 20 arm/scale combinations are required.
+Source-only fixtures include synthetic timestamps strictly to test
+**rejection behavior** and provide no physical-host qualification.
+
+Raw JSONL remains a producer claim. An independently provisioned worker,
+signed model-load receipt, trusted host telemetry custody, reproducible
+weight inventory, real Artifact CAS/CNS/Supervisor/Final-use lifecycle
+and independent operator acceptance are still **OPEN**. The report
+always includes `independent_acceptance=false`,
+`all_blockers_closed=false` and `production_activation_allowed=false`;
+even correct trace math cannot grant authorization or promotion.
+
 ## Independent verifier / evidence format
 
 `bakeoff.py` uses only the Python standard library and an external system `openssl` binary for Ed25519 verification:
