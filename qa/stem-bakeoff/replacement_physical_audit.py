@@ -128,6 +128,36 @@ def audit_arm(name: str, result: Any, spec: dict) -> list[str]:
                 or not _finite(perf.get("raw_forward_throughput_per_second"))
                 or perf["raw_forward_throughput_per_second"] <= 0):
             errors.append(f"{name}: raw full-CPU forward timing sample/identity missing")
+    # Pinned upstream Agent can normalize tokenizer_config.json in place.
+    # A complete Laya shadow receipt must disclose its private compatibility
+    # view and must never silently attribute rewritten bytes to the publisher.
+    compat = perf.get("laya_tokenizer_compat") if isinstance(perf, dict) else None
+    if name.startswith("laya_"):
+        expected_keys = {"isolation", "original_tokenizer_inventory_sha256",
+                         "effective_tokenizer_inventory_sha256",
+                         "original_tokenizer_config_sha256",
+                         "effective_tokenizer_config_sha256",
+                         "registered_config_rewrite", "original_weight_sha256",
+                         "no_original_snapshot_mutation_observed"}
+        if not isinstance(compat, dict) or set(compat) != expected_keys:
+            errors.append(f"{name}: missing isolated Laya tokenizer compatibility receipt")
+        elif (
+            compat["isolation"] != "private_tokenizer_copy_original_weight_symlink"
+            or compat["original_weight_sha256"] != spec["weight_sha256"]
+            or not _sha(compat["original_tokenizer_inventory_sha256"])
+            or not _sha(compat["effective_tokenizer_inventory_sha256"])
+            or any(value is not None and not _sha(value)
+                   for value in (compat["original_tokenizer_config_sha256"],
+                                 compat["effective_tokenizer_config_sha256"]))
+            or type(compat["registered_config_rewrite"]) is not bool
+            or compat["registered_config_rewrite"] !=
+               (compat["original_tokenizer_inventory_sha256"] !=
+                compat["effective_tokenizer_inventory_sha256"])
+            or compat["no_original_snapshot_mutation_observed"] is not True
+        ):
+            errors.append(f"{name}: inconsistent tokenizer rewrite or original-weight identity")
+    elif compat is not None:
+        errors.append(f"{name}: non-Laya Encoder must not claim Laya tokenizer compatibility")
     limits = result["limits"]
     if (not isinstance(limits, dict)
             or limits.get("historical_2014_dataset") is not True
