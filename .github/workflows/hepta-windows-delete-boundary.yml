@@ -48,7 +48,7 @@ jobs:
           set -euo pipefail
           test ! -e "$RUNNER_TEMP/windows-delete-boundary"
           mkdir -p "$RUNNER_TEMP/windows-delete-boundary"
-          printf 'Three existing native Windows deletion-boundary regressions, four native private-state mechanism probes, five read-only owner-descriptor controls, all eight current ACL unit controls, a test-only full-restriction token candidate, and three read-only same-handle local-NTFS controls. Real remote-device rejection remains a C2b acceptance gap. AccessCheck output is diagnostic; original deletion assertions determine success. Candidate success does not admit a production sandbox. Mechanism and descriptor control success does not establish Windows private-state owner support, parent or volume admission, power-loss durability, whole-project or PoN qualification.\n' > "$RUNNER_TEMP/windows-delete-boundary/SCOPE.txt"
+          printf 'Three existing native Windows deletion-boundary regressions, four native private-state mechanism probes, five read-only owner-descriptor controls, all eight current ACL unit controls, a test-only full-restriction token candidate, three read-only same-handle local-NTFS controls, and four live effective-token continuity controls. Real remote-device rejection remains a C2b acceptance gap. AccessCheck output is diagnostic; original deletion assertions determine success. Candidate success does not admit a production sandbox. Mechanism and descriptor control success does not establish Windows private-state owner support, parent or volume admission, power-loss durability, whole-project or PoN qualification.\n' > "$RUNNER_TEMP/windows-delete-boundary/SCOPE.txt"
           git config --global core.autocrlf false
           git config --global core.longpaths true
           printf 'CARGO_TARGET_DIR=%s/windows-delete-boundary-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
@@ -111,7 +111,7 @@ jobs:
               "security::tests::native_readback_parser_rejects_altered_forms_and_every_truncation",
               "security::tests::native_unqueryable_thread_token_never_falls_back_to_process_user",
           )
-          required = ("partial-delete-deny", "broad-identity-delete", "legacy-delete-boundary", *probes, "acl-unit-controls", "private-owner-descriptor", "full-restriction-candidate", "private-local-ntfs")
+          required = ("partial-delete-deny", "broad-identity-delete", "legacy-delete-boundary", *probes, "acl-unit-controls", "private-owner-descriptor", "full-restriction-candidate", "private-local-ntfs", "private-principal-continuity")
           if sys.argv[1] == "tests":
               name, minimum = sys.argv[2], int(sys.argv[3])
               assert name in required, "unknown native test receipt"
@@ -146,6 +146,17 @@ jobs:
                   runs = re.findall(r"Summary[^\n]*?(\d+) tests? run:", text)
                   ok = ok and minimum == passed == len(owner_selectors) and runs[-1:] == [str(len(owner_selectors))] and all(observed.values())
                   proof = {"test_package": "codex-utils-windows-private-state", "required_test_names_observed": observed, "owner_supported": False, "power_loss_qualified": False}
+              elif name == "private-principal-continuity":
+                  selectors = (
+                      "native_same_effective_token_revalidates",
+                      "native_same_sid_replacement_is_refused_and_cannot_revive",
+                      "native_held_token_modification_is_refused",
+                      "native_degraded_and_unqueryable_thread_tokens_never_fall_back",
+                  )
+                  observed = {selector: re.search(r"^test " + re.escape(selector) + r" \.\.\. ok\s*$", text, re.MULTILINE) is not None for selector in selectors}
+                  runs = re.findall(r"Summary[^\n]*?(\d+) tests? run:", text)
+                  ok = ok and minimum == passed == 4 and runs == ["4"] and all(observed.values())
+                  proof = {"test_target": "native_principal", "required_test_names_observed": observed, "owner_supported": False, "trusted_parent": False, "power_loss_qualified": False}
               elif name == "private-local-ntfs":
                   selectors = (
                       "native_local_ntfs_file_and_directory_report_same_volume",
@@ -245,6 +256,14 @@ jobs:
           codes="${PIPESTATUS[*]}"
           set -e
           python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests private-owner-descriptor 5 "$codes"
+      - name: Run four live effective-token native continuity controls
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: |
+          set +e
+          just test --locked -p codex-utils-windows-private-state --test native_principal --test-threads 1 --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-delete-boundary/private-principal-continuity.log"
+          codes="${PIPESTATUS[*]}"
+          set -e
+          python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests private-principal-continuity 4 "$codes"
       - name: Run three read-only same-handle native local-NTFS controls
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
         run: |
@@ -325,7 +344,7 @@ jobs:
           codes="${PIPESTATUS[*]}"
           set -e
           python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests acl-unit-controls 8 "$codes"
-      - name: Require unchanged source and all eleven completed Windows result receipts
+      - name: Require unchanged source and all twelve completed Windows result receipts
         if: ${{ always() && steps.source.outcome == 'success' }}
         run: python "$RUNNER_TEMP/windows-delete-boundary/check.py" source after
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

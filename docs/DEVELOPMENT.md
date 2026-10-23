@@ -898,6 +898,18 @@ remain proposed contracts, not implemented APIs.
 | C4: registry and real runtime caller | `hepta-prompt-registry` consumes lock, bounded mutable payload/journal, input and stage roles. Fleet/Agentd passes qualified home/run guards and converts the actual `prompt-runtime` store as well.                                                                               | Depends on C2b and the existing owner integration order. Retain [registry V3 and recovery rules](modules/prompt.registry/TECHNICAL.md#native-storage-v3-immutable-payload-extents); Windows permission/sync no-ops cannot qualify the pipeline.       |
 | C5: existing native qualification    | The existing Windows workflow and four native shards test source-head and base-merge candidates and the original consumer suites.                                                                                                                                                  | After the corresponding implementations, require complete native receipts, lock/process-death, recovery and controlled-run evidence. Safe mechanisms alone do not close sandbox isolation, power-loss persistence or whole-project qualification.     |
 
+The next existing C2b primitive is `CapturedPrincipal::capture_effective` plus
+`revalidate_effective`: it retains only a query handle to the actual effective
+token and compares kernel-read token instance, modification and authentication
+IDs, token type, usable impersonation level and the bounded original SID. Thread
+tokens take precedence; only `ERROR_NO_TOKEN` permits process-token fallback.
+Any error or drift permanently refuses that observation. Its four mandatory
+native controls cover unchanged context, same-SID token replacement, actual token
+modification and degraded/unqueryable impersonation. Cross-compilation is
+`NOT_NATIVE`; this primitive supplies no namespace, private owner, funding,
+restart authority or production sandbox qualification. The existing setup helper
+still needs the create-only held-parent/profile/checkpoint producer below.
+
 C2b must derive provenance from actual held kernel objects. Agentd currently
 derives `prompt-registry` from `identity.home_root` and `prompt-runtime` from
 `identity.run_root`; Fleet registration and canonical path spelling do not prove
