@@ -1,0 +1,39 @@
+{
+  "after_feedback_0": "image",
+  "after_feedback_1": "witness",
+  "comparisons": {
+    "dynamic": {
+      "any_refinement_rate": 0.9999999999999973,
+      "cvar90_external_loss": 0.42141808588799956,
+      "mean_external_loss": 0.10225626239999955,
+      "mean_symbolic_cost_units": 5.999999999999988,
+      "models_are_synthetic": true,
+      "solver_states": 816,
+      "terminal_coverage": 0.9999999999999973,
+      "witness_query_rate": 0.31801599999999947
+    },
+    "myopic": {
+      "any_refinement_rate": 0.9999999999999973,
+      "cvar90_external_loss": 0.42141808588799956,
+      "mean_external_loss": 0.10225626239999955,
+      "mean_symbolic_cost_units": 5.999999999999988,
+      "models_are_synthetic": true,
+      "solver_states": 0,
+      "terminal_coverage": 0.9999999999999973,
+      "witness_query_rate": 0.31801599999999947
+    },
+    "static": {
+      "any_refinement_rate": 1.0000000000000016,
+      "cvar90_external_loss": 0.43241159999999973,
+      "mean_external_loss": 0.10259999999999997,
+      "mean_symbolic_cost_units": 6.0,
+      "models_are_synthetic": true,
+      "solver_states": 0,
+      "terminal_coverage": 1.0000000000000016,
+      "witness_query_rate": 0.0
+    }
+  },
+  "no_natural_or_continuation_claim": true,
+  "root_action": "video",
+  "scope": "exploratory_synthetic_selective_query"
+}

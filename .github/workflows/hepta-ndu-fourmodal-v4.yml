@@ -1,0 +1,47 @@
+name: Hepta NDU four-modal finite portfolio v4
+on:
+  pull_request:
+    paths:
+      - "experiments/multimodal_output_portfolio/v4/**"
+      - ".github/workflows/hepta-ndu-fourmodal-v4.yml"
+  workflow_dispatch:
+jobs:
+  finite-portfolio:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Independent finite, adversarial and credit-attribution tests
+        run: python -m unittest discover -s experiments/multimodal_output_portfolio/v4 -p "test_*.py" -v
+      - name: Deterministic research-only evidence replay
+        run: |
+          python experiments/multimodal_output_portfolio/v4/run_experiment.py > /tmp/v4-evidence.json
+          python - <<'PY'
+          import json
+          with open("/tmp/v4-evidence.json", encoding="utf-8") as f:
+              x = json.load(f)
+          assert x["evidence_level"] == "exploratory_synthetic_only"
+          assert set(x["comparisons"]) == {
+              f"{s}/{m}" for s in ("nominal", "shared_cause_shift")
+              for m in ("dynamic", "static", "myopic")
+          }
+          for v in x["comparisons"].values():
+              assert abs(v["terminal_coverage"] - 1) < 1e-8
+              assert 4 <= v["mean_symbolic_cost_units"] <= 6.00001
+          PY
+      - name: Exploratory selective-witness feedback replay
+        run: |
+          python experiments/multimodal_output_portfolio/v4/run_selective_witness.py > /tmp/v4-witness.json
+          python - <<'PY'
+          import json
+          with open("/tmp/v4-witness.json", encoding="utf-8") as f:
+              x = json.load(f)
+          assert x["scope"] == "exploratory_synthetic_selective_query"
+          assert x["after_feedback_0"] != x["after_feedback_1"]
+          assert 0 < x["comparisons"]["dynamic"]["witness_query_rate"] < 1
+          assert x["no_natural_or_continuation_claim"] is True
+          PY
