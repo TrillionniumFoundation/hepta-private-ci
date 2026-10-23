@@ -163,7 +163,6 @@ def check_cohort(candidate, history, *, max_hamming=4, require_complete_history=
             "scope": "source_id/byte/RGB/dHash only; entity and pretraining claims remain unproven"}
 
 
-
 def validate_output_destination(output, input_paths):
     """Never overwrite frozen source evidence, including aliases or links.
 
