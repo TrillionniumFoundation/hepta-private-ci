@@ -1,0 +1,102 @@
+cargo clippy --tests {args}
+    Checking codex-hepta-contracts v0.0.0 (/workspace/pr3567-lock-diagnostic/codex-rs/hepta-contracts)
+    Checking codex-execution-core v0.0.0 (/workspace/pr3567-lock-diagnostic/codex-rs/execution-core)
+warning: `tokio::sync::MutexGuard` does not refer to a reachable type
+ --> /workspace/pr3567-lock-diagnostic/codex-rs/clippy.toml:4:5
+  |
+4 |     "tokio::sync::MutexGuard",
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: add `allow-invalid = true` to the entry to suppress this warning
+
+warning: `tokio::sync::RwLockReadGuard` does not refer to a reachable type
+ --> /workspace/pr3567-lock-diagnostic/codex-rs/clippy.toml:5:5
+  |
+5 |     "tokio::sync::RwLockReadGuard",
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: add `allow-invalid = true` to the entry to suppress this warning
+
+warning: `tokio::sync::RwLockWriteGuard` does not refer to a reachable type
+ --> /workspace/pr3567-lock-diagnostic/codex-rs/clippy.toml:6:5
+  |
+6 |     "tokio::sync::RwLockWriteGuard",
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: add `allow-invalid = true` to the entry to suppress this warning
+
+error: used `unwrap()` on a `Result` value
+  --> hepta-contracts/src/final_use_nonce_tests.rs:82:42
+   |
+82 |     let (authority, signed, directory) = nonce_fixture().unwrap();
+   |                                          ^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+   = note: requested on the command line with `-D clippy::unwrap-used`
+
+error: used `unwrap()` on a `Result` value
+  --> hepta-contracts/src/final_use_nonce_tests.rs:83:10
+   |
+83 |     drop(authority.claim(&signed, &signed.grant.binding).unwrap());
+   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+error: used `unwrap()` on a `Result` value
+  --> hepta-contracts/src/final_use_nonce_tests.rs:84:5
+   |
+84 | /     std::fs::OpenOptions::new()
+85 | |         .write(true)
+86 | |         .open(directory.path().join("authority.claims"))
+87 | |         .unwrap()
+88 | |         .set_len(length)
+89 | |         .unwrap();
+   | |_________________^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+error: used `unwrap()` on a `Result` value
+  --> hepta-contracts/src/final_use_nonce_tests.rs:84:5
+   |
+84 | /     std::fs::OpenOptions::new()
+85 | |         .write(true)
+86 | |         .open(directory.path().join("authority.claims"))
+87 | |         .unwrap()
+   | |_________________^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+error: used `unwrap()` on a `Result` value
+  --> hepta-contracts/src/final_use_nonce_tests.rs:94:20
+   |
+94 |             .sign(&next.signing_bytes().unwrap())
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+error: used `unwrap_err()` on a `Result` value
+   --> hepta-contracts/src/final_use_nonce_tests.rs:100:9
+    |
+100 |         authority.claim(&signed, &signed.grant.binding).unwrap_err(),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Ok`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+error: used `unwrap_err()` on a `Result` value
+   --> hepta-contracts/src/final_use_nonce_tests.rs:104:9
+    |
+104 |         authority.capacity().unwrap_err(),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Ok`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: `codex-hepta-contracts` (lib test) generated 3 warnings
+error: could not compile `codex-hepta-contracts` (lib test) due to 7 previous errors; 3 warnings emitted
+error: recipe `clippy` failed on line 61 with exit code 101

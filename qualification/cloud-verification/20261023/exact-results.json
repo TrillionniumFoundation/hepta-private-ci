@@ -1,0 +1,143 @@
+{
+  "sha": "3d38cc6e786179661d213e815c9b4f0761b2664a",
+  "tree": "aeb4d8fe15af25e09384135a4238c20acaacf7c1",
+  "time": "2026-10-23T16:04:12.807444+00:00",
+  "results": [
+    {
+      "name": "exact-rust-tests",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-execution-core",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-operations"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "pass": true
+    },
+    {
+      "name": "exact-clippy",
+      "command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-execution-core",
+        "-p",
+        "codex-hepta-contracts",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "pass": true
+    },
+    {
+      "name": "exact-fmt",
+      "command": [
+        "just",
+        "fmt",
+        "--check",
+        "--base",
+        "2f7ae91c4176896d0b9caf9aea75ed3e030a81f8"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "pass": true
+    },
+    {
+      "name": "exact-python-tests",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qualification/native-agent-comparison",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "pass": true
+    },
+    {
+      "name": "exact-ruff-check",
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "check",
+        "qualification/native-agent-comparison"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "pass": true
+    },
+    {
+      "name": "exact-ruff-format",
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "--check",
+        "qualification/native-agent-comparison"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "pass": true
+    },
+    {
+      "name": "exact-python-compile",
+      "command": [
+        "python3",
+        "-m",
+        "compileall",
+        "-q",
+        "qualification/native-agent-comparison"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "pass": true
+    },
+    {
+      "name": "exact-baseline",
+      "command": [
+        "python3",
+        "qualification/native-agent-comparison/compare.py",
+        "qualification/native-agent-comparison/BASELINE.json",
+        "/workspace/verification-3567/empty.json"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "pass": true
+    },
+    {
+      "name": "exact-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "2f7ae91c4176896d0b9caf9aea75ed3e030a81f8",
+        "HEAD"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "pass": true
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+Original checkout /workspace/hepta-private-ci:
+cat AGENTS.md
+git status --short
+git rev-parse HEAD
+git log -3 --oneline
+nproc; free -h; df -h /workspace
+rustup show  # initially absent
+python3 --version
+git remote -v
+git fetch origin 46dc890e40cf5bb7057012e4de756eab73c21351
+git worktree add --detach /workspace/pr3567 46dc890e40cf5bb7057012e4de756eab73c21351
+
+Exact HEAD cwd=/workspace/pr3567:
+cmp /workspace/hepta-private-ci/AGENTS.md AGENTS.md
+python3 -m unittest discover -s qualification/native-agent-comparison -p 'test_*.py' -v
+python3 -m compileall -q qualification/native-agent-comparison
+git diff --check 6a46fba297abf1b641a8637e007595dfd2ad03c8 HEAD
+printf '[]\n' > /workspace/verification-3567/empty.json
+python3 qualification/native-agent-comparison/compare.py qualification/native-agent-comparison/BASELINE.json /workspace/verification-3567/empty.json
+python3 scripts/format.py --base 6a46fba297abf1b641a8637e007595dfd2ad03c8 --check
+# First uv attempt failed because default /home/agent/.cache/uv is read-only.
+export UV_CACHE_DIR=/workspace/uv-cache UV_PROJECT_ENVIRONMENT=/workspace/verification-3567/pyenv
+uv run --frozen --project scripts ruff check qualification/native-agent-comparison
+uv run --frozen --project scripts ruff format --check qualification/native-agent-comparison
+# Reproduce existing lint failures on base's archived files:
+git archive 6a46fba297abf1b641a8637e007595dfd2ad03c8 qualification/native-agent-comparison | tar -x -C /workspace/verification-3567/base-python
+/workspace/verification-3567/pyenv/bin/ruff check /workspace/verification-3567/base-python/qualification/native-agent-comparison
+
+Tool provisioning (no credentials, no shell profile changes):
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /workspace/verification-3567/rustup-init.sh
+RUSTUP_HOME=/workspace/rustup CARGO_HOME=/workspace/cargo sh /workspace/verification-3567/rustup-init.sh -y --no-modify-path --profile minimal --default-toolchain 1.95.0 --component rustfmt --component clippy
+export RUSTUP_HOME=/workspace/rustup CARGO_HOME=/workspace/cargo PATH=/workspace/cargo/bin:$PATH CARGO_BUILD_JOBS=4 CARGO_TARGET_DIR=/workspace/target-3567
+cargo install --locked just cargo-nextest
+# Repo toolchain automatically also installed rust-src.
+# cwd=/workspace/pr3567/codex-rs
+cargo check --locked -p codex-execution-core -p codex-hepta-contracts
+# cwd=/workspace/pr3567
+just clippy --locked -p codex-execution-core -p codex-hepta-contracts -- -D warnings
+
+Diagnostic worktree, NOT exact HEAD (only lock reference disambiguation):
+git worktree add --detach /workspace/pr3567-lock-diagnostic 46dc890e40cf5bb7057012e4de756eab73c21351
+cargo generate-lockfile --offline --manifest-path /workspace/pr3567-lock-diagnostic/codex-rs/Cargo.toml
+# Above failed without changing lock: missing cached libz-rs-sys. Do not use generated replacement lock.
+# Apply retained lock-disambiguation.patch: codex-execution-core dependency sha2 -> sha2 0.10.9.
+# cwd=/workspace/pr3567-lock-diagnostic/codex-rs
+cargo check --locked -p codex-execution-core -p codex-hepta-contracts
+cargo check --locked -p codex-hepta-operations
+# cwd=/workspace/pr3567-lock-diagnostic
+just clippy --locked -p codex-execution-core -p codex-hepta-contracts -- -D warnings
+just fmt
+git diff --check
+curl -fL --max-time 60 https://github.com/bazelbuild/bazel/releases/download/9.0.0/bazel-9.0.0-linux-x86_64 -o /workspace/cargo/bin/bazel
+chmod +x /workspace/cargo/bin/bazel
+# Equivalent to just bazel-lock-update with writable cache overrides; first attempt omitted disk/contents overrides and failed on read-only default cache. Second hit stale crashed Bazel server. Third uses batch + separate output root.
+/workspace/cargo/bin/bazel --output_user_root=/workspace/bazel-output mod deps --lockfile_mode=update --repository_cache=/workspace/bazel-repo-cache
+/workspace/cargo/bin/bazel --output_user_root=/workspace/bazel-output mod deps --lockfile_mode=update --repository_cache=/workspace/bazel-repo-cache --disk_cache=/workspace/bazel-disk-cache --repo_contents_cache=/workspace/bazel-repo-contents-cache
+/workspace/cargo/bin/bazel --batch --output_user_root=/workspace/bazel-output-batch mod deps --lockfile_mode=update --repository_cache=/workspace/bazel-repo-cache --disk_cache=/workspace/bazel-disk-cache --repo_contents_cache=/workspace/bazel-repo-contents-cache
+# Exact HEAD after nextest installed:
+just test --locked -p codex-execution-core -p codex-hepta-contracts
+# Candidate tree:
+just test --locked -p codex-execution-core -p codex-hepta-contracts
+just test --locked -p codex-hepta-operations -E 'test(durable_store::tests)'
+# Remote verification (candidate cwd):
+git fetch origin 2f7ae91c4176896d0b9caf9aea75ed3e030a81f8
+git diff --exit-code 2f7ae91c4176896d0b9caf9aea75ed3e030a81f8 --
+git show -s --format='%H %P %T' 2f7ae91c4176896d0b9caf9aea75ed3e030a81f8
+# GitHub plugin actions: create_branch from exact 46dc890; update_file only codex-rs/Cargo.lock; fetch_file at exact 2f7ae91; create_pull_request draft=true base=fix/native-source-guard-paired-dot-20261023; fetch_commit_workflow_runs on both exact SHAs.

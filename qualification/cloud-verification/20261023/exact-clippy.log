@@ -1,0 +1,27 @@
+cargo clippy --tests {args}
+warning: `tokio::sync::MutexGuard` does not refer to a reachable type
+ --> /workspace/pr3567-lock-diagnostic/codex-rs/clippy.toml:4:5
+  |
+4 |     "tokio::sync::MutexGuard",
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: add `allow-invalid = true` to the entry to suppress this warning
+
+warning: `tokio::sync::RwLockReadGuard` does not refer to a reachable type
+ --> /workspace/pr3567-lock-diagnostic/codex-rs/clippy.toml:5:5
+  |
+5 |     "tokio::sync::RwLockReadGuard",
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: add `allow-invalid = true` to the entry to suppress this warning
+
+warning: `tokio::sync::RwLockWriteGuard` does not refer to a reachable type
+ --> /workspace/pr3567-lock-diagnostic/codex-rs/clippy.toml:6:5
+  |
+6 |     "tokio::sync::RwLockWriteGuard",
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: add `allow-invalid = true` to the entry to suppress this warning
+
+warning: `codex-hepta-contracts` (lib test) generated 3 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.56s

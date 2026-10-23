@@ -1,0 +1,62 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.228` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#assert_cmd@2.1.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.18` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.149` which wasn't produced by cargo metadata
+   Compiling codex-hepta-contracts v0.0.0 (/workspace/pr3567-lock-diagnostic/codex-rs/hepta-contracts)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.34s
+────────────
+ Nextest run ID 23424ae2-205b-4690-9bb3-e3ecf457dc1e with nextest profile: local
+    Starting 1 test across 4 binaries (175 tests skipped)
+  TRY 1 FAIL [   0.023s] (───) codex-hepta-contracts final_use::tests::nonce_tests::truncated_live_log_fences_the_owner_before_another_claim
+  stdout ───
+
+    running 1 test
+    test final_use::tests::nonce_tests::truncated_live_log_fences_the_owner_before_another_claim ... FAILED
+
+    failures:
+
+    failures:
+        final_use::tests::nonce_tests::truncated_live_log_fences_the_owner_before_another_claim
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 174 filtered out; finished in 0.02s
+
+  stderr ───
+
+    thread 'final_use::tests::nonce_tests::truncated_live_log_fences_the_owner_before_another_claim' (34427) panicked at hepta-contracts/src/final_use_nonce_tests.rs:24:57:
+    called `Result::unwrap_err()` on an `Ok` value: VerifiedUseToken([REDACTED])
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 2 FAIL [   0.023s] (1/1) codex-hepta-contracts final_use::tests::nonce_tests::truncated_live_log_fences_the_owner_before_another_claim
+  stdout ───
+
+    running 1 test
+    test final_use::tests::nonce_tests::truncated_live_log_fences_the_owner_before_another_claim ... FAILED
+
+    failures:
+
+    failures:
+        final_use::tests::nonce_tests::truncated_live_log_fences_the_owner_before_another_claim
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 174 filtered out; finished in 0.02s
+
+  stderr ───
+
+    thread 'final_use::tests::nonce_tests::truncated_live_log_fences_the_owner_before_another_claim' (34429) panicked at hepta-contracts/src/final_use_nonce_tests.rs:24:57:
+    called `Result::unwrap_err()` on an `Ok` value: VerifiedUseToken([REDACTED])
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+────────────
+     Summary [   0.048s] 1 test run: 0 passed, 1 failed, 175 skipped
+  TRY 2 FAIL [   0.023s] (1/1) codex-hepta-contracts final_use::tests::nonce_tests::truncated_live_log_fences_the_owner_before_another_claim
+error: test run failed
+error: recipe `test` failed on line 89 with exit code 100

@@ -1,0 +1,30 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#assert_cmd@2.1.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.149` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.18` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.228` which wasn't produced by cargo metadata
+   Compiling codex-hepta-contracts v0.0.0 (/workspace/pr3567-lock-diagnostic/codex-rs/hepta-contracts)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.61s
+────────────
+ Nextest run ID a642e91c-98ff-41e8-946a-44a0468cca39 with nextest profile: local
+    Starting 9 tests across 4 binaries (175 tests skipped)
+        PASS [   0.028s] (1/9) codex-hepta-contracts final_use::tests::nonce_tests::missing_nonce_log_is_not_an_empty_replay_registry
+        PASS [   0.037s] (2/9) codex-hepta-contracts final_use::tests::nonce_tests::malformed_complete_claim_frames_are_rejected
+        PASS [   0.045s] (3/9) codex-hepta-contracts final_use::tests::nonce_tests::external_frontier_rejects_lost_or_changed_claims_on_repeated_reopen
+        PASS [   0.048s] (4/9) codex-hepta-contracts final_use::tests::nonce_tests::epoch_snapshot_never_resurrects_old_grants_from_the_previous_journal
+        PASS [   0.026s] (5/9) codex-hepta-contracts final_use::tests::nonce_tests::revocation_snapshot_keeps_claims_if_old_journal_survives_replacement
+        PASS [   0.018s] (6/9) codex-hepta-contracts final_use::tests::nonce_tests::torn_tail_is_rejected_without_rewriting_the_valid_prefix
+        PASS [   0.044s] (7/9) codex-hepta-contracts final_use::tests::nonce_tests::truncated_live_log_fences_the_owner_before_another_claim
+        PASS [   0.048s] (8/9) codex-hepta-contracts final_use::tests::nonce_tests::unexpected_live_log_growth_fences_the_owner_before_another_claim
+        PASS [   0.540s] (9/9) codex-hepta-contracts final_use::tests::nonce_tests::nonce_claims_append_fixed_records_and_reopen_preserves_consumption
+────────────
+     Summary [   0.569s] 9 tests run: 9 passed, 175 skipped

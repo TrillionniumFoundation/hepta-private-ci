@@ -1,0 +1,5 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+error: cannot update the lock file /workspace/pr3567/codex-rs/Cargo.lock because --locked was passed to prevent this
+help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
+error: command `/workspace/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo '--color=auto' test --manifest-path /workspace/pr3567/codex-rs/Cargo.toml --no-run --message-format json-render-diagnostics --package codex-execution-core --package codex-hepta-contracts --locked` exited with code 101
+error: recipe `test` failed on line 89 with exit code 101

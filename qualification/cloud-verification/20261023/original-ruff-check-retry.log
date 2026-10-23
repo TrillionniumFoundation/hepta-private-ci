@@ -1,0 +1,30 @@
+Using CPython 3.12.14 interpreter at: /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3
+Creating virtual environment at: /workspace/verification-3567/pyenv
+Downloading ruff (10.9MiB)
+ Downloaded ruff
+Installed 1 package in 10ms
+E731 Do not assign a `lambda` expression, use a `def`
+ --> qualification/native-agent-comparison/test_cell_split.py:7:5
+  |
+6 | def fixture():
+7 |     h = lambda i: f"{i:064x}"
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+8 |     tasks = [{"id": f"old-{i}", "family": "old", "group": "old", "split": "test", "seed": i,
+9 |               "fixture_digest": h(i+10), "oracle_digest": h(i+20)} for i in range(2)]
+  |
+help: Rewrite `h` as a `def`
+
+E731 Do not assign a `lambda` expression, use a `def`
+  --> qualification/native-agent-comparison/test_source_guard.py:40:9
+   |
+38 |                           "tree": git(root, "rev-parse", "HEAD^{tree}")}
+39 |             self.paths[name] = str(root)
+40 |         digest = lambda n: f"{n:064x}"
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+41 |         self.base = {
+42 |             "schema": "hepta.native-abc.v1", "sources": pins,
+   |
+help: Rewrite `digest` as a `def`
+
+Found 2 errors.
+No fixes available (2 hidden fixes can be enabled with the `--unsafe-fixes` option).

@@ -1,0 +1,132 @@
+cargo clippy --tests {args}
+ Downloading crates ...
+  Downloaded predicates-tree v1.0.12
+  Downloaded predicates-core v1.0.9
+  Downloaded difflib v0.4.0
+  Downloaded predicates v3.1.3
+  Downloaded diff v0.1.13
+  Downloaded pretty_assertions v1.4.1
+  Downloaded assert_cmd v2.1.2
+  Downloaded termtree v0.5.1
+  Downloaded regex-automata v0.4.13
+  Downloaded tokio v1.52.3
+  Downloaded wait-timeout v0.2.1
+  Downloaded thiserror-impl v2.0.18
+  Downloaded thiserror v2.0.18
+  Downloaded winnow v0.7.14
+  Downloaded indexmap v2.14.0
+  Downloaded toml_writer v1.0.6+spec-1.1.0
+  Downloaded toml v0.9.11+spec-1.1.0
+  Downloaded pin-project-lite v0.2.16
+  Downloaded toml_datetime v0.7.5+spec-1.1.0
+  Downloaded anstyle v1.0.13
+  Downloaded yansi v1.0.1
+  Downloaded bstr v1.12.1
+   Compiling serde_core v1.0.228
+   Compiling libc v0.2.186
+    Checking predicates-core v1.0.9
+    Checking regex-automata v0.4.13
+    Checking anstyle v1.0.13
+   Compiling getrandom v0.4.2
+    Checking termtree v0.5.1
+   Compiling thiserror v2.0.18
+    Checking difflib v0.4.0
+   Compiling assert_cmd v2.1.2
+    Checking predicates v3.1.3
+    Checking bstr v1.12.1
+    Checking predicates-tree v1.0.12
+   Compiling thiserror-impl v2.0.18
+    Checking winnow v1.0.4
+    Checking wait-timeout v0.2.1
+   Compiling tokio-macros v2.7.0
+    Checking toml_parser v1.1.3+spec-1.1.0
+    Checking runfiles v0.1.0 (https://github.com/dzbarsky/rules_rust?rev=b56cbaa8465e74127f1ea216f813cd377295ad81#b56cbaa8)
+    Checking yansi v1.0.1
+    Checking pin-project-lite v0.2.16
+    Checking winnow v0.7.14
+    Checking serde_json v1.0.149
+    Checking serde v1.0.228
+    Checking toml_datetime v0.7.5+spec-1.1.0
+    Checking serde_spanned v1.1.1
+    Checking once_cell v1.21.4
+    Checking fastrand v2.3.0
+    Checking diff v0.1.13
+    Checking toml_writer v1.0.6+spec-1.1.0
+    Checking pretty_assertions v1.4.1
+    Checking codex-utils-cargo-bin v0.0.0 (/workspace/pr3567-lock-diagnostic/codex-rs/utils/cargo-bin)
+    Checking tempfile v3.27.0
+    Checking tokio v1.52.3
+    Checking codex-hepta-contracts v0.0.0 (/workspace/pr3567-lock-diagnostic/codex-rs/hepta-contracts)
+    Checking codex-execution-core v0.0.0 (/workspace/pr3567-lock-diagnostic/codex-rs/execution-core)
+error: unused import: `crate::ApprovalRequest`
+ --> execution-core/src/journal.rs:3:5
+  |
+3 | use crate::ApprovalRequest;
+  |     ^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `-D unused-imports` implied by `-D warnings`
+  = help: to override `-D warnings` add `#[allow(unused_imports)]`
+
+    Checking toml v0.9.11+spec-1.1.0
+error: redundant clone
+   --> execution-core/src/ports_tests.rs:205:35
+    |
+205 |         operation_id: operation_id.clone(),
+    |                                   ^^^^^^^^ help: remove this
+    |
+note: this value is dropped without further use
+   --> execution-core/src/ports_tests.rs:205:23
+    |
+205 |         operation_id: operation_id.clone(),
+    |                       ^^^^^^^^^^^^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#redundant_clone
+    = note: `-D clippy::redundant-clone` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::redundant_clone)]`
+
+error: could not compile `codex-execution-core` (lib test) due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...
+warning: `tokio::sync::MutexGuard` does not refer to a reachable type
+ --> /workspace/pr3567-lock-diagnostic/codex-rs/clippy.toml:4:5
+  |
+4 |     "tokio::sync::MutexGuard",
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: add `allow-invalid = true` to the entry to suppress this warning
+
+warning: `tokio::sync::RwLockReadGuard` does not refer to a reachable type
+ --> /workspace/pr3567-lock-diagnostic/codex-rs/clippy.toml:5:5
+  |
+5 |     "tokio::sync::RwLockReadGuard",
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: add `allow-invalid = true` to the entry to suppress this warning
+
+warning: `tokio::sync::RwLockWriteGuard` does not refer to a reachable type
+ --> /workspace/pr3567-lock-diagnostic/codex-rs/clippy.toml:6:5
+  |
+6 |     "tokio::sync::RwLockWriteGuard",
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: add `allow-invalid = true` to the entry to suppress this warning
+
+error: this call to `clone` can be replaced with `std::slice::from_ref`
+   --> hepta-contracts/src/final_use_control.rs:958:53
+    |
+958 |             .verify(&feed_verifier, &signed_update, &[signed_a.clone()], 2_100)
+    |                                                     ^^^^^^^^^^^^^^^^^^^ help: try: `std::slice::from_ref(&signed_a)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#cloned_ref_to_slice_refs
+    = note: `-D clippy::cloned-ref-to-slice-refs` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::cloned_ref_to_slice_refs)]`
+
+error: this call to `clone` can be replaced with `std::slice::from_ref`
+    --> hepta-contracts/src/final_use_control.rs:1073:61
+     |
+1073 |             verifier.verify(&feed_verifier, &signed_update, &[signed.clone()], 2_000),
+     |                                                             ^^^^^^^^^^^^^^^^^ help: try: `std::slice::from_ref(&signed)`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#cloned_ref_to_slice_refs
+
+warning: `codex-hepta-contracts` (lib test) generated 3 warnings
+error: could not compile `codex-hepta-contracts` (lib test) due to 2 previous errors; 3 warnings emitted
+error: recipe `clippy` failed on line 61 with exit code 101

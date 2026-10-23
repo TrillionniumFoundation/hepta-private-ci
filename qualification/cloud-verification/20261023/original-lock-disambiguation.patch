@@ -1,0 +1,13 @@
+diff --git a/codex-rs/Cargo.lock b/codex-rs/Cargo.lock
+index ac23fd840b..a6e0ce8378 100644
+--- a/codex-rs/Cargo.lock
++++ b/codex-rs/Cargo.lock
+@@ -3224,7 +3224,7 @@ version = "0.0.0"
+ dependencies = [
+  "serde",
+  "serde_json",
+- "sha2",
++ "sha2 0.10.9",
+ ]
+ 
+ [[package]]
