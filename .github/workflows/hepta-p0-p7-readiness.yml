@@ -11,10 +11,24 @@ permissions:
   pull-requests: read
 jobs:
   source-exact-readiness:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify checked-out exact source head
+        env:
+          EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          actual_sha="$(git rev-parse HEAD)"
+          if [ "$actual_sha" != "$EXPECTED_SOURCE_SHA" ]; then
+            echo "::error::checkout SHA differs from event PR source SHA"
+            exit 1
+          fi
+          echo "verified-source-head=$actual_sha"
       - name: Test source-bound status logic (no model, no external effects)
         run: |
           python3 -m unittest discover -s qa/hepta-p0-p7-readiness -p 'test_*.py' -v
