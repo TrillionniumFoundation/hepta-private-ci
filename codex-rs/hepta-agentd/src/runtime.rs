@@ -40,10 +40,16 @@ pub async fn run(
     arg0_paths: Arg0DispatchPaths,
 ) -> Result<(), AgentdError> {
     let production_operations = config.take_production_operations();
+    let hmi_text_enabled = config.hmi_text_enabled();
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let trust_file = config
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
+    if hmi_text_enabled && trust_file.is_none() {
+        return Err(AgentdError::Invalid(
+            "HMI text requires the existing AuthBus trust/checkpoint profile".into(),
+        ));
+    }
     let evidence_trust_file = config
         .evidence_trust_file()
         .map(std::path::Path::to_path_buf);
@@ -248,6 +254,18 @@ pub async fn run(
     // The single task host owns cancellation and joining on every exit path.
     // All fallible owner opens and control binding above precede task startup.
     let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?;
+    if hmi_text_enabled {
+        let active = Arc::new(std::sync::atomic::AtomicBool::new(true));
+        let quarantine = active.clone();
+        tasks.spawn_optional(
+            "hmi-text",
+            crate::hmi_text::run(state.clone(), active, cancellation.clone()),
+            move || {
+                quarantine.store(false, std::sync::atomic::Ordering::SeqCst);
+                Ok(())
+            },
+        )?;
+    }
     let startup: Result<(), AgentdError> = async {
         if let Some((host, interval)) = production_operations {
             tasks.spawn_required(

@@ -76,6 +76,7 @@ pub struct AgentdConfig {
     registry: FleetRegistry,
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
+    hmi_text_enabled: bool,
     evidence_trust_file: Option<PathBuf>,
     automation_effect_host_file: Option<PathBuf>,
     evidence_recovery_frontier_file: Option<PathBuf>,
@@ -199,6 +200,7 @@ impl AgentdConfig {
             registry,
             _writer_lock: writer_lock,
             authbus_trust_file: None,
+            hmi_text_enabled: false,
             evidence_trust_file: None,
             automation_effect_host_file: None,
             evidence_recovery_frontier_file: None,
@@ -227,6 +229,16 @@ impl AgentdConfig {
 
     pub(crate) fn authbus_trust_file(&self) -> Option<&Path> {
         self.authbus_trust_file.as_deref()
+    }
+    /// Register the private text presentation adapter under this existing owner.
+    /// Inputs still require its configured AuthBus issuer, signature and thread
+    /// allowlist. This enables no audio or external-effect authority.
+    pub fn with_hmi_text(mut self) -> Self {
+        self.hmi_text_enabled = true;
+        self
+    }
+    pub(crate) fn hmi_text_enabled(&self) -> bool {
+        self.hmi_text_enabled
     }
 
     /// Explicit multi-issuer role registry for kernel.evidence product ingress.

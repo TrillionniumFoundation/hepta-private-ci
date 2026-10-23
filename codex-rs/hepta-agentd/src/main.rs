@@ -17,6 +17,7 @@ fn main() -> anyhow::Result<()> {
         // Helper re-execs must reach arg0 dispatch before daemon-only flags.
         let mut args = std::env::args_os().skip(1);
         let mut authbus_trust = None;
+        let mut hmi_text = false;
         let mut intelligence_authority_file = None;
         let mut intelligence_authority_signer = None;
         let mut intelligence_authority_verifying_key = None;
@@ -29,6 +30,11 @@ fn main() -> anyhow::Result<()> {
         let mut evidence_recovery_frontier = None;
         let mut evidence_recovery_frontier_trust = None;
         while let Some(flag) = args.next() {
+            if flag == "--hmi-text" {
+                anyhow::ensure!(!hmi_text, "duplicate --hmi-text");
+                hmi_text = true;
+                continue;
+            }
             let path = args
                 .next()
                 .ok_or_else(|| anyhow::anyhow!("{flag:?} requires a path"))?;
@@ -110,6 +116,9 @@ fn main() -> anyhow::Result<()> {
             } else {
                 anyhow::bail!("unknown Agentd argument {flag:?}");
             }
+        }
+        if hmi_text {
+            config = config.with_hmi_text();
         }
         match (
             intelligence_authority_file,
