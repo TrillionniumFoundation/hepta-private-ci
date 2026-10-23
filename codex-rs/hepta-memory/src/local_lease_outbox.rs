@@ -2861,6 +2861,14 @@ impl LocalLeaseOutbox {
             &self.owner_agent_id,
         )
         .await?;
+        if outbox.topic == crate::NOTES_REPLACE_TOPIC_V1
+            && kind == "rolled_back"
+            && current == LocalOutcomeState::Indeterminate
+        {
+            return Err(LocalLeaseOutboxError::AccessDenied(
+                "unknown Notes effects require observation before cancellation".to_string(),
+            ));
+        }
         if !allowed.contains(&current) {
             match (
                 allow_exact_replay,

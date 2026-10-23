@@ -374,7 +374,7 @@ async fn original_final_use_rejection_preserves_notes_no_entry_settlement() -> T
 
     let temp = tempfile::tempdir()?;
     let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2d20")?;
-    for (stage, expire_after) in [("claim", 0), ("entry", 2)] {
+    for (stage, expire_after) in [("claim", 0), ("entry", 2), ("storage-failure", 0)] {
         let fleet_path = temp.path().join(stage);
         std::fs::create_dir(&fleet_path)?;
         let fleet = HeptaFleetRoot::parse(fleet_path.canonicalize()?)?;
@@ -424,10 +424,21 @@ async fn original_final_use_rejection_preserves_notes_no_entry_settlement() -> T
         let target = Arc::new(target);
         let dispatcher = ProductionFinalUseOutboxDispatcher::attach(authority, target.clone());
         let operation = queued.occurrence_key.clone();
+        if stage == "storage-failure" {
+            sqlx::query("CREATE TRIGGER notes_fixture_fail_rejection BEFORE INSERT ON cognitive_local_events WHEN NEW.event_kind = 'reconcile_rejected' BEGIN SELECT RAISE(ABORT, 'fixture rejection durability failure'); END").execute(&store.pool).await?;
+        }
         assert!(matches!(
             dispatcher.dispatch(&writer, &signed, &binding, queued).await,
             Err(ProductionWriterError::FinalUse(_))
         ));
+        if stage == "storage-failure" {
+            assert_eq!(writer.status(&operation).await?, LocalOutcomeState::Indeterminate);
+            let rejected: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM cognitive_local_events WHERE event_kind = 'reconcile_rejected'").fetch_one(&store.pool).await?;
+            assert_eq!(rejected, 0);
+            assert_eq!((target.observations.load(Ordering::SeqCst), target.retirements.load(Ordering::SeqCst)), (0, 0));
+            store.close().await;
+            continue;
+        }
         assert_eq!(writer.status(&operation).await?, LocalOutcomeState::Rejected);
         let reason: String = sqlx::query_scalar(
             "SELECT payload_json FROM cognitive_local_events WHERE lease_id = ? AND occurrence_key = ? AND event_kind = 'reconcile_rejected'",

@@ -173,6 +173,12 @@ Crash before source commit leaves no dispatch identity. Crash after source commi
 
 Stale claimants, stale generations, changed semantic digests and changed predecessor expectations fail closed. Owner handoff preserves immutable operation/outbox identity and requires a strictly newer fence.
 
+Notes terminal settlement requires the complete application receipt checked by the original observation owner. Generic `reconcile(Committed/Rejected)`, `apply(string)` and `reject(string)` cannot supply this evidence. Once a Notes effect is indeterminate, generic rollback/cancellation cannot hide it from observer-only recovery. Cancellation while still queued remains available.
+
+The original writer can separately prove a synchronous FinalUse claim/entry rejection before it invokes the target. Its private, non-serializable `NotesPreDispatchRejection` binds the immutable request and the exact current dispatch event/fence; public callers and targets cannot construct this permission. A failed durable rejection append leaves the operation indeterminate. This source-side no-entry proof is never an application receipt or permission to retire one.
+
+`production_notes_owner_tests.rs` exercises all five generic bypass attempts against real SQLite, successful observer recovery with the complete receipt, queued cancellation, both original FinalUse rejection stages and rejection persistence failure. The separately selected `notes_actual_ui_original_owner_roundtrip` uses the real companion Session/App and the original writer to qualify lost-reply recovery and receipt retirement; its fixture issuer is not production authority or native-kernel acceptance.
+
 Source qualification includes transaction fault cuts, deterministic `SQLITE_FULL`, corruption/tamper checks, reopen, claim takeover and lost-ack reconciliation. These are not physical power-loss certification; target-host filesystem/storage/controller evidence remains external.
 
 Compensation is always a new authorized operation. Rollback cannot rewrite an already observed external effect.
