@@ -104,7 +104,7 @@ fn verified_complete_proof_and_ascii_signature_create_exact_original_lease() {
     let (trust, proof) = fixture();
     let verified = VerifiedRootWriterProof::verify(proof.clone(), &trust).unwrap();
     let expected = ProductionAuthorityLease::from_verified_parts(
-        trust.agent_id.clone(),
+        trust.agent_id,
         Sha256Digest::for_bytes(&serde_json::to_vec(&proof).unwrap()),
         2,
         4,
