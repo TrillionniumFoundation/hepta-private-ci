@@ -4,6 +4,7 @@ use crate::SqliteConfig;
 use log::LevelFilter;
 use sqlx::ConnectOptions;
 use sqlx::Error;
+use sqlx::SqlSafeStr;
 use sqlx::Sqlite;
 use sqlx::SqlitePool;
 use sqlx::Transaction;
@@ -60,7 +61,7 @@ impl SqliteReadBarrier {
             .execute(&mut *connection)
             .await?;
         let mut transaction =
-            Transaction::begin(connection, Some("BEGIN IMMEDIATE".into())).await?;
+            Transaction::begin(connection, Some("BEGIN IMMEDIATE".into_sql_str())).await?;
         sqlx::query("PRAGMA query_only=ON")
             .execute(&mut *transaction)
             .await?;
