@@ -6,6 +6,9 @@ use std::collections::BTreeSet;
 use std::time::Duration;
 use tempfile::TempDir;
 
+#[path = "ordinary_cpu_source_route_tests.rs"]
+mod source_route;
+
 fn registration(temp: &TempDir) -> OrdinaryCpuRegistration {
     let mut registration = crate::ordinary_cpu_owner::tests::registration(temp);
     #[cfg(unix)]

@@ -27,6 +27,18 @@ does not qualify pool/process cold recovery or change the disabled production
 recovery APIs. Actual Child ownership, the signed source route and the original
 U/C/A resource qualification remain required parts of the same PN3/PN4 work.
 
+The ordinary target retains the original sealed dispatch through destination
+admission and consumes its claim at synchronous fixed-program/arguments/cwd
+spawn. It clears inherited environment and retains the original Child in a
+permanent slot. Only that Child's timely `try_wait` exit zero plus durable
+terminal storage establishes an ordinary exit fact; the eight-second observation
+bound does not bound the later storage settlement. Missing Child, late or nonzero
+exit, and uncertain durability remain indeterminate. Source-route tests use the
+original production writer/outbox, real signed FinalUse grants and a signed exact
+fixture lease verifier; they do not qualify production key custody or cold
+recovery. Ordinary exit is not wait4/cgroup accounting, resource retirement or
+model acceptance.
+
 ## 1. Ownership and effect boundary
 
 The named caller in
