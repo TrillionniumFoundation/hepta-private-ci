@@ -673,8 +673,10 @@ impl AuthorityLeaseVerifier {
         expected_revision: u64,
         expected: &AuthorityLeaseBinding,
     ) -> Result<LeaseVerifiedUseToken, AuthorityLeaseError> {
-        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let state = self.lock_state()?;
+        // Sample only after acquiring the final owner fence: waiting for a
+        // preceding local boundary may itself consume the lease's lifetime.
+        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let lease = state
             .leases
             .get(lease_id)
@@ -724,8 +726,10 @@ impl AuthorityLeaseVerifier {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.lease.binding != expected {
             return Err(AuthorityLeaseError::BindingMismatch);
         }
-        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let state = self.lock_state()?;
+        // Sample only after acquiring the final owner fence: waiting for a
+        // preceding local boundary may itself consume the lease's lifetime.
+        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         validate_live(
             &token.lease,
             &state,
@@ -758,8 +762,10 @@ impl AuthorityLeaseVerifier {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.lease.binding != expected {
             return Err(AuthorityLeaseError::BindingMismatch);
         }
-        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let state = self.lock_state()?;
+        // Sample only after acquiring the final owner fence: waiting for a
+        // preceding local boundary may itself consume the lease's lifetime.
+        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         validate_live(
             &token.lease,
             &state,
@@ -1732,3 +1738,7 @@ mod tests {
         assert_eq!(registry.capacity().unwrap().leases, 0);
     }
 }
+
+#[cfg(test)]
+#[path = "authority_lease_entry_clock_tests.rs"]
+mod entry_clock_tests;

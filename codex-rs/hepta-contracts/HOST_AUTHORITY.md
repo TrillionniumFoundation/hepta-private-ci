@@ -348,3 +348,12 @@ I/O, clock and freshness deadlines are unchanged. The earlier ten-second fixture
 lease that expired during setup is preserved as a failed attempt. These results
 still supply no checkpoint ACK, current-cut recovery, native V2 qualification or
 production readiness claim.
+
+
+Original general-lease verification now samples the authority clock only after
+acquiring the owner/revocation mutex. Time spent waiting for a preceding local
+boundary cannot extend a lease into a later consumer or dispatch entry. Clocks
+supplied to this original registry must be independent of that registry and must
+not reenter it. `with_verified_use` still releases the owner mutex before its
+consumer; `with_dispatch_boundary` still retains it across the bounded local
+entry. No deadline, lease lifetime, binding or revocation policy changes.
