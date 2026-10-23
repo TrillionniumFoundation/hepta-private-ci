@@ -96,6 +96,25 @@ def choose_rows(cohorts: dict, per_split: int) -> dict:
     return out
 
 
+def configure_arctic_cpu(config) -> dict:
+    """Disable pinned GTE xFormers/unpadding on the CPU-only shadow host.
+
+    Do not silently change a new publisher config: this override is a
+    separately measured compatibility profile, not the original performance
+    profile or a production-qualified equivalent.
+    """
+    flags = {}
+    for key in ("use_memory_efficient_attention", "unpad_inputs"):
+        raw = getattr(config, key, None)
+        if raw not in (True, False, "true", "false") or type(raw) not in (str, bool):
+            raise ValueError(f"unexpected pinned Arctic {key} profile")
+        flags[key] = raw
+        setattr(config, key, False)
+    if any(getattr(config, key) is not False for key in flags):
+        raise ValueError("Arctic CPU attention override did not apply")
+    return flags
+
+
 def tensor_digest(module) -> str:
     import torch
     d = hashlib.sha256()
@@ -168,6 +187,7 @@ def run(name: str, registry: dict, snapshot: Path, cohorts_dir: Path, archive: P
     loaded_at = time.perf_counter()
     before_rss = _rss_bytes()
     training = None
+    arctic_cpu_flags = None
     counters = [0]
     if name.startswith("laya_"):
         if laya_source is None:
@@ -201,7 +221,7 @@ def run(name: str, registry: dict, snapshot: Path, cohorts_dir: Path, archive: P
         loaded_parameters = sum(p.numel() for p in agent.model.parameters())
         kind = "full_policy"
     else:
-        from transformers import AutoModel, AutoTokenizer
+        from transformers import AutoConfig, AutoModel, AutoTokenizer
         tokenizer = AutoTokenizer.from_pretrained(snapshot, local_files_only=True, trust_remote_code=False)
         model_kwargs = {"local_files_only": True, "trust_remote_code": False,
                         "output_loading_info": True, "dtype": torch.float32}
@@ -211,7 +231,15 @@ def run(name: str, registry: dict, snapshot: Path, cohorts_dir: Path, archive: P
             # and native-runtime conformance remain separate production blockers.
             model_kwargs["trust_remote_code"] = True
             model_kwargs["add_pooling_layer"] = False
+            cpu_config = AutoConfig.from_pretrained(
+                snapshot, local_files_only=True, trust_remote_code=True)
+            arctic_cpu_flags = configure_arctic_cpu(cpu_config)
+            model_kwargs["config"] = cpu_config
         encoder, loading_info = AutoModel.from_pretrained(snapshot, **model_kwargs)
+        if name == "arctic_305m" and (
+                encoder.config.use_memory_efficient_attention is not False
+                or encoder.config.unpad_inputs is not False):
+            raise ValueError("pinned Arctic CPU model re-enabled unsupported attention profile")
         if loading_info.get("missing_keys") or loading_info.get("mismatched_keys"):
             raise ValueError("real frozen Encoder has missing or mismatched checkpoint tensors")
         encoder.requires_grad_(False).eval()
@@ -266,7 +294,8 @@ def run(name: str, registry: dict, snapshot: Path, cohorts_dir: Path, archive: P
               "frozen_selected_rows_sha256": dataset, "per_split_limit": per_split,
               "scores": scored, "head_training": training,
               "performance": {"device": "cpu", "host": platform.platform(),
-                              "runtime": torch.__version__, "rss_after_bytes": _rss_bytes(),
+                              "runtime": torch.__version__, "arctic_cpu_override": arctic_cpu_flags,
+                              "rss_after_bytes": _rss_bytes(),
                               "rss_before_bytes": before_rss,
                               "load_ms": load_ms, "original_forward_latency_ms": latency,
                               "forward_count": len(latency),

@@ -8,6 +8,22 @@ import replacement_physical as p
 
 
 class ReplacementPhysicalTests(unittest.TestCase):
+    def test_arctic_cpu_custom_attention_is_explicit_and_fail_closed(self):
+        from types import SimpleNamespace
+        config = SimpleNamespace(use_memory_efficient_attention="true",
+                                 unpad_inputs="true")
+        observed = p.configure_arctic_cpu(config)
+        self.assertEqual(observed, {"use_memory_efficient_attention": "true",
+                                    "unpad_inputs": "true"})
+        self.assertIs(config.use_memory_efficient_attention, False)
+        self.assertIs(config.unpad_inputs, False)
+        for invalid in (None, 1, "yes", [], object()):
+            with self.subTest(invalid=repr(invalid)):
+                bad = SimpleNamespace(use_memory_efficient_attention=invalid,
+                                      unpad_inputs="true")
+                with self.assertRaisesRegex(ValueError, "unexpected pinned Arctic"):
+                    p.configure_arctic_cpu(bad)
+
     def test_file_hash_and_symlink_denial(self):
         with tempfile.TemporaryDirectory() as t:
             root = Path(t)

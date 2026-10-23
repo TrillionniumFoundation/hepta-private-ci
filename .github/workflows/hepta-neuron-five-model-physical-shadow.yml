@@ -6,6 +6,8 @@ on:
       - qa/stem-bakeoff/replacement_physical.py
       - qa/stem-bakeoff/test_replacement_physical.py
       - qa/stem-bakeoff/replacement_physical_audit.py
+      - qa/stem-bakeoff/replacement_source_audit.py
+      - qa/stem-bakeoff/test_replacement_source_audit.py
       - qa/stem-bakeoff/test_replacement_physical_audit.py
       - qa/stem-bakeoff/replacement_models.json
       - qa/stem-bakeoff/replacement_gate.py
@@ -38,9 +40,10 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           git diff --check
-          python3 -m py_compile qa/stem-bakeoff/replacement_physical.py qa/stem-bakeoff/test_replacement_physical.py qa/stem-bakeoff/replacement_physical_audit.py qa/stem-bakeoff/test_replacement_physical_audit.py
+          python3 -m py_compile qa/stem-bakeoff/replacement_physical.py qa/stem-bakeoff/test_replacement_physical.py qa/stem-bakeoff/replacement_physical_audit.py qa/stem-bakeoff/test_replacement_physical_audit.py qa/stem-bakeoff/replacement_source_audit.py qa/stem-bakeoff/test_replacement_source_audit.py
           python3 -m unittest discover -s qa/stem-bakeoff -p 'test_replacement_gate.py' -v
           python3 -m unittest discover -s qa/stem-bakeoff -p 'test_replacement_physical_audit.py' -v
+          python3 -m unittest discover -s qa/stem-bakeoff -p 'test_replacement_source_audit.py' -v
       - name: Execute actual task-Head contract negatives
         run: |
           set -euo pipefail
@@ -156,7 +159,7 @@ jobs:
             args+=(--laya-source "$RUNNER_TEMP/laya-source")
           fi
           "$RUNNER_TEMP/physical-venv/bin/python" \
-            qa/stem-bakeoff/replacement_physical.py "${args[$]}"
+            qa/stem-bakeoff/replacement_physical.py "${args[@]}"
           "$RUNNER_TEMP/physical-venv/bin/python" - <<'PY'
           import json, os
           from pathlib import Path
@@ -229,11 +232,28 @@ jobs:
           python3 qa/stem-bakeoff/replacement_physical_audit.py \
             --input-directory "$RUNNER_TEMP/five-arm-raw" \
             --output "$RUNNER_TEMP/five-model-original-audit.json"
+      - name: Independently replay UCI archive and cross-check raw prediction origins
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --max-time 300 \
+            'https://archive.ics.uci.edu/static/public/359/news+aggregator.zip' \
+            --output "$RUNNER_TEMP/news-verified.zip"
+          python3 qa/stem-bakeoff/prepare_news_cohorts.py \
+            --archive "$RUNNER_TEMP/news-verified.zip" \
+            --output "$RUNNER_TEMP/source-audit-cohorts"
+          python3 qa/stem-bakeoff/replacement_source_audit.py \
+            --input-directory "$RUNNER_TEMP/five-arm-raw" \
+            --cohorts "$RUNNER_TEMP/source-audit-cohorts" \
+            --archive "$RUNNER_TEMP/news-verified.zip" \
+            --output "$RUNNER_TEMP/five-model-source-audit.json"
       - name: Retain cross-arm audit even if one original model failed
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: neuron-five-arm-original-audit-${{ github.event.pull_request.head.sha || github.sha }}
-          path: ${{ runner.temp }}/five-model-original-audit.json
+          path: |
+            ${{ runner.temp }}/five-model-original-audit.json
+            ${{ runner.temp }}/five-model-source-audit.json
           if-no-files-found: warn
           retention-days: 30
