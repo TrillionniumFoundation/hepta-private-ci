@@ -6,6 +6,10 @@
 
 mod app_runtime;
 #[cfg(target_os = "linux")]
+mod authority_host_consumer_frontier;
+#[cfg(target_os = "linux")]
+pub use authority_host_consumer_frontier::HostConsumerFrontier;
+#[cfg(target_os = "linux")]
 mod authority_host_checkpoint;
 #[cfg(target_os = "linux")]
 pub use authority_host_checkpoint::HostCognitiveCheckpoint;
