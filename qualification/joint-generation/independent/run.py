@@ -16,7 +16,7 @@ import numpy as np
 
 from data import metrics_from_observations, prepare_decoded_observer, templates
 from independent.accounting import BudgetExceeded, WorkLedger, compare_budgets, counted_model_class
-from independent.calibration import calibration_manifest, stratified_indices
+from independent.calibration import calibration_manifest, global_balanced_indices, stratified_indices
 from independent.data_v2 import dataset, manifest
 from independent.inference import FrozenGenerator, units
 from independent.experiments import EXPERIMENTS, bind_identity, resolve_experiment, validate_plan
@@ -287,6 +287,15 @@ def save_model(model, path, ledger, stage):
             "serialization_cpu_seconds": cpu_clock() - before}
 
 
+def calibration_indices(data, plan):
+    if "calibration_matching" not in plan:
+        return stratified_indices(data, plan["calibration_per_class"], plan["calibration_salt"])
+    if (plan.get("experiment_id") != "core-c1"
+            or plan["calibration_matching"] != "global-balanced-margins-v1"):
+        raise ValueError("unsupported experiment calibration matching")
+    return global_balanced_indices(data, plan["calibration_per_class"], plan["calibration_salt"])
+
+
 def prepare_shared(plan, run, runtime_plan):
     from independent.evaluation import measure
     from independent.native import compile_native
@@ -299,7 +308,7 @@ def prepare_shared(plan, run, runtime_plan):
             or set(train["input_hashes"]) & set(val["input_hashes"])):
         raise ValueError("independent training/validation leakage")
     shared.record("base_data", prepared_rows=len(train["labels"]) + len(val["labels"]))
-    take = stratified_indices(train, plan["calibration_per_class"], plan["calibration_salt"])
+    take = calibration_indices(train, plan)
     if len(take) != plan["calibration_rows"]:
         raise ValueError("stratified calibration rows differ from frozen protocol")
     calibration_identity = calibration_manifest(train, take)

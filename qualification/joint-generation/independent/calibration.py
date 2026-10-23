@@ -100,6 +100,110 @@ def stratified_indices(data, per_class=6, salt=DEFAULT_SALT):
     return np.asarray(ordered, dtype=np.int64)
 
 
+def global_balanced_indices(data, per_class=6, salt=DEFAULT_SALT):
+    """Match both margins globally, then interleave regular-graph matchings.
+
+    Source classes and target classes each receive exactly ``per_class`` rows.
+    Every physical source has capacity one. No source/target joint cell is
+    prescribed. Only TRAIN metadata and salted identity ordering are read.
+    """
+    if type(per_class) is not int or not 1 <= per_class <= 64:
+        raise ValueError("bounded positive calibration count required")
+    if not isinstance(salt, str) or not 1 <= len(salt) <= 256:
+        raise ValueError("bounded nonempty calibration salt required")
+    labels, _, sources, hashes, source_classes = _metadata(data)
+    best = {}
+    for index, (source, target, digest) in enumerate(zip(sources, labels, hashes)):
+        pair = source, int(target)
+        if pair not in best or digest < hashes[best[pair]]:
+            best[pair] = index
+    rank = {source: (hashlib.sha256((salt + "\0" + source).encode()).hexdigest(), source)
+            for source in source_classes}
+    identities = sorted(source_classes, key=rank.__getitem__)
+    target_order = sorted(range(CLASSES), key=lambda target: (
+        hashlib.sha256((salt + "\0target:" + str(target)).encode()).hexdigest(), target))
+    available = {source: [] for source in identities}
+    for source, target in best:
+        available[source].append(target)
+    target_rank = {target: index for index, target in enumerate(target_order)}
+    for scene in range(CLASSES):
+        if sum(value == scene for value in source_classes.values()) < per_class:
+            raise ValueError(f"source class {scene} cannot provide {per_class} distinct sources")
+
+    # Residual edges are [destination, capacity, reverse-index]. Numeric class
+    # order and salted source/target order fix every augmenting-path tie.
+    target_start, sink = 1 + CLASSES + len(identities), 1 + 2 * CLASSES + len(identities)
+    graph = [[] for _ in range(sink + 1)]
+
+    def edge(left, right, capacity):
+        forward = [right, capacity, len(graph[right])]
+        graph[left].append(forward)
+        graph[right].append([left, 0, len(graph[left]) - 1])
+        return forward
+
+    for scene in range(CLASSES):
+        edge(0, 1 + scene, per_class)
+    arcs = {}
+    for offset, source in enumerate(identities):
+        node = 1 + CLASSES + offset
+        edge(1 + source_classes[source], node, 1)
+        for target in sorted(available[source], key=target_rank.__getitem__):
+            arcs[source, target] = edge(node, target_start + target, 1)
+    for target in target_order:
+        edge(target_start + target, sink, per_class)
+
+    required, flow = CLASSES * per_class, 0
+    while flow < required:
+        previous = [None] * len(graph)
+        previous[0] = (-1, -1)
+        queue, cursor = [0], 0
+        while cursor < len(queue) and previous[sink] is None:
+            node = queue[cursor]
+            cursor += 1
+            for index, (destination, capacity, _) in enumerate(graph[node]):
+                if capacity and previous[destination] is None:
+                    previous[destination] = node, index
+                    queue.append(destination)
+        if previous[sink] is None:
+            raise ValueError(f"global training source/target margins infeasible: matched {flow} of {required}")
+        node = sink
+        while node:
+            parent, index = previous[node]
+            arc = graph[parent][index]
+            arc[1] -= 1
+            graph[node][arc[2]][1] += 1
+            node = parent
+        flow += 1
+
+    cells = {}
+    for source in identities:
+        for target in sorted(available[source], key=target_rank.__getitem__):
+            if arcs[source, target][1] == 0:
+                cells.setdefault((source_classes[source], target), []).append(best[source, target])
+    # A per_class-regular bipartite multigraph has a perfect matching. Removing
+    # one preserves regularity, so all rounds can cover both twelve-class sets.
+    ordered = []
+    for _ in range(per_class):
+        assigned = {}
+
+        def augment(scene, visited):
+            for target in target_order:
+                if not cells.get((scene, target)) or target in visited:
+                    continue
+                visited.add(target)
+                owner = assigned.get(target)
+                if owner is None or augment(owner, visited):
+                    assigned[target] = scene
+                    return True
+            return False
+
+        if not all(augment(scene, set()) for scene in range(CLASSES)):
+            raise RuntimeError("regular calibration graph decomposition failed")
+        for target in range(CLASSES):
+            ordered.append(cells[assigned[target], target].pop(0))
+    return np.asarray(ordered, dtype=np.int64)
+
+
 def calibration_manifest(data, indices):
     """Describe the selected training identities and both balance margins."""
     labels, scenes, sources, hashes, _ = _metadata(data)

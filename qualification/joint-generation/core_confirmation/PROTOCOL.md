@@ -1,7 +1,8 @@
 # Core-c1: prospective content-control and NDU confirmation
 
-This is prospective registration v1. At registration, no core-c1 split, model,
-calibration, validation, or test had been constructed. The final reviewed source,
+This is prospective registration v2. At the original v1 registration, no
+core-c1 split, model, calibration, validation, or test had been constructed.
+Revision v2 follows the retained TRAIN-only matching failure; test remains untouched. The final reviewed source,
 this document, and `plan.json` must be committed and bound before execution;
 actual execution status belongs in separate retained run receipts. The existing
 engine is reused through the fixed `core-c1` experiment registry; a second
@@ -114,9 +115,23 @@ No quarter-share common cost, padding, unused critic, or unused objective runs.
 Serialization/allocation/interpreter cost remains in actual CPU even where the
 operator profile does not claim hardware FLOPs or memory/PNG/JSON arithmetic.
 
-Common calibration is TRAIN-only: the same balanced 72-source/target-class
-matching, three repeats, full mode only, and three seeds. This is nine measures
-and 648 real outputs, not the r2 three-mode 27 measures. Keep every sample,
+Common calibration is TRAIN-only: 72 distinct physical sources, exactly six
+of each source class and six of each target class. Revision v2 uses a salted,
+deterministic global integer flow through source class, physical source and
+available target class. Source classes use numeric order. Physical sources use
+(SHA256(salt + U+0000 + source_id), source_id) order; target neighbors use
+(SHA256(salt + U+0000 + "target:" + decimal_target), target) order. Residual
+breadth-first augmenting paths use that fixed edge insertion order. Each selected
+source/target pair uses its smallest input SHA. Decompose the balanced class
+multigraph with scene-numeric, salted-target-order augmenting matchings into six
+rounds. Within each class-pair cell, consume physical sources in the same salted
+rank; output each round in numeric target-class order. Every round covers all
+source and target classes.
+No exact cyclic joint-cell pattern is required; no margin or uniqueness constraint
+is relaxed. Infeasible global flow still raises a real failure, with no salt or
+data-seed fallback. Graph selection is metadata preprocessing inside full common
+CPU; declared model-kernel work retains its stated scope. Use three repeats, full
+mode only, and three seeds: nine measures and 648 real outputs. Keep every sample,
 including timing outliers. Fix the common full-service CPU reference as the
 median per-row full-service CPU from the first shared base's calibration, before
 candidate search. Full is the only candidate/revalidation observer mode. Normal
@@ -236,3 +251,21 @@ reported and never a hidden budget credit. A failed, partial, or interrupted
 test opening stays consumed. Preserve every failure and do not tune against,
 rerun, replace, or recycle core-c1 held-out results. New findings require a new
 scientific protocol and independent evidence, not a changed passing label.
+
+## Pre-test implementation revision history
+
+Registration v1 was committed before the first core-c1 split construction. The
+first actual build, source 893a13fd16/freeze a80b6b6e23, exited 1 at calibration
+matching before compilation or model updates. Its original error and full cost
+are retained in runs/codex-cloud-core-c1-t1/REPORT.md. No validation score or
+formal test was produced.
+
+The existing class-wise matcher imposes extra source/target cyclic joint cells
+beyond the two balanced margins; the frozen fresh TRAIN metadata cannot satisfy
+that pattern. Revision v2 prospectively replaces only this subset-selection
+algorithm with global balanced flow. It preserves the same TRAIN/validation/test
+seeds, physical generator, 72/6 margin counts, model/objectives, complete budgets,
+all six statistical requirements and experiment-wide one-shot test rule. The
+legacy r2 cyclic selection and all prior failures remain unchanged. Hand-array
+matching proofs and a new source/protocol freeze precede another actual build.
+This revision is based on TRAIN construction failure, not test outcomes.

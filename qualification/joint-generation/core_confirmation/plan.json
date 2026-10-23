@@ -135,9 +135,9 @@
   "retained_artifact_bound_bytes": 33554432,
   "qualification_scope": "core-content-ndu-confirmation",
   "retained_prior_results": "r1 sealed forever; every r2 failure and original dynamic gate remains unchanged; r2 validation/OOF/timing R&D informed this design but does not qualify core-c1",
-  "protocol_status": "prospectively registered core-c1-v1; final source/plan/protocol freeze required before first build",
+  "protocol_status": "prospectively registered core-c1-v2 after retained pre-training t1 matching failure; new source freeze required",
   "protocol_path": "core_confirmation/PROTOCOL.md",
-  "protocol_sha256": "49fbebc934ce2cf06acdeb2139bb7bfffc4f81936ced8df6a1f22182397fceb0",
+  "protocol_sha256": "1dc19b8b52baef0963e26d7af8886a713a007db5876bfffb5774b1550a08313c",
   "data_seed_derivation": {
     "salt": "hepta-joint-generation-core-c1-v1",
     "message": "UTF8(salt + U+0000 + literal split name)",
@@ -186,5 +186,7 @@
     "CPU benefit across unmeasured execution waves"
   ],
   "execution_environment": "saved hepta-private-ci Codex cloud environment only; no dot workspace, user computer, Actions or denial/quota bypass",
-  "artifact_binding": "pre-build committed source/protocol/plan/compiler policy; during billed build bind binary/actual environment/train-validation manifests/selected inference artifacts/complete costs; verify actual protocol bytes at training and test preflight; optimizer source/profile and update receipts, no serialized moment/RNG resume claim"
+  "artifact_binding": "pre-build committed source/protocol/plan/compiler policy; during billed build bind binary/actual environment/train-validation manifests/selected inference artifacts/complete costs; verify actual protocol bytes at training and test preflight; optimizer source/profile and update receipts, no serialized moment/RNG resume claim",
+  "calibration_matching": "global-balanced-margins-v1",
+  "calibration_revision": "global exact source/target margins and unique physical sources; six deterministic perfect-matching rounds; legacy r2 cyclic joint-cell selection unchanged; no data/seed/margin/budget/statistical-gate change"
 }
