@@ -11,6 +11,7 @@ import hashlib
 import json
 from pathlib import Path
 import statistics
+import math
 
 
 def digest(data):
@@ -50,6 +51,106 @@ def verify_row_scoring(row, expected, selected, status, category):
     require(type(row["answerability_screen_correct"]) is int
             and row["answerability_screen_correct"] == answerability,
             "answerability scoring changed")
+
+
+
+def _audit_mean(values):
+    return statistics.fmean(values) if values else None
+
+
+def _audit_summary(rows):
+    """Reconstruct metrics independently from the frozen per-answer receipts."""
+    scored = [row for row in rows if row["support_recall"] is not None]
+    roots = defaultdict(list)
+    for row in scored:
+        roots[row["group"]].append(row)
+    answerable = [row for row in rows if row["category"] != 5]
+    adversarial = [row for row in rows if row["category"] == 5]
+    tpr = _audit_mean([float(row["accepted"]) for row in answerable])
+    tnr = _audit_mean([float(not row["accepted"]) for row in adversarial])
+    return {
+        "planned_questions": len(rows),
+        "scorable_support_questions": len(scored),
+        "adversarial_questions": len(adversarial),
+        "unresolved_or_missing_questions": sum(
+            row["annotation_status"] in ("unresolved", "missing") for row in rows
+        ),
+        "support_recall": _audit_mean([row["support_recall"] for row in scored]),
+        "all_support_recalled": _audit_mean([row["all_support_recalled"] for row in scored]),
+        "any_support_recalled": _audit_mean([row["any_support_recalled"] for row in scored]),
+        "group_macro_support_recall": _audit_mean([
+            _audit_mean([row["support_recall"] for row in group])
+            for group in roots.values()
+        ]),
+        "group_macro_all_support": _audit_mean([
+            _audit_mean([row["all_support_recalled"] for row in group])
+            for group in roots.values()
+        ]),
+        "acceptance_rate": _audit_mean([float(row["accepted"]) for row in rows]),
+        "answerability_balanced_accuracy": (
+            (tpr + tnr) / 2 if tpr is not None and tnr is not None else None
+        ),
+    }
+
+
+def _verify_audit_summary(actual, rows, identity):
+    """Fail closed on omitted, altered, wrong-type or non-finite aggregates."""
+    expected = _audit_summary(rows)
+    require(type(actual) is dict and set(actual) == set(expected),
+            f"{identity}: aggregate metric keys changed")
+    for name, correct in expected.items():
+        observed = actual[name]
+        if correct is None:
+            require(observed is None, f"{identity}: {name} missingness changed")
+        elif type(correct) is int:
+            require(type(observed) is int and observed == correct,
+                    f"{identity}: {name} integer denominator changed")
+        else:
+            require(type(observed) is float
+                    and math.isfinite(observed)
+                    and math.isclose(observed, correct, rel_tol=0.0, abs_tol=1e-12),
+                    f"{identity}: {name} aggregate changed")
+
+
+def verify_report_slices(result_blocks, rows, partitions, arms):
+    """Recheck every split/arm/category/source/image metric and slice inventory."""
+    splits = {**partitions, "full_census": sorted({row["group"] for row in rows})}
+    require(type(result_blocks) is dict and set(result_blocks) == set(splits),
+            "reported partition set changed")
+    for split, included in splits.items():
+        require(type(result_blocks[split]) is dict
+                and set(result_blocks[split]) == set(arms),
+                f"reported arm set changed for {split}")
+        for arm in arms:
+            identity = f"{split}/{arm}"
+            block = result_blocks[split][arm]
+            require(type(block) is dict and set(block) == {
+                "overall", "by_category", "by_source_group", "image_evidence_slice"
+            }, f"{identity}: slice registry changed")
+            subset = [row for row in rows
+                      if row["arm"] == arm and row["group"] in included]
+            _verify_audit_summary(block["overall"], subset, f"{identity}/overall")
+            categories = {str(row["category"]) for row in subset}
+            require(type(block["by_category"]) is dict
+                    and set(block["by_category"]) == categories,
+                    f"{identity}: category set changed")
+            for category in categories:
+                category_rows = [row for row in subset if str(row["category"]) == category]
+                _verify_audit_summary(block["by_category"][category], category_rows,
+                                      f"{identity}/category:{category}")
+            groups = {row["group"] for row in subset}
+            require(type(block["by_source_group"]) is dict
+                    and set(block["by_source_group"]) == groups,
+                    f"{identity}: source-group set changed")
+            for group in groups:
+                group_rows = [row for row in subset if row["group"] == group]
+                _verify_audit_summary(block["by_source_group"][group], group_rows,
+                                      f"{identity}/source:{group}")
+            _verify_audit_summary(
+                block["image_evidence_slice"],
+                [row for row in subset if row["evidence_has_image"]],
+                f"{identity}/image",
+            )
 
 
 def audit(source, directory):
@@ -112,17 +213,7 @@ def audit(source, directory):
             require(row["evidence_has_image"] == image, "image-dependent evidence slice")
             rows.append(row)
     require(len(seen) == len(query_map) * len(plan["arms"]), "missing question arm")
-    for split, groups in {**plan["partitions"], "full_census": list(source_groups)}.items():
-        for arm in plan["arms"]:
-            subset = [r for r in rows if r["arm"] == arm and r["group"] in groups]
-            scored = [r for r in subset if r["support_recall"] is not None]
-            metric = report["results"][split][arm]["overall"]
-            require(len(subset) == metric["planned_questions"] and len(scored) == metric["scorable_support_questions"], "reported denominator")
-            require(statistics.fmean(r["all_support_recalled"] for r in scored) == metric["all_support_recalled"], "reported all-evidence mean")
-            grouped = defaultdict(list)
-            for row in scored:
-                grouped[row["group"]].append(row["all_support_recalled"])
-            require(abs(statistics.fmean(statistics.fmean(v) for v in grouped.values()) - metric["group_macro_all_support"]) < 1e-15, "reported conversation macro mean")
+    verify_report_slices(report["results"], rows, plan["partitions"], plan["arms"])
     return {"schema": "hepta.locomo-source-retrieval-independent-audit.v1", "passed": True,
             "source_sha256": digest(data), "report_sha256": digest((root / "report.json").read_bytes()),
             "audit_source_sha256": digest(Path(__file__).read_bytes()),
