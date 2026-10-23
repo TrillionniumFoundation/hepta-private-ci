@@ -40,6 +40,10 @@ pub use authority_host_clock::HostAuthorityClockObservation;
 #[cfg(target_os = "linux")]
 pub use authority_host_clock::HostAuthorityClockProjection;
 #[cfg(target_os = "linux")]
+pub use authority_host_issuer_transport::HostAuthorityPeerChannel;
+#[cfg(target_os = "linux")]
+pub use authority_host_issuer_transport::HostAuthorityPeerPolicy;
+#[cfg(target_os = "linux")]
 pub use authority_host_issuer_transport::HostIssuerPeer;
 #[cfg(target_os = "linux")]
 pub use authority_host_issuer_transport::HostIssuerSession;

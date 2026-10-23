@@ -19,6 +19,11 @@ use std::time::Duration;
 #[path = "authority_host_channel.rs"]
 mod channel;
 
+#[path = "authority_host_peer.rs"]
+mod peer;
+pub use peer::HostAuthorityPeerChannel;
+pub use peer::HostAuthorityPeerPolicy;
+
 const OPERATION: &str = "runtime.agentd.production_operation";
 const MAX_REQUEST: usize = 16 * 1024;
 const MAX_RESPONSE: usize = 64 * 1024;
