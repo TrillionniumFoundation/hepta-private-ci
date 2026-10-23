@@ -198,8 +198,10 @@ impl HostAuthorityService {
                     return Err(HostIssuerTransportError::InvalidRequest);
                 }
                 let ingress = self
-                    .issuer
-                    .sign_objective(&self.identity, body)
+                    .writer
+                    .as_ref()
+                    .ok_or(HostIssuerTransportError::Unavailable)?
+                    .sign_objective(&self.issuer, &self.identity, body)
                     .map_err(unavailable)?;
                 let observation = self.clock.refresh_projection().map_err(unavailable)?;
                 if observation.observed_unix_ms >= ingress.expires_at_ms {

@@ -7,6 +7,8 @@
 use std::io;
 
 use codex_hepta_contracts::AuthorityFrontierStore;
+use codex_hepta_contracts::authority_lease::AuthorityLease;
+use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
 use ed25519_dalek::Signer;
 
 use super::DeploymentFinalUseIssuer;
@@ -14,6 +16,8 @@ use super::STATE_OWNER;
 use crate::AgentdIdentity;
 use crate::AuthBusObjectiveBody;
 use crate::AuthBusObjectiveIngress;
+use crate::HostAuthorityWriterRegistration;
+use crate::HostSignedWriterAuthorizationV1;
 use crate::authbus_objective_claims;
 use crate::objective_runtime::objective_payload;
 use crate::objective_runtime::objective_scope;
@@ -30,6 +34,39 @@ impl DeploymentFinalUseIssuer {
         &self,
         identity: &AgentdIdentity,
         body: AuthBusObjectiveBody,
+    ) -> io::Result<AuthBusObjectiveIngress> {
+        self.sign_objective_until(identity, body, /*lease*/ None)
+    }
+
+    /// Root service entry: the actual original writer lease fence covers the
+    /// canonical signing operation, including reservation and its final clock.
+    pub(crate) fn sign_registered_writer_objective(
+        &self,
+        identity: &AgentdIdentity,
+        body: AuthBusObjectiveBody,
+        registration: &HostAuthorityWriterRegistration,
+        leases: &AuthorityLeaseVerifier,
+        expected_proof: &HostSignedWriterAuthorizationV1,
+    ) -> io::Result<AuthBusObjectiveIngress> {
+        if self.lease.is_none()
+            || registration.registered_agent_id != identity.agent_id
+            || registration.spawn_generation != identity.spawn_generation
+        {
+            return Err(io::Error::other("protected registered writer required"));
+        }
+        registration.with_live(leases, |_| {
+            if self.retained_writer_authorization(registration)? != *expected_proof {
+                return Err(io::Error::other("retained writer proof changed"));
+            }
+            self.sign_objective_until(identity, body, Some(&registration.authority_lease))
+        })
+    }
+
+    fn sign_objective_until(
+        &self,
+        identity: &AgentdIdentity,
+        body: AuthBusObjectiveBody,
+        lease: Option<&AuthorityLease>,
     ) -> io::Result<AuthBusObjectiveIngress> {
         objective_payload(identity, &body, identity.spawn_generation).map_err(io::Error::other)?;
         if identity.spawn_generation == 0 {
@@ -57,6 +94,13 @@ impl DeploymentFinalUseIssuer {
             return Err(io::Error::other("invalid Objective lifetime"));
         }
         let now = self.clock.now_unix_ms().map_err(io::Error::other)?;
+        if lease.is_some_and(|lease| {
+            lease.authority_epoch != state.head.authority_epoch
+                || now < lease.issued_at_unix_ms
+                || now >= lease.expires_at_unix_ms
+        }) {
+            return Err(io::Error::other("Objective writer lease is not live"));
+        }
         let mut next = state.clone();
         next.sequence = state
             .sequence
@@ -72,7 +116,8 @@ impl DeploymentFinalUseIssuer {
             sequence: next.sequence,
             expires_at_ms: now
                 .checked_add(policy.lifetime_ms)
-                .ok_or_else(|| io::Error::other("issuer clock overflow"))?,
+                .ok_or_else(|| io::Error::other("issuer clock overflow"))?
+                .min(lease.map_or(u64::MAX, |lease| lease.expires_at_unix_ms)),
             signature_hex: String::new(),
             body,
         };

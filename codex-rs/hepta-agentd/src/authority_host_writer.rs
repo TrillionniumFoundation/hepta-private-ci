@@ -39,6 +39,21 @@ impl RegisteredWriter {
         })
     }
 
+    pub(super) fn sign_objective(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        identity: &AgentdIdentity,
+        body: AuthBusObjectiveBody,
+    ) -> io::Result<AuthBusObjectiveIngress> {
+        issuer.sign_registered_writer_objective(
+            identity,
+            body,
+            &self.registration,
+            &self.leases,
+            &self.proof,
+        )
+    }
+
     pub(super) fn observe(
         &self,
         issuer: &DeploymentFinalUseIssuer,

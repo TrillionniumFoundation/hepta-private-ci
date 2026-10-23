@@ -326,3 +326,25 @@ retained proof at sequence 1, original Objective/FinalUse sequences 2/3, and a
 also passed. The earlier initialization failures remain valid evidence of
 host-I/O unavailability; this is no sustained latency SLA, current-cut witness,
 full production writer or G2/native qualification.
+
+The service's Objective signing path now holds the original registered writer
+lease dispatch fence through the canonical signer. It requires the exact retained
+writer proof and fixed Agent/spawn, checks the original live lease before spending
+a sequence, caps Objective expiry at that lease's expiry, and discards a response
+that expires during durable I/O without reusing its sequence. The generic canonical
+signer retains its existing semantics for other callers. A service without a writer
+registration refuses Objective signing; it can still exercise the original v1 feed
+and per-effect FinalUse path. An effect lease is never substituted for a writer.
+
+Four focused regressions cover the expiry cap and original claims, changed/revoked
+leases, expiry after the durable sequence reservation, and wrong proof/spawn. The
+real persistent-bind UID60001 qualification then passed five cases: proof plus
+Objective/FinalUse sequences 1/2/3, expired Objective without a response prefix,
+expired feed plus refused FinalUse, and the thin and library clients without a
+writer. The positive V2 observation measured 68ms from before the read. The fixture
+performs setup negative checks before registering its fresh lease and releases
+the client through a readiness pipe only after root setup; the original connection,
+I/O, clock and freshness deadlines are unchanged. The earlier ten-second fixture
+lease that expired during setup is preserved as a failed attempt. These results
+still supply no checkpoint ACK, current-cut recovery, native V2 qualification or
+production readiness claim.

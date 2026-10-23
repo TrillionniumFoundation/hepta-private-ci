@@ -98,6 +98,21 @@ mod qualification {
         serde_json::from_slice(&bytes).unwrap()
     }
 
+    fn objective_body(spawn_generation: u64) -> AuthBusObjectiveBody {
+        AuthBusObjectiveBody {
+            spawn_generation,
+            run_id: "root-service-qualification".into(),
+            objective_revision: 1,
+            source_envelope_json: "{}".into(),
+            runtime_body_digest: "11".repeat(32),
+            preference_state_digest: "22".repeat(32),
+            model_tuple_digest: "33".repeat(32),
+            prompt_registry_digest: "44".repeat(32),
+            artifact_set_digest: "55".repeat(32),
+            authority_epoch: 1,
+        }
+    }
+
     pub(super) fn run() -> Result<(), Box<dyn std::error::Error>> {
         // SAFETY: geteuid takes no memory pointers or borrowed data.
         assert_eq!(unsafe { libc::geteuid() }, 60001);
@@ -118,6 +133,11 @@ mod qualification {
             std::fs::read_dir(state).unwrap_err().kind(),
             std::io::ErrorKind::PermissionDenied
         );
+        if std::env::var_os("HEPTA_SERVICE_START_STDIN").is_some() {
+            let mut start = [0];
+            std::io::stdin().read_exact(&mut start)?;
+            assert_eq!(start, [1]);
+        }
         let runtime = PathBuf::from(
             std::env::var_os("HEPTA_SERVICE_RUNTIME").ok_or("missing fixture runtime")?,
         );
@@ -126,6 +146,27 @@ mod qualification {
         let mut issuer = connect(&runtime.join("issuer.sock"), root_pid);
         let mut checkpoint = connect(&runtime.join("checkpoint.sock"), root_pid);
         let writer_proof = std::env::var_os("HEPTA_SERVICE_WRITER_PROOF").is_some();
+        if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_OBJECTIVE").is_some() {
+            std::thread::sleep(Duration::from_secs(3));
+            let identity: PublicFixtureIdentity =
+                serde_json::from_str(&std::env::var("HEPTA_SERVICE_IDENTITY")?)?;
+            let request = serde_json::to_vec(
+                &serde_json::json!({"schema_version":1,"operation":"runtime.authbus.objective.sign.v1","body":objective_body(identity.spawn_generation)}),
+            )?;
+            issuer.write_all(&(request.len() as u32).to_be_bytes())?;
+            issuer.write_all(&request)?;
+            let mut first = [0];
+            assert_eq!(
+                issuer.read(&mut first)?,
+                0,
+                "expired writer must not emit an Objective prefix"
+            );
+            println!(
+                "{}",
+                serde_json::json!({"qualification":"root_authority_expired_objective_v1","uid":60001,"objective_refused":true,"production_ready":false})
+            );
+            return Ok(());
+        }
         if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_FEED").is_some() {
             std::thread::sleep(Duration::from_secs(3));
             let request = serde_json::to_vec(&if writer_proof {
@@ -168,6 +209,7 @@ mod qualification {
             );
             return Ok(());
         }
+        let mut writer_expiry = None;
         if writer_proof {
             let read = serde_json::from_value::<HostWriterAuthorizationReadResponseV1>(exchange(
                 &mut observation,
@@ -189,6 +231,7 @@ mod qualification {
                 &ed25519_dalek::Signature::from_slice(&signature)?,
             )?;
             assert_eq!(read.proof.claims.sequence, 1);
+            writer_expiry = Some(read.proof.claims.authority_lease.expires_at_unix_ms);
             let before = Instant::now();
             let feed: HostAuthorityObservationResponseV2 = serde_json::from_value(exchange(
                 &mut observation,
@@ -259,25 +302,6 @@ mod qualification {
                     .as_u64()
                     .ok_or("missing ceiling")?
         );
-        let body = AuthBusObjectiveBody {
-            spawn_generation: identity.spawn_generation,
-            run_id: "root-service-qualification".into(),
-            objective_revision: 1,
-            source_envelope_json: "{}".into(),
-            runtime_body_digest: "11".repeat(32),
-            preference_state_digest: "22".repeat(32),
-            model_tuple_digest: "33".repeat(32),
-            prompt_registry_digest: "44".repeat(32),
-            artifact_set_digest: "55".repeat(32),
-            authority_epoch: 1,
-        };
-        let signed = exchange(
-            &mut issuer,
-            &serde_json::json!({"schema_version":1,"operation":"runtime.authbus.objective.sign.v1","body":body}),
-            64 * 1024,
-        );
-        let ingress: AuthBusObjectiveIngress = serde_json::from_value(signed["ingress"].clone())?;
-        assert_eq!(ingress.sequence, if writer_proof { 2 } else { 1 });
         let layout = HeptaFleetRoot::parse(identity.fleet_root.clone())?
             .layout()
             .agent(&identity.agent_id);
@@ -295,16 +319,34 @@ mod qualification {
         };
         let public: [u8; 32] = serde_json::from_str(&std::env::var("HEPTA_SERVICE_PUBLIC_KEY")?)?;
         let key = ed25519_dalek::VerifyingKey::from_bytes(&public)?;
-        let signature: Vec<u8> = ingress
-            .signature_hex
-            .as_bytes()
-            .chunks_exact(2)
-            .map(|chunk| u8::from_str_radix(std::str::from_utf8(chunk).unwrap(), 16).unwrap())
-            .collect();
-        key.verify(
-            &authbus_objective_claims(&identity, &ingress)?.signing_bytes(),
-            &ed25519_dalek::Signature::from_slice(&signature)?,
-        )?;
+        let mut unregistered_objective = issuer.try_clone()?;
+        let objective_sequence = if writer_proof {
+            let signed = exchange(
+                &mut issuer,
+                &serde_json::json!({"schema_version":1,"operation":"runtime.authbus.objective.sign.v1","body":objective_body(identity.spawn_generation)}),
+                64 * 1024,
+            );
+            let ingress: AuthBusObjectiveIngress =
+                serde_json::from_value(signed["ingress"].clone())?;
+            assert_eq!(ingress.sequence, 2);
+            assert_eq!(
+                ingress.expires_at_ms,
+                writer_expiry.ok_or("missing writer expiry")?
+            );
+            let signature: Vec<u8> = ingress
+                .signature_hex
+                .as_bytes()
+                .chunks_exact(2)
+                .map(|chunk| u8::from_str_radix(std::str::from_utf8(chunk).unwrap(), 16).unwrap())
+                .collect();
+            key.verify(
+                &authbus_objective_claims(&identity, &ingress)?.signing_bytes(),
+                &ed25519_dalek::Signature::from_slice(&signature)?,
+            )?;
+            Some(ingress.sequence)
+        } else {
+            None
+        };
         let provider = AgentdUnixFinalUseGrantProvider::from_stream(
             issuer,
             AgentdFinalUseIssuerPeer {
@@ -332,12 +374,25 @@ mod qualification {
             grant
                 .grant
                 .grant_id
-                .ends_with(if writer_proof { ":3" } else { ":2" })
+                .ends_with(if writer_proof { ":3" } else { ":1" })
         );
         key.verify(
             &grant.grant.signing_bytes()?,
             &ed25519_dalek::Signature::from_slice(&grant.signature)?,
         )?;
+        if !writer_proof {
+            let request = serde_json::to_vec(
+                &serde_json::json!({"schema_version":1,"operation":"runtime.authbus.objective.sign.v1","body":objective_body(identity.spawn_generation)}),
+            )?;
+            unregistered_objective.write_all(&(request.len() as u32).to_be_bytes())?;
+            unregistered_objective.write_all(&request)?;
+            let mut first = [0];
+            assert_eq!(
+                unregistered_objective.read(&mut first)?,
+                0,
+                "writer registration is required for Objective signing"
+            );
+        }
         let bytes = serde_json::to_vec(
             &serde_json::json!({"schema_version":1,"operation":"runtime.cognitive.checkpoint.v1","request_id":"00000000000000010000000000000001","command":"read_head","expected":null,"proposal":null}),
         )?;
@@ -351,7 +406,7 @@ mod qualification {
         );
         println!(
             "{}",
-            serde_json::json!({"qualification":"root_authority_original_peer_v1","uid":60001,"no_new_privileges":true,"capabilities_clear":true,"feed_elapsed_ms":feed_ms,"objective_sequence":ingress.sequence,"final_use_sequence":grant.grant.grant_id.rsplit(':').next().ok_or("missing sequence")?.parse::<u64>()?,"checkpoint_ack":false,"production_ready":false})
+            serde_json::json!({"qualification":"root_authority_original_peer_v1","uid":60001,"no_new_privileges":true,"capabilities_clear":true,"feed_elapsed_ms":feed_ms,"objective_sequence":objective_sequence,"objective_denied_without_writer":!writer_proof,"final_use_sequence":grant.grant.grant_id.rsplit(':').next().ok_or("missing sequence")?.parse::<u64>()?,"checkpoint_ack":false,"production_ready":false})
         );
         Ok(())
     }

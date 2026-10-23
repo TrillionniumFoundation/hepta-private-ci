@@ -6,6 +6,7 @@ use crate::DeploymentGrantPolicy;
 use crate::authority_host_config::*;
 use crate::authority_host_runtime::*;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::AuthorityFrontierStore;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentManifest;
@@ -119,9 +120,14 @@ fn protected_service_client() {
         std::fs::read_dir(state).unwrap_err().kind(),
         io::ErrorKind::PermissionDenied
     );
+    if std::env::var_os("HEPTA_SERVICE_START_STDIN").is_some() {
+        let mut start = [0];
+        std::io::stdin().read_exact(&mut start).unwrap();
+        assert_eq!(start, [1]);
+    }
     let runtime = std::path::PathBuf::from(std::env::var_os("HEPTA_SERVICE_RUNTIME").unwrap());
     let mut observe = connect(&runtime.join("observation.sock"));
-    let mut issuer = connect(&runtime.join("issuer.sock"));
+    let issuer = connect(&runtime.join("issuer.sock"));
     let mut checkpoint = connect(&runtime.join("checkpoint.sock"));
     if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_FEED").is_some() {
         std::thread::sleep(Duration::from_secs(3));
@@ -174,46 +180,10 @@ fn protected_service_client() {
     );
     let registered: HostAuthorityRegisteredIdentity =
         serde_json::from_str(&std::env::var("HEPTA_SERVICE_IDENTITY").unwrap()).unwrap();
-    let signed = exchange(
-        &mut issuer,
-        &serde_json::json!({"schema_version":1,"operation":"runtime.authbus.objective.sign.v1","body":body()}),
-        64 * 1024,
-    );
-    let ingress: AuthBusObjectiveIngress =
-        serde_json::from_value(signed["ingress"].clone()).unwrap();
-    assert_eq!(ingress.sequence, 1);
-    let layout = HeptaFleetRoot::parse(registered.fleet_root.clone())
-        .unwrap()
-        .layout()
-        .agent(&registered.agent_id);
-    let identity = AgentdIdentity {
-        agent_id: registered.agent_id.clone(),
-        layout: layout.clone(),
-        spawn_generation: 1,
-        fleet_root: registered.fleet_root,
-        workspace: registered.workspace,
-        resources: registered.resources,
-        home_root: layout.home_root().to_path_buf(),
-        run_root: layout.run_root().to_path_buf(),
-        control_socket: layout.agentd_control_socket().to_path_buf(),
-        app_server_socket: layout.app_server_socket().to_path_buf(),
-    };
     let public: [u8; 32] =
         serde_json::from_str(&std::env::var("HEPTA_SERVICE_PUBLIC_KEY").unwrap()).unwrap();
     let key = ed25519_dalek::VerifyingKey::from_bytes(&public).unwrap();
-    let signature: Vec<u8> = ingress
-        .signature_hex
-        .as_bytes()
-        .chunks_exact(2)
-        .map(|chunk| u8::from_str_radix(std::str::from_utf8(chunk).unwrap(), 16).unwrap())
-        .collect();
-    key.verify(
-        &crate::authbus_objective_claims(&identity, &ingress)
-            .unwrap()
-            .signing_bytes(),
-        &ed25519_dalek::Signature::from_slice(&signature).unwrap(),
-    )
-    .unwrap();
+    let mut unregistered_objective = issuer.try_clone().unwrap();
     let provider = AgentdUnixFinalUseGrantProvider::from_stream(
         issuer,
         AgentdFinalUseIssuerPeer {
@@ -232,12 +202,23 @@ fn protected_service_client() {
         Err(crate::AgentdFinalUseIssuerError::Denied)
     ));
     let grant = provider.request_grant(&binding).unwrap();
-    assert!(grant.grant.grant_id.ends_with(":2"));
+    assert!(grant.grant.grant_id.ends_with(":1"));
     key.verify(
         &grant.grant.signing_bytes().unwrap(),
         &ed25519_dalek::Signature::from_slice(&grant.signature).unwrap(),
     )
     .unwrap();
+    let request = serde_json::to_vec(&serde_json::json!({"schema_version":1,"operation":"runtime.authbus.objective.sign.v1","body":body()})).unwrap();
+    unregistered_objective
+        .write_all(&(request.len() as u32).to_be_bytes())
+        .unwrap();
+    unregistered_objective.write_all(&request).unwrap();
+    let mut first = [0];
+    assert_eq!(
+        unregistered_objective.read(&mut first).unwrap(),
+        0,
+        "unregistered writer must not sign an Objective"
+    );
     // An absent independently registered head must never return a cut/ACK.
     let bytes=serde_json::to_vec(&serde_json::json!({"schema_version":1,"operation":"runtime.cognitive.checkpoint.v1","request_id":"00000000000000010000000000000001","command":"read_head","expected":null,"proposal":null})).unwrap();
     checkpoint
@@ -302,7 +283,7 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
     let bootstrap = root.join("bootstrap.json");
     write_json(
         &bootstrap,
-        &serde_json::json!({"schema_version":1,"required_bind":required_bind,"signer_id":"root-service-qualification","policies":[DeploymentGrantPolicy {subject_id:owner.to_string(),destination_id:b.destination_id.clone(),scope_sha256:b.scope_sha256,lifetime_ms:30000},DeploymentGrantPolicy {subject_id:owner.to_string(),destination_id:DeploymentFinalUseIssuer::OBJECTIVE_DESTINATION.into(),scope_sha256:*crate::objective_runtime::objective_scope(&identity.identity().unwrap()).as_array(),lifetime_ms:30000}],"lease_id":"root-service-qualification","lease_binding":AuthorityLeaseBinding {principal_id:b.subject_id,operation_class:"runtime.agentd.production_operation".into(),destination_id:b.destination_id,scope_sha256:b.scope_sha256,payload_sha256:b.payload_sha256},"lease_lifetime_ms":if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_FEED").is_some() {2000} else {60000}}),
+        &serde_json::json!({"schema_version":1,"required_bind":required_bind,"signer_id":"root-service-qualification","policies":[DeploymentGrantPolicy {subject_id:owner.to_string(),destination_id:b.destination_id.clone(),scope_sha256:b.scope_sha256,lifetime_ms:30000},DeploymentGrantPolicy {subject_id:owner.to_string(),destination_id:DeploymentFinalUseIssuer::OBJECTIVE_DESTINATION.into(),scope_sha256:*crate::objective_runtime::objective_scope(&identity.identity().unwrap()).as_array(),lifetime_ms:300000}],"lease_id":"root-service-qualification","lease_binding":AuthorityLeaseBinding {principal_id:b.subject_id,operation_class:"runtime.agentd.production_operation".into(),destination_id:b.destination_id,scope_sha256:b.scope_sha256,payload_sha256:b.payload_sha256},"lease_lifetime_ms":if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_FEED").is_some() || std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_OBJECTIVE").is_some() {2000} else {60000}}),
     );
     let state = root.join("authority");
     let initialized = initialize_host_authority(&state, &bootstrap).unwrap();
@@ -338,6 +319,8 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
                 vec!["--exact", CLIENT, "--ignored", "--nocapture"]
             },
         )
+        .stdin(std::process::Stdio::piped())
+        .env("HEPTA_SERVICE_START_STDIN", "1")
         .env("HEPTA_SERVICE_STATE", &state)
         .env("HEPTA_SERVICE_RUNTIME", runtime.path())
         .env(
@@ -389,7 +372,7 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
         checkpoint_owner_agent_id: owner,
         publisher_epoch: 1,
     };
-    let config = HostAuthorityServiceConfig {
+    let mut config = HostAuthorityServiceConfig {
         schema_version: 1,
         state_dir: state,
         required_bind,
@@ -423,7 +406,9 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
                     },
                     issued_at_unix_ms: now,
                     expires_at_unix_ms: now
-                        + if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_FEED").is_some() {
+                        + if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_FEED").is_some()
+                            || std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_OBJECTIVE").is_some()
+                        {
                             2000
                         } else {
                             60000
@@ -457,12 +442,6 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
             )
             .is_err()
         );
-        let first = register_host_writer_authorization(&config_path).unwrap();
-        assert_eq!(first.claims.sequence, 1);
-        assert_eq!(
-            register_host_writer_authorization(&config_path).unwrap(),
-            first
-        );
     }
     let mut wrong_key = config.clone();
     wrong_key.expected_verifying_key[0] ^= 1;
@@ -491,7 +470,7 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
         .is_err()
     );
     assert!(!missing_state.state_dir.exists());
-    let mut unmounted = config;
+    let mut unmounted = config.clone();
     let metadata = std::fs::metadata(root).unwrap();
     unmounted.required_bind = HostAuthorityBindIdentity {
         mountpoint: root.to_path_buf(),
@@ -511,6 +490,41 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
         .to_string()
         .contains("not mounted")
     );
+    // Form the actual fresh no-effect writer authorization after setup-only
+    // negative checks. Its lifetime is not spent constructing the fixture.
+    let config_path = if let Some(writer) = &mut config.writer {
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_millis() as u64;
+        writer.authority_lease.issued_at_unix_ms = now;
+        writer.authority_lease.expires_at_unix_ms = now
+            + if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_FEED").is_some()
+                || std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_OBJECTIVE").is_some()
+            {
+                2000
+            } else {
+                60000
+            };
+        let active = root.join("service-active.json");
+        write_json(&active, &config);
+        active
+    } else {
+        config_path
+    };
+    if config.writer.is_some() {
+        let first = register_host_writer_authorization(&config_path).unwrap();
+        assert_eq!(first.claims.sequence, 1);
+        if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_FEED").is_none()
+            && std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_OBJECTIVE").is_none()
+        {
+            assert_eq!(
+                register_host_writer_authorization(&config_path).unwrap(),
+                first
+            );
+        }
+    }
+    child.stdin.take().unwrap().write_all(&[1]).unwrap();
     let result = serve_host_authority_session(&config_path, &registration_path, pidfd);
     let status = child.wait().unwrap();
     assert!(
@@ -519,4 +533,18 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
     );
     // The deliberately absent checkpoint head closes that lane as Unavailable.
     assert!(result.is_err());
+    let retained = crate::DeploymentFrontierStore::<serde_json::Value>::open_protected(
+        &config.state_dir.join("issuer"),
+    )
+    .unwrap();
+    let mut sequence = if config.writer.is_some() { 1 } else { 0 };
+    if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_FEED").is_none()
+        && std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_OBJECTIVE").is_none()
+    {
+        sequence += if config.writer.is_some() { 2 } else { 1 };
+    }
+    assert_eq!(
+        retained.load("local-final-use-issuer").unwrap()["sequence"],
+        sequence
+    );
 }

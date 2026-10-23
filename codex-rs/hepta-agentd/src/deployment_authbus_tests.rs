@@ -352,3 +352,6 @@ fn deployment_authbus_concurrent_requests_get_unique_durable_sequences() {
     assert_eq!(sequences, (1..=8).collect::<Vec<_>>());
     assert_eq!(fixture.sequence(), 8);
 }
+
+#[path = "deployment_authbus_writer_tests.rs"]
+mod writer_tests;
