@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "protocol_id": "hepta-memory-A-I-prospective-v1",
+  "arms": {
+    "A": "bm25",
+    "B": "dense_bm25_reranker",
+    "C": "graph_rag",
+    "D": "typed_memory_no_learning",
+    "E": "shared_encoder_single_trained_head",
+    "F": "shared_encoder_multi_typed_heads",
+    "G": "F_learned_router",
+    "H": "G_learned_meta_graph",
+    "I": "H_split_merge_evolution"
+  },
+  "controls": {
+    "E_FROZEN": "shared_encoder_single_untrained_head",
+    "F_SWAPPED": "multi_head_wrong_type_route",
+    "G_FIXED": "multi_head_static_router",
+    "H_PERMUTED": "learned_graph_shuffled_edges",
+    "I_STATIC": "equal_budget_static_specialists"
+  },
+  "comparisons": [
+    {"candidate": "D", "baseline": "B", "mechanism": "typed_organization", "min_gain": 0.0},
+    {"candidate": "E", "baseline": "E_FROZEN", "mechanism": "single_head_learning", "min_gain": 0.0},
+    {"candidate": "F", "baseline": "E", "mechanism": "typed_differentiation", "min_gain": 0.0},
+    {"candidate": "F", "baseline": "F_SWAPPED", "mechanism": "correct_type_assignment", "min_gain": 0.0},
+    {"candidate": "G", "baseline": "G_FIXED", "mechanism": "learned_routing", "min_gain": 0.0},
+    {"candidate": "H", "baseline": "G", "mechanism": "learned_graph_increment", "min_gain": 0.0},
+    {"candidate": "H", "baseline": "H_PERMUTED", "mechanism": "learned_graph_causality", "min_gain": 0.0},
+    {"candidate": "I", "baseline": "H", "mechanism": "evolution_increment", "min_gain": 0.0},
+    {"candidate": "I", "baseline": "I_STATIC", "mechanism": "equal_budget_evolution", "min_gain": 0.0},
+    {"candidate": "I", "baseline": "B", "mechanism": "strong_hybrid_superiority", "min_gain": 0.02},
+    {"candidate": "I", "baseline": "C", "mechanism": "graph_rag_superiority", "min_gain": 0.02}
+  ],
+  "evaluation_windows": ["future_a", "future_b"],
+  "min_independent_families_per_window": 200,
+  "bootstrap_replicates": 5000,
+  "family_bootstrap_seed": 20261023,
+  "simultaneous_one_sided_alpha": 0.05,
+  "top_k": 8,
+  "max_context_bytes": 4096,
+  "max_output_tokens": 64,
+  "max_wall_ms": 120000,
+  "max_p95_latency_ratio_vs_B": 1.25,
+  "max_peak_rss_ratio_vs_B": 2.0,
+  "min_answerable_coverage": 0.75,
+  "max_adversarial_false_acceptance": 0.05,
+  "min_citation_supported": 0.95,
+  "max_model_trainable_parameter_bytes": 1048576,
+  "max_model_optimizer_steps": 100000,
+  "max_model_training_examples": 1000000,
+  "production_activation_allowed": false
+}
