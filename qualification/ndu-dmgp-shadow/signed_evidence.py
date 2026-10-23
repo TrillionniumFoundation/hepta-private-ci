@@ -163,6 +163,19 @@ def verify_pair(entry: object, observer_pem: Path, meter_pem: Path, *,
         raise EvidenceRejected("unregistered perceptual evaluator revision")
     if obs.get("source_to_output_verified") is not True or obs.get("output_to_source_verified") is not True:
         raise EvidenceRejected("missing bidirectional semantic observation")
+    # A boolean verdict alone is not auditable evidence. Require three
+    # separately content-addressed and observer-signed perceptual products;
+    # even this remains a schema/provenance check, NOT a pixel/audio audit.
+    perceptual_fields = (
+        "source_to_output_evidence_digest",
+        "output_to_source_evidence_digest",
+        "cross_modal_claims_digest",
+    )
+    if not all(_hex_digest(obs.get(field)) and obs[field] != "0" * 64
+               for field in perceptual_fields):
+        raise EvidenceRejected("missing independently bound perceptual evidence digests")
+    if obs[perceptual_fields[0]] == obs[perceptual_fields[1]]:
+        raise EvidenceRejected("forward/reverse evidence must be separately identified")
     modalities = obs.get("modalities")
     if (not isinstance(modalities, list) or not modalities
             or not all(isinstance(item, str) for item in modalities)
