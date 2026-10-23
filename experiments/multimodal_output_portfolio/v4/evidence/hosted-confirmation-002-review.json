@@ -1,0 +1,98 @@
+{
+  "schema": "hepta.ndu-v4.hosted-confirmation-002-evidence-handoff.v1",
+  "evidence_role": "secondary_downloaded-artifact-integrity-and-statistic-check_not_independent_human_evaluator",
+  "reviewed_on_utc_date": "2026-10-23",
+  "upstream": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "request_pr": 3370,
+    "request_head": "812fd5e124e8c34a001627ae47b0e9aae399b7cc",
+    "scientific_source_commit": "7713023e604746a3947e0e0e2d31e8eaef6e48b1",
+    "scientific_preregistration_commit": "f10589f3df5d2da88b2b5d92e3686441ce982461",
+    "protocol_sha256": "4f90f435e3ce419a09f42412af1fc6fe3515f3c198e5e8555115b1996c1aab0b",
+    "github_run": 39919197831,
+    "github_job": 120300045436,
+    "github_artifact_id": 12495887443,
+    "github_artifact_zip_sha256": "2c8e4f1f5841e661bda7d50c9904e635c0346fce8b1a22e250d4444fdc3c919e",
+    "run_conclusion": "success",
+    "run_completed_utc": "2026-10-23T10:47:09Z"
+  },
+  "archive_readonly_verification": {
+    "hosted_payload_files_sha256_and_size_verified": 121,
+    "producer_payload_files_sha256_and_size_verified": 100,
+    "distinct_zip_member_names": true,
+    "independent_npz_paired_external_loss_recomputed": true,
+    "npz_rows_per_arm_per_seed": 1024,
+    "registered_seeds": [
+      17,
+      29,
+      43
+    ],
+    "registered_arms": [
+      "dynamic",
+      "initial_feedback_committed_open_loop",
+      "myopic",
+      "clean_no_disturbance_reference"
+    ],
+    "all_arm_world_rows": 12288,
+    "per_arm_world_ids_equal_across_paired_arms": true,
+    "all_modelled_online_linear_macs_within_cap": true,
+    "all_refinements_at_most_two": true
+  },
+  "first_party_scientific_audit_from_artifact": {
+    "formal_integrity_passed": true,
+    "confirmatory": true,
+    "development": false,
+    "mechanism_gate_passed": true,
+    "primary_superiority_passed": true,
+    "strong_sibling_gate_each_seed": {
+      "17": true,
+      "29": true,
+      "43": true
+    },
+    "native_sessions": 12288,
+    "native_requests": 63534,
+    "original_binary_sha256": "a945120403d1206fb62153e764575a1423e092262aa42833bee2c2df69856687",
+    "complete_forward_linear_macs": 9333911040,
+    "source_verified_files": 63,
+    "producer_verified_files": 100,
+    "clean_science_source": true
+  },
+  "observed_results": {
+    "dynamic_minus_committed_plan_sampled_J": 0.03986064693618696,
+    "paired_95_bootstrap_CI": [
+      0.035097475384546745,
+      0.044746637647522076
+    ],
+    "finite_exact_J_difference": 0.035636408191612255,
+    "dynamic_minus_committed_plan_mean_external_loss": -0.037575264617308916,
+    "external_loss_from_npz_recomputed_to_machine_precision": true,
+    "dynamic_minus_myopic_mean_external_loss": -0.03512025486011736,
+    "myopic_comparison_inference_role": "descriptive_unadjusted_secondary",
+    "conditional_sampling_seeds_fixed": true,
+    "checkpoint_resampling": false,
+    "bootstrap_replicates": 1000
+  },
+  "resource_scope": {
+    "producer_full_dense_linear_macs": 9333911040,
+    "producer_wall_seconds": 59.262390852,
+    "producer_python_process_cpu_seconds": 207.481204554,
+    "producer_peak_rss_kib": 851864,
+    "pinned_neural_cpu": "torch==2.5.1+cpu",
+    "physical_gpu_energy_host_side_process_total_compute_and_controller_end_to_end_cost_independently_calibrated": false,
+    "source_disjoint_natural_generation": false
+  },
+  "boundary": {
+    "registered_v4_finite_synthetic_mechanism": true,
+    "registered_v4_finite_synthetic_superiority": true,
+    "original_v3_frozen_negative_results_preserved": true,
+    "original_confirmation_001_capacity_failure_preserved": true,
+    "new_v4_training": false,
+    "real_natural_four_modal_target_blind_generation": false,
+    "authenticated_external_independent_terminal_observer": false,
+    "dedicated_self_hosted_runner_qualified": false,
+    "production_neuron_runtime_qualified": false,
+    "all_blockers_closed": false,
+    "policy": "DRAFT_SHADOW_ONLY_DENY_ALL_HOLD_NO_GO"
+  },
+  "notes": "Job SUCCESS alone is not efficacy. The downloaded original ZIP contents, archived first-party independent audit, and separately recomputed paired external loss support only the frozen v4 finite synthetic confirmation. Archive and manifest SHA-256 authenticate downloaded bytes, not an external observer identity. Raw experiments and failures remain unchanged."
+}
