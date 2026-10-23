@@ -255,6 +255,13 @@ impl FleetRegistry {
             std::process::id(),
             RELEASE_SEQUENCE.fetch_add(1, Ordering::Relaxed)
         ));
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::DirBuilderExt;
+
+            std::fs::DirBuilder::new().mode(0o700).create(&staging)?;
+        }
+        #[cfg(not(unix))]
         std::fs::create_dir(&staging)?;
         let result = (|| {
             let bin_root = staging.join("bin");
@@ -293,8 +300,14 @@ impl FleetRegistry {
             set_mode(&bin_root, /*mode*/ 0o555)?;
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
-            set_mode(&staging, /*mode*/ 0o555)?;
+            // Darwin requires write permission on the directory being renamed,
+            // even when its parent does not change. Keep the staging root
+            // private until publication, then seal and sync the final inode.
+            // Catalog resolution rejects this root while it is still writable;
+            // an interrupted seal remains fail-closed and is never reused.
             std::fs::rename(&staging, &final_root)?;
+            set_mode(&final_root, /*mode*/ 0o555)?;
+            sync_directory(&final_root)?;
             sync_directory(self.layout().releases_root())?;
             Ok(())
         })();
