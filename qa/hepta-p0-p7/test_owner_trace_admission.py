@@ -85,6 +85,12 @@ class GroupTraceAdmissionTests(unittest.TestCase):
         with self.assertRaisesRegex(EvidenceError, "record its terminal decision"):
             validate_episode(self.root, row, self.by_id, self.protocol)
 
+    def test_malformed_terminal_node_fails_closed(self):
+        row = self.ndu()
+        row["decisions"][-1] = ["STOP"]
+        with self.assertRaisesRegex(EvidenceError, "record its terminal decision"):
+            validate_episode(self.root, row, self.by_id, self.protocol)
+
     def test_empty_source_modality_set_does_not_qualify(self):
         sources = copy.deepcopy(self.sources)
         sources["sources"][0]["modalities"] = []
