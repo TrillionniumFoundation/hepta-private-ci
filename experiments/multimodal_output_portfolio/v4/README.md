@@ -8,7 +8,7 @@ This additive experiment changes **none** of v1/v1.1/v2/v3 source or sealed conf
 
 A budgeted finite **output portfolio** chooses a different information/refinement
 action after receiving real (synthetic) feedback. Its actions are:
-\`text\`, \`audio\`, \`image\`, \`video\`, \`witness\` and \`emit\`.
+`text`, `audio`, `image`, `video`, `witness` and `emit`.
 The first four are **symbolic feedback probes**, not natural-media decoders.
 The witness observes a latent common-corruption indicator with a declared error
 channel, rather than consulting hidden truth. All four final symbolic outputs
@@ -33,7 +33,7 @@ must be emitted, with four units reserved before every optional action.
 - The evaluator independently enumerates truth, common corruption, all public
   reports, stochastic intermediate signals, actual emitted symbols and charged
   costs; truth never enters the runtime policy.
-- \`factorial.py\` separately validates four **executed** paired
+- `factorial.py` separately validates four **executed** paired
   training × inference arms and re-scores raw outputs using independent truth,
   rejecting changed labels, missing arms, duplicate worlds, proxy-cost units
   or fabricated metrics. No neural training is run by this module.
@@ -45,14 +45,14 @@ or weights.
 
 ## Executed local evidence (2026-10-23, Python standard library)
 
-\`\`\`bash
+```bash
 python -m unittest discover -s experiments/multimodal_output_portfolio/v4 -p 'test_*.py' -v
 python experiments/multimodal_output_portfolio/v4/run_experiment.py
 python experiments/multimodal_output_portfolio/v4/run_selective_witness.py
-\`\`\`
+```
 
-13 unit/adversarial tests passed locally. The saved
-\`evidence-development.json\` contains complete exact enumeration, not a
+14 unit/adversarial tests passed locally. The saved
+`evidence-development.json` contains complete exact enumeration, not a
 randomized holdout or physical resource measurement.
 
 | Fixed model, budget 6 | Mean external loss ↓ | CVaR90 external loss ↓ | Mean declared symbolic cost |
@@ -71,7 +71,7 @@ The confirmation gates for P2–P5 are therefore **not passed**.
 
 The budget-6 dynamic planner visits 560 states over all 16 root public reports.
 For root reports (0,0,0,0), it first probes video; feedback 0 leads to
-\`image\` and feedback 1 to \`text\`. This verifies actual feedback-dependent
+`image` and feedback 1 to `text`. This verifies actual feedback-dependent
 portfolio reallocation at the **symbolic mechanism** level.
 
 ## Scientific gates and strict nonclaims
@@ -105,7 +105,7 @@ and production runtime authority. Do not rewrite the earlier negative pilots.
 No repository main-branch updates, selected artifacts, production dispatch
 changes, model promotions, new grants or external effects are authorized.
 The code does not consume model checkpoints or emit natural media.
-\`BLOCKER_LEDGER.json\` names what is complete and what remains open.
+`BLOCKER_LEDGER.json` names what is complete and what remains open.
 
 ### Additional exploratory conditional-witness mechanism
 
@@ -120,5 +120,5 @@ versus static 0.1026000; dynamic CVaR90 0.4214181 versus static 0.4324116.
 Myopic and dynamic are **identical**; no strict long-horizon NDU advantage is
 supported. This does not close the original v3 R03 selective-query superiority
 claim, because it is a different tuned toy law and not an independent natural
-information source. Exact replay: \`run_selective_witness.py\` and
-\`evidence-selective-development.json\`.
+information source. Exact replay: `run_selective_witness.py` and
+`evidence-selective-development.json`.
