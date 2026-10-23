@@ -15,6 +15,7 @@ import time
 from pathlib import Path
 from typing import Any
 
+from artifact_guard import SnapshotGuard
 from bakeoff import (
     CANDIDATES, MODEL_REPOS, REVISION, SCHEMA, file_hash, load_jsonl,
     require, validate_dataset, training_partition_digest,
@@ -110,15 +111,39 @@ def device_kind(device: Any) -> str:
     return str(device).split(":", 1)[0]
 
 
+def laya_calibration_identity(agent: Any) -> str:
+    """Do not silently compare SDK-clamped confidence as publisher calibration."""
+    names = ("temperature_raw", "temperature", "temperature_by_options_raw", "temperature_by_options")
+    require(all(hasattr(agent, name) for name in names),
+            "Laya runtime does not expose raw/effective calibration identity")
+    raw, applied = agent.temperature_raw, agent.temperature
+    buckets, applied_buckets = agent.temperature_by_options_raw, agent.temperature_by_options
+    for label, temperatures, options in (("publisher", raw, buckets), ("effective", applied, applied_buckets)):
+        require(isinstance(temperatures, (list, tuple)) and len(temperatures) == 3
+                and isinstance(options, dict) and all(isinstance(key, str) for key in options),
+                f"invalid Laya {label} calibration schema")
+        require(all(type(value) in (int, float) and math.isfinite(value) and value > 0
+                    for value in [*temperatures, *options.values()]),
+                f"invalid Laya {label} calibration value")
+    require(list(raw) == list(applied) and buckets == applied_buckets,
+            "Laya runtime altered publisher calibration; independently register a new runtime profile")
+    return hashlib.sha256(json.dumps(
+        {"temperature": list(raw), "temperature_by_options": buckets}, sort_keys=True,
+    ).encode()).hexdigest()
+
+
 def laya_scores(
     snapshot: Path, rows: list[dict[str, Any]], expected_device: str,
+    guard: SnapshotGuard,
 ) -> tuple[dict[str, dict[str, float]], dict[str, Any]]:
     import laya
 
     started = time.perf_counter()
     agent = laya.load(str(snapshot), device=expected_device)
     load_ms = (time.perf_counter() - started) * 1000
+    guard.verify("after Laya load")
     require(device_kind(agent.device) == expected_device, "Laya silent load-device fallback")
+    calibration_sha = laya_calibration_identity(agent)
     precision_sha = precision_manifest(agent.model)
     output: dict[str, dict[str, float]] = {}
     for row in rows:
@@ -135,15 +160,19 @@ def laya_scores(
         require(isinstance(probs, dict) and set(probs) == set(options),
                 "Laya decision did not emit a complete distribution")
         output[row["id"]] = normalize({x: float(probs[x]) for x in options})
+    guard.verify("after Laya inference")
+    require(laya_calibration_identity(agent) == calibration_sha, "Laya calibration changed during inference")
     return output, {
         "backend": "laya-sdk", "load_ms": load_ms,
         "selected_device": expected_device,
         "parameter_precision_sha256": precision_sha,
+        "publisher_calibration_sha256": calibration_sha,
     }
 
 
 def embedding_scores(
     snapshot: Path, rows: list[dict[str, Any]], expected_device: str,
+    guard: SnapshotGuard,
 ) -> tuple[dict[str, dict[str, float]], dict[str, Any], str]:
     import numpy as np
     from sentence_transformers import SentenceTransformer
@@ -153,6 +182,7 @@ def embedding_scores(
         str(snapshot), trust_remote_code=False, local_files_only=True, device=expected_device,
     )
     load_ms = (time.perf_counter() - started) * 1000
+    guard.verify("after Encoder load")
     require(device_kind(model.device) == expected_device, "Encoder device fallback")
     precision_sha = precision_manifest(model)
     texts: list[str] = []
@@ -168,6 +198,7 @@ def embedding_scores(
         convert_to_numpy=True, show_progress_bar=False,
     )
     encode_ms = (time.perf_counter() - started) * 1000
+    guard.verify("after Encoder inference")
     require(device_kind(model.device) == expected_device, "Encoder device changed")
     require(embeddings.ndim == 2 and embeddings.shape[1] >= HEAD_DIM and np.isfinite(embeddings).all(),
             "invalid real embeddings")
@@ -227,7 +258,10 @@ def runtime_identity() -> str:
         except importlib.metadata.PackageNotFoundError:
             continue
     packages["python"] = platform.python_version()
-    packages["runner_sha256"] = file_hash(Path(__file__))
+    packages["runner_files_sha256"] = {
+        name: file_hash(Path(__file__).with_name(name))
+        for name in ("run_models.py", "bakeoff.py", "artifact_guard.py", "retrieval.py")
+    }
     return hashlib.sha256(json.dumps(packages, sort_keys=True).encode()).hexdigest()
 
 
@@ -282,17 +316,21 @@ def main() -> int:
         validate_dataset(data)
         require(all(isinstance(r.get("state"), str) and isinstance(r.get("question"), str)
                     for r in data), "text state/question required")
-        if a.model.startswith("laya-"):
-            scores, profile = laya_scores(
-                root, [r for r in data if r["split"] in ("calibration", "future_test")],
-                a.device,
-            )
-            head_digest = inventory["weights"]
-        else:
-            scores, profile, head_digest = embedding_scores(
-                root, [r for r in data if r["split"] in ("train", "calibration", "future_test")],
-                a.device,
-            )
+        with SnapshotGuard(root) as guard:
+            if a.model.startswith("laya-"):
+                scores, profile = laya_scores(
+                    guard.path, [r for r in data if r["split"] in ("calibration", "future_test")],
+                    a.device, guard,
+                )
+                head_digest = inventory["weights"]
+            else:
+                scores, profile, head_digest = embedding_scores(
+                    guard.path, [r for r in data if r["split"] in ("train", "calibration", "future_test")],
+                    a.device, guard,
+                )
+            require(model_inventory(root, exclude_bundled_laya=(a.model == "laya-english-421m"))
+                    == inventory, "published model inventory drift")
+            profile["full_snapshot_sha256"] = guard.digest
         calibration_rows = [r for r in data if r["split"] == "calibration" and not r["ood"]]
         temp = choose_temperature([(scores[r["id"]], r["gold"]) for r in calibration_rows])
         output_dir = a.output_root / a.model
