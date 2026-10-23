@@ -97,7 +97,9 @@ impl HostAuthorityService {
         mut self,
         notes: crate::RootNotesGrantAdmission,
     ) -> io::Result<Self> {
-        let writer = self.writer.as_ref()
+        let writer = self
+            .writer
+            .as_ref()
             .ok_or_else(|| io::Error::other("registered writer required for Notes"))?;
         if !writer.matches_notes(&notes) {
             return Err(io::Error::other("Notes delegation writer mismatch"));

@@ -54,7 +54,10 @@ impl HostAuthorityWriterRegistration {
             .ok_or_else(|| io::Error::new(io::ErrorKind::PermissionDenied, "writer lease missing"))?
             .lease;
         if lease != self.authority_lease {
-            return Err(io::Error::new(io::ErrorKind::PermissionDenied, "writer lease changed"));
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "writer lease changed",
+            ));
         }
         let token = verifier
             .verify_use(&lease.lease_id, lease.revision, &lease.binding)
