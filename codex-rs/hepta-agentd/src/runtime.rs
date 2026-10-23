@@ -34,12 +34,17 @@ const RUN_DRAIN_GRACE: Duration = Duration::from_secs(5);
 const RUN_RECONCILE_GRACE: Duration = Duration::from_secs(2);
 
 const TASK_SHUTDOWN_GRACE: Duration = Duration::from_secs(3);
+// Provider configuration is capped at 30 seconds. This is a bounded join
+// opportunity, not permission to abandon durable unknown effects on timeout.
+const EFFECT_SHUTDOWN_GRACE: Duration = Duration::from_secs(32);
 
 pub async fn run(
     mut config: AgentdConfig,
     arg0_paths: Arg0DispatchPaths,
 ) -> Result<(), AgentdError> {
     let production_operations = config.take_production_operations();
+    let automation_effect_production_authority =
+        config.take_automation_effect_production_authority();
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let trust_file = config
         .authbus_trust_file()
@@ -56,6 +61,11 @@ pub async fn run(
     let objective_profile_file = config
         .objective_profile_file()
         .map(std::path::Path::to_path_buf);
+    if automation_effect_production_authority.is_some() && automation_effect_host_file.is_none() {
+        return Err(AgentdError::Invalid(
+            "automation effect production authority requires a protected host file".to_string(),
+        ));
+    }
     if objective_profile_file.is_some() && trust_file.is_none() {
         return Err(AgentdError::Invalid(
             "objective profile requires explicit AuthBus trust configuration".to_string(),
@@ -230,12 +240,31 @@ pub async fn run(
     if let Some(store) = automation_store.as_ref() {
         state.attach_automation_store(store.clone())?;
     }
-    if let Some(path) = automation_effect_host_file {
-        state.refresh_generation()?;
-        let host =
-            crate::automation_effect_host::AgentdAutomationEffectHost::open(&identity, &path)?;
-        state.refresh_generation()?;
-        state.attach_automation_effect_host(Arc::new(host))?;
+    match (
+        automation_effect_host_file,
+        automation_effect_production_authority,
+    ) {
+        (Some(path), Some(authority)) => {
+            state.refresh_generation()?;
+            let host = crate::automation_effect_host::AgentdAutomationEffectHost::open_production(
+                &identity, &path, &authority,
+            )?;
+            state.refresh_generation()?;
+            state.attach_automation_effect_host(Arc::new(host))?;
+        }
+        (Some(path), None) => {
+            state.refresh_generation()?;
+            let host =
+                crate::automation_effect_host::AgentdAutomationEffectHost::open(&identity, &path)?;
+            state.refresh_generation()?;
+            state.attach_automation_effect_host(Arc::new(host))?;
+        }
+        (None, None) => {}
+        (None, Some(_)) => {
+            return Err(AgentdError::Invalid(
+                "automation effect production authority requires a protected host file".to_string(),
+            ));
+        }
     }
     state.mark_runtime_prerequisites_ready()?;
     let cancellation = CancellationToken::new();
@@ -304,16 +333,53 @@ pub async fn run(
     }
     .await;
     if let Err(error) = startup {
+        let admission = close_effect_admission(&state);
         tasks.shutdown().await;
-        return Err(error);
+        let effects = drain_effect_owner(&state).await;
+        return combine_shutdown_results(combine_shutdown_results(Err(error), admission), effects);
     }
-    tasks
+    // Keep the existing effect owner alive even when a required service exits
+    // or run_until cancels its signal/drain future. Effect handles are not part
+    // of the cancellable control-response tasks.
+    let cleanup_state = Arc::clone(&state);
+    let runtime = tasks
         .run_until(async move {
             shutdown_signal().await?;
             // Keep control and owner reconciliation alive throughout drain.
             drain_runtime(state).await
         })
-        .await
+        .await;
+    let effects = drain_effect_owner(&cleanup_state).await;
+    combine_shutdown_results(runtime, effects)
+}
+
+fn close_effect_admission(state: &AgentdState) -> Result<(), AgentdError> {
+    if let Some(host) = state.automation_effect_host() {
+        host.begin_effect_shutdown()?;
+    }
+    Ok(())
+}
+
+async fn drain_effect_owner(state: &AgentdState) -> Result<(), AgentdError> {
+    if let Some(host) = state.automation_effect_host() {
+        // drain_owned_effects closes admission under the same lock used by
+        // submit, retains unjoined work on timeout, and reports failed joins.
+        host.drain_owned_effects(Instant::now() + EFFECT_SHUTDOWN_GRACE)
+            .await?;
+    }
+    Ok(())
+}
+
+fn combine_shutdown_results(
+    runtime: Result<(), AgentdError>,
+    effects: Result<(), AgentdError>,
+) -> Result<(), AgentdError> {
+    match (runtime, effects) {
+        (Ok(()), result) | (result, Ok(())) => result,
+        (Err(runtime), Err(effects)) => Err(AgentdError::Protocol(format!(
+            "runtime shutdown: {runtime}; effect-owner shutdown: {effects}"
+        ))),
+    }
 }
 
 fn require_cognitive_retrieval_context_for_mode(
@@ -495,6 +561,9 @@ async fn probe_app_server(identity: &AgentdIdentity) -> Result<(), AgentdError> 
 }
 
 async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
+    // Close effect admission before any fallible run-drain bookkeeping. Exact
+    // terminal reads and explicit reconciliation do not use this admission gate.
+    close_effect_admission(&state)?;
     state.mark_draining()?;
     let drain_deadline = Instant::now() + RUN_DRAIN_GRACE;
     loop {
@@ -553,3 +622,38 @@ async fn shutdown_signal() -> Result<(), AgentdError> {
 #[cfg(test)]
 #[path = "runtime_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+mod effect_shutdown_tests {
+    use super::*;
+
+    #[test]
+    fn runtime_success_cannot_hide_effect_owner_failure() {
+        let result = combine_shutdown_results(
+            Ok(()),
+            Err(AgentdError::Protocol("unjoined-effect".to_string())),
+        );
+        assert!(result.unwrap_err().to_string().contains("unjoined-effect"));
+    }
+
+    #[test]
+    fn effect_drain_success_cannot_hide_required_service_failure() {
+        let result = combine_shutdown_results(
+            Err(AgentdError::Protocol("required-service".to_string())),
+            Ok(()),
+        );
+        assert!(result.unwrap_err().to_string().contains("required-service"));
+    }
+
+    #[test]
+    fn combined_shutdown_retains_both_failure_contexts() {
+        let result = combine_shutdown_results(
+            Err(AgentdError::Protocol("required-service".to_string())),
+            Err(AgentdError::Protocol("unjoined-effect".to_string())),
+        );
+        let error = result.unwrap_err().to_string();
+        assert!(error.contains("required-service"));
+        assert!(error.contains("unjoined-effect"));
+        assert!(combine_shutdown_results(Ok(()), Ok(())).is_ok());
+    }
+}

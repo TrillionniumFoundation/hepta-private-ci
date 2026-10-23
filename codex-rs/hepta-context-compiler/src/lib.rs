@@ -34,6 +34,7 @@ pub use v2::ContextCandidateV2;
 pub use v2::ContextCompilationReceiptV2;
 pub use v2::ContextCompilationRequestV2;
 pub use v2::ContextCompilerV2Error;
+pub use v2::ContextDeliveryArtifactsV2;
 pub use v2::ContextDeliveryDispositionV2;
 pub use v2::ContextDeliveryObservationV2;
 pub use v2::ContextDeliveryPreparationV2;

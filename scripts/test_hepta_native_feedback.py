@@ -161,19 +161,34 @@ class NativeFeedbackPolicyTests(unittest.TestCase):
             self.assertTrue(fnmatch.fnmatchcase("owner-test.json", pattern))
             self.assertTrue(fnmatch.fnmatchcase("owner-test.json.1234.log", pattern))
 
-    def test_build_inputs_cannot_miss_the_outer_path_filter(self):
+    def test_build_and_policy_inputs_reach_the_aggregate_checks(self):
+        from scripts.hepta_ci_scope import select
+
+        # The consolidated workflow is now reusable. Automatic dispatch belongs
+        # to the aggregate, whose dependency selector must retain build inputs.
         text = WORKFLOW.read_text().split("permissions:", 1)[0]
+        self.assertIn("  workflow_call:", text)
+        aggregate = (ROOT / ".github/workflows/blocking-ci.yml").read_text()
+        events = aggregate.split("concurrency:", 1)[0]
+        self.assertIn("  pull_request:", events)
+        self.assertNotIn("paths:", events)
+        self.assertIn("needs.scope.outputs.native == 'true'", aggregate)
         for path in (
-            ".cargo/**",
-            "codex-rs/.cargo/**",
+            ".cargo/config.toml",
+            "codex-rs/.cargo/config.toml",
             "rust-toolchain",
             "rust-toolchain.toml",
             "codex-rs/rust-toolchain",
             "codex-rs/rust-toolchain.toml",
+        ):
+            with self.subTest(path=path):
+                self.assertTrue(select([path])["native"])
+        for path in (
             "scripts/hepta_workspace.py",
             "scripts/test_hepta_native_feedback.py",
         ):
-            self.assertIn('      - "' + path + '"', text)
+            with self.subTest(path=path):
+                self.assertTrue(select([path])["derived"])
 
 
 class NativeFeedbackExecutionTests(unittest.TestCase):

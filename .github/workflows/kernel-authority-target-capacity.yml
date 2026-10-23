@@ -1,0 +1,401 @@
+name: Kernel authority target capacity collection
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact 40-character candidate commit to measure
+        required: true
+        type: string
+      profile_id:
+        description: Stable target-host profile identifier
+        required: true
+        type: string
+      samples:
+        description: Samples per measurement and diagnostic row (minimum 100)
+        required: true
+        default: "100"
+        type: string
+      driver_sha256:
+        description: Expected SHA-256 of the protected host-owned measurement driver
+        required: true
+        type: string
+      policy_sha256:
+        description: Expected SHA-256 of the independently reviewed hot-path policy
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-authority-target-capacity-${{ inputs.candidate_sha }}-${{ inputs.profile_id }}
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    name: Collect exact target-host matrix
+    if: github.ref == 'refs/heads/main'
+    environment: kernel-authority-target
+    runs-on: [self-hosted, kernel-authority-target]
+    timeout-minutes: 360
+    env:
+      DRIVER: /opt/hepta/bin/kernel-authority-capacity-driver
+      POLICY: /opt/hepta/policies/kernel-authority-hot-path-policy.json
+      CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+      PROFILE_ID: ${{ inputs.profile_id }}
+      SAMPLES: ${{ inputs.samples }}
+      EXPECTED_DRIVER_SHA256: ${{ inputs.driver_sha256 }}
+      EXPECTED_POLICY_SHA256: ${{ inputs.policy_sha256 }}
+    steps:
+      - name: Validate dispatch inputs and create a fresh private evidence root
+        env:
+          EVIDENCE_ROOT: ${{ runner.temp }}/kernel-authority-target-capacity-${{ github.run_id }}-${{ github.run_attempt }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$PROFILE_ID" =~ ^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$ ]]
+          [[ "$SAMPLES" =~ ^[0-9]+$ ]]
+          test "$SAMPLES" -ge 100
+          test "$SAMPLES" -le 1000000
+          [[ "$EXPECTED_DRIVER_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$EXPECTED_POLICY_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          test ! -e "$EVIDENCE_ROOT"
+          mkdir -m 0700 "$EVIDENCE_ROOT"
+          printf 'EVIDENCE_ROOT=%s\n' "$EVIDENCE_ROOT" >> "$GITHUB_ENV"
+
+      - name: Checkout trusted collector from exact main dispatch source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          path: control
+          persist-credentials: false
+
+      - id: identity
+        name: Pin current main control, candidate metadata, collector, policy, and driver identities
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_API_URL: ${{ github.api_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          control="$GITHUB_WORKSPACE/control"
+          test "$(git -C "$control" rev-parse HEAD)" = "$GITHUB_SHA"
+          git -C "$control" fetch --no-tags origin refs/heads/main:refs/remotes/origin/main
+          test "$(git -C "$control" rev-parse refs/remotes/origin/main)" = "$GITHUB_SHA"
+          test -z "$(git -C "$control" status --porcelain)"
+          collector="$control/qualification/kernel-authority/capacity_matrix.py"
+          gate="$control/qualification/kernel-authority/hot_path_gate.py"
+          test -f "$collector"
+          test -f "$gate"
+          test -f "$POLICY"
+          test -f "$DRIVER"
+          test -x "$DRIVER"
+
+          # The privileged target runner never checks out or fetches candidate bytes.
+          # Resolve only the exact commit/tree metadata from the repository API.
+          candidate_tree="$(python3 - <<'PY'
+          import json
+          import os
+          import re
+          import urllib.error
+          import urllib.request
+
+          candidate_sha = os.environ["CANDIDATE_SHA"]
+          api_url = os.environ["GITHUB_API_URL"].rstrip("/")
+          repository = os.environ["GITHUB_REPOSITORY"]
+          token = os.environ["GITHUB_TOKEN"]
+          sha = re.compile(r"[0-9a-f]{40}")
+          repository_name = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
+          if sha.fullmatch(candidate_sha) is None:
+              raise SystemExit("invalid candidate commit identity")
+          if not api_url.startswith("https://") or repository_name.fullmatch(repository) is None:
+              raise SystemExit("invalid trusted GitHub API context")
+          if not token:
+              raise SystemExit("missing read-only GitHub token")
+
+          url = f"{api_url}/repos/{repository}/git/commits/{candidate_sha}"
+          request = urllib.request.Request(
+              url,
+              headers={
+                  "Accept": "application/vnd.github+json",
+                  "Authorization": f"Bearer {token}",
+                  "User-Agent": "kernel-authority-target-capacity",
+                  "X-GitHub-Api-Version": "2022-11-28",
+              },
+              method="GET",
+          )
+          try:
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  raw = response.read(1_048_577)
+          except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as error:
+              raise SystemExit("candidate identity lookup failed") from error
+          if len(raw) > 1_048_576:
+              raise SystemExit("candidate identity response exceeded one MiB")
+          try:
+              payload = json.loads(raw)
+          except (UnicodeDecodeError, json.JSONDecodeError) as error:
+              raise SystemExit("candidate identity response was invalid JSON") from error
+          if not isinstance(payload, dict) or payload.get("sha") != candidate_sha:
+              raise SystemExit("candidate identity response did not bind the requested commit")
+          tree = payload.get("tree")
+          tree_sha = tree.get("sha") if isinstance(tree, dict) else None
+          if not isinstance(tree_sha, str) or sha.fullmatch(tree_sha) is None:
+              raise SystemExit("candidate identity response did not contain an exact tree")
+          print(tree_sha)
+          PY
+          )"
+          [[ "$candidate_tree" =~ ^[0-9a-f]{40}$ ]]
+
+          control_tree="$(git -C "$control" rev-parse 'HEAD^{tree}')"
+          collector_sha256="$(python3 -c 'import hashlib,pathlib,sys; print(hashlib.sha256(pathlib.Path(sys.argv[1]).read_bytes()).hexdigest())' "$collector")"
+          gate_sha256="$(python3 -c 'import hashlib,pathlib,sys; print(hashlib.sha256(pathlib.Path(sys.argv[1]).read_bytes()).hexdigest())' "$gate")"
+          observed_policy_sha256="$(python3 -c 'import hashlib,pathlib,sys; print(hashlib.sha256(pathlib.Path(sys.argv[1]).read_bytes()).hexdigest())' "$POLICY")"
+          observed_driver_sha256="$(python3 -c 'import hashlib,pathlib,sys; print(hashlib.sha256(pathlib.Path(sys.argv[1]).read_bytes()).hexdigest())' "$DRIVER")"
+          test "$observed_policy_sha256" = "$EXPECTED_POLICY_SHA256"
+          test "$observed_driver_sha256" = "$EXPECTED_DRIVER_SHA256"
+          cp "$POLICY" "$EVIDENCE_ROOT/hot-path-policy.json"
+          printf '%s\n' "$CANDIDATE_SHA" > "$EVIDENCE_ROOT/candidate-commit.txt"
+          printf '%s\n' "$candidate_tree" > "$EVIDENCE_ROOT/candidate-tree.txt"
+          printf '%s\n' "$GITHUB_SHA" > "$EVIDENCE_ROOT/control-commit.txt"
+          printf '%s\n' "$control_tree" > "$EVIDENCE_ROOT/control-tree.txt"
+          printf '%s\n' "$collector_sha256" > "$EVIDENCE_ROOT/collector-sha256.txt"
+          printf '%s\n' "$gate_sha256" > "$EVIDENCE_ROOT/hot-path-gate-sha256.txt"
+          printf '%s\n' "$observed_policy_sha256" > "$EVIDENCE_ROOT/policy-sha256.txt"
+          printf '%s\n' "$observed_driver_sha256" > "$EVIDENCE_ROOT/driver-sha256.txt"
+          printf '%s\n' "${RUNNER_NAME:-unknown}" > "$EVIDENCE_ROOT/runner-name.txt"
+          printf 'candidate_tree=%s\n' "$candidate_tree" >> "$GITHUB_OUTPUT"
+
+      - name: Build exact measurement plan with trusted collector
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$GITHUB_WORKSPACE/control/qualification/kernel-authority/capacity_matrix.py" plan \
+            --candidate-commit "$CANDIDATE_SHA" \
+            --candidate-tree '${{ steps.identity.outputs.candidate_tree }}' \
+            --profile-id "$PROFILE_ID" \
+            --samples "$SAMPLES" \
+            --output "$EVIDENCE_ROOT/plan.json"
+
+      - name: Collect real target-host rows with pinned host driver
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$GITHUB_WORKSPACE/control/qualification/kernel-authority/capacity_matrix.py" collect \
+            --plan "$EVIDENCE_ROOT/plan.json" \
+            --driver "$DRIVER" \
+            --output-dir "$EVIDENCE_ROOT/collection" \
+            --timeout-seconds 3600
+
+      - name: Reopen and byte-verify the retained collection
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$GITHUB_WORKSPACE/control/qualification/kernel-authority/capacity_matrix.py" validate \
+            --plan "$EVIDENCE_ROOT/plan.json" \
+            --collection "$EVIDENCE_ROOT/collection/capacity-collection.json"
+          python3 - "$EVIDENCE_ROOT/collection/capacity-collection.json" "$EVIDENCE_ROOT/collection" <<'PY'
+          import hashlib
+          import json
+          import pathlib
+          import sys
+
+          collection_path = pathlib.Path(sys.argv[1]).resolve()
+          root = pathlib.Path(sys.argv[2]).resolve()
+          if collection_path != root / "capacity-collection.json" or not root.is_dir():
+              raise SystemExit("capacity collection root mismatch")
+          receipt = json.loads(collection_path.read_text(encoding="utf-8"))
+          if receipt.get("synthetic") is not False or receipt.get("passed") is not True:
+              raise SystemExit("target collection is not a real validated pass")
+          for field in (
+              "productionEvidenceAdmissible",
+              "productionSloGranted",
+              "independentAcceptance",
+              "activationGranted",
+              "releaseGranted",
+          ):
+              if receipt.get(field) is not False:
+                  raise SystemExit(f"target collection overclaims {field}")
+          if len(receipt.get("measurements", [])) != 55:
+              raise SystemExit("target collection does not contain 55 measurement rows")
+          if len(receipt.get("faultResults", [])) != 8:
+              raise SystemExit("target collection does not contain eight fault rows")
+          if len(receipt.get("hotPathDiagnostics", [])) != 25:
+              raise SystemExit("target collection does not contain 25 diagnostics")
+
+          artifacts = receipt.get("artifacts")
+          if not isinstance(artifacts, list) or len(artifacts) != 267:
+              raise SystemExit("target collection does not contain 267 artifact identities")
+          expected = {}
+          for row in artifacts:
+              if not isinstance(row, dict) or set(row) != {"path", "sha256"}:
+                  raise SystemExit("invalid capacity artifact identity")
+              relative = row["path"]
+              digest = row["sha256"]
+              if (
+                  not isinstance(relative, str)
+                  or not relative
+                  or relative in expected
+                  or not isinstance(digest, str)
+                  or len(digest) != 64
+                  or any(character not in "0123456789abcdef" for character in digest)
+              ):
+                  raise SystemExit("invalid or duplicate capacity artifact identity")
+              path = (root / relative).resolve()
+              try:
+                  path.relative_to(root)
+              except ValueError as error:
+                  raise SystemExit("capacity artifact escapes collection root") from error
+              if path.is_symlink() or not path.is_file():
+                  raise SystemExit("capacity artifact is missing, non-regular, or a symlink")
+              observed = hashlib.sha256(path.read_bytes()).hexdigest()
+              if observed != digest:
+                  raise SystemExit("capacity artifact digest mismatch")
+              expected[relative] = digest
+
+          actual = set()
+          for path in root.rglob("*"):
+              if path.is_symlink():
+                  raise SystemExit("capacity collection contains a symlink")
+              if path.is_file():
+                  actual.add(path.relative_to(root).as_posix())
+          if actual != set(expected) | {"capacity-collection.json"}:
+              raise SystemExit("capacity collection contains missing or unbound files")
+          PY
+
+      - name: Apply independent hot-path policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$GITHUB_WORKSPACE/control/qualification/kernel-authority/hot_path_gate.py" \
+            --plan "$EVIDENCE_ROOT/plan.json" \
+            --collection "$EVIDENCE_ROOT/collection/capacity-collection.json" \
+            --policy "$EVIDENCE_ROOT/hot-path-policy.json" \
+            --output "$EVIDENCE_ROOT/hot-path-decision.json"
+          python3 - "$EVIDENCE_ROOT/hot-path-decision.json" <<'PY'
+          import json
+          import pathlib
+          import sys
+
+          decision = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+          if decision.get("passed") is not True:
+              raise SystemExit("hot-path policy did not pass")
+          if len(decision.get("metricResults", [])) != 5:
+              raise SystemExit("hot-path decision does not contain five metrics")
+          for field in (
+              "runtimeOptimizationAuthorized",
+              "productionSloGranted",
+              "independentAcceptance",
+              "activationGranted",
+              "releaseGranted",
+          ):
+              if decision.get(field) is not False:
+                  raise SystemExit(f"hot-path decision overclaims {field}")
+          PY
+          git -C "$GITHUB_WORKSPACE/control" diff --check
+          test -z "$(git -C "$GITHUB_WORKSPACE/control" status --porcelain)"
+
+      - name: Seal one content-addressed target evidence envelope
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - "$EVIDENCE_ROOT" "$PROFILE_ID" "$SAMPLES" <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import re
+          import sys
+
+          root = pathlib.Path(sys.argv[1]).resolve()
+          profile_id = sys.argv[2]
+          samples = int(sys.argv[3])
+          sha1 = re.compile(r"[0-9a-f]{40}")
+          sha256 = re.compile(r"[0-9a-f]{64}")
+
+          def text(name):
+              value = (root / name).read_text(encoding="utf-8").strip()
+              if not value:
+                  raise SystemExit(f"empty identity file: {name}")
+              return value
+
+          def digest(name):
+              return hashlib.sha256((root / name).read_bytes()).hexdigest()
+
+          candidate_commit = text("candidate-commit.txt")
+          candidate_tree = text("candidate-tree.txt")
+          control_commit = text("control-commit.txt")
+          control_tree = text("control-tree.txt")
+          for label, value in (
+              ("candidateCommit", candidate_commit),
+              ("candidateTree", candidate_tree),
+              ("controlCommit", control_commit),
+              ("controlTree", control_tree),
+          ):
+              if sha1.fullmatch(value) is None:
+                  raise SystemExit(f"invalid {label}")
+          identities = {
+              "collectorSha256": text("collector-sha256.txt"),
+              "hotPathGateSha256": text("hot-path-gate-sha256.txt"),
+              "policySha256": text("policy-sha256.txt"),
+              "driverSha256": text("driver-sha256.txt"),
+          }
+          if any(sha256.fullmatch(value) is None for value in identities.values()):
+              raise SystemExit("invalid content identity")
+
+          envelope = {
+              "schema": "hepta.kernel-authority-target-evidence-envelope.v1",
+              "schemaVersion": 1,
+              "candidate": {"commit": candidate_commit, "tree": candidate_tree},
+              "control": {"commit": control_commit, "tree": control_tree},
+              "profileId": profile_id,
+              "samplesPerRow": samples,
+              "runnerName": text("runner-name.txt"),
+              "workflowRunId": os.environ["GITHUB_RUN_ID"],
+              "workflowRunAttempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              **identities,
+              "planSha256": digest("plan.json"),
+              "collectionSha256": digest("collection/capacity-collection.json"),
+              "hotPathDecisionSha256": digest("hot-path-decision.json"),
+              "collectionArtifactCount": 267,
+              "productionEvidenceAdmissible": False,
+              "runtimeOptimizationAuthorized": False,
+              "productionSloGranted": False,
+              "independentAcceptance": False,
+              "activationGranted": False,
+              "releaseGranted": False,
+          }
+          target = root / "target-evidence-envelope.json"
+          temporary = target.with_name(target.name + ".next")
+          temporary.write_text(
+              json.dumps(envelope, sort_keys=True, separators=(",", ":")) + "\n",
+              encoding="utf-8",
+          )
+          os.replace(temporary, target)
+
+          reopened = json.loads(target.read_text(encoding="utf-8"))
+          if reopened != envelope:
+              raise SystemExit("target evidence envelope failed exact reopen")
+          for field in (
+              "productionEvidenceAdmissible",
+              "runtimeOptimizationAuthorized",
+              "productionSloGranted",
+              "independentAcceptance",
+              "activationGranted",
+              "releaseGranted",
+          ):
+              if reopened.get(field) is not False:
+                  raise SystemExit(f"target evidence envelope overclaims {field}")
+          PY
+
+      - name: Retain candidate-bound target evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: kernel-authority-target-capacity-${{ github.run_id }}-${{ github.run_attempt }}-${{ inputs.candidate_sha }}
+          path: ${{ runner.temp }}/kernel-authority-target-capacity-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: error
+          retention-days: 30

@@ -165,6 +165,16 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 Use the host-enrolled BaoClient consumer behind a registered trusted callback. The current integration supports the KV v2 read contract and a durable metadata-only lease lifecycle/reconciliation owner. Provider-native lease issuance/renew/revoke dispatch remains gated by the OpenBao compatibility blocker and must stay fail-closed until the exact endpoint contract is qualified. Configure CA, issuer, epoch and persistent authority state through the host, pass the provider token through the dedicated channel, and retain indeterminate consumer outcomes without blind retry.
 
+The metadata owner admits one pending operation of each kind for a lease. A
+pending revocation fences renewal observations and new renewals; late renewal
+results cannot restore a revoked or expired lease. A denial clears only its own
+uncertainty, and denying a revocation restores an earlier unresolved renewal to
+`RenewUnknown`. Exact preparation retries return the original durable operation,
+including Unknown or terminal observations, without issuing a new provider
+attempt. Reusing that identity with changed semantics conflicts. Recovery rejects
+dangling lease references and multiple pending operations of the same kind. These
+metadata transitions do not authorize a provider dispatch or a secret read.
+
 Current operating and state-format references:
 
 - [codex-rs/hepta-bao-adapter/README.md](../../../codex-rs/hepta-bao-adapter/README.md).

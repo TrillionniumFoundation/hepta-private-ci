@@ -8,6 +8,7 @@ use super::FinalUseError;
 use super::FinalUseRevocations;
 use super::MAX_CLAIMS;
 use super::State;
+use super::head_advances;
 use super::valid_head;
 use serde::Deserialize;
 use serde::Serialize;
@@ -22,6 +23,7 @@ use std::path::Path;
 const STATE_SCHEMA_V1: u32 = 1;
 const STATE_SCHEMA_V2: u32 = 2;
 const STATE_SCHEMA_V3: u32 = 3;
+const STATE_SCHEMA_V4: u32 = 4;
 const CLAIM_FRAME_BYTES: usize = 8 + 32;
 
 #[derive(Deserialize)]
@@ -67,16 +69,34 @@ struct StoredV3 {
     head: FinalUseRevocations,
 }
 
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct StoredV4 {
+    schema: u32,
+    signer_id: String,
+    trust: StoreTrust,
+    head: FinalUseRevocations,
+    pending_revocations: Option<FinalUseRevocations>,
+}
+
 #[derive(Clone, Copy, Deserialize, Eq, PartialEq, Serialize)]
 enum StoreTrust {
     SingleKey([u8; 32]),
     IssuerKeyRing([u8; 32]),
 }
 
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum StartupHeadPolicy {
+    Advance,
+    Exact,
+    Recover,
+}
+
 pub(super) struct Store {
     root: File,
     signer_id: String,
     trust: StoreTrust,
+    obsolete_claims: bool,
     _lock: File,
 }
 
@@ -92,7 +112,7 @@ impl Store {
             signer_id,
             StoreTrust::SingleKey(verifying_key),
             initial,
-            true,
+            StartupHeadPolicy::Advance,
         )
     }
 
@@ -107,7 +127,7 @@ impl Store {
             signer_id,
             StoreTrust::SingleKey(verifying_key),
             initial,
-            false,
+            StartupHeadPolicy::Exact,
         )
     }
 
@@ -122,7 +142,24 @@ impl Store {
             signer_id,
             StoreTrust::IssuerKeyRing(issuer_trust_sha256),
             initial,
-            false,
+            StartupHeadPolicy::Exact,
+        )
+    }
+
+    pub(super) fn open_key_ring_recovered(
+        root: &Path,
+        signer_id: &str,
+        issuer_trust_sha256: [u8; 32],
+        initial: FinalUseRevocations,
+    ) -> Result<(Self, State), FinalUseError> {
+        // Existing state is never advanced from the bootstrap hint. The caller
+        // must compare its complete frontier with the independent backend.
+        Self::open_inner(
+            root,
+            signer_id,
+            StoreTrust::IssuerKeyRing(issuer_trust_sha256),
+            initial,
+            StartupHeadPolicy::Recover,
         )
     }
 
@@ -131,16 +168,17 @@ impl Store {
         signer_id: &str,
         trust: StoreTrust,
         initial: FinalUseRevocations,
-        allow_startup_head_advance: bool,
+        startup_head_policy: StartupHeadPolicy,
     ) -> Result<(Self, State), FinalUseError> {
         let root = prepare_directory(root)?;
         let initialized = entry_exists(&root, "authority.lock")?;
         let lock = open_private(&root, "authority.lock", Access::Create)?;
         lock.try_lock().map_err(|_| FinalUseError::StateLocked)?;
-        let store = Self {
+        let mut store = Self {
             root,
             signer_id: signer_id.to_owned(),
             trust,
+            obsolete_claims: false,
             _lock: lock,
         };
         let has_state = entry_exists(&store.root, "authority.json")?;
@@ -181,6 +219,7 @@ impl Store {
                         State {
                             used_nonces: store.read_claims(stored.head.authority_epoch)?,
                             head: stored.head,
+                            pending_revocations: None,
                             failed: false,
                         },
                         false,
@@ -196,6 +235,26 @@ impl Store {
                         State {
                             used_nonces: store.read_claims(stored.head.authority_epoch)?,
                             head: stored.head,
+                            pending_revocations: None,
+                            failed: false,
+                        },
+                        false,
+                    )
+                }
+                (_, STATE_SCHEMA_V4) => {
+                    let stored: StoredV4 =
+                        serde_json::from_slice(&bytes).map_err(|_| FinalUseError::InvalidTrust)?;
+                    if stored.schema != STATE_SCHEMA_V4
+                        || stored.signer_id != signer_id
+                        || stored.trust != trust
+                    {
+                        return Err(FinalUseError::InvalidTrust);
+                    }
+                    (
+                        State {
+                            used_nonces: store.read_claims(stored.head.authority_epoch)?,
+                            head: stored.head,
+                            pending_revocations: stored.pending_revocations,
                             failed: false,
                         },
                         false,
@@ -203,17 +262,22 @@ impl Store {
                 }
                 _ => return Err(FinalUseError::InvalidTrust),
             };
-            if !valid_head(&state.head) || state.used_nonces.len() > MAX_CLAIMS {
+            if !valid_head(&state.head)
+                || state.used_nonces.len() > MAX_CLAIMS
+                || state.pending_revocations.as_ref().is_some_and(|pending| {
+                    !valid_head(pending) || !head_advances(&state.head, pending)
+                })
+            {
                 return Err(FinalUseError::InvalidTrust);
             }
             state.failed = false;
-            if header.schema != STATE_SCHEMA_V3 {
+            if header.schema != STATE_SCHEMA_V4 {
                 // Publish a complete legacy nonce set before its journal-based
                 // snapshot. Retrying an interrupted migration is idempotent.
                 if legacy_snapshot {
                     store.replace_claims(state.head.authority_epoch, &state.used_nonces)?;
                 }
-                store.persist_snapshot(&state.head)?;
+                store.persist_snapshot(&state)?;
             }
             state
         } else {
@@ -226,15 +290,20 @@ impl Store {
             let state = State {
                 head: initial.clone(),
                 used_nonces: Default::default(),
+                pending_revocations: None,
                 failed: false,
             };
             store.replace_claims(initial.authority_epoch, &state.used_nonces)?;
-            store.persist_snapshot(&initial)?;
+            store.persist_snapshot(&state)?;
             state
         };
 
-        if allow_startup_head_advance {
-            if initial.authority_epoch >= state.head.authority_epoch
+        if startup_head_policy == StartupHeadPolicy::Advance {
+            if state.pending_revocations.is_some() {
+                if state.head != initial {
+                    return Err(FinalUseError::InvalidTrust);
+                }
+            } else if initial.authority_epoch >= state.head.authority_epoch
                 && initial.revision > state.head.revision
                 && (initial.authority_epoch > state.head.authority_epoch
                     || initial
@@ -256,17 +325,27 @@ impl Store {
             {
                 return Err(FinalUseError::InvalidTrust);
             }
-        } else if state.head != initial {
+        } else if startup_head_policy == StartupHeadPolicy::Exact && state.head != initial {
             return Err(FinalUseError::InvalidTrust);
         }
 
         Ok((store, state))
     }
 
+    /// Called only after the owner has validated its complete recovered frontier.
+    /// A snapshot-first epoch rollover can leave obsolete frames on disk. Remove
+    /// those frames before new appends, without changing live nonces or authority.
+    pub(super) fn compact_obsolete_claims(&self, state: &State) -> Result<(), FinalUseError> {
+        if self.obsolete_claims {
+            self.replace_claims(state.head.authority_epoch, &state.used_nonces)?;
+        }
+        Ok(())
+    }
+
     /// Persist a revocation/epoch transition. This path is not the per-claim
     /// hot path, so it may compact the claim journal to the current epoch.
     pub(super) fn persist(&self, state: &State) -> Result<(), FinalUseError> {
-        self.persist_snapshot(&state.head)?;
+        self.persist_snapshot(state)?;
         self.replace_claims(state.head.authority_epoch, &state.used_nonces)
     }
 
@@ -289,12 +368,13 @@ impl Store {
             .map_err(|_| FinalUseError::Unavailable)
     }
 
-    fn persist_snapshot(&self, head: &FinalUseRevocations) -> Result<(), FinalUseError> {
-        let stored = StoredV3 {
-            schema: STATE_SCHEMA_V3,
+    fn persist_snapshot(&self, state: &State) -> Result<(), FinalUseError> {
+        let stored = StoredV4 {
+            schema: STATE_SCHEMA_V4,
             signer_id: self.signer_id.clone(),
             trust: self.trust,
-            head: head.clone(),
+            head: state.head.clone(),
+            pending_revocations: state.pending_revocations.clone(),
         };
         let bytes = serde_json::to_vec(&stored).map_err(|_| FinalUseError::Unavailable)?;
         let mut file = open_private(&self.root, "authority.next", Access::Create)?;
@@ -306,7 +386,7 @@ impl Store {
         self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
     }
 
-    fn read_claims(&self, authority_epoch: u64) -> Result<BTreeSet<[u8; 32]>, FinalUseError> {
+    fn read_claims(&mut self, authority_epoch: u64) -> Result<BTreeSet<[u8; 32]>, FinalUseError> {
         if !entry_exists(&self.root, "authority.claims")? {
             return Err(FinalUseError::InvalidTrust);
         }
@@ -325,6 +405,9 @@ impl Store {
             let epoch = u64::from_be_bytes(epoch_bytes);
             if epoch == 0 || epoch > authority_epoch {
                 return Err(FinalUseError::InvalidTrust);
+            }
+            if epoch < authority_epoch {
+                self.obsolete_claims = true;
             }
             if epoch == authority_epoch {
                 let mut nonce = [0u8; 32];
@@ -423,6 +506,8 @@ fn open_private(directory: &File, name: &str, access: Access) -> Result<File, Fi
         Access::Write => OFlags::RDWR,
         Access::Create => OFlags::RDWR | OFlags::CREATE,
     } | OFlags::NOFOLLOW
+        // Reject FIFOs at the descriptor check instead of blocking on open.
+        | OFlags::NONBLOCK
         | OFlags::CLOEXEC;
     let file: File = rustix::fs::openat(directory, name, flags, Mode::RUSR | Mode::WUSR)
         .map_err(|_| FinalUseError::Unavailable)?

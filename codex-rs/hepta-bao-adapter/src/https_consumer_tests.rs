@@ -1,7 +1,5 @@
-#![allow(
-    clippy::unwrap_used,
-    reason = "Test-only authority fixtures must fail immediately when setup is invalid."
-)]
+// Fixture setup fails the test immediately; runtime authority lints stay active.
+#![allow(clippy::expect_used, clippy::unwrap_used)]
 
 use super::*;
 use std::os::unix::fs::PermissionsExt;
@@ -685,9 +683,11 @@ async fn authbus_product_path_reserves_fences_final_use_and_settles_observed_cos
         .consume_kv_v2_with_authbus(
             &authbus,
             &admission,
-            &authority,
-            &grant,
-            &request,
+            BaoFinalUseRead {
+                authority: &authority,
+                grant: &grant,
+                request: &request,
+            },
             &mut evidence,
             |bytes| {
                 assert_eq!(bytes, SECRET.as_bytes());
@@ -729,9 +729,11 @@ async fn authbus_timeout_keeps_quota_held_as_indeterminate() {
         .consume_kv_v2_with_authbus(
             &authbus,
             &admission,
-            &authority,
-            &grant,
-            &request,
+            BaoFinalUseRead {
+                authority: &authority,
+                grant: &grant,
+                request: &request,
+            },
             &mut evidence,
             |_| Ok(()),
         )

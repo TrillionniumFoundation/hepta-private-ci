@@ -25,6 +25,7 @@ The native general capability owner is split by type-level least authority:
 - `AuthorityLeaseVerifier` is the cloneable read/verify attenuation;
 - `put_lease(lease, expected_revision)` performs bounded owner-CAS create/update;
   an identical retry succeeds only with the original predecessor revision;
+  identical content with any other predecessor is `RevisionMismatch`;
 - `read_lease(lease_id)` and `read_revocation(lease_id)` publish the current
   `authority_lease` / `capability_revocation` values;
 - `AuthorityLeaseVerifier::verify_use(lease_id, expected_revision, binding)`
@@ -76,6 +77,9 @@ grants and general durable leases have different lifecycle semantics.
 For a general lease, resolve the authenticated caller and exact binding, inspect
 one coherent lease/revocation state under the owner lock and return an opaque
 verified-use token. Recheck the current state at the final synchronous boundary.
+The final check acquires the owner lock before sampling the bound clock; a lease
+that expires while waiting for the lock is rejected rather than admitted with a
+stale timestamp.
 
 For signed final-use, `claim` verifies the owner signature and exact binding,
 durably consumes the nonce, then the adapter may perform bounded asynchronous
@@ -92,6 +96,22 @@ version and secret-digest validation, it checks feed freshness again at the
 registered consumer boundary before releasing secret bytes. A feed that expires
 in flight therefore fails with `StaleRevocationFeed` without invoking the
 consumer. Revocation updates enter through a separately pinned signed feed.
+
+The named Agentd automation host composes the same native FinalUse owner through
+`open_state_dir_with_issuer_keys`, using `AgentdFinalUseTrustStore` as both the
+bound clock and exact external frontier. It verifies a separately signed
+revocation feed at startup and refreshes that file before every provider effect.
+The trust state is owner-locked, lives outside Agent home, persists a monotonic
+clock floor and fails closed on CAS conflict, missing frontier, clock rollback
+or restored local authority state. This is a repository source composition; it
+is not a target attestation or HSM/KMS claim.
+
+Guarded provider effects publish an active-effect fence. If a newer trusted
+revocation arrives during the effect, update returns `DispatchInProgress` and
+sets `revocation_pending`. New claims and entries then reject with
+`RevocationPending`; the exact update is retried after the effect drains. The
+pending bit is process-local, so restart safety comes from re-reading the signed
+feed, not from assuming the interrupted update disappeared.
 
 The revocation control protocol caps signed-feed lifetime at 300,000 ms and
 supports node-signed exact-update acknowledgements. A successful local apply
@@ -118,7 +138,12 @@ coordinate the trusted epoch/frontier transition before admitting new work.
 
 Pilot verified-use request <= 16 KiB; bounded scope predicates <= 64; no
 unbounded grant chain. Measure final-gate p99 separately from remote identity or
-revocation transport. Pilot ceilings are design targets, not measurements.
+revocation transport. FinalUse local claims append fixed frames, while a
+production frontier digest still covers the complete nonce/revocation state and
+therefore must be measured at history load points. Pilot ceilings are design
+targets, not measurements. Production evidence schema v2 requires the complete
+5-by-11 numerical matrix, structured fault outcomes and demonstrated reserve
+alert; prose-only pass flags are rejected.
 
 ## 6. Concrete verification cases
 
@@ -135,6 +160,11 @@ revocation transport. Pilot ceilings are design targets, not measurements.
 - AUTH-11: if signed-feed freshness expires during Bao provider I/O, final consumer entry is denied and no secret is released.
 - AUTH-12: otherwise valid node acknowledgements over an unsigned or forged distributor update cannot produce a convergence report.
 - AUTH-13: a node acknowledgement cannot be constructed with an apply receipt from a semantically different revocation update.
+- AUTH-14: an identical lease put with a different predecessor revision is rejected.
+- AUTH-15: lease expiry while waiting for the owner lock denies both consumer and dispatch entry.
+- AUTH-16: a blocked revocation stops new claims until the exact signed update is retried after drain.
+- AUTH-17: Agentd trust ownership hands off only after the old owner exits, and a restored local authority snapshot is rejected by the external frontier.
+- AUTH-18: the TaskFlow attempt and canonical authority witness survive provider response loss and restart; the same attempt is reconciled rather than redispatched.
 
 Source tests implement the native cases above. Exact-candidate workflow receipts,
 not test-file existence, establish execution for one candidate.
@@ -171,9 +201,14 @@ promotion or release.
   `FinalUseRevocationFeedVerifier` and
   `FinalUseRevocationConvergenceVerifier` in
   [codex-rs/hepta-contracts/src/final_use_control.rs](../../../codex-rs/hepta-contracts/src/final_use_control.rs).
-- **Registered integration host:** `BaoFinalUseHost` in
-  [codex-rs/hepta-bao-adapter/src/final_use_host.rs](../../../codex-rs/hepta-bao-adapter/src/final_use_host.rs).
-  It is source-composed but currently has no selected production process caller.
+- **Registered integration hosts:** `BaoFinalUseHost` in
+  [codex-rs/hepta-bao-adapter/src/final_use_host.rs](../../../codex-rs/hepta-bao-adapter/src/final_use_host.rs),
+  and the named Agentd automation host in
+  `codex-rs/hepta-agentd/src/automation_effect_host.rs` plus
+  `authority_trust_host.rs`. Agentd binds rotating issuer keys, signed feed,
+  protected host state, durable TaskFlow attempt/witness and the concrete HTTP
+  provider adapter. Neither source host is a selected or independently accepted
+  deployment merely because it compiles.
 - **Operator utilities:** `hepta-final-use-signer`,
   `hepta-final-use-approver` and `hepta-final-use-revocation-signer` in
   `codex-rs/hepta-supervisor`, gated by the explicit `production-authority`
@@ -209,3 +244,9 @@ the concrete owner boundary, retaining its canonical audit witness.
 ## Integrated runtime.codex entry
 
 Runtime Codex obtains an opaque final-use token from the host-owned verifier, binds its exact claim-time head into the durable dispatch witness, and calls `VerifiedUseToken::enter` at its first effectful boundary. Entry rechecks the same protected clock and requires an unchanged head. This source integration does not qualify a concrete deployed clock, rollback frontier or revocation-distribution backend.
+
+## Durable Agentd automation evidence chain
+
+For one authorized TaskFlow effect, the product source path is: validated durable effect intent → exact FinalUse binding → durable nonce claim → active-effect/final-entry check → immutable `VerifiedUseTokenWitnessV1` plus attempt row → physical provider call → durable observation or indeterminate recovery. The SQL witness table rejects update/delete and exact replay with semantic drift. Crash after provider contact, lost acknowledgement and an indeterminate result reopen the same attempt; provider-owned lookup/reconciliation is required before a terminal transition.
+
+The canonical witness is evidence only. It cannot be deserialized into authority, reissue a grant or authorize retry.

@@ -6,11 +6,13 @@ import re
 import sys
 import tomllib
 import unittest
+import tempfile
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
 INVENTORY = ROOT / "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json"
+EXTENSION_INVENTORY = ROOT / "qa/b4-no-bypass/KERNEL_AUTHORITY_EXTENSION_API.json"
 MANIFEST = ROOT / "CALLERS.toml"
 SPEC = importlib.util.spec_from_file_location(
     "verify_hepta_callers", ROOT / "scripts/verify_hepta_callers.py"
@@ -39,6 +41,35 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         )
         return rows
 
+    def extension_delegates(self) -> dict[str, set[str]]:
+        policy = json.loads(EXTENSION_INVENTORY.read_text(encoding="utf-8"))
+        self.assertEqual(policy.get("schema"), "hepta.kernel-authority-extension-api.v1")
+        source_path = str(policy.get("sourcePath", ""))
+        self.assertTrue(source_path, "extension inventory must name its source path")
+
+        free_functions = policy.get("freeFunctions")
+        self.assertIsInstance(free_functions, dict)
+        assert isinstance(free_functions, dict)
+        privileged = free_functions.get("privileged")
+        self.assertIsInstance(privileged, dict)
+        assert isinstance(privileged, dict)
+        wrapper_boundary_ids = {str(value) for value in privileged.values()}
+
+        delegates = policy.get("canonicalDelegates")
+        self.assertIsInstance(delegates, list)
+        assert isinstance(delegates, list)
+        delegate_ids = {str(value) for value in delegates}
+        canonical_ids = {str(row["id"]) for row in self.inventory()}
+        self.assertTrue(
+            delegate_ids.issubset(canonical_ids),
+            f"extension delegates reference missing canonical boundaries: {sorted(delegate_ids - canonical_ids)}",
+        )
+        self.assertTrue(
+            delegate_ids.issubset(wrapper_boundary_ids),
+            f"extension delegates must be backed by inventoried privileged free-function wrappers: {sorted(delegate_ids - wrapper_boundary_ids)}",
+        )
+        return {boundary_id: {source_path} for boundary_id in delegate_ids}
+
     def rust_sources(self) -> list[Path]:
         return sorted((ROOT / "codex-rs").rglob("*.rs"))
 
@@ -60,7 +91,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         block = code[brace + 1 : end]
         methods: set[str] = set()
         for method in re.finditer(
-            r"\bpub\s+(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", block
+            r"\bpub\s+(?:(?:async|const)\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", block
         ):
             prefix = block[: method.start()]
             depth = prefix.count("{") - prefix.count("}")
@@ -72,7 +103,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         code = self.lexical_code(source_path)
         functions: set[str] = set()
         for function in re.finditer(
-            r"\bpub\s+(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", code
+            r"\bpub\s+(?:(?:async|const)\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", code
         ):
             prefix = code[: function.start()]
             depth = prefix.count("{") - prefix.count("}")
@@ -80,7 +111,9 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                 functions.add(function.group(1))
         return functions
 
-    def test_every_public_authority_free_function_is_explicitly_classified(self) -> None:
+    def test_every_public_authority_free_function_is_explicitly_classified(
+        self,
+    ) -> None:
         data = self.data()
         rows = data.get("freeFunctions")
         self.assertIsInstance(rows, list)
@@ -92,7 +125,9 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             assert isinstance(row, dict)
             source_path = str(row["sourcePath"])
             self.assertNotIn(
-                source_path, seen_paths, f"duplicate free-function policy: {source_path}"
+                source_path,
+                seen_paths,
+                f"duplicate free-function policy: {source_path}",
             )
             seen_paths.add(source_path)
             privileged = row.get("privilegedFunctions")
@@ -131,7 +166,9 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             self.assertIsInstance(row, dict)
             assert isinstance(row, dict)
             type_name = str(row["typeName"])
-            self.assertNotIn(type_name, seen_types, f"duplicate type policy: {type_name}")
+            self.assertNotIn(
+                type_name, seen_types, f"duplicate type policy: {type_name}"
+            )
             seen_types.add(type_name)
             privileged = row.get("privilegedMethods")
             non_privileged = row.get("nonPrivilegedMethods")
@@ -158,7 +195,30 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                 f"{type_name}: public method classification drifted",
             )
 
-    def test_canonical_kernel_authority_inventory_is_declared_in_callers_manifest(self) -> None:
+    def test_forbidden_production_code_is_not_confused_with_negative_tests(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "owner.rs"
+            policy = {
+                "protected_file": [
+                    {"path": "owner.rs", "required": [], "forbidden": ["self_select"]}
+                ]
+            }
+            path.write_text(
+                "fn verify() {}\n#[cfg(test)] mod tests { fn rejects_self_select() {} }\n"
+            )
+            self.assertEqual(
+                CALLER_PROOF._verify_protected_files(root, policy), ["owner.rs"]
+            )
+            path.write_text("fn self_select() {}\n")
+            with self.assertRaises(CALLER_PROOF.VerificationFailure):
+                CALLER_PROOF._verify_protected_files(root, policy)
+
+    def test_canonical_kernel_authority_inventory_is_declared_in_callers_manifest(
+        self,
+    ) -> None:
         data = tomllib.loads(MANIFEST.read_text(encoding="utf-8"))
         declared_rows = data.get("boundary")
         self.assertIsInstance(declared_rows, list)
@@ -180,31 +240,55 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
 
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
-        rows = self.inventory()
-        type_markers = {str(row["typeMarker"]) for row in rows}
-        # Read each physical source once. Repeating this scan for every
-        # boundary adds I/O while proving exactly the same closed set.
-        sources = []
-        for path in self.rust_sources():
-            relative = path.relative_to(ROOT).as_posix()
-            if any(fragment in f"/{relative}" for fragment in ignored):
-                continue
-            raw = path.read_text(encoding="utf-8")
-            if any(marker in raw for marker in type_markers):
-                code = CALLER_PROOF._strip_cfg_test_items(
-                    CALLER_PROOF._strip_rust_non_code(raw)
-                )
-                sources.append((relative, raw, code))
-        for row in rows:
+        sources = self.rust_sources()
+        extension_delegates = self.extension_delegates()
+        method_source = json.loads(EXTENSION_INVENTORY.read_text())["sourcePath"]
+        method_delegates = CALLER_PROOF._verified_method_delegate_spans(
+            ROOT,
+            CALLER_PROOF._boundary_rows(tomllib.loads(MANIFEST.read_text())),
+            {method_source: self.lexical_code(method_source)},
+        )
+        raw_cache = {path: path.read_text(encoding="utf-8") for path in sources}
+        code_cache = {
+            path: CALLER_PROOF._strip_cfg_test_items(CALLER_PROOF._strip_rust_non_code(raw))
+            for path, raw in raw_cache.items()
+        }
+        alias_index = {path.relative_to(ROOT).as_posix(): code for path, code in code_cache.items()}
+        free_symbols = {
+            name for item in self.data()["freeFunctions"]
+            for name in item["privilegedFunctions"]
+        }
+        for row in self.inventory():
             boundary_id = str(row["id"])
             type_marker = str(row["typeMarker"])
             definition = str(row["definitionPath"])
+            internal_delegates = extension_delegates.get(boundary_id, set())
             patterns = [re.compile(str(value)) for value in row["callPatterns"]]
             expected = {str(value) for value in row["allowedCallers"]}
             observed: set[str] = set()
-            for relative, raw, code in sources:
-                if relative == definition or type_marker not in raw:
+            aliases = CALLER_PROOF.symbol_aliases(alias_index, type_marker) if type_marker in free_symbols else frozenset()
+            for path in sources:
+                relative = path.relative_to(ROOT).as_posix()
+                if (
+                    relative == definition
+                    or relative in internal_delegates
+                    or any(fragment in f"/{relative}" for fragment in ignored)
+                ):
                     continue
+                if path not in raw_cache:
+                    raw_cache[path] = path.read_text(encoding="utf-8")
+                raw = raw_cache[path]
+                if type_marker not in raw and not aliases:
+                    continue
+                if path not in code_cache:
+                    code_cache[path] = CALLER_PROOF._strip_cfg_test_items(
+                        CALLER_PROOF._strip_rust_non_code(raw)
+                    )
+                code = CALLER_PROOF._mask_method_delegate_spans(
+                    code_cache[path], method_delegates.get(boundary_id, {}).get(relative, [])
+                )
+                if aliases:
+                    code = CALLER_PROOF.normalize_symbol_aliases(code, type_marker, aliases)
                 if any(pattern.search(code) for pattern in patterns):
                     observed.add(relative)
             with self.subTest(boundary=boundary_id):

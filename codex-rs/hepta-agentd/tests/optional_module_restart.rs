@@ -1,12 +1,14 @@
+#![allow(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    reason = "test fixture setup must fail immediately on invalid input; production code retains these lints"
+)]
+
 //! A real optional service on the SAME RuntimeTasks used by Agentd, backed by
 //! AutomationStore, exercised in separate OS processes. Forty required echo
 //! services represent sibling liveness; these are not forty real Codex sessions.
 //! No provider, physical effect, independent evaluator, cross-schema migration
 //! or deployed-host performance claim is made by this fixture.
-#![allow(
-    clippy::expect_used,
-    reason = "integration assertions and fixture setup must fail the test immediately"
-)]
 
 use std::fs::File;
 use std::path::Path;

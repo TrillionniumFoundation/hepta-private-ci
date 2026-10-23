@@ -5,6 +5,7 @@
 //! trusted reconciler observes the original operation.
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
@@ -17,6 +18,7 @@ use serde::Serialize;
 const SCHEMA_VERSION: u32 = 1;
 const MAX_RECORDS: usize = 65_536;
 const MAX_METADATA_BYTES: usize = 16 * 1024;
+const MAX_REGISTRY_BYTES: u64 = 8 * 1024 * 1024;
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -140,12 +142,12 @@ impl std::error::Error for LeaseRegistryErrorV1 {}
 impl DurableLeaseRegistryV1 {
     pub fn open(path: impl Into<PathBuf>) -> Result<Self, LeaseRegistryErrorV1> {
         let path = path.into();
-        let state = if path.exists() {
+        let state = if let Some(file) = open_snapshot(&path)? {
             let mut bytes = Vec::new();
-            File::open(&path)
-                .and_then(|file| file.take(8 * 1024 * 1024 + 1).read_to_end(&mut bytes))
+            file.take(MAX_REGISTRY_BYTES + 1)
+                .read_to_end(&mut bytes)
                 .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-            if bytes.len() > 8 * 1024 * 1024 {
+            if bytes.len() as u64 > MAX_REGISTRY_BYTES {
                 return Err(LeaseRegistryErrorV1::CorruptState);
             }
             let state: StoredRegistryV1 =
@@ -189,7 +191,6 @@ impl DurableLeaseRegistryV1 {
         lease_id: String,
         semantic_sha256: [u8; 32],
     ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
-        self.require_active(&lease_id)?;
         self.prepare(
             operation_id,
             LeaseOperationKindV1::Renew,
@@ -204,17 +205,6 @@ impl DurableLeaseRegistryV1 {
         lease_id: String,
         semantic_sha256: [u8; 32],
     ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
-        let lease = self
-            .state
-            .leases
-            .get(&lease_id)
-            .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
-        if matches!(
-            lease.state,
-            SecretLeaseStateV1::Revoked | SecretLeaseStateV1::Expired
-        ) {
-            return Err(LeaseRegistryErrorV1::InvalidTransition);
-        }
         self.prepare(
             operation_id,
             LeaseOperationKindV1::Revoke,
@@ -227,6 +217,21 @@ impl DurableLeaseRegistryV1 {
         &mut self,
         operation_id: &str,
     ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
+        let current = self
+            .operation(operation_id)
+            .ok_or(LeaseRegistryErrorV1::OperationNotFound)?;
+        if let Some(lease_id) = current.lease_id.as_deref() {
+            if current.kind == LeaseOperationKindV1::Renew {
+                self.require_live_renewal(lease_id)?;
+            } else if self.state.leases.get(lease_id).is_none_or(|lease| {
+                matches!(
+                    lease.state,
+                    SecretLeaseStateV1::Revoked | SecretLeaseStateV1::Expired
+                )
+            }) {
+                return Err(LeaseRegistryErrorV1::InvalidTransition);
+            }
+        }
         let mut next = self.state.clone();
         let operation = next
             .operations
@@ -273,7 +278,7 @@ impl DurableLeaseRegistryV1 {
         }
 
         let mut next = self.state.clone();
-        let reconciled_state = match (&current.kind, observation) {
+        let resulting_state = match (&current.kind, observation) {
             (LeaseOperationKindV1::Issue, ProviderLeaseObservationV1::IssueApplied { lease }) => {
                 validate_lease(&lease)?;
                 if lease.state != SecretLeaseStateV1::Active {
@@ -301,6 +306,7 @@ impl DurableLeaseRegistryV1 {
                 {
                     return Err(LeaseRegistryErrorV1::ObservationMismatch);
                 }
+                self.require_live_renewal(&lease_id)?;
                 let lease = next
                     .leases
                     .get_mut(&lease_id)
@@ -347,8 +353,8 @@ impl DurableLeaseRegistryV1 {
         };
         next.operations
             .get_mut(operation_id)
-            .ok_or(LeaseRegistryErrorV1::OperationNotFound)?
-            .state = reconciled_state;
+            .ok_or(LeaseRegistryErrorV1::CorruptState)?
+            .state = resulting_state;
         self.commit(next)?;
         self.operation(operation_id)
             .cloned()
@@ -393,6 +399,31 @@ impl DurableLeaseRegistryV1 {
             }
             return Err(LeaseRegistryErrorV1::OperationConflict);
         }
+        if let Some(lease_id) = lease_id.as_deref() {
+            match kind {
+                LeaseOperationKindV1::Renew => {
+                    self.require_active(lease_id)?;
+                    if self.has_pending_operation(lease_id, None) {
+                        return Err(LeaseRegistryErrorV1::InvalidTransition);
+                    }
+                }
+                LeaseOperationKindV1::Revoke => {
+                    let lease = self
+                        .state
+                        .leases
+                        .get(lease_id)
+                        .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
+                    if matches!(
+                        lease.state,
+                        SecretLeaseStateV1::Revoked | SecretLeaseStateV1::Expired
+                    ) || self.has_pending_operation(lease_id, Some(LeaseOperationKindV1::Revoke))
+                    {
+                        return Err(LeaseRegistryErrorV1::InvalidTransition);
+                    }
+                }
+                LeaseOperationKindV1::Issue => return Err(LeaseRegistryErrorV1::InvalidInput),
+            }
+        }
         if self.state.operations.len() >= MAX_RECORDS {
             return Err(LeaseRegistryErrorV1::CapacityExceeded);
         }
@@ -421,6 +452,33 @@ impl DurableLeaseRegistryV1 {
         Ok(())
     }
 
+    fn has_pending_operation(&self, lease_id: &str, kind: Option<LeaseOperationKindV1>) -> bool {
+        self.state.operations.values().any(|operation| {
+            operation.lease_id.as_deref() == Some(lease_id)
+                && kind.is_none_or(|kind| operation.kind == kind)
+                && matches!(
+                    operation.state,
+                    LeaseOperationStateV1::Prepared | LeaseOperationStateV1::Unknown
+                )
+        })
+    }
+
+    fn require_live_renewal(&self, lease_id: &str) -> Result<(), LeaseRegistryErrorV1> {
+        let lease = self
+            .state
+            .leases
+            .get(lease_id)
+            .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
+        if !matches!(
+            lease.state,
+            SecretLeaseStateV1::Active | SecretLeaseStateV1::RenewUnknown
+        ) || self.has_pending_operation(lease_id, Some(LeaseOperationKindV1::Revoke))
+        {
+            return Err(LeaseRegistryErrorV1::InvalidTransition);
+        }
+        Ok(())
+    }
+
     fn commit(&mut self, next: StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> {
         validate_state(&next)?;
         persist(&self.path, &next)?;
@@ -436,15 +494,31 @@ fn restore_unknown_lease_state(
     let Some(lease_id) = operation.lease_id.as_ref() else {
         return Ok(());
     };
+    let renewal_still_unknown = operation.kind == LeaseOperationKindV1::Revoke
+        && state.operations.values().any(|pending| {
+            pending.kind == LeaseOperationKindV1::Renew
+                && pending.lease_id.as_ref() == Some(lease_id)
+                && pending.state == LeaseOperationStateV1::Unknown
+        });
     let lease = state
         .leases
         .get_mut(lease_id)
         .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
     if matches!(
-        lease.state,
-        SecretLeaseStateV1::RenewUnknown | SecretLeaseStateV1::RevokeUnknown
+        (operation.kind, lease.state),
+        (
+            LeaseOperationKindV1::Renew,
+            SecretLeaseStateV1::RenewUnknown
+        ) | (
+            LeaseOperationKindV1::Revoke,
+            SecretLeaseStateV1::RevokeUnknown
+        )
     ) {
-        lease.state = SecretLeaseStateV1::Active;
+        lease.state = if renewal_still_unknown {
+            SecretLeaseStateV1::RenewUnknown
+        } else {
+            SecretLeaseStateV1::Active
+        };
     }
     Ok(())
 }
@@ -456,6 +530,7 @@ fn validate_state(state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> 
     {
         return Err(LeaseRegistryErrorV1::CorruptState);
     }
+    let mut pending = BTreeSet::new();
     for (id, operation) in &state.operations {
         if id != &operation.operation_id
             || !identifier(id)
@@ -466,6 +541,21 @@ fn validate_state(state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> 
                 .is_some_and(|value| !identifier(value))
         {
             return Err(LeaseRegistryErrorV1::CorruptState);
+        }
+        match (operation.kind, operation.lease_id.as_deref()) {
+            (LeaseOperationKindV1::Issue, None) => {}
+            (LeaseOperationKindV1::Renew | LeaseOperationKindV1::Revoke, Some(lease_id)) => {
+                if !state.leases.contains_key(lease_id)
+                    || (matches!(
+                        operation.state,
+                        LeaseOperationStateV1::Prepared | LeaseOperationStateV1::Unknown
+                    ) && !pending
+                        .insert((operation.kind == LeaseOperationKindV1::Revoke, lease_id)))
+                {
+                    return Err(LeaseRegistryErrorV1::CorruptState);
+                }
+            }
+            _ => return Err(LeaseRegistryErrorV1::CorruptState),
         }
     }
     for (id, lease) in &state.leases {
@@ -495,20 +585,53 @@ fn validate_lease(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErro
     Ok(())
 }
 
+// The caller owns the parent directory. Reject leaf aliases and non-regular
+// inputs before reading; on Unix NONBLOCK also closes the FIFO-open race.
+fn open_snapshot(path: &Path) -> Result<Option<File>, LeaseRegistryErrorV1> {
+    match std::fs::symlink_metadata(path) {
+        Ok(metadata) if !metadata.is_file() => return Err(LeaseRegistryErrorV1::CorruptState),
+        Ok(_) => {}
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(_) => return Err(LeaseRegistryErrorV1::Unavailable),
+    }
+    #[cfg(unix)]
+    let file: File = rustix::fs::open(
+        path,
+        rustix::fs::OFlags::RDONLY
+            | rustix::fs::OFlags::NOFOLLOW
+            | rustix::fs::OFlags::NONBLOCK
+            | rustix::fs::OFlags::CLOEXEC,
+        rustix::fs::Mode::empty(),
+    )
+    .map_err(|_| LeaseRegistryErrorV1::Unavailable)?
+    .into();
+    #[cfg(not(unix))]
+    let file = File::open(path).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
+    let metadata = file
+        .metadata()
+        .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
+    if !metadata.is_file() || metadata.len() > MAX_REGISTRY_BYTES {
+        return Err(LeaseRegistryErrorV1::CorruptState);
+    }
+    Ok(Some(file))
+}
+
 fn persist(path: &Path, state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> {
     let parent = path.parent().ok_or(LeaseRegistryErrorV1::Unavailable)?;
     std::fs::create_dir_all(parent).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
     let bytes = serde_json::to_vec(state).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    let file_name = path
-        .file_name()
-        .and_then(|value| value.to_str())
-        .ok_or(LeaseRegistryErrorV1::Unavailable)?;
-    let next = parent.join(format!("{file_name}.next"));
-    let mut file = File::create(&next).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
+    if bytes.len() as u64 > MAX_REGISTRY_BYTES {
+        return Err(LeaseRegistryErrorV1::CapacityExceeded);
+    }
+    // A fixed `.next` path can alias another file or block on a FIFO. An
+    // exclusively created sibling also keeps crash leftovers out of recovery.
+    let mut file =
+        tempfile::NamedTempFile::new_in(parent).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
     file.write_all(&bytes)
-        .and_then(|()| file.sync_all())
+        .and_then(|()| file.as_file().sync_all())
         .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    std::fs::rename(&next, path).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
+    file.persist(path)
+        .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
     File::open(parent)
         .and_then(|directory| directory.sync_all())
         .map_err(|_| LeaseRegistryErrorV1::Unavailable)

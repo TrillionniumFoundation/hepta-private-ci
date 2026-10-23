@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import functools
 import importlib.util
 import json
 import os
@@ -102,13 +103,7 @@ def verify_module_source_base(row: dict[str, Any], label: str) -> tuple[str, str
     if policy == "candidate_or_exact_observation_v1":
         # Do not duplicate or weaken the shared verifier's mapped-source,
         # workspace-input, clean-checkout and historical-anchor requirements.
-        spec = importlib.util.spec_from_file_location(
-            "hepta_lane_b_canonical_source_identity",
-            Path(__file__).with_name("hepta-implementation-maps.py"),
-        )
-        need(spec is not None and spec.loader is not None, "canonical verifier loader")
-        verifier = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(verifier)
+        verifier = canonical_source_verifier()
         verifier.ROOT = ROOT
         roots = row.get("resolvedRoots")
         need(isinstance(roots, list) and bool(roots), f"{label}: resolved roots")
@@ -125,6 +120,18 @@ def verify_module_source_base(row: dict[str, Any], label: str) -> tuple[str, str
         return git("rev-parse", "HEAD"), git("rev-parse", "HEAD^{tree}")
     need(policy == "legacy_shared_literal", f"{label}: source identity policy")
     return verify_source_base(row.get("sourceBase"), label)
+
+
+@functools.cache
+def canonical_source_verifier():
+    spec = importlib.util.spec_from_file_location(
+        "hepta_lane_b_canonical_source_identity",
+        Path(__file__).with_name("hepta-implementation-maps.py"),
+    )
+    need(spec is not None and spec.loader is not None, "canonical verifier loader")
+    verifier = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(verifier)
+    return verifier
 
 
 def verify_observed_source(row: dict[str, Any], module: str) -> None:
@@ -464,8 +471,18 @@ def verify_anchor(
         need(isinstance(anchor.get("ownerModule"), str), f"{module}: delegated owner")
     source = ROOT / path
     need(source.is_file(), f"{module}: missing source {path}")
+    text = source.read_text(encoding="utf-8")
+    symbol = anchor["symbol"]
+    if source.suffix == ".rs" and re.fullmatch(
+        r"[A-Za-z_][A-Za-z0-9_]*::[A-Za-z_][A-Za-z0-9_]*", symbol
+    ):
+        present = canonical_source_verifier().rust_associated_function_present(
+            text, symbol
+        )
+    else:
+        present = symbol in text
     need(
-        anchor["symbol"] in source.read_text(encoding="utf-8"),
+        present,
         f"{module}: missing symbol {anchor['symbol']!r}",
     )
     need(

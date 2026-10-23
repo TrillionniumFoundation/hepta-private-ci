@@ -23,6 +23,7 @@ use codex_hepta_contracts::ProviderEffectKey;
 use codex_hepta_contracts::ProviderEffectLookup;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_contracts::VerifiedUseTokenWitnessV1;
 use codex_hepta_operations::OperationIntentV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -539,7 +540,7 @@ pub enum AuthorizedEffectRecovery {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AuthorizedEffectRecoveryResult {
     ProvenAbsent,
-    Observed(TaskFlowStepReceipt),
+    Observed(Box<TaskFlowStepReceipt>),
 }
 
 #[derive(Debug, Error)]
@@ -556,6 +557,18 @@ pub enum AuthorizedEffectError {
     ProvenAbsentNeedsNewAttempt,
     #[error(transparent)]
     Driver(#[from] AuthorizedEffectDriverError),
+}
+
+/// Exact caller-supplied dispatch inputs. Construction grants no authority:
+/// both execution paths still validate every field against the durable intent.
+pub struct AuthorizedEffectDispatchRequest<'a> {
+    pub intent: &'a AuthorizedEffectIntent,
+    pub wire_payload: &'a [u8],
+    pub fence: &'a TaskFlowFence,
+    pub signed_grant: &'a SignedFinalUseGrant,
+    pub expected_binding: &'a FinalUseBinding,
+    pub command_id: &'a str,
+    pub now_ms: u64,
 }
 
 impl AutomationStore {
@@ -645,14 +658,17 @@ impl AutomationStore {
         &self,
         authority: &FinalUseAuthority,
         driver: &mut D,
-        intent: &AuthorizedEffectIntent,
-        wire_payload: &[u8],
-        fence: &TaskFlowFence,
-        signed_grant: &SignedFinalUseGrant,
-        expected_binding: &FinalUseBinding,
-        command_id: &str,
-        now_ms: u64,
+        request: AuthorizedEffectDispatchRequest<'_>,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
+        let AuthorizedEffectDispatchRequest {
+            intent,
+            wire_payload,
+            fence,
+            signed_grant,
+            expected_binding,
+            command_id,
+            now_ms,
+        } = request;
         let operation_intent = intent.operation_intent_v1()?;
         if Sha256Digest::for_bytes(wire_payload) != intent.payload_digest {
             return Err(AuthorizedEffectError::BindingMismatch);
@@ -705,7 +721,7 @@ impl AutomationStore {
                 .settle_effect_dispatch_attempt(&existing, fence)
                 .await?
             {
-                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
                 }
@@ -744,7 +760,7 @@ impl AutomationStore {
                     command_id,
                 )?;
                 return match self.settle_effect_dispatch_attempt(&durable, fence).await? {
-                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
                     AuthorizedEffectRecoveryResult::ProvenAbsent => {
                         Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
                     }
@@ -760,10 +776,22 @@ impl AutomationStore {
             binding: expected_binding,
         };
         let provider = match authority
-            .with_verified_effect(token, expected_binding, || driver.dispatch(&request))
+            .with_verified_use_async_with_witness(token, expected_binding, |witness| async move {
+                self.record_effect_dispatch_authority_witness(
+                    &intent.run_id,
+                    &intent.step_id,
+                    intent.attempt,
+                    &witness,
+                )
+                .await?;
+                driver
+                    .dispatch(&request)
+                    .map_err(AuthorizedEffectError::Driver)
+            })
+            .await
         {
-            Ok(Ok(receipt)) => receipt,
-            Ok(Err(error)) => {
+            Ok((Ok(receipt), _witness)) => receipt,
+            Ok((Err(AuthorizedEffectError::Driver(error)), _witness)) => {
                 let proof = no_contact_digest(&durable, "driver_before_provider_contact");
                 let durable = self
                     .record_effect_dispatch_observation(
@@ -778,6 +806,7 @@ impl AutomationStore {
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
                 return Err(AuthorizedEffectError::Driver(error));
             }
+            Ok((Err(error), _witness)) => return Err(error),
             Err(error) => {
                 // `with_verified_use` invokes the consumer only after its
                 // final revocation/epoch check succeeds, so this path is a
@@ -809,7 +838,7 @@ impl AutomationStore {
             )
             .await?;
         match self.settle_effect_dispatch_attempt(&durable, fence).await? {
-            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
             AuthorizedEffectRecoveryResult::ProvenAbsent => {
                 Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
             }
@@ -829,6 +858,20 @@ impl AutomationStore {
             .effect_dispatch_attempt(run_id, step_id, attempt)
             .await?
             .map(AuthorizedEffectPending::from))
+    }
+
+    /// Read the immutable, non-authorizing witness emitted at the exact
+    /// final-use dispatch-entry cut. Absence means no durable witness is known;
+    /// it never authorizes retry or proves provider absence by itself.
+    pub async fn authorized_taskflow_effect_authority_witness(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+    ) -> Result<Option<VerifiedUseTokenWitnessV1>, AuthorizedEffectError> {
+        Ok(self
+            .effect_dispatch_authority_witness(run_id, step_id, attempt)
+            .await?)
     }
 
     /// Settle already-durable local provider evidence into TaskFlow before a
@@ -867,14 +910,17 @@ impl AutomationStore {
         &self,
         authority: &FinalUseAuthority,
         driver: &mut D,
-        intent: &AuthorizedEffectIntent,
-        wire_payload: &[u8],
-        fence: &TaskFlowFence,
-        signed_grant: &SignedFinalUseGrant,
-        expected_binding: &FinalUseBinding,
-        command_id: &str,
-        now_ms: u64,
+        request: AuthorizedEffectDispatchRequest<'_>,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
+        let AuthorizedEffectDispatchRequest {
+            intent,
+            wire_payload,
+            fence,
+            signed_grant,
+            expected_binding,
+            command_id,
+            now_ms,
+        } = request;
         let provider_intent = provider_effect_intent(intent, wire_payload)?;
         let operation_intent = intent.operation_intent_v1()?;
         let intent_digest = intent.digest()?;
@@ -922,7 +968,7 @@ impl AutomationStore {
                 .settle_effect_dispatch_attempt(&existing, fence)
                 .await?
             {
-                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
                 }
@@ -961,7 +1007,7 @@ impl AutomationStore {
                     command_id,
                 )?;
                 return match self.settle_effect_dispatch_attempt(&durable, fence).await? {
-                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
                     AuthorizedEffectRecoveryResult::ProvenAbsent => {
                         Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
                     }
@@ -978,11 +1024,23 @@ impl AutomationStore {
             wire_payload,
         };
         let provider = match authority
-            .with_verified_use_async(token, expected_binding, || driver.dispatch(request))
+            .with_verified_use_async_with_witness(token, expected_binding, |witness| async move {
+                self.record_effect_dispatch_authority_witness(
+                    &intent.run_id,
+                    &intent.step_id,
+                    intent.attempt,
+                    &witness,
+                )
+                .await?;
+                driver
+                    .dispatch(request)
+                    .await
+                    .map_err(AuthorizedEffectError::Driver)
+            })
             .await
         {
-            Ok(Ok(receipt)) => receipt,
-            Ok(Err(error)) => {
+            Ok((Ok(receipt), _witness)) => receipt,
+            Ok((Err(AuthorizedEffectError::Driver(error)), _witness)) => {
                 let proof = no_contact_digest(&durable, "driver_before_provider_contact");
                 let durable = self
                     .record_effect_dispatch_observation(
@@ -997,6 +1055,7 @@ impl AutomationStore {
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
                 return Err(AuthorizedEffectError::Driver(error));
             }
+            Ok((Err(error), _witness)) => return Err(error),
             Err(error) => {
                 let proof = no_contact_digest(&durable, "final_use_pre_dispatch_rejection");
                 let durable = self
@@ -1025,7 +1084,7 @@ impl AutomationStore {
             )
             .await?;
         match self.settle_effect_dispatch_attempt(&durable, fence).await? {
-            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
             AuthorizedEffectRecoveryResult::ProvenAbsent => {
                 Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
             }
@@ -1196,7 +1255,7 @@ impl AutomationStore {
             self.reconcile_effect_run(durable, fence, observation, terminal)
                 .await?;
         }
-        Ok(AuthorizedEffectRecoveryResult::Observed(step))
+        Ok(AuthorizedEffectRecoveryResult::Observed(Box::new(step)))
     }
 
     async fn quarantine_effect_run(

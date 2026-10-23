@@ -83,22 +83,28 @@ unknown effect keeps that sequence blocked. Cross-schema migration requires its
 own owner implementation and rollback validation; the same-schema timer tests
 below do not establish it.
 
-## Built-in executable observations
+## Executable observation utility
 
-Agentd binds built-in implementation identity to the executable bytes plus the
-module ID and manifest digest. `candidate_artifact_digest` identifies the
-observed executable, not the manifest. The observation is bounded and cached once
-per process; the runtime never substitutes a manifest or environment string if
-reading the executable fails.
+`RuntimeExecutableIdentity` is a callable Agentd library utility. It observes
+executable bytes and derives an implementation digest from those bytes, a module
+ID and a manifest digest. `artifact_digest()` identifies the observed executable,
+not the manifest. Observation is bounded and cached once per process; failure
+never substitutes a manifest or environment string.
+
+The current Agentd startup and module constructors do not call this utility.
+Restoring its private module declaration and named library exports makes the
+existing four `runtime_executable` tests part of the compiled crate again. The
+architecture lane verifies this utility's real image observation, digest binding,
+invalid-image rejection and process-local cache. This is not evidence of installed
+production registration, selected-artifact admission or executable attestation.
 
 On Linux `/proc/self/exe` names the loaded image, including after unlink or path
 replacement. Other targets explicitly report `ExecutablePath`, a weaker
 observation that must not be treated as a kernel-attested loaded image. Neither
 kind authenticates build provenance, independent review, selection or release.
-Concrete versioned ports are now connected for the TaskFlow constructor described
-above. Other module constructors still need their own interface bindings before
-they can be advertised as a general hot-replacement ABI. An executable hash alone
-is not protocol compatibility.
+Product constructors still require explicit integration and their own interface
+bindings before general hot replacement can be advertised. An executable hash
+alone is not protocol compatibility.
 
 ## Running-service regressions
 

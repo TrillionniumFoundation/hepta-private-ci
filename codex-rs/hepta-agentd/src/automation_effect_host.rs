@@ -1,9 +1,9 @@
 //! Host-owned composition for final-use-authorized automation effects.
 //!
-//! The TaskFlow owner persists intent/attempt/reconciliation state. Agentd owns
-//! the selected provider contract and final-use verifier. Control callers can
-//! transport a signed grant and exact provider bytes, but they cannot select a
-//! provider endpoint, destination, final-use scope, subject, or TaskFlow fence.
+//! TaskFlow owns durable intent/attempt/observation. Agentd owns the provider
+//! contract, exact historical provider-key profile, feed freshness and bounded
+//! task lifetime on its existing runtime. A cancelled response is not a cancelled
+//! provider effect, proof of absence, or permission to discard its owner.
 
 use std::collections::BTreeMap;
 use std::fs;
@@ -11,24 +11,30 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::thread;
 use std::time::Duration;
 
-use codex_hepta_automation::AuthorizedEffectDriver;
+use codex_hepta_automation::AsyncAuthorizedEffectDriver;
+use codex_hepta_automation::AuthorizedEffectDispatchRequest;
 use codex_hepta_automation::AuthorizedEffectDriverError;
+use codex_hepta_automation::AuthorizedEffectFuture;
 use codex_hepta_automation::AuthorizedEffectIntent;
 use codex_hepta_automation::AuthorizedEffectOutcome;
 use codex_hepta_automation::AuthorizedEffectPending;
 use codex_hepta_automation::AuthorizedEffectProviderReceipt;
 use codex_hepta_automation::AuthorizedEffectRecovery;
 use codex_hepta_automation::AuthorizedEffectRecoveryResult;
-use codex_hepta_automation::AuthorizedEffectRequest;
+use codex_hepta_automation::AuthorizedProviderEffectRequest;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_automation::TaskFlowFence;
 use codex_hepta_automation::TaskFlowStepObservation;
 use codex_hepta_automation::TaskFlowStepReceipt;
+use codex_hepta_contracts::AuthorityClock;
+use codex_hepta_contracts::AuthorityFrontierStore;
 use codex_hepta_contracts::FinalUseAuthority;
-use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_contracts::FinalUseFrontier;
+use codex_hepta_contracts::FinalUseIssuerTrustKey;
+use codex_hepta_contracts::FinalUseRevocationFeedVerifier;
+use codex_hepta_contracts::FinalUseTrustKey;
 use codex_hepta_contracts::ProviderEffectAck;
 use codex_hepta_contracts::ProviderEffectAckStatus;
 use codex_hepta_contracts::ProviderEffectAdapter;
@@ -38,6 +44,8 @@ use codex_hepta_contracts::ProviderEffectKey;
 use codex_hepta_contracts::ProviderEffectLookup;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_contracts::SignedFinalUseRevocationUpdate;
+use codex_hepta_contracts::VerifiedFinalUseRevocationHead;
 use codex_model_provider::HttpProviderEffectAdapter;
 use codex_model_provider::HttpProviderEffectConfig;
 use codex_model_provider::HttpProviderEffectContractAttestation;
@@ -48,15 +56,35 @@ use serde::Deserialize;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;
+use crate::AgentdProductionAuthorityBootstrap;
+use crate::authority_trust_host::AgentdFinalUseTrustStore;
 
-const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;
+#[path = "authority_effect_tasks.rs"]
+mod effect_tasks;
+#[path = "authority_feed_clock.rs"]
+mod feed_clock;
+
+use effect_tasks::EffectTasks;
+use feed_clock::FinalUseFeedClock;
+
+const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 2;
 const MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES: u64 = 64 * 1024;
-const MAX_AUTOMATION_EFFECT_REVOCATIONS_FILE_BYTES: u64 = 4 * 1024 * 1024;
+const MAX_AUTOMATION_EFFECT_REVOCATION_FEED_FILE_BYTES: u64 = 4 * 1024 * 1024;
+const MAX_FINAL_USE_TRUST_KEYS: usize = 8;
 const MAX_PROVIDER_HEADERS: usize = 64;
+const MAX_INFLIGHT_EFFECTS: usize = 1_024;
+
+fn default_inflight_effects() -> usize {
+    64
+}
+
+fn default_claim_reserve() -> usize {
+    256
+}
 
 #[derive(Clone, Debug)]
 pub(crate) enum AgentdAutomationEffectReconcileOutcome {
-    Observed(TaskFlowStepReceipt),
+    Observed(Box<TaskFlowStepReceipt>),
     Indeterminate,
     ProvenAbsent,
 }
@@ -68,9 +96,15 @@ pub(crate) struct AgentdAutomationEffectHost {
     destination_id: String,
     final_use_scope_digest: Sha256Digest,
     authority: FinalUseAuthority,
-    revocations_file: PathBuf,
-    revocation_frontier: Arc<Mutex<(u64, u64)>>,
+    refresh_clock: Arc<dyn AuthorityClock>,
+    admission_clock: Arc<FinalUseFeedClock>,
+    revocation_feed_verifier: FinalUseRevocationFeedVerifier,
+    revocation_feed_file: PathBuf,
+    revocation_refresh: Arc<Mutex<()>>,
     adapter: HttpProviderEffectAdapter,
+    effect_tasks: Arc<EffectTasks>,
+    claim_reserve: usize,
+    max_inflight_effects: usize,
 }
 
 impl std::fmt::Debug for AgentdAutomationEffectHost {
@@ -86,9 +120,18 @@ impl std::fmt::Debug for AgentdAutomationEffectHost {
     }
 }
 
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct FinalUseTrustKeyFileV1 {
+    key_id: String,
+    verifying_key_hex: String,
+    not_before_authority_epoch: u64,
+    not_after_authority_epoch: u64,
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct AutomationEffectHostFileV1 {
+struct AutomationEffectHostFileV2 {
     schema_version: u32,
     provider_scope: String,
     destination_id: String,
@@ -104,12 +147,45 @@ struct AutomationEffectHostFileV1 {
     contract_signature_hex: String,
     contract_verifying_key_hex: String,
     final_use_signer_id: String,
-    final_use_verifying_key_hex: String,
-    final_use_revocations_file: PathBuf,
+    final_use_issuer_keys: Vec<FinalUseTrustKeyFileV1>,
+    final_use_revocation_distributor_id: String,
+    final_use_revocation_keys: Vec<FinalUseTrustKeyFileV1>,
+    final_use_revocation_feed_file: PathBuf,
+    final_use_trust_root: PathBuf,
+    #[serde(default = "default_inflight_effects")]
+    max_inflight_effects: usize,
+    #[serde(default = "default_claim_reserve")]
+    claim_reserve: usize,
+}
+
+#[derive(Clone, Copy)]
+enum AutomationAuthorityMode<'a> {
+    Compatibility,
+    Production(&'a AgentdProductionAuthorityBootstrap),
 }
 
 impl AgentdAutomationEffectHost {
     pub(crate) fn open(identity: &AgentdIdentity, path: &Path) -> Result<Self, AgentdError> {
+        Self::open_with_authority(identity, path, AutomationAuthorityMode::Compatibility)
+    }
+
+    pub(crate) fn open_production(
+        identity: &AgentdIdentity,
+        path: &Path,
+        authority: &AgentdProductionAuthorityBootstrap,
+    ) -> Result<Self, AgentdError> {
+        Self::open_with_authority(
+            identity,
+            path,
+            AutomationAuthorityMode::Production(authority),
+        )
+    }
+
+    fn open_with_authority(
+        identity: &AgentdIdentity,
+        path: &Path,
+        authority_mode: AutomationAuthorityMode<'_>,
+    ) -> Result<Self, AgentdError> {
         let config = read_host_file(path)?;
         if config.schema_version != AUTOMATION_EFFECT_HOST_SCHEMA_VERSION {
             return Err(AgentdError::Invalid(
@@ -128,7 +204,11 @@ impl AgentdAutomationEffectHost {
                 "automation effect provider header bound exceeded".to_string(),
             ));
         }
-
+        if config.max_inflight_effects == 0 || config.max_inflight_effects > MAX_INFLIGHT_EFFECTS {
+            return Err(AgentdError::Invalid(
+                "max_inflight_effects must be 1..=1024".to_string(),
+            ));
+        }
         let final_use_scope_digest = Sha256Digest::parse(config.final_use_scope_sha256.clone())
             .map_err(AgentdError::Invalid)?;
         let declared_contract_digest =
@@ -139,11 +219,8 @@ impl AgentdAutomationEffectHost {
             &config.contract_verifying_key_hex,
             "contract_verifying_key_hex",
         )?;
-        let final_use_verifying_key = decode_hex_array::<32>(
-            &config.final_use_verifying_key_hex,
-            "final_use_verifying_key_hex",
-        )?;
-
+        let final_use_issuer_keys = issuer_trust_keys(&config.final_use_issuer_keys)?;
+        let final_use_revocation_keys = control_trust_keys(&config.final_use_revocation_keys)?;
         let mut headers = HeaderMap::new();
         for (name, value) in config.headers {
             let name = HeaderName::from_bytes(name.as_bytes()).map_err(|error| {
@@ -154,7 +231,6 @@ impl AgentdAutomationEffectHost {
             })?;
             headers.append(name, value);
         }
-
         let attestation = HttpProviderEffectContractAttestation::verify_signed(
             config.contract_id.clone(),
             declared_contract_digest,
@@ -163,60 +239,180 @@ impl AgentdAutomationEffectHost {
             &contract_verifying_key,
         )
         .map_err(AgentdError::Invalid)?;
-        let provider_config = HttpProviderEffectConfig {
+        let adapter = HttpProviderEffectAdapter::new(HttpProviderEffectConfig {
             dispatch_url: config.dispatch_url,
             lookup_url_template: config.lookup_url_template,
             headers,
             timeout: Duration::from_millis(config.timeout_ms),
             contract_id: config.contract_id,
             attestation: Some(attestation),
-        };
-        let adapter =
-            HttpProviderEffectAdapter::new(provider_config).map_err(AgentdError::Invalid)?;
-
-        if !config.final_use_revocations_file.is_absolute() {
+        })
+        .map_err(AgentdError::Invalid)?;
+        if !config.final_use_revocation_feed_file.is_absolute()
+            || !config.final_use_trust_root.is_absolute()
+        {
             return Err(AgentdError::Invalid(
-                "final_use_revocations_file must be absolute".to_string(),
+                "final_use_revocation_feed_file and final_use_trust_root must be absolute"
+                    .to_string(),
             ));
         }
-        let initial_revocations = read_revocations_file(&config.final_use_revocations_file)?;
-        let frontier = (
-            initial_revocations.authority_epoch,
-            initial_revocations.revision,
-        );
-
+        let revocation_feed_verifier = FinalUseRevocationFeedVerifier::new_with_keys(
+            config.final_use_revocation_distributor_id,
+            final_use_revocation_keys,
+        )
+        .map_err(|error| {
+            AgentdError::Invalid(format!("invalid final-use revocation trust: {error}"))
+        })?;
+        let signed_update = read_revocation_feed_file(&config.final_use_revocation_feed_file)?;
         let authority_root = identity
             .layout
             .automation_root()
             .join("final-use-authority");
+        let local_authority_uninitialized =
+            if matches!(authority_mode, AutomationAuthorityMode::Compatibility) {
+                authority_state_uninitialized(&authority_root)?
+            } else {
+                false
+            };
         fs::create_dir_all(&authority_root)?;
         #[cfg(unix)]
         {
             use std::os::unix::fs::PermissionsExt;
             fs::set_permissions(&authority_root, fs::Permissions::from_mode(0o700))?;
         }
-        let authority = FinalUseAuthority::open_state_dir(
-            &authority_root,
-            config.final_use_signer_id,
-            final_use_verifying_key,
-            initial_revocations,
-        )
-        .map_err(|error| {
-            AgentdError::Protocol(format!(
-                "open automation final-use authority state: {error}"
-            ))
-        })?;
-
-        Ok(Self {
+        let (refresh_clock, admission_clock, authority) = match authority_mode {
+            AutomationAuthorityMode::Compatibility => {
+                let authority_trust = Arc::new(AgentdFinalUseTrustStore::open(
+                    &config.final_use_trust_root,
+                    &identity.home_root,
+                    &config.final_use_signer_id,
+                )?);
+                let now = authority_trust.now_unix_ms().map_err(|error| {
+                    AgentdError::Protocol(format!("sample protected final-use clock: {error}"))
+                })?;
+                let verified_initial_head = VerifiedFinalUseRevocationHead::verify(
+                    &revocation_feed_verifier,
+                    &signed_update,
+                    now,
+                )
+                .map_err(|error| {
+                    AgentdError::GenerationFenced(format!(
+                        "initial signed final-use revocation feed rejected: {error}"
+                    ))
+                })?;
+                let initial_revocations = verified_initial_head.head().clone();
+                let initial_frontier = FinalUseFrontier::for_initial_head(&initial_revocations)
+                    .map_err(|error| {
+                        AgentdError::Invalid(format!("invalid initial final-use frontier: {error}"))
+                    })?;
+                authority_trust
+                    .ensure_initial_frontier(initial_frontier, local_authority_uninitialized)?;
+                let refresh_clock: Arc<dyn AuthorityClock> = authority_trust.clone();
+                let admission_clock: Arc<FinalUseFeedClock> =
+                    Arc::new(FinalUseFeedClock::new(Arc::clone(&refresh_clock)));
+                admission_clock
+                    .publish(&verified_initial_head)
+                    .map_err(|error| {
+                        AgentdError::GenerationFenced(format!(
+                            "initial feed interval rejected: {error}"
+                        ))
+                    })?;
+                let clock: Arc<dyn AuthorityClock> = admission_clock.clone();
+                let frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>> =
+                    authority_trust;
+                let authority = FinalUseAuthority::recover_state_dir_with_issuer_keys(
+                    &authority_root,
+                    config.final_use_signer_id.clone(),
+                    final_use_issuer_keys,
+                    initial_revocations,
+                    clock,
+                    frontier_store,
+                )
+                .map_err(|error| {
+                    AgentdError::Protocol(format!(
+                        "open automation final-use authority state: {error}"
+                    ))
+                })?;
+                (refresh_clock, admission_clock, authority)
+            }
+            AutomationAuthorityMode::Production(bootstrap) => {
+                let context = bootstrap.bind(&final_use_issuer_keys).map_err(|error| {
+                    AgentdError::GenerationFenced(format!(
+                        "production final-use trust rejected: {error}"
+                    ))
+                })?;
+                let refresh_clock = context.clock();
+                let now = refresh_clock.now_unix_ms().map_err(|error| {
+                    AgentdError::GenerationFenced(format!(
+                        "sample production final-use clock: {error}"
+                    ))
+                })?;
+                let verified_initial_head = VerifiedFinalUseRevocationHead::verify(
+                    &revocation_feed_verifier,
+                    &signed_update,
+                    now,
+                )
+                .map_err(|error| {
+                    AgentdError::GenerationFenced(format!(
+                        "initial signed final-use revocation feed rejected: {error}"
+                    ))
+                })?;
+                let admission_clock: Arc<FinalUseFeedClock> = context.feed_clock();
+                admission_clock
+                    .publish(&verified_initial_head)
+                    .map_err(|error| {
+                        AgentdError::GenerationFenced(format!(
+                            "initial production feed interval rejected: {error}"
+                        ))
+                    })?;
+                let authority = context
+                    .recover_state_dir_with_feed_clock(
+                        &authority_root,
+                        config.final_use_signer_id.clone(),
+                        final_use_issuer_keys,
+                        &verified_initial_head,
+                        Arc::clone(&admission_clock),
+                    )
+                    .map_err(|error| {
+                        AgentdError::GenerationFenced(format!(
+                            "recover production automation authority: {error}"
+                        ))
+                    })?;
+                (refresh_clock, admission_clock, authority)
+            }
+        };
+        let capacity = authority
+            .capacity()
+            .map_err(|error| AgentdError::Protocol(format!("read authority capacity: {error}")))?;
+        if config
+            .claim_reserve
+            .saturating_add(config.max_inflight_effects)
+            >= capacity.max_claims
+            || config.claim_reserve >= capacity.max_revocations
+        {
+            return Err(AgentdError::Invalid(
+                "authority reserve leaves no admissible capacity".to_string(),
+            ));
+        }
+        let host = Self {
             agent_id: identity.agent_id.clone(),
             provider_scope: config.provider_scope,
             destination_id: config.destination_id,
             final_use_scope_digest,
             authority,
-            revocations_file: config.final_use_revocations_file,
-            revocation_frontier: Arc::new(Mutex::new(frontier)),
+            refresh_clock,
+            admission_clock,
+            revocation_feed_verifier,
+            revocation_feed_file: config.final_use_revocation_feed_file,
+            revocation_refresh: Arc::new(Mutex::new(())),
             adapter,
-        })
+            effect_tasks: Arc::new(EffectTasks::new(config.max_inflight_effects)),
+            claim_reserve: config.claim_reserve,
+            max_inflight_effects: config.max_inflight_effects,
+        };
+        // No authority escapes before the recovered head and verified feed agree.
+        host.refresh_revocations()?;
+        Ok(host)
     }
 
     pub(crate) async fn execute(
@@ -229,7 +425,8 @@ impl AgentdAutomationEffectHost {
         now_ms: u64,
     ) -> Result<TaskFlowStepReceipt, AgentdError> {
         self.validate_intent(intent, wire_payload)?;
-        self.refresh_revocations()?;
+        // Terminal observation is read-only and neither consumes reserve nor
+        // needs a fresh effect grant/feed. All identity checks remain in store.
         if let Some(receipt) = store
             .read_authorized_taskflow_effect_receipt(intent, command_id)
             .await
@@ -238,6 +435,59 @@ impl AgentdAutomationEffectHost {
             })?
         {
             return Ok(receipt);
+        }
+        let response = self
+            .effect_tasks
+            .submit(|| {
+                let host = self.clone();
+                let store = store.clone();
+                let intent = intent.clone();
+                let wire_payload = wire_payload.to_vec();
+                let signed_grant = signed_grant.clone();
+                let command_id = command_id.to_owned();
+                async move {
+                    host.execute_owned(
+                        &store,
+                        &intent,
+                        &wire_payload,
+                        &signed_grant,
+                        &command_id,
+                        now_ms,
+                    )
+                    .await
+                }
+            })
+            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
+        response.await.map_err(|_| AgentdError::Protocol(
+            "effect task ended without a response; preserve its durable identity and reconcile before retry".to_string(),
+        ))?
+    }
+
+    async fn execute_owned(
+        &self,
+        store: &AutomationStore,
+        intent: &AuthorizedEffectIntent,
+        wire_payload: &[u8],
+        signed_grant: &SignedFinalUseGrant,
+        command_id: &str,
+        now_ms: u64,
+    ) -> Result<TaskFlowStepReceipt, AgentdError> {
+        self.refresh_revocations()?;
+        let capacity = self
+            .authority
+            .capacity()
+            .map_err(|error| AgentdError::Protocol(format!("read authority capacity: {error}")))?;
+        // Account for every possible concurrent one-nonce task. Reconciliation
+        // and signed revocation/epoch transitions never pass through this gate.
+        if capacity.remaining_claims()
+            <= self.claim_reserve.saturating_add(self.max_inflight_effects)
+            || capacity.remaining_revocations() <= self.claim_reserve
+        {
+            return Err(AgentdError::GenerationFenced(format!(
+                "authority reserve reached: claims={} revocations={}; request signed epoch rollover",
+                capacity.remaining_claims(),
+                capacity.remaining_revocations(),
+            )));
         }
         let run = store
             .taskflow_run(&intent.run_id)
@@ -254,18 +504,23 @@ impl AgentdAutomationEffectHost {
             adapter: self.adapter.clone(),
             provider_scope: self.provider_scope.clone(),
             destination_id: self.destination_id.clone(),
+            admission_clock: Arc::clone(&self.admission_clock),
+            grant_not_before: signed_grant.grant.not_before_unix_ms,
+            grant_expires: signed_grant.grant.expires_at_unix_ms,
         };
         store
-            .execute_authorized_taskflow_effect(
+            .execute_authorized_taskflow_effect_async(
                 &self.authority,
                 &mut driver,
-                intent,
-                wire_payload,
-                &fence,
-                signed_grant,
-                &binding,
-                command_id,
-                now_ms,
+                AuthorizedEffectDispatchRequest {
+                    intent,
+                    wire_payload,
+                    fence: &fence,
+                    signed_grant,
+                    expected_binding: &binding,
+                    command_id,
+                    now_ms,
+                },
             )
             .await
             .map_err(|error| {
@@ -327,6 +582,9 @@ impl AgentdAutomationEffectHost {
         let provider_intent = self.provider_intent(&pending)?;
         match self.adapter.lookup_for_intent(&provider_intent).await {
             ProviderEffectLookup::Ack(ack) => {
+                if ack.validate_for(&provider_intent).is_err() {
+                    return Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate);
+                }
                 let Some(receipt) = terminal_receipt_from_ack(&ack) else {
                     return Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate);
                 };
@@ -363,28 +621,43 @@ impl AgentdAutomationEffectHost {
     }
 
     fn refresh_revocations(&self) -> Result<(), AgentdError> {
-        let head = read_revocations_file(&self.revocations_file)?;
-        let mut frontier = self.revocation_frontier.lock().map_err(|_| {
+        let _refresh = self.revocation_refresh.lock().map_err(|_| {
             AgentdError::Protocol(
-                "automation effect revocation frontier lock is poisoned".to_string(),
+                "automation effect revocation refresh lock is poisoned".to_string(),
             )
         })?;
-        let observed = (head.authority_epoch, head.revision);
-        if observed == *frontier {
-            return Ok(());
-        }
-        if observed.0 < frontier.0 || (observed.0 == frontier.0 && observed.1 < frontier.1) {
-            return Err(AgentdError::GenerationFenced(
-                "automation effect revocation frontier rolled back".to_string(),
-            ));
-        }
-        self.authority.update_revocations(head).map_err(|error| {
-            AgentdError::GenerationFenced(format!(
-                "automation effect revocation refresh rejected: {error}"
-            ))
+        let signed = read_revocation_feed_file(&self.revocation_feed_file)?;
+        let now = self.refresh_clock.now_unix_ms().map_err(|error| {
+            AgentdError::Protocol(format!("sample protected final-use clock: {error}"))
         })?;
-        *frontier = observed;
-        Ok(())
+        let verified =
+            VerifiedFinalUseRevocationHead::verify(&self.revocation_feed_verifier, &signed, now)
+                .map_err(|error| {
+                    AgentdError::GenerationFenced(format!(
+                        "automation effect signed revocation feed rejected: {error}"
+                    ))
+                })?;
+        let current = self.authority.revocation_head().map_err(|error| {
+            AgentdError::Protocol(format!("read automation revocation head: {error}"))
+        })?;
+        if current != signed.update.head {
+            // Invalidate before mutation, publish only after success. An older
+            // request waiting in the DB cannot borrow a newer feed's lifetime
+            // while still observing an older authority head.
+            self.admission_clock.invalidate().map_err(|error| {
+                AgentdError::GenerationFenced(format!("invalidate feed interval: {error}"))
+            })?;
+            self.revocation_feed_verifier
+                .apply(&self.authority, &signed, now)
+                .map_err(|error| {
+                    AgentdError::GenerationFenced(format!(
+                        "automation effect revocation refresh rejected: {error}"
+                    ))
+                })?;
+        }
+        self.admission_clock.publish(&verified).map_err(|error| {
+            AgentdError::GenerationFenced(format!("publish committed feed interval: {error}"))
+        })
     }
 
     fn validate_intent(
@@ -454,79 +727,94 @@ impl AgentdAutomationEffectHost {
         &self,
         pending: &AuthorizedEffectPending,
     ) -> Result<ProviderEffectIntent, AgentdError> {
-        let key = ProviderEffectKey::for_operation(
+        historical_provider_intent(
             &self.provider_scope,
             &pending.run_id,
             &pending.step_id,
+            &pending.payload_digest,
         )
-        .map_err(|error| AgentdError::Invalid(format!("derive provider effect key: {error:?}")))?;
-        Ok(ProviderEffectIntent::new(
-            key,
-            pending.payload_digest.clone(),
-        ))
+        .map_err(|_| {
+            AgentdError::Invalid("invalid historical provider effect identity".to_string())
+        })
     }
+}
+
+/// Preserve the pre-migration external provider-key profile for dispatch AND
+/// lookup. The async TaskFlow logical key is not substituted for this namespace.
+fn historical_provider_intent(
+    provider_scope: &str,
+    run_id: &str,
+    step_id: &str,
+    payload: &Sha256Digest,
+) -> Result<ProviderEffectIntent, AuthorizedEffectDriverError> {
+    let key = ProviderEffectKey::for_operation(provider_scope, run_id, step_id)
+        .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;
+    Ok(ProviderEffectIntent::new(key, payload.clone()))
 }
 
 struct HttpAuthorizedEffectDriver {
     adapter: HttpProviderEffectAdapter,
     provider_scope: String,
     destination_id: String,
+    admission_clock: Arc<FinalUseFeedClock>,
+    grant_not_before: u64,
+    grant_expires: u64,
 }
 
-impl AuthorizedEffectDriver for HttpAuthorizedEffectDriver {
-    fn dispatch(
-        &mut self,
-        request: &AuthorizedEffectRequest<'_>,
-    ) -> Result<AuthorizedEffectProviderReceipt, AuthorizedEffectDriverError> {
-        if request.intent.destination_id != self.destination_id {
-            return Err(AuthorizedEffectDriverError::BeforeProviderContact);
-        }
-        let key = ProviderEffectKey::for_operation(
-            &self.provider_scope,
-            &request.intent.run_id,
-            &request.intent.step_id,
-        )
-        .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;
-        let provider_intent = ProviderEffectIntent::new(key, request.intent.payload_digest.clone());
-        let adapter = self.adapter.clone();
-        let wire_payload = request.wire_payload.to_vec();
-        let spawn = thread::Builder::new()
-            .name("hepta-automation-provider-effect".to_string())
-            .spawn(move || {
-                let runtime = match tokio::runtime::Builder::new_current_thread()
-                    .enable_all()
-                    .build()
-                {
-                    Ok(runtime) => runtime,
-                    Err(_) => return ProviderThreadOutcome::BeforeContact,
-                };
-                ProviderThreadOutcome::Dispatch(
-                    runtime
-                        .block_on(adapter.dispatch_with_payload(&provider_intent, &wire_payload)),
-                )
-            })
-            .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;
-        match spawn.join() {
-            Ok(ProviderThreadOutcome::BeforeContact) => {
-                Err(AuthorizedEffectDriverError::BeforeProviderContact)
+impl AsyncAuthorizedEffectDriver for HttpAuthorizedEffectDriver {
+    fn dispatch<'a>(
+        &'a mut self,
+        request: AuthorizedProviderEffectRequest<'a>,
+    ) -> AuthorizedEffectFuture<'a> {
+        Box::pin(async move {
+            if request.intent.destination_id != self.destination_id
+                || request.provider_intent.payload_sha256 != request.intent.payload_digest
+                || Sha256Digest::for_bytes(request.wire_payload) != request.intent.payload_digest
+            {
+                return Err(AuthorizedEffectDriverError::BeforeProviderContact);
             }
-            Ok(ProviderThreadOutcome::Dispatch(ProviderEffectDispatch::NotDispatched {
-                ..
-            })) => Err(AuthorizedEffectDriverError::BeforeProviderContact),
-            Ok(ProviderThreadOutcome::Dispatch(dispatch)) => Ok(receipt_from_dispatch(&dispatch)),
-            Err(_) => Ok(AuthorizedEffectProviderReceipt {
-                outcome: AuthorizedEffectOutcome::Indeterminate,
-                receipt_digest: Sha256Digest::for_bytes(
-                    b"hepta.agentd.provider-effect.worker-panic.v1",
-                ),
-            }),
-        }
+            let provider_intent = historical_provider_intent(
+                &self.provider_scope,
+                &request.intent.run_id,
+                &request.intent.step_id,
+                &request.intent.payload_digest,
+            )?;
+            // The witness has already been durably recorded. Recheck time at
+            // actual provider entry, not before an intervening database await.
+            let (now, uncertainty) = self
+                .admission_clock
+                .now_with_uncertainty()
+                .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;
+            if now
+                .checked_sub(uncertainty)
+                .is_none_or(|earliest| earliest < self.grant_not_before)
+                || now
+                    .checked_add(uncertainty)
+                    .is_none_or(|latest| latest >= self.grant_expires)
+            {
+                return Err(AuthorizedEffectDriverError::BeforeProviderContact);
+            }
+            let dispatch = self
+                .adapter
+                .dispatch_with_payload(&provider_intent, request.wire_payload)
+                .await;
+            match &dispatch {
+                ProviderEffectDispatch::NotDispatched { .. } => {
+                    Err(AuthorizedEffectDriverError::BeforeProviderContact)
+                }
+                ProviderEffectDispatch::Ack(ack) if ack.validate_for(&provider_intent).is_err() => {
+                    Ok(AuthorizedEffectProviderReceipt {
+                        outcome: AuthorizedEffectOutcome::Indeterminate,
+                        receipt_digest: serialized_observation_digest(
+                            b"hepta.agentd.provider-effect.invalid-ack.v1\0",
+                            ack,
+                        ),
+                    })
+                }
+                _ => Ok(receipt_from_dispatch(&dispatch)),
+            }
+        })
     }
-}
-
-enum ProviderThreadOutcome {
-    BeforeContact,
-    Dispatch(ProviderEffectDispatch),
 }
 
 fn receipt_from_dispatch(dispatch: &ProviderEffectDispatch) -> AuthorizedEffectProviderReceipt {
@@ -537,8 +825,9 @@ fn receipt_from_dispatch(dispatch: &ProviderEffectDispatch) -> AuthorizedEffectP
             ProviderEffectAckStatus::Accepted => AuthorizedEffectOutcome::Indeterminate,
         },
         ProviderEffectDispatch::Rejected { .. } => AuthorizedEffectOutcome::Failed,
-        ProviderEffectDispatch::Unknown => AuthorizedEffectOutcome::Indeterminate,
-        ProviderEffectDispatch::NotDispatched { .. } => AuthorizedEffectOutcome::Indeterminate,
+        ProviderEffectDispatch::Unknown | ProviderEffectDispatch::NotDispatched { .. } => {
+            AuthorizedEffectOutcome::Indeterminate
+        }
     };
     AuthorizedEffectProviderReceipt {
         outcome,
@@ -574,7 +863,7 @@ fn serialized_observation_digest(domain: &[u8], value: &impl serde::Serialize) -
     Sha256Digest::for_bytes(&bytes)
 }
 
-fn read_host_file(path: &Path) -> Result<AutomationEffectHostFileV1, AgentdError> {
+fn read_host_file(path: &Path) -> Result<AutomationEffectHostFileV2, AgentdError> {
     let bytes = read_protected_file(
         path,
         MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES,
@@ -583,13 +872,79 @@ fn read_host_file(path: &Path) -> Result<AutomationEffectHostFileV1, AgentdError
     Ok(serde_json::from_slice(&bytes)?)
 }
 
-fn read_revocations_file(path: &Path) -> Result<FinalUseRevocations, AgentdError> {
+fn read_revocation_feed_file(path: &Path) -> Result<SignedFinalUseRevocationUpdate, AgentdError> {
     let bytes = read_protected_file(
         path,
-        MAX_AUTOMATION_EFFECT_REVOCATIONS_FILE_BYTES,
-        "automation effect revocations file",
+        MAX_AUTOMATION_EFFECT_REVOCATION_FEED_FILE_BYTES,
+        "automation effect signed revocation feed file",
     )?;
     Ok(serde_json::from_slice(&bytes)?)
+}
+
+fn issuer_trust_keys(
+    configured: &[FinalUseTrustKeyFileV1],
+) -> Result<Vec<FinalUseIssuerTrustKey>, AgentdError> {
+    validate_trust_key_count(configured)?;
+    configured
+        .iter()
+        .map(|key| {
+            validate_host_identifier("final-use issuer key id", &key.key_id)?;
+            Ok(FinalUseIssuerTrustKey {
+                key_id: key.key_id.clone(),
+                verifying_key: decode_hex_array::<32>(
+                    &key.verifying_key_hex,
+                    "final-use issuer verifying key",
+                )?,
+                not_before_authority_epoch: key.not_before_authority_epoch,
+                not_after_authority_epoch: key.not_after_authority_epoch,
+            })
+        })
+        .collect()
+}
+
+fn control_trust_keys(
+    configured: &[FinalUseTrustKeyFileV1],
+) -> Result<Vec<FinalUseTrustKey>, AgentdError> {
+    validate_trust_key_count(configured)?;
+    configured
+        .iter()
+        .map(|key| {
+            validate_host_identifier("final-use revocation key id", &key.key_id)?;
+            Ok(FinalUseTrustKey {
+                key_id: key.key_id.clone(),
+                verifying_key: decode_hex_array::<32>(
+                    &key.verifying_key_hex,
+                    "final-use revocation verifying key",
+                )?,
+                not_before_authority_epoch: key.not_before_authority_epoch,
+                not_after_authority_epoch: key.not_after_authority_epoch,
+            })
+        })
+        .collect()
+}
+
+fn validate_trust_key_count(configured: &[FinalUseTrustKeyFileV1]) -> Result<(), AgentdError> {
+    if configured.is_empty() || configured.len() > MAX_FINAL_USE_TRUST_KEYS {
+        return Err(AgentdError::Invalid(
+            "final-use trust-key ring must contain 1..=8 keys".to_string(),
+        ));
+    }
+    Ok(())
+}
+
+fn authority_state_uninitialized(root: &Path) -> Result<bool, AgentdError> {
+    if !root.exists() {
+        return Ok(true);
+    }
+    let metadata = fs::symlink_metadata(root)?;
+    if !metadata.is_dir() || metadata.file_type().is_symlink() {
+        return Err(AgentdError::Invalid(
+            "automation final-use authority root is not a safe directory".to_string(),
+        ));
+    }
+    Ok(!root.join("authority.lock").exists()
+        && !root.join("authority.json").exists()
+        && !root.join("authority.claims").exists())
 }
 
 fn read_protected_file(path: &Path, max_bytes: u64, label: &str) -> Result<Vec<u8>, AgentdError> {
@@ -667,428 +1022,5 @@ fn hex_nibble(value: u8) -> Option<u8> {
 }
 
 #[cfg(all(test, unix))]
-mod tests {
-    use std::collections::BTreeSet;
-    use std::os::unix::fs::PermissionsExt;
-    use std::time::SystemTime;
-    use std::time::UNIX_EPOCH;
-
-    use codex_hepta_automation::AuthorizedEffectIntent;
-    use codex_hepta_automation::TaskFlowCommand;
-    use codex_hepta_automation::TaskFlowDefinition;
-    use codex_hepta_automation::TaskFlowEdgeSpec;
-    use codex_hepta_automation::TaskFlowNodeKind;
-    use codex_hepta_automation::TaskFlowNodeSpec;
-    use codex_hepta_automation::TaskFlowStepObservation;
-    use codex_hepta_automation::TaskFlowTransition;
-    use codex_hepta_contracts::FinalUseGrant;
-    use codex_hepta_contracts::ProviderEffectKey;
-    use codex_hepta_contracts::SignedFinalUseGrant;
-    use codex_hepta_fleet::AgentManifest;
-    use codex_hepta_fleet::FleetRegistry;
-    use codex_hepta_fleet::ResourceBudget;
-    use codex_hepta_fleet::WorkspaceBinding;
-    use codex_hepta_paths::HeptaFleetRoot;
-    use codex_model_provider::PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER;
-    use ed25519_dalek::Signer;
-    use ed25519_dalek::SigningKey;
-    use wiremock::Mock;
-    use wiremock::MockServer;
-    use wiremock::ResponseTemplate;
-    use wiremock::matchers::body_bytes;
-    use wiremock::matchers::header;
-    use wiremock::matchers::method;
-    use wiremock::matchers::path;
-
-    use super::*;
-
-    const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c52";
-    const WIRE: &[u8] = b"{\"effect\":\"deliver\"}";
-
-    struct Fixture {
-        _temp: tempfile::TempDir,
-        identity: AgentdIdentity,
-        store: AutomationStore,
-    }
-
-    impl Fixture {
-        async fn new() -> Self {
-            let temp = tempfile::tempdir().expect("temp root");
-            let root = temp.path().canonicalize().expect("canonical temp root");
-            let fleet_path = root.join("fleet");
-            let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).expect("fleet root");
-            let registry = FleetRegistry::initialize(fleet_root.clone()).expect("fleet registry");
-            let workspace = root.join("workspace");
-            fs::create_dir(&workspace).expect("workspace");
-            let workspace = workspace.canonicalize().expect("canonical workspace");
-            let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID).expect("agent id");
-            let resources = ResourceBudget::local_default();
-            let manifest = AgentManifest::new(
-                agent_id.clone(),
-                WorkspaceBinding::new(workspace.clone(), &fleet_root).expect("workspace binding"),
-                resources.clone(),
-            )
-            .expect("manifest");
-            let layout = registry.register(manifest).expect("register agent").layout;
-            let identity = AgentdIdentity {
-                agent_id: agent_id.clone(),
-                layout: layout.clone(),
-                spawn_generation: 1,
-                fleet_root: fleet_path,
-                workspace,
-                resources,
-                home_root: layout.home_root().to_path_buf(),
-                run_root: layout.run_root().to_path_buf(),
-                control_socket: layout.agentd_control_socket().to_path_buf(),
-                app_server_socket: layout.app_server_socket().to_path_buf(),
-            };
-            let store = AutomationStore::open(&layout)
-                .await
-                .expect("automation store");
-            Self {
-                _temp: temp,
-                identity,
-                store,
-            }
-        }
-    }
-
-    fn definition() -> TaskFlowDefinition {
-        TaskFlowDefinition::new(
-            "agentd-product-effect",
-            1,
-            "effect",
-            vec![
-                TaskFlowNodeSpec::effect("effect", "provider.deliver", "provider-key-v1"),
-                TaskFlowNodeSpec::new("success", TaskFlowNodeKind::TerminalSuccess),
-                TaskFlowNodeSpec::new("failure", TaskFlowNodeKind::TerminalFailure),
-            ],
-            vec![
-                TaskFlowEdgeSpec::new("effect", "success"),
-                TaskFlowEdgeSpec::new("effect", "failure"),
-            ],
-            vec!["provider.deliver".to_string()],
-            Sha256Digest::for_bytes(b"agentd-product-effect-policy"),
-        )
-        .expect("definition")
-    }
-
-    fn effect_intent(scope: &Sha256Digest) -> AuthorizedEffectIntent {
-        AuthorizedEffectIntent {
-            run_id: "agentd-product-effect-run".to_string(),
-            step_id: "effect".to_string(),
-            attempt: 1,
-            operation_id: "provider.deliver".to_string(),
-            subject_id: AGENT_ID.to_string(),
-            destination_id: "provider:fixture".to_string(),
-            payload_digest: Sha256Digest::for_bytes(WIRE),
-            final_use_scope_digest: scope.clone(),
-            policy_generation: 1,
-            expected_predecessor_digest: None,
-            dependencies: Vec::new(),
-            compensation_for: None,
-        }
-    }
-
-    async fn prepare_effect(
-        fixture: &Fixture,
-        now_ms: u64,
-        intent: &AuthorizedEffectIntent,
-    ) -> TaskFlowFence {
-        let definition = definition();
-        let fence = TaskFlowFence::new(
-            fixture.identity.agent_id.clone(),
-            "agentd-product-effect-owner",
-            1,
-            1,
-            "agentd-product-effect-fence",
-        )
-        .expect("fence");
-        fixture
-            .store
-            .register_taskflow_definition(&definition, &fence, now_ms)
-            .await
-            .expect("register definition");
-        fixture
-            .store
-            .create_taskflow_run(
-                &intent.run_id,
-                &definition.workflow_id,
-                definition.version,
-                definition.definition_digest(),
-                "thread-product-effect",
-                now_ms,
-            )
-            .await
-            .expect("create run");
-        let claimed = fixture
-            .store
-            .claim_taskflow_run(&intent.run_id, &fence, now_ms + 1, 60_000)
-            .await
-            .expect("claim run");
-        fixture
-            .store
-            .apply_taskflow_command(
-                &TaskFlowCommand::new(
-                    &intent.run_id,
-                    "agentd-product-effect-start",
-                    fence.clone(),
-                    claimed.revision,
-                    TaskFlowTransition::Start,
-                    now_ms + 2,
-                )
-                .expect("start command"),
-            )
-            .await
-            .expect("start run");
-        let digest = intent.digest().expect("intent digest");
-        fixture
-            .store
-            .prepare_taskflow_step(
-                &intent.run_id,
-                &intent.step_id,
-                intent.attempt,
-                &fence,
-                &digest,
-                &intent.payload_digest,
-                "agentd-product-effect-prepare",
-                now_ms + 3,
-            )
-            .await
-            .expect("prepare step");
-        fixture
-            .store
-            .claim_taskflow_step(
-                &intent.run_id,
-                &intent.step_id,
-                intent.attempt,
-                &fence,
-                &digest,
-                &intent.payload_digest,
-                "agentd-product-effect-claim",
-                now_ms + 4,
-            )
-            .await
-            .expect("claim step");
-        fence
-    }
-
-    fn signed_final_use(
-        intent: &AuthorizedEffectIntent,
-        now_ms: u64,
-        signing_key: &SigningKey,
-    ) -> SignedFinalUseGrant {
-        let binding = intent.final_use_binding().expect("final-use binding");
-        let grant = FinalUseGrant {
-            schema_version: 1,
-            signer_id: "automation-security-owner".to_string(),
-            authority_epoch: 9,
-            grant_id: "agentd-product-effect-grant".to_string(),
-            nonce: digest_bytes_for_test(&Sha256Digest::for_bytes(b"agentd-product-effect-nonce")),
-            binding,
-            not_before_unix_ms: now_ms.saturating_sub(1_000),
-            expires_at_unix_ms: now_ms + 30_000,
-        };
-        let signature = signing_key
-            .sign(&grant.signing_bytes().expect("signing bytes"))
-            .to_bytes()
-            .to_vec();
-        SignedFinalUseGrant { grant, signature }
-    }
-
-    fn digest_bytes_for_test(digest: &Sha256Digest) -> [u8; 32] {
-        decode_hex_array::<32>(digest.as_str(), "digest").expect("digest bytes")
-    }
-
-    fn hex(bytes: &[u8]) -> String {
-        const HEX: &[u8; 16] = b"0123456789abcdef";
-        let mut output = String::with_capacity(bytes.len() * 2);
-        for byte in bytes {
-            output.push(char::from(HEX[usize::from(byte >> 4)]));
-            output.push(char::from(HEX[usize::from(byte & 0x0f)]));
-        }
-        output
-    }
-
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn host_dispatches_exact_wire_payload_once() {
-        let fixture = Fixture::new().await;
-        let now_ms = u64::try_from(
-            SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                .expect("wall clock")
-                .as_millis(),
-        )
-        .expect("millis");
-        let scope = Sha256Digest::for_bytes(b"provider-fixture-scope");
-        let intent = effect_intent(&scope);
-        prepare_effect(&fixture, now_ms, &intent).await;
-
-        let server = MockServer::start().await;
-        let provider_key = ProviderEffectKey::for_operation(
-            "provider/fixture-v1",
-            &intent.run_id,
-            &intent.step_id,
-        )
-        .expect("provider key");
-        let provider_operation = Sha256Digest::for_bytes(b"provider-operation");
-        let ack = serde_json::json!({
-            "effect_key": provider_key.as_str(),
-            "payload_sha256": intent.payload_digest.as_str(),
-            "provider_operation_id_sha256": provider_operation.as_str(),
-            "status": "completed"
-        });
-        Mock::given(method("POST"))
-            .and(path("/dispatch"))
-            .and(header(
-                PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER,
-                provider_key.as_str(),
-            ))
-            .and(body_bytes(WIRE.to_vec()))
-            .respond_with(ResponseTemplate::new(200).set_body_json(ack))
-            .expect(1)
-            .mount(&server)
-            .await;
-
-        let contract_signer = SigningKey::from_bytes(&[23_u8; 32]);
-        let final_use_signer = SigningKey::from_bytes(&[29_u8; 32]);
-        let unsigned_provider_config = HttpProviderEffectConfig {
-            dispatch_url: format!("{}/dispatch", server.uri()),
-            lookup_url_template: format!("{}/status/{{key}}", server.uri()),
-            headers: HeaderMap::new(),
-            timeout: Duration::from_secs(2),
-            contract_id: "agentd-product-effect-contract".to_string(),
-            attestation: None,
-        };
-        let contract_digest = unsigned_provider_config
-            .contract_sha256()
-            .expect("contract digest");
-        let statement = HttpProviderEffectContractAttestation::statement_for(
-            "agentd-product-effect-contract",
-            &contract_digest,
-            1,
-        );
-        let contract_signature = contract_signer.sign(&statement).to_bytes();
-        let revocations_file = fixture
-            .identity
-            .layout
-            .automation_root()
-            .join("effect-revocations.json");
-        fs::write(
-            &revocations_file,
-            serde_json::to_vec(&FinalUseRevocations {
-                authority_epoch: 9,
-                revision: 1,
-                revoked_grant_ids: BTreeSet::new(),
-            })
-            .expect("revocations json"),
-        )
-        .expect("write revocations file");
-        fs::set_permissions(&revocations_file, fs::Permissions::from_mode(0o600))
-            .expect("revocations file permissions");
-
-        let host_file = fixture
-            .identity
-            .layout
-            .automation_root()
-            .join("effect-host.json");
-        let host_json = serde_json::json!({
-            "schema_version": 1,
-            "provider_scope": "provider/fixture-v1",
-            "destination_id": "provider:fixture",
-            "final_use_scope_sha256": scope.as_str(),
-            "dispatch_url": format!("{}/dispatch", server.uri()),
-            "lookup_url_template": format!("{}/status/{{key}}", server.uri()),
-            "headers": {},
-            "timeout_ms": 2000,
-            "contract_id": "agentd-product-effect-contract",
-            "contract_sha256": contract_digest.as_str(),
-            "contract_authority_epoch": 1,
-            "contract_signature_hex": hex(&contract_signature),
-            "contract_verifying_key_hex": hex(&contract_signer.verifying_key().to_bytes()),
-            "final_use_signer_id": "automation-security-owner",
-            "final_use_verifying_key_hex": hex(&final_use_signer.verifying_key().to_bytes()),
-            "final_use_revocations_file": revocations_file
-        });
-        fs::write(
-            &host_file,
-            serde_json::to_vec(&host_json).expect("host json"),
-        )
-        .expect("write host file");
-        fs::set_permissions(&host_file, fs::Permissions::from_mode(0o600))
-            .expect("host file permissions");
-
-        let host =
-            AgentdAutomationEffectHost::open(&fixture.identity, &host_file).expect("effect host");
-        let grant = signed_final_use(&intent, now_ms, &final_use_signer);
-        let receipt = host
-            .execute(
-                &fixture.store,
-                &intent,
-                WIRE,
-                &grant,
-                "agentd-product-effect-dispatch",
-                now_ms + 5,
-            )
-            .await
-            .expect("effect dispatch");
-        assert_eq!(
-            receipt.observation,
-            Some(TaskFlowStepObservation::Succeeded)
-        );
-
-        let replay = host
-            .execute(
-                &fixture.store,
-                &intent,
-                WIRE,
-                &grant,
-                "agentd-product-effect-dispatch",
-                now_ms + 6,
-            )
-            .await
-            .expect("settled replay");
-        assert_eq!(replay.receipt_digest, receipt.receipt_digest);
-        // A terminal read is not permission to substitute bytes or command
-        // identity, even though the live lease has already been cleared.
-        let mut substituted = intent.clone();
-        substituted.operation_id.push_str("-substitution");
-        assert!(
-            host.execute(
-                &fixture.store,
-                &substituted,
-                WIRE,
-                &grant,
-                "agentd-product-effect-dispatch",
-                now_ms + 7
-            )
-            .await
-            .is_err()
-        );
-        assert!(
-            host.execute(
-                &fixture.store,
-                &intent,
-                WIRE,
-                &grant,
-                "different-command",
-                now_ms + 7
-            )
-            .await
-            .is_err()
-        );
-        assert!(
-            host.execute(
-                &fixture.store,
-                &intent,
-                b"different-wire",
-                &grant,
-                "agentd-product-effect-dispatch",
-                now_ms + 7
-            )
-            .await
-            .is_err()
-        );
-        server.verify().await;
-    }
-}
+#[path = "automation_effect_host_tests.rs"]
+mod tests;

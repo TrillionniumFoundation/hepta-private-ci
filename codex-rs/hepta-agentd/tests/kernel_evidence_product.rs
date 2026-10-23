@@ -1,3 +1,8 @@
+#![allow(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    reason = "test fixture setup must fail immediately on invalid input; production code retains these lints"
+)]
 #![cfg(unix)]
 
 use std::os::unix::fs::PermissionsExt;

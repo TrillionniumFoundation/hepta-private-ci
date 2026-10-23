@@ -351,6 +351,14 @@ impl CognitiveStore {
         &self.owner_agent_id
     }
 
+    /// Wait for all SQLite connections to close before handing the files to
+    /// recovery. Dropping a pool alone can leave asynchronous WAL/SHM cleanup
+    /// racing the retained file identity checks. This closes the shared pool;
+    /// callers must also drop every store clone to release the open guards.
+    pub async fn close(&self) {
+        self.pool.close().await;
+    }
+
     /// Returns whether two handles refer to the same Agent-local database and
     /// owner.  This is crate-private so composite local writers can reject a
     /// lease/executor assembled from different stores before opening a

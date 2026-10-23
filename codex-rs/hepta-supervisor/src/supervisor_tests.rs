@@ -43,6 +43,9 @@ use crate::SupervisorEventKind;
 use crate::TickReport;
 use crate::driver::SpawnedProcess;
 
+#[path = "supervisor_matrix_restart_recovery_tests.rs"]
+mod matrix_restart_recovery;
+
 const FIRST_AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 const SECOND_AGENT_ID: &str = "019153a4-3088-7e03-a56a-9b1964f75dd3";
 
