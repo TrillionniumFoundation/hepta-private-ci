@@ -33,9 +33,10 @@ claimed to be historically unseen semantic classes. Every source's instructions
 and sensor variants stay together. The new test must remain unopened until the
 protocol, source hashes and selection are frozen and validation is ready.
 
-The first four r2 training/validation builds all exited 2 and never constructed
+The first five r2 training/validation builds all exited 2 and never constructed
 the formal test. Their signed failures, models and costs remain in verified
-lossless archives under `runs/codex-cloud-efficient-r2-t1` through `t4`.
+receipts under `runs/codex-cloud-efficient-r2-t1` through `t5`; earlier complete
+builds also have byte-verified lossless archives.
 
 | Build | Content A-anchor utility | NDU-additive utility | Control CPU-net vs efficient reference | Outcome |
 |---|---:|---:|---:|---|
@@ -43,6 +44,7 @@ lossless archives under `runs/codex-cloud-efficient-r2-t1` through `t4`.
 | t2 | — | -0.060660 | -0.145698 | Unready; two actual CPU cap breaches |
 | t3 | +0.021224 | +0.006639 | -0.004409 | Unready; caps held |
 | t4 | +0.024836 | +0.003498 | -0.004656 | Unready; caps held; raw control/random also negative |
+| t5 | +0.014986 | +0.012584 | -0.002427 | Unready; caps held; raw control/random also negative |
 
 These are validation mean contrasts, not held-out confidence intervals. t4
 aligned raw critic gain and complete marginal service CPU using train-only
@@ -51,6 +53,18 @@ Adam/RNG state. Neither change closed the effective-control benefit gap.
 Its [report](runs/codex-cloud-efficient-r2-t4/REPORT.md) and
 [standalone smoke](runs/codex-cloud-efficient-r2-t4/standalone-smoke.json) separate
 real trainable content/export evidence from the failed scientific claim.
+
+The common exact-output optimization in t5 admitted 84 residual control rounds
+versus 45 static NDU rounds. Final control updates were 389/450/450 versus
+388/431/431, but its full-content utility still trailed by 0.001265 on average;
+its own routing lost another 0.000780. More optimization steps do not guarantee
+better decoded raw utility. The [t5 report](runs/codex-cloud-efficient-r2-t5/REPORT.md)
+retains the actual build, scope and complete-cost boundaries.
+
+The core content/NDU generation claim and the stronger adaptive-continuation
+claim have separate evidence states. Core validation contrasts are positive but
+not independently tested. The frozen r2 dynamic gates remain failed. Neither a
+service smoke nor a transport contract permits an overall first-goal pass.
 
 First-goal efficient-budget acceptance remains blocked by demonstrated control
 net-benefit failure. Audio/video generation and long interactions remain unrun

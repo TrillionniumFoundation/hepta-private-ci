@@ -128,3 +128,13 @@ was 145553 ns per batch, about 2.27 us/request; this noisy hand-array diagnostic
 cannot establish whole-build, controller or held-out benefit. A new source freeze
 precedes any actual training/validation use; prices, objectives, caps and gates
 remain unchanged.
+
+The output revision's 59 affected source tests passed in 3.506 seconds. Its t5
+build exited 2: validation content A-anchor utility +0.014986, NDU-additive
++0.012584, control CPU-net versus NDU/full -0.002427, and raw control/random
+-0.000780. Actual build caps held and the test remained unopened. Savings funded
+84 residual control rounds versus 45 static NDU rounds; control had more final
+updates for all three seeds but still a -0.001265 full-content utility gap.
+These optimization trajectories and rare early-stop losses call for TRAIN-only
+grouped decision-regret diagnosis before assuming a larger head is necessary.
+No prospective nonlinear head has been committed, frozen or evaluated.
