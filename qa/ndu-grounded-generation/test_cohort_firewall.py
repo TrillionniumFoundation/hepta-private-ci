@@ -64,6 +64,39 @@ class CohortFirewallTests(unittest.TestCase):
         v["splits"]["test"]["sources"][0]["image_sha256"] = v["splits"]["train"]["sources"][0]["image_sha256"]
         self.assertEqual(check_cohort(v, [self.old])["status"], "fail")
 
+    def test_task_id_aliases_are_rejected_across_and_within_splits(self):
+        # A task ID is a score/journal join key, independently of image bytes.
+        for first, second in (("train", "dev"), ("train", "test"),
+                              ("dev", "calibration"), ("calibration", "test")):
+            with self.subTest(first=first, second=second):
+                candidate = copy.deepcopy(self.new)
+                candidate["splits"][second]["sources"][0]["task_id"] = (
+                    candidate["splits"][first]["sources"][0]["task_id"])
+                with self.assertRaisesRegex(CohortContractError, "duplicate task_id"):
+                    check_cohort(candidate, [self.old])
+        candidate = copy.deepcopy(self.new)
+        duplicate = image(98765)
+        duplicate["task_id"] = candidate["splits"]["train"]["sources"][0]["task_id"]
+        candidate["splits"]["train"]["sources"].append(duplicate)
+        candidate["splits"]["train"]["count"] = 2
+        with self.assertRaisesRegex(CohortContractError, "duplicate task_id"):
+            check_cohort(candidate, [self.old])
+        historical = copy.deepcopy(self.old)
+        historical["splits"]["test"]["sources"][0]["task_id"] = (
+            historical["splits"]["train"]["sources"][0]["task_id"])
+        with self.assertRaisesRegex(CohortContractError, "duplicate task_id"):
+            check_cohort(self.new, [historical])
+
+    def test_noncanonical_task_ids_are_rejected_before_scoring(self):
+        for task_id in ("", " ", "two words", " leading", "trailing ",
+                        "x\\ny", "a/b", "a" * 129, "🚫", "\\t"):
+            with self.subTest(task_id=task_id):
+                candidate = copy.deepcopy(self.new)
+                candidate["splits"]["test"]["sources"][0]["task_id"] = task_id
+                with self.assertRaisesRegex(CohortContractError, "task_id"):
+                    check_cohort(candidate, [self.old])
+        self.assertEqual(check_cohort(self.new, [self.old])["status"], "pass")
+
     def test_bad_contract_fails_closed(self):
         for bad in [None, {}, {"schema": "bad"}, {"schema": "hepta.grounded-cohort.v1", "splits": {}}]:
             with self.subTest(bad=bad), self.assertRaises(CohortContractError):

@@ -76,6 +76,10 @@ missing source groups, invalid counts, missing pins, altered pinned historical
 bytes and incomplete historical rosters cause explicit nonzero exits. Manifest
 bytes are capped at 16 MiB; candidate sources at 2,048, historical sources at
 4,096, pairwise comparisons at 2,000,000 and recorded violations at 4,096.
+Original-cohort task IDs are bounded canonical ASCII keys and must be globally
+unique across train/dev/calibration/test (including v1 historical manifests),
+independent of image identity. Duplicate task IDs are refused before score
+joins; this does not prove entity or foundation-model independence.
 Historical source IDs must also be unique across the complete rosters. Input
 byte limits are checked before and after file reading, to avoid allocating
 oversized manifests. Resource overruns yield a typed denial, never a partial
