@@ -64,8 +64,8 @@ fn claim(intent: &RuntimeToolIntentV1, bytes: &[u8]) -> DispatchClaim {
 #[test]
 fn exact_bytes_host_tool_idempotency_and_generation_change_outbox_identity() {
     let (base, bytes) = fixture();
-    let durable = bind_native_cell_to_durable_outbox_v1(10_000, &base, bytes)
-        .expect("exact durable binding");
+    let durable =
+        bind_native_cell_to_durable_outbox_v1(10_000, &base, bytes).expect("exact durable binding");
     assert_eq!(durable.payload_digest, base.intent_digest());
     let mut variants = Vec::new();
 
