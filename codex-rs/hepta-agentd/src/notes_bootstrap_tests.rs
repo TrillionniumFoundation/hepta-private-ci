@@ -14,7 +14,7 @@ struct Fixture {
 }
 
 fn fixture() -> Fixture {
-    serde_json::from_str(include_str!("../tests/fixtures/notes-bootstrap-v1.json"))
+    serde_json::from_str(include_str!("../tests/fixtures/notes-bootstrap-v2.json"))
         .expect("shared bootstrap fixture")
 }
 
@@ -59,19 +59,21 @@ fn send_offer(socket: &UnixDatagram, payload: &[u8], descriptors: &[RawFd]) -> i
 }
 
 #[test]
-fn bootstrap_golden_transfers_one_cloexec_endpoint_and_correlates_only_registration() -> TestResult
-{
+fn bootstrap_golden_transfers_two_ordered_cloexec_endpoints_and_correlates_only_registration()
+-> TestResult {
     let fixture = fixture();
     let (parent, session) = UnixDatagram::pair()?;
     let (offered, mut application) = UnixStream::pair()?;
+    let (recovery, _recovery_peer) = UnixDatagram::pair()?;
     send_offer(
         &session,
         fixture.offer_utf8.as_bytes(),
-        &[offered.as_raw_fd()],
+        &[offered.as_raw_fd(), recovery.as_raw_fd()],
     )?;
     drop(offered);
     let deadline = Instant::now() + Duration::from_secs(2);
-    let (offer, mut received) = receive_offer(&parent, deadline)?;
+    let (offer, mut received, received_recovery) = receive_offer(&parent, deadline)?;
+    require_socket(received_recovery.as_raw_fd(), libc::SOCK_DGRAM)?;
     // SAFETY: F_GETFD reads the flags of the retained received descriptor.
     let flags = unsafe { libc::fcntl(received.as_raw_fd(), libc::F_GETFD) };
     assert!(flags >= 0 && flags & libc::FD_CLOEXEC != 0);
@@ -105,6 +107,7 @@ fn duplicate_unknown_wrong_identity_and_oversized_offers_close_received_descript
     let mut wrong_destination: serde_json::Value = serde_json::from_str(&original)?;
     wrong_destination["destination_id"] = serde_json::json!("another-destination");
     for payload in [
+        original.replace("\"schema_version\":2", "\"schema_version\":1"),
         original.replacen("{", "{\"schema_version\":1,", 1),
         original.replacen("{", "{\"extra\":true,", 1),
         serde_json::to_string(&wrong_task)?,
@@ -113,7 +116,12 @@ fn duplicate_unknown_wrong_identity_and_oversized_offers_close_received_descript
     ] {
         let (parent, session) = UnixDatagram::pair()?;
         let (offered, mut application) = UnixStream::pair()?;
-        send_offer(&session, payload.as_bytes(), &[offered.as_raw_fd()])?;
+        let (recovery, _recovery_peer) = UnixDatagram::pair()?;
+        send_offer(
+            &session,
+            payload.as_bytes(),
+            &[offered.as_raw_fd(), recovery.as_raw_fd()],
+        )?;
         drop(offered);
         assert!(receive_offer(&parent, Instant::now() + Duration::from_secs(2)).is_err());
         application.set_read_timeout(Some(Duration::from_secs(1)))?;
@@ -125,7 +133,7 @@ fn duplicate_unknown_wrong_identity_and_oversized_offers_close_received_descript
 #[test]
 fn absent_multiple_and_truncated_descriptor_sets_are_rejected_and_closed() -> TestResult {
     let fixture = fixture();
-    for count in [0, 2, 80] {
+    for count in [0, 1, 2, 3, 80] {
         let (parent, session) = UnixDatagram::pair()?;
         let (offered, mut application) = UnixStream::pair()?;
         let descriptors = vec![offered.as_raw_fd(); count];
@@ -143,10 +151,11 @@ fn datagram_or_named_effect_descriptor_cannot_be_attached() -> TestResult {
     let fixture = fixture();
     let (parent, session) = UnixDatagram::pair()?;
     let (offered, _peer) = UnixDatagram::pair()?;
+    let (recovery, _recovery_peer) = UnixDatagram::pair()?;
     send_offer(
         &session,
         fixture.offer_utf8.as_bytes(),
-        &[offered.as_raw_fd()],
+        &[offered.as_raw_fd(), recovery.as_raw_fd()],
     )?;
     assert!(receive_offer(&parent, Instant::now() + Duration::from_secs(2)).is_err());
     let directory = tempfile::tempdir()?;
@@ -156,7 +165,7 @@ fn datagram_or_named_effect_descriptor_cannot_be_attached() -> TestResult {
     send_offer(
         &session,
         fixture.offer_utf8.as_bytes(),
-        &[offered.as_raw_fd()],
+        &[offered.as_raw_fd(), recovery.as_raw_fd()],
     )?;
     assert!(receive_offer(&parent, Instant::now() + Duration::from_secs(2)).is_err());
     Ok(())

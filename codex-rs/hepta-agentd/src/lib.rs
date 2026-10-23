@@ -26,6 +26,9 @@ mod evidence_frontier;
 mod evidence_host;
 mod evidence_trust;
 #[cfg(target_os = "linux")]
+mod final_use_issuer;
+mod grant_provider_worker;
+#[cfg(target_os = "linux")]
 mod hos2_device;
 mod intelligence_ingress;
 mod intelligence_product;
@@ -43,6 +46,10 @@ mod plasticity_learning_producer;
 mod plasticity_owner_evidence;
 mod plasticity_process_bootstrap;
 mod plasticity_runtime;
+#[cfg(target_os = "linux")]
+mod production_authority;
+#[cfg(target_os = "linux")]
+mod production_composition;
 mod production_writer_host;
 mod prompt_runtime;
 mod qualification_writer;
@@ -165,6 +172,12 @@ pub use evidence_frontier::EvidenceRecoveryFrontierV1;
 pub use evidence_frontier::evidence_recovery_frontier_signing_bytes;
 pub use evidence_host::kernel_evidence_claims;
 #[cfg(target_os = "linux")]
+pub use final_use_issuer::AgentdFinalUseIssuerError;
+#[cfg(target_os = "linux")]
+pub use final_use_issuer::AgentdFinalUseIssuerPeer;
+#[cfg(target_os = "linux")]
+pub use final_use_issuer::AgentdUnixFinalUseGrantProvider;
+#[cfg(target_os = "linux")]
 pub use hos2_device::AgentdHos2Device;
 #[cfg(target_os = "linux")]
 pub use hos2_device::AgentdHos2Usage;
@@ -233,6 +246,14 @@ pub use plasticity_runtime::PlasticityRuntimeCallErrorV1;
 pub use plasticity_runtime::PlasticityRuntimeHandleV1;
 pub use plasticity_runtime::PlasticityRuntimeOwnerV1;
 pub use plasticity_runtime::plasticity_runtime_channel_v1;
+#[cfg(target_os = "linux")]
+pub use production_authority::AgentdFinalUseHostInputs;
+#[cfg(target_os = "linux")]
+pub use production_composition::AgentdProductionHostInputs;
+#[cfg(target_os = "linux")]
+pub use production_composition::AgentdProductionNotesInputs;
+#[cfg(target_os = "linux")]
+pub use production_composition::attach_production_operation_host;
 pub use production_writer_host::AgentdFinalUseGrantProvider;
 pub use production_writer_host::AgentdProductionOperationRuntimeConfig;
 pub use production_writer_host::AgentdProductionWriterHost;

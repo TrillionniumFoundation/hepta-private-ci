@@ -66,6 +66,10 @@ mod hos2_owner;
 pub use hos2_owner::Hos2RetirementObservation;
 pub use hos2_owner::Hos2RetirementPermit;
 
+#[path = "production_notes_owner.rs"]
+mod notes_owner;
+pub use notes_owner::NotesRetirementPermit;
+
 #[path = "production_hos2_execution.rs"]
 mod hos2_execution;
 use hos2_execution::Hos2OwnerGate;
@@ -1007,6 +1011,13 @@ impl ProductionDurableWriter {
                             LocalReconcileOutcome::Committed,
                         )
                         .await?;
+                    } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+                        self.settle_notes_terminal(
+                            &request,
+                            &receipt,
+                            LocalReconcileOutcome::Committed,
+                        )
+                        .await?;
                     } else {
                         self.reconcile(&operation_id, LocalReconcileOutcome::Committed)
                             .await?;
@@ -1016,6 +1027,13 @@ impl ProductionDurableWriter {
                 ProductionTerminalObservation::NotApplied { reason } => {
                     if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
                         self.settle_hos2_terminal(
+                            &request,
+                            &reason,
+                            LocalReconcileOutcome::Rejected,
+                        )
+                        .await?;
+                    } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+                        self.settle_notes_terminal(
                             &request,
                             &reason,
                             LocalReconcileOutcome::Rejected,
@@ -1044,6 +1062,8 @@ impl ProductionDurableWriter {
                 ProductionTerminalObservation::Unavailable { .. } => {}
             }
         }
+        // Failure retains source terminality and permits a later exact ACK.
+        let _ = self.retry_notes_retirement(target).await;
         Ok(reconciled)
     }
 
@@ -1611,6 +1631,14 @@ impl ProductionDurableWriter {
             )
             .await;
         }
+        if let Ok(receipt) = &settled
+            && receipt.request.topic == crate::NOTES_REPLACE_TOPIC_V1
+            && receipt.state == LocalOutcomeState::Committed
+        {
+            let _ = self
+                .retire_notes_receipt(target, &receipt.request.occurrence_key)
+                .await;
+        }
         settled
     }
 
@@ -1643,6 +1671,9 @@ impl ProductionDurableWriter {
                 let local = if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
                     self.settle_hos2_terminal(&request, &receipt, LocalReconcileOutcome::Committed)
                         .await?
+                } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+                    self.settle_notes_terminal(&request, &receipt, LocalReconcileOutcome::Committed)
+                        .await?
                 } else {
                     self.reconcile(occurrence_key, LocalReconcileOutcome::Committed)
                         .await?
@@ -1660,6 +1691,9 @@ impl ProductionDurableWriter {
             ProductionTargetOutcome::NotApplied { reason } => {
                 let local = if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
                     self.settle_hos2_terminal(&request, &reason, LocalReconcileOutcome::Rejected)
+                        .await?
+                } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+                    self.settle_notes_terminal(&request, &reason, LocalReconcileOutcome::Rejected)
                         .await?
                 } else {
                     self.reconcile(occurrence_key, LocalReconcileOutcome::Rejected)
@@ -1722,6 +1756,13 @@ impl ProductionDurableWriter {
                         LocalReconcileOutcome::Committed,
                     )
                     .await
+                } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+                    self.settle_notes_terminal(
+                        &request,
+                        &target_receipt,
+                        LocalReconcileOutcome::Committed,
+                    )
+                    .await
                 } else {
                     self.apply(occurrence_key, target_receipt.clone()).await
                 };
@@ -1743,6 +1784,9 @@ impl ProductionDurableWriter {
             ProductionTargetOutcome::NotApplied { reason } => {
                 let local = if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
                     self.settle_hos2_terminal(&request, &reason, LocalReconcileOutcome::Rejected)
+                        .await?
+                } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+                    self.settle_notes_terminal(&request, &reason, LocalReconcileOutcome::Rejected)
                         .await?
                 } else {
                     self.reject(occurrence_key, &reason).await?
@@ -2375,6 +2419,12 @@ pub trait ProductionOutboxTarget: Send + Sync {
 /// target cannot accidentally turn transport acknowledgement into terminality.
 pub trait FinalUseProductionOutboxTarget: ProductionOutboxTarget {
     fn destination_id(&self) -> &str;
+
+    /// Notes-only metadata retirement. A caller cannot construct this permit;
+    /// the original writer derives it from its existing durable terminal event.
+    fn retire_notes_receipt(&self, _permit: &NotesRetirementPermit) -> Result<(), String> {
+        Err("target does not provide Notes receipt retirement".to_string())
+    }
 
     fn observe_terminal<'a>(
         &'a self,

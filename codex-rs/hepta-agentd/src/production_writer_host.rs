@@ -38,11 +38,22 @@ use codex_hepta_memory::ProductionFinalUseOutboxDispatcher;
 
 use crate::AgentdConfig;
 use crate::AgentdError;
+use crate::grant_provider_worker::GrantProviderWorker;
 
 /// Externally owned grant source. Agentd asks for a grant bound to the exact
 /// FinalUseBinding; it never receives or constructs the issuer signing key.
+/// Implementations must bound their synchronous work. The original host runs
+/// one request on a blocking worker, retaining that capacity across cancellation.
 pub trait AgentdFinalUseGrantProvider: Send + Sync {
     fn signed_grant(&self, binding: &FinalUseBinding) -> Result<SignedFinalUseGrant, AgentdError>;
+}
+
+#[cfg(target_os = "linux")]
+impl AgentdFinalUseGrantProvider for crate::AgentdUnixFinalUseGrantProvider {
+    fn signed_grant(&self, binding: &FinalUseBinding) -> Result<SignedFinalUseGrant, AgentdError> {
+        self.request_grant(binding)
+            .map_err(|error| AgentdError::Protocol(format!("final-use issuer transport: {error}")))
+    }
 }
 
 /// Explicit runtime composition input for the production operation service.
@@ -211,7 +222,7 @@ impl AgentdProductionOperationRuntimeConfig {
 pub struct AgentdProductionWriterHost {
     writer: Arc<ProductionDurableWriter>,
     dispatchers: BTreeMap<String, ProductionFinalUseOutboxDispatcher>,
-    grants: Option<Arc<dyn AgentdFinalUseGrantProvider>>,
+    grants: Option<Arc<GrantProviderWorker>>,
     // Private read-side clone of the exact recovered generation. Runtime
     // composition can reuse the same fenced owner without reopening by path or
     // exposing ProductionDurableWriter's crate-private raw-store handle.
@@ -427,7 +438,7 @@ impl AgentdProductionWriterHost {
             destination,
             ProductionFinalUseOutboxDispatcher::attach(final_use, target),
         );
-        self.grants = Some(grants);
+        self.grants = Some(Arc::new(GrantProviderWorker::new(grants)));
         Ok(self)
     }
 
@@ -503,7 +514,7 @@ impl AgentdProductionWriterHost {
             .writer
             .final_use_binding(&receipt, dispatcher.destination_id())
             .await?;
-        let signed = grants.signed_grant(&binding)?;
+        let signed = grants.signed_grant(&binding).await?;
         Ok(dispatcher
             .dispatch(self.writer.as_ref(), &signed, &binding, receipt)
             .await?)
@@ -563,7 +574,7 @@ impl AgentdProductionWriterHost {
                     .await?;
                 // An issuer refusal does not mutate the original operation or
                 // manufacture a grant. The same proof remains pending.
-                let Ok(signed) = grants.signed_grant(&binding) else {
+                let Ok(signed) = grants.signed_grant(&binding).await else {
                     continue;
                 };
                 match dispatcher

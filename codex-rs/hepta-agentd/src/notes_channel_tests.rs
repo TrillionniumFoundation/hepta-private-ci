@@ -6,6 +6,92 @@ use std::os::unix::net::UnixListener;
 type TestResult = Result<(), Box<dyn Error>>;
 
 #[test]
+fn independent_recovery_survives_effect_loss_and_filters_late_datagrams() -> TestResult {
+    let (owner, mut app) = UnixStream::pair()?;
+    let (recovery, recovery_app) = UnixDatagram::pair()?;
+    let channel = AgentdNotesChannel::from_private_channels(owner, recovery)?;
+    let query = serde_json::json!({"schema_version":1,"action":"observe",
+        "target":{"session_instance":"11111111111111111111111111111111","task_id":1,"incarnation":"22222222222222222222222222222222"},
+        "operation_id":"exact-operation","payload_sha256":"a".repeat(64)});
+    let raw = serde_json::to_vec(&query)?;
+    let mut reply = query;
+    reply
+        .as_object_mut()
+        .ok_or("reply object")?
+        .remove("action");
+    reply["result"] = serde_json::json!({"status":"unknown","current_revision":1});
+    let expected = serde_json::to_vec(&reply)?;
+    let response = expected.clone();
+    let peer = std::thread::spawn(move || -> io::Result<()> {
+        let mut effect = [0_u8; 10];
+        app.read_exact(&mut effect)?;
+        drop(app); // application model survives the effect stream loss
+        recovery_app.set_read_timeout(Some(Duration::from_secs(5)))?;
+        let mut bytes = [0_u8; 8192];
+        recovery_app.recv(&mut bytes)?;
+        let mut stale: serde_json::Value = serde_json::from_slice(&response)?;
+        stale["operation_id"] = serde_json::json!("unrelated-operation");
+        recovery_app.send(&serde_json::to_vec(&stale)?)?;
+        recovery_app.send(&response)?;
+        Ok(())
+    });
+    assert!(channel.exchange(b"effect").is_err());
+    assert!(channel.exchange(b"effect").is_err());
+    assert_eq!(channel.recovery_exchange(&raw)?, expected);
+    peer.join().expect("recovery peer")?;
+    Ok(())
+}
+
+#[test]
+fn lost_retirement_ack_can_retry_the_exact_datagram_and_cannot_send_effects() -> TestResult {
+    let (owner, _app) = UnixStream::pair()?;
+    let (recovery, recovery_app) = UnixDatagram::pair()?;
+    let channel = AgentdNotesChannel::from_private_channels(owner, recovery)?;
+    assert!(
+        channel
+            .recovery_exchange(br#"{"action":"replace_note"}"#)
+            .is_err()
+    );
+    recovery_app.set_nonblocking(true)?;
+    assert_eq!(
+        recovery_app
+            .recv(&mut [0_u8; 1])
+            .expect_err("no effect sent")
+            .kind(),
+        io::ErrorKind::WouldBlock
+    );
+    recovery_app.set_nonblocking(false)?;
+    let request = serde_json::to_vec(
+        &serde_json::json!({"schema_version":1,"action":"acknowledge_terminal",
+        "target":{"session_instance":"11111111111111111111111111111111","task_id":1,"incarnation":"22222222222222222222222222222222"},
+        "operation_id":"exact-operation","payload_sha256":"a".repeat(64),"receipt_sha256":"b".repeat(64)}),
+    )?;
+    let expected = request.clone();
+    let peer = std::thread::spawn(move || -> io::Result<()> {
+        recovery_app.set_read_timeout(Some(Duration::from_secs(5)))?;
+        let mut bytes = [0_u8; 8192];
+        for attempt in 0..2 {
+            let length = recovery_app.recv(&mut bytes)?;
+            assert_eq!(&bytes[..length], expected);
+            if attempt == 0 {
+                continue;
+            }
+            let mut response: serde_json::Value = serde_json::from_slice(&bytes[..length])?;
+            response.as_object_mut().expect("object").remove("action");
+            response["status"] = serde_json::json!("already_released");
+            recovery_app.send(&serde_json::to_vec(&response)?)?;
+        }
+        Ok(())
+    });
+    assert!(channel.recovery_exchange(&request).is_err());
+    let response: serde_json::Value =
+        serde_json::from_slice(&channel.recovery_exchange(&request)?)?;
+    assert_eq!(response["status"], "already_released");
+    peer.join().expect("retirement peer")?;
+    Ok(())
+}
+
+#[test]
 fn inherited_socketpair_preserves_exact_frame_bytes() -> TestResult {
     let (owner, mut application) = UnixStream::pair()?;
     let channel = AgentdNotesChannel::from_private_channel(owner)?;
