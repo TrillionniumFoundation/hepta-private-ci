@@ -2015,9 +2015,7 @@ class ManagedHooksRequirements(BaseModel):
     post_tool_use: Annotated[list[ConfiguredHookMatcherGroup], Field(alias="PostToolUse")]
     pre_compact: Annotated[list[ConfiguredHookMatcherGroup], Field(alias="PreCompact")]
     pre_tool_use: Annotated[list[ConfiguredHookMatcherGroup], Field(alias="PreToolUse")]
-    session_end: Annotated[
-        list[ConfiguredHookMatcherGroup] | None, Field(alias="SessionEnd", validate_default=True)
-    ] = []
+    session_end: Annotated[list[ConfiguredHookMatcherGroup] | None, Field(alias="SessionEnd")] = []
     session_start: Annotated[list[ConfiguredHookMatcherGroup], Field(alias="SessionStart")]
     stop: Annotated[list[ConfiguredHookMatcherGroup], Field(alias="Stop")]
     subagent_start: Annotated[list[ConfiguredHookMatcherGroup], Field(alias="SubagentStart")]
@@ -3556,9 +3554,7 @@ class WorkspaceWriteSandboxPolicy(BaseModel):
     exclude_tmpdir_env_var: Annotated[bool | None, Field(alias="excludeTmpdirEnvVar")] = False
     network_access: Annotated[bool | None, Field(alias="networkAccess")] = False
     type: Literal["workspaceWrite"]
-    writable_roots: Annotated[
-        list[AbsolutePathBuf] | None, Field(alias="writableRoots", validate_default=True)
-    ] = []
+    writable_roots: Annotated[list[AbsolutePathBuf] | None, Field(alias="writableRoots")] = []
 
 
 class SandboxPolicy(
@@ -5167,8 +5163,7 @@ class TextUserInput(BaseModel):
     text_elements: Annotated[
         list[TextElement] | None,
         Field(
-            description="UI-defined spans within `text` used to render or persist special elements.",
-            validate_default=True,
+            description="UI-defined spans within `text` used to render or persist special elements."
         ),
     ] = []
     type: Literal["text"]
@@ -6931,16 +6926,14 @@ class MigrationDetails(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    commands: Annotated[list[CommandMigration] | None, Field(validate_default=True)] = []
-    hooks: Annotated[list[HookMigration] | None, Field(validate_default=True)] = []
-    mcp_servers: Annotated[
-        list[McpServerMigration] | None, Field(alias="mcpServers", validate_default=True)
-    ] = []
+    commands: Annotated[list[CommandMigration] | None, Field()] = []
+    hooks: Annotated[list[HookMigration] | None, Field()] = []
+    mcp_servers: Annotated[list[McpServerMigration] | None, Field(alias="mcpServers")] = []
     memory: list[str] | None = None
-    plugins: Annotated[list[PluginsMigration] | None, Field(validate_default=True)] = []
-    sessions: Annotated[list[SessionMigration] | None, Field(validate_default=True)] = []
-    skills: Annotated[list[SkillMigration] | None, Field(validate_default=True)] = []
-    subagents: Annotated[list[SubagentMigration] | None, Field(validate_default=True)] = []
+    plugins: Annotated[list[PluginsMigration] | None, Field()] = []
+    sessions: Annotated[list[SessionMigration] | None, Field()] = []
+    skills: Annotated[list[SkillMigration] | None, Field()] = []
+    subagents: Annotated[list[SubagentMigration] | None, Field()] = []
 
 
 class Model(BaseModel):
@@ -6971,9 +6964,7 @@ class Model(BaseModel):
     is_default: Annotated[bool, Field(alias="isDefault")]
     model: str
     model_specialty: Annotated[str | None, Field(alias="modelSpecialty")] = None
-    service_tiers: Annotated[
-        list[ModelServiceTier] | None, Field(alias="serviceTiers", validate_default=True)
-    ] = []
+    service_tiers: Annotated[list[ModelServiceTier] | None, Field(alias="serviceTiers")] = []
     supported_reasoning_efforts: Annotated[
         list[ReasoningEffortOption], Field(alias="supportedReasoningEfforts")
     ]
@@ -9366,9 +9357,7 @@ class ExternalAgentConfigDetectResponse(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True,
     )
-    connectors: Annotated[
-        list[ExternalAgentDetectedConnectorCandidate] | None, Field(validate_default=True)
-    ] = []
+    connectors: Annotated[list[ExternalAgentDetectedConnectorCandidate] | None, Field()] = []
     items: list[ExternalAgentConfigMigrationItem]
 
 
@@ -9696,7 +9685,6 @@ class ThreadForkResponse(BaseModel):
         Field(
             alias="instructionSources",
             description="Environment-native paths to instruction source files currently loaded for this thread.",
-            validate_default=True,
         ),
     ] = []
     model: str
@@ -9765,7 +9753,6 @@ class ThreadResumeResponse(BaseModel):
         Field(
             alias="instructionSources",
             description="Environment-native paths to instruction source files currently loaded for this thread.",
-            validate_default=True,
         ),
     ] = []
     model: str
@@ -9819,7 +9806,6 @@ class ThreadStartResponse(BaseModel):
         Field(
             alias="instructionSources",
             description="Environment-native paths to instruction source files currently loaded for this thread.",
-            validate_default=True,
         ),
     ] = []
     model: str
@@ -10163,7 +10149,7 @@ class PluginInstalledResponse(BaseModel):
     )
     marketplace_load_errors: Annotated[
         list[MarketplaceLoadErrorInfo] | None,
-        Field(alias="marketplaceLoadErrors", validate_default=True),
+        Field(alias="marketplaceLoadErrors"),
     ] = []
     marketplaces: list[PluginMarketplaceEntry]
 
@@ -10175,7 +10161,7 @@ class PluginListResponse(BaseModel):
     featured_plugin_ids: Annotated[list[str] | None, Field(alias="featuredPluginIds")] = []
     marketplace_load_errors: Annotated[
         list[MarketplaceLoadErrorInfo] | None,
-        Field(alias="marketplaceLoadErrors", validate_default=True),
+        Field(alias="marketplaceLoadErrors"),
     ] = []
     marketplaces: list[PluginMarketplaceEntry]
 
