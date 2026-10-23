@@ -207,6 +207,8 @@ async fn root_current_handoff_refuses_changed_cut_phase_generation_and_dead_succ
     let original = f.registration.clone();
     f.registration.writer_binding.generation = f.previous.head.writer_binding.generation;
     assert_eq!(f.adopt().err(), Some(AuthorityTrustError::Invalid));
+    f.registration.writer_binding.generation += 2;
+    assert_eq!(f.adopt().err(), Some(AuthorityTrustError::Invalid));
     f.registration = original;
     let previous = f.previous.clone();
     f.previous.head.last_current.state_digest = Sha256Digest::for_bytes(b"untrusted replacement cut");

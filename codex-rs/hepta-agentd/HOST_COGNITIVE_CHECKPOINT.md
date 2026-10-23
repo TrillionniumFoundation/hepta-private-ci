@@ -60,7 +60,7 @@ does not grant or rotate that authorization.
 Adoption compares the complete existing Current head and its original token,
 keeps its exact retained cut, increments the original counter and publisher
 epoch, and starts a fresh request highwater only within that new epoch. The
-same local lease ID must advance generation and the original lexicographic
+same local lease ID must advance generation by exactly one and the original lexicographic
 authority/owner epoch, with a different full grant and fencing digest. Original
 CAS sync/readback and a final clock/process check precede success. A lost result
 may have committed: reconcile by opening that exact new registration. Never

@@ -38,7 +38,7 @@ impl HostCognitiveCheckpoint {
             || old.peer_lifetime.uid != registration.peer_lifetime.uid
             || old.peer_lifetime.boot_id != registration.peer_lifetime.boot_id
             || old_writer.lease_id != new_writer.lease_id
-            || old_writer.generation >= new_writer.generation
+            || old_writer.generation.checked_add(1) != Some(new_writer.generation)
             || (old_writer.authority_epoch, old_writer.owner_epoch)
                 >= (new_writer.authority_epoch, new_writer.owner_epoch)
             || old_writer.authority_grant_digest == new_writer.authority_grant_digest
