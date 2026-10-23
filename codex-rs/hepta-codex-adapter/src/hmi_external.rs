@@ -1,7 +1,15 @@
 //! Presentation attachment to an already authorized external queue owner.
 use super::*;
+/// Owner-minted admission floor, retained across asynchronous ingress lookup.
+/// A local interrupt invalidates it before any fresh output can be armed.
+pub struct HmiOwnerAdmissionFenceV1 { connection_id:u64,epoch:u64 }
 
 impl HmiRequestsV1 {
+    pub fn owner_admission_fence(&self)->Result<HmiOwnerAdmissionFenceV1,HmiError>{
+        let state=self.shared.state.lock().map_err(|_|HmiError::Fenced)?;
+        if state.fenced{return Err(HmiError::Fenced);}
+        Ok(HmiOwnerAdmissionFenceV1 {connection_id:self.shared.connection_id,epoch:state.epoch})
+    }
     /// Current context may report an interrupted/failed terminal even though its
     /// output admission is closed. It cannot publish text from a fenced handle.
     pub fn permits_owner_context(&self, scope: &HmiOutputScopeV1) -> Result<bool, HmiError> {
@@ -19,6 +27,7 @@ impl HmiRequestsV1 {
     /// A duplicate never reopens output, including after interruption.
     pub fn observe_owner_submission(
         &self,
+        fence:HmiOwnerAdmissionFenceV1,
         generation: u64,
         sequence: u64,
         client_id: &str,
@@ -26,7 +35,7 @@ impl HmiRequestsV1 {
     ) -> Result<(), HmiError> {
         let (_, digest) = owner_input(client_id, text)?;
         let mut state = self.shared.state.lock().map_err(|_| HmiError::Fenced)?;
-        if state.fenced || generation != self.shared.binding.organ_generation {
+        if state.fenced || generation != self.shared.binding.organ_generation || fence.connection_id!=self.shared.connection_id || fence.epoch!=state.epoch {
             return Err(HmiError::Fenced);
         }
         if state.pending.as_ref() == Some(&(client_id.into(), digest.clone())) {
@@ -125,3 +134,7 @@ fn owner_input(client_id: &str, text: &str) -> Result<(Vec<UserInput>, String), 
     .map_err(|e| HmiError::Protocol(e.to_string()))?;
     Ok((input, digest))
 }
+
+#[cfg(test)]
+#[path="hmi_external_tests.rs"]
+mod tests;

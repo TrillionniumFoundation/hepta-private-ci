@@ -211,7 +211,9 @@ pub(crate) async fn run(
         let (tx, mut rx) = mpsc::channel::<UiEnvelope>(32);
         let session_cancel = cancel.child_token();
         let writer_cancel = session_cancel.clone();
-        let mut writer = tokio::spawn(async move {
+        // Both futures remain owned by this runtime task. Forced service
+        // retirement drops its socket writer as well; no JoinHandle can detach.
+        let writer = async move {
             let result = async {
                 while let Some(envelope) = rx.recv().await {
                     if let Some(gate) = &envelope.guard {
@@ -246,23 +248,26 @@ pub(crate) async fn run(
             .await;
             writer_cancel.cancel();
             result
-        });
-        let result = session::serve(&state, &active, &session_cancel, &mut read, &tx).await;
-        if let Err(error) = &result {
-            let _ = emit(
-                &tx,
-                json!({"type":"sessionError","error":error.to_string()}),
-            );
-        }
-        drop(tx);
-        match tokio::time::timeout(Duration::from_secs(3), &mut writer).await {
-            Ok(Ok(Ok(()))) => {}
-            other => {
-                writer.abort();
-                let _ = writer.await;
-                eprintln!("HMI text writer ended without complete delivery: {other:?}");
+        };
+        let session=async {
+            let result=session::serve(&state,&active,&session_cancel,&mut read,&tx).await;
+            if let Err(error)=&result {let _=emit(&tx,json!({"type":"sessionError","error":error.to_string()}));}
+            drop(tx);result
+        };
+        tokio::pin!(writer,session);
+        let result=tokio::select! {
+            result=&mut session=>{
+                if let other @ (Ok(Err(_))|Err(_))=tokio::time::timeout(Duration::from_secs(3),&mut writer).await {
+                    eprintln!("HMI text writer ended without complete delivery: {other:?}");
+                }
+                result
             }
-        }
+            writer_result=&mut writer=>{
+                if let Err(error)=writer_result {eprintln!("HMI text writer failed: {error}");}
+                tokio::time::timeout(Duration::from_secs(5),&mut session).await
+                    .unwrap_or_else(|_|Err(invalid("session cleanup timed out; original admission remains unknown")))
+            }
+        };
         if let Err(error) = result {
             eprintln!("HMI text session: {error}");
         }
