@@ -9,10 +9,24 @@ release, deployment, or runtime capability authority.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Iterable
+from typing import Callable, Iterable, TypeVar
 
+from .audit_checkpoint import (
+    AuditCheckpoint,
+    advance_audit_checkpoint,
+    create_audit_checkpoint,
+    verify_audit_checkpoint,
+)
+from .capacity_policy import (
+    DatabaseCapacityDecision,
+    DatabaseCapacityPolicy,
+    enforce_database_capacity,
+    evaluate_database_capacity,
+)
+from .clock_policy import ClockPolicy
 from .control_plane import EngineeringError, EngineeringStore, WorkEnvelope
 from .evidence import SignatureTrustStore
+from .git_security import run_git
 from .integration_controller import (
     IntegrationQueueGeneration,
     IntegrationQueueItem,
@@ -32,6 +46,11 @@ from .orchestration import (
     issue_repository_work_envelope,
     plan_engineering_work,
 )
+from .worker_identity import (
+    WorkerRegistrationRenewalDecision,
+    WorkerRegistrationRenewalReceipt,
+    renew_worker_registration,
+)
 from .worker_lifecycle import (
     WorkerClaim,
     WorkerHeartbeatReceipt,
@@ -49,6 +68,8 @@ from .worker_lifecycle import (
     worker_completion_observation_digest,
 )
 
+_T = TypeVar("_T")
+
 
 class EngineeringControlProduct:
     def __init__(
@@ -58,10 +79,20 @@ class EngineeringControlProduct:
         *,
         expected_repository: str,
         trust_store: SignatureTrustStore,
+        clock_policy: ClockPolicy = ClockPolicy(),
+        capacity_policy: DatabaseCapacityPolicy | None = None,
     ):
+        if not isinstance(clock_policy, ClockPolicy):
+            raise EngineeringError("invalid_clock_policy")
+        if capacity_policy is not None and not isinstance(
+            capacity_policy, DatabaseCapacityPolicy
+        ):
+            raise EngineeringError("invalid_capacity_policy")
         self.repository = Path(repository).resolve()
         self.expected_repository = expected_repository
         self.trust_store = trust_store
+        self.clock_policy = clock_policy
+        self.capacity_policy = capacity_policy or DatabaseCapacityPolicy()
         self.store = EngineeringStore(database)
         self._startup_reconciled = False
 
@@ -78,18 +109,35 @@ class EngineeringControlProduct:
     def close(self) -> None:
         self.store.close()
 
+    def _capacity_guarded_admission(self, operation: Callable[[], _T]) -> _T:
+        """Commit an admission only when both capacity snapshots are valid.
+
+        The store transaction helper is deliberately re-entrant. The post-write
+        measurement therefore remains in the same transaction and rolls back an
+        admission that crosses a hard ceiling. Recovery, result submission and
+        terminal reconciliation are intentionally not pre-blocked: those paths
+        drain or resolve existing work and must remain available during pressure.
+        """
+        with self.store._transaction():
+            enforce_database_capacity(self.store, self.capacity_policy)
+            result = operation()
+            enforce_database_capacity(self.store, self.capacity_policy)
+            return result
+
     def admit_repository_envelope(
         self,
         envelope: WorkEnvelope,
         *,
         now_ns: int | None = None,
     ) -> WorkEnvelope:
-        return issue_repository_work_envelope(
-            self.repository,
-            self.store,
-            envelope,
-            expected_repository=self.expected_repository,
-            now_ns=now_ns,
+        return self._capacity_guarded_admission(
+            lambda: issue_repository_work_envelope(
+                self.repository,
+                self.store,
+                envelope,
+                expected_repository=self.expected_repository,
+                now_ns=now_ns,
+            )
         )
 
     def acquire_lease(
@@ -103,14 +151,17 @@ class EngineeringControlProduct:
         expires_unix_ns: int,
         now_ns: int | None = None,
     ):
-        return self.store.acquire_path_lease(
-            lease_id,
-            envelope_id,
-            holder,
-            paths,
-            authority_epoch=authority_epoch,
-            expires_unix_ns=expires_unix_ns,
-            now_ns=now_ns,
+        paths_value = tuple(paths)
+        return self._capacity_guarded_admission(
+            lambda: self.store.acquire_path_lease(
+                lease_id,
+                envelope_id,
+                holder,
+                paths_value,
+                authority_epoch=authority_epoch,
+                expires_unix_ns=expires_unix_ns,
+                now_ns=now_ns,
+            )
         )
 
     def plan_work(
@@ -124,16 +175,21 @@ class EngineeringControlProduct:
         generation_id: str,
         now_ns: int | None = None,
     ) -> EngineeringPlan:
-        return plan_engineering_work(
-            self.store,
-            envelope,
-            packages,
-            workers,
-            completion_receipts,
-            self.trust_store,
-            capacity,
-            generation_id=generation_id,
-            now_ns=now_ns,
+        packages_value = tuple(packages)
+        workers_value = tuple(workers)
+        completions_value = tuple(completion_receipts)
+        return self._capacity_guarded_admission(
+            lambda: plan_engineering_work(
+                self.store,
+                envelope,
+                packages_value,
+                workers_value,
+                completions_value,
+                self.trust_store,
+                capacity,
+                generation_id=generation_id,
+                now_ns=now_ns,
+            )
         )
 
     def startup_reconcile(
@@ -141,9 +197,53 @@ class EngineeringControlProduct:
         *,
         now_ns: int | None = None,
     ) -> WorkerRecoveryReport:
+        # Recovery is allowed to drain over-capacity stale claims. Its mutation is
+        # retained even if the subsequent capacity check keeps admission closed.
         report = recover_worker_lifecycle(self.store, now_ns=now_ns)
+        enforce_database_capacity(self.store, self.capacity_policy)
         self._startup_reconciled = True
         return report
+
+    def database_capacity(self) -> DatabaseCapacityDecision:
+        return evaluate_database_capacity(self.store, self.capacity_policy)
+
+    def create_audit_checkpoint(self, *, observed_unix_ns: int) -> AuditCheckpoint:
+        source_commit = run_git(self.repository, "rev-parse", "HEAD")
+        source_tree = run_git(self.repository, "rev-parse", "HEAD^{tree}")
+        return create_audit_checkpoint(
+            self.store,
+            source_commit=source_commit,
+            source_tree=source_tree,
+            observed_unix_ns=observed_unix_ns,
+        )
+
+    def advance_audit_checkpoint(
+        self,
+        checkpoint: AuditCheckpoint,
+        *,
+        observed_unix_ns: int,
+    ) -> AuditCheckpoint:
+        source_commit = run_git(self.repository, "rev-parse", "HEAD")
+        source_tree = run_git(self.repository, "rev-parse", "HEAD^{tree}")
+        return advance_audit_checkpoint(
+            self.store,
+            checkpoint,
+            source_commit=source_commit,
+            source_tree=source_tree,
+            observed_unix_ns=observed_unix_ns,
+        )
+
+    def verify_audit_checkpoint(
+        self,
+        checkpoint: AuditCheckpoint,
+        *,
+        require_current_state: bool = True,
+    ) -> None:
+        verify_audit_checkpoint(
+            self.store,
+            checkpoint,
+            require_current_state=require_current_state,
+        )
 
     def worker_capacity(self, worker_id: str):
         return worker_capacity_usage(self.store, worker_id)
@@ -154,11 +254,29 @@ class EngineeringControlProduct:
         *,
         now_ns: int | None = None,
     ) -> str:
-        return register_worker(
-            self.store,
-            receipt,
-            self.trust_store,
-            now_ns=now_ns,
+        return self._capacity_guarded_admission(
+            lambda: register_worker(
+                self.store,
+                receipt,
+                self.trust_store,
+                now_ns=now_ns,
+            )
+        )
+
+    def renew_worker(
+        self,
+        receipt: WorkerRegistrationRenewalReceipt,
+        *,
+        now_ns: int,
+    ) -> WorkerRegistrationRenewalDecision:
+        return self._capacity_guarded_admission(
+            lambda: renew_worker_registration(
+                self.store,
+                receipt,
+                self.trust_store,
+                now_ns=now_ns,
+                clock_policy=self.clock_policy,
+            )
         )
 
     def claim(
@@ -173,14 +291,16 @@ class EngineeringControlProduct:
     ) -> WorkerClaim:
         if not self._startup_reconciled:
             raise EngineeringError("product_startup_reconciliation_required")
-        return claim_assignment(
-            self.store,
-            generation_id,
-            package_id,
-            worker_id,
-            lease_id,
-            heartbeat_ttl_ns=heartbeat_ttl_ns,
-            now_ns=now_ns,
+        return self._capacity_guarded_admission(
+            lambda: claim_assignment(
+                self.store,
+                generation_id,
+                package_id,
+                worker_id,
+                lease_id,
+                heartbeat_ttl_ns=heartbeat_ttl_ns,
+                now_ns=now_ns,
+            )
         )
 
     def heartbeat(
@@ -243,13 +363,15 @@ class EngineeringControlProduct:
         base_tree: str,
         now_ns: int | None = None,
     ) -> IntegrationQueueGeneration:
-        return publish_integration_queue(
-            self.store,
-            plan,
-            queue_generation_id=queue_generation_id,
-            base_commit=base_commit,
-            base_tree=base_tree,
-            now_ns=now_ns,
+        return self._capacity_guarded_admission(
+            lambda: publish_integration_queue(
+                self.store,
+                plan,
+                queue_generation_id=queue_generation_id,
+                base_commit=base_commit,
+                base_tree=base_tree,
+                now_ns=now_ns,
+            )
         )
 
     def reconcile_integration(
