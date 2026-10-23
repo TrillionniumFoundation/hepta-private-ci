@@ -31,6 +31,10 @@ use checkpoint::RegisteredCheckpoint;
 #[path = "authority_host_consumers.rs"]
 mod consumers;
 use consumers::RegisteredConsumers;
+#[path = "authority_host_service_bootstrap.rs"]
+mod bootstrap;
+use bootstrap::RegisteredBootstrap;
+pub use bootstrap::HostAuthorityBootstrapLocations;
 
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]
@@ -52,6 +56,7 @@ pub struct HostAuthorityService {
     writer: Option<RegisteredWriter>,
     checkpoint: Option<RegisteredCheckpoint>,
     consumers: Option<RegisteredConsumers>,
+    bootstrap: Option<RegisteredBootstrap>,
 }
 
 impl HostAuthorityService {
@@ -70,6 +75,7 @@ impl HostAuthorityService {
             writer: None,
             checkpoint: None,
             consumers: None,
+            bootstrap: None,
         })
     }
 
@@ -80,6 +86,9 @@ impl HostAuthorityService {
         registration: crate::HostAuthorityWriterRegistration,
         leases: codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier,
     ) -> io::Result<Self> {
+        if self.bootstrap.is_some() {
+            return Err(io::Error::other("Root bootstrap registration is immutable"));
+        }
         self.writer = Some(RegisteredWriter::open(
             &self.issuer,
             &self.identity,
@@ -97,6 +106,9 @@ impl HostAuthorityService {
         publisher_epoch: u64,
         peer: codex_hepta_memory::CognitiveCheckpointPeerLifetime,
     ) -> io::Result<Self> {
+        if self.bootstrap.is_some() {
+            return Err(io::Error::other("Root bootstrap registration is immutable"));
+        }
         let writer = self
             .writer
             .as_ref()
@@ -117,6 +129,9 @@ impl HostAuthorityService {
         protected_state: &std::path::Path,
         config: &crate::HostAuthorityConsumersConfig,
     ) -> io::Result<Self> {
+        if self.bootstrap.is_some() {
+            return Err(io::Error::other("Root bootstrap registration is immutable"));
+        }
         let writer = self
             .writer
             .as_ref()
@@ -141,6 +156,10 @@ impl HostAuthorityService {
         mut policy: HostAuthorityPeerPolicy,
         owner_pidfd: OwnedFd,
     ) -> Result<(), HostIssuerTransportError> {
+        self.check_bootstrap_lifetime()?;
+        if let Some(bootstrap) = &self.bootstrap {
+            bootstrap.validate_peer(policy.peer).map_err(unavailable)?;
+        }
         let bound = match lane {
             HostAuthorityLane::Observation => 16 * 1024,
             HostAuthorityLane::Issuer => 64 * 1024,
@@ -165,7 +184,8 @@ impl HostAuthorityService {
         lane: HostAuthorityLane,
         bytes: &[u8],
     ) -> Result<Vec<u8>, HostIssuerTransportError> {
-        match lane {
+        self.check_bootstrap_lifetime()?;
+        let result = match lane {
             HostAuthorityLane::Observation => self.observe(bytes),
             HostAuthorityLane::Issuer => self.issue(bytes),
             HostAuthorityLane::Checkpoint => self
@@ -198,7 +218,16 @@ impl HostAuthorityService {
                     .ok_or(HostIssuerTransportError::Unavailable)?
                     .exchange_consumer(&self.issuer, &self.clock, backend, bytes)
             }
+        };
+        self.check_bootstrap_lifetime()?;
+        result
+    }
+
+    fn check_bootstrap_lifetime(&self) -> Result<(), HostIssuerTransportError> {
+        if let Some(bootstrap) = &self.bootstrap {
+            bootstrap.check_serving().map_err(unavailable)?;
         }
+        Ok(())
     }
 
     fn observe(&self, bytes: &[u8]) -> Result<Vec<u8>, HostIssuerTransportError> {

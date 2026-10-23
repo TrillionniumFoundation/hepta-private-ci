@@ -11,7 +11,7 @@ use codex_hepta_memory::CognitiveCheckpointWriterBinding;
 
 pub(super) struct RegisteredCheckpoint {
     pub(super) backend: HostCognitiveCheckpoint,
-    peer: CognitiveCheckpointPeerLifetime,
+    pub(super) peer: CognitiveCheckpointPeerLifetime,
 }
 
 impl RegisteredCheckpoint {

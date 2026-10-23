@@ -14,7 +14,7 @@ use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
 
 pub(super) struct RegisteredWriter {
     pub(super) registration: HostAuthorityWriterRegistration,
-    leases: AuthorityLeaseVerifier,
+    pub(super) leases: AuthorityLeaseVerifier,
     pub(super) proof: HostSignedWriterAuthorizationV1,
 }
 
