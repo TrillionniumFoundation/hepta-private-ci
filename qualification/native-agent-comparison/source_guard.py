@@ -5,6 +5,7 @@ This checks local Git objects, visible worktree dirt, and index concealment.
 It does NOT attest a compiled binary, external dependencies, real tasks, or an
 independent runtime/effect result. Its output must never authorize cutover.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -30,14 +31,35 @@ class SourceGuardError(ValueError):
 def _git(path: Path, *args: str) -> bytes:
     # Host Git overrides could silently redirect object/index lookups.  Work
     # with the selected checkout only, without hooks, filters or fsmonitor.
-    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
-    env.update({"GIT_NO_REPLACE_OBJECTS": "1", "GIT_CONFIG_NOSYSTEM": "1",
-                "GIT_CONFIG_GLOBAL": os.devnull, "GIT_OPTIONAL_LOCKS": "0",
-                "GIT_NO_LAZY_FETCH": "1", "GIT_TERMINAL_PROMPT": "0"})
-    cmd = ["git", "-c", "core.fsmonitor=false", "-c", "core.hooksPath=" + os.devnull,
-           "-c", "core.untrackedCache=false", "-C", str(path), *args]
+    env = {
+        key: value for key, value in os.environ.items() if not key.startswith("GIT_")
+    }
+    env.update(
+        {
+            "GIT_NO_REPLACE_OBJECTS": "1",
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "GIT_CONFIG_GLOBAL": os.devnull,
+            "GIT_OPTIONAL_LOCKS": "0",
+            "GIT_NO_LAZY_FETCH": "1",
+            "GIT_TERMINAL_PROMPT": "0",
+        }
+    )
+    cmd = [
+        "git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=" + os.devnull,
+        "-c",
+        "core.untrackedCache=false",
+        "-C",
+        str(path),
+        *args,
+    ]
     try:
-        proc = subprocess.run(cmd, env=env, capture_output=True, timeout=30, check=False)
+        proc = subprocess.run(
+            cmd, env=env, capture_output=True, timeout=30, check=False
+        )
     except (OSError, subprocess.TimeoutExpired) as error:
         raise SourceGuardError(f"git invocation failed: {error}") from error
     if proc.returncode:
@@ -79,13 +101,17 @@ def _verify_source_bytes(root: Path) -> None:
                 if not path.is_symlink():
                     raise SourceGuardError("tracked source symlink changed")
                 data = os.fsencode(os.readlink(path))
-                actual = hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
+                actual = hashlib.sha1(
+                    b"blob " + str(len(data)).encode() + b"\0" + data
+                ).hexdigest()
             else:
                 file_mode = path.lstat().st_mode
                 if not stat.S_ISREG(file_mode):
                     raise SourceGuardError("tracked source is not a regular file")
                 if bool(file_mode & stat.S_IXUSR) != (mode == b"100755"):
-                    raise SourceGuardError("tracked source executable bit differs from pinned Git mode")
+                    raise SourceGuardError(
+                        "tracked source executable bit differs from pinned Git mode"
+                    )
                 with path.open("rb") as source:
                     size = os.fstat(source.fileno()).st_size
                     digest = hashlib.sha1(b"blob " + str(size).encode() + b"\0")
@@ -95,14 +121,23 @@ def _verify_source_bytes(root: Path) -> None:
         except OSError as error:
             raise SourceGuardError(f"tracked source unreadable: {error}") from error
         if actual != expected.decode("ascii"):
-            raise SourceGuardError("raw tracked source bytes differ from pinned Git blob")
+            raise SourceGuardError(
+                "raw tracked source bytes differ from pinned Git blob"
+            )
 
 
 def verify_worktrees(baseline: object, paths: dict[str, str]) -> dict:
-    if not isinstance(baseline, dict) or baseline.get("schema") != "hepta.native-abc.v1":
+    if (
+        not isinstance(baseline, dict)
+        or baseline.get("schema") != "hepta.native-abc.v1"
+    ):
         raise SourceGuardError("A/B/C baseline schema mismatch")
     sources = baseline.get("sources")
-    if not isinstance(sources, dict) or set(sources) != set(REPOS) or set(paths) != set(REPOS):
+    if (
+        not isinstance(sources, dict)
+        or set(sources) != set(REPOS)
+        or set(paths) != set(REPOS)
+    ):
         raise SourceGuardError("exactly hepta, runtime and codex are required")
 
     verified = {}
@@ -115,7 +150,9 @@ def verify_worktrees(baseline: object, paths: dict[str, str]) -> dict:
         try:
             path = Path(paths[owner]).expanduser().resolve(strict=True)
         except (OSError, RuntimeError) as error:
-            raise SourceGuardError(f"{owner}: repository path unavailable: {error}") from error
+            raise SourceGuardError(
+                f"{owner}: repository path unavailable: {error}"
+            ) from error
         if not path.is_dir():
             raise SourceGuardError(f"{owner}: repository root must be a directory")
         top = _git(path, "rev-parse", "--show-toplevel").decode().strip()
@@ -126,14 +163,25 @@ def verify_worktrees(baseline: object, paths: dict[str, str]) -> dict:
         # repository-configured transport while resolving a missing tree.
         keys = _git(path, "config", "--includes", "--null", "--name-only", "--list")
         names = [key.lower() for key in keys.split(b"\0")]
-        if any(key == b"extensions.partialclone" or
-               (key.startswith(b"remote.") and key.endswith((b".promisor", b".partialclonefilter")))
-               for key in names):
-            raise SourceGuardError(f"{owner}: partial/promisor Git sources are not permitted")
+        if any(
+            key == b"extensions.partialclone"
+            or (
+                key.startswith(b"remote.")
+                and key.endswith((b".promisor", b".partialclonefilter"))
+            )
+            for key in names
+        ):
+            raise SourceGuardError(
+                f"{owner}: partial/promisor Git sources are not permitted"
+            )
         if any(key.startswith(b"filter.") for key in names):
             raise SourceGuardError(f"{owner}: configured Git filters are not permitted")
-        observed_commit = _git(path, "rev-parse", "--verify", "HEAD^{commit}").decode().strip()
-        observed_tree = _git(path, "rev-parse", "--verify", "HEAD^{tree}").decode().strip()
+        observed_commit = (
+            _git(path, "rev-parse", "--verify", "HEAD^{commit}").decode().strip()
+        )
+        observed_tree = (
+            _git(path, "rev-parse", "--verify", "HEAD^{tree}").decode().strip()
+        )
         if observed_commit != commit or observed_tree != tree:
             raise SourceGuardError(f"{owner}: checked-out Git commit/tree drift")
 
@@ -141,11 +189,21 @@ def verify_worktrees(baseline: object, paths: dict[str, str]) -> dict:
         # Reject index gitlinks before status, and never recurse into submodules.
         for entry in _git(path, "ls-files", "--stage", "-z").split(b"\0"):
             if entry.startswith(b"160000 "):
-                raise SourceGuardError(f"{owner}: submodule source needs separate pinning")
+                raise SourceGuardError(
+                    f"{owner}: submodule source needs separate pinning"
+                )
         # Porcelain status catches tracked, staged and visible untracked dirt.
-        if _git(path, "status", "--porcelain=v1", "-z", "--untracked-files=all",
-                "--ignore-submodules=all"):
-            raise SourceGuardError(f"{owner}: modified, staged or untracked files present")
+        if _git(
+            path,
+            "status",
+            "--porcelain=v1",
+            "-z",
+            "--untracked-files=all",
+            "--ignore-submodules=all",
+        ):
+            raise SourceGuardError(
+                f"{owner}: modified, staged or untracked files present"
+            )
         # A build may read ignored files even when porcelain status is clean.
         # Demand a source-only checkout before a reproducibility claim; callers
         # can keep generated outputs in separate worktrees or build directories.
@@ -156,7 +214,9 @@ def verify_worktrees(baseline: object, paths: dict[str, str]) -> dict:
         # status, making a supposedly exact-source execution irreproducible.
         for entry in _git(path, "ls-files", "-v", "-z").split(b"\0"):
             if entry and (entry[:1].islower() or entry[:1] == b"S"):
-                raise SourceGuardError(f"{owner}: assume-unchanged/skip-worktree index entry")
+                raise SourceGuardError(
+                    f"{owner}: assume-unchanged/skip-worktree index entry"
+                )
         verified[owner] = {"commit": commit, "tree": tree, "worktree_clean": True}
 
     # The existing comparison baseline validates tasks, model, target and
@@ -167,8 +227,11 @@ def verify_worktrees(baseline: object, paths: dict[str, str]) -> dict:
     except (ComparisonError, KeyError, TypeError, ValueError) as error:
         ready, blocker = False, str(error)
     return {
-        "status": ("LOCAL_SOURCE_MATCH_EXPERIMENT_PINS_PRESENT" if ready
-                   else "LOCAL_SOURCE_MATCH_EXPERIMENT_PINS_MISSING"),
+        "status": (
+            "LOCAL_SOURCE_MATCH_EXPERIMENT_PINS_PRESENT"
+            if ready
+            else "LOCAL_SOURCE_MATCH_EXPERIMENT_PINS_MISSING"
+        ),
         "verified_worktrees": verified,
         "experiment_pins_present": ready,
         "experiment_pin_blocker": blocker,
@@ -187,7 +250,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         baseline = json.loads(args.baseline.read_text(encoding="utf-8"))
-        result = verify_worktrees(baseline, {owner: getattr(args, owner) for owner in REPOS})
+        result = verify_worktrees(
+            baseline, {owner: getattr(args, owner) for owner in REPOS}
+        )
     except (SourceGuardError, OSError, json.JSONDecodeError) as error:
         print(f"HOLD_NO_GO_SOURCE: {error}", file=sys.stderr)
         return 1

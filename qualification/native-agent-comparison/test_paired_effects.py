@@ -35,9 +35,15 @@ class PairedEffectsTests(unittest.TestCase):
         native = result["4096"]["C_vs_B"]
         self.assertTrue(native["any_paired_quality_regression"])
         self.assertEqual(native["quality"]["task_success"]["reference_only_passes"], 1)
-        self.assertEqual(native["quality"]["task_success"]["paired_delta_percentage_points"], -50.0)
-        self.assertEqual(native["mean_resource_delta_C_minus_reference"]["wall_ms"], 150.0)
-        self.assertEqual(native["mean_resource_delta_C_minus_reference"]["peak_rss_bytes"], 2_500_000)
+        self.assertEqual(
+            native["quality"]["task_success"]["paired_delta_percentage_points"], -50.0
+        )
+        self.assertEqual(
+            native["mean_resource_delta_C_minus_reference"]["wall_ms"], 150.0
+        )
+        self.assertEqual(
+            native["mean_resource_delta_C_minus_reference"]["peak_rss_bytes"], 2_500_000
+        )
         self.assertFalse(result["64"]["C_vs_B"]["any_paired_quality_regression"])
         self.assertFalse(native["independent_measurement_proven"])
         self.assertFalse(native["statistical_significance_proven"])
@@ -51,8 +57,12 @@ class PairedEffectsTests(unittest.TestCase):
         b = paired_effects_by_scale(tasks, actual, (64,))["64"]["C_vs_B"]
         self.assertEqual(a["quality"]["task_success"]["native_only_passes"], 1)
         self.assertEqual(b["quality"]["task_success"]["native_only_passes"], 1)
-        self.assertEqual(a["quality"]["task_success"]["paired_delta_percentage_points"], 50.0)
-        self.assertEqual(b["mean_resource_delta_C_minus_reference"]["input_tokens"], -3.5)
+        self.assertEqual(
+            a["quality"]["task_success"]["paired_delta_percentage_points"], 50.0
+        )
+        self.assertEqual(
+            b["mean_resource_delta_C_minus_reference"]["input_tokens"], -3.5
+        )
         self.assertFalse(a["any_paired_quality_regression"])
 
     def test_empty_cohort_is_invalid(self):

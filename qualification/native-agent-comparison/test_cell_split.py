@@ -4,36 +4,88 @@ from cell_split import ARMS, SCALES, GateError, compare
 
 
 def fixture():
-    h = lambda i: f"{i:064x}"
-    tasks = [{"id": f"old-{i}", "family": "old", "group": "old", "split": "test", "seed": i,
-              "fixture_digest": h(i+10), "oracle_digest": h(i+20)} for i in range(2)]
-    tasks += [{"id": f"future-{i}", "family": f"unseen-{i}", "group": f"future-{i}",
-               "split": "future", "seed": i, "fixture_digest": h(i+100),
-               "oracle_digest": h(i+200)} for i in range(5)]
-    plan = {"schema": "hepta.cell-split-comparison.v1", "arms": list(ARMS), "scales": list(SCALES),
-            "source_digest": h(31), "model_profile_digest": h(32), "target_profile_digest": h(33),
-            "objective_digest": h(34), "evaluation_code_digest": h(35), "bootstrap_seed": 19,
-            "min_future_group_gain": 0, "max_old_task_regression": 0,
-            "max_cpu_overhead_fraction": 0, "max_rss_overhead_fraction": 0,
-            "max_p99_overhead_fraction": 0,
-            "limits": {"wall_ms": 10000, "cpu_ms": 10000, "peak_rss_bytes": 100000000,
-                       "input_tokens": 1000, "output_tokens": 1000, "tool_calls": 20},
-            "tasks": tasks}
+    def h(i):
+        return f"{i:064x}"
+
+    tasks = [
+        {
+            "id": f"old-{i}",
+            "family": "old",
+            "group": "old",
+            "split": "test",
+            "seed": i,
+            "fixture_digest": h(i + 10),
+            "oracle_digest": h(i + 20),
+        }
+        for i in range(2)
+    ]
+    tasks += [
+        {
+            "id": f"future-{i}",
+            "family": f"unseen-{i}",
+            "group": f"future-{i}",
+            "split": "future",
+            "seed": i,
+            "fixture_digest": h(i + 100),
+            "oracle_digest": h(i + 200),
+        }
+        for i in range(5)
+    ]
+    plan = {
+        "schema": "hepta.cell-split-comparison.v1",
+        "arms": list(ARMS),
+        "scales": list(SCALES),
+        "source_digest": h(31),
+        "model_profile_digest": h(32),
+        "target_profile_digest": h(33),
+        "objective_digest": h(34),
+        "evaluation_code_digest": h(35),
+        "bootstrap_seed": 19,
+        "min_future_group_gain": 0,
+        "max_old_task_regression": 0,
+        "max_cpu_overhead_fraction": 0,
+        "max_rss_overhead_fraction": 0,
+        "max_p99_overhead_fraction": 0,
+        "limits": {
+            "wall_ms": 10000,
+            "cpu_ms": 10000,
+            "peak_rss_bytes": 100000000,
+            "input_tokens": 1000,
+            "output_tokens": 1000,
+            "tool_calls": 20,
+        },
+        "tasks": tasks,
+    }
     receipts = []
     for scale in SCALES:
         for arm in ARMS:
             for t in tasks:
-                r = {"schema": "hepta.cell-split-observation.v1", "task_id": t["id"],
-                     "seed": t["seed"], "arm": arm, "scale": scale,
-                     "fixture_digest": t["fixture_digest"], "oracle_digest": t["oracle_digest"],
-                     "source_digest": h(31), "model_profile_digest": h(32),
-                     "target_profile_digest": h(33), "objective_digest": h(34),
-                     "evaluation_code_digest": h(35), "limits": copy.deepcopy(plan["limits"]),
-                     "idempotency_replayed": False, "unknown_effects": 0,
-                     "success": arm == "split" or t["split"] == "test", "tool_correct": True,
-                     "observation_digest": h(44000 + len(receipts)), "wall_ms": 100, "cpu_ms": 50,
-                     "peak_rss_bytes": 4000, "input_tokens": 100, "output_tokens": 10,
-                     "tool_calls": 1}
+                r = {
+                    "schema": "hepta.cell-split-observation.v1",
+                    "task_id": t["id"],
+                    "seed": t["seed"],
+                    "arm": arm,
+                    "scale": scale,
+                    "fixture_digest": t["fixture_digest"],
+                    "oracle_digest": t["oracle_digest"],
+                    "source_digest": h(31),
+                    "model_profile_digest": h(32),
+                    "target_profile_digest": h(33),
+                    "objective_digest": h(34),
+                    "evaluation_code_digest": h(35),
+                    "limits": copy.deepcopy(plan["limits"]),
+                    "idempotency_replayed": False,
+                    "unknown_effects": 0,
+                    "success": arm == "split" or t["split"] == "test",
+                    "tool_correct": True,
+                    "observation_digest": h(44000 + len(receipts)),
+                    "wall_ms": 100,
+                    "cpu_ms": 50,
+                    "peak_rss_bytes": 4000,
+                    "input_tokens": 100,
+                    "output_tokens": 10,
+                    "tool_calls": 1,
+                }
                 receipts.append(r)
     return plan, receipts
 
@@ -67,7 +119,9 @@ class CellComparisonTest(unittest.TestCase):
     def test_future_groups_must_be_independent_families(self):
         p, rows = fixture()
         p["tasks"][3]["family"] = p["tasks"][2]["family"]
-        with self.assertRaisesRegex(GateError, "future family crosses independent groups"):
+        with self.assertRaisesRegex(
+            GateError, "future family crosses independent groups"
+        ):
             compare(p, rows)
 
         p, rows = fixture()
@@ -81,7 +135,9 @@ class CellComparisonTest(unittest.TestCase):
         for r in rows:
             if r["task_id"] == "future-1":
                 r["fixture_digest"] = p["tasks"][2]["fixture_digest"]
-        with self.assertRaisesRegex(GateError, "fixture reused across independent groups"):
+        with self.assertRaisesRegex(
+            GateError, "fixture reused across independent groups"
+        ):
             compare(p, rows)
 
         p, rows = fixture()
@@ -89,7 +145,9 @@ class CellComparisonTest(unittest.TestCase):
         for r in rows:
             if r["task_id"] == "old-0":
                 r["fixture_digest"] = p["tasks"][2]["fixture_digest"]
-        with self.assertRaisesRegex(GateError, "fixture reused across independent groups"):
+        with self.assertRaisesRegex(
+            GateError, "fixture reused across independent groups"
+        ):
             compare(p, rows)
 
     def test_same_source_within_one_group_allows_repeated_seed_measurements(self):
@@ -109,7 +167,7 @@ class CellComparisonTest(unittest.TestCase):
             ("idempotency_replayed", True, "unsafe effect"),
             ("wall_ms", 10001, "over-budget wall_ms"),
             ("success", 1, "outcome format"),
-            ("source_digest", "f"*64, "source_digest drift"),
+            ("source_digest", "f" * 64, "source_digest drift"),
         ]:
             p, rows = fixture()
             rows[0][field] = value
@@ -119,7 +177,10 @@ class CellComparisonTest(unittest.TestCase):
     def test_future_gain_and_old_regression_are_independent(self):
         p, rows = fixture()
         for r in rows:
-            if r["task_id"] in ("future-0", "future-1", "future-2") and r["arm"] == "split":
+            if (
+                r["task_id"] in ("future-0", "future-1", "future-2")
+                and r["arm"] == "split"
+            ):
                 r["success"] = False
         self.assertFalse(compare(p, rows)["all_scales_meet_structural_metrics"])
         p, rows = fixture()
@@ -139,9 +200,13 @@ class CellComparisonTest(unittest.TestCase):
                 if row["arm"] == "split" and row["scale"] == 4096:
                     row[field] = value
             measured = compare(plan, rows)
-            self.assertTrue(measured["scales"]["64"]["candidate_meets_structural_metrics"])
+            self.assertTrue(
+                measured["scales"]["64"]["candidate_meets_structural_metrics"]
+            )
             self.assertFalse(measured["scales"]["4096"]["resource_cost_guard"][cost])
-            self.assertFalse(measured["scales"]["4096"]["candidate_meets_structural_metrics"])
+            self.assertFalse(
+                measured["scales"]["4096"]["candidate_meets_structural_metrics"]
+            )
             self.assertFalse(measured["all_scales_meet_structural_metrics"])
             self.assertFalse(measured["independent_acceptance"])
 
@@ -169,7 +234,9 @@ class CellComparisonTest(unittest.TestCase):
         plan, rows = fixture()
         rows[0]["success"] = True
         rows[0]["tool_correct"] = False
-        with self.assertRaisesRegex(GateError, "success conflicts with tool correctness"):
+        with self.assertRaisesRegex(
+            GateError, "success conflicts with tool correctness"
+        ):
             compare(plan, rows)
 
     def test_no_fixture_is_no_go(self):
