@@ -13,6 +13,8 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from paired_effects import paired_effects_by_scale
+
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 DIGEST = re.compile(r"[0-9a-f]{64}\Z")
 MODES = ("A", "B", "C")
@@ -154,6 +156,7 @@ def compare(base: object, observations: object) -> dict:
         "paired_case_count": len(expected) // 3,
         "mode_summaries": summary,
         "scale_summaries": scale_summaries,
+        "paired_effects": paired_effects_by_scale(base["tasks"], actual, SCALES),
     }
 
 

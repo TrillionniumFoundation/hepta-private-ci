@@ -106,3 +106,23 @@ throughput. Those physical measurements and signed original-source evidence
 remain **OPEN** P6 acceptance blockers. All result values are synthetic/
 untrusted unless authenticated by a separate owner; the comparator always
 returns `independent_acceptance=false` and `physical_execution_proven=false`.
+
+## P6 paired native-vs-Codex deltas (source-only)
+
+The descriptive `paired_effects[scale][C_vs_A|C_vs_B]` values compare the
+**same frozen task ID and seed** at each Cell scale. Unlike pooled per-mode
+averages, a Native C failure against an A/B pass is counted as a distinct
+`reference_only_passes` regression. Quality deltas are percentage points;
+resource deltas are mean **C-minus-reference**, so negative cost means less
+resource use by C. The result includes conservative
+`any_paired_quality_regression` across task success, tool correctness and
+recovery, as well as discordant win/loss counts.
+
+These are *descriptive* counts, not valid significance tests: separate task
+IDs are not evidence of independent original-source families. The source-only
+pairing layer intentionally returns
+`statistical_significance_proven=false` and
+`independent_measurement_proven=false`. A future independent evaluator
+must authenticate task-family independence, real tool/provider/target-host
+receipts, CPU/GPU/throughput measurements and negative-transfer evidence.
+Neither P6 nor the P5 cell-split gate is promoted by these statistics.
