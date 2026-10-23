@@ -59,7 +59,8 @@ def verify_checkpoint(name: str, spec: dict, snapshot: Path) -> dict:
             raise ValueError(f"physical checkpoint missing regular {rel}")
     return {"repository": spec["repository"], "revision": spec["revision"],
             "loaded_weight_sha256": file_sha256(weights),
-            "weight_bytes": weights.stat().st_size}
+            "weight_bytes": weights.stat().st_size,
+            "component_sha256": {rel: file_sha256(snapshot / rel) for rel in required}}
 
 
 def verify_laya_source(root: Path) -> None:
@@ -278,8 +279,8 @@ def run(name: str, registry: dict, snapshot: Path, cohorts_dir: Path, archive: P
                          "independent_observer_attested": False},
               "mode": "SHADOW_ONLY", "authority": "DENY_ALL",
               "production_activation_allowed": False}
-    if file_sha256(snapshot / spec["weight_file"]) != spec["weight_sha256"]:
-        raise ValueError("checkpoint bytes drifted during experiment")
+    if verify_checkpoint(name, spec, snapshot) != physical:
+        raise ValueError("checkpoint weight/config/tokenizer bytes drifted during experiment")
     return result
 
 
