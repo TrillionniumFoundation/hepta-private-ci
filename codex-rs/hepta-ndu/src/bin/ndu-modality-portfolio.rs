@@ -2,10 +2,9 @@
 
 #[path = "../modality_portfolio.rs"]
 mod modality_portfolio;
+#[path = "../modality_portfolio_protocol.rs"]
+mod modality_portfolio_protocol;
 
 fn main() -> std::io::Result<()> {
-    Err(std::io::Error::new(
-        std::io::ErrorKind::Unsupported,
-        "MP1 state owner only: TSV transport is not installed in this review stage",
-    ))
+    modality_portfolio_protocol::run(std::io::stdin().lock(), std::io::stdout().lock())
 }

@@ -161,3 +161,55 @@ fn committed_plan_is_immutable_and_emission_seals() -> Result<(), PortfolioError
     }
     Ok(())
 }
+
+#[test]
+fn finite_complete_tables_and_order_independent_ties() -> Result<(), PortfolioError> {
+    let base = SessionV1::new(config(PolicyV1::Adaptive))?;
+    let s = base.snapshot();
+    for value in [f64::NAN, f64::INFINITY, f64::NEG_INFINITY] {
+        let mut owner = base.clone();
+        assert_eq!(
+            choose(&mut owner, [0.0, value, 0.0, 0.0, 0.0]),
+            Err(PortfolioError::NonFiniteValue)
+        );
+        assert_eq!(owner, base);
+    }
+    for (values, expected) in [
+        ([0.0, 1e-12, 0.5e-12, 0.0, 0.0], ActionV1::Emit),
+        (
+            [-1.0, 0.0, 1e-12, 0.0, 0.0],
+            ActionV1::Refine(ModalityV1::Text),
+        ),
+    ] {
+        for rotation in 0..5 {
+            let mut owner = base.clone();
+            let mut entries = table(values);
+            entries.rotate_left(rotation);
+            assert_eq!(
+                owner
+                    .choose(s.session_id, s.version, s.joint_digest(), &entries)?
+                    .action,
+                expected
+            );
+        }
+    }
+    let mut owner = base.clone();
+    let mut entries = table([0.0; 5]);
+    assert_eq!(
+        owner.choose(s.session_id, s.version, s.joint_digest(), &entries[..4]),
+        Err(PortfolioError::InvalidTable)
+    );
+    entries[2] = entries[1];
+    assert_eq!(
+        owner.choose(s.session_id, s.version, s.joint_digest(), &entries),
+        Err(PortfolioError::InvalidTable)
+    );
+    entries = table([0.0; 5]);
+    entries[3].cost_macs -= 1;
+    assert_eq!(
+        owner.choose(s.session_id, s.version, s.joint_digest(), &entries),
+        Err(PortfolioError::CostMismatch)
+    );
+    assert_eq!(owner, base);
+    Ok(())
+}

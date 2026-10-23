@@ -104,6 +104,8 @@ pub(crate) enum PortfolioError {
     ActionMismatch,
     UnrelatedLatentChanged,
     InvalidOutputs,
+    InvalidProtocol,
+    SessionSequence,
 }
 
 impl fmt::Display for PortfolioError {
