@@ -242,3 +242,36 @@ fn expired_completion_remains_unverified_even_if_observer_approves() {
         NativeLoopPhaseV1::Completed { .. }
     ));
 }
+
+#[test]
+fn variable_length_run_and_operation_ids_cannot_alias_successor_state() {
+    // With the old unframed concatenation these two different pairs produced
+    // identical successor state SHA-256 digests despite independent bindings.
+    let mut first_binding = binding();
+    first_binding.run_id = "a".into();
+    first_binding.operation_id = "bc".into();
+    let mut second_binding = binding();
+    second_binding.run_id = "ab".into();
+    second_binding.operation_id = "c".into();
+
+    let first = NativeLoopCursorV1::begin(first_binding, digest(4), 3, 10_000).unwrap();
+    let second = NativeLoopCursorV1::begin(second_binding, digest(4), 3, 10_000).unwrap();
+    let first_waiting = first
+        .accept_step(&proposed(&first, AgentStepDisposition::InvokeModel), 1)
+        .unwrap();
+    let second_waiting = second
+        .accept_step(&proposed(&second, AgentStepDisposition::InvokeModel), 1)
+        .unwrap();
+    let mut first_observation = external(NativeExternalKindV1::Model);
+    first_observation.operation_id = "bc".into();
+    let mut second_observation = external(NativeExternalKindV1::Model);
+    second_observation.operation_id = "c".into();
+
+    let first_done = first_waiting
+        .accept_external(&first_observation, &TrustedFixture, 2)
+        .unwrap();
+    let second_done = second_waiting
+        .accept_external(&second_observation, &TrustedFixture, 2)
+        .unwrap();
+    assert_ne!(first_done.state_digest(), second_done.state_digest());
+}
