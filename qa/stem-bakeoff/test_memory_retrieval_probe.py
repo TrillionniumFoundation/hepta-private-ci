@@ -6,7 +6,12 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from audit_memory_retrieval import verify_row_scoring
+from audit_memory_retrieval import (
+    _audit_summary,
+    _verify_audit_summary,
+    verify_report_slices,
+    verify_row_scoring,
+)
 from memory_retrieval_data import Corpus, Gold, Query, Turn, decode_source, load_source
 from memory_retrieval_probe import MAX_CONTEXT_BYTES, MAX_TURNS, RetrievalIndex, pack_context
 from memory_retrieval_scoring import paired_group_interval, score_query, summarize
@@ -176,6 +181,110 @@ class MemoryRetrievalProbeTests(unittest.TestCase):
         for count in (0, -1, 10001, False, 1.0):
             with self.subTest(samples=count), self.assertRaises(ValueError):
                 paired_group_interval(left[:1], right[:1], samples=count)
+
+
+    @staticmethod
+    def _summary_fixture():
+        def row(arm, group, category, recall, accepted, image=False):
+            scorable = category != 5
+            return {
+                "arm": arm, "group": group, "category": category,
+                "annotation_status": "scorable" if scorable else "adversarial",
+                "support_recall": recall if scorable else None,
+                "all_support_recalled": int(recall == 1) if scorable else None,
+                "any_support_recalled": int(recall > 0) if scorable else None,
+                "accepted": accepted, "evidence_has_image": image,
+            }
+
+        rows = [
+            row("a", "source1", 2, 1.0, True, True),
+            row("a", "source2", 2, 0.0, False),
+            row("a", "source2", 5, None, False),
+            row("b", "source1", 2, 0.5, True, True),
+            row("b", "source2", 5, None, True),
+        ]
+        partitions = {"train": ["source1"], "holdout": ["source2"]}
+        arms = ["a", "b"]
+        results = {}
+        for split, groups in {**partitions,
+                              "full_census": ["source1", "source2"]}.items():
+            results[split] = {}
+            for arm in arms:
+                subset = [r for r in rows if r["arm"] == arm and r["group"] in groups]
+                results[split][arm] = {
+                    "overall": _audit_summary(subset),
+                    "by_category": {
+                        str(c): _audit_summary([r for r in subset if r["category"] == c])
+                        for c in {r["category"] for r in subset}
+                    },
+                    "by_source_group": {
+                        group: _audit_summary([r for r in subset if r["group"] == group])
+                        for group in {r["group"] for r in subset}
+                    },
+                    "image_evidence_slice": _audit_summary(
+                        [r for r in subset if r["evidence_has_image"]]
+                    ),
+                }
+        return rows, partitions, arms, results
+
+    def test_independent_summary_hand_computed_and_complete_slices(self):
+        rows, partitions, arms, result = self._summary_fixture()
+        first = _audit_summary(rows[:3])
+        self.assertEqual(first["planned_questions"], 3)
+        self.assertEqual(first["scorable_support_questions"], 2)
+        self.assertEqual(first["adversarial_questions"], 1)
+        self.assertEqual(first["support_recall"], 0.5)
+        self.assertEqual(first["group_macro_all_support"], 0.5)
+        self.assertEqual(first["acceptance_rate"], 1 / 3)
+        self.assertEqual(first["answerability_balanced_accuracy"], 0.75)
+        verify_report_slices(result, rows, partitions, arms)
+
+    def test_independent_audit_rejects_forged_report_slices(self):
+        rows, partitions, arms, original = self._summary_fixture()
+        tampering = [
+            ("full_census", "a", "overall", "acceptance_rate"),
+            ("full_census", "a", "overall", "support_recall"),
+            ("full_census", "a", "overall", "answerability_balanced_accuracy"),
+            ("holdout", "b", "by_category", "5", "adversarial_questions"),
+            ("holdout", "a", "by_source_group", "source2", "all_support_recalled"),
+            ("train", "a", "image_evidence_slice", "support_recall"),
+        ]
+        for path in tampering:
+            altered = deepcopy(original)
+            record = altered
+            for item in path[:-1]:
+                record = record[item]
+            value = record[path[-1]]
+            record[path[-1]] = 0.3 if value is None else value + 0.123
+            with self.subTest(path=path), self.assertRaises(ValueError):
+                verify_report_slices(altered, rows, partitions, arms)
+        for slice_name in (
+            "overall", "by_category", "by_source_group", "image_evidence_slice"
+        ):
+            altered = deepcopy(original)
+            altered["full_census"]["a"].pop(slice_name)
+            with self.subTest(missing=slice_name), self.assertRaises(ValueError):
+                verify_report_slices(altered, rows, partitions, arms)
+
+    def test_independent_audit_rejects_wrong_types_and_missingness(self):
+        rows, partitions, arms, result = self._summary_fixture()
+        original = result["full_census"]["a"]["overall"]
+        for name, value in (
+            ("planned_questions", True), ("acceptance_rate", True),
+            ("acceptance_rate", "1.0"), ("support_recall", float("nan")),
+        ):
+            altered = {**original, name: value}
+            with self.subTest(field=name, value=value), self.assertRaises(ValueError):
+                _verify_audit_summary(
+                    altered, [r for r in rows if r["arm"] == "a"], "test"
+                )
+        empty = result["holdout"]["a"]["image_evidence_slice"]
+        self.assertEqual(empty["planned_questions"], 0)
+        self.assertIsNone(empty["support_recall"])
+        altered = deepcopy(result)
+        altered["holdout"]["a"]["image_evidence_slice"]["support_recall"] = 0.0
+        with self.assertRaises(ValueError):
+            verify_report_slices(altered, rows, partitions, arms)
 
 
 if __name__ == "__main__":
