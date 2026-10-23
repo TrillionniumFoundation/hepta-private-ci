@@ -37,9 +37,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: cc9b599515eb5a9a895174c80220c32de12c6b4f
+      CHAIN_SOURCE_SHA: 96a98a635def8c13b2d4f234aa1daee59c57afa0
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && 'cc9b599515eb5a9a895174c80220c32de12c6b4f' || '535901454f10b2e2c834cbf15c1a7dff8fb67a16' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '96a98a635def8c13b2d4f234aa1daee59c57afa0' || '7453b294b4703996174ea9b86fdb119e3302846d' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -283,7 +283,7 @@ jobs:
           assert report['wan_tps'] is None
           print('PASS: native consumer reexecution under public TCP load; no independent WAN qualification')
           PYNETWORK
-      - name: Build the actual pinned native Chain executable and signed task fixture
+      - name: Build the actual pinned native Chain executable and PNP1/PNP2 signed task fixture
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-build.json" -- cargo +1.95.0 build --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --bin trnm-pon-node --example hepta_task_fixture
@@ -297,6 +297,13 @@ jobs:
           echo "HEPTA_PON_TASK_FIXTURE=$fixture" >> "$GITHUB_ENV"
           echo "HEPTA_PON_TASK_FIXTURE_SHA256=$fixture_digest" >> "$GITHUB_ENV"
           printf '%s\n' "$fixture_digest" > "$RUNNER_TEMP/pon-pair/chain-task-fixture.sha256"
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/growth-task-fixture-plan.json" -- "$fixture" growth-plan 1700000000 hepta-pair-growth-v1
+      - name: Require exact PNP2 snapshot and read-only observer controls
+        run: |
+          set -euo pipefail
+          for selector in native_growth_v2_exact_packet_observation_binds_bytes_context_and_active_snapshot native_growth_v2_packet_observer_opens_read_only_without_recovering native_growth_v2_exact_packet_observation_refuses_foreign_epoch; do
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "store::growth::tests::$selector" -- --exact --show-output --test-threads=1
+          done
       - name: Prefetch locked Hepta dependencies before offline test execution
         timeout-minutes: 12
         env:
@@ -349,13 +356,32 @@ jobs:
           CARGO_NET_OFFLINE: "true"
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-task-acceptance-contract.json" --minimum-tests 3 -- just test --locked -p codex-hepta-agent-protocol --lib -E 'test(automation_chain_observation::tests::)' --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-task-acceptance-contract.json" --minimum-tests 4 -- just test --locked -p codex-hepta-agent-protocol --lib -E 'test(automation_chain_observation::tests::)' --no-capture
       - name: Require native task acceptance parser regressions
         env:
           CARGO_NET_OFFLINE: "true"
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-task-acceptance-parser.json" --minimum-tests 2 -- just test --locked -p codex-hepta-agentd --lib -E 'test(pon_task_acceptance::tests::)' --no-capture
+      - name: Require strict growth host profile and genesis observation controls
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-growth-host.json" --minimum-tests 4 -- just test --locked -p codex-hepta-agentd --lib -E 'test(pon_growth::tests::)' --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-growth-live-contract.json" --minimum-tests 5 -- just test --locked -p codex-hepta-agentd --lib -E 'test(pon_remote::)' --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-growth-live-credential.json" --minimum-tests 4 -- just test --locked -p codex-hepta-agentd --lib -E 'test(pon_process::credential::tests::)' --no-capture
+      - name: Require ordinary neural host configuration and bounded cleanup controls
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/neural-host-boundaries.json" --minimum-tests 5 -- just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(smollm_cognitive_)' --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/neural-host-session.json" --minimum-tests 3 -- just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(smollm_neural_read::driver::session::tests::)' --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/neural-host-qualification-refusal.json" --minimum-tests 3 -- just test --locked -p codex-hepta-agentd --test neural_cognitive_bootstrap --no-capture
+          # A help-only build/run proves the fixed entry point exists. It does
+          # not load a model or grant product-qualification/ordinary-read credit.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/neural-host-cli-smoke.json" -- cargo run --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --bin hepta-neural-agentd -- --help
       - name: Require actual ranker and independent selection lifetime controls
         env:
           CARGO_NET_OFFLINE: "true"
@@ -454,6 +480,16 @@ jobs:
           CARGO_NET_OFFLINE: "true"
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-task-pair.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(real_chain_signed_task_acceptance_confirm_and_reorg)' --run-ignored only --no-capture
+      - name: Require actual PNP2 maintenance, signed task acceptance and resident reconciliation
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -uo pipefail
+          failed=0
+          for selector in real_growth_chain_submit_lost_ack_confirm_reorg_cold_reopen real_growth_chain_signed_task_acceptance_confirm_reorg real_growth_remote_chain_resident_task_lost_ack_confirm_reorg_restart; do
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E "test($selector)" --run-ignored only --no-capture || failed=1
+          done
+          exit "$failed"
       - name: Retain read-only source and prior Windows failure diagnostics
         if: always() && matrix.runner == 'ubuntu-24.04' && matrix.lane == 'source-head'
         env:

@@ -1,0 +1,54 @@
+[
+  {
+    "name": "hepta-live-repaired-fmt-before",
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "returncode": 0,
+    "seconds": 2.515067756990902,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "hepta-live-repaired-fix",
+    "command": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-agentd",
+      "--locked",
+      "--offline"
+    ],
+    "returncode": 0,
+    "seconds": 69.64411874406505,
+    "log_sha256": "df786f4c2625bd2ca63273fe5a5430c33e197482b9792f4488af77cc3f6b879d"
+  },
+  {
+    "name": "hepta-live-repaired-fmt-after",
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "returncode": 0,
+    "seconds": 2.3848835988901556,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "hepta-live-repaired-effect-tests",
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "--lib",
+      "-E",
+      "test(automation_effect_host)",
+      "--no-capture"
+    ],
+    "returncode": 0,
+    "seconds": 81.29503162705805,
+    "log_sha256": "7aa862ff98e33c56f190b96985713b95fc553f3706e873420a94eafb9ed67dd4"
+  }
+]

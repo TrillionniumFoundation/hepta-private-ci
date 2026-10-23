@@ -308,3 +308,7 @@ owner supplies typed causal, procedural and contradiction-support channels; gene
 graph evidence remains separate. Target
 host timing/resource measurements, independent semantic review, longitudinal
 outcomes, canary/promotion and release remain separate gates.
+
+### 2026-10-23 convergence evidence
+
+The [recorded local PN0–PN6 convergence cohort](../../evidence/pon-six-gate-20261022/pn-convergence-20261023/SCOPE.md) preserves original failures, source overlays, the 39-case live effect-host result and the ordinary neural-entry component scope. Final paired head/merge execution and qualification remain separate receipts; this index grants no readiness or activation authority.

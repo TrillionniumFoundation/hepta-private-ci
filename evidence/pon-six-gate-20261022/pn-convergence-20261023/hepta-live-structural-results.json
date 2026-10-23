@@ -1,0 +1,40 @@
+[
+  {
+    "name": "hepta-live-source-contract",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts",
+      "-p",
+      "test_hepta_ci_source_identity.py",
+      "-v"
+    ],
+    "returncode": 0,
+    "seconds": 3.4098370620049536,
+    "log_sha256": "1e65a74aefd76345116b41f2beac79c70c97b9b2d5be31d1f54bca216b42dc1b"
+  },
+  {
+    "name": "hepta-live-workspace",
+    "command": [
+      "python3",
+      "scripts/hepta_workspace.py"
+    ],
+    "returncode": 0,
+    "seconds": 0.5996166779659688,
+    "log_sha256": "6a437814142f1071f98664abc8a131c5c26d3dc40521307842b1acda091272f0"
+  },
+  {
+    "name": "hepta-live-diff",
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "returncode": 0,
+    "seconds": 0.027079168939962983,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]
