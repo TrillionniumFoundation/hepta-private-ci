@@ -10,7 +10,8 @@ import tempfile
 import unittest
 
 sys.path.insert(0, str(Path(__file__).parent))
-from qualification import EvidenceError, digest, validate_episode, validate_sources
+from qualification import (EvidenceError, digest, report_status, validate_episode,
+                           validate_sources)
 from test_qualification import generate_fixture
 
 
@@ -89,6 +90,21 @@ class GroupTraceAdmissionTests(unittest.TestCase):
         sources["sources"][0]["modalities"] = []
         with self.assertRaisesRegex(EvidenceError, "source modalities"):
             validate_sources(self.root, sources, self.history)
+
+
+    def test_no_covariance_arm_must_match_realized_cost(self):
+        rows = copy.deepcopy(self.records)
+        comparison = next(r for r in rows if r["arm"] == "ndu_no_cov")
+        comparison["cost_us"]["head"] += 2000
+        comparison["total_us"] += 2000
+        # This is a well-formed physical cost observation. The earlier summary
+        # excluded the no-covariance arm and incorrectly reported matched=True.
+        validate_episode(self.root, comparison, self.by_id, self.protocol)
+        report = report_status(self.by_id, self.protocol, rows)
+        self.assertFalse(
+            report["mechanism_checks"]["actual_cost_and_coverage_matched"]
+        )
+
 
 
 if __name__ == "__main__":
