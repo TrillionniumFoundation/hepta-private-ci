@@ -39,6 +39,25 @@ in the emitted run receipts. **No implicit HF downloads are allowed.**
 Prepare each model snapshot in a private target host by independently
 downloading a specific 40-character HF revision and verifying its immutable
 weights/tokenizer against the owner's artifact registry.
+A freeze-ready plan must explicitly set `kind=frozen_experiment_plan`,
+`source_commit` to the exact runner checkout SHA, a timezone-aware
+`registered_before_utc`, and a preregistered `abstention_threshold`
+strictly between zero and one. Template values cannot pass evaluation.
+Each model run must bind the **same** source commit and threshold.
+The evaluator independently recomputes abstention from each published
+probability vector; changing an `abstained` boolean cannot improve
+selective accuracy or OOD acceptance. Reported `accuracy` is raw
+prediction accuracy on all in-domain rows, `effective_correct_rate`
+is correct-and-accepted divided by all in-domain rows, and
+`selective_accuracy` is correct/accepted. Keep these distinct.
+
+The three Laya arms require distinct **repository-specific** local
+Hugging Face cache snapshots. The English bundled repository's
+multilingual/typed sibling files are excluded from the English artifact
+hash; standalone Typed/Multilingual snapshots must correspond to their
+own repository paths. Directory names are a drift check, not independent
+artifact provenance or proof of real execution.
+
 The runner now requires --device cpu|cuda|mps and verifies the selected
 device on load and after inference (Laya may otherwise silently fall back
 to CPU after an OOM). Its quantization digest binds the loaded tensor
