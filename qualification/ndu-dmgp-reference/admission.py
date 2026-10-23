@@ -217,11 +217,11 @@ def compare_a0_a5(
     return PortfolioComparison(n, tuple(comparisons), observed_overhead, passes)
 
 
-def conditional_covariance(
+def conditional_policy_arm_covariance(
     records: Sequence[AdmittedRun], experts: Sequence[str], *,
     train_cutoff: int, stratum: str, rank: int | None = None,
 ) -> Covariance:
-    """Risk covariance fitted only from prior paired train outcomes, never future."""
+    """Paired *policy-arm* return covariance from train only (not A4 expert risk)."""
     if train_cutoff <= 0 or not stratum or len(experts) < 2:
         raise GateRejected("invalid conditional covariance freeze")
     paired = _matched(records, split="train", arms=experts)
