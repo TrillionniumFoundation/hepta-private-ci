@@ -55,6 +55,13 @@ def validate_plan(plan: object) -> tuple[dict, list[dict]]:
     seen = set()
     split_groups = {"train": set(), "calibration": set(), "test": set(), "future": set()}
     split_families = {key: set() for key in split_groups}
+    # Preserve original-file identity across repeated seeds, but refuse reuse
+    # between independent cohort groups or across train/test/future boundaries.
+    fixture_owners = {}
+    # The future bootstrap is grouped by source family. Treating five aliases
+    # of one family as five independent future groups inflates confidence.
+    future_group_families = {}
+    future_family_groups = {}
     evaluation = []
     for task in tasks:
         require(isinstance(task, dict) and set(task) == {"id", "family", "group", "split", "seed", "fixture_digest", "oracle_digest"}, "task schema")
@@ -68,6 +75,14 @@ def validate_plan(plan: object) -> tuple[dict, list[dict]]:
         subset = task["split"]
         require(subset in split_groups, "invalid task split")
         require(task["group"] not in set().union(*(v for k, v in split_groups.items() if k != subset)), "group crosses data split")
+        owner = (subset, task["group"])
+        prior_owner = fixture_owners.setdefault(task["fixture_digest"], owner)
+        require(prior_owner == owner, "fixture reused across independent groups")
+        if subset == "future":
+            prior_family = future_group_families.setdefault(task["group"], task["family"])
+            require(prior_family == task["family"], "future group mixes families")
+            prior_group = future_family_groups.setdefault(task["family"], task["group"])
+            require(prior_group == task["group"], "future family crosses independent groups")
         split_groups[subset].add(task["group"])
         split_families[subset].add(task["family"])
         if subset in ("test", "future"):
