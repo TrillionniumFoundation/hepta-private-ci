@@ -61,6 +61,45 @@ class CellComparisonTest(unittest.TestCase):
         with self.assertRaisesRegex(GateError, "family leaked"):
             compare(p, rows)
 
+    def test_future_groups_must_be_independent_families(self):
+        p, rows = fixture()
+        p["tasks"][3]["family"] = p["tasks"][2]["family"]
+        with self.assertRaisesRegex(GateError, "future family crosses independent groups"):
+            compare(p, rows)
+
+        p, rows = fixture()
+        p["tasks"][3]["group"] = p["tasks"][2]["group"]
+        with self.assertRaisesRegex(GateError, "future group mixes families"):
+            compare(p, rows)
+
+    def test_raw_original_fixture_identity_cannot_leak_between_cohorts(self):
+        p, rows = fixture()
+        p["tasks"][3]["fixture_digest"] = p["tasks"][2]["fixture_digest"]
+        for r in rows:
+            if r["task_id"] == "future-1":
+                r["fixture_digest"] = p["tasks"][2]["fixture_digest"]
+        with self.assertRaisesRegex(GateError, "fixture reused across independent groups"):
+            compare(p, rows)
+
+        p, rows = fixture()
+        p["tasks"][0]["fixture_digest"] = p["tasks"][2]["fixture_digest"]
+        for r in rows:
+            if r["task_id"] == "old-0":
+                r["fixture_digest"] = p["tasks"][2]["fixture_digest"]
+        with self.assertRaisesRegex(GateError, "fixture reused across independent groups"):
+            compare(p, rows)
+
+    def test_same_source_within_one_group_allows_repeated_seed_measurements(self):
+        p, rows = fixture()
+        # Repeated seeds within one group are allowed; the bootstrap will
+        # still count that source group once, not as independent groups.
+        p["tasks"][1]["fixture_digest"] = p["tasks"][0]["fixture_digest"]
+        for r in rows:
+            if r["task_id"] == "old-1":
+                r["fixture_digest"] = p["tasks"][0]["fixture_digest"]
+        result = compare(p, rows)
+        self.assertEqual(result["scales"]["64"]["future_group_count"], 5)
+
     def test_outcome_drift_and_effect_replay_denied(self):
         for field, value, reason in [
             ("unknown_effects", 1, "unsafe effect"),

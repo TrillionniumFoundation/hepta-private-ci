@@ -70,3 +70,22 @@ runs, valid held-out results, source/host attestations or evidence that Cell
 division produces AGI. A distinct authenticated evaluator must authenticate
 the actual source, model, corpus, measurements and producer identities before
 any selection or production promotion.
+
+## P5 source-family independence hardening (source-only)
+
+The future bootstrap operates on **independent original-source family groups**,
+not merely on distinct text labels for groups. Five groups named differently
+but sharing the same family are one correlated family, not five independent
+future sources. The evaluator now rejects a future family appearing in more than
+one future group, rejects a future group mixing unrelated families, and rejects
+an identical original fixture digest reused between otherwise independent
+cohort groups or train/calibration/test/future boundaries. Repeated seeds of an
+original source **within the same group and split** remain allowed and do not
+increase the number of bootstrap groups.
+
+These checks prevent one form of pseudoreplication and exact-byte leakage;
+they do not authenticate the manifest, prove independent data collection or
+rule out near-duplicate sources with different bytes. The frozen evaluator still
+returns `HOLD_NO_GO_INDEPENDENT_EVIDENCE_REQUIRED` even if structural metrics
+pass. Require external original-source identity review, signer-verified physical
+receipts, statistical review and all real model/host gates before selection.
