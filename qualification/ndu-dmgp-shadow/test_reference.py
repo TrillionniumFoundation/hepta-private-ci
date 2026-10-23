@@ -68,6 +68,11 @@ class IdentityAndReward(unittest.TestCase):
             paired_future_evaluation((replace(rows[1], source_digest='other'),)
                                      + rows[:1] + rows[2:], F, 'A0', 'A5', 0)
 
+    def test_future_support_floor_cannot_be_overridden(self):
+        with self.assertRaisesRegex(Unavailable, 'cannot lower'):
+            paired_future_evaluation(outcomes(), F, 'A0', 'A5', 0,
+                                     min_episodes=2)
+
     def test_critic_revision_and_future_support_fail(self):
         with self.assertRaisesRegex(Unavailable, 'drift'):
             paired_future_evaluation((replace(outcomes()[0], critic_digest='new'),)
@@ -80,6 +85,23 @@ class ModalConsistency(unittest.TestCase):
     def test_forward_reverse_and_time_align(self):
         p, c = plan_claims()
         self.assertEqual(len(verify_cross_modal(p, c, F)), 64)
+
+    def test_receipt_is_bound_to_claim_evidence_and_pairwise_timing(self):
+        p, c = plan_claims()
+        altered_evidence = (replace(c[0], evidence_digest='different-source'),) + c[1:]
+        self.assertNotEqual(verify_cross_modal(p, c, F),
+                            verify_cross_modal(p, altered_evidence, F))
+        # Both shifts satisfy the plan tolerance individually, but a 50 ms
+        # disagreement violates the pairwise synchronization tolerance (30).
+        drifted = (replace(c[0], start_ms=25),
+                   replace(c[2], start_ms=0),
+                   replace(c[4], start_ms=-25))
+        with self.assertRaises(Unavailable):
+            verify_cross_modal(p, drifted + c[1:2] + c[3:4] + c[5:], F)
+        overlapping = replace(p, events=(('opening', 'speaker1', 0, 500),
+                                         ('finale', 'speaker2', 400, 1000)))
+        with self.assertRaises(Unavailable):
+            verify_cross_modal(overlapping, c, F)
 
     def test_missing_output_and_hallucinated_claim(self):
         p, c = plan_claims()
@@ -188,7 +210,8 @@ class PerformanceAndClosure(unittest.TestCase):
         c = tuple(WorkReceipt(str(i), f'c{i}', 1500, 160, 35, 4096, True)
                   for i in range(30))
         r = compare_work(b, c)
-        self.assertTrue(r['production_efficiency_evidence'])
+        self.assertFalse(r['production_efficiency_evidence'])
+        self.assertTrue(r['unverified_host_metric_candidate'])
         self.assertGreater(r['decoder_saved_us'], r['extra_controller_us'])
         self.assertFalse(compare_work(b, (replace(c[0], measured_on_host=False),)
                                        + c[1:])['production_efficiency_evidence'])
