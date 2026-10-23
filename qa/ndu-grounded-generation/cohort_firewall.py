@@ -163,6 +163,29 @@ def check_cohort(candidate, history, *, max_hamming=4, require_complete_history=
             "scope": "source_id/byte/RGB/dHash only; entity and pretraining claims remain unproven"}
 
 
+
+def validate_output_destination(output, input_paths):
+    """Never overwrite frozen source evidence, including aliases or links.
+
+    Invalid output destinations cannot receive even a denial receipt. The
+    caller must select a separate, ordinary path for that receipt.
+    """
+    try:
+        if output.is_symlink():
+            raise CohortContractError("output path must not be a symlink")
+        if output.exists():
+            if not output.is_file() or output.stat().st_nlink != 1:
+                raise CohortContractError("output path must be an unlinked regular file")
+        resolved_output = output.resolve(strict=False)
+        for source in input_paths:
+            if resolved_output == source.resolve(strict=False) or (
+                output.exists() and source.exists() and output.samefile(source)
+            ):
+                raise CohortContractError("output path aliases frozen input evidence")
+    except (OSError, RuntimeError) as error:
+        raise CohortContractError("cannot verify safe output path") from error
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--candidate", required=True)
@@ -172,6 +195,16 @@ def main(argv=None):
     parser.add_argument("--output", required=True)
     parser.add_argument("--max-dhash-distance", type=int, default=4)
     args = parser.parse_args(argv)
+    dest = Path(args.output)
+    try:
+        validate_output_destination(
+            dest, [Path(args.candidate), *(Path(item) for item in args.historical)]
+        )
+    except CohortContractError as error:
+        # A denial receipt cannot safely be written to an aliased output.
+        print(json.dumps({"status": "fail", "error": str(error),
+                          "output_written": False}, sort_keys=True))
+        return 2
     try:
         if len(args.historical) != len(args.historical_sha256):
             raise CohortContractError("each historical manifest requires an out-of-band SHA256")
@@ -201,7 +234,6 @@ def main(argv=None):
     except (OSError, json.JSONDecodeError, CohortContractError) as exc:
         result = {"schema": "hepta.ndu-cohort-firewall.v2", "status": "fail",
                   "error": str(exc), "observable_image_identity_disjoint": False}
-    dest = Path(args.output)
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(json.dumps(result, sort_keys=True, indent=2) + "\n")
     print(json.dumps({"status": result["status"], "output": str(dest)}, sort_keys=True))
