@@ -56,6 +56,7 @@ pub enum ValidationError {
     UnprotectedDacl,
     NonCanonicalDacl,
     UnsafeObject,
+    PrincipalChanged,
 }
 
 impl From<io::Error> for ValidationError {
@@ -111,6 +112,7 @@ impl Sid {
 }
 
 /// Captured TokenUser SID, not TokenOwner, group membership or an owner guard.
+#[derive(Eq, PartialEq)]
 pub struct CurrentUser {
     sid: Sid,
 }
@@ -118,32 +120,10 @@ pub struct CurrentUser {
 impl CurrentUser {
     /// Capture the thread token when impersonating; only NO_TOKEN falls back.
     pub fn capture_effective() -> Result<Self, ValidationError> {
-        let mut raw = 0;
-        // SAFETY: current-thread pseudo-handle is live, output is writable;
-        // OpenAsSelf affects opening access, not which thread token is returned.
-        if unsafe {
-            OpenThreadToken(
-                GetCurrentThread(),
-                TOKEN_QUERY,
-                /*openasself*/ 1,
-                &mut raw,
-            )
-        } == 0
-        {
-            let error = io::Error::last_os_error();
-            if error.raw_os_error() != Some(ERROR_NO_TOKEN as i32) {
-                return Err(error.into());
-            }
-            // SAFETY: current-process pseudo-handle is live and output writable.
-            if unsafe { OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &mut raw) } == 0 {
-                return Err(io::Error::last_os_error().into());
-            }
-        }
-        if raw == 0 || raw == INVALID_HANDLE_VALUE {
-            return Err(io::Error::other("token open returned an invalid handle").into());
-        }
-        // SAFETY: successful token open transfers one owned non-inherited handle.
-        let token = unsafe { OwnedHandle::from_raw_handle(raw as *mut c_void) };
+        Self::from_token(&open_effective_token()?)
+    }
+
+    pub(crate) fn from_token(token: &OwnedHandle) -> Result<Self, ValidationError> {
         let mut needed = 0;
         // SAFETY: the null/zero query writes only needed, while token stays live.
         let result = unsafe {
@@ -203,6 +183,35 @@ impl CurrentUser {
             sid: Sid::read(bytes)?,
         })
     }
+}
+
+pub(crate) fn open_effective_token() -> Result<OwnedHandle, ValidationError> {
+    let mut raw = 0;
+    // SAFETY: current-thread pseudo-handle is live, output is writable;
+    // OpenAsSelf affects opening access, not which thread token is returned.
+    if unsafe {
+        OpenThreadToken(
+            GetCurrentThread(),
+            TOKEN_QUERY,
+            /*openasself*/ 1,
+            &mut raw,
+        )
+    } == 0
+    {
+        let error = io::Error::last_os_error();
+        if error.raw_os_error() != Some(ERROR_NO_TOKEN as i32) {
+            return Err(error.into());
+        }
+        // SAFETY: current-process pseudo-handle is live and output writable.
+        if unsafe { OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &mut raw) } == 0 {
+            return Err(io::Error::last_os_error().into());
+        }
+    }
+    if raw == 0 || raw == INVALID_HANDLE_VALUE {
+        return Err(io::Error::other("token open returned an invalid handle").into());
+    }
+    // SAFETY: successful token open transfers one owned non-inherited handle.
+    Ok(unsafe { OwnedHandle::from_raw_handle(raw as *mut c_void) })
 }
 
 struct LocalDescriptor(NonNull<c_void>);
