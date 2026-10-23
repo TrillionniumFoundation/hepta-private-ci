@@ -39,3 +39,11 @@ The original NDU v1 real grounded trial #3213 was negative (0.833594 quality vs 
 Unit tests exercise only tool logic with simulated GitHub API responses. The production check fetches current GitHub PR heads twice (to detect drift), only considers exact-sha `pull_request` workflow runs, selects the newest attempt, requires all mandatory native jobs truly completed with `success`, and rejects incomplete pages rather than assuming missing runs passed. It does not verify the external independent origin of task labels, raw decoded outputs, authority signatures or hardware counters. That is why it *cannot* qualify scientific or production evidence alone.
 
 The project owner must explicitly review any prospective combined PR against unmodified security controls, registered scientific protocols, heldout outcome receipts, true cost/energy measurements, and independent authorization before converting any scientific/blocker status to closed.
+
+## Exact-source hosted evidence observer
+
+The scoped workflow uses the already exercised `ubuntu-slim` runner to execute only Python standard-library tests and read-only GitHub API observations. On pull requests it checks out `github.event.pull_request.head.sha` rather than the synthetic merge ref; a workflow dispatch checks out `github.sha`. An explicit `git rev-parse HEAD` equality check must succeed **before** the existing 11 adversarial tests or remote status audit runs. Checkout credentials are not persisted.
+
+The script's pinned candidate plan and all its strict CI/native/scientific requirements remain unchanged. A successful workflow is only proof that this observer was run on the named source, not that any original PR, Windows DELETE isolation, model, future/OOD evaluation, NDU benefit, hardware energy, or FinalUse gate passed. Missing, stale, cancelled, skipped, and failed source evidence remains `BLOCKED`; every P0–P7 capability gate remains `HOLD_NO_GO`.
+
+If the runner is unavailable, source checkout fails, or GitHub API is incomplete, retain the failure/queue evidence. Never replace it with a different branch's PASS or weaker checks.
