@@ -178,6 +178,11 @@ class AllocationPolicy:
                 scores = self.policy[arm + "_scores_" + str(depth)][matches]
                 if np.max(np.abs(scores - scores[0])) > 1e-10:
                     raise ValueError("ambiguous latent matches have different action values")
+            for remaining in PLANS:
+                if len(remaining) <= 2 - depth:
+                    values = self.sequence_value(depth, matches, remaining)
+                    if np.max(np.abs(values - values[0])) > 1e-10:
+                        raise ValueError("ambiguous latent matches have different committed-plan values")
         return int(candidates[errors.argmin()]), float(errors.min())
 
     def decision(self, arm, depth, node, plan=None):
