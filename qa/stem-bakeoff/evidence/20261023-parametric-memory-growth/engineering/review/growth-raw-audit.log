@@ -1,0 +1,103 @@
+{
+  "output": "/workspace/scratch/1d69f04ee9f4/parametric-next-20261023/review/growth-raw-audit.json",
+  "sha256": "d99c48df683eb0e52cdc85219c9819ae4e8b5953c1e6f8bb110d1cebee24bb65",
+  "audit_passed": true,
+  "check_count": 75,
+  "failed_checks": [],
+  "outcome": {
+    "chosen_arm": "single",
+    "source_correct_counts": {
+      "nochange": 15,
+      "single": 30,
+      "split": 30
+    },
+    "raw_final_metrics": {
+      "nochange": {
+        "old": {
+          "correct": 15,
+          "total": 15,
+          "exact_match": 1.0
+        },
+        "new": {
+          "correct": 0,
+          "total": 15,
+          "exact_match": 0.0
+        },
+        "all": {
+          "correct": 15,
+          "total": 30,
+          "exact_match": 0.5
+        }
+      },
+      "single": {
+        "old": {
+          "correct": 15,
+          "total": 15,
+          "exact_match": 1.0
+        },
+        "new": {
+          "correct": 15,
+          "total": 15,
+          "exact_match": 1.0
+        },
+        "all": {
+          "correct": 30,
+          "total": 30,
+          "exact_match": 1.0
+        }
+      },
+      "split": {
+        "old": {
+          "correct": 15,
+          "total": 15,
+          "exact_match": 1.0
+        },
+        "new": {
+          "correct": 15,
+          "total": 15,
+          "exact_match": 1.0
+        },
+        "all": {
+          "correct": 30,
+          "total": 30,
+          "exact_match": 1.0
+        }
+      }
+    },
+    "measured_candidate_costs": {
+      "nochange": {
+        "private_parameter_bytes": 1843200,
+        "retained_checkpoint_bytes": 1910596,
+        "optimizer_steps": 0
+      },
+      "single": {
+        "private_parameter_bytes": 1843200,
+        "retained_checkpoint_bytes": 1916187,
+        "optimizer_steps": 480
+      },
+      "split": {
+        "private_parameter_bytes": 3686400,
+        "retained_checkpoint_bytes": 3805650,
+        "optimizer_steps": 480
+      }
+    },
+    "raw_gate_values": {
+      "selected_old_recall": true,
+      "selected_new_recall": true,
+      "selected_preserves_parent_correct_old": true,
+      "parent_unchanged": true,
+      "matched_training_steps": true,
+      "revoked_ancestry_disjoint": true,
+      "final_owner_admission": true,
+      "selection_preceded_final_reads": true,
+      "selection_bytes_unchanged": true,
+      "source_identity_unchanged": true,
+      "sqlite_exact_recall": true
+    },
+    "experiment_gate_passed": true,
+    "failed_experiment_gates": [],
+    "actual_run_exit_code": 0,
+    "source_manifest_sha256": "e27a70e290273ac321827e76c51143d59a4a869f655159c7fb2efa7a2041e3e9",
+    "selection_artifact_sha256": "bf253f7915e80344dfddc933649a18d241e7698beadf22b4e240445c6bd259fc"
+  }
+}

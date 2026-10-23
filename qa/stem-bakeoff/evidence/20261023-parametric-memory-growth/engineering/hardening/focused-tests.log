@@ -1,0 +1,12 @@
+test_fifo_and_replacement_race_reject_without_blocking (test_owner_admission.BoundedFileTests.test_fifo_and_replacement_race_reject_without_blocking) ... ok
+test_mutation_during_read_is_rejected (test_owner_admission.BoundedFileTests.test_mutation_during_read_is_rejected) ... ok
+test_regular_file_and_bounds (test_owner_admission.BoundedFileTests.test_regular_file_and_bounds) ... ok
+test_regular_inode_replacement_during_open_is_rejected (test_owner_admission.BoundedFileTests.test_regular_inode_replacement_during_open_is_rejected) ... ok
+test_symlink_rejected (test_owner_admission.BoundedFileTests.test_symlink_rejected) ... ok
+test_peer_version_change_during_validation_prevents_callback (test_owner_admission.OwnerAdmissionTests.test_peer_version_change_during_validation_prevents_callback) ... ok
+test_peer_withdrawal_during_validation_prevents_callback (test_owner_admission.OwnerAdmissionTests.test_peer_withdrawal_during_validation_prevents_callback) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 5.198s
+
+OK

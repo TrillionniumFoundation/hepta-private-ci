@@ -1,0 +1,91 @@
+{
+  "schema": "hepta.parametric-memory.next-stage-publication.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": {
+    "sha": "cbd139ad7cfeaf0be226688f2475cdeb364aa3e1",
+    "tree": "3c6efc8c4a38285da6c6ce4396f252128a8b8a3e"
+  },
+  "stages": [
+    {
+      "branch": "codex/memory-parametric-hardening-20261023",
+      "sha": "4cd9bd85131ea0d95e4d607ecad3e64ea11c5a5f",
+      "tree": "982c97c81505b9487009b82dcc685d11195f038f",
+      "parent_sha": "cbd139ad7cfeaf0be226688f2475cdeb364aa3e1",
+      "base_branch": "codex/memory-parametric-catalog-20261023",
+      "pr": 3430,
+      "pr_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3430",
+      "files": [
+        "scripts/memory_cell/README.md",
+        "scripts/memory_cell/parametric_evolution.py",
+        "scripts/memory_cell/parametric_owner.py",
+        "scripts/memory_cell/tensor_contract.py",
+        "scripts/memory_cell/test_parametric_evolution.py",
+        "scripts/memory_cell_hardening/README.md",
+        "scripts/memory_cell_hardening/test_owner_admission.py"
+      ],
+      "title": "memory: close callback admission races and reject tied evolution"
+    },
+    {
+      "branch": "codex/memory-parametric-growth-foundation-20261023",
+      "sha": "4970fe9f17b12a067992f0703329d0c93ef389f1",
+      "tree": "d7169869a463909061f12ae80028d8b09bcc88c5",
+      "parent_sha": "4cd9bd85131ea0d95e4d607ecad3e64ea11c5a5f",
+      "base_branch": "codex/memory-parametric-hardening-20261023",
+      "pr": 3431,
+      "pr_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3431",
+      "files": [
+        "scripts/memory_cell_growth/growth_policy.py",
+        "scripts/memory_cell_growth/growth_runtime.py"
+      ],
+      "title": "memory: add budgeted single-cell and split arrival candidates"
+    },
+    {
+      "branch": "codex/memory-parametric-growth-admission-20261023",
+      "sha": "125c73bd561be77f2566438a59c39d0b60aa9784",
+      "tree": "d47d4677d8657bb5f207ef24c103bea63e995d28",
+      "parent_sha": "4970fe9f17b12a067992f0703329d0c93ef389f1",
+      "base_branch": "codex/memory-parametric-growth-foundation-20261023",
+      "pr": 3432,
+      "pr_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3432",
+      "files": [
+        "scripts/memory_cell_growth/growth_protocol.py",
+        "scripts/memory_cell_growth/growth_reads.py",
+        "scripts/memory_cell_growth/fixtures/clean-replay-facts.json",
+        "scripts/memory_cell_growth/fixtures/parent-provenance.json"
+      ],
+      "title": "memory: pin clean arrival lineage and admit fresh worker reads"
+    },
+    {
+      "branch": "codex/memory-parametric-growth-trial-20261023",
+      "sha": "f9884819bbfb23a04cc319e8b6643eebaeac5e07",
+      "tree": "0b6253cffd4ba20e857f571e54dfcc3a3b52c871",
+      "parent_sha": "125c73bd561be77f2566438a59c39d0b60aa9784",
+      "base_branch": "codex/memory-parametric-growth-admission-20261023",
+      "pr": 3433,
+      "pr_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3433",
+      "files": [
+        "scripts/memory_cell_growth/growth_trial.py",
+        "scripts/memory_cell_growth/README.md"
+      ],
+      "title": "memory: add fixed color-to-shape sequential-arrival experiment"
+    },
+    {
+      "branch": "codex/memory-parametric-next-20261023",
+      "sha": "2b42a265e51ad2ac0d2127e8f6b81cc4fa4d1b3b",
+      "tree": "78d3287f92f3abbca4843d746b975aed922c3d36",
+      "parent_sha": "f9884819bbfb23a04cc319e8b6643eebaeac5e07",
+      "base_branch": "codex/memory-parametric-growth-trial-20261023",
+      "pr": 3434,
+      "pr_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3434",
+      "files": [
+        "scripts/memory_cell_growth/test_growth.py",
+        ".github/workflows/hepta-parametric-next-shadow.yml"
+      ],
+      "title": "memory: verify arrival protocol and exact-head shadow CI"
+    }
+  ],
+  "source_head": "2b42a265e51ad2ac0d2127e8f6b81cc4fa4d1b3b",
+  "source_tree": "78d3287f92f3abbca4843d746b975aed922c3d36",
+  "prior_nine_heads_unchanged": true,
+  "production_accepted": false
+}

@@ -1,0 +1,369 @@
+{
+  "costs": {
+    "nochange": {
+      "optimizer_steps": 0,
+      "private_parameter_bytes": 1843200,
+      "retained_checkpoint_bytes": 1910596
+    },
+    "single": {
+      "optimizer_steps": 480,
+      "private_parameter_bytes": 1843200,
+      "retained_checkpoint_bytes": 1916187
+    },
+    "split": {
+      "optimizer_steps": 480,
+      "private_parameter_bytes": 3686400,
+      "retained_checkpoint_bytes": 3805650
+    }
+  },
+  "learned_routing_claimed": false,
+  "matched_optimizer_steps": true,
+  "matched_parameter_bytes": false,
+  "parent_unchanged": true,
+  "production_accepted": false,
+  "revoked_ancestry_disjoint": true,
+  "schema": "hepta.parametric-memory.arrival-candidates.v1",
+  "selection": {
+    "additional_private_bytes_over_parent": 0,
+    "best_eligible_cheaper_arm": "single",
+    "chosen_arm": "single",
+    "final_scores_used": false,
+    "parent_correct_old_preserved": {
+      "nochange": true,
+      "single": true,
+      "split": true
+    },
+    "price_utility_claimed": false,
+    "production_accepted": false,
+    "rule": "Preserve every parent-correct old item; single needs at least one extra correct source selection answer over nochange; split needs at least two over the best eligible cheaper arm; ties retain the cheaper/nochange arm.",
+    "schema": "hepta.parametric-memory.growth-selection.v1",
+    "selected_cost": {
+      "optimizer_steps": 480,
+      "private_parameter_bytes": 1843200,
+      "retained_checkpoint_bytes": 1916187
+    },
+    "single_eligible": true,
+    "source_correct_counts": {
+      "nochange": 15,
+      "single": 30,
+      "split": 30
+    },
+    "split_eligible": false
+  },
+  "source_assessments": {
+    "nochange": {
+      "new": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "old": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    "single": {
+      "new": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "old": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    "split": {
+      "new": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "old": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    }
+  },
+  "source_frontier": {
+    "epoch": 1,
+    "revoked": [
+      "ecbf81965c51e8b9dc77b163f56f5428046b0b0e32b8c6c93079367178471967",
+      "ff61b0a343d65ca74aab7f58964c4e834989a8c7760e9d31bc5a78283e62f5fc"
+    ],
+    "scope": "parametric-confirmation"
+  },
+  "source_selection_generated_tokens": 186,
+  "source_selection_input_tokens": 4818,
+  "source_selection_seconds": 24.761524883972015,
+  "training_loss_by_relation": {
+    "nochange": [],
+    "single": [
+      {
+        "color": {
+          "first_completion_ce": 0.0005933732609264553,
+          "last_completion_ce": 0.000991755397990346,
+          "mean_completion_ce": 0.02078635259155514,
+          "updates": 240
+        },
+        "shape": {
+          "first_completion_ce": 11.066207885742188,
+          "last_completion_ce": 0.0002808677963912487,
+          "mean_completion_ce": 0.46365724458055413,
+          "updates": 240
+        }
+      }
+    ],
+    "split": [
+      {
+        "color": {
+          "first_completion_ce": 0.0002149108040612191,
+          "last_completion_ce": 0.0001539420336484909,
+          "mean_completion_ce": 0.0014549276702382485,
+          "updates": 240
+        },
+        "shape": {
+          "first_completion_ce": null,
+          "last_completion_ce": null,
+          "mean_completion_ce": null,
+          "updates": 0
+        }
+      },
+      {
+        "color": {
+          "first_completion_ce": null,
+          "last_completion_ce": null,
+          "mean_completion_ce": null,
+          "updates": 0
+        },
+        "shape": {
+          "first_completion_ce": 6.342659950256348,
+          "last_completion_ce": 0.0003670334699563682,
+          "mean_completion_ce": 0.5805909104689514,
+          "updates": 240
+        }
+      }
+    ]
+  },
+  "typed_router": {
+    "color": 0,
+    "shape": 1
+  },
+  "versions": {
+    "nochange": [
+      {
+        "directory": "/workspace/scratch/1d69f04ee9f4/parametric-runs/confirmation-001/lifecycle/rebuilt-cell",
+        "manifest_sha256": "c273d4555cc0dbb105fc38a674ac6963a43cf48c58d9fced6a38e373759c2e05",
+        "roots": [
+          "006b493b63022c2230ae4bd753849de9a9b8ee203b2012ca96c2d369ba908d6b",
+          "040792978942a213bda6e9f1dc521057565973a36b3ec2c4b6cbf00a819d0fbb",
+          "167f9e6d198f73238824d968eca1b3a2808dbaf5d2d3b9a864cc136bb7af2a3e",
+          "1954b51669e6ea2294fab1e522c3e127577b4ffac1d23a8976fc9e0b46b8adde",
+          "254d4e0ea0ca09faf51aac3dd3e7d80be3ce9a2204a5dcbec8497d41907e1cd7",
+          "2c557e65e8cde98d832d0503c1c36238e6a7fed628fa1b9afd34c98b0610d92b",
+          "35c354ea3898aeff24f60ccfaadf2499b249a8216fa2673a0139a5caa16a6d2c",
+          "41c011aa1c080ddbe911939191de40d656cd685a63e0dad0f7a38bc38b95e846",
+          "6009bfd36c5686fde028ddeb4fed219c192088c8657b9c2946874230cdd5cd5d",
+          "7ca00968690767a8b10bd8139ae97b91eb2433b61eccab38ef4ac94516b32548",
+          "8257fb7dcfadd19b8305a482fe57440372c3e0e41ffff1290fdb58364652e624",
+          "a5f33ad6db729e4cc8b1defe48517bc1a1d31a9dbf3456d6bd6020270f7093d4",
+          "c9fc0d38a8acf66e8f6dc2fb1b2861897ec90b37781aa452e317addcf671b76d",
+          "e48f0692b6b264debf5b535fa6021023cfec2ffc455d8e9a2586f9faad08ebaa",
+          "f25063c4b3543f8e8674eea124c95976fdc0b0a1962f26ced3649c9ff5a44c37"
+        ]
+      }
+    ],
+    "single": [
+      {
+        "directory": "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/candidates/single-0",
+        "manifest_sha256": "b5e89f50473cfac7c65f33a1a82095fb5f569c40a30bbf8cacad7efa5301d125",
+        "roots": [
+          "006b493b63022c2230ae4bd753849de9a9b8ee203b2012ca96c2d369ba908d6b",
+          "040792978942a213bda6e9f1dc521057565973a36b3ec2c4b6cbf00a819d0fbb",
+          "167f9e6d198f73238824d968eca1b3a2808dbaf5d2d3b9a864cc136bb7af2a3e",
+          "1954b51669e6ea2294fab1e522c3e127577b4ffac1d23a8976fc9e0b46b8adde",
+          "254d4e0ea0ca09faf51aac3dd3e7d80be3ce9a2204a5dcbec8497d41907e1cd7",
+          "2c557e65e8cde98d832d0503c1c36238e6a7fed628fa1b9afd34c98b0610d92b",
+          "314f6f0778873d3b0de7f16fe1d4d5bd47e35363c12d61c48e1cf41d3e0e977f",
+          "35c354ea3898aeff24f60ccfaadf2499b249a8216fa2673a0139a5caa16a6d2c",
+          "41c011aa1c080ddbe911939191de40d656cd685a63e0dad0f7a38bc38b95e846",
+          "5bb0a9b650a04824fc7f19dd83735a0d93ba1aa0572c760d2da3877f571a77ab",
+          "5d6f637190a1253037ab33019ef7d3bf8c6aa7ba2123d396a097fc51edbac7d9",
+          "5f457e856c622a2e8f694348d10afc329f20f483d0021e693a44af40209e935c",
+          "5fd9d86d5101b14ce8fdd09700b11fdb9e8d37e82539321af3d573caec5364cd",
+          "6009bfd36c5686fde028ddeb4fed219c192088c8657b9c2946874230cdd5cd5d",
+          "6577cf98b01111d20a38e023a11da1b02a173c6d8773c976639eb33afb21ddb2",
+          "726a78f7e6d2ea88d9e444b42db11b78896c0f7f1957f375c0bd9318aff3f4b7",
+          "7ca00968690767a8b10bd8139ae97b91eb2433b61eccab38ef4ac94516b32548",
+          "7fe2e675f448f03769c5b5c71def68c53e25ad59765d0c184caee200d186a254",
+          "8257fb7dcfadd19b8305a482fe57440372c3e0e41ffff1290fdb58364652e624",
+          "85546358a6c0b51f7f8fddd83d1de9503dd3ffa8e4e0aa9bfdeb6780c6a023f5",
+          "884b67d5e26f293f07a456a4e0e07b86931725b8a69f7081770b1fc4d07b88bc",
+          "a5f33ad6db729e4cc8b1defe48517bc1a1d31a9dbf3456d6bd6020270f7093d4",
+          "b83018e54c0d1fd47183bc9850a76a07a717b83efd2b6f2fe456d66e7e46fc84",
+          "c9fc0d38a8acf66e8f6dc2fb1b2861897ec90b37781aa452e317addcf671b76d",
+          "e48f0692b6b264debf5b535fa6021023cfec2ffc455d8e9a2586f9faad08ebaa",
+          "e9a03c0ae446bd70376475cd26d134b3875f2de889ab5ce6cf6bf5c23ad41c6b",
+          "ec9d87ac2ea04148e093d25be2d55da596f03c396e3d296903a3005e470f4dfb",
+          "ef52915d5887d70f63c7ed33a38837faa8daf65b9fb16ea366658eb5dc88c794",
+          "f25063c4b3543f8e8674eea124c95976fdc0b0a1962f26ced3649c9ff5a44c37",
+          "fe63651df057433d129f6552628b2acbcd3dc9b71ad2fb9aec3e4236373c0c06"
+        ]
+      }
+    ],
+    "split": [
+      {
+        "directory": "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/candidates/split-0",
+        "manifest_sha256": "e748fb6f090057ef6c88670bb1a135c379eb202865ec30b60ca66a27b39d3ed8",
+        "roots": [
+          "006b493b63022c2230ae4bd753849de9a9b8ee203b2012ca96c2d369ba908d6b",
+          "040792978942a213bda6e9f1dc521057565973a36b3ec2c4b6cbf00a819d0fbb",
+          "167f9e6d198f73238824d968eca1b3a2808dbaf5d2d3b9a864cc136bb7af2a3e",
+          "1954b51669e6ea2294fab1e522c3e127577b4ffac1d23a8976fc9e0b46b8adde",
+          "254d4e0ea0ca09faf51aac3dd3e7d80be3ce9a2204a5dcbec8497d41907e1cd7",
+          "2c557e65e8cde98d832d0503c1c36238e6a7fed628fa1b9afd34c98b0610d92b",
+          "35c354ea3898aeff24f60ccfaadf2499b249a8216fa2673a0139a5caa16a6d2c",
+          "41c011aa1c080ddbe911939191de40d656cd685a63e0dad0f7a38bc38b95e846",
+          "6009bfd36c5686fde028ddeb4fed219c192088c8657b9c2946874230cdd5cd5d",
+          "7ca00968690767a8b10bd8139ae97b91eb2433b61eccab38ef4ac94516b32548",
+          "8257fb7dcfadd19b8305a482fe57440372c3e0e41ffff1290fdb58364652e624",
+          "a5f33ad6db729e4cc8b1defe48517bc1a1d31a9dbf3456d6bd6020270f7093d4",
+          "c9fc0d38a8acf66e8f6dc2fb1b2861897ec90b37781aa452e317addcf671b76d",
+          "e48f0692b6b264debf5b535fa6021023cfec2ffc455d8e9a2586f9faad08ebaa",
+          "f25063c4b3543f8e8674eea124c95976fdc0b0a1962f26ced3649c9ff5a44c37"
+        ]
+      },
+      {
+        "directory": "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001/candidates/split-1",
+        "manifest_sha256": "ff61674d9344761b2ed988dbe52daa071a4dbaa74a02b4c85575ef2a605d2a58",
+        "roots": [
+          "006b493b63022c2230ae4bd753849de9a9b8ee203b2012ca96c2d369ba908d6b",
+          "040792978942a213bda6e9f1dc521057565973a36b3ec2c4b6cbf00a819d0fbb",
+          "167f9e6d198f73238824d968eca1b3a2808dbaf5d2d3b9a864cc136bb7af2a3e",
+          "1954b51669e6ea2294fab1e522c3e127577b4ffac1d23a8976fc9e0b46b8adde",
+          "254d4e0ea0ca09faf51aac3dd3e7d80be3ce9a2204a5dcbec8497d41907e1cd7",
+          "2c557e65e8cde98d832d0503c1c36238e6a7fed628fa1b9afd34c98b0610d92b",
+          "314f6f0778873d3b0de7f16fe1d4d5bd47e35363c12d61c48e1cf41d3e0e977f",
+          "35c354ea3898aeff24f60ccfaadf2499b249a8216fa2673a0139a5caa16a6d2c",
+          "41c011aa1c080ddbe911939191de40d656cd685a63e0dad0f7a38bc38b95e846",
+          "5bb0a9b650a04824fc7f19dd83735a0d93ba1aa0572c760d2da3877f571a77ab",
+          "5d6f637190a1253037ab33019ef7d3bf8c6aa7ba2123d396a097fc51edbac7d9",
+          "5f457e856c622a2e8f694348d10afc329f20f483d0021e693a44af40209e935c",
+          "5fd9d86d5101b14ce8fdd09700b11fdb9e8d37e82539321af3d573caec5364cd",
+          "6009bfd36c5686fde028ddeb4fed219c192088c8657b9c2946874230cdd5cd5d",
+          "6577cf98b01111d20a38e023a11da1b02a173c6d8773c976639eb33afb21ddb2",
+          "726a78f7e6d2ea88d9e444b42db11b78896c0f7f1957f375c0bd9318aff3f4b7",
+          "7ca00968690767a8b10bd8139ae97b91eb2433b61eccab38ef4ac94516b32548",
+          "7fe2e675f448f03769c5b5c71def68c53e25ad59765d0c184caee200d186a254",
+          "8257fb7dcfadd19b8305a482fe57440372c3e0e41ffff1290fdb58364652e624",
+          "85546358a6c0b51f7f8fddd83d1de9503dd3ffa8e4e0aa9bfdeb6780c6a023f5",
+          "884b67d5e26f293f07a456a4e0e07b86931725b8a69f7081770b1fc4d07b88bc",
+          "a5f33ad6db729e4cc8b1defe48517bc1a1d31a9dbf3456d6bd6020270f7093d4",
+          "b83018e54c0d1fd47183bc9850a76a07a717b83efd2b6f2fe456d66e7e46fc84",
+          "c9fc0d38a8acf66e8f6dc2fb1b2861897ec90b37781aa452e317addcf671b76d",
+          "e48f0692b6b264debf5b535fa6021023cfec2ffc455d8e9a2586f9faad08ebaa",
+          "e9a03c0ae446bd70376475cd26d134b3875f2de889ab5ce6cf6bf5c23ad41c6b",
+          "ec9d87ac2ea04148e093d25be2d55da596f03c396e3d296903a3005e470f4dfb",
+          "ef52915d5887d70f63c7ed33a38837faa8daf65b9fb16ea366658eb5dc88c794",
+          "f25063c4b3543f8e8674eea124c95976fdc0b0a1962f26ced3649c9ff5a44c37",
+          "fe63651df057433d129f6552628b2acbcd3dc9b71ad2fb9aec3e4236373c0c06"
+        ]
+      }
+    ]
+  },
+  "work": {
+    "nochange": {
+      "input_tokens": 0,
+      "model_forwards": 0,
+      "supervised_tokens": 0,
+      "training_seconds": 0
+    },
+    "single": {
+      "input_tokens": 26736,
+      "model_forwards": 480,
+      "supervised_tokens": 992,
+      "training_seconds": 255.06161428900305
+    },
+    "split": {
+      "input_tokens": 26736,
+      "model_forwards": 480,
+      "supervised_tokens": 992,
+      "training_seconds": 250.13149582999904
+    }
+  }
+}

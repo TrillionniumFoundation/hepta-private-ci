@@ -1,0 +1,18 @@
+Direct unittest output; full growth suite plus focused RSS portability regression.
+Discovery: scripts/memory_cell_growth/test_growth.py
+Source manifest before: 6796881b03333937f97f10b49929c678c02e048cd031e0c37b748694e1971abf
+test_rss_units_and_unavailable_measurements_are_explicit (test_growth.GrowthCostTests.test_rss_units_and_unavailable_measurements_are_explicit) ... ok
+test_actual_arrivals_preserve_ancestry_and_execute_closed_fresh_readers (test_growth.GrowthDecoderTests.test_actual_arrivals_preserve_ancestry_and_execute_closed_fresh_readers) ... `torch_dtype` is deprecated! Use `dtype` instead!
+ok
+test_new_sources_must_be_distinct_and_rejected_before_any_model_call (test_growth.GrowthDecoderTests.test_new_sources_must_be_distinct_and_rejected_before_any_model_call) ... ok
+test_revoked_old_or_new_sources_are_rejected_before_model_load_or_fit (test_growth.GrowthDecoderTests.test_revoked_old_or_new_sources_are_rejected_before_model_load_or_fit) ... ok
+test_ties_keep_parent_and_split_requires_two_over_eligible_cheaper (test_growth.GrowthPolicyTests.test_ties_keep_parent_and_split_requires_two_over_eligible_cheaper) ... ok
+test_unmatched_costs_nonboolean_or_final_scores_are_rejected (test_growth.GrowthPolicyTests.test_unmatched_costs_nonboolean_or_final_scores_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 24.289s
+
+OK
+Source manifest after: 6796881b03333937f97f10b49929c678c02e048cd031e0c37b748694e1971abf
+Source identity unchanged: True
+Exit code: 0

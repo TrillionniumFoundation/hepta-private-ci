@@ -1,0 +1,24 @@
+{
+  "command": [
+    "/workspace/scratch/1d69f04ee9f4/parametric-venv/bin/python",
+    "-B",
+    "scripts/memory_cell_growth/growth_trial.py",
+    "--model",
+    "/tmp/hepta-parametric-smol135m",
+    "--parent",
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/confirmation-001/lifecycle/rebuilt-cell",
+    "--source-facts",
+    "scripts/memory_cell_growth/fixtures/clean-replay-facts.json",
+    "--output",
+    "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001"
+  ],
+  "completed_at_utc": "2026-10-23T08:02:31.890116+00:00",
+  "exit_code": 0,
+  "model_run_attempt": 1,
+  "output": "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001",
+  "recipe_overrides": false,
+  "schema": "hepta.parametric-memory.arrival-execution.v1",
+  "source_head": "2b42a265e51ad2ac0d2127e8f6b81cc4fa4d1b3b",
+  "started_at_utc": "2026-10-23T07:52:21.349143+00:00",
+  "wall_seconds": 610.5409757000016
+}

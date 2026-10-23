@@ -1,0 +1,96 @@
+{
+  "all_blockers_closed": false,
+  "claim_scope": "Synthetic trained-fact recall with wording held out, pinned local source authority and declared relation routing.",
+  "closed_bounded_engineering": [
+    {
+      "evidence": "selection/tie-regression-before.txt and evolution-regression-after.txt",
+      "id": "continuation-on-quality-tie",
+      "resolution": "Strict source-selection improvement is now required; tie retains parent.",
+      "status": "closed_in_published_source_and_local_validation"
+    },
+    {
+      "evidence": "hardening/before.json and after.json",
+      "id": "withdrawal-during-checkpoint-validation",
+      "resolution": "Repeat frontier/version admission after checkpoint verification and before callback; post-admission in-flight result remains checked afterward.",
+      "status": "closed_in_published_source_and_local_validation"
+    },
+    {
+      "evidence": "hardening/focused-tests.log",
+      "id": "blocking-special-file-read",
+      "resolution": "Bounded regular-file and descriptor identity checks with conditional nofollow/nonblocking flags.",
+      "status": "closed_in_published_source_and_local_validation"
+    },
+    {
+      "evidence": "review/growth-review.json",
+      "id": "retired-growth-parent",
+      "resolution": "Pinned actual clean replay after withdrawal, with exact15-source digest and no revoked ancestry.",
+      "status": "closed_in_published_source_and_local_validation"
+    },
+    {
+      "evidence": "growth6 direct test log",
+      "id": "growth-cost-portability",
+      "resolution": "Correct Linux/Darwin RSS units and unavailable null on unsupported platforms.",
+      "status": "closed_in_published_source_and_local_validation"
+    },
+    {
+      "evidence": "source-reconciliation-before-run.json",
+      "id": "ambiguous-execution-source",
+      "resolution": "Published17 changed blobs verified before local HEAD reconciliation; main run uses frozen2b42a265.",
+      "status": "closed_in_published_source_and_local_validation"
+    },
+    {
+      "evidence": "growth-confirmation-001/result.json",
+      "id": "bounded-sequential-arrival",
+      "resolution": "Main exit0, all11 gates pass, selected old15/15 and new15/15; split supplies no extra gain.",
+      "status": "closed_for_this_fixed_cohort"
+    },
+    {
+      "evidence": "engineering/review/growth-audit-execution.json",
+      "id": "independent-raw-audit",
+      "resolution": "Prepared audit ran once unchanged;75 checks passed; no model calls or source edits.",
+      "status": "closed_for_actual_completed_artifacts"
+    }
+  ],
+  "code_head": "2b42a265e51ad2ac0d2127e8f6b81cc4fa4d1b3b",
+  "merge_ready": false,
+  "open_execution_blockers": [
+    {
+      "critical_run_ids": [
+        39920456698,
+        39912356783,
+        39912691480,
+        39916012060,
+        39912660973
+      ],
+      "id": "remote-ci",
+      "latest_complete_stack_snapshot": "engineering/ci/remote-ci-stack-075339Z.json",
+      "latest_critical_snapshot": "engineering/ci/remote-ci-critical-080619Z.json",
+      "required_closure": "Actual required jobs execute and pass on the expected PR heads; skipped is not passed.",
+      "resolution_owner": "existing authorized automated CI follow-up",
+      "status": "queued_or_pending_without_execution",
+      "workaround_taken": false
+    }
+  ],
+  "production_accepted": false,
+  "schema": "hepta.parametric-memory.growth-blocker-register.v1",
+  "selected_arm": "single",
+  "split_benefit_on_this_cohort": false,
+  "unproven_research": [
+    {
+      "gate": "Measure total active and retained bytes, source/replay cost, base amortization and task quality against real retrieval/exact stores at scale.",
+      "id": "compression-advantage"
+    },
+    {
+      "gate": "Demonstrate repeatable benefit under a learned/discovered partition and resource budget, beyond fixed color/shape routing.",
+      "id": "autonomous-specialization-and-routing"
+    },
+    {
+      "gate": "Generalize to heterogeneous factual/episodic/procedural memories, updates, time and out-of-distribution tasks with stable lifecycle controls.",
+      "id": "general-memory"
+    },
+    {
+      "gate": "Live authenticated external source frontier and production authorization; this run uses a pinned local snapshot.",
+      "id": "production-source-authority"
+    }
+  ]
+}

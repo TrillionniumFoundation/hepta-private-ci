@@ -1,0 +1,338 @@
+"""Independent stdlib readback of one frozen arrival run; never invokes a model."""
+
+import argparse
+from collections import Counter
+from datetime import datetime, timezone
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import random
+import sqlite3
+import stat
+import subprocess
+import sys
+
+
+HEAD = "2b42a265e51ad2ac0d2127e8f6b81cc4fa4d1b3b"
+PARENT = "c273d4555cc0dbb105fc38a674ac6963a43cf48c58d9fced6a38e373759c2e05"
+SOURCE = "1e2ee44982654500732596e6d41e4f7222702ce3b187f2eb1fced0c24afd70ce"
+PROVENANCE = "ac920436b96e5dd9e2646add53db932d63b8d0f890a9675c9eca1beb587f430d"
+SOURCE_MANIFEST = "e27a70e290273ac321827e76c51143d59a4a869f655159c7fb2efa7a2041e3e9"
+ARMS = ("nochange", "single", "split")
+SHAPES = ["circle", "square", "triangle", "oval", "star", "cube", "sphere", "cone"]
+TRAIN = ["What is {entity}'s {relation}?", "Recall the {relation} assigned to {entity}.",
+         "{entity} has which {relation}?", "Return {entity}'s {relation}."]
+SELECT = "State the {relation} for {entity}."
+FINAL = "Which {relation} did we assign to {entity}?"
+RULE = ("Preserve every parent-correct old item; single needs at least one extra "
+        "correct source selection answer over nochange; split needs at least two "
+        "over the best eligible cheaper arm; ties retain the cheaper/nochange arm.")
+EXPECTED_PROTOCOL = {
+    "schema": "hepta.parametric-memory.arrival-protocol.v1",
+    "parent_manifest_sha256": PARENT, "parent_source_file_sha256": SOURCE,
+    "parent_provenance_file_sha256": PROVENANCE,
+    "old_count": 15, "incoming_count": 15, "incoming_relation": "shape",
+    "shape_vocabulary": SHAPES, "shape_seed": 718203,
+    "shape_assignment": "duplicate vocabulary, shuffle once, then retain first 15",
+    "rank": 8, "model_seed": 2718, "learning_rate": 0.001,
+    "single_steps": 480, "split_steps_per_cell": 240,
+    "train_templates": TRAIN, "selection_template": SELECT, "final_template": FINAL,
+    "selection_rule": RULE, "single_minimum_selection_gain": 1,
+    "split_minimum_gain_over_eligible_cheaper": 2,
+    "selected_old_recall_minimum": 0.75, "selected_new_recall_minimum": 0.75,
+    "old_parent_correct_items_must_be_preserved": True,
+    "matched_parameter_budget_claimed": False,
+    "typed_namespace_router": {"color": 0, "shape": 1},
+    "source_frontier_epoch": 1, "live_external_frontier_claimed": False,
+    "production_accepted": False,
+}
+WIDTHS = {"F32": (4, "torch.float32"), "F16": (2, "torch.float16"),
+          "BF16": (2, "torch.bfloat16"), "F64": (8, "torch.float64")}
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def digest(value):
+    return sha(json.dumps(value, sort_keys=True, ensure_ascii=False,
+                          separators=(",", ":"), allow_nan=False).encode())
+
+
+def no_duplicates(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate JSON key: " + key)
+        result[key] = value
+    return result
+
+
+def parse(raw):
+    def invalid(value):
+        raise ValueError("nonfinite JSON constant: " + value)
+    return json.loads(raw, object_pairs_hook=no_duplicates, parse_constant=invalid)
+
+
+class Audit:
+    def __init__(self):
+        self.checks, self.files = [], {}
+
+    def check(self, name, passed, **detail):
+        self.checks.append({"name": name, "passed": bool(passed), **detail})
+        return bool(passed)
+
+    def read(self, path, limit=64 * 1024 * 1024):
+        path = Path(path).absolute()
+        before = path.lstat()
+        if not stat.S_ISREG(before.st_mode) or not 0 < before.st_size <= limit:
+            raise ValueError("bounded regular audit input required: " + str(path))
+        with path.open("rb") as stream:
+            raw = stream.read(limit + 1)
+        after = path.stat()
+        if len(raw) != before.st_size or (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns):
+            raise ValueError("audit input changed while reading: " + str(path))
+        entry = {"sha256": sha(raw), "bytes": len(raw), "mtime_ns": before.st_mtime_ns}
+        if str(path) in self.files and self.files[str(path)] != entry:
+            raise ValueError("audit input changed between reads: " + str(path))
+        self.files[str(path)] = entry
+        return raw
+
+    def json(self, path):
+        return parse(self.read(path, 4 * 1024 * 1024))
+
+    def inventory(self, directory):
+        result = {}
+        for path in sorted(Path(directory).rglob("*")):
+            if path.is_file() and ".cache" not in path.relative_to(directory).parts:
+                raw = self.read(path)
+                result[str(path.relative_to(directory))] = {"sha256": sha(raw), "bytes": len(raw)}
+        if not 1 <= len(result) <= 64:
+            raise ValueError("checkpoint inventory bound")
+        return result
+
+    def checkpoint(self, directory, expected, label):
+        directory = Path(directory)
+        raw = self.read(directory / "lineage.json")
+        manifest = parse(raw)
+        config = self.read(directory / "adapter_config.json")
+        tensor = self.read(directory / "adapter_model.safetensors")
+        self.check(label + ": manifest/config/tensor pins", sha(raw) == expected and sha(config) == manifest["config_sha256"] and sha(tensor) == manifest["adapter_sha256"])
+        header_len = int.from_bytes(tensor[:8], "little")
+        if not 1 <= header_len <= 1024 * 1024 or 8 + header_len >= len(tensor):
+            raise ValueError("safetensors header bound")
+        header, payload = parse(tensor[8:8 + header_len]), memoryview(tensor)[8 + header_len:]
+        layout, ranges, count, total = {}, [], 0, 0
+        state, raw_state = hashlib.sha256(), hashlib.sha256()
+        for name, metadata in sorted(header.items()):
+            if name == "__metadata__":
+                continue
+            width, dtype = WIDTHS[metadata["dtype"]]
+            shape, (start, end) = metadata["shape"], metadata["data_offsets"]
+            if any(type(v) is not int or v < 1 for v in shape) or end - start != math.prod(shape) * width or not 0 <= start < end <= len(payload):
+                raise ValueError("invalid tensor shape/offset")
+            value = payload[start:end]
+            layout[name] = {"dtype": dtype, "shape": shape}
+            ranges.append((start, end))
+            count, total = count + math.prod(shape), total + end - start
+            state.update(digest([name, shape, dtype]).encode())
+            state.update(value)
+            raw_state.update(name.encode())
+            raw_state.update(value)
+        cursor = 0
+        for start, end in sorted(ranges):
+            if start != cursor:
+                raise ValueError("tensor payload gaps/overlap")
+            cursor = end
+        training = manifest["training"]
+        self.check(label + ": actual tensor layout and private bytes", layout == manifest["tensor_layout"] and cursor == len(payload) == total and training["parameter_bytes"] == total and training["trainable_parameters"] == count)
+        self.check(label + ": actual adapter state digest", state.hexdigest() == training["adapter_state_sha256"])
+        return {"directory": str(directory.resolve()), "manifest": manifest,
+                "inventory": self.inventory(directory), "parameter_bytes": total,
+                "parameters": count, "adapter_state_sha256": state.hexdigest(),
+                "raw_tensor_state_sha256": raw_state.hexdigest()}
+
+
+def score(rows, facts):
+    if len(rows) != len(facts):
+        raise ValueError("incomplete journal")
+    correct = sum(row["text"] == fact["value"] for row, fact in zip(rows, facts, strict=True))
+    return {"correct": correct, "total": len(facts), "exact_match": correct / len(facts)}
+
+
+def run_audit(a, args):
+    root, repo = args.run.resolve(), args.repo.resolve()
+    witness = a.json(args.witness)
+    parent_witness = a.json(args.parent_witness)
+    protocol = a.json(root / "protocol.json")
+    before, after = a.json(root / "source-identity.json"), a.json(root / "source-identity-after.json")
+    candidates = a.json(root / "candidates/precommitted-selection.json")
+    readout, result = a.json(root / "final/result.json"), a.json(root / "result.json")
+    a.check("protocol equals independently registered fixed recipe", protocol == EXPECTED_PROTOCOL)
+    a.check("protocol and source identity match pre-output witness", all(a.files[str(root / name)]["sha256"] == record["sha256"] for name, record in witness["captured_inputs"].items()))
+    a.check("independent witness preceded selection and final workers", witness["final_result_existed"] is False and witness["precommitted_selection_existed"] is False and witness["final_worker_request_files_existing"] == [])
+    a.check("source identity before equals after with frozen HEAD", before == after and before["git_head"] == HEAD and before["source_manifest_sha256"] == SOURCE_MANIFEST == digest(before["files_sha256"]))
+    tree = subprocess.check_output(["git", "ls-tree", "-r", "--name-only", HEAD, "--", "scripts/memory_cell", "scripts/memory_cell_catalog", "scripts/memory_cell_growth"], cwd=repo, text=True).splitlines()
+    expected_paths = {path.removeprefix("scripts/") for path in tree if (len(Path(path).parts) == 3 and path.endswith(".py")) or (path.startswith("scripts/memory_cell_growth/fixtures/") and path.endswith(".json"))}
+    a.check("source inventory is complete for registered source directories", set(before["files_sha256"]) == expected_paths)
+    git_files_match = True
+    for relative, expected in before["files_sha256"].items():
+        blob = subprocess.check_output(["git", "show", HEAD + ":scripts/" + relative], cwd=repo)
+        git_files_match &= sha(blob) == expected == sha(a.read(repo / "scripts" / relative))
+    a.check("every recorded source byte matches frozen commit and current file", git_files_match)
+    fixture = repo / "scripts/memory_cell_growth/fixtures"
+    old_raw, provenance_raw = a.read(fixture / "clean-replay-facts.json"), a.read(fixture / "parent-provenance.json")
+    old, provenance = parse(old_raw), parse(provenance_raw)
+    a.check("independent source/provenance fixture pins", sha(old_raw) == SOURCE and sha(provenance_raw) == PROVENANCE)
+    a.check("run provenance matches pinned fixture", a.json(root / "parent-provenance.json") == provenance)
+    frontier = {"scope": provenance["scope"], "epoch": 1, "revoked": sorted(provenance["revoked"])}
+    a.check("all published frontiers match pinned withdrawal view", all(value == frontier for value in (a.json(root / "source-frontier.json"), candidates["source_frontier"], readout["source_frontier"], result["source_frontier"], a.json(root / "final/owner-frontier.json"))))
+    values = SHAPES * 2
+    random.Random(718203).shuffle(values)
+    incoming = []
+    for fact, value in zip(old, values[:15], strict=True):
+        row = {"scope": fact["scope"], "entity": fact["entity"], "relation": "shape", "value": value}
+        incoming.append(row | {"source_digest": digest(["hepta.parametric.shape-arrival.v1", row])})
+    facts, revoked = old + incoming, set(frontier["revoked"])
+    old_roots, all_roots = {row["source_digest"] for row in old}, {row["source_digest"] for row in old + incoming}
+    a.check("actual facts equal pinned old cohort plus fixed incoming shuffle", len(old) == 15 and all(row["entity"] != "Alice" for row in old) and a.json(root / "source-facts.json") == facts and len(all_roots) == 30 and not all_roots & revoked)
+    parent_dir = Path(candidates["versions"]["nochange"][0]["directory"])
+    a.check("actual parent matches independently witnessed parent directory", parent_dir.resolve() == Path(parent_witness["parent_directory"]).resolve())
+    parent = a.checkpoint(parent_dir, PARENT, "parent")
+    pm = parent["manifest"]
+    a.check("full parent inventory unchanged from independent witness", parent["inventory"] == parent_witness["inventory"])
+    a.check("clean parent lineage excludes retired and revoked ancestors", set(pm["roots"]) == old_roots and not old_roots & revoked and pm["training"]["initialization"] == "frozen_base" and pm["training"]["learned_parent_manifest_sha256"] is None and pm["training"]["inherited_roots"] == [] and pm["training"]["source_facts_sha256"] == digest(old))
+    checkpoints, receipts, measured_costs = {"nochange-0": parent}, {}, {}
+    for arm in ARMS:
+        expected_slots = 2 if arm == "split" else 1
+        a.check(arm + ": exact candidate count", len(candidates["versions"][arm]) == expected_slots)
+        for slot, version in enumerate(candidates["versions"][arm]):
+            label = f"{arm}-{slot}"
+            subset = facts if arm == "single" else old if slot == 0 else incoming
+            roots = all_roots if arm == "single" or arm == "split" and slot == 1 else old_roots
+            if arm != "nochange":
+                directory = root / "candidates" / label
+                a.check(label + ": fixed checkpoint path", Path(version["directory"]).resolve() == directory.resolve())
+                checkpoints[label] = a.checkpoint(directory, version["manifest_sha256"], label)
+                receipt = a.json(root / "candidates" / (label + ".write.json"))
+                receipts[label] = receipt
+                steps, n_examples = (480 if arm == "single" else 240), len(subset) * 4
+                schedule = []
+                for epoch in range(steps // n_examples):
+                    order = list(range(n_examples))
+                    random.Random(2718 + epoch).shuffle(order)
+                    schedule.extend(order)
+                visits = Counter(receipt["schedule_indices"])
+                fact_visits = Counter(i // 4 for i in receipt["schedule_indices"])
+                a.check(label + ": actual schedule and exact exposure", receipt["steps"] == steps == len(receipt["losses"]) == len(receipt["schedule_indices"]) and receipt["schedule_indices"] == schedule and receipt["schedule_sha256"] == digest(schedule) and receipt["example_visits"] == [visits[i] for i in range(n_examples)] == [4] * n_examples and receipt["fact_visits"] == [fact_visits[i] for i in range(len(subset))] == [16] * len(subset))
+                a.check(label + ": source-only measured warm-parent write", receipt == checkpoints[label]["manifest"]["training"] and receipt["source_facts_sha256"] == digest(subset) and receipt["source_digests"] == [row["source_digest"] for row in subset] and receipt["templates_sha256"] == digest(TRAIN) and receipt["objective"] == "completion_ce" and receipt["learning_rate"] == 0.001 and receipt["writer_seed"] == 2718 and receipt["evaluation_targets_used"] is False and receipt["base_unchanged"] is True and receipt["learned_parent_manifest_sha256"] == PARENT and receipt["starting_adapter_sha256"] == parent["adapter_state_sha256"] and set(receipt["inherited_roots"]) == old_roots and set(receipt["accessed_roots"]) == {row["source_digest"] for row in subset} and receipt["actual_model_forwards"] == steps and math.isfinite(receipt["adapter_delta_squared_norm"]) and receipt["adapter_delta_squared_norm"] > 0)
+            cp = checkpoints[label]
+            a.check(label + ": lineage and version roots disjoint from revocation", set(version["roots"]) == set(cp["manifest"]["roots"]) == roots and not roots & revoked and cp["manifest"]["base_identity"] == pm["base_identity"])
+        labels = [f"{arm}-{slot}" for slot in range(expected_slots)]
+        measured_costs[arm] = {"private_parameter_bytes": sum(checkpoints[label]["parameter_bytes"] for label in labels), "retained_checkpoint_bytes": sum(item["bytes"] for label in labels for item in checkpoints[label]["inventory"].values()), "optimizer_steps": sum(receipts[label]["steps"] for label in labels if label in receipts)}
+    a.check("all private parameter/checkpoint/update cost vectors exact", candidates["costs"] == measured_costs)
+    a.check("matched work with explicitly doubled split parameters", measured_costs["single"]["optimizer_steps"] == measured_costs["split"]["optimizer_steps"] == 480 and measured_costs["split"]["private_parameter_bytes"] == 2 * measured_costs["single"]["private_parameter_bytes"] == 2 * measured_costs["nochange"]["private_parameter_bytes"])
+    selection_rows = a.json(root / "candidates/source-selection-generations.json")
+    assessments, totals = {}, {}
+    for arm in ARMS:
+        rows = selection_rows[arm]
+        a.check(arm + ": source selection wording and complete rows", len(rows) == 30 and [row["question"] for row in rows] == [SELECT.format(**fact) for fact in facts])
+        correct = [row["text"] == fact["value"] for row, fact in zip(rows, facts, strict=True)]
+        assessments[arm] = {"old": correct[:15], "new": correct[15:]}
+        totals[arm] = sum(correct)
+    preserved = {arm: all(not x or y for x, y in zip(assessments["nochange"]["old"], assessments[arm]["old"], strict=True)) for arm in ARMS}
+    single = preserved["single"] and totals["single"] >= totals["nochange"] + 1
+    cheaper = "single" if single else "nochange"
+    split = preserved["split"] and totals["split"] >= totals[cheaper] + 2
+    chosen = "split" if split else cheaper
+    expected_selection = {"schema": "hepta.parametric-memory.growth-selection.v1", "chosen_arm": chosen, "rule": RULE, "source_correct_counts": totals, "parent_correct_old_preserved": preserved, "single_eligible": single, "split_eligible": split, "best_eligible_cheaper_arm": cheaper, "selected_cost": measured_costs[chosen], "additional_private_bytes_over_parent": measured_costs[chosen]["private_parameter_bytes"] - measured_costs["nochange"]["private_parameter_bytes"], "final_scores_used": False, "price_utility_claimed": False, "production_accepted": False}
+    a.check("source choice independently recomputed without final scores", assessments == candidates["source_assessments"] and candidates["selection"] == result["selection"] == expected_selection and readout["chosen_before_final_read"] == chosen)
+    request_fields = {"model", "snapshot", "manifest_sha256", "scope", "allowed_roots", "questions", "rank", "seed", "control"}
+    final_rows = {arm: [None] * 30 for arm in ARMS}
+    expected_calls = [("nochange", 0), ("single", 0), ("split", 0), ("split", 1)]
+    a.check("exact four fresh worker requests and journals", {p.name for p in (root / "final").glob("*.request.json")} == {f"{arm}-{slot}.request.json" for arm, slot in expected_calls} and {p.name for p in (root / "final").glob("*.journal.json")} == {f"{arm}-{slot}.journal.json" for arm, slot in expected_calls})
+    a.check("exact four routed calls", [(call["arm"], call["slot"]) for call in readout["routed_calls"]] == expected_calls and readout["fresh_worker_processes"] == result["fresh_worker_processes"] == 4)
+    for (arm, slot), call in zip(expected_calls, readout["routed_calls"], strict=True):
+        label, cp = f"{arm}-{slot}", checkpoints[f"{arm}-{slot}"]
+        request = a.json(root / "final" / (label + ".request.json"))
+        journal = a.json(root / "final" / (label + ".journal.json"))
+        indices = list(range(15, 30)) if arm == "split" and slot == 1 else list(range(15)) if arm == "split" else list(range(30))
+        expected_questions = [FINAL.format(**facts[i]) for i in indices]
+        a.check(label + ": closed worker input contains only keys/weights/questions", set(request) == request_fields and request["questions"] == expected_questions and request["scope"] == frontier["scope"] and request["allowed_roots"] == sorted(cp["manifest"]["roots"]) and Path(request["snapshot"]).resolve() == Path(cp["directory"]) and request["manifest_sha256"] == candidates["versions"][arm][slot]["manifest_sha256"] and request["rank"] == 8 and request["seed"] == 2718 and request["control"] == "adapter")
+        a.check(label + ": journal bound to actual request and tensor bytes", journal["request_sha256"] == sha(json.dumps(request, sort_keys=True).encode()) and journal["actual_adapter_tensor_sha256"] == cp["raw_tensor_state_sha256"] and journal["admitted_adapter_state_sha256"] == journal["consumed_adapter_state_sha256"] == cp["adapter_state_sha256"] and journal["control"] == "adapter" and journal["fact_input"] is False and journal["retrieval_input"] is False and journal["answer_lexicon_input"] is False)
+        a.check(label + ": ordered unmodified raw generations", len(journal["rows"]) == len(indices) and [row["question"] for row in journal["rows"]] == expected_questions and all(row["answer_postprocessed"] is False and row["evidence"] == [] and row["adapter_enabled"] is True and 1 <= len(row["token_ids"]) <= 16 for row in journal["rows"]))
+        a.check(label + ": admitted routing and unwritten diagnostic scope", call["query_indices"] == indices and call["manifest_sha256"] == request["manifest_sha256"] and call["owner_admitted_before_and_after"] is True and call["unwritten_diagnostic_indices"] == (list(range(15, 30)) if arm == "nochange" else []))
+        for index, row in zip(indices, journal["rows"], strict=True):
+            final_rows[arm][index] = row
+    selection_mtime = a.files[str(root / "candidates/precommitted-selection.json")]["mtime_ns"]
+    a.check("selection file predates every final worker request", all(selection_mtime <= a.files[str(root / "final" / f"{arm}-{slot}.request.json")]["mtime_ns"] for arm, slot in expected_calls))
+    metrics = {arm: {"old": score(rows[:15], old), "new": score(rows[15:], incoming), "all": score(rows, facts)} for arm, rows in final_rows.items()}
+    a.check("all final old/new/all recalls recomputed exactly", metrics == readout["metrics"] == result["metrics"])
+    retained = all(parent_row["text"] != fact["value"] or selected_row["text"] == fact["value"] for parent_row, selected_row, fact in zip(final_rows["nochange"][:15], final_rows[chosen][:15], old, strict=True))
+    database = root / "final/owner.sqlite3"
+    with sqlite3.connect(database.as_uri() + "?mode=ro", uri=True) as connection:
+        db_frontiers = connection.execute("SELECT scope,value FROM frontiers").fetchall()
+        db_cells = connection.execute("SELECT scope,cell,value FROM cells").fetchall()
+    active = {row["cell_id"]: row for row in readout["active_versions"]}
+    a.check("durable owner frontier and four activated versions", len(db_frontiers) == 1 and db_frontiers[0][0] == frontier["scope"] and parse(db_frontiers[0][1]) == frontier and len(db_cells) == 4 and all(scope == frontier["scope"] and parse(value) == active[cell] for scope, cell, value in db_cells))
+    a.check("owner active metadata binds every actual worker checkpoint", set(active) == set(checkpoints) and all(row["manifest_sha256"] == candidates["versions"][label.rsplit('-', 1)[0]][int(label.rsplit('-', 1)[1])]["manifest_sha256"] and row["roots"] == sorted(checkpoints[label]["manifest"]["roots"]) and Path(row["directory"]).resolve() == Path(checkpoints[label]["directory"]) for label, row in active.items()))
+    baseline = a.json(root / "sqlite-baseline.json")
+    independent_gates = {"selected_old_recall": metrics[chosen]["old"]["exact_match"] >= 0.75, "selected_new_recall": metrics[chosen]["new"]["exact_match"] >= 0.75, "selected_preserves_parent_correct_old": retained, "parent_unchanged": parent["inventory"] == parent_witness["inventory"], "matched_training_steps": measured_costs["single"]["optimizer_steps"] == measured_costs["split"]["optimizer_steps"], "revoked_ancestry_disjoint": all(not set(cp["manifest"]["roots"]) & revoked for cp in checkpoints.values()), "final_owner_admission": all(call["owner_admitted_before_and_after"] for call in readout["routed_calls"]), "selection_preceded_final_reads": readout["chosen_before_final_read"] == chosen, "selection_bytes_unchanged": result["gates"]["selection_bytes_unchanged"], "source_identity_unchanged": before == after, "sqlite_exact_recall": score(baseline["rows"], facts)["exact_match"] == 1}
+    a.check("reported gate values equal raw-evidence recomputation", independent_gates == result["gates"] and result["bounded_arrival_gate_passed"] == all(independent_gates.values()))
+    a.check("negative or positive outcome retained with corresponding exit status", args.run_exit_code == (0 if all(independent_gates.values()) else 1))
+    cost = result["costs"]
+    acquisition = a.json(root / "model-acquisition.json")
+    a.check("reported storage and optimizer costs match physical artifacts", cost["incremental_experiment_training_steps"] == 960 and cost["selected_retained_cost"] == measured_costs[chosen] and cost["candidate_checkpoint_bytes"] == sum(measured_costs[arm]["retained_checkpoint_bytes"] for arm in ("single", "split")) and cost["source_ledger_bytes"] == (root / "source-facts.json").stat().st_size and cost["shared_base_disk_bytes"] == acquisition["total_bytes"] == sum(row["bytes"] for row in acquisition["files"]) and cost["owner_database_bytes"] == database.stat().st_size and cost["same_private_parameter_budget"] is False)
+    a.check("inherited parent costs agree with exact retained write receipt", cost["parent_historical_optimizer_steps"] == pm["training"]["steps"] == 512 and cost["parent_historical_input_tokens"] == pm["training"]["input_tokens"] and cost["parent_historical_training_seconds"] == pm["training"]["seconds"] and cost["upstream_original_and_correction_writes"] == {key: value for key, value in provenance["historical_writes"].items() if key != "clean_replay"})
+    a.check("all broader claims remain explicitly unaccepted", result["production_accepted"] is False and result["general_memory_proven"] is False and result["compression_advantage_proven"] is False and result["learned_routing_proven"] is False and result["new_relation_acquisition_not_new_architectural_cell_type"] is True and readout["frontier_is_pinned_local_snapshot"] is True)
+    return {"chosen_arm": chosen, "source_correct_counts": totals, "raw_final_metrics": metrics,
+            "measured_candidate_costs": measured_costs, "raw_gate_values": independent_gates,
+            "experiment_gate_passed": all(independent_gates.values()),
+            "failed_experiment_gates": [name for name, passed in independent_gates.items() if not passed],
+            "actual_run_exit_code": args.run_exit_code,
+            "source_manifest_sha256": before["source_manifest_sha256"],
+            "selection_artifact_sha256": a.files[str(root / "candidates/precommitted-selection.json")]["sha256"]}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--run", type=Path, required=True)
+    parser.add_argument("--repo", type=Path, required=True)
+    parser.add_argument("--witness", type=Path, required=True)
+    parser.add_argument("--parent-witness", type=Path, required=True)
+    parser.add_argument("--run-exit-code", type=int, choices=(0, 1), required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    audit, outcome = Audit(), None
+    try:
+        outcome = run_audit(audit, args)
+        changed = []
+        for path, entry in list(audit.files.items()):
+            raw = Path(path).read_bytes()
+            if sha(raw) != entry["sha256"] or len(raw) != entry["bytes"]:
+                changed.append(path)
+        audit.check("all consumed evidence bytes unchanged during audit", not changed, changed_paths=changed)
+    except Exception as error:
+        audit.check("audit completed without input/validation error", False, error_type=type(error).__name__, error=str(error))
+    result = {"schema": "hepta.parametric-memory.independent-raw-growth-audit.v1",
+              "audited_at_utc": datetime.now(timezone.utc).isoformat(),
+              "expected_git_head": HEAD, "audit_script_sha256": sha(Path(__file__).read_bytes()),
+              "audit_python": sys.version, "run_directory": str(args.run.resolve()),
+              "audit_passed": all(row["passed"] for row in audit.checks),
+              "check_count": len(audit.checks), "checks": audit.checks,
+              "outcome": outcome, "input_file_inventory": audit.files,
+              "limits": ["No model, optimizer, test suite, or production source was executed or modified by this audit.", "The source write is checked from retained measured receipts and tensor bytes, not independently replayed.", "Selection-byte preservation during final inference uses the reviewed frozen implementation's recorded check plus final file chronology; no external transaction trace exists.", "File timestamps and local witness are local observations, not an authenticated external clock.", "The frontier remains a pinned local snapshot; routing remains declared metadata; the result does not establish general memory or compression."],
+              "production_accepted": False}
+    with args.output.open("x", encoding="utf-8") as stream:
+        json.dump(result, stream, indent=2, sort_keys=True, allow_nan=False)
+        stream.write("\n")
+        stream.flush()
+        os.fsync(stream.fileno())
+    print(json.dumps({"output": str(args.output.resolve()), "sha256": sha(args.output.read_bytes()), "audit_passed": result["audit_passed"], "check_count": result["check_count"], "failed_checks": [row for row in audit.checks if not row["passed"]], "outcome": outcome}, indent=2))
+    raise SystemExit(0 if result["audit_passed"] else 1)
+
+
+if __name__ == "__main__":
+    main()

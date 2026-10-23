@@ -1,0 +1,51 @@
+{
+  "all_17_published_files_matched_before_index_change": true,
+  "clean_before_main_run": true,
+  "main_model_run_started": false,
+  "observed_at_utc": "2026-10-23T07:51:19.972630+00:00",
+  "prior_local_head": "cbd139ad7cfeaf0be226688f2475cdeb364aa3e1",
+  "published_execution_head": "2b42a265e51ad2ac0d2127e8f6b81cc4fa4d1b3b",
+  "schema": "hepta.parametric-memory.next-source-reconciliation.v1",
+  "stage_change_sizes": [
+    {
+      "changed_lines": 328,
+      "pr": 3430
+    },
+    {
+      "changed_lines": 367,
+      "pr": 3431
+    },
+    {
+      "changed_lines": 434,
+      "pr": 3432
+    },
+    {
+      "changed_lines": 403,
+      "pr": 3433
+    },
+    {
+      "changed_lines": 443,
+      "pr": 3434
+    }
+  ],
+  "tree": "78d3287f92f3abbca4843d746b975aed922c3d36",
+  "verified_exact_git_blobs": {
+    ".github/workflows/hepta-parametric-next-shadow.yml": "1aad52288604a046f0d364767786404e9af470b7",
+    "scripts/memory_cell/README.md": "11803ec5685413db46a1e502d306b91652bc688b",
+    "scripts/memory_cell/parametric_evolution.py": "3e1d74d0292cc8e49a3071f1495b105b007a624a",
+    "scripts/memory_cell/parametric_owner.py": "d70a0dbbee8c128b37311fc0c2a9a866f6e60cf9",
+    "scripts/memory_cell/tensor_contract.py": "882841c08da63668b8e116c1c671e7cd41566f19",
+    "scripts/memory_cell/test_parametric_evolution.py": "2bbb9e3fe17260662e2ce8e5e1059bae3ba196c6",
+    "scripts/memory_cell_growth/README.md": "740842889f7b17d409b97557208e86e0543465b1",
+    "scripts/memory_cell_growth/fixtures/clean-replay-facts.json": "6867aae4c3a59265fb71aadac1071f93fa50ba6e",
+    "scripts/memory_cell_growth/fixtures/parent-provenance.json": "ad9b299226e15ec06566f62dfdf090ae0fcfa3d1",
+    "scripts/memory_cell_growth/growth_policy.py": "a0341ce74dce2c786d1d4552fd4364ac2806da37",
+    "scripts/memory_cell_growth/growth_protocol.py": "a95fcc643fc0781f1102baf4c8117d2a812a0c68",
+    "scripts/memory_cell_growth/growth_reads.py": "0f42bc0528fa689f8fffed063adfdc6850614e87",
+    "scripts/memory_cell_growth/growth_runtime.py": "65337669c8be4e221050fdefc8db87ba85050894",
+    "scripts/memory_cell_growth/growth_trial.py": "ce2539211901691e3ac1c3180543b3029e2a08f8",
+    "scripts/memory_cell_growth/test_growth.py": "a50fd6fc5b0c2c2cc51ac649dc9062bc2831c234",
+    "scripts/memory_cell_hardening/README.md": "8ce9763498edbb8af82eb07ba0e6e7c1a182b261",
+    "scripts/memory_cell_hardening/test_owner_admission.py": "3b9581034f5405e64ad685440a780383cf5b758e"
+  }
+}

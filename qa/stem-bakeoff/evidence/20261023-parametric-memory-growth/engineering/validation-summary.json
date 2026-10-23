@@ -1,0 +1,38 @@
+{
+  "growth_test_source_matches_preformat_snapshot": true,
+  "postformat_ast_equivalent": true,
+  "production_accepted": false,
+  "rss_portability_blocker": "closed by optional import/unit fix and explicit unavailable null; focused conversion regression passed",
+  "suites": [
+    {
+      "log": "/workspace/scratch/1d69f04ee9f4/parametric-next-20261023/hardening/parametric-tests.log",
+      "log_sha256": "537f9bb2d9337051a63a8216941497daf540f3c17027aff64f6b12c5bea2b250",
+      "passed": true,
+      "suite": "parametric",
+      "test_methods": 27
+    },
+    {
+      "log": "/workspace/scratch/1d69f04ee9f4/parametric-next-20261023/hardening/focused-tests.log",
+      "log_sha256": "9322e2db310cc748bdc118f122dfda4c4fcea480e03f8a6d5f2c4286430f9650",
+      "passed": true,
+      "suite": "hardening",
+      "test_methods": 7
+    },
+    {
+      "log": "/workspace/scratch/1d69f04ee9f4/parametric-next-20261023/selection/catalog-after-admission-hardening.log",
+      "log_sha256": "69fe54e57fd1501bad3906a85f43e6e1e283bbd6c9b81072d507833ff60c82c7",
+      "passed": true,
+      "suite": "catalog",
+      "test_methods": 6
+    },
+    {
+      "log": "/workspace/scratch/1d69f04ee9f4/memory-growth-validation-20261023/test-growth-portability-direct.log",
+      "log_sha256": "79e84e831370a257ff1ec7b4d1dd99ae2b9afcb4a17a21e54c60f5c202ee0766",
+      "passed": true,
+      "suite": "growth",
+      "test_methods": 6
+    }
+  ],
+  "tests_rerun_after_formatter": false,
+  "unique_test_methods": 46
+}

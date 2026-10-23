@@ -1,0 +1,18 @@
+test_selection_keeps_parent_when_candidates_regress (test_parametric_evolution.ParametricEvolutionTests.test_selection_keeps_parent_when_candidates_regress) ... `torch_dtype` is deprecated! Use `dtype` instead!
+FAIL
+
+======================================================================
+FAIL: test_selection_keeps_parent_when_candidates_regress (test_parametric_evolution.ParametricEvolutionTests.test_selection_keeps_parent_when_candidates_regress)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/1d69f04ee9f4/hepta-private-ci/scripts/memory_cell/test_parametric_evolution.py", line 176, in test_selection_keeps_parent_when_candidates_regress
+    self.assertEqual(report["chosen_arm"], expected)
+AssertionError: 'continue' != 'nochange'
+- continue
++ nochange
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.297s
+
+FAILED (failures=1)
