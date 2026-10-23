@@ -7,6 +7,11 @@ use std::ffi::OsStr;
 use std::path::Path;
 use std::path::PathBuf;
 
+#[path = "sqlite_root_owner_publication.rs"]
+mod publication;
+pub use publication::RootSqliteOwnerPublication;
+pub use publication::RootSqliteOwnerPublished;
+
 #[cfg(unix)]
 #[path = "sqlite_root_owner_directory.rs"]
 mod directory;

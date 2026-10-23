@@ -28,6 +28,8 @@ pub use root_registration::RootSqliteMaterialRegistration;
 mod root_owner_copy;
 pub use root_owner_copy::RootSqliteOwnerCandidate;
 pub use root_owner_copy::RootSqliteOwnerCopy;
+pub use root_owner_copy::RootSqliteOwnerPublication;
+pub use root_owner_copy::RootSqliteOwnerPublished;
 
 #[cfg(unix)]
 use std::ffi::CString;

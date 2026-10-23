@@ -53,6 +53,8 @@ pub use sqlite_recovery::RootSqliteMaterialRegistration;
 pub use sqlite_recovery::RootSqliteMaterialSource;
 pub use sqlite_recovery::RootSqliteOwnerCandidate;
 pub use sqlite_recovery::RootSqliteOwnerCopy;
+pub use sqlite_recovery::RootSqliteOwnerPublication;
+pub use sqlite_recovery::RootSqliteOwnerPublished;
 pub use sqlite_recovery::SqliteRecoveryError;
 
 pub use audit::ThreadStateAuditRow;
