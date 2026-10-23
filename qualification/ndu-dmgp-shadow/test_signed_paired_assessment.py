@@ -153,12 +153,18 @@ class SignedPairedAssessmentTests(unittest.TestCase):
     def test_rejects_missing_arm_new_source_and_duplicate_work(self):
         with self.assertRaisesRegex(EvidenceRejected, "missing/extra"):
             self.assess(rows=self.rows[:-1])
-        with self.assertRaisesRegex(EvidenceRejected, "signed trial violates"):
+        with self.assertRaisesRegex(EvidenceRejected, "different executions"):
             self.assess(rows=self.altered_row(
                 "observer", "input_digest", sha("substituted-input")))
+        repeated = list(self.rows)
+        first = copy.deepcopy(repeated[0])
+        existing_trace = self.rows[1]["observer"]["payload"]["trace_digest"]
+        for role, key in (("observer", self.private_obs), ("meter", self.private_meter)):
+            payload = dict(first[role]["payload"], trace_digest=existing_trace)
+            first[role] = self.signature(payload, key)
+        repeated[0] = first
         with self.assertRaisesRegex(EvidenceRejected, "reused physical"):
-            self.assess(rows=self.altered_row(
-                "observer", "trace_digest", self.rows[1]["observer"]["payload"]["trace_digest"]))
+            self.assess(rows=repeated)
 
     def test_hard_risk_or_resource_ceiling_cannot_be_compensated_by_quality(self):
         for role, field, value in (
