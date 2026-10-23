@@ -1,0 +1,148 @@
+{
+  "protocol_id": "hepta-controlled-generation-v2-20261023",
+  "status": "preregistered_before_new_heldout",
+  "baseline_commit": "9da3c2b98bf427c5812cdc332d4adda1fc23bac6",
+  "baseline_tree": "7f0c26c15aa7f560c53c68f26a227bdaeb40e1de",
+  "preserves": [
+    "v1",
+    "v1.1",
+    "v1.1_failed_primary_effect"
+  ],
+  "scope": "Finite synthetic learned four-modality generation with depth control and recursive NDU-conditioned generator fine-tuning. Not native Rust DecisionCell integration, learned identifiable preference, general FBSDE, or an open-domain foundation model.",
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "development_seed": 5,
+  "splits": {
+    "train": 2048,
+    "calibration": 8192,
+    "validation": 768,
+    "test_iid": 1536,
+    "correlation_shift": 768,
+    "all_shared_wrong": 384
+  },
+  "rng": {
+    "train_labels_base": 310000,
+    "train_render_base": 311000,
+    "calibration_base": 320000,
+    "validation_base": 330000,
+    "heldout_base": 400000,
+    "development_base": 900000,
+    "split_prefix": "controlled-generation-v2"
+  },
+  "base_train_steps": 400,
+  "depth_supervision_steps": 100,
+  "ndu_train_steps": 40,
+  "joint_training": {
+    "optimizer": "AdamW",
+    "learning_rate": 0.0003,
+    "weight_decay": 0.0001,
+    "gradient_norm_cap": 1,
+    "anchor_weight": 0.1,
+    "anchor": "mean normalized vertex reconstruction loss across depths0..3",
+    "frozen": "raw encoders and calibration table",
+    "updated": "initial latent, shared refinement, all four decoders",
+    "objective": "negative calibration-marginal mean initial recursive utility at budget12, gamma2, P0=0; same terminal external loss as evaluation",
+    "policy": "reselect finite exact policy each update; differentiate that selected policy with identical loss tensor",
+    "gradient_boundary": "piecewise pathwise derivative; hard argmin contradiction is locally constant away ties, clamping and action ties are nonsmooth; no global convergence claim"
+  },
+  "max_depth": 3,
+  "budgets_after_initial_text": [
+    8,
+    12,
+    16
+  ],
+  "costs": {
+    "acquisition": [
+      1,
+      2,
+      1,
+      4
+    ],
+    "controller_per_event": 1,
+    "initialize": 1,
+    "refinement_step": 1,
+    "emit_all_four": 1,
+    "unit": "declared proxy units, not physical FLOPs"
+  },
+  "generation_contract": {
+    "required_modalities": [
+      "text",
+      "audio",
+      "image",
+      "video"
+    ],
+    "atomic_emit": true,
+    "post_emit_mutation": false,
+    "acquisition_after_generation_commit": false,
+    "depth_preselected_at_commit": true
+  },
+  "penalty": 0.025,
+  "gamma": 2,
+  "preference": "same bounded observed-disagreement update as v1.1; not learned latent preference identification",
+  "portfolio_denominator": 4,
+  "joint_smoothing_total_count": 32,
+  "external_loss": "unchanged metrics.score_outputs: mean per-modality normalized raw reconstruction error clipped at2, plus0.25 cross-modal nearest-prototype disagreement",
+  "arms": [
+    "supervised_static",
+    "supervised_ndu",
+    "joint_static",
+    "joint_ndu",
+    "joint_myopic",
+    "joint_fixed_risk",
+    "joint_risk_neutral"
+  ],
+  "static_selection": "for each model and budget, validation selects a fixed acquisition subset/quarter-grid weights and fixed depth0..3 on mean external loss+0.5CVaR90; every acquisition and generation event is charged",
+  "selection": "gamma fixed2, no heldout tuning; validation-only static policies saved before heldout generation",
+  "primary": {
+    "scenario": "test_iid",
+    "budget": 12,
+    "contrast": "joint_ndu minus supervised_static",
+    "endpoint": "mean across seeds of within-seed CVaR90 external loss differences",
+    "minimum_reduction": 0.02,
+    "bootstrap": "1000 paired hierarchical draws, seeds then within-seed worlds",
+    "gates": [
+      "CI95 upper bound<0",
+      "CVaR90 difference<=-0.02",
+      "mean quality delta>=-0.02",
+      "mean ideal dense Linear MAC ratio<=1.05",
+      "three registered seeds",
+      "exact DP/oracle agreement",
+      "all mandatory outputs and no budget violation"
+    ]
+  },
+  "secondary": [
+    "joint_ndu minus supervised_ndu isolates NDU-conditioned parameter update",
+    "joint_ndu minus joint_static isolates dynamic control",
+    "joint_ndu minus joint_myopic probes continuation effect",
+    "joint_ndu minus joint_fixed_risk probes bounded preference effect",
+    "joint_ndu minus joint_risk_neutral probes risk profile"
+  ],
+  "evidence_rules": [
+    "old failures retained",
+    "no pooling v1/v1.1/v2 as independent seeds",
+    "all failed runs preserved",
+    "no test-set policy or checkpoint selection",
+    "same concept space across splits, independent draws only",
+    "actual encoder calls lazy at heldout",
+    "offline table/DP and training costs reported",
+    "controller/generation modeled overhead in feasibility plus measured wall/CPU and ideal Linear MAC separately",
+    "new protocol required for changes after heldout inspection"
+  ],
+  "execution_gates": {
+    "local": "real CPU execution with pinned dependencies and source hashes",
+    "hosted": "GitHub-hosted CPU verification is distinct from dedicated execution",
+    "dedicated": "external Actions job must attest runner desktop in group trillionnium-android-gpu with nonzero runner id and executed steps"
+  },
+  "broad_blockers_not_closed_by_this_stage": [
+    "v1.1 failed efficacy result",
+    "native HEPTA runtime integration",
+    "latent-dependent reallocation within refinement",
+    "learned identified preference dynamics",
+    "general stochastic FBSDE solver",
+    "natural-data all-modal foundation-model validation",
+    "verified dedicated project runner execution"
+  ]
+}
