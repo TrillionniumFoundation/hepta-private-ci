@@ -1,0 +1,92 @@
+{
+  "schema": "hepta.modality-allocation.storage-recovery.v4",
+  "observed_at_utc": "2026-10-23T06:21:19.701552+00:00",
+  "history": [
+    {
+      "schema": "hepta.space-recovery.v1",
+      "completed_at_utc": "2026-10-23T06:06:09.932036+00:00",
+      "removed_reconstructible_runtime_only": "/tmp/hepta-audio-codec-env-001",
+      "reason": "isolated DAC interface completed and fully evidenced; release duplicate temporary runtime for v4 build and audit",
+      "retained_evidence": [
+        {
+          "path": "/tmp/hepta-audio-codec-001/reconstruction-003/pip-freeze.txt",
+          "bytes": 1754,
+          "sha256": "4826bed77a305c3ae8e8f961bd6fcf2a083f39eec16e8066d267f31a1e7df26b"
+        },
+        {
+          "path": "/tmp/hepta-audio-codec-001/install-report.json",
+          "bytes": 1045115,
+          "sha256": "b46ee0f10952b9a9b1a0c3db9c7229c8376aeb401660b2f893ea3de7413c8ab7"
+        },
+        {
+          "path": "/workspace/scratch/f837bdde9335/deliverables/hepta-v3-execution-data.zip",
+          "bytes": 72996642,
+          "sha256": "cf9e87bf707bd0adc6bfe078684ca975961b18271459f312e90eccdcc379454a"
+        }
+      ],
+      "pretrained_weights_and_all_recordings_preserved": true,
+      "formal_v3_and_development_directories_preserved": true,
+      "free_bytes_before": 0,
+      "free_bytes_after": 1552097280,
+      "bytes_released": 1552097280,
+      "reconstruction_inputs": "pinned code/weight URLs, pip-freeze and package install reports retained; existing audio README paths describe its recorded runtime, which must be recreated for rerun"
+    },
+    {
+      "schema": "hepta.space-recovery.v1",
+      "completed_at_utc": "2026-10-23T06:14:17.931761+00:00",
+      "reason": "shared disk exhausted again; remove only reconstructible caches from completed natural interface runs",
+      "free_bytes_before": 0,
+      "retained_provenance": [
+        {
+          "path": "/tmp/hepta-natural-text-001/requirements-observed.txt",
+          "bytes": 471,
+          "sha256": "a56f5c89cab5bfc0cfc364c810e7fdba42d47b9311ac5351490b96e0e5c19830"
+        },
+        {
+          "path": "/tmp/hepta-natural-text-001/dependency-install.json",
+          "bytes": 282066,
+          "sha256": "2a89bb22866733c81e9e343d81fbb17234974089885c644056dee274d0adb365"
+        },
+        {
+          "path": "/tmp/hepta-audio-codec-001/weight-download-receipt.json",
+          "bytes": 602,
+          "sha256": "1c817efed3f0e582c20e2d4892673c5f8fc7b4b6cd3d58ae7d35245ac1e72325"
+        },
+        {
+          "path": "/tmp/hepta-audio-codec-001/install-report.json",
+          "bytes": 1045115,
+          "sha256": "b46ee0f10952b9a9b1a0c3db9c7229c8376aeb401660b2f893ea3de7413c8ab7"
+        },
+        {
+          "path": "/tmp/hepta-t5-small-assets/source-metadata.json",
+          "bytes": 10212,
+          "sha256": "95d96c7175ade4018da235b53f968ba578db349995d156f1acedeab528252977"
+        }
+      ],
+      "removed_downloadable_weights": [
+        {
+          "path": "/tmp/hepta-audio-codec-001/weights-16khz-0.0.5.pth",
+          "bytes": 296820733,
+          "sha256": "95ab7176b67137d4d4c6c54b8d6ef3cea797faec228cb03ad084badcad570b4d"
+        },
+        {
+          "path": "/tmp/hepta-t5-small-assets/model.safetensors",
+          "bytes": 242043056,
+          "sha256": "bd944e5f1b3ad9b70dd9d00010a517059e19265671076b8b0a4a58d9491842bc"
+        }
+      ],
+      "removed_reconstructible_runtime_only": "/tmp/hepta-natural-text-env",
+      "free_bytes_after": 0,
+      "preserved": "all source recordings, audio/text/image/video outputs, failed attempts, installation records, pinned upstream URLs/revisions and all v3/v4 experimental data"
+    }
+  ],
+  "verified_alternative": {
+    "path": "/dev/shm/hepta-v4",
+    "kind": "memory-backed temporary filesystem",
+    "probe": "created/read/fsync/unlinked task-only probe; exact byte check passed",
+    "available_bytes_at_probe": 5225717760,
+    "purpose": "new v4 development/confirmation data and temporary package; final artifacts require durable save",
+    "access_scope": "Cross-command persistence verified in require_escalated execution view; default sandbox has a different /dev/shm view. All reads and writes use the same escalated view."
+  },
+  "scope": "No other workspace was changed. Prior raw recordings, outputs, failed attempts, scientific checkpoints and source receipts were retained. Completed natural interface environments and pinned downloadable pretrained weight caches can be reconstructed from retained installation and download records. The frozen original v3 data archive is unchanged."
+}
