@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - qa/stem-bakeoff/replacement_physical.py
+      - qa/stem-bakeoff/replacement_head_scale.py
+      - qa/stem-bakeoff/test_replacement_head_scale.py
       - qa/stem-bakeoff/replacement_laya_view.py
       - qa/stem-bakeoff/test_replacement_laya_view.py
       - qa/stem-bakeoff/test_replacement_physical.py
@@ -42,7 +44,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           git diff --check
-          python3 -m py_compile qa/stem-bakeoff/replacement_physical.py qa/stem-bakeoff/test_replacement_physical.py qa/stem-bakeoff/replacement_physical_audit.py qa/stem-bakeoff/test_replacement_physical_audit.py qa/stem-bakeoff/replacement_source_audit.py qa/stem-bakeoff/test_replacement_source_audit.py
+          python3 -m py_compile qa/stem-bakeoff/replacement_physical.py qa/stem-bakeoff/test_replacement_physical.py qa/stem-bakeoff/replacement_physical_audit.py qa/stem-bakeoff/test_replacement_physical_audit.py qa/stem-bakeoff/replacement_source_audit.py qa/stem-bakeoff/test_replacement_source_audit.py qa/stem-bakeoff/replacement_head_scale.py qa/stem-bakeoff/test_replacement_head_scale.py
           python3 -m unittest discover -s qa/stem-bakeoff -p 'test_replacement_gate.py' -v
           python3 -m unittest discover -s qa/stem-bakeoff -p 'test_replacement_physical_audit.py' -v
           python3 -m py_compile qa/stem-bakeoff/replacement_laya_view.py qa/stem-bakeoff/test_replacement_laya_view.py
@@ -56,6 +58,8 @@ jobs:
             --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
           "$RUNNER_TEMP/contracts/bin/python" -m unittest discover \
             -s qa/stem-bakeoff -p 'test_replacement_physical.py' -v
+          "$RUNNER_TEMP/contracts/bin/python" -m unittest discover \
+            -s qa/stem-bakeoff -p 'test_replacement_head_scale.py' -v
           git diff --check
           git diff --exit-code
 
@@ -174,6 +178,15 @@ jobs:
           assert set(r["scores"]) == {"train","calibration","future_1","future_2","ood"}
           assert r["authority"] == "DENY_ALL" and r["production_activation_allowed"] is False
           assert r["limits"]["target_device_qualified"] is False
+          if os.environ["CANDIDATE"].startswith("laya_"):
+              assert r["performance"]["physical_private_head_scale"] is None
+          else:
+              scale = r["performance"]["physical_private_head_scale"]
+              assert scale["target_device_qualified"] is False
+              assert scale["independent_input_event_scaling_measured"] is False
+              assert [m["logical_cells"] for m in scale["measurements"]] == [64,256,1024,4096]
+              assert all(len(m["raw_full_fanout_latency_ms"]) == 100
+                         for m in scale["measurements"])
           PY
       - name: Retain original raw outputs and exact weight metadata
         if: always()
