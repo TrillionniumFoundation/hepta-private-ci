@@ -1,3 +1,54 @@
+# v4 results: frozen three-checkpoint hosted confirmation complete for synthetic scope
+
+> **Status update 2026-10-23 10:47 UTC.** The original text below records
+> the earlier **local confirmation-001 storage-preflight failure**, which remains
+> an authentic, immutable negative execution. A separate, fully executed
+> **GitHub-hosted confirmation-002**, run
+> [39919197831](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39919197831)
+> (job 120300045436), has now passed the **registered finite synthetic v4**
+> mechanism and primary-superiority gates; neither all scientific blockers nor
+> production admission is thereby closed.
+>
+> Request HEAD `812fd5e124e8c34a001627ae47b0e9aae399b7cc`
+> checked out frozen scientific code
+> `7713023e604746a3947e0e0e2d31e8eaef6e48b1`, unchanged protocol SHA-256
+> `4f90f435e3ce419a09f42412af1fc6fe3515f3c198e5e8555115b1996c1aab0b`.
+> Hosted job and first-party independent audit completed successfully. The
+> [downloadable archived artifact](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39919197831/artifacts/12495887443)
+> has ZIP SHA-256 `2c8e4f1f5841e661bda7d50c9904e635c0346fce8b1a22e250d4444fdc3c919e`.
+> A separate read-only check verified 121 archived hosted and 100 producer
+> file digests and recalculated paired loss differences from saved scores.
+> The audited run contains 3 frozen checkpoints × 1,024 paired worlds × 4
+> policies = **12,288 native sessions**, **63,534 native requests** and
+> **9,333,911,040 dense Linear MACs** over its producer's full model work.
+>
+> Registered primary (dynamic minus initial-feedback committed plan):
+> sampled utility difference **+0.03986064694**, paired 95% interval
+> **[+0.03509747538, +0.04474663765]**, finite exact-model difference
+> **+0.03563640819**, saved raw external-loss difference
+> **−0.03757526462**. All three registered per-checkpoint strong feedback
+> sibling gates passed. The **myopic** contrast also has lower mean loss
+> (**−0.03512025486**) but is **secondary and unadjusted**.
+> Original v3 R01/R02/R03 failures and shared-wrong R04 impossibility remain.
+>
+> These inherited **frozen synthetic eight-concept neural weights** underwent
+> no new v4 training. This is not target-blind natural multimodal generation,
+> external semantic adjudication, calibrated dependence under real shifts,
+> causal 2×2 training attribution, dedicated runner qualification, authenticated
+> production NeuronRuntime, or full physics/energy cost measurement. The
+> first-party independent audit and secondary artifact check are **not signed
+> external evaluation**. Keep **DRAFT / SHADOW_ONLY / DENY_ALL / HOLD_NO_GO**.
+> The scope-precise metadata handoff is
+> [hosted-confirmation-002-review.json](evidence/hosted-confirmation-002-review.json)
+> and the prospective branch-only
+> [BLOCKER_LEDGER.json](BLOCKER_LEDGER.json).
+>
+> **The following historical section is preserved in substance and refers to
+> the pre-hosted status.** It is not a description of the current confirmation-002
+> outcome.
+
+---
+
 # v4 results: implemented and development-audited; confirmation blocked
 
 ## Status as of 2026-10-23
