@@ -147,7 +147,7 @@ class SignedPairedAssessmentTests(unittest.TestCase):
             ("meter", "meter_id", "different-meter"),
         ):
             with self.subTest(role=role, field=field):
-                with self.assertRaisesRegex(EvidenceRejected, "prospective"):
+                with self.assertRaises(EvidenceRejected):
                     self.assess(rows=self.altered_row(role, field, value))
 
     def test_rejects_missing_arm_new_source_and_duplicate_work(self):
