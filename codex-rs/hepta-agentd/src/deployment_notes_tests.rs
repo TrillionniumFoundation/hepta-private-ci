@@ -226,3 +226,72 @@ fn deployment_notes_policy_wrong_predecessor_or_expired_writer_cannot_change_sta
     assert!(f.issuer.replace_notes_policy(&f.writer, &f.target, 1_000, &next, 1_000).is_err());
     assert!(f.issuer.store.load(STATE_OWNER).unwrap() == before);
 }
+
+#[test]
+#[ignore = "explicit Root-only exact Notes admission on selected protected filesystem"]
+fn deployment_notes_actual_root_clock_registry_and_canonical_issuer_issue_distinct_payloads() {
+    use codex_hepta_contracts::HostAuthorityClock;
+    use codex_hepta_contracts::HostAuthorityFrontierStore;
+    use codex_hepta_contracts::RootAuthorityDirectory;
+    // SAFETY: geteuid has no arguments or borrowed memory.
+    assert_eq!(unsafe { libc::geteuid() }, 0);
+    let parent = std::env::var_os("HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT").unwrap();
+    let home = tempfile::Builder::new().prefix("notes-exact-root-").tempdir_in(parent).unwrap();
+    std::fs::set_permissions(home.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let root = RootAuthorityDirectory::open(home.path()).unwrap();
+    let clock: Arc<dyn AuthorityClock> = Arc::new(
+        HostAuthorityClock::initialize(root.clone(), "notes-exact-clock".into()).unwrap());
+    let frontier = Arc::new(HostAuthorityFrontierStore::initialize(root,
+        "notes-exact-leases".into(), AuthorityLeaseFrontier::for_empty_epoch(1).unwrap()).unwrap());
+    let leases = home.path().join("leases");
+    std::fs::create_dir(&leases).unwrap();
+    std::fs::set_permissions(&leases, std::fs::Permissions::from_mode(0o700)).unwrap();
+    let registry = Arc::new(AuthorityLeaseRegistry::open_state_dir_with_trust(
+        &leases, "notes-exact-leases".into(), clock.clone(), frontier).unwrap());
+    let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").unwrap();
+    // This explicit Root component fixture supplies a synthetic Notes identity;
+    // a real Session Reserved capability is a separate launcher qualification.
+    let target = NotesTargetIdentity { session_instance: "1".repeat(32), task_id: 7,
+        incarnation: "2".repeat(32) };
+    let now = clock.now_unix_ms().unwrap();
+    let writer = HostAuthorityWriterRegistration {
+        registered_agent_id: agent.clone(), spawn_generation: 7, owner_epoch: 4,
+        local_lease_id: "original-local-writer".into(), local_lease_generation: 9,
+        authority_lease: AuthorityLease {
+            schema_version: 1, lease_id: "notes-exact-writer".into(), authority_epoch: 1,
+            revision: 1, binding: AuthorityLeaseBinding {
+                principal_id: agent.as_str().into(), operation_class: "runtime.agentd.production_writer".into(),
+                destination_id: "original-cognitive-owner".into(), scope_sha256: [4; 32], payload_sha256: [5; 32],
+            }, issued_at_unix_ms: now, expires_at_unix_ms: now + 60_000,
+        },
+    };
+    registry.put_lease(writer.authority_lease.clone(), 0).unwrap();
+    let path = home.path().join("issuer");
+    let issuer = DeploymentFinalUseIssuer::create_protected(&path, "canonical-notes-root".into(),
+        vec![DeploymentGrantPolicy { subject_id: agent.as_str().into(), destination_id: target.destination_id(),
+            scope_sha256: target.scope_digest().into_array(), lifetime_ms: 1_000 }],
+        clock.clone(), registry.verifier(), writer.authority_lease.lease_id.clone(), 1).unwrap();
+    let proof = issuer.register_writer_authorization(&writer, &registry.verifier()).unwrap();
+    assert_eq!(proof.claims.sequence, 1);
+    let admission = RootNotesGrantAdmission::from_registered_notes(
+        &issuer, registry.clone(), writer.clone(), &target, 1_000).unwrap();
+    let binding = FinalUseBinding { subject_id: agent.as_str().into(), destination_id: target.destination_id(),
+        scope_sha256: target.scope_digest().into_array(), request_sha256: [1; 32], payload_sha256: [2; 32] };
+    let first = admission.issue(&issuer, &binding).unwrap().unwrap();
+    let second = admission.issue(&issuer, &FinalUseBinding {
+        request_sha256: [3; 32], payload_sha256: [4; 32], ..binding.clone() }).unwrap().unwrap();
+    assert_eq!(first.grant.grant_id, "canonical-notes-root:1:2");
+    assert_eq!(second.grant.grant_id, "canonical-notes-root:1:3");
+    assert_eq!(registry.capacity().unwrap().leases, 3);
+    let denied = std::process::Command::new("/usr/bin/setpriv").args([
+        "--reuid", "60001", "--regid", "60001", "--clear-groups", "--no-new-privs", "/usr/bin/test", "-r",
+    ]).arg(path.join("issuer.key")).status().unwrap();
+    assert_eq!(denied.code(), Some(1));
+    let key = issuer.trust_key().unwrap();
+    drop(admission);
+    drop(issuer);
+    let reopened = DeploymentFinalUseIssuer::open_protected(&path, clock, registry.verifier(),
+        writer.authority_lease.lease_id.clone(), 1).unwrap();
+    assert_eq!(reopened.trust_key().unwrap().verifying_key, key.verifying_key);
+    assert_eq!(reopened.store.load(STATE_OWNER).unwrap().sequence, 3);
+}
