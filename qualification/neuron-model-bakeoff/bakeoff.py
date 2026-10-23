@@ -127,6 +127,7 @@ def training_partition_digest(rows: list[dict[str, Any]]) -> str:
 def validate_run(
     run: dict[str, Any], model: str, dataset_hash: str, prediction_hash: str,
     source_commit: str, frozen_threshold: float, training_digest: str,
+    frozen_artifact: dict[str, str],
 ) -> None:
     require(run.get("schema") == SCHEMA and run.get("model") == model, "run schema/model mismatch")
     require(run.get("dataset_sha256") == dataset_hash, "dataset identity mismatch")
@@ -135,6 +136,7 @@ def validate_run(
     require(run.get("repository") == MODEL_REPOS[model], "model repository mismatch")
     rev, source = run.get("revision"), run.get("source_commit")
     require(isinstance(rev, str) and REVISION.fullmatch(rev) is not None, "exact checkpoint revision required")
+    require(rev == frozen_artifact["revision"], "model revision differs from frozen plan")
     require(isinstance(source, str) and REVISION.fullmatch(source) is not None, "exact source commit required")
     require(source == source_commit, "mixed or unregistered source commits")
     calibration = run.get("calibration")
@@ -150,6 +152,10 @@ def validate_run(
     for name in REQUIRED_DIGESTS:
         value = digests.get(name)
         require(isinstance(value, str) and SHA256.fullmatch(value) is not None, f"missing/invalid {name} digest")
+    require(digests["weights"] == frozen_artifact["weights_sha256"],
+            "model weights differ from frozen plan")
+    require(digests["tokenizer"] == frozen_artifact["tokenizer_sha256"],
+            "model tokenizer differs from frozen plan")
     require(run.get("role") == "model_runner", "run role mismatch")
     if model in EMBEDDING_MODELS:
         profile = run.get("profile")
@@ -315,6 +321,20 @@ def analyse(plan: dict[str, Any], dataset_path: Path, run_dir: Path) -> dict[str
     require(isinstance(limits, dict), "missing thresholds")
     for key in ("max_ece", "max_brier", "max_ood_false_acceptance", "max_slice_regression", "min_accuracy_gain"):
         require(type(limits.get(key)) in (float, int) and 0 <= limits[key] <= 1, f"invalid threshold {key}")
+    frozen_artifacts = plan.get("model_artifacts")
+    require(isinstance(frozen_artifacts, dict) and set(frozen_artifacts) == set(CANDIDATES),
+            "five independently frozen model artifacts required")
+    for arm in CANDIDATES:
+        manifest = frozen_artifacts[arm]
+        require(isinstance(manifest, dict) and set(manifest) == {
+            "revision", "weights_sha256", "tokenizer_sha256",
+        }, f"{arm}: incomplete frozen artifact")
+        for key, pattern in (("revision", REVISION),
+                             ("weights_sha256", SHA256),
+                             ("tokenizer_sha256", SHA256)):
+            value = manifest[key]
+            require(isinstance(value, str) and pattern.fullmatch(value) is not None,
+                    f"{arm}: invalid frozen {key}")
     minimum = plan.get("minimum_slice_size")
     require(type(minimum) is int and minimum >= 1, "minimum_slice_size invalid")
     dataset_hash = file_hash(dataset_path)
@@ -328,7 +348,8 @@ def analyse(plan: dict[str, Any], dataset_path: Path, run_dir: Path) -> dict[str
         run_path = run_dir / model / "run.json"
         require(predictions_path.is_file() and run_path.is_file(), f"missing measured run for {model}")
         validate_run(load_json(run_path), model, dataset_hash, file_hash(predictions_path),
-                     source_commit, frozen_threshold, training_digest)
+                     source_commit, frozen_threshold, training_digest,
+                     frozen_artifacts[model])
         predicted = validate_predictions(load_jsonl(predictions_path), dataset, model,
                                          frozen_threshold)
         predictions_by_model[model] = predicted
