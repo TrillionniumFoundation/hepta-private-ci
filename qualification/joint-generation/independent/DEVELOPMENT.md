@@ -229,3 +229,19 @@ Before that diagnostic, all 151 independent source tests passed in 4.708 seconds
 (exit 0), including cache/stage-sum equivalence, late overflow rollback, shared
 digest-failure atomicity and completed-shared metadata persistence on failure.
 The test fold remains unopened; no cap, price, objective or benefit gate changes.
+
+The corrected diagnostic executed once with all three thread variables set to 1
+and observed one thread. Every pair retained exact snapshot, parameters, Adam,
+loss and update equality. Ledger median paired saving was 15.54% (one slower
+pair); actual 256-update median paired saving was 4.12% (two slower pairs,
+including a -24.58% outlier). Aggregate update CPU was almost equal:
+707.475291 versus 706.408365 ms, only 0.15% saved. All original and corrected
+positive/negative timings are retained; no further benchmark was run.
+
+The actual source-frozen t8 build then exited 1 with shared CPU 12.274880402
+seconds, exceeding the unchanged 10-second cap before any candidate completed.
+Declared shared units remained 3611371737. The previously missing full shared
+metadata is now retained even on that early failure. The optimization did not
+close the resource blocker and no identical-source retry or formal evaluation
+followed. The retained receipt supports further component-cost diagnosis; the
+historical runtime variation is still unexplained.

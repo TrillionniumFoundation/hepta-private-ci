@@ -146,3 +146,10 @@ optimization. The initial hand-built benchmark saved ledger CPU but its full
 256-update median was 2.76% slower. That negative result is retained; neither a
 microbenchmark nor positive training/validation contrasts establish independent
 first-goal acceptance. The r2 formal fold remains unconstructed and unopened.
+
+The subsequent frozen ledger-cache t8 build exited 1: complete shared CPU
+12.274880402 seconds exceeded the unchanged 10-second cap before any candidate
+completed. Full shared receipts are retained. The corrected one-thread,
+seven-stage diagnostic had mixed update timings (4.12% median paired saving,
+0.15% aggregate saving); it did not predict or establish whole-build benefit.
+No identical-source repeat or formal evaluation followed this failure.
