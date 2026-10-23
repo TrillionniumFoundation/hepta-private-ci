@@ -18,20 +18,18 @@ pub struct ShadowExecutionCandidateV1 {
     pub record_digest: String,
 }
 
-/// This entrypoint is side-effect free. Only the independent runtime owner may
-/// turn a shadow proposal into a reservation, start or final effect receipt.
-pub fn propose_shadow_execution_v1(
-    binding: ExecutionBinding,
-    operation: &CodexOperationIntent,
-    class: ExecutionClass,
+/// Canonical native entrypoint. No Codex session, thread, protocol or model
+/// DTO is required, and this function cannot execute an effect. The caller must
+/// bring an exact versioned intent from the appropriate independent owner.
+pub fn propose_native_shadow_execution_v1(
+    intent: ExecutionIntent,
 ) -> Result<ShadowExecutionCandidateV1, ExecutionError> {
-    if binding.currentness != Currentness::Current
-        || !matches!(binding.final_use, FinalUse::NotGranted)
-        || binding.predecessor.is_some()
+    if intent.binding.currentness != Currentness::Current
+        || !matches!(intent.binding.final_use, FinalUse::NotGranted)
+        || intent.binding.predecessor.is_some()
     {
         return Err(ExecutionError::Binding("shadow candidate cannot carry authority"));
     }
-    let intent = canonical_codex_intent_v1(binding, operation, class)?;
     let mut journal = ExecutionJournal::new();
     let record_digest = journal.append(ExecutionRecord::ExecutionIntent(intent.clone()))?;
     Ok(ShadowExecutionCandidateV1 {
@@ -39,3 +37,19 @@ pub fn propose_shadow_execution_v1(
         record_digest,
     })
 }
+
+/// Compatibility bridge only: Codex-specific bindings are translated at this
+/// edge, and the native validation path is shared. This does not remove other
+/// Codex dependencies or activate an independent Agent Loop.
+pub fn propose_shadow_execution_v1(
+    binding: ExecutionBinding,
+    operation: &CodexOperationIntent,
+    class: ExecutionClass,
+) -> Result<ShadowExecutionCandidateV1, ExecutionError> {
+    let intent = canonical_codex_intent_v1(binding, operation, class)?;
+    propose_native_shadow_execution_v1(intent)
+}
+
+#[cfg(test)]
+#[path = "shadow_execution_tests.rs"]
+mod tests;
