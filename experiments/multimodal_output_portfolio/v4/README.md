@@ -37,3 +37,26 @@ The 10 tests include a complete three-decision feedback trajectory that switches
 ## Next independently measured scientific experiment
 
 Replace the synthetic proxy-state/decoder fixtures with a source-pinned **real** shared Encoder plus four output decoders, observed partial latents, actual Neural/Cell feature invocation and all separately paid decoder/verifier/selection costs. Preregister source-disjoint natural tasks, multiple training seeds and common random-number draws, then compare same-information/static, MoE, risk-neutral MPC, fixed-risk MPC, dynamic NDU and best-of-N with independent decoded-output scoring and risk/coverage/cost thresholds. Train/inference factorial ablations are essential to determine whether NDU changes learned generation rather than only selecting an existing candidate. Do not enable or deploy any output-portfolio policy based only on this code.
+
+## Numeric admission and conditional-support follow-up (2026-10-23)
+
+A narrowly scoped follow-up preserves the original v4 finite controller, fixed
+three-branch positive shock law, action menu, benchmark conclusions and authority
+posture, while addressing two source-reproducible fail-closed defects:
+
+- `Config` now rejects booleans, fractional physical units, oversize integer
+  budget/synchronization parameters, nonfinite or out-of-range risk and cost
+  prices **at admission**, before generating any noncanonical cost/utility trace.
+- `conditional_ce` computes its numerical anchor only over **positive-probability
+  outcomes**. A zero-mass, arbitrarily bad branch must not underflow the entire
+  lawful conditional expectation and spuriously reject a legal action.
+  Conditional probabilities are checked with absolute rather than implicit
+  relative sum tolerance. Extreme, nonfinite and ambiguous supplied numerical
+  values fail closed.
+
+`test_profile_safety.py` retains the unchanged three-step feedback/allocation
+trajectory and adds adversarial profile, zero-mass and probability-law
+regressions. This is **a local mathematical/engineering correction**, not an
+independent task result, natural-data experiment, learned risk critic, evidence
+of 8–16 real decisions, model promotion, or closure of R05/P0–P7. The original
+v1–v3 negative and mixed evidence is unchanged.
