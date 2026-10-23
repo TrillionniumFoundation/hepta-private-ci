@@ -44,6 +44,21 @@ reports, correlated refinements and actual four-modal emissions. Nominal
 Bellman values are checked against complete path entropic utility, with
 weighted fractional CVaR90 and explicit paid-resource conservation.
 
+## Fresh-episode state custody (source-level modeled budget)
+
+A stage-zero `PublicState` must start with `active_mask=0` and
+`witnessed=False`. Otherwise an unrecorded mask can waive a modeled fixed
+Cell activation charge, or an unobserved witness purchase can be silently
+claimed before a registered QUERY. Both are denied at state construction,
+before controller evaluation or independent full-path scoring. A genuine
+stage-one continuation retains its paid activation mask and witness flag,
+so the ordinary finite action lifecycle is unchanged.
+
+`test_fresh_root_custody.py` covers the activation-charge counterexample,
+fabricated witness, valid continuation, and unchanged complete terminal
+emission. This establishes a **synthetic input-admission invariant**, not
+physical metering, real witness provenance or production NeuronRuntime trust.
+
 ## Bounded System 2 search cost
 
 `JointController` counts unique Bellman state expansions with an exact integer
