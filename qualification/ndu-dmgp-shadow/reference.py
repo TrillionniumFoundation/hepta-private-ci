@@ -413,13 +413,8 @@ def allocate(actions: tuple[Action, ...], risk: RiskEstimate | None,
         return Allocation(tuple(float(i == selected) for i in range(len(actions))),
                           0.0, 0.0, "deterministic-fallback")
     k = len(actions)
-    require(len(risk.means) == k and len(risk.covariance) == k
-            and all(len(row) == k for row in risk.covariance),
-            "candidate/covariance dimensional drift")
+    require(len(risk.means) == k, "candidate/mean dimensional drift")
     require(all(finite(v) and -1 <= v <= 1 for v in risk.means)
-            and all(finite(v) for row in risk.covariance for v in row)
-            and all(abs(risk.covariance[i][j] - risk.covariance[j][i]) <= 1e-8
-                    for i in range(k) for j in range(k))
             and finite(risk.condition_upper)
             and 0 < risk.condition_upper <= 1e6
             and type(risk.sample_count) is int
@@ -428,8 +423,13 @@ def allocate(actions: tuple[Action, ...], risk: RiskEstimate | None,
             and 0 <= risk.rank_retained <= k
             and isinstance(risk.context, str) and risk.context,
             "unsupported conditional covariance profile")
-    # A positive score on a simplex does not imply covariance PSD.
+    require(isinstance(risk.covariance, (tuple, list))
+            and all(isinstance(row, (tuple, list)) for row in risk.covariance),
+            "invalid covariance geometry")
+    # Diagnose invalid shape, symmetry and finite entries before PSD scoring.
+    # A valid-looking simplex variance is insufficient for covariance admission.
     eigen = symmetric_eigenvalues([list(row) for row in risk.covariance])
+    require(len(eigen) == k, "candidate/covariance dimensional drift")
     require(eigen[0] > 1e-10 and eigen[-1] / eigen[0] <= 1e6,
             "unsupported portfolio covariance spectrum")
     require(abs(1 / step - round(1 / step)) < 1e-8 and 1 / step <= 20,
