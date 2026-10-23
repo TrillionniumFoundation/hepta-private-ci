@@ -194,6 +194,14 @@ async fn managed_effect_entry_holds_exact_entered_cut_through_synchronous_channe
     let channel = entry.channel.clone();
     let (release, receive) = std::sync::mpsc::channel();
     *channel.release.lock().unwrap() = Some(receive);
+    // Acquire the original writer connection before entry. A zero-timeout
+    // BEGIN below must observe an actual SQLite lock, not scheduler delay.
+    let mut lock_competitor = fixture.store.pool.acquire().await.unwrap();
+    lock_competitor.close_on_drop();
+    sqlx::query("PRAGMA busy_timeout=0")
+        .execute(&mut *lock_competitor)
+        .await
+        .unwrap();
     let writer = fixture.writer.clone();
     let dispatching = tokio::spawn(async move {
         entry
@@ -220,6 +228,15 @@ async fn managed_effect_entry_holds_exact_entered_cut_through_synchronous_channe
         .fetch_one(&mut *observation).await.unwrap();
     assert_eq!(claim_state, "entered");
     observation.rollback().await.unwrap();
+    let error = sqlx::query("BEGIN IMMEDIATE")
+        .execute(&mut *lock_competitor)
+        .await
+        .unwrap_err();
+    assert_eq!(
+        error.as_database_error().unwrap().code().as_deref(),
+        Some("5"),
+        "synchronous Notes entry must still own the physical SQLite barrier"
+    );
     let writer = fixture.writer.clone();
     let mut competitor = tokio::spawn(async move {
         writer
@@ -242,6 +259,14 @@ async fn managed_effect_entry_holds_exact_entered_cut_through_synchronous_channe
         .await
         .unwrap()
         .unwrap()
+        .unwrap();
+    sqlx::query("BEGIN IMMEDIATE")
+        .execute(&mut *lock_competitor)
+        .await
+        .unwrap();
+    sqlx::query("ROLLBACK")
+        .execute(&mut *lock_competitor)
+        .await
         .unwrap();
     assert_eq!(channel.calls.load(Ordering::SeqCst), 1);
     assert!(!fixture.store.commit_gate.is_fenced());
