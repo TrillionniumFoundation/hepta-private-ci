@@ -105,6 +105,34 @@ impl OrdinaryCpuOwner {
             row.try_get("terminal_receipt").map_err(|e| e.to_string())?,
         )))
     }
+
+    /// Only the live owned-Child observer calls this. A disk receipt alone
+    /// never reconstructs a Child or qualifies post-process-loss terminality.
+    pub(super) async fn record_terminal(
+        &self,
+        intent: &OperationIntentV1,
+        receipt: &str,
+    ) -> Result<(), String> {
+        if receipt.is_empty() || receipt.len() > 128 {
+            return Err("unbounded ordinary child terminal receipt".to_owned());
+        }
+        let mut transaction = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(|e| e.to_string())?;
+        verify_durable(&mut transaction).await?;
+        sqlx::query("UPDATE ordinary_cpu_entries SET terminal_receipt = ? WHERE operation_id = ? AND semantic_digest = ? AND terminal_receipt IS NULL")
+            .bind(receipt).bind(intent.operation_id().as_str()).bind(intent.semantic_digest().as_array().as_slice())
+            .execute(&mut *transaction).await.map_err(|e| e.to_string())?;
+        let stored: Option<Option<String>> = sqlx::query_scalar("SELECT terminal_receipt FROM ordinary_cpu_entries WHERE operation_id = ? AND semantic_digest = ?")
+            .bind(intent.operation_id().as_str()).bind(intent.semantic_digest().as_array().as_slice())
+            .fetch_optional(&mut *transaction).await.map_err(|e| e.to_string())?;
+        if stored.as_ref().and_then(Option::as_deref) != Some(receipt) {
+            return Err("ordinary child terminal binding conflicts or is missing".to_owned());
+        }
+        transaction.commit().await.map_err(|e| e.to_string())
+    }
 }
 
 pub(super) async fn verify_durable(connection: &mut SqliteConnection) -> Result<(), String> {
@@ -124,4 +152,4 @@ pub(super) async fn verify_durable(connection: &mut SqliteConnection) -> Result<
 
 #[cfg(test)]
 #[path = "ordinary_cpu_owner_tests.rs"]
-mod tests;
+pub(super) mod tests;

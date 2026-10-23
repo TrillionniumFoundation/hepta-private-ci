@@ -14,9 +14,11 @@ pub mod final_use_authorizer;
 pub mod native_app_server;
 mod ordinary_cpu_owner;
 mod ordinary_cpu_registration;
+mod ordinary_cpu_target;
 
 pub use ordinary_cpu_registration::OrdinaryCpuBinding;
 pub use ordinary_cpu_registration::OrdinaryCpuRegistration;
+pub use ordinary_cpu_target::OrdinaryCpuTarget;
 
 use std::error::Error as StdError;
 use std::fmt;

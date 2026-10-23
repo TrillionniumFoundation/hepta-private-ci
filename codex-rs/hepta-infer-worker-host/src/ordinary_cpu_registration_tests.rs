@@ -21,7 +21,7 @@ pub(super) fn registration(temp: &TempDir) -> OrdinaryCpuRegistration {
     .expect("registration")
 }
 
-pub(super) fn request(
+pub(crate) fn request(
     registration: &OrdinaryCpuRegistration,
     operation_id: &str,
 ) -> ProductionDispatchRequest {

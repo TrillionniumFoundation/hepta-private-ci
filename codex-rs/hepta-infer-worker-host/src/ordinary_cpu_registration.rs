@@ -30,9 +30,9 @@ pub struct OrdinaryCpuBinding {
 /// The host must keep its executable/deployment immutable and independently
 /// authenticate its declared source identity; a path/digest is not that proof.
 pub struct OrdinaryCpuRegistration {
-    binding: OrdinaryCpuBinding,
-    program: PathBuf,
-    arguments: Vec<String>,
+    pub(super) binding: OrdinaryCpuBinding,
+    pub(super) program: PathBuf,
+    pub(super) arguments: Vec<String>,
 }
 
 impl OrdinaryCpuRegistration {
@@ -141,4 +141,4 @@ impl OrdinaryCpuRegistration {
 
 #[cfg(test)]
 #[path = "ordinary_cpu_registration_tests.rs"]
-mod tests;
+pub(super) mod tests;

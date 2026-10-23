@@ -9,7 +9,7 @@ use pretty_assertions::assert_eq;
 use std::time::Duration;
 use tempfile::TempDir;
 
-pub(super) fn registration(temp: &TempDir) -> OrdinaryCpuRegistration {
+pub(crate) fn registration(temp: &TempDir) -> OrdinaryCpuRegistration {
     OrdinaryCpuRegistration::new(
         OrdinaryCpuBinding {
             subject_id: StableId::new("ordinary-host-subject").expect("subject"),
@@ -27,7 +27,7 @@ pub(super) fn registration(temp: &TempDir) -> OrdinaryCpuRegistration {
     .expect("registration")
 }
 
-pub(super) async fn pool(temp: &TempDir) -> SqlitePool {
+pub(crate) async fn pool(temp: &TempDir) -> SqlitePool {
     let root = temp.path().canonicalize().expect("private root");
     let config =
         SqliteConfig::from_sqlite_home(AbsolutePathBuf::try_from(root.clone()).expect("absolute"));
