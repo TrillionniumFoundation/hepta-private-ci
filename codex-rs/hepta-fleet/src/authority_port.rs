@@ -171,6 +171,29 @@ mod tests {
         }
     }
 
+    // Strict workspace Clippy denies both unwrap_used and expect_used.
+    // Test-only explicit error branches preserve the original assertions.
+    trait CheckedFixture<T, E> {
+        fn checked_fixture(self) -> T;
+        fn checked_error_fixture(self) -> E;
+    }
+
+    impl<T, E: std::fmt::Debug> CheckedFixture<T, E> for Result<T, E> {
+        fn checked_fixture(self) -> T {
+            match self {
+                Ok(value) => value,
+                Err(error) => panic!("authority fixture failed: {error:?}"),
+            }
+        }
+
+        fn checked_error_fixture(self) -> E {
+            match self {
+                Err(error) => error,
+                Ok(_) => panic!("expected authority fixture rejection"),
+            }
+        }
+    }
+
     fn grant() -> AllocationGrant {
         AllocationGrant {
             allocation_id: "allocation-one".into(),
@@ -207,25 +230,23 @@ mod tests {
                     accelerator_millis: 1_000,
                 },
             })
-            .expect("test fixture should succeed");
+            .checked_fixture();
         ledger
     }
 
     #[test]
     fn allocation_issue_consumes_exact_live_kernel_authority_lease() {
-        let directory = tempfile::tempdir().expect("test fixture should succeed");
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
-            .expect("test fixture should succeed");
+        let directory = tempfile::tempdir().checked_fixture();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).checked_fixture();
         let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
             directory.path(),
             "security-authority".into(),
-            AuthorityLeaseFrontier::for_empty_epoch(7).expect("test fixture should succeed"),
+            AuthorityLeaseFrontier::for_empty_epoch(7).checked_fixture(),
             Arc::new(FixedClock(2_000)),
         )
-        .expect("test fixture should succeed");
+        .checked_fixture();
         let grant = grant();
-        let binding =
-            FleetAuthorityPort::binding_for_issue(&grant).expect("test fixture should succeed");
+        let binding = FleetAuthorityPort::binding_for_issue(&grant).checked_fixture();
         registry
             .put_lease(
                 AuthorityLease {
@@ -239,12 +260,12 @@ mod tests {
                 },
                 0,
             )
-            .expect("test fixture should succeed");
+            .checked_fixture();
         let port = FleetAuthorityPort::new(registry.verifier());
         let mut ledger = ledger();
         let (receipt, witness) = port
             .issue_with_witness(&mut ledger, "fleet-issue-one", 1, 2_000, grant.clone())
-            .expect("test fixture should succeed");
+            .checked_fixture();
         assert_eq!(receipt.allocation_id, "allocation-one");
         assert_eq!(witness.boundary, VerifiedUseBoundaryV1::DispatchEntry);
         assert_eq!(witness.authority_epoch, 7);
@@ -258,12 +279,10 @@ mod tests {
             other => panic!("unexpected authority witness: {other:?}"),
         }
 
-        registry
-            .revoke("fleet-issue-one", 1, [9; 32])
-            .expect("test fixture should succeed");
+        registry.revoke("fleet-issue-one", 1, [9; 32]).checked_fixture();
         assert_eq!(
             port.issue(&mut ledger, "fleet-issue-one", 2, 2_001, grant)
-                .unwrap_err(),
+                .checked_error_fixture(),
             FleetAuthorityError::Authority(AuthorityLeaseError::Revoked)
         );
     }
@@ -271,12 +290,10 @@ mod tests {
     #[test]
     fn allocation_binding_changes_when_owner_mutation_semantics_change() {
         let first = grant();
-        let first_binding =
-            FleetAuthorityPort::binding_for_issue(&first).expect("test fixture should succeed");
+        let first_binding = FleetAuthorityPort::binding_for_issue(&first).checked_fixture();
         let mut changed = first;
         changed.resources.cpu_millis += 1;
-        let changed_binding =
-            FleetAuthorityPort::binding_for_issue(&changed).expect("test fixture should succeed");
+        let changed_binding = FleetAuthorityPort::binding_for_issue(&changed).checked_fixture();
         assert_ne!(first_binding.scope_sha256, changed_binding.scope_sha256);
         assert_eq!(first_binding.payload_sha256, changed_binding.payload_sha256);
     }
