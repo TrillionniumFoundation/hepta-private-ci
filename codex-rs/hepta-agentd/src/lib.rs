@@ -14,6 +14,8 @@ mod automation_effect_host;
 mod automation_recovery;
 mod browser_servo;
 mod client;
+#[cfg(target_os = "linux")]
+mod cognitive_checkpoint_unix;
 mod cognitive_context;
 mod cognitive_ranker;
 mod cognitive_retrieval_context;
@@ -155,6 +157,10 @@ pub use codex_hepta_automation::AutomationTaskId;
 pub use codex_hepta_automation::AutomationTimeZoneProfileV1;
 pub use codex_hepta_automation::AutomationTimezoneTransitionV1;
 pub use codex_hepta_memory::RetrievalExecutionContextV1;
+#[cfg(target_os = "linux")]
+pub use cognitive_checkpoint_unix::AgentdCognitiveCheckpointPeer;
+#[cfg(target_os = "linux")]
+pub use cognitive_checkpoint_unix::AgentdUnixCognitiveCheckpointTransport;
 pub use cognitive_ranker::CurrentCognitiveRegistry;
 pub use cognitive_ranker::PinnedCognitiveRanker;
 pub use cognitive_ranker::cognitive_action_id;
