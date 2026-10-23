@@ -24,13 +24,16 @@ def emit_jsonl(path: Path, rows: list[dict]) -> None:
 
 def example(i: str, split: str, day: int, *, ood: bool = False,
             lang: str = "en", task: str = "route") -> dict:
-    return {
+    row = {
         "id": i, "cluster": "c" + i, "split": split,
         "event_time": f"2026-10-{day:02d}T12:00:00Z",
         "language": lang, "slice": task, "ood": ood,
         "options": ["allow", "deny"], "gold": "allow",
         "state": "fixture", "question": "allow or deny?",
     }
+    if split == "future_test":
+        row["future_window"] = "future_1" if day <= 4 else "future_2"
+    return row
 
 
 class BakeoffContractTests(unittest.TestCase):
@@ -44,8 +47,8 @@ class BakeoffContractTests(unittest.TestCase):
             example("val", "validation", 2),
             example("cal", "calibration", 3),
             example("test-en", "future_test", 4),
-            example("test-zh", "future_test", 4, lang="zh", task="sentinel"),
-            example("test-ood", "future_test", 4, ood=True),
+            example("test-zh", "future_test", 5, lang="zh", task="sentinel"),
+            example("test-ood", "future_test", 5, ood=True),
         ]
         emit_jsonl(self.dataset_path, self.rows)
         self.plan = {
@@ -165,6 +168,46 @@ class BakeoffContractTests(unittest.TestCase):
         with self.assertRaisesRegex(EvidenceError, "time leakage"):
             validate_dataset(self.rows)
 
+    def test_retroactive_plan_fails_even_when_hashes_match(self):
+        self.plan["registered_before_utc"] = "2026-10-04T12:00:00Z"
+        with self.assertRaisesRegex(EvidenceError, "retroactive registration"):
+            analyse(self.plan, self.dataset_path, self.runs)
+
+    def test_second_future_window_is_mandatory(self):
+        self.rows[4]["future_window"] = "future_1"
+        self.rows[5]["future_window"] = "future_1"
+        with self.assertRaisesRegex(EvidenceError, "two independent future windows"):
+            validate_dataset(self.rows)
+
+    def test_future_windows_must_be_strictly_chronological(self):
+        self.rows[4]["event_time"] = "2026-10-04T11:00:00Z"
+        self.rows[5]["event_time"] = "2026-10-04T11:00:00Z"
+        with self.assertRaisesRegex(EvidenceError, "future window chronology"):
+            validate_dataset(self.rows)
+
+    def test_future_cluster_leakage_fails(self):
+        self.rows[4]["cluster"] = self.rows[3]["cluster"]
+        with self.assertRaisesRegex(EvidenceError, "cluster crosses independent future windows"):
+            validate_dataset(self.rows)
+
+    def test_missing_explicit_window_label_fails(self):
+        del self.rows[4]["future_window"]
+        with self.assertRaisesRegex(EvidenceError, "explicit future_1/future_2"):
+            validate_dataset(self.rows)
+
+    def test_each_future_window_is_scored_separately(self):
+        result = analyse(self.plan, self.dataset_path, self.runs)
+        for arm in CANDIDATES:
+            arm_result = result["results"][arm]
+            windows = arm_result["future_windows"]
+            self.assertEqual(set(windows), {"future_1", "future_2"})
+            self.assertEqual(windows["future_1"]["n_in_domain"], 1)
+            self.assertEqual(windows["future_2"]["n_in_domain"], 1)
+            self.assertIsNone(windows["future_1"]["ood_false_acceptance"])
+            self.assertEqual(windows["future_2"]["ood_false_acceptance"], 0.0)
+            self.assertTrue(arm_result["future_window_metric_gate"])
+            self.assertFalse(result["independent_acceptance"])
+
     def test_nonholdout_prediction_fails(self):
         dataset = validate_dataset(self.rows)
         row = json.loads(
@@ -206,6 +249,9 @@ class BakeoffContractTests(unittest.TestCase):
         result = analyse(self.plan, self.dataset_path, self.runs)
         self.assertFalse(result["results"][model]["metric_gate"])
         self.assertEqual(result["results"][model]["maximum_slice_regression"], 1.0)
+        self.assertEqual(
+            result["results"][model]["maximum_future_window_accuracy_regression"], 1.0
+        )
         self.assertLess(result["results"][model]["paired_cluster_accuracy_gain_95ci"]["lower"], 0)
 
     def test_forged_abstention_is_rejected(self):

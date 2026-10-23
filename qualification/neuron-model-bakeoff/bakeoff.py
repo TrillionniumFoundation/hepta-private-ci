@@ -33,6 +33,7 @@ HEAD_BUDGET_FIELDS = (
     "head_training_dataset_sha256",
 )
 SPLITS = ("train", "validation", "calibration", "future_test")
+FUTURE_WINDOWS = ("future_1", "future_2")
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 REVISION = re.compile(r"[0-9a-f]{40}\Z")
 REQUIRED_DIGESTS = ("weights", "tokenizer", "preprocessor", "head", "quantization", "runtime", "device")
@@ -88,6 +89,8 @@ def validate_dataset(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     by_id: dict[str, dict[str, Any]] = {}
     cluster_split: dict[str, str] = {}
     windows: dict[str, list[datetime]] = defaultdict(list)
+    future_times: dict[str, list[datetime]] = defaultdict(list)
+    future_cluster_windows: dict[str, str] = {}
     for row in rows:
         rid, cluster, split = row.get("id"), row.get("cluster"), row.get("split")
         require(isinstance(rid, str) and rid and rid not in by_id, "duplicate/invalid example id")
@@ -102,11 +105,28 @@ def validate_dataset(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
         for name in ("state", "question", "language", "slice"):
             require(isinstance(row.get(name), str) and row[name], f"{rid}: missing {name}")
         require(type(row.get("ood")) is bool, f"{rid}: missing OOD label")
-        windows[split].append(parse_time(row.get("event_time")))
+        observed_at = parse_time(row.get("event_time"))
+        windows[split].append(observed_at)
+        if split == "future_test":
+            future_window = row.get("future_window")
+            require(future_window in FUTURE_WINDOWS, f"{rid}: explicit future_1/future_2 required")
+            require(future_cluster_windows.setdefault(cluster, future_window) == future_window,
+                    f"{rid}: cluster crosses independent future windows")
+            future_times[future_window].append(observed_at)
+        else:
+            require("future_window" not in row, f"{rid}: non-holdout row has future window")
         by_id[rid] = row
     require(all(windows[name] for name in SPLITS), "train/validation/calibration/future_test required")
     for earlier, later in zip(SPLITS, SPLITS[1:]):
         require(max(windows[earlier]) < min(windows[later]), f"split time leakage: {earlier} -> {later}")
+    require(all(future_times[name] for name in FUTURE_WINDOWS),
+            "two independent future windows required")
+    require(max(future_times["future_1"]) < min(future_times["future_2"]),
+            "future window chronology overlaps or reverses")
+    for name in FUTURE_WINDOWS:
+        require(any(row["split"] == "future_test" and row["future_window"] == name
+                    and not row["ood"] for row in by_id.values()),
+                f"{name}: missing in-domain evaluation rows")
     return by_id
 
 
@@ -191,11 +211,18 @@ def validate_predictions(
     return predicted
 
 
-def metrics(dataset: dict[str, dict[str, Any]], predicted: dict[str, dict[str, Any]], bins: int = 15) -> dict[str, Any]:
+def metrics(
+    dataset: dict[str, dict[str, Any]],
+    predicted: dict[str, dict[str, Any]],
+    bins: int = 15,
+    *,
+    require_ood: bool = True,
+) -> dict[str, Any]:
     ids = sorted(predicted)
     in_domain = [x for x in ids if not dataset[x]["ood"]]
     ood = [x for x in ids if dataset[x]["ood"]]
-    require(bool(in_domain) and bool(ood), "in-domain and OOD holdouts required")
+    require(bool(in_domain) and (bool(ood) or not require_ood),
+            "in-domain and OOD holdouts required")
     groups: list[list[tuple[float, float]]] = [[] for _ in range(bins)]
     correct = accepted_correct = answered = 0
     brier = 0.0
@@ -240,7 +267,8 @@ def metrics(dataset: dict[str, dict[str, Any]], predicted: dict[str, dict[str, A
         "balanced_accuracy": sum(recall_by_class.values()) / len(recall_by_class),
         "per_class_recall": recall_by_class,
         "macro_f1": sum(macro_f1_by_class.values()) / len(macro_f1_by_class),
-        "ood_false_acceptance": sum(not predicted[x]["abstained"] for x in ood) / len(ood),
+        "ood_false_acceptance": (sum(not predicted[x]["abstained"] for x in ood) / len(ood)
+                                 if ood else None),
     }
 
 
@@ -307,7 +335,7 @@ def analyse(plan: dict[str, Any], dataset_path: Path, run_dir: Path) -> dict[str
     source_commit = plan.get("source_commit")
     require(isinstance(source_commit, str) and REVISION.fullmatch(source_commit) is not None,
             "unregistered exact source commit")
-    parse_time(plan.get("registered_before_utc"))
+    registered_at = parse_time(plan.get("registered_before_utc"))
     frozen_threshold = plan.get("abstention_threshold")
     require(type(frozen_threshold) in (float, int) and math.isfinite(frozen_threshold)
             and 0 < frozen_threshold < 1, "missing/invalid frozen abstention threshold")
@@ -340,6 +368,12 @@ def analyse(plan: dict[str, Any], dataset_path: Path, run_dir: Path) -> dict[str
     dataset_hash = file_hash(dataset_path)
     require(plan.get("dataset_sha256") == dataset_hash, "preregistered dataset hash mismatch")
     dataset = validate_dataset(load_jsonl(dataset_path))
+    first_future_at = min(
+        parse_time(row["event_time"]) for row in dataset.values()
+        if row["split"] == "future_test"
+    )
+    require(registered_at < first_future_at,
+            "retroactive registration: plan must predate first future observation")
     training_digest = training_partition_digest(list(dataset.values()))
     results: dict[str, Any] = {}
     predictions_by_model: dict[str, dict[str, dict[str, Any]]] = {}
@@ -357,6 +391,15 @@ def analyse(plan: dict[str, Any], dataset_path: Path, run_dir: Path) -> dict[str
             "all": metrics(dataset, predicted),
             "languages": slice_accuracy(dataset, predicted, "language", minimum),
             "tasks": slice_accuracy(dataset, predicted, "slice", minimum),
+            "future_windows": {
+                window: metrics(
+                    dataset,
+                    {rid: prediction for rid, prediction in predicted.items()
+                     if dataset[rid]["future_window"] == window},
+                    require_ood=False,
+                )
+                for window in FUTURE_WINDOWS
+            },
         }
     head_a = load_json(run_dir / EMBEDDING_MODELS[0] / "run.json")["profile"]
     head_b = load_json(run_dir / EMBEDDING_MODELS[1] / "run.json")["profile"]
@@ -372,8 +415,26 @@ def analyse(plan: dict[str, Any], dataset_path: Path, run_dir: Path) -> dict[str
             (baseline[k][name] - result[k][name] for k in ("languages", "tasks") for name in baseline[k]),
             default=0.0,
         )
+        result["maximum_future_window_accuracy_regression"] = max(
+            baseline["future_windows"][window]["accuracy"]
+            - result["future_windows"][window]["accuracy"]
+            for window in FUTURE_WINDOWS
+        )
+        result["future_window_metric_gate"] = all(
+            result["future_windows"][window]["ece"] <= limits["max_ece"]
+            and result["future_windows"][window]["brier"] <= limits["max_brier"]
+            and (
+                result["future_windows"][window]["ood_false_acceptance"] is None
+                or result["future_windows"][window]["ood_false_acceptance"]
+                   <= limits["max_ood_false_acceptance"]
+            )
+            for window in FUTURE_WINDOWS
+        )
         result["metric_gate"] = (
-            result["all"]["ece"] <= limits["max_ece"]
+            result["future_window_metric_gate"]
+            and result["maximum_future_window_accuracy_regression"]
+                <= limits["max_slice_regression"]
+            and result["all"]["ece"] <= limits["max_ece"]
             and result["all"]["brier"] <= limits["max_brier"]
             and result["all"]["ood_false_acceptance"] <= limits["max_ood_false_acceptance"]
             and result["maximum_slice_regression"] <= limits["max_slice_regression"]

@@ -123,6 +123,16 @@ class ScaleTests(unittest.TestCase):
             )
             self.assertEqual(record["successes"], 64)
             self.assertEqual(record["failures"], 0)
+            self.assertEqual(record["configured_active_workers"], 4)
+            self.assertGreaterEqual(record["client_http_inflight_peak"], 1)
+            self.assertLessEqual(record["client_http_inflight_peak"], 4)
+            self.assertIsNone(record["server_active_inference_peak"])
+            self.assertIsNone(record["concurrently_active"])
+            self.assertFalse(record["p99_at_least_100_samples"])
+            self.assertEqual(
+                record["measurement_scope"],
+                "client_http_timing_not_attested_server_execution",
+            )
             self.assertFalse(record["qualification"])
         finally:
             server.shutdown()
