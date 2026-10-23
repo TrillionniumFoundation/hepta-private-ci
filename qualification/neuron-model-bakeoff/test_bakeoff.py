@@ -56,6 +56,11 @@ class BakeoffContractTests(unittest.TestCase):
             "candidates": list(CANDIDATES),
             "baseline": CANDIDATES[0],
             "dataset_sha256": file_hash(self.dataset_path),
+            "model_artifacts": {
+                arm: {"revision": "f" * 40, "weights_sha256": "b" * 64,
+                      "tokenizer_sha256": "b" * 64}
+                for arm in CANDIDATES
+            },
             "independent_roles": {
                 "dataset_owner": "data-owner", "evaluator": "eval",
                 "selector": "select", "executor": "exec",
@@ -111,6 +116,21 @@ class BakeoffContractTests(unittest.TestCase):
     def test_missing_candidate_fails_closed(self):
         (self.runs / CANDIDATES[-1] / "run.json").unlink()
         with self.assertRaisesRegex(EvidenceError, "missing measured run"):
+            analyse(self.plan, self.dataset_path, self.runs)
+
+    def test_model_revision_must_match_frozen_manifest(self):
+        self.plan["model_artifacts"][CANDIDATES[1]]["revision"] = "c" * 40
+        with self.assertRaisesRegex(EvidenceError, "model revision differs"):
+            analyse(self.plan, self.dataset_path, self.runs)
+
+    def test_model_weights_must_match_frozen_manifest(self):
+        self.plan["model_artifacts"][CANDIDATES[0]]["weights_sha256"] = "c" * 64
+        with self.assertRaisesRegex(EvidenceError, "model weights differ"):
+            analyse(self.plan, self.dataset_path, self.runs)
+
+    def test_model_tokenizer_must_match_frozen_manifest(self):
+        self.plan["model_artifacts"][CANDIDATES[0]]["tokenizer_sha256"] = "c" * 64
+        with self.assertRaisesRegex(EvidenceError, "model tokenizer differs"):
             analyse(self.plan, self.dataset_path, self.runs)
 
     def test_unpinned_head_fails(self):
