@@ -1,5 +1,10 @@
 # HEPTA dynamic modality allocation v4
 
+Current outcome: complete development and independent replay passed. The first
+registered confirmation stopped at the capacity preflight before model execution.
+See [RESULTS.md](RESULTS.md) and [BLOCKER_LEDGER.json](BLOCKER_LEDGER.json);
+formal mechanism acceptance and confirmatory superiority remain unestablished.
+
 ## Implemented problem and scope
 
 This stage studies a finite inference-control problem using the three frozen v3
