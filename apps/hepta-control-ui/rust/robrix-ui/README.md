@@ -18,6 +18,19 @@ ledger or an authenticated bridge. Sending remains unavailable without external
 owner composition. Queue acknowledgement is never model completion. Local drafts
 are not transcript messages. Core observer fixtures must remain visibly fixtures.
 
+The default-off `native-presentation` composition lends an existing caller-owned
+workspace to this same App and its original IME router. It publishes read-only
+Console observations without implementing `NativeHost` or enabling Send. See
+[NATIVE_COMPOSITION.md](NATIVE_COMPOSITION.md) for the fixed-workspace contract,
+original resource/notice inputs and the separate native verification gates.
+
+`native-presentation` continues to compile with the original pinned Makepad
+`337566c8` source. The separate, default-off `native-clipboard-sdk` feature
+enables the reviewed request-scoped SDK clipboard candidate. Only that feature
+imports its new API and advertises the native PasteText action. It requires the
+complete all-crate override described in `third_party/makepad-patches/README.md`;
+the ordinary native renderer needs no external SDK configuration.
+
 ## Commands and evidence limits
 
 From `apps/hepta-control-ui`, `npm run build` produces the Makepad Web package,

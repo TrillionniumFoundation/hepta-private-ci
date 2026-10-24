@@ -1,5 +1,36 @@
 use super::*;
 
+#[path = "chat_owner_recovery_tests.rs"]
+mod recovery;
+
+#[test]
+fn original_approval_scope_requires_its_explicit_live_owner_capability() {
+    let mut adapter = ChatOwnerAdapter::default();
+    adapter.install_owner(session(), 10).unwrap();
+    assert_eq!(
+        adapter.require_capability(ChatCapability::ResolveApproval, 10),
+        Err(ChatOwnerError::PermissionDenied)
+    );
+    let mut authorized = session();
+    authorized
+        .capabilities
+        .push(ChatCapability::ResolveApproval);
+    adapter.install_owner(authorized, 11).unwrap();
+    assert_eq!(
+        adapter.require_capability(ChatCapability::ResolveApproval, 11),
+        Ok(&scope())
+    );
+    assert_eq!(
+        adapter.require_capability(ChatCapability::ResolveApproval, 500_000),
+        Err(ChatOwnerError::Expired)
+    );
+    adapter.disconnect();
+    assert_eq!(
+        adapter.require_capability(ChatCapability::ResolveApproval, 12),
+        Err(ChatOwnerError::Unavailable)
+    );
+}
+
 fn scope() -> OwnerScope {
     OwnerScope {
         principal_id: "human:one".into(),
@@ -88,17 +119,62 @@ fn unavailable_or_read_only_owner_cannot_turn_clicks_into_admission() {
         adapter.begin_submit(envelope("one"), 1000),
         Err(ChatOwnerError::PermissionDenied)
     );
-    for capability in [
-        ChatCapability::CreateThread,
-        ChatCapability::InterruptTurn,
-        ChatCapability::ResolveApproval,
-    ] {
+    for capability in [ChatCapability::CreateThread] {
         assert_eq!(
             adapter.require_capability(capability, 1000),
             Err(ChatOwnerError::Unsupported)
         );
     }
+    assert_eq!(
+        adapter.require_capability(ChatCapability::InterruptTurn, 1000),
+        Err(ChatOwnerError::PermissionDenied)
+    );
     assert!(adapter.pending.is_empty());
+}
+
+#[test]
+fn known_signed_identity_survives_lost_first_ack_for_lookup_only() {
+    let mut adapter = adapter();
+    let ticket = dispatched(adapter.begin_submit(envelope("lost-ack"), 1000).unwrap());
+    adapter
+        .retain_delivery_identity(&ticket, [7; 32], 1000)
+        .unwrap();
+    assert_eq!(
+        adapter.view("lost-ack", 1000).unwrap().state,
+        DeliveryState::Sending
+    );
+    adapter.mark_unknown(&ticket).unwrap();
+    assert_eq!(
+        adapter.view("lost-ack", 1000).unwrap().state,
+        DeliveryState::Unknown
+    );
+    let lookup = dispatched(adapter.begin_status("lost-ack", 1001).unwrap());
+    assert_eq!(lookup.kind(), DispatchKind::DeliveryStatus);
+    assert_eq!(lookup.delivery_id(), Some([7; 32]));
+    assert_eq!(
+        adapter.retain_delivery_identity(&lookup, [8; 32], 1001),
+        Err(ChatOwnerError::BindingMismatch)
+    );
+}
+
+#[test]
+fn interrupt_requires_the_explicit_original_owner_capability() {
+    let mut adapter = adapter();
+    assert_eq!(
+        adapter.require_capability(ChatCapability::InterruptTurn, 1000),
+        Err(ChatOwnerError::PermissionDenied)
+    );
+    let mut authorized = session();
+    authorized.capabilities.push(ChatCapability::InterruptTurn);
+    adapter.install_owner(authorized, 1001).unwrap();
+    assert_eq!(
+        adapter.require_capability(ChatCapability::InterruptTurn, 1001),
+        Ok(&scope())
+    );
+    assert_eq!(
+        adapter.require_capability(ChatCapability::InterruptTurn, 500_000),
+        Err(ChatOwnerError::Expired)
+    );
 }
 
 #[test]

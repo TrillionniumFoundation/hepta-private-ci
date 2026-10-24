@@ -21,3 +21,14 @@ The builder's exact SDK/nightly pins, patches, licenses and source guards are
 part of the build contract. Keep generated HTML, framework glue, WASM and font
 assets from one verified build. See the [application guide](../README.md) for
 product integration, owner and qualification limits.
+
+Local draft recovery uses `ChatWorkspace::archive_local_drafts` and
+`ChatWorkspace::from_local_draft_archive`. The bounded archive includes all
+local rooms and selections in the anonymous partition and the four named
+partitions retained by the original workspace. It excludes owner sessions,
+signatures, remote thread bindings, timeline events and delivery state. A
+restored workspace starts in its anonymous partition; a named partition is
+selected only by a later authenticated `install_owner` call. The archive's
+principal strings are routing labels and provide no authority. The host owns
+private file storage, atomic replacement and migration, while an active IME
+composition defers checkpointing.

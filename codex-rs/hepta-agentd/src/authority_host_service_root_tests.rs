@@ -416,6 +416,7 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
         publisher_epoch: 1,
     };
     let mut config = HostAuthorityServiceConfig {
+        issuer_record_profile: crate::authority_host_config::HostIssuerRecordProfile::Standard,
         schema_version: 1,
         checkpoint_state_dir: None,
         consumers: None,

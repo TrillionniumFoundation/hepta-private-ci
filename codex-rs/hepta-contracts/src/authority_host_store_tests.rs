@@ -30,6 +30,44 @@ mod durable_tests;
 #[path = "authority_host_store_cache_tests.rs"]
 mod cache_tests;
 
+#[test]
+fn explicit_large_record_bound_reopens_without_relaxing_default_or_cas_bound() {
+    let directory = tempfile::tempdir().unwrap();
+    let root = test_directory(directory.path());
+    let first = "x".repeat(20 * 1024);
+    assert!(
+        HostAuthorityFrontierStore::initialize(root.clone(), "default".into(), first.clone())
+            .is_err()
+    );
+    let store = HostAuthorityFrontierStore::initialize_bounded(
+        root.clone(),
+        "large".into(),
+        first.clone(),
+        64 * 1024,
+    )
+    .unwrap();
+    let oversized = "y".repeat(64 * 1024);
+    assert_eq!(
+        store.compare_and_set("large", &first, &oversized),
+        Err(AuthorityTrustError::Invalid)
+    );
+    assert_eq!(store.load("large"), Ok(first.clone()));
+    drop(store);
+    assert!(HostAuthorityFrontierStore::<String>::open(root.clone(), "large".into()).is_err());
+    assert!(
+        HostAuthorityFrontierStore::<String>::open_bounded(
+            root.clone(),
+            "large".into(),
+            64 * 1024 + 1
+        )
+        .is_err()
+    );
+    let reopened =
+        HostAuthorityFrontierStore::<String>::open_bounded(root, "large".into(), 64 * 1024)
+            .unwrap();
+    assert_eq!(reopened.load("large"), Ok(first));
+}
+
 const OWNER: &str = "local-host-authority";
 
 // Tests exercise real filesystem persistence as their ordinary test UID. This

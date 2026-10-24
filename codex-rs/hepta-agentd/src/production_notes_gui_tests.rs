@@ -13,6 +13,9 @@ use std::process::Child;
 use std::process::Command;
 use std::process::Stdio;
 
+#[path = "production_notes_crash_owner_tests.rs"]
+mod crash_owner_tests;
+
 #[derive(Default)]
 struct NotesReplyLossProbe {
     lose_next_reply: AtomicBool,

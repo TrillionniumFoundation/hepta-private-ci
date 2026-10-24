@@ -5,68 +5,17 @@ use std::cell::Cell;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-#[derive(Default)]
-struct RunOutcome {
-    adopted: bool,
-    exited: bool,
-}
+use crate::native_launch::LaunchMode;
+use crate::native_launch::RunOutcome;
 
-type ConfigureResources = Box<dyn FnOnce(&mut Cx)>;
-
-struct Setup {
-    host: Box<dyn NativeHost>,
-    resources: Option<ConfigureResources>,
-    outcome: Rc<RefCell<RunOutcome>>,
-}
-
-thread_local! {
-    static RUNNING: Cell<bool> = const { Cell::new(false) };
-    static PENDING: RefCell<Option<Setup>> = const { RefCell::new(None) };
-}
-
-#[derive(Default)]
-struct HostSlot(Option<Setup>);
-
-/// A Linux development runner. The stock Windows loop terminates the process;
-/// it cannot yet preserve the native main's post-loop update-helper handoff.
+/// A Linux development runner. The original owner/witness and close protocol
+/// remains here; only event-loop admission is shared with presentation mode.
 #[cfg(target_os = "linux")]
-pub fn run_native(host: Box<dyn NativeHost>, resources: ConfigureResources) -> Result<(), String> {
-    if RUNNING.with(|running| running.replace(true)) {
-        return Err("a native Robrix host is already running on this thread".into());
-    }
-    struct Reset;
-    impl Drop for Reset {
-        fn drop(&mut self) {
-            PENDING.with(|slot| slot.borrow_mut().take());
-            RUNNING.with(|running| running.set(false));
-        }
-    }
-    let _reset = Reset;
-    let outcome = Rc::new(RefCell::new(RunOutcome::default()));
-    PENDING.with(|slot| {
-        *slot.borrow_mut() = Some(Setup {
-            host,
-            resources: Some(resources),
-            outcome: Rc::clone(&outcome),
-        });
-    });
-    crate::app::app_main();
-    let outcome = outcome.borrow();
-    if !outcome.adopted || !outcome.exited {
-        return Err("native Robrix host did not complete its renderer lifecycle".into());
-    }
-    Ok(())
-}
-
-pub(crate) fn configure(cx: &mut Cx) {
-    if let Some(mut setup) = PENDING.with(|slot| slot.borrow_mut().take()) {
-        setup
-            .resources
-            .take()
-            .expect("native resources are configured once")(cx);
-        setup.host.set_waker(Arc::new(SignalToUI::set_ui_signal));
-        cx.set_global(HostSlot(Some(setup)));
-    }
+pub fn run_native(
+    host: Box<dyn NativeHost>,
+    resources: Box<dyn FnOnce(&mut Cx)>,
+) -> Result<(), String> {
+    crate::native_launch::run(LaunchMode::OwnerHost(host), resources)
 }
 
 #[derive(Default)]
@@ -86,15 +35,18 @@ pub(crate) struct RendererHost {
 }
 
 impl RendererHost {
-    pub(crate) fn adopt(&mut self, cx: &mut Cx) {
-        if let Some(setup) = cx.global::<HostSlot>().0.take() {
-            setup.outcome.borrow_mut().adopted = true;
-            self.host = Some(setup.host);
-            self.outcome = Some(setup.outcome);
-            // A completion signal can arrive just before JoinHandle becomes
-            // finished. Keep the legacy 250 ms bounded nonblocking poll fallback.
-            self.poll_timer = cx.start_interval(0.25);
-        }
+    pub(crate) fn adopt(
+        &mut self,
+        cx: &mut Cx,
+        host: Box<dyn NativeHost>,
+        outcome: Rc<RefCell<RunOutcome>>,
+    ) {
+        outcome.borrow_mut().adopted = true;
+        self.host = Some(host);
+        self.outcome = Some(outcome);
+        // A completion signal can arrive just before JoinHandle becomes
+        // finished. Keep the legacy 250 ms bounded nonblocking poll fallback.
+        self.poll_timer = cx.start_interval(0.25);
     }
 
     pub(crate) fn before_event(&mut self, cx: &mut Cx, ui: &WidgetRef, event: &Event) -> bool {

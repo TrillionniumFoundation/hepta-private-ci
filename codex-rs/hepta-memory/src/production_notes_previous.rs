@@ -92,6 +92,65 @@ impl FinalUseProductionOutboxTarget for ProductionNotesRecoveryTarget {
 }
 
 impl ProductionDurableWriter {
+    /// Reattach an explicitly identified retained operation through a recovery-
+    /// only descriptor. The trusted host supplies the old target and original
+    /// operation id; neither directory discovery nor a fresh app's null
+    /// previous-receipt response selects them. No target I/O occurs before the
+    /// original source owner verifies its immutable intent/payload/state.
+    ///
+    /// Committed source rows remain eligible: the application may have durably
+    /// retired its receipt and lost that ACK. Its exact AlreadyReleased reply
+    /// must still be reachable without redispatching or inventing a receipt.
+    pub async fn notes_recovery_target_for_retained_operation(
+        &self,
+        target: NotesTargetIdentity,
+        operation_id: &str,
+        channel: Arc<dyn NotesRecoveryChannel>,
+    ) -> Result<ProductionNotesRecoveryTarget, ProductionWriterError> {
+        self.verify_current_authority().await?;
+        target.validate().map_err(ProductionWriterError::Invalid)?;
+        StableId::new(operation_id)
+            .map_err(|error| ProductionWriterError::Invalid(error.to_string()))?;
+        let retained = self
+            .retained_operation(operation_id)
+            .await?
+            .ok_or_else(|| {
+                ProductionWriterError::Invalid(
+                    "explicit Notes recovery has no retained operation".into(),
+                )
+            })?;
+        let parsed = parse_replace(&target, &retained.payload_json)
+            .map_err(ProductionWriterError::Invalid)?;
+        let original = notes_operation_intent(
+            &target,
+            &retained.payload_json,
+            StableId::new(self.owner_agent_id().as_str())
+                .map_err(|error| ProductionWriterError::Invalid(error.to_string()))?,
+            retained.operation.policy_generation(),
+        )
+        .map_err(ProductionWriterError::Invalid)?;
+        if parsed.operation_id != operation_id
+            || retained.topic != NOTES_REPLACE_TOPIC_V1
+            || original != retained.operation
+            || !matches!(
+                retained.state,
+                LocalOutcomeState::Indeterminate | LocalOutcomeState::Committed
+            )
+        {
+            return Err(ProductionWriterError::Invalid(
+                "explicit Notes recovery differs from an executed retained operation".into(),
+            ));
+        }
+        let recovery = ProductionNotesRecoveryTarget {
+            inner: ProductionNotesTarget::new(target, Arc::new(RecoveryOnlyChannel(channel)))
+                .map_err(ProductionWriterError::Invalid)?,
+            operation_id: operation_id.to_owned(),
+            payload_sha256: Sha256Digest::for_bytes(retained.payload_json.as_bytes()),
+        };
+        self.verify_current_authority().await?;
+        Ok(recovery)
+    }
+
     /// Discover through the current attached application's private recovery
     /// lane, then validate against this original writer's retained operation.
     /// The fresh nonce is supplied by the trusted blocking host worker. No

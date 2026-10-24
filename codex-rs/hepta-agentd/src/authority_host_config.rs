@@ -86,6 +86,16 @@ pub struct HostAuthorityServiceConfig {
     pub peer_gid: u32,
     pub timeout_ms: u64,
     pub lifetime_ms: u64,
+    #[serde(default)]
+    pub issuer_record_profile: HostIssuerRecordProfile,
+}
+
+#[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum HostIssuerRecordProfile {
+    #[default]
+    Standard,
+    TextRecovery,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -173,7 +183,9 @@ pub(super) fn read_root_json<T: serde::de::DeserializeOwned>(path: &Path) -> io:
     .map_err(io::Error::other)?;
     let mut file = OpenOptions::new()
         .read(true)
-        .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC)
+        // Validate the opened descriptor below without first blocking on a
+        // substituted FIFO. Async callers cannot time out a synchronous open.
+        .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK)
         .open(path)?;
     let metadata = file.metadata()?;
     if !metadata.is_file()

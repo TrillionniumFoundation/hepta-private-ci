@@ -188,7 +188,7 @@ Example with notification opt-out:
 - `thread/goal/updated` — notification emitted whenever a thread goal changes; includes the full current goal.
 - `thread/goal/cleared` — notification emitted whenever a thread goal is removed.
 - `thread/queue/add` — experimental; persist a user turn for automatic FIFO submission when the thread next becomes idle.
-- `thread/queue/reconcile` — experimental; atomically reconcile or admit one text-only user turn against a durable `(threadId, clientUserMessageId, payload SHA-256)` binding. `allowIfAbsent` may create one queue row; `reconcileOnly` never creates one.
+- `thread/queue/reconcile` — experimental; atomically reconcile or admit one text-only user turn against a durable `(threadId, clientUserMessageId, payload SHA-256)` binding. `allowIfAbsent` may create one queue row; `reconcileOnly` never creates one; `closeIfAbsent` retains an original cancellation binding only for absent input.
 - `thread/queue/list` — experimental; return one page of a thread's queued turns.
 - `thread/queue/update` — experimental; edit a queued turn while preserving its stable submission ID, client message ID, and position.
 - `thread/queue/delete` — experimental; remove a queued turn by submission ID.
@@ -627,8 +627,12 @@ Paginated threads support the same views. Their `full` view is materialized from
 Each returned entry includes the containing `turnId` and its full `item`, so clients can group
 unfiltered pages into turns. Omit `turnId` or pass `null` to page items across the thread. Item
 cursors can be reused with or without `turnId`; the filter does not change the cursor's scope.
-Thread stores that do not implement item pagination return JSON-RPC `-32601` with message
-`thread/items/list is not supported yet`.
+Paginated threads use their original item index. Legacy threads reconstruct items from the same
+rollout and live turn overlay used by `thread/turns/list`, then return the requested bounded item
+count. This compatibility path replays the rollout on each request; individual items retain their
+complete original payload. Legacy cursors bind the thread and original turn/item anchor, reject a
+removed anchor after rollback, and may be reused with or without a turn filter. A cursor from a
+different thread is rejected. Neither path creates or changes a thread, turn, item, or input.
 
 `thread/searchOccurrences` searches one paginated thread without replaying its rollout. It returns
 occurrences in chronological message order from every visible user message, including steering
@@ -813,6 +817,8 @@ A queued submission contains its user input and a required, client-provided `cli
 ```
 
 Use `thread/queue/reconcile` when a transport needs one correctness operation instead of a paginated `queue/list` → `turns/list` → `queue/add` sequence. The request is limited to text input and includes the caller's canonical digest; the server normalizes the input, recomputes that digest, and returns the authoritative value. Reusing a client message ID with different content fails closed before admission. A queued outcome includes `created: true` only for the transaction that inserted the row; retries return the same row with `created: false`. Persisted, missing, and cancelled are separate outcomes.
+
+`closeIfAbsent` uses the same original per-thread dispatch guard, durable client reservation, and full rollout scan. If that exact client ID and payload are absent, its reservation is atomically retained as `cancelled`. A late `allowIfAbsent` for the same input then returns `cancelled`, including after the original owner restarts. Existing queued or persisted input is observed without modification. Changed payloads still conflict. This mode does not delete a queued input, interrupt a live turn, or assert that a model completed.
 
 ```json
 { "method": "thread/queue/reconcile", "id": 41, "params": {

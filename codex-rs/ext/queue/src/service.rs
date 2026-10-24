@@ -69,6 +69,7 @@ pub struct QueuedItem {
 pub enum QueueReconcileMode {
     AllowIfAbsent,
     ReconcileOnly,
+    CloseIfAbsent,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -495,6 +496,9 @@ impl QueuedItemService {
                     }
                     QueueReconcileMode::ReconcileOnly => {
                         QueuedClientBindingFinalizeMode::ReconcileOnly
+                    }
+                    QueueReconcileMode::CloseIfAbsent => {
+                        QueuedClientBindingFinalizeMode::CloseIfAbsent
                     }
                 };
                 match self

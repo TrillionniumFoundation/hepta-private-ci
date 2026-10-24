@@ -9,6 +9,9 @@ use sha2::Digest;
 use sha2::Sha256;
 use std::collections::BTreeMap;
 
+#[path = "chat_owner_recovery.rs"]
+mod recovery;
+
 pub const CHAT_OWNER_PROTOCOL: &str = "hepta.ui-chat-owner.v1";
 pub const MAX_PENDING_DELIVERIES: usize = 32;
 pub const MAX_SIGNED_TEXT_BYTES: usize = 8 * 1024;
@@ -317,12 +320,7 @@ impl ChatOwnerAdapter {
         capability: ChatCapability,
         now_ms: u64,
     ) -> Result<&OwnerScope, ChatOwnerError> {
-        if matches!(
-            capability,
-            ChatCapability::CreateThread
-                | ChatCapability::InterruptTurn
-                | ChatCapability::ResolveApproval
-        ) {
+        if matches!(capability, ChatCapability::CreateThread) {
             return Err(ChatOwnerError::Unsupported);
         }
         if now_ms < self.now_ms {
@@ -536,9 +534,31 @@ impl ChatOwnerAdapter {
         }
         pending.in_flight = None;
         pending.view.fresh = false;
-        if pending.view.delivery_id.is_none() {
+        if pending.view.state == DeliveryState::Sending {
             pending.view.state = DeliveryState::Unknown;
         }
+        Ok(())
+    }
+
+    /// The host can retain the canonical signed-envelope correlation before
+    /// I/O. This records no admission/queue outcome and enables lookup after a
+    /// lost first ACK. The digest alone grants neither submit nor completion.
+    pub fn retain_delivery_identity(
+        &mut self,
+        ticket: &DispatchTicket,
+        identity: [u8; 32],
+        now_ms: u64,
+    ) -> Result<(), ChatOwnerError> {
+        self.advance_clock(now_ms)?;
+        self.validate_ticket(ticket, now_ms)?;
+        let pending = self
+            .pending
+            .get_mut(&ticket.envelope.metadata.message_id)
+            .ok_or(ChatOwnerError::UnknownDelivery)?;
+        if identity == [0; 32] || pending.view.delivery_id.is_some_and(|old| old != identity) {
+            return Err(ChatOwnerError::BindingMismatch);
+        }
+        pending.view.delivery_id = Some(identity);
         Ok(())
     }
 

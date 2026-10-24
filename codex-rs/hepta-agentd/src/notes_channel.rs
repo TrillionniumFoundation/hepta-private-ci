@@ -110,8 +110,24 @@ impl NotesPrivateChannel for AgentdNotesChannel {
 
 // This object retains only the recovery datagram. It has no reference to the
 // effect stream, including through an owning AgentdNotesChannel Arc.
-struct AgentdNotesRecoveryChannel {
+pub struct AgentdNotesRecoveryChannel {
     endpoint: Arc<Mutex<UnixDatagram>>,
+}
+
+impl AgentdNotesRecoveryChannel {
+    /// One explicitly inherited recovery capability, with no effect stream.
+    pub fn from_private_channel(endpoint: UnixDatagram) -> io::Result<Self> {
+        if !endpoint.local_addr()?.is_unnamed() || !endpoint.peer_addr()?.is_unnamed() {
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "Notes recovery requires an inherited unnamed datagram pair",
+            ));
+        }
+        endpoint.set_nonblocking(false)?;
+        Ok(Self {
+            endpoint: Arc::new(Mutex::new(endpoint)),
+        })
+    }
 }
 
 impl NotesRecoveryChannel for AgentdNotesRecoveryChannel {

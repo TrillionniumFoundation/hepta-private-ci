@@ -267,6 +267,32 @@ impl AgentdClient {
         }
     }
 
+    /// Typed absence is observation only. The original daemon verifies its
+    /// independent replay checkpoint; absence never authorizes a new send.
+    pub async fn authbus_text_lookup(
+        &self,
+        delivery_id: String,
+    ) -> Result<Option<crate::AuthBusTextStatus>, AgentdError> {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::AuthBusTextLookup {
+                    delivery_id: delivery_id.clone(),
+                },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::AuthBusTextLookup {
+                delivery_id: observed,
+                status,
+            } if observed == delivery_id => Ok(status),
+            payload => unexpected(payload),
+        }
+    }
+
     pub async fn append_kernel_evidence(
         &self,
         request: crate::KernelEvidenceAppendIngress,

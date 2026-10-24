@@ -36,6 +36,11 @@ use crate::DeploymentFrontierStore;
 #[path = "deployment_authbus.rs"]
 mod authbus;
 
+#[path = "deployment_text.rs"]
+mod text;
+pub use text::TextIssuerOperation;
+pub(crate) use text::VerifiedTextRetirement;
+
 #[path = "deployment_issuer_root.rs"]
 mod root;
 use root::ProtectedLease;
@@ -70,6 +75,12 @@ struct IssuerState {
     sequence: u64,
     #[serde(default)]
     writer_authorization: Option<crate::HostSignedWriterAuthorizationV1>,
+    #[serde(default)]
+    text_signatures: Vec<text::RetainedTextSignature>,
+    /// Monotonic intent watermark in the SAME issuer CAS. A retired or skipped
+    /// number can never be signed again, even when its signature slot is freed.
+    #[serde(default)]
+    text_intent_sequence: u64,
 }
 
 /// Independent signer; private key bytes are neither serialized nor logged.
@@ -202,6 +213,8 @@ impl DeploymentFinalUseIssuer {
                 },
                 sequence: 0,
                 writer_authorization: None,
+                text_signatures: Vec::new(),
+                text_intent_sequence: 0,
             },
         )?;
         File::open(directory)?.sync_all()?;
@@ -219,8 +232,18 @@ impl DeploymentFinalUseIssuer {
         protected: bool,
         lease: Option<ProtectedLease>,
     ) -> io::Result<Self> {
+        Self::open_inner_with_record_bound(directory, clock, protected, lease, 16 * 1024)
+    }
+
+    fn open_inner_with_record_bound(
+        directory: &Path,
+        clock: Arc<dyn AuthorityClock>,
+        protected: bool,
+        lease: Option<ProtectedLease>,
+        record_bound: u64,
+    ) -> io::Result<Self> {
         let store = if protected {
-            DeploymentFrontierStore::open_protected(directory)?
+            DeploymentFrontierStore::open_protected_bounded(directory, record_bound)?
         } else {
             DeploymentFrontierStore::open(directory)?
         };

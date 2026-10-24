@@ -1,0 +1,1599 @@
+diff --git a/Cargo.toml b/Cargo.toml
+index ab35fdd..40d2c33 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -4,16 +4,12 @@ members = [
+     "common",
+     "consumer",
+     "platforms/atspi-common",
+-    "platforms/macos",
+     "platforms/unix",
+-    "platforms/windows",
+-    "platforms/winit",
+ ]
+ default-members = [
+     "common",
+     "consumer",
+     "platforms/atspi-common",
+-    "platforms/winit",
+ ]
+ 
+ [workspace.package]
+diff --git a/common/src/geometry.rs b/common/src/geometry.rs
+index a7cd1f2..afc1f5d 100644
+--- a/common/src/geometry.rs
++++ b/common/src/geometry.rs
+@@ -9,10 +9,16 @@
+ // the LICENSE-APACHE file) or the MIT license (found in
+ // the LICENSE-MIT file), at your option.
+ 
+-use core::{
+-    fmt,
+-    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
+-};
++use core::fmt;
++use core::ops::Add;
++use core::ops::AddAssign;
++use core::ops::Div;
++use core::ops::DivAssign;
++use core::ops::Mul;
++use core::ops::MulAssign;
++use core::ops::Neg;
++use core::ops::Sub;
++use core::ops::SubAssign;
+ 
+ /// A 2D affine transform. Derived from [kurbo](https://github.com/linebender/kurbo).
+ #[derive(Clone, Copy, Debug, PartialEq)]
+diff --git a/common/src/lib.rs b/common/src/lib.rs
+index b630f21..fed429a 100644
+--- a/common/src/lib.rs
++++ b/common/src/lib.rs
+@@ -12,25 +12,49 @@
+ 
+ extern crate alloc;
+ 
+-use alloc::{boxed::Box, string::String, vec::Vec};
++use alloc::boxed::Box;
++use alloc::string::String;
++use alloc::vec::Vec;
+ use core::fmt;
+ #[cfg(feature = "pyo3")]
+ use pyo3::pyclass;
+ #[cfg(feature = "schemars")]
+-use schemars::{
+-    gen::SchemaGenerator,
+-    schema::{InstanceType, ObjectValidation, Schema, SchemaObject},
+-    JsonSchema, Map as SchemaMap,
+-};
++use schemars::gen::SchemaGenerator;
++#[cfg(feature = "schemars")]
++use schemars::schema::InstanceType;
++#[cfg(feature = "schemars")]
++use schemars::schema::ObjectValidation;
++#[cfg(feature = "schemars")]
++use schemars::schema::Schema;
++#[cfg(feature = "schemars")]
++use schemars::schema::SchemaObject;
++#[cfg(feature = "schemars")]
++use schemars::JsonSchema;
++#[cfg(feature = "schemars")]
++use schemars::Map as SchemaMap;
++#[cfg(feature = "serde")]
++use serde::de::Deserializer;
+ #[cfg(feature = "serde")]
+-use serde::{
+-    de::{Deserializer, IgnoredAny, MapAccess, Visitor},
+-    ser::{SerializeMap, Serializer},
+-    Deserialize, Serialize,
+-};
++use serde::de::IgnoredAny;
++#[cfg(feature = "serde")]
++use serde::de::MapAccess;
++#[cfg(feature = "serde")]
++use serde::de::Visitor;
++#[cfg(feature = "serde")]
++use serde::ser::SerializeMap;
++#[cfg(feature = "serde")]
++use serde::ser::Serializer;
++#[cfg(feature = "serde")]
++use serde::Deserialize;
++#[cfg(feature = "serde")]
++use serde::Serialize;
+ 
+ mod geometry;
+-pub use geometry::{Affine, Point, Rect, Size, Vec2};
++pub use geometry::Affine;
++pub use geometry::Point;
++pub use geometry::Rect;
++pub use geometry::Size;
++pub use geometry::Vec2;
+ 
+ /// The type of an accessibility node.
+ ///
+@@ -341,6 +365,16 @@ pub enum Action {
+     SetValue,
+ 
+     ShowContextMenu,
++
++    /// Apply an atomic text or clipboard operation to an observed text range.
++    /// Requires [`ActionData::EditText`]. The application must validate the
++    /// observed text and range identity again before changing its editor.
++    EditText,
++
++    /// Request a native clipboard read for an observed text insertion point.
++    /// Requires [`ActionData::EditText`] with [`TextEditOperation::Paste`].
++    /// Applications advertise this separately from synchronous text edits.
++    PasteText,
+ }
+ 
+ impl Action {
+@@ -378,6 +412,8 @@ impl Action {
+             21 => Some(Action::SetSequentialFocusNavigationStartingPoint),
+             22 => Some(Action::SetValue),
+             23 => Some(Action::ShowContextMenu),
++            24 => Some(Action::EditText),
++            25 => Some(Action::PasteText),
+             _ => None,
+         }
+     }
+@@ -2332,6 +2368,37 @@ pub enum ActionData {
+     /// of the action's target node.
+     SetScrollOffset(Point),
+     SetTextSelection(TextSelection),
++    EditText(TextEdit),
++}
++
++/// A complete edit against one observed editor revision. The run identities in
++/// `range` and the complete `expected` text must still match on the UI thread.
++/// An adapter must never implement this as independent selection/edit actions.
++#[derive(Clone, Debug, PartialEq)]
++#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
++#[cfg_attr(feature = "schemars", derive(JsonSchema))]
++#[cfg_attr(
++    feature = "serde",
++    serde(deny_unknown_fields, rename_all = "camelCase")
++)]
++pub struct TextEdit {
++    pub range: TextSelection,
++    pub expected: Box<str>,
++    pub operation: TextEditOperation,
++}
++
++/// Clipboard actions use the application's existing native clipboard path.
++#[derive(Clone, Debug, PartialEq)]
++#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
++#[cfg_attr(feature = "schemars", derive(JsonSchema))]
++#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
++pub enum TextEditOperation {
++    Replace(Box<str>),
++    Copy,
++    Cut,
++    /// Read the native clipboard and insert only if this editor revision is
++    /// still current when the asynchronous result arrives.
++    Paste,
+ }
+ 
+ #[derive(Clone, Debug, PartialEq)]
+@@ -2430,7 +2497,9 @@ mod tests {
+         );
+         assert_eq!(Action::n(22), Some(Action::SetValue));
+         assert_eq!(Action::n(23), Some(Action::ShowContextMenu));
+-        assert_eq!(Action::n(24), None);
++        assert_eq!(Action::n(24), Some(Action::EditText));
++        assert_eq!(Action::n(25), Some(Action::PasteText));
++        assert_eq!(Action::n(26), None);
+     }
+ 
+     #[test]
+diff --git a/consumer/src/iterators.rs b/consumer/src/iterators.rs
+index efef7ab..392041b 100644
+--- a/consumer/src/iterators.rs
++++ b/consumer/src/iterators.rs
+@@ -12,7 +12,9 @@ use core::iter::FusedIterator;
+ 
+ use accesskit::NodeId;
+ 
+-use crate::{filters::FilterResult, node::Node, tree::State as TreeState};
++use crate::filters::FilterResult;
++use crate::node::Node;
++use crate::tree::State as TreeState;
+ 
+ /// An iterator that yields following siblings of a node.
+ ///
+diff --git a/consumer/src/lib.rs b/consumer/src/lib.rs
+index 5ab13d3..ed2a129 100644
+--- a/consumer/src/lib.rs
++++ b/consumer/src/lib.rs
+@@ -8,25 +8,36 @@
+ extern crate alloc;
+ 
+ pub(crate) mod tree;
+-pub use tree::{ChangeHandler as TreeChangeHandler, State as TreeState, Tree};
++pub use tree::ChangeHandler as TreeChangeHandler;
++pub use tree::State as TreeState;
++pub use tree::Tree;
+ 
+ pub(crate) mod node;
+ pub use node::Node;
+ 
+ pub(crate) mod filters;
+-pub use filters::{common_filter, common_filter_with_root_exception, FilterResult};
++pub use filters::common_filter;
++pub use filters::common_filter_with_root_exception;
++pub use filters::FilterResult;
+ 
+ pub(crate) mod iterators;
+ 
+ pub(crate) mod text;
+-pub use text::{
+-    AttributeValue as TextAttributeValue, Position as TextPosition, Range as TextRange,
+-    WeakRange as WeakTextRange,
+-};
++pub use text::AttributeValue as TextAttributeValue;
++pub use text::Position as TextPosition;
++pub use text::Range as TextRange;
++pub use text::WeakRange as WeakTextRange;
+ 
+ #[cfg(test)]
+ mod tests {
+-    use accesskit::{Affine, Node, NodeId, Rect, Role, Tree, TreeUpdate, Vec2};
++    use accesskit::Affine;
++    use accesskit::Node;
++    use accesskit::NodeId;
++    use accesskit::Rect;
++    use accesskit::Role;
++    use accesskit::Tree;
++    use accesskit::TreeUpdate;
++    use accesskit::Vec2;
+     use alloc::vec;
+ 
+     use crate::FilterResult;
+diff --git a/consumer/src/node.rs b/consumer/src/node.rs
+index e7a0879..7209d88 100644
+--- a/consumer/src/node.rs
++++ b/consumer/src/node.rs
+@@ -8,22 +8,30 @@
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE.chromium file.
+ 
+-use accesskit::{
+-    Action, Affine, FrozenNode as NodeData, Live, NodeId, Orientation, Point, Rect, Role,
+-    TextSelection, Toggled,
+-};
+-use alloc::{
+-    string::{String, ToString},
+-    sync::Arc,
+-    vec::Vec,
+-};
++use accesskit::Action;
++use accesskit::Affine;
++use accesskit::FrozenNode as NodeData;
++use accesskit::Live;
++use accesskit::NodeId;
++use accesskit::Orientation;
++use accesskit::Point;
++use accesskit::Rect;
++use accesskit::Role;
++use accesskit::TextSelection;
++use accesskit::Toggled;
++use alloc::string::String;
++use alloc::string::ToString;
++use alloc::sync::Arc;
++use alloc::vec::Vec;
+ use core::iter::FusedIterator;
+ 
+ use crate::filters::FilterResult;
+-use crate::iterators::{
+-    FilteredChildren, FollowingFilteredSiblings, FollowingSiblings, LabelledBy,
+-    PrecedingFilteredSiblings, PrecedingSiblings,
+-};
++use crate::iterators::FilteredChildren;
++use crate::iterators::FollowingFilteredSiblings;
++use crate::iterators::FollowingSiblings;
++use crate::iterators::LabelledBy;
++use crate::iterators::PrecedingFilteredSiblings;
++use crate::iterators::PrecedingSiblings;
+ use crate::tree::State as TreeState;
+ 
+ #[derive(Clone, Copy, PartialEq, Eq)]
+@@ -448,7 +456,9 @@ impl<'a> Node<'a> {
+ 
+     // The future of the `Action` enum is undecided, so keep the following
+     // function private for now.
+-    fn supports_action(&self, action: Action) -> bool {
++    /// Whether the application advertised this action for the current node.
++    /// This exposes the capability bit without exposing the internal NodeData.
++    pub fn supports_action(&self, action: Action) -> bool {
+         self.data().supports_action(action)
+     }
+ 
+@@ -668,7 +678,13 @@ impl<'a> Node<'a> {
+ 
+ #[cfg(test)]
+ mod tests {
+-    use accesskit::{Node, NodeId, Point, Rect, Role, Tree, TreeUpdate};
++    use accesskit::Node;
++    use accesskit::NodeId;
++    use accesskit::Point;
++    use accesskit::Rect;
++    use accesskit::Role;
++    use accesskit::Tree;
++    use accesskit::TreeUpdate;
+     use alloc::vec;
+ 
+     use crate::tests::*;
+diff --git a/consumer/src/text.rs b/consumer/src/text.rs
+index 0404ad0..884e196 100644
+--- a/consumer/src/text.rs
++++ b/consumer/src/text.rs
+@@ -3,13 +3,21 @@
+ // the LICENSE-APACHE file) or the MIT license (found in
+ // the LICENSE-MIT file), at your option.
+ 
+-use accesskit::{
+-    NodeId, Point, Rect, Role, TextDirection, TextPosition as WeakPosition, TextSelection,
+-};
+-use alloc::{string::String, vec::Vec};
+-use core::{cmp::Ordering, iter::FusedIterator};
+-
+-use crate::{FilterResult, Node, TreeState};
++use accesskit::NodeId;
++use accesskit::Point;
++use accesskit::Rect;
++use accesskit::Role;
++use accesskit::TextDirection;
++use accesskit::TextPosition as WeakPosition;
++use accesskit::TextSelection;
++use alloc::string::String;
++use alloc::vec::Vec;
++use core::cmp::Ordering;
++use core::iter::FusedIterator;
++
++use crate::FilterResult;
++use crate::Node;
++use crate::TreeState;
+ 
+ #[derive(Clone, Copy)]
+ pub(crate) struct InnerPosition<'a> {
+@@ -1089,12 +1097,21 @@ impl<'a> Node<'a> {
+ 
+ #[cfg(test)]
+ mod tests {
+-    use accesskit::{NodeId, Point, Rect, TextSelection};
++    use accesskit::NodeId;
++    use accesskit::Point;
++    use accesskit::Rect;
++    use accesskit::TextSelection;
+     use alloc::vec;
+ 
+     // This is based on an actual tree produced by egui.
+     fn main_multiline_tree(selection: Option<TextSelection>) -> crate::Tree {
+-        use accesskit::{Action, Affine, Node, Role, TextDirection, Tree, TreeUpdate};
++        use accesskit::Action;
++        use accesskit::Affine;
++        use accesskit::Node;
++        use accesskit::Role;
++        use accesskit::TextDirection;
++        use accesskit::Tree;
++        use accesskit::TreeUpdate;
+ 
+         let update = TreeUpdate {
+             nodes: vec![
+diff --git a/consumer/src/tree.rs b/consumer/src/tree.rs
+index f476898..c0d2aa0 100644
+--- a/consumer/src/tree.rs
++++ b/consumer/src/tree.rs
+@@ -3,12 +3,22 @@
+ // the LICENSE-APACHE file) or the MIT license (found in
+ // the LICENSE-MIT file), at your option.
+ 
+-use accesskit::{FrozenNode as NodeData, NodeId, Tree as TreeData, TreeUpdate};
+-use alloc::{format, string::String, sync::Arc, vec, vec::Vec};
+-use hashbrown::{HashMap, HashSet};
++use accesskit::FrozenNode as NodeData;
++use accesskit::NodeId;
++use accesskit::Tree as TreeData;
++use accesskit::TreeUpdate;
++use alloc::format;
++use alloc::string::String;
++use alloc::sync::Arc;
++use alloc::vec;
++use alloc::vec::Vec;
++use hashbrown::HashMap;
++use hashbrown::HashSet;
+ use immutable_chunkmap::map::MapM as ChunkMap;
+ 
+-use crate::node::{Node, NodeState, ParentAndIndex};
++use crate::node::Node;
++use crate::node::NodeState;
++use crate::node::ParentAndIndex;
+ 
+ #[derive(Clone)]
+ pub struct State {
+@@ -364,7 +374,11 @@ fn short_node_list<'a>(nodes: impl ExactSizeIterator<Item = &'a NodeId>) -> Stri
+ 
+ #[cfg(test)]
+ mod tests {
+-    use accesskit::{Node, NodeId, Role, Tree, TreeUpdate};
++    use accesskit::Node;
++    use accesskit::NodeId;
++    use accesskit::Role;
++    use accesskit::Tree;
++    use accesskit::TreeUpdate;
+     use alloc::vec;
+ 
+     #[test]
+diff --git a/platforms/atspi-common/src/action.rs b/platforms/atspi-common/src/action.rs
+index bbdfdf7..a27ccc4 100644
+--- a/platforms/atspi-common/src/action.rs
++++ b/platforms/atspi-common/src/action.rs
+@@ -3,7 +3,8 @@
+ // the LICENSE-APACHE file) or the MIT license (found in
+ // the LICENSE-MIT file), at your option.
+ 
+-use serde::{Deserialize, Serialize};
++use serde::Deserialize;
++use serde::Serialize;
+ use zvariant::Type;
+ 
+ #[derive(Deserialize, Serialize, Type)]
+diff --git a/platforms/atspi-common/src/adapter.rs b/platforms/atspi-common/src/adapter.rs
+index e44de30..3d07240 100644
+--- a/platforms/atspi-common/src/adapter.rs
++++ b/platforms/atspi-common/src/adapter.rs
+@@ -8,24 +8,38 @@
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE.chromium file.
+ 
+-use accesskit::{ActionHandler, NodeId, Role, TreeUpdate};
+-use accesskit_consumer::{FilterResult, Node, Tree, TreeChangeHandler, TreeState};
+-use atspi_common::{InterfaceSet, Live, State};
+-use std::{
+-    collections::HashSet,
+-    sync::{
+-        atomic::{AtomicUsize, Ordering},
+-        Arc, RwLock,
+-    },
+-};
+-
+-use crate::{
+-    context::{ActionHandlerNoMut, ActionHandlerWrapper, AppContext, Context},
+-    filters::filter,
+-    node::{NodeIdOrRoot, NodeWrapper, PlatformNode, PlatformRoot},
+-    util::WindowBounds,
+-    AdapterCallback, Event, ObjectEvent, WindowEvent,
+-};
++use accesskit::ActionHandler;
++use accesskit::NodeId;
++use accesskit::Role;
++use accesskit::TreeUpdate;
++use accesskit_consumer::FilterResult;
++use accesskit_consumer::Node;
++use accesskit_consumer::Tree;
++use accesskit_consumer::TreeChangeHandler;
++use accesskit_consumer::TreeState;
++use atspi_common::InterfaceSet;
++use atspi_common::Live;
++use atspi_common::State;
++use std::collections::HashSet;
++use std::sync::atomic::AtomicUsize;
++use std::sync::atomic::Ordering;
++use std::sync::Arc;
++use std::sync::RwLock;
++
++use crate::context::ActionHandlerNoMut;
++use crate::context::ActionHandlerWrapper;
++use crate::context::AppContext;
++use crate::context::Context;
++use crate::filters::filter;
++use crate::node::NodeIdOrRoot;
++use crate::node::NodeWrapper;
++use crate::node::PlatformNode;
++use crate::node::PlatformRoot;
++use crate::util::WindowBounds;
++use crate::AdapterCallback;
++use crate::Event;
++use crate::ObjectEvent;
++use crate::WindowEvent;
+ 
+ struct AdapterChangeHandler<'a> {
+     adapter: &'a Adapter,
+diff --git a/platforms/atspi-common/src/callback.rs b/platforms/atspi-common/src/callback.rs
+index deb1df8..612f964 100644
+--- a/platforms/atspi-common/src/callback.rs
++++ b/platforms/atspi-common/src/callback.rs
+@@ -6,7 +6,8 @@
+ use accesskit::NodeId;
+ use atspi_common::InterfaceSet;
+ 
+-use crate::{Adapter, Event};
++use crate::Adapter;
++use crate::Event;
+ 
+ pub trait AdapterCallback {
+     fn register_interfaces(&self, adapter: &Adapter, id: NodeId, interfaces: InterfaceSet);
+diff --git a/platforms/atspi-common/src/context.rs b/platforms/atspi-common/src/context.rs
+index dbf02c4..470e6b5 100644
+--- a/platforms/atspi-common/src/context.rs
++++ b/platforms/atspi-common/src/context.rs
+@@ -3,9 +3,14 @@
+ // the LICENSE-APACHE file) or the MIT license (found in
+ // the LICENSE-MIT file), at your option.
+ 
+-use accesskit::{ActionHandler, ActionRequest};
++use accesskit::ActionHandler;
++use accesskit::ActionRequest;
+ use accesskit_consumer::Tree;
+-use std::sync::{Arc, Mutex, RwLock, RwLockReadGuard, RwLockWriteGuard};
++use std::sync::Arc;
++use std::sync::Mutex;
++use std::sync::RwLock;
++use std::sync::RwLockReadGuard;
++use std::sync::RwLockWriteGuard;
+ 
+ use crate::WindowBounds;
+ 
+diff --git a/platforms/atspi-common/src/editable_text_tests.rs b/platforms/atspi-common/src/editable_text_tests.rs
+new file mode 100644
+index 0000000..ddbab3f
+--- /dev/null
++++ b/platforms/atspi-common/src/editable_text_tests.rs
+@@ -0,0 +1,194 @@
++use super::*;
++use crate::context::ActionHandlerWrapper;
++use accesskit::ActionHandler;
++use accesskit::Node as RawNode;
++use accesskit::TextPosition;
++use accesskit::Tree as RawTree;
++use accesskit::TreeUpdate;
++use std::sync::Mutex;
++
++struct Record(Arc<Mutex<Vec<ActionRequest>>>);
++impl ActionHandler for Record {
++    fn do_action(&mut self, request: ActionRequest) {
++        self.0.lock().unwrap().push(request);
++    }
++}
++
++fn snapshot(editable: bool) -> TreeUpdate {
++    let mut root = RawNode::new(Role::Window);
++    root.set_children(vec![NodeId(2)]);
++    let mut input = RawNode::new(Role::MultilineTextInput);
++    input.set_children(vec![NodeId(3)]);
++    input.set_value("中e\u{301}🙂");
++    if editable {
++        input.add_action(Action::EditText);
++    }
++    let mut run = RawNode::new(Role::TextRun);
++    run.set_value("中e\u{301}🙂");
++    run.set_character_lengths(vec![3, 3, 4]);
++    TreeUpdate {
++        nodes: vec![(NodeId(1), root), (NodeId(2), input), (NodeId(3), run)],
++        tree: Some(RawTree::new(NodeId(1))),
++        focus: NodeId(2),
++    }
++}
++
++fn setup() -> (Arc<Context>, PlatformNode, Arc<Mutex<Vec<ActionRequest>>>) {
++    let requests = Arc::new(Mutex::new(Vec::new()));
++    let context = Context::new(
++        &AppContext::new(),
++        accesskit_consumer::Tree::new(snapshot(true), true),
++        Arc::new(ActionHandlerWrapper::new(Record(requests.clone()))),
++        WindowBounds::default(),
++    );
++    let node = PlatformNode::new(&context, 0, NodeId(2));
++    (context, node, requests)
++}
++
++#[test]
++fn entire_value_is_one_revision_bound_request() {
++    let (_context, node, requests) = setup();
++    assert!(node.interfaces().unwrap().contains(Interface::EditableText));
++    assert!(node.set_text_contents("中文").unwrap());
++    let requests = requests.lock().unwrap();
++    assert_eq!(requests.len(), 1);
++    assert_eq!(requests[0].action, Action::EditText);
++    let Some(ActionData::EditText(edit)) = &requests[0].data else {
++        panic!("missing atomic edit")
++    };
++    assert_eq!(edit.expected.as_ref(), "中e\u{301}🙂");
++    assert_eq!(
++        edit.range.anchor,
++        TextPosition {
++            node: NodeId(3),
++            character_index: 0
++        }
++    );
++    assert_eq!(
++        edit.range.focus,
++        TextPosition {
++            node: NodeId(3),
++            character_index: 3
++        }
++    );
++    assert_eq!(edit.operation, TextEditOperation::Replace("中文".into()));
++}
++
++#[test]
++fn unicode_scalar_offsets_never_round_inside_grapheme() {
++    let (_context, node, requests) = setup();
++    assert!(matches!(
++        node.delete_text(2, 3),
++        Err(Error::IndexOutOfRange)
++    ));
++    assert!(matches!(
++        node.insert_text(-1, "a", 1),
++        Err(Error::IndexOutOfRange)
++    ));
++    assert!(matches!(
++        node.delete_text(3, 1),
++        Err(Error::IndexOutOfRange)
++    ));
++    assert!(requests.lock().unwrap().is_empty());
++    assert!(node.delete_text(1, 3).unwrap());
++    let requests = requests.lock().unwrap();
++    let Some(ActionData::EditText(edit)) = &requests[0].data else {
++        panic!()
++    };
++    assert_eq!(edit.range.anchor.character_index, 1);
++    assert_eq!(edit.range.focus.character_index, 2);
++}
++
++#[test]
++fn insert_length_is_bytes_and_invalid_utf8_prefix_is_refused() {
++    let (_context, node, requests) = setup();
++    assert!(!node.insert_text(1, "你好", 1).unwrap());
++    assert!(!node.insert_text(1, "你好", -1).unwrap());
++    assert!(!node.insert_text(1, "你好", 7).unwrap());
++    assert!(requests.lock().unwrap().is_empty());
++    assert!(node.insert_text(1, "你好", 3).unwrap());
++    let requests = requests.lock().unwrap();
++    let Some(ActionData::EditText(edit)) = &requests[0].data else {
++        panic!()
++    };
++    assert_eq!(edit.operation, TextEditOperation::Replace("你".into()));
++    assert_eq!(edit.range.anchor, edit.range.focus);
++}
++
++#[test]
++fn limit_nul_and_unavailable_action_never_queue_mutation() {
++    let (context, node, requests) = setup();
++    assert!(!node.set_text_contents(&"界".repeat(6000)).unwrap());
++    assert!(!node.set_text_contents("a\0b").unwrap());
++    assert!(!node.insert_text(0, &"x".repeat(16384), 16384).unwrap());
++    context.tree.write().unwrap().update(snapshot(false));
++    assert!(!node.interfaces().unwrap().contains(Interface::EditableText));
++    assert!(matches!(
++        node.set_text_contents("new"),
++        Err(Error::UnsupportedInterface)
++    ));
++    assert!(requests.lock().unwrap().is_empty());
++}
++
++#[test]
++fn clipboard_and_defunct_node_preserve_original_range_identity() {
++    let (context, node, requests) = setup();
++    assert!(node.copy_text(0, 1).unwrap());
++    assert!(node.cut_text(1, 3).unwrap());
++    let captured = requests.lock().unwrap();
++    assert_eq!(captured.len(), 2);
++    let Some(ActionData::EditText(copy)) = &captured[0].data else {
++        panic!()
++    };
++    let Some(ActionData::EditText(cut)) = &captured[1].data else {
++        panic!()
++    };
++    assert_eq!(copy.operation, TextEditOperation::Copy);
++    assert_eq!(cut.operation, TextEditOperation::Cut);
++    assert_eq!(copy.expected, cut.expected);
++    drop(captured);
++    context.tree.write().unwrap().update(TreeUpdate {
++        nodes: vec![(NodeId(1), RawNode::new(Role::Window))],
++        tree: None,
++        focus: NodeId(1),
++    });
++    assert!(matches!(node.delete_text(0, 1), Err(Error::Defunct)));
++    assert_eq!(requests.lock().unwrap().len(), 2);
++}
++
++#[test]
++fn paste_is_one_degenerate_revision_bound_clipboard_request() {
++    let (context, node, requests) = setup();
++    // EditableText alone never claims native clipboard support. The standard
++    // D-Bus method returns false without queueing an unavailable operation.
++    assert!(!node.paste_text(1).unwrap());
++    assert!(requests.lock().unwrap().is_empty());
++    let mut enabled = snapshot(true);
++    enabled
++        .nodes
++        .iter_mut()
++        .find(|(id, _)| *id == NodeId(2))
++        .unwrap()
++        .1
++        .add_action(Action::PasteText);
++    context.tree.write().unwrap().update(enabled);
++    assert!(matches!(node.paste_text(2), Err(Error::IndexOutOfRange)));
++    assert!(requests.lock().unwrap().is_empty());
++    assert!(node.paste_text(1).unwrap());
++    let requests = requests.lock().unwrap();
++    assert_eq!(requests.len(), 1);
++    assert_eq!(requests[0].action, Action::PasteText);
++    let Some(ActionData::EditText(edit)) = &requests[0].data else {
++        panic!()
++    };
++    assert_eq!(edit.operation, TextEditOperation::Paste);
++    assert_eq!(edit.expected.as_ref(), "中e\u{301}🙂");
++    assert_eq!(
++        edit.range.anchor,
++        TextPosition {
++            node: NodeId(3),
++            character_index: 1
++        }
++    );
++    assert_eq!(edit.range.anchor, edit.range.focus);
++}
+diff --git a/platforms/atspi-common/src/events.rs b/platforms/atspi-common/src/events.rs
+index 6c95ab3..c5f9a1a 100644
+--- a/platforms/atspi-common/src/events.rs
++++ b/platforms/atspi-common/src/events.rs
+@@ -4,9 +4,12 @@
+ // the LICENSE-MIT file), at your option.
+ 
+ use accesskit::NodeId;
+-use atspi_common::{Live, Role, State};
++use atspi_common::Live;
++use atspi_common::Role;
++use atspi_common::State;
+ 
+-use crate::{NodeIdOrRoot, Rect};
++use crate::NodeIdOrRoot;
++use crate::Rect;
+ 
+ #[derive(Debug)]
+ pub enum Event {
+diff --git a/platforms/atspi-common/src/lib.rs b/platforms/atspi-common/src/lib.rs
+index fa2ba07..d7b11da 100644
+--- a/platforms/atspi-common/src/lib.rs
++++ b/platforms/atspi-common/src/lib.rs
+@@ -16,16 +16,26 @@ mod rect;
+ pub mod simplified;
+ mod util;
+ 
+-pub use atspi_common::{
+-    CoordType, Granularity, InterfaceSet, Layer, Role, ScrollType, State, StateSet,
+-};
++pub use atspi_common::CoordType;
++pub use atspi_common::Granularity;
++pub use atspi_common::InterfaceSet;
++pub use atspi_common::Layer;
++pub use atspi_common::Role;
++pub use atspi_common::ScrollType;
++pub use atspi_common::State;
++pub use atspi_common::StateSet;
+ 
+ pub use action::*;
+-pub use adapter::{next_adapter_id, Adapter};
++pub use adapter::next_adapter_id;
++pub use adapter::Adapter;
+ pub use callback::AdapterCallback;
+-pub use context::{ActionHandlerNoMut, ActionHandlerWrapper, AppContext};
++pub use context::ActionHandlerNoMut;
++pub use context::ActionHandlerWrapper;
++pub use context::AppContext;
+ pub use error::*;
+ pub use events::*;
+-pub use node::{NodeIdOrRoot, PlatformNode, PlatformRoot};
++pub use node::NodeIdOrRoot;
++pub use node::PlatformNode;
++pub use node::PlatformRoot;
+ pub use rect::*;
+ pub use util::WindowBounds;
+diff --git a/platforms/atspi-common/src/node.rs b/platforms/atspi-common/src/node.rs
+index 3151870..bb52564 100644
+--- a/platforms/atspi-common/src/node.rs
++++ b/platforms/atspi-common/src/node.rs
+@@ -8,29 +8,56 @@
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE.chromium file.
+ 
+-use accesskit::{
+-    Action, ActionData, ActionRequest, Affine, Live, NodeId, Orientation, Point, Rect, Role,
+-    Toggled,
+-};
+-use accesskit_consumer::{FilterResult, Node, TreeState};
+-use atspi_common::{
+-    CoordType, Granularity, Interface, InterfaceSet, Layer, Live as AtspiLive, Role as AtspiRole,
+-    ScrollType, State, StateSet,
+-};
+-use std::{
+-    collections::HashMap,
+-    hash::{Hash, Hasher},
+-    iter::FusedIterator,
+-    sync::{Arc, RwLock, RwLockReadGuard, Weak},
+-};
+-
+-use crate::{
+-    adapter::Adapter,
+-    context::{AppContext, Context},
+-    filters::filter,
+-    util::*,
+-    Action as AtspiAction, Error, ObjectEvent, Property, Rect as AtspiRect, Result,
+-};
++use accesskit::Action;
++use accesskit::ActionData;
++use accesskit::ActionRequest;
++use accesskit::Affine;
++use accesskit::Live;
++use accesskit::NodeId;
++use accesskit::Orientation;
++use accesskit::Point;
++use accesskit::Rect;
++use accesskit::Role;
++use accesskit::TextEdit;
++use accesskit::TextEditOperation;
++use accesskit::Toggled;
++use accesskit_consumer::FilterResult;
++use accesskit_consumer::Node;
++use accesskit_consumer::TreeState;
++use atspi_common::CoordType;
++use atspi_common::Granularity;
++use atspi_common::Interface;
++use atspi_common::InterfaceSet;
++use atspi_common::Layer;
++use atspi_common::Live as AtspiLive;
++use atspi_common::Role as AtspiRole;
++use atspi_common::ScrollType;
++use atspi_common::State;
++use atspi_common::StateSet;
++use std::collections::HashMap;
++use std::hash::Hash;
++use std::hash::Hasher;
++use std::iter::FusedIterator;
++use std::sync::Arc;
++use std::sync::RwLock;
++use std::sync::RwLockReadGuard;
++use std::sync::Weak;
++
++use crate::adapter::Adapter;
++use crate::context::AppContext;
++use crate::context::Context;
++use crate::filters::filter;
++use crate::util::*;
++use crate::Action as AtspiAction;
++use crate::Error;
++use crate::ObjectEvent;
++use crate::Property;
++use crate::Rect as AtspiRect;
++use crate::Result;
++
++#[cfg(test)]
++#[path = "editable_text_tests.rs"]
++mod editable_text_tests;
+ 
+ pub(crate) struct NodeWrapper<'a>(pub(crate) &'a Node<'a>);
+ 
+@@ -376,6 +403,13 @@ impl<'a> NodeWrapper<'a> {
+         self.0.supports_text_ranges()
+     }
+ 
++    fn supports_editable_text(&self) -> bool {
++        self.supports_text()
++            && self.0.is_text_input()
++            && !self.0.is_read_only_or_disabled()
++            && self.0.supports_action(Action::EditText)
++    }
++
+     fn supports_value(&self) -> bool {
+         self.current_value().is_some()
+     }
+@@ -391,6 +425,9 @@ impl<'a> NodeWrapper<'a> {
+         if self.supports_text() {
+             interfaces.insert(Interface::Text);
+         }
++        if self.supports_editable_text() {
++            interfaces.insert(Interface::EditableText);
++        }
+         if self.supports_value() {
+             interfaces.insert(Interface::Value);
+         }
+@@ -1000,6 +1037,116 @@ impl PlatformNode {
+         })
+     }
+ 
++    // This compatibility patch is scoped to Hepta's bounded native editor.
++    // Reject before cloning/enqueuing an unbounded external D-Bus value.
++    const MAX_EDIT_BYTES: usize = 16 * 1024;
++
++    fn edit_text(&self, offsets: Option<(i32, i32)>, operation: TextEditOperation) -> Result<bool> {
++        if matches!(&operation, TextEditOperation::Replace(value)
++            if value.len() > Self::MAX_EDIT_BYTES || value.contains('\0'))
++        {
++            return Ok(false);
++        }
++        let context = self.upgrade_context()?;
++        let tree = context.read_tree();
++        let node = tree.state().node_by_id(self.id).ok_or(Error::Defunct)?;
++        if !NodeWrapper(&node).supports_editable_text() {
++            return Err(Error::UnsupportedInterface);
++        }
++        let action = if operation == TextEditOperation::Paste {
++            if !node.supports_action(Action::PasteText) {
++                return Ok(false);
++            }
++            Action::PasteText
++        } else {
++            Action::EditText
++        };
++        let range = match offsets {
++            None => node.document_range(),
++            Some((start, end)) if start >= 0 && end >= start => {
++                let start_position =
++                    text_position_from_offset(&node, start).ok_or(Error::IndexOutOfRange)?;
++                let end_position =
++                    text_position_from_offset(&node, end).ok_or(Error::IndexOutOfRange)?;
++                // Consumer positions are grapheme based. Do not silently round
++                // an AT-SPI Unicode scalar offset inside a combining sequence.
++                if start_position.to_global_usv_index() != start as usize
++                    || end_position.to_global_usv_index() != end as usize
++                {
++                    return Err(Error::IndexOutOfRange);
++                }
++                let mut range = start_position.to_degenerate_range();
++                range.set_end(end_position);
++                range
++            }
++            Some(_) => return Err(Error::IndexOutOfRange),
++        };
++        let expected = node.document_range().text();
++        if expected.len() > Self::MAX_EDIT_BYTES || expected.contains('\0') {
++            return Ok(false);
++        }
++        if let TextEditOperation::Replace(value) = &operation {
++            let resulting = expected.len() - range.text().len() + value.len();
++            if resulting > Self::MAX_EDIT_BYTES {
++                return Ok(false);
++            }
++        }
++        let request = ActionRequest {
++            action,
++            target: node.id(),
++            data: Some(ActionData::EditText(TextEdit {
++                range: range.to_text_selection(),
++                expected: expected.into_boxed_str(),
++                operation,
++            })),
++        };
++        // Never call application code while holding the consumer tree lock.
++        drop(tree);
++        context.do_action(request);
++        Ok(true)
++    }
++
++    pub fn set_text_contents(&self, value: &str) -> Result<bool> {
++        if value.len() > Self::MAX_EDIT_BYTES || value.contains('\0') {
++            return Ok(false);
++        }
++        self.edit_text(None, TextEditOperation::Replace(value.into()))
++    }
++
++    pub fn insert_text(&self, position: i32, value: &str, length: i32) -> Result<bool> {
++        // The AT-SPI length is a byte count, while position is a character
++        // offset. A partial UTF-8 code point is refused, never rounded.
++        let Ok(length) = usize::try_from(length) else {
++            return Ok(false);
++        };
++        if length > Self::MAX_EDIT_BYTES {
++            return Ok(false);
++        }
++        let Some(value) = value.get(..length) else {
++            return Ok(false);
++        };
++        self.edit_text(
++            Some((position, position)),
++            TextEditOperation::Replace(value.into()),
++        )
++    }
++
++    pub fn copy_text(&self, start: i32, end: i32) -> Result<bool> {
++        self.edit_text(Some((start, end)), TextEditOperation::Copy)
++    }
++
++    pub fn cut_text(&self, start: i32, end: i32) -> Result<bool> {
++        self.edit_text(Some((start, end)), TextEditOperation::Cut)
++    }
++
++    pub fn delete_text(&self, start: i32, end: i32) -> Result<bool> {
++        self.edit_text(Some((start, end)), TextEditOperation::Replace("".into()))
++    }
++
++    pub fn paste_text(&self, position: i32) -> Result<bool> {
++        self.edit_text(Some((position, position)), TextEditOperation::Paste)
++    }
++
+     pub fn set_caret_offset(&self, offset: i32) -> Result<bool> {
+         self.resolve_for_text_with_context(|node, context| {
+             let offset = text_position_from_offset(&node, offset).ok_or(Error::IndexOutOfRange)?;
+diff --git a/platforms/atspi-common/src/rect.rs b/platforms/atspi-common/src/rect.rs
+index 7705dec..df6bb1b 100644
+--- a/platforms/atspi-common/src/rect.rs
++++ b/platforms/atspi-common/src/rect.rs
+@@ -3,8 +3,11 @@
+ // the LICENSE-APACHE file) or the MIT license (found in
+ // the LICENSE-MIT file), at your option.
+ 
+-use serde::{Deserialize, Serialize};
+-use zvariant::{OwnedValue, Type, Value};
++use serde::Deserialize;
++use serde::Serialize;
++use zvariant::OwnedValue;
++use zvariant::Type;
++use zvariant::Value;
+ 
+ #[derive(
+     Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, OwnedValue, Type, Value,
+diff --git a/platforms/atspi-common/src/simplified.rs b/platforms/atspi-common/src/simplified.rs
+index b2ee51e..c2543b1 100644
+--- a/platforms/atspi-common/src/simplified.rs
++++ b/platforms/atspi-common/src/simplified.rs
+@@ -9,12 +9,24 @@
+ 
+ use std::collections::HashMap;
+ 
+-use crate::{
+-    Adapter, Event as EventEnum, NodeIdOrRoot, ObjectEvent, PlatformNode, PlatformRoot, Property,
+-    WindowEvent,
+-};
+-
+-pub use crate::{CoordType, Error, Granularity, Layer, Rect, Result, Role, ScrollType, StateSet};
++use crate::Adapter;
++use crate::Event as EventEnum;
++use crate::NodeIdOrRoot;
++use crate::ObjectEvent;
++use crate::PlatformNode;
++use crate::PlatformRoot;
++use crate::Property;
++use crate::WindowEvent;
++
++pub use crate::CoordType;
++pub use crate::Error;
++pub use crate::Granularity;
++pub use crate::Layer;
++pub use crate::Rect;
++pub use crate::Result;
++pub use crate::Role;
++pub use crate::ScrollType;
++pub use crate::StateSet;
+ 
+ #[derive(Clone, Hash, PartialEq)]
+ pub enum Accessible {
+diff --git a/platforms/atspi-common/src/util.rs b/platforms/atspi-common/src/util.rs
+index 2632af4..9f8f63b 100644
+--- a/platforms/atspi-common/src/util.rs
++++ b/platforms/atspi-common/src/util.rs
+@@ -3,9 +3,13 @@
+ // the LICENSE-APACHE file) or the MIT license (found in
+ // the LICENSE-MIT file), at your option.
+ 
+-use accesskit::{Point, Rect};
+-use accesskit_consumer::{Node, TextPosition, TextRange};
+-use atspi_common::{CoordType, Granularity};
++use accesskit::Point;
++use accesskit::Rect;
++use accesskit_consumer::Node;
++use accesskit_consumer::TextPosition;
++use accesskit_consumer::TextRange;
++use atspi_common::CoordType;
++use atspi_common::Granularity;
+ 
+ use crate::Error;
+ 
+diff --git a/platforms/unix/src/adapter.rs b/platforms/unix/src/adapter.rs
+index 4083d8d..c77be04 100644
+--- a/platforms/unix/src/adapter.rs
++++ b/platforms/unix/src/adapter.rs
+@@ -3,19 +3,30 @@
+ // the LICENSE-APACHE file) or the MIT license (found in
+ // the LICENSE-MIT file), at your option.
+ 
+-use accesskit::{ActionHandler, ActivationHandler, DeactivationHandler, NodeId, Rect, TreeUpdate};
+-use accesskit_atspi_common::{
+-    next_adapter_id, ActionHandlerNoMut, ActionHandlerWrapper, Adapter as AdapterImpl,
+-    AdapterCallback, Event, PlatformNode, WindowBounds,
+-};
++use accesskit::ActionHandler;
++use accesskit::ActivationHandler;
++use accesskit::DeactivationHandler;
++use accesskit::NodeId;
++use accesskit::Rect;
++use accesskit::TreeUpdate;
++use accesskit_atspi_common::next_adapter_id;
++use accesskit_atspi_common::ActionHandlerNoMut;
++use accesskit_atspi_common::ActionHandlerWrapper;
++use accesskit_atspi_common::Adapter as AdapterImpl;
++use accesskit_atspi_common::AdapterCallback;
++use accesskit_atspi_common::Event;
++use accesskit_atspi_common::PlatformNode;
++use accesskit_atspi_common::WindowBounds;
+ #[cfg(not(feature = "tokio"))]
+ use async_channel::Sender;
+ use atspi::InterfaceSet;
+-use std::sync::{Arc, Mutex};
++use std::sync::Arc;
++use std::sync::Mutex;
+ #[cfg(feature = "tokio")]
+ use tokio::sync::mpsc::UnboundedSender as Sender;
+ 
+-use crate::context::{get_or_init_app_context, get_or_init_messages};
++use crate::context::get_or_init_app_context;
++use crate::context::get_or_init_messages;
+ 
+ pub(crate) struct Callback {
+     messages: Sender<Message>,
+diff --git a/platforms/unix/src/atspi/bus.rs b/platforms/unix/src/atspi/bus.rs
+index 9b289d2..9dd5494 100644
+--- a/platforms/unix/src/atspi/bus.rs
++++ b/platforms/unix/src/atspi/bus.rs
+@@ -3,27 +3,37 @@
+ // the LICENSE-APACHE file) or the MIT license (found in
+ // the LICENSE-MIT file), at your option.
+ 
+-use crate::{
+-    atspi::{interfaces::*, ObjectId},
+-    context::get_or_init_app_context,
+-    executor::{Executor, Task},
+-};
++use crate::atspi::interfaces::*;
++use crate::atspi::ObjectId;
++use crate::context::get_or_init_app_context;
++use crate::executor::Executor;
++use crate::executor::Task;
+ use accesskit::NodeId;
+-use accesskit_atspi_common::{
+-    NodeIdOrRoot, ObjectEvent, PlatformNode, PlatformRoot, Property, WindowEvent,
+-};
+-use atspi::{
+-    events::EventBody,
+-    proxy::{bus::BusProxy, socket::SocketProxy},
+-    Interface, InterfaceSet,
+-};
++use accesskit_atspi_common::NodeIdOrRoot;
++use accesskit_atspi_common::ObjectEvent;
++use accesskit_atspi_common::PlatformNode;
++use accesskit_atspi_common::PlatformRoot;
++use accesskit_atspi_common::Property;
++use accesskit_atspi_common::WindowEvent;
++use atspi::events::EventBody;
++use atspi::proxy::bus::BusProxy;
++use atspi::proxy::socket::SocketProxy;
++use atspi::Interface;
++use atspi::InterfaceSet;
+ use serde::Serialize;
+-use std::{collections::HashMap, env::var, io};
+-use zbus::{
+-    names::{BusName, InterfaceName, MemberName, OwnedUniqueName},
+-    zvariant::{Str, Value},
+-    Address, Connection, ConnectionBuilder, Result,
+-};
++use std::collections::HashMap;
++use std::env::var;
++use std::io;
++use zbus::names::BusName;
++use zbus::names::InterfaceName;
++use zbus::names::MemberName;
++use zbus::names::OwnedUniqueName;
++use zbus::zvariant::Str;
++use zbus::zvariant::Value;
++use zbus::Address;
++use zbus::Connection;
++use zbus::ConnectionBuilder;
++use zbus::Result;
+ 
+ pub(crate) struct Bus {
+     conn: Connection,
+@@ -123,6 +133,10 @@ impl Bus {
+             self.register_interface(&path, TextInterface::new(node.clone()))
+                 .await?;
+         }
++        if new_interfaces.contains(Interface::EditableText) {
++            self.register_interface(&path, EditableTextInterface::new(node.clone()))
++                .await?;
++        }
+         if new_interfaces.contains(Interface::Value) {
+             self.register_interface(&path, ValueInterface::new(node.clone()))
+                 .await?;
+@@ -167,6 +181,10 @@ impl Bus {
+         if old_interfaces.contains(Interface::Text) {
+             self.unregister_interface::<TextInterface>(&path).await?;
+         }
++        if old_interfaces.contains(Interface::EditableText) {
++            self.unregister_interface::<EditableTextInterface>(&path)
++                .await?;
++        }
+         if old_interfaces.contains(Interface::Value) {
+             self.unregister_interface::<ValueInterface>(&path).await?;
+         }
+diff --git a/platforms/unix/src/atspi/interfaces/accessible.rs b/platforms/unix/src/atspi/interfaces/accessible.rs
+index f809be0..df78e85 100644
+--- a/platforms/unix/src/atspi/interfaces/accessible.rs
++++ b/platforms/unix/src/atspi/interfaces/accessible.rs
+@@ -5,12 +5,20 @@
+ 
+ use std::collections::HashMap;
+ 
+-use accesskit_atspi_common::{NodeIdOrRoot, PlatformNode, PlatformRoot};
+-use atspi::{Interface, InterfaceSet, Role, StateSet};
+-use zbus::{fdo, interface, names::OwnedUniqueName};
++use accesskit_atspi_common::NodeIdOrRoot;
++use accesskit_atspi_common::PlatformNode;
++use accesskit_atspi_common::PlatformRoot;
++use atspi::Interface;
++use atspi::InterfaceSet;
++use atspi::Role;
++use atspi::StateSet;
++use zbus::fdo;
++use zbus::interface;
++use zbus::names::OwnedUniqueName;
+ 
+ use super::map_root_error;
+-use crate::atspi::{ObjectId, OwnedObjectAddress};
++use crate::atspi::ObjectId;
++use crate::atspi::OwnedObjectAddress;
+ 
+ pub(crate) struct NodeAccessibleInterface {
+     bus_name: OwnedUniqueName,
+diff --git a/platforms/unix/src/atspi/interfaces/action.rs b/platforms/unix/src/atspi/interfaces/action.rs
+index e982468..eab1c10 100644
+--- a/platforms/unix/src/atspi/interfaces/action.rs
++++ b/platforms/unix/src/atspi/interfaces/action.rs
+@@ -3,8 +3,10 @@
+ // the LICENSE-APACHE file) or the MIT license (found in
+ // the LICENSE-MIT file), at your option.
+ 
+-use accesskit_atspi_common::{Action, PlatformNode};
+-use zbus::{fdo, interface};
++use accesskit_atspi_common::Action;
++use accesskit_atspi_common::PlatformNode;
++use zbus::fdo;
++use zbus::interface;
+ 
+ pub(crate) struct ActionInterface(PlatformNode);
+ 
+diff --git a/platforms/unix/src/atspi/interfaces/application.rs b/platforms/unix/src/atspi/interfaces/application.rs
+index 6ad408b..87d34f9 100644
+--- a/platforms/unix/src/atspi/interfaces/application.rs
++++ b/platforms/unix/src/atspi/interfaces/application.rs
+@@ -4,7 +4,8 @@
+ // the LICENSE-MIT file), at your option.
+ 
+ use accesskit_atspi_common::PlatformRoot;
+-use zbus::{fdo, interface};
++use zbus::fdo;
++use zbus::interface;
+ 
+ use super::map_root_error;
+ 
+diff --git a/platforms/unix/src/atspi/interfaces/component.rs b/platforms/unix/src/atspi/interfaces/component.rs
+index ac99efe..ea066d5 100644
+--- a/platforms/unix/src/atspi/interfaces/component.rs
++++ b/platforms/unix/src/atspi/interfaces/component.rs
+@@ -3,11 +3,16 @@
+ // the LICENSE-APACHE file) or the MIT license (found in
+ // the LICENSE-MIT file), at your option.
+ 
+-use accesskit_atspi_common::{PlatformNode, Rect};
+-use atspi::{CoordType, Layer};
+-use zbus::{fdo, interface, names::OwnedUniqueName};
++use accesskit_atspi_common::PlatformNode;
++use accesskit_atspi_common::Rect;
++use atspi::CoordType;
++use atspi::Layer;
++use zbus::fdo;
++use zbus::interface;
++use zbus::names::OwnedUniqueName;
+ 
+-use crate::atspi::{ObjectId, OwnedObjectAddress};
++use crate::atspi::ObjectId;
++use crate::atspi::OwnedObjectAddress;
+ 
+ pub(crate) struct ComponentInterface {
+     bus_name: OwnedUniqueName,
+diff --git a/platforms/unix/src/atspi/interfaces/editable_text.rs b/platforms/unix/src/atspi/interfaces/editable_text.rs
+new file mode 100644
+index 0000000..dd8e497
+--- /dev/null
++++ b/platforms/unix/src/atspi/interfaces/editable_text.rs
+@@ -0,0 +1,66 @@
++// Copyright 2026 The AccessKit Authors. All rights reserved.
++// Licensed under the Apache License, Version 2.0 (found in
++// the LICENSE-APACHE file) or the MIT license (found in
++// the LICENSE-MIT file), at your option.
++
++use accesskit_atspi_common::PlatformNode;
++use zbus::fdo;
++use zbus::interface;
++
++pub(crate) struct EditableTextInterface {
++    node: PlatformNode,
++}
++
++impl EditableTextInterface {
++    pub fn new(node: PlatformNode) -> Self {
++        Self { node }
++    }
++
++    fn map_error(&self) -> impl '_ + FnOnce(accesskit_atspi_common::Error) -> fdo::Error {
++        |error| crate::util::map_error_from_node(&self.node, error)
++    }
++}
++
++#[interface(name = "org.a11y.atspi.EditableText")]
++impl EditableTextInterface {
++    fn set_text_contents(&self, new_contents: &str) -> fdo::Result<bool> {
++        self.node
++            .set_text_contents(new_contents)
++            .map_err(self.map_error())
++    }
++
++    fn insert_text(&self, position: i32, text: &str, length: i32) -> fdo::Result<bool> {
++        self.node
++            .insert_text(position, text, length)
++            .map_err(self.map_error())
++    }
++
++    fn copy_text(&self, start_pos: i32, end_pos: i32) -> fdo::Result<()> {
++        match self
++            .node
++            .copy_text(start_pos, end_pos)
++            .map_err(self.map_error())?
++        {
++            true => Ok(()),
++            false => Err(fdo::Error::Failed("Text copy was refused".into())),
++        }
++    }
++
++    fn cut_text(&self, start_pos: i32, end_pos: i32) -> fdo::Result<bool> {
++        self.node
++            .cut_text(start_pos, end_pos)
++            .map_err(self.map_error())
++    }
++
++    fn delete_text(&self, start_pos: i32, end_pos: i32) -> fdo::Result<bool> {
++        self.node
++            .delete_text(start_pos, end_pos)
++            .map_err(self.map_error())
++    }
++
++    fn paste_text(&self, position: i32) -> fdo::Result<bool> {
++        // As with the other semantic edits, true means queued. The original
++        // editor revalidates this exact revision after its clipboard reply.
++        self.node.paste_text(position).map_err(self.map_error())
++    }
++}
+diff --git a/platforms/unix/src/atspi/interfaces/mod.rs b/platforms/unix/src/atspi/interfaces/mod.rs
+index 607c4f8..13d9d63 100644
+--- a/platforms/unix/src/atspi/interfaces/mod.rs
++++ b/platforms/unix/src/atspi/interfaces/mod.rs
+@@ -7,11 +7,14 @@ mod accessible;
+ mod action;
+ mod application;
+ mod component;
++mod editable_text;
+ mod text;
+ mod value;
+ 
+-use crate::atspi::{ObjectId, OwnedObjectAddress};
+-use zbus::{fdo, names::UniqueName};
++use crate::atspi::ObjectId;
++use crate::atspi::OwnedObjectAddress;
++use zbus::fdo;
++use zbus::names::UniqueName;
+ 
+ fn map_root_error(error: accesskit_atspi_common::Error) -> fdo::Error {
+     crate::util::map_error(ObjectId::Root, error)
+@@ -31,5 +34,6 @@ pub(crate) use accessible::*;
+ pub(crate) use action::*;
+ pub(crate) use application::*;
+ pub(crate) use component::*;
++pub(crate) use editable_text::*;
+ pub(crate) use text::*;
+ pub(crate) use value::*;
+diff --git a/platforms/unix/src/atspi/interfaces/text.rs b/platforms/unix/src/atspi/interfaces/text.rs
+index be92625..0745a4f 100644
+--- a/platforms/unix/src/atspi/interfaces/text.rs
++++ b/platforms/unix/src/atspi/interfaces/text.rs
+@@ -3,10 +3,14 @@
+ // the LICENSE-APACHE file) or the MIT license (found in
+ // the LICENSE-MIT file), at your option.
+ 
+-use accesskit_atspi_common::{PlatformNode, Rect};
+-use atspi::{CoordType, Granularity, ScrollType};
++use accesskit_atspi_common::PlatformNode;
++use accesskit_atspi_common::Rect;
++use atspi::CoordType;
++use atspi::Granularity;
++use atspi::ScrollType;
+ use std::collections::HashMap;
+-use zbus::{fdo, interface};
++use zbus::fdo;
++use zbus::interface;
+ 
+ pub(crate) struct TextInterface {
+     node: PlatformNode,
+diff --git a/platforms/unix/src/atspi/interfaces/value.rs b/platforms/unix/src/atspi/interfaces/value.rs
+index e410acd..4563d0d 100644
+--- a/platforms/unix/src/atspi/interfaces/value.rs
++++ b/platforms/unix/src/atspi/interfaces/value.rs
+@@ -4,7 +4,8 @@
+ // the LICENSE-MIT file), at your option.
+ 
+ use accesskit_atspi_common::PlatformNode;
+-use zbus::{fdo, interface};
++use zbus::fdo;
++use zbus::interface;
+ 
+ pub(crate) struct ValueInterface {
+     node: PlatformNode,
+diff --git a/platforms/unix/src/atspi/object_address.rs b/platforms/unix/src/atspi/object_address.rs
+index 0a14f08..936141c 100644
+--- a/platforms/unix/src/atspi/object_address.rs
++++ b/platforms/unix/src/atspi/object_address.rs
+@@ -4,11 +4,15 @@
+ // the LICENSE-MIT file), at your option.
+ 
+ use atspi::ObjectRef;
+-use serde::{Deserialize, Serialize};
+-use zbus::{
+-    names::UniqueName,
+-    zvariant::{ObjectPath, OwnedObjectPath, OwnedValue, Str, Type, Value},
+-};
++use serde::Deserialize;
++use serde::Serialize;
++use zbus::names::UniqueName;
++use zbus::zvariant::ObjectPath;
++use zbus::zvariant::OwnedObjectPath;
++use zbus::zvariant::OwnedValue;
++use zbus::zvariant::Str;
++use zbus::zvariant::Type;
++use zbus::zvariant::Value;
+ 
+ // https://gnome.pages.gitlab.gnome.org/at-spi2-core/libatspi/const.DBUS_PATH_NULL.html
+ const NULL_PATH: &str = "/org/a11y/atspi/null";
+diff --git a/platforms/unix/src/atspi/object_id.rs b/platforms/unix/src/atspi/object_id.rs
+index 06dfeaf..a7597df 100644
+--- a/platforms/unix/src/atspi/object_id.rs
++++ b/platforms/unix/src/atspi/object_id.rs
+@@ -6,11 +6,15 @@
+ use crate::atspi::OwnedObjectAddress;
+ use accesskit::NodeId;
+ use accesskit_atspi_common::PlatformNode;
+-use serde::{Serialize, Serializer};
+-use zbus::{
+-    names::UniqueName,
+-    zvariant::{ObjectPath, OwnedObjectPath, Signature, Structure, StructureBuilder, Type},
+-};
++use serde::Serialize;
++use serde::Serializer;
++use zbus::names::UniqueName;
++use zbus::zvariant::ObjectPath;
++use zbus::zvariant::OwnedObjectPath;
++use zbus::zvariant::Signature;
++use zbus::zvariant::Structure;
++use zbus::zvariant::StructureBuilder;
++use zbus::zvariant::Type;
+ 
+ const ACCESSIBLE_PATH_PREFIX: &str = "/org/a11y/atspi/accessible/";
+ const ROOT_PATH: &str = "/org/a11y/atspi/accessible/root";
+diff --git a/platforms/unix/src/context.rs b/platforms/unix/src/context.rs
+index f940cb6..b273fff 100644
+--- a/platforms/unix/src/context.rs
++++ b/platforms/unix/src/context.rs
+@@ -3,32 +3,49 @@
+ // the LICENSE-APACHE file) or the MIT license (found in
+ // the LICENSE-MIT file), at your option.
+ 
+-use accesskit::{ActivationHandler, DeactivationHandler};
+-use accesskit_atspi_common::{Adapter as AdapterImpl, AppContext, Event};
++use accesskit::ActivationHandler;
++use accesskit::DeactivationHandler;
++use accesskit_atspi_common::Adapter as AdapterImpl;
++use accesskit_atspi_common::AppContext;
++use accesskit_atspi_common::Event;
+ #[cfg(not(feature = "tokio"))]
+-use async_channel::{Receiver, Sender};
++use async_channel::Receiver;
++#[cfg(not(feature = "tokio"))]
++use async_channel::Sender;
+ use atspi::proxy::bus::StatusProxy;
+ #[cfg(not(feature = "tokio"))]
+-use futures_util::{pin_mut as pin, select, StreamExt};
+-use std::{
+-    sync::{Arc, Mutex, OnceLock, RwLock},
+-    thread,
+-};
++use futures_util::pin_mut as pin;
++#[cfg(not(feature = "tokio"))]
++use futures_util::select;
++#[cfg(not(feature = "tokio"))]
++use futures_util::StreamExt;
++use std::sync::Arc;
++use std::sync::Mutex;
++use std::sync::OnceLock;
++use std::sync::RwLock;
++use std::thread;
++#[cfg(feature = "tokio")]
++use tokio::pin;
+ #[cfg(feature = "tokio")]
+-use tokio::{
+-    pin, select,
+-    sync::mpsc::{UnboundedReceiver as Receiver, UnboundedSender as Sender},
+-};
++use tokio::select;
+ #[cfg(feature = "tokio")]
+-use tokio_stream::{wrappers::UnboundedReceiverStream, StreamExt};
+-use zbus::{Connection, ConnectionBuilder};
+-
+-use crate::{
+-    adapter::{AdapterState, Callback, Message},
+-    atspi::{map_or_ignoring_broken_pipe, Bus},
+-    executor::Executor,
+-    util::block_on,
+-};
++use tokio::sync::mpsc::UnboundedReceiver as Receiver;
++#[cfg(feature = "tokio")]
++use tokio::sync::mpsc::UnboundedSender as Sender;
++#[cfg(feature = "tokio")]
++use tokio_stream::wrappers::UnboundedReceiverStream;
++#[cfg(feature = "tokio")]
++use tokio_stream::StreamExt;
++use zbus::Connection;
++use zbus::ConnectionBuilder;
++
++use crate::adapter::AdapterState;
++use crate::adapter::Callback;
++use crate::adapter::Message;
++use crate::atspi::map_or_ignoring_broken_pipe;
++use crate::atspi::Bus;
++use crate::executor::Executor;
++use crate::util::block_on;
+ 
+ static APP_CONTEXT: OnceLock<Arc<RwLock<AppContext>>> = OnceLock::new();
+ static MESSAGES: OnceLock<Sender<Message>> = OnceLock::new();
+diff --git a/platforms/unix/src/executor.rs b/platforms/unix/src/executor.rs
+index a705583..fa4a082 100644
+--- a/platforms/unix/src/executor.rs
++++ b/platforms/unix/src/executor.rs
+@@ -11,15 +11,14 @@
+ use async_executor::Executor as AsyncExecutor;
+ #[cfg(not(feature = "tokio"))]
+ use async_task::Task as AsyncTask;
++use std::future::Future;
+ #[cfg(feature = "tokio")]
+ use std::marker::PhantomData;
++use std::pin::Pin;
+ #[cfg(not(feature = "tokio"))]
+ use std::sync::Arc;
+-use std::{
+-    future::Future,
+-    pin::Pin,
+-    task::{Context, Poll},
+-};
++use std::task::Context;
++use std::task::Poll;
+ #[cfg(feature = "tokio")]
+ use tokio::task::JoinHandle;
+ 
+diff --git a/platforms/unix/src/util.rs b/platforms/unix/src/util.rs
+index 1507302..8418932 100644
+--- a/platforms/unix/src/util.rs
++++ b/platforms/unix/src/util.rs
+@@ -3,7 +3,8 @@
+ // the LICENSE-APACHE file) or the MIT license (found in
+ // the LICENSE-MIT file), at your option.
+ 
+-use accesskit_atspi_common::{Error as InternalError, PlatformNode};
++use accesskit_atspi_common::Error as InternalError;
++use accesskit_atspi_common::PlatformNode;
+ use zbus::fdo::Error as FdoError;
+ 
+ use crate::atspi::ObjectId;

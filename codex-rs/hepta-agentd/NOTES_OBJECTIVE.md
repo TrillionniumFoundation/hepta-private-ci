@@ -54,6 +54,20 @@ Until retirement succeeds the current application continues to refuse new
 external edits. Missing or inconsistent source evidence never authorizes a
 reset, re-execution, or migration of the previous application identity.
 
+The Desktop durable-store profile deliberately starts each new incarnation
+with a fresh document and returns `previous_receipt: null`. In that profile
+the trusted host selects the old target and original operation from its
+retained source/startup manifest, then calls
+`attach_previous_notes_recovery_process(current, launch)` or runs the finite
+`run_notes_organ_with_previous_recovery` entry. This selection is explicit;
+there is no directory scan or inference from UI text. The original writer
+checks the retained operation before opening the old recovery channel. A
+`Committed` operation can still attach because the old helper may have
+persisted retirement before its ACK was lost. Only the original exact
+retirement permit is retried. The old target is never added to the effects
+dispatcher map, and a fresh current document is not blocked or overwritten by
+this independent predecessor's receipt storage.
+
 Before signing Objective ingress, the trusted compiler must prepare the exact
 original `OperationIntentV1` and payload with the installed writer. Its
 `operation_id` equals the stable Objective `run_id`. The source provenance

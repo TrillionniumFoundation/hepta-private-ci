@@ -4463,7 +4463,8 @@
     "ThreadQueueReconcileMode": {
       "enum": [
         "allowIfAbsent",
-        "reconcileOnly"
+        "reconcileOnly",
+        "closeIfAbsent"
       ],
       "type": "string"
     },

@@ -14,6 +14,7 @@ use app_test_support::MockResponsesConfig;
 use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_protocol::ClientRequest;
 use codex_app_server_protocol::RequestId;
+use codex_app_server_protocol::ServerNotification;
 use codex_app_server_protocol::ThreadItem;
 use codex_app_server_protocol::ThreadReadParams;
 use codex_app_server_protocol::ThreadReadResponse;
@@ -28,6 +29,9 @@ use codex_hepta_agentd::AuthBusTextIngress;
 use codex_hepta_agentd::AuthBusTextState;
 use codex_hepta_agentd::AuthBusTextStatus;
 use codex_hepta_agentd::authbus_text_claims;
+use codex_hepta_agentd::text_session::AgentdTextSession;
+use codex_hepta_agentd::text_session::AgentdTextSessionConfig;
+use codex_hepta_agentd::text_session::TextSessionError;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_evidence::HeptaEvidenceStore;
 use codex_state::SqliteConfig;
@@ -38,6 +42,16 @@ use ed25519_dalek::SigningKey;
 use tokio::time::timeout;
 
 mod support;
+#[path = "support/text_approval_product.rs"]
+mod text_approval_product;
+#[path = "support/text_close_product.rs"]
+mod text_close_product;
+#[path = "support/text_large_history_product.rs"]
+mod text_large_history_product;
+#[path = "support/text_slow_approval_product.rs"]
+mod text_slow_approval_product;
+#[path = "support/text_snapshot_boundary_product.rs"]
+mod text_snapshot_boundary_product;
 
 use support::fleet::FleetHarness;
 use support::fleet::connect_app_server_with_experimental;
@@ -115,7 +129,70 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         /*revoked*/ false,
     )?;
     let request = signed_text(&agent.agent_id, &key, &thread, /*sequence*/ 1)?;
-    let admitted = control.submit_authbus_text(request.clone()).await?;
+    let thread_view: ThreadReadResponse = client
+        .request_typed(ClientRequest::ThreadRead {
+            request_id: take_request_id(&mut request_id),
+            params: ThreadReadParams {
+                thread_id: thread.clone(),
+                include_turns: false,
+            },
+        })
+        .await?;
+    let text_config = AgentdTextSessionConfig {
+        control_socket: agent.layout.agentd_control_socket().to_path_buf(),
+        agent_id: agent.agent_id.clone(),
+        spawn_generation: 1,
+        thread_id: thread.clone(),
+        app_server_session_id: thread_view.thread.session_id,
+        codex_home: agent.layout.home_root().to_path_buf(),
+    };
+    // Actual provider account state comes from this exact original App Server,
+    // without reading a credential file or constructing Hepta human authority.
+    let mut route_file = tempfile::NamedTempFile::new()?;
+    serde_json::to_writer(route_file.as_file_mut(), &text_config)?;
+    route_file.as_file().sync_all()?;
+    let diagnosis =
+        codex_hepta_agentd::text_session::diagnose_existing_provider(route_file.path()).await?;
+    let account: codex_app_server_protocol::GetAccountResponse = client
+        .request_typed(ClientRequest::GetAccount {
+            request_id: take_request_id(&mut request_id),
+            params: codex_app_server_protocol::GetAccountParams {
+                refresh_token: false,
+            },
+        })
+        .await?;
+    ensure!(
+        diagnosis.existing_route_verified
+            && diagnosis.provider_account_configured == account.account.is_some()
+    );
+    ensure!(diagnosis.provider_requires_openai_auth == account.requires_openai_auth);
+    ensure!(
+        diagnosis.hepta_human_authority == "requires_independent_existing_root_human_registration"
+    );
+    ensure!(physical_send_count(&model).await == 0);
+    let mut text_session = AgentdTextSession::connect(text_config.clone()).await?;
+    let mut passive = AgentdTextSession::connect(text_config.clone()).await?;
+    ensure!(passive.requests.history_page(None).await?.turns.is_empty());
+    let attached: ThreadReadResponse = client
+        .request_typed(ClientRequest::ThreadRead {
+            request_id: take_request_id(&mut request_id),
+            params: ThreadReadParams {
+                thread_id: thread.clone(),
+                include_turns: true,
+            },
+        })
+        .await?;
+    ensure!(attached.thread.id == thread);
+    ensure!(attached.thread.session_id == text_config.app_server_session_id);
+    ensure!(
+        attached.thread.turns.is_empty(),
+        "attaching created conversation content"
+    );
+    ensure!(
+        physical_send_count(&model).await == 0,
+        "attaching started a model call"
+    );
+    let admitted = text_session.requests.submit_signed(request.clone()).await?;
     let accepted = wait_queue_accepted(&control, &admitted.delivery_id).await?;
     ensure!(
         accepted.delivery_attempts == 1,
@@ -136,7 +213,75 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
     );
     ensure!(physical_send_count(&model).await == 1);
 
-    let duplicate = control.submit_authbus_text(request).await?;
+    // Drain the actual original subscriber: no protocol DTO or fabricated
+    // terminal record is promoted into a streaming/completion observation.
+    let terminal = timeout(WAIT_TIMEOUT, async {
+        loop {
+            let event = text_session
+                .events
+                .next()
+                .await?
+                .context("text stream ended")?;
+            if let ServerNotification::TurnCompleted(completed) = &event.notification {
+                ensure!(event.thread_id == thread);
+                ensure!(event.message_id == request.message_id);
+                ensure!(event.delivery_id == admitted.delivery_id);
+                ensure!(completed.turn.status == TurnStatus::Completed);
+                return Ok::<_, anyhow::Error>(event);
+            }
+        }
+    })
+    .await??;
+    timeout(WAIT_TIMEOUT, async {
+        loop {
+            let event = passive
+                .events
+                .next()
+                .await?
+                .context("passive original stream ended")?;
+            ensure!(event.thread_id == thread);
+            ensure!(
+                event.message_id.is_empty() && event.delivery_id.is_empty(),
+                "another producer's activity became a local admission"
+            );
+            if let ServerNotification::TurnCompleted(completed) = event.notification {
+                ensure!(
+                    completed.turn.id == terminal.turn_id
+                        && completed.turn.status == TurnStatus::Completed
+                );
+                break;
+            }
+        }
+        Ok::<_, anyhow::Error>(())
+    })
+    .await??;
+    let original_history = passive.requests.history_page(None).await?;
+    ensure!(original_history.turns.len() == 1 && original_history.earlier_cursor.is_none());
+    ensure!(original_history.turns[0].id == terminal.turn_id);
+
+    // Reattachment retains the exact signed message, and the old request handle
+    // cannot submit. The new connection only reconciles the original Core ID.
+    let old_requests = text_session.requests.clone();
+    let resumed = text_session.reattach(text_config.clone()).await?;
+    ensure!(matches!(
+        old_requests.submit_signed(request.clone()).await,
+        Err(TextSessionError::Fenced)
+    ));
+    let recovered = resumed.requests.reconcile(&request.message_id).await?;
+    ensure!(recovered.turn.as_ref().is_some_and(|turn| turn.id == terminal.turn_id && turn.status == TurnStatus::Completed));
+    ensure!(recovered.delivery == Some(accepted.clone()));
+
+    // A fresh client has no copied transient requests. It adopts only the
+    // independently retained exact original, then status-looks up that ID.
+    let restored = AgentdTextSession::connect(text_config).await?;
+    restored.requests.restore_signed(request.clone())?;
+    let restored_view = restored.requests.reconcile(&request.message_id).await?;
+    ensure!(restored_view.delivery == Some(accepted.clone()));
+    ensure!(restored_view.turn.as_ref().is_some_and(|turn| turn.id == terminal.turn_id && turn.status == TurnStatus::Completed));
+    ensure!(restored.requests.submit_signed(request.clone()).await? == accepted);
+    ensure!(physical_send_count(&model).await == 1);
+
+    let duplicate = resumed.requests.submit_signed(request).await?;
     ensure!(
         duplicate == accepted,
         "retained duplicate changed the durable delivery result"
@@ -148,14 +293,41 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
             == accepted,
         "status RPC disagrees with the durable accepted delivery"
     );
-    let mut invalid_signature = signed_text(&agent.agent_id, &key, &thread, /*sequence*/ 2)?;
+    // Explicit cancellation before first transport admission must close the
+    // original identity immediately, without waiting for signature expiry.
+    let cancelled = signed_text(&agent.agent_id, &key, &thread, /*sequence*/ 2)?;
+    restored.requests.restore_signed(cancelled.clone())?;
+    let closed = restored.requests.interrupt(&cancelled.message_id).await?;
+    ensure!(closed.delivery.is_none());
+    ensure!(closed.queue == codex_app_server_protocol::ThreadQueueReconcileOutcome::Cancelled);
+    let late = control.submit_authbus_text(cancelled).await?;
+    timeout(WAIT_TIMEOUT, async {
+        loop {
+            let status = control
+                .authbus_text_status(late.delivery_id.clone())
+                .await?;
+            if status.state == AuthBusTextState::Quarantined {
+                break;
+            }
+            ensure!(
+                status.state != AuthBusTextState::QueueAccepted,
+                "cancelled original was admitted to Core"
+            );
+            tokio::time::sleep(Duration::from_millis(20)).await;
+        }
+        Ok::<_, anyhow::Error>(())
+    })
+    .await??;
+    ensure!(physical_send_count(&model).await == 1);
+
+    let mut invalid_signature = signed_text(&agent.agent_id, &key, &thread, /*sequence*/ 3)?;
     invalid_signature.signature_hex = "00".repeat(64);
     assert_server_rejection(control.submit_authbus_text(invalid_signature).await)?;
     let wrong_thread = signed_text(
         &agent.agent_id,
         &key,
         &disallowed_thread,
-        /*sequence*/ 3,
+        /*sequence*/ 4,
     )?;
     assert_server_rejection(control.submit_authbus_text(wrong_thread).await)?;
     write_trust(
@@ -165,7 +337,7 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         std::slice::from_ref(&thread),
         /*revoked*/ true,
     )?;
-    let revoked = signed_text(&agent.agent_id, &key, &thread, /*sequence*/ 4)?;
+    let revoked = signed_text(&agent.agent_id, &key, &thread, /*sequence*/ 5)?;
     assert_server_rejection(control.submit_authbus_text(revoked).await)?;
 
     // Observe subsequent worker polls after the duplicate and failed requests.
@@ -177,6 +349,10 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         physical_send_count(&model).await == 1,
         "duplicate or rejected ingress sent another model request"
     );
+    text_session.events.shutdown().await?;
+    resumed.events.shutdown().await?;
+    restored.events.shutdown().await?;
+    passive.events.shutdown().await?;
     client.shutdown().await?;
     drop(fleet);
     ensure!(physical_send_count(&model).await == 1);

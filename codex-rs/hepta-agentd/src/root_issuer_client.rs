@@ -11,6 +11,61 @@ const SIGN_OBJECTIVE: &str = "runtime.authbus.objective.sign.v1";
 const SIGNED_OBJECTIVE: &str = "runtime.authbus.objective.signed.v1";
 
 impl AgentdUnixFinalUseGrantProvider {
+    /// Typed text signing/lookup over the SAME pre-held registered Root lane.
+    /// The original service retains request_id and its exact signed identity.
+    /// This never opens a new connection or installs a text policy or signer.
+    pub fn text(
+        &self,
+        request_id: &str,
+        body: &crate::AuthBusTextBody,
+        mode: crate::TextIssuerOperation,
+    ) -> Result<crate::AuthBusTextIngress, AgentdFinalUseIssuerError> {
+        if self.protected_root.is_none()
+            || request_id.is_empty()
+            || request_id.len() > 192
+            || body.spawn_generation == 0
+            || body.thread_id.len() > 128
+            || body.text.len() > 8192
+        {
+            return Err(AgentdFinalUseIssuerError::InvalidConfiguration);
+        }
+        let request = serde_json::to_vec(&TextRequest {
+            schema_version: 1,
+            operation: "runtime.authbus.text.v1",
+            request_id,
+            body,
+            mode,
+        })
+        .map_err(|_| AgentdFinalUseIssuerError::InvalidGrant)?;
+        if request.len() > 32 * 1024 {
+            return Err(AgentdFinalUseIssuerError::InvalidGrant);
+        }
+        self.exchange_guarded(|stream, deadline| {
+            let bytes = exchange_frame(stream, &request, deadline)?;
+            let response: TextResponse = serde_json::from_slice(&bytes)
+                .map_err(|_| AgentdFinalUseIssuerError::MalformedResponse)?;
+            if response.schema_version != 1
+                || response.operation != "runtime.authbus.text.signed.v1"
+                || response.request_id != request_id
+                || response.ingress.body.thread_id != body.thread_id
+                || response.ingress.body.text != body.text
+                || response.ingress.body.spawn_generation == 0
+                || response.ingress.body.spawn_generation > body.spawn_generation
+                || response.ingress.sequence == 0
+                || response.ingress.key_epoch == 0
+                || response.ingress.signature_hex.len() != 128
+                || !response
+                    .ingress
+                    .signature_hex
+                    .bytes()
+                    .all(|byte| matches!(byte, b'0'..=b'9' | b'a'..=b'f'))
+            {
+                return Err(AgentdFinalUseIssuerError::MalformedResponse);
+            }
+            Ok(response.ingress)
+        })
+    }
+
     /// Transfer an already connected UID-0 issuer lane and the launcher's
     /// pre-held pidfd for that exact Root process. There is no PID discovery,
     /// connect, renewal or retry. The absolute lifetime applies across both
@@ -136,6 +191,24 @@ struct ObjectiveSignResponse {
     schema_version: u32,
     operation: String,
     ingress: AuthBusObjectiveIngress,
+}
+
+#[derive(Serialize)]
+struct TextRequest<'a> {
+    schema_version: u32,
+    operation: &'static str,
+    request_id: &'a str,
+    body: &'a crate::AuthBusTextBody,
+    mode: crate::TextIssuerOperation,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct TextResponse {
+    schema_version: u32,
+    operation: String,
+    request_id: String,
+    ingress: crate::AuthBusTextIngress,
 }
 
 #[cfg(test)]

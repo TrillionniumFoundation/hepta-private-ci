@@ -54,6 +54,8 @@ mod memory_admission;
 mod model_receipt;
 mod neuron_proposal;
 mod operation_claims;
+mod production_android;
+mod production_android_wire;
 mod production_cognitive_source_target;
 mod production_hos2;
 mod production_notes;
@@ -62,6 +64,17 @@ mod recall;
 mod shadow_advisory;
 mod shadow_model_runtime;
 mod shared_experience;
+
+pub use production_android::ANDROID_SET_TEXT_TOPIC_V1;
+pub use production_android::OriginalAndroidTextDevice;
+pub use production_android::ProductionAndroidTextTarget;
+pub use production_android::android_text_operation_intent;
+pub use production_android_wire::AndroidApplicationGeneration;
+pub use production_android_wire::AndroidCellGeneration;
+pub use production_android_wire::AndroidNativeTextNode;
+pub use production_android_wire::AndroidNativeTextObservation;
+pub use production_android_wire::AndroidNativeWindow;
+pub use production_android_wire::AndroidSetTextV1;
 
 pub use production_hos2::HOS2_CPU_PERIOD_NS;
 pub use production_hos2::HOS2_DESTINATION_V1;

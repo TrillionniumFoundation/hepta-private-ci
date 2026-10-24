@@ -294,3 +294,17 @@ owner composition, native-host closure and installed-package qualification remai
 separate work. Send and Console mutation controls stay disabled. New gateway/status
 source needs its own execution and pixels; no foundation or historical receipt is
 rewritten or transferred as its proof.
+
+## Native external-workspace composition
+
+The original Makepad App can borrow an external caller's single `ChatWorkspace`
+through `NativeChatComposition`. The host retains its transport, authentication,
+signer, event generation fences and recovery; no runtime or owner is constructed
+by the renderer. Native Send and Stop use original widget actions and room-bound
+capability checks after the sole IME router. Default composition methods refuse
+both operations. The original editor restores its SDK selection and undo history
+when a complete edit is rejected, and discards checkpoints on room/epoch changes.
+See `apps/hepta-control-ui/rust/robrix-ui/NATIVE_COMPOSITION.md` for resource,
+lifecycle and acceptance requirements. Native pixels, physical input and AT-SPI
+results require execution against the selected source; API presence is not an
+installed-product acceptance claim.

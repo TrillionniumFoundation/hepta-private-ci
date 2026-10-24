@@ -30,3 +30,12 @@ The distributed CNS, organ graph and embodied-control extension starts at [`docs
 Implementation state machines, typed readiness protocols, all-module lane bindings, embodied-control semantics and authorized external-system assimilation start at [`docs/readiness/README.md`](docs/readiness/README.md). There is one current document set, with module-specific detail retained rather than flattened or duplicated into competing plans.
 
 The implemented HeptaBao connection starts at the [HTTPS consumer guide](codex-rs/hepta-bao-adapter/README.md) and [kernel final-use / independent issuer design](codex-rs/hepta-contracts/FINAL_USE.md). These describe the explicit host call point, signed operation binding, durable replay/revocation state, failure semantics and real service verification. [The external source record](external/HeptaBao/README.md) pins the reviewed service candidate. This bounded connection does not automatically enroll a global production caller or establish complete OpenBao replacement.
+
+Native Desktop organ implementation handoffs live beside their owners:
+[original Root/Agentd text session](codex-rs/hepta-agentd/NATIVE_TEXT_SESSION.md),
+[finite Notes owner and predecessor recovery](codex-rs/hepta-agentd/README.md),
+[real Notes process crash recipe](codex-rs/hepta-agentd/NOTES_RECOVERY_QUALIFICATION.md)
+and [original Android text target](codex-rs/hepta-memory/PRODUCTION_ANDROID_TEXT.md).
+These manuals map actual source, build/tests, trusted inputs and recovery
+boundaries to the existing authorities. They do not revise the global plan or
+replace source-bound production, native-guest or physical-device qualification.

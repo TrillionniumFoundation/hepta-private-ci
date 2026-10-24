@@ -191,6 +191,26 @@ pub(crate) async fn status(
     status_response(status, &host)
 }
 
+pub(crate) async fn lookup(
+    state: &AgentdState,
+    delivery_id: &str,
+) -> Result<Option<AuthBusTextStatus>, AgentdError> {
+    require_ready(state)?;
+    let host = attached(state)?;
+    host.sync_replay_checkpoint().await?;
+    let id = delivery_id
+        .parse()
+        .map_err(|_| invalid("invalid delivery ID"))?;
+    let observed = match host.evidence.authbus_delivery_status(id).await {
+        Ok(status) => Some(status_response(status, &host)?),
+        Err(codex_hepta_evidence::AuthBusOutboxError::NotFound) => None,
+        Err(error) => return Err(invalid(&error.to_string())),
+    };
+    host.sync_replay_checkpoint().await?;
+    require_ready(state)?;
+    Ok(observed)
+}
+
 fn status_response(
     status: AuthBusDeliveryStatus,
     host: &TextIngress,
@@ -256,7 +276,7 @@ fn subject(owner: &AgentId) -> Result<StableId, AgentdError> {
     StableId::new(owner.as_str()).map_err(|error| invalid(&error.to_string()))
 }
 
-fn scope(owner: &AgentId) -> Digest32 {
+pub(crate) fn scope(owner: &AgentId) -> Digest32 {
     let mut bytes = b"hepta:agentd:signed-text:v1\0".to_vec();
     bytes.extend_from_slice(owner.as_str().as_bytes());
     Digest32::of_bytes(&bytes)

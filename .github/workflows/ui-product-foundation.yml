@@ -30,6 +30,7 @@ on:
       - scripts/test_hepta_ci_module_path_scopes.py
       - apps/hepta-native/resources/NATIVE-ASSETS.json
       - apps/hepta-native/resources/notices/Noto-Sans-CJK-2.004-OFL.txt
+      - apps/hepta-native/resources/**
       - .github/workflows/ui-product-foundation.yml
       - .github/actions/hepta-synthetic-merge/**
       - scripts/test_ui_product_foundation_ci.py
@@ -367,6 +368,93 @@ jobs:
             apps/hepta-control-ui/test-results/font-diagnostic-*/
             apps/hepta-control-ui/test-results/font-diagnostic-*-results.json
           if-no-files-found: warn
+
+  native-presentation:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, base-merge]
+    name: Original native presentation / ${{ matrix.lane }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      RUSTUP_TOOLCHAIN: 1.95.0
+      CARGO_BUILD_JOBS: 1
+      CARGO_INCREMENTAL: 0
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+      CARGO_TARGET_DIR: ${{ runner.temp }}/native-presentation-target
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Construct separately identified native presentation merge
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Native presentation CI
+          author-email: native-presentation-ci@invalid
+          message: Synthetic native presentation merge
+      - name: Bind source before installing native inputs
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/native-presentation-evidence"
+          git rev-parse HEAD > "$RUNNER_TEMP/native-presentation-evidence/tested-head.txt"
+          git rev-parse 'HEAD^{tree}' > "$RUNNER_TEMP/native-presentation-evidence/tested-tree.txt"
+          sha256sum apps/hepta-control-ui/rust/Cargo.lock > "$RUNNER_TEMP/native-presentation-evidence/original-lock.sha256"
+      - name: Install the official compiler and pinned test tools
+        env:
+          TOOL_ROOT: ${{ runner.temp }}/native-presentation-tools
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+          test "$(rustc --version)" = "rustc 1.95.0 (59807616e 2026-04-14)"
+          cargo install just --locked --version 1.58.0 --root "$TOOL_ROOT"
+          python3 apps/hepta-control-ui/tools/install-official-nextest.py "$TOOL_ROOT"
+          export PATH="$TOOL_ROOT/bin:$PATH"
+          test "$(just --version)" = "just 1.58.0"
+          python3 apps/hepta-control-ui/tools/install-official-nextest.py --verify "$TOOL_ROOT"
+          echo "$TOOL_ROOT/bin" >> "$GITHUB_PATH"
+          rustc -Vv > "$RUNNER_TEMP/native-presentation-evidence/rustc.txt"
+          cargo -Vv > "$RUNNER_TEMP/native-presentation-evidence/cargo.txt"
+      - name: Install Linux native compile dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y pkg-config libasound2-dev libwayland-dev libx11-dev libxcursor-dev libxrandr-dev libxi-dev libxinerama-dev libxkbcommon-dev libgl1-mesa-dev libegl1-mesa-dev
+          dpkg-query -W pkg-config libasound2-dev libwayland-dev libx11-dev libxcursor-dev libxrandr-dev libxi-dev libxinerama-dev libxkbcommon-dev libgl1-mesa-dev libegl1-mesa-dev > "$RUNNER_TEMP/native-presentation-evidence/system-inputs.txt"
+      - name: Execute the explicitly enabled composition and lifecycle tests
+        run: |
+          set -euo pipefail
+          TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/native-presentation-evidence/junit-gate-tests.json" --minimum-tests 12 --timeout-seconds 60 -- python3 apps/hepta-control-ui/test/test_native_composition_junit.py
+          cargo fmt --manifest-path apps/hepta-control-ui/rust/Cargo.toml --all -- --check
+          python3 apps/hepta-control-ui/tools/check-native-composition-junit.py prepare --start "$RUNNER_TEMP/native-presentation-evidence/headless-junit-start.json" --junit "$CARGO_TARGET_DIR/nextest/native-composition-headless/junit.xml" --mode headless --tested-sha "$(git rev-parse HEAD)"
+          TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/native-presentation-evidence/headless.json" --minimum-tests 5 --timeout-seconds 600 -- just test --locked --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --no-default-features --features native-presentation --lib --profile native-composition-headless
+          python3 apps/hepta-control-ui/tools/check-native-composition-junit.py verify --start "$RUNNER_TEMP/native-presentation-evidence/headless-junit-start.json" --execution "$RUNNER_TEMP/native-presentation-evidence/headless.json" --output "$RUNNER_TEMP/native-presentation-evidence/headless-junit.json"
+          python3 apps/hepta-control-ui/tools/check-native-composition-junit.py prepare --start "$RUNNER_TEMP/native-presentation-evidence/native-junit-start.json" --junit "$CARGO_TARGET_DIR/nextest/native-composition-native/junit.xml" --mode native --tested-sha "$(git rev-parse HEAD)"
+          TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/native-presentation-evidence/native.json" --minimum-tests 8 --timeout-seconds 1200 -- just test --locked --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --features ui,native-host,native-presentation --lib --profile native-composition-native
+          python3 apps/hepta-control-ui/tools/check-native-composition-junit.py verify --start "$RUNNER_TEMP/native-presentation-evidence/native-junit-start.json" --execution "$RUNNER_TEMP/native-presentation-evidence/native.json" --output "$RUNNER_TEMP/native-presentation-evidence/native-junit.json"
+          cargo clippy --locked --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --all-targets --features ui,native-host,native-presentation -- -D warnings 2>&1 | tee "$RUNNER_TEMP/native-presentation-evidence/clippy.log"
+          sha256sum -c "$RUNNER_TEMP/native-presentation-evidence/original-lock.sha256"
+          git diff --exit-code HEAD --
+      - name: Preserve native compilation and test evidence separately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: native-presentation-${{ matrix.lane }}-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ runner.temp }}/native-presentation-evidence/
+            ${{ runner.temp }}/native-presentation-target/nextest/native-composition-*/junit.xml
+          if-no-files-found: error
 
   ui-bazel-lock-generation:
     name: Generate UI dependency lock for review

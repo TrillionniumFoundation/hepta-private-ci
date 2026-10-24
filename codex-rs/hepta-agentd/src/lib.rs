@@ -75,7 +75,17 @@ pub use authority_host_config::HostAuthorityConsumersConfig;
 #[cfg(target_os = "linux")]
 pub use authority_host_config::HostAuthorityRegisteredIdentity;
 #[cfg(target_os = "linux")]
+mod authority_host_native_launch;
+#[cfg(target_os = "linux")]
 mod authority_host_runtime;
+#[cfg(target_os = "linux")]
+pub use authority_host_native_launch::HostAuthorityNativeProfile;
+#[cfg(target_os = "linux")]
+pub use authority_host_native_launch::NativeLaunchDiagnostic;
+#[cfg(target_os = "linux")]
+pub use authority_host_native_launch::diagnose_native_launch;
+#[cfg(target_os = "linux")]
+pub use authority_host_native_launch::launch_host_authority_native_session;
 #[cfg(target_os = "linux")]
 mod authority_host_service;
 #[cfg(target_os = "linux")]
@@ -85,9 +95,13 @@ pub use authority_host_runtime::register_host_writer_authorization;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::serve_host_authority_session;
 #[cfg(target_os = "linux")]
+pub use authority_host_runtime::serve_host_authority_session_with_text;
+#[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityLane;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityService;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::HostAuthorityTextUiRegistration;
 #[cfg(target_os = "linux")]
 mod root_authority_session;
 #[cfg(target_os = "linux")]
@@ -160,6 +174,8 @@ mod notes_channel;
 mod notes_document_observer;
 #[cfg(target_os = "linux")]
 mod notes_organ;
+#[cfg(target_os = "linux")]
+mod notes_recovery_process;
 mod objective_runtime;
 mod plasticity_anchor_journal;
 mod plasticity_host;
@@ -177,9 +193,18 @@ mod qualification_writer;
 mod runtime;
 #[cfg(target_os = "linux")]
 pub use notes_organ::run_notes_organ;
+#[cfg(target_os = "linux")]
+pub use notes_organ::run_notes_organ_with_previous_recovery;
+#[cfg(target_os = "linux")]
+pub use notes_recovery_process::AgentdNotesPreviousRecoveryLaunch;
 mod runtime_tasks;
 mod shared_terminal_cell;
 mod state;
+pub mod text_session;
+#[cfg(target_os = "linux")]
+pub use deployment_issuer::TextIssuerOperation;
+#[cfg(target_os = "linux")]
+mod text_session_host;
 pub use shared_terminal_cell::AgentdSharedReplayHostV1;
 pub use shared_terminal_cell::SharedTerminalCandidateV1;
 pub use shared_terminal_cell::SharedTerminalCellError;
@@ -341,6 +366,8 @@ pub use lane_b_runtime::RuntimeComposition;
 pub use neuron_runtime::AgentdNeuronOwner;
 #[cfg(unix)]
 pub use notes_channel::AgentdNotesChannel;
+#[cfg(unix)]
+pub use notes_channel::AgentdNotesRecoveryChannel;
 #[cfg(target_os = "linux")]
 pub use notes_document_observer::AgentdNotesDocumentObserver;
 pub use objective_runtime::authbus_objective_claims;

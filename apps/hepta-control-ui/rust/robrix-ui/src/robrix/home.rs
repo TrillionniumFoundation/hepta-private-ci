@@ -139,7 +139,9 @@ impl Widget for MainConversationUI {
             .global::<crate::runtime_status::RuntimeDisplay>()
             .text
             .clone();
-        let enabled = cfg!(target_arch = "wasm32")
+        let enabled = cx
+            .global::<crate::runtime_status::RuntimeDisplay>()
+            .refresh_available
             && !cx.global::<crate::runtime_status::RuntimeDisplay>().busy;
         let button = self.view.widget(cx, ids!(owner_refresh));
         let key = (button.widget_uid(), enabled);
@@ -374,7 +376,9 @@ impl Widget for HomeScreen {
             .global::<crate::runtime_status::RuntimeDisplay>()
             .text
             .clone();
-        let enabled = cfg!(target_arch = "wasm32")
+        let enabled = cx
+            .global::<crate::runtime_status::RuntimeDisplay>()
+            .refresh_available
             && !cx.global::<crate::runtime_status::RuntimeDisplay>().busy;
         let button = self.view.widget(cx, ids!(mobile_owner_refresh));
         let key = (button.widget_uid(), enabled);
