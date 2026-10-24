@@ -15,8 +15,9 @@ from scripts.check_hepta_rustsec_advisories import (
 
 
 class TrackedRustSecGuardTests(unittest.TestCase):
-    def test_all_eighteen_tracked_advisories_are_caught_as_cargo_deny_ignores(self):
-        self.assertEqual(len(TRACKED_RUSTSEC), 18)
+    def test_all_nineteen_tracked_advisories_are_caught_as_cargo_deny_ignores(self):
+        self.assertEqual(len(TRACKED_RUSTSEC), 19)
+        self.assertIn("RUSTSEC-2026-0374", TRACKED_RUSTSEC)
         for advisory_id in sorted(TRACKED_RUSTSEC):
             with self.subTest(advisory_id=advisory_id):
                 policy = (
