@@ -1,5 +1,7 @@
 #![cfg(windows)]
 
+#[path = "../src/token_test_fixture.rs"]
+mod token_test_fixture;
 #[path = "../src/token_test_observation.rs"]
 mod token_test_observation;
 
@@ -19,7 +21,6 @@ use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::Security::AdjustTokenPrivileges;
 use windows_sys::Win32::Security::DuplicateTokenEx;
 use windows_sys::Win32::Security::GetTokenInformation;
-use windows_sys::Win32::Security::ImpersonateAnonymousToken;
 use windows_sys::Win32::Security::RevertToSelf;
 use windows_sys::Win32::Security::SecurityImpersonation;
 use windows_sys::Win32::Security::TOKEN_ADJUST_PRIVILEGES;
@@ -30,7 +31,6 @@ use windows_sys::Win32::Security::TOKEN_STATISTICS;
 use windows_sys::Win32::Security::TokenImpersonation;
 use windows_sys::Win32::Security::TokenStatistics;
 use windows_sys::Win32::System::Threading::GetCurrentProcess;
-use windows_sys::Win32::System::Threading::GetCurrentThread;
 use windows_sys::Win32::System::Threading::OpenProcessToken;
 use windows_sys::Win32::System::Threading::SetThreadToken;
 
@@ -198,16 +198,14 @@ fn native_degraded_and_unqueryable_thread_tokens_never_fall_back() -> Result {
     isolated(|| {
         let mut original = CapturedPrincipal::capture_effective()?;
         let identification = duplicate(windows_sys::Win32::Security::SecurityIdentification)?;
+        let anonymous = token_test_fixture::anonymous_level_token()?;
         let _restore = RestoreThread;
         install(&identification)?;
         assert!(matches!(
             CapturedPrincipal::capture_effective(),
             Err(ValidationError::PrincipalChanged)
         ));
-        // SAFETY: anonymous impersonation affects only this new fixture thread.
-        if unsafe { ImpersonateAnonymousToken(GetCurrentThread()) } == 0 {
-            return Err(io::Error::last_os_error().into());
-        }
+        install(&anonymous)?;
         let observed = original.revalidate_effective();
         token_test_observation::observe(&observed);
         assert!(

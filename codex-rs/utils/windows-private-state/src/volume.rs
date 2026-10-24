@@ -17,12 +17,15 @@ use windows_sys::Win32::Foundation::RtlNtStatusToDosError;
 use windows_sys::Win32::Storage::FileSystem::FILE_DEVICE_DISK;
 use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_BACKUP_SEMANTICS;
 use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_OPEN_REPARSE_POINT;
+use windows_sys::Win32::Storage::FileSystem::FILE_ID_DESCRIPTOR;
+use windows_sys::Win32::Storage::FileSystem::FILE_ID_DESCRIPTOR_0;
 use windows_sys::Win32::Storage::FileSystem::FILE_READ_ATTRIBUTES;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
+use windows_sys::Win32::Storage::FileSystem::FileIdType;
 use windows_sys::Win32::Storage::FileSystem::GetVolumeInformationByHandleW;
-use windows_sys::Win32::Storage::FileSystem::ReOpenFile;
+use windows_sys::Win32::Storage::FileSystem::OpenFileById;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK_0;
 
@@ -117,22 +120,35 @@ pub fn inspect_local_ntfs_observed(
         identity(file),
         &mut observe,
     )?;
-    // An arbitrary caller File can be overlapped. Reopen the held object itself,
-    // without any path lookup, as synchronous (no FILE_FLAG_OVERLAPPED). Sharing
-    // here cannot relax the sharing restrictions of the still-live original.
-    // SAFETY: the original handle remains borrowed and live through ReOpenFile.
+    // Use the held object's volume and kernel-read file ID, never its pathname.
+    // OpenFileById explicitly supports directories with BACKUP_SEMANTICS. Unlike
+    // duplicating an overlapped handle, this creates a separate synchronous file
+    // object; concurrent I/O on the caller's File cannot signal this query.
+    // Existing sharing restrictions remain in force and identity is checked below.
+    let descriptor = FILE_ID_DESCRIPTOR {
+        dwSize: size_of::<FILE_ID_DESCRIPTOR>() as u32,
+        Type: FileIdType,
+        Anonymous: FILE_ID_DESCRIPTOR_0 {
+            // FileId is a signed LARGE_INTEGER carrying the same 64 ID bits.
+            FileId: object.file_id as i64,
+        },
+    };
+    // SAFETY: the volume-hint handle and fixed ID descriptor remain live. No
+    // OVERLAPPED flag is requested, and no security attributes are supplied.
     let raw = unsafe {
-        ReOpenFile(
+        OpenFileById(
             file.as_raw_handle() as HANDLE,
+            &descriptor,
             FILE_READ_ATTRIBUTES | SYNCHRONIZE_ACCESS,
             FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+            ptr::null(),
             FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT,
         )
     };
     let reopened = if raw == 0 || raw == INVALID_HANDLE_VALUE {
         Err(io::Error::last_os_error())
     } else {
-        // SAFETY: successful ReOpenFile transfers one newly owned live handle.
+        // SAFETY: successful OpenFileById transfers one newly owned live handle.
         Ok(File::from(unsafe {
             OwnedHandle::from_raw_handle(raw as *mut c_void)
         }))
@@ -165,7 +181,7 @@ pub fn inspect_local_ntfs_observed(
         Anonymous: IO_STATUS_BLOCK_0 { Status: -1 },
         Information: 0,
     };
-    // SAFETY: ReOpenFile created a synchronous, non-overlapped handle. The I/O
+    // SAFETY: OpenFileById created a synchronous, non-overlapped file object. The I/O
     // manager completes its operation before this call returns, so both output
     // structures stay live until completion, including an internally pending I/O.
     let status = unsafe {

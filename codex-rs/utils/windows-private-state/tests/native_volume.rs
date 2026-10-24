@@ -54,6 +54,7 @@ impl Drop for Fixture {
         let _ = fs::remove_file(self.0.join("object"));
         let _ = fs::remove_file(self.0.join("held"));
         let _ = fs::remove_dir(&self.0);
+        let _ = fs::remove_dir(self.0.with_extension("held-directory"));
     }
 }
 
@@ -120,5 +121,28 @@ fn native_volume_observation_stays_bound_to_renamed_held_object() -> Result {
     assert_ne!(identity(&replacement)?, original.object);
     assert_eq!(inspect_local_ntfs(&held)?, original);
     completed("held_binding_complete");
+    Ok(())
+}
+
+#[test]
+fn native_directory_volume_observation_stays_bound_after_rename() -> Result {
+    let fixture = Fixture::new()?;
+    let held = OpenOptions::new()
+        .read(true)
+        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
+        .custom_flags(
+            FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_OVERLAPPED,
+        )
+        .open(&fixture.0)?;
+    let original = inspect_local_ntfs(&held)?;
+    fs::rename(&fixture.0, fixture.0.with_extension("held-directory"))?;
+    fs::create_dir(&fixture.0)?;
+    let replacement = OpenOptions::new()
+        .read(true)
+        .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
+        .open(&fixture.0)?;
+    assert_ne!(identity(&replacement)?, original.object);
+    assert_eq!(inspect_local_ntfs(&held)?, original);
+    completed("held_directory_binding_complete");
     Ok(())
 }

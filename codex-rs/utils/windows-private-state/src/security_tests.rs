@@ -1,4 +1,6 @@
 use super::*;
+#[path = "token_test_fixture.rs"]
+mod token_test_fixture;
 #[path = "token_test_observation.rs"]
 mod token_test_observation;
 use std::error::Error;
@@ -16,7 +18,6 @@ use windows_sys::Win32::Security::Authorization::SDDL_REVISION_1;
 use windows_sys::Win32::Security::Authorization::SetSecurityInfo;
 use windows_sys::Win32::Security::GetSecurityDescriptorControl;
 use windows_sys::Win32::Security::GetSecurityDescriptorDacl;
-use windows_sys::Win32::Security::ImpersonateAnonymousToken;
 use windows_sys::Win32::Security::PROTECTED_DACL_SECURITY_INFORMATION;
 use windows_sys::Win32::Security::RevertToSelf;
 use windows_sys::Win32::Security::SECURITY_ATTRIBUTES;
@@ -401,8 +402,9 @@ fn native_unqueryable_thread_token_never_falls_back_to_process_user() -> Result 
         None
     };
     let restore = RestoreThread(previous);
-    // SAFETY: impersonate only this test thread; the guard restores its old token.
-    if unsafe { ImpersonateAnonymousToken(GetCurrentThread()) } == 0 {
+    let anonymous = token_test_fixture::anonymous_level_token()?;
+    // SAFETY: install only on this thread; retain the token and restore guard.
+    if unsafe { SetThreadToken(ptr::null(), anonymous.as_raw_handle() as HANDLE) } == 0 {
         return Err(io::Error::last_os_error().into());
     }
     let observed = CurrentUser::capture_effective();
