@@ -67,7 +67,9 @@ class State:
     active_mask: int = 0
 
     def __post_init__(self) -> None:
-        if (len(self.levels) != 4
+        # Hash-stable public state is required by memoized Bellman control and
+        # public-state action replay. A frozen dataclass does not freeze lists.
+        if (type(self.levels) is not tuple or len(self.levels) != 4
             or any(type(x) is not int or not 0 <= x <= MAX_LEVEL for x in self.levels)
             or type(self.remaining) is not int or self.remaining < 0
             or type(self.step) is not int or self.step < 0
@@ -83,7 +85,9 @@ class Allocation:
     units: tuple[int, int, int, int]
 
     def __post_init__(self) -> None:
-        if (len(self.units) != 4
+        # Actions are retained in replay ledgers and allocation traces;
+        # a caller-owned mutable sequence would change a past decision.
+        if (type(self.units) is not tuple or len(self.units) != 4
             or any(type(x) is not int or x < 0 or x > 2 for x in self.units)):
             raise ValueError("invalid four-channel allocation")
 
