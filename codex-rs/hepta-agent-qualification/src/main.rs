@@ -2,6 +2,8 @@
 //! the installed configuration; this executable is not a Core-free RSS sample.
 
 mod evidence;
+mod inspection_args;
+mod inspector;
 mod policy;
 mod probe;
 
@@ -12,25 +14,19 @@ use evidence::Evidence;
 use serde_json::json;
 use std::path::PathBuf;
 
-#[derive(Debug, Parser)]
+#[derive(Debug)]
 struct Args {
     /// Send exactly one provider request. Without this flag, only report the plan.
-    #[arg(long)]
     run: bool,
     /// New private directory for qualification evidence; existing paths fail closed.
-    #[arg(long)]
     evidence_dir: PathBuf,
     /// Must equal the actual model resolved by the installed configuration.
-    #[arg(long)]
     expected_model: String,
     /// Local reservation, not a provider wire-level input-token cap.
-    #[arg(long)]
     maximum_provider_input_tokens: u64,
     /// Local reservation, not a provider wire-level output-token cap.
-    #[arg(long)]
     maximum_output_tokens: u64,
     /// Local stream deadline, bounded to at most 120 seconds.
-    #[arg(long)]
     maximum_elapsed_seconds: u64,
 }
 
@@ -52,7 +48,10 @@ impl Args {
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> Result<()> {
-    let args = Args::parse();
+    let args = match inspection_args::CommandLine::parse().into_command()? {
+        inspection_args::Command::Qualification(args) => args,
+        inspection_args::Command::Inspect(args) => return inspector::run(&args).await,
+    };
     args.validate()?;
     let plan = json!({
         "schema":"hepta-native-provider-qualification:v1",
