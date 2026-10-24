@@ -72,7 +72,8 @@ fn read_bounded(path: &Path, maximum: usize) -> Result<Vec<u8>, Box<dyn Error>> 
 
 fn leaf(name: &str) -> Result<&Path, Box<dyn Error>> {
     let path = Path::new(name);
-    if name.len() > 100 || path.components().count() != 1
+    if name.len() > 100
+        || path.components().count() != 1
         || !matches!(path.components().next(), Some(Component::Normal(_)))
         || name.contains('\\')
     {
@@ -106,9 +107,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut ids = BTreeSet::new();
     let mut paths = BTreeSet::from([request.features.path.as_str()]);
     for head in &request.heads {
-        if head.id.is_empty() || head.id.len() > 64
-            || !head.id.bytes().all(|c| c.is_ascii_alphanumeric() || c == b'-')
-            || !ids.insert(head.id.as_str()) || !paths.insert(head.path.as_str())
+        if head.id.is_empty()
+            || head.id.len() > 64
+            || !head
+                .id
+                .bytes()
+                .all(|c| c.is_ascii_alphanumeric() || c == b'-')
+            || !ids.insert(head.id.as_str())
+            || !paths.insert(head.path.as_str())
         {
             return Err("bounded distinct Head IDs and paths required".into());
         }
@@ -117,14 +123,19 @@ fn main() -> Result<(), Box<dyn Error>> {
     let directory = request_path.parent().ok_or("request parent required")?;
     let load_started = Instant::now();
     let batch = SharedLearnedFeatures770V1::import(
-        &read_bounded(&directory.join(leaf(&request.features.path)?), /*maximum*/ 400_000)?,
+        &read_bounded(
+            &directory.join(leaf(&request.features.path)?),
+            /*maximum*/ 400_000,
+        )?,
         &LearnedFeaturePins770V1 {
             artifact_digest: request.features.artifact_digest.parse()?,
             feature_identity_digest: feature_identity,
             generation,
         },
     )?;
-    if batch.rows() != 64 { return Err("fixed 64-row batch required".into()); }
+    if batch.rows() != 64 {
+        return Err("fixed 64-row batch required".into());
+    }
     let feature_import_ns = load_started.elapsed().as_nanos();
     let mut results = Vec::with_capacity(request.heads.len());
     let mut parameter_bytes = 0;
@@ -147,9 +158,16 @@ fn main() -> Result<(), Box<dyn Error>> {
         let evaluate_ns = eval_started.elapsed().as_nanos();
         if output.calibration != LearnedCellCalibration770V1::Unavailable
             || output.mode != LearnedCellExecutionMode770V1::ShadowOnly
-            || output.quality_qualified || output.authority != AuthorityPosture::DENY_ALL
-        { return Err("raw shadow output posture changed".into()); }
-        let argmax: Vec<_> = output.raw_logits.iter().map(|row| usize::from(row[1] > row[0])).collect();
+            || output.quality_qualified
+            || output.authority != AuthorityPosture::DENY_ALL
+        {
+            return Err("raw shadow output posture changed".into());
+        }
+        let argmax: Vec<_> = output
+            .raw_logits
+            .iter()
+            .map(|row| usize::from(row[1] > row[0]))
+            .collect();
         parameter_bytes += head.tensor_bytes();
         peak_head_bytes = peak_head_bytes.max(head.tensor_bytes());
         results.push(json!({"id": input.id, "mode": head.mode().name(),
@@ -161,7 +179,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             "parameter_bytes": head.tensor_bytes(), "import_ns": head_import_ns,
             "evaluate_ns": evaluate_ns}));
     }
-    println!("{}", json!({"schema": "hepta.native-learned-replay.v1",
+    println!(
+        "{}",
+        json!({"schema": "hepta.native-learned-replay.v1",
         "request_sha256": expected.to_string(), "heads": results,
         "rows": batch.rows(), "feature_imports": 1, "feature_import_ns": feature_import_ns,
         "feature_tensor_bytes": batch.tensor_bytes(),
@@ -169,6 +189,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         "total_parameter_bytes_read": parameter_bytes, "peak_owned_head_parameter_bytes": peak_head_bytes,
         "wall_ns_before_serialization": began.elapsed().as_nanos(),
         "encoder_calls": 0, "parameter_updates": 0, "calibration": null,
-        "execution_mode": "SHADOW_ONLY", "quality_qualified": false, "authority": "DENY_ALL"}));
+        "execution_mode": "SHADOW_ONLY", "quality_qualified": false, "authority": "DENY_ALL"})
+    );
     Ok(())
 }

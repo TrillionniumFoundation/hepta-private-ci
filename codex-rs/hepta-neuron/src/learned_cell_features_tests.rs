@@ -40,7 +40,10 @@ fn normalizes_once_and_shares_an_immutable_owned_buffer() {
     let alias = batch.clone();
     bytes.fill(0);
     assert!(Arc::ptr_eq(&batch.normalized, &alias.normalized));
-    assert_eq!(&batch.normalized[..2], &[0.6 * 770_f64.sqrt(), 0.8 * 770_f64.sqrt()]);
+    assert_eq!(
+        &batch.normalized[..2],
+        &[0.6 * 770_f64.sqrt(), 0.8 * 770_f64.sqrt()]
+    );
     assert!(batch.normalized[2..].iter().all(|x| *x == 0.0));
     assert_eq!(batch.tensor_bytes(), 2 * 770 * 8);
     assert_eq!(batch.source_record_digests(), alias.source_record_digests());
@@ -51,24 +54,39 @@ fn external_identity_generation_and_complete_source_bytes_are_bound() {
     let (mut bytes, pins) = fixture(2);
     let mut changed = pins;
     changed.feature_identity_digest = Digest32::of_bytes(b"other-space");
-    assert_eq!(failure(&bytes, &changed), LearnedFeatureError770V1::IdentityMismatch);
+    assert_eq!(
+        failure(&bytes, &changed),
+        LearnedFeatureError770V1::IdentityMismatch
+    );
     changed = pins;
     changed.generation = Generation::new(2).unwrap_or_else(|e| panic!("{e:?}"));
-    assert_eq!(failure(&bytes, &changed), LearnedFeatureError770V1::GenerationMismatch);
+    assert_eq!(
+        failure(&bytes, &changed),
+        LearnedFeatureError770V1::GenerationMismatch
+    );
     bytes[HEADER_BYTES..HEADER_BYTES + 64].rotate_left(32);
-    assert_eq!(failure(&bytes, &pins), LearnedFeatureError770V1::ArtifactDigestMismatch);
+    assert_eq!(
+        failure(&bytes, &pins),
+        LearnedFeatureError770V1::ArtifactDigestMismatch
+    );
 }
 
 #[test]
 fn refuses_invalid_rows_trailing_bytes_and_duplicate_or_zero_sources() {
     for rows in [0, 65] {
         let (bytes, pins) = fixture(rows);
-        assert_eq!(failure(&bytes, &pins), LearnedFeatureError770V1::InvalidEnvelope);
+        assert_eq!(
+            failure(&bytes, &pins),
+            LearnedFeatureError770V1::InvalidEnvelope
+        );
     }
     let (mut bytes, mut pins) = fixture(1);
     bytes.push(0);
     pins.artifact_digest = Digest32::of_bytes(&bytes);
-    assert_eq!(failure(&bytes, &pins), LearnedFeatureError770V1::InvalidEnvelope);
+    assert_eq!(
+        failure(&bytes, &pins),
+        LearnedFeatureError770V1::InvalidEnvelope
+    );
     for zero in [false, true] {
         let (mut bytes, mut pins) = fixture(2);
         if zero {
@@ -77,7 +95,10 @@ fn refuses_invalid_rows_trailing_bytes_and_duplicate_or_zero_sources() {
             bytes.copy_within(HEADER_BYTES..HEADER_BYTES + 32, HEADER_BYTES + 32);
         }
         pins.artifact_digest = Digest32::of_bytes(&bytes);
-        assert_eq!(failure(&bytes, &pins), LearnedFeatureError770V1::InvalidSource);
+        assert_eq!(
+            failure(&bytes, &pins),
+            LearnedFeatureError770V1::InvalidSource
+        );
     }
 }
 

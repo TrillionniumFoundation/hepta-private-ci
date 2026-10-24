@@ -33,11 +33,20 @@ impl LearnedHeadMode770V1 {
     fn layout(self) -> &'static [(&'static str, &'static str, usize)] {
         match self {
             Self::Linear => &[("W", "[770,2]", 1540), ("b", "[2]", 2)],
-            Self::Gated => &[("W", "[770,2]", 1540), ("a", "[770]", 770),
-                ("b", "[2]", 2), ("g", "[770]", 770)],
-            Self::Residual => &[("U", "[4,770]", 3080), ("V", "[770,4]", 3080),
-                ("W", "[770,2]", 1540), ("a", "[770]", 770),
-                ("b", "[2]", 2), ("g", "[770]", 770)],
+            Self::Gated => &[
+                ("W", "[770,2]", 1540),
+                ("a", "[770]", 770),
+                ("b", "[2]", 2),
+                ("g", "[770]", 770),
+            ],
+            Self::Residual => &[
+                ("U", "[4,770]", 3080),
+                ("V", "[770,4]", 3080),
+                ("W", "[770,2]", 1540),
+                ("a", "[770]", 770),
+                ("b", "[2]", 2),
+                ("g", "[770]", 770),
+            ],
         }
     }
 }
@@ -64,10 +73,19 @@ impl LearnedCellHead770V1 {
     /// Import raw little-endian arrays in sorted parameter-name order, without
     /// quantizing or rewriting the trained values. Only width770/classes2/rank4
     /// is accepted. The complete envelope and original tensor digest are checked.
-    pub fn import(bytes: &[u8], expected: &LearnedHeadPins770V1) -> Result<Self, LearnedHeadError770V1> {
+    pub fn import(
+        bytes: &[u8],
+        expected: &LearnedHeadPins770V1,
+    ) -> Result<Self, LearnedHeadError770V1> {
         if !(HEADER_BYTES..=HEADER_BYTES + 9242 * 8).contains(&bytes.len())
-            || [expected.artifact_digest, expected.feature_identity_digest,
-                expected.task_digest, expected.predictor_digest].iter().any(|x| x.is_zero())
+            || [
+                expected.artifact_digest,
+                expected.feature_identity_digest,
+                expected.task_digest,
+                expected.predictor_digest,
+            ]
+            .iter()
+            .any(|x| x.is_zero())
         {
             return Err(LearnedHeadError770V1::InvalidEnvelope);
         }
@@ -117,14 +135,21 @@ impl LearnedCellHead770V1 {
             }
             parameters.push(value);
         }
-        Ok(Self { pins: *expected, mode, parameters: Arc::from(parameters) })
+        Ok(Self {
+            pins: *expected,
+            mode,
+            parameters: Arc::from(parameters),
+        })
     }
 
     /// Borrow one shared normalized feature buffer. No Encoder, feature copy,
     /// optimizer, probability calibration, or action authorization is created.
     /// Nonfinite intermediates fail even when later clipping or tanh could hide
     /// an overflow; parity is qualified for the accepted finite execution domain.
-    pub fn evaluate(&self, batch: &SharedLearnedFeatures770V1) -> Result<LearnedCellLogits770V1, LearnedHeadError770V1> {
+    pub fn evaluate(
+        &self,
+        batch: &SharedLearnedFeatures770V1,
+    ) -> Result<LearnedCellLogits770V1, LearnedHeadError770V1> {
         if batch.feature_identity_digest() != self.pins.feature_identity_digest {
             return Err(LearnedHeadError770V1::IdentityMismatch);
         }
@@ -146,7 +171,9 @@ impl LearnedCellHead770V1 {
                     for (i, feature) in x.iter().enumerate() {
                         *value += feature * p[3080 + i * 4 + j];
                     }
-                    if !value.is_finite() { return Err(LearnedHeadError770V1::Nonfinite); }
+                    if !value.is_finite() {
+                        return Err(LearnedHeadError770V1::Nonfinite);
+                    }
                     *value = value.tanh();
                 }
             }
@@ -155,7 +182,9 @@ impl LearnedCellHead770V1 {
                 let mut value = feature;
                 if gated {
                     let argument = feature * p[a_start + i] + p[g_start + i];
-                    if !argument.is_finite() { return Err(LearnedHeadError770V1::Nonfinite); }
+                    if !argument.is_finite() {
+                        return Err(LearnedHeadError770V1::Nonfinite);
+                    }
                     value *= 1.0 / (1.0 + (-argument.clamp(-40.0, 40.0)).exp());
                 }
                 if residual {
@@ -163,14 +192,18 @@ impl LearnedCellHead770V1 {
                         value += hidden * p[j * 770 + i];
                     }
                 }
-                if !value.is_finite() { return Err(LearnedHeadError770V1::Nonfinite); }
+                if !value.is_finite() {
+                    return Err(LearnedHeadError770V1::Nonfinite);
+                }
                 for (j, logit) in logits.iter_mut().enumerate() {
                     *logit += value * p[w_start + i * 2 + j];
                 }
             }
             for (j, logit) in logits.iter_mut().enumerate() {
                 *logit += p[b_start + j];
-                if !logit.is_finite() { return Err(LearnedHeadError770V1::Nonfinite); }
+                if !logit.is_finite() {
+                    return Err(LearnedHeadError770V1::Nonfinite);
+                }
             }
             raw_logits.push(logits);
         }
@@ -189,18 +222,26 @@ impl LearnedCellHead770V1 {
     }
 
     #[must_use]
-    pub const fn mode(&self) -> LearnedHeadMode770V1 { self.mode }
+    pub const fn mode(&self) -> LearnedHeadMode770V1 {
+        self.mode
+    }
 
     /// Owned parameter bytes, excluding metadata, caller input and scratch.
     #[must_use]
-    pub fn tensor_bytes(&self) -> usize { self.parameters.len() * std::mem::size_of::<f64>() }
+    pub fn tensor_bytes(&self) -> usize {
+        self.parameters.len() * std::mem::size_of::<f64>()
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum LearnedCellExecutionMode770V1 { ShadowOnly }
+pub enum LearnedCellExecutionMode770V1 {
+    ShadowOnly,
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum LearnedCellCalibration770V1 { Unavailable }
+pub enum LearnedCellCalibration770V1 {
+    Unavailable,
+}
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct LearnedCellLogits770V1 {
@@ -218,12 +259,18 @@ pub struct LearnedCellLogits770V1 {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LearnedHeadError770V1 {
-    InvalidEnvelope, ArtifactDigestMismatch, IdentityMismatch, GenerationMismatch,
-    PredictorDigestMismatch, Nonfinite,
+    InvalidEnvelope,
+    ArtifactDigestMismatch,
+    IdentityMismatch,
+    GenerationMismatch,
+    PredictorDigestMismatch,
+    Nonfinite,
 }
 
 impl fmt::Display for LearnedHeadError770V1 {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result { write!(formatter, "{self:?}") }
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
+    }
 }
 
 impl StdError for LearnedHeadError770V1 {}
