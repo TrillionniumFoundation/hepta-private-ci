@@ -390,7 +390,7 @@ impl Store {
         authority_epoch: u64,
         claims: &BTreeSet<[u8; 32]>,
     ) -> Result<(), FinalUseError> {
-        if authority_epoch == 0 || claims.len() > MAX_CLAIMS {
+        if authority_epoch == 0 || claims.len() > MAX_CLAIMS || claims.contains(&[0; 32]) {
             return Err(FinalUseError::InvalidTrust);
         }
         let mut file = open_private(&self.root, "authority.claims.next", Access::Create)?;
