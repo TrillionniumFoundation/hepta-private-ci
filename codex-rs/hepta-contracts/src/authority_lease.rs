@@ -38,6 +38,12 @@ pub use pair_boundary::AuthorityLeaseRetirement;
 mod admin_read;
 pub use admin_read::AuthorityLeaseUnretiredReadV1;
 
+#[cfg(target_os = "linux")]
+#[path = "authority_lease_initialization.rs"]
+mod initialization;
+#[cfg(target_os = "linux")]
+pub use initialization::AuthorityLeaseInitialization;
+
 const LEASE_SCHEMA_VERSION: u32 = 1;
 const STORE_SCHEMA_VERSION: u32 = 2;
 pub const MAX_AUTHORITY_LEASES: usize = 16_384;
@@ -601,7 +607,23 @@ impl AuthorityLeaseRegistry {
         state: &mut std::sync::MutexGuard<'_, State>,
         next: State,
     ) -> Result<(), AuthorityLeaseError> {
+        // Retain the complete original next State before its protected digest
+        // can advance. A crash after that CAS must not lose the exact lease
+        // times, revocations or retired IDs needed to finish this publication.
+        let prepared = match self.0.store.prepare(&next) {
+            Ok(prepared) => prepared,
+            Err(error) => {
+                state.failed = true;
+                return Err(error);
+            }
+        };
         if let Some(frontier_store) = &self.0.frontier_store {
+            // File fsync alone does not durably name a new .next inode. Its
+            // directory entry must survive before the independent frontier CAS.
+            if prepared.sync_name().is_err() {
+                state.failed = true;
+                return Err(AuthorityLeaseError::Unavailable);
+            }
             let expected = frontier_for_state(state);
             let advanced = frontier_for_state(&next);
             if let Err(error) =
@@ -611,7 +633,7 @@ impl AuthorityLeaseRegistry {
                 return Err(map_trust_error(error));
             }
         }
-        if self.0.store.persist(&next).is_err() {
+        if prepared.publish().is_err() {
             state.failed = true;
             return Err(AuthorityLeaseError::Unavailable);
         }
@@ -982,6 +1004,10 @@ impl Store {
     }
 
     fn persist(&self, state: &State) -> Result<(), AuthorityLeaseError> {
+        self.prepare(state)?.publish()
+    }
+
+    fn prepare(&self, state: &State) -> Result<PreparedState<'_>, AuthorityLeaseError> {
         let stored = Stored {
             schema_version: STORE_SCHEMA_VERSION,
             owner_id: self.owner_id.clone(),
@@ -994,8 +1020,34 @@ impl Store {
         file.write_all(&bytes)
             .and_then(|()| file.sync_all())
             .map_err(|_| AuthorityLeaseError::Unavailable)?;
-        replace_state(&self.root)?;
-        self.root
+        Ok(PreparedState {
+            store: self,
+            _file: file,
+        })
+    }
+}
+
+// Non-cloneable original publication. The named candidate and held inode stay
+// alive through the frontier CAS; Drop never deletes uncertain crash evidence.
+struct PreparedState<'a> {
+    store: &'a Store,
+    _file: File,
+}
+
+impl PreparedState<'_> {
+    fn sync_name(&self) -> Result<(), AuthorityLeaseError> {
+        self.store
+            .root
+            .sync_all()
+            .map_err(|_| AuthorityLeaseError::Unavailable)
+    }
+
+    fn publish(self) -> Result<(), AuthorityLeaseError> {
+        replace_state(&self.store.root)?;
+        #[cfg(all(test, target_os = "linux"))]
+        initialization_tests::after_original_rename();
+        self.store
+            .root
             .sync_all()
             .map_err(|_| AuthorityLeaseError::Unavailable)
     }
@@ -1662,6 +1714,34 @@ mod tests {
 
     #[test]
     fn external_frontier_ahead_after_local_commit_failure_fences_reopen() {
+        // Preparation now happens before the CAS. Keep this original negative
+        // at its intended later boundary: the real rename must fail after the
+        // frontier has actually advanced, leaving ordinary reopen fenced.
+        struct FailRenameAfterCas {
+            inner: Arc<MemoryFrontierStore>,
+            directory: std::path::PathBuf,
+        }
+        impl AuthorityFrontierStore<AuthorityLeaseFrontier> for FailRenameAfterCas {
+            fn load(&self, owner: &str) -> Result<AuthorityLeaseFrontier, AuthorityTrustError> {
+                self.inner.load(owner)
+            }
+            fn compare_and_set(
+                &self,
+                owner: &str,
+                expected: &AuthorityLeaseFrontier,
+                next: &AuthorityLeaseFrontier,
+            ) -> Result<(), AuthorityTrustError> {
+                self.inner.compare_and_set(owner, expected, next)?;
+                std::fs::rename(
+                    self.directory.join("authority-leases.json"),
+                    self.directory
+                        .join("retained-before-failed-publication.json"),
+                )
+                .unwrap();
+                std::fs::create_dir(self.directory.join("authority-leases.json")).unwrap();
+                Ok(())
+            }
+        }
         let directory = tempfile::tempdir().unwrap();
         std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
         let frontier_store = Arc::new(MemoryFrontierStore(Mutex::new(
@@ -1671,11 +1751,13 @@ mod tests {
             directory.path(),
             "security-authority".into(),
             Arc::new(FixedClock(2_000)),
-            frontier_store.clone(),
+            Arc::new(FailRenameAfterCas {
+                inner: frontier_store.clone(),
+                directory: directory.path().to_path_buf(),
+            }),
         )
         .unwrap();
 
-        std::fs::create_dir(directory.path().join("authority-leases.next")).unwrap();
         assert_eq!(
             registry.put_lease(lease(), 0).unwrap_err(),
             AuthorityLeaseError::Unavailable
@@ -1686,8 +1768,22 @@ mod tests {
         );
         let external = frontier_store.load("security-authority").unwrap();
         assert_eq!(external.store_revision, 2);
+        assert!(directory.path().join("authority-leases.json").is_dir());
+        assert!(directory.path().join("authority-leases.next").is_file());
+        let candidate: Stored = serde_json::from_slice(
+            &std::fs::read(directory.path().join("authority-leases.next")).unwrap(),
+        )
+        .unwrap();
+        assert_eq!(frontier_for_state(&candidate.state), external);
 
-        std::fs::remove_dir(directory.path().join("authority-leases.next")).unwrap();
+        std::fs::remove_dir(directory.path().join("authority-leases.json")).unwrap();
+        std::fs::rename(
+            directory
+                .path()
+                .join("retained-before-failed-publication.json"),
+            directory.path().join("authority-leases.json"),
+        )
+        .unwrap();
         drop(registry);
         assert_eq!(
             AuthorityLeaseRegistry::open_state_dir_with_trust(
@@ -1697,7 +1793,7 @@ mod tests {
                 frontier_store,
             )
             .unwrap_err(),
-            AuthorityLeaseError::AntiRollbackViolation
+            AuthorityLeaseError::AntiRollbackViolation,
         );
     }
 
@@ -1750,3 +1846,7 @@ mod tests {
 #[cfg(test)]
 #[path = "authority_lease_entry_clock_tests.rs"]
 mod entry_clock_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "authority_lease_initialization_tests.rs"]
+mod initialization_tests;

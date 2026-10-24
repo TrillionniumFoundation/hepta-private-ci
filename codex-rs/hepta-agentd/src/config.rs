@@ -8,10 +8,6 @@ use codex_hepta_fleet::FleetRegistry;
 
 use crate::AgentdError;
 pub use crate::process_identity::AgentdIdentity;
-pub use crate::process_identity::HEPTA_AGENT_GENERATION_ENV;
-pub use crate::process_identity::HEPTA_AGENT_HOME_ENV;
-pub use crate::process_identity::HEPTA_AGENT_ID_ENV;
-pub use crate::process_identity::HEPTA_AGENT_RUN_ROOT_ENV;
 
 #[cfg(target_os = "linux")]
 #[path = "config_native.rs"]

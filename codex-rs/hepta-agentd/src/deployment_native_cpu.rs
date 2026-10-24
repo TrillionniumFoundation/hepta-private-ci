@@ -165,20 +165,29 @@ impl DeploymentFinalUseIssuer {
     ) -> io::Result<[[u8; 32]; 2]> {
         if unsafe { libc::geteuid() } != 0
             || std::process::id() != 1
-            || image.role() != codex_hepta_supervisor::KernelSuccessorRole::Manager
+            || !matches!(
+                image.role(),
+                codex_hepta_supervisor::KernelSuccessorRole::Manager
+                    | codex_hepta_supervisor::KernelSuccessorRole::Recovery
+            )
         {
             return Err(denied(
-                "actual Root manager activation required for namespace replacement",
+                "actual Root pair-owner activation required for namespace replacement",
             ));
         }
         let launch = image.launch();
         let retirement = image.retirement();
+        let actual_pid = match image.role() {
+            codex_hepta_supervisor::KernelSuccessorRole::Manager => launch.manager_pid(),
+            codex_hepta_supervisor::KernelSuccessorRole::Recovery => launch.recovery_pid(),
+            codex_hepta_supervisor::KernelSuccessorRole::HistoryOnly => None,
+        };
         if launch.mode() != codex_hepta_supervisor::KernelLaunchMode::ManagerRecovery
             || launch.generation() == 0
             || launch.generation() != retirement.generation()
             || launch.boot_id() != retirement.boot_id()
             || !retirement.policy_retired()
-            || launch.manager_pid() != Some(image.pid())
+            || actual_pid != Some(image.pid())
         {
             return Err(denied(
                 "actual fresh pair and preceding policy retirement required",
@@ -208,21 +217,24 @@ impl DeploymentFinalUseIssuer {
             };
             Ok([one(spaces[0])?, one(spaces[1])?])
         };
-        if scopes(retirement.previous_history_spaces())? != expected_scopes {
-            return Err(denied(
-                "old CPU policy differs from the actual retired namespaces",
-            ));
-        }
+        let old_scopes = scopes(retirement.previous_history_spaces())?;
         let next_scopes = scopes(launch.history_spaces())?;
         if next_scopes[0] == next_scopes[1]
-            || next_scopes
-                .iter()
-                .any(|scope| expected_scopes.contains(scope))
+            || next_scopes.iter().any(|scope| old_scopes.contains(scope))
         {
             return Err(denied(
                 "fresh kernel namespaces reused an old exact CPU scope",
             ));
         }
+        if expected_scopes != old_scopes && expected_scopes != next_scopes {
+            return Err(denied(
+                "retained CPU policy is neither this exact retired nor fresh pair",
+            ));
+        }
+        // A failed Manager may have committed the original policy CAS before
+        // its checkpoint/bootstrap failed. Recovery is the other actual image
+        // from that same saved kernel transaction. An already-new expectation
+        // below permits only exact retained verification, never old -> new CAS.
         self.replace_native_cpu_exact_scopes(registration, expected_scopes, next_scopes)
     }
 
@@ -297,3 +309,6 @@ impl DeploymentFinalUseIssuer {
 
 #[path = "deployment_native_cpu_boot.rs"]
 mod boot;
+
+#[path = "deployment_native_cpu_genesis.rs"]
+mod genesis;

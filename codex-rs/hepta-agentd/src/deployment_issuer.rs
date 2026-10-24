@@ -36,6 +36,9 @@ use crate::DeploymentFrontierStore;
 #[path = "deployment_authbus.rs"]
 mod authbus;
 
+#[path = "deployment_issuer_initialization.rs"]
+mod initialization;
+
 #[path = "deployment_issuer_root.rs"]
 mod root;
 use root::ProtectedLease;
@@ -153,63 +156,21 @@ impl DeploymentFinalUseIssuer {
         clock: Arc<dyn AuthorityClock>,
         protected: bool,
     ) -> io::Result<Self> {
-        if signer_id.is_empty()
-            || signer_id.len() > 64
-            || policies.is_empty()
-            || policies.len() > 16
-        {
-            return Err(io::Error::other("invalid local issuer policy"));
-        }
-        for policy in &policies {
-            let probe = FinalUseGrant {
-                schema_version: 1,
-                signer_id: signer_id.clone(),
-                authority_epoch: 1,
-                grant_id: "policy-validation".into(),
-                nonce: [1; 32],
-                binding: FinalUseBinding {
-                    subject_id: policy.subject_id.clone(),
-                    destination_id: policy.destination_id.clone(),
-                    request_sha256: [1; 32],
-                    scope_sha256: policy.scope_sha256,
-                    payload_sha256: [1; 32],
-                },
-                not_before_unix_ms: 1,
-                expires_at_unix_ms: 1_u64
-                    .checked_add(policy.lifetime_ms)
-                    .ok_or_else(|| io::Error::other("invalid lifetime"))?,
-            };
-            probe.signing_bytes().map_err(io::Error::other)?;
-        }
+        initialization::validate_policy(&signer_id, &policies)?;
         clock.now_unix_ms().map_err(io::Error::other)?;
         let store = if protected {
             DeploymentFrontierStore::create_protected(directory)?
         } else {
             DeploymentFrontierStore::create(directory)?
         };
-        let key_bytes = random_bytes()?;
-        let mut key_file = OpenOptions::new()
-            .write(true)
-            .create_new(true)
-            .mode(0o600)
-            .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC)
-            .open(directory.join("issuer.key"))?;
-        key_file.write_all(&key_bytes)?;
-        key_file.sync_all()?;
+        let publication = initialization::KeyPublication::open(directory)?;
+        publication.create_key()?;
         store.provision(
             STATE_OWNER,
-            &IssuerState {
-                signer_id,
-                policies,
-                head: FinalUseRevocations {
-                    authority_epoch: 1,
-                    revision: 1,
-                    revoked_grant_ids: BTreeSet::new(),
-                },
-                sequence: 0,
-                writer_authorization: None,
-            },
+            &initialization::initial_state(signer_id, policies),
         )?;
+        #[cfg(test)]
+        initialization::at_state_publication_cut();
         File::open(directory)?.sync_all()?;
         Self::open_inner(directory, clock, protected, None)
     }

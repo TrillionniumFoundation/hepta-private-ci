@@ -406,6 +406,7 @@ mod tests {
     use crate::DB_INIT_METRIC;
     use crate::DbTelemetry;
     use crate::migrations::STATE_MIGRATOR;
+    use crate::sqlite::RuntimeSqliteConfigExt;
     use codex_protocol::ThreadId;
     use codex_utils_absolute_path::test_support::PathExt;
     use pretty_assertions::assert_eq;

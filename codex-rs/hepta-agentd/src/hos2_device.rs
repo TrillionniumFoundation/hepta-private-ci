@@ -23,7 +23,6 @@ use bootstrap::validate_bootstrap;
 #[path = "hos2_copyout.rs"]
 mod copyout;
 pub(crate) use copyout::AfterCopyoutFault;
-pub(crate) use copyout::NativeCopyoutDiagnostic;
 pub(crate) use copyout::NativeCopyoutSnapshot;
 pub(crate) use copyout::NativeIoctlCounts;
 

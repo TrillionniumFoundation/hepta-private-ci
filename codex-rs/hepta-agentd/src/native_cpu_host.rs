@@ -12,7 +12,6 @@ use codex_hepta_memory::CognitiveCheckpointStatus;
 use codex_hepta_memory::CognitiveCheckpointTransport;
 use codex_hepta_memory::ProductionHos2Target;
 use std::io::Read;
-use std::os::fd::OwnedFd;
 use std::os::unix::fs::DirBuilderExt;
 
 pub(super) fn run(boot: NativeBootstrap, device: Arc<crate::AgentdHos2Device>) -> io::Result<()> {
@@ -74,7 +73,7 @@ pub(super) fn run(boot: NativeBootstrap, device: Arc<crate::AgentdHos2Device>) -
         identity.home_root.clone(),
         identity.run_root.clone(),
         identity.home_root.clone(),
-        identity.workspace.clone(),
+        identity.workspace,
     )
     .map_err(error)?;
     // All five connections precede the first awaited feed read. The Root lane

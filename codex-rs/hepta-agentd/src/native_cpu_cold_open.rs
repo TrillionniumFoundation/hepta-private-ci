@@ -144,6 +144,37 @@ pub(super) fn retire_lease_for_handoff(
     Ok(())
 }
 
+pub(super) fn writer_binding(
+    config: &HostAuthorityServiceConfig,
+    previous_writer: &crate::HostAuthorityWriterRegistration,
+    proof: &crate::HostSignedWriterAuthorizationV1,
+) -> io::Result<CognitiveCheckpointWriterBinding> {
+    let verified = codex_hepta_authority_client::VerifiedRootWriterProof::verify(
+        proof.clone(),
+        &crate::AgentdRootWriterTrust {
+            issuer_id: config.signer_id.clone(),
+            verifying_key: config.expected_verifying_key,
+            agent_id: previous_writer.registered_agent_id.clone(),
+            spawn_generation: previous_writer.spawn_generation,
+            owner_epoch: previous_writer.owner_epoch,
+            local_lease_id: previous_writer.local_lease_id.clone(),
+            local_lease_generation: previous_writer.local_lease_generation,
+            authority_lease: previous_writer.authority_lease.clone(),
+        },
+    )
+    .map_err(error)?;
+    let authority = verified.authority();
+    Ok(CognitiveCheckpointWriterBinding {
+        lease_id: previous_writer.local_lease_id.clone(),
+        generation: previous_writer.local_lease_generation,
+        authority_epoch: authority.authority_epoch,
+        owner_epoch: authority.owner_epoch,
+        authority_grant_digest: authority.grant_digest.clone(),
+        fencing_token_digest: authority.fencing_token_digest().map_err(error)?,
+        expires_at_unix_seconds: authority.lease_expires_at_unix_seconds,
+    })
+}
+
 impl Installation {
     pub(super) fn cold_open(boot: &NativeBootstrap, deadline: u64) -> io::Result<Self> {
         let pin = InstalledPin::load()?;
@@ -160,7 +191,7 @@ impl Installation {
             return Err(invalid("retained Fleet Agent identity changed"));
         }
         let (clock, leases, issuer) =
-            crate::authority_host_runtime::open_registered_issuer(&config)?;
+            crate::authority_host_runtime::resume_registered_issuer_for_root(&config)?;
         let canonical = issuer.retained_writer_state_for_root()?;
         if canonical.registration.registered_agent_id != pin.agent_id {
             return Err(invalid(
@@ -171,34 +202,11 @@ impl Installation {
         let directory = RootAuthorityDirectory::open(&checkpoint).map_err(error)?;
         let head = crate::HostCognitiveCheckpoint::retained_head_for_root(directory.clone())
             .map_err(error)?;
-        let previous_writer = &canonical.registration;
-        let verified = codex_hepta_authority_client::VerifiedRootWriterProof::verify(
-            canonical.proof.clone(),
-            &crate::AgentdRootWriterTrust {
-                issuer_id: config.signer_id.clone(),
-                verifying_key: config.expected_verifying_key,
-                agent_id: previous_writer.registered_agent_id.clone(),
-                spawn_generation: previous_writer.spawn_generation,
-                owner_epoch: previous_writer.owner_epoch,
-                local_lease_id: previous_writer.local_lease_id.clone(),
-                local_lease_generation: previous_writer.local_lease_generation,
-                authority_lease: previous_writer.authority_lease.clone(),
-            },
-        )
-        .map_err(error)?;
-        let authority = verified.authority();
-        let binding = CognitiveCheckpointWriterBinding {
-            lease_id: previous_writer.local_lease_id.clone(),
-            generation: previous_writer.local_lease_generation,
-            authority_epoch: authority.authority_epoch,
-            owner_epoch: authority.owner_epoch,
-            authority_grant_digest: authority.grant_digest.clone(),
-            fencing_token_digest: authority.fencing_token_digest().map_err(error)?,
-            expires_at_unix_seconds: authority.lease_expires_at_unix_seconds,
-        };
-        if head.head.owner_agent_id != pin.agent_id || head.head.writer_binding != binding {
+        let binding = writer_binding(&config, &canonical.registration, &canonical.proof)?;
+        let installed = head.head.writer_binding == binding;
+        if head.head.owner_agent_id != pin.agent_id {
             return Err(invalid(
-                "canonical authorization and actual retained checkpoint require partial-activation reconciliation",
+                "actual protected checkpoint belongs to another Agent",
             ));
         }
         let archive = config.state_dir.join("material");
@@ -225,6 +233,22 @@ impl Installation {
                 "original head changed while selecting its physical image",
             ));
         }
+        let authorization = if installed {
+            recovery::RecoveryAuthorization::Installed
+        } else {
+            // Only the canonical signature selects this original pre-signing
+            // witness. A saved but unsigned candidate, missing/changed witness
+            // or unsupported generation gap cannot provide failure evidence.
+            let failed = crate::HostCognitiveCheckpoint::observe_unactivated_publisher_for_root(
+                RootAuthorityDirectory::open(&checkpoint).map_err(error)?,
+                &issuer,
+                &clock,
+                &previous,
+                &material,
+            )
+            .map_err(error)?;
+            recovery::RecoveryAuthorization::Unactivated { failed }
+        };
         let launcher = Arc::new(RootKernelLauncher::open(&boot.bytes)?);
         let current_root = retired
             .prior_boot_root_for_namespace(&previous)
@@ -301,6 +325,7 @@ impl Installation {
                 codex_hepta_contracts::authority_lease::MAX_AUTHORITY_LEASES,
             )
             .map_err(error)?;
+        let mut revoked = Vec::new();
         for lease in &selected.leases {
             remaining(deadline)?;
             let reason = Sha256::digest(
@@ -313,19 +338,19 @@ impl Installation {
                 .map_err(error)?,
             )
             .into();
-            leases
-                .revoke(&lease.lease_id, lease.revision, reason)
-                .map_err(error)?;
+            revoked.push(
+                leases
+                    .revoke(&lease.lease_id, lease.revision, reason)
+                    .map_err(error)?,
+            );
         }
-        if !leases
+        let after = leases
             .read_unretired_for_principal(
                 pin.agent_id.as_str(),
                 codex_hepta_contracts::authority_lease::MAX_AUTHORITY_LEASES,
             )
-            .map_err(error)?
-            .leases
-            .is_empty()
-        {
+            .map_err(error)?;
+        if !after.leases.is_empty() {
             return Err(invalid(
                 "original Agent retirement did not observe an empty active selection",
             ));
@@ -354,7 +379,16 @@ impl Installation {
                 .map_err(error)?;
         config.writer = Some(canonical.registration.clone());
         let initial = previous.head.last_current.clone();
+        let observation = clock.refresh_projection().map_err(error)?;
+        // Exact original metadata, never used as an adoption/retirement token.
+        let cold_observation = Some(serde_json::json!({"previous":previous,
+            "previous_writer":canonical.registration,"writer_proof_sha256":canonical.proof.sha256().map_err(error)?,
+            "issuer_sequence":canonical.sequence,"revocations":canonical.revocations,
+            "registry_before":selected,"revocations_applied":revoked,"registry_after":after,
+            "clock":{"projection":observation.projection,"observed_unix_ms":observation.observed_unix_ms},
+            "device_frontier":frontiers[0],"notes_frontier":frontiers[1]}));
         let recovery = recovery::PreparedRecovery {
+            authorization,
             previous,
             writer: canonical.registration,
             proof: canonical.proof,
@@ -379,6 +413,10 @@ impl Installation {
             recovery: Some(recovery),
             launcher,
             launch_observations,
+            cold_observation,
+            activation: None,
+            activation_fault: None,
+            last_activation_reconciliation: None,
         })
     }
 }

@@ -33,7 +33,6 @@ use sha2::Digest;
 use sha2::Sha256;
 use std::io::Read;
 use std::io::Write;
-use std::os::fd::AsFd;
 use std::os::fd::OwnedFd;
 use std::os::unix::fs::MetadataExt;
 use std::os::unix::fs::OpenOptionsExt;
@@ -52,8 +51,11 @@ mod successor;
 use successor::OwnerImage;
 #[path = "native_cpu_lost_copyout.rs"]
 mod lost_copyout;
+use lost_copyout::prior_boot;
 #[path = "native_cpu_recovery.rs"]
 mod recovery;
+#[path = "native_cpu_reentry.rs"]
+mod reentry;
 
 struct Installation {
     fleet: FleetRegistry,
@@ -68,6 +70,10 @@ struct Installation {
     recovery: Option<recovery::PreparedRecovery>,
     launcher: Arc<RootKernelLauncher>,
     launch_observations: Arc<RootAuthorityDirectory>,
+    cold_observation: Option<serde_json::Value>,
+    activation: Option<reentry::PendingActivation>,
+    activation_fault: Option<reentry::FailurePoint>,
+    last_activation_reconciliation: Option<serde_json::Value>,
 }
 pub(super) struct Active {
     pub(super) service: Arc<crate::HostAuthorityService>,
@@ -260,6 +266,10 @@ impl Installation {
             recovery: None,
             launcher,
             launch_observations,
+            cold_observation: None,
+            activation: None,
+            activation_fault: None,
+            last_activation_reconciliation: None,
         };
         let head = installation.issuer.revocations()?;
         let consumer = |name: &str| -> io::Result<crate::HostAuthorityConsumerConfig> {
@@ -304,12 +314,13 @@ impl Installation {
         self.activate_image(spec, image, owner, deadline)
     }
 
-    fn activate_image(
+    fn activate_image_inner(
         &mut self,
         spec: &SpawnSpec,
         image: OwnerImage,
         owner: OwnedFd,
         deadline: u64,
+        retained: crate::RetainedCheckpointPublisher,
     ) -> io::Result<Active> {
         let first = image.kernel.is_none()
             && image.role == 1
@@ -325,9 +336,8 @@ impl Installation {
             self.refresh_canonical_root_lease(spec)?;
         }
         let recovery = self.recovery.as_ref();
-        let pid = image.pid;
         let name = image.runtime_name()?;
-        let owner_peer = peer(pid, 60001)?;
+        let owner_peer = retained.lifetime().clone();
         let root = peer(1, 0)?;
         let launch_listener = listener(&Path::new(RUNTIME).join(format!("{name}.launch")), 60001)?;
         let rpc_listener = listener(&Path::new(RUNTIME).join(format!("{name}.rpc")), 60001)?;
@@ -357,7 +367,7 @@ impl Installation {
         let identity = crate::authority_host_config::registered_identity(&registered)?;
         let now = self.clock.now_unix_ms().map_err(error)?;
         let writer = if let Some(previous) = recovery {
-            self.recovered_writer(spec, previous)?
+            self.recovered_writer(spec, previous, &retained)?
         } else {
             let writer = crate::HostAuthorityWriterRegistration {
                 registered_agent_id: spec.agent_id.clone(),
@@ -395,6 +405,10 @@ impl Installation {
                 .register_writer_authorization(&writer, &self.leases.verifier())?;
             writer
         };
+        self.activation
+            .as_mut()
+            .ok_or_else(|| invalid("actual activation custody missing"))?
+            .fail_at(reentry::FailurePoint::AfterProof, &retained, deadline)?;
         let epoch = recovery.map_or(Ok(1), |previous| {
             previous
                 .previous
@@ -403,17 +417,18 @@ impl Installation {
                 .checked_add(1)
                 .ok_or_else(|| invalid("original publisher epoch overflow"))
         })?;
-        let retained =
-            crate::RetainedCheckpointPublisher::capture(owner_peer.clone()).map_err(error)?;
         if let Some(kernel) = &image.kernel
-            && kernel.role() == KernelSuccessorRole::Manager
+            && matches!(
+                kernel.role(),
+                KernelSuccessorRole::Manager | KernelSuccessorRole::Recovery
+            )
         {
             self.scopes =
                 self.issuer
                     .replace_native_cpu_namespaces(&writer, kernel, self.scopes)?;
         }
         if image.kernel.is_none()
-            && image.role == 1
+            && matches!(image.role, 1 | 3)
             && let Some(previous) = recovery
             && previous.previous.head.peer_lifetime.boot_id != root.boot_id
         {
@@ -494,8 +509,8 @@ impl Installation {
         let bundle = service.capture_public_bootstrap()?;
         let adopted = if let Some(previous) = self.recovery.take() {
             if [
-                bundle.consumers.device.frontier.clone(),
-                bundle.consumers.notes.frontier.clone(),
+                bundle.consumers.device.frontier,
+                bundle.consumers.notes.frontier,
             ] != previous.frontiers
             {
                 return Err(invalid(
@@ -524,6 +539,10 @@ impl Installation {
         } else {
             None
         };
+        self.activation
+            .as_mut()
+            .ok_or_else(|| invalid("actual activation custody missing"))?
+            .fail_at(reentry::FailurePoint::AfterMaterial, &retained, deadline)?;
         let registration = HostAuthorityRegistration {
             schema_version: 1,
             peer_pid: owner_peer.pid,
@@ -561,6 +580,10 @@ impl Installation {
                     &owner,
                 )
             })?;
+        self.activation
+            .as_mut()
+            .ok_or_else(|| invalid("actual activation custody missing"))?
+            .server = Some(server);
         let (ready, descriptors) = launch.read(deadline)?;
         if !descriptors.is_empty()
             || !matches!(ready,crate::RootNotesLaunchFrame::RecoveredOwnerReadyV1 {schema_version:1,launch_nonce:ref actual} if actual==&nonce)
@@ -590,6 +613,19 @@ impl Installation {
             pidfd(bundle.consumer.pid)?,
             deadline,
         )?;
+        let root_lease = self
+            .leases
+            .read_lease(&self.config.lease_id)
+            .map_err(error)?
+            .ok_or_else(|| invalid("actual canonical Root lease absent"))?
+            .lease;
+        let server = self
+            .activation
+            .as_mut()
+            .ok_or_else(|| invalid("actual activation custody missing"))?
+            .server
+            .take()
+            .ok_or_else(|| invalid("actual original lane custody missing"))?;
         self.config.writer = Some(writer);
         Ok(Active {
             service,
@@ -602,12 +638,7 @@ impl Installation {
             server: Some(server),
             adopted,
             image,
-            root_lease: self
-                .leases
-                .read_lease(&self.config.lease_id)
-                .map_err(error)?
-                .ok_or_else(|| invalid("actual canonical Root lease absent"))?
-                .lease,
+            root_lease,
         })
     }
 }
@@ -632,27 +663,26 @@ pub(super) fn run(boot: NativeBootstrap) -> io::Result<()> {
     } else {
         end()?
     };
-    let driver =
-        KernelInitialProcessDriver::new(&boot.bytes, command.clone(), move |spec, role, owner| {
-            let generation = owner_install
-                .lock()
-                .map_err(|e| codex_hepta_supervisor::ProcessDriverError::new(e.to_string()))?
-                .activate(
-                    spec,
-                    role,
-                    owner
-                        .try_clone_to_owned()
-                        .map_err(codex_hepta_supervisor::ProcessDriverError::from)?,
-                    end().map_err(codex_hepta_supervisor::ProcessDriverError::from)?,
-                )
-                .map_err(|e| codex_hepta_supervisor::ProcessDriverError::new(e.to_string()))?;
-            *ready
-                .lock()
-                .map_err(|e| codex_hepta_supervisor::ProcessDriverError::new(e.to_string()))? =
-                Some(generation);
-            Ok(())
-        })
-        .map_err(error)?;
+    let driver = KernelInitialProcessDriver::new(&boot.bytes, command, move |spec, role, owner| {
+        let generation = owner_install
+            .lock()
+            .map_err(|e| codex_hepta_supervisor::ProcessDriverError::new(e.to_string()))?
+            .activate(
+                spec,
+                role,
+                owner
+                    .try_clone_to_owned()
+                    .map_err(codex_hepta_supervisor::ProcessDriverError::from)?,
+                end().map_err(codex_hepta_supervisor::ProcessDriverError::from)?,
+            )
+            .map_err(|e| codex_hepta_supervisor::ProcessDriverError::new(e.to_string()))?;
+        *ready
+            .lock()
+            .map_err(|e| codex_hepta_supervisor::ProcessDriverError::new(e.to_string()))? =
+            Some(generation);
+        Ok(())
+    })
+    .map_err(error)?;
     let next_install = installation.clone();
     let next_active = active.clone();
     let (launcher, observations) = {
@@ -698,9 +728,14 @@ pub(super) fn run(boot: NativeBootstrap) -> io::Result<()> {
         return Err(invalid("original Supervisor recovery reported faults"));
     }
     let agent = AgentId::parse(AGENT).map_err(error)?;
-    supervisor
-        .start(&agent, command, Instant::now())
-        .map_err(error)?;
+    reentry::start(
+        &mut evidence,
+        &installation,
+        &active,
+        &mut supervisor,
+        &agent,
+        deadline,
+    )?;
     loop {
         remaining(deadline)?;
         let report = supervisor.tick(Instant::now());
@@ -720,6 +755,11 @@ pub(super) fn run(boot: NativeBootstrap) -> io::Result<()> {
         .map_err(error)?
         .take()
         .ok_or_else(|| invalid("native activation omitted original service"))?;
+    if evidence.scenario() == "prior-boot-unknown-v1" {
+        // This scenario deliberately preserves unresolved prior-boot work.
+        // Its distinct poweroff path makes no successful drain/release claim.
+        return prior_boot::run(&mut evidence, &boot, &mut generation, &installation);
+    }
     evidence.begin(&boot, &mut generation)?;
     match evidence.scenario() {
         "steady-state-v1" => evidence.steady_state(&mut generation)?,
@@ -759,6 +799,17 @@ pub(super) fn run(boot: NativeBootstrap) -> io::Result<()> {
         }
         "history-only-after-both-owner-exit-v1" => {
             generation = continuity::history_only(
+                &mut evidence,
+                generation,
+                &installation,
+                &active,
+                &mut supervisor,
+                &agent,
+                deadline,
+            )?;
+        }
+        "activation-after-proof-v1" | "activation-after-material-v1" => {
+            generation = continuity::activation_failure(
                 &mut evidence,
                 generation,
                 &installation,

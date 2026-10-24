@@ -94,12 +94,12 @@ impl HostCognitiveCheckpoint {
                 "unactivated writer differs from original predecessor",
             ));
         }
-        // Ordinary evidence retains exact same-boot equality. A prior-boot
-        // predecessor can be used only with its original full-head token and
-        // actual new-boot Root; both failed and replacement lives must belong
-        // to that same new boot. Their own retirement/liveness remains below.
-        predecessor
-            .require_physical_successor(previous, &failed_publisher.lifetime)
+        // Ordinary failed publishers remain strictly same-boot. A failure
+        // from an earlier boot additionally needs the original pre-signing
+        // Root observation committed by that exact canonical candidate's
+        // signed payload; it cannot be substituted for a protected head.
+        failed_publisher
+            .require_unactivated_successor(previous, failed, &successor.lifetime)
             .map_err(io::Error::other)?;
         predecessor
             .require_physical_successor(previous, &successor.lifetime)

@@ -184,6 +184,33 @@ where
         File::open(&self.directory)?.sync_all()
     }
 
+    /// Explicit original Root bootstrap completion; ordinary provision/open
+    /// never invoke this path. A different retained state is not replaced.
+    pub(crate) fn resume_protected_initialization(
+        &self,
+        owner_id: &str,
+        initial: &F,
+    ) -> io::Result<()> {
+        let protected = self.protected.as_ref().ok_or_else(|| {
+            io::Error::other("initialization resume requires the protected owner")
+        })?;
+        let mut registered = protected
+            .registered
+            .lock()
+            .map_err(|_| io::Error::other("protected store lock"))?;
+        if registered.is_some() {
+            return Err(io::Error::other("protected owner already registered"));
+        }
+        let store = HostAuthorityFrontierStore::resume_initialization(
+            protected.directory.clone(),
+            owner_id.into(),
+            initial.clone(),
+        )
+        .map_err(io::Error::other)?;
+        *registered = Some(Arc::new(store));
+        Ok(())
+    }
+
     fn record_path(&self, owner_id: &str) -> io::Result<PathBuf> {
         if owner_id.is_empty() || owner_id.len() > 128 || owner_id.as_bytes().contains(&0) {
             return Err(io::Error::other("invalid frontier owner"));

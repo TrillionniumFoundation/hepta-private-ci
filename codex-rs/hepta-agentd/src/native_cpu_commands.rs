@@ -23,10 +23,17 @@ use std::net::Shutdown;
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
 
+#[path = "native_cpu_prior_boot_observer.rs"]
+mod prior_boot_observer;
+
 #[derive(Deserialize, Serialize)]
 #[serde(tag = "command", rename_all = "snake_case", deny_unknown_fields)]
 pub(super) enum Command {
     Inspect,
+    TransportObservation,
+    ObservePreviousBoot {
+        occurrence_key: String,
+    },
     ReconcileRetained {
         occurrence_key: String,
     },
@@ -341,6 +348,10 @@ impl<T: codex_hepta_memory::CognitiveCheckpointTransport + 'static> Owner<T> {
         let writer = self.host.writer();
         writer.verify_current_authority().await?;
         match command {
+            Command::TransportObservation => self.transport_observation(),
+            Command::ObservePreviousBoot { occurrence_key } => {
+                self.observe_previous_boot(&occurrence_key).await
+            }
             Command::Inspect => {
                 use std::os::unix::fs::MetadataExt;
                 let lock = std::fs::metadata(

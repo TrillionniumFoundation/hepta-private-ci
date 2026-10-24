@@ -195,7 +195,7 @@ impl Fixture {
                     operation_class: "runtime.agentd.production_writer".into(),
                     destination_id: format!("cognitive.owner:{owner}"),
                     scope_sha256: Sha256::digest(
-                        serde_json::to_vec(&(owner.clone(), layout.cognitive_root())).unwrap(),
+                        serde_json::to_vec(&(owner, layout.cognitive_root())).unwrap(),
                     )
                     .into(),
                     payload_sha256: Sha256::digest(serde_json::to_vec(&initial).unwrap()).into(),
@@ -255,7 +255,7 @@ impl Fixture {
             .args(["--exact", CANONICAL_CLIENT, "--ignored", "--nocapture"])
             .stdin(Stdio::piped())
             .current_dir(
-                crate::authority_host_config::registered_identity(&identity)
+                crate::authority_host_config::registered_identity(identity)
                     .unwrap()
                     .layout
                     .home_root(),
@@ -265,7 +265,7 @@ impl Fixture {
             .env("HEPTA_SERVICE_PID", std::process::id().to_string())
             .env(
                 "TMPDIR",
-                crate::authority_host_config::registered_identity(&identity)
+                crate::authority_host_config::registered_identity(identity)
                     .unwrap()
                     .layout
                     .home_root(),

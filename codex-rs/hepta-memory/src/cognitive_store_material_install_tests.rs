@@ -15,6 +15,9 @@ use std::time::Instant;
 const POINTER: &str = ".cognitive-active-v1";
 const LOCK: &str = ".cognitive-store.lock";
 
+#[path = "cognitive_store_material_attempt_tests.rs"]
+mod attempt_tests;
+
 struct Fixture {
     case: TempDir,
     _source: TempDir,

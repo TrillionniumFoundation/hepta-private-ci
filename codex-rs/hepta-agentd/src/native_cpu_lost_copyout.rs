@@ -14,6 +14,9 @@ use serde::Deserialize;
 use serde::Serialize;
 use std::os::fd::BorrowedFd;
 
+#[path = "native_cpu_prior_boot.rs"]
+pub(super) mod prior_boot;
+
 struct Prepared {
     operation: &'static str,
     key: String,
@@ -46,7 +49,7 @@ struct Snapshot {
     last: Option<Diagnostic>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct FaultBoundary {
     phase: String,

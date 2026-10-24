@@ -81,7 +81,7 @@ impl RootNotesStartupCancellation {
             .0
             .state
             .lock()
-            .unwrap_or_else(|error| error.into_inner());
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         if matches!(*state, StartupCancellationState::Armed(_)) {
             drop(std::mem::replace(
                 &mut *state,
@@ -96,7 +96,7 @@ impl RootNotesStartupCancellation {
             .0
             .state
             .lock()
-            .unwrap_or_else(|error| error.into_inner());
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         match std::mem::replace(&mut *state, StartupCancellationState::Completed) {
             StartupCancellationState::Armed(abort) => {
                 abort.disarm();
@@ -125,7 +125,7 @@ impl RootNotesLaunchServer {
         if !service
             .material_startup
             .as_ref()
-            .is_some_and(|state| state.is_pending())
+            .is_some_and(super::material_startup::RequiredMaterialStartup::is_pending)
             || service
                 .checkpoint
                 .as_ref()

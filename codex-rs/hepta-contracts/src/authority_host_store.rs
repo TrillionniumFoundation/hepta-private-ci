@@ -33,6 +33,9 @@ mod issuer;
 pub use issuer::HostFinalUseIssuer;
 pub use issuer::HostIssuerError;
 
+#[path = "authority_host_store_initialization.rs"]
+mod initialization;
+
 #[path = "authority_host_observation.rs"]
 mod observation;
 pub use observation::RootStoredObservation;
@@ -123,21 +126,31 @@ impl RootAuthorityDirectory {
         }
     }
 
+    fn prepare_replace(
+        &self,
+        temporary: &str,
+        name: &str,
+    ) -> Result<PreparedRootReplacement<'_>, AuthorityTrustError> {
+        let file = self.open_private(temporary, OFlags::RDWR | OFlags::CREATE)?;
+        // Validate type/ownership/link count before truncating even a stale
+        // temporary entry left by a killed broker. This prepares only the
+        // unpublished temporary inode, never the canonical frontier.
+        file.set_len(0).map_err(unavailable)?;
+        Ok(PreparedRootReplacement {
+            root: self,
+            temporary: temporary.to_owned(),
+            name: name.to_owned(),
+            file,
+        })
+    }
+
     fn replace(
         &self,
         temporary: &str,
         name: &str,
         bytes: &[u8],
     ) -> Result<(), AuthorityTrustError> {
-        let mut file = self.open_private(temporary, OFlags::RDWR | OFlags::CREATE)?;
-        // Validate type/ownership/link count before truncating even a stale
-        // temporary entry left by a killed broker.
-        file.set_len(0).map_err(unavailable)?;
-        file.write_all(bytes).map_err(unavailable)?;
-        file.sync_all().map_err(unavailable)?;
-        rustix::fs::renameat(&self.directory, temporary, &self.directory, name)
-            .map_err(|_| AuthorityTrustError::Unavailable)?;
-        self.sync_directory()
+        self.prepare_replace(temporary, name)?.commit(bytes)
     }
 
     fn sync_directory(&self) -> Result<(), AuthorityTrustError> {
@@ -155,6 +168,31 @@ impl RootAuthorityDirectory {
             }
         }
         self.directory.sync_all().map_err(unavailable)
+    }
+}
+
+// Private, non-cloneable preparation under the caller's original owner lock.
+// Preparing it publishes no record. All callers consume it through the same
+// original durability sequence, and no descriptor escapes to another owner.
+struct PreparedRootReplacement<'a> {
+    root: &'a RootAuthorityDirectory,
+    temporary: String,
+    name: String,
+    file: File,
+}
+
+impl PreparedRootReplacement<'_> {
+    fn commit(mut self, bytes: &[u8]) -> Result<(), AuthorityTrustError> {
+        self.file.write_all(bytes).map_err(unavailable)?;
+        self.file.sync_all().map_err(unavailable)?;
+        rustix::fs::renameat(
+            &self.root.directory,
+            &self.temporary,
+            &self.root.directory,
+            &self.name,
+        )
+        .map_err(|_| AuthorityTrustError::Unavailable)?;
+        self.root.sync_directory()
     }
 }
 
@@ -239,6 +277,51 @@ impl<F: Serialize + DeserializeOwned + Eq> HostAuthorityFrontierStore<F> {
         store.persist(&initial)?;
         store.acknowledge_persisted(&initial)?;
         Ok(store)
+    }
+
+    /// Prepare a genuinely absent frontier before constructing its value.
+    /// The original clock uses this to avoid aging a one-second sample while
+    /// opening/validating/truncating an unpublished temporary file. There is
+    /// still exactly one construction attempt and one durability attempt.
+    pub(crate) fn initialize_prepared(
+        root: Arc<RootAuthorityDirectory>,
+        owner_id: String,
+        construct: impl FnOnce() -> Result<F, AuthorityTrustError>,
+    ) -> Result<(Self, F), AuthorityTrustError> {
+        let store = Self::configured(root, owner_id)?;
+        let _lock = store.publication_lock()?;
+        if store.root.exists(&store.name)? {
+            return Err(AuthorityTrustError::Conflict);
+        }
+        let prepared = store.prepare_persist()?;
+        let initial = construct()?;
+        store.persist_prepared(prepared, &initial)?;
+        store.acknowledge_persisted(&initial)?;
+        Ok((store, initial))
+    }
+
+    /// Same original CAS fence, with value construction after complete
+    /// expected-record validation and unpublished temporary-file preparation.
+    /// A wrong owner, stale preimage, contested lock or invalid temporary inode
+    /// cannot invoke the constructor or publish any replacement.
+    pub(crate) fn compare_and_set_prepared(
+        &self,
+        owner_id: &str,
+        expected: &F,
+        construct: impl FnOnce() -> Result<F, AuthorityTrustError>,
+    ) -> Result<F, AuthorityTrustError> {
+        if owner_id != self.owner_id {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        let _lock = self.publication_lock()?;
+        if &self.read()? != expected {
+            return Err(AuthorityTrustError::Conflict);
+        }
+        let prepared = self.prepare_persist()?;
+        let next = construct()?;
+        self.persist_prepared(prepared, &next)?;
+        self.acknowledge_persisted(&next)?;
+        Ok(next)
     }
 
     /// Open an existing registration without creating or repairing state.
@@ -377,7 +460,10 @@ impl<F: Serialize + DeserializeOwned + Eq> HostAuthorityFrontierStore<F> {
     }
 
     fn read_record(&self) -> Result<(F, DurableRecord), AuthorityTrustError> {
-        let file = self.root.open_private(&self.name, OFlags::RDONLY)?;
+        self.read_opened_record(self.root.open_private(&self.name, OFlags::RDONLY)?)
+    }
+
+    fn read_opened_record(&self, file: File) -> Result<(F, DurableRecord), AuthorityTrustError> {
         if file.metadata().map_err(unavailable)?.len() > MAX_RECORD_BYTES {
             return Err(AuthorityTrustError::Invalid);
         }
@@ -397,8 +483,7 @@ impl<F: Serialize + DeserializeOwned + Eq> HostAuthorityFrontierStore<F> {
         Ok((value.frontier, DurableRecord { file, bytes }))
     }
 
-    fn persist(&self, frontier: &F) -> Result<(), AuthorityTrustError> {
-        self.forget_durability()?;
+    fn encode(&self, frontier: &F) -> Result<Vec<u8>, AuthorityTrustError> {
         let bytes = serde_json::to_vec(&Record {
             schema: 1,
             owner_id: self.owner_id.clone(),
@@ -408,6 +493,38 @@ impl<F: Serialize + DeserializeOwned + Eq> HostAuthorityFrontierStore<F> {
         if bytes.len() as u64 > MAX_RECORD_BYTES {
             return Err(AuthorityTrustError::Invalid);
         }
+        Ok(bytes)
+    }
+
+    fn prepare_persist(&self) -> Result<PreparedRootReplacement<'_>, AuthorityTrustError> {
+        match self
+            .root
+            .prepare_replace(&format!("{}.next", self.name), &self.name)
+        {
+            Ok(prepared) => Ok(prepared),
+            Err(error) => {
+                self.forget_durability()?;
+                Err(error)
+            }
+        }
+    }
+
+    fn persist_prepared(
+        &self,
+        prepared: PreparedRootReplacement<'_>,
+        frontier: &F,
+    ) -> Result<(), AuthorityTrustError> {
+        // A constructor failure has not touched the canonical inode. Once
+        // actual publication starts, retain the original uncertainty rule:
+        // no old durability witness survives a failed encode/write/sync.
+        self.forget_durability()?;
+        let bytes = self.encode(frontier)?;
+        prepared.commit(&bytes)
+    }
+
+    fn persist(&self, frontier: &F) -> Result<(), AuthorityTrustError> {
+        self.forget_durability()?;
+        let bytes = self.encode(frontier)?;
         self.root
             .replace(&format!("{}.next", self.name), &self.name, &bytes)
     }

@@ -50,6 +50,13 @@ pub use publisher::RetiredCheckpointPublisher;
 #[path = "authority_host_checkpoint_adoption.rs"]
 mod adoption;
 
+#[path = "authority_host_checkpoint_activation.rs"]
+mod activation;
+
+#[path = "authority_host_checkpoint_genesis.rs"]
+mod genesis;
+pub(crate) use genesis::RetainedCheckpointGenesis;
+
 #[path = "authority_host_checkpoint_reentry.rs"]
 mod reentry;
 

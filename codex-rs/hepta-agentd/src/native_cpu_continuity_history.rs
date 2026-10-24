@@ -85,15 +85,16 @@ where
             "pidfd_revents":revents,"wait_kind":"signaled","wait_value":signal,"signal":libc::SIGKILL}))?;
     }
     require_launch_busy(evidence, installation, "unreaped")?;
-    let retired = crate::RetiredCheckpointPublisher::observe(manager.clone()).map_err(error)?;
+    let retired = crate::RetiredCheckpointPublisher::observe(manager).map_err(error)?;
     old.join_retired_lanes()?;
     let previous = recovery::PreparedRecovery {
+        authorization: recovery::RecoveryAuthorization::Installed,
         previous: terminal.current.clone(),
         writer: old.bundle.writer.clone(),
         proof: old.bundle.writer_proof.clone(),
         retired,
         material,
-        frontiers: terminal.frontiers.clone(),
+        frontiers: terminal.frontiers,
     };
     drop(old);
     let (first_stat, second_stat) = recovery::observe_watchdog(deadline)?;
@@ -178,7 +179,7 @@ where
         }
         std::thread::sleep(Duration::from_millis(10));
     }
-    let mut history = start_ready(installation, active, supervisor, agent, deadline)?;
+    let mut history = start_ready(evidence, installation, active, supervisor, agent, deadline)?;
     if history.image.role != 5
         || history.image.kernel.as_ref().is_none_or(|image| {
             image.launch().mode() != codex_hepta_supervisor::KernelLaunchMode::HistoryOnly
@@ -195,8 +196,8 @@ where
         .ok_or_else(|| invalid("history owner material adoption missing"))?;
     if adopted.head.last_current != terminal.current.head.last_current
         || [
-            history.bundle.consumers.device.frontier.clone(),
-            history.bundle.consumers.notes.frontier.clone(),
+            history.bundle.consumers.device.frontier,
+            history.bundle.consumers.notes.frontier,
         ] != terminal.frontiers
     {
         return Err(invalid(

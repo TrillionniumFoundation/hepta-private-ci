@@ -201,7 +201,10 @@ async fn connection_metadata(
     }))
 }
 
-async fn scalar(connection: &mut SqliteConnection, sql: &str) -> Result<i64, CognitiveStoreError> {
+async fn scalar(
+    connection: &mut SqliteConnection,
+    sql: &'static str,
+) -> Result<i64, CognitiveStoreError> {
     sqlx::query_scalar(sql)
         .fetch_one(connection)
         .await

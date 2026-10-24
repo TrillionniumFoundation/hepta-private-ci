@@ -382,3 +382,9 @@ async fn root_real_death_after_checkpoint_cas_recovers_actual_head_without_skipp
 
 #[path = "authority_host_checkpoint_observation_tests.rs"]
 mod checkpoint_observation;
+
+#[path = "authority_host_checkpoint_activation_tests.rs"]
+mod activation_witness;
+
+#[path = "authority_host_checkpoint_genesis_tests.rs"]
+mod genesis;

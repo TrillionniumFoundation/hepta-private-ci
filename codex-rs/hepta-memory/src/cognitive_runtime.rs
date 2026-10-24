@@ -10,7 +10,8 @@ use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use futures::future::join_all;
+use futures::StreamExt;
+use futures::stream;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
@@ -68,6 +69,9 @@ mod identity;
 
 const PRODUCT_FEDERATION_TOTAL_BUDGET: Duration = Duration::from_secs(2);
 const MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS: usize = 128;
+// Bound simultaneous original SQLite/VFS work instead of opening every owner
+// at once. Queued owners and attempts still consume the same global budget.
+const MAX_PRODUCT_FEDERATION_IN_FLIGHT: usize = 4;
 const PRODUCT_FEDERATION_PURPOSE: &[u8] = b"hepta.cognitive.federated-recall.product.v2";
 static PRODUCT_FEDERATION_ATTEMPT_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
@@ -531,18 +535,19 @@ async fn retrieve_federated_product_original(
     #[cfg(test)]
     diagnostic.stage("discovery_start");
     let discovery = async {
-        let outcomes = join_all(owner_layouts.iter().map(|owner_layout| async move {
-            (
-                owner_layout.clone(),
-                FederatedMemoryReader::discover(
-                    owner_layout,
+        let outcomes = stream::iter(owner_layouts.iter().cloned())
+            .map(|owner_layout| async move {
+                let discovered = FederatedMemoryReader::discover(
+                    &owner_layout,
                     consumer_agent_id,
                     request.now_unix_seconds(),
                 )
-                .await,
-            )
-        }))
-        .await;
+                .await;
+                (owner_layout, discovered)
+            })
+            .buffered(MAX_PRODUCT_FEDERATION_IN_FLIGHT)
+            .collect::<Vec<_>>()
+            .await;
         let mut readers = Vec::new();
         let mut discovery_failures = 0usize;
         for (owner_layout, outcome) in outcomes {
@@ -603,50 +608,53 @@ async fn retrieve_federated_product_original(
     };
     let mut candidates = Vec::new();
 
-    let attempts = join_all(readers.iter().map(|(owner_layout, reader)| async move {
-        if elapsed_logical_ms(logical_start_ms, started_at) >= global_deadline_ms {
-            return Ok((
-                Err(FederationV2Error::DeadlineExpired),
-                Arc::new(Mutex::new(None)),
-            ));
-        }
-        let (query, lease) = build_product_query_and_lease(
-            reader,
-            access,
-            request,
-            logical_start_ms,
-            global_deadline_ms,
-        )?;
-        let captured = Arc::new(Mutex::new(None));
-        let transport = ProductReaderTransport {
-            reader,
-            access,
-            request,
-            captured: Arc::clone(&captured),
-        };
-        let authority = ProductReaderAuthority {
-            owner_layout,
-            consumer_agent_id,
-            expected_capability: reader.capability(),
-            logical_start_ms,
-            started_at,
-        };
-        let control = ProductAttemptControl {
-            logical_start_ms,
-            started_at,
-        };
-        let result = execute_once(
-            &transport,
-            &authority,
-            &control,
-            logical_start_ms,
-            query,
-            &lease,
-        )
+    let attempts = stream::iter(readers.iter().cloned())
+        .map(|(owner_layout, reader)| async move {
+            if elapsed_logical_ms(logical_start_ms, started_at) >= global_deadline_ms {
+                return Ok((
+                    Err(FederationV2Error::DeadlineExpired),
+                    Arc::new(Mutex::new(None)),
+                ));
+            }
+            let (query, lease) = build_product_query_and_lease(
+                &reader,
+                access,
+                request,
+                logical_start_ms,
+                global_deadline_ms,
+            )?;
+            let captured = Arc::new(Mutex::new(None));
+            let transport = ProductReaderTransport {
+                reader: &reader,
+                access,
+                request,
+                captured: Arc::clone(&captured),
+            };
+            let authority = ProductReaderAuthority {
+                owner_layout: &owner_layout,
+                consumer_agent_id,
+                expected_capability: reader.capability(),
+                logical_start_ms,
+                started_at,
+            };
+            let control = ProductAttemptControl {
+                logical_start_ms,
+                started_at,
+            };
+            let result = execute_once(
+                &transport,
+                &authority,
+                &control,
+                logical_start_ms,
+                query,
+                &lease,
+            )
+            .await;
+            Ok::<_, CognitiveStoreError>((result, captured))
+        })
+        .buffered(MAX_PRODUCT_FEDERATION_IN_FLIGHT)
+        .collect::<Vec<_>>()
         .await;
-        Ok::<_, CognitiveStoreError>((result, captured))
-    }))
-    .await;
 
     #[cfg(test)]
     diagnostic.stage("all_peer_attempts_end");

@@ -19,6 +19,10 @@ use std::sync::Mutex;
 
 const HORIZON_NS: u64 = 1_000_000_000;
 const MAX_SAMPLE_SPAN_NS: u64 = 10_000_000;
+// The original client admits observations for at most 500 ms from request
+// start. A Root response retains at least that much of its existing durable
+// projection at the same actual post-I/O sample, including client ceil rounding.
+const OBSERVATION_REMAINING_NS: u64 = 500_000_000;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -68,9 +72,34 @@ pub struct HostAuthorityClockObservation {
 /// horizon is persisted before publication. Time is sampled again after CAS
 /// and fsync; slow I/O cannot return the earlier pre-I/O timestamp.
 pub struct HostAuthorityClock {
-    store: Arc<dyn AuthorityFrontierStore<ClockRecord>>,
+    store: Arc<dyn ClockFrontierStore>,
     owner_id: String,
     serial: Mutex<()>,
+}
+
+// Private extension of the existing clock-store seam. Production constructors
+// only install the original protected store; no consumer can supply a backend.
+// Keeping the seam also preserves the original real-store delayed-I/O tests.
+trait ClockFrontierStore: AuthorityFrontierStore<ClockRecord> {
+    fn publish_prepared(
+        &self,
+        owner_id: &str,
+        expected: &ClockRecord,
+        construct: &mut dyn FnMut() -> Result<ClockRecord, AuthorityTrustError>,
+    ) -> Result<ClockRecord, AuthorityTrustError>;
+}
+
+impl ClockFrontierStore for HostAuthorityFrontierStore<ClockRecord> {
+    fn publish_prepared(
+        &self,
+        owner_id: &str,
+        expected: &ClockRecord,
+        construct: &mut dyn FnMut() -> Result<ClockRecord, AuthorityTrustError>,
+    ) -> Result<ClockRecord, AuthorityTrustError> {
+        // The original prepared API consumes this callback as FnOnce and only
+        // invokes it after the full CAS fence and temporary inode preparation.
+        self.compare_and_set_prepared(owner_id, expected, construct)
+    }
 }
 
 impl HostAuthorityClock {
@@ -82,15 +111,17 @@ impl HostAuthorityClock {
         #[cfg(debug_assertions)]
         let mut timing = ClockPhaseTiming::new("initialize");
         #[cfg(debug_assertions)]
-        timing.stage("initial_os_sample_enter");
-        let initial = initial_record(sample_os_clock()?)?;
-        #[cfg(debug_assertions)]
-        timing.stage("initial_record_complete");
-        let store = Arc::new(HostAuthorityFrontierStore::initialize(
-            root,
-            owner_id.clone(),
-            initial.clone(),
-        )?);
+        timing.stage("publication_prepare_enter");
+        let (store, initial) =
+            HostAuthorityFrontierStore::initialize_prepared(root, owner_id.clone(), || {
+                #[cfg(debug_assertions)]
+                timing.stage("initial_publication_prepared");
+                let initial = initial_record(sample_os_clock()?)?;
+                #[cfg(debug_assertions)]
+                timing.stage("initial_record_complete");
+                Ok(initial)
+            })?;
+        let store = Arc::new(store);
         #[cfg(debug_assertions)]
         timing.stage("frontier_initialize_complete");
         let observed_sample = sample_os_clock()?;
@@ -148,20 +179,70 @@ impl HostAuthorityClock {
         result
     }
 
+    /// Observe the complete current durable record or renew it once if its
+    /// projection cannot cover the original 500 ms observation-cache bound.
+    /// The response is checked against the same actual post-I/O BOOTTIME
+    /// sample. There is no cached-record shortcut or retry after failed I/O.
+    pub fn observe_current_or_renew(
+        &self,
+    ) -> Result<HostAuthorityClockObservation, AuthorityTrustError> {
+        #[cfg(debug_assertions)]
+        let mut timing = ClockPhaseTiming::new("observe_current_or_renew");
+        let _serial = self
+            .serial
+            .lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
+        #[cfg(debug_assertions)]
+        timing.stage("clock_serial_acquired");
+        let previous = self.store.load(&self.owner_id)?;
+        #[cfg(debug_assertions)]
+        timing.stage("durable_clock_loaded");
+        let result = match observe_projection_after_io(&previous, sample_os_clock()?) {
+            Ok(observation) => Ok(observation),
+            Err(AuthorityTrustError::Unavailable) => {
+                // This is the same one original publication used for an
+                // expired window. A rejected post-publication observation
+                // stays an error; it never starts another publication.
+                self.renew_after_load_observing(&previous, observe_projection_after_io)
+            }
+            Err(error) => Err(error),
+        };
+        #[cfg(debug_assertions)]
+        timing.finish(result.is_ok());
+        result
+    }
+
     fn renew_after_load(
         &self,
         previous: &ClockRecord,
     ) -> Result<HostAuthorityClockObservation, AuthorityTrustError> {
+        self.renew_after_load_observing(previous, observe_after_io)
+    }
+
+    fn renew_after_load_observing(
+        &self,
+        previous: &ClockRecord,
+        observe: fn(
+            &ClockRecord,
+            ClockSample,
+        ) -> Result<HostAuthorityClockObservation, AuthorityTrustError>,
+    ) -> Result<HostAuthorityClockObservation, AuthorityTrustError> {
         #[cfg(debug_assertions)]
         let mut timing = ClockPhaseTiming::new("renew_after_load");
-        let next = project(previous, sample_os_clock()?)?;
-        #[cfg(debug_assertions)]
-        timing.stage("fresh_clock_projected");
-        self.store
-            .compare_and_set(&self.owner_id, previous, &next)?;
+        let mut construct = || {
+            #[cfg(debug_assertions)]
+            timing.stage("clock_publication_prepared");
+            let next = project(previous, sample_os_clock()?)?;
+            #[cfg(debug_assertions)]
+            timing.stage("fresh_clock_projected");
+            Ok(next)
+        };
+        let next = self
+            .store
+            .publish_prepared(&self.owner_id, previous, &mut construct)?;
         #[cfg(debug_assertions)]
         timing.stage("durable_clock_cas_finished");
-        let result = observe_after_io(&next, sample_os_clock()?);
+        let result = observe(&next, sample_os_clock()?);
         #[cfg(debug_assertions)]
         timing.finish(result.is_ok());
         result
@@ -257,6 +338,32 @@ fn observe_after_io(
         },
         observed_unix_ms: actual / 1_000_000,
     })
+}
+
+// Match the original client's ceil(elapsed / 1 ms) projection exactly. The
+// integer-ms difference from observed_unix_ms would overstate the remaining
+// lifetime near a sub-ms phase boundary. Use the same sample as the observer,
+// not a second pre-I/O or newly sampled timestamp.
+fn observe_projection_after_io(
+    durable: &ClockRecord,
+    sample: ClockSample,
+) -> Result<HostAuthorityClockObservation, AuthorityTrustError> {
+    let observed_boottime_ns = sample.after_ns;
+    let observation = observe_after_io(durable, sample)?;
+    let projection = &observation.projection;
+    let deadline_ns = projection
+        .ceiling_unix_ms
+        .checked_sub(projection.anchor_unix_ms)
+        .and_then(|milliseconds| milliseconds.checked_mul(1_000_000))
+        .and_then(|elapsed| projection.anchor_boottime_ns.checked_add(elapsed))
+        .ok_or(AuthorityTrustError::Invalid)?;
+    if deadline_ns
+        .checked_sub(observed_boottime_ns)
+        .is_none_or(|remaining| remaining < OBSERVATION_REMAINING_NS)
+    {
+        return Err(AuthorityTrustError::Unavailable);
+    }
+    Ok(observation)
 }
 
 fn project(

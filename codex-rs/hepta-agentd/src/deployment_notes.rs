@@ -3,9 +3,6 @@
 
 use super::*;
 use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_contracts::authority_lease::AuthorityLease;
-use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
-use codex_hepta_contracts::authority_lease::AuthorityLeaseError;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry;
 use codex_hepta_memory::NotesTargetIdentity;
 

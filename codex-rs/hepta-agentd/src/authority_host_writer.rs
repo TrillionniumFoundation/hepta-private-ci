@@ -101,10 +101,7 @@ impl RegisteredWriter {
                 let head = issuer.revocations()?;
                 #[cfg(debug_assertions)]
                 timing.stage("issuer_revocations_read");
-                let now = clock
-                    .refresh_projection()
-                    .map_err(io::Error::other)?
-                    .observed_unix_ms;
+                let now = clock.now_unix_ms().map_err(io::Error::other)?;
                 #[cfg(debug_assertions)]
                 timing.stage("clock_projection_finished");
                 validate_observation_lease(&self.registration.authority_lease, &head, now)?;
@@ -138,10 +135,7 @@ impl RegisteredWriter {
             }
             material.validate(b"root:initial-current-material:v1", &expected.last_current)?;
             let head = issuer.revocations()?;
-            let now = clock
-                .refresh_projection()
-                .map_err(io::Error::other)?
-                .observed_unix_ms;
+            let now = clock.now_unix_ms().map_err(io::Error::other)?;
             validate_observation_lease(&self.registration.authority_lease, &head, now)
         })
     }
@@ -220,7 +214,7 @@ impl RegisteredWriter {
                 // All blocking reads precede this final projection. Nothing after
                 // it writes a clock or substitutes a durable future ceiling for now.
                 let observation = clock
-                    .refresh_projection()
+                    .observe_current_or_renew()
                     .inspect_err(|_error| {
                         #[cfg(debug_assertions)]
                         eprintln!(

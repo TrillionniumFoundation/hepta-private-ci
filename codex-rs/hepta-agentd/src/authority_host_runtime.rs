@@ -38,10 +38,17 @@ use crate::authority_host_config::read_root_json;
 pub(crate) mod listeners;
 use listeners::serve_lanes;
 
+#[path = "authority_host_runtime_resume.rs"]
+mod resume;
+pub(crate) use resume::resume_registered_issuer_for_root;
+
+#[path = "authority_host_runtime_initialization.rs"]
+mod initialization;
+
 const CLOCK_OWNER: &str = "root-authority-clock-v1";
 const LEASE_OWNER: &str = "root-authority-leases-v1";
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct HostAuthorityBootstrap {
     pub schema_version: u32,

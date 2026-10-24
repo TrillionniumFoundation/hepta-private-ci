@@ -241,9 +241,9 @@ fn open_registered_consumers(
         )?);
         assert_eq!(frontier.load(&signer)?, slot.frontier);
         let path = &slot.local_state_dir;
-        std::fs::DirBuilder::new().mode(0o700).create(&path)?;
+        std::fs::DirBuilder::new().mode(0o700).create(path)?;
         let owner = FinalUseAuthority::open_state_dir_with_issuer_keys(
-            &path,
+            path,
             signer.clone(),
             vec![FinalUseIssuerTrustKey::from(bundle.issuer_key.clone())],
             head.clone(),

@@ -117,6 +117,7 @@ codex-utils-path = { workspace = true }
 
 [target.'cfg(target_os = "linux")'.dependencies]
 libc = { workspace = true }
+rustix = { workspace = true, features = ["fs", "process"] }
 
 [dev-dependencies]
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }

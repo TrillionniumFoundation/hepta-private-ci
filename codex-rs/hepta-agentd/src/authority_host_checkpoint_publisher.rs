@@ -11,6 +11,8 @@ use codex_hepta_memory::CognitiveCheckpointPeerLifetime;
 use codex_hepta_memory::CognitiveCheckpointReceipt;
 use codex_hepta_memory::CognitiveCheckpointToken;
 
+#[path = "authority_host_checkpoint_activation_retirement.rs"]
+mod activation_retirement;
 #[path = "authority_host_checkpoint_boot_retirement.rs"]
 mod boot_retirement;
 
@@ -43,6 +45,13 @@ enum RetirementEvidence {
     PriorBoot {
         root: CognitiveCheckpointPeerLifetime,
         predecessor: CognitiveCheckpointToken,
+    },
+    // A canonical proof that never entered the protected head has no peer
+    // lifetime there. Only its separately prepared, signed-payload-bound Root
+    // observation may establish this former-boot failed publisher.
+    PriorBootActivation {
+        root: CognitiveCheckpointPeerLifetime,
+        preparation: super::activation::RetainedCheckpointActivation,
     },
 }
 
@@ -127,7 +136,15 @@ impl RetiredCheckpointPublisher {
         // A later process at that PID cannot revive the old kernel lifetime.
         match &self.evidence {
             RetirementEvidence::SameBoot { .. } => require_same_boot(&self.lifetime),
-            RetirementEvidence::PriorBoot { root, .. } => {
+            RetirementEvidence::PriorBoot { root, .. }
+            | RetirementEvidence::PriorBootActivation { root, .. } => {
+                if let RetirementEvidence::PriorBootActivation { preparation, .. } = &self.evidence
+                {
+                    preparation.verify_durable()?;
+                    if preparation.peer() != &self.lifetime {
+                        return Err(AuthorityTrustError::Invalid);
+                    }
+                }
                 let actual = crate::HostAuthorityService::current_root_lifetime_for_admin()
                     .map_err(|_| AuthorityTrustError::Unavailable)?;
                 if actual != *root || actual.boot_id == self.lifetime.boot_id {
@@ -188,6 +205,9 @@ impl RetiredCheckpointPublisher {
                 }
                 self.require_retired()
             }
+            // Never admit a protected head or CPU policy from the failed
+            // activation's observation. It only replaces its canonical proof.
+            RetirementEvidence::PriorBootActivation { .. } => Err(AuthorityTrustError::Invalid),
         }
     }
 }

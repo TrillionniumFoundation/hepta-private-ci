@@ -1,6 +1,8 @@
 use super::*;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::AuthorityTrustError;
+use codex_hepta_contracts::authority_lease::AuthorityLease;
+use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseFrontier;
 use pretty_assertions::assert_eq;
 use std::os::unix::fs::PermissionsExt;

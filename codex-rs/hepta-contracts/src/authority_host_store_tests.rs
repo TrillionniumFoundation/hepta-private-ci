@@ -412,3 +412,6 @@ fn original_final_use_rejects_replay_revocation_and_rolled_back_local_state() {
 
 #[path = "authority_host_store_inspect_tests.rs"]
 mod inspect_tests;
+
+#[path = "authority_host_store_prepared_tests.rs"]
+mod prepared_tests;

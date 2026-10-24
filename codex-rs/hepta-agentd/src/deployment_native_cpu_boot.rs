@@ -47,7 +47,7 @@ impl DeploymentFinalUseIssuer {
             || launch.recovery_pid() != Some(4)
             || launch.history_pid().is_some()
             || expected_scopes[0] == expected_scopes[1]
-            || expected_scopes.iter().any(|scope| *scope == [0; 32])
+            || expected_scopes.contains(&[0; 32])
         {
             return Err(denied(
                 "new-boot policy differs from original Root and initial kernel pair",
@@ -69,14 +69,19 @@ impl DeploymentFinalUseIssuer {
         let spaces = launch.history_spaces();
         let next_scopes = [one(spaces[0])?, one(spaces[1])?];
         if next_scopes[0] == next_scopes[1]
-            || next_scopes
-                .iter()
-                .any(|scope| expected_scopes.contains(scope))
+            || (expected_scopes != next_scopes
+                && next_scopes
+                    .iter()
+                    .any(|scope| expected_scopes.contains(scope)))
         {
             return Err(denied(
                 "actual new boot reused an old exact CPU policy scope",
             ));
         }
+        // A failed first activation can leave the exact new policies already
+        // committed. The original full-token prior-boot and actual initial
+        // kernel pair checks above still apply. Equal expectations below are
+        // pure original retained-state verification, never a new policy grant.
         let result =
             self.replace_native_cpu_exact_scopes(registration, expected_scopes, next_scopes)?;
         if retired

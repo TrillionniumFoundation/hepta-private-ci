@@ -305,7 +305,7 @@ impl HostCognitiveCheckpoint {
                 return Err(AuthorityTrustError::Unavailable);
             }
             let installed = material
-                .install_for_registered_owner(layout, &expected.last_current)
+                .install_for_registered_successor(layout, &expected)
                 .map_err(|_| AuthorityTrustError::Unavailable)?;
             // Publication may already be durable. Later uncertainty is always
             // Unknown; never delete or retry the new image or changed pointer.

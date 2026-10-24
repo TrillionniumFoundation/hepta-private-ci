@@ -58,6 +58,45 @@ impl VerifiedCognitiveMaterial {
         layout: &HeptaAgentLayout,
         expected_current: &CognitiveRecoveryAnchor,
     ) -> Result<InstalledCognitiveMaterial, CognitiveRecoveryError> {
+        let discriminator = Sha256Digest::for_bytes(b"hepta:cognitive:root-material-install:v1");
+        self.install_registered_attempt(layout, expected_current, &discriminator)
+    }
+
+    /// Name one physical installation for the original Root-validated whole
+    /// successor head. The caller must independently hold the original Registry,
+    /// checkpoint, actual retired/live publisher and verified-material checks.
+    /// This head is naming metadata here, never evidence of Current or authority.
+    /// A later actual publisher gets a distinct candidate for the same old cut;
+    /// the same attempt still refuses an existing/partial file. Nothing is reset,
+    /// removed or overwritten, and the original one-attempt Root gate remains.
+    pub fn install_for_registered_successor(
+        self,
+        layout: &HeptaAgentLayout,
+        successor: &crate::CognitiveCheckpointHead,
+    ) -> Result<InstalledCognitiveMaterial, CognitiveRecoveryError> {
+        if successor.owner_agent_id != *layout.agent_id()
+            || successor.last_current != self.anchor
+            || successor.phase != crate::CognitiveCheckpointPhase::Current
+            || successor.publisher_epoch == 0
+            || successor.counter == 0
+            || successor.peer_lifetime.uid != 60001
+        {
+            return Err(CognitiveRecoveryError::AccessDenied(
+                "physical attempt differs from registered successor material".into(),
+            ));
+        }
+        let bytes = serde_json::to_vec(&("hepta:cognitive:root-successor-install:v1", successor))
+            .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?;
+        let discriminator = Sha256Digest::for_bytes(&bytes);
+        self.install_registered_attempt(layout, &successor.last_current, &discriminator)
+    }
+
+    fn install_registered_attempt(
+        self,
+        layout: &HeptaAgentLayout,
+        expected_current: &CognitiveRecoveryAnchor,
+        discriminator: &Sha256Digest,
+    ) -> Result<InstalledCognitiveMaterial, CognitiveRecoveryError> {
         RootSqliteMaterialRegistration::verify_caller(/*registered_uid*/ 60001)
             .map_err(recovery_error)?;
         validate_requirement(
@@ -77,8 +116,7 @@ impl VerifiedCognitiveMaterial {
         );
         // This is only a physical install-attempt discriminator, never an
         // authority fence. The original factory still requires its real lease.
-        let discriminator = Sha256Digest::for_bytes(b"hepta:cognitive:root-material-install:v1");
-        let name = recovered_database_filename(expected_current, &discriminator);
+        let name = recovered_database_filename(expected_current, discriminator);
         let temporary = active_pointer_temporary_name(&name)
             .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?;
         let publication = RootSqliteOwnerCopy::bind_registered(

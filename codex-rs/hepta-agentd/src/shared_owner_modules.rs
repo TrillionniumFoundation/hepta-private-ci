@@ -286,10 +286,6 @@ pub use cognitive_checkpoint_unix::AgentdCognitiveCheckpointPeer;
 #[cfg(target_os = "linux")]
 pub use cognitive_checkpoint_unix::AgentdUnixCognitiveCheckpointTransport;
 pub use config::AgentdIdentity;
-pub use config::HEPTA_AGENT_GENERATION_ENV;
-pub use config::HEPTA_AGENT_HOME_ENV;
-pub use config::HEPTA_AGENT_ID_ENV;
-pub use config::HEPTA_AGENT_RUN_ROOT_ENV;
 use control::AgentdControlServer;
 pub use error::AgentdError;
 use event_buffer::EventBuffer;
@@ -306,6 +302,10 @@ pub use hos2_device::AgentdHos2Usage;
 #[cfg(target_os = "linux")]
 pub use notes_document_observer::AgentdNotesDocumentObserver;
 pub use objective_runtime::authbus_objective_claims;
+pub use process_identity::HEPTA_AGENT_GENERATION_ENV;
+pub use process_identity::HEPTA_AGENT_HOME_ENV;
+pub use process_identity::HEPTA_AGENT_ID_ENV;
+pub use process_identity::HEPTA_AGENT_RUN_ROOT_ENV;
 pub use production_writer_host::AgentdFinalUseGrantProvider;
 pub use production_writer_host::AgentdProductionOperationRuntimeConfig;
 pub use production_writer_host::AgentdProductionWriterHost;

@@ -6,10 +6,6 @@ use codex_hepta_fleet::FleetRegistry;
 
 use crate::AgentdError;
 pub use crate::process_identity::AgentdIdentity;
-pub use crate::process_identity::HEPTA_AGENT_GENERATION_ENV;
-pub use crate::process_identity::HEPTA_AGENT_HOME_ENV;
-pub use crate::process_identity::HEPTA_AGENT_ID_ENV;
-pub use crate::process_identity::HEPTA_AGENT_RUN_ROOT_ENV;
 
 /// Internal native composition of the same validated process and recovered
 /// writer. This type cannot carry an App Server, Prompt or other execution

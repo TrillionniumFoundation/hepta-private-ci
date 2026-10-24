@@ -22,10 +22,16 @@ impl ServiceDelivery {
         Ok(())
     }
 
-    pub(super) fn register(&self, stream: &UnixStream) -> Result<Arc<UnixStream>, HostIssuerTransportError> {
+    pub(super) fn register(
+        &self,
+        stream: &UnixStream,
+    ) -> Result<Arc<UnixStream>, HostIssuerTransportError> {
         let pin = Arc::new(stream.try_clone().map_err(unavailable)?);
         {
-            let mut streams = self.streams.lock().map_err(|_| HostIssuerTransportError::Unavailable)?;
+            let mut streams = self
+                .streams
+                .lock()
+                .map_err(|_| HostIssuerTransportError::Unavailable)?;
             streams.retain(|stream| stream.strong_count() > 0);
             streams.push(Arc::downgrade(&pin));
         }
@@ -36,7 +42,10 @@ impl ServiceDelivery {
     }
 
     pub(super) fn response_guard(&self) -> Result<MutexGuard<'_, ()>, HostIssuerTransportError> {
-        let guard = self.publication.lock().map_err(|_| HostIssuerTransportError::Unavailable)?;
+        let guard = self
+            .publication
+            .lock()
+            .map_err(|_| HostIssuerTransportError::Unavailable)?;
         self.require_open()?;
         Ok(guard)
     }
@@ -45,22 +54,33 @@ impl ServiceDelivery {
         self.failed.store(true, Ordering::Release);
         // Shutdown before waiting for an in-progress bounded write. Handler
         // durability holds neither lock, and can finish only as Unknown.
-        let mut streams = self.streams.lock().unwrap_or_else(|error| error.into_inner());
+        let mut streams = self
+            .streams
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         for stream in streams.drain(..).filter_map(|stream| stream.upgrade()) {
             let _ = stream.shutdown(Shutdown::Both);
         }
         drop(streams);
         // On return, every previously admitted actual response write ended.
         // No registry/issuer/checkpoint lock is acquired under this gate.
-        drop(self.publication.lock().unwrap_or_else(|error| error.into_inner()));
+        drop(
+            self.publication
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner),
+        );
     }
 }
 
 impl HostAuthorityService {
     pub(super) fn fail_material_startup(&self) {
         self.delivery.close();
-        if let Some(startup) = &self.material_startup { startup.fail(); }
-        if let Some(checkpoint) = &self.checkpoint { checkpoint.backend.close(); }
+        if let Some(startup) = &self.material_startup {
+            startup.fail();
+        }
+        if let Some(checkpoint) = &self.checkpoint {
+            checkpoint.backend.close();
+        }
     }
 }
 

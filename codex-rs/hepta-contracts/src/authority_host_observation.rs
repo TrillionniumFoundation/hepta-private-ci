@@ -165,3 +165,6 @@ fn read_record(
 #[cfg(test)]
 #[path = "authority_host_observation_open_tests.rs"]
 mod open_tests;
+
+#[path = "authority_host_observation_initialization.rs"]
+mod initialization;

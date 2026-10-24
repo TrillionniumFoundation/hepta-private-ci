@@ -18,10 +18,10 @@ use codex_hepta_paths::HeptaFleetRoot;
 
 use crate::AgentdError;
 use crate::config::AgentdIdentity;
-use crate::config::HEPTA_AGENT_GENERATION_ENV;
-use crate::config::HEPTA_AGENT_HOME_ENV;
-use crate::config::HEPTA_AGENT_ID_ENV;
-use crate::config::HEPTA_AGENT_RUN_ROOT_ENV;
+use crate::process_identity::HEPTA_AGENT_GENERATION_ENV;
+use crate::process_identity::HEPTA_AGENT_HOME_ENV;
+use crate::process_identity::HEPTA_AGENT_ID_ENV;
+use crate::process_identity::HEPTA_AGENT_RUN_ROOT_ENV;
 
 pub(crate) struct ValidatedProcessConfig {
     identity: AgentdIdentity,

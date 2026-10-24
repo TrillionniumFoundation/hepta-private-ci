@@ -66,6 +66,9 @@ impl Evidence {
                 "manager-exit-before-terminal-v1",
                 "history-only-after-both-owner-exit-v1",
                 "successor-renewal-v1",
+                "activation-after-proof-v1",
+                "activation-after-material-v1",
+                "prior-boot-unknown-v1",
             ]
             .contains(&plan.scenario.as_str())
             || plan.nonce.len() != 64
@@ -86,6 +89,9 @@ impl Evidence {
     }
     pub(super) fn scenario(&self) -> &str {
         &self.plan.scenario
+    }
+    pub(super) fn nonce(&self) -> &str {
+        &self.plan.nonce
     }
     pub(super) fn emit(&mut self, event: &str, payload: impl Serialize) -> io::Result<()> {
         self.sequence = self

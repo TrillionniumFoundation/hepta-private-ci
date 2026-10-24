@@ -9,6 +9,7 @@ use std::os::fd::AsRawFd;
 use std::os::fd::BorrowedFd;
 
 pub(super) struct PreparedRecovery {
+    pub(super) authorization: RecoveryAuthorization,
     pub(super) previous: CognitiveCheckpointReceipt,
     pub(super) writer: crate::HostAuthorityWriterRegistration,
     pub(super) proof: crate::HostSignedWriterAuthorizationV1,
@@ -17,11 +18,19 @@ pub(super) struct PreparedRecovery {
     pub(super) frontiers: [codex_hepta_contracts::FinalUseFrontier; 2],
 }
 
+pub(super) enum RecoveryAuthorization {
+    Installed,
+    Unactivated {
+        failed: crate::RetiredCheckpointPublisher,
+    },
+}
+
 impl Installation {
     pub(super) fn recovered_writer(
         &self,
         spec: &SpawnSpec,
         previous: &PreparedRecovery,
+        successor: &crate::RetainedCheckpointPublisher,
     ) -> io::Result<crate::HostAuthorityWriterRegistration> {
         if previous.writer.registered_agent_id != spec.agent_id
             || spec.generation <= previous.writer.spawn_generation
@@ -47,10 +56,12 @@ impl Installation {
             .owner_epoch
             .checked_add(1)
             .ok_or_else(|| invalid("original owner epoch overflow"))?;
-        writer.local_lease_generation = writer
-            .local_lease_generation
-            .checked_add(1)
-            .ok_or_else(|| invalid("original local generation overflow"))?;
+        if matches!(&previous.authorization, RecoveryAuthorization::Installed) {
+            writer.local_lease_generation = writer
+                .local_lease_generation
+                .checked_add(1)
+                .ok_or_else(|| invalid("original local generation overflow"))?;
+        }
         writer.authority_lease.lease_id = cold_open::lease_id("writer", spec)?;
         writer.authority_lease.revision = 1;
         writer.authority_lease.issued_at_unix_ms = self.clock.now_unix_ms().map_err(error)?;
@@ -68,11 +79,44 @@ impl Installation {
             .map_err(error)?,
         )
         .into();
+        // The original checkpoint owner durably prepares the actual publisher
+        // before either registry publication or canonical signing. The signed
+        // lease payload binds its whole original cut and process observation.
+        let writer = crate::HostCognitiveCheckpoint::prepare_activation_for_root(
+            RootAuthorityDirectory::open(&self.checkpoint).map_err(error)?,
+            &self.clock,
+            &previous.previous,
+            &previous.retired,
+            successor,
+            &previous.material,
+            writer,
+        )
+        .map_err(error)?;
         self.leases
             .put_lease(writer.authority_lease.clone(), 0)
             .map_err(error)?;
-        self.issuer
-            .rotate_writer_authorization(&previous.writer, &previous.proof, &writer)?;
+        match &previous.authorization {
+            RecoveryAuthorization::Installed => {
+                self.issuer.rotate_writer_authorization(
+                    &previous.writer,
+                    &previous.proof,
+                    &writer,
+                )?;
+            }
+            RecoveryAuthorization::Unactivated { failed } => {
+                self.issuer.replace_unactivated_writer_authorization(
+                    &previous.writer,
+                    &previous.proof,
+                    &writer,
+                    RootAuthorityDirectory::open(&self.checkpoint).map_err(error)?,
+                    &previous.previous,
+                    &previous.retired,
+                    failed,
+                    successor,
+                    &previous.material,
+                )?;
+            }
+        }
         Ok(writer)
     }
 }
@@ -158,7 +202,7 @@ where
     if old
         .server
         .as_ref()
-        .is_none_or(|server| server.is_finished())
+        .is_none_or(std::thread::JoinHandle::is_finished)
     {
         return Err(invalid("original service ended before the Manager crash"));
     }
@@ -204,12 +248,13 @@ where
     // not a successful-service claim or the independent retirement witness.
     old.join_retired_lanes()?;
     let previous = PreparedRecovery {
+        authorization: RecoveryAuthorization::Installed,
         previous: cut.current.clone(),
         writer: old.bundle.writer.clone(),
         proof: old.bundle.writer_proof.clone(),
         retired,
         material,
-        frontiers: cut.frontiers.clone(),
+        frontiers: cut.frontiers,
     };
     drop(old);
     let (first_stat, second_stat) = observe_watchdog(deadline)?;

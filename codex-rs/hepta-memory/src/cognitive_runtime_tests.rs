@@ -421,12 +421,28 @@ async fn product_v2_composition_reports_omitted_owner_candidates() {
 
 #[tokio::test]
 async fn product_v2_reports_peer_truncation_before_aggregation() {
+    let phase_started = std::time::Instant::now();
+    let phase = |name: &str, owner: usize| {
+        eprintln!(
+            "hepta_peer_fixture phase={name} owner={owner} elapsed_us={}",
+            phase_started.elapsed().as_micros()
+        );
+    };
+    phase("temp-before", 0);
     let temp = TempDir::new().expect("temp dir");
+    eprintln!(
+        "hepta_peer_fixture pid={} temporary={}",
+        std::process::id(),
+        temp.path().display()
+    );
+    phase("temp-after", 0);
     let consumer_id = agent_id(220);
     let consumer_layout = layout(&temp, &consumer_id);
+    phase("consumer-open-before", 0);
     let consumer = CognitiveStore::open(&consumer_layout)
         .await
         .expect("consumer store");
+    phase("consumer-open-after", 0);
     let consumer_workspace = workspace("runtime-v2-peer-truncation");
     let mut owner_layouts = Vec::new();
     // The peer writers remain alive throughout the actual federated request.
@@ -435,9 +451,11 @@ async fn product_v2_reports_peer_truncation_before_aggregation() {
     for raw_id in 1..=17 {
         let owner_id = agent_id(raw_id);
         let owner_layout = layout(&temp, &owner_id);
+        phase("owner-open-before", usize::from(raw_id));
         let owner = CognitiveStore::open(&owner_layout)
             .await
             .expect("owner store");
+        phase("owner-open-after", usize::from(raw_id));
         let owner_access = CognitiveAccess::agent_private(owner_id);
         owner
             .grant_federated_recall(
@@ -454,6 +472,7 @@ async fn product_v2_reports_peer_truncation_before_aggregation() {
             )
             .await
             .expect("grant");
+        phase("owner-grant-after", usize::from(raw_id));
         owner_layouts.push(owner_layout);
         owner_stores.push(owner);
     }
@@ -461,10 +480,12 @@ async fn product_v2_reports_peer_truncation_before_aggregation() {
     let runtime = CognitiveRuntime::from_open_result(Ok(consumer))
         .with_federation_sources(consumer_id.clone(), owner_layouts.clone());
     let access = FederationConsumerAccess::new(consumer_id.clone(), consumer_workspace);
+    phase("product-request-before", 0);
     let (batch, coverage) = runtime
         .retrieve_product_federated(&access, &RetrievalRequest::new("anything", 150))
         .await
         .expect("bounded product retrieval");
+    phase("product-request-after", 0);
     if !batch.candidates.is_empty()
         || coverage.requested_peers != 16
         || coverage.completed_peers != 16
@@ -474,12 +495,14 @@ async fn product_v2_reports_peer_truncation_before_aggregation() {
     {
         // Diagnose only after the original two-second request has returned.
         // Its result and all assertions below remain unchanged.
+        phase("failed-request-profile-before", 0);
         crate::cognitive_federation::sqlite_profile::failed_product_attempt(
             &owner_layouts,
             &consumer_id,
             150,
         )
         .await;
+        phase("failed-request-profile-after", 0);
     }
     assert!(batch.candidates.is_empty());
     assert_eq!(coverage.requested_peers, 16);
@@ -487,7 +510,11 @@ async fn product_v2_reports_peer_truncation_before_aggregation() {
     assert_eq!(coverage.failed_peers, 0);
     assert_eq!(coverage.truncated_peers, 1);
     assert_eq!(coverage.omitted_peer_candidates, 0);
-    for owner in owner_stores {
+    phase("assertions-passed", 0);
+    for (index, owner) in owner_stores.into_iter().enumerate() {
+        phase("owner-close-before", index + 1);
         owner.close().await;
+        phase("owner-close-after", index + 1);
     }
+    phase("test-return", 0);
 }

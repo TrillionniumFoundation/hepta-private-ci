@@ -2,6 +2,7 @@
 
 use super::ProductionDurableWriter;
 use super::ProductionWriterError;
+#[cfg(test)]
 use crate::CognitiveRecoveryAnchor;
 use crate::CognitiveStoreError;
 use crate::cognitive_store::capture_recovery_anchor;

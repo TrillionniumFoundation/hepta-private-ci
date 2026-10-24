@@ -159,6 +159,7 @@ where
             "release_generation":released.generation,"supervisor":snapshot_json(supervisor,agent,owner.bundle.writer.spawn_generation)?}))?;
     }
     Ok(recovery::PreparedRecovery {
+        authorization: recovery::RecoveryAuthorization::Installed,
         previous: current,
         writer: owner.bundle.writer.clone(),
         proof: owner.bundle.writer_proof.clone(),
@@ -214,6 +215,7 @@ where
 }
 
 fn start_ready<F>(
+    evidence: &mut evidence::Evidence,
     installation: &Arc<Mutex<Installation>>,
     active: &Arc<Mutex<Option<Active>>>,
     supervisor: &mut Supervisor<KernelInitialProcessDriver<F>>,
@@ -234,13 +236,7 @@ where
             "original successor material is not exclusively pending",
         ));
     }
-    supervisor
-        .start(
-            agent,
-            AgentCommand::new("/test/hepta-g2-owner", Vec::new()).map_err(error)?,
-            Instant::now(),
-        )
-        .map_err(error)?;
+    reentry::start(evidence, installation, active, supervisor, agent, deadline)?;
     loop {
         remaining(deadline)?;
         let report = supervisor.tick(Instant::now());
@@ -346,7 +342,7 @@ where
     ) -> Result<(), ProcessDriverError>,
 {
     let current = previous.previous.clone();
-    let frontiers = previous.frontiers.clone();
+    let frontiers = previous.frontiers;
     let local_generation = previous.writer.local_lease_generation;
     let owner_epoch = previous.writer.owner_epoch;
     let original_spawn = previous.writer.spawn_generation;
@@ -358,7 +354,7 @@ where
         }
         owner.recovery = Some(previous);
     }
-    let mut next = start_ready(installation, active, supervisor, agent, deadline)?;
+    let mut next = start_ready(evidence, installation, active, supervisor, agent, deadline)?;
     let adopted = next
         .adopted
         .as_ref()
@@ -371,8 +367,8 @@ where
         || next.bundle.writer.spawn_generation <= original_spawn
         || adopted.head.last_current != current.head.last_current
         || [
-            next.bundle.consumers.device.frontier.clone(),
-            next.bundle.consumers.notes.frontier.clone(),
+            next.bundle.consumers.device.frontier,
+            next.bundle.consumers.notes.frontier,
         ] != frontiers
     {
         return Err(invalid(
@@ -405,4 +401,100 @@ fn material_digest(material: &codex_hepta_memory::VerifiedCognitiveMaterial) -> 
     }
     material.verify_unchanged().map_err(error)?;
     Ok(format!("{:x}", hash.finalize()))
+}
+
+/// Each fixed case interrupts a different real successor activation. The old
+/// owner first finishes its normal original drain/release/reap ceremony.
+pub(super) fn activation_failure<F>(
+    evidence: &mut evidence::Evidence,
+    mut old: Active,
+    installation: &Arc<Mutex<Installation>>,
+    active: &Arc<Mutex<Option<Active>>>,
+    supervisor: &mut Supervisor<KernelInitialProcessDriver<F>>,
+    agent: &AgentId,
+    deadline: u64,
+) -> io::Result<Active>
+where
+    F: for<'fd> FnMut(
+        &SpawnSpec,
+        KernelInitialRole,
+        BorrowedFd<'fd>,
+    ) -> Result<(), ProcessDriverError>,
+{
+    let (point, advances) = match evidence.scenario() {
+        "activation-after-proof-v1" => (reentry::FailurePoint::AfterProof, 1_u64),
+        "activation-after-material-v1" => (reentry::FailurePoint::AfterMaterial, 2_u64),
+        _ => return Err(invalid("unsupported fixed partial-activation case")),
+    };
+    emit_owner(evidence, &mut old, supervisor, agent)?;
+    let terminal = evidence.operation("before-partial-activation", 25_000_000, &mut old)?;
+    evidence.acknowledge(&terminal, &mut old)?;
+    evidence.window("before-partial-activation", &mut old)?;
+    let previous = stop_owner(evidence, &mut old, supervisor, agent, deadline, true)?;
+    let current = previous.previous.clone();
+    let frontiers = previous.frontiers;
+    let local_generation = previous.writer.local_lease_generation;
+    let material_sha256 = material_digest(&previous.material)?;
+    drop(old);
+    {
+        let mut owner = installation.lock().map_err(error)?;
+        if owner.recovery.is_some()
+            || owner.activation.is_some()
+            || owner.activation_fault.is_some()
+        {
+            return Err(invalid("another original activation or failure is pending"));
+        }
+        owner.recovery = Some(previous);
+        owner.activation_fault = Some(point);
+        owner.last_activation_reconciliation = None;
+    }
+    let mut next = start_ready(evidence, installation, active, supervisor, agent, deadline)?;
+    let adopted = next
+        .adopted
+        .as_ref()
+        .ok_or_else(|| invalid("reentered original physical adoption absent"))?;
+    let actual_fault = installation
+        .lock()
+        .map_err(error)?
+        .last_activation_reconciliation
+        .clone()
+        .ok_or_else(|| invalid("actual failed activation reconciliation was not observed"))?;
+    let expected_point = match point {
+        reentry::FailurePoint::AfterProof => "after_proof",
+        reentry::FailurePoint::AfterMaterial => "after_material",
+    };
+    if actual_fault["fault"]["point"].as_str() != Some(expected_point)
+        || actual_fault["fault"]["wait_value"].as_i64() != Some(i64::from(libc::SIGKILL))
+        || installation
+            .lock()
+            .map_err(error)?
+            .activation_fault
+            .is_some()
+        || next.bundle.writer.local_lease_generation
+            != local_generation
+                .checked_add(advances)
+                .ok_or_else(|| invalid("original reentry local generation overflow"))?
+        || adopted.head.last_current != current.head.last_current
+        || [
+            next.bundle.consumers.device.frontier,
+            next.bundle.consumers.notes.frontier,
+        ] != frontiers
+        || next.image.kernel.is_none()
+        || next.image.role != 1
+    {
+        return Err(invalid(
+            "actual reentry did not preserve the exact original cut and unused generation",
+        ));
+    }
+    evidence.emit(
+        "material_adopted",
+        serde_json::json!({
+            "previous":current,"successor":adopted,"material_sha256":material_sha256,
+        }),
+    )?;
+    emit_owner(evidence, &mut next, supervisor, agent)?;
+    let terminal = evidence.operation("after-partial-activation", 35_000_000, &mut next)?;
+    evidence.acknowledge(&terminal, &mut next)?;
+    evidence.window("after-partial-activation", &mut next)?;
+    Ok(next)
 }
