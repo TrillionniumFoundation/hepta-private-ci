@@ -570,9 +570,20 @@ impl FederatedMemoryReader {
         if owner_layout.agent_id() == consumer_agent_id {
             return Ok(Vec::new());
         }
+        #[cfg(test)]
+        let mut diagnostic = crate::cognitive_runtime::diagnostics::Phase::start(
+            "owner_discovery",
+            owner_layout.agent_id().as_str(),
+        );
         let database_path = owner_layout.cognitive_root().join(COGNITIVE_DB_FILENAME);
+        #[cfg(test)]
+        diagnostic.stage("pool_open_start");
         let pool = open_read_only_pool(&database_path).await?;
+        #[cfg(test)]
+        diagnostic.stage("pool_open_end");
         verify_read_only_store(&pool, owner_layout.agent_id()).await?;
+        #[cfg(test)]
+        diagnostic.stage("head_query_start");
         let rows = sqlx::query(
             "SELECT e.*, e.owner_workspace_sha256 AS workspace_sha256
              FROM memory_federation_heads h JOIN memory_federation_events e
@@ -583,6 +594,8 @@ impl FederatedMemoryReader {
         .fetch_all(&pool)
         .await
         .map_err(unavailable)?;
+        #[cfg(test)]
+        diagnostic.stage("head_query_end");
         let owner = Arc::new(CognitiveStore::from_read_only_pool(
             pool,
             owner_layout.agent_id().clone(),
@@ -614,6 +627,8 @@ impl FederatedMemoryReader {
                     .to_string(),
             ));
         }
+        #[cfg(test)]
+        diagnostic.finish();
         Ok(readers)
     }
 
@@ -1175,10 +1190,17 @@ async fn verify_read_only_store(
     pool: &SqlitePool,
     expected_owner: &AgentId,
 ) -> Result<(), CognitiveStoreError> {
+    #[cfg(test)]
+    let mut diagnostic = crate::cognitive_runtime::diagnostics::Phase::start(
+        "store_verification",
+        expected_owner.as_str(),
+    );
     let quick_check = sqlx::query_scalar::<_, String>("PRAGMA quick_check(1)")
         .fetch_all(pool)
         .await
         .map_err(unavailable)?;
+    #[cfg(test)]
+    diagnostic.stage("quick_check_end");
     if quick_check != ["ok"]
         || !sqlx::query("PRAGMA foreign_key_check")
             .fetch_all(pool)
@@ -1190,6 +1212,8 @@ async fn verify_read_only_store(
             "federated cognitive store failed SQLite integrity checks".to_string(),
         ));
     }
+    #[cfg(test)]
+    diagnostic.stage("foreign_key_check_end");
     let owner: String =
         sqlx::query_scalar("SELECT owner_agent_id FROM cognitive_meta WHERE singleton = 1")
             .fetch_one(pool)
@@ -1200,6 +1224,8 @@ async fn verify_read_only_store(
             "federated cognitive store owner does not match its AgentId path".to_string(),
         ));
     }
+    #[cfg(test)]
+    diagnostic.stage("owner_check_end");
     let objects: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM sqlite_schema WHERE name IN (
             'memory_federation_events', 'memory_federation_events_no_update',
@@ -1215,6 +1241,8 @@ async fn verify_read_only_store(
             "memory federation schema is incomplete".to_string(),
         ));
     }
+    #[cfg(test)]
+    diagnostic.finish();
     Ok(())
 }
 
