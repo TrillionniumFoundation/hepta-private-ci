@@ -130,6 +130,7 @@ pub fn leaf_name(name: &str) -> io::Result<Vec<u16>> {
 enum ObjectOpen<'a> {
     Probe(u32),
     ProtectedDirectory(&'a ProtectedDescriptor),
+    ProtectedFile(&'a ProtectedDescriptor),
 }
 
 fn open_nt(
@@ -144,6 +145,7 @@ fn open_nt(
     let (options, security_descriptor) = match open {
         ObjectOpen::Probe(options) => (options, ptr::null()),
         ObjectOpen::ProtectedDirectory(descriptor) => (FILE_DIRECTORY_FILE, descriptor.as_ptr()),
+        ObjectOpen::ProtectedFile(descriptor) => (FILE_NON_DIRECTORY_FILE, descriptor.as_ptr()),
     };
     let length = u16::try_from(name.len() * size_of::<u16>())
         .map_err(|_| invalid("probe name is too long"))?;
@@ -377,6 +379,23 @@ pub(crate) fn open_existing_owner_directory(
         FILE_SHARE_READ | FILE_SHARE_WRITE,
         FILE_OPEN,
         ObjectOpen::Probe(FILE_DIRECTORY_FILE),
+        observe,
+    )
+}
+
+pub(crate) fn create_protected_file(
+    root: &File,
+    name: &str,
+    descriptor: &ProtectedDescriptor,
+    observe: impl FnOnce(OpenObservation),
+) -> io::Result<File> {
+    open_nt(
+        root.as_raw_handle() as HANDLE,
+        leaf_name(name)?,
+        FILE_GENERIC_READ | FILE_GENERIC_WRITE,
+        FILE_SHARE_READ | FILE_SHARE_WRITE,
+        FILE_CREATE,
+        ObjectOpen::ProtectedFile(descriptor),
         observe,
     )
 }

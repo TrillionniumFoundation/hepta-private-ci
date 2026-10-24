@@ -264,3 +264,9 @@ impl DirectoryContext {
 #[cfg(test)]
 #[path = "fresh_private_directory_tests.rs"]
 mod tests;
+
+#[path = "private_owner_lock.rs"]
+mod private_owner_lock;
+pub use private_owner_lock::OwnerLock;
+pub use private_owner_lock::OwnerLockError;
+pub use private_owner_lock::OwnerLockOrigin;
