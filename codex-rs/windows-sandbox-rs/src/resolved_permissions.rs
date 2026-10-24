@@ -107,6 +107,10 @@ impl ResolvedWindowsSandboxPermissions {
         self.file_system.has_full_disk_read_access()
     }
 
+    pub(crate) fn has_full_disk_write_access(&self) -> bool {
+        self.file_system.has_full_disk_write_access()
+    }
+
     pub(crate) fn has_symbolic_root_read_access(&self, cwd: &Path) -> bool {
         self.file_system.entries.iter().any(|entry| {
             matches!(&entry.path, FileSystemPath::Special { value: Root })
