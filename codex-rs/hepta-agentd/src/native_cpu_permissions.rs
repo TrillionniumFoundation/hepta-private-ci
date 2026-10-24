@@ -20,7 +20,6 @@ pub(super) fn handoff_fresh(fleet: &HeptaFleetLayout, agent: &HeptaAgentLayout) 
     for path in [
         fleet.fleet_root().as_path(),
         fleet.state_root(),
-        fleet.run_root(),
         fleet.releases_root(),
         fleet.agents_root(),
         agent.agent_root(),
@@ -34,6 +33,11 @@ pub(super) fn handoff_fresh(fleet: &HeptaFleetLayout, agent: &HeptaAgentLayout) 
     ] {
         private_owner_tree(path)?;
     }
+    // HeptaAgentLayout deliberately places its short Unix socket paths in
+    // the shared Fleet run directory, separately from the Agent writer lock.
+    // Root keeps ownership; sticky mode protects its own supervisor endpoints
+    // while the Host can create and replace only its runtime socket entries.
+    root_directory(fleet.run_root(), 0o3770)?;
     // Root owns the directory. Sticky mode protects each Root-created control
     // file; setgid gives new control files the explicit Host read group. The
     // original Registry's FD/owner check independently rejects a Host-created
@@ -51,6 +55,7 @@ pub(super) fn handoff_fresh(fleet: &HeptaFleetLayout, agent: &HeptaAgentLayout) 
     ] {
         verify(path, HOST, HOST, 0o700, true)?;
     }
+    verify(fleet.run_root(), 0, HOST, 0o3770, true)?;
     verify(agent.run_root(), 0, HOST, 0o3770, true)?;
     verify(agent.agent_root(), 0, HOST, 0o750, true)?;
     Ok(())

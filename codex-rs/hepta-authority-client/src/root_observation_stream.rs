@@ -104,11 +104,7 @@ impl RootObservationStream {
             unsafe { AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE) }
                 .map_err(|_error| {
                 #[cfg(debug_assertions)]
-                eprintln!(
-                    "root observation stage=register_pidfd kind={:?} errno={:?}",
-                    _error.kind(),
-                    _error.raw_os_error()
-                );
+                eprintln!("root observation stage=register_pidfd error={_error:?}");
                 AgentdRootAuthorityError::Unavailable
             })?;
         check_lifetime(root.get_ref())?;

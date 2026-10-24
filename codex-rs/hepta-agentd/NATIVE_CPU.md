@@ -1,9 +1,10 @@
 # Native CPU owner profile
 
 `hepta-native-cpu` is one frozen ELF for the reviewed Asterinas
-`g2-trusted-daemon` initial transaction. It requires the actual HOS2BOOT v3
-page, fixed Root/Manager/Workload/Recovery Process identities and the original
-8 MiB file / 16 MiB load limits. Ordinary execution has no supported fallback.
+`g2-trusted-daemon` initial transaction and restricted successor factory. The
+initial HOS2BOOT v3 page names the fixed Root/Manager/Workload/Recovery images;
+actual later images use the complete HOS2BOOT v4 page and kernel launch receipt.
+The original 8 MiB file / 16 MiB load limits remain mandatory. Ordinary execution has no supported fallback.
 This module is separate from ordinary Agentd's full App Server profile.
 
 ## Authority and lifecycle
@@ -17,9 +18,11 @@ is transferred across processes, and no child exec inherits an HOS2 role.
 
 The original FleetRegistry registers the Agent. Only the original Supervisor
 allocates Starting generations and retains process leases. Its
-`KernelInitialProcessDriver` takes one Manager slot, then one Recovery slot;
-these finite slots are not renewal or a process factory. It retains real
-pidfds, boot/start identity and exclusive child-reaper custody. Original exact
+`KernelInitialProcessDriver` consumes the two initial slots, then uses the
+original restricted kernel factory to obtain actual successor images. It
+saves and verifies the full kernel retirement observation before ACK and child
+activation. It retains real pidfds, boot/start identity and exclusive
+child-reaper custody. No ordinary fork/exec gains a role. Original exact
 Agentd Health checks perform promotion. The native profile never reports
 AppServerReady.
 
@@ -35,8 +38,19 @@ five original lanes and confirms the zero-argument recovered-owner readiness
 notification. The Host connects all five lanes before awaiting the live Root
 feed, activates its two original FinalUse owners, reads an actual opaque
 Current receipt and opens the sole writer through
-`open_with_protected_recovery_and_ready`. No JSON-derived token or local-state
+the shared body of `open_with_protected_recovery_and_ready`, using the original
+validated identity through `NativeCpuConfig`. The finite profile never first
+constructs a full App Server configuration. No JSON-derived token or local-state
 hash substitutes for protected Current.
+
+The actual compressed Agent control/Matrix/App Server socket paths live in
+Fleet/run, while the writer lock and lifecycle files live in Agent/run. Both
+runtime directories retain Root ownership, explicit Host group 60001 and
+03770 sticky/setgid mode. Root control files retain their original owner and
+read-only Host access; private cognitive/home/Matrix data belong to the Host.
+See [NATIVE_PERMISSIONS.md](NATIVE_PERMISSIONS.md) for the control-file boundary.
+The real UID60001 test must bind the original socket paths and fail to modify,
+remove or replace Root supervisor endpoints.
 
 ## Exact CPU operations
 
@@ -115,18 +129,35 @@ then does the original writer retire the durable prefix. A fresh request after
 the watchdog has consumed the recovery allowance must retain an actual native
 refusal without another CPU revision.
 
-Cross-boot adoption, more than the two initial management images, grant renewal
-beyond the original 300-second native lease and power-loss qualification remain
-separate requirements. Neither finite scenario establishes those results.
+The original copyout scenarios are `lost-copyout-live-v1` and
+`manager-exit-before-terminal-v1`; their actual FileTransport fault and original
+Current/recovery requirements are documented in
+[NATIVE_COPYOUT_SCENARIOS.md](NATIVE_COPYOUT_SCENARIOS.md).
+
+The additional `history-only-after-both-owner-exit-v1` and
+`successor-renewal-v1` scenarios exercise actual restricted successor images.
+The renewal endpoint requires a new Manager Applied time beyond the initial
+sample plus 330 seconds, at least two fresh pairs, original finite lease
+handoffs and real workload usage windows. Only that scenario has a 600-second
+outer acceptance window; no authority or kernel lifetime is enlarged.
+[NATIVE_CONTINUITY.md](NATIVE_CONTINUITY.md) specifies the actual release
+observation, policy CAS, persisted Root receipts and complete event contracts.
+
+These implemented scenarios are not native qualification results. Actual
+same-source ELF-size admission, each strict guest oracle and retained state
+verification remain required. Cross-boot adoption, interrupted activation and
+physical power-loss recovery have independent requirements and are not implied
+by any one finite scenario.
 
 Compile and test the affected original crates with `just test --locked -p
 codex-hepta-agentd -p codex-hepta-memory -p codex-hepta-supervisor --lib`.
 The supervisor's `kernel_initial::child::tests` exercise real Linux pidfd,
 identity, termination and reap behavior. Existing exact Notes lease tests must
 remain green after the shared-admission extraction. Then build the real binary
-with default features, using the existing release profile and environment
-size overrides (`OPT_LEVEL=z`, `LTO=fat`, `CODEGEN_UNITS=1`), and pass that exact
-frozen ELF/build receipt to the native owner runner. A successful host build is
+with unchanged default features, the unchanged original release profile and
+the original image limits, and pass that exact frozen ELF/build receipt to the
+native owner runner. Do not use environment profile overrides or reduced
+features to present a different build as the required owner. A successful host build is
 neither ELF-size admission nor a native owner-cycle result.
 
 The `native_profile_tests` use the original SQLite fixture and device fixture.

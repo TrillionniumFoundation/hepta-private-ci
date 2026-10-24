@@ -8,9 +8,10 @@ under Root control.
 
 | Namespace | Owner and mode | Purpose |
 | --- | --- | --- |
-| Fleet and Agent control directories | Root:60001, `0750` | Host can search and read its registration; only Root can change control entries. |
+| Fleet and Agent control directories, except the runtime directories below | Root:60001, `0750` | Host can search and read its registration; only Root can change control entries. |
 | Agent manifest and lifecycle/release state files | Root:60001, `0640` | Root publishes Registry state; Host reads the original state. |
-| Agent run directory | Root:60001, `03770` | Host creates its writer lock and control socket; sticky mode protects Root-owned entries. |
+| Agent run directory | Root:60001, `03770` | Host creates its writer lock; original lifecycle/control files retain Root ownership. |
+| Fleet run directory | Root:60001, `03770` | The original short Agentd/Matrix/App Server socket paths live here; sticky mode protects Root supervisor endpoints. |
 | Agent home, matrix and cognitive directories | 60001:60001, `0700` | Original Host-owned runtime and durable data. |
 | Files in those private Host directories | 60001:60001, `0600` | Private data, including the initialized SQLite store. |
 
@@ -48,8 +49,11 @@ requires actual Root. It creates an isolated `/run/hepta-native-permissions-*`
 namespace, initializes the original registry and SQLite store, and starts an
 independent process of the original test executable. That child drops to the
 real UID/GID 60001, reads the registration and release state, opens the store,
-and creates its real lock and socket. It must fail to modify or unlink Root
-control files, publish a Registry transition, or have a Host-owned higher
+and creates its real lock and binds all three original socket paths. Root
+retains a real supervisor control file and socket in the shared Fleet run
+directory. The child must fail to write, remove or replace those Root inodes,
+connect to the Root-only socket, change the shared directory mode, modify or
+unlink Agent control files, publish a Registry transition, or have a Host-owned higher
 generation interpreted as controller state. Root then verifies the same
 forgery is refused and publishes an ordinary legitimate transition.
 
