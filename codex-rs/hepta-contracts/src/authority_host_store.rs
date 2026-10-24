@@ -33,6 +33,10 @@ mod issuer;
 pub use issuer::HostFinalUseIssuer;
 pub use issuer::HostIssuerError;
 
+#[path = "authority_host_observation.rs"]
+mod observation;
+pub use observation::RootStoredObservation;
+
 enum DirectoryAccess {
     Ancestor,
     Private,

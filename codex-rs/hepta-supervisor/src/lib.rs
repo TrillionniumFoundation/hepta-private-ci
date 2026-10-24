@@ -188,3 +188,11 @@ pub use unix::UnixProcessDriver;
 pub use kernel_initial::KernelInitialProcessDriver;
 #[cfg(target_os = "linux")]
 pub use kernel_initial::KernelInitialRole;
+#[cfg(target_os = "linux")]
+pub use kernel_initial::KernelLaunchMode;
+#[cfg(target_os = "linux")]
+pub use kernel_initial::KernelLaunchReceipt;
+#[cfg(target_os = "linux")]
+pub use kernel_initial::KernelPolicyRetirement;
+#[cfg(target_os = "linux")]
+pub use kernel_initial::RootKernelLauncher;

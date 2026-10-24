@@ -46,8 +46,6 @@ pub use authority_host_clock::HostAuthorityClockObservation;
 #[cfg(target_os = "linux")]
 pub use authority_host_clock::HostAuthorityClockProjection;
 #[cfg(target_os = "linux")]
-pub use authority_host_issuer_transport::channel::HostAuthorityOwnerLifetime;
-#[cfg(target_os = "linux")]
 pub use authority_host_issuer_transport::HostAuthorityPeerChannel;
 #[cfg(target_os = "linux")]
 pub use authority_host_issuer_transport::HostAuthorityPeerPolicy;
@@ -59,6 +57,8 @@ pub use authority_host_issuer_transport::HostIssuerSession;
 pub use authority_host_issuer_transport::HostIssuerSessionPolicy;
 #[cfg(target_os = "linux")]
 pub use authority_host_issuer_transport::HostIssuerTransportError;
+#[cfg(target_os = "linux")]
+pub use authority_host_issuer_transport::channel::HostAuthorityOwnerLifetime;
 #[cfg(unix)]
 pub use authority_host_store::HostAuthorityFrontierStore;
 #[cfg(unix)]
@@ -67,6 +67,8 @@ pub use authority_host_store::HostFinalUseIssuer;
 pub use authority_host_store::HostIssuerError;
 #[cfg(unix)]
 pub use authority_host_store::RootAuthorityDirectory;
+#[cfg(unix)]
+pub use authority_host_store::RootStoredObservation;
 pub use authority_lease::deliver_authority_lease_with_witness;
 pub use authority_lease::dispatch_authority_lease_with_witness;
 #[cfg(target_os = "linux")]

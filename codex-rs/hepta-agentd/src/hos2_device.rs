@@ -5,7 +5,6 @@
 //! different identifiers never grants a native capability.
 
 use std::fs::File;
-use std::os::fd::AsRawFd;
 
 use codex_hepta_memory::HOS2_CPU_PERIOD_NS;
 use codex_hepta_memory::Hos2DeliveryId;
@@ -16,6 +15,16 @@ use codex_hepta_memory::Hos2InstallContradiction;
 use codex_hepta_memory::Hos2InstallOutcome;
 use codex_hepta_memory::Hos2RetirementObservation;
 use codex_hepta_memory::Hos2RetirementPermit;
+
+#[path = "hos2_device_bootstrap.rs"]
+mod bootstrap;
+use bootstrap::validate_bootstrap;
+
+#[path = "hos2_copyout.rs"]
+mod copyout;
+pub(crate) use copyout::AfterCopyoutFault;
+pub(crate) use copyout::NativeCopyoutDiagnostic;
+pub(crate) use copyout::NativeCopyoutSnapshot;
 
 const HEADER_BYTES: usize = 64;
 const HOS2_IOCTL: libc::c_ulong = 0xc020_4802;
@@ -36,6 +45,8 @@ pub struct AgentdHos2Device {
     manager_history: (u64, u64),
     recovery_history: (u64, u64),
     maximum_cap_ns: u64,
+    history_only: bool,
+    kernel_launch_generation: u64,
 }
 
 /// One correlated N0 CPU observation, not an operation outcome or a grant.
@@ -67,43 +78,40 @@ struct Response {
 /// effect, retry an ambiguous call, or retain either borrowed frame buffer.
 trait ControlTransport: Send + Sync {
     fn exchange(&self, input: &[u8], output: &mut [u8]) -> Result<(), String>;
+
+    // Inert scripted transports cannot manufacture an actual syscall probe.
+    fn native_copyout_probe(&self) -> Option<&copyout::NativeCopyoutProbe> {
+        None
+    }
 }
 
 struct FileTransport {
     file: File,
+    copyout: copyout::NativeCopyoutProbe,
 }
 
 impl ControlTransport for FileTransport {
     fn exchange(&self, input: &[u8], output: &mut [u8]) -> Result<(), String> {
-        let mut descriptor = [0_u8; 32];
-        descriptor[..8].copy_from_slice(&(input.as_ptr() as u64).to_le_bytes());
-        descriptor[8..16].copy_from_slice(&(output.as_mut_ptr() as u64).to_le_bytes());
-        descriptor[16..20].copy_from_slice(&(input.len() as u32).to_le_bytes());
-        descriptor[20..24].copy_from_slice(&(output.len() as u32).to_le_bytes());
-        // SAFETY: both borrowed, initialized frame buffers and this descriptor
-        // remain live for this synchronous ioctl. The lengths describe their
-        // actual bounds. HOS2 snapshots input and copies output before return;
-        // it retains no Rust reference. The File retains the process binding.
-        let result =
-            unsafe { libc::ioctl(self.file.as_raw_fd(), HOS2_IOCTL, descriptor.as_mut_ptr()) };
-        if result != 0 {
-            // EINTR is not retried: the original outbox must query D after an
-            // ambiguous call, never dispatch the operation a second time.
-            return Err(format!(
-                "HOS2 ioctl did not return a complete result: {}",
-                std::io::Error::last_os_error()
-            ));
-        }
-        Ok(())
+        self.copyout.exchange(&self.file, input, output)
+    }
+
+    fn native_copyout_probe(&self) -> Option<&copyout::NativeCopyoutProbe> {
+        Some(&self.copyout)
     }
 }
 
 impl AgentdHos2Device {
     /// Attach only through an explicitly supplied, already-open process file
-    /// and an existing HOS2BOOT v2/v3 page. No environment switch enables effects
+    /// and an existing HOS2BOOT v2/v3/v4 page. No environment switch enables effects
     /// and no authority, writer or signer is manufactured by this constructor.
     pub fn from_bootstrap(file: File, bootstrap: &[u8]) -> Result<Self, String> {
-        Self::attach(Box::new(FileTransport { file }), bootstrap)
+        Self::attach(
+            Box::new(FileTransport {
+                file,
+                copyout: copyout::NativeCopyoutProbe::default(),
+            }),
+            bootstrap,
+        )
     }
 
     /// Open the control device in the final kernel-created G2 manager or
@@ -113,18 +121,21 @@ impl AgentdHos2Device {
     /// the actual Process and image. No caller-supplied file crosses a role.
     pub fn from_kernel_bootstrap(bootstrap: &[u8]) -> Result<Self, String> {
         validate_bootstrap(bootstrap)?;
-        if read64(bootstrap, /*offset*/ 8)? != 3 {
-            return Err("kernel-initial Agentd requires HOS2BOOT v3".to_string());
+        let version = read64(bootstrap, /*offset*/ 8)?;
+        if !matches!(version, 3 | 4) {
+            return Err("kernel-initial Agentd requires HOS2BOOT v3 or v4".to_string());
         }
-        let expected_pid = match read64(bootstrap, /*offset*/ 16)? {
-            1 => read64(bootstrap, /*offset*/ 144)?,
-            3 => read64(bootstrap, /*offset*/ 160)?,
+        let expected_pid = match (version, read64(bootstrap, /*offset*/ 16)?) {
+            (3, 1) => read64(bootstrap, /*offset*/ 144)?,
+            (3, 3) => read64(bootstrap, /*offset*/ 160)?,
+            (4, 1 | 3 | 5) => read64(bootstrap, /*offset*/ 200)?,
             _ => return Err("kernel-initial role is not an Agentd owner".to_string()),
         };
+        let expected_parent = read64(bootstrap, /*offset*/ 192)?;
         // SAFETY: these process/credential queries take no pointer arguments.
         let identity_matches = unsafe {
             u64::from(std::process::id()) == expected_pid
-                && libc::getppid() == 1
+                && u64::try_from(libc::getppid()).ok() == Some(expected_parent)
                 && libc::getuid() == 0
                 && libc::geteuid() == 0
                 && libc::getgid() == 0
@@ -142,17 +153,27 @@ impl AgentdHos2Device {
             .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
             .open("/dev/hepta-control")
             .map_err(|error| format!("opening this Process's HOS2 control device: {error}"))?;
-        Self::attach(Box::new(FileTransport { file }), bootstrap)
+        Self::attach(
+            Box::new(FileTransport {
+                file,
+                copyout: copyout::NativeCopyoutProbe::default(),
+            }),
+            bootstrap,
+        )
     }
 
     fn attach(transport: Box<dyn ControlTransport>, bootstrap: &[u8]) -> Result<Self, String> {
         validate_bootstrap(bootstrap)?;
         let manager_space = read16(bootstrap, /*offset*/ 112)?;
         let recovery_space = read16(bootstrap, /*offset*/ 128)?;
-        let local_space = match read64(bootstrap, /*offset*/ 16)? {
-            1 => manager_space,
-            3 => recovery_space,
-            _ => return Err("this bootstrap role has no native management slot".to_string()),
+        let version = read64(bootstrap, /*offset*/ 8)?;
+        let role = read64(bootstrap, /*offset*/ 16)?;
+        let history_only = version == 4 && role == 5;
+        let local_space = match (version, role) {
+            (4, 1 | 3 | 5) => read16(bootstrap, /*offset*/ 208)?,
+            (_, 1) => manager_space,
+            (_, 3) => recovery_space,
+            _ => return Err("this bootstrap role has no native owner slot".to_string()),
         };
         let device = Self {
             transport,
@@ -173,16 +194,23 @@ impl AgentdHos2Device {
                 read64(bootstrap, /*offset*/ 88)?,
             ),
             maximum_cap_ns: read64(bootstrap, /*offset*/ 168)?,
+            history_only,
+            kernel_launch_generation: if version == 4 {
+                read64(bootstrap, /*offset*/ 224)?
+            } else {
+                0
+            },
         };
         if device.boot_id == [0; 16]
             || device.local_space == [0; 16]
             || device.manager_space == [0; 16]
             || device.recovery_space == [0; 16]
             || device.manager_space == device.recovery_space
-            || device.observe_slot == 0
-            || device.observe_generation == 0
-            || device.manage_slot == 0
-            || device.manage_generation == 0
+            || (!device.history_only
+                && (device.observe_slot == 0
+                    || device.observe_generation == 0
+                    || device.manage_slot == 0
+                    || device.manage_generation == 0))
             || device.maximum_cap_ns > HOS2_CPU_PERIOD_NS
         {
             return Err("invalid HOS2 bootstrap management binding".to_string());
@@ -210,12 +238,31 @@ impl AgentdHos2Device {
         Ok(device)
     }
 
+    /// This image can only query and retire the two retained namespaces.
+    /// The role does not imply that the old workload still exists.
+    pub fn is_history_only(&self) -> bool {
+        self.history_only
+    }
+
+    /// Kernel lifecycle correlation only; it is not a writer generation.
+    pub fn kernel_launch_generation(&self) -> u64 {
+        self.kernel_launch_generation
+    }
+
+    /// Exact discovery already checked against this Process's QueryAbi.
+    pub fn native_history_identity(&self) -> ([u8; 16], [u8; 16], [u8; 16]) {
+        (self.boot_id, self.manager_space, self.recovery_space)
+    }
+
     /// Read the already-delegated CPU object once, without allocating D,
     /// retrying transport, publishing an outcome or sending a management call.
     /// `request_id` is only a nonzero read correlation ID. Its value does not
     /// consume the original owner's delivery sequence. The snapshot can supply
     /// an observed revision for a new intent; it cannot settle an existing K.
     pub fn read_usage(&self, request_id: u64) -> Result<AgentdHos2Usage, String> {
+        if self.history_only {
+            return Err("history-only image has no CPU observation capability".to_string());
+        }
         let response = self.exchange(
             /*opcode*/ 2,
             request_id,
@@ -271,6 +318,9 @@ impl AgentdHos2Device {
         expected_revision: u64,
         cap_ns: u64,
     ) -> Result<Hos2InstallBudgetV1, String> {
+        if self.history_only {
+            return Err("history-only image cannot prepare a CPU effect".to_string());
+        }
         if cap_ns > self.maximum_cap_ns {
             return Err("requested budget exceeds the native bootstrap grant".to_string());
         }
@@ -285,6 +335,44 @@ impl AgentdHos2Device {
         };
         request.to_json()?;
         Ok(request)
+    }
+
+    /// Arm one inaccessible response for the exact original prepared request.
+    /// This is explicit native qualification only; it grants no capability and
+    /// neither dispatches nor creates an outbox entry. The original writer still
+    /// performs FinalUse, the effect-entry barrier and its one device call.
+    pub(crate) fn arm_native_copyout_fault(
+        &self,
+        request: &Hos2InstallBudgetV1,
+        after_fault: Option<AfterCopyoutFault>,
+    ) -> Result<(), String> {
+        let expected = self.install_request(
+            request.delivery.sequence()?,
+            request.expected_revision,
+            request.cap_ns,
+        )?;
+        if expected.to_json()? != request.to_json()? {
+            return Err("copyout qualification differs from the original current request".into());
+        }
+        let payload = install_payload(request);
+        let (frame, length) = encode_frame(
+            3,
+            request.delivery.sequence()?,
+            request.manage_slot,
+            request.manage_generation,
+            &payload,
+        )?;
+        self.transport
+            .native_copyout_probe()
+            .ok_or("copyout qualification requires the original actual FileTransport")?
+            .arm(&frame[..length], after_fault)
+    }
+
+    pub(crate) fn native_copyout_snapshot(&self) -> Result<NativeCopyoutSnapshot, String> {
+        self.transport
+            .native_copyout_probe()
+            .ok_or("native syscall diagnostics require the original actual FileTransport")?
+            .snapshot()
     }
 
     fn history_slot(&self, delivery: &Hos2DeliveryId) -> Result<(u64, u64), String> {
@@ -313,22 +401,9 @@ impl AgentdHos2Device {
         generation: u64,
         payload: &[u8],
     ) -> Result<Response, String> {
-        if payload.len() > 40 || sequence == 0 || (sequence == u64::MAX && opcode != 2) {
-            return Err("invalid bounded HOS2 frame".to_string());
-        }
-        let mut input = [0_u8; HEADER_BYTES + 40];
-        input[..4].copy_from_slice(b"HOS2");
-        input[4..6].copy_from_slice(&2_u16.to_le_bytes());
-        input[8..10].copy_from_slice(&opcode.to_le_bytes());
-        input[12..16].copy_from_slice(&64_u32.to_le_bytes());
-        input[16..20].copy_from_slice(&(payload.len() as u32).to_le_bytes());
-        input[24..32].copy_from_slice(&sequence.to_le_bytes());
-        input[40..48].copy_from_slice(&slot.to_le_bytes());
-        input[48..56].copy_from_slice(&generation.to_le_bytes());
-        input[HEADER_BYTES..HEADER_BYTES + payload.len()].copy_from_slice(payload);
+        let (input, length) = encode_frame(opcode, sequence, slot, generation, payload)?;
         let mut output = [0_u8; HEADER_BYTES + 64];
-        self.transport
-            .exchange(&input[..HEADER_BYTES + payload.len()], &mut output)?;
+        self.transport.exchange(&input[..length], &mut output)?;
         let length = read32(&output, /*offset*/ 16)? as usize;
         let status = read_u16(&output, /*offset*/ 10)?;
         if &output[..4] != b"HOSR"
@@ -353,8 +428,43 @@ impl AgentdHos2Device {
     }
 }
 
+fn install_payload(request: &Hos2InstallBudgetV1) -> [u8; 32] {
+    let mut payload = [0_u8; 32];
+    payload[..8].copy_from_slice(&request.expected_revision.to_le_bytes());
+    payload[8..16].copy_from_slice(&request.period_ns.to_le_bytes());
+    payload[16..24].copy_from_slice(&request.cap_ns.to_le_bytes());
+    payload
+}
+
+fn encode_frame(
+    opcode: u16,
+    sequence: u64,
+    slot: u64,
+    generation: u64,
+    payload: &[u8],
+) -> Result<([u8; HEADER_BYTES + 40], usize), String> {
+    if payload.len() > 40 || sequence == 0 || (sequence == u64::MAX && opcode != 2) {
+        return Err("invalid bounded HOS2 frame".to_string());
+    }
+    let mut input = [0_u8; HEADER_BYTES + 40];
+    input[..4].copy_from_slice(b"HOS2");
+    input[4..6].copy_from_slice(&2_u16.to_le_bytes());
+    input[8..10].copy_from_slice(&opcode.to_le_bytes());
+    input[12..16].copy_from_slice(&64_u32.to_le_bytes());
+    input[16..20].copy_from_slice(&(payload.len() as u32).to_le_bytes());
+    input[24..32].copy_from_slice(&sequence.to_le_bytes());
+    input[40..48].copy_from_slice(&slot.to_le_bytes());
+    input[48..56].copy_from_slice(&generation.to_le_bytes());
+    input[HEADER_BYTES..HEADER_BYTES + payload.len()].copy_from_slice(payload);
+    Ok((input, HEADER_BYTES + payload.len()))
+}
+
 impl Hos2Device for AgentdHos2Device {
     fn install(&self, request: &Hos2InstallBudgetV1) -> Result<Hos2InstallOutcome, String> {
+        if self.history_only {
+            // Unavailable authority cannot become a terminal for an old D.
+            return Err("history-only image cannot dispatch a CPU effect".to_string());
+        }
         request.to_json()?;
         if request.delivery.boot_id != self.boot_id
             || request.delivery.space_id != self.local_space
@@ -372,10 +482,7 @@ impl Hos2Device for AgentdHos2Device {
                 },
             ));
         }
-        let mut payload = [0_u8; 32];
-        payload[..8].copy_from_slice(&request.expected_revision.to_le_bytes());
-        payload[8..16].copy_from_slice(&request.period_ns.to_le_bytes());
-        payload[16..24].copy_from_slice(&request.cap_ns.to_le_bytes());
+        let payload = install_payload(request);
         let response = self.exchange(
             /*opcode*/ 3,
             request.delivery.sequence()?,
@@ -439,18 +546,25 @@ impl Hos2Device for AgentdHos2Device {
         // namespace still leaves the original effect unknown. This also
         // permits a recovery image's retained manager-history capability.
         self.history_slot(&request.delivery)?;
-        if request.manage_slot != self.manage_slot
-            || request.manage_generation != self.manage_generation
-        {
+        // A history-only image owns no manage capability. These are the
+        // immutable constraints of the OLD request, not newly granted slots.
+        let (manage_slot, manage_generation, maximum_cap_ns) = if self.history_only {
+            (2, 1, bootstrap::NATIVE_MAX_CAP_NS)
+        } else {
+            (
+                self.manage_slot,
+                self.manage_generation,
+                self.maximum_cap_ns,
+            )
+        };
+        if request.manage_slot != manage_slot || request.manage_generation != manage_generation {
             return Ok(Hos2InstallOutcome::Contradiction(
                 Hos2InstallContradiction::RequestBindingMismatch,
             ));
         }
-        if request.cap_ns > self.maximum_cap_ns {
+        if request.cap_ns > maximum_cap_ns {
             return Ok(Hos2InstallOutcome::Contradiction(
-                Hos2InstallContradiction::BudgetExceedsGrant {
-                    maximum_cap_ns: self.maximum_cap_ns,
-                },
+                Hos2InstallContradiction::BudgetExceedsGrant { maximum_cap_ns },
             ));
         }
         self.query(&request.delivery)
@@ -570,39 +684,6 @@ fn read16(bytes: &[u8], offset: usize) -> Result<[u8; 16], String> {
         .ok_or_else(|| "truncated HOS2 identity".to_string())?
         .try_into()
         .map_err(|_| "invalid HOS2 identity length".to_string())
-}
-
-// The v2 profile remains byte-for-byte compatible with the three-role G1d
-// consumer. G2 is a distinct four-role initial transaction, never inferred from
-// a new PID, an environment variable or a transferred file descriptor.
-fn validate_bootstrap(bootstrap: &[u8]) -> Result<(), String> {
-    if bootstrap.len() < 192
-        || &bootstrap[..8] != b"HOS2BOOT"
-        || read64(bootstrap, /*offset*/ 176)? != HOS2_CPU_PERIOD_NS
-    {
-        return Err("invalid sealed HOS2 bootstrap discovery page".to_string());
-    }
-    let bytes = match read64(bootstrap, /*offset*/ 8)? {
-        2 => 192,
-        3 => {
-            if !matches!(bootstrap.len(), 200 | 4096)
-                || read64(bootstrap, /*offset*/ 144)? != 2
-                || read64(bootstrap, /*offset*/ 152)? != 3
-                || read64(bootstrap, /*offset*/ 160)? != 4
-                || read64(bootstrap, /*offset*/ 192)? != 1
-            {
-                return Err("invalid G2 kernel-initial process topology".to_string());
-            }
-            200
-        }
-        _ => return Err("unsupported HOS2 bootstrap version".to_string()),
-    };
-    if read64(bootstrap, /*offset*/ 24)? != bytes as u64
-        || bootstrap[bytes..].iter().any(|byte| *byte != 0)
-    {
-        return Err("invalid sealed HOS2 bootstrap discovery page".to_string());
-    }
-    Ok(())
 }
 
 #[cfg(test)]

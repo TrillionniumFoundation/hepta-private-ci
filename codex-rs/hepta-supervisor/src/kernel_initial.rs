@@ -21,6 +21,13 @@ use crate::UnixManagedProcess;
 mod child;
 pub(crate) use child::KernelInitialChild;
 
+#[path = "kernel_launcher.rs"]
+mod launcher;
+pub use launcher::KernelLaunchMode;
+pub use launcher::KernelLaunchReceipt;
+pub use launcher::KernelPolicyRetirement;
+pub use launcher::RootKernelLauncher;
+
 /// One of the two already-loaded management images in the G2 transaction.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum KernelInitialRole {

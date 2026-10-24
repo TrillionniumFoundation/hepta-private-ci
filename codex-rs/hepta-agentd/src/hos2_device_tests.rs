@@ -944,5 +944,8 @@ fn g2_root_workload_and_foreign_process_cannot_open_an_agentd_owner() {
     let error = AgentdHos2Device::from_kernel_bootstrap(&bootstrap_for_role(/*role*/ 1))
         .err()
         .expect("legacy G1d cannot select the G2 opening path");
-    assert_eq!(error, "kernel-initial Agentd requires HOS2BOOT v3");
+    assert_eq!(error, "kernel-initial Agentd requires HOS2BOOT v3 or v4");
 }
+
+#[path = "hos2_device_successor_tests.rs"]
+mod successors;
