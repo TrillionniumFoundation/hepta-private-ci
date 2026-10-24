@@ -148,7 +148,7 @@ pub fn encrypt_room_key_export(
 }
 
 fn encrypt_helper(plaintext: &[u8], passphrase: &str, rounds: u32) -> String {
-    let mut salt = [0u8; SALT_SIZE];
+    let mut salt = <[u8; SALT_SIZE]>::default();
     let mut rng = rng();
 
     rng.fill_bytes(&mut salt);
@@ -177,8 +177,8 @@ fn decrypt_helper(ciphertext: &str, passphrase: &str) -> Result<String, KeyExpor
     let mut decoded = Cursor::new(decoded);
 
     let mut salt = [0u8; SALT_SIZE];
-    let mut iv = [0u8; IV_SIZE];
-    let mut mac = [0u8; MAC_SIZE];
+    let mut iv = <[u8; IV_SIZE]>::default();
+    let mut mac = <[u8; MAC_SIZE]>::default();
 
     let version = decoded.read_u8()?;
     decoded.read_exact(&mut salt)?;

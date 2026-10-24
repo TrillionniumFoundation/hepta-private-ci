@@ -213,8 +213,8 @@ impl<'a, R: Read + ?Sized + 'a> AttachmentEncryptor<'a, R> {
     /// let key = encryptor.finish();
     /// ```
     pub fn new(reader: &'a mut R) -> Self {
-        let mut key = [0u8; KEY_SIZE];
-        let mut iv = [0u8; IV_SIZE];
+        let mut key = <[u8; KEY_SIZE]>::default();
+        let mut iv = <[u8; IV_SIZE]>::default();
 
         let mut rng = rng();
 
