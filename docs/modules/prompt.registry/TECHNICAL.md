@@ -153,7 +153,7 @@ payload copy/write amplification, not unlimited-history recovery or retention co
 The [existing PN0/P0 sequence](../../DEVELOPMENT.md#audit-remediation-within-the-existing-roadmap)
 assigns OS namespace/creation primitives to C2b, FinalUse integration to C3 and
 registry plus its actual Agentd runtime caller to C4. This is design work within
-that item. `PromptRegistry::open_windows_private` now consumes the actual opaque
+that item. `DurablePromptRegistry::open_windows_private` now consumes the actual opaque
 fresh/existing directory capability and retains the original Store, marker,
 OS lock, V1/V2 migration and V3 extents. Complete manifest/payload restoration
 precedes orphan-tail trimming or migration writes. Three new native controls
