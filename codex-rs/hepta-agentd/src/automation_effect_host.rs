@@ -69,7 +69,8 @@ pub(crate) struct AgentdAutomationEffectHost {
     final_use_scope_digest: Sha256Digest,
     authority: FinalUseAuthority,
     revocations_file: PathBuf,
-    revocation_frontier: Arc<Mutex<(u64, u64)>>,
+    // Serialize refreshes; the existing durable authority owns the only head.
+    revocation_refresh: Arc<Mutex<()>>,
     adapter: HttpProviderEffectAdapter,
 }
 
@@ -180,10 +181,6 @@ impl AgentdAutomationEffectHost {
             ));
         }
         let initial_revocations = read_revocations_file(&config.final_use_revocations_file)?;
-        let frontier = (
-            initial_revocations.authority_epoch,
-            initial_revocations.revision,
-        );
 
         let authority_root = identity
             .layout
@@ -214,7 +211,7 @@ impl AgentdAutomationEffectHost {
             final_use_scope_digest,
             authority,
             revocations_file: config.final_use_revocations_file,
-            revocation_frontier: Arc::new(Mutex::new(frontier)),
+            revocation_refresh: Arc::new(Mutex::new(())),
             adapter,
         })
     }
@@ -363,28 +360,31 @@ impl AgentdAutomationEffectHost {
     }
 
     fn refresh_revocations(&self) -> Result<(), AgentdError> {
-        let head = read_revocations_file(&self.revocations_file)?;
-        let mut frontier = self.revocation_frontier.lock().map_err(|_| {
+        // A numeric (epoch, revision) cache cannot detect same-head content
+        // drift or a head advanced through another clone of the authority.
+        // Keep only refresh serialization here, never a second trust frontier.
+        let _refresh = self.revocation_refresh.lock().map_err(|_| {
             AgentdError::Protocol(
-                "automation effect revocation frontier lock is poisoned".to_string(),
+                "automation effect revocation refresh lock is poisoned".to_string(),
             )
         })?;
-        let observed = (head.authority_epoch, head.revision);
-        if observed == *frontier {
+        let head = read_revocations_file(&self.revocations_file)?;
+        let current = self.authority.revocation_head().map_err(|error| {
+            AgentdError::GenerationFenced(format!(
+                "automation effect revocation head unavailable: {error}"
+            ))
+        })?;
+        if head == current {
             return Ok(());
         }
-        if observed.0 < frontier.0 || (observed.0 == frontier.0 && observed.1 < frontier.1) {
-            return Err(AgentdError::GenerationFenced(
-                "automation effect revocation frontier rolled back".to_string(),
-            ));
-        }
+        // The authority atomically enforces revision monotonicity, complete
+        // revocation-set inclusion, entered-effect fencing and durable writes.
+        // A changed head with unchanged numbers reaches that check and rejects.
         self.authority.update_revocations(head).map_err(|error| {
             AgentdError::GenerationFenced(format!(
                 "automation effect revocation refresh rejected: {error}"
             ))
-        })?;
-        *frontier = observed;
-        Ok(())
+        })
     }
 
     fn validate_intent(
@@ -1021,6 +1021,38 @@ mod tests {
         let host =
             AgentdAutomationEffectHost::open(&fixture.identity, &host_file).expect("effect host");
         let grant = signed_final_use(&intent, now_ms, &final_use_signer);
+        let trusted_head = host.authority.revocation_head().expect("trusted head");
+        let trusted_frontier = host.authority.frontier().expect("trusted frontier");
+        let mut changed_same_revision = trusted_head.clone();
+        changed_same_revision
+            .revoked_grant_ids
+            .insert(grant.grant.grant_id.clone());
+        fs::write(
+            &revocations_file,
+            serde_json::to_vec(&changed_same_revision).expect("changed head json"),
+        )
+        .expect("write conflicting same-revision head");
+        assert!(matches!(
+            host.execute(
+                &fixture.store,
+                &intent,
+                WIRE,
+                &grant,
+                "agentd-product-effect-dispatch",
+                now_ms + 5,
+            )
+            .await,
+            Err(AgentdError::GenerationFenced(_))
+        ));
+        assert_eq!(host.authority.revocation_head().unwrap(), trusted_head);
+        assert_eq!(host.authority.frontier().unwrap(), trusted_frontier);
+        assert_eq!(host.authority.capacity().unwrap().used_nonces, 0);
+        assert!(server.received_requests().await.unwrap().is_empty());
+        fs::write(
+            &revocations_file,
+            serde_json::to_vec(&trusted_head).expect("restore head json"),
+        )
+        .expect("restore exact trusted head");
         let receipt = host
             .execute(
                 &fixture.store,
@@ -1037,6 +1069,56 @@ mod tests {
             Some(TaskFlowStepObservation::Succeeded)
         );
 
+        // Another trusted handle may advance the existing durable owner.
+        // A host-local numeric cache must not accept the old on-disk feed.
+        let mut advanced_head = trusted_head.clone();
+        advanced_head.revision += 1;
+        advanced_head
+            .revoked_grant_ids
+            .insert(grant.grant.grant_id.clone());
+        host.authority
+            .update_revocations(advanced_head.clone())
+            .expect("trusted authority advance");
+        let advanced_frontier = host.authority.frontier().unwrap();
+        assert!(matches!(
+            host.clone().refresh_revocations(),
+            Err(AgentdError::GenerationFenced(_))
+        ));
+        assert_eq!(host.authority.frontier().unwrap(), advanced_frontier);
+        fs::write(
+            &revocations_file,
+            serde_json::to_vec(&advanced_head).expect("advanced head json"),
+        )
+        .expect("publish the exact advanced head");
+        host.clone()
+            .refresh_revocations()
+            .expect("current cloned host");
+        // Removing a revocation fails with either the same or a newer revision.
+        // Neither refusal changes the durable head or refunds the used nonce.
+        for revision in [advanced_head.revision, advanced_head.revision + 1] {
+            let mut removed = advanced_head.clone();
+            removed.revision = revision;
+            removed.revoked_grant_ids.clear();
+            fs::write(
+                &revocations_file,
+                serde_json::to_vec(&removed).expect("removed head json"),
+            )
+            .expect("write invalid revocation removal");
+            assert!(matches!(
+                host.refresh_revocations(),
+                Err(AgentdError::GenerationFenced(_))
+            ));
+            assert_eq!(host.authority.revocation_head().unwrap(), advanced_head);
+            assert_eq!(host.authority.frontier().unwrap(), advanced_frontier);
+            assert_eq!(host.authority.capacity().unwrap().used_nonces, 1);
+        }
+        fs::write(
+            &revocations_file,
+            serde_json::to_vec(&advanced_head).expect("restore advanced json"),
+        )
+        .expect("restore advanced head");
+        // A now-revoked grant does not erase the already completed effect. The
+        // identical terminal read below still returns its original receipt.
         let replay = host
             .execute(
                 &fixture.store,
