@@ -1,10 +1,12 @@
 //! Two original consumers and one canonical signer; no external effect occurs.
-use codex_hepta_agentd::AgentdRootAuthorityPeer;
-use codex_hepta_agentd::AgentdRootAuthoritySession;
-use codex_hepta_agentd::AgentdRootWriterTrust;
-use codex_hepta_agentd::HOST_AUTHORITY_BOOTSTRAP_BOUND;
-use codex_hepta_agentd::HOST_AUTHORITY_BOOTSTRAP_V1;
-use codex_hepta_agentd::HostAuthorityPublicBootstrapV1;
+use codex_hepta_authority_client::AgentdRootAuthorityPeer;
+use codex_hepta_authority_client::AgentdRootAuthoritySession;
+use codex_hepta_authority_client::AgentdRootWriterTrust;
+use codex_hepta_authority_types::HOST_AUTHORITY_BOOTSTRAP_BOUND;
+use codex_hepta_authority_types::HOST_AUTHORITY_BOOTSTRAP_V1;
+use codex_hepta_authority_types::HostAuthorityPublicBootstrapV1;
+use codex_hepta_authority_types::ProductionAuthorityLease;
+use codex_hepta_authority_types::ProductionAuthorityVerifier;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::AuthorityFrontierStore;
 use codex_hepta_contracts::AuthorityTrustError;
@@ -16,8 +18,6 @@ use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::RootFinalUseFrontierClient;
 use codex_hepta_contracts::RootPeerIdentity;
 use codex_hepta_contracts::SignedFinalUseGrant;
-use codex_hepta_memory::ProductionAuthorityLease;
-use codex_hepta_memory::ProductionAuthorityVerifier;
 use std::future::Future;
 use std::io::Read;
 use std::os::fd::FromRawFd;
@@ -98,8 +98,17 @@ pub(super) fn qualify(
     // Erase the large qualification future before the runtime boundary, so
     // each runtime wrapper uses the same poll implementation.
     let qualification: Pin<Box<dyn Future<Output = Result<(), QualificationError>> + '_>> =
-        Box::pin(qualify_with_live_feed(observation, device, notes, bundle, grants, binding));
-    runtime.block_on(qualification).map_err(|error| error as Box<dyn std::error::Error>)
+        Box::pin(qualify_with_live_feed(
+            observation,
+            device,
+            notes,
+            bundle,
+            grants,
+            binding,
+        ));
+    runtime
+        .block_on(qualification)
+        .map_err(|error| error as Box<dyn std::error::Error>)
 }
 
 async fn qualify_with_live_feed(
@@ -120,7 +129,8 @@ async fn qualify_with_live_feed(
     // SAFETY: the trusted root parent exclusively transferred this one
     // already held pidfd; no path-based descriptor is opened by the child.
     let root = unsafe { OwnedFd::from_raw_fd(fd) };
-    let public: [u8; 32] = serde_json::from_slice(std::env::var("HEPTA_SERVICE_PUBLIC_KEY")?.as_bytes())?;
+    let public: [u8; 32] =
+        serde_json::from_slice(std::env::var("HEPTA_SERVICE_PUBLIC_KEY")?.as_bytes())?;
     assert_eq!(public, bundle.issuer_key.verifying_key);
     let signer = bundle.issuer_key.key_id.clone();
     assert_eq!(signer, std::env::var("HEPTA_SERVICE_SIGNER_ID")?);
@@ -130,15 +140,26 @@ async fn qualify_with_live_feed(
     let agent = writer.registered_agent_id.clone();
     let session = AgentdRootAuthoritySession::connect(
         observation,
-        AgentdRootAuthorityPeer { pid: root_pid, boot_id: boot.clone(), process_start_ticks: start },
-        root.try_clone()?, Duration::from_millis(500), Duration::from_secs(20),
-        AgentdRootWriterTrust {
-            issuer_id: signer.clone(), verifying_key: public,
-            agent_id: writer.registered_agent_id.clone(), spawn_generation: writer.spawn_generation,
-            owner_epoch: writer.owner_epoch, local_lease_id: writer.local_lease_id.clone(),
-            local_lease_generation: writer.local_lease_generation, authority_lease: writer.authority_lease.clone(),
+        AgentdRootAuthorityPeer {
+            pid: root_pid,
+            boot_id: boot.clone(),
+            process_start_ticks: start,
         },
-    ).await?;
+        root.try_clone()?,
+        Duration::from_millis(500),
+        Duration::from_secs(20),
+        AgentdRootWriterTrust {
+            issuer_id: signer.clone(),
+            verifying_key: public,
+            agent_id: writer.registered_agent_id.clone(),
+            spawn_generation: writer.spawn_generation,
+            owner_epoch: writer.owner_epoch,
+            local_lease_id: writer.local_lease_id.clone(),
+            local_lease_generation: writer.local_lease_generation,
+            authority_lease: writer.authority_lease.clone(),
+        },
+    )
+    .await?;
     let head = session.revocations()?;
     assert_eq!(head, bundle.revocations);
     let clock = session.clock();
@@ -146,18 +167,33 @@ async fn qualify_with_live_feed(
     // Blocking frontier/file operations must not starve the original
     // background observation feed on the current-thread reactor.
     let consumers = tokio::task::spawn_blocking(move || {
-        open_registered_consumers(*bundle, [device, notes], root, head, owner_clock, signer, agent)
-    }).await??;
-    session.activate_final_use_owners(consumers.owners.clone()).await?;
+        open_registered_consumers(
+            *bundle,
+            [device, notes],
+            root,
+            head,
+            owner_clock,
+            signer,
+            agent,
+        )
+    })
+    .await??;
+    session
+        .activate_final_use_owners(consumers.owners.clone())
+        .await?;
     let verifier = session.verifier();
     let authority = session.authority();
     let binding = binding.clone();
     let signer = tokio::task::spawn_blocking(move || {
         claim_and_enter(consumers, grants, binding, verifier, authority)
-    }).await??;
+    })
+    .await??;
     drop(session);
     assert_eq!(clock.now_unix_ms(), Err(AuthorityTrustError::Unavailable));
-    println!("{}", serde_json::json!({"qualification":"root_two_original_final_use_consumers","uid":60001,"canonical_signer":signer,"independent_original_frontiers":true,"actual_claim_and_enter":true,"nonce_replay_refused":true,"no_effect":true,"production_ready":false}));
+    println!(
+        "{}",
+        serde_json::json!({"qualification":"root_two_original_final_use_consumers","uid":60001,"canonical_signer":signer,"independent_original_frontiers":true,"actual_claim_and_enter":true,"nonce_replay_refused":true,"no_effect":true,"production_ready":false})
+    );
     Ok(())
 }
 
@@ -174,29 +210,61 @@ fn open_registered_consumers(
     let root_pid = bundle.root.pid;
     let boot = bundle.root.boot_id.clone();
     let start = bundle.root.process_start_ticks;
-    let local = bundle.consumers.device.local_state_dir.parent().ok_or("missing local parent")?.to_path_buf();
-    assert_eq!(bundle.consumers.notes.local_state_dir.parent(), Some(local.as_path()));
+    let local = bundle
+        .consumers
+        .device
+        .local_state_dir
+        .parent()
+        .ok_or("missing local parent")?
+        .to_path_buf();
+    assert_eq!(
+        bundle.consumers.notes.local_state_dir.parent(),
+        Some(local.as_path())
+    );
     let mut owners = Vec::new();
     let mut frontiers = Vec::new();
-    for (slot, stream) in [&bundle.consumers.device, &bundle.consumers.notes].into_iter().zip(streams) {
+    for (slot, stream) in [&bundle.consumers.device, &bundle.consumers.notes]
+        .into_iter()
+        .zip(streams)
+    {
         let frontier = Arc::new(RootFinalUseFrontierClient::from_stream(
-            stream, signer.clone(),
-            RootPeerIdentity { pid: root_pid, boot_id: boot.clone(), process_start_ticks: start },
-            root.try_clone()?, Duration::from_secs(5), Duration::from_secs(20),
+            stream,
+            signer.clone(),
+            RootPeerIdentity {
+                pid: root_pid,
+                boot_id: boot.clone(),
+                process_start_ticks: start,
+            },
+            root.try_clone()?,
+            Duration::from_secs(5),
+            Duration::from_secs(20),
         )?);
         assert_eq!(frontier.load(&signer)?, slot.frontier);
         let path = &slot.local_state_dir;
         std::fs::DirBuilder::new().mode(0o700).create(&path)?;
         let owner = FinalUseAuthority::open_state_dir_with_issuer_keys(
-            &path, signer.clone(),
-            vec![FinalUseIssuerTrustKey::from(bundle.issuer_key.clone())], head.clone(), Arc::clone(&clock), frontier.clone(),
+            &path,
+            signer.clone(),
+            vec![FinalUseIssuerTrustKey::from(bundle.issuer_key.clone())],
+            head.clone(),
+            Arc::clone(&clock),
+            frontier.clone(),
         )?;
         assert_eq!(frontier.load(&signer)?, owner.frontier()?);
-        assert_eq!(frontier.load("peer-selected-owner"), Err(AuthorityTrustError::Invalid));
+        assert_eq!(
+            frontier.load("peer-selected-owner"),
+            Err(AuthorityTrustError::Invalid)
+        );
         owners.push(owner);
         frontiers.push(frontier);
     }
-    Ok(RegisteredConsumers { agent, signer, local, owners, frontiers })
+    Ok(RegisteredConsumers {
+        agent,
+        signer,
+        local,
+        owners,
+        frontiers,
+    })
 }
 
 #[inline(never)]
@@ -207,19 +275,31 @@ fn claim_and_enter(
     verifier: Arc<dyn ProductionAuthorityVerifier>,
     authority: ProductionAuthorityLease,
 ) -> Result<String, QualificationError> {
-    let RegisteredConsumers { agent, signer, local, owners, frontiers } = consumers;
+    let RegisteredConsumers {
+        agent,
+        signer,
+        local,
+        owners,
+        frontiers,
+    } = consumers;
     verifier.verify(&authority, &agent)?;
     let mut committed = Vec::new();
     for ((owner, frontier), grant) in owners.iter().zip(&frontiers).zip(grants) {
         let token = owner.claim(&grant, &binding)?;
         owner.enter_verified_use(token, &binding)?;
-        assert!(matches!(owner.claim(&grant, &binding), Err(FinalUseError::AlreadyClaimed)));
+        assert!(matches!(
+            owner.claim(&grant, &binding),
+            Err(FinalUseError::AlreadyClaimed)
+        ));
         let actual = owner.frontier()?;
         assert_eq!(frontier.load(&signer)?, actual);
         committed.push(actual);
     }
     assert_ne!(committed[0], committed[1]);
     verifier.verify(&authority, &agent)?;
-    std::fs::write(local.join("qualified-frontiers.json"), serde_json::to_vec(&committed)?)?;
+    std::fs::write(
+        local.join("qualified-frontiers.json"),
+        serde_json::to_vec(&committed)?,
+    )?;
     Ok(signer)
 }

@@ -1,9 +1,9 @@
 //! No-effect service qualification; this does not construct a production writer.
 
 use super::qualification::exchange;
-use codex_hepta_memory::CognitiveCheckpointPhase;
-use codex_hepta_memory::CognitiveCheckpointResponse;
-use codex_hepta_memory::CognitiveCheckpointStatus;
+use codex_hepta_authority_types::CognitiveCheckpointPhase;
+use codex_hepta_authority_types::CognitiveCheckpointResponse;
+use codex_hepta_authority_types::CognitiveCheckpointStatus;
 use std::os::unix::net::UnixStream;
 
 pub(super) fn qualify(stream: &mut UnixStream) -> Result<(), Box<dyn std::error::Error>> {
