@@ -47,9 +47,7 @@ struct Fixture {
 
 impl Fixture {
     async fn new() -> anyhow::Result<Self> {
-        let temp = tempfile::Builder::new()
-            .prefix("hmx-lifecycle-")
-            .tempdir_in("/tmp")?;
+        let temp = control_test_directory("hmx-lifecycle-")?;
         let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
         let layout = HeptaFleetRoot::parse(temp.path().canonicalize()?)?
             .layout()

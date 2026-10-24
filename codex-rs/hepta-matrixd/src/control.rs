@@ -554,6 +554,17 @@ pub enum MatrixdControlError {
 }
 
 #[cfg(test)]
+fn control_test_directory(prefix: &str) -> std::io::Result<tempfile::TempDir> {
+    // Keep Darwin's short socket path fixture while using the platform temp
+    // directory on Windows, where an absolute /tmp directory does not exist.
+    #[cfg(unix)]
+    let root = std::path::PathBuf::from("/tmp");
+    #[cfg(not(unix))]
+    let root = std::env::temp_dir();
+    tempfile::Builder::new().prefix(prefix).tempdir_in(root)
+}
+
+#[cfg(test)]
 mod tests {
     use std::error::Error;
     use std::fs;
@@ -907,9 +918,7 @@ mod tests {
         // The product fleet root deliberately leaves Darwin `sun_path`
         // headroom. The SSD test harness uses a much deeper TMPDIR, so put
         // this socket-binding fixture under the canonical short temp root.
-        let temp = tempfile::Builder::new()
-            .prefix("hmx-control-")
-            .tempdir_in("/tmp")?;
+        let temp = control_test_directory("hmx-control-")?;
         let fake = Arc::new(FakeTransport::default());
         let (state, connections) = state(&temp, fake).await?;
         connections.set_agentd_connected(/*connected*/ false);

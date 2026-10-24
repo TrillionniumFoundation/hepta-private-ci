@@ -887,6 +887,39 @@ resolve the original Windows failures. Exact-source Windows native CI is pending
 including the separate unsupported private-owner backend boundary;
 these handle repairs do not qualify owner SID/DACL checks or FinalUse durability.
 
+The full native Windows ARM tests for the preserved source
+`797daea26ccb53202e9c6b84d9bc5fcc2d77ef04` and actual GitHub original-base
+preview `18e9703ec14b6b22f13bae5aecb16795b6218d10` remain red:
+[source run](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40076783217),
+[preview run](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40076829654).
+Across the seven executed shard lanes, 31,469 case executions passed, 614 failed
+and 61 timed out; these are lane executions, not distinct tests. The fourth
+source shard never ran project tests because its archive download failed.
+The 150 additional inventory entries absent from the complete preview's executed
+set remain unexplained. Neither missing group is accepted as passing or waived.
+Private-owner construction, parent delete-child access, effective anonymous
+impersonation level, directory volume reopening and other original failures
+remain separate PN0 blockers; the original eight-second terminal deadline and
+all assertions stay required.
+
+The same PN0 signature-portability slice now uses one bounded in-process verifier
+in `hepta-operator-acceptance::sshsig` for operator and G5 read-only trust
+verification. It checks SSHSIG V1 framing, exact pinned raw Ed25519 key and
+principal, exact nonempty namespace, SHA-256/SHA-512 and strict Ed25519 signatures.
+The policy digest, revocation checks, signature schema and authority flags are
+unchanged. It removes the production Unix-descriptor and executable-path
+dependency. Test fixtures still require real OpenSSH: Unix uses the original OS
+path; Windows obtains the system directory from the OS, without a PATH or
+SystemRoot fallback. All 25 package tests pass on Linux, including OpenSSH
+interoperability, altered message/principal/domain/key, every binary packet byte
+mutation, every truncation and trailing data. MSVC checking is not native
+acceptance. Windows execution, the existing unsupported private-owner guard and
+all original signed-consumer controls remain required; this verifier alone grants
+no acceptance or promotion authority. The two Matrix control fixtures use the
+platform temporary directory on Windows and retain the short Unix socket root;
+all 40 Matrixd tests pass on Linux. That fixture repair does not establish Windows
+peer identity or durable owner support.
+
 Within this existing PN0/P0 Windows storage item, the small
 `utils/windows-private-state` utility supplies OS mechanisms without importing the
 sandbox, C++/V8, serialization or protocol stack. Its current C1 mechanisms and C2a
