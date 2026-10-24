@@ -225,7 +225,8 @@ async fn wait_for_python_repl_ready_via_probe(
 
     while tokio::time::Instant::now() < deadline {
         writer
-            .send(format!("print('{marker}'){newline}").into_bytes())
+            // Split the marker so terminal input echo cannot satisfy readiness.
+            .send(format!("print('__codex_pty_' + 'ready__'){newline}").into_bytes())
             .await?;
 
         let probe_deadline = tokio::time::Instant::now() + probe_window;
