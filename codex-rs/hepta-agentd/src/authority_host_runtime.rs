@@ -63,17 +63,49 @@ pub struct HostAuthorityInitialized {
     pub production_ready: bool,
 }
 
+/// Preserve the original error and kind while identifying the failed bootstrap
+/// stage. This adds diagnostics only; no partial state is reset or retried.
+#[derive(Debug)]
+struct InitializationFailure {
+    stage: &'static str,
+    source: io::Error,
+}
+
+impl std::fmt::Display for InitializationFailure {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            formatter,
+            "host authority initialization ({}) failed: {}",
+            self.stage, self.source
+        )
+    }
+}
+
+impl std::error::Error for InitializationFailure {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(&self.source)
+    }
+}
+
+fn initialization_failure(stage: &'static str, source: io::Error) -> io::Error {
+    io::Error::new(source.kind(), InitializationFailure { stage, source })
+}
+
 /// Fresh explicit administrator authorization, not a cut/recovery witness.
 /// Existing or partial state is never overwritten or reset after failure.
 pub fn initialize_host_authority(
     state: &Path,
     bootstrap_file: &Path,
 ) -> io::Result<HostAuthorityInitialized> {
-    let bootstrap: HostAuthorityBootstrap = read_root_json(bootstrap_file)?;
+    let bootstrap: HostAuthorityBootstrap = read_root_json(bootstrap_file)
+        .map_err(|error| initialization_failure("read bootstrap", error))?;
     if bootstrap.schema_version != 1 || !(1..=86_400_000).contains(&bootstrap.lease_lifetime_ms) {
         return Err(io::Error::other("invalid bootstrap"));
     }
-    bootstrap.required_bind.verify()?;
+    bootstrap
+        .required_bind
+        .verify()
+        .map_err(|error| initialization_failure("verify required bind", error))?;
     if !state.starts_with(&bootstrap.required_bind.mountpoint)
         || state == bootstrap.required_bind.mountpoint
     {
@@ -86,38 +118,58 @@ pub fn initialize_host_authority(
             .parent()
             .ok_or_else(|| io::Error::other("missing parent"))?,
     )
-    .map_err(io::Error::other)?;
-    std::fs::DirBuilder::new().mode(0o700).create(state)?;
+    .map_err(|error| initialization_failure("open state parent", io::Error::other(error)))?;
+    std::fs::DirBuilder::new()
+        .mode(0o700)
+        .create(state)
+        .map_err(|error| initialization_failure("create state directory", error))?;
     File::open(
         state
             .parent()
             .ok_or_else(|| io::Error::other("missing parent"))?,
-    )?
-    .sync_all()?;
-    let root = RootAuthorityDirectory::open(state).map_err(io::Error::other)?;
+    )
+    .map_err(|error| initialization_failure("open state parent for sync", error))?
+    .sync_all()
+    .map_err(|error| initialization_failure("sync state parent", error))?;
+    let root = RootAuthorityDirectory::open(state)
+        .map_err(|error| initialization_failure("open state directory", io::Error::other(error)))?;
     let clock = Arc::new(
         HostAuthorityClock::initialize(root.clone(), CLOCK_OWNER.into())
-            .map_err(io::Error::other)?,
+            .map_err(|error| initialization_failure("initialize clock", io::Error::other(error)))?,
     );
     let frontier = Arc::new(
         HostAuthorityFrontierStore::initialize(
             root,
             LEASE_OWNER.into(),
-            AuthorityLeaseFrontier::for_empty_epoch(1).map_err(io::Error::other)?,
+            AuthorityLeaseFrontier::for_empty_epoch(1).map_err(|error| {
+                initialization_failure("construct initial lease frontier", io::Error::other(error))
+            })?,
         )
-        .map_err(io::Error::other)?,
+        .map_err(|error| {
+            initialization_failure("initialize lease frontier", io::Error::other(error))
+        })?,
     );
     let lease_path = state.join("leases");
-    std::fs::DirBuilder::new().mode(0o700).create(&lease_path)?;
-    File::open(state)?.sync_all()?;
+    std::fs::DirBuilder::new()
+        .mode(0o700)
+        .create(&lease_path)
+        .map_err(|error| initialization_failure("create lease directory", error))?;
+    File::open(state)
+        .map_err(|error| initialization_failure("open state for lease sync", error))?
+        .sync_all()
+        .map_err(|error| initialization_failure("sync lease parent", error))?;
     let leases = AuthorityLeaseRegistry::open_state_dir_with_trust(
         &lease_path,
         LEASE_OWNER.into(),
         clock.clone(),
         frontier,
     )
-    .map_err(io::Error::other)?;
-    let now = clock.now_unix_ms().map_err(io::Error::other)?;
+    .map_err(|error| {
+        initialization_failure("open original lease registry", io::Error::other(error))
+    })?;
+    let now = clock.now_unix_ms().map_err(|error| {
+        initialization_failure("read clock for initial lease", io::Error::other(error))
+    })?;
     let expiry = now
         .checked_add(bootstrap.lease_lifetime_ms)
         .ok_or_else(|| io::Error::other("lease expiry overflow"))?;
@@ -134,7 +186,7 @@ pub fn initialize_host_authority(
             },
             0,
         )
-        .map_err(io::Error::other)?;
+        .map_err(|error| initialization_failure("put initial lease", io::Error::other(error)))?;
     let issuer = DeploymentFinalUseIssuer::create_protected(
         &state.join("issuer"),
         bootstrap.signer_id.clone(),
@@ -143,11 +195,15 @@ pub fn initialize_host_authority(
         leases.verifier(),
         bootstrap.lease_id.clone(),
         1,
-    )?;
+    )
+    .map_err(|error| initialization_failure("create protected issuer", error))?;
     Ok(HostAuthorityInitialized {
         schema_version: 1,
         signer_id: bootstrap.signer_id,
-        verifying_key: issuer.trust_key()?.verifying_key,
+        verifying_key: issuer
+            .trust_key()
+            .map_err(|error| initialization_failure("read initial issuer trust key", error))?
+            .verifying_key,
         lease_id: bootstrap.lease_id,
         lease_revision: 1,
         production_ready: false,

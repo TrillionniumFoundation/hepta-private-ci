@@ -54,8 +54,12 @@ fn control_reader_rejects_shared_write_symlink_and_fifo_inodes() -> Result<(), F
     std::os::unix::fs::symlink(&retained, manifest)?;
     assert!(fleet.registry.load_agent(&agent).is_err());
     fs::remove_file(manifest)?;
-    rustix::fs::mkfifo(manifest, rustix::fs::Mode::from_bits_truncate(0o600))
-        .map_err(std::io::Error::from)?;
+    rustix::fs::mkfifoat(
+        rustix::fs::CWD,
+        manifest,
+        rustix::fs::Mode::from_bits_truncate(0o600),
+    )
+    .map_err(std::io::Error::from)?;
     // Opening occurs before fstat now: O_NONBLOCK is necessary to reject a
     // FIFO rather than waiting forever for a writer to an untrusted pathname.
     assert!(fleet.registry.load_agent(&agent).is_err());

@@ -399,7 +399,7 @@ impl Fixture {
         });
         assert_ne!(dirty_cut, original_cut);
         config.writer = Some(old_writer.clone());
-        consumer_fixture::initialize(&mut config);
+        consumer_fixture::initialize_with_owner(&mut config, clock.clone(), issuer.as_ref());
         leases
             .revoke(
                 &old_writer.authority_lease.lease_id,

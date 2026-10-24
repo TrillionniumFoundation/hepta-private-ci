@@ -31,6 +31,19 @@ pub(super) fn root_peer_fd(command: &mut Command) -> std::os::fd::OwnedFd {
 
 pub(super) fn initialize(config: &mut HostAuthorityServiceConfig) {
     let (clock, _leases, issuer) = open_registered_issuer(config).unwrap();
+    initialize_with_owner(config, clock, issuer.as_ref());
+}
+
+/// Reuse the fixture's already-held canonical owner. A second registry open
+/// must keep failing its exclusive lock; initialization is not a lock reset.
+pub(super) fn initialize_with_owner(
+    config: &mut HostAuthorityServiceConfig,
+    clock: Arc<codex_hepta_contracts::HostAuthorityClock>,
+    issuer: &crate::DeploymentFinalUseIssuer,
+) {
+    let key = issuer.trust_key().unwrap();
+    assert_eq!(key.key_id, config.signer_id);
+    assert_eq!(key.verifying_key, config.expected_verifying_key);
     let writer = config.writer.as_ref().unwrap();
     let head = issuer.revocations().unwrap();
     let device = HostAuthorityConsumerConfig {
@@ -88,8 +101,11 @@ pub(super) fn release(
     preheld_host_pidfd: &std::os::fd::OwnedFd,
 ) -> Option<HostAuthorityService> {
     let captured = config.consumers.as_ref().map(|_| {
-        let (service, bundle) = bootstrap::capture(config, registration,
-            preheld_host_pidfd.try_clone().unwrap());
+        let (service, bundle) = bootstrap::capture(
+            config,
+            registration,
+            preheld_host_pidfd.try_clone().unwrap(),
+        );
         let mut sealed = crate::seal_host_authority_bootstrap(&bundle).unwrap();
         let mut bytes = Vec::new();
         std::io::Read::read_to_end(&mut sealed, &mut bytes).unwrap();

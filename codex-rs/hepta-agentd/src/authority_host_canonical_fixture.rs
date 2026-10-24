@@ -216,7 +216,7 @@ impl Fixture {
             .unwrap();
         assert_eq!(first_proof.claims.sequence, 1);
         config.writer = Some(first_writer.clone());
-        consumer_fixture::initialize(&mut config);
+        consumer_fixture::initialize_with_owner(&mut config, clock.clone(), issuer.as_ref());
         let checkpoint = config.state_dir.join("checkpoint");
         let archive = config.state_dir.join("material");
         for path in [&checkpoint, &archive] {
