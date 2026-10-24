@@ -46,6 +46,8 @@ class ProspectiveDatasetTests(unittest.TestCase):
             data = json.loads((root / "dataset/dataset.json").read_bytes())
             self.assertEqual(audit["proposed_actions"], 3)
             self.assertEqual(audit["physical_commands"], 6)
+            self.assertEqual(audit["complete_command_observations"], 6)
+            self.assertTrue(all(a["pair_cost_complete"] for a in data["proposal_registry"][0]["actions"]))
             self.assertCountEqual([r["labels"][TASK] for r in data["rows"]], [1, 0, None])
             for before, after in zip(original["rows"], data["rows"]):
                 self.assertEqual({k: v for k, v in after.items() if k not in ("labels", "outcome_provenance")},

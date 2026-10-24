@@ -37,7 +37,7 @@ def build_dataset(inputs_path, executions, output):
             or set(summary["case_results"]) != set(inputs["case_bindings"])):
         raise ValueError("complete proposal-matched execution condition required")
     rows = {r["source_id"]: copy.deepcopy(r) for r in inputs["rows"]}
-    registry, reasons, by_project, command_count = [], Counter(), {}, 0
+    registry, reasons, by_project, command_count, observation_count = [], Counter(), {}, 0, 0
     for group, binding in inputs["case_bindings"].items():
         stem = binding["project"] + "-" + str(binding["bug_id"])
         directory = executions / stem
@@ -47,6 +47,7 @@ def build_dataset(inputs_path, executions, output):
             raise ValueError("observations differ from completed condition")
         pins[str(directory / "result.json")] = result_sha
         command_count += result["physical_command_executions"]
+        observation_count += result["complete_command_observations"]
         project = by_project.setdefault(binding["project"], Counter())
         project["proposed_groups"] += 1
         actions = []
@@ -66,6 +67,9 @@ def build_dataset(inputs_path, executions, output):
                 "recorded_pair_wall_ns": sum(p["wall_ns"] for p in pair.values()),
                 "physical_command_executions": result["action_launch_counts"][key],
                 "complete_command_observations": len(pair),
+                "pair_cost_complete": len(pair) == 2 and result["action_launch_counts"][key] == 2,
+                "known_unreturned_observer_wall_ns": sum(error["partial_observation"]["wall_ns"]
+                    for error in result["errors"] if error.get("action") == key and "partial_observation" in error),
                 "case_result_sha256": result_sha})
             if candidate["source_id"] is not None:
                 row = rows[candidate["source_id"]]
@@ -100,7 +104,8 @@ def build_dataset(inputs_path, executions, output):
     audit = {"schema": "hepta.prospective-action-label-audit.v1", "dataset_sha256": sha_file(path),
         "input_dataset_sha256": data["input_dataset_sha256"], "proposed_groups": len(registry),
         "proposed_actions": sum(len(p["actions"]) for p in registry), "source_available_rows": len(ordered),
-        "physical_commands": command_count, "unavailable_outcome_reasons": dict(reasons),
+        "physical_commands": command_count, "complete_command_observations": observation_count,
+        "unavailable_outcome_reasons": dict(reasons),
         "by_project": {key: dict(value) for key, value in sorted(by_project.items())},
         "all_predictor_fields_unchanged": True, "observed_unknowns_relabelled_negative": False}
     (output / "audit.json").write_bytes(canonical(audit))
