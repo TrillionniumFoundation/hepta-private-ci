@@ -5,12 +5,15 @@ on:
     paths:
       - 'qa/stem-bakeoff/memory_nine_arm_gate.py'
       - 'qa/stem-bakeoff/memory_nine_arm_training_cost.py'
+      - 'qa/stem-bakeoff/memory_nine_arm_two_phase.py'
+      - 'qa/stem-bakeoff/test_memory_nine_arm_two_phase.py'
       - 'qa/stem-bakeoff/test_memory_nine_arm_training_cost.py'
       - 'qa/stem-bakeoff/test_memory_nine_arm_gate.py'
       - 'qa/stem-bakeoff/memory_nine_arm_existing_evidence.py'
       - 'qa/stem-bakeoff/test_memory_nine_arm_existing_evidence.py'
       - 'qa/stem-bakeoff/MEMORY_NINE_ARM_QUALIFICATION.md'
       - 'docs/learning/MEMORY_A_I_CLOSURE_LEDGER_20261023.md'
+      - 'docs/learning/MEMORY_A_I_TWO_PHASE_FREEZE.md'
       - '.github/workflows/hepta-memory-nine-arm-shadow.yml'
   workflow_dispatch:
 
@@ -37,13 +40,15 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
           git diff --check
-      - name: Audit nine-arm refusal and frozen input shape
+      - name: Audit nine-arm refusal, both immutable freezes and learning costs
         run: |
           set -euo pipefail
           python3 -m py_compile qa/stem-bakeoff/memory_nine_arm_gate.py \
             qa/stem-bakeoff/memory_nine_arm_training_cost.py \
+            qa/stem-bakeoff/memory_nine_arm_two_phase.py \
             qa/stem-bakeoff/test_memory_nine_arm_training_cost.py \
             qa/stem-bakeoff/test_memory_nine_arm_gate.py \
+            qa/stem-bakeoff/test_memory_nine_arm_two_phase.py \
             qa/stem-bakeoff/memory_nine_arm_existing_evidence.py \
             qa/stem-bakeoff/test_memory_nine_arm_existing_evidence.py
           python3 -m unittest discover -s qa/stem-bakeoff \
@@ -52,6 +57,8 @@ jobs:
             -p 'test_memory_nine_arm_existing_evidence.py' -v
           python3 -m unittest discover -s qa/stem-bakeoff \
             -p 'test_memory_nine_arm_training_cost.py' -v
+          python3 -m unittest discover -s qa/stem-bakeoff \
+            -p 'test_memory_nine_arm_two_phase.py' -v
           python3 qa/stem-bakeoff/memory_nine_arm_existing_evidence.py
       - name: No uncommitted mutation
         if: always()
