@@ -66,7 +66,7 @@ impl ControlProfile for NotesControlProfile {
 
 pub(crate) struct AgentdControlServer {
     listener: UnixListener,
-    socket_path: PathBuf,
+    owned_socket_path: Option<PathBuf>,
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
     connections: Arc<Semaphore>,
@@ -85,7 +85,25 @@ impl AgentdControlServer {
         set_owner_only(&socket_path).await?;
         Ok(Self {
             listener,
-            socket_path,
+            owned_socket_path: Some(socket_path),
+            state,
+            cancellation,
+            connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
+        })
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn from_root_bound(
+        socket: std::os::fd::OwnedFd,
+        socket_path: &Path,
+        state: Arc<AgentdState>,
+        cancellation: CancellationToken,
+    ) -> Result<Self, AgentdError> {
+        let socket = crate::listen_root_bound_socket(socket, socket_path)?;
+        let listener = UnixListener::from_inherited(socket, socket_path)?;
+        Ok(Self {
+            listener,
+            owned_socket_path: None,
             state,
             cancellation,
             connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
@@ -107,6 +125,10 @@ impl AgentdControlServer {
                 _ = self.cancellation.cancelled() => return Ok(()),
                 accepted = self.listener.accept() => accepted?,
             };
+            #[cfg(target_os = "linux")]
+            if self.owned_socket_path.is_none() && stream.ensure_current_user_or_root_peer().is_err() {
+                continue;
+            }
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
                 let mut stream = stream;
                 let _ = timeout(OVERLOAD_WRITE_TIMEOUT, async {
@@ -127,12 +149,13 @@ impl AgentdControlServer {
 
 impl Drop for AgentdControlServer {
     fn drop(&mut self) {
-        if let Err(error) = std::fs::remove_file(&self.socket_path)
+        let Some(path) = &self.owned_socket_path else { return; };
+        if let Err(error) = std::fs::remove_file(path)
             && error.kind() != ErrorKind::NotFound
         {
             eprintln!(
                 "failed to remove agentd control socket {}: {error}",
-                self.socket_path.display()
+                path.display()
             );
         }
     }

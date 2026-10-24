@@ -24,6 +24,51 @@ after dropping credentials. This preserves Root custody of `run/` and the
 Registry lifecycle while the peer credentials identify the actual Agentd. A
 Root-listening socket would carry the wrong peer credentials. The production
 path must not unlink and rebind those paths as the Agentd user.
+
+The Linux implementation is `bind_root_agentd_socket` → inherited FD →
+`AgentdConfig::with_root_bound_sockets` → the original `RuntimeTasks` control
+and App Server workers. Root's bind helper creates only a new Unix stream
+socket, sets that socket node to the dedicated UID/GID and `0600`, and returns
+without calling `listen`. It refuses existing paths and never changes a
+directory. Root retains pathname cleanup. Its parent chain must be canonical,
+Root-owned and have no group/other write permission; ordinary shared `/tmp`
+does not qualify, even with a private descendant.
+
+The child retains the original Root-created socket inode and validates the
+exact original control/App Server path, the private node, an unconnected stream
+type and `SO_ACCEPTCONN=0`. The shared original credential validator requires
+all real/effective/saved IDs to equal the dedicated owner, no supplementary
+groups or capabilities, and NoNewPrivileges. Runtime then calls
+`listen_root_bound_socket` as that owner and adopts the descriptor through
+`codex-uds`; a descriptor already listened on by Root is refused. The same
+function supplies the fixed Notes UI path. The actual socket pathname and
+protected parent are rechecked around listen without modifying either.
+
+App Server enters `run_main_with_inherited_unix_listener`, the same original
+runtime with an explicit retained listener. It skips ordinary path preparation,
+stale-path probing, binding, permission repair and pathname cleanup. The
+original Agentd control server also leaves Root paths intact. Both inherited
+control transports admit only the dedicated UID or actual UID0 supervisor
+before reading protocol bytes, preserving Root's existing private-path access.
+The Notes UI separately keeps its stricter exact Session PID/UID/pidfd gate.
+
+The inherited App Server entry retains a shutdown guard across its fallible
+startup. If authentication/configuration startup fails after the acceptor was
+spawned, or the embedding cancels its future, the original cancellation token
+closes the acceptor and its active or incomplete WebSocket connections. The
+original WebSocket worker handles abort their child read/write tasks on drop,
+including tasks blocked in I/O. Merely dropping a JoinHandle would detach
+those tasks. None of these exit paths unlinks the Root rendezvous. Root must
+close any producer copies after transferring the child descriptors, so a
+producer copy cannot extend a failed or departed child's listener lifetime.
+
+The socket descriptor's creator UID, its exact bound address and exclusive Root
+pathname custody establish this handoff boundary. Linux socket-fd inode numbers
+and filesystem socket-node inode numbers are different and must not be compared
+as if they were the same inode. The unprivileged consumer does not use
+`SIOCUNIXFILE`, whose kernel implementation requires `CAP_NET_ADMIN`; it never
+regains that capability. Root remains the trusted pathname owner and must not
+replace its rendezvous behind the retained descriptor.
 Linux documents the credential capture points in
 [unix(7)](https://man7.org/linux/man-pages/man7/unix.7.html); its
 [AF_UNIX implementation](https://github.com/torvalds/linux/blob/master/net/unix/af_unix.c)
@@ -219,6 +264,8 @@ Use the repository's `just test` entry, with separate scopes for the layers:
 
 ```text
 just test -p codex-mcp retained_binding
+just test -p codex-uds --lib inherited
+just test -p codex-app-server-transport --lib inherited_socket
 just test -p codex-app-server --lib configured_mcp_runtime
 just test -p codex-hepta-agentd --lib production_launcher
 just test -p codex-hepta-agentd --lib android_runtime
@@ -231,3 +278,17 @@ sets `test = false`, so a passing library test does not compile the main entry.
 Run `just fmt` and the changed-crate `just fix` as required by the repository;
 dependency changes also require the original Bazel lock update. Record actual
 commands and exit states instead of inferring success from a quiet log.
+
+The ignored
+`root_bound_socket::tests::original_root_bound_listener_preserves_peer_identity_and_path_custody`
+is a separate actual-Root component check. Give it `HEPTA_SOCKET_TEST_ROOT`
+pointing to an explicitly isolated, traversable Root-owned parent with a short
+path (for example a newly provisioned directory beneath `/run`). It creates
+only its own temporary fixtures and launches the same test executable through
+the existing `/usr/bin/setpriv` to dedicated fixture UID/GID 60001 with zero
+groups/capabilities and NoNewPrivileges. It checks the actual child's
+SO_PEERCRED UID/GID/PID, the original UDS exchange, unchanged Root directory and
+socket nodes, peer unlink denial, wrong-path refusal, and rejection of an
+already Root-listening descriptor. Ordinary non-Root source tests do not run or
+qualify this ignored check. It is not a Root authority, application receipt or
+production device-effect qualification.

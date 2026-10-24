@@ -13,6 +13,10 @@ use codex_hepta_paths::HeptaFleetRoot;
 
 use crate::AgentdError;
 
+#[path = "config_sockets.rs"]
+mod sockets;
+pub(crate) use sockets::AgentdSocketInputs;
+
 #[cfg(target_os = "linux")]
 #[path = "config_root_handoff.rs"]
 mod root_handoff;
@@ -79,6 +83,7 @@ fn cognitive_retrieval_mode_from_process_environment() -> Result<CognitiveRetrie
 
 pub struct AgentdConfig {
     identity: AgentdIdentity,
+    sockets: AgentdSocketInputs,
     registry: FleetRegistry,
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
@@ -207,6 +212,7 @@ impl AgentdConfig {
             },
             registry,
             _writer_lock: writer_lock,
+            sockets: AgentdSocketInputs::Bind,
             authbus_trust_file: None,
             evidence_trust_file: None,
             automation_effect_host_file: None,

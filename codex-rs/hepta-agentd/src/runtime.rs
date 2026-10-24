@@ -40,6 +40,7 @@ pub async fn run(
     arg0_paths: Arg0DispatchPaths,
 ) -> Result<(), AgentdError> {
     let production_operations = config.take_production_operations();
+    let sockets = config.take_socket_inputs();
     #[cfg(target_os = "linux")]
     let notes_ui = config.take_original_notes_ui();
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
@@ -268,12 +269,17 @@ pub async fn run(
     }
     state.mark_runtime_prerequisites_ready()?;
     let cancellation = CancellationToken::new();
-    let control = AgentdControlServer::bind(
-        identity.control_socket.clone(),
-        Arc::clone(&state),
-        cancellation.clone(),
-    )
-    .await?;
+    let (control, app_server_socket) = match sockets {
+        crate::config::AgentdSocketInputs::Bind => (
+            AgentdControlServer::bind(identity.control_socket.clone(), Arc::clone(&state), cancellation.clone()).await?,
+            crate::app_runtime::AppServerSocket::Bind,
+        ),
+        #[cfg(target_os = "linux")]
+        crate::config::AgentdSocketInputs::RootBound { control, app_server } => (
+            AgentdControlServer::from_root_bound(control, &identity.control_socket, Arc::clone(&state), cancellation.clone())?,
+            crate::app_runtime::AppServerSocket::RootBound(app_server),
+        ),
+    };
     // The single task host owns cancellation and joining on every exit path.
     // All fallible owner opens and control binding above precede task startup.
     let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?;
@@ -300,6 +306,7 @@ pub async fn run(
                 cognitive_runtime,
                 app_state,
                 production_writer_host,
+                app_server_socket,
             )
             .await
             .map_err(AgentdError::from)?;

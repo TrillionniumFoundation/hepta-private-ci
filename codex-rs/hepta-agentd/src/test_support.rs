@@ -137,6 +137,7 @@ impl CognitiveTestHost {
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
             /*production_writer_host*/ None,
+            crate::app_runtime::AppServerSocket::Bind,
         ));
 
         let deadline = Instant::now() + READY_TIMEOUT;

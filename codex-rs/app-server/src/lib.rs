@@ -48,6 +48,7 @@ use crate::transport::auth::policy_from_settings;
 use crate::transport::prepare_control_socket_path;
 use crate::transport::route_outgoing_envelope;
 use crate::transport::start_control_socket_acceptor;
+use crate::transport::start_inherited_control_socket_acceptor;
 use crate::transport::start_remote_control;
 use crate::transport::start_stdio_connection;
 use crate::transport::start_websocket_acceptor;
@@ -151,6 +152,12 @@ pub use crate::hepta_local_lifecycle::HEPTA_LOCAL_LIFECYCLE_OWNER_RUNTIME_REGIST
 pub use crate::hepta_local_lifecycle::HeptaLocalDevelopmentLifecycleOwner;
 pub use crate::hepta_local_lifecycle::HeptaLocalDevelopmentLifecycleOwnerError;
 pub use crate::transport::AppServerTransport;
+pub use crate::transport::InheritedControlSocket;
+
+mod inherited_transport;
+pub use inherited_transport::run_main_with_transport_options;
+#[cfg(target_os = "linux")]
+pub use inherited_transport::run_main_with_inherited_unix_listener;
 pub use crate::transport::RemoteControlStartupMode;
 pub use crate::transport::app_server_control_socket_path;
 pub use crate::transport::auth::AppServerWebsocketAuthArgs;
@@ -685,7 +692,7 @@ impl Default for AppServerRuntimeOptions {
 }
 
 #[allow(clippy::too_many_arguments)]
-pub async fn run_main_with_transport_options(
+async fn run_main_with_transport_options_inner(
     arg0_paths: Arg0DispatchPaths,
     cli_config_overrides: CliConfigOverrides,
     loader_overrides: LoaderOverrides,
@@ -695,6 +702,7 @@ pub async fn run_main_with_transport_options(
     session_source: SessionSource,
     auth: AppServerWebsocketAuthSettings,
     runtime_options: AppServerRuntimeOptions,
+    mut inherited_socket: Option<InheritedControlSocket>,
 ) -> IoResult<()> {
     validate_hepta_local_lifecycle_runtime_options(&runtime_options)?;
     let loader_overrides = loader_overrides_with_test_user_config_file(
@@ -850,7 +858,7 @@ pub async fn run_main_with_transport_options(
     codex_core::otel_init::record_process_start(otel.as_ref(), OTEL_SERVICE_NAME);
     codex_core::otel_init::install_sqlite_telemetry(otel.as_ref(), OTEL_SERVICE_NAME);
     let unix_socket_startup_lock = match &transport {
-        AppServerTransport::UnixSocket { socket_path } => {
+        AppServerTransport::UnixSocket { socket_path } if inherited_socket.is_none() => {
             let startup_lock_path = app_server_startup_lock_path(&codex_home)?;
             let startup_lock = acquire_app_server_startup_lock(startup_lock_path).await?;
             prepare_control_socket_path(socket_path.as_path()).await?;
@@ -966,6 +974,14 @@ pub async fn run_main_with_transport_options(
     }
     let installation_id = resolve_installation_id(&config.codex_home).await?;
     let transport_shutdown_token = CancellationToken::new();
+    // An embedding owns the inherited listener's lifetime, including startup
+    // errors after the acceptor has been spawned and cancellation of this
+    // future. Dropping a JoinHandle alone detaches that acceptor. Keep the
+    // original shutdown token fenced to this scope without taking pathname
+    // cleanup ownership or changing the ordinary transport startup behavior.
+    let _inherited_transport_guard = inherited_socket
+        .as_ref()
+        .map(|_| transport_shutdown_token.clone().drop_guard());
     let mut transport_accept_handles = Vec::<JoinHandle<()>>::new();
 
     let single_client_mode = matches!(&transport, AppServerTransport::Stdio);
@@ -985,12 +1001,14 @@ pub async fn run_main_with_transport_options(
             .await?;
         }
         AppServerTransport::UnixSocket { socket_path } => {
-            let accept_handle = start_control_socket_acceptor(
-                socket_path.clone(),
-                transport_event_tx.clone(),
-                transport_shutdown_token.clone(),
-            )
-            .await?;
+            let accept_handle = match inherited_socket.take() {
+                Some(socket) => start_inherited_control_socket_acceptor(
+                    socket, transport_event_tx.clone(), transport_shutdown_token.clone(),
+                ),
+                None => start_control_socket_acceptor(
+                    socket_path.clone(), transport_event_tx.clone(), transport_shutdown_token.clone(),
+                ).await?,
+            };
             transport_accept_handles.push(accept_handle);
         }
         AppServerTransport::WebSocket { bind_address } => {
