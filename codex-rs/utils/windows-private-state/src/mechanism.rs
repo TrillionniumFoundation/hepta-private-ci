@@ -364,3 +364,19 @@ pub(crate) fn create_protected_directory(
         observe,
     )
 }
+
+pub(crate) fn open_existing_owner_directory(
+    root: &File,
+    name: &str,
+    observe: impl FnOnce(OpenObservation),
+) -> io::Result<File> {
+    open_nt(
+        root.as_raw_handle() as HANDLE,
+        leaf_name(name)?,
+        FILE_GENERIC_READ | FILE_GENERIC_WRITE,
+        FILE_SHARE_READ | FILE_SHARE_WRITE,
+        FILE_OPEN,
+        ObjectOpen::Probe(FILE_DIRECTORY_FILE),
+        observe,
+    )
+}

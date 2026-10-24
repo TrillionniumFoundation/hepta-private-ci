@@ -1,4 +1,4 @@
-//! Atomic fresh-directory creation only; no existing-store or journal factory.
+//! Held private-directory roles; existing candidates grant no store authority.
 
 use super::Continuity;
 use super::ParentAnchor;
@@ -20,6 +20,10 @@ use std::sync::MutexGuard;
 /// A failed post-create readback retains the actual new directory and ancestry.
 /// It grants no validated operations; dropping it only closes owned handles.
 pub struct UnverifiedCreatedDirectory {
+    _directory: HeldDirectory,
+}
+
+struct HeldDirectory {
     // Rust drops fields in declaration order: retain ancestry until this closes.
     file: File,
     parent: ParentAnchor,
@@ -60,13 +64,22 @@ pub struct FreshPrivateDirectory {
     context: Arc<Mutex<DirectoryContext>>,
 }
 
+/// An existing held private directory, pending the original store protocol.
+///
+/// This only admits bounded inspection and the subsequent original OS lock.
+/// It does not prove an initialization marker, journal, frontier or authority.
+/// No raw handle, cloning or conversion to the fresh-created role is provided.
+pub struct ExistingPrivateDirectoryCandidate {
+    context: Arc<Mutex<DirectoryContext>>,
+}
+
 struct DirectoryContext {
-    created: UnverifiedCreatedDirectory,
+    directory: HeldDirectory,
     identity: Identity,
     continuity: Continuity,
 }
 
-impl UnverifiedCreatedDirectory {
+impl HeldDirectory {
     fn inspect(&mut self) -> Result<Identity, ValidationError> {
         self.parent.revalidate()?;
         non_inherited(&self.file)?;
@@ -113,27 +126,78 @@ impl ParentAnchor {
             |value| event = Some(value),
         )
         .map_err(|error| CreationFailure::NotAdmitted(error.into()))?;
-        let mut created = UnverifiedCreatedDirectory { parent: self, file };
+        let mut directory = HeldDirectory { parent: self, file };
         let validate = (|| {
             let event = event.ok_or(ValidationError::UnsafeObject)?;
             if event.ntstatus != 0 || event.information != 2 {
                 return Err(ValidationError::UnsafeObject);
             }
-            created.inspect()
+            directory.inspect()
         })();
         match validate {
             Ok(identity) => Ok(FreshPrivateDirectory {
                 context: Arc::new(Mutex::new(DirectoryContext {
-                    created,
+                    directory,
                     identity,
                     continuity: Continuity::Live,
                 })),
             }),
             Err(error) => Err(CreationFailure::Created {
-                directory: Box::new(created),
+                directory: Box::new(UnverifiedCreatedDirectory {
+                    _directory: directory,
+                }),
                 error,
             }),
         }
+    }
+}
+
+impl ParentAnchor {
+    /// Hold an existing private leaf solely for original cold-protocol validation.
+    /// FILE_OPEN never creates, repairs, truncates or resets existing state.
+    pub fn open_existing_candidate(
+        mut self,
+        leaf: &str,
+    ) -> Result<ExistingPrivateDirectoryCandidate, ValidationError> {
+        if leaf.len() > 128 {
+            return Err(ValidationError::UnsafeObject);
+        }
+        mechanism::leaf_name(leaf)?;
+        self.revalidate()?;
+        let mut event = None;
+        let file = mechanism::open_existing_owner_directory(
+            &self
+                .ancestors
+                .last()
+                .ok_or(ValidationError::UnsafeObject)?
+                .file,
+            leaf,
+            |value| event = Some(value),
+        )?;
+        let event = event.ok_or(ValidationError::UnsafeObject)?;
+        if event.ntstatus != 0 || event.information != 1 {
+            return Err(ValidationError::UnsafeObject);
+        }
+        let mut directory = HeldDirectory { file, parent: self };
+        let identity = directory.inspect()?;
+        Ok(ExistingPrivateDirectoryCandidate {
+            context: Arc::new(Mutex::new(DirectoryContext {
+                directory,
+                identity,
+                continuity: Continuity::Live,
+            })),
+        })
+    }
+}
+
+impl ExistingPrivateDirectoryCandidate {
+    /// Re-read held identities, owner descriptor and live primary principal.
+    /// Failure is sticky, including any shared-context poison.
+    pub fn revalidate(&mut self) -> Result<(), ValidationError> {
+        self.context
+            .lock()
+            .map_err(|_| ValidationError::UnsafeObject)?
+            .revalidate()
     }
 }
 
@@ -158,7 +222,7 @@ impl FreshPrivateDirectory {
         context.revalidate()?;
         context.continuity = Continuity::Refused;
         let parent = &context
-            .created
+            .directory
             .parent
             .ancestors
             .last()
@@ -177,7 +241,7 @@ impl FreshPrivateDirectory {
         let mut context = self.lock_context()?;
         context.revalidate()?;
         context.continuity = Continuity::Refused;
-        context.created.file.sync_all()?;
+        context.directory.file.sync_all()?;
         context.continuity = Continuity::Live;
         context.revalidate()
     }
@@ -189,7 +253,7 @@ impl DirectoryContext {
             return Err(ValidationError::UnsafeObject);
         }
         self.continuity = Continuity::Refused;
-        if self.created.inspect()? != self.identity {
+        if self.directory.inspect()? != self.identity {
             return Err(ValidationError::UnsafeObject);
         }
         self.continuity = Continuity::Live;

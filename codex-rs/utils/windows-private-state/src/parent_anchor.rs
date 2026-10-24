@@ -92,7 +92,7 @@ fn non_inherited(file: &File) -> Result<(), ValidationError> {
 
 /// Holds the actual local NTFS ancestry under a live primary administrator.
 ///
-/// This capability supports only subsequent atomic create-only provisioning.
+/// Supports atomic create-only provisioning or unqualified cold-protocol inspection.
 /// It has no arbitrary-File, supplied-SID, receipt, Clone, or Serde constructor,
 /// and exposes no raw handles. It does not adopt an existing private store or
 /// revoke historical handles. Cold store recovery still needs its existing
@@ -197,5 +197,6 @@ mod tests;
 #[path = "fresh_private_directory.rs"]
 mod fresh_private_directory;
 pub use fresh_private_directory::CreationFailure;
+pub use fresh_private_directory::ExistingPrivateDirectoryCandidate;
 pub use fresh_private_directory::FreshPrivateDirectory;
 pub use fresh_private_directory::UnverifiedCreatedDirectory;
