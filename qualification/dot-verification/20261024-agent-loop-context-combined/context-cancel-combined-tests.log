@@ -1,0 +1,8 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+error: failed to download `bitflags v2.13.2`
+
+Caused by:
+  attempting to make an HTTP request, but --offline was specified
+error: command `/workspace/scratch/f24caf690188/hepta-native-dot-resume/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-agent-loop --features context-v2 --locked --offline` exited with code 101
+error: recipe `test` failed on line 89 with exit code 101
