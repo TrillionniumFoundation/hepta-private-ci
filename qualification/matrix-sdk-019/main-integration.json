@@ -1,0 +1,16 @@
+{
+  "kind": "immutable synthetic qualification, not a main-branch merge",
+  "main_commit": "c6f90d48c40f7b5267db587bb3c3f4934f1414a8",
+  "upgrade_input_commit": "209eacd902cb93b8bd94f21814e5c9342f215422",
+  "candidate_commit": "a21a33c9718152ad58867bfc7a35903f359758c0",
+  "candidate_tree": "4951cf27e617f21cbdd9d5f93dbaff52f9def540",
+  "resolutions": [
+    "Retain main's aggregate workflow_call trigger policy and candidate Matrix regression jobs.",
+    "Retain main's existing Clippy policy; replace unused imbl6/SQLite0.18 production patches with the reviewed SDK0.19 adaptations.",
+    "Regenerate Cargo lock from main's lock to preserve unrelated main dependencies.",
+    "Regenerate Bazel lock; it matches the upgrade lock output."
+  ],
+  "verified": ["dependency resolution", "cargo-deny advisories", "cargo-deny bans", "cargo-deny licenses", "cargo-deny sources", "exact local-to-remote tree equality"],
+  "pending": ["pinned current-main hosted Matrix regressions"],
+  "constraints": ["main and prerequisite refs unchanged", "no live stores", "no merge or deployment", "workflow fails if main moves beyond the pinned main commit"]
+}
