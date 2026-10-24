@@ -1,0 +1,57 @@
+{
+  "all_archive_members_verified": true,
+  "all_transport_parts_read_back": true,
+  "archive": {
+    "bytes": 14814570,
+    "parts": [
+      {
+        "bytes": 6291456,
+        "git_blob_sha1": "7c448ccc8c972d4d394a38f96d97b353baa1d1ba",
+        "mode": "100644",
+        "path": "memory-budget-evidence-20261024.tar.gz.part-000",
+        "sha256": "9b96158bbe747965db1faf5f4e1809a0ff7fc37e86a7c9dc668d849ed3888891"
+      },
+      {
+        "bytes": 6291456,
+        "git_blob_sha1": "ef993eda70262a5291248877dd59e3afc1fa458a",
+        "mode": "100644",
+        "path": "memory-budget-evidence-20261024.tar.gz.part-001",
+        "sha256": "8828de7747e583b937321b6c27be26516b0c8d7c165863e79ef7e9133a0cc024"
+      },
+      {
+        "bytes": 2231658,
+        "git_blob_sha1": "3a48fba248914d5f059f0bbd0e5d5a75d60d54dd",
+        "mode": "100644",
+        "path": "memory-budget-evidence-20261024.tar.gz.part-002",
+        "sha256": "8c3f95050aa6f3accdadfe4ab172bd66c83d7c33a4c31b7e9c8101ce04eb309e"
+      }
+    ],
+    "path": "memory-budget-evidence-20261024.tar.gz",
+    "sha256": "585e07975a1edf844e5656917571cfa2713842a9ac462e5d5402a75b58244bbc"
+  },
+  "archive_format": "gzip mtime=0; tar uid/gid/mtime=0; regular files only; member hashes streamed and verified",
+  "archive_manifest_sha256": "0a30566787bb3cfbd3a769fd5ac7707f18d573d00c14459d9bd90b2614b5ad93",
+  "archive_member_count": 783,
+  "artifact_audit_sha256": "da2eb369149b476336b8e0de3932d0e12a3865163567e618cf6bf68ea1f2a3fa",
+  "excluded_external_components": {
+    "base_model": "19 exact files pinned in b-execution-002/launch-dependencies.json and verified in final artifact audit",
+    "codec_engineering_followup": "separate root-owned post-B experiment; not A/B task results or cost",
+    "git_objects_and_caches": "reproducible caches; original source identities and required exact source bytes retained",
+    "python_runtime": "declared inventories and external/runtime-lock-20261024.txt retained; installation is external",
+    "ruff_binary": "external fixed SHA in original source seals; original executed lint logs retained"
+  },
+  "extra_model_or_test_execution": 0,
+  "format_proof_sha256": "fc132a6904b29f92f0390ce1ce79bf9c2ed74a3d8618e06ddc8e7c3fceddcdd9",
+  "model_run_result_sha256": "5cde385cec6f760bda917b882681c04d9d1dd8cc32a34daf239a74bdb88f0ba0",
+  "natural_action_audit_sha256": "fcb4aafdf0bed48bf4eabd0e222029ec188bb40e99969ce862b7d0104a06cdca",
+  "original_reviewed_report_sha256": "3b5573f310a25ec0f08acbbf36b37d934b4d647cf237a70ab89f8f72e24ee446",
+  "original_seal_pin_checks": 313,
+  "original_source_seals_unchanged": true,
+  "package_helper_sha256": "78631ae571be8da4841bf572b09f0d2d7978690438bdd706450a47bb64800dbd",
+  "payload_file_count": 782,
+  "prospective_final_sha256": "fd5b6cb2882a76ea3fb66a9ea37ea6aefe290a66369f6e8aabf34d653b7783aa",
+  "publication_report_sha256": "94d4e915059d3728c449a38764edef12b97c8e4611798b3b1d1820a74fc76525",
+  "schema": "hepta.memory-budget.publication-evidence.v1",
+  "scope": "A historical task/retrieval, frozen B development model arms, and prospective null cohort; no codec follow-up or new model work",
+  "uncompressed_payload_bytes": 41041921
+}
