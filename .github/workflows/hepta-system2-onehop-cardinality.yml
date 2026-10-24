@@ -1,0 +1,149 @@
+name: Hepta System2 frozen Reader evidence-cardinality and salience
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_onehop_cardinality.py"
+      - "scripts/memory_cell/test_system2_onehop_cardinality.py"
+      - "scripts/memory_cell/system2_onehop_cardinality_audit.py"
+      - "scripts/memory_cell/test_system2_onehop_cardinality_audit.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_ONEHOP_CARDINALITY.md"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_ONEHOP_PAIRED_AUDIT.md"
+      - ".github/workflows/hepta-system2-onehop-cardinality.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-onehop-cardinality-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  onehop-cardinality:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+      HEPTA_SYSTEM2_ONEHOP_PARENT: /tmp/frozen-onehop-original.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set up pinned isolated CPU environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/onehop-cardinality
+          python3 -m venv /tmp/onehop-cardinality-python
+          /tmp/onehop-cardinality-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/onehop-cardinality/install-torch.log 2>&1
+          /tmp/onehop-cardinality-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8 > /tmp/onehop-cardinality/install-deps.log 2>&1
+          /tmp/onehop-cardinality-python/bin/pip freeze > /tmp/onehop-cardinality/environment.txt
+      - name: Pin completed 80-call Reader baseline before any new model work
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11751763282/zip > "$HEPTA_SYSTEM2_ONEHOP_PARENT"
+          printf '%s  %s\n' 4e9e48bb266a7390089da5c80172d033d99522b1e786b05fc01973b63275ab03 "$HEPTA_SYSTEM2_ONEHOP_PARENT" | sha256sum -c -
+          /tmp/onehop-cardinality-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          from system2_onehop_cardinality import load_parent
+          audit=load_parent(Path('/tmp/frozen-onehop-original.zip'))
+          Path('/tmp/onehop-cardinality/baseline-audit.json').write_text(json.dumps(
+              dict(archive_sha256=audit['sha256'],original_raw_seal=audit['original_seal'],
+                   manifest_entries=audit['manifest_entries'],raw_answer_count=len(audit['rows'])),
+              indent=2,allow_nan=False)+'\n')
+          print('ONEHOP_HISTORY_VERIFIED',len(audit['rows']))
+          PY
+      - name: Full MemoryCell regressions and strict scoped lint
+        run: |
+          set -euo pipefail
+          if ! /tmp/onehop-cardinality-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/onehop-cardinality/full-regression.log 2>&1; then
+            tail -120 /tmp/onehop-cardinality/full-regression.log
+            exit 1
+          fi
+          tail -6 /tmp/onehop-cardinality/full-regression.log
+          /tmp/onehop-cardinality-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_onehop_cardinality.py scripts/memory_cell/test_system2_onehop_cardinality.py scripts/memory_cell/system2_onehop_reader.py scripts/memory_cell/test_system2_onehop_reader.py scripts/memory_cell/system2_onehop_cardinality_audit.py scripts/memory_cell/test_system2_onehop_cardinality_audit.py | tee /tmp/onehop-cardinality/lint.log
+      - name: Restore exact frozen Reader from signed historical nested source
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          /tmp/onehop-cardinality-python/bin/python - <<'PY'
+          import hashlib, json, shutil, tarfile, zipfile
+          from pathlib import Path, PurePosixPath
+          from native import digest
+          from pretrained import file_inventory
+          from stem_cell_trial import READER
+          from system2_onehop_cardinality import PARENT_MODEL_ZIP_SHA256
+          parent=Path('/tmp/frozen-onehop-original.zip')
+          nested=Path('/tmp/onehop-cardinality-models.zip')
+          with zipfile.ZipFile(parent) as outer:
+              with outer.open('history-models.zip') as source,nested.open('wb') as dest:
+                  shutil.copyfileobj(source,dest)
+          if hashlib.sha256(nested.read_bytes()).hexdigest()!=PARENT_MODEL_ZIP_SHA256:
+              raise ValueError('historical Reader staged-model ZIP changed')
+          with zipfile.ZipFile(nested) as models:
+              if models.namelist()!=['memory-inputs.tar.gz']:
+                  raise ValueError('Reader nested model bundle drift')
+              models.extractall('/tmp')
+          with tarfile.open('/tmp/memory-inputs.tar.gz','r:gz') as tar:
+              members=tar.getmembers()
+              if len(members)>10000 or sum(m.size for m in members)>2*1024**3:
+                  raise ValueError('historical model tree beyond budget')
+              if len({m.name for m in members})!=len(members):
+                  raise ValueError('duplicate tar member')
+              for member in members:
+                  p=PurePosixPath(member.name)
+                  if (p.is_absolute() or '..' in p.parts or not p.parts
+                          or p.parts[0]!='memory-inputs' or not (member.isfile() or member.isdir())):
+                      raise ValueError('unsafe model tar member')
+              chosen=[m for m in members if m.name.startswith('memory-inputs/reader/')]
+              if not chosen:
+                  raise ValueError('missing unchanged Reader')
+              tar.extractall('/tmp',members=chosen,filter='data')
+          reader=Path('/tmp/memory-inputs/reader')
+          if digest(file_inventory(reader))!=READER:
+              raise ValueError('original frozen Reader inventory mismatch')
+          Path('/tmp/onehop-cardinality/reader-inventory.json').write_text(json.dumps(
+              dict(reader_identity=READER,model_files=file_inventory(reader)),indent=2)+'\n')
+          print('HISTORICAL_READER_IMMUTABLE')
+          PY
+      - name: Seven fixed evidence cardinality and source-order interventions
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/onehop-cardinality/resources.txt /tmp/onehop-cardinality-python/bin/python scripts/memory_cell/system2_onehop_cardinality.py "$HEPTA_SYSTEM2_ONEHOP_PARENT" /tmp/memory-inputs/reader /tmp/onehop-cardinality/trial --development > /tmp/onehop-cardinality/execution.log 2>&1 || { tail -120 /tmp/onehop-cardinality/execution.log; exit 1; }
+          tail -1 /tmp/onehop-cardinality/execution.log
+      - name: Independently audit source-bound same-question cardinality results
+        if: always()
+        run: |
+          set -euo pipefail
+          if [ -f /tmp/onehop-cardinality/trial/raw-seal.json ]; then
+            PYTHONPATH=scripts/memory_cell /tmp/onehop-cardinality-python/bin/python scripts/memory_cell/system2_onehop_cardinality_audit.py "$HEPTA_SYSTEM2_ONEHOP_PARENT" /tmp/onehop-cardinality/trial /tmp/onehop-cardinality/paired-audit > /tmp/onehop-cardinality/paired-audit.log 2>&1 || { tail -100 /tmp/onehop-cardinality/paired-audit.log; exit 1; }
+            tail -1 /tmp/onehop-cardinality/paired-audit.log
+          else
+            echo 'PAIRED_AUDIT_UNAVAILABLE: original 140-call trial did not seal; no result is imputed' | tee /tmp/onehop-cardinality/paired-audit-unavailable.log
+          fi
+      - name: Retain exact source and all raw outputs, failures and hashes
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/onehop-cardinality/source
+          git rev-parse HEAD > /tmp/onehop-cardinality/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/onehop-cardinality/tested-tree.txt
+          cp scripts/memory_cell/{system2_onehop_cardinality.py,test_system2_onehop_cardinality.py,system2_onehop_reader.py,system2_multihop_evidence.py,system2_multihop_trial.py,system2_native_receipt.py} /tmp/onehop-cardinality/source/
+          cp scripts/memory_cell/{system2_onehop_cardinality_audit.py,test_system2_onehop_cardinality_audit.py} /tmp/onehop-cardinality/source/
+          cp codex-rs/hepta-ndu/research/{SYSTEM2_ONEHOP_CARDINALITY.md,SYSTEM2_ONEHOP_PAIRED_AUDIT.md} .github/workflows/hepta-system2-onehop-cardinality.yml /tmp/onehop-cardinality/source/
+          (cd /tmp/onehop-cardinality && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-onehop-cardinality
+          path: /tmp/onehop-cardinality
+          if-no-files-found: error

@@ -1,0 +1,71 @@
+name: Hepta System2 Qwen equal-token postseal Reader audit
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_equal_token_postseal_audit.py"
+      - "scripts/memory_cell/test_system2_equal_token_postseal_audit.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_EQUAL_TOKEN_POSTSEAL_AUDIT.md"
+      - ".github/workflows/hepta-system2-equal-token-postseal.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-equal-token-postseal-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  immutable-reader-archive:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      HEPTA_QWEN_EQUAL_TOKEN_ARCHIVE: /tmp/qwen-equal-token-original.zip
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned source-only static checks
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/postseal-python
+          /tmp/postseal-python/bin/pip install ruff==0.15.8 > /tmp/postseal-install.log 2>&1
+          /tmp/postseal-python/bin/pip freeze > /tmp/postseal-environment.txt
+      - name: Acquire immutable completed 200-call model output
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11862571176/zip > "$HEPTA_QWEN_EQUAL_TOKEN_ARCHIVE"
+          printf '%s  %s\n' 90094839a30638f8d47b9047520c455af1a41974e61f3bfbde64b02a10a74802 "$HEPTA_QWEN_EQUAL_TOKEN_ARCHIVE" | sha256sum -c -
+      - name: Run archive tamper regressions and exact source format gates
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/postseal-archive
+          /tmp/postseal-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_system2_equal_token_postseal_audit.py' -v > /tmp/postseal-archive/tests.log 2>&1 || { tail -100 /tmp/postseal-archive/tests.log; exit 1; }
+          tail -5 /tmp/postseal-archive/tests.log
+          /tmp/postseal-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_equal_token_postseal_audit.py scripts/memory_cell/test_system2_equal_token_postseal_audit.py | tee /tmp/postseal-archive/lint.log
+          /tmp/postseal-python/bin/ruff format --check scripts/memory_cell/system2_equal_token_postseal_audit.py scripts/memory_cell/test_system2_equal_token_postseal_audit.py | tee /tmp/postseal-archive/format.log
+      - name: Replay raw Qwen outcome and reject unsupported decoy answers
+        run: |
+          set -euo pipefail
+          /tmp/postseal-python/bin/python scripts/memory_cell/system2_equal_token_postseal_audit.py "$HEPTA_QWEN_EQUAL_TOKEN_ARCHIVE" /tmp/postseal-archive/summary.json | tee /tmp/postseal-archive/result.log
+      - name: Retain sealed source, results and failure diagnostics
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/postseal-archive/source
+          git rev-parse HEAD > /tmp/postseal-archive/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/postseal-archive/tested-tree.txt
+          cp scripts/memory_cell/{system2_equal_token_postseal_audit.py,test_system2_equal_token_postseal_audit.py} /tmp/postseal-archive/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_EQUAL_TOKEN_POSTSEAL_AUDIT.md .github/workflows/hepta-system2-equal-token-postseal.yml /tmp/postseal-archive/source/
+          if [ -f /tmp/postseal-install.log ]; then cp /tmp/postseal-install.log /tmp/postseal-archive/; fi
+          if [ -f /tmp/postseal-environment.txt ]; then cp /tmp/postseal-environment.txt /tmp/postseal-archive/; fi
+          (cd /tmp/postseal-archive && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-equal-token-postseal
+          path: /tmp/postseal-archive
+          if-no-files-found: error

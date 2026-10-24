@@ -1,0 +1,119 @@
+name: Hepta System2 single-hop frozen Reader control
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_onehop_reader.py"
+      - "scripts/memory_cell/test_system2_onehop_reader.py"
+      - "scripts/memory_cell/system2_multihop_stress.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_ONEHOP_READER.md"
+      - ".github/workflows/hepta-system2-onehop-reader.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-onehop-reader-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  frozen-onehop:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned isolated CPU research environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/onehop
+          python3 -m venv /tmp/onehop-python
+          /tmp/onehop-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/onehop/install-torch.log 2>&1
+          /tmp/onehop-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8 > /tmp/onehop/install-deps.log 2>&1
+          /tmp/onehop-python/bin/pip freeze > /tmp/onehop/environment.txt
+      - name: Preserve inherited full suite and static quality gates
+        run: |
+          set -euo pipefail
+          if ! /tmp/onehop-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/onehop/full-regression.log 2>&1; then
+            tail -100 /tmp/onehop/full-regression.log
+            exit 1
+          fi
+          tail -5 /tmp/onehop/full-regression.log
+          /tmp/onehop-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_onehop_reader.py scripts/memory_cell/test_system2_onehop_reader.py scripts/memory_cell/system2_multihop_stress.py | tee /tmp/onehop/lint.log
+      - name: Verify completed multi-hop baseline source, prompt and all immutable receipts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11743040489/zip > /tmp/onehop/previous-completed.zip
+          printf '%s  %s\n' 7a0cb798418e7b00ac5258c26617f05e547be9f4c428bb82fb13428ec98647e2 /tmp/onehop/previous-completed.zip | sha256sum -c -
+          /tmp/onehop-python/bin/python scripts/memory_cell/system2_multihop_completed_audit.py /tmp/onehop/previous-completed.zip /tmp/onehop/previous-audit.json > /tmp/onehop/previous-audit.log 2>&1 || { tail -80 /tmp/onehop/previous-audit.log; exit 1; }
+      - name: Stage historical unchanged frozen Reader from pinned archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/onehop/history-models.zip
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/onehop/history-models.zip | sha256sum -c -
+          PYTHONPATH=scripts/memory_cell /tmp/onehop-python/bin/python - <<'PY'
+          import json
+          import tarfile
+          import zipfile
+          from pathlib import Path, PurePosixPath
+          from native import digest
+          from pretrained import file_inventory
+          from stem_cell_trial import READER
+          with zipfile.ZipFile('/tmp/onehop/history-models.zip') as z:
+              if z.namelist()!=['memory-inputs.tar.gz']:
+                  raise ValueError('historical model bundle layout drift')
+              z.extractall('/tmp')
+          with tarfile.open('/tmp/memory-inputs.tar.gz','r:gz') as t:
+              members=t.getmembers()
+              if len(members)>10000 or sum(m.size for m in members)>2*1024**3:
+                  raise ValueError('model stage size budget')
+              if len({m.name for m in members})!=len(members):
+                  raise ValueError('duplicate archive member')
+              for m in members:
+                  p=PurePosixPath(m.name)
+                  if p.is_absolute() or '..' in p.parts or not p.parts or p.parts[0]!='memory-inputs' or not (m.isfile() or m.isdir()):
+                      raise ValueError('unsafe archive member')
+              reader=[m for m in members if m.name.startswith('memory-inputs/reader/')]
+              if not reader:
+                  raise ValueError('missing original frozen Reader')
+              t.extractall('/tmp',members=reader,filter='data')
+          inventory=file_inventory(Path('/tmp/memory-inputs/reader'))
+          if digest(inventory)!=READER:
+              raise ValueError('frozen Reader inventory drift')
+          Path('/tmp/onehop/reader-inventory.json').write_text(json.dumps(dict(reader_sha256=READER,files=inventory),indent=2))
+          print('FROZEN_READER_PINNED')
+          PY
+      - name: Single-hop direct fact, distractors, and missing evidence with one frozen Reader
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/onehop/resources.txt /tmp/onehop-python/bin/python scripts/memory_cell/system2_onehop_reader.py /tmp/memory-inputs/reader /tmp/onehop/native --development > /tmp/onehop/execution.log 2>&1 || { tail -100 /tmp/onehop/execution.log; exit 1; }
+          tail -1 /tmp/onehop/execution.log
+      - name: Retain exact source, raw output, failure records and SHA256 manifest
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/onehop/source
+          git rev-parse HEAD > /tmp/onehop/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/onehop/tested-tree.txt
+          cp scripts/memory_cell/{system2_onehop_reader.py,test_system2_onehop_reader.py,system2_multihop_stress.py,system2_multihop_evidence.py,system2_multihop_trial.py,system2_multihop_completed_audit.py} /tmp/onehop/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_ONEHOP_READER.md .github/workflows/hepta-system2-onehop-reader.yml /tmp/onehop/source/
+          (cd /tmp/onehop && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-onehop-reader
+          path: /tmp/onehop
+          if-no-files-found: error

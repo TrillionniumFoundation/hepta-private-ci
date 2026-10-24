@@ -1,0 +1,116 @@
+name: Hepta System2 stronger frozen Reader adequacy control
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_reader_capacity_reference.py"
+      - "scripts/memory_cell/test_system2_reader_capacity_reference.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_READER_CAPACITY_REFERENCE.md"
+      - ".github/workflows/hepta-system2-reader-capacity-reference.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-reader-capacity-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  frozen-capacity:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+      HEPTA_CARDINALITY_ARCHIVE: /tmp/onehop-cardinality-140.zip
+      HEPTA_LABEL_ARCHIVE: /tmp/onehop-label-140.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Pinned isolated CPU environment and complete source receipt
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/capacity-reference
+          python3 -m venv /tmp/capacity-python
+          /tmp/capacity-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/capacity-reference/install-torch.log 2>&1
+          /tmp/capacity-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8 > /tmp/capacity-reference/install-deps.log 2>&1
+          /tmp/capacity-python/bin/pip freeze > /tmp/capacity-reference/environment.txt
+      - name: Download both externally pinned historical Reader archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11756357532/zip > "$HEPTA_CARDINALITY_ARCHIVE"
+          printf '%s  %s\n' 9f4a4ed9429212b98befffca27a297780d61317eaed8be519b1cb6880037f121 "$HEPTA_CARDINALITY_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11760345185/zip > "$HEPTA_LABEL_ARCHIVE"
+          printf '%s  %s\n' a278014bae564336fc4d63335154cadbf14febc73620d958f45648b17ca0622a "$HEPTA_LABEL_ARCHIVE" | sha256sum -c -
+      - name: Full MemoryCell regression, pinned baseline audit, strict Python checks
+        run: |
+          set -euo pipefail
+          if ! /tmp/capacity-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/capacity-reference/regression.log 2>&1; then
+            tail -100 /tmp/capacity-reference/regression.log
+            exit 1
+          fi
+          tail -6 /tmp/capacity-reference/regression.log
+          /tmp/capacity-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_reader_capacity_reference.py scripts/memory_cell/test_system2_reader_capacity_reference.py | tee /tmp/capacity-reference/lint.log
+      - name: Stage separate publicly available reference model at exact revision
+        run: |
+          set -euo pipefail
+          PYTHONPATH=scripts/memory_cell /tmp/capacity-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          from huggingface_hub import snapshot_download
+          from pretrained import file_inventory
+          from system2_reader_capacity_reference import MODEL_ID, MODEL_REV, MODEL_FILES
+          if MODEL_ID != 'Qwen/Qwen2.5-0.5B-Instruct' or MODEL_REV != 'a338b55dd21219a5f4da42bc11a9313d1a27d4cc':
+              raise ValueError('unregistered reference model')
+          root=Path('/tmp/capacity-qwen-0.5b')
+          snapshot_download(repo_id=MODEL_ID, revision=MODEL_REV, token=False,
+              local_dir=str(root), allow_patterns=[
+                  'config.json','generation_config.json','tokenizer.json',
+                  'tokenizer_config.json','special_tokens_map.json',
+                  'model.safetensors','merges.txt','vocab.json'],
+              ignore_patterns=['*.bin','*.pt','*.onnx','*.msgpack'])
+          inventory=file_inventory(root)
+          missing=sorted(set(MODEL_FILES)-set(inventory))
+          if missing:
+              raise ValueError('model download missing required files: '+repr(missing))
+          if (not root.joinpath('model.safetensors').is_file() or
+                  root.joinpath('model.safetensors').stat().st_size < 500_000_000):
+              raise ValueError('unexpected strong reference checkpoint size')
+          payload=dict(model_id=MODEL_ID,revision=MODEL_REV,
+                       model_snapshot_inventory=inventory,revision_pinned=True,
+                       untrusted_remote_code_executed=False)
+          Path('/tmp/capacity-reference/reference-inventory.json').write_text(
+              json.dumps(payload,indent=2,sort_keys=True)+'\n')
+          print('REFERENCE_REVISION_PINNED',MODEL_REV,'file_count',len(inventory))
+          PY
+      - name: Stronger frozen Reader versus original 135M answer-only baseline
+        env:
+          PYTHONPATH: scripts/memory_cell
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/capacity-reference/resources.txt /tmp/capacity-python/bin/python scripts/memory_cell/system2_reader_capacity_reference.py "$HEPTA_CARDINALITY_ARCHIVE" "$HEPTA_LABEL_ARCHIVE" /tmp/capacity-qwen-0.5b /tmp/capacity-reference/trial --development > /tmp/capacity-reference/execution.log 2>&1 || { tail -100 /tmp/capacity-reference/execution.log; exit 1; }
+          tail -1 /tmp/capacity-reference/execution.log
+      - name: Preserve exact source, model identity, raw answers and failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/capacity-reference/source
+          git rev-parse HEAD > /tmp/capacity-reference/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/capacity-reference/tested-tree.txt
+          cp scripts/memory_cell/system2_reader_capacity_reference.py scripts/memory_cell/test_system2_reader_capacity_reference.py /tmp/capacity-reference/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_READER_CAPACITY_REFERENCE.md .github/workflows/hepta-system2-reader-capacity-reference.yml /tmp/capacity-reference/source/
+          (cd /tmp/capacity-reference && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-strong-reader-capacity
+          path: /tmp/capacity-reference
+          if-no-files-found: error

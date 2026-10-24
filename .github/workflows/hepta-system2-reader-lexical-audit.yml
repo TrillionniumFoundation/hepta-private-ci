@@ -1,0 +1,88 @@
+name: Hepta System2 sealed 0.5B lexical factorial audit
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_reader_lexical_sealed_audit.py"
+      - "scripts/memory_cell/test_system2_reader_lexical_sealed_audit.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_READER_LEXICAL_SEALED_AUDIT.md"
+      - ".github/workflows/hepta-system2-reader-lexical-audit.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-lexical-audit-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  sealed-lexical-audit:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned offline analysis environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/lexical-sealed-audit
+          python3 -m venv /tmp/lexical-audit-python
+          /tmp/lexical-audit-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/lexical-sealed-audit/install-torch.log 2>&1
+          /tmp/lexical-audit-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8 > /tmp/lexical-sealed-audit/install-deps.log 2>&1
+          /tmp/lexical-audit-python/bin/pip freeze > /tmp/lexical-sealed-audit/environment.txt
+      - name: Verify both external GitHub artifact SHA256 pins
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11784676839/zip > /tmp/factorial-320.zip
+          printf '%s  %s\n' 0fd2a2aa60c0c28bdd61a2566262558410bb66c6997355aa610fe98b89aabc19 /tmp/factorial-320.zip | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11768355664/zip > /tmp/original-qwen-160.zip
+          printf '%s  %s\n' 853afed48368b2c4e562191c7ed6d6bf28492bd80ec95634119b8afc7d43ab37 /tmp/original-qwen-160.zip | sha256sum -c -
+      - name: Full MemoryCell regression and strict new-source Ruff gate
+        run: |
+          set -euo pipefail
+          if ! /tmp/lexical-audit-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/lexical-sealed-audit/regression.log 2>&1; then
+            tail -100 /tmp/lexical-sealed-audit/regression.log
+            exit 1
+          fi
+          tail -5 /tmp/lexical-sealed-audit/regression.log
+          /tmp/lexical-audit-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_reader_lexical_sealed_audit.py scripts/memory_cell/test_system2_reader_lexical_sealed_audit.py | tee /tmp/lexical-sealed-audit/lint.log
+      - name: No-new-model-call factor audit of exact completed 320-answer archive
+        run: |
+          set -euo pipefail
+          PYTHONPATH=scripts/memory_cell /tmp/lexical-audit-python/bin/python scripts/memory_cell/system2_reader_lexical_sealed_audit.py /tmp/factorial-320.zip /tmp/original-qwen-160.zip /tmp/lexical-sealed-audit/summary.json | tee /tmp/lexical-sealed-audit/receipt.log
+          /tmp/lexical-audit-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/lexical-sealed-audit/summary.json')
+          result=json.loads(p.read_text())
+          if result['audited_neural_calls']!=320 or result['new_neural_calls']!=0 or result['question_count']!=20:
+              raise ValueError('factorial audit incomplete')
+          print('PERCENT_ANALYSES',len(result['grouped_effects']))
+          for item in result['grouped_effects']:
+              print('FACTOR_EFFECT',json.dumps(dict(arm=item['arm'],metrics=item['metrics'],cost_by_profile=item['cost_by_profile']),sort_keys=True))
+          PY
+      - name: Retain generating source, journals, environment and manifest
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/lexical-sealed-audit/source
+          git rev-parse HEAD > /tmp/lexical-sealed-audit/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/lexical-sealed-audit/tested-tree.txt
+          cp scripts/memory_cell/{system2_reader_lexical_sealed_audit.py,test_system2_reader_lexical_sealed_audit.py} /tmp/lexical-sealed-audit/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_READER_LEXICAL_SEALED_AUDIT.md .github/workflows/hepta-system2-reader-lexical-audit.yml /tmp/lexical-sealed-audit/source/
+          (cd /tmp/lexical-sealed-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-reader-lexical-sealed-audit
+          path: /tmp/lexical-sealed-audit
+          if-no-files-found: error

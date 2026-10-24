@@ -1,0 +1,120 @@
+name: Hepta System2 Qwen TAG source label and order diagnostic
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_reader_tag_label_order.py"
+      - "scripts/memory_cell/test_system2_reader_tag_label_order.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_READER_TAG_LABEL_ORDER.md"
+      - ".github/workflows/hepta-system2-reader-tag-label-order.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-reader-tag-label-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  frozen-tag-label:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 95
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+      HEPTA_ORIGINAL_QWEN_ARCHIVE: /tmp/qwen-original-160.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned isolated CPU research environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/qwen-tag-label
+          python3 -m venv /tmp/tag-label-python
+          /tmp/tag-label-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/qwen-tag-label/install-torch.log 2>&1
+          /tmp/tag-label-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8 > /tmp/qwen-tag-label/install-deps.log 2>&1
+          /tmp/tag-label-python/bin/pip freeze > /tmp/qwen-tag-label/environment.txt
+      - name: Verify original Qwen artifact and full parent provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11768355664/zip > "$HEPTA_ORIGINAL_QWEN_ARCHIVE"
+          printf '%s  %s\n' 853afed48368b2c4e562191c7ed6d6bf28492bd80ec95634119b8afc7d43ab37 "$HEPTA_ORIGINAL_QWEN_ARCHIVE" | sha256sum -c -
+          PYTHONPATH=scripts/memory_cell /tmp/tag-label-python/bin/python - <<'PY'
+          from pathlib import Path
+          from system2_reader_paired_capacity_audit import open_strong
+          source,plan,rows=open_strong(Path('/tmp/qwen-original-160.zip'))
+          if len(rows)!=160 or plan.get('production_accepted') is not False:
+              raise ValueError('original Qwen Reader source incomplete')
+          print('ORIGINAL_QWEN_160_VERIFIED',len(source)-1)
+          PY
+      - name: Full MemoryCell regression and scoped Ruff checks
+        run: |
+          set -euo pipefail
+          if ! /tmp/tag-label-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/qwen-tag-label/regression.log 2>&1; then
+            tail -120 /tmp/qwen-tag-label/regression.log
+            exit 1
+          fi
+          tail -5 /tmp/qwen-tag-label/regression.log
+          /tmp/tag-label-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_reader_tag_label_order.py scripts/memory_cell/test_system2_reader_tag_label_order.py | tee /tmp/qwen-tag-label/lint.log
+      - name: Verify exact immutable original Qwen weights and tokenizer
+        run: |
+          set -euo pipefail
+          PYTHONPATH=scripts/memory_cell /tmp/tag-label-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          from huggingface_hub import snapshot_download
+          from pretrained import file_inventory
+          from system2_native_receipt import verified_archive, strict_json
+          from system2_reader_capacity_reference import MODEL_ID,MODEL_REV,MODEL_FILES
+          source=verified_archive(Path('/tmp/qwen-original-160.zip'),
+              '853afed48368b2c4e562191c7ed6d6bf28492bd80ec95634119b8afc7d43ab37')
+          inventory=strict_json(source['reference-inventory.json'])
+          if (MODEL_ID!='Qwen/Qwen2.5-0.5B-Instruct' or
+              MODEL_REV!='a338b55dd21219a5f4da42bc11a9313d1a27d4cc'):
+              raise ValueError('Qwen model revision changed')
+          root=Path('/tmp/qwen-tag-label-reader')
+          snapshot_download(repo_id=MODEL_ID,revision=MODEL_REV,local_dir=str(root),
+              token=False,allow_patterns=['config.json','generation_config.json',
+                  'tokenizer.json','tokenizer_config.json','special_tokens_map.json',
+                  'model.safetensors','merges.txt','vocab.json'],
+              ignore_patterns=['*.bin','*.pt','*.onnx','*.msgpack'])
+          actual=file_inventory(root)
+          if (inventory.get('model_id')!=MODEL_ID or
+              inventory.get('revision')!=MODEL_REV or
+              inventory.get('model_snapshot_inventory')!=actual or
+              set(MODEL_FILES)-set(actual)):
+              raise ValueError('original pinned Qwen source/model mismatch')
+          Path('/tmp/qwen-tag-label/reader-inventory.json').write_text(json.dumps(
+              dict(model=MODEL_ID,revision=MODEL_REV,files=actual),indent=2)+'\n')
+          print('EXACT_QWEN_SNAPSHOT_VERIFIED',len(actual))
+          PY
+      - name: Compare JSON E labels and two-source fact order on new fixed TAG questions
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/qwen-tag-label/resources.txt /tmp/tag-label-python/bin/python scripts/memory_cell/system2_reader_tag_label_order.py "$HEPTA_ORIGINAL_QWEN_ARCHIVE" /tmp/qwen-tag-label-reader /tmp/qwen-tag-label/trial --development > /tmp/qwen-tag-label/execution.log 2>&1 || { tail -120 /tmp/qwen-tag-label/execution.log; exit 1; }
+          tail -1 /tmp/qwen-tag-label/execution.log
+      - name: Preserve tested source, raw outputs, failure journals and manifests
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/qwen-tag-label/source
+          git rev-parse HEAD > /tmp/qwen-tag-label/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/qwen-tag-label/tested-tree.txt
+          cp scripts/memory_cell/system2_reader_tag_label_order.py scripts/memory_cell/test_system2_reader_tag_label_order.py /tmp/qwen-tag-label/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_READER_TAG_LABEL_ORDER.md .github/workflows/hepta-system2-reader-tag-label-order.yml /tmp/qwen-tag-label/source/
+          (cd /tmp/qwen-tag-label && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-reader-tag-label-order
+          path: /tmp/qwen-tag-label
+          if-no-files-found: error

@@ -1,0 +1,124 @@
+name: Hepta System2 completed Reader prompt preflight
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_multihop_completed_audit.py"
+      - "scripts/memory_cell/test_system2_multihop_completed_audit.py"
+      - "scripts/memory_cell/system2_multihop_prompt_trial.py"
+      - "scripts/memory_cell/test_system2_multihop_prompt_trial.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_READER_PROMPT_PREFLIGHT.md"
+      - ".github/workflows/hepta-system2-reader-prompt-preflight.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-reader-prompt-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  pinned-reader-prompt-preflight:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+      HEPTA_SYSTEM2_COMPLETED_MULTIHOP_ARCHIVE: /tmp/completed-multihop100.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned research-only CPU environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/system2-prompt-preflight
+          python3 -m venv /tmp/prompt-python
+          /tmp/prompt-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/system2-prompt-preflight/install-torch.log 2>&1
+          /tmp/prompt-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8 > /tmp/system2-prompt-preflight/install-deps.log 2>&1
+          /tmp/prompt-python/bin/pip freeze > /tmp/system2-prompt-preflight/environment.txt
+      - name: Pin actual completed 100-call Reader output, not queued results
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11743040489/zip > "$HEPTA_SYSTEM2_COMPLETED_MULTIHOP_ARCHIVE"
+          printf '%s  %s\n' 7a0cb798418e7b00ac5258c26617f05e547be9f4c428bb82fb13428ec98647e2 "$HEPTA_SYSTEM2_COMPLETED_MULTIHOP_ARCHIVE" | sha256sum -c -
+          /tmp/prompt-python/bin/python scripts/memory_cell/system2_multihop_completed_audit.py "$HEPTA_SYSTEM2_COMPLETED_MULTIHOP_ARCHIVE" /tmp/system2-prompt-preflight/completed-100-audit.json > /tmp/system2-prompt-preflight/completed-audit.log 2>&1
+          tail -1 /tmp/system2-prompt-preflight/completed-audit.log
+      - name: Full MemoryCell regression and exact scoped lint
+        run: |
+          set -euo pipefail
+          if ! /tmp/prompt-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/system2-prompt-preflight/full-regression.log 2>&1; then
+            tail -100 /tmp/system2-prompt-preflight/full-regression.log
+            exit 1
+          fi
+          tail -5 /tmp/system2-prompt-preflight/full-regression.log
+          /tmp/prompt-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_multihop_completed_audit.py scripts/memory_cell/test_system2_multihop_completed_audit.py scripts/memory_cell/system2_multihop_prompt_trial.py scripts/memory_cell/test_system2_multihop_prompt_trial.py | tee /tmp/system2-prompt-preflight/lint.log
+      - name: Restore only the historically pinned Reader weights and tokenizer
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/reader-staged-historical.zip
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/reader-staged-historical.zip | sha256sum -c -
+          /tmp/prompt-python/bin/python - <<'PY'
+          import json, tarfile, zipfile
+          from pathlib import Path, PurePosixPath
+          from native import digest
+          from pretrained import file_inventory
+          from stem_cell_trial import READER
+          with zipfile.ZipFile('/tmp/reader-staged-historical.zip') as z:
+              if z.namelist()!=['memory-inputs.tar.gz']:
+                  raise ValueError('staging layout drift')
+              z.extractall('/tmp')
+          with tarfile.open('/tmp/memory-inputs.tar.gz','r:gz') as tar:
+              members=tar.getmembers()
+              if len(members)>10000 or sum(m.size for m in members)>2*1024**3:
+                  raise ValueError('oversize model archive')
+              if len({m.name for m in members}) != len(members):
+                  raise ValueError('duplicate archive path')
+              for member in members:
+                  path=PurePosixPath(member.name)
+                  if (path.is_absolute() or '..' in path.parts or not path.parts
+                          or path.parts[0]!='memory-inputs'
+                          or not (member.isfile() or member.isdir())):
+                      raise ValueError('unsafe source member')
+              selected=[m for m in members if m.name.startswith('memory-inputs/reader/')]
+              if not selected:
+                  raise ValueError('missing historical Reader')
+              tar.extractall('/tmp',members=selected,filter='data')
+          inventory=file_inventory(Path('/tmp/memory-inputs/reader'))
+          if digest(inventory)!=READER:
+              raise ValueError('frozen Reader weights or tokenizer changed')
+          (Path('/tmp/system2-prompt-preflight')/'reader-inventory.json').write_text(
+              json.dumps(dict(reader_id=READER,files=inventory),indent=2)+'\n')
+          print('HISTORICAL_READER_VERIFIED')
+          PY
+      - name: Compare frozen Reader prompt representation without retraining
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/system2-prompt-preflight/resources.txt /tmp/prompt-python/bin/python scripts/memory_cell/system2_multihop_prompt_trial.py /tmp/memory-inputs/reader "$HEPTA_SYSTEM2_COMPLETED_MULTIHOP_ARCHIVE" /tmp/system2-prompt-preflight/trial --development > /tmp/system2-prompt-preflight/experiment.log 2>&1 || { tail -100 /tmp/system2-prompt-preflight/experiment.log; exit 1; }
+          tail -1 /tmp/system2-prompt-preflight/experiment.log
+      - name: Preserve exact sources and all partial evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/system2-prompt-preflight/source
+          git rev-parse HEAD > /tmp/system2-prompt-preflight/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/system2-prompt-preflight/tested-tree.txt
+          cp scripts/memory_cell/system2_multihop_completed_audit.py scripts/memory_cell/test_system2_multihop_completed_audit.py scripts/memory_cell/system2_multihop_prompt_trial.py scripts/memory_cell/test_system2_multihop_prompt_trial.py /tmp/system2-prompt-preflight/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_READER_PROMPT_PREFLIGHT.md .github/workflows/hepta-system2-reader-prompt-preflight.yml /tmp/system2-prompt-preflight/source/
+          (cd /tmp/system2-prompt-preflight && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-reader-prompt-preflight
+          path: /tmp/system2-prompt-preflight
+          if-no-files-found: error

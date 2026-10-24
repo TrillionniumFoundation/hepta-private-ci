@@ -1,0 +1,77 @@
+name: Hepta System2 completed Reader label archive qualification
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_label_archive_qualification.py"
+      - "scripts/memory_cell/test_system2_label_archive_qualification.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_LABEL_ARCHIVE_QUALIFICATION.md"
+      - ".github/workflows/hepta-system2-label-archive-qualification.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-label-archive-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  archive-qualification:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      HEPTA_SYSTEM2_CARDINALITY_ARCHIVE: /tmp/label-archive-qualification/parent-cardinality.zip
+      HEPTA_SYSTEM2_COMPLETED_LABEL_ARCHIVE: /tmp/label-archive-qualification/completed-label140.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Fetch exact completed model receipts by externally pinned SHA256
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/label-archive-qualification
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11756357532/zip > "$HEPTA_SYSTEM2_CARDINALITY_ARCHIVE"
+          printf '%s  %s\n' 9f4a4ed9429212b98befffca27a297780d61317eaed8be519b1cb6880037f121 "$HEPTA_SYSTEM2_CARDINALITY_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11760345185/zip > "$HEPTA_SYSTEM2_COMPLETED_LABEL_ARCHIVE"
+          printf '%s  %s\n' a278014bae564336fc4d63335154cadbf14febc73620d958f45648b17ca0622a "$HEPTA_SYSTEM2_COMPLETED_LABEL_ARCHIVE" | sha256sum -c -
+      - name: Run standalone tests, scoped Ruff and full source/evidence/Reader provenance audit
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/label-archive-qualification/.venv
+          /tmp/label-archive-qualification/.venv/bin/pip install --disable-pip-version-check ruff==0.15.8 > /tmp/label-archive-qualification/install.log 2>&1
+          /tmp/label-archive-qualification/.venv/bin/python -m unittest discover -s scripts/memory_cell -p 'test_system2_label_archive_qualification.py' -v > /tmp/label-archive-qualification/tests.log 2>&1 || { tail -100 /tmp/label-archive-qualification/tests.log; exit 1; }
+          tail -5 /tmp/label-archive-qualification/tests.log
+          /tmp/label-archive-qualification/.venv/bin/ruff check --select F,E9 scripts/memory_cell/system2_label_archive_qualification.py scripts/memory_cell/test_system2_label_archive_qualification.py | tee /tmp/label-archive-qualification/lint.log
+          PYTHONPATH=scripts/memory_cell /tmp/label-archive-qualification/.venv/bin/python scripts/memory_cell/system2_label_archive_qualification.py "$HEPTA_SYSTEM2_CARDINALITY_ARCHIVE" "$HEPTA_SYSTEM2_COMPLETED_LABEL_ARCHIVE" /tmp/label-archive-qualification/independent-receipt.json | tee /tmp/label-archive-qualification/run.log
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/label-archive-qualification/independent-receipt.json').read_text())
+          if (r['original_model_calls']!=140 or r['new_model_calls']!=0 or
+                  r['verified_completed_member_files']!=25 or
+                  r['verified_parent_member_files']!=25 or
+                  r['disposition']!='reject_no_answer_or_refusal_gain' or
+                  r['production_accepted'] or r['causal_label_effect_established']):
+              raise ValueError('unqualified or changed historical Reader behavior')
+          for key in ('single_fact:unlabeled','target_decoy_two_first:unlabeled','decoy_one:unlabeled'):
+              if r['conditions'][key]['decoder_at_64']!=20:
+                  raise ValueError('unexpected historical decoder receipt')
+          print('SEALED_LABEL_BEHAVIOR_NEGATIVE_RESULT_VERIFIED')
+          PY
+      - name: Retain authenticated bytes, source, tests and audit receipt
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/label-archive-qualification/source
+          git rev-parse HEAD > /tmp/label-archive-qualification/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/label-archive-qualification/tested-tree.txt
+          cp scripts/memory_cell/system2_label_archive_qualification.py scripts/memory_cell/test_system2_label_archive_qualification.py codex-rs/hepta-ndu/research/SYSTEM2_LABEL_ARCHIVE_QUALIFICATION.md .github/workflows/hepta-system2-label-archive-qualification.yml /tmp/label-archive-qualification/source/
+          (cd /tmp/label-archive-qualification && find . -path './.venv' -prune -o -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-completed-label-qualification
+          path: /tmp/label-archive-qualification
+          if-no-files-found: error

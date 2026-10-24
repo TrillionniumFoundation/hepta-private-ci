@@ -1,0 +1,140 @@
+name: Hepta System2 frozen Reader evidence label echo ablation
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_onehop_label_ablation.py"
+      - "scripts/memory_cell/test_system2_onehop_label_ablation.py"
+      - "scripts/memory_cell/system2_onehop_label_pair_audit.py"
+      - "scripts/memory_cell/test_system2_onehop_label_pair_audit.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_ONEHOP_LABEL_ABLATION.md"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_ONEHOP_LABEL_PAIR_AUDIT.md"
+      - ".github/workflows/hepta-system2-onehop-label-ablation.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-onehop-label-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  frozen-reader-label-echo:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+      HEPTA_SYSTEM2_CARDINALITY_ARCHIVE: /tmp/hepta-cardinality-parent.zip
+      HEPTA_REQUIRE_CARDINALITY_INTEGRATION: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned offline Reader environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/system2-onehop-label
+          python3 -m venv /tmp/onehop-label-python
+          /tmp/onehop-label-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/system2-onehop-label/install-torch.log 2>&1
+          /tmp/onehop-label-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8 > /tmp/system2-onehop-label/install-deps.log 2>&1
+          /tmp/onehop-label-python/bin/pip freeze > /tmp/system2-onehop-label/environment.txt
+      - name: Verify immutable completed 140-call cardinality archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11756357532/zip > "$HEPTA_SYSTEM2_CARDINALITY_ARCHIVE"
+          printf '%s  %s\n' 9f4a4ed9429212b98befffca27a297780d61317eaed8be519b1cb6880037f121 "$HEPTA_SYSTEM2_CARDINALITY_ARCHIVE" | sha256sum -c -
+          /tmp/onehop-label-python/bin/python scripts/memory_cell/system2_onehop_label_ablation.py "$HEPTA_SYSTEM2_CARDINALITY_ARCHIVE" /tmp/unneeded /tmp/unneeded --audit-only > /tmp/system2-onehop-label/parent-audit.json
+      - name: Full MemoryCell Python regressions and strict scoped lint
+        run: |
+          set -euo pipefail
+          test -s "$HEPTA_SYSTEM2_CARDINALITY_ARCHIVE"
+          if ! /tmp/onehop-label-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/system2-onehop-label/full-regression.log 2>&1; then
+            tail -120 /tmp/system2-onehop-label/full-regression.log
+            exit 1
+          fi
+          tail -6 /tmp/system2-onehop-label/full-regression.log
+          /tmp/onehop-label-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_onehop_label_ablation.py scripts/memory_cell/test_system2_onehop_label_ablation.py scripts/memory_cell/system2_onehop_reader.py scripts/memory_cell/system2_onehop_cardinality.py scripts/memory_cell/system2_onehop_label_pair_audit.py scripts/memory_cell/test_system2_onehop_label_pair_audit.py | tee /tmp/system2-onehop-label/lint.log
+      - name: Restore only the original pinned Reader weights and tokenizer
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/hepta-pinned-models.zip
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/hepta-pinned-models.zip | sha256sum -c -
+          /tmp/onehop-label-python/bin/python - <<'PY'
+          import json, tarfile, zipfile
+          from pathlib import Path, PurePosixPath
+          from native import digest
+          from pretrained import file_inventory
+          from stem_cell_trial import READER
+          with zipfile.ZipFile('/tmp/hepta-pinned-models.zip') as z:
+              if z.namelist() != ['memory-inputs.tar.gz']:
+                  raise ValueError('unexpected frozen Reader archive')
+              z.extractall('/tmp')
+          with tarfile.open('/tmp/memory-inputs.tar.gz', mode='r:gz') as tar:
+              ms=tar.getmembers()
+              if (len(ms)>10000 or sum(m.size for m in ms)>2*1024**3
+                      or len({m.name for m in ms})!=len(ms)):
+                  raise ValueError('unsafe Reader source size/duplication')
+              for m in ms:
+                  p=PurePosixPath(m.name)
+                  if (p.is_absolute() or '..' in p.parts or not p.parts
+                      or p.parts[0]!='memory-inputs' or not (m.isfile() or m.isdir())):
+                      raise ValueError('unsafe Reader source path')
+              wanted=[m for m in ms if m.name.startswith('memory-inputs/reader/')]
+              if not wanted:
+                  raise ValueError('missing pinned Reader')
+              tar.extractall('/tmp', members=wanted, filter='data')
+          inventory=file_inventory(Path('/tmp/memory-inputs/reader'))
+          if digest(inventory)!=READER:
+              raise ValueError('historical frozen Reader inventory changed')
+          Path('/tmp/system2-onehop-label/reader-inventory.json').write_text(
+              json.dumps(dict(reader_id=READER, files=inventory),indent=2)+'\n')
+          print('READER_IDENTITY_PINNED')
+          PY
+      - name: Compare labeled versus unlabeled identical evidence under one answer-only instruction
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/system2-onehop-label/resources.txt /tmp/onehop-label-python/bin/python scripts/memory_cell/system2_onehop_label_ablation.py "$HEPTA_SYSTEM2_CARDINALITY_ARCHIVE" /tmp/memory-inputs/reader /tmp/system2-onehop-label/trial --development > /tmp/system2-onehop-label/execution.log 2>&1 || { tail -120 /tmp/system2-onehop-label/execution.log; exit 1; }
+          tail -1 /tmp/system2-onehop-label/execution.log
+      - name: Post-seal independent paired labels and token-cost audit (no model calls)
+        if: always()
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          if [ ! -e /tmp/system2-onehop-label/trial/raw-seal.json ]; then
+            printf '%s\n' '{"audit_available":false,"reader_model_results_not_completed":true}' > /tmp/system2-onehop-label/audit-unavailable.json
+            exit 0
+          fi
+          /tmp/onehop-label-python/bin/python scripts/memory_cell/system2_onehop_label_pair_audit.py \
+            "$HEPTA_SYSTEM2_CARDINALITY_ARCHIVE" \
+            /tmp/system2-onehop-label/trial \
+            /tmp/system2-onehop-label/paired-label-postseal-audit.json \
+            --source-commit "$HEPTA_MEMORY_TESTED_COMMIT"
+      - name: Preserve all source, sealed answers, failures and reproducible hashes
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/system2-onehop-label/source
+          git rev-parse HEAD > /tmp/system2-onehop-label/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/system2-onehop-label/tested-tree.txt
+          cp scripts/memory_cell/{system2_onehop_label_ablation.py,test_system2_onehop_label_ablation.py,system2_onehop_cardinality.py,system2_onehop_reader.py,system2_multihop_evidence.py,system2_multihop_trial.py} /tmp/system2-onehop-label/source/
+          cp scripts/memory_cell/{system2_onehop_label_pair_audit.py,test_system2_onehop_label_pair_audit.py} /tmp/system2-onehop-label/source/
+          cp codex-rs/hepta-ndu/research/{SYSTEM2_ONEHOP_LABEL_ABLATION.md,SYSTEM2_ONEHOP_LABEL_PAIR_AUDIT.md} .github/workflows/hepta-system2-onehop-label-ablation.yml /tmp/system2-onehop-label/source/
+          (cd /tmp/system2-onehop-label && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-onehop-label-ablation
+          path: /tmp/system2-onehop-label
+          if-no-files-found: error

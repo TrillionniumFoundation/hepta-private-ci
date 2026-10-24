@@ -1,0 +1,120 @@
+name: Hepta System2 finite-tree research ablation
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_*.py"
+      - "scripts/memory_cell/test_system2*.py"
+      - "scripts/memory_cell/reader_review_*.py"
+      - "scripts/memory_cell/test_reader_review_*.py"
+      - "scripts/memory_cell/reader_originals_attestation.py"
+      - "scripts/memory_cell/test_reader_originals_attestation.py"
+      - "scripts/memory_cell/full_cell_matrix.py"
+      - "scripts/memory_cell/test_full_cell_matrix.py"
+      - "codex-rs/hepta-ndu/research/**"
+      - ".github/workflows/hepta-system2-fbsde-ablation.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-research-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  native-development:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HEPTA_STEM_STRICT_ARCHIVE: /tmp/stem-regression.zip
+      HEPTA_SYSTEM2_ORIGINAL_ARCHIVE: /tmp/system2-original.zip
+      HEPTA_SYSTEM2_CONTENT_ARCHIVE: /tmp/system2-content.zip
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install isolated pinned CPU research environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/system2-research
+          python3 -m venv /tmp/system2-python
+          /tmp/system2-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/system2-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8
+          /tmp/system2-python/bin/pip freeze > /tmp/system2-research/environment.txt
+      - name: Supply unchanged full-suite historical fixture
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11693693993/zip > "$HEPTA_STEM_STRICT_ARCHIVE"
+          printf '%s  %s\n' 1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8 "$HEPTA_STEM_STRICT_ARCHIVE" | sha256sum -c -
+      - name: Audit original complete native run without new model calls
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11703482865/zip > "$HEPTA_SYSTEM2_ORIGINAL_ARCHIVE"
+          printf '%s  %s\n' 80037375c44927f71e15dea508abb6ac3a2d5ccd03cefe2a5c21beedad37247e "$HEPTA_SYSTEM2_ORIGINAL_ARCHIVE" | sha256sum -c -
+          /tmp/system2-python/bin/python scripts/memory_cell/system2_native_receipt.py "$HEPTA_SYSTEM2_ORIGINAL_ARCHIVE" /tmp/system2-research/original-native-audit.json
+      - name: Download the exact saved content features and weights
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11706235289/zip > "$HEPTA_SYSTEM2_CONTENT_ARCHIVE"
+          printf '%s  %s\n' 2d7d1058c724f79298b8ccd28c319629b929a842f2107301c3e1c1adef09bcea "$HEPTA_SYSTEM2_CONTENT_ARCHIVE" | sha256sum -c -
+      - name: New mechanics, full Python regression set, and diagnostics
+        run: |
+          set -euo pipefail
+          /tmp/system2-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_system2*.py' -v 2>&1 | tee /tmp/system2-research/mechanics.log
+          /tmp/system2-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/system2-research/full-regression.log
+          /tmp/system2-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_*.py scripts/memory_cell/test_system2*.py scripts/memory_cell/reader_review_*.py scripts/memory_cell/test_reader_review_*.py scripts/memory_cell/reader_originals_attestation.py scripts/memory_cell/test_reader_originals_attestation.py scripts/memory_cell/full_cell_matrix.py scripts/memory_cell/test_full_cell_matrix.py codex-rs/hepta-ndu/research/finite_tree_bsde.py 2>&1 | tee /tmp/system2-research/lint.log
+      - name: Replay existing native features with real repository heads, no pretrained models
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/system2-research/resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_linear_solver.py "$HEPTA_SYSTEM2_CONTENT_ARCHIVE" /tmp/system2-research/linear-replay 2>&1 | tee /tmp/system2-research/execution.log
+      - name: Compare one-sided margins and frozen-stop control on the same saved features
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/system2-research/margin-resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_margin_transfer.py "$HEPTA_SYSTEM2_CONTENT_ARCHIVE" /tmp/system2-research/margin-transfer 2>&1 | tee /tmp/system2-research/margin-execution.log
+      - name: Test episodic per-Cell few-shot deltas without Encoder or Reader calls
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/system2-research/fewshot-resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_fewshot_cells.py "$HEPTA_SYSTEM2_CONTENT_ARCHIVE" /tmp/system2-research/fewshot-cells 2>&1 | tee /tmp/system2-research/fewshot-execution.log
+      - name: Exhaust all bounded support subsets without selecting a favorable split
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/system2-research/support-resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_support_sensitivity.py "$HEPTA_SYSTEM2_CONTENT_ARCHIVE" /tmp/system2-research/support-sensitivity 2>&1 | tee /tmp/system2-research/support-execution.log
+      - name: Retain source identity, partial rows, failures, and full artifacts
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/system2-research/source
+          git rev-parse HEAD > /tmp/system2-research/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/system2-research/tested-tree.txt
+          cp scripts/memory_cell/system2_*.py scripts/memory_cell/test_system2*.py /tmp/system2-research/source/
+          cp codex-rs/hepta-ndu/research/finite_tree_bsde.py .github/workflows/hepta-system2-fbsde-ablation.yml /tmp/system2-research/source/
+          (cd /tmp/system2-research && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-fbsde-research
+          path: /tmp/system2-research
+          if-no-files-found: error

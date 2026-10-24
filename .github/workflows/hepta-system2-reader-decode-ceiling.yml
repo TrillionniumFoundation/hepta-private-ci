@@ -1,0 +1,120 @@
+name: Hepta System2 frozen Reader decoding ceiling check
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_reader_decode_ceiling.py"
+      - "scripts/memory_cell/test_system2_reader_decode_ceiling.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_DECODE_CEILING.md"
+      - ".github/workflows/hepta-system2-reader-decode-ceiling.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-decode-ceiling-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  frozen-reader-length:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HEPTA_SYSTEM2_DECODE_PARENT: /tmp/parent-counterfactual.zip
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Pin isolated Python CPU dependencies
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/system2-decode
+          python3 -m venv /tmp/reader-decode-python
+          /tmp/reader-decode-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/system2-decode/install-torch.log 2>&1
+          /tmp/reader-decode-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8 > /tmp/system2-decode/install-deps.log 2>&1
+          /tmp/reader-decode-python/bin/pip freeze > /tmp/system2-decode/environment.txt
+      - name: Verify externally pinned completed 160-response control before any model loading
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11744278119/zip > "$HEPTA_SYSTEM2_DECODE_PARENT"
+          printf '%s  %s\n' 9ee9e63a725b3a5598ba6e89d728d6b17582d60853ee994151c1b58a15bf4a95 "$HEPTA_SYSTEM2_DECODE_PARENT" | sha256sum -c -
+          /tmp/reader-decode-python/bin/python - <<'PY'
+          from pathlib import Path
+          from system2_reader_decode_ceiling import load_parent
+          p=load_parent(Path('/tmp/parent-counterfactual.zip'))
+          print('VERIFIED_PARENT',p['verified_files'],len(p['by_key']),p['raw_seal'])
+          PY
+      - name: Full MemoryCell regression, source tests and strict lint
+        run: |
+          set -euo pipefail
+          if ! /tmp/reader-decode-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/system2-decode/regression.log 2>&1; then
+            tail -100 /tmp/system2-decode/regression.log
+            exit 1
+          fi
+          tail -5 /tmp/system2-decode/regression.log
+          /tmp/reader-decode-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_reader_decode_ceiling.py scripts/memory_cell/test_system2_reader_decode_ceiling.py | tee /tmp/system2-decode/lint.log
+      - name: Stage unchanged historical Reader weight files only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/original-memory-inputs.zip
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/original-memory-inputs.zip | sha256sum -c -
+          PYTHONPATH=scripts/memory_cell /tmp/reader-decode-python/bin/python - <<'PY'
+          import tarfile, zipfile
+          from pathlib import Path, PurePosixPath
+          from native import digest
+          from pretrained import file_inventory
+          from stem_cell_trial import READER
+          with zipfile.ZipFile('/tmp/original-memory-inputs.zip') as z:
+              if z.namelist() != ['memory-inputs.tar.gz']:
+                  raise ValueError('historic staging ZIP drift')
+              z.extractall('/tmp')
+          with tarfile.open('/tmp/memory-inputs.tar.gz','r:gz') as t:
+              ms=t.getmembers()
+              if (len(ms)>10000 or sum(m.size for m in ms)>2*1024**3
+                      or len({m.name for m in ms})!=len(ms)):
+                  raise ValueError('historic tar admission cap')
+              for m in ms:
+                  path=PurePosixPath(m.name)
+                  if (path.is_absolute() or '..' in path.parts or not path.parts
+                          or path.parts[0]!='memory-inputs' or not (m.isfile() or m.isdir())):
+                      raise ValueError('unsafe input archive')
+              members=[m for m in ms if m.name.startswith('memory-inputs/reader/')]
+              if not members:
+                  raise ValueError('historical Reader not staged')
+              t.extractall('/tmp',members=members,filter='data')
+          if digest(file_inventory(Path('/tmp/memory-inputs/reader'))) != READER:
+              raise ValueError('Reader inventory mismatch')
+          Path('/tmp/system2-decode/reader-pin.txt').write_text(READER+'\n')
+          PY
+      - name: Reuse exact prompts and extend only greedy decoding from 64 to 128
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/system2-decode/resources.txt /tmp/reader-decode-python/bin/python scripts/memory_cell/system2_reader_decode_ceiling.py "$HEPTA_SYSTEM2_DECODE_PARENT" /tmp/memory-inputs/reader /tmp/system2-decode/trial --development > /tmp/system2-decode/execution.log 2>&1 || { tail -120 /tmp/system2-decode/execution.log; exit 1; }
+          tail -1 /tmp/system2-decode/execution.log
+      - name: Save exact source, original sealed control, generated raw outputs and failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/system2-decode/source
+          git rev-parse HEAD > /tmp/system2-decode/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/system2-decode/tested-tree.txt
+          cp scripts/memory_cell/system2_reader_decode_ceiling.py scripts/memory_cell/test_system2_reader_decode_ceiling.py codex-rs/hepta-ndu/research/SYSTEM2_DECODE_CEILING.md .github/workflows/hepta-system2-reader-decode-ceiling.yml /tmp/system2-decode/source/
+          (cd /tmp/system2-decode && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-reader-decode-ceiling
+          path: /tmp/system2-decode
+          if-no-files-found: error

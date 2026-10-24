@@ -1,0 +1,136 @@
+name: Hepta System2 same-question original frozen 135M Reader control
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_reader_newcohort_135m.py"
+      - "scripts/memory_cell/test_system2_reader_newcohort_135m.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_READER_NEWCOHORT_135M.md"
+      - ".github/workflows/hepta-system2-reader-newcohort-135m.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-reader-newcohort-135m-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  same-question-frozen-135m:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+      HEPTA_CARDINALITY_ARCHIVE: /tmp/onehop-cardinality-140.zip
+      HEPTA_LABEL_ARCHIVE: /tmp/onehop-label-140.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Pin isolated CPU environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reader-135m-newcohort
+          python3 -m venv /tmp/reader-135m-python
+          /tmp/reader-135m-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/reader-135m-newcohort/install-torch.log 2>&1
+          /tmp/reader-135m-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8 > /tmp/reader-135m-newcohort/install-deps.log 2>&1
+          /tmp/reader-135m-python/bin/pip freeze > /tmp/reader-135m-newcohort/environment.txt
+      - name: Verify both actual previously completed frozen Reader archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11756357532/zip > "$HEPTA_CARDINALITY_ARCHIVE"
+          printf '%s  %s\n' 9f4a4ed9429212b98befffca27a297780d61317eaed8be519b1cb6880037f121 "$HEPTA_CARDINALITY_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11760345185/zip > "$HEPTA_LABEL_ARCHIVE"
+          printf '%s  %s\n' a278014bae564336fc4d63335154cadbf14febc73620d958f45648b17ca0622a "$HEPTA_LABEL_ARCHIVE" | sha256sum -c -
+          /tmp/reader-135m-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          from system2_reader_capacity_reference import load_baseline_archives
+          data = load_baseline_archives('/tmp/onehop-cardinality-140.zip','/tmp/onehop-label-140.zip')
+          if len(data['by_key']) != 140 or data['verified_files'] != 25:
+              raise ValueError('prior frozen Reader 140-result archive changed')
+          Path('/tmp/reader-135m-newcohort/pinned-parent.json').write_text(
+              json.dumps(dict(raw_sha256=data['raw_sha256'],verified_files=data['verified_files'],
+                              previous_completed=140,original_model_new_calls=0),sort_keys=True,indent=2)+'\n')
+          print('BOTH_COMPLETED_PARENT_ARCHIVES_VERIFIED')
+          PY
+      - name: Full MemoryCell regressions and strict static checks
+        run: |
+          set -euo pipefail
+          if ! /tmp/reader-135m-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/reader-135m-newcohort/full-regression.log 2>&1; then
+            tail -120 /tmp/reader-135m-newcohort/full-regression.log
+            exit 1
+          fi
+          tail -6 /tmp/reader-135m-newcohort/full-regression.log
+          /tmp/reader-135m-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_reader_newcohort_135m.py scripts/memory_cell/test_system2_reader_newcohort_135m.py scripts/memory_cell/system2_reader_capacity_reference.py scripts/memory_cell/system2_onehop_label_ablation.py | tee /tmp/reader-135m-newcohort/lint.log
+      - name: Restore unchanged pinned original 135M Reader and tokenizer
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/original-135m-reader.zip
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/original-135m-reader.zip | sha256sum -c -
+          /tmp/reader-135m-python/bin/python - <<'PY'
+          import json, tarfile, zipfile
+          from pathlib import Path, PurePosixPath
+          from native import digest
+          from pretrained import file_inventory
+          from stem_cell_trial import READER
+          with zipfile.ZipFile('/tmp/original-135m-reader.zip') as z:
+              if z.namelist() != ['memory-inputs.tar.gz']:
+                  raise ValueError('unexpected pinned original Reader archive')
+              z.extractall('/tmp')
+          with tarfile.open('/tmp/memory-inputs.tar.gz',mode='r:gz') as tar:
+              members=tar.getmembers()
+              if len(members)>10000 or sum(m.size for m in members)>2*1024**3:
+                  raise ValueError('oversized original Reader archive')
+              if len({m.name for m in members})!=len(members):
+                  raise ValueError('duplicate original Reader archive member')
+              for m in members:
+                  p=PurePosixPath(m.name)
+                  if p.is_absolute() or '..' in p.parts or not p.parts or p.parts[0]!='memory-inputs' or not (m.isfile() or m.isdir()):
+                      raise ValueError('unsafe original Reader member')
+              wanted=[m for m in members if m.name.startswith('memory-inputs/reader/')]
+              if not wanted:
+                  raise ValueError('pinned original Reader weights missing')
+              tar.extractall('/tmp',members=wanted,filter='data')
+          root=Path('/tmp/memory-inputs/reader')
+          inventory=file_inventory(root)
+          if digest(inventory)!=READER:
+              raise ValueError('original Reader file/weight/tokenizer drift')
+          Path('/tmp/reader-135m-newcohort/reader-inventory.json').write_text(
+              json.dumps(dict(reader_identity=READER,files=inventory),sort_keys=True,indent=2)+'\n')
+          print('ORIGINAL_FROZEN_READER_INVENTORY_VERIFIED')
+          PY
+      - name: Require exact old prompts then run only 80 new-cohort 135M answers
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/reader-135m-newcohort/resources.txt /tmp/reader-135m-python/bin/python scripts/memory_cell/system2_reader_newcohort_135m.py "$HEPTA_CARDINALITY_ARCHIVE" "$HEPTA_LABEL_ARCHIVE" /tmp/memory-inputs/reader /tmp/reader-135m-newcohort/trial --development > /tmp/reader-135m-newcohort/execution.log 2>&1 || { tail -100 /tmp/reader-135m-newcohort/execution.log; exit 1; }
+          tail -1 /tmp/reader-135m-newcohort/execution.log
+      - name: Retain exact source, raw answers, partial receipts and immutable hashes
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reader-135m-newcohort/source
+          git rev-parse HEAD > /tmp/reader-135m-newcohort/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/reader-135m-newcohort/tested-tree.txt
+          cp scripts/memory_cell/system2_reader_newcohort_135m.py scripts/memory_cell/test_system2_reader_newcohort_135m.py /tmp/reader-135m-newcohort/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_READER_NEWCOHORT_135M.md .github/workflows/hepta-system2-reader-newcohort-135m.yml /tmp/reader-135m-newcohort/source/
+          (cd /tmp/reader-135m-newcohort && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-original-135m-newcohort-reader
+          path: /tmp/reader-135m-newcohort
+          if-no-files-found: error

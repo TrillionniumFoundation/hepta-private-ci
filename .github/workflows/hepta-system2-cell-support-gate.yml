@@ -1,0 +1,95 @@
+name: Hepta System2 tiny Cell support gate replay
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_cell_support_gate.py"
+      - "scripts/memory_cell/test_system2_cell_support_gate.py"
+      - "scripts/memory_cell/system2_cell_action_menu.py"
+      - "scripts/memory_cell/test_system2_cell_action_menu.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_CELL_SUPPORT_GATE.md"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_CELL_ACTION_MENU.md"
+      - ".github/workflows/hepta-system2-cell-support-gate.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-cell-support-gate-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  frozen-cell-support:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+      HEPTA_CELL_GATE_REQUIRED: "1"
+      HEPTA_STEM_STRICT_ARCHIVE: /tmp/stem-regression.zip
+      HEPTA_GATE_TRAIN_320: /tmp/qwen-lexical-320.zip
+      HEPTA_GATE_TRAIN_180: /tmp/qwen-tag-label-180.zip
+      HEPTA_GATE_EVAL_200: /tmp/qwen-placebo-200.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned CPU regression environment without loading pretrained Readers
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/cell-support-gate
+          python3 -m venv /tmp/cell-gate-python
+          /tmp/cell-gate-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/cell-support-gate/install-torch.log 2>&1
+          /tmp/cell-gate-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8 > /tmp/cell-support-gate/install-deps.log 2>&1
+          /tmp/cell-gate-python/bin/pip freeze > /tmp/cell-support-gate/environment.txt
+      - name: Verify original archives and freeze input artifacts before test/Head training
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11693693993/zip > "$HEPTA_STEM_STRICT_ARCHIVE"
+          printf '%s  %s\n' 1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8 "$HEPTA_STEM_STRICT_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11784676839/zip > "$HEPTA_GATE_TRAIN_320"
+          printf '%s  %s\n' 0fd2a2aa60c0c28bdd61a2566262558410bb66c6997355aa610fe98b89aabc19 "$HEPTA_GATE_TRAIN_320" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11787041990/zip > "$HEPTA_GATE_TRAIN_180"
+          printf '%s  %s\n' 8da46b3965f8a6aa9919877c8165e6a2d06f3298921e645d91f7cddfcf9b8761 "$HEPTA_GATE_TRAIN_180" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11790630289/zip > "$HEPTA_GATE_EVAL_200"
+          printf '%s  %s\n' 6f10c884f949a8518294b1b320cb2d5374232edbe3bafc881826a96e1723e9b6 "$HEPTA_GATE_EVAL_200" | sha256sum -c -
+      - name: Full MemoryCell regression and F/E9 scoped static checks
+        run: |
+          set -euo pipefail
+          if ! /tmp/cell-gate-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/cell-support-gate/full-regression.log 2>&1; then
+            tail -100 /tmp/cell-support-gate/full-regression.log
+            exit 1
+          fi
+          tail -5 /tmp/cell-support-gate/full-regression.log
+          /tmp/cell-gate-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_cell_support_gate.py scripts/memory_cell/test_system2_cell_support_gate.py scripts/memory_cell/system2_cell_action_menu.py scripts/memory_cell/test_system2_cell_action_menu.py | tee /tmp/cell-support-gate/lint.log
+      - name: Frozen 6-parameter Head versus zero-fit and shuffled controls, no Reader inference
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/cell-support-gate/resources.txt /tmp/cell-gate-python/bin/python scripts/memory_cell/system2_cell_support_gate.py "$HEPTA_GATE_TRAIN_320" "$HEPTA_GATE_TRAIN_180" "$HEPTA_GATE_EVAL_200" /tmp/cell-support-gate/trial > /tmp/cell-support-gate/execution.log 2>&1 || { tail -100 /tmp/cell-support-gate/execution.log; exit 1; }
+          tail -1 /tmp/cell-support-gate/execution.log
+      - name: Exhaust restricted action menu after sealing source-only decisions
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/cell-support-gate/menu-resources.txt /tmp/cell-gate-python/bin/python scripts/memory_cell/system2_cell_action_menu.py "$HEPTA_GATE_TRAIN_320" "$HEPTA_GATE_TRAIN_180" "$HEPTA_GATE_EVAL_200" /tmp/cell-support-gate/action-menu > /tmp/cell-support-gate/menu-execution.log 2>&1 || { tail -100 /tmp/cell-support-gate/menu-execution.log; exit 1; }
+          tail -1 /tmp/cell-support-gate/menu-execution.log
+      - name: Retain exact checked-out source, all decisions and SHA256 manifest
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/cell-support-gate/source
+          git rev-parse HEAD > /tmp/cell-support-gate/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/cell-support-gate/tested-tree.txt
+          cp scripts/memory_cell/{system2_cell_support_gate.py,test_system2_cell_support_gate.py,system2_cell_action_menu.py,test_system2_cell_action_menu.py} /tmp/cell-support-gate/source/
+          cp codex-rs/hepta-ndu/research/{SYSTEM2_CELL_SUPPORT_GATE.md,SYSTEM2_CELL_ACTION_MENU.md} .github/workflows/hepta-system2-cell-support-gate.yml /tmp/cell-support-gate/source/
+          (cd /tmp/cell-support-gate && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-cell-support-gate
+          path: /tmp/cell-support-gate
+          if-no-files-found: error

@@ -1,0 +1,84 @@
+name: Hepta System2 sealed counterfactual order audit
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_counterfactual_order_audit.py"
+      - "scripts/memory_cell/test_system2_counterfactual_order_audit.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_COUNTERFACTUAL_ORDER_AUDIT.md"
+      - ".github/workflows/hepta-system2-counterfactual-order-audit.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-counterfactual-order-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  verify-sealed-order:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install scoped static linter without loading models
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/system2-order-audit
+          python3 -m venv /tmp/system2-order-python
+          /tmp/system2-order-python/bin/pip install ruff==0.15.8 > /tmp/system2-order-audit/install.log 2>&1
+      - name: Run deterministic offline tests, syntax and static checks
+        run: |
+          set -euo pipefail
+          /tmp/system2-order-python/bin/python -m unittest -v test_system2_counterfactual_order_audit > /tmp/system2-order-audit/test.log 2>&1 || { tail -80 /tmp/system2-order-audit/test.log; exit 1; }
+          tail -5 /tmp/system2-order-audit/test.log
+          /tmp/system2-order-python/bin/python -m compileall -q scripts/memory_cell/system2_counterfactual_order_audit.py scripts/memory_cell/test_system2_counterfactual_order_audit.py
+          /tmp/system2-order-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_counterfactual_order_audit.py scripts/memory_cell/test_system2_counterfactual_order_audit.py | tee /tmp/system2-order-audit/lint.log
+      - name: Fetch original immutable hosted neural answers
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11744278119/zip > /tmp/system2-order-audit/original-counterfactual.zip
+          printf '%s  %s\n' 9ee9e63a725b3a5598ba6e89d728d6b17582d60853ee994151c1b58a15bf4a95 /tmp/system2-order-audit/original-counterfactual.zip | sha256sum -c -
+      - name: Validate every source and audit matched evidence-order effects
+        run: |
+          set -euo pipefail
+          /tmp/system2-order-python/bin/python scripts/memory_cell/system2_counterfactual_order_audit.py /tmp/system2-order-audit/original-counterfactual.zip /tmp/system2-order-audit/summary.json | tee /tmp/system2-order-audit/execution.log
+          /tmp/system2-order-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/system2-order-audit/summary.json')
+          r=json.loads(p.read_text())
+          assert (r['original_model_calls'],r['new_model_calls'],r['distinct_causal_pairs'])==(160,0,16)
+          by={x['arm']:x for x in r['group_by_arm']}
+          assert by['joined_top3']['exact_target_only']==3
+          assert by['reversed_join_top3']['exact_target_only']==16
+          assert by['missing_start_top3']['unsupported_exact_target_copy']==8
+          assert all(x['strict_answer_and_complete_citation']==0 for x in by.values())
+          assert r['paired_order']['both_correct_pairs_by_order']=={'joined_top3':1,'reversed_join_top3':8}
+          assert r['paired_order']['both_grounded_pairs_by_order']=={'joined_top3':0,'reversed_join_top3':0}
+          assert r['production_accepted'] is False
+          print('SEALED_ORDER_REPLAY_VERIFIED')
+          PY
+      - name: Retain exact source, immutable receipts and deterministic results
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/system2-order-audit/source
+          git rev-parse HEAD > /tmp/system2-order-audit/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/system2-order-audit/tested-tree.txt
+          cp scripts/memory_cell/{system2_counterfactual_order_audit.py,test_system2_counterfactual_order_audit.py,system2_multihop_counterfactual.py,system2_multihop_counterfactual_trial.py,system2_multihop_evidence.py,system2_multihop_trial.py,system2_native_receipt.py} /tmp/system2-order-audit/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_COUNTERFACTUAL_ORDER_AUDIT.md .github/workflows/hepta-system2-counterfactual-order-audit.yml /tmp/system2-order-audit/source/
+          (cd /tmp/system2-order-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-counterfactual-order-audit
+          path: /tmp/system2-order-audit
+          if-no-files-found: error

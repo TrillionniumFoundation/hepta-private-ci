@@ -1,0 +1,187 @@
+name: Hepta System2 token-budget matched evidence Reader trial
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_frozen_cohort.py"
+      - "scripts/memory_cell/system2_new_questions.py"
+      - "scripts/memory_cell/system2_matched_evidence.py"
+      - "scripts/memory_cell/test_system2_matched_evidence.py"
+      - "scripts/memory_cell/test_system2_frozen_cohort.py"
+      - "scripts/memory_cell/test_system2_new_questions_wiring.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_MATCHED_EVIDENCE.md"
+      - ".github/workflows/hepta-system2-new-questions.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-new-questions-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  matched-evidence-reader:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HEPTA_STEM_STRICT_ARCHIVE: /tmp/stem-regression.zip
+      HEPTA_SYSTEM2_ORIGINAL_ARCHIVE: /tmp/system2-original.zip
+      HEPTA_SYSTEM2_CONTENT_ARCHIVE: /tmp/system2-content.zip
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned CPU environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/new-question-evidence
+          python3 -m venv /tmp/system2-python
+          /tmp/system2-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/new-question-evidence/install-torch.log 2>&1
+          /tmp/system2-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8 > /tmp/new-question-evidence/install-deps.log 2>&1
+          /tmp/system2-python/bin/pip freeze > /tmp/new-question-evidence/environment.txt
+      - name: Stage immutable historical regression and prior-feature archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11693693993/zip > "$HEPTA_STEM_STRICT_ARCHIVE"
+          printf '%s  %s\n' 1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8 "$HEPTA_STEM_STRICT_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11703482865/zip > "$HEPTA_SYSTEM2_ORIGINAL_ARCHIVE"
+          printf '%s  %s\n' 80037375c44927f71e15dea508abb6ac3a2d5ccd03cefe2a5c21beedad37247e "$HEPTA_SYSTEM2_ORIGINAL_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11706235289/zip > "$HEPTA_SYSTEM2_CONTENT_ARCHIVE"
+          printf '%s  %s\n' 2d7d1058c724f79298b8ccd28c319629b929a842f2107301c3e1c1adef09bcea "$HEPTA_SYSTEM2_CONTENT_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11721757214/zip > /tmp/original-new-questions.zip
+          printf '%s  %s\n' 53dff155f79d4b333ba30060022cc38d351807993f09812ee94e0d8f5f24aee3 /tmp/original-new-questions.zip | sha256sum -c -
+      - name: Full MemoryCell regressions and static checks before native models
+        run: |
+          set -euo pipefail
+          if ! /tmp/system2-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/new-question-evidence/regression.log 2>&1; then
+            tail -80 /tmp/new-question-evidence/regression.log
+            exit 1
+          fi
+          tail -5 /tmp/new-question-evidence/regression.log
+          /tmp/system2-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_frozen_cohort.py scripts/memory_cell/system2_new_questions.py scripts/memory_cell/system2_matched_evidence.py scripts/memory_cell/test_system2_frozen_cohort.py scripts/memory_cell/test_system2_new_questions_wiring.py scripts/memory_cell/test_system2_matched_evidence.py 2>&1 | tee /tmp/new-question-evidence/lint.log
+      - name: Reuse pinned native data and models without changing architecture
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/staged.zip
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/staged.zip | sha256sum -c -
+          /tmp/system2-python/bin/python - <<'PY'
+          import tarfile, zipfile
+          from pathlib import PurePosixPath
+          from huggingface_hub import snapshot_download
+          from pretrained import file_inventory
+          from pathlib import Path
+          from relevance_ranker import RANKER_ID, RANKER_REVISION, RANKER_TENSOR_SHA256
+          with zipfile.ZipFile('/tmp/staged.zip') as z:
+              if z.namelist() != ['memory-inputs.tar.gz']:
+                  raise ValueError('unexpected pinned staging layout')
+              z.extractall('/tmp')
+          with tarfile.open('/tmp/memory-inputs.tar.gz') as t:
+              members=t.getmembers()
+              if len(members)>10000 or sum(m.size for m in members)>2*1024**3:
+                  raise ValueError('staging size budget')
+              if len({m.name for m in members}) != len(members):
+                  raise ValueError('duplicate staged path')
+              for m in members:
+                  p=PurePosixPath(m.name)
+                  if p.is_absolute() or '..' in p.parts or not p.parts or p.parts[0]!='memory-inputs' or not (m.isfile() or m.isdir()):
+                      raise ValueError('unsafe staged path')
+              t.extractall('/tmp', filter='data')
+          snapshot_download(RANKER_ID, revision=RANKER_REVISION, local_dir='/tmp/system2-ranker',
+              allow_patterns=['config.json','model.safetensors','tokenizer.json','tokenizer_config.json','special_tokens_map.json','vocab.txt'], token=False)
+          if file_inventory(Path('/tmp/system2-ranker'))['model.safetensors']['sha256'] != RANKER_TENSOR_SHA256:
+              raise ValueError('paired Encoder drift')
+          PY
+      - name: Same fixed supports then token-budget matched evidence selection
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/new-question-evidence/resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_new_questions.py /tmp/memory-inputs /tmp/system2-ranker "$HEPTA_SYSTEM2_CONTENT_ARCHIVE" /tmp/new-question-evidence/native --evidence-mode matched3 2>&1 | tee /tmp/new-question-evidence/execution.log
+      - name: Verify unchanged fitted states and publish the complete result summary
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          /tmp/system2-python/bin/python - <<'PY' | tee /tmp/new-question-evidence/result.log
+          import hashlib, json
+          from pathlib import Path
+          import torch
+          from safetensors.torch import load, load_file
+          from system2_native_receipt import verified_archive, strict_json
+          from system2_matched_evidence import summarize
+          out=Path('/tmp/new-question-evidence/native')
+          old=verified_archive(Path('/tmp/original-new-questions.zip'),'53dff155f79d4b333ba30060022cc38d351807993f09812ee94e0d8f5f24aee3')
+          plan=json.loads((out/'registered-plan.json').read_text())
+          original_plan=strict_json(old['native/registered-plan.json'])
+          if plan['groups'] != original_plan['groups']:
+              raise ValueError('fixed support/query cohort changed')
+          fits=[json.loads(x) for x in (out/'trial/fits.jsonl').read_text().splitlines()]
+          state_count=0
+          for fit in fits:
+              if 'state_file' not in fit:
+                  continue
+              a=load(old['native/trial/'+fit['state_file']])
+              b=load_file(str(out/'trial'/fit['state_file']))
+              if set(a)!=set(b) or any(not torch.equal(a[k],b[k]) for k in a):
+                  raise ValueError('fitted weights drifted: evidence-only contrast unqualified')
+              state_count+=1
+          if state_count!=36:
+              raise ValueError('incomplete frozen-state census')
+          raw_path=out/'trial/answers.jsonl'
+          seal=json.loads((out/'trial/answer-seal.json').read_text())
+          raw=[json.loads(x) for x in raw_path.read_text().splitlines()]
+          scored=[json.loads(x) for x in (out/'trial/scored.jsonl').read_text().splitlines()]
+          if hashlib.sha256(raw_path.read_bytes()).hexdigest()!=seal['sha256'] or len(raw)!=384 or len(scored)!=384:
+              raise ValueError('raw answer seal/census')
+          by_arm={}
+          report=json.loads((out/'run-summary.json').read_text())
+          for arm,summary in report['by_arm'].items():
+              group=[r for r in scored if r['arm']==arm]
+              hits=[r['weak_source_hit'] for r in group if r['weak_source_hit'] is not None]
+              by_arm[arm]=summary | dict(source_hits=sum(hits),source_scored=len(hits),
+                  input_tokens=sum(r.get('receipt',{}).get('input_tokens',0) for r in group),
+                  generated_tokens=sum(r.get('receipt',{}).get('generated_tokens',0) for r in group),
+                  changed_reference_sets=sum(not r.get('evidence_selection',{}).get('unchanged_reference',True) for r in group if r.get('evidence_selection') is not None))
+          controls={(r['query_id'],r['arm']):r for r in raw if r['arm'] in ('ranked3','no_evidence')}
+          old_rows=[strict_json(x) for x in old['native/trial/answers.jsonl'].splitlines()]
+          for r in old_rows:
+              key=r['query_id'],r['arm']
+              if key not in controls:
+                  continue
+              current=controls[key]
+              fields=('reader_identity','reader_profile','input_ids_digest','generated_ids_digest')
+              if r['answer']!=current['answer'] or any(r['receipt'][f]!=current['receipt'][f] for f in fields):
+                  raise ValueError('unchanged reference Reader path diverged')
+          result=dict(recorded=len(raw),unchanged_state_files=state_count,unchanged_reference_answers=len(controls),
+              budget_audit=summarize(raw),by_arm=by_arm,comparisons=report['comparisons'],
+              candidate_disposition=report['candidate_disposition'],new_independent_queries=0,
+              production_accepted=False,semantic_correctness_verified=False)
+          (out/'matched-result.json').write_text(json.dumps(result,indent=2,allow_nan=False)+'\n')
+          print('MATCHED_RESULT='+json.dumps(result,allow_nan=False))
+          PY
+      - name: Retain exact source, partial output and failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/new-question-evidence/source
+          git rev-parse HEAD > /tmp/new-question-evidence/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/new-question-evidence/tested-tree.txt
+          cp scripts/memory_cell/system2_frozen_cohort.py scripts/memory_cell/system2_new_questions.py scripts/memory_cell/system2_matched_evidence.py scripts/memory_cell/test_system2_frozen_cohort.py scripts/memory_cell/test_system2_new_questions_wiring.py scripts/memory_cell/test_system2_matched_evidence.py .github/workflows/hepta-system2-new-questions.yml /tmp/new-question-evidence/source/
+          (cd /tmp/new-question-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-matched-evidence
+          path: /tmp/new-question-evidence
+          if-no-files-found: error
