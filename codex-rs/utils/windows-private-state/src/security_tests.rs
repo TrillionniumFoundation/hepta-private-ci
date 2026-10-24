@@ -273,7 +273,7 @@ fn native_rejects_existing_unsafe_dacls_without_repair() -> Result {
         format!("D:P(A;;FR;;;{sid})"),
         format!("D:P(A;;FA;;;{sid})(A;;FR;;;{sid})"),
         "D:P(A;;FA;;;WD)".to_string(),
-        "D:P(A;;FA;;;BU)".to_string(),
+        "D:P(A;;FA;;;S-1-5-32-545)".to_string(),
         "D:P(A;;FA;;;AU)".to_string(),
         format!("D:P(A;;FA;;;{sid})(A;;FA;;;SY)"),
         format!("D:P(A;;FA;;;{sid})(A;;FA;;;BA)"),
