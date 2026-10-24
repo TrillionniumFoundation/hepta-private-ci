@@ -1,0 +1,32 @@
+cargo nextest run --no-fail-fast "$@"
+   Compiling research-task-head-owner-check v0.0.0 (/workspace/task-head-final-published/owner)
+    Finished `test` profile [unoptimized] target(s) in 1.06s
+────────────
+ Nextest run ID a6e75e32-84ae-4321-a3bf-86165463b660 with nextest profile: default
+    Starting 24 tests across 2 binaries (100 tests skipped)
+        PASS [   0.006s] ( 1/24) codex-hepta-neuron task_head_native::tests::erf_branches_match_high_precision_values_and_preserve_odd_symmetry
+        PASS [   0.007s] ( 2/24) codex-hepta-neuron task_head_native::tests::exact_identity_and_revocation_epoch_are_required_at_use
+        PASS [   0.006s] ( 3/24) codex-hepta-neuron task_head_native::tests::manifest_pin_payload_hash_and_exact_shape_are_independent_fences
+        PASS [   0.008s] ( 4/24) codex-hepta-neuron task_head_native::tests::missing_required_modalities_return_no_prediction_before_arithmetic
+        PASS [   0.021s] ( 5/24) codex-hepta-neuron task_head_native::tests::bounded_metadata_rejects_oversized_dimensions_before_tensor_allocation
+        PASS [   0.009s] ( 6/24) codex-hepta-neuron task_head_native::tests::nonfinite_parameters_inputs_and_finite_overflow_fail_closed
+        PASS [   0.023s] ( 7/24) codex-hepta-neuron task_head_native::tests::invalid_identity_encodings_and_duplicate_keys_are_not_admitted
+        PASS [   0.010s] ( 8/24) codex-hepta-neuron task_head_native::tests::nonzero_gate_gelu_residual_and_temperature_match_independent_torch_values
+        PASS [   0.007s] ( 9/24) codex-hepta-neuron task_head_native::tests::unknown_fields_and_contract_relaxations_are_rejected
+        PASS [   0.014s] (10/24) research-task-head-owner-check research_task_head_owner::tests::duplicate_declared_row_identity_is_rejected_even_with_distinct_indices
+        PASS [   0.050s] (11/24) research-task-head-owner-check research_task_head_owner::tests::duplicate_reordered_boolean_unknown_and_label_fields_are_rejected
+        PASS [   0.074s] (12/24) codex-hepta-neuron task_head_native::tests::width_3073_uses_the_final_feature_in_the_learned_nonlinear_path
+        PASS [   0.077s] (13/24) research-task-head-owner-check research_task_head_owner::tests::declared_original_crossed_and_shuffled_pairs_all_score_without_label_gate
+        PASS [   0.097s] (14/24) research-task-head-owner-check research_task_head_owner::tests::declared_missing_rows_never_enter_native_head_and_mixed_rows_preserve_order
+        PASS [   0.026s] (15/24) research-task-head-owner-check research_task_head_owner::tests::late_row_drift_and_attacker_rehashed_features_fail_before_first_head_entry
+        PASS [   0.038s] (16/24) research-task-head-owner-check research_task_head_owner::tests::native_semantics_source_parent_and_posture_are_cross_bound_even_after_host_rehash
+        PASS [   0.154s] (17/24) research-task-head-owner-check research_task_head_owner::tests::inventory_row_wire_limit_applies_before_materializing_pinned_rows
+        PASS [   0.054s] (18/24) research-task-head-owner-check research_task_head_owner::tests::request_row_wire_limit_is_inclusive_and_preflights_late_multiline_rows
+        PASS [   0.177s] (19/24) research-task-head-owner-check research_task_head_owner::tests::separate_inventory_can_exceed_header_budget_but_never_its_own_bound
+        PASS [   0.045s] (20/24) research-task-head-owner-check research_task_head_owner::tests::serde_sequence_rows_and_envelopes_obey_the_same_wire_byte_limit
+        PASS [   0.031s] (21/24) research-task-head-owner-check research_task_head_owner::tests::strings_do_not_change_row_nesting_and_serde_still_rejects_invalid_fields
+        PASS [   0.581s] (22/24) research-task-head-owner-check research_task_head_owner::tests::escaped_rows_key_and_utf8_field_bytes_cannot_bypass_row_preflight
+        PASS [   0.647s] (23/24) research-task-head-owner-check research_task_head_owner::tests::mask_pair_source_owner_and_feature_identity_cannot_be_replaced_by_wire
+        PASS [   1.556s] (24/24) research-task-head-owner-check research_task_head_owner::tests::negative_zero_bytes_and_request_row_budget_are_not_silently_coerced
+────────────
+     Summary [   1.725s] 24 tests run: 24 passed, 100 skipped

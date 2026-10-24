@@ -1,0 +1,6 @@
+==> Python scripts formatter failed
+$ uv run --frozen --project scripts ruff format ./scripts/prepare_research_task_head_check.py
+error: Failed to initialize cache at `/home/agent/.cache/uv`
+  cause: failed to open file `/home/agent/.cache/uv/CACHEDIR.TAG`: Read-only file system (os error 30)
+Formatting failed: Python scripts
+error: recipe `fmt` failed on line 51 with exit code 1

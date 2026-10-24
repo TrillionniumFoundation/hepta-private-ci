@@ -1,0 +1,42 @@
+cargo nextest run --offline -p research-task-head-owner-check
+     Locking 24 packages to latest compatible versions
+      Adding sha2 v0.10.9 (available: v0.11.1)
+   Compiling version_check v0.9.5
+   Compiling proc-macro2 v1.0.107
+   Compiling typenum v1.20.1
+   Compiling generic-array v0.14.7
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling serde_core v1.0.229
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling zmij v1.0.23
+   Compiling syn v3.0.9
+   Compiling digest v0.10.7
+   Compiling cfg-if v1.0.5
+   Compiling serde_json v1.0.154
+   Compiling serde v1.0.229
+   Compiling cpufeatures v0.2.17
+   Compiling sha2 v0.10.9
+   Compiling serde_derive v1.0.229
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling codex-hepta-types v0.0.0 (/workspace/task-head-harness/hepta-types)
+   Compiling codex-hepta-infer-core v0.0.0 (/workspace/task-head-harness/hepta-infer-core)
+   Compiling codex-hepta-neuron v0.0.0 (/workspace/task-head-harness/hepta-neuron)
+   Compiling research-task-head-owner-check v0.0.0 (/workspace/task-head-harness/owner)
+    Finished `test` profile [unoptimized] target(s) in 7.99s
+────────────
+ Nextest run ID bf9b141d-fe86-4bdc-9d26-08a14d917e30 with nextest profile: default
+    Starting 9 tests across 1 binary
+        PASS [   0.013s] (1/9) research-task-head-owner-check research_task_head_owner::tests::duplicate_declared_row_identity_is_rejected_even_with_distinct_indices
+        PASS [   0.022s] (2/9) research-task-head-owner-check research_task_head_owner::tests::declared_original_crossed_and_shuffled_pairs_all_score_without_label_gate
+        PASS [   0.031s] (3/9) research-task-head-owner-check research_task_head_owner::tests::declared_missing_rows_never_enter_native_head_and_mixed_rows_preserve_order
+        PASS [   0.025s] (4/9) research-task-head-owner-check research_task_head_owner::tests::late_row_drift_and_attacker_rehashed_features_fail_before_first_head_entry
+        PASS [   0.044s] (5/9) research-task-head-owner-check research_task_head_owner::tests::duplicate_reordered_boolean_unknown_and_label_fields_are_rejected
+        PASS [   0.044s] (6/9) research-task-head-owner-check research_task_head_owner::tests::native_semantics_source_parent_and_posture_are_cross_bound_even_after_host_rehash
+        PASS [   0.072s] (7/9) research-task-head-owner-check research_task_head_owner::tests::mask_pair_source_owner_and_feature_identity_cannot_be_replaced_by_wire
+        PASS [   0.088s] (8/9) research-task-head-owner-check research_task_head_owner::tests::separate_inventory_can_exceed_header_budget_but_never_its_own_bound
+        PASS [   0.835s] (9/9) research-task-head-owner-check research_task_head_owner::tests::negative_zero_bytes_and_request_row_budget_are_not_silently_coerced
+────────────
+     Summary [   0.875s] 9 tests run: 9 passed, 0 skipped

@@ -1,0 +1,107 @@
+cargo nextest run --offline --no-fail-fast -p research-task-head-owner-check
+   Compiling research-task-head-owner-check v0.0.0 (/workspace/task-head-harness/owner)
+    Finished `test` profile [unoptimized] target(s) in 1.74s
+────────────
+ Nextest run ID 5d2b1e13-113e-4ef2-a0a5-0dc9005a7767 with nextest profile: default
+    Starting 13 tests across 1 binary
+        PASS [   0.016s] ( 1/13) research-task-head-owner-check research_task_head_owner::tests::duplicate_declared_row_identity_is_rejected_even_with_distinct_indices
+        PASS [   0.107s] ( 2/13) research-task-head-owner-check research_task_head_owner::tests::declared_missing_rows_never_enter_native_head_and_mixed_rows_preserve_order
+        PASS [   0.108s] ( 3/13) research-task-head-owner-check research_task_head_owner::tests::declared_original_crossed_and_shuffled_pairs_all_score_without_label_gate
+        FAIL [   0.091s] ( 4/13) research-task-head-owner-check research_task_head_owner::tests::escaped_rows_key_and_utf8_field_bytes_cannot_bypass_row_preflight
+  stdout ───
+
+    running 1 test
+    test research_task_head_owner::tests::escaped_rows_key_and_utf8_field_bytes_cannot_bypass_row_preflight ... FAILED
+
+    failures:
+
+    failures:
+        research_task_head_owner::tests::escaped_rows_key_and_utf8_field_bytes_cannot_bypass_row_preflight
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.08s
+
+  stderr ───
+
+    thread 'research_task_head_owner::tests::escaped_rows_key_and_utf8_field_bytes_cannot_bypass_row_preflight' (115797) panicked at /workspace/task-head-baseline-owner/research_task_head_owner_tests.rs:412:5:
+    assertion `left == right` failed
+      left: Some(Encoding)
+     right: Some(Bounds)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+        PASS [   0.131s] ( 5/13) research-task-head-owner-check research_task_head_owner::tests::duplicate_reordered_boolean_unknown_and_label_fields_are_rejected
+        FAIL [   0.038s] ( 6/13) research-task-head-owner-check research_task_head_owner::tests::inventory_row_wire_limit_applies_before_materializing_pinned_rows
+  stdout ───
+
+    running 1 test
+    test research_task_head_owner::tests::inventory_row_wire_limit_applies_before_materializing_pinned_rows ... FAILED
+
+    failures:
+
+    failures:
+        research_task_head_owner::tests::inventory_row_wire_limit_applies_before_materializing_pinned_rows
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.03s
+
+  stderr ───
+
+    thread 'research_task_head_owner::tests::inventory_row_wire_limit_applies_before_materializing_pinned_rows' (115802) panicked at /workspace/task-head-baseline-owner/research_task_head_owner_tests.rs:398:13:
+    assertion `left == right` failed
+      left: None
+     right: Some(Bounds)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+        PASS [   0.040s] ( 7/13) research-task-head-owner-check research_task_head_owner::tests::native_semantics_source_parent_and_posture_are_cross_bound_even_after_host_rehash
+        FAIL [   0.030s] ( 8/13) research-task-head-owner-check research_task_head_owner::tests::request_row_wire_limit_is_inclusive_and_preflights_late_multiline_rows
+  stdout ───
+
+    running 1 test
+    test research_task_head_owner::tests::request_row_wire_limit_is_inclusive_and_preflights_late_multiline_rows ... FAILED
+
+    failures:
+
+    failures:
+        research_task_head_owner::tests::request_row_wire_limit_is_inclusive_and_preflights_late_multiline_rows
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.03s
+
+  stderr ───
+
+    thread 'research_task_head_owner::tests::request_row_wire_limit_is_inclusive_and_preflights_late_multiline_rows' (115809) panicked at /workspace/task-head-baseline-owner/research_task_head_owner_tests.rs:362:9:
+    assertion `left == right` failed
+      left: None
+     right: Some(Bounds)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+        PASS [   0.092s] ( 9/13) research-task-head-owner-check research_task_head_owner::tests::separate_inventory_can_exceed_header_budget_but_never_its_own_bound
+        FAIL [   0.015s] (10/13) research-task-head-owner-check research_task_head_owner::tests::strings_do_not_change_row_nesting_and_serde_still_rejects_invalid_fields
+  stdout ───
+
+    running 1 test
+    test research_task_head_owner::tests::strings_do_not_change_row_nesting_and_serde_still_rejects_invalid_fields ... FAILED
+
+    failures:
+
+    failures:
+        research_task_head_owner::tests::strings_do_not_change_row_nesting_and_serde_still_rejects_invalid_fields
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.01s
+
+  stderr ───
+
+    thread 'research_task_head_owner::tests::strings_do_not_change_row_nesting_and_serde_still_rejects_invalid_fields' (115813) panicked at /workspace/task-head-baseline-owner/research_task_head_owner_tests.rs:431:5:
+    assertion `left == right` failed
+      left: Some(Encoding)
+     right: Some(Bounds)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+        PASS [   0.336s] (11/13) research-task-head-owner-check research_task_head_owner::tests::late_row_drift_and_attacker_rehashed_features_fail_before_first_head_entry
+        PASS [   0.491s] (12/13) research-task-head-owner-check research_task_head_owner::tests::mask_pair_source_owner_and_feature_identity_cannot_be_replaced_by_wire
+        PASS [   1.593s] (13/13) research-task-head-owner-check research_task_head_owner::tests::negative_zero_bytes_and_request_row_budget_are_not_silently_coerced
+────────────
+     Summary [   1.747s] 13 tests run: 9 passed, 4 failed, 0 skipped
+        FAIL [   0.091s] ( 4/13) research-task-head-owner-check research_task_head_owner::tests::escaped_rows_key_and_utf8_field_bytes_cannot_bypass_row_preflight
+        FAIL [   0.038s] ( 6/13) research-task-head-owner-check research_task_head_owner::tests::inventory_row_wire_limit_applies_before_materializing_pinned_rows
+        FAIL [   0.030s] ( 8/13) research-task-head-owner-check research_task_head_owner::tests::request_row_wire_limit_is_inclusive_and_preflights_late_multiline_rows
+        FAIL [   0.015s] (10/13) research-task-head-owner-check research_task_head_owner::tests::strings_do_not_change_row_nesting_and_serde_still_rejects_invalid_fields
+error: test run failed
+error: recipe `test` failed on line 2 with exit code 100

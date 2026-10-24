@@ -1,0 +1,32 @@
+cargo nextest run --no-fail-fast "$@"
+   Compiling research-task-head-owner-check v0.0.0 (/workspace/task-head-final-harness-v3/owner)
+    Finished `test` profile [unoptimized] target(s) in 0.60s
+────────────
+ Nextest run ID 71bd3a53-c474-4904-9d8a-9d3f6dbe7d6d with nextest profile: default
+    Starting 1 test across 1 binary (13 tests skipped)
+        FAIL [   0.030s] (1/1) research-task-head-owner-check research_task_head_owner::tests::serde_sequence_rows_and_envelopes_obey_the_same_wire_byte_limit
+  stdout ───
+
+    running 1 test
+    test research_task_head_owner::tests::serde_sequence_rows_and_envelopes_obey_the_same_wire_byte_limit ... FAILED
+
+    failures:
+
+    failures:
+        research_task_head_owner::tests::serde_sequence_rows_and_envelopes_obey_the_same_wire_byte_limit
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.02s
+
+  stderr ───
+
+    thread 'research_task_head_owner::tests::serde_sequence_rows_and_envelopes_obey_the_same_wire_byte_limit' (116182) panicked at /workspace/task-head-row/codex-rs/hepta-agentd/src/research_task_head_owner_tests.rs:37:9:
+    assertion `left == right` failed
+      left: None
+     right: Some(Bounds)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+────────────
+     Summary [   0.031s] 1 test run: 0 passed, 1 failed, 13 skipped
+        FAIL [   0.030s] (1/1) research-task-head-owner-check research_task_head_owner::tests::serde_sequence_rows_and_envelopes_obey_the_same_wire_byte_limit
+error: test run failed
+error: recipe `test` failed on line 3 with exit code 100
