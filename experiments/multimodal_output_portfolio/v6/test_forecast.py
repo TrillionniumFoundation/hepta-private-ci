@@ -62,7 +62,7 @@ class ForecastTests(unittest.TestCase):
         values, probabilities = backend.predict(state)
         self.assertTrue(all(-1 <= v <= 1 for v in values))
         self.assertAlmostEqual(sum(probabilities), 1)
-        self.assertEqual(set(vars(backend)), {"snapshot", "forecast", "context_id"})
+        self.assertEqual(set(vars(backend)), {"snapshot", "forecast", "context_id", "_guard_owner", "_guard_lock"})
         before = backend.state_key(state)
         result = choose(backend, state, WorkBudget(100, 2), ControllerConfig(horizon=1))
         self.assertTrue(result.complete)

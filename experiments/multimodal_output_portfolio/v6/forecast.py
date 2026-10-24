@@ -7,11 +7,13 @@ Offline observer labels never enter the inference backend. Calls are counted.
 """
 
 from copy import deepcopy
+from contextlib import contextmanager
 import hashlib
 import json
 import math
 from pathlib import Path
 import time
+from threading import Lock, get_ident
 
 import torch
 from torch import nn
@@ -162,15 +164,51 @@ class ForecastBackend:
         if forecast.metric_digest != METRIC_DIGEST:
             raise ValueError("Forecast objective differs from the active metric contract")
         self.snapshot, self.forecast, self.context_id = snapshot, forecast, context_id
+        self._guard_owner, self._guard_lock = None, Lock()
+
+    def _guard_active(self):
+        if self._guard_owner is not None and self._guard_owner != get_ident():
+            raise RuntimeError("Inference backend is guarded by another thread")
+        return self._guard_owner is not None
+
+    @contextmanager
+    def inference_guard(self):
+        """Verify immutable artifacts around one synchronous inference episode.
+
+        Only repeated model hashes are skipped inside this owning thread. The
+        forecast and public-state checks remain active. No result may be
+        published before context exit. Concurrent writers are unsupported.
+        """
+        if not self._guard_lock.acquire(blocking=False):
+            raise RuntimeError("Nested or concurrent inference guards are unsupported")
+        self._guard_owner = get_ident()
+        try:
+            try:
+                self.snapshot.verify_integrity()
+            finally:
+                self.forecast.verify_integrity()
+            try:
+                yield self
+            finally:
+                try:
+                    self.snapshot.verify_integrity()
+                finally:
+                    self.forecast.verify_integrity()
+        finally:
+            self._guard_owner = None
+            self._guard_lock.release()
 
     def actions(self, state, content_control):
+        self._guard_active()
         return ACTIONS if content_control else ("refine_image", "refine_text")
 
     def transition(self, state, action):
+        self._guard_active()
         return self.snapshot.step(state, action)
 
     @torch.inference_mode()
     def predict(self, state):
+        self._guard_active()
         self.forecast.verify_integrity()
         features = self.snapshot.state_features(state)
         if len(features) != 1:
@@ -181,6 +219,7 @@ class ForecastBackend:
 
     @torch.inference_mode()
     def router(self, state, admissible_actions):
+        self._guard_active()
         self.forecast.verify_integrity()
         features = self.snapshot.state_features(state)
         if len(features) != 1 or any(a not in ACTIONS for a in admissible_actions):
@@ -191,18 +230,22 @@ class ForecastBackend:
         return action if gain > 0 else None
 
     def action_cost(self, state, action):
+        self._guard_active()
         if action not in ACTIONS:
             raise ValueError("Unknown neural action")
         return 1.0
 
     def prediction_cost(self, state):
+        self._guard_active()
         return 0.25
 
     def state_key(self, state):
+        self._guard_active()
         return self.snapshot.state_key(state)
 
     def identity(self, state):
-        self.snapshot.verify_integrity()
+        if not self._guard_active():
+            self.snapshot.verify_integrity()
         self.forecast.verify_integrity()
         context = self.snapshot.observation_identity(state)
         return ":".join((self.context_id, self.snapshot.fingerprint, self.forecast.fingerprint, context))

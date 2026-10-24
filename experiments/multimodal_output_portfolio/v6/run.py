@@ -93,30 +93,31 @@ def rollout(snapshot, forecast, observation, policy, budget_limit, config,
         policy=policy, fixed_order=tuple(forecast.static_sequence or ("refine_image",))
         if policy == "fixed_dev_tuned" else ("refine_image", "refine_text", "couple"),
         **config["control"])
-    for step_index in range(config["inference_horizon"]):
-        if policy == "fixed_dev_tuned" and step_index >= len(forecast.static_sequence):
-            break
+    with backend.inference_guard():
+        for step_index in range(config["inference_horizon"]):
+            if policy == "fixed_dev_tuned" and step_index >= len(forecast.static_sequence):
+                break
+            started = time.perf_counter_ns()
+            remaining_config = replace(controller_config, horizon=min(
+                controller_config.horizon, config["inference_horizon"] - step_index))
+            decision = choose(backend, state, work, remaining_config,
+                              step_index=step_index, router=backend.router)
+            controller_ns += time.perf_counter_ns() - started
+            choices.append(asdict(decision))
+            if decision.action is None:
+                break
+            work.charge_execution(backend.action_cost(state, decision.action))
+            started = time.perf_counter_ns()
+            state = backend.transition(state, decision.action)
+            execute_ns += time.perf_counter_ns() - started
+            actions.append(decision.action)
         started = time.perf_counter_ns()
-        remaining_config = replace(controller_config, horizon=min(
-            controller_config.horizon, config["inference_horizon"] - step_index))
-        decision = choose(backend, state, work, remaining_config,
-                          step_index=step_index, router=backend.router)
-        controller_ns += time.perf_counter_ns() - started
-        choices.append(asdict(decision))
-        if decision.action is None:
-            break
-        work.charge_execution(backend.action_cost(state, decision.action))
-        started = time.perf_counter_ns()
-        state = backend.transition(state, decision.action)
-        execute_ns += time.perf_counter_ns() - started
-        actions.append(decision.action)
-    started = time.perf_counter_ns()
-    output = snapshot.decode(state)
-    pixels = output.image_logits.sigmoid()
-    caption = render_tokens(output.token_ids[0])
-    decode_ns = time.perf_counter_ns() - started
-    # Reserve the known two-crop post-execution observer work as well as decode.
-    work.finish_stop(4)
+        output = snapshot.decode(state)
+        pixels = output.image_logits.sigmoid()
+        caption = render_tokens(output.token_ids[0])
+        decode_ns = time.perf_counter_ns() - started
+        # Reserve the known two-crop post-execution observer work as well as decode.
+        work.finish_stop(4)
     snapshot.verify_integrity()
     return pixels, caption, {
         "actions": actions, "initial_content_plan": initial_actions,

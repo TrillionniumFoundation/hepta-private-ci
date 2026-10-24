@@ -2,6 +2,7 @@
 
 from dataclasses import replace
 from copy import deepcopy
+from contextlib import nullcontext
 import json
 from pathlib import Path
 import tempfile
@@ -116,7 +117,7 @@ class JointContractTests(unittest.TestCase):
         snapshot = ControlledSnapshot(NeuralSnapshot(NeuralPortfolio(hidden=16)), PlanHead(16))
         observation = Observation(torch.zeros(1, 1, 28, 56), torch.ones(1, 1, 28, 56),
                                   torch.tensor([[1, 9, 12, 11, 13, 11, 2, 0]]))
-        forecast = SimpleNamespace(backend=lambda *_: SimpleNamespace())
+        forecast = SimpleNamespace(backend=lambda *_: SimpleNamespace(inference_guard=nullcontext))
         pixels, caption, trace = rollout(snapshot, forecast, observation, "fixed", 64,
                                         {"inference_horizon": 0, "control": {}}, "case", 59)
         with tempfile.TemporaryDirectory() as directory:
