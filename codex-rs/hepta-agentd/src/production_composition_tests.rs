@@ -29,11 +29,9 @@ async fn android_runtime_bootstrap_preserves_original_writer_and_refuses_revoked
         let (mut config, fixture) = Fixture::new().await?;
         let (inputs, probes, issuer_peer) = fixture.inputs()?;
         attach_production_operation_host(&mut config, inputs).await?;
-        let recovered = Arc::clone(
-            config
-                .production_writer_host()
-                .expect("original recovered host"),
-        );
+        let recovered = config
+            .production_writer_host()
+            .expect("original recovered host");
         let original_writer = recovered.writer();
         let operations = config
             .take_production_operations()
