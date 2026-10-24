@@ -666,7 +666,7 @@ npm, Python, build or exact-source CI gates. Complete PN0 before treating later
 PoN or model experiments as a qualified integration baseline.
 
 Cross-repository qualification follows the Chain plan's single
-[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/7acf5b649933edb052e86dafeb96c42a23cb72da/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
+[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/8e0f7adc53418a60b03a4e27a519358988616f43/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
 PN0 exact-source/security baseline → PN1 work security and PN2 bounded state →
 PN3 real-model closure → PN4 five-budget/effect-liability qualification →
 PN5 independent-operator WAN/discovery/availability → PN6 governed migration and
@@ -681,24 +681,36 @@ optimizer, durable journal or authority issuer. Parameter, topology, executable
 and consensus upgrades retain their separate admission and release boundaries.
 
 PN0's native pair pins Chain source
-`7acf5b649933edb052e86dafeb96c42a23cb72da`, tree
-`dfe9dd8db949bd95951dced1667b26239cdeeb8c`, against unchanged default main
+`8e0f7adc53418a60b03a4e27a519358988616f43`, tree
+`009fa641f5f9cfd97c79efd5d5d3396f08310598`, against unchanged default main
 `9fedf7ecbbe07177069c030592b4e03dcffebb81`. Its source-head lane tests that source;
-its base-merge lane tests prospective main merge
-`b19ae5e71484172f66b18859de12e3e7f31cae4d`, with ordered parents `[9fedf7ec, 7acf5b64]`
+its base-merge lane pins the published main qualification object
+`09d6fc8c6c547cbc7e63abd814df8d6f87f024fe`, with ordered parents `[9fedf7ec, 8e0f7adc]`
 and the original exact merge-tree checks. The separate original-integration base
 `57c1ed545d067937cbd7aaa7570d5f22123265e6` retains prospective merge
-`4ed752827b57e0caf3db7e5e2c38637acc76870c`, ordered parents `[57c1ed54, 7acf5b64]`.
+`374ae9477d1290c567ee7a5bd96acfb467ee6861`, ordered parents `[57c1ed54, 8e0f7adc]`.
 Both prospective trees equal the source tree; their different parent identities
 and required executions remain distinct. Neither baseline replaces the other,
 and publication or a pin refresh supplies no passing execution evidence.
-This unpublished CI repair candidate binds actual local merges; GitHub source and
-prospective-merge runs must still verify the published commits. It fixes child
-test import roots, the exact durable-opener scanner shape and ledger fixture
-account sequencing. It preserves the original eight-second terminal deadline,
-all retained assertions and TCL2 interfaces; new CodeQL and full native Windows
-results remain open. The older source-bound campaign observations below remain
-unchanged.
+The GitHub App source object has distinct commit metadata from locally reviewed
+`8caa6699d4dde7c20dea01f6938191335c2bee3f` while preserving its exact tree. The
+qualification branch `fix/chain-main-pair-concurrent-20261024` publishes the main
+qualification object; this is not an executed GitHub PR merge. New source and
+prospective-merge runs must still verify the published objects. The concurrent
+integration preserves both source-import controls, the pidfd/procfs namespace
+fixture, the exact durable-opener mutants and shared funding through the real
+account's next nonce. Their local checks pass; the original eight-second terminal
+deadline, all retained assertions and TCL2 interfaces remain unchanged. The
+campaign reader adds complete fixed-cohort cost and unknown-subclock accounting
+for retained records. Measurements on historical Chain source
+`4e49725f1b457a422dbb12f620101903c21599d7` remain observations of that source,
+with no native campaign rerun or current-source/public qualification implied.
+Its retained Rust baseline runs
+runtime and quality shards concurrently; both must pass the exact-source and
+current-run checks before either original required baseline name can pass.
+Publishing these pins still requires new CodeQL and full native Windows results
+on the published source. The older source-bound campaign observations below
+remain unchanged.
 
 The paired PN2/PN3 M09 cache now uses fresh TCL2/schema2 with explicit shared
 `--cache-max-bytes`, `--cache-max-chunks` and `--cache-max-manifests` on every
