@@ -1,0 +1,198 @@
+name: Hepta original-source physical hybrid B (research-only)
+
+on:
+  pull_request:
+    paths:
+      - qa/stem-bakeoff/memory_hybrid_b_physical.py
+      - qa/stem-bakeoff/test_memory_hybrid_b_physical.py
+      - docs/learning/MEMORY_HYBRID_B_PHYSICAL_20261023.md
+      - .github/workflows/hepta-memory-real-hybrid-b.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-real-hybrid-b-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  gold-free-preparation:
+    name: Source-only projection, no original Reader
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact PR head
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+      - name: Fetch exact original LoCoMo and strip all gold before worker job
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --max-time 180 \
+            'https://raw.githubusercontent.com/snap-research/locomo/3eb6f2c585f5e1699204e3c3bdf7adc5c28cb376/data/locomo10.json' \
+            --output "$RUNNER_TEMP/original.json"
+          printf '%s  %s\n' \
+            '79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4' \
+            "$RUNNER_TEMP/original.json" | sha256sum --check --status
+          python3 qa/stem-bakeoff/memory_hybrid_b_physical.py prepare \
+            --source "$RUNNER_TEMP/original.json" \
+            --worker "$RUNNER_TEMP/worker.json" \
+            --manifest "$RUNNER_TEMP/manifest.json"
+          python3 -m py_compile qa/stem-bakeoff/memory_hybrid_b_physical.py
+      - name: Test original-source contract with pinned CPU NumPy
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/test-venv"
+          "$RUNNER_TEMP/test-venv/bin/python" -m pip install --only-binary=:all: 'numpy==2.2.6'
+          "$RUNNER_TEMP/test-venv/bin/python" -m unittest discover -s qa/stem-bakeoff \
+            -p 'test_memory_hybrid_b_physical.py' -v
+      - name: Export gold-free only (never original source or annotations)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hybrid-b-gold-free-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/worker.json
+            ${{ runner.temp }}/manifest.json
+          if-no-files-found: error
+          retention-days: 14
+
+  physical-original-models:
+    name: Original safetensors dense and reranker B forward (no gold)
+    needs: gold-free-preparation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Import only gold-free projected input
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hybrid-b-gold-free-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/source-only
+      - name: Install frozen CPU runtime
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/hybrid-venv"
+          "$RUNNER_TEMP/hybrid-venv/bin/python" -m pip install --only-binary=:all: \
+            --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          "$RUNNER_TEMP/hybrid-venv/bin/python" -m pip install --only-binary=:all: \
+            'numpy==2.2.6' 'transformers==4.57.1' 'huggingface_hub==0.36.0' 'safetensors==0.7.0'
+      - name: Download exact original model revisions and freeze local byte inventories
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/hybrid-venv/bin/python" - <<'PY'
+          import json, os, pathlib, shutil, sys
+          from huggingface_hub import hf_hub_download
+          root = pathlib.Path(os.environ['RUNNER_TEMP'])
+          sys.path.insert(0, 'qa/stem-bakeoff')
+          from memory_hybrid_b_physical import DENSE_REV, RERANK_REV, hash_tree
+          names = ('config.json', 'model.safetensors', 'tokenizer.json',
+                   'tokenizer_config.json', 'special_tokens_map.json', 'vocab.txt')
+          inventories = {}
+          for key, repo, rev in (
+              ('dense', 'sentence-transformers/all-MiniLM-L6-v2', DENSE_REV),
+              ('rerank', 'cross-encoder/ms-marco-MiniLM-L6-v2', RERANK_REV)):
+              location = root / ('original-' + key)
+              location.mkdir(mode=0o700)
+              for name in names:
+                  downloaded = hf_hub_download(repo_id=repo, filename=name, revision=rev)
+                  shutil.copyfile(downloaded, location / name)
+              identity, files = hash_tree(location)
+              inventories[key] = dict(repo=repo, revision=rev,
+                                      local_inventory_sha256=identity, files=files)
+          target = root / 'original-model-inventory.json'
+          with target.open('x') as handle:
+              json.dump(inventories, handle, sort_keys=True)
+          PY
+      - name: Original physical B and paired A, full heldout question census
+        run: |
+          set -euo pipefail
+          export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+          "$RUNNER_TEMP/hybrid-venv/bin/python" - <<'PY'
+          import json, os, pathlib, subprocess, sys
+          root=pathlib.Path(os.environ['RUNNER_TEMP'])
+          pins=json.loads((root/'original-model-inventory.json').read_text())
+          code='qa/stem-bakeoff/memory_hybrid_b_physical.py'
+          args=[sys.executable,code,'run', '--worker',str(root/'source-only/worker.json'),
+                '--manifest',str(root/'source-only/manifest.json'),
+                '--dense-dir',str(root/'original-dense'),
+                '--rerank-dir',str(root/'original-rerank'),
+                '--dense-inventory',pins['dense']['local_inventory_sha256'],
+                '--rerank-inventory',pins['rerank']['local_inventory_sha256'],
+                '--predictions',str(root/'predictions.jsonl')]
+          with (root/'physical-run-receipt.json').open('x') as output:
+              subprocess.run(args, stdout=output, check=True)
+          PY
+      - name: Retain exact source/model/prediction receipts, never gold
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hybrid-b-physical-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/predictions.jsonl
+            ${{ runner.temp }}/original-model-inventory.json
+            ${{ runner.temp }}/physical-run-receipt.json
+          if-no-files-found: error
+          retention-days: 14
+
+  independent-postseal-audit:
+    name: Separate postseal original-source gold scorer (HOLD_NO_GO)
+    needs: physical-original-models
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hybrid-b-gold-free-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/source-only
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hybrid-b-physical-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/physical
+      - name: Reopen original after the model job completed and independently score
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --max-time 180 \
+            'https://raw.githubusercontent.com/snap-research/locomo/3eb6f2c585f5e1699204e3c3bdf7adc5c28cb376/data/locomo10.json' \
+            --output "$RUNNER_TEMP/original.json"
+          printf '%s  %s\n' \
+            '79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4' \
+            "$RUNNER_TEMP/original.json" | sha256sum --check --status
+          python3 qa/stem-bakeoff/memory_hybrid_b_physical.py audit \
+            --source "$RUNNER_TEMP/original.json" \
+            --worker "$RUNNER_TEMP/source-only/worker.json" \
+            --manifest "$RUNNER_TEMP/source-only/manifest.json" \
+            --predictions "$RUNNER_TEMP/physical/predictions.jsonl" \
+            --report "$RUNNER_TEMP/independent-audit.json"
+          python3 - "$RUNNER_TEMP/independent-audit.json" <<'PY'
+          import json,sys
+          report=json.load(open(sys.argv[1]))
+          assert report['query_arm_rows_verified']==2662
+          assert report['status']=='HOLD_NO_GO'
+          assert report['science_superiority_established'] is False
+          assert report['production_activation_allowed'] is False
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hybrid-b-audit-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/independent-audit.json
+          if-no-files-found: error
+          retention-days: 30
+
