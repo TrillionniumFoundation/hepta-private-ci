@@ -11,19 +11,28 @@ use crate::NeuronDeletionRebuildPlanV1;
 use crate::NeuronDeletionRebuildReceiptV1;
 use crate::SparseConfig;
 use crate::SparseJournal;
+use crate::NeuronShadowConfigV1;
+use crate::NeuronShadowOutputV1;
 use crate::runtime_types::*;
 use crate::validate_deletion_rebuild;
+
+#[derive(Clone)]
+enum ProfileOutput {
+    Calibrated(NeuronRuntimeOutputV1),
+    Shadow(NeuronShadowOutputV1),
+}
 
 #[derive(Clone)]
 struct PendingWitness {
     input_digest: Digest32,
     expected: Option<JournalAnchor>,
     next: JournalAnchor,
-    output: NeuronRuntimeOutputV1,
+    output: ProfileOutput,
 }
 
 pub struct NeuronRuntime<W: AnchorWitnessStore> {
-    config: NeuronRuntimeConfigV1,
+    config: NeuronShadowConfigV1,
+    calibrated: Option<NeuronRuntimeConfigV1>,
     journal: SparseJournal,
     witness: W,
     pending: Option<PendingWitness>,
@@ -39,19 +48,11 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         witness: W,
     ) -> Result<Self, NeuronRuntimeError> {
         config.validate_native(&native)?;
-        if file.metadata().map_err(JournalError::from)?.len() != 0 {
-            return Err(NeuronRuntimeError::BootstrapRequiresEmptyJournal);
-        }
-        if witness.current()?.is_some() {
-            return Err(NeuronRuntimeError::BootstrapWitnessPresent);
-        }
-        let journal = SparseJournal::open(file, native, scope, max_records)?;
-        Ok(Self {
-            config,
-            journal,
-            witness,
-            pending: None,
-        })
+        let mut runtime = Self::bootstrap_shadow(
+            file, native, scope, max_records, NeuronShadowConfigV1::from(&config), witness,
+        )?;
+        runtime.calibrated = Some(config);
+        Ok(runtime)
     }
 
     /// Start a fresh generation after authenticated deletion/withdrawal
@@ -94,32 +95,14 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         max_records: usize,
         config: NeuronRuntimeConfigV1,
         anchor: JournalAnchor,
-        mut witness: W,
+        witness: W,
     ) -> Result<Self, NeuronRuntimeError> {
         config.validate_native(&native)?;
-        if witness.current()? != Some(anchor) {
-            return Err(NeuronRuntimeError::RecoveryWitnessMismatch);
-        }
-        let journal = SparseJournal::open_anchored(file, native, scope, max_records, anchor)?;
-        let recovered = journal
-            .current()?
-            .map(|checkpoint| JournalAnchor {
-                sequence: checkpoint.sequence(),
-                checkpoint_digest: checkpoint.digest(),
-            })
-            .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
-        if recovered.sequence < anchor.sequence {
-            return Err(NeuronRuntimeError::RecoveryWitnessMismatch);
-        }
-        if recovered != anchor {
-            witness.compare_and_swap(Some(anchor), recovered)?;
-        }
-        Ok(Self {
-            config,
-            journal,
-            witness,
-            pending: None,
-        })
+        let mut runtime = Self::recover_shadow(
+            file, native, scope, max_records, NeuronShadowConfigV1::from(&config), anchor, witness,
+        )?;
+        runtime.calibrated = Some(config);
+        Ok(runtime)
     }
 
     pub fn model_request(
@@ -172,7 +155,8 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             ));
         }
         Ok(Self {
-            config,
+            config: NeuronShadowConfigV1::from(&config),
+            calibrated: Some(config),
             journal,
             witness,
             pending: None,
@@ -243,7 +227,10 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             .current()
             .map_err(|_| crate::NeuronProtocolError::BindingMismatch("journal"))?
             .ok_or(crate::NeuronProtocolError::BindingMismatch("checkpoint"))?;
-        crate::canonical_checkpoint_v1(&self.config, checkpoint, tick, expires_unix_ms)
+        let config = self.calibrated.as_ref().ok_or(
+            crate::NeuronProtocolError::BindingMismatch("uncalibrated shadow profile"),
+        )?;
+        crate::canonical_checkpoint_v1(config, checkpoint, tick, expires_unix_ms)
     }
 
     pub fn current_anchor(&self) -> Result<Option<JournalAnchor>, NeuronRuntimeError> {
@@ -262,6 +249,9 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             .map(crate::EligibilityTraceSampleV1::from_checkpoint))
     }
 }
+
+#[path = "runtime_shadow.rs"]
+mod shadow;
 
 #[path = "runtime_tick.rs"]
 mod transaction;

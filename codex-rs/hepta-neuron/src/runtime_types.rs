@@ -464,7 +464,7 @@ pub(crate) fn validate_tick_input(input: &NeuronTickInputV1) -> Result<(), Neuro
 }
 
 pub(crate) fn validate_model_output(
-    config: &NeuronRuntimeConfigV1,
+    config: &crate::NeuronShadowConfigV1,
     output: &NeuronModelOutputV1,
 ) -> Result<(), NeuronRuntimeError> {
     if output.encoder_digest != config.encoder_digest
@@ -532,7 +532,7 @@ pub(crate) fn subject_scope_digest(subject: &StableId) -> Result<Digest32, Neuro
     Ok(Digest32::of_bytes(&bytes))
 }
 
-pub(crate) fn body_digest(config: &NeuronRuntimeConfigV1, input: &NeuronTickInputV1) -> Digest32 {
+pub(crate) fn body_digest(config: &crate::NeuronShadowConfigV1, input: &NeuronTickInputV1) -> Digest32 {
     let mut bytes = b"hepta.neuron.body-binding.v1".to_vec();
     bytes.extend_from_slice(config.head_digest.as_array());
     bytes.extend_from_slice(&config.generation.get().to_be_bytes());
