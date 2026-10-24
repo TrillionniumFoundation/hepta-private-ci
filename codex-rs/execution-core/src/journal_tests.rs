@@ -350,3 +350,56 @@ fn mutating_action_without_any_final_use_never_reaches_the_verifier() {
     );
     assert_eq!(journal.events(), original_events);
 }
+
+#[test]
+fn tagged_execution_and_final_use_envelopes_reject_discarded_fields() {
+    let intent = ExecutionRecord::ExecutionIntent(ExecutionIntent {
+        binding: binding(ExecutionClass::ReadOnlyInspection),
+        class: ExecutionClass::ReadOnlyInspection,
+        payload_digest: digest(6),
+    });
+    let original = serde_json::to_value(&intent).unwrap();
+    let mut envelope = original.clone();
+    envelope["opaque_authority"] = serde_json::json!("forged");
+    assert!(serde_json::from_value::<ExecutionRecord>(envelope).is_err());
+
+    for field in [
+        "grant_digest",
+        "verifier_receipt_digest",
+        "opaque_authority",
+    ] {
+        let mut changed = original.clone();
+        changed["record"]["binding"]["final_use"][field] = serde_json::json!(digest(7));
+        assert!(serde_json::from_value::<ExecutionRecord>(changed).is_err());
+    }
+    let restored: ExecutionRecord = serde_json::from_value(original).unwrap();
+    assert_eq!(restored, intent);
+}
+
+#[test]
+fn final_use_decode_preserves_exact_claims_without_granting_authority() {
+    for original in [
+        FinalUse::NotGranted,
+        FinalUse::Verified {
+            grant_digest: digest(4),
+            verifier_receipt_digest: digest(5),
+        },
+    ] {
+        let bytes = serde_json::to_vec(&original).unwrap();
+        let decoded: FinalUse = serde_json::from_slice(&bytes).unwrap();
+        assert_eq!(decoded, original);
+        assert_eq!(serde_json::to_vec(&decoded).unwrap(), bytes);
+        let mut extra = serde_json::to_value(&original).unwrap();
+        extra["unverified_grant"] = serde_json::json!(true);
+        assert!(serde_json::from_value::<FinalUse>(extra).is_err());
+    }
+    for invalid in [
+        r#"{}"#,
+        r#"{"state":null}"#,
+        r#"{"state":"not_granted","grant_digest":null}"#,
+        r#"{"state":"not_granted","state":"not_granted"}"#,
+        r#"{"state":"verified","grant_digest":"unbound"}"#,
+    ] {
+        assert!(serde_json::from_str::<FinalUse>(invalid).is_err());
+    }
+}
