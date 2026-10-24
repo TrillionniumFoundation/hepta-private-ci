@@ -1,4 +1,4 @@
-#![cfg(unix)]
+#![cfg(target_os = "linux")]
 
 use std::collections::BTreeSet;
 use std::os::unix::fs::MetadataExt;
@@ -92,6 +92,12 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
     let authorizer = UnixFinalUseAuthorizer::from_config(FinalUseAuthorizerConfig {
         issuer_socket: authority_socket,
         issuer_uid,
+        issuer_process: Some(
+            codex_hepta_infer_worker_host::final_use_authorizer::capture_issuer_process_identity(
+                std::process::id(),
+                issuer_uid,
+            )?,
+        ),
         signer_id: "authority-owner".to_string(),
         verifying_key: signer.verifying_key().to_bytes(),
         authority_state_dir: authority_root.path().join("authority-state"),

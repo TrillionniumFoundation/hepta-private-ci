@@ -322,54 +322,74 @@ fn lost_pre_effect_abort_token_becomes_reconcile_only_on_reopen() {
 }
 
 #[test]
-fn explicit_dispatch_rejection_releases_without_claiming_provider_terminal() {
-    let path = path("dispatch-rejected");
+fn typed_pre_admission_rejection_is_durable_and_holds_capacity_until_owner_ack() {
+    let path = path("dispatch-rejected-two-stage");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     control.reserve_native(request("r1"), 1).unwrap();
     control.dispatch_native("r1", dispatch()).unwrap();
     let rejection = NativeDispatchRejection {
         status: NativeDispatchRejectionStatus::Overloaded,
-        reason: "Server overloaded; retry later.".to_string(),
+        reason: "Server overloaded before admission.".to_string(),
         response_digest: "e".repeat(64),
         retry_safe_before_admission: true,
     };
-    let rejected = control
-        .reject_native_before_start("r1", rejection.clone())
+    let prepared = control
+        .prepare_native_rejection_before_start("r1", rejection.clone())
         .unwrap();
-    assert_eq!(rejected.state, NativeReservationState::Released);
-    assert_eq!(rejected.dispatch_rejection, Some(rejection));
-    assert_eq!(rejected.observation, None);
-    assert_eq!(rejected.turn_id, None);
-    control.reserve_native(request("r2"), 1).unwrap();
+    assert_eq!(prepared.state, NativeReservationState::Dispatching);
+    assert!(prepared.pre_admission_rejection_pending);
+    assert_eq!(prepared.dispatch_rejection, Some(rejection.clone()));
+    assert_eq!(
+        control.reserve_native(request("r2"), 1),
+        Err(Error::CapacityExceeded)
+    );
     drop(control);
 
-    let control = DurableInferenceControl::open(&path, 8).unwrap();
-    assert_eq!(control.native_record("r1"), Some(&rejected));
-    drop(control);
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(reopened.native_record("r1"), Some(&prepared));
+    let released = reopened
+        .complete_native_rejection_before_start("r1")
+        .unwrap();
+    assert_eq!(released.state, NativeReservationState::Released);
+    assert!(!released.pre_admission_rejection_pending);
+    assert_eq!(released.dispatch_rejection, Some(rejection));
+    assert_eq!(
+        reopened
+            .complete_native_rejection_before_start("r1")
+            .unwrap(),
+        released
+    );
+    reopened.reserve_native(request("r2"), 1).unwrap();
+    drop(reopened);
     std::fs::remove_file(path).unwrap();
 }
 
 #[test]
-fn generic_dispatch_rejection_holds_slot_when_pre_admission_is_not_proven() {
-    let path = path("dispatch-rejected-unknown");
+fn deterministic_request_rejection_closes_capacity_but_never_becomes_retry_safe() {
+    let path = path("dispatch-invalid-request-two-stage");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     control.reserve_native(request("r1"), 1).unwrap();
     control.dispatch_native("r1", dispatch()).unwrap();
     let rejection = NativeDispatchRejection {
         status: NativeDispatchRejectionStatus::Rejected,
-        reason: "application error after dispatch".to_string(),
+        reason: "invalid params before handler admission".to_string(),
         response_digest: "f".repeat(64),
         retry_safe_before_admission: false,
     };
-    let rejected = control
-        .reject_native_before_start("r1", rejection.clone())
+    control
+        .prepare_native_rejection_before_start("r1", rejection.clone())
         .unwrap();
-    assert_eq!(rejected.state, NativeReservationState::Indeterminate);
-    assert_eq!(rejected.dispatch_rejection, Some(rejection));
-    assert_eq!(rejected.observation, None);
-    assert_eq!(
-        control.reserve_native(request("r2"), 1),
-        Err(Error::CapacityExceeded)
+    let released = control
+        .complete_native_rejection_before_start("r1")
+        .unwrap();
+    assert_eq!(released.state, NativeReservationState::Released);
+    assert_eq!(released.dispatch_rejection, Some(rejection));
+    assert!(
+        !released
+            .dispatch_rejection
+            .as_ref()
+            .unwrap()
+            .retry_safe_before_admission
     );
     drop(control);
     std::fs::remove_file(path).unwrap();
@@ -601,3 +621,97 @@ fn historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_succ
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn two_phase_pre_effect_abort_survives_reopen() {
+    let journal = path("abort-pending");
+    let mut control = DurableInferenceControl::open(&journal, 32).unwrap();
+    control.reserve_native(request("r-pending"), 4).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort_bound(
+            "r-pending",
+            dispatch(),
+            NativeOwnerDispatchBinding {
+                run_id: "run.pending".to_string(),
+                pre_dispatch_revision: 2,
+                dispatch_digest: "d".repeat(64),
+            },
+        )
+        .unwrap();
+    let pending = control
+        .prepare_native_abort_before_effect(token, "owner fence drift".to_string())
+        .unwrap();
+    assert!(pending.pre_effect_abort_pending);
+    assert_eq!(pending.state, NativeReservationState::Dispatching);
+    drop(control);
+
+    let mut reopened = DurableInferenceControl::open(&journal, 32).unwrap();
+    let replayed = reopened.native_record("r-pending").unwrap();
+    assert!(replayed.pre_effect_abort_pending);
+    assert_eq!(
+        replayed.owner_dispatch.as_ref().unwrap().run_id,
+        "run.pending"
+    );
+    let released = reopened
+        .complete_native_abort_before_effect("r-pending")
+        .unwrap();
+    assert_eq!(released.state, NativeReservationState::Released);
+    assert!(!released.pre_effect_abort_pending);
+    drop(reopened);
+    std::fs::remove_file(journal).unwrap();
+}
+
+#[test]
+fn pending_abort_forbids_start_cancel_and_observation() {
+    let journal = path("abort-fence");
+    let mut control = DurableInferenceControl::open(&journal, 32).unwrap();
+    control.reserve_native(request("r-fenced"), 4).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r-fenced", dispatch())
+        .unwrap();
+    control
+        .prepare_native_abort_before_effect(token, "final-use denied".to_string())
+        .unwrap();
+    assert_eq!(
+        control.native_started("r-fenced", "turn-fenced".to_string()),
+        Err(Error::InvalidTransition)
+    );
+    assert_eq!(
+        control.cancel_native("r-fenced"),
+        Err(Error::InvalidTransition)
+    );
+    drop(control);
+    std::fs::remove_file(journal).unwrap();
+}
+
+#[test]
+fn completing_a_pre_effect_abort_is_idempotent_after_reopen() {
+    let journal = path("abort-complete-retry");
+    let mut control = DurableInferenceControl::open(&journal, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
+    let released = control
+        .abort_native_before_effect(token, "no physical send".to_string())
+        .unwrap();
+    assert!(released.pre_effect_abort_local_only);
+    drop(control);
+    let mut reopened = DurableInferenceControl::open(&journal, 8).unwrap();
+    assert_eq!(
+        reopened.complete_native_abort_before_effect("r1").unwrap(),
+        released
+    );
+    assert!(
+        reopened
+            .dispatch_native_with_pre_effect_abort("r1", dispatch())
+            .is_err()
+    );
+    assert!(reopened.native_started("r1", "turn-1".to_string()).is_err());
+    drop(reopened);
+    std::fs::remove_file(journal).unwrap();
+}
+
+#[cfg(unix)]
+#[path = "native_crash_tests.rs"]
+mod crash;
