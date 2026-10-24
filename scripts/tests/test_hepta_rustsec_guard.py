@@ -1,6 +1,7 @@
 """Regression tests for the tracked advisory no-suppression policy."""
 
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -14,8 +15,8 @@ from scripts.check_hepta_rustsec_advisories import (
 
 
 class TrackedRustSecGuardTests(unittest.TestCase):
-    def test_all_thirteen_tracked_advisories_are_caught_as_cargo_deny_ignores(self):
-        self.assertEqual(len(TRACKED_RUSTSEC), 13)
+    def test_all_eighteen_tracked_advisories_are_caught_as_cargo_deny_ignores(self):
+        self.assertEqual(len(TRACKED_RUSTSEC), 18)
         for advisory_id in sorted(TRACKED_RUSTSEC):
             with self.subTest(advisory_id=advisory_id):
                 policy = (
@@ -31,6 +32,23 @@ class TrackedRustSecGuardTests(unittest.TestCase):
             with self.subTest(advisory_id=advisory_id):
                 policy = f'[advisories]\nignore = ["{advisory_id}"]\n'
                 self.assertEqual(ignored_tracked_advisories(policy), [advisory_id])
+
+    def test_emsign_tls_trust_dependency_pins_cannot_regress(self):
+        """An installed vulnerable TLS verifier or trust-root bundle must fail."""
+        lock_path = Path(__file__).resolve().parents[2] / "codex-rs" / "Cargo.lock"
+        packages = tomllib.loads(lock_path.read_text(encoding="utf-8"))["package"]
+        minimum = {
+            "rustls-webpki": (0, 103, 16),  # RUSTSEC-2026-0382
+            "webpki-roots": (1, 0, 10),  # RUSTSEC-2026-0381
+            "webpki-root-certs": (1, 0, 10),  # RUSTSEC-2026-0383
+        }
+        for package in packages:
+            name = package["name"]
+            if name not in minimum:
+                continue  # Removing the vulnerable dependency entirely is safe.
+            with self.subTest(package=name, version=package["version"]):
+                version = tuple(int(piece) for piece in package["version"].split("."))
+                self.assertGreaterEqual(version, minimum[name])
 
     def test_unrelated_existing_exceptions_are_not_silently_rewritten(self):
         policy = (
