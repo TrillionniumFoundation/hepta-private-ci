@@ -1,7 +1,7 @@
 use super::*;
 use codex_hepta_infer_core::GENERATION_SCHEMA;
 
-fn fixture() -> (
+pub(super) fn fixture() -> (
     tempfile::TempDir,
     GenerationRegistrationV1,
     GenerationRequestV1,

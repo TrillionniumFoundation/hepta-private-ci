@@ -93,9 +93,12 @@ and timeout, within the normal per-test timeout. CI runs them explicitly and
 retains the complete fixture/evidence directory. The initialized
 tiny models prove execution and custody mechanics, not trained-model efficacy.
 
-This driver does not implement `NeuronFeatureDriver`, calibrated intuition,
-online NDU policy selection, authenticated learning-ledger admission, or Agentd
-startup activation. Those gates require an explicit bounded latent projection
-and prediction profile, real calibration/OOD artifacts, current selected-model
-and authority wiring, and durable production evidence ownership. No missing
-calibration or authority is replaced by a fixture success value.
+The additional [generation-neuron adapter](GENERATION_NEURON.md) implements the
+existing `NeuronFeatureDriver` boundary with an explicit bounded latent
+projection and persistence prediction. Its frozen real calibration failed the
+ECE/OOD gates; the native integration requires actual `InvalidCalibration`
+rejection. Calibrated intuition, online NDU policy selection, authenticated
+production learning admission and Agentd startup activation are not implied.
+Current selected-model/authority wiring and durable production evidence
+ownership remain separate gates. No failed calibration is replaced by a
+fixture success value.

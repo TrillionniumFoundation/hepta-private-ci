@@ -32,6 +32,9 @@ use crate::model_worker::ModelDriver;
 use crate::model_worker::ModelManifest;
 use crate::model_worker::WorkerRequest;
 
+#[path = "generation_neuron.rs"]
+pub mod neuron;
+
 const SOURCE_DIR: &str = "experiments/multimodal_output_portfolio/v6";
 const SOURCES: [&str; 6] = [
     "conditioned.py",
@@ -86,6 +89,7 @@ pub struct GenerationDriver {
     registration: GenerationRegistrationV1,
     requests: BTreeMap<String, GenerationRequestV1>,
     evidence: GenerationEvidenceV1,
+    neuron: neuron::GenerationNeuronRegistry,
 }
 
 fn failure(message: impl std::fmt::Display) -> Error {
@@ -138,6 +142,7 @@ impl GenerationDriver {
             registration,
             requests: prepared,
             evidence: GenerationEvidenceV1::default(),
+            neuron: neuron::GenerationNeuronRegistry::default(),
         };
         driver.verify_registration()?;
         Ok(driver)
