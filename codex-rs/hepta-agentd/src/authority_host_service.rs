@@ -57,6 +57,11 @@ pub use notes_launch::RootNotesReservedTarget;
 pub use notes_launch::RootNotesSessionChannels;
 pub use notes_launch::RootNotesStartupCancellation;
 
+#[path = "root_notes_fresh_authority.rs"]
+mod notes_fresh;
+pub use notes_fresh::RootNotesFreshAuthority;
+pub use notes_fresh::RootNotesFreshAuthorityInput;
+
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]
 pub enum HostAuthorityLane {

@@ -93,6 +93,8 @@ pub use authority_host_service::{RootNotesAuthorityStartup, RootNotesAwaitingSes
     RootNotesLaunchServer, RootNotesReservedTarget, RootNotesSessionChannels,
     RootNotesStartupCancellation};
 #[cfg(target_os = "linux")]
+pub use authority_host_service::{RootNotesFreshAuthority, RootNotesFreshAuthorityInput};
+#[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityLane;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityService;
