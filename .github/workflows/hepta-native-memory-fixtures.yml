@@ -21,19 +21,20 @@ jobs:
       CARGO_BUILD_JOBS: "1"
       PYTHONDONTWRITEBYTECODE: "1"
       NEXTEST_USER_CONFIG_FILE: "none"
-      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-fixtures-target
-      EVIDENCE: ${{ runner.temp }}/hepta-native-fixtures-evidence
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
-          fetch-depth: 3
+          fetch-depth: 4
       - name: Bind reviewed source before setup
         id: source
         shell: bash
         run: |
           set -euo pipefail
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/hepta-native-fixtures-target"
+          export EVIDENCE="$RUNNER_TEMP/hepta-native-fixtures-evidence"
+          printf 'CARGO_TARGET_DIR=%s\nEVIDENCE=%s\n' "$CARGO_TARGET_DIR" "$EVIDENCE" >> "$GITHUB_ENV"
           mkdir "$EVIDENCE"
           test "$WORKFLOW_SHA" = "$CANDIDATE_SHA"
           python3 .github/scripts/native_fixture_evidence.py bind "$EVIDENCE" 2>&1 | tee "$EVIDENCE/source.log"
