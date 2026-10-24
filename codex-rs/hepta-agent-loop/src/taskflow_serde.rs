@@ -42,6 +42,10 @@ pub(crate) mod generation {
     use codex_hepta_types::Generation;
     use serde::Deserialize;
 
+    #[expect(
+        clippy::trivially_copy_pass_by_ref,
+        reason = "Serde serialize_with requires a shared reference to the field"
+    )]
     pub(crate) fn serialize<S>(value: &Generation, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
