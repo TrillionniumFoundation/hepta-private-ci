@@ -165,3 +165,16 @@ separately preregistered supplement, never a renamed 128. Source/model acquisiti
 media encoding and operational command execution are separate, costly activities:
 follow their pinned protocols/runtime receipts and write new artifacts if repeated.
 None is triggered by archive restoration or frozen-head replay.
+
+## 6. Replay a relocated cost ledger
+
+Clone the registry into a **new descriptor outside sealed trees**, changing only `datasets[*].path` and `receipts[*].path`.
+Resolve paths through verified `manifest.provenance.roots`, require actual `manifest.files` membership, and verify each candidate file against the entry's unchanged `sha256`.
+Keep every JSON-pointer key, binding edge, other registry value and historical source path inside sealed receipts unchanged. Use a fresh ledger output:
+
+```sh
+python3 qa/stem-bakeoff/cell_cost_ledger.py --registry NEW_DESCRIPTOR --output NEW_LEDGER
+```
+
+The metadata-only portability proof used the then-incomplete draft registry: 259 ordinary copied inputs, with all 21 cost-semantic output fields equal. Receipt `portability-replay.json` has SHA256 `e99726c10547db76f0a1c2db54fa822b86ea96d4d09cce5df77c4583203c5de6`; it is not a final full-archive restoration claim.
+Expected provenance differences are `registry_sha256`, `artifact_bindings`, `artifact_file_bytes` and location fields in `dataset_artifacts`. Compare every other output field exactly; do not claim byte-identical whole JSON after relocation. No wrapper or source modification is needed.
