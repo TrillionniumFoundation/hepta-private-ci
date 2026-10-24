@@ -10,6 +10,12 @@ use crate::AgentdNotesSubmissionState;
 use crate::notes_ui_queue::NotesUiQueue;
 use crate::notes_ui_wire::*;
 
+enum CallPhase {
+    ReadOnly,
+    Preparing,
+    Sending,
+}
+
 impl AgentdNotesLiteralAdapter {
     pub(super) async fn run_ui(&mut self, queue: &NotesUiQueue) -> Result<(), AgentdError> {
         loop {
@@ -21,20 +27,36 @@ impl AgentdNotesLiteralAdapter {
             let mut view = queue.current(&entry.command).map_err(|_| invalid("Notes UI view missing"))?;
             let submitting = matches!(entry.command, ObjectiveCommand::Submit { .. });
             let cancelling = matches!(entry.command, ObjectiveCommand::Cancel { .. });
-            let outcome = tokio::time::timeout_at(entry.end.into(), self.handle_ui(entry.command, entry.end, &mut view)).await;
+            let mut phase = CallPhase::ReadOnly;
+            let outcome = tokio::time::timeout_at(entry.end.into(), self.handle_ui(entry.command, entry.end, &mut view, &mut phase)).await;
             if !matches!(outcome, Ok(Ok(()))) {
                 // A cancelled started checkpoint/effect retains the original
                 // fence. An old positive observation is never erased by timeout.
-                if submitting && !view.publication_retained { view.stage = ObjectiveStage::SubmitUnknown; }
+                let issue = if submitting && !view.publication_retained {
+                    match phase {
+                        CallPhase::ReadOnly => {
+                            if !view.request_retained { view.stage = ObjectiveStage::Unavailable; }
+                            ObjectiveHostIssue::Unavailable
+                        }
+                        CallPhase::Preparing => {
+                            view.stage = ObjectiveStage::SubmitUnknown;
+                            ObjectiveHostIssue::PersistenceUnknown
+                        }
+                        CallPhase::Sending => {
+                            view.stage = ObjectiveStage::SubmitUnknown;
+                            ObjectiveHostIssue::TransportUnknown
+                        }
+                    }
+                } else { ObjectiveHostIssue::TransportUnknown };
                 if cancelling { view.cancellation = ObjectiveCancellation::Unknown; }
-                view.issue = Some(if submitting { ObjectiveHostIssue::PersistenceUnknown } else { ObjectiveHostIssue::TransportUnknown });
+                view.issue = Some(issue);
             }
             self.check_available()?;
             queue.update(view).map_err(|_| invalid("Notes UI view update failed"))?;
         }
     }
 
-    async fn handle_ui(&mut self, command: ObjectiveCommand, end: Instant, view: &mut ObjectiveObservation) -> Result<(), AgentdError> {
+    async fn handle_ui(&mut self, command: ObjectiveCommand, end: Instant, view: &mut ObjectiveObservation, phase: &mut CallPhase) -> Result<(), AgentdError> {
         if Instant::now() >= end { return Err(invalid("Notes UI action deadline elapsed before start")); }
         view.issue = None;
         view.observed_unix_ms = ObjectiveObservation::new(None, ObjectiveStage::Unavailable).observed_unix_ms;
@@ -55,12 +77,15 @@ impl AgentdNotesLiteralAdapter {
                 let run_id = self.run_id(&intent.client_intent_id)?;
                 let retained = self.sender.retained_request_for_run(&run_id).await
                     .map_err(|error| invalid(&error.to_string()))?;
-                if retained.is_none() && self.require_objective_ready().await.is_err() {
-                    // Startup is a read-only availability gap. No preparation,
-                    // send fence or Unknown delivery is created by this check.
-                    view.stage = ObjectiveStage::Unavailable;
-                    view.issue = Some(ObjectiveHostIssue::Unavailable);
-                    return Ok(());
+                if retained.is_none() {
+                    if self.require_objective_ready().await.is_err() {
+                        // Startup is a read-only availability gap. No preparation,
+                        // send fence or Unknown delivery is created by this check.
+                        view.stage = ObjectiveStage::Unavailable;
+                        view.issue = Some(ObjectiveHostIssue::Unavailable);
+                        return Ok(());
+                    }
+                    *phase = CallPhase::Preparing;
                 }
                 match self.prepare(&intent.client_intent_id, &intent.text).await? {
                     AgentdNotesPreparedObjective::Retained(_) => {
@@ -72,6 +97,7 @@ impl AgentdNotesLiteralAdapter {
                         view.stage = ObjectiveStage::Retained;
                         let remaining = end.checked_duration_since(Instant::now())
                             .filter(|remaining| !remaining.is_zero()).ok_or_else(|| invalid("Notes UI submission deadline elapsed"))?;
+                        *phase = CallPhase::Sending;
                         let observed = prepared.submit_once(remaining).await?;
                         let acknowledged = observed.retention == AgentdNotesObservationRetention::Acknowledged;
                         view.stage = match observed.state {
