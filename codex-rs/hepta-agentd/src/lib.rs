@@ -221,8 +221,10 @@ pub mod test_support;
 mod topology_plasticity_host;
 
 pub use android_runtime::AgentdAndroidRuntimeInputs;
+pub use android_runtime::AgentdAndroidRuntimeSession;
 pub use android_runtime::AgentdAndroidTextDevice;
 pub use android_runtime::AndroidRuntimeAttempt;
+pub use android_runtime::prepare_android_runtime_target;
 pub use authbus_ingress::authbus_text_claims;
 pub use browser_servo::BrowserFinalUseInvocation;
 pub use browser_servo::BrowserServoCall;

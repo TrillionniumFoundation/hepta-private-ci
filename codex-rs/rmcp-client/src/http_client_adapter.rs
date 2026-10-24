@@ -203,7 +203,8 @@ impl StreamableHttpClient for StreamableHttpClientAdapter {
         } else {
             (is_discovery_request || uses_modern_protocol).then_some(MAX_MCP_STDIO_LINE_BYTES)
         };
-        let redirect_policy = if is_discovery_request {
+        let single_attempt = self.single_attempt_requests.load(Ordering::Acquire);
+        let redirect_policy = if single_attempt || is_discovery_request {
             HttpRedirectPolicy::Stop
         } else {
             self.redirect_policy(&headers)
@@ -254,7 +255,7 @@ impl StreamableHttpClient for StreamableHttpClientAdapter {
             request_id: "buffered-request".to_string(),
             stream_response: true,
         };
-        let request = if self.single_attempt_requests.load(Ordering::Acquire) {
+        let request = if single_attempt {
             self.http_client.http_request_stream_once(params)
         } else {
             self.http_client.http_request_stream(params)

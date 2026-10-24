@@ -194,7 +194,7 @@ pub(crate) async fn inputs(
         serde_json::from_str(include_str!("../tests/fixtures/android-bound-text-v1.json"))?;
     Ok((
         AgentdAndroidRuntimeInputs {
-            session: client.retain_tool_session().await?,
+            session: client.retain_tool_session().await?.into(),
             runtime: Handle::current(),
             payload_json: fixture["request_utf8"]
                 .as_str()

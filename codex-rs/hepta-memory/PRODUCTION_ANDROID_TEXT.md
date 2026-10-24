@@ -126,8 +126,11 @@ authenticated client into an Agentd process.
 
 The original trusted embedding retains its already initialized `RmcpClient`
 with `retain_tool_session`. The client must keep its original lifetime alive.
-HTTP requires the original authenticated `AgentPluginV1` no-redirect mode and
-legacy MCP request protocol. OAuth-managed transports, including the SDK's
+HTTP requires the original authenticated peer and legacy MCP request protocol.
+Retention monotonically enforces `HttpRedirectPolicy::Stop` on that same
+adapter, including ordinary configured servers whose initial redirect policy
+was `Legacy`; an agent-plugin source label is not the no-replay guarantee.
+OAuth-managed transports, including the SDK's
 access-token-only OAuth path, are refused because challenge handling can resend
 a request below the application layer. Opaque delegated bearer credentials and
 dynamic authentication providers are also refused. The existing HTTP capability
@@ -165,6 +168,19 @@ returns an `Arc<AgentdAndroidTextDevice>` for original-job correlation. It does
 not issue a grant or call the helper during bootstrap. Normal runtime attachment
 rechecks the recovered owner again. The original embedding must provide this
 composition explicitly; no environment-based production preset was added.
+
+For a ready original `codex-mcp::McpBinding`,
+`AgentdAndroidRuntimeInputs::from_mcp_binding` retains only `process_start`,
+`process_wait` and `process_read` in the independently selected original
+environment. It preserves the frozen tool catalog, its read fence throughout
+each request, the original client and the smaller original server timeout.
+Disabled, unready or app-only tools cannot trigger server startup. The existing
+MCP policy must explicitly approve unattended use; an interactive approval
+requirement is not silently discharged by a FinalUse grant. No bare manager
+client is exported. `prepare_android_runtime_target` supplies this actual
+Android target as the primary destination of the existing production host,
+allowing Notes to use its original separate consumer without a synthetic
+primary target. The original manager must remain owned until Agentd ends.
 
 This connector intentionally binds one exact operation/payload. Its effect
 entry is consumed on the first attempt, including failed or ambiguous attempts.

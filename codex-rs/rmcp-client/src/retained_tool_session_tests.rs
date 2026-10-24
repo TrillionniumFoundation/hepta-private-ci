@@ -150,9 +150,9 @@ async fn authenticated_server(status: u16, delay: Duration, auth: FixtureAuth) -
 #[tokio::test]
 async fn retained_session_never_recovers_404_or_retries_auth_or_transient_failures()
 -> anyhow::Result<()> {
-    for (auth, status) in [FixtureAuth::Bearer, FixtureAuth::RuntimeHeader].into_iter().flat_map(|auth| [404, 401, 400, 403, 502, 307].map(|status| (auth, status))) {
+    for (auth, redirects, status) in [FixtureAuth::Bearer, FixtureAuth::RuntimeHeader].into_iter().flat_map(|auth| [StreamableHttpRedirectMode::Legacy, StreamableHttpRedirectMode::AgentPluginV1].into_iter().flat_map(move |redirects| [404, 401, 400, 403, 502, 307].map(|status| (auth, redirects, status)))) {
         let (server, initializes, calls) = authenticated_server(status, Duration::ZERO, auth).await;
-        let client = authenticated_client(&server, StreamableHttpRedirectMode::AgentPluginV1, auth, Environment::default_for_tests().get_http_client()).await?;
+        let client = authenticated_client(&server, redirects, auth, Environment::default_for_tests().get_http_client()).await?;
         let retained = client.retain_tool_session().await?;
         assert!(
             retained
@@ -237,11 +237,8 @@ async fn retained_session_lost_reply_has_hard_deadline_and_no_second_request() -
 }
 
 #[tokio::test]
-async fn retained_session_refuses_redirecting_transport_and_closed_peer() -> anyhow::Result<()> {
+async fn retained_session_refuses_closed_original_peer() -> anyhow::Result<()> {
     let (server, _, calls) = server(200, Duration::ZERO).await;
-    let redirecting = client(&server, StreamableHttpRedirectMode::Legacy).await?;
-    assert!(redirecting.retain_tool_session().await.is_err());
-    redirecting.shutdown().await;
     let original = client(&server, StreamableHttpRedirectMode::AgentPluginV1).await?;
     let retained = original.retain_tool_session().await?;
     original.shutdown().await;

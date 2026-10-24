@@ -10,6 +10,7 @@ use serde_json::json;
 use codex_hepta_contracts::Sha256Digest;
 
 use super::AgentdAndroidTextDevice;
+use super::AgentdAndroidRuntimeSession;
 
 const HOST: &str = "pocket4";
 const EXECUTABLE: &str = "/usr/bin/sudo";
@@ -201,10 +202,11 @@ async fn call(
     let Value::Object(arguments) = arguments else {
         return Err("invalid Runtime arguments".to_string());
     };
-    let response = device
-        .session
-        .call_tool_once(tool, arguments, remaining(deadline)?)
-        .await
+    let budget = remaining(deadline)?;
+    let response = match &device.session {
+        AgentdAndroidRuntimeSession::Native(session) => session.call_tool_once(tool, arguments, budget).await,
+        AgentdAndroidRuntimeSession::Managed(session) => session.call_tool_once(tool, arguments, budget).await,
+    }
         .map_err(|_| "original retained Runtime call failed or expired".to_string())?;
     remaining(deadline)?;
     if response.is_error == Some(true) || response.content.len() != 1 {

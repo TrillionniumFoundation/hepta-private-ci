@@ -390,7 +390,7 @@ impl RmcpClient {
     }
 
     /// Retain the exact initialized peer for calls which must never be repaired
-    /// or replayed. HTTP requires the existing no-redirect authenticated mode;
+    /// or replayed. HTTP becomes strictly non-redirecting on the original peer;
     /// OAuth transports (including access-token-only fallback) and opaque
     /// delegated HTTP credentials are refused. The original HTTP capability
     /// must explicitly support sending once below its authentication layer.
@@ -405,11 +405,9 @@ impl RmcpClient {
                 pinned_credential_store,
                 http_client,
                 auth_provider,
-                redirect_mode,
                 ..
             } => {
-                *redirect_mode == StreamableHttpRedirectMode::AgentPluginV1
-                    && pinned_credential_store.get().is_none()
+                pinned_credential_store.get().is_none()
                     && auth_provider.is_none()
                     && !matches!(bearer_token, Some(StreamableHttpBearerToken::ProvidedByHttpClient))
                     && http_client.supports_single_attempt_requests()

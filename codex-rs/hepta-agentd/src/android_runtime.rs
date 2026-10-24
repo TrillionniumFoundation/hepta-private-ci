@@ -8,11 +8,14 @@ use std::time::Duration;
 use std::time::Instant;
 
 use base64::Engine;
+use codex_config::AppToolApproval;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory::AndroidSetTextV1;
 use codex_hepta_memory::OriginalAndroidTextDevice;
 use codex_hepta_memory::ProductionAndroidTextTarget;
+use codex_mcp::McpBinding;
+use codex_mcp::RetainedMcpCalls;
 use codex_rmcp_client::RetainedMcpToolSession;
 use serde::Serialize;
 use tokio::runtime::Handle;
@@ -32,10 +35,52 @@ mod job;
 /// This value neither discovers credentials nor creates any device authority.
 /// `deadline` is the original local monotonic bound, never a renewed expiry.
 pub struct AgentdAndroidRuntimeInputs {
-    pub session: RetainedMcpToolSession,
+    pub session: AgentdAndroidRuntimeSession,
     pub runtime: Handle,
     pub payload_json: String,
     pub deadline: Instant,
+}
+
+/// An original native peer or the named calls retained by the original MCP
+/// manager. Managed calls preserve its tool/environment/catalog boundaries.
+pub enum AgentdAndroidRuntimeSession {
+    Native(RetainedMcpToolSession),
+    Managed(RetainedMcpCalls),
+}
+
+impl From<RetainedMcpToolSession> for AgentdAndroidRuntimeSession {
+    fn from(session: RetainedMcpToolSession) -> Self {
+        Self::Native(session)
+    }
+}
+
+impl AgentdAndroidRuntimeInputs {
+    /// Use the manager's existing ready binding without exporting its raw
+    /// client, starting another server, or bypassing interactive tool policy.
+    /// The original FinalUse owner still separately authorizes the operation.
+    pub async fn from_mcp_binding(
+        binding: &McpBinding,
+        server: &str,
+        environment_id: &str,
+        runtime: Handle,
+        payload_json: String,
+        deadline: Instant,
+    ) -> Result<Self, AgentdError> {
+        let tools = ["process_start", "process_wait", "process_read"];
+        let session = tokio::time::timeout_at(
+            deadline.into(),
+            binding.retain_calls(server, environment_id, &tools),
+        )
+        .await
+        .map_err(|_| AgentdError::Protocol("original Android MCP bootstrap expired".into()))?
+        .map_err(|error| AgentdError::Protocol(format!("original Android MCP binding: {error}")))?;
+        if tools.into_iter().any(|tool| session.tool_approval_mode(tool) != Some(AppToolApproval::Approve)) {
+            return Err(AgentdError::Invalid(
+                "original Android Runtime tools require explicit unattended approval in the existing MCP policy".into(),
+            ));
+        }
+        Ok(Self { session: AgentdAndroidRuntimeSession::Managed(session), runtime, payload_json, deadline })
+    }
 }
 
 /// Correlation retained for the original owner, not an effect receipt. An
@@ -55,7 +100,7 @@ pub struct AndroidRuntimeAttempt {
 /// Uncertainty closes this effect lane permanently; read-only reconciliation
 /// remains possible on the same peer and original operation.
 pub struct AgentdAndroidTextDevice {
-    session: RetainedMcpToolSession,
+    session: AgentdAndroidRuntimeSession,
     runtime: Handle,
     deadline: Instant,
     apply_request: Vec<u8>,
@@ -65,6 +110,20 @@ pub struct AgentdAndroidTextDevice {
     invalidated: AtomicBool,
     exchange: Mutex<()>,
     attempt: Mutex<AndroidRuntimeAttempt>,
+}
+
+/// Prepare the real Android primary target for the same original production
+/// writer. Construction performs no helper call, grant request or state write.
+/// The trusted launcher must retain its original Runtime manager for the whole
+/// Agentd lifetime and attach the existing Device FinalUse owner before use.
+pub fn prepare_android_runtime_target(
+    inputs: AgentdAndroidRuntimeInputs,
+) -> Result<(Arc<ProductionAndroidTextTarget>, Arc<AgentdAndroidTextDevice>), AgentdError> {
+    let (device, payload) = AgentdAndroidTextDevice::new(inputs).map_err(AgentdError::Invalid)?;
+    let device = Arc::new(device);
+    let target = ProductionAndroidTextTarget::new(&payload.observation, device.clone())
+        .map_err(AgentdError::Invalid)?;
+    Ok((Arc::new(target), device))
 }
 
 impl AgentdAndroidTextDevice {
@@ -229,13 +288,9 @@ impl AgentdProductionOperationRuntimeConfig {
         .map_err(|_| {
             AgentdError::Protocol("Android recovered-owner validation expired".to_string())
         })??;
-        let (device, payload) =
-            AgentdAndroidTextDevice::new(inputs).map_err(AgentdError::Invalid)?;
-        let device = Arc::new(device);
-        let target = ProductionAndroidTextTarget::new(&payload.observation, device.clone())
-            .map_err(AgentdError::Invalid)?;
+        let (target, device) = prepare_android_runtime_target(inputs)?;
         Ok((
-            self.with_additional_target(final_use, Arc::new(target))?,
+            self.with_additional_target(final_use, target)?,
             device,
         ))
     }
