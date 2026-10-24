@@ -35,9 +35,33 @@ fn private_directory(path: &Path, uid: u32) {
 impl Fixture {
     fn new() -> Self {
         require_root().expect("this ignored parent must run under actual Root");
+        // Runtime sockets may live on noexec /run; the actual installed ELF
+        // belongs in the separately provisioned Root-owned exec namespace.
+        let installed = PathBuf::from(
+            std::env::var_os("HEPTA_TEST_ROOT_OWNER_INSTALL_DESTINATION")
+                .expect("Root0:0 mode0711 executable installation parent is required"),
+        );
+        require_path(&installed).expect("normalized absolute Root installation parent");
+        let metadata = std::fs::symlink_metadata(&installed).unwrap();
+        assert!(metadata.is_dir());
+        assert_eq!(
+            (metadata.uid(), metadata.gid(), metadata.mode() & 0o7777),
+            (0, 0, 0o711)
+        );
+        for ancestor in installed.ancestors() {
+            let entry = std::fs::symlink_metadata(ancestor).unwrap();
+            assert!(
+                entry.is_dir()
+                    && entry.uid() == 0
+                    && entry.mode() & 0o022 == 0
+                    && entry.mode() & 0o001 != 0,
+                "installed role ancestor must be Root-owned, non-writable and searchable: {}",
+                ancestor.display()
+            );
+        }
         let root = tempfile::Builder::new()
             .prefix("hepta-role-launch-")
-            .tempdir_in("/run")
+            .tempdir_in(&installed)
             .unwrap();
         std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o755)).unwrap();
         let home = root.path().join("home");
