@@ -1,5 +1,6 @@
 //! Source-bound public bundle from actual original root state, not a template.
 use super::*;
+use crate::deployment_issuer::WriterRegistrationExt;
 use codex_hepta_contracts::AuthorityClock;
 use pretty_assertions::assert_eq;
 

@@ -43,6 +43,7 @@ use root::ProtectedLease;
 #[path = "deployment_writer.rs"]
 mod writer;
 pub use writer::HostAuthorityWriterRegistration;
+pub(crate) use writer::WriterRegistrationExt;
 
 const STATE_OWNER: &str = "local-final-use-issuer";
 const EXCHANGE_DEADLINE: Duration = Duration::from_secs(2);

@@ -54,3 +54,15 @@ pub use cognitive_checkpoint_wire::CognitiveCheckpointRetainedRequest;
 pub use cognitive_checkpoint_wire::CognitiveCheckpointStatus;
 pub use cognitive_checkpoint_wire::CognitiveCheckpointToken;
 pub use cognitive_checkpoint_wire::CognitiveCheckpointWriterBinding;
+
+mod writer_registration;
+pub use writer_registration::HostAuthorityWriterRegistration;
+
+mod authority_host_bootstrap;
+pub use authority_host_bootstrap::HOST_AUTHORITY_BOOTSTRAP_BOUND;
+pub use authority_host_bootstrap::HOST_AUTHORITY_BOOTSTRAP_V1;
+pub use authority_host_bootstrap::HostAuthorityFiveLanePathsV1;
+pub use authority_host_bootstrap::HostAuthorityPublicBootstrapV1;
+pub use authority_host_bootstrap::HostAuthorityPublicConsumerV1;
+pub use authority_host_bootstrap::HostAuthorityPublicConsumersV1;
+pub use authority_host_bootstrap::HostAuthorityPublicIssuerKeyV1;

@@ -9,7 +9,6 @@ use crate::cognitive_store::unavailable;
 use codex_hepta_contracts::Sha256Digest;
 use sqlx::Sqlite;
 use sqlx::Transaction;
-use std::future::Future;
 use std::sync::Arc;
 use std::sync::Weak;
 use std::sync::atomic::AtomicU8;

@@ -9,6 +9,7 @@ use crate::HostAuthorityWriterObservationV2;
 use crate::HostAuthorityWriterRegistration;
 use crate::HostSignedWriterAuthorizationV1;
 use crate::HostWriterAuthorizationReadResponseV1;
+use crate::deployment_issuer::WriterRegistrationExt;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
 

@@ -1,5 +1,6 @@
 //! Root launcher entry points. Initialization and runtime opening are disjoint.
 
+use crate::deployment_issuer::WriterRegistrationExt;
 use std::fs::File;
 use std::io;
 use std::os::fd::AsRawFd;
