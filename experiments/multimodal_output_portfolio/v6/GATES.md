@@ -29,7 +29,7 @@
 
 原生执行验证包括**现有 inference owner 与 worker 的执行闭环**，以及本地 terminal learning owner 的真实导入、冻结、拟合、加载和恢复。Neuron 的拒绝路径使用实际测量值；“正确拒绝”通过并不意味着 predictor 通过校准。这些切片不激活 Agentd daemon，不产生外部 observer 认证或生产写入权限。
 
-塑性前置条件另已实测：真实 terminal artifact 的值经 `NduProjectionStoreV1` append/select/reopen 保持一致；被拒 Neuron 的真实 `FileAnchorWitnessStore::current()` 返回 `None`，journal 仍为空。因此没有可提交的 acknowledged checkpoint，未构造 dynamic resolver、未调用 proposal owner、未产生 update。`MissingAcknowledgedNeuronCheckpoint` 是对此前置条件的工程标签，不是 proposal owner 返回的错误。两个原始 objective/subject 上下文均保留，没有改写成同一个上下文来拼接成功链路。
+塑性前置条件另已实测：真实 terminal artifact 的值经 `NduProjectionStoreV1` append/select/reopen 保持一致；被拒 Neuron 的真实 `FileAnchorWitnessStore::current()` 返回 `None`，journal 仍为空。因此没有可提交的 acknowledged checkpoint，未构造 dynamic resolver、未调用 proposal owner、未产生 update。`MissingAcknowledgedNeuronCheckpoint` 是对此前置条件的工程标签，不是 proposal owner 返回的错误。terminal 的原 objective/subject 与 Neuron 的独立 scope/objective 均保留，没有改写成同一个上下文来拼接成功链路。
 
 自动 CI 执行当前 run 的真实 trained-model 重放、terminal import 和 paired evaluation，以及通用 feature 边界和 Python 校准算术回归。原始 rows SHA 在完成验收时单独固定，导出与原生导入复用这个 pin。绑定 full-002 checkpoint 的 Neuron 实测与塑性前置条件集成只在明确提供完整 fixture 与独立 SHA 时执行；自动 CI 对这两个 opt-in target 仅编译，不能把 ignored 或 compilation 计为实测测试通过。
 

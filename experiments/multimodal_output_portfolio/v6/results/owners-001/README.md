@@ -2,6 +2,8 @@
 
 本目录保存实际 owner 执行的紧凑摘要，原始字节哈希及来源见 [manifest.json](manifest.json)。这些是本地工程证据，权限始终为 `DENY_ALL`。它们既不增加独立科学样本，也不替代生产 trust、daemon 注册或新实验的预注册。完整质量结论见 [full-002](../full-002/README.md)。
 
+最终原始证据包 `ndu_v6_owner_evidence.tar.gz` 为 51,419,940 bytes，含 405 个原始 payload 文件及两份归档说明；全部 407 个成员已解压回读核验。SHA256 为 `00159262e8b55275b326fa8f7b94abcb51ed97d89f35c4871ac83e988a185cb4`，最终 owner 源码绑定提交 `b2964156764e174b396407c0c981d6fad043b204`。实际执行二进制、格式化前源身份、原始失败日志与零字节 Neuron journal 均保留；先前科学数据通过各自 archive SHA 关联。原 fixture 保留原绝对路径，新环境应重新导出明确绑定的新 fixture，不能原地改写这些原始证据。
+
 ## 1. 同一已训练生成模型进入 inference owner
 
 [trained-owner-replay.json](trained-owner-replay.json) 使用 full-002 的首个 seed 17、NDU 训练、future-0060、预算 128。选择规则在工程导出中固定为首个有实际追加动作的 risk-aware 行；没有按正确率挑选。相同 checkpoint 经现有 `ModelDriver`、`InferenceWorker` 和 `DurableInferenceControl` 执行原记录中的 `couple → refine_semantic → couple`。
