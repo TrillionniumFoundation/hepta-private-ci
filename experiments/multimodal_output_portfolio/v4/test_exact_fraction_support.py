@@ -13,7 +13,9 @@ class ExactFractionSupportTests(unittest.TestCase):
         tiny = Fraction(1, 10**500)
         for prior in (tiny, 1 - tiny):
             with self.subTest(rare_truth_is_zero=prior == tiny):
-                with self.assertRaisesRegex(ValueError, "unsupported public belief-state"):
+                with self.assertRaisesRegex(
+                    ValueError, "unsupported public belief-state"
+                ):
                     JointState(State((0, 0, 0, 0), 30), prior)
 
     def test_supported_truth_shock_path_must_not_disappear(self):
@@ -27,7 +29,9 @@ class ExactFractionSupportTests(unittest.TestCase):
             return (Allocation((1, 0, 0, 0))
                     if s.generation.step < cfg.horizon else EMIT)
 
-        with self.assertRaisesRegex(ValueError, "positive exact audit path mass underflow"):
+        with self.assertRaisesRegex(
+            ValueError, "positive exact audit path mass underflow"
+        ):
             full_outcome_audit(initial, cfg, choose)
 
     def test_representable_small_fraction_retains_all_paths(self):
