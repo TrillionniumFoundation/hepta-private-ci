@@ -110,9 +110,10 @@ Run from `qa/stem-bakeoff`:
 
 ```sh
 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -W error -m unittest \
-  test_cell_field_retention test_cell_field_control -v
+  test_cell_field_retention test_cell_field_control test_cell_field_retention_subnormal -v
 ```
 
+The third module covers subnormal-factor rejection and supported boundary cases.
 The second module is the existing compatibility suite. Its small synthetic Head
 fixture is a software test, not an additional task experiment or model-benefit
 sample. Real historical or new task gains, old-capability retention and complete
