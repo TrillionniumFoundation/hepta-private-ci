@@ -180,6 +180,7 @@ pub use notes_organ::run_notes_organ;
 mod runtime_tasks;
 mod shared_terminal_cell;
 mod state;
+pub mod text_session;
 pub use shared_terminal_cell::AgentdSharedReplayHostV1;
 pub use shared_terminal_cell::SharedTerminalCandidateV1;
 pub use shared_terminal_cell::SharedTerminalCellError;
