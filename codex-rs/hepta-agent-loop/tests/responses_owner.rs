@@ -92,6 +92,7 @@ async fn forward(
         payload: "compiled payload".into(),
         context_digest: Digest32::of_bytes(b"compiled payload"),
         input_tokens: 5,
+        maximum_provider_input_tokens: 8,
         maximum_output_tokens: 10,
     };
     let (tx, mut rx) = mpsc::channel(16);

@@ -38,6 +38,7 @@ pub struct PreparedNativeContextV2 {
 /// unresolved request must continue using its previously frozen frame.
 pub fn prepare_native_context_v2(
     request_id: StableId,
+    maximum_provider_input_tokens: u64,
     maximum_output_tokens: u64,
     input: NativeContextInputV2<'_>,
 ) -> Result<PreparedNativeContextV2> {
@@ -57,7 +58,8 @@ pub fn prepare_native_context_v2(
     .map_err(|_| Error::Contract("context delivery preparation"))?;
     let input_tokens = input.serialized.receipt().serialized_token_count();
     if maximum_output_tokens == 0
-        || input_tokens
+        || input_tokens > maximum_provider_input_tokens
+        || maximum_provider_input_tokens
             .checked_add(maximum_output_tokens)
             .is_none_or(|v| v > input.model_profile.maximum_context_tokens)
     {
@@ -71,6 +73,7 @@ pub fn prepare_native_context_v2(
             payload: payload.into(),
             context_digest: input.serialized.receipt().payload_digest(),
             input_tokens,
+            maximum_provider_input_tokens,
             maximum_output_tokens,
         },
         preparation,

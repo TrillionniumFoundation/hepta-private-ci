@@ -20,6 +20,7 @@ fn request(round: u32) -> ModelRequest {
         context_digest: Digest32::of_bytes(payload.as_bytes()),
         payload: payload.into(),
         input_tokens: 3,
+        maximum_provider_input_tokens: 3,
         maximum_output_tokens: 10,
     }
 }

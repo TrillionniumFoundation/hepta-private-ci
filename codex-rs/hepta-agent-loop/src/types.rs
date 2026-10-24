@@ -23,7 +23,13 @@ pub struct ModelRequest {
     pub request_id: StableId,
     pub payload: Arc<str>,
     pub context_digest: Digest32,
+    /// Exact count from the compiled-context tokenizer, before provider framing.
     pub input_tokens: u64,
+    /// Caller-reserved upper bound including provider framing and tool schemas.
+    /// Provider-reported input usage is charged independently of `input_tokens`.
+    pub maximum_provider_input_tokens: u64,
+    /// Local reservation/acceptance bound. A wire-level provider hard cap exists
+    /// only when the selected inference owner can enforce one.
     pub maximum_output_tokens: u64,
 }
 
@@ -176,6 +182,8 @@ pub trait TurnOwner: Send {
 /// retain the full provider-native continuation in the owning store and bind
 /// its receipt to the exact request. Text/tool projections cannot replace
 /// opaque reasoning or other provider output required by the next request.
+/// The inference owner retains actual terminal usage even when the loop rejects
+/// a result for exceeding a reservation; rejected cost must never disappear.
 pub trait InferenceOwner: Send {
     fn open_or_reconcile(
         &mut self,

@@ -208,7 +208,7 @@ impl Fixture {
 #[test]
 fn context_recompile_preserves_mandatory_instruction_and_tool() {
     let fixture = Fixture::new();
-    let prepared = prepare_native_context_v2(id("request:1"), 8, fixture.input()).unwrap();
+    let prepared = prepare_native_context_v2(id("request:1"), 12, 8, fixture.input()).unwrap();
     assert_eq!(prepared.request.payload.as_ref(), "systemresult");
     assert_eq!(prepared.request.input_tokens, 12);
     assert_eq!(
@@ -228,7 +228,7 @@ fn revoked_context_is_rejected_before_native_dispatch() {
     let mut input = fixture.input();
     input.current_snapshot = &revoked;
     assert!(matches!(
-        prepare_native_context_v2(id("request:1"), 8, input),
+        prepare_native_context_v2(id("request:1"), 12, 8, input),
         Err(LoopError::Contract("context delivery preparation"))
     ));
 }
@@ -239,7 +239,7 @@ fn foreign_objective_cannot_reuse_valid_context_receipts() {
     let mut input = fixture.input();
     input.objective_digest = digest("different objective");
     assert!(matches!(
-        prepare_native_context_v2(id("request:1"), 8, input),
+        prepare_native_context_v2(id("request:1"), 12, 8, input),
         Err(LoopError::Contract("context objective"))
     ));
 }
@@ -248,9 +248,25 @@ fn foreign_objective_cannot_reuse_valid_context_receipts() {
 fn output_reservation_must_fit_the_existing_model_profile() {
     let fixture = Fixture::new();
     assert!(matches!(
-        prepare_native_context_v2(id("request:1"), 53, fixture.input()),
+        prepare_native_context_v2(id("request:1"), 12, 53, fixture.input()),
         Err(LoopError::Limit(
             "model context including output reservation"
         ))
     ));
+}
+
+#[test]
+fn provider_overhead_reservation_is_separate_from_compiled_token_count() {
+    let fixture = Fixture::new();
+    let prepared = prepare_native_context_v2(id("request:1"), 18, 8, fixture.input()).unwrap();
+    assert_eq!(prepared.request.input_tokens, 12);
+    assert_eq!(prepared.request.maximum_provider_input_tokens, 18);
+    for reserved in [11, 60] {
+        assert!(matches!(
+            prepare_native_context_v2(id("request:2"), reserved, 8, fixture.input()),
+            Err(LoopError::Limit(
+                "model context including output reservation"
+            ))
+        ));
+    }
 }

@@ -125,7 +125,7 @@ async fn drive<C: TurnOwner, I: InferenceOwner, E: EffectOwner>(
                 validate_calls(&output.calls, limits)?;
                 if output.text.len() > limits.maximum_output_bytes
                     || output.usage.output_tokens > request.maximum_output_tokens
-                    || output.usage.input_tokens != request.input_tokens
+                    || output.usage.input_tokens > request.maximum_provider_input_tokens
                     || frame
                         .consumed_tokens
                         .checked_add(output.usage.input_tokens)
@@ -248,11 +248,12 @@ fn validate_frame(frame: &Frame, binding: &TurnBinding, limits: &Limits) -> Resu
     if let Phase::Model(request) = &frame.phase {
         if request.payload.is_empty()
             || request.input_tokens == 0
+            || request.input_tokens > request.maximum_provider_input_tokens
             || request.payload.len() > limits.maximum_context_bytes
             || request.maximum_output_tokens == 0
             || frame
                 .consumed_tokens
-                .checked_add(request.input_tokens)
+                .checked_add(request.maximum_provider_input_tokens)
                 .and_then(|v| v.checked_add(request.maximum_output_tokens))
                 .is_none_or(|v| v > limits.maximum_total_tokens)
         {
