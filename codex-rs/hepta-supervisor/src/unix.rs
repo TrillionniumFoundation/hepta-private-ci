@@ -57,6 +57,8 @@ pub use precreated::PrecreatedChild;
 pub use precreated::PrecreatedProcessDriver;
 #[cfg(target_os = "linux")]
 pub use precreated::receive_precreated_spawn;
+#[cfg(target_os = "linux")]
+pub use precreated::receive_precreated_spawn_with_descriptor;
 
 const LOG_CHUNK_BYTES: usize = 4_096;
 const HEALTH_PROBE_INTERVAL: Duration = Duration::from_millis(50);

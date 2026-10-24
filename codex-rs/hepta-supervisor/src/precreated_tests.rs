@@ -8,6 +8,7 @@ use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
 use pretty_assertions::assert_eq;
+use std::os::unix::net::UnixDatagram;
 use std::os::unix::net::UnixListener;
 use std::path::Path;
 use std::time::Instant;
@@ -15,6 +16,7 @@ use std::time::Instant;
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 const CHILD_SOCKET: &str = "HEPTA_PRECREATED_TEST_SOCKET";
 const CHILD_OUTPUT: &str = "HEPTA_PRECREATED_TEST_OUTPUT";
+const CHILD_DESCRIPTOR: &str = "HEPTA_PRECREATED_TEST_DESCRIPTOR";
 
 struct ChildGuard(Child);
 impl Drop for ChildGuard {
@@ -26,6 +28,7 @@ impl Drop for ChildGuard {
 
 fn child_at(
     root: &Path,
+    descriptor: bool,
 ) -> TestResult<(
     ChildGuard,
     UnixStream,
@@ -49,6 +52,7 @@ fn child_at(
             .args(&command.args)
             .env(CHILD_SOCKET, &socket)
             .env(CHILD_OUTPUT, root.join("received.json"))
+            .env(CHILD_DESCRIPTOR, if descriptor { "1" } else { "0" })
             .stdin(Stdio::null())
             .stdout(Stdio::null())
             .stderr(Stdio::null())
@@ -91,15 +95,20 @@ fn precreated_child() -> TestResult {
         std::env::current_exe()?,
         std::env::args_os().skip(1).collect(),
     )?;
-    let spec = receive_precreated_spawn(
-        UnixStream::connect(socket)?,
-        parent_pidfd,
-        HostIssuerPeer {
-            uid: rustix::process::getuid().as_raw(),
-            pid: parent.as_raw_nonzero().get() as u32,
-        },
-        &command,
-    )?;
+    let peer = HostIssuerPeer {
+        uid: rustix::process::getuid().as_raw(),
+        pid: parent.as_raw_nonzero().get() as u32,
+    };
+    let spec = if std::env::var_os(CHILD_DESCRIPTOR).as_deref() == Some(std::ffi::OsStr::new("1")) {
+        let (spec, descriptor) = receive_precreated_spawn_with_descriptor(
+            UnixStream::connect(socket)?, parent_pidfd, peer, &command,
+        )?;
+        let startup = UnixDatagram::from(descriptor);
+        assert_eq!(startup.send(b"original child received the actual pair")?, 39);
+        spec
+    } else {
+        receive_precreated_spawn(UnixStream::connect(socket)?, parent_pidfd, peer, &command)?
+    };
     let output = PathBuf::from(output);
     let temporary = output.with_extension("pending");
     std::fs::write(&temporary, serde_json::to_vec(&spec)?)?;
@@ -110,6 +119,15 @@ fn precreated_child() -> TestResult {
 
 #[test]
 fn original_supervisor_hands_off_its_real_starting_generation_and_reaps_by_pidfd() -> TestResult {
+    original_supervisor_case(false)
+}
+
+#[test]
+fn original_supervisor_transfers_actual_pair_after_its_real_starting_ack() -> TestResult {
+    original_supervisor_case(true)
+}
+
+fn original_supervisor_case(descriptor: bool) -> TestResult {
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     let fleet = HeptaFleetRoot::parse(root.join("fleet"))?;
@@ -122,8 +140,10 @@ fn original_supervisor_hands_off_its_real_starting_generation_and_reaps_by_pidfd
         WorkspaceBinding::new(workspace.clone(), &fleet)?,
         ResourceBudget::local_default(),
     )?)?;
-    let (_child, stream, pin, peer, command) = child_at(&root)?;
+    let (_child, stream, pin, peer, command) = child_at(&root, descriptor)?;
     let bound = PrecreatedChild::from_stream(stream, pin, peer, command.clone())?;
+    let (startup, offered) = UnixDatagram::pair()?;
+    let bound = if descriptor { bound.with_startup_descriptor(offered.into())? } else { bound };
     let driver = PrecreatedProcessDriver::new(agent.clone(), vec![bound])?;
     let (mut supervisor, _) = crate::Supervisor::recover(
         registry.clone(),
@@ -132,6 +152,12 @@ fn original_supervisor_hands_off_its_real_starting_generation_and_reaps_by_pidfd
         Instant::now(),
     )?;
     supervisor.start(&agent, command.clone(), Instant::now())?;
+    if descriptor {
+        startup.set_read_timeout(Some(Duration::from_secs(3)))?;
+        let mut bytes = [0_u8; 128];
+        let count = startup.recv(&mut bytes)?;
+        assert_eq!(&bytes[..count], b"original child received the actual pair");
+    }
     let state = registry
         .load()?
         .agents
@@ -186,7 +212,7 @@ fn original_supervisor_hands_off_its_real_starting_generation_and_reaps_by_pidfd
 fn precreated_binding_rejects_a_foreign_pidfd_and_a_changed_executable_command() -> TestResult {
     for foreign_fd in [true, false] {
         let temp = tempfile::tempdir()?;
-        let (_child, stream, pin, peer, mut command) = child_at(temp.path())?;
+        let (_child, stream, pin, peer, mut command) = child_at(temp.path(), false)?;
         let pin = if foreign_fd {
             rustix::process::pidfd_open(
                 rustix::process::getpid(),

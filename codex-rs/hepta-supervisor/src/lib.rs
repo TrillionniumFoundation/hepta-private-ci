@@ -187,3 +187,5 @@ pub use unix::PrecreatedChild;
 pub use unix::PrecreatedProcessDriver;
 #[cfg(target_os = "linux")]
 pub use unix::receive_precreated_spawn;
+#[cfg(target_os = "linux")]
+pub use unix::receive_precreated_spawn_with_descriptor;

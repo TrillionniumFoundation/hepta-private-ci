@@ -28,6 +28,7 @@ pub struct PrecreatedChild {
     identity: ProcessIdentity,
     command: AgentCommand,
     channel: HostAuthorityPeerChannel,
+    startup_descriptor: Option<OwnedFd>,
     pin: PinnedChild,
 }
 
@@ -88,12 +89,27 @@ impl PrecreatedChild {
             identity,
             command,
             channel,
+            startup_descriptor: None,
             pin: PinnedChild {
                 fd: owner_pidfd,
                 pid: peer.pid,
                 exit: None,
             },
         })
+    }
+
+    /// Retain one already-created startup capability for this exact child. It
+    /// is transferred only after the child's exact original SpawnSpec ACK, and
+    /// is consumed even if delivery is uncertain. The original recipient must
+    /// still validate its purpose/provenance; this driver creates no authority.
+    /// This lets a native Root pass its real late-handoff pair after the kernel
+    /// has already created the child, without changing kernel role grants.
+    pub fn with_startup_descriptor(mut self, descriptor: OwnedFd) -> Result<Self, ProcessDriverError> {
+        if self.startup_descriptor.is_some() {
+            return Err(ProcessDriverError::new("this original child already holds a startup descriptor"));
+        }
+        self.startup_descriptor = Some(descriptor);
+        Ok(self)
     }
 }
 
@@ -156,11 +172,11 @@ impl ProcessDriver for PrecreatedProcessDriver {
         }
         // Removal precedes the first possible delivery. An ambiguous handoff
         // must never retarget the same role with a new Registry generation.
-        let mut child = self.pending.pop_front().unwrap();
+        let PrecreatedChild { identity, command, mut channel, startup_descriptor, pin, .. } =
+            self.pending.pop_front().unwrap();
         let outcome = (|| {
-            verify_command(child.pin.pid, &child.command)?;
-            let reply = child
-                .channel
+            verify_command(pin.pid, &command)?;
+            let reply = channel
                 .request(&bytes)
                 .map_err(|error| ProcessDriverError::new(error.to_string()))?;
             if reply != Sha256::digest(&bytes).as_slice() {
@@ -168,7 +184,11 @@ impl ProcessDriver for PrecreatedProcessDriver {
                     "precreated child did not acknowledge the exact SpawnSpec",
                 ));
             }
-            let agent_control = AgentHealthProbeIdentity::from_spawn(spec, child.pin.pid);
+            if let Some(descriptor) = startup_descriptor {
+                channel.send_one_descriptor(descriptor)
+                    .map_err(|error| ProcessDriverError::new(error.to_string()))?;
+            }
+            let agent_control = AgentHealthProbeIdentity::from_spawn(spec, pin.pid);
             let health_probe =
                 HealthProbe::spawn(HealthProbeIdentity::Agentd(agent_control.clone()))?;
             Ok((agent_control, health_probe))
@@ -176,15 +196,15 @@ impl ProcessDriver for PrecreatedProcessDriver {
         let (agent_control, health_probe) = match outcome {
             Ok(value) => value,
             Err(error) => {
-                let _ = child.pin.signal(libc::SIGKILL);
+                let _ = pin.signal(libc::SIGKILL);
                 return Err(error);
             }
         };
         let (_sender, logs) = std::sync::mpsc::sync_channel(1);
         Ok(SpawnedProcess {
-            identity: child.identity,
+            identity,
             process: UnixManagedProcess {
-                handle: UnixProcessHandle::Precreated(child.pin),
+                handle: UnixProcessHandle::Precreated(pin),
                 logs,
                 health_probe,
                 agent_control: Some(agent_control),
@@ -210,6 +230,31 @@ pub fn receive_precreated_spawn(
     parent: HostIssuerPeer,
     command: &AgentCommand,
 ) -> Result<SpawnSpec, ProcessDriverError> {
+    receive_spawn_channel(stream, parent_pidfd, parent, command).map(|(spec, _channel)| spec)
+}
+
+/// Receive the same original SpawnSpec and its one terminal startup capability.
+/// The inherited Root handoff validator must still verify the returned socket,
+/// Root creator, seals and retained lifetime before accepting any authority.
+/// A missing/extra/late FD cannot fall back to the descriptor-free protocol.
+pub fn receive_precreated_spawn_with_descriptor(
+    stream: UnixStream,
+    parent_pidfd: OwnedFd,
+    parent: HostIssuerPeer,
+    command: &AgentCommand,
+) -> Result<(SpawnSpec, OwnedFd), ProcessDriverError> {
+    let (spec, channel) = receive_spawn_channel(stream, parent_pidfd, parent, command)?;
+    let descriptor = channel.receive_one_descriptor()
+        .map_err(|error| ProcessDriverError::new(error.to_string()))?;
+    Ok((spec, descriptor))
+}
+
+fn receive_spawn_channel(
+    stream: UnixStream,
+    parent_pidfd: OwnedFd,
+    parent: HostIssuerPeer,
+    command: &AgentCommand,
+) -> Result<(SpawnSpec, HostAuthorityPeerChannel), ProcessDriverError> {
     // SAFETY: getppid has no pointer arguments and reads the actual parent.
     if unsafe { libc::getppid() } != parent.pid as i32 {
         return Err(ProcessDriverError::new(
@@ -249,7 +294,8 @@ pub fn receive_precreated_spawn(
             "original parent closed before SpawnSpec handoff",
         ));
     }
-    received.ok_or_else(|| ProcessDriverError::new("no complete original SpawnSpec received"))
+    received.map(|spec| (spec, channel))
+        .ok_or_else(|| ProcessDriverError::new("no complete original SpawnSpec received"))
 }
 
 fn verify_command(pid: u32, command: &AgentCommand) -> Result<(), ProcessDriverError> {
