@@ -17,7 +17,7 @@ pub enum Currentness {
     Unknown,
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 #[serde(tag = "state", rename_all = "snake_case")]
 pub enum FinalUse {
     NotGranted,
@@ -25,6 +25,37 @@ pub enum FinalUse {
         grant_digest: String,
         verifier_receipt_digest: String,
     },
+}
+
+// A tagged unit variant may silently discard extra fields. Decode through
+// strict struct variants, then retain the established public unit variant.
+// Verified remains an untrusted wire claim; independent verification is still
+// required at the existing journal's start and effect boundaries.
+impl<'de> Deserialize<'de> for FinalUse {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        #[derive(Deserialize)]
+        #[serde(tag = "state", rename_all = "snake_case", deny_unknown_fields)]
+        enum Wire {
+            NotGranted {},
+            Verified {
+                grant_digest: String,
+                verifier_receipt_digest: String,
+            },
+        }
+        match Wire::deserialize(deserializer)? {
+            Wire::NotGranted {} => Ok(Self::NotGranted),
+            Wire::Verified {
+                grant_digest,
+                verifier_receipt_digest,
+            } => Ok(Self::Verified {
+                grant_digest,
+                verifier_receipt_digest,
+            }),
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -225,7 +256,12 @@ pub struct EffectReceipt {
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(tag = "kind", content = "record", rename_all = "snake_case")]
+#[serde(
+    tag = "kind",
+    content = "record",
+    rename_all = "snake_case",
+    deny_unknown_fields
+)]
 pub enum ExecutionRecord {
     ExecutionIntent(ExecutionIntent),
     ExecutionReservation(ExecutionReservation),
