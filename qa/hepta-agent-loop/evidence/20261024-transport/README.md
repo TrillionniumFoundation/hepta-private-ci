@@ -21,7 +21,7 @@ This bounded probe compares the existing typed in-process request/event facade w
 | UDS bridge request + event | 3.918 ms | 4.664 ms |
 | Paired UDS minus typed | 1.288 ms | 1.961 ms |
 
-These are descriptive quantiles from one run, not confidence intervals or independent host replications. The raw nanosecond values are retained in `measurement.json`.
+These are descriptive quantiles from one run, not confidence intervals or independent host replications. The nanosecond summaries (count, minimum, p50, p95 and maximum) are retained in `measurement.json`; the 256 individual paired samples were not retained. The published summaries cannot support a later independent recomputation of quantiles or confidence intervals.
 
 ## Decision boundary
 
