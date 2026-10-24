@@ -74,11 +74,18 @@ pub struct AgentdNativeMemoryShadowOwner<C> {
 /// Both receipts came from the same admitted callback. The shadow observation
 /// always abstains; this result is not a calibrated NeuronSignalReceiptV1.
 pub struct NativeMemoryShadowReadV1 {
-    pub observation: NeuronShadowOutputV1,
-    pub execution: NativeMemoryExecutionV1,
-    pub source: MemoryCellUseReceiptV1,
+    observation: NeuronShadowOutputV1,
+    execution: NativeMemoryExecutionV1,
+    source: MemoryCellUseReceiptV1,
+    namespace: Digest32,
     admission: Arc<MemoryCellAdmissionV1>,
     input: NeuronTickInputV1,
+}
+
+impl NativeMemoryShadowReadV1 {
+    pub fn observation(&self) -> &NeuronShadowOutputV1 { &self.observation }
+    pub fn execution(&self) -> &NativeMemoryExecutionV1 { &self.execution }
+    pub fn source(&self) -> &MemoryCellUseReceiptV1 { &self.source }
 }
 
 impl<C: NativeMemoryContextAuthorityV1 + 'static> AgentdNativeMemoryShadowOwner<C> {
@@ -178,7 +185,7 @@ impl<C: NativeMemoryContextAuthorityV1 + 'static> AgentdNativeMemoryShadowOwner<
                 &job.admission, Digest32::of_bytes(&execution_bytes)))?;
             handle.block_on(owner.host.writer.revalidate_memory_cell_source(&job.admission))?;
             state.failed = false;
-            Ok((NativeMemoryShadowReadV1 { observation, execution, source, admission: job.admission, input: job.input }, permit))
+            Ok((NativeMemoryShadowReadV1 { observation, execution, source, namespace: owner.namespace, admission: job.admission, input: job.input }, permit))
         }).await.map_err(reject)??;
         // Check again after asynchronous handoff. A completed nonce remains
         // spent even when current-source delivery is now refused.
@@ -189,6 +196,7 @@ impl<C: NativeMemoryContextAuthorityV1 + 'static> AgentdNativeMemoryShadowOwner<
     pub async fn revalidate_delivery(&self, result: &NativeMemoryShadowReadV1) -> Result<(), NativeMemoryError> {
         let checked = async {
             if self.host.cancellation.is_cancelled() { return Err(reject("native owner is closed")); }
+            if result.namespace != self.namespace { return Err(reject("result belongs to another enrolled owner namespace")); }
             let namespace = source_namespace(result.admission.binding(), self.host.writer.owner_agent_id().as_str(),
                 &self.subject, &self.cell_id, &self.host.model, self.profile_digest)?;
             if namespace != self.namespace { return Err(reject("result belongs to another source/profile namespace")); }
@@ -206,3 +214,7 @@ impl<C: NativeMemoryContextAuthorityV1 + 'static> AgentdNativeMemoryShadowOwner<
         checked
     }
 }
+
+#[cfg(test)]
+#[path = "native_memory_tick_owner_tests.rs"]
+mod tests;

@@ -76,3 +76,16 @@ async fn native_memory_revoked_source_authority_never_dispatches_model() {
     assert!(count.load(Ordering::SeqCst) == 0);
     drop(f.temp);
 }
+
+#[tokio::test]
+async fn completed_source_revalidation_does_not_reopen_nonce_or_survive_revocation() {
+    let f = fixture().await;
+    f.writer.finish_memory_cell(&f.admission, Digest32::of_bytes(b"controlled completion fixture"))
+        .await.unwrap();
+    f.writer.revalidate_memory_cell_source(&f.admission).await.unwrap();
+    assert!(f.writer.revalidate_memory_cell(&f.admission).await.is_err());
+    assert!(f.writer.finish_memory_cell(&f.admission, Digest32::of_bytes(b"replayed completion"))
+        .await.is_err());
+    f.verifier.0.store(true, Ordering::SeqCst);
+    assert!(f.writer.revalidate_memory_cell_source(&f.admission).await.is_err());
+}
