@@ -921,6 +921,16 @@ modification and degraded/unqueryable impersonation. Cross-compilation is
 restart authority or production sandbox qualification. The existing setup helper
 still needs the create-only held-parent/profile/checkpoint producer below.
 
+The current source-head and original-base-merge Windows runs both failed the
+anonymous-token unit control and the fourth `native_principal` control. The logs
+omit the actual error variant. The test-only bounded diagnostic now reports the
+original result plus an independent query-only `OpenThreadToken`/`TokenStatistics`
+observation; it never supplies the original result, retries principal validation,
+or permits process fallback. The exact `ERROR_CANT_OPEN_ANONYMOUS` assertion and
+sticky refusal remain required. An anonymous logon user is not by itself evidence
+of the token's impersonation level. These failures remain open until an actual
+Windows run identifies and fixes the cause; MSVC checking is `NOT_NATIVE`.
+
 C2b must derive provenance from actual held kernel objects. Agentd currently
 derives `prompt-registry` from `identity.home_root` and `prompt-runtime` from
 `identity.run_root`; Fleet registration and canonical path spelling do not prove
@@ -959,8 +969,15 @@ Three required `native_volume` integration controls cover actual local file and
 directory queries, a non-disk handle, and an overlapped held object renamed while
 its former path is replaced. The existing Windows workflow retains all ten prior receipts and
 the five original owner-descriptor controls, adding an eleventh receipt for these
-three operations. This source slice has no native Windows result yet. Actual SMB
-or mapped-remote rejection remains a required, unexecuted C2b acceptance item;
+three operations. The current source-head and original-base-merge native local
+file/directory control returned `AccessDenied` (5), without identifying the
+failing API. The additive `inspect_local_ntfs_observed` API reports at most nine
+fixed query stages and the original captured Win32/NT status, with no path or
+handle exposure. Its existing wrapper, query-only access mask, same-object
+identity checks and error results are unchanged. The three original native
+controls and their positive assertions remain mandatory; no new native result
+closes this failure. Actual SMB or mapped-remote rejection remains a required,
+unexecuted C2b acceptance item;
 no fabricated flags or skipped remote test count toward those three controls.
 Trusted ancestor admission, protected creation and C3–C5 remain open; production
 Windows owner support and power-loss qualification remain false.

@@ -1,4 +1,6 @@
 use super::*;
+#[path = "token_test_observation.rs"]
+mod token_test_observation;
 use std::error::Error;
 use std::fs;
 use std::os::windows::ffi::OsStrExt;
@@ -404,6 +406,7 @@ fn native_unqueryable_thread_token_never_falls_back_to_process_user() -> Result 
         return Err(io::Error::last_os_error().into());
     }
     let observed = CurrentUser::capture_effective();
+    token_test_observation::observe(&observed);
     drop(restore);
     assert!(
         matches!(observed, Err(ValidationError::Os(error)) if error.raw_os_error() == Some(ERROR_CANT_OPEN_ANONYMOUS as i32))
