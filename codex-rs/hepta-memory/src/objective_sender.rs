@@ -145,8 +145,7 @@ impl ProductionDurableWriter {
                 "malformed Objective sender authority grant digest".to_string(),
             )
         })?;
-        self.authority
-            .validate_for_agent(self.store.owner_agent_id())?;
+        super::validate_authority_for_agent(&self.authority, self.store.owner_agent_id())?;
         self.live_verifier
             .as_ref()
             .ok_or(ProductionWriterError::LiveVerifierRequired)?

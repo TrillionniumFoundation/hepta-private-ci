@@ -127,8 +127,7 @@ impl CognitiveStore {
         verifier
             .verify(authority, layout.agent_id())
             .map_err(CognitiveRecoveryError::AccessDenied)?;
-        authority
-            .validate_for_agent(layout.agent_id())
+        crate::production_writer::validate_authority_for_agent(authority, layout.agent_id())
             .map_err(|error| CognitiveRecoveryError::AccessDenied(error.to_string()))?;
         let writer_fence = authority
             .fencing_token_digest()

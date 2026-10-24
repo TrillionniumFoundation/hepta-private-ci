@@ -132,7 +132,7 @@ pub use codex_hepta_authority_types::ProductionAuthorityToken;
 pub use codex_hepta_authority_types::ProductionAuthorityVerifier;
 pub use codex_hepta_authority_types::ProductionWriterError;
 
-fn validate_authority_for_agent(
+pub(crate) fn validate_authority_for_agent(
     authority: &ProductionAuthorityLease,
     agent_id: &AgentId,
 ) -> Result<(), ProductionWriterError> {
