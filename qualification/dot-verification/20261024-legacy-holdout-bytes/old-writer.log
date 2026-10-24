@@ -1,0 +1,16 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+error: no matching package named `arbitrary` found
+location searched: crates.io index
+required by package `zip v2.4.2`
+    ... which satisfies dependency `zip = "^2.4.2"` (locked to 2.4.2) of package `codex-core-plugins v0.0.0 (/workspace/scratch/f24caf690188/hepta-holdout-legacy-writer/codex-rs/core-plugins)`
+    ... which satisfies path dependency `codex-core-plugins` (locked to 0.0.0) of package `codex-core v0.0.0 (/workspace/scratch/f24caf690188/hepta-holdout-legacy-writer/codex-rs/core)`
+    ... which satisfies path dependency `codex-core` (locked to 0.0.0) of package `codex-linux-sandbox v0.0.0 (/workspace/scratch/f24caf690188/hepta-holdout-legacy-writer/codex-rs/linux-sandbox)`
+    ... which satisfies path dependency `codex-linux-sandbox` (locked to 0.0.0) of package `codex-arg0 v0.0.0 (/workspace/scratch/f24caf690188/hepta-holdout-legacy-writer/codex-rs/arg0)`
+    ... which satisfies path dependency `codex-arg0` (locked to 0.0.0) of package `codex-test-binary-support v0.0.0 (/workspace/scratch/f24caf690188/hepta-holdout-legacy-writer/codex-rs/test-binary-support)`
+    ... which satisfies path dependency `codex-test-binary-support` (locked to 0.0.0) of package `codex-exec-server v0.0.0 (/workspace/scratch/f24caf690188/hepta-holdout-legacy-writer/codex-rs/exec-server)`
+    ... which satisfies path dependency `codex-exec-server` (locked to 0.0.0) of package `codex-utils-plugins v0.0.0 (/workspace/scratch/f24caf690188/hepta-holdout-legacy-writer/codex-rs/utils/plugins)`
+    ... which satisfies path dependency `codex-utils-plugins` (locked to 0.0.0) of package `codex-plugin v0.0.0 (/workspace/scratch/f24caf690188/hepta-holdout-legacy-writer/codex-rs/plugin)`
+As a reminder, you're using offline mode (--offline) which can sometimes cause surprising resolution failures, if this error is too confusing you may wish to retry without `--offline`.
+error: command `/workspace/scratch/f24caf690188/hepta-native-dot-resume/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-intelligence-eval --test legacy_golden_writer --locked --offline` exited with code 101
+error: recipe `test` failed on line 89 with exit code 101

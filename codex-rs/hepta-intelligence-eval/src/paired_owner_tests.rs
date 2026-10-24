@@ -319,3 +319,6 @@ fn actual_locked_file_replays_mixed_profiles_and_retains_rollback_anchor() {
     );
     fs::remove_file(path).expect("remove fixture");
 }
+
+#[path = "legacy_byte_migration_tests.rs"]
+mod legacy_byte_migration_tests;
