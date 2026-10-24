@@ -5702,3 +5702,6 @@ pub(crate) async fn verify_local_lease_outbox(
         .map_err(crate::cognitive_store::unavailable)?;
     Ok(())
 }
+
+#[path = "local_lease_terminal_publication.rs"]
+mod terminal_publication;

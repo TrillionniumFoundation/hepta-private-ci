@@ -95,6 +95,8 @@ mod effect_entry;
 
 #[path = "production_owner_publication.rs"]
 mod owner_publication;
+#[path = "production_terminal_publication.rs"]
+mod terminal_publication;
 
 #[path = "production_notes_owner.rs"]
 mod notes_owner;
@@ -1245,7 +1247,10 @@ impl ProductionDurableWriter {
 
     pub async fn release(&self) -> Result<ProductionLeaseReceipt, ProductionWriterError> {
         self.verify_authority().await?;
+        let attempt = self.store.commit_gate.is_managed().then(|| self.store.commit_gate.transition_attempt());
         let head = self.lease.release().await?;
+        self.acknowledge_terminal_owner_cut(&head).await?;
+        if let Some(attempt) = attempt { attempt.acknowledge(); }
         Ok(ProductionLeaseReceipt::new(
             &self.authority,
             head,
@@ -1255,7 +1260,10 @@ impl ProductionDurableWriter {
 
     pub async fn rollback_lease(&self) -> Result<ProductionLeaseReceipt, ProductionWriterError> {
         self.verify_authority().await?;
+        let attempt = self.store.commit_gate.is_managed().then(|| self.store.commit_gate.transition_attempt());
         let head = self.lease.rollback_lease().await?;
+        self.acknowledge_terminal_owner_cut(&head).await?;
+        if let Some(attempt) = attempt { attempt.acknowledge(); }
         Ok(ProductionLeaseReceipt::new(
             &self.authority,
             head,
