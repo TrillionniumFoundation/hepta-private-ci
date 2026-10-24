@@ -188,3 +188,7 @@ async fn observe_catalog(
         model,
     }
 }
+
+#[cfg(test)]
+#[path = "inspection_tests.rs"]
+mod tests;

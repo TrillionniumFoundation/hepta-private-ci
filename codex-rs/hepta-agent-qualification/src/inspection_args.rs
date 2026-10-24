@@ -76,3 +76,7 @@ impl CommandLine {
         }))
     }
 }
+
+#[cfg(test)]
+#[path = "inspection_args_tests.rs"]
+mod tests;

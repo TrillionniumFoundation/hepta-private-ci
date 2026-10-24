@@ -1,0 +1,18 @@
+[
+  {
+    "stage": "native-loop-qualification",
+    "command": [
+      "just",
+      "test",
+      "-p",
+      "codex-hepta-agent-loop",
+      "-p",
+      "codex-hepta-agent-qualification",
+      "--features",
+      "codex-hepta-agent-loop/context-v2,codex-hepta-agent-loop/managed-responses,codex-hepta-agent-loop/taskflow-owner,codex-hepta-agent-loop/automation-effects"
+    ],
+    "returncode": 100,
+    "wall_seconds": 213.82500852597877,
+    "log_sha256": "74d84456fd65b46e7728794de84feb6a8e482e6a177a7bb40bfbe11dab32553a"
+  }
+]

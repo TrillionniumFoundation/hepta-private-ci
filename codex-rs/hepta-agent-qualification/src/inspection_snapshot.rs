@@ -198,3 +198,7 @@ impl Write for BoundedBytes {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "inspection_snapshot_tests.rs"]
+mod tests;
