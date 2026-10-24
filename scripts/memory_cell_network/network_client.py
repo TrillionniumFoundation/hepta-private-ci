@@ -2,23 +2,40 @@
 
 from network_authority import placement
 from network_checkpoints import pack
-from network_wire import call, endpoint
+import network_wire
 
 
 class NetworkClient:
-    def __init__(self, authority, nodes, key):
-        endpoint(authority)
+    def __init__(
+        self,
+        authority,
+        nodes,
+        key,
+        *,
+        transport=network_wire,
+        authority_snapshot=None,
+        authority_publish=None,
+    ):
+        transport.endpoint(authority)
         for address in nodes.values():
-            endpoint(address)
+            transport.endpoint(address)
         self.authority, self.nodes, self.key = authority, dict(nodes), key
+        self.transport, self.authority_snapshot = transport, authority_snapshot
+        self.authority_publish = authority_publish
 
     def snapshot(self, scope, cell_id):
-        return call(
-            self.authority, self.key, dict(op="snapshot", scope=scope, cell_id=cell_id)
+        return (
+            self.authority_snapshot(scope, cell_id)
+            if self.authority_snapshot
+            else self.transport.call(
+                self.authority,
+                self.key,
+                dict(op="snapshot", scope=scope, cell_id=cell_id),
+            )
         )
 
     def stage(self, node_id, directory, retained_pin, scope):
-        return call(
+        return self.transport.call(
             self.nodes[node_id],
             self.key,
             dict(
@@ -29,7 +46,9 @@ class NetworkClient:
         )
 
     def publish(self, candidate, expected_generation):
-        return call(
+        if self.authority_publish is not None:
+            return self.authority_publish(placement(candidate), expected_generation)
+        return self.transport.call(
             self.authority,
             self.key,
             dict(
@@ -51,14 +70,14 @@ class NetworkClient:
             return dict(placement=candidate, transfer=None, already_current=True)
         if snapshot["placement"] != previous:
             raise ValueError("migration source placement changed")
-        package = call(
+        package = self.transport.call(
             self.nodes[previous["node_id"]],
             self.key,
             dict(op="export", scope=previous["scope"], cell_id=previous["cell_id"]),
         )
         if package["manifest_sha256"] != previous["manifest_sha256"]:
             raise ValueError("migration source pin changed")
-        receipt = call(
+        receipt = self.transport.call(
             self.nodes[target_node],
             self.key,
             dict(
@@ -76,7 +95,7 @@ class NetworkClient:
         current = self.snapshot(scope, cell_id)["placement"]
         if current is None:
             raise ValueError("cell has no placement")
-        result = call(
+        result = self.transport.call(
             self.nodes[current["node_id"]],
             self.key,
             dict(

@@ -29,6 +29,15 @@ mod intelligence_ingress;
 mod intelligence_product;
 mod intuition_policy;
 mod lane_b_runtime;
+mod native_memory;
+#[cfg(test)]
+#[path = "native_memory_control_tests.rs"]
+mod native_memory_control_tests;
+mod native_memory_model;
+mod native_memory_process;
+#[cfg(test)]
+mod native_memory_test_support;
+mod native_memory_types;
 mod neuron_runtime;
 mod objective_runtime;
 mod plasticity_anchor_journal;
@@ -182,6 +191,11 @@ pub use lane_b_runtime::RunReceipt;
 pub use lane_b_runtime::RunRecovery;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
+pub use native_memory::AgentdNativeMemoryCell;
+pub use native_memory_types::NativeMemoryError;
+pub use native_memory_types::NativeMemoryExecutionV1;
+pub use native_memory_types::NativeMemoryModelConfigV1;
+pub use native_memory_types::NativeMemoryPinsV1;
 pub use neuron_runtime::AgentdNeuronOwner;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;

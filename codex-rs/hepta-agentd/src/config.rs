@@ -85,6 +85,7 @@ pub struct AgentdConfig {
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
     production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
+    native_memory_cell: Option<std::sync::Arc<crate::AgentdNativeMemoryCell>>,
     cognitive_retrieval_mode: CognitiveRetrievalMode,
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
@@ -208,6 +209,7 @@ impl AgentdConfig {
             cognitive_ranker: None,
             production_operations: None,
             production_writer_host: None,
+            native_memory_cell: None,
             cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
@@ -374,6 +376,35 @@ impl AgentdConfig {
         &self,
     ) -> Option<std::sync::Arc<crate::AgentdProductionWriterHost>> {
         self.production_writer_host.clone()
+    }
+
+    /// Explicit native decoder opt-in on the already recovered production
+    /// writer; neither a query nor daemon startup can choose model authority.
+    #[cfg(feature = "qualification-cognitive-write")]
+    pub fn with_native_memory_cell(
+        mut self,
+        cell: std::sync::Arc<crate::AgentdNativeMemoryCell>,
+    ) -> Result<Self, AgentdError> {
+        let host = self.production_writer_host.as_ref().ok_or_else(|| {
+            AgentdError::Invalid(
+                "native memory requires the recovered production writer host".to_string(),
+            )
+        })?;
+        if self.native_memory_cell.is_some()
+            || !std::sync::Arc::ptr_eq(&cell.writer, &host.writer())
+        {
+            return Err(AgentdError::Invalid(
+                "native memory owner differs from registered production host".to_string(),
+            ));
+        }
+        self.native_memory_cell = Some(cell);
+        Ok(self)
+    }
+
+    pub(crate) fn native_memory_cell(
+        &self,
+    ) -> Option<std::sync::Arc<crate::AgentdNativeMemoryCell>> {
+        self.native_memory_cell.clone()
     }
 
     /// Select the retrieval product profile explicitly. Compatibility preserves
