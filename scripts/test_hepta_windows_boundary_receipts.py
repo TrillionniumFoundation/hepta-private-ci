@@ -83,6 +83,117 @@ class WindowsBoundaryReceiptTests(unittest.TestCase):
         cls.source = reader()
         cls.cases = owner_cases(cls.source)
 
+    def test_native_host_must_match_the_fixed_runner_and_target(self):
+        definition = next(
+            node
+            for node in ast.parse(self.source).body
+            if isinstance(node, ast.FunctionDef) and node.name == "native_identity"
+        )
+        namespace = {}
+        exec(
+            compile(
+                ast.Module(body=[definition], type_ignores=[]),
+                "native-identity",
+                "exec",
+            ),
+            namespace,
+        )
+        identity = namespace["native_identity"]
+        for runner, target, arch in (
+            ("windows-latest", "x86_64-pc-windows-msvc", "X64"),
+            ("windows-11-arm", "aarch64-pc-windows-msvc", "ARM64"),
+        ):
+            lines = ["host: " + target, "release: 1.96.0"]
+            self.assertEqual(
+                identity(runner, target, "Windows", arch, lines)["target"], target
+            )
+            invalid = (
+                ("unknown", target, "Windows", arch, lines),
+                (runner, "wrong-target", "Windows", arch, lines),
+                (runner, target, "Linux", arch, lines),
+                (runner, target, "Windows", "wrong-arch", lines),
+                (runner, target, "Windows", arch, ["host: wrong", "release: 1.96.0"]),
+                (runner, target, "Windows", arch, lines + [lines[0]]),
+                (runner, target, "Windows", arch, [lines[0], "release: 1.95.0"]),
+            )
+            for arguments in invalid:
+                with (
+                    self.subTest(arguments=arguments),
+                    self.assertRaises(AssertionError),
+                ):
+                    identity(*arguments)
+
+    def test_every_filtered_group_requires_one_exact_complete_named_result_set(self):
+        assignments = {
+            target.id: node
+            for node in ast.parse(self.source).body
+            if isinstance(node, ast.Assign)
+            for target in node.targets
+            if isinstance(target, ast.Name)
+        }
+        namespace = {}
+        selected = [
+            assignments[name]
+            for name in ("probes", "acl_selectors", "filtered_selectors")
+        ]
+        exec(
+            compile(
+                ast.Module(body=selected, type_ignores=[]), "filtered-selectors", "exec"
+            ),
+            namespace,
+        )
+        operations = ast.literal_eval(assignments["operations"].value)
+        groups = namespace["filtered_selectors"]
+        self.assertEqual(len(groups), 9)
+        for name, cases in groups.items():
+            markers = ""
+            if name in namespace["probes"]:
+                complete = namespace["probes"][name][1]
+                records = [
+                    {
+                        "stage": stage,
+                        "result": {"ok": expected},
+                        "owner_supported": False,
+                        "power_loss_qualified": False,
+                    }
+                    for stage, expected in operations[name].items()
+                ] + [
+                    {
+                        "stage": complete,
+                        "owner_supported": False,
+                        "power_loss_qualified": False,
+                    }
+                ]
+                markers = "".join(
+                    "HEPTA_PRIVATE_STATE_NATIVE_PROBE " + json.dumps(row) + "\n"
+                    for row in records
+                )
+            elif name == "full-restriction-candidate":
+                markers = (
+                    "HEPTA_FULL_RESTRICTION_CANDIDATE "
+                    + json.dumps(
+                        {
+                            "stage": "original_operations_complete",
+                            "readonly_controls": True,
+                            "explicit_read_execute": True,
+                            "production_admitted": False,
+                        }
+                    )
+                    + "\n"
+                )
+            complete = markers + log(cases, skipped=200)
+            with self.subTest(name=name):
+                self.assertEqual(self.evaluate(name, len(cases), complete), 0)
+                invalid = (
+                    markers + log(("unregistered::wrong_test",), passed=len(cases)),
+                    complete + "test " + cases[0] + " ... ok\n",
+                    complete + log(cases),
+                    markers + log(cases[:-1], passed=len(cases)),
+                    markers + log(cases, failed=1),
+                )
+                for text in invalid:
+                    self.assertEqual(self.evaluate(name, len(cases), text), 1)
+
     def evaluate(self, tag, minimum, text, *, codes="0 0"):
         with tempfile.TemporaryDirectory(
             prefix="windows-receipt-parser-only-"

@@ -1172,7 +1172,12 @@ its former path is replaced. The existing Windows workflow retains all ten prior
 the five original owner-descriptor controls. Fifteen mandatory receipts now
 include the complete library, process-lock, principal, volume, original FinalUse
 and registry targets. The same workflow adds ARM64 source/merge execution while
-retaining both original x64 lanes; artifacts identify their runner and lane. The
+retaining both original x64 lanes; artifacts identify their runner and lane.
+The source check binds the fixed runner/target pair to the actual Windows
+architecture and compiler host. Every receipt requires exactly its named cases
+and one complete summary; a green total, duplicate output or a different test
+cannot replace an original case. Filtered groups still allow only unrelated
+cases to be omitted by their explicit selector. The
 preserved source and actual preview's full native runs
 locate `AccessDenied` (5) at the directory's old `ReOpenFile` call; local file
 queries pass. The additive `inspect_local_ntfs_observed` API reports at most nine
