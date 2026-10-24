@@ -31,6 +31,7 @@ use crate::RuntimeComposition;
 mod control;
 
 pub(crate) struct AgentdState {
+    pub(crate) native_memory_cell: std::sync::OnceLock<Arc<crate::AgentdNativeMemoryCell>>,
     pub(crate) intelligence_product:
         std::sync::OnceLock<Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     pub(crate) intelligence_invocation:
@@ -127,6 +128,7 @@ impl AgentdState {
         })?;
         let prompt_pipeline = Arc::new(prompt_pipeline);
         Ok(Self {
+            native_memory_cell: std::sync::OnceLock::new(),
             authbus: std::sync::OnceLock::new(),
             intelligence_product: std::sync::OnceLock::new(),
             intelligence_invocation: std::sync::OnceLock::new(),

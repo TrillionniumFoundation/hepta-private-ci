@@ -66,6 +66,10 @@ pub async fn run(
         .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
     let mut production_writer_host = config.production_writer_host();
+    let native_memory_cell = config.native_memory_cell();
+    let _native_memory_lifetime = native_memory_cell
+        .as_ref()
+        .map(|cell| cell.cancellation.clone().drop_guard());
     if production_operations.is_some() && production_writer_host.is_none() {
         return Err(AgentdError::Invalid(
             "production operations require an independently recovered production writer host"
@@ -93,6 +97,11 @@ pub async fn run(
         registry,
         EVENT_CAPACITY,
     )?);
+    if let Some(cell) = native_memory_cell {
+        state.native_memory_cell.set(cell).map_err(|_| {
+            AgentdError::Invalid("native memory owner already attached".to_string())
+        })?;
+    }
     let plasticity_runtime =
         crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, plasticity_bootstrap)?;
     if let Some(host) = intuition_policy_host {
