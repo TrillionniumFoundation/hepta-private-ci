@@ -46,6 +46,17 @@ class LocalEvidenceTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "fresh"):
                 build({"valid": source}, archive, {})
 
+    def test_logical_file_ancestor_collision_rejects_before_creating_archive(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "data"
+            source.write_bytes(b"same bytes")
+            for names in (("a", "a/b"), ("a", "a/b/c"), (".",)):
+                target = root / "invalid.tar.gz"
+                with self.assertRaisesRegex(ValueError, "ancestor"):
+                    build({name: source for name in names}, target, {})
+                self.assertFalse(target.exists())
+
 
 if __name__ == "__main__":
     unittest.main()

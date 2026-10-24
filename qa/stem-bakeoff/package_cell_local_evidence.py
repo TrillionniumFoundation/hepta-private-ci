@@ -32,9 +32,18 @@ def code_pin(repo, commit):
     names = [name for name in names if Path(name).parent.as_posix() == "qa/stem-bakeoff"
              and name.endswith((".py", ".md", ".txt", ".json"))]
     hashes = {name: hashlib.sha256(git("show", commit + ":" + name)).hexdigest() for name in names}
-    if hashes.get("qa/stem-bakeoff/" + Path(__file__).name) != sha_file(__file__):
-        raise ValueError("running packager differs from immutable implementation")
+    for name in (Path(__file__).name, "package_cell_evidence.py"):
+        if hashes.get("qa/stem-bakeoff/" + name) != sha_file(Path(__file__).with_name(name)):
+            raise ValueError("running packager or imported helper differs from immutable implementation")
     return {"repository": REPOSITORY, "commit": commit, "tree": tree, "code_sha256": hashes}
+
+
+def validate_logical_paths(names):
+    names = set(names)
+    for name in names:
+        safe_name(name)
+        if name == "." or any(parent.as_posix() in names for parent in Path(name).parents if parent.as_posix() != "."):
+            raise ValueError("logical file and ancestor directory paths conflict")
 
 
 def build(entries, output, provenance):
@@ -42,6 +51,7 @@ def build(entries, output, provenance):
     index_path = output.with_name(output.name + ".index.json")
     if not 1 <= len(entries) <= MAX_FILES or output.exists() or index_path.exists():
         raise ValueError("bounded nonempty data and fresh archive/index destinations required")
+    validate_logical_paths(entries)
     files, objects = [], {}
     for name, path in sorted(entries.items()):
         safe_name(name)
@@ -131,6 +141,7 @@ def check(archive, index_path, output=None):
                     if value["bytes"] != row["bytes"]:
                         raise ValueError("one object has conflicting sizes")
                     value["paths"].append(row["path"])
+                validate_logical_paths(logical)
             elif position == 1:
                 if member.name != "REPRODUCE.md" or digest != index["instructions_sha256"]:
                     raise ValueError("reproduction instructions differ")
