@@ -2,5 +2,5 @@
 # Ref: https://github.com/codespell-project/codespell#using-a-config-file
 skip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new
 check-hidden = true
-ignore-regex = ^\s*"image/\S+": ".*|\b(afterAll)\b
+ignore-regex = ^\s*"image/\S+": ".*|\b(afterAll)\b|^      "url": "https://raw\.githubusercontent\.com/google-research-datasets/wit/main/README\.md",$
 ignore-words-list = ratatui,ser,iTerm,iterm2,iterm,te,TE,PASE,SEH,disjointness

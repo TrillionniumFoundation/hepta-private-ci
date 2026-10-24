@@ -13,7 +13,7 @@ Natural execution is blocked and no new independent validation is claimed.
 
 ## Intended natural task (not frozen data acceptance)
 
-WIT English image/caption correspondence, not semantic class recognition. Text
+WIT English image/caption correspondence, not semantic class recognition. Text <!-- codespell:ignore wit -->
 metadata is CC BY-SA 3.0; images require individual author/license/source-page
 verification and local evidence. Reject unresolved rights, unavailable pixels,
 missing captions, ambiguous source identity. Do not treat repository code license
@@ -40,7 +40,7 @@ by SHA256 bucket: train 60%, temperature 10%, conformal calibration 15%, test 15
 Negative donors stay in the same block/split, enabling disjoint block bootstrap.
 For each anchor: one true pair, one highest-cosine other-component hard negative,
 one distinct random other-component negative. Positives are minority 1/3.
-For natural WIT these are weak correspondence labels: semantic false negatives
+For natural WIT these are weak correspondence labels: semantic false negatives <!-- codespell:ignore wit -->
 remain possible. A blinded ambiguity audit would be required before claiming
 semantic match performance. No old feature bank is an independent holdout.
 
@@ -85,8 +85,8 @@ Strong-baseline superiority and out-of-distribution generalization are unproven.
 - LMF paper https://aclanthology.org/P18-1209/ ; author code https://github.com/Justin1904/Low-rank-Multimodal-Fusion
 - CLIP paper https://arxiv.org/abs/2103.00020 ; code/model license https://github.com/openai/CLIP
 - Tip-Adapter paper https://arxiv.org/abs/2207.09519 ; author code https://github.com/gaopengcuhk/Tip-Adapter
-- WIT paper https://arxiv.org/abs/2103.01913 ; official license https://github.com/google-research-datasets/wit/blob/main/LICENSE
-- WIT download documentation https://github.com/google-research-datasets/wit/blob/main/DATA.md
+- WIT paper https://arxiv.org/abs/2103.01913 ; official license https://github.com/google-research-datasets/wit/blob/main/LICENSE <!-- codespell:ignore wit -->
+- WIT download documentation https://github.com/google-research-datasets/wit/blob/main/DATA.md <!-- codespell:ignore wit -->
 - SelectiveNet https://proceedings.mlr.press/v97/geifman19a.html
 - CALM https://arxiv.org/abs/2207.07061
 

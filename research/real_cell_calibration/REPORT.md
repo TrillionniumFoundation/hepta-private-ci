@@ -28,7 +28,7 @@ minority recall is null; positive/per-class recalls are available locally.
 
 The fixed .25 cosine threshold is unsuitable for this feature space: all-positive
 predictions are a weak-baseline failure, not evidence of Head superiority. No
-threshold was retuned. An unchanged historical strong cosine script, with two
+threshold was tuned again. An unchanged historical strong cosine script, with two
 train-fitted scalar parameters, replayed at 250/256 accuracy, 251/256 coverage
 at confidence .70, and NLL .07438. Original Head accuracy was 251/256, with paired
 difference interval [-.0078125,.015625], crossing zero. This historical .70 rule
@@ -51,7 +51,7 @@ Each learned model used 300 steps. Paired projected models have 65 parameters;
 historical full-linear has 1537. Unimodal arrays allocate 65, with only 33 affecting
 output. Runtime includes evaluation/bootstrap, not original Encoder execution.
 
-Fresh WIT sample, image-license metadata and CLIP checkpoint acquisition were
+Fresh WIT sample, image-license metadata and CLIP checkpoint acquisition were <!-- codespell:ignore wit -->
 blocked by HTTP 403. No retry or alternate source was used. Fresh per-image
 rights evidence, original-image feature extraction and exact natural-data freeze
 remain incomplete. Natural mode therefore fails closed. References and public
