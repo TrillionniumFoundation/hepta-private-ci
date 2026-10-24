@@ -12,6 +12,27 @@ pub(super) struct RegisteredConsumers {
 }
 
 impl RegisteredConsumers {
+    pub(super) fn initialize_fresh(
+        state: &Path,
+        config: &HostAuthorityConsumersConfig,
+        issuer: &DeploymentFinalUseIssuer,
+        clock: Arc<HostAuthorityClock>,
+        expires_at_unix_ms: u64,
+    ) -> io::Result<Self> {
+        let (device_root, notes_root) = Self::roots(state, config, &issuer.trust_key()?.key_id)?;
+        let head = issuer.revocations()?;
+        let result = Self {
+            device: HostConsumerFrontier::initialize_fresh(device_root, config.device.owner_id.clone(),
+                &head, clock.clone(), expires_at_unix_ms).map_err(io::Error::other)?,
+            notes: HostConsumerFrontier::initialize_fresh(notes_root, config.notes.owner_id.clone(),
+                &head, clock, expires_at_unix_ms).map_err(io::Error::other)?,
+        };
+        if issuer.revocations()? != head {
+            return Err(io::Error::other("original issuer changed during fresh consumer publication"));
+        }
+        Ok(result)
+    }
+
     pub(super) fn open(
         state: &Path,
         config: &HostAuthorityConsumersConfig,
@@ -19,6 +40,22 @@ impl RegisteredConsumers {
         clock: Arc<HostAuthorityClock>,
         expires_at_unix_ms: u64,
     ) -> io::Result<Self> {
+        let (device_root, notes_root) = Self::roots(state, config, signer_id)?;
+        Ok(Self {
+            device: HostConsumerFrontier::open(
+                device_root, config.device.owner_id.clone(), clock.clone(), expires_at_unix_ms,
+            ).map_err(io::Error::other)?,
+            notes: HostConsumerFrontier::open(
+                notes_root, config.notes.owner_id.clone(), clock, expires_at_unix_ms,
+            ).map_err(io::Error::other)?,
+        })
+    }
+
+    fn roots(
+        state: &Path,
+        config: &HostAuthorityConsumersConfig,
+        signer_id: &str,
+    ) -> io::Result<(Arc<RootAuthorityDirectory>, Arc<RootAuthorityDirectory>)> {
         if config.device.owner_id != signer_id
             || config.notes.owner_id != signer_id
             || [&config.device, &config.notes].iter().any(|slot| {
@@ -42,21 +79,6 @@ impl RegisteredConsumers {
                 "distinct protected consumer directories required",
             ));
         }
-        Ok(Self {
-            device: HostConsumerFrontier::open(
-                device_root,
-                config.device.owner_id.clone(),
-                clock.clone(),
-                expires_at_unix_ms,
-            )
-            .map_err(io::Error::other)?,
-            notes: HostConsumerFrontier::open(
-                notes_root,
-                config.notes.owner_id.clone(),
-                clock,
-                expires_at_unix_ms,
-            )
-            .map_err(io::Error::other)?,
-        })
+        Ok((device_root, notes_root))
     }
 }

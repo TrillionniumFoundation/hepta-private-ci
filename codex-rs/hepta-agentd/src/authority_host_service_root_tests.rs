@@ -284,33 +284,25 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
             .unwrap(),
         )
         .unwrap();
-    registry
+    let starting = registry
         .compare_and_transition(&owner, 0, AgentLifecycle::Starting)
         .unwrap();
     let identity = HostAuthorityRegisteredIdentity {
         agent_id: owner.clone(),
-        spawn_generation: 1,
+        spawn_generation: starting.generation,
         fleet_root: root.join("fleet"),
         workspace,
         resources: ResourceBudget::local_default(),
     };
     // The original owner creates and coherently captures a genuinely fresh
     // store before any protected clock/lease starts. No suspect DB is imported.
-    let checkpoint_cut = std::env::var_os("HEPTA_SERVICE_CHECKPOINT").map(|_| {
+    let fresh_cognitive = std::env::var_os("HEPTA_SERVICE_CHECKPOINT").map(|_| {
         assert!(std::env::var_os("HEPTA_SERVICE_WRITER_PROOF").is_some());
         tokio::runtime::Builder::new_current_thread()
             .enable_all()
             .build()
             .unwrap()
-            .block_on(async {
-                let store =
-                    codex_hepta_memory::CognitiveStore::open(&identity.identity().unwrap().layout)
-                        .await
-                        .unwrap();
-                let cut = store.recovery_anchor().await.unwrap();
-                store.close().await;
-                cut
-            })
+            .block_on(crate::FreshHostCognitiveState::prepare(&identity)).unwrap()
     });
     let metadata = std::fs::metadata(&parent).unwrap();
     let required_bind = HostAuthorityBindIdentity {
@@ -565,7 +557,7 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
             );
         }
     }
-    let config_path = if let Some(cut) = checkpoint_cut {
+    let config_path = if let Some(fresh) = fresh_cognitive {
         let (clock, leases, issuer) = open_registered_issuer(&config).unwrap();
         let service = HostAuthorityService::from_registered_owner(
             issuer.clone(),
@@ -588,19 +580,11 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
             .checkpoint_registration(&issuer, registration.publisher_epoch, peer)
             .unwrap();
         let directory = config.state_dir.join("checkpoint");
-        std::fs::DirBuilder::new()
-            .mode(0o700)
-            .create(&directory)
-            .unwrap();
-        let backend = crate::HostCognitiveCheckpoint::initialize_fresh(
-            RootAuthorityDirectory::open(&directory).unwrap(),
-            registered.clone(),
-            cut,
-            clock,
-        )
-        .unwrap();
-        drop(backend);
         config.checkpoint_state_dir = Some(directory);
+        if std::env::var_os("HEPTA_SERVICE_CONSUMERS").is_some() {
+            consumer_fixture::configure(&mut config);
+        }
+        let service = service.initialize_fresh_heads(&config, &registration, &pidfd, fresh).unwrap();
         let path = root.join("service-checkpoint.json");
         write_json(&path, &config);
         // A whole-writer binding from a different original authority/token
@@ -623,7 +607,7 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
     };
     let config_path = if std::env::var_os("HEPTA_SERVICE_CONSUMERS").is_some() {
         assert!(config.writer.is_some());
-        consumer_fixture::initialize(&mut config);
+        assert!(config.consumers.is_some(), "the production fresh factory must initialize both original frontiers");
         let path = root.join("service-consumers.json");
         write_json(&path, &config);
         path

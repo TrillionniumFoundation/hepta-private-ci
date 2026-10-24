@@ -26,10 +26,7 @@ pub(super) fn root_peer_fd(command: &mut Command) -> std::os::fd::OwnedFd {
     fd
 }
 
-pub(super) fn initialize(config: &mut HostAuthorityServiceConfig) {
-    let (clock, _leases, issuer) = open_registered_issuer(config).unwrap();
-    let writer = config.writer.as_ref().unwrap();
-    let head = issuer.revocations().unwrap();
+pub(super) fn configure(config: &mut HostAuthorityServiceConfig) {
     let device = HostAuthorityConsumerConfig {
         state_dir: config.state_dir.join("device-consumer"),
         owner_id: config.signer_id.clone(),
@@ -38,26 +35,6 @@ pub(super) fn initialize(config: &mut HostAuthorityServiceConfig) {
         state_dir: config.state_dir.join("notes-consumer"),
         owner_id: config.signer_id.clone(),
     };
-    for slot in [&device, &notes] {
-        std::fs::DirBuilder::new()
-            .mode(0o700)
-            .create(&slot.state_dir)
-            .unwrap();
-    }
-    std::fs::File::open(&config.state_dir)
-        .unwrap()
-        .sync_all()
-        .unwrap();
-    for slot in [&device, &notes] {
-        crate::HostConsumerFrontier::initialize_fresh(
-            RootAuthorityDirectory::open(&slot.state_dir).unwrap(),
-            slot.owner_id.clone(),
-            &head,
-            clock.clone(),
-            writer.authority_lease.expires_at_unix_ms,
-        )
-        .unwrap();
-    }
     let runtime = config.sockets.observation.parent().unwrap();
     config.sockets.device_frontier = Some(runtime.join("device-frontier.sock"));
     config.sockets.notes_frontier = Some(runtime.join("notes-frontier.sock"));

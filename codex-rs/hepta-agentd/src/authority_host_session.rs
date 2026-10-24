@@ -13,6 +13,23 @@ pub struct PreparedHostAuthoritySession {
 }
 
 impl PreparedHostAuthoritySession {
+    /// Publish an explicitly prepared fresh original DB and fresh protected
+    /// heads, retaining the same service for subsequent capture and serving.
+    /// Issuer, clock, writer lease and proof must already be registered by the
+    /// original administrative factories. This is never a recovery fallback.
+    pub fn initialize_fresh(
+        config_file: &Path,
+        registration_file: &Path,
+        owner_pidfd: OwnedFd,
+        fresh: crate::FreshHostCognitiveState,
+    ) -> io::Result<Self> {
+        let config = read_root_json(config_file)?;
+        let registration = read_root_json(registration_file)?;
+        let service = open_registered_writer(&config, &registration, &owner_pidfd)?
+            .initialize_fresh_heads(&config, &registration, &owner_pidfd, fresh)?;
+        Ok(Self { config, registration, owner_pidfd, service })
+    }
+
     /// Open existing Root state once through the original service factory.
     /// No file, lease, signer, consumer or checkpoint is initialized here.
     pub fn open(

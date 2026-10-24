@@ -143,3 +143,35 @@ backend qualifications also check that capture refuses a Dirty checkpoint and
 cannot revive a closed consumer. These checks need their existing explicit
 Root/data-bind environment and must actually run; compilation or ignored
 test discovery alone does not establish passage.
+
+## Fresh original state before releasing a daemon
+
+`FreshHostCognitiveState::prepare` accepts the original registered identity,
+requires the exact Registry `Starting` record and immutable manifest/layout,
+and admits only an empty cognitive directory still under Root0700 custody.
+It holds the original Agentd writer lock, opens the original CognitiveStore,
+captures its coherent cut and awaits complete SQLite pool shutdown. The
+non-Clone result retains that original lock and has no public cut constructor.
+Wrong generation, peer-writable custody, existing bytes or concurrent writer
+ownership cannot fall back to initialization. Failed or partial state is kept.
+
+After the original administrative factories have created the issuer/clock and
+registered the actual writer lease/proof, the Root entry can consume this
+preparation in `PreparedHostAuthoritySession::initialize_fresh`. This shares
+the ordinary registered writer factory, derives the checkpoint binding through
+the original signed proof, and creates only absent, distinct direct children
+of protected state. Original Current and both original consumer-frontier
+backends are initialized inside the existing live writer lease fence and then
+retained for capture and serving. Registry and actual pidfd/UID/GID/lifetime
+are checked again before returning. No nonce journal or runtime authority is
+inferred from these new protected heads; the real daemon still has to open
+its original FinalUse owners and protected recovery writer.
+
+The explicit five-lane Root qualification now uses this original fresh
+preparation and head publication path. The additional real Registry/SQLite
+regression is `original_fresh_state_retains_writer_lock_and_refuses_nonempty_or_changed_registry`;
+run it with `just test -p codex-hepta-agentd --lib --run-ignored ignored-only`
+and that exact test filter, as Root with an explicit Root-owned
+`HEPTA_CHECKPOINT_TEST_ROOT`. It checks the actual writer lock, refusal of a
+second fresh preparation, unchanged original cut, and Registry transition
+fencing. These host tests still do not qualify the native G2 finite sequence.

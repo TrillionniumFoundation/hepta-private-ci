@@ -15,6 +15,19 @@ pub(super) struct RegisteredCheckpoint {
 }
 
 impl RegisteredCheckpoint {
+    pub(super) fn initialize_fresh(
+        directory: Arc<RootAuthorityDirectory>,
+        registration: HostCognitiveCheckpointRegistration,
+        cut: codex_hepta_memory::CognitiveRecoveryAnchor,
+        clock: Arc<HostAuthorityClock>,
+    ) -> io::Result<Self> {
+        Ok(Self {
+            peer: registration.peer_lifetime.clone(),
+            backend: HostCognitiveCheckpoint::initialize_fresh(directory, registration, cut, clock)
+                .map_err(io::Error::other)?,
+        })
+    }
+
     pub(super) fn open(
         directory: Arc<RootAuthorityDirectory>,
         registration: HostCognitiveCheckpointRegistration,

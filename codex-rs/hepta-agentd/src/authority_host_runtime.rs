@@ -190,6 +190,40 @@ pub(super) fn open_registered_service(
     registration: &HostAuthorityRegistration,
     owner_pidfd: &OwnedFd,
 ) -> io::Result<HostAuthorityService> {
+    let service = open_registered_writer(config, registration, owner_pidfd)?;
+    let service = if let Some(directory) = &config.checkpoint_state_dir {
+        if !directory.starts_with(&config.state_dir) || directory == &config.state_dir {
+            return Err(io::Error::other("checkpoint must be a private state child"));
+        }
+        service.with_registered_checkpoint(
+            RootAuthorityDirectory::open(directory).map_err(io::Error::other)?,
+            registration.publisher_epoch,
+            codex_hepta_memory::CognitiveCheckpointPeerLifetime {
+                uid: config.peer_uid,
+                pid: registration.peer_pid,
+                boot_id: registration.boot_id.clone(),
+                process_start_ticks: registration.process_start_ticks,
+            },
+        )?
+    } else {
+        service
+    };
+    match (&config.consumers, &config.sockets.device_frontier, &config.sockets.notes_frontier) {
+        (Some(consumers), Some(_), Some(_)) => {
+            service.with_registered_consumers(&config.state_dir, consumers)
+        }
+        (None, None, None) => Ok(service),
+        _ => Err(io::Error::other("both fixed consumer lanes are required together")),
+    }
+}
+
+/// Both explicit fresh publication and runtime open retain this same original
+/// registered issuer/writer factory; neither path invents a separate owner.
+pub(super) fn open_registered_writer(
+    config: &HostAuthorityServiceConfig,
+    registration: &HostAuthorityRegistration,
+    owner_pidfd: &OwnedFd,
+) -> io::Result<HostAuthorityService> {
     if config.schema_version != 1
         || registration.schema_version != 1
         || config.peer_uid == 0
@@ -213,38 +247,6 @@ pub(super) fn open_registered_service(
         service.with_registered_writer(writer.clone(), leases.verifier())?
     } else {
         service
-    };
-    let service = if let Some(directory) = &config.checkpoint_state_dir {
-        if !directory.starts_with(&config.state_dir) || directory == &config.state_dir {
-            return Err(io::Error::other("checkpoint must be a private state child"));
-        }
-        service.with_registered_checkpoint(
-            RootAuthorityDirectory::open(directory).map_err(io::Error::other)?,
-            registration.publisher_epoch,
-            codex_hepta_memory::CognitiveCheckpointPeerLifetime {
-                uid: config.peer_uid,
-                pid: registration.peer_pid,
-                boot_id: registration.boot_id.clone(),
-                process_start_ticks: registration.process_start_ticks,
-            },
-        )?
-    } else {
-        service
-    };
-    let service = match (
-        &config.consumers,
-        &config.sockets.device_frontier,
-        &config.sockets.notes_frontier,
-    ) {
-        (Some(consumers), Some(_), Some(_)) => {
-            service.with_registered_consumers(&config.state_dir, consumers)?
-        }
-        (None, None, None) => service,
-        _ => {
-            return Err(io::Error::other(
-                "both fixed consumer lanes are required together",
-            ));
-        }
     };
     Ok(service)
 }

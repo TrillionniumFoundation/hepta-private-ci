@@ -15,6 +15,13 @@ use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
 #[path = "authority_host_bootstrap_capture.rs"]
 mod bootstrap;
 
+#[path = "authority_host_fresh.rs"]
+mod fresh;
+pub use fresh::FreshHostCognitiveState;
+
+#[path = "authority_host_fresh_publish.rs"]
+mod fresh_publish;
+
 pub(super) struct RegisteredWriter {
     pub(super) registration: HostAuthorityWriterRegistration,
     leases: AuthorityLeaseVerifier,
