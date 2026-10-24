@@ -84,7 +84,7 @@ an authority service or create a writer. Run it separately as Root in the
 isolated validation environment; a default skipped test is not evidence:
 
 ```sh
-just test -p codex-hepta-agentd --lib --run-ignored ignored-only original_owner_process_rejects_same_uid_with_different_gid
+just test -p codex-hepta-agentd --lib --run-ignored only original_owner_process_rejects_same_uid_with_different_gid
 ```
 
 This Linux host regression still does not qualify native G2 execution.
@@ -170,8 +170,23 @@ its original FinalUse owners and protected recovery writer.
 The explicit five-lane Root qualification now uses this original fresh
 preparation and head publication path. The additional real Registry/SQLite
 regression is `original_fresh_state_retains_writer_lock_and_refuses_nonempty_or_changed_registry`;
-run it with `just test -p codex-hepta-agentd --lib --run-ignored ignored-only`
+run it with `just test -p codex-hepta-agentd --lib --run-ignored only`
 and that exact test filter, as Root with an explicit Root-owned
 `HEPTA_CHECKPOINT_TEST_ROOT`. It checks the actual writer lock, refusal of a
 second fresh preparation, unchanged original cut, and Registry transition
 fencing. These host tests still do not qualify the native G2 finite sequence.
+
+## Initial protected writer receipt
+
+The public bootstrap carries the complete original head, not its opaque Root
+token. `AgentdUnixCognitiveCheckpointTransport::into_protected_inputs` consumes
+the sole already authenticated Root lane, reads its original `ReadHead` ACK,
+requires exact equality with that trusted Current head, and preserves the
+server's token bytes. It does not compute a token from public JSON. Its output
+can enter `AgentdProductionWriterHost::open_with_protected_recovery` with the
+original live Root session's authority/verifier and writer lease identity.
+That original factory still performs exclusive exact-cut recovery, authentic
+whole-owner binding and another Current check before creating the writer.
+Any bootstrap mismatch, refusal, malformed response or cancellation drops the
+consumed lane; no retry or reconnect is added. Framing regressions use explicit
+same-UID protocol peers and do not claim live Root or native G2 qualification.

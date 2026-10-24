@@ -20,6 +20,9 @@ use tokio::io::AsyncWriteExt;
 use tokio::io::unix::AsyncFd;
 use tokio::sync::Mutex;
 
+#[path = "cognitive_checkpoint_initial.rs"]
+mod initial;
+
 /// Exact root process identity established by the trusted launcher before
 /// descriptor transfer. A numeric PID discovered from the connection is not
 /// sufficient; the launcher must also retain and transfer its original pidfd.

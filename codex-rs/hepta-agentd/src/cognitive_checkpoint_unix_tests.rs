@@ -4,6 +4,9 @@ use super::*;
 use std::io::Write;
 use std::os::fd::FromRawFd;
 
+#[path = "cognitive_checkpoint_initial_tests.rs"]
+mod initial;
+
 fn identity() -> AgentdCognitiveCheckpointPeer {
     identity_for(std::process::id())
 }
