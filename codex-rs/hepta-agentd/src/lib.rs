@@ -87,6 +87,8 @@ pub use authority_host_native_launch::diagnose_native_launch;
 #[cfg(target_os = "linux")]
 pub use authority_host_native_launch::launch_host_authority_native_session;
 #[cfg(target_os = "linux")]
+pub use authority_host_native_launch::launch_host_authority_native_session_with_deployment_lock;
+#[cfg(target_os = "linux")]
 mod authority_host_service;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::initialize_host_authority;
