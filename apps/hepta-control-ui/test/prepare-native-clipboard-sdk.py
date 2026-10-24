@@ -15,6 +15,12 @@ BASE = "337566c8b25d47f7e4fff6a202157b65bf183330"
 SOURCE = "https://github.com/kevinaboos/makepad"
 ORIGINAL_SOURCE = "git+" + SOURCE + "?rev=" + BASE + "#" + BASE
 UI_FEATURE = "native-clipboard-sdk"
+# Git package discovery at BASE resolves the original 0.2.20 vendor copy.
+# The explicit path candidate must preserve that same package and source.
+GRAPH_MANIFESTS = {
+    "libs/vulkan/makepad-half/Cargo.toml",
+    "libs/vulkan/naga/Cargo.toml",
+}
 
 
 def require_clipboard_feature(metadata):
@@ -117,7 +123,8 @@ def prepare(upstream, destination, hepta):
     changed = set()
     for record in manifest["changed_files"]:
         relative = Path(record["path"])
-        if (relative.is_absolute() or relative.parts[0] != "platform"
+        if (relative.is_absolute()
+                or (relative.parts[0] != "platform" and str(relative) not in GRAPH_MANIFESTS)
                 or any(part in ("", ".", "..") for part in relative.parts) or str(relative) in changed):
             raise ValueError("Invalid or duplicate SDK source path")
         changed.add(str(relative))

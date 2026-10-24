@@ -2,8 +2,8 @@
   "schema": "hepta.native-sdk-notices.v1",
   "upstreamRepository": "https://github.com/kevinaboos/makepad",
   "upstreamRevision": "337566c8b25d47f7e4fff6a202157b65bf183330",
-  "patchedTree": "f9efec87ff9d5690b8c9fd23ea0c8f3535a9d8eb",
-  "sourceManifestSha256": "a7f36936a4101d85df78b30a7776ee85388fd004b7b8fccd0d1d3a460d859b3a",
+  "patchedTree": "e5ae930cc6a0a528719673deff44ec2830f4bdfa",
+  "sourceManifestSha256": "cd511d5c0862ce720f596285f17aa2e4e3d133f3c45b76bcaa5a5d962d005f73",
   "files": [
     {
       "path": "dependency-notices/makepad/LICENSE-MIT",
@@ -12,8 +12,8 @@
     },
     {
       "path": "dependency-notices/makepad/MANIFEST.json",
-      "bytes": 3347,
-      "sha256": "a7f36936a4101d85df78b30a7776ee85388fd004b7b8fccd0d1d3a460d859b3a"
+      "bytes": 4040,
+      "sha256": "cd511d5c0862ce720f596285f17aa2e4e3d133f3c45b76bcaa5a5d962d005f73"
     },
     {
       "path": "dependency-notices/makepad/native-clipboard-read.patch",
@@ -21,9 +21,14 @@
       "sha256": "0edf1c0f806fec15ce29f03670e722d3eda4ec3943911537874087e8a8d4fa1f"
     },
     {
+      "path": "dependency-notices/makepad/sdk-num-traits-path.patch",
+      "bytes": 521,
+      "sha256": "5a1778061979f444063ba0d0c9b9dce1815c345e242eb87178252a6779c6ea1c"
+    },
+    {
       "path": "dependency-notices/makepad/README.md",
-      "bytes": 5480,
-      "sha256": "eabc33024106161239be4ebb97abc5579acfe932fe88d7e995491944b0c044b6"
+      "bytes": 6228,
+      "sha256": "0449cb12a27f7f0003312c63cd810a96930f92dd6917f782381147063d7c3d01"
     }
   ]
 }

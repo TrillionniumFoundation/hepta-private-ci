@@ -6,6 +6,17 @@ not a new renderer. `MANIFEST.json` fixes upstream commit
 patched bytes, the patch digest, and the complete resulting Git tree. The
 original MIT license remains in the prepared source and is recorded by hash.
 
+The current candidate also carries `sdk-num-traits-path.patch`. The original
+Git Cargo graph resolves `num-traits` 0.2.20 from
+`libs/rapier/vendor/num-traits`, while the literal paths in `makepad-half` and
+`naga` would select the separate Vulkan 0.2.19 copy in a path build. The added
+patch changes only those two manifest paths to the original 0.2.20 directory;
+their version requirements, features and the dependency's source bytes stay
+unchanged. The unrelated registry 0.2.19 package remains separate. The earlier
+clipboard-only `f9efec87ff9d5690b8c9fd23ea0c8f3535a9d8eb` candidate failed this
+graph gate; its receipts remain evidence of that failure. The original
+`native-clipboard-read.patch` bytes and default Git SDK are unchanged.
+
 The change adds one bounded, request-scoped clipboard read to the original
 `CxOsOp` path and X11 connection. It returns a unique nonblocking ticket. It
 never emits a global `TextInput` event or follows a later focused field. The
@@ -88,8 +99,8 @@ native builds use `hepta-native-makepad`; candidate builds use the explicit
 clipboard feature and the generated config together.
 
 `apps/hepta-native/resources/NATIVE-SDK-PATCH.json` separately binds the actual
-original MIT license, exact source manifest, complete patch and this provenance
-note. These four files are installed under `dependency-notices/makepad/`; the
+original MIT license, exact source manifest, both complete patches and this
+provenance note. These five files are installed under `dependency-notices/makepad/`; the
 font resource inventory remains unchanged. The native UI exports the compiled
 notice contract so startup can refuse a mismatched bundle.
 

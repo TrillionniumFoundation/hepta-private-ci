@@ -2,7 +2,7 @@
   "schema_version": 1,
   "upstream_repository": "https://github.com/kevinaboos/makepad",
   "upstream_commit": "337566c8b25d47f7e4fff6a202157b65bf183330",
-  "patched_tree": "f9efec87ff9d5690b8c9fd23ea0c8f3535a9d8eb",
+  "patched_tree": "e5ae930cc6a0a528719673deff44ec2830f4bdfa",
   "package": {
     "name": "makepad-platform",
     "version": "2.0.0"
@@ -12,6 +12,11 @@
       "file": "native-clipboard-read.patch",
       "sha256": "0edf1c0f806fec15ce29f03670e722d3eda4ec3943911537874087e8a8d4fa1f",
       "bytes": 19919
+    },
+    {
+      "file": "sdk-num-traits-path.patch",
+      "sha256": "5a1778061979f444063ba0d0c9b9dce1815c345e242eb87178252a6779c6ea1c",
+      "bytes": 521
     }
   ],
   "changed_files": [
@@ -74,6 +79,18 @@
       "upstream_sha256": "747aaf90ecb6dd2616488cb74152aad9c7a1f07d2fd43ad04000befe60be429f",
       "patched_sha256": "e8002f6985cf92f9ea83920667cc701a0ecb609ba87c6cf318612734d732d207",
       "bytes": 79083
+    },
+    {
+      "path": "libs/vulkan/makepad-half/Cargo.toml",
+      "upstream_sha256": "bd99184fb0d45fda38ed4c41c5a1eeb313ca79d5867dd24db09076d7edb02316",
+      "patched_sha256": "e8ea6f9101bacbb8153bdd8d5f8444859d5a1d42dd7c3f8dffdd583a021b7a76",
+      "bytes": 2488
+    },
+    {
+      "path": "libs/vulkan/naga/Cargo.toml",
+      "upstream_sha256": "99655c7b791930cc9648ab142620f03b199a7e732b89ebd72862d2af7ef1a917",
+      "patched_sha256": "2ef1e620085a44556042d463232e1496a0a7aa24997ec8332aa7ad0ca3a470c7",
+      "bytes": 3672
     }
   ],
   "license": {
