@@ -180,3 +180,10 @@ pub use writer_handoff::WriterHandoffPlanV1;
 pub use unix::UnixManagedProcess;
 #[cfg(unix)]
 pub use unix::UnixProcessDriver;
+
+#[cfg(target_os = "linux")]
+pub use unix::PrecreatedChild;
+#[cfg(target_os = "linux")]
+pub use unix::PrecreatedProcessDriver;
+#[cfg(target_os = "linux")]
+pub use unix::receive_precreated_spawn;

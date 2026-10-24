@@ -48,6 +48,16 @@ use crate::ProcessStream;
 use crate::SpawnSpec;
 use crate::driver::SpawnedProcess;
 
+#[cfg(target_os = "linux")]
+#[path = "precreated.rs"]
+mod precreated;
+#[cfg(target_os = "linux")]
+pub use precreated::PrecreatedChild;
+#[cfg(target_os = "linux")]
+pub use precreated::PrecreatedProcessDriver;
+#[cfg(target_os = "linux")]
+pub use precreated::receive_precreated_spawn;
+
 const LOG_CHUNK_BYTES: usize = 4_096;
 const HEALTH_PROBE_INTERVAL: Duration = Duration::from_millis(50);
 const HEALTH_PROBE_IO_TIMEOUT: Duration = Duration::from_millis(200);
@@ -83,6 +93,8 @@ pub struct UnixManagedProcess {
 enum UnixProcessHandle {
     Child(Child),
     Adopted { process_id: u32 },
+    #[cfg(target_os = "linux")]
+    Precreated(precreated::PinnedChild),
 }
 
 impl UnixProcessHandle {
@@ -90,6 +102,8 @@ impl UnixProcessHandle {
         match self {
             Self::Child(child) => child.id(),
             Self::Adopted { process_id } => *process_id,
+            #[cfg(target_os = "linux")]
+            Self::Precreated(child) => child.pid,
         }
     }
 }
@@ -119,6 +133,17 @@ impl ManagedProcess for UnixManagedProcess {
             },
             UnixProcessHandle::Adopted { process_id } => {
                 if let Some(exit) = poll_adopted_process(*process_id)? {
+                    self.health_probe.shutdown();
+                    return Ok(ProcessObservation {
+                        state: ProcessState::Exited(exit),
+                        logs,
+                    });
+                }
+                true
+            }
+            #[cfg(target_os = "linux")]
+            UnixProcessHandle::Precreated(child) => {
+                if let Some(exit) = child.poll()? {
                     self.health_probe.shutdown();
                     return Ok(ProcessObservation {
                         state: ProcessState::Exited(exit),
@@ -164,10 +189,18 @@ impl ManagedProcess for UnixManagedProcess {
     }
 
     fn request_stop(&mut self) -> Result<(), ProcessDriverError> {
+        #[cfg(target_os = "linux")]
+        if let UnixProcessHandle::Precreated(child) = &self.handle {
+            return child.signal(libc::SIGTERM);
+        }
         send_signal(self.handle.process_id(), libc::SIGTERM)
     }
 
     fn kill(&mut self) -> Result<(), ProcessDriverError> {
+        #[cfg(target_os = "linux")]
+        if let UnixProcessHandle::Precreated(child) = &self.handle {
+            return child.signal(libc::SIGKILL);
+        }
         send_signal(self.handle.process_id(), libc::SIGKILL)
     }
 }
