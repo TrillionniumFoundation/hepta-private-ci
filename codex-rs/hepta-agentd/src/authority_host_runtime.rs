@@ -185,6 +185,14 @@ pub fn serve_host_authority_session_with_text(
         return Err(io::Error::other("invalid service registration"));
     }
     verify_process(&registration, config.peer_uid)?;
+    if text_ui.is_some()
+        && config.issuer_record_profile
+            != crate::authority_host_config::HostIssuerRecordProfile::TextRecovery
+    {
+        return Err(io::Error::other(
+            "native text requires the explicit text_recovery issuer record profile",
+        ));
+    }
     let (clock, leases, issuer) = open_registered_issuer(&config)?;
     let service = HostAuthorityService::from_registered_owner(
         issuer,
@@ -335,7 +343,15 @@ pub(super) fn open_registered_issuer(
         frontier,
     )
     .map_err(io::Error::other)?;
-    let issuer = Arc::new(DeploymentFinalUseIssuer::open_protected(
+    let open = match config.issuer_record_profile {
+        crate::authority_host_config::HostIssuerRecordProfile::Standard => {
+            DeploymentFinalUseIssuer::open_protected
+        }
+        crate::authority_host_config::HostIssuerRecordProfile::TextRecovery => {
+            DeploymentFinalUseIssuer::open_protected_text_recovery
+        }
+    };
+    let issuer = Arc::new(open(
         &config.state_dir.join("issuer"),
         clock.clone(),
         leases.verifier(),
@@ -361,7 +377,7 @@ fn read_existing_private(path: &Path) -> io::Result<()> {
     Ok(())
 }
 
-fn verify_process(registration: &HostAuthorityRegistration, uid: u32) -> io::Result<()> {
+pub(crate) fn verify_process(registration: &HostAuthorityRegistration, uid: u32) -> io::Result<()> {
     if registration.peer_pid == 0
         || registration.peer_pid > i32::MAX as u32
         || registration.process_start_ticks == 0

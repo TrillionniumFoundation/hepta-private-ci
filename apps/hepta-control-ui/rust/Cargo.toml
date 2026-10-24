@@ -24,3 +24,11 @@ incremental = false
 [profile.test]
 debug = 0
 incremental = false
+
+# All four parts of the original Linux adapter use one reviewed source. A
+# downstream Cargo root must repeat these patches at its fixed Hepta revision.
+[patch.crates-io]
+accesskit = { path = "../../../codex-rs/third_party/accesskit-0.17.1/common" }
+accesskit_consumer = { path = "../../../codex-rs/third_party/accesskit-0.17.1/consumer" }
+accesskit_atspi_common = { path = "../../../codex-rs/third_party/accesskit-0.17.1/platforms/atspi-common" }
+accesskit_unix = { path = "../../../codex-rs/third_party/accesskit-0.17.1/platforms/unix" }

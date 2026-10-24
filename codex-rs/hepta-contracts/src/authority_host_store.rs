@@ -27,6 +27,7 @@ use rustix::fs::Mode;
 use rustix::fs::OFlags;
 
 const MAX_RECORD_BYTES: u64 = 16 * 1024;
+const MAX_REGISTERED_RECORD_BYTES: u64 = 64 * 1024;
 
 #[path = "authority_host_issuer.rs"]
 mod issuer;
@@ -199,6 +200,7 @@ pub struct HostAuthorityFrontierStore<F> {
     root: Arc<RootAuthorityDirectory>,
     owner_id: String,
     name: String,
+    record_bound: u64,
     _frontier: PhantomData<fn() -> F>,
     durable: Mutex<Option<DurableRecord>>,
 }
@@ -227,7 +229,19 @@ impl<F: Serialize + DeserializeOwned + Eq> HostAuthorityFrontierStore<F> {
         owner_id: String,
         initial: F,
     ) -> Result<Self, AuthorityTrustError> {
-        let store = Self::configured(root, owner_id)?;
+        Self::initialize_bounded(root, owner_id, initial, MAX_RECORD_BYTES)
+    }
+
+    /// Register the same original frontier with an explicitly reviewed byte
+    /// bound. This changes neither the owner key nor the publication protocol.
+    /// Other callers retain the default 16 KiB limit; no record may exceed 64 KiB.
+    pub fn initialize_bounded(
+        root: Arc<RootAuthorityDirectory>,
+        owner_id: String,
+        initial: F,
+        record_bound: u64,
+    ) -> Result<Self, AuthorityTrustError> {
+        let store = Self::configured(root, owner_id, record_bound)?;
         let _lock = store.publication_lock()?;
         if store.root.exists(&store.name)? {
             return Err(AuthorityTrustError::Conflict);
@@ -242,7 +256,17 @@ impl<F: Serialize + DeserializeOwned + Eq> HostAuthorityFrontierStore<F> {
         root: Arc<RootAuthorityDirectory>,
         owner_id: String,
     ) -> Result<Self, AuthorityTrustError> {
-        let store = Self::configured(root, owner_id)?;
+        Self::open_bounded(root, owner_id, MAX_RECORD_BYTES)
+    }
+
+    /// Reopen a bounded registration without creating, shrinking, or repairing
+    /// its state. A caller with a smaller bound rejects an oversized record.
+    pub fn open_bounded(
+        root: Arc<RootAuthorityDirectory>,
+        owner_id: String,
+        record_bound: u64,
+    ) -> Result<Self, AuthorityTrustError> {
+        let store = Self::configured(root, owner_id, record_bound)?;
         let _lock = store.publication_lock()?;
         store.read_durable()?;
         Ok(store)
@@ -251,8 +275,10 @@ impl<F: Serialize + DeserializeOwned + Eq> HostAuthorityFrontierStore<F> {
     fn configured(
         root: Arc<RootAuthorityDirectory>,
         owner_id: String,
+        record_bound: u64,
     ) -> Result<Self, AuthorityTrustError> {
-        if owner_id.is_empty()
+        if !(1..=MAX_REGISTERED_RECORD_BYTES).contains(&record_bound)
+            || owner_id.is_empty()
             || owner_id.len() > 128
             || !owner_id
                 .bytes()
@@ -266,6 +292,7 @@ impl<F: Serialize + DeserializeOwned + Eq> HostAuthorityFrontierStore<F> {
             root,
             owner_id,
             name: format!("frontier-v1-{suffix}.json"),
+            record_bound,
             _frontier: PhantomData,
             durable: Mutex::new(None),
         })
@@ -350,15 +377,15 @@ impl<F: Serialize + DeserializeOwned + Eq> HostAuthorityFrontierStore<F> {
 
     fn read_record(&self) -> Result<(F, DurableRecord), AuthorityTrustError> {
         let file = self.root.open_private(&self.name, OFlags::RDONLY)?;
-        if file.metadata().map_err(unavailable)?.len() > MAX_RECORD_BYTES {
+        if file.metadata().map_err(unavailable)?.len() > self.record_bound {
             return Err(AuthorityTrustError::Invalid);
         }
         let mut bytes = Vec::new();
         (&file)
-            .take(MAX_RECORD_BYTES + 1)
+            .take(self.record_bound + 1)
             .read_to_end(&mut bytes)
             .map_err(unavailable)?;
-        if bytes.len() as u64 > MAX_RECORD_BYTES {
+        if bytes.len() as u64 > self.record_bound {
             return Err(AuthorityTrustError::Invalid);
         }
         let value: Record<F> =
@@ -377,7 +404,7 @@ impl<F: Serialize + DeserializeOwned + Eq> HostAuthorityFrontierStore<F> {
             frontier,
         })
         .map_err(|_| AuthorityTrustError::Invalid)?;
-        if bytes.len() as u64 > MAX_RECORD_BYTES {
+        if bytes.len() as u64 > self.record_bound {
             return Err(AuthorityTrustError::Invalid);
         }
         self.root

@@ -37,6 +37,29 @@ impl AgentdTextRequests {
         self.retain_signed(envelope, true).await
     }
 
+    /// Restore an exact Root-retained reference without issuing any request.
+    /// A later submit of this recovered identity is status-only, including for
+    /// an older generation. The original issuer owns its durable bytes.
+    pub fn restore_signed(&self, envelope: AuthBusTextIngress) -> Result<(), TextSessionError> {
+        let mut pending = prepare(&self.shared.config, envelope)?;
+        pending.recovered = true;
+        let mut state = self.shared.current()?;
+        if let Some(old) = state.pending.get_mut(&pending.envelope.message_id) {
+            if old.envelope != pending.envelope {
+                return Err(TextSessionError::Identity);
+            }
+            old.recovered = true;
+        } else {
+            if state.pending.len() >= MAX_RETAINED {
+                return Err(TextSessionError::Capacity);
+            }
+            state
+                .pending
+                .insert(pending.envelope.message_id.clone(), pending);
+        }
+        Ok(())
+    }
+
     async fn retain_signed(
         &self,
         envelope: AuthBusTextIngress,
@@ -97,6 +120,35 @@ impl AgentdTextRequests {
         &self,
         message_id: &str,
     ) -> Result<TextReconciliation, TextSessionError> {
+        self.reconcile_mode(message_id, ThreadQueueReconcileMode::ReconcileOnly)
+            .await
+    }
+
+    pub(crate) async fn close_expired_original(
+        &self,
+        message_id: &str,
+    ) -> Result<TextReconciliation, TextSessionError> {
+        let expires = self
+            .shared
+            .current()?
+            .pending
+            .get(message_id)
+            .ok_or(TextSessionError::UnknownRequest)?
+            .envelope
+            .expires_at_ms;
+        if crate::authbus_ingress::now_ms().map_err(unavailable)? < expires {
+            return Err(unavailable("original signature is not expired"));
+        }
+        self.check_current_ingress().await?;
+        self.reconcile_mode(message_id, ThreadQueueReconcileMode::CloseIfAbsent)
+            .await
+    }
+
+    async fn reconcile_mode(
+        &self,
+        message_id: &str,
+        mode: ThreadQueueReconcileMode,
+    ) -> Result<TextReconciliation, TextSessionError> {
         let pending = self
             .shared
             .current()?
@@ -107,10 +159,13 @@ impl AgentdTextRequests {
         let delivery = self
             .shared
             .control
-            .authbus_text_status(pending.delivery_id.clone())
+            .authbus_text_lookup(pending.delivery_id.clone())
             .await
             .map_err(unavailable)?;
-        if delivery.delivery_id != pending.delivery_id {
+        if delivery
+            .as_ref()
+            .is_some_and(|status| status.delivery_id != pending.delivery_id)
+        {
             self.fence()?;
             return Err(TextSessionError::Identity);
         }
@@ -122,7 +177,7 @@ impl AgentdTextRequests {
                     input: pending.input.clone(),
                     client_user_message_id: pending.client_id.clone(),
                     expected_payload_sha256: pending.input_digest.clone(),
-                    mode: ThreadQueueReconcileMode::ReconcileOnly,
+                    mode,
                 },
             })
             .await?;
@@ -203,6 +258,21 @@ impl AgentdTextRequests {
         turn_id: &str,
         pending: &Pending,
     ) -> Result<Option<Turn>, TextSessionError> {
+        {
+            let mut state = self.shared.current()?;
+            if state.snapshot_turns.len() >= 64 {
+                state.snapshot_turns.retain(|_, terminal| !*terminal);
+            }
+            state
+                .snapshot_turns
+                .entry(turn_id.to_string())
+                .or_insert(false);
+            state
+                .pending
+                .get_mut(&pending.envelope.message_id)
+                .ok_or(TextSessionError::UnknownRequest)?
+                .recovered = true;
+        }
         // Bounded pagination avoids loading an unbounded conversation into the
         // renderer. Hitting a history limit leaves the outcome unknown.
         let mut cursor = None;
@@ -215,7 +285,7 @@ impl AgentdTextRequests {
                         cursor,
                         limit: Some(16),
                         sort_direction: Some(SortDirection::Desc),
-                        items_view: Some(TurnItemsView::Full),
+                        items_view: Some(TurnItemsView::NotLoaded),
                     },
                 })
                 .await?;
@@ -223,7 +293,10 @@ impl AgentdTextRequests {
                 return Err(TextSessionError::Capacity);
             }
             if let Some(turn) = page.data.into_iter().find(|turn| turn.id == turn_id) {
-                if turn.items_view != TurnItemsView::Full || !turn.items.iter().any(|item| matches!(item, ThreadItem::UserMessage {client_id: Some(id), content, ..} if id == &pending.client_id && content == &pending.input)) {
+                if turn.items_view != TurnItemsView::NotLoaded
+                    || !turn.items.is_empty()
+                    || !self.original_input_in_turn(turn_id, pending).await?
+                {
                     return Err(TextSessionError::Identity);
                 }
                 if turn.status != TurnStatus::InProgress {
@@ -233,12 +306,70 @@ impl AgentdTextRequests {
                         .get_mut(&pending.envelope.message_id)
                         .ok_or(TextSessionError::UnknownRequest)?
                         .terminal = true;
+                    self.shared
+                        .current()?
+                        .snapshot_turns
+                        .insert(turn_id.to_string(), true);
                 }
                 return Ok(Some(turn));
             }
             cursor = page.next_cursor;
             if cursor.is_none() {
                 return Ok(None);
+            }
+        }
+        Err(TextSessionError::Capacity)
+    }
+
+    /// Reconcile's original Core binding already pins the exact turn/client ID
+    /// and payload digest. Confirm its actual original UserMessage through item
+    /// pagination without loading unrelated tool output into a terminal proof.
+    async fn original_input_in_turn(
+        &self,
+        turn_id: &str,
+        pending: &Pending,
+    ) -> Result<bool, TextSessionError> {
+        let mut cursor = None;
+        for _ in 0..1024 {
+            let page: ThreadItemsListResponse = self
+                .call(ClientRequest::ThreadItemsList {
+                    request_id: self.id(),
+                    params: ThreadItemsListParams {
+                        thread_id: self.shared.config.thread_id.clone(),
+                        turn_id: Some(turn_id.into()),
+                        cursor,
+                        limit: Some(1),
+                        sort_direction: Some(SortDirection::Asc),
+                    },
+                })
+                .await?;
+            if page.data.len() > 1
+                || page.data.iter().any(|entry| entry.turn_id != turn_id)
+                || page
+                    .next_cursor
+                    .as_ref()
+                    .is_some_and(|value| value.is_empty() || value.len() > 2048)
+            {
+                return Err(TextSessionError::Identity);
+            }
+            for entry in page.data {
+                if let ThreadItem::UserMessage {
+                    client_id: Some(id),
+                    content,
+                    ..
+                } = entry.item
+                    && id == pending.client_id
+                {
+                    return if content == pending.input {
+                        Ok(true)
+                    } else {
+                        Err(TextSessionError::Identity)
+                    };
+                }
+            }
+            cursor = page.next_cursor;
+            if cursor.is_none() {
+                return Ok(false);
             }
         }
         Err(TextSessionError::Capacity)
@@ -257,7 +388,16 @@ impl AgentdTextRequests {
             .get_mut(message_id)
             .ok_or(TextSessionError::UnknownRequest)?
             .cancellation_requested = true;
-        self.reconcile(message_id).await
+        let observed = self.reconcile(message_id).await?;
+        if matches!(&observed.queue, ThreadQueueReconcileOutcome::Missing) {
+            // An explicit authorized interruption closes the same original
+            // client binding before a delayed first delivery can arrive.
+            self.check_current_ingress().await?;
+            self.reconcile_mode(message_id, ThreadQueueReconcileMode::CloseIfAbsent)
+                .await
+        } else {
+            Ok(observed)
+        }
     }
 
     pub(super) async fn interrupt_turn(&self, turn_id: String) -> Result<(), TextSessionError> {
@@ -274,7 +414,7 @@ impl AgentdTextRequests {
         Ok(())
     }
 
-    async fn check_current_ingress(&self) -> Result<(), TextSessionError> {
+    pub(super) async fn check_current_ingress(&self) -> Result<(), TextSessionError> {
         drop(self.shared.current()?);
         let ingress = self
             .shared

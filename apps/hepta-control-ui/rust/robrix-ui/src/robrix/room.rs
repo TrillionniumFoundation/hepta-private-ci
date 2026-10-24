@@ -122,6 +122,20 @@ script_mod! {
     }}
    timeline_and_input_bar := View {
     width: Fill height: Fill flow: Down
+    history_navigation := View {visible: false width: Fill height: Fit flow: Flow.Right{wrap: true} spacing: 8 padding: Inset{left: 20, right: 20, top: 6, bottom: 6}
+     earlier_history_button := mod.widgets.AuroraButton {visible: false text: "Earlier messages"}
+     latest_history_button := mod.widgets.AuroraButton {visible: false text: "Latest messages"}
+    }
+    original_approval := View {visible: false width: Fill height: Fit flow: Down padding: 12 spacing: 8
+     original_approval_title := Label {width: Fill height: Fit draw_text.color: COLOR_TEXT}
+     original_approval_scroll := ScrollYView {width: Fill height: 160 flow: Down
+      original_approval_details := Label {width: Fill height: Fit flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT}
+     }
+     original_approval_actions := View {width: Fill height: Fit flow: Flow.Right{wrap: true} spacing: 8
+      original_approval_accept := mod.widgets.AuroraButton {text: "Approve once"}
+      original_approval_decline := mod.widgets.AuroraButton {text: "Decline"}
+     }
+    }
     empty_state := Label {width: Fill height: Fit padding: 24 flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Your conversation starts here. Write a local draft below."}
     timeline := mod.widgets.Timeline {}
     jump_to_latest := mod.widgets.AuroraButton {visible: false text: "Jump to latest"}

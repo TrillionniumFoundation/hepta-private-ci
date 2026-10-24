@@ -10,14 +10,33 @@ use super::*;
 pub struct AgentdTextEvent {
     pub connection_id: u64,
     pub thread_id: String,
+    /// Empty for original-thread activity without a retained local input.
+    /// Such events never acknowledge admission of a new UI message.
     pub message_id: String,
     pub delivery_id: String,
     pub turn_id: String,
     pub notification: ServerNotification,
 }
 
+pub enum AgentdTextObservation {
+    Notification(AgentdTextEvent),
+    Approval(TextApprovalObservation),
+}
+
 impl AgentdTextEvents {
     pub async fn next(&mut self) -> Result<Option<AgentdTextEvent>, TextSessionError> {
+        loop {
+            match self.next_observation().await? {
+                Some(AgentdTextObservation::Notification(event)) => return Ok(Some(event)),
+                Some(AgentdTextObservation::Approval(_)) => {}
+                None => return Ok(None),
+            }
+        }
+    }
+
+    pub async fn next_observation(
+        &mut self,
+    ) -> Result<Option<AgentdTextObservation>, TextSessionError> {
         if self.ended {
             return Ok(None);
         }
@@ -40,12 +59,28 @@ impl AgentdTextEvents {
                     self.ended = true;
                     return Err(unavailable("stream gap; reconcile original identities"));
                 }
-                AppServerEvent::ServerRequest(_) => {
-                    self.shared.state()?.fenced = true;
-                    self.ended = true;
-                    return Err(unavailable("original approval channel required"));
+                AppServerEvent::ServerRequest(request) => {
+                    let requests = AgentdTextRequests {
+                        handle: self.client.request_handle(),
+                        shared: self.shared.clone(),
+                    };
+                    let observation = requests.observe_approval(request).await?;
+                    return Ok(Some(AgentdTextObservation::Approval(observation)));
                 }
             };
+            if let ServerNotification::ServerRequestResolved(resolved) = notification {
+                if resolved.thread_id != self.shared.config.thread_id {
+                    continue;
+                }
+                let id = serde_json::to_string(&resolved.request_id).map_err(unavailable)?;
+                self.shared.current()?.approvals.remove(&id);
+                return Ok(Some(AgentdTextObservation::Approval(
+                    TextApprovalObservation::Resolved {
+                        connection_id: self.shared.connection_id,
+                        id,
+                    },
+                )));
+            }
             let (thread_id, turn_id) = match notification {
                 ServerNotification::ItemStarted(value) => (&value.thread_id, &value.turn_id),
                 ServerNotification::ItemCompleted(value) => (&value.thread_id, &value.turn_id),
@@ -62,13 +97,22 @@ impl AgentdTextEvents {
             if thread_id != &self.shared.config.thread_id {
                 continue;
             }
-            if serde_json::to_vec(notification).map_err(unavailable)?.len() > MAX_OBSERVATION_BYTES
-            {
-                self.shared.state()?.fenced = true;
-                return Err(TextSessionError::Capacity);
-            }
+            let bytes = serde_json::to_vec(notification).map_err(unavailable)?.len();
             let (event, cancel) = {
                 let mut state = self.shared.current()?;
+                if state.snapshot_turns.contains_key(turn_id) {
+                    continue;
+                }
+                let used = state.stream_bytes.entry(turn_id.clone()).or_default();
+                *used = used.saturating_add(bytes);
+                if bytes > 32 * 1024 || *used > 128 * 1024 {
+                    // The original notification remains owned by App Server.
+                    // A large artifact changes only display strategy, not the
+                    // connection identity, authority, or durable delivery.
+                    state.snapshot_turns.insert(turn_id.clone(), false);
+                    state.stream_bytes.remove(turn_id);
+                    continue;
+                }
                 if let ServerNotification::ItemStarted(started) = notification
                     && let ThreadItem::UserMessage {
                         client_id: Some(id),
@@ -88,43 +132,44 @@ impl AgentdTextEvents {
                     }
                     pending.turn_id = Some(turn_id.clone());
                 }
-                let Some(pending) = state
+                if matches!(notification, ServerNotification::TurnCompleted(_)) {
+                    state.stream_bytes.remove(turn_id);
+                }
+                let pending = state
                     .pending
                     .values_mut()
-                    .find(|pending| pending.turn_id.as_ref() == Some(turn_id))
-                else {
-                    continue;
-                };
-                if pending.terminal {
+                    .find(|pending| pending.turn_id.as_ref() == Some(turn_id));
+                if pending.as_ref().is_some_and(|pending| pending.terminal) {
                     continue;
                 }
-                // App Server deltas have no replay cursor. After reconnect an
-                // active snapshot can overlap queued deltas; use replacement
-                // snapshots and final items for that turn until it terminates.
-                if pending.recovered
-                    && matches!(
-                        notification,
-                        ServerNotification::AgentMessageDelta(_)
-                            | ServerNotification::CommandExecutionOutputDelta(_)
-                            | ServerNotification::PlanDelta(_)
-                    )
+                if pending.as_ref().is_some_and(|pending| pending.recovered) {
+                    state.snapshot_turns.insert(turn_id.clone(), false);
+                    continue;
+                }
+                if let ServerNotification::TurnCompleted(completed) = notification
+                    && completed.turn.status == TurnStatus::InProgress
                 {
-                    continue;
+                    return Err(TextSessionError::Identity);
                 }
-                if let ServerNotification::TurnCompleted(completed) = notification {
-                    if completed.turn.status == TurnStatus::InProgress {
-                        return Err(TextSessionError::Identity);
+                let (message_id, delivery_id, cancel) = if let Some(pending) = pending {
+                    if matches!(notification, ServerNotification::TurnCompleted(_)) {
+                        pending.terminal = true;
                     }
-                    pending.terminal = true;
-                }
-                let cancel = pending.cancellation_requested
-                    && matches!(notification, ServerNotification::ItemStarted(value) if matches!(&value.item, ThreadItem::UserMessage { .. }));
+                    (
+                        pending.envelope.message_id.clone(),
+                        pending.delivery_id.clone(),
+                        pending.cancellation_requested
+                            && matches!(notification, ServerNotification::ItemStarted(value) if matches!(&value.item, ThreadItem::UserMessage { .. })),
+                    )
+                } else {
+                    (String::new(), String::new(), false)
+                };
                 (
                     AgentdTextEvent {
                         connection_id: self.shared.connection_id,
                         thread_id: thread_id.clone(),
-                        message_id: pending.envelope.message_id.clone(),
-                        delivery_id: pending.delivery_id.clone(),
+                        message_id,
+                        delivery_id,
                         turn_id: turn_id.clone(),
                         notification: notification.clone(),
                     },
@@ -138,7 +183,7 @@ impl AgentdTextEvents {
                 };
                 requests.interrupt_turn(turn_id.clone()).await?;
             }
-            return Ok(Some(event));
+            return Ok(Some(AgentdTextObservation::Notification(event)));
         }
     }
 

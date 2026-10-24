@@ -9,6 +9,9 @@ use sha2::Digest;
 use sha2::Sha256;
 use std::collections::BTreeMap;
 
+#[path = "chat_owner_recovery.rs"]
+mod recovery;
+
 pub const CHAT_OWNER_PROTOCOL: &str = "hepta.ui-chat-owner.v1";
 pub const MAX_PENDING_DELIVERIES: usize = 32;
 pub const MAX_SIGNED_TEXT_BYTES: usize = 8 * 1024;
@@ -317,10 +320,7 @@ impl ChatOwnerAdapter {
         capability: ChatCapability,
         now_ms: u64,
     ) -> Result<&OwnerScope, ChatOwnerError> {
-        if matches!(
-            capability,
-            ChatCapability::CreateThread | ChatCapability::ResolveApproval
-        ) {
+        if matches!(capability, ChatCapability::CreateThread) {
             return Err(ChatOwnerError::Unsupported);
         }
         if now_ms < self.now_ms {

@@ -75,7 +75,17 @@ pub use authority_host_config::HostAuthorityConsumersConfig;
 #[cfg(target_os = "linux")]
 pub use authority_host_config::HostAuthorityRegisteredIdentity;
 #[cfg(target_os = "linux")]
+mod authority_host_native_launch;
+#[cfg(target_os = "linux")]
 mod authority_host_runtime;
+#[cfg(target_os = "linux")]
+pub use authority_host_native_launch::HostAuthorityNativeProfile;
+#[cfg(target_os = "linux")]
+pub use authority_host_native_launch::NativeLaunchDiagnostic;
+#[cfg(target_os = "linux")]
+pub use authority_host_native_launch::diagnose_native_launch;
+#[cfg(target_os = "linux")]
+pub use authority_host_native_launch::launch_host_authority_native_session;
 #[cfg(target_os = "linux")]
 mod authority_host_service;
 #[cfg(target_os = "linux")]

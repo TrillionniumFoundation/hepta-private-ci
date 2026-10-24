@@ -22,6 +22,8 @@ use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::ServerNotification;
 use codex_app_server_protocol::SortDirection;
 use codex_app_server_protocol::ThreadItem;
+use codex_app_server_protocol::ThreadItemsListParams;
+use codex_app_server_protocol::ThreadItemsListResponse;
 use codex_app_server_protocol::ThreadQueueDeleteParams;
 use codex_app_server_protocol::ThreadQueueDeleteResponse;
 use codex_app_server_protocol::ThreadQueueReconcileMode;
@@ -50,9 +52,12 @@ use crate::AuthBusTextStatus;
 
 #[path = "text_session_events.rs"]
 mod events;
+#[path = "text_session_history.rs"]
+mod history;
 #[path = "text_session_requests.rs"]
 mod requests;
 pub use events::AgentdTextEvent;
+pub use history::TextHistorySnapshot;
 #[path = "text_session_worker.rs"]
 mod worker;
 pub use worker::AgentdTextWorker;
@@ -63,8 +68,20 @@ pub use worker::TextWorkerEvent;
 #[path = "text_session_auth.rs"]
 mod auth;
 pub use auth::TextOwnerReceipt;
+#[path = "text_session_approvals.rs"]
+mod approvals;
 #[path = "text_session_signer.rs"]
 mod signer;
+pub use approvals::TextApproval;
+pub use approvals::TextApprovalDecision;
+pub use approvals::TextApprovalObservation;
+pub use events::AgentdTextObservation;
+#[path = "text_session_provider.rs"]
+mod provider;
+pub use provider::ProviderAccountDiagnostic;
+pub use provider::ProviderLoginChallenge;
+pub use provider::diagnose_existing_provider;
+pub use provider::login_existing_provider;
 
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(5);
 const MAX_RETAINED: usize = 32;
@@ -100,7 +117,7 @@ pub enum TextSessionError {
 #[serde(rename_all = "camelCase")]
 pub struct TextReconciliation {
     pub message_id: String,
-    pub delivery: AuthBusTextStatus,
+    pub delivery: Option<AuthBusTextStatus>,
     pub queue: ThreadQueueReconcileOutcome,
     /// An authoritative replacement snapshot, not additional streaming deltas.
     pub turn: Option<Turn>,
@@ -123,6 +140,11 @@ struct Pending {
 struct State {
     fenced: bool,
     pending: BTreeMap<String, Pending>,
+    // Turns projected from full owner snapshots have no compatible delta
+    // replay cursor. Keep refreshing their original full snapshots instead.
+    snapshot_turns: BTreeMap<String, bool>,
+    stream_bytes: BTreeMap<String, usize>,
+    approvals: BTreeMap<String, approvals::PendingApproval>,
 }
 
 struct Shared {

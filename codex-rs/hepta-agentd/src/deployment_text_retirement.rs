@@ -10,12 +10,14 @@ use codex_app_server_protocol::TurnStatus;
 pub(crate) struct VerifiedTextRetirement {
     original: AuthBusTextIngress,
     agent_id: codex_hepta_contracts::AgentId,
+    closed_after_expiry: bool,
 }
 
 impl VerifiedTextRetirement {
     pub(crate) async fn read_original(
         route: AgentdTextSessionConfig,
         original: AuthBusTextIngress,
+        observed_root_ms: u64,
     ) -> io::Result<Self> {
         let agent_id = route.agent_id.clone();
         let session = AgentdTextSession::connect(route)
@@ -24,20 +26,30 @@ impl VerifiedTextRetirement {
         let result = async {
             session
                 .requests
-                .lookup_signed(original.clone())
-                .await
+                .restore_signed(original.clone())
                 .map_err(io::Error::other)?;
-            let observed = session
+            let mut observed = session
                 .requests
                 .reconcile(&original.message_id)
                 .await
                 .map_err(io::Error::other)?;
-            if observed.delivery.state != AuthBusTextState::QueueAccepted
-                || observed.delivery.queue_receipt_digest.is_none()
+            let mut closed_after_expiry = false;
+            // A past AuthBus expiry or an absent row alone never proves that
+            // a prior AllowIfAbsent RPC cannot still arrive. Close that exact
+            // original Core binding durably before releasing its Root slot.
+            if observed_root_ms >= original.expires_at_ms
+                && matches!(&observed.queue, ThreadQueueReconcileOutcome::Missing)
+                && observed
+                    .delivery
+                    .as_ref()
+                    .is_none_or(|delivery| delivery.state != AuthBusTextState::QueueAccepted)
             {
-                return Err(io::Error::other(
-                    "original AuthBus queue acknowledgement is not durable",
-                ));
+                observed = session
+                    .requests
+                    .close_expired_original(&original.message_id)
+                    .await
+                    .map_err(io::Error::other)?;
+                closed_after_expiry = true;
             }
             let terminal = match &observed.queue {
                 ThreadQueueReconcileOutcome::Cancelled => true,
@@ -51,7 +63,11 @@ impl VerifiedTextRetirement {
             if !terminal {
                 return Err(io::Error::other("original Core outcome is not terminal"));
             }
-            Ok(Self { original, agent_id })
+            Ok(Self {
+                original,
+                agent_id,
+                closed_after_expiry,
+            })
         }
         .await;
         let _ = session.events.shutdown().await;
@@ -94,6 +110,13 @@ impl DeploymentFinalUseIssuer {
             .lock()
             .map_err(|_| io::Error::other("issuer fenced"))?;
         let state = self.store.load(STATE_OWNER).map_err(io::Error::other)?;
+        if proof.closed_after_expiry
+            && self.clock.now_unix_ms().map_err(io::Error::other)? < proof.original.expires_at_ms
+        {
+            return Err(io::Error::other(
+                "original close expiry is not confirmed by Root clock",
+            ));
+        }
         let number = intent_number(request_id)?;
         let retained = state
             .text_signatures

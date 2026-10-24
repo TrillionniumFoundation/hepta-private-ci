@@ -24,6 +24,7 @@ fn retirement_frees_capacity_without_reissuing_past_intents_after_reopen() {
                 VerifiedTextRetirement {
                     original,
                     agent_id: owner.agent_id.clone(),
+                    closed_after_expiry: false,
                 },
             )
             .unwrap();
@@ -103,7 +104,8 @@ fn retiring_later_input_keeps_unknown_earlier_identity_and_rejects_wrong_proof()
                 "session:1",
                 VerifiedTextRetirement {
                     original: later.clone(),
-                    agent_id: owner.agent_id.clone()
+                    agent_id: owner.agent_id.clone(),
+                    closed_after_expiry: false,
                 }
             )
             .is_err()
@@ -114,6 +116,7 @@ fn retiring_later_input_keeps_unknown_earlier_identity_and_rejects_wrong_proof()
             VerifiedTextRetirement {
                 original: later,
                 agent_id: owner.agent_id.clone(),
+                closed_after_expiry: false,
             },
         )
         .unwrap();

@@ -86,6 +86,16 @@ pub struct HostAuthorityServiceConfig {
     pub peer_gid: u32,
     pub timeout_ms: u64,
     pub lifetime_ms: u64,
+    #[serde(default)]
+    pub issuer_record_profile: HostIssuerRecordProfile,
+}
+
+#[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum HostIssuerRecordProfile {
+    #[default]
+    Standard,
+    TextRecovery,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

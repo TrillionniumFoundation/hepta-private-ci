@@ -1,5 +1,6 @@
 //! Linux AT-SPI projection of the original active Makepad widget tree.
 //! The adapter owns no draft, transcript, runtime or authentication state.
+mod edit;
 mod text;
 mod tree;
 
@@ -15,6 +16,7 @@ use accesskit::ActionRequest;
 use accesskit::ActivationHandler;
 use accesskit::DeactivationHandler;
 use accesskit::NodeId;
+use accesskit::TextEditOperation;
 use accesskit::TreeUpdate;
 use hepta_control_core::chat::ChatWorkspace;
 use makepad_widgets::makepad_draw::text::selection::Cursor;
@@ -53,6 +55,13 @@ impl ActivationHandler for Handler {
 impl ActionHandler for Handler {
     fn do_action(&mut self, request: ActionRequest) {
         if matches!(&request.data, Some(ActionData::Value(value)) if value.len() > hepta_control_core::chat::MAX_DRAFT_BYTES)
+        {
+            return;
+        }
+        if matches!(&request.data, Some(ActionData::EditText(edit))
+            if edit.expected.len() > hepta_control_core::chat::MAX_DRAFT_BYTES
+            || matches!(&edit.operation, TextEditOperation::Replace(value)
+                if value.len() > hepta_control_core::chat::MAX_DRAFT_BYTES))
         {
             return;
         }
@@ -299,6 +308,39 @@ impl NativeAccessibility {
                             },
                         },
                     );
+                }
+            }
+            Action::EditText => {
+                if let Kind::Input { name, runs, value } = &target.kind
+                    && let Some(ActionData::EditText(edit)) = request.data
+                {
+                    let current_text = input.text();
+                    // A prior SDK Changed action must reach the sole reducer
+                    // before another accessibility edit can use that draft.
+                    if *name != id!(room_filter) && current_text != workspace.draft().text {
+                        return;
+                    }
+                    let limit = if *name == id!(room_filter) {
+                        crate::presentation::MAX_FILTER_BYTES
+                    } else {
+                        hepta_control_core::chat::MAX_DRAFT_BYTES
+                    };
+                    let Some(range) = edit::validate(runs, value, &current_text, &edit, limit)
+                    else {
+                        return;
+                    };
+                    match edit.operation {
+                        TextEditOperation::Replace(replacement) => {
+                            let _ = input.replace_range(cx, range, &replacement, UndoGroup::New);
+                        }
+                        TextEditOperation::Copy => cx.copy_to_clipboard(&current_text[range]),
+                        TextEditOperation::Cut => {
+                            let selected = &current_text[range.clone()];
+                            if input.replace_range(cx, range, "", UndoGroup::New).is_ok() {
+                                cx.copy_to_clipboard(selected);
+                            }
+                        }
+                    }
                 }
             }
             _ => return,

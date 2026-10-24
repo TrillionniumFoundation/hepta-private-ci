@@ -1,0 +1,489 @@
+{
+  "schema": "hepta.vendored-source.v1",
+  "repository": "https://github.com/AccessKit/accesskit",
+  "revision": "405d578cdfd8496ee79020d24cfaac8c29a8a48f",
+  "crates": {
+    "accesskit": "0.17.1",
+    "accesskit_consumer": "0.26.0",
+    "accesskit_atspi_common": "0.10.1",
+    "accesskit_unix": "0.13.1"
+  },
+  "licenses": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT",
+    "LICENSE.chromium"
+  ],
+  "original_files": [
+    {
+      "path": "Cargo.toml",
+      "sha256": "0abb91f04b462f2c73682f30e36a515d17322961fcaa9b5882ae9919a51c0793",
+      "bytes": 569
+    },
+    {
+      "path": "LICENSE-APACHE",
+      "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+      "bytes": 9723
+    },
+    {
+      "path": "LICENSE-MIT",
+      "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+      "bytes": 1023
+    },
+    {
+      "path": "LICENSE.chromium",
+      "sha256": "845022e0c1db1abb41a6ba4cd3c4b674ec290f3359d9d3c78ae558d4c0ed9308",
+      "bytes": 1559
+    },
+    {
+      "path": "README.md",
+      "sha256": "dc34c1df96c199c7d6c66a6cf7c92383e510efa3e879c13e279473f21c9eec11",
+      "bytes": 7303
+    },
+    {
+      "path": "common/CHANGELOG.md",
+      "sha256": "7122d1fe602714e83bee46d762babd286d3f46ca2b6089dd87478c62a897f8d1",
+      "bytes": 20140
+    },
+    {
+      "path": "common/Cargo.toml",
+      "sha256": "cb391051b6ea1ecade93b6af7afd3140985024ba6192625246c1c0ad8044cca8",
+      "bytes": 781
+    },
+    {
+      "path": "common/README.md",
+      "sha256": "d969decd301ee74baf0e545ec8b487ab1e30a07f090befccddd541a77ad1693e",
+      "bytes": 1027
+    },
+    {
+      "path": "common/src/geometry.rs",
+      "sha256": "2f2c37da6a856f1463c593bd2c01d07f237951556c3f72594cb05a2561afa7ed",
+      "bytes": 22258
+    },
+    {
+      "path": "common/src/lib.rs",
+      "sha256": "9660b795c662cf814ba7b6e0bfadc76fff3e5b049fa4ed144666fd0df4b05ae7",
+      "bytes": 83704
+    },
+    {
+      "path": "consumer/CHANGELOG.md",
+      "sha256": "be776c7cd5bbeefa08a3f5d309954335dbc377b65b3218f2c1818312cbc59e4c",
+      "bytes": 26172
+    },
+    {
+      "path": "consumer/Cargo.toml",
+      "sha256": "779e0dd8411e2a77c2f725b46564b7eecf182bb3c164c6b901a520efc35b44ea",
+      "bytes": 525
+    },
+    {
+      "path": "consumer/README.md",
+      "sha256": "28c871133e9adeb24b4140a520614cee08713c35e2e2688f4a2fed7d4e62b472",
+      "bytes": 207
+    },
+    {
+      "path": "consumer/src/filters.rs",
+      "sha256": "74b3a6cb2ddc8a944f49cc41b4e72f0f9c5ab40ce1839694511d0188a6c894a1",
+      "bytes": 1128
+    },
+    {
+      "path": "consumer/src/iterators.rs",
+      "sha256": "0ebb124fa55252a8864d5fb209bf057b29ae12e223fca2c3083335a003df6f26",
+      "bytes": 25311
+    },
+    {
+      "path": "consumer/src/lib.rs",
+      "sha256": "5c9eac044ea3d69edff3b3946e22af29568cbcac53756be1a90054cacde8a61e",
+      "bytes": 7147
+    },
+    {
+      "path": "consumer/src/node.rs",
+      "sha256": "33a7c53dce46e50e290ebc9dfee2821aae1a659f6095a943a763f880eea4f7b3",
+      "bytes": 37241
+    },
+    {
+      "path": "consumer/src/text.rs",
+      "sha256": "6b5d5375cfbfeab148c525454be4e10ff7566f88acd71e5b0241e13c1c0ff02f",
+      "bytes": 71119
+    },
+    {
+      "path": "consumer/src/tree.rs",
+      "sha256": "a80cdb975342113e0854f1214e2e50b44f9b758ff8b6e5c16794690d5d1688a0",
+      "bytes": 26270
+    },
+    {
+      "path": "platforms/atspi-common/CHANGELOG.md",
+      "sha256": "f97e804679ad015c6bdeacc9838aa788d4e4326872e1c6813c8924ed15f46f3f",
+      "bytes": 11037
+    },
+    {
+      "path": "platforms/atspi-common/Cargo.toml",
+      "sha256": "5878b108c30ea4cce6039e5812b2906400cf6723fe04c01d2a65e9db02485253",
+      "bytes": 700
+    },
+    {
+      "path": "platforms/atspi-common/README.md",
+      "sha256": "d85aba43de55ad4e6d9654bdf9899f1447aa8f791dd4c2789e95ae4b461aa59f",
+      "bytes": 317
+    },
+    {
+      "path": "platforms/atspi-common/src/action.rs",
+      "sha256": "36d0787759c74a16a0718a81bd9b10d73d03c1114610c7c7d529ef8f2bd8efb5",
+      "bytes": 432
+    },
+    {
+      "path": "platforms/atspi-common/src/adapter.rs",
+      "sha256": "3bd4baadba1d18d8df8664c85fd54fdb3c6e408b411f0bceddbd31ce60006603",
+      "bytes": 19628
+    },
+    {
+      "path": "platforms/atspi-common/src/callback.rs",
+      "sha256": "5c3435be09b55d476cea107cfff36e5561791636a3623308298d79c63613ac7e",
+      "bytes": 583
+    },
+    {
+      "path": "platforms/atspi-common/src/context.rs",
+      "sha256": "673880f8b7826caf9f6586672d6226a93ab94ec223c45356d02d633852df0dee",
+      "bytes": 3414
+    },
+    {
+      "path": "platforms/atspi-common/src/error.rs",
+      "sha256": "e85968762269160ec7d6bf1b08e60c60c0f406a2d2e11266e1bb1f9945605565",
+      "bytes": 677
+    },
+    {
+      "path": "platforms/atspi-common/src/events.rs",
+      "sha256": "baabd070d6915cbb3913a8f37dea34446e3c2f5a1316d8f0df3766104107b602",
+      "bytes": 1278
+    },
+    {
+      "path": "platforms/atspi-common/src/filters.rs",
+      "sha256": "cfe74d16da43ccfda209f11107faf78442c6830fa126cf2d48ffdcdf14c65288",
+      "bytes": 282
+    },
+    {
+      "path": "platforms/atspi-common/src/lib.rs",
+      "sha256": "cd9c30d4cc77ea1f0c19905bed38fa95129b6b160fdd0f66e815d646b83614ab",
+      "bytes": 820
+    },
+    {
+      "path": "platforms/atspi-common/src/node.rs",
+      "sha256": "714790ca2345dc15693476edee1f011d9c95a3759d6c1d8b0447e69484e82163",
+      "bytes": 48215
+    },
+    {
+      "path": "platforms/atspi-common/src/rect.rs",
+      "sha256": "b24337632621ee6bfa6397525bbd864b08b94e23c9201ebefd0fd73d1aa112e2",
+      "bytes": 898
+    },
+    {
+      "path": "platforms/atspi-common/src/simplified.rs",
+      "sha256": "005242be2eddf2ed3a3c2d5a5c996df534c0db3544408107eb3f068c78debb56",
+      "bytes": 20511
+    },
+    {
+      "path": "platforms/atspi-common/src/util.rs",
+      "sha256": "64735332c7f50f453a8210fe3666bc7637d0e8fbb1310d34c814a60c0a3060ef",
+      "bytes": 4041
+    },
+    {
+      "path": "platforms/unix/CHANGELOG.md",
+      "sha256": "6797838b91eb279afb1adf827b8400110e117301f984a6915b0fc60d19717325",
+      "bytes": 15988
+    },
+    {
+      "path": "platforms/unix/Cargo.toml",
+      "sha256": "42c28bdf27203ede3f98bfe4b61550e504e26702a585bb0791a38ba863b03304",
+      "bytes": 1293
+    },
+    {
+      "path": "platforms/unix/README.md",
+      "sha256": "843382343abfe5052b670db006fa0fde3f8bf577ef9be8d200392d9b7c0a13cd",
+      "bytes": 487
+    },
+    {
+      "path": "platforms/unix/src/adapter.rs",
+      "sha256": "fc58314a2b4979c9e388a752560a628af76fd71f988b98113868970cfdfb1128",
+      "bytes": 6935
+    },
+    {
+      "path": "platforms/unix/src/atspi/bus.rs",
+      "sha256": "d1eaacc70b5987a6982d4c17e720eb57039677b3f2b2e58542c18181b70a1fd9",
+      "bytes": 16058
+    },
+    {
+      "path": "platforms/unix/src/atspi/interfaces/accessible.rs",
+      "sha256": "846774797b5f4d204ba7cac180b26c591a660e8c64d0be3db30afcaeadd734aa",
+      "bytes": 5946
+    },
+    {
+      "path": "platforms/unix/src/atspi/interfaces/action.rs",
+      "sha256": "7ffa334b1cace21aa567a074d0c1ba59dd2229449af02ffc329bfd4671940903",
+      "bytes": 1453
+    },
+    {
+      "path": "platforms/unix/src/atspi/interfaces/application.rs",
+      "sha256": "530316441ee42b415605f6f50526ac776d8ab038aff24dfa02d4352dedcf2db0",
+      "bytes": 1054
+    },
+    {
+      "path": "platforms/unix/src/atspi/interfaces/component.rs",
+      "sha256": "0133b5d980ed058a5e30dccbfa73358267b954d8bea14695708ad9cb2371e4db",
+      "bytes": 2201
+    },
+    {
+      "path": "platforms/unix/src/atspi/interfaces/mod.rs",
+      "sha256": "f0efcd0b93f65a908d509c1771f115adabebe052fbfe27bd6503d7c635d5ddd6",
+      "bytes": 924
+    },
+    {
+      "path": "platforms/unix/src/atspi/interfaces/text.rs",
+      "sha256": "315eb0c8a9afc19aff0e6af8033c97ab2558393b184aec84068d7f55c85d30c3",
+      "bytes": 4755
+    },
+    {
+      "path": "platforms/unix/src/atspi/interfaces/value.rs",
+      "sha256": "829dfa73ab581da1be9210c1a6a0361bbb8563fb8d49c7057557cc1ddefafbab",
+      "bytes": 1417
+    },
+    {
+      "path": "platforms/unix/src/atspi/mod.rs",
+      "sha256": "0cedb0ba1137ed36e0a7bc7d154ab1846ffed870ca2b4d7db9a1b06f658a483c",
+      "bytes": 404
+    },
+    {
+      "path": "platforms/unix/src/atspi/object_address.rs",
+      "sha256": "b4e8590911bbc5c0334f4c16101d67a90d90bfde76b956195a8a74fe15a73552",
+      "bytes": 1287
+    },
+    {
+      "path": "platforms/unix/src/atspi/object_id.rs",
+      "sha256": "3d771204989fc334a748e81f5ee75a396d5b1866567d2a5e94faa7fdae6028d4",
+      "bytes": 2176
+    },
+    {
+      "path": "platforms/unix/src/context.rs",
+      "sha256": "0341f822195615d9190e4fc95ae030e3fc96a0ae28851a93239122f17edd74dd",
+      "bytes": 8048
+    },
+    {
+      "path": "platforms/unix/src/executor.rs",
+      "sha256": "bb67a30e189413f0d766129fadaa2973cb206d22474d6bb0024d4aadb77fa754",
+      "bytes": 4885
+    },
+    {
+      "path": "platforms/unix/src/lib.rs",
+      "sha256": "4416ce59366d321c3dbd29a1054c3ad6c426168c97f7b237ff3e818de6c3168c",
+      "bytes": 972
+    },
+    {
+      "path": "platforms/unix/src/util.rs",
+      "sha256": "2a043a60ea1d76c5603d65d5a9844586f00d1d310902032214a10c70b80750c5",
+      "bytes": 1616
+    }
+  ],
+  "patched_files": [
+    {
+      "path": "Cargo.toml",
+      "sha256": "0adf41d252749f93a3236aae1ecb8b9cece42ce91ebac935ba80358a50aac7dd",
+      "bytes": 475,
+      "upstream_sha256": "0abb91f04b462f2c73682f30e36a515d17322961fcaa9b5882ae9919a51c0793"
+    },
+    {
+      "path": "common/src/geometry.rs",
+      "sha256": "f65bf2cf436876647aacbf17606f77875f1ed9dedcff0d0215f06708bf879581",
+      "bytes": 22373,
+      "upstream_sha256": "2f2c37da6a856f1463c593bd2c01d07f237951556c3f72594cb05a2561afa7ed"
+    },
+    {
+      "path": "common/src/lib.rs",
+      "sha256": "1980bc741bc4c6d081db71cbf573ce9248bc1b889ea100e0ca4dc9fc399fe419",
+      "bytes": 85657,
+      "upstream_sha256": "9660b795c662cf814ba7b6e0bfadc76fff3e5b049fa4ed144666fd0df4b05ae7"
+    },
+    {
+      "path": "consumer/src/iterators.rs",
+      "sha256": "d5e3d8c377f51deab2dc3e30bd573a98c32f27202abc1789fdb3d87fd359459b",
+      "bytes": 25331,
+      "upstream_sha256": "0ebb124fa55252a8864d5fb209bf057b29ae12e223fca2c3083335a003df6f26"
+    },
+    {
+      "path": "consumer/src/lib.rs",
+      "sha256": "7354c1ad5146c0bd269bf3ee6d05600b0a8d2a806a8e53a8ee140d687c1f0244",
+      "bytes": 7365,
+      "upstream_sha256": "5c9eac044ea3d69edff3b3946e22af29568cbcac53756be1a90054cacde8a61e"
+    },
+    {
+      "path": "consumer/src/node.rs",
+      "sha256": "b83cbc20695f6548c579c588d17a49da007ef5bb5ede51e719c82b356cdc52f2",
+      "bytes": 37609,
+      "upstream_sha256": "33a7c53dce46e50e290ebc9dfee2821aae1a659f6095a943a763f880eea4f7b3"
+    },
+    {
+      "path": "consumer/src/text.rs",
+      "sha256": "6bdb8bbc8fbe9709fed62b11ed9ba500df1f0a3367c353d1c8f27b1ced3c33e7",
+      "bytes": 71428,
+      "upstream_sha256": "6b5d5375cfbfeab148c525454be4e10ff7566f88acd71e5b0241e13c1c0ff02f"
+    },
+    {
+      "path": "consumer/src/tree.rs",
+      "sha256": "86e08b53db61b963ed2e08a09d1274cdd87ed9afe8d65ac9e9b5f773641f9465",
+      "bytes": 26474,
+      "upstream_sha256": "a80cdb975342113e0854f1214e2e50b44f9b758ff8b6e5c16794690d5d1688a0"
+    },
+    {
+      "path": "platforms/atspi-common/src/action.rs",
+      "sha256": "85252f2390cb849d7e521b3e69237af569122c9d546d9a793ce0f900c3c6fd5f",
+      "bytes": 441,
+      "upstream_sha256": "36d0787759c74a16a0718a81bd9b10d73d03c1114610c7c7d529ef8f2bd8efb5"
+    },
+    {
+      "path": "platforms/atspi-common/src/adapter.rs",
+      "sha256": "99031f619ddf5fe4df18494928e4a75bec6bfccb25431791fc6ac80b446e41cc",
+      "bytes": 19980,
+      "upstream_sha256": "3bd4baadba1d18d8df8664c85fd54fdb3c6e408b411f0bceddbd31ce60006603"
+    },
+    {
+      "path": "platforms/atspi-common/src/callback.rs",
+      "sha256": "8774083b402e1a0aa4ccf8d2fe0389b0ac6087e9cb30a2f50b11b10fa6296f81",
+      "bytes": 592,
+      "upstream_sha256": "5c3435be09b55d476cea107cfff36e5561791636a3623308298d79c63613ac7e"
+    },
+    {
+      "path": "platforms/atspi-common/src/context.rs",
+      "sha256": "48bc03d220d3f7f931de96e5e3c933f883f9ee8db885719a251a8b9f548e66db",
+      "bytes": 3485,
+      "upstream_sha256": "673880f8b7826caf9f6586672d6226a93ab94ec223c45356d02d633852df0dee"
+    },
+    {
+      "path": "platforms/atspi-common/src/editable_text_tests.rs",
+      "sha256": "13caac50a5052352a2c4f3a3d384a2af2ce982c4ef4f2c96be1ac07e482ad22f",
+      "bytes": 5385,
+      "upstream_sha256": null
+    },
+    {
+      "path": "platforms/atspi-common/src/events.rs",
+      "sha256": "5f749e7525926eb2310e8366a166b8e14aab25afe5bbf793494b3bb5cbcea4b8",
+      "bytes": 1321,
+      "upstream_sha256": "baabd070d6915cbb3913a8f37dea34446e3c2f5a1316d8f0df3766104107b602"
+    },
+    {
+      "path": "platforms/atspi-common/src/lib.rs",
+      "sha256": "643aa10fbd8c2ed22852428cfef99af03ba45d02916375e3eed1780be128dfce",
+      "bytes": 1038,
+      "upstream_sha256": "cd9c30d4cc77ea1f0c19905bed38fa95129b6b160fdd0f66e815d646b83614ab"
+    },
+    {
+      "path": "platforms/atspi-common/src/node.rs",
+      "sha256": "84e9118d797434ff9e55d7ea07436deb73aeb8124dc4b23c114b598dddc4136c",
+      "bytes": 53215,
+      "upstream_sha256": "714790ca2345dc15693476edee1f011d9c95a3759d6c1d8b0447e69484e82163"
+    },
+    {
+      "path": "platforms/atspi-common/src/rect.rs",
+      "sha256": "e2041c9d4f3cd081bb9e6b62bc9154433d8b2a5435bf213f9b5ad734d696236f",
+      "bytes": 933,
+      "upstream_sha256": "b24337632621ee6bfa6397525bbd864b08b94e23c9201ebefd0fd73d1aa112e2"
+    },
+    {
+      "path": "platforms/atspi-common/src/simplified.rs",
+      "sha256": "d2fff616feb7da697b77086d450c6e6473b5509ac9569d82f74bc6f66176f7f2",
+      "bytes": 20693,
+      "upstream_sha256": "005242be2eddf2ed3a3c2d5a5c996df534c0db3544408107eb3f068c78debb56"
+    },
+    {
+      "path": "platforms/atspi-common/src/util.rs",
+      "sha256": "148679338a5f954c33b6c82149b652ecb3cc923dc3de33f76b5a3cfa9b45f453",
+      "bytes": 4116,
+      "upstream_sha256": "64735332c7f50f453a8210fe3666bc7637d0e8fbb1310d34c814a60c0a3060ef"
+    },
+    {
+      "path": "platforms/unix/src/adapter.rs",
+      "sha256": "3ea7a3acaec685e0d1338360950ad529d6b815156cc0c9418a65af6a29f66bf5",
+      "bytes": 7222,
+      "upstream_sha256": "fc58314a2b4979c9e388a752560a628af76fd71f988b98113868970cfdfb1128"
+    },
+    {
+      "path": "platforms/unix/src/atspi/bus.rs",
+      "sha256": "b42f7600fcaa478e649762c2dbb7d8038a0f719e67bc034fd560d6bcc6b07807",
+      "bytes": 16726,
+      "upstream_sha256": "d1eaacc70b5987a6982d4c17e720eb57039677b3f2b2e58542c18181b70a1fd9"
+    },
+    {
+      "path": "platforms/unix/src/atspi/interfaces/accessible.rs",
+      "sha256": "3c0b3ad1491d2ab426dad8867ac16509f8a225451b03854522dcc179bfaeba86",
+      "bytes": 6065,
+      "upstream_sha256": "846774797b5f4d204ba7cac180b26c591a660e8c64d0be3db30afcaeadd734aa"
+    },
+    {
+      "path": "platforms/unix/src/atspi/interfaces/action.rs",
+      "sha256": "c66054154d243d11c4aef0e95da758a5a84f509a08954cb999a0928d5a69935b",
+      "bytes": 1487,
+      "upstream_sha256": "7ffa334b1cace21aa567a074d0c1ba59dd2229449af02ffc329bfd4671940903"
+    },
+    {
+      "path": "platforms/unix/src/atspi/interfaces/application.rs",
+      "sha256": "1742c8abca31052030b256741d4a37fe9d837e6a8d6731ba787b0d052218f0e6",
+      "bytes": 1062,
+      "upstream_sha256": "530316441ee42b415605f6f50526ac776d8ab038aff24dfa02d4352dedcf2db0"
+    },
+    {
+      "path": "platforms/unix/src/atspi/interfaces/component.rs",
+      "sha256": "d1d3b4609d846a4459aef08aade7e34716f00b8d841c858c4008e89697226e22",
+      "bytes": 2270,
+      "upstream_sha256": "0133b5d980ed058a5e30dccbfa73358267b954d8bea14695708ad9cb2371e4db"
+    },
+    {
+      "path": "platforms/unix/src/atspi/interfaces/editable_text.rs",
+      "sha256": "13f1fed09a06b755bc763a5f7ec9095f3a3ff6e0a6fb2bb2582606ca4886eb96",
+      "bytes": 2053,
+      "upstream_sha256": null
+    },
+    {
+      "path": "platforms/unix/src/atspi/interfaces/mod.rs",
+      "sha256": "7faa94c6da8b4b4479351209b55d2704a6517b006374f3c594f8521a0db55143",
+      "bytes": 1000,
+      "upstream_sha256": "f0efcd0b93f65a908d509c1771f115adabebe052fbfe27bd6503d7c635d5ddd6"
+    },
+    {
+      "path": "platforms/unix/src/atspi/interfaces/text.rs",
+      "sha256": "9ea8fd707e46b93ced900f4a9901de473625a6845468e2ddeaa506d7cf70692b",
+      "bytes": 4809,
+      "upstream_sha256": "315eb0c8a9afc19aff0e6af8033c97ab2558393b184aec84068d7f55c85d30c3"
+    },
+    {
+      "path": "platforms/unix/src/atspi/interfaces/value.rs",
+      "sha256": "e2887b3fa9b706d5545e9cee17ea60d4508902d3fa8353ccee0fe8fc04107658",
+      "bytes": 1425,
+      "upstream_sha256": "829dfa73ab581da1be9210c1a6a0361bbb8563fb8d49c7057557cc1ddefafbab"
+    },
+    {
+      "path": "platforms/unix/src/atspi/object_address.rs",
+      "sha256": "8b9ed3e1eb0ac7373798f50884d638d5799fc53f9bd0b40b0a860d15033d52c5",
+      "bytes": 1391,
+      "upstream_sha256": "b4e8590911bbc5c0334f4c16101d67a90d90bfde76b956195a8a74fe15a73552"
+    },
+    {
+      "path": "platforms/unix/src/atspi/object_id.rs",
+      "sha256": "58298d4b08e7acd03ce651e2855f81b6ea16c5ce10080ffe1fc5afeecf52d1d2",
+      "bytes": 2280,
+      "upstream_sha256": "3d771204989fc334a748e81f5ee75a396d5b1866567d2a5e94faa7fdae6028d4"
+    },
+    {
+      "path": "platforms/unix/src/context.rs",
+      "sha256": "b889dd0fb62434f8eba20e1522f96987cda206f8baa1bd2e5e00409defff12f8",
+      "bytes": 8522,
+      "upstream_sha256": "0341f822195615d9190e4fc95ae030e3fc96a0ae28851a93239122f17edd74dd"
+    },
+    {
+      "path": "platforms/unix/src/executor.rs",
+      "sha256": "281dbc6f74dbffc00b689d74e33334a1b40c758841901396186215ffbe6f7616",
+      "bytes": 4899,
+      "upstream_sha256": "bb67a30e189413f0d766129fadaa2973cb206d22474d6bb0024d4aadb77fa754"
+    },
+    {
+      "path": "platforms/unix/src/util.rs",
+      "sha256": "5944d323c63dfebcb84502993fd364fc67b0be149fa7edc514a3eea642abbcc6",
+      "bytes": 1642,
+      "upstream_sha256": "2a043a60ea1d76c5603d65d5a9844586f00d1d310902032214a10c70b80750c5"
+    }
+  ]
+}

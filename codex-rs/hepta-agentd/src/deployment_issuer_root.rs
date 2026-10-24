@@ -150,6 +150,19 @@ impl DeploymentFinalUseIssuer {
         let lease = ProtectedLease::new(leases, lease_id, lease_revision)?;
         Self::open_inner(directory, clock, true, Some(lease))
     }
+
+    /// Explicit native-text deployment profile of this same original owner.
+    /// All other protected owners retain their original 16 KiB record bound.
+    pub(crate) fn open_protected_text_recovery(
+        directory: &Path,
+        clock: Arc<dyn AuthorityClock>,
+        leases: AuthorityLeaseVerifier,
+        lease_id: String,
+        lease_revision: u64,
+    ) -> io::Result<Self> {
+        let lease = ProtectedLease::new(leases, lease_id, lease_revision)?;
+        Self::open_inner_with_record_bound(directory, clock, true, Some(lease), 64 * 1024)
+    }
 }
 
 impl DeploymentIssuerObserver {

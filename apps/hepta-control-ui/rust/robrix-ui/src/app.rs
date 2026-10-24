@@ -113,7 +113,20 @@ impl AppMain for App {
         crate::robrix::rooms::script_mod(vm);
         crate::robrix::room::script_mod(vm);
         crate::robrix::home::script_mod(vm);
-        self::script_mod(vm)
+        #[cfg(all(
+            not(target_arch = "wasm32"),
+            any(feature = "native-host", feature = "native-presentation")
+        ))]
+        {
+            crate::native_resources::register_packaged_app(vm, self::script_mod)
+        }
+        #[cfg(not(all(
+            not(target_arch = "wasm32"),
+            any(feature = "native-host", feature = "native-presentation")
+        )))]
+        {
+            self::script_mod(vm)
+        }
     }
     fn handle_event(&mut self, cx: &mut Cx, event: &Event) {
         #[cfg(feature = "ui-fixtures")]

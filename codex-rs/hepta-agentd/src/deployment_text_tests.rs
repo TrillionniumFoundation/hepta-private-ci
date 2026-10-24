@@ -134,7 +134,7 @@ fn missing_lookup_and_scope_conflict_do_not_sign_or_consume_sequence() {
             .text(&owner, "other:2", wrong, TextIssuerOperation::Sign)
             .is_err()
     );
-    let mut newer = owner.clone();
+    let mut newer = owner;
     newer.spawn_generation = 2;
     let mut request = body();
     request.spawn_generation = 2;

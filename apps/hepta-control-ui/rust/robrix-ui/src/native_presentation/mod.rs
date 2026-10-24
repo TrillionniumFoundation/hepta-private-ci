@@ -20,6 +20,13 @@ pub const NATIVE_RESOURCE_MANIFEST_JSON: &str = include_str!(concat!(
     "/../../../hepta-native/resources/NATIVE-ASSETS.json"
 ));
 
+/// Dependency licenses and exact upstream/patch provenance are delivered beside
+/// the unchanged original font/resource inventory, and verified independently.
+pub const NATIVE_DEPENDENCY_NOTICE_MANIFEST_JSON: &str = include_str!(concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../../../hepta-native/resources/NATIVE-DEPENDENCIES.json"
+));
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct NativeConsoleObservation {
     pub text: String,
@@ -33,6 +40,24 @@ pub struct NativeConsoleObservation {
 pub struct NativeChatAvailability {
     pub can_submit: bool,
     pub can_interrupt: bool,
+    pub can_load_earlier: bool,
+    pub can_load_latest: bool,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum NativeApprovalDecision {
+    AcceptOnce,
+    Decline,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct NativeApprovalView {
+    pub id: String,
+    pub title: String,
+    pub details: String,
+    pub can_accept: bool,
+    pub can_decline: bool,
+    pub busy: bool,
 }
 
 /// Supplies one existing workspace and nonblocking observations to the original
@@ -57,6 +82,23 @@ pub trait NativeChatComposition {
     /// Interrupt only the active host-bound turn; closing the window is separate.
     fn request_interrupt(&mut self, _source: RoomKey) -> Result<(), String> {
         Err("No authenticated active turn is available to interrupt".into())
+    }
+    fn request_earlier_history(&mut self, _source: RoomKey) -> Result<(), String> {
+        Err("Original thread history is unavailable".into())
+    }
+    fn request_latest_history(&mut self, _source: RoomKey) -> Result<(), String> {
+        Err("Original thread history is unavailable".into())
+    }
+    fn pending_approval(&self) -> Option<NativeApprovalView> {
+        None
+    }
+    fn request_approval(
+        &mut self,
+        _source: RoomKey,
+        _id: &str,
+        _decision: NativeApprovalDecision,
+    ) -> Result<(), String> {
+        Err("Original authenticated approval channel is unavailable".into())
     }
     /// Nonblocking: consume already received observations and evaluate age.
     /// Called outside Draw and without a live mutable workspace borrow.

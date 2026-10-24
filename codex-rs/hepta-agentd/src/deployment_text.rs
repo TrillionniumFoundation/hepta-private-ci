@@ -14,6 +14,8 @@ const MAX_TEXT_SIGNATURES: usize = 32;
 #[path = "deployment_text_retirement.rs"]
 mod retirement;
 pub(crate) use retirement::VerifiedTextRetirement;
+#[path = "deployment_text_recovery.rs"]
+mod recovery;
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
@@ -33,6 +35,11 @@ pub(super) struct RetainedTextSignature {
     sequence: u64,
     expires_at_ms: u64,
     signature_hex: String,
+    // Atomic with the original signature/counter, so a restarted UI can only
+    // recover the exact retained input. Legacy hash-only entries are never
+    // reconstructed from guessed text or re-signed.
+    #[serde(default)]
+    body: Option<AuthBusTextBody>,
 }
 
 impl DeploymentFinalUseIssuer {
@@ -251,8 +258,13 @@ impl DeploymentFinalUseIssuer {
                 .checked_add(policy.lifetime_ms)
                 .ok_or_else(|| io::Error::other("text expiry overflow"))?
                 .min(lease.map_or(u64::MAX, |lease| lease.expires_at_unix_ms)),
-            signature_hex: String::new(),
+            signature_hex: "0".repeat(128),
+            body: Some(body.clone()),
         };
+        next.text_signatures.push(retained.clone());
+        // Exact total encoded record budget, checked BEFORE signing or CAS.
+        // 32 is an entry cap, not a promise of 32 maximum-sized text inputs.
+        self.store.validate_record(STATE_OWNER, &next)?;
         let unsigned = envelope(&state.signer_id, &retained, body.clone());
         let claims =
             crate::authbus_text_claims(&identity.agent_id, &unsigned).map_err(io::Error::other)?;
@@ -264,7 +276,10 @@ impl DeploymentFinalUseIssuer {
             .map(|byte| format!("{byte:02x}"))
             .collect();
         let signed = envelope(&state.signer_id, &retained, body);
-        next.text_signatures.push(retained);
+        *next
+            .text_signatures
+            .last_mut()
+            .expect("reserved original reference") = retained;
         // The exact signature and shared sequence commit in the SAME original
         // issuer CAS. A lost response reopens this record without new signing.
         self.store

@@ -30,6 +30,67 @@ fn workspace() -> (ChatWorkspace, StreamBinding) {
 }
 
 #[test]
+fn original_history_pages_replace_the_visible_window_without_changing_drafts() {
+    let (mut workspace, binding) = workspace();
+    workspace.edit("local draft stays local".into());
+    let recent = json!({"id":"recent-turn","status":"completed","items":[
+        {"type":"userMessage","id":"recent-input","content":[{"type":"text","text":"recent original input"}]},
+        {"type":"agentMessage","id":"recent-output","text":"recent original output"}
+    ]});
+    workspace
+        .receive_app_server_history(&binding, 11, &[recent], 11)
+        .unwrap();
+    assert_eq!(
+        workspace.timeline().unwrap().history().unwrap().messages[0].id,
+        "recent-input"
+    );
+    let earlier = json!({"id":"earlier-turn","status":"completed","items":[
+        {"type":"agentMessage","id":"earlier-output","text":"earlier original output"}
+    ]});
+    workspace
+        .receive_app_server_history(&binding, 11, &[earlier.clone()], 12)
+        .unwrap();
+    assert_eq!(
+        workspace
+            .timeline()
+            .unwrap()
+            .history()
+            .unwrap()
+            .messages
+            .len(),
+        1
+    );
+    assert_eq!(
+        workspace.timeline().unwrap().history().unwrap().messages[0].id,
+        "earlier-output"
+    );
+    assert_eq!(workspace.draft().text, "local draft stays local");
+    let before = workspace.timeline().unwrap().history().cloned();
+    assert_eq!(
+        workspace.receive_app_server_history(&binding, 10, &[earlier], 13),
+        Err(E::Stale)
+    );
+    assert_eq!(workspace.timeline().unwrap().history().cloned(), before);
+}
+
+#[test]
+fn a_large_tool_display_has_an_explicit_utf8_safe_preview_without_new_effects() {
+    let (mut workspace, binding) = workspace();
+    let turn = json!({"id":"large-tool-turn","status":"completed","items":[
+        {"type":"commandExecution","id":"original-tool-item","aggregatedOutput":"界".repeat(15_000)}
+    ]});
+    workspace
+        .receive_app_server_turn(&binding, 11, &turn, 11)
+        .unwrap();
+    let message = &workspace.timeline().unwrap().history().unwrap().messages[0];
+    assert_eq!(message.id, "original-tool-item");
+    assert_eq!(message.phase, MessagePhase::Completed);
+    assert!(message.text.len() < 33 * 1024);
+    assert!(message.text.contains("[Desktop preview:"));
+    assert!(message.text.ends_with("original App Server item.]"));
+}
+
+#[test]
 fn original_stream_and_reconciliation_share_the_same_timeline_and_item_identity() {
     let (mut workspace, binding) = workspace();
     workspace

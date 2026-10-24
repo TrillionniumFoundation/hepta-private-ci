@@ -22,6 +22,74 @@ struct SignerResponse {
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
+pub(super) struct RetainedInput {
+    pub(super) request_id: String,
+    pub(super) envelope: AuthBusTextIngress,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct PendingResponse {
+    schema_version: u32,
+    operation: String,
+    through_sequence: u64,
+    entry: Option<RetainedInput>,
+}
+
+pub(super) async fn pending(
+    endpoint: &TextSignerEndpoint,
+    owner: &TextOwnerReceipt,
+) -> Result<Vec<RetainedInput>, TextSessionError> {
+    let through = owner
+        .next_intent_sequence
+        .checked_sub(1)
+        .ok_or(TextSessionError::Identity)?;
+    let prefix = format!("{}:", owner.intent_namespace);
+    let mut after = 0;
+    let mut retained = Vec::new();
+    for _ in 0..=MAX_RETAINED {
+        let page: PendingResponse = exchange(
+            endpoint,
+            &serde_json::json!({
+                "schema_version": 1, "operation": "pending",
+                "after_sequence": after, "through_sequence": through,
+            }),
+        )
+        .await?;
+        if page.schema_version != 1
+            || page.operation != "pending"
+            || page.through_sequence != through
+        {
+            return Err(TextSessionError::Identity);
+        }
+        let Some(entry) = page.entry else {
+            return Ok(retained);
+        };
+        let number = entry
+            .request_id
+            .strip_prefix(&prefix)
+            .and_then(|suffix| suffix.parse::<u64>().ok())
+            .ok_or(TextSessionError::Identity)?;
+        if number <= after
+            || number > through
+            || entry.request_id != format!("{prefix}{number}")
+            || entry.envelope.body.thread_id != owner.route.thread_id
+            || entry.envelope.body.spawn_generation == 0
+            || entry.envelope.body.spawn_generation > owner.route.spawn_generation
+        {
+            return Err(TextSessionError::Identity);
+        }
+        if retained.len() >= MAX_RETAINED {
+            return Err(TextSessionError::Capacity);
+        }
+        after = number;
+        retained.push(entry);
+    }
+    Err(TextSessionError::Capacity)
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 struct RetirementResponse {
     schema_version: u32,
     operation: String,
@@ -149,6 +217,10 @@ async fn exchange<T: serde::de::DeserializeOwned>(
         .await
         .map_err(unavailable)?
 }
+
+#[cfg(all(test, unix))]
+#[path = "text_session_signer_tests.rs"]
+mod tests;
 
 #[cfg(not(unix))]
 async fn exchange<T: serde::de::DeserializeOwned>(

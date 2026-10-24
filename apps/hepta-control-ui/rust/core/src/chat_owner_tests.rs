@@ -1,5 +1,36 @@
 use super::*;
 
+#[path = "chat_owner_recovery_tests.rs"]
+mod recovery;
+
+#[test]
+fn original_approval_scope_requires_its_explicit_live_owner_capability() {
+    let mut adapter = ChatOwnerAdapter::default();
+    adapter.install_owner(session(), 10).unwrap();
+    assert_eq!(
+        adapter.require_capability(ChatCapability::ResolveApproval, 10),
+        Err(ChatOwnerError::PermissionDenied)
+    );
+    let mut authorized = session();
+    authorized
+        .capabilities
+        .push(ChatCapability::ResolveApproval);
+    adapter.install_owner(authorized, 11).unwrap();
+    assert_eq!(
+        adapter.require_capability(ChatCapability::ResolveApproval, 11),
+        Ok(&scope())
+    );
+    assert_eq!(
+        adapter.require_capability(ChatCapability::ResolveApproval, 500_000),
+        Err(ChatOwnerError::Expired)
+    );
+    adapter.disconnect();
+    assert_eq!(
+        adapter.require_capability(ChatCapability::ResolveApproval, 12),
+        Err(ChatOwnerError::Unavailable)
+    );
+}
+
 fn scope() -> OwnerScope {
     OwnerScope {
         principal_id: "human:one".into(),
@@ -88,10 +119,7 @@ fn unavailable_or_read_only_owner_cannot_turn_clicks_into_admission() {
         adapter.begin_submit(envelope("one"), 1000),
         Err(ChatOwnerError::PermissionDenied)
     );
-    for capability in [
-        ChatCapability::CreateThread,
-        ChatCapability::ResolveApproval,
-    ] {
+    for capability in [ChatCapability::CreateThread] {
         assert_eq!(
             adapter.require_capability(capability, 1000),
             Err(ChatOwnerError::Unsupported)

@@ -188,7 +188,7 @@ Example with notification opt-out:
 - `thread/goal/updated` — notification emitted whenever a thread goal changes; includes the full current goal.
 - `thread/goal/cleared` — notification emitted whenever a thread goal is removed.
 - `thread/queue/add` — experimental; persist a user turn for automatic FIFO submission when the thread next becomes idle.
-- `thread/queue/reconcile` — experimental; atomically reconcile or admit one text-only user turn against a durable `(threadId, clientUserMessageId, payload SHA-256)` binding. `allowIfAbsent` may create one queue row; `reconcileOnly` never creates one.
+- `thread/queue/reconcile` — experimental; atomically reconcile or admit one text-only user turn against a durable `(threadId, clientUserMessageId, payload SHA-256)` binding. `allowIfAbsent` may create one queue row; `reconcileOnly` never creates one; `closeIfAbsent` retains an original cancellation binding only for absent input.
 - `thread/queue/list` — experimental; return one page of a thread's queued turns.
 - `thread/queue/update` — experimental; edit a queued turn while preserving its stable submission ID, client message ID, and position.
 - `thread/queue/delete` — experimental; remove a queued turn by submission ID.
@@ -813,6 +813,8 @@ A queued submission contains its user input and a required, client-provided `cli
 ```
 
 Use `thread/queue/reconcile` when a transport needs one correctness operation instead of a paginated `queue/list` → `turns/list` → `queue/add` sequence. The request is limited to text input and includes the caller's canonical digest; the server normalizes the input, recomputes that digest, and returns the authoritative value. Reusing a client message ID with different content fails closed before admission. A queued outcome includes `created: true` only for the transaction that inserted the row; retries return the same row with `created: false`. Persisted, missing, and cancelled are separate outcomes.
+
+`closeIfAbsent` uses the same original per-thread dispatch guard, durable client reservation, and full rollout scan. If that exact client ID and payload are absent, its reservation is atomically retained as `cancelled`. A late `allowIfAbsent` for the same input then returns `cancelled`, including after the original owner restarts. Existing queued or persisted input is observed without modification. Changed payloads still conflict. This mode does not delete a queued input, interrupt a live turn, or assert that a model completed.
 
 ```json
 { "method": "thread/queue/reconcile", "id": 41, "params": {

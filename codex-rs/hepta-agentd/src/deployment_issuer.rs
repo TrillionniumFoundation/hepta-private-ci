@@ -232,8 +232,18 @@ impl DeploymentFinalUseIssuer {
         protected: bool,
         lease: Option<ProtectedLease>,
     ) -> io::Result<Self> {
+        Self::open_inner_with_record_bound(directory, clock, protected, lease, 16 * 1024)
+    }
+
+    fn open_inner_with_record_bound(
+        directory: &Path,
+        clock: Arc<dyn AuthorityClock>,
+        protected: bool,
+        lease: Option<ProtectedLease>,
+        record_bound: u64,
+    ) -> io::Result<Self> {
         let store = if protected {
-            DeploymentFrontierStore::open_protected(directory)?
+            DeploymentFrontierStore::open_protected_bounded(directory, record_bound)?
         } else {
             DeploymentFrontierStore::open(directory)?
         };

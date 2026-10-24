@@ -18,6 +18,84 @@ pub struct StreamBinding {
 }
 
 impl ChatWorkspace {
+    /// Replace the visible bounded page with complete turns from the same
+    /// original thread. The original App Server retains all other history.
+    pub fn receive_app_server_history(
+        &mut self,
+        binding: &StreamBinding,
+        connection_id: u64,
+        turns: &[Value],
+        now_ms: u64,
+    ) -> Result<(), E> {
+        self.validate_stream(binding, connection_id, now_ms)?;
+        if turns.len() > 16 || serde_json::to_vec(turns).map_err(|_| E::Invalid)?.len() > 256 * 1024
+        {
+            return Err(E::Limit);
+        }
+        let mut history = self.stream_history(binding)?;
+        let mut messages = Vec::new();
+        for turn in turns {
+            let turn_id = string(turn, "id")?;
+            let phase = turn_phase(turn)?;
+            let items = turn
+                .get("items")
+                .and_then(Value::as_array)
+                .ok_or(E::Invalid)?;
+            messages.extend(
+                items
+                    .iter()
+                    .map(|item| item_message(item, turn_id, phase))
+                    .collect::<Result<Vec<_>, E>>()?,
+            );
+        }
+        history.messages = messages;
+        history.revision = history.revision.checked_add(1).ok_or(E::Limit)?;
+        history.event_sequence = history.event_sequence.checked_add(1).ok_or(E::Limit)?;
+        self.receive_history(&binding.ticket, history)
+    }
+
+    pub fn restore_chat_delivery_reference(
+        &mut self,
+        room: u64,
+        envelope: crate::chat_owner::SignedTextRef,
+        delivery_id: [u8; 32],
+        now_ms: u64,
+    ) -> Result<crate::chat_owner::DeliveryView, crate::chat_owner::ChatOwnerError> {
+        use crate::chat_owner::ChatCapability;
+        use crate::chat_owner::ChatOwnerError;
+        let scope = self
+            .owner
+            .require_capability(ChatCapability::ReadDeliveryStatus, now_ms)?;
+        let binding = self
+            .bindings
+            .get(&room)
+            .ok_or(ChatOwnerError::Unavailable)?;
+        if binding.thread != envelope.scope().thread_id
+            || binding.fence.owner_session != scope.session_id
+            || binding.fence.generation != scope.connection_generation
+        {
+            return Err(ChatOwnerError::BindingMismatch);
+        }
+        self.owner.restore_reference(envelope, delivery_id, now_ms)
+    }
+
+    pub fn retire_chat_reference_from_owner(
+        &mut self,
+        message_id: &str,
+        now_ms: u64,
+    ) -> Result<crate::chat_owner::DeliveryView, crate::chat_owner::ChatOwnerError> {
+        use crate::chat_owner::ChatOwnerError;
+        use crate::chat_owner::SubmissionAdmission;
+        let SubmissionAdmission::Dispatch(ticket) = self.owner.begin_status(message_id, now_ms)?
+        else {
+            return Err(ChatOwnerError::NotRetirable);
+        };
+        let view = self.owner.retire_original_reference(&ticket, now_ms)?;
+        self.authorized
+            .retain(|_, reference| reference.metadata().message_id != message_id);
+        Ok(view)
+    }
+
     pub fn authenticated_chat_scope(
         &self,
         capability: ChatCapability,
@@ -204,13 +282,7 @@ impl ChatWorkspace {
             return Err(E::Limit);
         }
         let turn_id = string(turn, "id")?;
-        let phase = match string(turn, "status")? {
-            "inProgress" => MessagePhase::Streaming,
-            "completed" => MessagePhase::Completed,
-            "failed" => MessagePhase::Failed,
-            "interrupted" => MessagePhase::Interrupted,
-            _ => return Err(E::Invalid),
-        };
+        let phase = turn_phase(turn)?;
         let items = turn
             .get("items")
             .and_then(Value::as_array)
@@ -279,10 +351,20 @@ fn string<'a>(value: &'a Value, key: &str) -> Result<&'a str, E> {
     value.get(key).and_then(Value::as_str).ok_or(E::Invalid)
 }
 
+fn turn_phase(turn: &Value) -> Result<MessagePhase, E> {
+    match string(turn, "status")? {
+        "inProgress" => Ok(MessagePhase::Streaming),
+        "completed" => Ok(MessagePhase::Completed),
+        "failed" => Ok(MessagePhase::Failed),
+        "interrupted" => Ok(MessagePhase::Interrupted),
+        _ => Err(E::Invalid),
+    }
+}
+
 fn item_message(item: &Value, turn_id: &str, phase: MessagePhase) -> Result<Message, E> {
     let id = string(item, "id")?.to_owned();
     let kind = string(item, "type")?;
-    let (role, text, phase) = match kind {
+    let (role, mut text, phase) = match kind {
         "userMessage" => {
             let content = item
                 .get("content")
@@ -309,6 +391,18 @@ fn item_message(item: &Value, turn_id: &str, phase: MessagePhase) -> Result<Mess
             phase,
         ),
     };
+    // A display preview is not the authoritative item or any delivery proof.
+    // Pretty-printed tool JSON can exceed the original transport byte count.
+    const PREVIEW_BYTES: usize = 32 * 1024;
+    if text.len() > PREVIEW_BYTES {
+        let original_bytes = text.len();
+        let mut end = PREVIEW_BYTES;
+        while !text.is_char_boundary(end) {
+            end -= 1;
+        }
+        text.truncate(end);
+        text.push_str(&format!("\n[Desktop preview: {original_bytes} original display bytes; full content remains in the original App Server item.]"));
+    }
     Ok(Message {
         id,
         turn_id: turn_id.to_owned(),

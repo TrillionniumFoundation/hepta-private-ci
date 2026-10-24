@@ -9,6 +9,12 @@ mod chat_source;
     any(feature = "native-host", feature = "native-presentation")
 ))]
 mod native_launch;
+#[cfg(all(
+    feature = "ui",
+    not(target_arch = "wasm32"),
+    any(feature = "native-host", feature = "native-presentation")
+))]
+mod native_resources;
 #[cfg(feature = "ui")]
 mod native_status;
 #[cfg(feature = "ui")]

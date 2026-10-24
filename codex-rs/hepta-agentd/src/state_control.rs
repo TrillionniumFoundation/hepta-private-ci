@@ -252,6 +252,13 @@ impl AgentdState {
                     crate::authbus_ingress::status(self, delivery_id).await?,
                 )
             }
+            crate::AgentdMethod::AuthBusTextLookup { delivery_id } => {
+                let status = crate::authbus_ingress::lookup(self, &delivery_id).await?;
+                AgentdPayload::AuthBusTextLookup {
+                    delivery_id,
+                    status,
+                }
+            }
             crate::AgentdMethod::KernelEvidenceAppend { request } => {
                 AgentdPayload::KernelEvidenceResult(
                     crate::evidence_host::append(self, request).await?,

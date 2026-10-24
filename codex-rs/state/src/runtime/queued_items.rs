@@ -1087,6 +1087,33 @@ impl SqliteQueueStore {
             return Ok(QueuedClientBindingFinalizeOutcome::Missing);
         }
 
+        if mode == QueuedClientBindingFinalizeMode::CloseIfAbsent {
+            // The caller scanned the authoritative rollout under its original
+            // dispatch guard. Retain the same exact client binding so a late
+            // AllowIfAbsent cannot turn this durable rejection into a new send.
+            let changed = sqlx::query(
+                "UPDATE queued_client_bindings
+                 SET state = 'cancelled', queued_item_id = NULL,
+                     revision = revision + 1, updated_at_ms = ?
+                 WHERE thread_id = ? AND client_user_message_id = ?
+                   AND state = 'reserved' AND reservation_id = ? AND revision = ?",
+            )
+            .bind(datetime_to_epoch_millis(Utc::now()))
+            .bind(&thread_id_string)
+            .bind(&client_id)
+            .bind(&lease.reservation_id)
+            .bind(lease.revision)
+            .execute(transaction.as_mut())
+            .await?;
+            if changed.rows_affected() != 1 {
+                return Err(binding_conflict(
+                    "original close reservation changed".into(),
+                ));
+            }
+            transaction.commit().await?;
+            return Ok(QueuedClientBindingFinalizeOutcome::Cancelled);
+        }
+
         enforce_capacity(transaction.as_mut(), &thread_id_string, runtime_capacity).await?;
         let record = insert_queued_record(
             transaction.as_mut(),

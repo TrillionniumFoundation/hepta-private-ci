@@ -49,6 +49,7 @@ pub struct DeploymentFrontierStore<F> {
 
 struct ProtectedBackend<F> {
     directory: Arc<RootAuthorityDirectory>,
+    record_bound: u64,
     registered: Mutex<Option<Arc<HostAuthorityFrontierStore<F>>>>,
 }
 
@@ -122,11 +123,19 @@ where
     }
 
     pub(crate) fn open_protected(directory: &Path) -> io::Result<Self> {
+        Self::open_protected_bounded(directory, 16 * 1024)
+    }
+
+    pub(crate) fn open_protected_bounded(directory: &Path, record_bound: u64) -> io::Result<Self> {
+        if !(1..=MAX_RECORD_BYTES as u64).contains(&record_bound) {
+            return Err(io::Error::other("invalid protected frontier bound"));
+        }
         Ok(Self {
             directory: directory.to_path_buf(),
             value: PhantomData,
             protected: Some(ProtectedBackend {
                 directory: RootAuthorityDirectory::open(directory).map_err(io::Error::other)?,
+                record_bound,
                 registered: Mutex::new(None),
             }),
         })
@@ -144,9 +153,10 @@ where
             .lock()
             .map_err(|_| AuthorityTrustError::Unavailable)?;
         if registered.is_none() {
-            *registered = Some(Arc::new(HostAuthorityFrontierStore::open(
+            *registered = Some(Arc::new(HostAuthorityFrontierStore::open_bounded(
                 protected.directory.clone(),
                 owner.into(),
+                protected.record_bound,
             )?));
         }
         Ok(registered.clone())
@@ -163,10 +173,11 @@ where
             if registered.is_some() {
                 return Err(io::Error::other("protected owner already registered"));
             }
-            let store = HostAuthorityFrontierStore::initialize(
+            let store = HostAuthorityFrontierStore::initialize_bounded(
                 protected.directory.clone(),
                 owner_id.into(),
                 frontier.clone(),
+                protected.record_bound,
             )
             .map_err(io::Error::other)?;
             *registered = Some(Arc::new(store));
@@ -268,6 +279,20 @@ where
             return Err(io::Error::other("frontier record is oversized"));
         }
         Ok(bytes)
+    }
+
+    pub(crate) fn validate_record(&self, owner_id: &str, frontier: &F) -> io::Result<()> {
+        // This wrapper is slightly larger than the protected store's wrapper,
+        // so this is a conservative bound for both original backends.
+        let bytes = Self::encode(owner_id, frontier)?;
+        if self
+            .protected
+            .as_ref()
+            .is_some_and(|backend| bytes.len() as u64 > backend.record_bound)
+        {
+            return Err(io::Error::other("protected frontier record is oversized"));
+        }
+        Ok(())
     }
 
     fn commit_record(&self, owner_id: &str, next: &F) -> io::Result<()> {

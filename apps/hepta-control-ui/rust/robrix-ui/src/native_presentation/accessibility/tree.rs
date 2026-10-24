@@ -108,6 +108,7 @@ impl NativeAccessibility {
                 let (text_nodes, runs) = text::build(&value, |part| self.id(uid, part + 1));
                 if !workspace.composing && !input.is_composing() && runs.len() == text_nodes.len() {
                     node.add_action(Action::SetTextSelection);
+                    node.add_action(Action::EditText);
                 }
                 node.set_children(text_nodes.iter().map(|(id, _)| *id).collect::<Vec<_>>());
                 let selection = input.selection();

@@ -10,6 +10,9 @@ use std::thread;
 
 use super::*;
 
+#[path = "text_session_worker_recovery.rs"]
+mod recovery;
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct TextSignerEndpoint {
@@ -20,6 +23,13 @@ pub struct TextSignerEndpoint {
 
 #[derive(Clone, Debug)]
 pub enum TextCommand {
+    ResolveApproval {
+        connection_id: u64,
+        id: String,
+        decision: TextApprovalDecision,
+    },
+    EarlierHistory,
+    LatestHistory,
     Submit {
         request_id: String,
         text: String,
@@ -66,6 +76,20 @@ pub struct TextPrepared {
 
 #[derive(Clone, Debug)]
 pub enum TextWorkerEvent {
+    Approval(TextApprovalObservation),
+    ApprovalWritten {
+        connection_id: u64,
+        id: String,
+    },
+    History {
+        connection_id: u64,
+        page: TextHistorySnapshot,
+        viewing_earlier: bool,
+    },
+    HistoryActivity {
+        connection_id: u64,
+        page: TextHistorySnapshot,
+    },
     /// Connection identity only; never a readiness or authority attestation.
     Connected {
         connection_id: u64,
@@ -79,6 +103,14 @@ pub enum TextWorkerEvent {
     Prepared {
         connection_id: u64,
         reference: TextPrepared,
+    },
+    /// Original Root reference recovered by lookup; never a new-send ticket.
+    Recovered {
+        connection_id: u64,
+        reference: TextPrepared,
+    },
+    RecoveryComplete {
+        connection_id: u64,
     },
     Admission {
         connection_id: u64,
@@ -194,6 +226,8 @@ async fn run(
         waker();
         Ok(())
     };
+    let mut startup_until = std::time::Instant::now() + Duration::from_secs(10);
+    let mut last_connect_error = None;
     let (mut owner, mut session) = loop {
         let attempt = async {
             let owner = super::signer::owner(&signer).await?;
@@ -206,16 +240,30 @@ async fn run(
         .await;
         match attempt {
             Ok(connected) => break connected,
-            Err(issue) => emit(TextWorkerEvent::Unavailable {
-                request_id: None,
-                message: issue.to_string(),
-            })?,
+            Err(issue) => {
+                let message = issue.to_string();
+                if last_connect_error.as_ref() != Some(&message) {
+                    emit(TextWorkerEvent::Unavailable {
+                        request_id: None,
+                        message: message.clone(),
+                    })?;
+                    last_connect_error = Some(message);
+                }
+            }
         }
         // No intent has been accepted before authentication. Stay available to
         // retry the SAME configured Root endpoint after startup/transport loss.
         loop {
-            match commands.recv().await {
-                Some(TextCommand::Reconnect) => break,
+            let command = tokio::select! {
+                _ = tokio::time::sleep(Duration::from_millis(250)), if std::time::Instant::now() < startup_until => break,
+                command = commands.recv() => command,
+            };
+            match command {
+                Some(TextCommand::Reconnect) => {
+                    startup_until = std::time::Instant::now() + Duration::from_secs(10);
+                    last_connect_error = None;
+                    break;
+                }
                 Some(TextCommand::Submit { request_id, .. })
                 | Some(TextCommand::Dispatch { request_id }) => {
                     emit(TextWorkerEvent::Unavailable {
@@ -251,48 +299,126 @@ async fn run(
         Result<TextWorkerEvent, (Option<String>, TextSessionError)>,
     > = tokio::task::JoinSet::new();
     let mut stream_open = true;
+    let mut earlier_cursor = None;
+    let mut ready = match recovery::restore(
+        &signer,
+        &owner,
+        &session,
+        &mut intents,
+        &mut messages,
+        &prepared,
+        &emit,
+    )
+    .await
+    {
+        Ok(cursor) => {
+            earlier_cursor = cursor;
+            true
+        }
+        Err(issue) => {
+            emit(TextWorkerEvent::Unavailable {
+                request_id: None,
+                message: issue.to_string(),
+            })?;
+            stream_open = false;
+            false
+        }
+    };
+    let mut last_polled = String::new();
     let mut poll = tokio::time::interval(Duration::from_millis(250));
     poll.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
+    let mut history_poll = tokio::time::interval(Duration::from_millis(1000));
+    history_poll.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
     loop {
+        if ready && crate::authbus_ingress::now_ms().map_err(unavailable)? >= owner.expires_at_ms {
+            ready = false;
+            stream_open = false;
+            session.requests.fence()?;
+            emit(TextWorkerEvent::Unavailable {
+                request_id: None,
+                message:
+                    "Original Root chat session expired; original re-authentication is required"
+                        .into(),
+            })?;
+        }
+        let until_expiry = owner
+            .expires_at_ms
+            .saturating_sub(crate::authbus_ingress::now_ms().map_err(unavailable)?)
+            .min(300_000);
         tokio::select! {
-            event = session.events.next(), if stream_open => match event {
-                Ok(Some(event)) => emit(TextWorkerEvent::Notification(event))?,
-                Ok(None) => stream_open = false,
+            _ = tokio::time::sleep(Duration::from_millis(until_expiry)), if ready => continue,
+            event = session.events.next_observation(), if stream_open => match event {
+                Ok(Some(AgentdTextObservation::Notification(event))) => emit(TextWorkerEvent::Notification(event))?,
+                Ok(Some(AgentdTextObservation::Approval(event))) => emit(TextWorkerEvent::Approval(event))?,
+                Ok(None) => { stream_open = false; ready = false; },
                 Err(error) => {
                     stream_open = false;
+                    ready = false;
                     emit(TextWorkerEvent::Unavailable { request_id: None, message: error.to_string() })?;
                 }
             },
             result = inflight.join_next(), if !inflight.is_empty() => {
                 match result.ok_or_else(|| unavailable("request task missing"))?.map_err(unavailable)? {
                     Ok(event) => {
+                        if let TextWorkerEvent::Prepared { reference, .. } = &event {
+                            messages.insert(reference.message_id.clone(), reference.host_reference.clone());
+                        }
                         if let TextWorkerEvent::Retired { request_id, message_id, .. } = &event {
                             let _ = request_id;
                             retired.insert(message_id.clone());
                         }
-                        emit(event)?;
+                        if ready { emit(event)?; }
                     }
                     Err((request_id, error)) => emit(TextWorkerEvent::Unavailable { request_id, message: error.to_string() })?,
                 }
             },
-            _ = poll.tick(), if inflight.is_empty() && stream_open => {
-                let next = session.requests.shared.current()?.pending.values()
-                    .find(|pending| (pending.cancellation_requested || pending.recovered) && !pending.terminal)
-                    .map(|pending| pending.envelope.message_id.clone());
-                if let Some(message_id) = next {
+            _ = history_poll.tick(), if ready && inflight.is_empty() => {
+                let activity = match session.requests.has_snapshot_activity() {
+                    Ok(value) => value,
+                    Err(issue) => {
+                        ready = false; stream_open = false;
+                        emit(TextWorkerEvent::Unavailable { request_id: None, message: issue.to_string() })?;
+                        continue;
+                    }
+                };
+                if activity {
+                    match session.requests.refresh_snapshot_activity().await {
+                        Ok(page) if !page.turns.is_empty() || page.notice.is_some() => emit(TextWorkerEvent::HistoryActivity { connection_id: session.requests.connection_id(), page })?,
+                        Ok(_) => {},
+                        Err(issue) => emit(TextWorkerEvent::Unavailable { request_id: Some("history".into()), message: issue.to_string() })?,
+                    }
+                }
+            },
+            _ = poll.tick(), if inflight.is_empty() && ready => {
+                let next = recovery::next_work(&session, &prepared, &messages, &last_polled)?;
+                if let Some((message_id, retire)) = next {
+                    last_polled = message_id.clone();
                     let requests = session.requests.clone();
-                    inflight.spawn(async move {
-                        requests.reconcile(&message_id).await
-                            .map(|view| TextWorkerEvent::Reconciled { connection_id: requests.connection_id(), view })
-                            .map_err(|error| (Some(message_id), error))
-                    });
+                    if retire && !retired.contains(&message_id) {
+                        let request_id = messages.get(&message_id).cloned().ok_or(TextSessionError::UnknownRequest)?;
+                        let text = intents.get(&request_id).cloned().ok_or(TextSessionError::UnknownRequest)?;
+                        let signer = signer.clone(); let config = config.clone();
+                        inflight.spawn(async move {
+                            super::signer::retire_input(&signer, &config, &request_id, &text).await
+                                .map(|()| TextWorkerEvent::Retired { connection_id: requests.connection_id(), request_id: request_id.clone(), message_id })
+                                .map_err(|error| (Some(request_id), error))
+                        });
+                    } else if !retired.contains(&message_id) {
+                        inflight.spawn(async move {
+                            requests.reconcile(&message_id).await
+                                .map(|view| TextWorkerEvent::Reconciled { connection_id: requests.connection_id(), view })
+                                .map_err(|error| (Some(message_id), error))
+                        });
+                    }
                 }
             },
             command = commands.recv() => {
                 let Some(command) = command else { break; };
                 if let TextCommand::Release { message_id } = &command {
                     if retired.contains(message_id) {
-                        session.requests.retire(message_id)?;
+                        // Root's independently verified original terminal/close
+                        // receipt, not a local timer, permits transient release.
+                        session.requests.shared.current()?.pending.remove(message_id);
                         retired.remove(message_id);
                         if let Some(request_id) = messages.remove(message_id) {
                             intents.remove(&request_id);
@@ -302,8 +428,48 @@ async fn run(
                     continue;
                 }
                 if inflight.len() >= 4 { emit(TextWorkerEvent::Unavailable { request_id: None, message: "text request capacity reached".into() })?; continue; }
+                if !ready && !matches!(&command, TextCommand::Reconnect) {
+                    emit(TextWorkerEvent::Unavailable { request_id: None, message: "Original references must finish recovery before new work".into() })?;
+                    continue;
+                }
                 let interrupt_requested = matches!(&command, TextCommand::Interrupt { .. });
                 match command {
+                    TextCommand::ResolveApproval { connection_id, id, decision } => {
+                        if !owner.can_resolve_approvals || connection_id != session.requests.connection_id() {
+                            emit(TextWorkerEvent::Unavailable { request_id: Some(format!("approval:{id}")), message: "Original Root session does not permit this approval callback".into() })?;
+                            continue;
+                        }
+                        let requests = session.requests.clone();
+                        let signer = signer.clone();
+                        let expected_owner = owner.clone();
+                        inflight.spawn(async move {
+                            let result = async {
+                                let current = super::signer::owner(&signer).await?;
+                                if !current.same_authorization(&expected_owner) || !current.can_resolve_approvals { return Err(TextSessionError::Identity); }
+                                requests.resolve_approval(connection_id, &id, decision).await?;
+                                Ok(TextWorkerEvent::ApprovalWritten { connection_id, id: id.clone() })
+                            }.await;
+                            result.map_err(|error| (Some(format!("approval:{id}")), error))
+                        });
+                    }
+                    TextCommand::EarlierHistory | TextCommand::LatestHistory => {
+                        if !inflight.is_empty() {
+                            emit(TextWorkerEvent::Unavailable { request_id: Some("history".into()), message: "Wait for original input reconciliation before changing history pages".into() })?;
+                            continue;
+                        }
+                        let viewing_earlier = matches!(&command, TextCommand::EarlierHistory);
+                        let cursor = if viewing_earlier {
+                            let Some(cursor) = earlier_cursor.clone() else { continue; };
+                            Some(cursor)
+                        } else { None };
+                        match session.requests.history_page(cursor).await {
+                            Ok(page) => {
+                                earlier_cursor = page.earlier_cursor.clone();
+                                emit(TextWorkerEvent::History { connection_id: session.requests.connection_id(), page, viewing_earlier })?;
+                            }
+                            Err(issue) => emit(TextWorkerEvent::Unavailable { request_id: Some("history".into()), message: issue.to_string() })?,
+                        }
+                    }
                     TextCommand::Submit { request_id, text } => {
                         if request_id.is_empty() || request_id.len() > 192
                             || !request_id.bytes().all(|byte| byte.is_ascii_alphanumeric() || b"._:-".contains(&byte))
@@ -338,10 +504,9 @@ async fn run(
                                     delivery_id: super::prepare(&config, envelope.clone())?.delivery_id,
                                 };
                                 let mut retained = prepared.lock().map_err(|_| TextSessionError::Fenced)?;
-                                if retained.len() >= MAX_RETAINED { return Err(TextSessionError::Capacity); }
-                                if let Some((old, _)) = retained.get(&request_id) {
-                                    if old != &envelope { return Err(TextSessionError::Identity); }
-                                }
+                                if retained.len() >= MAX_RETAINED && !retained.contains_key(&request_id) { return Err(TextSessionError::Capacity); }
+                                if let Some((old, _)) = retained.get(&request_id)
+                                    && old != &envelope { return Err(TextSessionError::Identity); }
                                 retained.insert(request_id.clone(), (envelope, lookup_only));
                                 Ok(TextWorkerEvent::Prepared { connection_id: requests.connection_id(), reference })
                             }.await;
@@ -384,8 +549,18 @@ async fn run(
                             continue;
                         }
                         let requests = session.requests.clone();
+                        let signer = signer.clone();
+                        let expected_owner = owner.clone();
                         inflight.spawn(async move {
-                            let result = if interrupt { requests.interrupt(&message_id).await } else { requests.reconcile(&message_id).await };
+                            let result = async {
+                                if interrupt {
+                                    let current = super::signer::owner(&signer).await?;
+                                    if !current.same_authorization(&expected_owner) || !current.can_interrupt {
+                                        return Err(TextSessionError::Identity);
+                                    }
+                                    requests.interrupt(&message_id).await
+                                } else { requests.reconcile(&message_id).await }
+                            }.await;
                             result.map(|view| TextWorkerEvent::Reconciled { connection_id: requests.connection_id(), view })
                                 .map_err(|error| (Some(message_id), error))
                         });
@@ -403,6 +578,7 @@ async fn run(
                             Err(issue) => {
                                 let _ = session.requests.fence();
                                 stream_open = false;
+                                ready = false;
                                 emit(TextWorkerEvent::Unavailable { request_id: None, message: issue.to_string() })?;
                                 continue;
                             }
@@ -413,6 +589,15 @@ async fn run(
                         stream_open = true;
                         emit(TextWorkerEvent::Connected { connection_id: session.requests.connection_id() })?;
                         emit(TextWorkerEvent::Authenticated { connection_id: session.requests.connection_id(), owner: refreshed })?;
+                        ready = match recovery::restore(&signer, &owner, &session, &mut intents, &mut messages, &prepared, &emit).await {
+                            Ok(cursor) => { earlier_cursor = cursor; true },
+                            Err(issue) => {
+                                stream_open = false;
+                                emit(TextWorkerEvent::Unavailable { request_id: None, message: issue.to_string() })?;
+                                false
+                            }
+                        };
+                        if !ready { continue; }
                         let ids = session.requests.shared.current()?.pending.keys().cloned().collect::<Vec<_>>();
                         for message_id in ids {
                             match session.requests.reconcile(&message_id).await {

@@ -6,6 +6,7 @@ use crate::AuthBusTextBody;
 use crate::TextIssuerOperation;
 use crate::text_session::AgentdTextSessionConfig;
 use crate::text_session::TextOwnerReceipt;
+use codex_hepta_contracts::AuthorityClock;
 use std::os::unix::net::UnixListener;
 use std::time::Duration;
 
@@ -27,6 +28,10 @@ pub struct HostAuthorityTextUiRegistration {
     pub expires_at_ms: u64,
     pub route: AgentdTextSessionConfig,
     pub can_interrupt: bool,
+    /// Explicit existing human-session permission, never inferred from text
+    /// submission or a model provider login. Old registrations default to false.
+    #[serde(default)]
+    pub can_resolve_approvals: bool,
 }
 
 #[derive(Deserialize)]
@@ -34,6 +39,11 @@ pub struct HostAuthorityTextUiRegistration {
 enum Request {
     Hello {
         schema_version: u32,
+    },
+    Pending {
+        schema_version: u32,
+        after_sequence: u64,
+        through_sequence: u64,
     },
     Sign {
         schema_version: u32,
@@ -83,6 +93,7 @@ impl HostAuthorityTextUiRegistration {
             expires_at_ms: self.expires_at_ms,
             route: self.route.clone(),
             can_interrupt: self.can_interrupt,
+            can_resolve_approvals: self.can_resolve_approvals,
             intent_namespace: self.namespace(),
             next_intent_sequence: 1,
         }
@@ -180,6 +191,38 @@ impl HostAuthorityService {
         match request {
             Request::Hello { schema_version: 1 } => encode_bounded(&owner, 16 * 1024),
             Request::Hello { .. } => Err(HostIssuerTransportError::InvalidRequest),
+            Request::Pending {
+                schema_version,
+                after_sequence,
+                through_sequence,
+            } => {
+                if schema_version != 1 {
+                    return Err(HostIssuerTransportError::InvalidRequest);
+                }
+                let entry = self
+                    .issuer
+                    .retained_text_page(
+                        &self.identity,
+                        &owner.intent_namespace,
+                        &owner.route.thread_id,
+                        after_sequence,
+                        through_sequence,
+                    )
+                    .map_err(unavailable)?;
+                // Recheck the original writer lease after reading. Principal,
+                // namespace, route and generation never come from peer JSON.
+                self.text_ui_owner(registration)?;
+                encode_bounded(
+                    &serde_json::json!({
+                        "schema_version": 1, "operation": "pending",
+                        "through_sequence": through_sequence,
+                        "entry": entry.map(|(request_id, envelope)| serde_json::json!({
+                            "request_id": request_id, "envelope": envelope
+                        }))
+                    }),
+                    32 * 1024,
+                )
+            }
             Request::Sign {
                 schema_version,
                 request_id,
@@ -271,12 +314,14 @@ impl HostAuthorityService {
                 .enable_all()
                 .build()
                 .map_err(unavailable)?;
+            let observed_root_ms = self.clock.now_unix_ms().map_err(unavailable)?;
             let verified = runtime.block_on(async {
                 tokio::time::timeout(
                     Duration::from_secs(4),
                     crate::deployment_issuer::VerifiedTextRetirement::read_original(
                         registration.route.clone(),
                         original,
+                        observed_root_ms,
                     ),
                 )
                 .await

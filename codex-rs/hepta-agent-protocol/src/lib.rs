@@ -596,6 +596,9 @@ pub enum AgentdMethod {
     AuthBusTextStatus {
         delivery_id: String,
     },
+    AuthBusTextLookup {
+        delivery_id: String,
+    },
     KernelEvidenceAppend {
         request: KernelEvidenceAppendIngress,
     },
@@ -761,6 +764,10 @@ pub enum AgentdPayload {
     CognitiveContext(CognitiveContextSnapshot),
     CognitiveContextRevalidated(CognitiveContextRevalidation),
     AuthBusTextStatus(AuthBusTextStatus),
+    AuthBusTextLookup {
+        delivery_id: String,
+        status: Option<AuthBusTextStatus>,
+    },
     KernelEvidenceResult(KernelEvidenceResult),
     Events(EventBatch),
     RunReceipt(AgentRunReceipt),

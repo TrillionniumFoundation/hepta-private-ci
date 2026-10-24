@@ -152,6 +152,27 @@ impl RendererPresentation {
                     {
                         composition.inner.request_interrupt(room)
                     }
+                    ChatIntent::EarlierHistory(room)
+                        if controls
+                            .permits_earlier_history(room, composition.inner.workspace()) =>
+                    {
+                        composition.inner.request_earlier_history(room)
+                    }
+                    ChatIntent::LatestHistory(room)
+                        if controls.permits_latest_history(room, composition.inner.workspace()) =>
+                    {
+                        composition.inner.request_latest_history(room)
+                    }
+                    ChatIntent::Approval(room, id, decision)
+                        if controls.permits_approval(
+                            room,
+                            &id,
+                            decision,
+                            composition.inner.workspace(),
+                        ) =>
+                    {
+                        composition.inner.request_approval(room, &id, decision)
+                    }
                     _ => continue,
                 };
                 if let Err(error) = result {
@@ -160,6 +181,7 @@ impl RendererPresentation {
             }
         }
         let availability = composition.inner.poll_chat();
+        let approval = composition.inner.pending_approval();
         let workspace = composition.inner.workspace();
         let controls = Controls {
             room: Some(RoomKey {
@@ -167,6 +189,7 @@ impl RendererPresentation {
                 local_id: workspace.active_id(),
             }),
             availability,
+            approval,
         };
         if *cx.global::<Controls>() != controls {
             *cx.global::<Controls>() = controls;

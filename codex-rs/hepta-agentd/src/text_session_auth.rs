@@ -15,6 +15,8 @@ pub struct TextOwnerReceipt {
     pub expires_at_ms: u64,
     pub route: AgentdTextSessionConfig,
     pub can_interrupt: bool,
+    #[serde(default)]
+    pub can_resolve_approvals: bool,
     pub intent_namespace: String,
     pub next_intent_sequence: u64,
 }
