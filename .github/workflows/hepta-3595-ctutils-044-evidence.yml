@@ -1,0 +1,122 @@
+name: Isolated ctutils 0.4.4 Cargo and Bazel lock evidence (read-only)
+on:
+  push:
+    branches:
+      - codex/3595-ctutils-044-evidence-20261024
+    paths:
+      - .github/workflows/hepta-3595-ctutils-044-evidence.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-3595-ctutils-044-evidence-20261024
+  cancel-in-progress: false
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout exact source, no persistent write credential
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Enforce original HEAD and byte-exact Cargo/Bazel inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD^)" = "00b3f410b13ee8731ec8f6b5341c53be176e6a2a"
+          test "$(git diff --name-only 00b3f410b13ee8731ec8f6b5341c53be176e6a2a HEAD)" = ".github/workflows/hepta-3595-ctutils-044-evidence.yml"
+          test "$(git hash-object codex-rs/Cargo.lock)" = "8a9eab30d8957daab7dd027e86e88ca792e04a1c"
+          test "$(git hash-object MODULE.bazel)" = "a49ef6c1cf4cf6b12f76296cd488c93f0753905b"
+          test "$(git hash-object MODULE.bazel.lock)" = "b511f2f09a21057a3d3654e441a69835cbd91ce9"
+
+      - name: Prepare repository pinned Bazel resolver
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: hepta-3595-ctutils-044
+
+      - name: Resolve precise RustSec fix, then regenerate Bazel lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          rustup toolchain install 1.95.0 --profile minimal
+          (cd codex-rs && cargo +1.95.0 update -p ctutils --precise 0.4.4)
+          python3 - <<'PY'
+          import pathlib
+          import subprocess
+          import tomllib
+
+          original = tomllib.loads(subprocess.check_output(
+              ["git", "show", "HEAD:codex-rs/Cargo.lock"], text=True,
+          ))
+          generated = tomllib.loads(pathlib.Path("codex-rs/Cargo.lock").read_text())
+          def without_ctutils(lock):
+              return {
+                  **lock,
+                  "package": [p for p in lock["package"] if p["name"] != "ctutils"],
+              }
+          def entries(lock):
+              return [p for p in lock["package"] if p["name"] == "ctutils"]
+          before, after = entries(original), entries(generated)
+          assert len(before) == len(after) == 1, (before, after)
+          assert before[0]["version"] == "0.4.2", before
+          assert after[0]["version"] == "0.4.4", after
+          assert before[0].get("checksum") != after[0].get("checksum"), "checksum did not change"
+          assert without_ctutils(original) == without_ctutils(generated), "unrelated Cargo lock change"
+          print("Only ctutils 0.4.2 -> 0.4.4 changed in Cargo.lock")
+          PY
+          bazel mod deps --lockfile_mode=update
+          ./scripts/check-module-bazel-lock.sh
+          python3 -m json.tool MODULE.bazel.lock >/dev/null
+          git diff --check
+          python3 - <<'PY'
+          import subprocess
+          changed = set(subprocess.check_output(
+              ["git", "diff", "--name-only"], text=True,
+          ).splitlines())
+          if not changed.issubset({"codex-rs/Cargo.lock", "MODULE.bazel.lock"}):
+              raise SystemExit(f"Unexpected touched files: {sorted(changed)}")
+          if "codex-rs/Cargo.lock" not in changed:
+              raise SystemExit(f"Missing Cargo update: {sorted(changed)}")
+          print(f"Generated file changes: {sorted(changed)}")
+          PY
+
+      - name: Save exact generated evidence and source provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/hepta-3595-ctutils-044"
+          mkdir -p "$out"
+          git diff --binary -- codex-rs/Cargo.lock MODULE.bazel.lock > "$out/generated-locks.patch"
+          test -s "$out/generated-locks.patch"
+          cp codex-rs/Cargo.lock "$out/Cargo.lock"
+          cp MODULE.bazel.lock "$out/MODULE.bazel.lock"
+          {
+            printf 'source_sha=%s\n' "$GITHUB_SHA"
+            printf 'source_parent=%s\n' "$(git rev-parse HEAD^)"
+            printf 'original_cargo_blob=%s\n' "$(git show HEAD:codex-rs/Cargo.lock | git hash-object --stdin)"
+            printf 'original_module_blob=%s\n' "$(git show HEAD:MODULE.bazel | git hash-object --stdin)"
+            printf 'original_bazel_lock_blob=%s\n' "$(git show HEAD:MODULE.bazel.lock | git hash-object --stdin)"
+            printf 'generated_cargo_blob=%s\n' "$(git hash-object codex-rs/Cargo.lock)"
+            printf 'generated_bazel_lock_blob=%s\n' "$(git hash-object MODULE.bazel.lock)"
+            rustc +1.95.0 --version
+            cargo +1.95.0 --version
+            bazel --version
+            sha256sum codex-rs/Cargo.lock MODULE.bazel.lock
+          } > "$out/provenance.txt"
+          cat "$out/provenance.txt"
+
+      - name: Upload read-only generated locks and patch
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-3595-ctutils-044-generated-lock-evidence
+          path: ${{ runner.temp }}/hepta-3595-ctutils-044/
+          if-no-files-found: error
+          retention-days: 14
