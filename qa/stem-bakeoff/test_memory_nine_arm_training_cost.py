@@ -42,8 +42,8 @@ def package_for(plan):
             "encoder_sha256": plan["common"]["encoder_sha256"],
             "source_frontier_sha256": plan["common"]["source_frontier_sha256"],
             "forget_frontier_sha256": plan["common"]["forget_frontier_sha256"],
-            "source_ancestor_roots": plan["common"]["training_roots"],
-            "replay_source_roots": plan["common"]["training_roots"],
+            "source_ancestor_roots": list(plan["common"]["training_roots"]),
+            "replay_source_roots": list(plan["common"]["training_roots"]),
             "trained_head_tensor_digests": tensors,
             "weight_inventory_sha256": sha(canonical(tensors)),
             "journal_sha256": sha(canonical(events)),
@@ -93,6 +93,24 @@ class PhysicalTrainingCostTests(unittest.TestCase):
         self.assertFalse(report["prospective_memory_superiority_established"])
         self.assertFalse(report["production_activation_allowed"])
         self.assertEqual(report["authority"], "DENY_ALL")
+
+    def test_receipt_lineage_mutation_preserves_frozen_plan_and_other_arms(self):
+        frozen_plan = deepcopy(self.plan)
+        expected_package = deepcopy(self.package)
+        expected_package["arms"][1]["source_ancestor_roots"].append("calib:root")
+        self.subject("F")["source_ancestor_roots"].append("calib:root")
+        self.assertEqual(self.plan, frozen_plan)
+        self.assertEqual(self.package, expected_package)
+        self.refuses("train/evaluation/calibration")
+
+    def test_receipt_replay_mutation_preserves_independent_ancestor_snapshot(self):
+        frozen_plan = deepcopy(self.plan)
+        expected_package = deepcopy(self.package)
+        expected_package["arms"][2]["replay_source_roots"].append("untraced")
+        self.subject("G")["replay_source_roots"].append("untraced")
+        self.assertEqual(self.plan, frozen_plan)
+        self.assertEqual(self.package, expected_package)
+        self.refuses("replay source omitted")
 
     def test_missing_physical_training_keeps_original_gate_on_hold(self):
         _, obs, judgments = fixture()

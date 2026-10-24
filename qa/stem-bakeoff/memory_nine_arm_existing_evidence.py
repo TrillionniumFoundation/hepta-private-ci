@@ -3,6 +3,8 @@
 The physical source-retrieval experiment is already in PR #3125. This program
 audits its frozen journal identities and emits a gap census; it does not rerun
 a Reader, train a Head, or claim a complete prospective A-I experiment.
+Historical producer snapshots are read as bytes, never imported or executed.
+The current live scorer may evolve without rewriting the retained experiment.
 """
 import json
 from pathlib import Path
@@ -10,7 +12,7 @@ from pathlib import Path
 from memory_nine_arm_gate import ARMS, Refused, require, sha
 
 EVIDENCE_DIR = Path(__file__).parent / "evidence" / "20261022-locomo-memory-retrieval"
-CODE_DIR = Path(__file__).parent
+CODE_DIR = EVIDENCE_DIR / "producer-source"
 
 
 def recount(directory=EVIDENCE_DIR, code_dir=CODE_DIR):
@@ -70,8 +72,8 @@ def recount(directory=EVIDENCE_DIR, code_dir=CODE_DIR):
             and pair["population_independence_authenticated"] is False
             and pair["superiority_established"] is False,
             "original paired low-power result changed")
-    lexical_hop = results["bm25_turn_session"]["by_category"]["1"]["overall"]
-    typed_hop = results["episodic_context"]["by_category"]["1"]["overall"]
+    lexical_hop = results["bm25_turn_session"]["by_category"]["1"]
+    typed_hop = results["episodic_context"]["by_category"]["1"]
     multi_hop_delta = (typed_hop["all_support_recalled"]
                        - lexical_hop["all_support_recalled"])
     require(multi_hop_delta < 0, "original multi-hop regression hidden")
