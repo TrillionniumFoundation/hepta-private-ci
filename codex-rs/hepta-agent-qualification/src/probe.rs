@@ -3,10 +3,9 @@ use crate::evidence::ContinuationEvidence;
 use crate::evidence::Evidence;
 use crate::evidence::ExactBodyObserver;
 use crate::policy::QualificationPolicy;
+use crate::request_wire::PreparedOrdinaryWire;
 use anyhow::Result;
 use anyhow::anyhow;
-use codex_api::Reasoning;
-use codex_api::RequestDispatchMetadata;
 use codex_api::ResponsesApiRequest;
 use codex_api::ResponsesOptions;
 use codex_api::TextControls;
@@ -40,6 +39,9 @@ use std::time::UNIX_EPOCH;
 use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
 
+#[path = "probe_settings.rs"]
+mod settings;
+
 const EXPECTED: &str = "HEPTA_NATIVE_STREAM_OK";
 const MAXIMUM_VISIBLE_BYTES: usize = 8_192;
 const MAXIMUM_RETAINED_BYTES: usize = 262_144;
@@ -66,6 +68,9 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
     .map_err(|_| anyhow!("qualification auth owner deadline"))?
     .map_err(|_| anyhow!("qualification auth owner unavailable"))?;
     let provider = create_model_provider(config.model_provider.clone(), Some(auth));
+    let prepared_settings = settings::prepare(&config, &provider, model, &evidence).await?;
+    let request_settings_evidence_digest = prepared_settings.evidence_digest;
+    let normalized_settings = prepared_settings.settings;
     let use_agent_identity = config.features.enabled(Feature::UseAgentIdentity);
     let policy_name = if use_agent_identity {
         "configured_chatgpt_agent_identity"
@@ -101,22 +106,28 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
             "content":[{"type":"input_text", "text":format!("Return only {EXPECTED}")}],
         }))?],
         tools: None, tool_choice: "none".into(), parallel_tool_calls: false,
-        reasoning: Some(Reasoning { effort: config.model_reasoning_effort.clone(),
-            summary: config.model_reasoning_summary, context: None }),
+        reasoning: Some(normalized_settings.reasoning),
         store: false, stream: true, stream_options: None,
         include: vec!["reasoning.encrypted_content".into()],
-        service_tier: config.service_tier.clone(), prompt_cache_key: Some(run_id.to_string()),
-        text: config.model_verbosity.map(|verbosity| TextControls { verbosity: Some(verbosity.into()), format: None }),
+        service_tier: normalized_settings.service_tier, prompt_cache_key: Some(run_id.to_string()),
+        text: normalized_settings.verbosity.map(|verbosity| TextControls { verbosity: Some(verbosity.into()), format: None }),
         client_metadata: None,
     };
     let encoded = EncodedJsonBody::encode(&api_request)
         .map_err(|_| anyhow!("qualification request encoding failed"))?;
     let body_digest = Digest32::of_bytes(encoded.as_bytes());
+    let wire = PreparedOrdinaryWire::new(body_digest, request_settings_evidence_digest)?;
     let admission = json!({
-        "schema":"hepta-native-qualification-admission:v1",
+        "schema":"hepta-native-qualification-admission:v2",
         "run_id":run_id.as_str(), "request_id":request_id.as_str(),
         "model":model, "provider":config.model_provider_id,
         "auth_policy":policy_name, "api_body_sha256":body_digest.to_string(),
+        "wire_semantic_sha256":wire.semantic_digest().to_string(),
+        "request_settings_evidence_sha256":request_settings_evidence_digest.to_string(),
+        "request_normalization":"shared_original_model_settings_ordinary_v1",
+        "catalog_refresh_strategy":"offline", "full_core_request_parity":false,
+        "routing_hint":null, "responses_lite":false,
+        "routing_and_lite_headers_must_be_absent":true,
         "compiled_context_tokens":0, "compiled_context_bytes":0,
         "maximum_provider_input_tokens":args.maximum_provider_input_tokens,
         "maximum_output_tokens":args.maximum_output_tokens,
@@ -156,7 +167,7 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
     .await
     .map_err(|_| anyhow!("qualification policy setup deadline"))??;
     let observer = Arc::new(ExactBodyObserver::new(evidence.clone(), body_digest));
-    let dispatch = RequestDispatchMetadata::new();
+    let dispatch = wire.dispatch_metadata();
     let retained = Arc::new(Mutex::new(None));
     let mut owner = ContinuationEvidence {
         evidence: evidence.clone(),
@@ -177,7 +188,7 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
             &request,
             model,
             client.endpoint_for_admission(),
-            body_digest,
+            &wire,
             policy_name,
         ),
     )
@@ -253,6 +264,12 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
         "qualified":complete && observed.completed && !observed.unexpected_tool && terminal_recorded && within_reservations && output_matches,
         "status":status, "provider_transport_invoked":dispatch.transport_invoked(),
         "failure_diagnostic":result.as_ref().err().map(failure_diagnostic),
+        "wire_semantic_sha256":wire.semantic_digest().to_string(),
+        "request_settings_evidence_sha256":request_settings_evidence_digest.to_string(),
+        "request_normalization":"shared_original_model_settings_ordinary_v1",
+        "catalog_refresh_strategy":"offline", "full_core_request_parity":false,
+        "routing_and_lite_headers_must_be_absent":true,
+        "previous_indeterminate_attempt_repaired":false,
         "maximum_provider_calls":1, "automatic_retry":false,
         "requested_model":model, "server_model":continuation.as_ref().and_then(|c| c.get("server_model")),
         "configured_reasoning_effort":config.model_reasoning_effort,

@@ -6,6 +6,7 @@ mod inspection_args;
 mod inspector;
 mod policy;
 mod probe;
+mod request_wire;
 
 use anyhow::Result;
 use anyhow::anyhow;
@@ -65,6 +66,9 @@ async fn main() -> Result<()> {
         "policy":"existing Hepta governance Enforce contributor, isolated evidence",
         "compiled_context":"empty; fixed qualification task resides in admitted API template",
         "tool_execution":false, "production_turn_owner":false,
+        "request_normalization":"shared_original_model_settings_ordinary_v1",
+        "catalog_refresh_strategy":"offline", "full_core_request_parity":false,
+        "routing_hint":"expected_absent", "responses_lite":"expected_absent",
         "core_linked_for_config_bootstrap":true, "core_free_memory_comparison":false,
     });
     if !args.run {

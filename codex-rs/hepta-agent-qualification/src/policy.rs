@@ -1,6 +1,7 @@
 //! Compose the existing durable provider governance contributor in Enforce
 //! mode for this isolated qualification. No FinalUse grant is issued here.
 
+use crate::request_wire::PreparedOrdinaryWire;
 use anyhow::Result;
 use anyhow::anyhow;
 use codex_core::config::Config;
@@ -88,7 +89,7 @@ impl QualificationPolicy {
         request: &ModelRequest,
         model: &str,
         endpoint: &str,
-        body_digest: Digest32,
+        prepared_wire: &PreparedOrdinaryWire,
         auth_policy: &str,
     ) -> Result<Box<dyn ModelProviderAttemptLease>> {
         let policies = self.registry.model_provider_policy_contributors();
@@ -101,12 +102,13 @@ impl QualificationPolicy {
         }))?)?;
         let endpoint = endpoint_digest(endpoint)?;
         let logical = digest(&serde_json::to_vec(&json!({
-            "schema":"hepta-native-qualification-logical-request:v1",
+            "schema":"hepta-native-qualification-logical-request:v2",
             "admission_digest":binding.admission_digest.to_string(),
             "request_id":request.request_id.as_str(), "context_digest":request.context_digest.to_string(),
-            "api_body_sha256":body_digest.to_string(),
+            "api_body_sha256":prepared_wire.body_digest().to_string(),
+            "wire_semantic_sha256":prepared_wire.semantic_digest().to_string(),
         }))?)?;
-        let wire = ModelProviderSha256Digest::parse(body_digest.to_string())
+        let wire = ModelProviderSha256Digest::parse(prepared_wire.semantic_digest().to_string())
             .map_err(|_| anyhow!("qualification request digest invalid"))?;
         match policies[0]
             .begin(ModelProviderInvocationInput {
