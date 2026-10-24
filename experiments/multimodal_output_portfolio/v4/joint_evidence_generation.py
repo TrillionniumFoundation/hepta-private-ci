@@ -35,7 +35,10 @@ class JointState:
     witness_seen: bool = False
 
     def __post_init__(self) -> None:
-        if (type(self.p_zero) is not Fraction
+        # Structural lookalikes have not passed State admission. Preserve
+        # ordinary State subclasses that inherit its validation.
+        if (not isinstance(self.generation, State)
+            or type(self.p_zero) is not Fraction
             or not Fraction(0) <= self.p_zero <= Fraction(1)
             or type(self.witness_seen) is not bool
             # A paid witness cannot precede the first recorded action.
