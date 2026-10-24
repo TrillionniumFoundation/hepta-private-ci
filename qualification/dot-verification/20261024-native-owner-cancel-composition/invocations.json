@@ -1,0 +1,27 @@
+{
+  "cwd": "/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs",
+  "environment": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "RUSTUP_HOME": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/rustup",
+    "CARGO_HOME": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/cargo",
+    "CARGO_TARGET_DIR": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/target",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/14/include",
+    "PATH_prefix": "/workspace/scratch/f24caf690188/hepta-native-owner-evidence/build-tools/bin:/workspace/scratch/f24caf690188/hepta-native-dot-resume/bin:/workspace/scratch/f24caf690188/hepta-native-dot-resume/cargo/bin"
+  },
+  "commands": {
+    "baseline.log": "just test --locked --offline -p codex-hepta-agent-loop --features automation-effects --test automation_effects --test-threads 1 --retries 0",
+    "cancel-red.log": "just test --locked --offline -p codex-hepta-agent-loop --features automation-effects --test cancellation_successor --test-threads 1 --retries 0",
+    "combined-green.log": "just test --locked --offline -p codex-hepta-agent-loop --features automation-effects,context-v2 --test cancellation_successor --test automation_effects --test owner_loop --test taskflow_owner --test-threads 1 --retries 0",
+    "combined-after-import.log": "just test --locked --offline -p codex-hepta-agent-loop --features automation-effects,context-v2 --test cancellation_successor --test automation_effects --test owner_loop --test taskflow_owner --test-threads 1 --retries 0",
+    "fmt.log": "just fmt",
+    "diff-check.log": "git diff --check",
+    "scoped-strict-clippy.log": "cargo clippy --locked --offline -p codex-hepta-agent-loop --features automation-effects,context-v2 --test cancellation_successor --test automation_effects --test owner_loop --test taskflow_owner --no-deps -- -D warnings",
+    "scoped-default-clippy.log": "cargo clippy --locked --offline -p codex-hepta-agent-loop --features automation-effects,context-v2 --test cancellation_successor --test automation_effects --test owner_loop --test taskflow_owner --no-deps"
+  },
+  "source": "95943a632f607f497f9ce63b001cd297276e1d7e",
+  "donor": "#3652 8bd8cf63619ac845a56eba62de83c2d7a569f5e1",
+  "tool_origins": "Official isolated Rust1.96.0; previously installed pinned just/nextest and PyPI cmake3.31.6 from original-owner verification. No new downloads in this task."
+}
