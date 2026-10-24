@@ -161,7 +161,8 @@ jobs:
           python ../scripts/hepta_ci_exec.py \
             --output "$V6_EVIDENCE/commands/native-tests.json" \
             --minimum-tests 1 --timeout-seconds 900 -- \
-            just test --locked -p codex-hepta-ndu
+            just test --locked -p codex-hepta-ndu -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval
 
       - name: Build and preserve the actual native evaluator
         id: build
@@ -200,6 +201,16 @@ jobs:
             just test --locked -p codex-hepta-infer-worker-host --test generation_owner_execution \
             --run-ignored only --test-threads 1
 
+      - name: Compile the opt-in calibration and plasticity-prerequisite integrations
+        id: neuron_calibration_compile
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          python ../scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/neuron-calibration-compile.json" --timeout-seconds 900 -- \
+            cargo check --locked -p codex-hepta-agentd --test generation_neuron_calibration \
+            --test generation_plasticity_rejection
+
       - name: Execute real text and image generation with native receipts
         id: experiment
         run: |
@@ -234,7 +245,8 @@ jobs:
           protocol = json.loads((output / "protocol.json").read_text())
           status = json.loads((output / "status.json").read_text())
           summary = json.loads((output / "summary.json").read_text())
-          rows = [json.loads(line) for line in (output / "rows.jsonl").read_text().splitlines()]
+          raw_rows = (output / "rows.jsonl").read_bytes()
+          rows = [json.loads(line) for line in raw_rows.splitlines()]
           receipts = json.loads((output / "native-receipts.json").read_text())
           streamed = [json.loads(line) for line in
                       (output / "native-receipts.jsonl").read_text().splitlines()]
@@ -268,9 +280,104 @@ jobs:
               assert receipt["binary_sha256"] == binary_sha
           os.chdir(output)
           summarize(rows, protocol)  # Reopen every emitted file and recheck paired census.
+          assert (output / "rows.jsonl").read_bytes() == raw_rows
+          with (evidence / "accepted-run.json").open("x") as handle:
+              json.dump({"rows_sha256": hashlib.sha256(raw_rows).hexdigest(),
+                         "summary_sha256": status["summary_sha256"],
+                         "protocol_sha256": digest(protocol),
+                         "tested_sha": os.environ["TESTED_SHA"]}, handle, sort_keys=True)
           print(json.dumps({"rows": len(rows), "native_receipts": groups,
                             "profile": os.environ["V6_PROFILE"]}, sort_keys=True))
           PY
+
+      - name: Replay this completed run's trained checkpoint through inference owners
+        id: trained_generation_owner
+        run: |
+          set -euo pipefail
+          rows_sha=$(python -c \
+            'import json,os,pathlib; print(json.loads((pathlib.Path(os.environ["V6_EVIDENCE"])/"accepted-run.json").read_text())["rows_sha256"])')
+          python scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/trained-owner-fixture.json" --timeout-seconds 120 -- \
+            python -m experiments.multimodal_output_portfolio.v6.completed_owner_fixture \
+            --repo "$GITHUB_WORKSPACE" --run "$V6_EVIDENCE/run" \
+            --cache "$V6_EVIDENCE/mnist" --output "$V6_EVIDENCE/trained-owner-fixture" \
+            --expected-rows-sha256 "$rows_sha"
+          export HEPTA_GENERATION_TEST_FIXTURE="$V6_EVIDENCE/trained-owner-fixture/fixture.json"
+          cd codex-rs
+          python ../scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/trained-generation-owner.json" \
+            --minimum-tests 1 --timeout-seconds 1800 -- \
+            just test --locked -p codex-hepta-infer-worker-host --test generation_owner_execution \
+            --run-ignored only --retries 0 --test-threads 1 \
+            -E 'test(existing_owners_execute_controlled_generation)'
+          cd ..
+          python scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/trained-owner-byte-comparison.json" --timeout-seconds 60 -- \
+            python -m experiments.multimodal_output_portfolio.v6.completed_owner_fixture \
+            --output "$V6_EVIDENCE/trained-owner-fixture" \
+            --expected-rows-sha256 "$rows_sha" --verify
+
+      - name: Fit and recover terminal cells from this completed generation run
+        id: terminal_owner
+        run: |
+          set -euo pipefail
+          export HEPTA_TERMINAL_OWNER_FIXTURE="$V6_EVIDENCE/terminal-owner/fixture.json"
+          python scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/terminal-fixture.json" --timeout-seconds 120 -- \
+            python - <<'PY'
+          import os
+          from pathlib import Path
+          from experiments.multimodal_output_portfolio.v6.terminal_fixture import canonical, export_fixture
+          root = Path(os.environ["V6_EVIDENCE"])
+          receipt = export_fixture(root / "run", Path(os.environ["HEPTA_TERMINAL_OWNER_FIXTURE"]))
+          with (root / "terminal-owner-export.json").open("x") as handle:
+              handle.write(canonical(receipt) + "\n")
+          print(canonical(receipt))
+          PY
+          HEPTA_TERMINAL_OWNER_FIXTURE_SHA256=$(python -c \
+            'import json,os,pathlib; print(json.loads((pathlib.Path(os.environ["V6_EVIDENCE"])/"terminal-owner-export.json").read_text())["sha256"])')
+          export HEPTA_TERMINAL_OWNER_FIXTURE_SHA256
+          cd codex-rs
+          python ../scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/terminal-owner.json" \
+            --minimum-tests 5 --timeout-seconds 1800 -- \
+            just test --locked -p codex-hepta-agentd --test generation_terminal_owner \
+            --test terminal_cell_subset --test terminal_cell_owner --run-ignored all \
+            --retries 0 --success-output immediate --test-threads 1 \
+            -E 'binary(generation_terminal_owner) | binary(terminal_cell_subset) | test(real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal)'
+
+      - name: Evaluate this completed run through the fenced paired owner
+        id: paired_owner
+        run: |
+          set -euo pipefail
+          export HEPTA_PAIRED_OWNER_FIXTURE="$V6_EVIDENCE/paired-owner/fixture.json"
+          python scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/paired-fixture.json" --timeout-seconds 120 -- \
+            python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from experiments.multimodal_output_portfolio.v6.paired_fixture import export_fixture
+          root = Path(os.environ["V6_EVIDENCE"])
+          accepted = json.loads((root / "accepted-run.json").read_text())
+          receipt = export_fixture(root / "run", Path(os.environ["HEPTA_PAIRED_OWNER_FIXTURE"]),
+                                   cache=root / "mnist", expected_rows_sha256=accepted["rows_sha256"],
+                                   expected_summary=accepted["summary_sha256"])
+          with (root / "paired-owner-export.json").open("x") as handle:
+              json.dump(receipt, handle, sort_keys=True)
+          print(json.dumps(receipt, sort_keys=True))
+          PY
+          HEPTA_PAIRED_OWNER_FIXTURE_SHA256=$(python -c \
+            'import json,os,pathlib; print(json.loads((pathlib.Path(os.environ["V6_EVIDENCE"])/"paired-owner-export.json").read_text())["sha256"])')
+          HEPTA_PAIRED_SOURCE_ROWS_SHA256=$(python -c \
+            'import json,os,pathlib; print(json.loads((pathlib.Path(os.environ["V6_EVIDENCE"])/"accepted-run.json").read_text())["rows_sha256"])')
+          export HEPTA_PAIRED_OWNER_FIXTURE_SHA256 HEPTA_PAIRED_SOURCE_ROWS_SHA256
+          cd codex-rs
+          python ../scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/paired-owner.json" \
+            --minimum-tests 1 --timeout-seconds 1800 -- \
+            just test --locked -p codex-hepta-agentd --test generation_paired_evaluation \
+            --run-ignored all --retries 0 --test-threads 1 --success-output immediate
 
       - name: Preserve the tested source unchanged
         id: source

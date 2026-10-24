@@ -2,7 +2,7 @@
 
 这是**有界领域的研究实现**：输入真实 MNIST 手写图像及公开文字提示，生成实际自回归文字和神经像素图像，并比较训练目标与推理控制。配对、遮挡和任务说明是人为构造的 benchmark；它不代表自然场景的通用全模态能力。
 
-首轮 7,560 行完整实验、保持原始输出不变的成本重放、以及验证集上的基础能力修复，已记录在 [results/README.md](results/README.md)。首轮没有得到有效的联合语义生成或 NDU 优势；该负结果保留。新的可选条件架构与条件误差尺度 forecast 通过独立协议登记，不覆盖旧协议或旧 checkpoint。
+两轮各 7,560 行完整实验、保持原始输出不变的成本重放、以及验证集上的基础能力修复，已记录在 [results/README.md](results/README.md)。首轮没有得到有效的联合语义生成；负结果保留。[full-002](results/full-002/README.md) 使用独立新源验证了可用的联合生成，NDU 训练出现三 seed 的描述性收益，但风险感知动态推理没有超过强对照或覆盖额外成本。所有已登记条件区间仍包含零。新的可选条件架构与条件误差尺度 forecast 不覆盖旧协议或旧 checkpoint。
 
 ## 1. 模块与实际输出
 
@@ -26,7 +26,7 @@ encoder 的共享 context 保留输入条件；初始 latent 噪声有显式 see
 
 [joint_contract.py](joint_contract.py) 为后续四模态扩展定义有限的联合状态契约：四个固定槽位、共享 latent 与模型/状态身份、精确必需输出集、共同 clock、语义 event 覆盖和最大对齐偏差。当前运行把实际 text/image latent 及回读的输出摘要绑定到同一静态任务 event；audio/video 槽位明确为 `unsupported`，没有伪造 latent 或输出。静态任务使用无物理时长的 `logical_event` clock；该绑定不证明音画同步、口型同步或语义正确性。未来的 timed media 必须使用明确单位的 presentation clock，并由真实 decoder/媒体观察器验证原生时间戳映射。
 
-`hard_output_modalities` 现在在数据加载和生成前检查。缺失、重复、未知模态、未实现的必需 decoder，或偏离当前 text+image 配对任务的输出集都会进入 `failed` 状态；不能把四模态请求静默降为双模态。完成状态必须具有精确的必需 mask 和全部 event 绑定；pending、unsupported、部分输出或 abstain 均不能算完成。每行记录中的 `joint_output_contract` 由原行摘要绑定，汇总器另按冻结 profile、实际 state/output 摘要重新构建并核验，不能仅靠重算行摘要掩盖契约篡改。旧版未声明该 profile 的结果仍按原双模态范围复核。逻辑 event 对齐是声明的绑定元数据，不是外部事实或真实 presentation-clock 测量。这是研究 backend 的执行契约，尚未接入生产 `NeuronInferenceControlPort`、worker 或 neuron checkpoint owner。
+`hard_output_modalities` 现在在数据加载和生成前检查。缺失、重复、未知模态、未实现的必需 decoder，或偏离当前 text+image 配对任务的输出集都会进入 `failed` 状态；不能把四模态请求静默降为双模态。完成状态必须具有精确的必需 mask 和全部 event 绑定；pending、unsupported、部分输出或 abstain 均不能算完成。每行记录中的 `joint_output_contract` 由原行摘要绑定，汇总器另按冻结 profile、实际 state/output 摘要重新构建并核验，不能仅靠重算行摘要掩盖契约篡改。旧版未声明该 profile 的结果仍按原双模态范围复核。逻辑 event 对齐是声明的绑定元数据，不是外部事实或真实 presentation-clock 测量。真实 worker/inference owner 执行及 Neuron feature adapter 见第八节；生产 Neuron checkpoint 准入仍受其自身校准和权限合同约束。
 
 ## 2. 数据来源、公开信息与两个 observer
 
@@ -117,7 +117,7 @@ scale 的目标来自四折、按原始源 pair 分组的 out-of-fold 预测绝�
 
 [protocol.json](protocol.json) 当前登记 seeds `17,29,43`；两种训练；七种 policy；预算 `64,128`。基础训练为 400 steps、batch 64、hidden 96；计划训练 128 对输入、120 steps；forecast fit/calibration/dev 为 128/64/64 对；每个 observer 300 steps。最终推理最多追加三步，搜索 horizon 为二，`γ=2`，动作效用成本为 `0.002`。
 
-搜索上限为 32 工作单位，`search_fraction=0.5`。64 单位预算的初始完整深度二四动作树需要 25.25 搜索单位，能够纳入初次搜索配额；后续仍可能预算截断，须按每次 decision 的完成标志解释。
+搜索上限为 32 工作单位，`search_fraction=0.5`。默认旧 forecast 的初始完整深度二四动作树需要 25.25 搜索单位。新条件 forecast 两头收费增加后需要 30.5 单位；预算 64 的初次配额只有 27.875，因此会截断。必须按实际所选 profile、收费和每次 decision 的完成标志解释；full-002 的预算 64 全部搜索截断，预算 128 全部完成声明的有限树。
 
 每个 seed/profile/policy/budget 重放同样的 60 个 `future` 与 30 个 clean `retention` case；不同 case 的原始源不复用。future 按 `clean`、`occlusion`、`missing`、`heavy_noise`、`wrong_hint`、`missing_no_hint` 六层循环登记。完整协议预期 **7,560 条**结果；这是清单大小，不是已经完成的结果声明。
 
@@ -129,7 +129,7 @@ scale 的目标来自四折、按原始源 pair 分组的 out-of-fold 预测绝�
 
 声明的工作单位：encoder 为 1、初始两步计划为 2、启用 gate 为 1、每次 neural transition 为 1、forecast 为 0.25、最终联合 decode 为 2、执行后图像观察为 2。allocation-only 的初始成本为 3，其余为 4；最终 decode 与观察预留 4。搜索、路由和未被选中的前瞻工作也收费。
 
-这些单位是实验记账尺度，不能转换成 FLOPs、纳焦耳或硬件时间。两档预算比较的是相同上限，各 policy 的实际消耗可以不同。报告另存真实 wall/CPU 时间及 encode/controller/execute/decode/observer 分项；最终 wall 包含输出落盘、回读和评分。训练枚举、observer 训练、gate/forecast 训练及 native adapter 的时间另列。能耗当前没有测量，记录为 unavailable。
+上述 forecast 0.25 单位适用于默认旧 profile；新条件 profile 的两头预测为 0.5 单位，公开摘要另收一次 0.25 单位。这些单位是实验记账尺度，不能转换成 FLOPs、纳焦耳或硬件时间。两档预算比较的是相同上限，各 policy 的实际消耗可以不同。报告另存真实 wall/CPU 时间及 encode/controller/execute/decode/observer 分项；最终 wall 包含输出落盘、回读和评分。训练枚举、observer 训练、gate/forecast 训练及 native adapter 的时间另列。能耗当前没有测量，记录为 unavailable。
 
 原生接口位于 [generation_rollout.rs](../../../codex-rs/hepta-ndu/src/generation_rollout.rs) 与 [ndu-generation-rollout](../../../codex-rs/hepta-ndu/src/bin/ndu-generation-rollout.rs)。传输为 `hepta.ndu.generation-rollout.v1`，实际调用 `evaluate_candidates_with_policy`，内部产生 `NduEvaluationReceiptV2`，并保留 `evaluation_digest_v2`。
 
@@ -215,9 +215,33 @@ python experiments/multimodal_output_portfolio/v6/validate_oracle.py \
 
 ## 8. 原生 inference owner 执行
 
+本批调用链、实测成本、拒绝结论和可核验摘要集中在 [owner 实测报告](results/owners-001/README.md)。
+
 [GenerationDriver](../../../codex-rs/hepta-infer-worker-host/GENERATION_EXECUTION.md) 把本实验的冻结模型接入现有 `ModelDriver`、`InferenceWorker` 与 `DurableInferenceControl`。受信 host 注册 Python 可执行文件、源码、checkpoint、完整文件和参数身份；请求只携带有界公开观察、噪声与动作。真实模型在 worker 中生成 caption、PNG 和逐动作状态，返回后核验内容及身份，不传入 Target 或 observer。
 
 此切片覆盖 submit/reserve/assign/execute/settle、重复请求、失败、超时和 journal recovery。owner 集成测试显式使用 fixture grant，且每次首次执行启动独立 Python/Torch 进程。它的冷启动成本与研究 runner 的常驻模型成本不同，应分别报告。它不激活 Agentd daemon，也没有把事后 native advisory 变为在线生产策略。
+
+[completed_owner_fixture.py](completed_owner_fixture.py) 从已完成协议及独立保留的 `rows.jsonl` SHA 导出已训练模型请求，并在执行后核对原始行归属、summary checkpoint pin、完整 V1 request wire、输出字节和最终 backend state。本次 full-002 的 seed 17 / future-0060 实测完全相同，冷子进程 8.257 秒，原常驻完整行 59.501 ms。选择规则固定为首个具有实际动作的 NDU future 行；这只是已有动作的 owner 重放，不增加科学样本，也没有把在线搜索移交原生控制器。
+
+### 有界 Neuron feature 与真实准入拒绝
+
+[Neuron feature adapter](../../../codex-rs/hepta-infer-worker-host/GENERATION_NEURON.md) 实现既有 `NeuronFeatureDriver`。完整 384 维 latent 留在模型执行层，全部分量参与 96 维有界投影；注册和 receipt 另绑定完整前态、公开请求、checkpoint、模型和源码身份。完整状态核验不依赖有损投影相等。
+
+固定 persistence predictor 在两组各 64 个独立验证源 pair 上实测 ECE 为 503,354 / 612,707 ppm，预定义 OOD 假接受均为 1,000,000 ppm；冻结门槛仍是 30,000 / 4,999 ppm。实际模型经过现有 inference owner 执行后，原生 `NeuronRuntime::bootstrap` 用这些测量返回 `InvalidCalibration`，没有写入 checkpoint。该拒绝路径通过测试，predictor 的准入未通过。
+
+原生执行保留冷子进程、投影、driver 全程时间和 RSS。RSS 明确是 resident-byte charge，不是 allocator 资格测量；投影的短耗时不代表完整生成满足 hot-tick 预算。这里的测试 NDU 上下文明确为 `no-NDU-valuation-owner`，不能称为在线原生 NDU 调度闭环。
+
+### 真实记录进入 terminal learning owner
+
+[OWNER_TERMINAL.md](OWNER_TERMINAL.md) 说明真实七策略输出如何经过本地角色签名、`LedgerWriter` admission、14 条记录、精确数据冻结、七个 terminal cell 拟合、artifact 保存/加载及恢复后相同预测。完整候选语法保留第八个 `abstain`，但没有伪造它的执行或训练目标；加载后的模型对此返回 unsupported。
+
+导入固定旧记录仅作为工程验证，不增加科学样本，也不将 Python 生成器梯度改称原生 plasticity。正式参数更新仍需同上下文的合格 Neuron checkpoint、acknowledged anchor、eligibility、NDU modulator 和参数映射。
+
+### 成对结果进入既有 evaluation owner
+
+[Paired full-information profile](../../../codex-rs/hepta-intelligence-eval/PAIRED_FULL_INFORMATION.md) 对实际分别执行的两臂使用独立入口，不把不同终局结果塞进要求相同 logged outcome 的 OPE 合同。它使用同一 fenced holdout owner 和 CAS；成功消费后才释放完整 case×seed×arm 清单，按源 case 内平均固定 seeds 计算有界差值，再走角色签名和持久化。
+
+本次 full-002 的 N/N 对 N/S、future/128 共 360 个实际观测已执行并恢复验证。平均 loss 差约为 +0.00544652，事实错误差为 +0.01666667，工程 profile 的保守区间含零，优势判断未通过。该 profile 永久标记为已观察数据的工程重放，`DENY_ALL`；冻结已观察结果不是新实验预注册，本地签名也不是外部真值认证。旧 journal/event-1 字节与哈希保持；公开 CAS snapshot 字段升级为 V2 envelope，直接依赖旧 Rust 字段类型的客户端需要显式迁移。
 
 [交付边界](GATES.md) 逐项登记 Section VIII 的实现、研究结论与生产接入条件。模型执行层可以承载大型 latent；Neuron 的有界状态、projection/calibration、正式学习 evidence 和产品评估授权仍必须走其自身 owner 接口，不能由同主机的 benchmark JSON 代替。
 

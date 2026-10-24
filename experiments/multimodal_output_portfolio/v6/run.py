@@ -50,11 +50,16 @@ def source_identity():
     root = Path(__file__).resolve().parents[3]
     paths = sorted(Path(__file__).parent.glob("*.py"))
     paths.extend(sorted(Path(__file__).parent.glob("protocol*.json")))
+    paths.append(Path(__file__).parent / "neuron_calibration_spec.json")
     paths.extend(sorted(root.glob("codex-rs/hepta-ndu/src/**/*.rs")))
-    for crate in ("hepta-infer-core", "hepta-infer-worker-host"):
+    for crate in ("hepta-infer-core", "hepta-infer-worker-host", "hepta-neuron",
+                  "hepta-bellman-operator", "hepta-intelligence-eval"):
         paths.extend(sorted(root.glob(f"codex-rs/{crate}/src/**/*.rs")))
         paths.append(root / "codex-rs" / crate / "Cargo.toml")
     paths.extend(sorted(root.glob("codex-rs/hepta-infer-worker-host/tests/generation_owner_execution*.rs")))
+    paths.extend(sorted(root.glob("codex-rs/hepta-agentd/tests/generation_*.rs")))
+    paths.extend(sorted(root.glob("codex-rs/hepta-agentd/tests/support/*.rs")))
+    paths.append(root / "codex-rs/hepta-agentd/tests/terminal_cell_subset.rs")
     paths.append(root / "codex-rs/hepta-agentd/Cargo.toml")
     paths.append(root / "codex-rs/hepta-agentd/src/test_support.rs")
     paths.extend(root / path for path in (
