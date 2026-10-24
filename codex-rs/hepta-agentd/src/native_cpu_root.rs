@@ -39,6 +39,8 @@ use std::os::unix::net::UnixListener;
 use std::path::PathBuf;
 use std::sync::Mutex;
 
+#[path = "native_cpu_lost_copyout.rs"]
+mod lost_copyout;
 #[path = "native_cpu_recovery.rs"]
 mod recovery;
 
@@ -599,6 +601,18 @@ pub(super) fn run(boot: NativeBootstrap) -> io::Result<()> {
                 &agent,
                 deadline,
             )?
+        }
+        "lost-copyout-live-v1" => lost_copyout::live(&mut evidence, &mut generation)?,
+        "manager-exit-before-terminal-v1" => {
+            generation = lost_copyout::before_terminal(
+                &mut evidence,
+                generation,
+                &installation,
+                &active,
+                &mut supervisor,
+                &agent,
+                deadline,
+            )?;
         }
         _ => return Err(invalid("unsupported native acceptance scenario")),
     }

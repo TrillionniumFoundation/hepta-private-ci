@@ -2,12 +2,12 @@
 //! The trusted kernel entry supplies the already recovered, bound writer and
 //! same Root session. Public ordinary configuration never enables this profile.
 
-use crate::AgentdConfig;
 use crate::AgentdControlServer;
 use crate::AgentdError;
 use crate::AgentdRootAuthoritySession;
 use crate::AgentdState;
 use crate::RuntimeTasks;
+use crate::config::NativeCpuConfig;
 use crate::state::NativeCpuRuntimeOwners;
 use std::future::Future;
 use std::sync::Arc;
@@ -15,7 +15,7 @@ use std::time::Duration;
 use tokio_util::sync::CancellationToken;
 
 pub(crate) async fn run_native_cpu_owner_until<S>(
-    config: AgentdConfig,
+    config: NativeCpuConfig,
     root: Arc<AgentdRootAuthoritySession>,
     ingress: Arc<crate::native_cpu_ingress::NativeCpuIngress>,
     owner_control: S,

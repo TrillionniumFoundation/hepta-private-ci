@@ -199,6 +199,7 @@ mod config;
 mod control;
 #[cfg(target_os = "linux")]
 mod deployment_frontier;
+mod process_config;
 #[cfg(target_os = "linux")]
 pub use deployment_frontier::DeploymentFrontierStore;
 #[cfg(target_os = "linux")]

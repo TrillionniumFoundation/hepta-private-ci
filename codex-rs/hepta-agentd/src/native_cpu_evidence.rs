@@ -59,8 +59,13 @@ impl Evidence {
         }
         let plan: Plan = serde_json::from_reader(file).map_err(error)?;
         if plan.schema_version != 1
-            || !["steady-state-v1", "manager-exit-after-terminal-v1"]
-                .contains(&plan.scenario.as_str())
+            || ![
+                "steady-state-v1",
+                "manager-exit-after-terminal-v1",
+                "lost-copyout-live-v1",
+                "manager-exit-before-terminal-v1",
+            ]
+            .contains(&plan.scenario.as_str())
             || plan.nonce.len() != 64
             || !plan
                 .nonce
@@ -169,6 +174,8 @@ impl Evidence {
         ready.remove("usage");
         ready.remove("store_device");
         ready.remove("store_inode");
+        ready.remove("startup_retained");
+        ready.remove("copyout");
         ready.insert("role".into(), serde_json::json!(role));
         ready.insert(
             "current".into(),
@@ -315,6 +322,33 @@ impl Evidence {
         }
         Ok(recovered)
     }
+    pub(super) fn reconciled_copyout_terminal(
+        &mut self,
+        operation: &str,
+        key: String,
+        request: Hos2InstallBudgetV1,
+        receipt: codex_hepta_memory::ProductionOutcomeReceipt,
+        terminal_json: String,
+        active: &mut root::Active,
+    ) -> io::Result<SourceTerminal> {
+        if receipt.occurrence_key != key || receipt.external_effect {
+            return Err(invalid("original observed copyout receipt differs from K"));
+        }
+        let source = self.source_terminal(
+            operation,
+            key,
+            request,
+            receipt.state,
+            receipt.event_id,
+            terminal_json,
+            active,
+        )?;
+        self.operation_count = self
+            .operation_count
+            .checked_add(1)
+            .ok_or_else(|| invalid("operation counter overflow"))?;
+        Ok(source)
+    }
     pub(super) fn acknowledge(
         &mut self,
         terminal: &SourceTerminal,
@@ -382,7 +416,7 @@ pub(super) fn retained_material(
         ))
         .map_err(error)
 }
-fn material(
+pub(super) fn material(
     active: &root::Active,
     current: &CognitiveCheckpointReceipt,
 ) -> io::Result<(std::path::PathBuf, String)> {

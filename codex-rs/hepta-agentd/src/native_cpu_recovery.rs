@@ -79,6 +79,15 @@ impl Installation {
     }
 }
 
+pub(super) struct CrashCheckpoint {
+    pub(super) current: CognitiveCheckpointReceipt,
+    pub(super) material_sha256: String,
+    pub(super) frontiers: [codex_hepta_contracts::FinalUseFrontier; 2],
+    // Only the real copyout boundary supplies a bound. An ordinary completed
+    // terminal retains its existing crash ceremony without a new timer.
+    pub(super) kill_before: Option<u64>,
+}
+
 pub(super) fn after_terminal<F>(
     evidence: &mut evidence::Evidence,
     mut old: Active,
@@ -96,10 +105,50 @@ where
     ) -> Result<(), ProcessDriverError>,
 {
     let terminal = evidence.operation("pending-retirement", 25_000_000, &mut old)?;
-    let material = evidence::retained_material(&old, &terminal.current)?;
+    let mut next = recover_after_crash(
+        evidence,
+        old,
+        CrashCheckpoint {
+            current: terminal.current.clone(),
+            material_sha256: terminal.material_sha256.clone(),
+            frontiers: terminal.frontiers,
+            kill_before: None,
+        },
+        installation,
+        active,
+        supervisor,
+        agent,
+        deadline,
+    )?;
+    let recovered = evidence.recovered_terminal(&terminal, &mut next)?;
+    evidence.acknowledge(&recovered, &mut next)?;
+    let refused = evidence.operation("used-recovery-allowance", 50_000_000, &mut next)?;
+    evidence.acknowledge(&refused, &mut next)?;
+    evidence.window("used-recovery-allowance", &mut next)?;
+    Ok(next)
+}
+
+pub(super) fn recover_after_crash<F>(
+    evidence: &mut evidence::Evidence,
+    mut old: Active,
+    cut: CrashCheckpoint,
+    installation: &Arc<Mutex<Installation>>,
+    active: &Arc<Mutex<Option<Active>>>,
+    supervisor: &mut Supervisor<KernelInitialProcessDriver<F>>,
+    agent: &AgentId,
+    deadline: u64,
+) -> io::Result<Active>
+where
+    F: for<'fd> FnMut(
+        &SpawnSpec,
+        KernelInitialRole,
+        BorrowedFd<'fd>,
+    ) -> Result<(), ProcessDriverError>,
+{
+    let material = evidence::retained_material(&old, &cut.current)?;
     material.verify_unchanged().map_err(error)?;
     let lifetime = old.retained.lifetime().clone();
-    if lifetime != terminal.current.head.peer_lifetime || lifetime.pid != 2 {
+    if lifetime != cut.current.head.peer_lifetime || lifetime.pid != 2 {
         return Err(invalid(
             "retained original Manager lifetime differs from Current",
         ));
@@ -115,6 +164,9 @@ where
     {
         return Err(invalid("original service ended before the Manager crash"));
     }
+    if let Some(bound) = cut.kill_before {
+        remaining(bound)?;
+    }
     // This is an actual crash of the retained native Process. The Supervisor
     // remains Running until its normal poll observes and reaps the same child.
     if unsafe {
@@ -129,25 +181,37 @@ where
     {
         return Err(io::Error::last_os_error());
     }
+    let killed_at = if let Some(bound) = cut.kill_before {
+        let completed = now()?;
+        if completed >= bound {
+            return Err(invalid(
+                "actual copyout callback deadline elapsed before Manager kill completed",
+            ));
+        }
+        Some(completed)
+    } else {
+        None
+    };
     let (revents, signal) = observe_child_exit(lifetime.pid, &held, deadline)?;
     let retired = crate::RetiredCheckpointPublisher::observe(lifetime.clone()).map_err(error)?;
-    evidence.emit(
-        "manager_retired",
-        serde_json::json!({"pid":lifetime.pid,"start_ticks":lifetime.process_start_ticks,
+    let mut exited = serde_json::json!({"pid":lifetime.pid,"start_ticks":lifetime.process_start_ticks,
         "root_pid":std::process::id(),"root_start_ticks":peer(1,0)?.process_start_ticks,
         "signal":libc::SIGKILL,"wait_kind":"signaled","wait_value":signal,"pidfd_revents":revents,
-        "old_current_token":terminal.current.token,"old_material_sha256":terminal.material_sha256}),
-    )?;
+        "old_current_token":cut.current.token,"old_material_sha256":cut.material_sha256});
+    if let Some(killed_at) = killed_at {
+        exited["kill_boottime_ns"] = serde_json::json!(killed_at);
+    }
+    evidence.emit("manager_retired", exited)?;
     // Joining ends old worker custody only. Inner errors remain diagnostics,
     // not a successful-service claim or the independent retirement witness.
     old.join_retired_lanes()?;
     let previous = PreparedRecovery {
-        previous: terminal.current.clone(),
+        previous: cut.current.clone(),
         writer: old.bundle.writer.clone(),
         proof: old.bundle.writer_proof.clone(),
         retired,
         material,
-        frontiers: terminal.frontiers.clone(),
+        frontiers: cut.frontiers.clone(),
     };
     drop(old);
     let (first_stat, second_stat) = observe_watchdog(deadline)?;
@@ -205,14 +269,14 @@ where
         serde_json::from_value(inspected["device_frontier"].clone()).map_err(error)?,
         serde_json::from_value(inspected["notes_frontier"].clone()).map_err(error)?,
     ];
-    if frontiers != terminal.frontiers {
+    if frontiers != cut.frontiers {
         return Err(invalid("cold handoff reset an original FinalUse frontier"));
     }
     evidence.emit("watchdog",serde_json::json!({"first_cpu_stat":first_stat,"second_cpu_stat":second_stat,"usage":inspected["usage"]}))?;
     evidence.emit(
         "local_lease_retired",
-        serde_json::json!({"lease_id":terminal.current.head.writer_binding.lease_id,
-        "generation":terminal.current.head.writer_binding.generation,"mode":"expired",
+        serde_json::json!({"lease_id":cut.current.head.writer_binding.lease_id,
+        "generation":cut.current.head.writer_binding.generation,"mode":"expired",
         "observed_unix_seconds":observed,"expires_at_unix_seconds":expiry}),
     )?;
     let adopted = next
@@ -221,15 +285,10 @@ where
         .ok_or_else(|| invalid("original successor adoption receipt absent"))?;
     evidence.emit(
         "material_adopted",
-        serde_json::json!({"previous":terminal.current,"successor":adopted,
-        "material_sha256":terminal.material_sha256}),
+        serde_json::json!({"previous":cut.current,"successor":adopted,
+        "material_sha256":cut.material_sha256}),
     )?;
     evidence.owner_ready("recovery", &mut next)?;
-    let recovered = evidence.recovered_terminal(&terminal, &mut next)?;
-    evidence.acknowledge(&recovered, &mut next)?;
-    let refused = evidence.operation("used-recovery-allowance", 50_000_000, &mut next)?;
-    evidence.acknowledge(&refused, &mut next)?;
-    evidence.window("used-recovery-allowance", &mut next)?;
     Ok(next)
 }
 

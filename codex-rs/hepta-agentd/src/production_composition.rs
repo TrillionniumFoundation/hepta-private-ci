@@ -112,26 +112,12 @@ impl AgentdConfig {
         checkpoint: Arc<C>,
         deadline: Duration,
     ) -> Result<ProductionObjectiveSender<C>, AgentdError> {
-        let host = self
-            .production_writer_host()
-            .ok_or(AgentdError::CognitiveWriteRuntimeUnavailable)?;
-        let writer = host.writer();
-        if writer.owner_agent_id() != &self.identity().agent_id
-            || host.spawn_generation() != self.identity().spawn_generation
-        {
-            return Err(AgentdError::GenerationFenced(
-                "Objective sender owner differs from installed Agentd identity".to_string(),
-            ));
-        }
-        writer
-            .objective_sender_for_spawn_generation(
-                checkpoint,
-                deadline,
-                self.identity().spawn_generation,
-            )
-            .map_err(|error| {
-                AgentdError::Invalid(format!("original Objective sender unavailable: {error}"))
-            })
+        crate::process_config::original_objective_sender(
+            self.identity(),
+            self.production_writer_host(),
+            checkpoint,
+            deadline,
+        )
     }
 }
 

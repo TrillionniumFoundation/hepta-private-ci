@@ -71,6 +71,35 @@ impl AgentdProductionWriterHost {
         R: FnOnce() -> F + Send,
         F: Future<Output = Result<(), AgentdError>> + Send,
     {
+        Self::open_with_protected_recovery_and_ready_for_identity(
+            config.identity(),
+            authority,
+            verifier,
+            lease_id,
+            lease_generation,
+            checkpoint,
+            ready,
+        )
+        .await
+    }
+
+    /// Shared construction body for identities obtained by the original
+    /// validated process loader. The native composition borrows only this
+    /// identity; no full execution configuration is constructed or dropped.
+    pub(crate) async fn open_with_protected_recovery_and_ready_for_identity<T, R, F>(
+        identity: &crate::AgentdIdentity,
+        authority: ProductionAuthorityLease,
+        verifier: Arc<dyn ProductionAuthorityVerifier>,
+        lease_id: impl Into<String>,
+        lease_generation: u64,
+        checkpoint: AgentdProtectedCheckpointInputs<T>,
+        ready: R,
+    ) -> Result<(Self, Arc<ProtectedCognitiveCheckpoint<T>>), AgentdError>
+    where
+        T: CognitiveCheckpointTransport + 'static,
+        R: FnOnce() -> F + Send,
+        F: Future<Output = Result<(), AgentdError>> + Send,
+    {
         let lease_id = lease_id.into();
         let binding = CognitiveCheckpointWriterBinding {
             lease_id: lease_id.clone(),
@@ -82,7 +111,7 @@ impl AgentdProductionWriterHost {
             expires_at_unix_seconds: authority.lease_expires_at_unix_seconds,
         };
         let receipt = checkpoint.current_receipt;
-        if authority.agent_id != config.identity().agent_id
+        if authority.agent_id != identity.agent_id
             || lease_generation == 0
             || receipt.head.owner_agent_id != authority.agent_id
             || receipt.head.writer_binding != binding
@@ -96,14 +125,14 @@ impl AgentdProductionWriterHost {
         verifier
             .verify_sender_process_binding(
                 &authority,
-                &config.identity().agent_id,
+                &identity.agent_id,
                 &lease_id,
                 lease_generation,
-                config.identity().spawn_generation,
+                identity.spawn_generation,
             )
             .map_err(AgentdError::GenerationFenced)?;
         let store = CognitiveStore::open_with_recovery(
-            &config.identity().layout,
+            &identity.layout,
             CognitiveRecoveryRequirement::ExactCurrentCut(&receipt.head.last_current),
             &authority,
             verifier.as_ref(),
@@ -123,7 +152,7 @@ impl AgentdProductionWriterHost {
                 AgentdError::Protocol(format!("bind protected cognitive checkpoint: {error}"))
             })?;
         let host = Self::from_recovered_store(
-            config.identity().spawn_generation,
+            identity.spawn_generation,
             store,
             authority,
             verifier,

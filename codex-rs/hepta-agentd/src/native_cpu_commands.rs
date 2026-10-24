@@ -27,11 +27,36 @@ use std::os::unix::net::UnixStream;
 #[serde(tag = "command", rename_all = "snake_case", deny_unknown_fields)]
 pub(super) enum Command {
     Inspect,
-    ReconcileRetained { occurrence_key: String },
-    Prepare { operation: String, cap_ns: u64 },
-    Dispatch { occurrence_key: String },
-    Retire { through: Hos2DeliveryId },
+    ReconcileRetained {
+        occurrence_key: String,
+    },
+    Prepare {
+        operation: String,
+        cap_ns: u64,
+    },
+    Dispatch {
+        occurrence_key: String,
+    },
+    DispatchCopyout {
+        occurrence_key: String,
+        hold_until_exit: bool,
+    },
+    ReconcileCopyout {
+        occurrence_key: String,
+    },
+    Retire {
+        through: Hos2DeliveryId,
+    },
     Window,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct StartupRetained {
+    pub(super) occurrence_key: String,
+    pub(super) topic: String,
+    pub(super) payload_json: String,
+    pub(super) state: codex_hepta_memory::LocalOutcomeState,
 }
 
 pub(super) struct Rpc {
@@ -121,6 +146,45 @@ impl Rpc {
         self.check()?;
         serde_json::from_slice(&bytes).map_err(error)
     }
+    // This consumes the one authenticated RPC. A successful crash scenario
+    // never returns to this process or fabricates a completed dispatch reply.
+    fn copyout_exit_boundary(
+        mut self,
+        occurrence_key: String,
+    ) -> crate::hos2_device::AfterCopyoutFault {
+        Box::new(move |diagnostic| {
+            let observed = now().map_err(|e| e.to_string())?;
+            let boundary_deadline = observed
+                .checked_add(2_000_000_000)
+                .ok_or("copyout boundary deadline overflow")?
+                .min(self.deadline);
+            self.stream
+                .set_write_timeout(Some(
+                    remaining(boundary_deadline).map_err(|e| e.to_string())?,
+                ))
+                .map_err(|e| e.to_string())?;
+            self.send(
+                &serde_json::json!({"phase":"copyout_fault_boundary","pid":std::process::id(),
+                "occurrence_key":occurrence_key,"diagnostic":diagnostic,
+                "observed_boottime_ns":observed,"pending_until_boottime_ns":boundary_deadline}),
+            )
+            .map_err(|e| e.to_string())?;
+            loop {
+                let left = remaining(boundary_deadline)
+                    .map_err(|_| "actual copyout boundary elapsed before Manager exit")?;
+                self.check().map_err(|e| e.to_string())?;
+                self.stream
+                    .set_read_timeout(Some(left.min(Duration::from_millis(50))))
+                    .map_err(|e| e.to_string())?;
+                let mut byte = [0_u8; 1];
+                match self.stream.read(&mut byte) {
+                    Err(e) if matches!(e.kind(), io::ErrorKind::WouldBlock | io::ErrorKind::TimedOut | io::ErrorKind::Interrupted) => {},
+                    Err(e) => return Err(e.to_string()),
+                    Ok(_) => return Err("copyout crash boundary requires actual Manager exit, not a Root reply or EOF".into()),
+                }
+            }
+        })
+    }
     pub(super) fn call(&mut self, command: Command) -> io::Result<serde_json::Value> {
         self.send(&command)?;
         let value: serde_json::Value = self.read()?;
@@ -147,6 +211,9 @@ pub(super) struct Owner<T: codex_hepta_memory::CognitiveCheckpointTransport + 's
     pub(super) notes_owner: codex_hepta_contracts::FinalUseAuthority,
     pub(super) bundle: crate::HostAuthorityPublicBootstrapV1,
     pub(super) queue: Option<ProductionQueuedReceipt>,
+    // Captured once through the original writer after recovery and before its
+    // ordinary monitor is started. Later Inspect only copies this observation.
+    pub(super) startup_retained: Vec<StartupRetained>,
     pub(super) ingress: Arc<crate::native_cpu_ingress::NativeCpuIngress>,
 }
 
@@ -181,6 +248,19 @@ impl<T: codex_hepta_memory::CognitiveCheckpointTransport + 'static> Owner<T> {
                 Err(_) if self.ingress.stopping() => return Ok(()),
                 Err(error) => return Err(error.into()),
             };
+            if let Command::DispatchCopyout {
+                occurrence_key,
+                hold_until_exit: true,
+            } = command
+            {
+                let callback = rpc.copyout_exit_boundary(occurrence_key.clone());
+                return match self.dispatch_copyout(occurrence_key, Some(callback)).await {
+                    Err(failure) => Err(failure),
+                    Ok(_) => Err(crate::AgentdError::Protocol(
+                        "crash qualification returned from the original dispatch".into(),
+                    )),
+                };
+            }
             let result = self.execute(command).await;
             if self.ingress.stopping() {
                 return result.map(|_| ());
@@ -206,7 +286,10 @@ impl<T: codex_hepta_memory::CognitiveCheckpointTransport + 'static> Owner<T> {
         let fail = |e: String| crate::AgentdError::Protocol(e);
         let _mutation = if matches!(
             &command,
-            Command::Prepare { .. } | Command::Dispatch { .. } | Command::Retire { .. }
+            Command::Prepare { .. }
+                | Command::Dispatch { .. }
+                | Command::Retire { .. }
+                | Command::ReconcileCopyout { .. }
         ) {
             Some(self.ingress.begin_mutation().await?)
         } else {
@@ -234,6 +317,8 @@ impl<T: codex_hepta_memory::CognitiveCheckpointTransport + 'static> Owner<T> {
                     "notes_frontier":self.notes_owner.frontier().map_err(|e|fail(e.to_string()))?,
                     "owner_lock_device":lock.dev(),"owner_lock_inode":lock.ino(),
                     "store_device":database.dev(),"store_inode":database.ino(),
+                    "startup_retained":self.startup_retained,
+                    "copyout":self.device.native_copyout_snapshot().map_err(fail)?,
                     "usage":usage(&self.device)?}),
                 )
             }
@@ -336,6 +421,70 @@ impl<T: codex_hepta_memory::CognitiveCheckpointTransport + 'static> Owner<T> {
                     serde_json::json!({"pid":std::process::id(),"receipt":receipt,"before":before,"after":after}),
                 )
             }
+            Command::DispatchCopyout {
+                occurrence_key,
+                hold_until_exit: false,
+            } => self.dispatch_copyout(occurrence_key, None).await,
+            Command::DispatchCopyout {
+                hold_until_exit: true,
+                ..
+            } => Err(fail(
+                "crash copyout must own its original authenticated RPC".into(),
+            )),
+            Command::ReconcileCopyout { occurrence_key } => {
+                let before = writer
+                    .retained_operation(&occurrence_key)
+                    .await?
+                    .ok_or_else(|| fail("original retained copyout operation is absent".into()))?;
+                if before.topic != codex_hepta_memory::HOS2_INSTALL_TOPIC_V1 {
+                    return Err(fail(
+                        "copyout reconciliation requires the original HOS2 topic".into(),
+                    ));
+                }
+                let before_calls = self.device.native_copyout_snapshot().map_err(fail)?;
+                let reconciled = self
+                    .host
+                    .reconcile_for_destination(codex_hepta_memory::HOS2_DESTINATION_V1, 16)
+                    .await?;
+                let (request, receipt, terminal) =
+                    writer.retained_hos2_terminal(&occurrence_key).await?;
+                if request.to_json().map_err(fail)? != before.payload_json {
+                    return Err(fail(
+                        "original copyout K/D payload changed during observation".into(),
+                    ));
+                }
+                let observed = match self.device.observe(&request).map_err(fail)? {
+                    Hos2InstallOutcome::Observed(value) => value,
+                    Hos2InstallOutcome::Contradiction(_) => {
+                        return Err(fail(
+                            "original copyout request contradicted its retained history".into(),
+                        ));
+                    }
+                };
+                let retained: serde_json::Value = serde_json::from_str(&terminal)?;
+                if retained["observation"] != serde_json::to_value(&observed)? {
+                    return Err(fail(
+                        "actual old D differs from original reconciled terminal".into(),
+                    ));
+                }
+                self.sender
+                    .acknowledge_owner_cut()
+                    .await
+                    .map_err(|e| fail(e.to_string()))?;
+                writer.verify_current_authority().await?;
+                let after_calls = self.device.native_copyout_snapshot().map_err(fail)?;
+                if after_calls.install_ioctl_count != before_calls.install_ioctl_count {
+                    return Err(fail(
+                        "observer-only copyout recovery dispatched an Install".into(),
+                    ));
+                }
+                Ok(
+                    serde_json::json!({"pid":std::process::id(),"request_json":request.to_json().map_err(fail)?,
+                    "receipt":receipt,"terminal_json":terminal,"usage":usage(&self.device)?,
+                    "before_state":before.state,"before_payload_json":before.payload_json,
+                    "reconciled_count":reconciled,"copyout":after_calls}),
+                )
+            }
             Command::Retire { through } => {
                 let observation = writer.retire_hos2_through(&self.target, &through).await?;
                 Ok(
@@ -351,5 +500,83 @@ impl<T: codex_hepta_memory::CognitiveCheckpointTransport + 'static> Owner<T> {
                 Ok(serde_json::json!({"pid":std::process::id(),"first":first,"second":second}))
             }
         }
+    }
+    async fn dispatch_copyout(
+        &mut self,
+        occurrence_key: String,
+        after_fault: Option<crate::hos2_device::AfterCopyoutFault>,
+    ) -> Result<serde_json::Value, crate::AgentdError> {
+        let fail = |e: String| crate::AgentdError::Protocol(e);
+        let _mutation = self.ingress.begin_mutation().await?;
+        self.host.writer().verify_current_authority().await?;
+        let queued = self
+            .queue
+            .as_ref()
+            .filter(|value| value.occurrence_key == occurrence_key)
+            .ok_or_else(|| {
+                fail(
+                    "copyout dispatch must reference the retained original queued operation".into(),
+                )
+            })?
+            .clone();
+        let request = codex_hepta_memory::Hos2InstallBudgetV1::from_json(&queued.payload_json)
+            .map_err(fail)?;
+        let before = usage(&self.device)?;
+        let initial = self.device.native_copyout_snapshot().map_err(fail)?;
+        if initial.armed
+            || initial.install_ioctl_count != 0
+            || initial.selected_ioctl_count != 0
+            || initial.efault_count != 0
+            || initial.last.is_some()
+        {
+            return Err(fail(
+                "copyout acceptance selects exactly the first original Install once".into(),
+            ));
+        }
+        let requires_exit = after_fault.is_some();
+        self.device
+            .arm_native_copyout_fault(&request, after_fault)
+            .map_err(fail)?;
+        let receipt = self.host.dispatch_with_grant_provider(queued).await?;
+        if requires_exit {
+            return Err(fail(
+                "Manager survived its bounded real-copyout crash boundary".into(),
+            ));
+        }
+        let snapshot = self.device.native_copyout_snapshot().map_err(fail)?;
+        let diagnostic = snapshot
+            .last
+            .as_ref()
+            .ok_or_else(|| fail("actual selected ioctl diagnostic absent".into()))?;
+        if snapshot.armed
+            || snapshot.install_ioctl_count != 1
+            || snapshot.selected_ioctl_count != 1
+            || snapshot.efault_count != 1
+            || diagnostic.syscall_return != -1
+            || diagnostic.errno != Some(libc::EFAULT)
+            || diagnostic.request_bytes != 96
+            || diagnostic.response_capacity != 128
+            || receipt.state != codex_hepta_memory::LocalOutcomeState::Indeterminate
+            || receipt.target_disposition
+                != codex_hepta_memory::ProductionTargetDisposition::Indeterminate
+            || receipt.target_receipt.is_some()
+            || receipt.external_effect
+            || receipt.request.occurrence_key != occurrence_key
+            || receipt.request.payload_json != request.to_json().map_err(fail)?
+        {
+            return Err(fail(
+                "actual copyout did not preserve the original Indeterminate dispatch receipt"
+                    .into(),
+            ));
+        }
+        self.sender
+            .acknowledge_owner_cut()
+            .await
+            .map_err(|e| fail(e.to_string()))?;
+        self.queue.take();
+        Ok(
+            serde_json::json!({"pid":std::process::id(),"receipt":receipt,"before":before,
+            "after":usage(&self.device)?,"copyout":snapshot}),
+        )
     }
 }

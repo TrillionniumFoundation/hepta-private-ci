@@ -69,7 +69,7 @@ pub(super) fn run(boot: NativeBootstrap, device: Arc<crate::AgentdHos2Device>) -
     }
     let identity = crate::authority_host_config::registered_identity(&bundle.registered_identity)?;
     std::env::set_current_dir(&identity.workspace)?;
-    let config = crate::AgentdConfig::load(
+    let config = crate::config::NativeCpuConfig::load(
         identity.fleet_root.clone(),
         identity.agent_id.clone(),
         identity.spawn_generation,
@@ -129,7 +129,7 @@ pub(super) fn run(boot: NativeBootstrap, device: Arc<crate::AgentdHos2Device>) -
         let current=CognitiveCheckpointReceipt {token:response.token.ok_or_else(||invalid("missing opaque Current token"))?,
             head:response.head.ok_or_else(||invalid("missing complete Current head"))?};
         if current.head!=bundle.checkpoint {return Err(invalid("original Current changed before exact recovery"));}
-        let (host,coordinator)=crate::AgentdProductionWriterHost::open_with_protected_recovery_and_ready(&config,
+        let (host,coordinator)=crate::AgentdProductionWriterHost::open_with_protected_recovery_and_ready_for_identity(config.identity(),
             session.authority(),session.verifier(),writer.local_lease_id.clone(),writer.local_lease_generation,
             crate::AgentdProtectedCheckpointInputs {transport,current_receipt:current,deadline:IO_TIMEOUT},
             move || async move {
@@ -143,6 +143,15 @@ pub(super) fn run(boot: NativeBootstrap, device: Arc<crate::AgentdHos2Device>) -
                 }).await.map_err(|e|crate::AgentdError::Protocol(e.to_string()))??;
                 Ok(())
             }).await.map_err(error)?;
+        // Capture original retained state immediately after the protected
+        // recovery factory, before attach_target and the normal monitor start.
+        // Later Inspect reports this initial observation, never a claim that
+        // the live store must still have the same unresolved outcome.
+        let startup_retained = host.writer().retained_pending_hos2(16).await.map_err(error)?
+            .into_iter().map(|(occurrence_key, original)| commands::StartupRetained {
+                occurrence_key, topic:original.topic, payload_json:original.payload_json,
+                state:original.state,
+            }).collect::<Vec<_>>();
         let grants=Arc::new(crate::AgentdUnixFinalUseGrantProvider::from_root_stream(issuer,root_peer.pid,
             transferred_root.try_clone()?,IO_TIMEOUT,remaining(deadline)?).map_err(error)?);
         let target=Arc::new(ProductionHos2Target::new(device.clone()));
@@ -154,7 +163,8 @@ pub(super) fn run(boot: NativeBootstrap, device: Arc<crate::AgentdHos2Device>) -
         let rpc=commands::Rpc::new(rpc_stream,&root_peer,transferred_root,deadline)?;
         let ingress=Arc::new(crate::native_cpu_ingress::NativeCpuIngress::new());
         let control=commands::Owner {host,device,target,sender,root:session.clone(),
-            device_owner:owners[0].clone(),notes_owner:owners[1].clone(),bundle,queue:None,ingress:ingress.clone()};
+            device_owner:owners[0].clone(),notes_owner:owners[1].clone(),bundle,queue:None,
+            startup_retained,ingress:ingress.clone()};
         crate::native_cpu_runtime::run_native_cpu_owner_until(config,session,ingress,control.run(rpc)).await.map_err(error)
     })
 }
