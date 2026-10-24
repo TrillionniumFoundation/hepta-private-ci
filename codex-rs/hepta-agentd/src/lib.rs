@@ -202,6 +202,10 @@ mod notes_literal_observation;
 #[cfg(target_os = "linux")]
 mod notes_literal_prepare;
 #[cfg(target_os = "linux")]
+mod notes_ui_wire;
+#[cfg(target_os = "linux")]
+mod notes_ui_queue;
+#[cfg(target_os = "linux")]
 mod notes_organ;
 #[cfg(target_os = "linux")]
 mod notes_recovery_process;
