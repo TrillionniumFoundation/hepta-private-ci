@@ -233,7 +233,7 @@ fn binding_generation_cell_and_width_fences_fail_closed() {
         other_generation_digest,
         3,
         2,
-        weights.clone(),
+        weights,
         bias.clone(),
         0,
     ));

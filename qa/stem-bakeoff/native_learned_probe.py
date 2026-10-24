@@ -3,9 +3,9 @@
 import argparse
 import hashlib
 import json
-import os
 from pathlib import Path
 import resource
+import stat
 import subprocess
 import time
 
@@ -18,7 +18,10 @@ from cell_runtime_bundle import sha_file
 def verify_export(root, expected):
     root = Path(root)
     manifest = root/"manifest.json"
-    if sha_file(manifest) != expected or manifest.stat().st_size > 65536:
+    info = manifest.lstat()
+    if (not stat.S_ISREG(info.st_mode) or not 0 < info.st_size <= 65536
+            or any(p.is_symlink() for p in manifest.absolute().parents)
+            or sha_file(manifest) != expected):
         raise ValueError("externally pinned bounded export manifest required")
     meta = json.loads(manifest.read_bytes())
     if (meta["schema"] != "hepta.native-learned-export.v1" or meta["heads"] != 27
@@ -27,17 +30,23 @@ def verify_export(root, expected):
     total = 0
     for name, value in meta["files"].items():
         p = root/name
-        if (Path(name).name != name or "\\" in name or p.is_symlink()
+        if (Path(name).name != name or "\\" in name or not stat.S_ISREG(p.lstat().st_mode)
                 or any(q.is_symlink() for q in p.absolute().parents)
-                or value["bytes"] > 2*1024*1024
+                or type(value["bytes"]) is not int or not 0 <= value["bytes"] <= 2*1024*1024
                 or p.stat().st_size != value["bytes"] or sha_file(p) != value["sha256"]):
             raise ValueError("export member changed")
         total += value["bytes"]
     if total > 8*1024*1024:
         raise ValueError("export budget exceeded")
+    if (not {"request.json", "reference.json"} <= set(meta["files"])
+            or {p.name for p in root.iterdir()} != set(meta["files"]) | {"manifest.json"}):
+        raise ValueError("complete exact export inventory required")
     request = json.loads((root/"request.json").read_bytes())
     reference = json.loads((root/"reference.json").read_bytes())
+    required = {"request.json", "reference.json", request["features"]["path"]}
+    required.update(row["path"] for row in request["heads"])
     if (meta["request_sha256"] != sha_file(root/"request.json")
+            or set(meta["files"]) != required or len(required) != 30
             or len(request["heads"]) != 27 or len(reference) != 27
             or set(reference) != {row["id"] for row in request["heads"]}):
         raise ValueError("replay coverage changed")
@@ -46,9 +55,13 @@ def verify_export(root, expected):
 
 def probe(export, manifest_sha256, binary, binary_sha256, output):
     began, cpu = time.perf_counter_ns(), time.process_time_ns()
+    code = {name: sha_file(Path(__file__).with_name(name)) for name in
+        ("native_learned_probe.py", "cell_runtime_bundle.py", "cell_learning_models.py", "cell_learning_metrics.py")}
     meta, request, reference = verify_export(export, manifest_sha256)
     binary = Path(binary).absolute()
-    if binary.is_symlink() or sha_file(binary) != binary_sha256:
+    info = binary.lstat()
+    if (not stat.S_ISREG(info.st_mode) or not 0 < info.st_size <= 32*1024*1024
+            or sha_file(binary) != binary_sha256):
         raise ValueError("externally pinned ordinary native binary required")
     output = Path(output)
     if output.exists() or any(p.is_symlink() for p in (output.absolute(), *output.absolute().parents)):
@@ -105,6 +118,8 @@ def probe(export, manifest_sha256, binary, binary_sha256, output):
         verify_export(export, manifest_sha256)
         if sha_file(binary) != binary_sha256:
             raise ValueError("native binary changed during execution")
+        if any(sha_file(Path(__file__).with_name(name)) != pin for name, pin in code.items()):
+            raise ValueError("native probe implementation changed during execution")
         if not all(row["passed"] for row in comparisons):
             raise ValueError("predeclared native parity gate failed")
         result = {"schema": "hepta.native-learned-parity.v1", "passed": True,
@@ -115,15 +130,19 @@ def probe(export, manifest_sha256, binary, binary_sha256, output):
             "absolute_tolerance": 1e-9, "argmax_exact": True,
             "parameter_updates": 0, "encoder_calls": 0, "calibration": None,
             "quality_qualified": False, "authority": "DENY_ALL", "invocation": invocation,
-            "probe_sha256": sha_file(__file__), "wall_ns": time.perf_counter_ns()-began,
+            "source_sha256": code, "wall_ns": time.perf_counter_ns()-began,
             "parent_cpu_ns": time.process_time_ns()-cpu,
             "cost_scope": "parent verification plus one native child; excludes prior export and build"}
         (output/"parity.json").write_bytes(canonical(result)+b"\n")
         return result
     except BaseException as error:
+        child_after = resource.getrusage(resource.RUSAGE_CHILDREN)
         (output/"failed.json").write_bytes(canonical({"error": repr(error),
             "partial_evidence_retained": True, "wall_ns": time.perf_counter_ns()-began,
-            "parent_cpu_ns": time.process_time_ns()-cpu})+b"\n")
+            "parent_cpu_ns": time.process_time_ns()-cpu,
+            "reaped_child_cpu_ns": round((child_after.ru_utime+child_after.ru_stime
+                -child_before.ru_utime-child_before.ru_stime)*1e9),
+            "source_sha256": code})+b"\n")
         raise
 
 

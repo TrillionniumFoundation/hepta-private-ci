@@ -53,6 +53,10 @@ fn read_bounded(path: &Path, maximum: usize) -> Result<Vec<u8>, Box<dyn Error>> 
             return Err("symlink input is not accepted".into());
         }
     }
+    let initial = fs::symlink_metadata(path)?;
+    if !initial.is_file() || initial.len() > maximum as u64 {
+        return Err("ordinary bounded input file required before open".into());
+    }
     let file = fs::File::open(path)?;
     let metadata = file.metadata()?;
     if !metadata.is_file() || metadata.len() > maximum as u64 {
