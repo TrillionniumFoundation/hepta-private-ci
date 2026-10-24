@@ -27,6 +27,25 @@ pub async fn run_notes_organ(
     config: AgentdConfig,
     root: Arc<AgentdRootAuthoritySession>,
 ) -> Result<(), AgentdError> {
+    run_notes_organ_inner(config, root, None).await
+}
+
+/// Trusted startup may explicitly attach one old retained operation to the
+/// same original owner. Failure to start its hash-bound private helper stops
+/// startup before control binding/readiness. No historical directory is scanned.
+pub async fn run_notes_organ_with_previous_recovery(
+    config: AgentdConfig,
+    root: Arc<AgentdRootAuthoritySession>,
+    previous: crate::AgentdNotesPreviousRecoveryLaunch,
+) -> Result<(), AgentdError> {
+    run_notes_organ_inner(config, root, Some(previous)).await
+}
+
+async fn run_notes_organ_inner(
+    config: AgentdConfig,
+    root: Arc<AgentdRootAuthoritySession>,
+    previous: Option<crate::AgentdNotesPreviousRecoveryLaunch>,
+) -> Result<(), AgentdError> {
     let runtime_handle = tokio::runtime::Handle::current();
     if runtime_handle.runtime_flavor() != tokio::runtime::RuntimeFlavor::MultiThread
         || runtime_handle.metrics().num_workers() < 2
@@ -43,6 +62,15 @@ pub async fn run_notes_organ(
         AgentdError::Invalid("Notes Organ requires a fixed Notes Objective profile".into())
     })?;
     notes.validate_host(&host)?;
+    let host = match previous {
+        Some(launch) => Arc::new(
+            host.as_ref()
+                .clone()
+                .attach_previous_notes_recovery_process(&notes.target, launch)
+                .await?,
+        ),
+        None => host,
+    };
     let trust = config
         .authbus_trust_file()
         .ok_or_else(|| AgentdError::Invalid("Notes Organ requires original AuthBus trust".into()))?

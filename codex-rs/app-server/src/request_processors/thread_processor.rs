@@ -4414,6 +4414,22 @@ impl ThreadRequestProcessor {
         } else if let Ok(existing_thread_id) = ThreadId::from_string(&params.thread_id)
             && let Ok(existing_thread) = self.thread_manager.get_thread(existing_thread_id).await
         {
+            // A live thread can exist before its lazy rollout is materialized.
+            // Rejoin that SAME Core instance through its original store writer;
+            // do not fall into cold resume or create a replacement thread just
+            // because no user turn has been submitted yet. Corrupt/unavailable
+            // metadata still fails closed through the existing typed reader.
+            if self
+                .read_stored_thread_for_read(existing_thread_id, /*include_history*/ false)
+                .await
+                .map_err(thread_read_view_error)?
+                .is_none()
+            {
+                self.thread_store
+                    .persist_thread(existing_thread_id, PersistContext::Standard)
+                    .await
+                    .map_err(thread_store_resume_read_error)?;
+            }
             let source_thread = self
                 .read_stored_thread_for_resume(
                     &params.thread_id,

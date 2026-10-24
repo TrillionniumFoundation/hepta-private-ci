@@ -2,6 +2,7 @@
 // Copyright 2023–2026 Project Robius Developers. MIT; see ../../licenses/ROBRIX-MIT.txt.
 // Source: src/home/room_screen.rs:235–383,654–740. Adapted message profile/content
 // hierarchy, virtual PortalList and room timeline/composer ownership. No Matrix behavior.
+use super::composer_transaction::ComposerTransaction;
 use crate::presentation::PresentationAction;
 use crate::presentation::PresentationCommand;
 use crate::presentation::RoomKey;
@@ -16,6 +17,12 @@ use hepta_control_core::chat_timeline::Role;
 #[cfg(feature = "ui-fixtures")]
 use makepad_widgets::makepad_platform::script::res::CxScriptResourceData;
 use makepad_widgets::*;
+// The pinned Makepad field parser consumes a simple type identifier, not a
+// bare qualified path. Resolve conditional state outside that parser as well.
+#[cfg(feature = "native-presentation")]
+type RoomChatControls = crate::native_presentation::chat_controls::RenderedControls;
+#[cfg(not(feature = "native-presentation"))]
+type RoomChatControls = ();
 script_mod! {
  use mod.prelude.widgets.*
  use mod.widgets.*
@@ -268,16 +275,16 @@ pub struct RoomScreen {
     #[rust]
     pending_tail_redraw: Option<(NextFrame, RoomKey, f64)>,
     #[rust]
-    composer_transaction: super::composer_transaction::ComposerTransaction,
-    #[cfg(feature = "native-presentation")]
+    composer_transaction: ComposerTransaction,
     #[rust]
-    chat_controls: crate::native_presentation::chat_controls::RenderedControls,
+    chat_controls: RoomChatControls,
 }
 impl Widget for RoomScreen {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
         if let Some(workspace) = scope.data.get_mut::<ChatWorkspace>() {
             let input = self.view.text_input(cx, ids!(message_input));
-            self.composer_transaction.checkpoint(&input, workspace, self.active_key);
+            self.composer_transaction
+                .checkpoint(&input, workspace, self.active_key);
         }
         self.view.handle_event(cx, event, scope);
         let Some(workspace) = scope.data.get_mut::<ChatWorkspace>() else {
@@ -328,7 +335,13 @@ impl Widget for RoomScreen {
                 let travel = list.user_scroll_travel();
                 if let Some(at_end) = self.scroll_tracker.observe(travel, list.is_at_end()) {
                     self.pending_tail_redraw = None;
-                    let _result = apply_action(workspace, PresentationAction { source, command: PresentationCommand::UserScrolled { at_end } });
+                    let _result = apply_action(
+                        workspace,
+                        PresentationAction {
+                            source,
+                            command: PresentationCommand::UserScrolled { at_end },
+                        },
+                    );
                     #[cfg(feature = "ui-fixtures")]
                     log!(
                         "HEPTA_FIXTURE_SCROLL_ACTION room={} epoch={} at_end={} result={:?}",
@@ -377,21 +390,36 @@ impl Widget for RoomScreen {
                 );
             }
             if self.view.button(cx, ids!(jump_to_latest)).clicked(actions) {
-                apply_action(workspace, PresentationAction { source, command: PresentationCommand::JumpToLatest });
+                apply_action(
+                    workspace,
+                    PresentationAction {
+                        source,
+                        command: PresentationCommand::JumpToLatest,
+                    },
+                );
                 list.set_tail_range(true);
                 list.scroll_to_end(cx);
             }
             if let Some(text) = input.changed(actions) {
-                self.composer_transaction.edit(cx, &input, workspace, source, text);
+                self.composer_transaction
+                    .edit(cx, &input, workspace, source, text);
                 self.view.redraw(cx);
             }
             let returned = input.returned(actions).is_some() && !input.is_composing();
             #[cfg(feature = "native-presentation")]
-            let dispatched = crate::native_presentation::chat_controls::dispatch(cx, &self.view, actions, returned, workspace, source);
+            let dispatched = crate::native_presentation::chat_controls::dispatch(
+                cx, &self.view, actions, returned, workspace, source,
+            );
             #[cfg(not(feature = "native-presentation"))]
             let dispatched = false;
             if returned && !dispatched {
-                apply_action(workspace, PresentationAction { source, command: PresentationCommand::RequestSend });
+                apply_action(
+                    workspace,
+                    PresentationAction {
+                        source,
+                        command: PresentationCommand::RequestSend,
+                    },
+                );
                 self.view.redraw(cx);
             }
         }
@@ -447,6 +475,8 @@ impl Widget for RoomScreen {
             );
             #[cfg(feature = "native-presentation")]
             self.chat_controls.draw(cx, &self.view, workspace, key);
+            #[cfg(not(feature = "native-presentation"))]
+            let _ = &self.chat_controls;
             self.view
                 .label(cx, ids!(presentation_note))
                 .set_visible(cx, presentation.presentation_note.is_some());

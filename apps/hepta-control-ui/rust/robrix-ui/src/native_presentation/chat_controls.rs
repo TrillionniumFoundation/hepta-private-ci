@@ -45,7 +45,13 @@ pub(crate) struct RenderedControls {
 }
 
 impl RenderedControls {
-    pub(crate) fn draw(&mut self, cx: &mut Cx, view: &View, workspace: &ChatWorkspace, room: RoomKey) {
+    pub(crate) fn draw(
+        &mut self,
+        cx: &mut Cx,
+        view: &View,
+        workspace: &ChatWorkspace,
+        room: RoomKey,
+    ) {
         let controls = cx.global::<Controls>().clone();
         let send = controls.permits_submit(room, workspace);
         let interrupt = controls.permits_interrupt(room, workspace);
@@ -53,8 +59,10 @@ impl RenderedControls {
         let key = (button.widget_uid(), send, interrupt);
         if self.last != Some(key) {
             button.set_enabled(cx, send);
-            view.button(cx, ids!(interrupt_message_button)).set_enabled(cx, interrupt);
-            view.button(cx, ids!(interrupt_message_button)).set_visible(cx, interrupt);
+            view.button(cx, ids!(interrupt_message_button))
+                .set_enabled(cx, interrupt);
+            view.button(cx, ids!(interrupt_message_button))
+                .set_visible(cx, interrupt);
             self.last = Some(key);
         }
     }
@@ -77,7 +85,9 @@ pub(crate) fn dispatch(
         cx.widget_action(view.widget_uid(), ChatIntent::Submit(room));
         return true;
     }
-    if view.button(cx, ids!(interrupt_message_button)).clicked(actions)
+    if view
+        .button(cx, ids!(interrupt_message_button))
+        .clicked(actions)
         && controls.permits_interrupt(room, workspace)
     {
         cx.widget_action(view.widget_uid(), ChatIntent::Interrupt(room));

@@ -160,6 +160,17 @@ pub fn serve_host_authority_session(
     registration_file: &Path,
     owner_pidfd: OwnedFd,
 ) -> io::Result<()> {
+    serve_host_authority_session_with_text(config_file, registration_file, owner_pidfd, None)
+}
+
+/// Open the existing Root service with an optional fixed native UI peer. The
+/// same issuer and writer proof serve all lanes; no second Agentd is launched.
+pub fn serve_host_authority_session_with_text(
+    config_file: &Path,
+    registration_file: &Path,
+    owner_pidfd: OwnedFd,
+    text_ui: Option<(&Path, OwnedFd)>,
+) -> io::Result<()> {
     let config: HostAuthorityServiceConfig = read_root_json(config_file)?;
     let registration: HostAuthorityRegistration = read_root_json(registration_file)?;
     if config.schema_version != 1
@@ -217,7 +228,45 @@ pub fn serve_host_authority_session(
             ));
         }
     };
-    serve_lanes(&service, &config, &registration, &owner_pidfd)
+    if let Some((text_file, ui_pidfd)) = text_ui {
+        let text: crate::HostAuthorityTextUiRegistration = read_root_json(text_file)?;
+        if text.peer_uid != config.peer_uid {
+            return Err(io::Error::other(
+                "text UI must share the registered Agentd owner UID for its existing private ingress",
+            ));
+        }
+        text.validate(&service)?;
+        if [
+            &config.sockets.observation,
+            &config.sockets.issuer,
+            &config.sockets.checkpoint,
+        ]
+        .into_iter()
+        .chain(config.sockets.device_frontier.iter())
+        .chain(config.sockets.notes_frontier.iter())
+        .any(|path| path == &text.socket_path)
+        {
+            return Err(io::Error::other("text UI requires a distinct private lane"));
+        }
+        std::thread::scope(|scope| {
+            let worker = scope.spawn(|| {
+                service.serve_text_ui(
+                    &text,
+                    &ui_pidfd,
+                    &owner_pidfd,
+                    std::time::Duration::from_millis(config.timeout_ms),
+                    std::time::Duration::from_millis(config.lifetime_ms),
+                )
+            });
+            let original = serve_lanes(&service, &config, &registration, &owner_pidfd);
+            let ui = worker
+                .join()
+                .map_err(|_| io::Error::other("text UI lane panicked"))?;
+            original.and(ui)
+        })
+    } else {
+        serve_lanes(&service, &config, &registration, &owner_pidfd)
+    }
 }
 
 /// Explicit root administration authorizes a new original registry writer
@@ -361,7 +410,7 @@ fn verify_process(registration: &HostAuthorityRegistration, uid: u32) -> io::Res
     Ok(())
 }
 
-fn owner_alive(owner: &OwnedFd, end: Instant) -> io::Result<()> {
+pub(crate) fn owner_alive(owner: &OwnedFd, end: Instant) -> io::Result<()> {
     if Instant::now() >= end {
         return Err(io::Error::other("session lifetime elapsed"));
     }

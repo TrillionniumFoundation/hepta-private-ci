@@ -1,7 +1,9 @@
 use super::*;
-use crate::presentation::{
-    ActionResult, PresentationAction, PresentationCommand, RoomKey, apply_action,
-};
+use crate::presentation::ActionResult;
+use crate::presentation::PresentationAction;
+use crate::presentation::PresentationCommand;
+use crate::presentation::RoomKey;
+use crate::presentation::apply_action;
 
 #[test]
 fn adoption_does_not_replace_an_existing_draft_or_construct_a_second_source() {

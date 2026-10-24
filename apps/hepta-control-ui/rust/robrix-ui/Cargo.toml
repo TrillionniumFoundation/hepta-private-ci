@@ -18,8 +18,13 @@ default = ["ui"]
 ui = ["dep:makepad-widgets"]
 ui-fixtures = ["hepta-control-core/ui-fixtures"]
 native-host = []
-native-presentation = []
+native-presentation = ["dep:accesskit", "dep:accesskit_unix", "dep:makepad-unicode-segmentation"]
 
 [dependencies]
 makepad-widgets = { git = "https://github.com/kevinaboos/makepad", rev = "337566c8b25d47f7e4fff6a202157b65bf183330", features = ["serde"], optional = true }
 hepta-control-core = { path = "../core" }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+accesskit = { version = "=0.17.1", optional = true }
+accesskit_unix = { version = "=0.13.1", optional = true }
+makepad-unicode-segmentation = { package = "unicode-segmentation", git = "https://github.com/kevinaboos/makepad", rev = "337566c8b25d47f7e4fff6a202157b65bf183330", optional = true }

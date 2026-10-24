@@ -1,11 +1,15 @@
-use super::{NativeChatComposition, OwnedComposition, bounded_console};
-use crate::native_launch::{LaunchMode, RunOutcome};
+use super::NativeChatComposition;
+use super::OwnedComposition;
+use super::bounded_console;
+use super::chat_controls::ChatIntent;
+use super::chat_controls::Controls;
+use crate::native_launch::LaunchMode;
+use crate::native_launch::RunOutcome;
+use crate::presentation::RoomKey;
 use hepta_control_core::chat::WorkspaceTab;
 use makepad_widgets::*;
 use std::cell::RefCell;
 use std::rc::Rc;
-use crate::presentation::RoomKey;
-use super::chat_controls::{ChatIntent, Controls};
 
 /// Run the original App with the caller's sole draft/state owner. This Linux
 /// development mode is neither a NativeHost witness nor production chat send.
@@ -29,6 +33,8 @@ pub(crate) struct RendererPresentation {
     closed: bool,
     checked_resources: bool,
     failed: bool,
+    #[cfg(target_os = "linux")]
+    accessibility: Option<super::accessibility::NativeAccessibility>,
 }
 
 impl RendererPresentation {
@@ -38,6 +44,10 @@ impl RendererPresentation {
         // Completion signals are coalesced by the SDK. The bounded timer also
         // reevaluates age when the session is silent; it never renews a sample.
         self.timer = cx.start_interval(0.25);
+        #[cfg(target_os = "linux")]
+        {
+            self.accessibility = Some(super::accessibility::NativeAccessibility::new());
+        }
     }
 
     pub(crate) fn before_event(
@@ -55,6 +65,10 @@ impl RendererPresentation {
         let window_closed =
             matches!(event, Event::WindowClosed(closed) if Some(closed.window_id) == window_id);
         if shutting_down || window_closed {
+            #[cfg(target_os = "linux")]
+            {
+                self.accessibility = None;
+            }
             composition.exit();
             self.closed = true;
             cx.stop_timer(self.timer);
@@ -63,6 +77,10 @@ impl RendererPresentation {
                 outcome.borrow_mut().exited = true;
             }
             return false;
+        }
+        #[cfg(target_os = "linux")]
+        if let Some(accessibility) = &mut self.accessibility {
+            accessibility.before_event(cx, ui, event, composition.inner.workspace_mut());
         }
         if matches!(event, Event::LiveEdit | Event::ScriptReapply) {
             self.checked_resources = false;
@@ -110,6 +128,13 @@ impl RendererPresentation {
         event: &Event,
         composition: &mut OwnedComposition,
     ) {
+        #[cfg(target_os = "linux")]
+        if matches!(event, Event::Draw(_))
+            && !self.closed
+            && let Some(accessibility) = &mut self.accessibility
+        {
+            accessibility.after_draw(cx, ui, composition.inner.workspace());
+        }
         if self.closed || matches!(event, Event::Draw(_)) {
             return;
         }
@@ -117,10 +142,14 @@ impl RendererPresentation {
             for action in actions.iter() {
                 let controls = cx.global::<Controls>().clone();
                 let result = match action.as_widget_action().cast::<ChatIntent>() {
-                    ChatIntent::Submit(room) if controls.permits_submit(room, composition.inner.workspace()) => {
+                    ChatIntent::Submit(room)
+                        if controls.permits_submit(room, composition.inner.workspace()) =>
+                    {
                         composition.inner.request_send(room)
                     }
-                    ChatIntent::Interrupt(room) if controls.permits_interrupt(room, composition.inner.workspace()) => {
+                    ChatIntent::Interrupt(room)
+                        if controls.permits_interrupt(room, composition.inner.workspace()) =>
+                    {
                         composition.inner.request_interrupt(room)
                     }
                     _ => continue,
@@ -133,7 +162,10 @@ impl RendererPresentation {
         let availability = composition.inner.poll_chat();
         let workspace = composition.inner.workspace();
         let controls = Controls {
-            room: Some(RoomKey { epoch: workspace.presentation_epoch(), local_id: workspace.active_id() }),
+            room: Some(RoomKey {
+                epoch: workspace.presentation_epoch(),
+                local_id: workspace.active_id(),
+            }),
             availability,
         };
         if *cx.global::<Controls>() != controls {

@@ -89,12 +89,25 @@ fn trusted_registration_and_current_expiry_are_required() {
 #[test]
 fn delivery_identity_matches_original_admission_and_never_authenticates_by_itself() {
     let (issuer, mut message) = fixture();
-    let admitted = message.authenticate(&issuer, message.claims.scope_digest,
-        message.claims.payload_digest, /*now_ms*/ 1_000).unwrap();
+    let admitted = message
+        .authenticate(
+            &issuer,
+            message.claims.scope_digest,
+            message.claims.payload_digest,
+            /*now_ms*/ 1_000,
+        )
+        .unwrap();
     assert_eq!(message.delivery_id(), admitted.receipt().envelope_digest);
     let original_id = message.delivery_id();
     message.signature[0] ^= 1;
     assert_ne!(message.delivery_id(), original_id);
-    assert!(matches!(message.authenticate(&issuer, message.claims.scope_digest,
-        message.claims.payload_digest, /*now_ms*/ 1_000), Err(Error::InvalidSignature)));
+    assert!(matches!(
+        message.authenticate(
+            &issuer,
+            message.claims.scope_digest,
+            message.claims.payload_digest,
+            /*now_ms*/ 1_000
+        ),
+        Err(Error::InvalidSignature)
+    ));
 }

@@ -256,7 +256,7 @@ fn subject(owner: &AgentId) -> Result<StableId, AgentdError> {
     StableId::new(owner.as_str()).map_err(|error| invalid(&error.to_string()))
 }
 
-fn scope(owner: &AgentId) -> Digest32 {
+pub(crate) fn scope(owner: &AgentId) -> Digest32 {
     let mut bytes = b"hepta:agentd:signed-text:v1\0".to_vec();
     bytes.extend_from_slice(owner.as_str().as_bytes());
     Digest32::of_bytes(&bytes)

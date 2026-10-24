@@ -119,17 +119,43 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         /*revoked*/ false,
     )?;
     let request = signed_text(&agent.agent_id, &key, &thread, /*sequence*/ 1)?;
-    let thread_view: ThreadReadResponse = client.request_typed(ClientRequest::ThreadRead {
-        request_id: take_request_id(&mut request_id),
-        params: ThreadReadParams { thread_id: thread.clone(), include_turns: false },
-    }).await?;
+    let thread_view: ThreadReadResponse = client
+        .request_typed(ClientRequest::ThreadRead {
+            request_id: take_request_id(&mut request_id),
+            params: ThreadReadParams {
+                thread_id: thread.clone(),
+                include_turns: false,
+            },
+        })
+        .await?;
     let text_config = AgentdTextSessionConfig {
         control_socket: agent.layout.agentd_control_socket().to_path_buf(),
-        agent_id: agent.agent_id.clone(), spawn_generation: 1, thread_id: thread.clone(),
+        agent_id: agent.agent_id.clone(),
+        spawn_generation: 1,
+        thread_id: thread.clone(),
         app_server_session_id: thread_view.thread.session_id,
         codex_home: agent.layout.home_root().to_path_buf(),
     };
     let mut text_session = AgentdTextSession::connect(text_config.clone()).await?;
+    let attached: ThreadReadResponse = client
+        .request_typed(ClientRequest::ThreadRead {
+            request_id: take_request_id(&mut request_id),
+            params: ThreadReadParams {
+                thread_id: thread.clone(),
+                include_turns: true,
+            },
+        })
+        .await?;
+    ensure!(attached.thread.id == thread);
+    ensure!(attached.thread.session_id == text_config.app_server_session_id);
+    ensure!(
+        attached.thread.turns.is_empty(),
+        "attaching created conversation content"
+    );
+    ensure!(
+        physical_send_count(&model).await == 0,
+        "attaching started a model call"
+    );
     let admitted = text_session.requests.submit_signed(request.clone()).await?;
     let accepted = wait_queue_accepted(&control, &admitted.delivery_id).await?;
     ensure!(
@@ -155,7 +181,11 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
     // terminal record is promoted into a streaming/completion observation.
     let terminal = timeout(WAIT_TIMEOUT, async {
         loop {
-            let event = text_session.events.next().await?.context("text stream ended")?;
+            let event = text_session
+                .events
+                .next()
+                .await?
+                .context("text stream ended")?;
             if let ServerNotification::TurnCompleted(completed) = &event.notification {
                 ensure!(event.thread_id == thread);
                 ensure!(event.message_id == request.message_id);
@@ -164,13 +194,17 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
                 return Ok::<_, anyhow::Error>(event);
             }
         }
-    }).await??;
+    })
+    .await??;
 
     // Reattachment retains the exact signed message, and the old request handle
     // cannot submit. The new connection only reconciles the original Core ID.
     let old_requests = text_session.requests.clone();
     let resumed = text_session.reattach(text_config).await?;
-    ensure!(matches!(old_requests.submit_signed(request.clone()).await, Err(TextSessionError::Fenced)));
+    ensure!(matches!(
+        old_requests.submit_signed(request.clone()).await,
+        Err(TextSessionError::Fenced)
+    ));
     let recovered = resumed.requests.reconcile(&request.message_id).await?;
     ensure!(recovered.turn.as_ref().is_some_and(|turn| turn.id == terminal.turn_id && turn.status == TurnStatus::Completed));
     ensure!(recovered.delivery == accepted);

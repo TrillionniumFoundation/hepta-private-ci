@@ -606,6 +606,34 @@ impl AgentdProductionWriterHost {
         Ok(self)
     }
 
+    /// Trusted startup selects one exact old retained operation and a narrowed
+    /// recovery capability. A fresh document's `previous_receipt: null` is not
+    /// changed, and an already-retired application receipt can still receive
+    /// its original committed source owner's idempotent acknowledgement.
+    pub async fn attach_explicit_previous_notes_recovery(
+        mut self,
+        current: &codex_hepta_memory::NotesTargetIdentity,
+        previous: codex_hepta_memory::NotesTargetIdentity,
+        operation_id: &str,
+        channel: Arc<dyn codex_hepta_memory::NotesRecoveryChannel>,
+    ) -> Result<Self, AgentdError> {
+        current.validate().map_err(AgentdError::Invalid)?;
+        if self.previous_notes.is_some()
+            || previous == *current
+            || !self.has_destination(&current.destination_id())
+        {
+            return Err(AgentdError::Invalid(
+                "explicit Notes recovery requires a distinct old target and one fixed current destination".into(),
+            ));
+        }
+        let recovery = self
+            .writer
+            .notes_recovery_target_for_retained_operation(previous, operation_id, channel)
+            .await?;
+        self.previous_notes = Some((current.destination_id(), Arc::new(recovery)));
+        Ok(self)
+    }
+
     pub async fn dispatch(
         &self,
         signed: &SignedFinalUseGrant,

@@ -2,11 +2,11 @@
 //! owner service; no signing key, sequence allocator, or durable journal lives
 //! in this worker. A host must authenticate the human before installing it.
 
+use codex_hepta_types::Digest32;
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 use std::sync::mpsc;
 use std::thread;
-use codex_hepta_types::Digest32;
 
 use super::*;
 
@@ -18,32 +18,31 @@ pub struct TextSignerEndpoint {
     pub owner_pid: u32,
 }
 
-/// The private host deduplicates request_id with the exact owner/thread/text.
-/// `lookup` MUST NOT sign or allocate a new sequence if the original is absent.
-#[derive(Serialize)]
-struct SignerRequest<'a> {
-    schema_version: u32,
-    operation: &'a str,
-    request_id: &'a str,
-    agent_id: &'a AgentId,
-    spawn_generation: u64,
-    thread_id: &'a str,
-    text: &'a str,
-}
-
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-struct SignerResponse {
-    schema_version: u32,
-    request_id: String,
-    envelope: AuthBusTextIngress,
-}
-
 #[derive(Clone, Debug)]
 pub enum TextCommand {
-    Submit { request_id: String, text: String },
-    Interrupt { message_id: String },
-    Reconcile { message_id: String },
+    Submit {
+        request_id: String,
+        text: String,
+    },
+    /// Release one retained original only after the shared ChatWorkspace has
+    /// accepted its exact SignedTextRef and returned the original dispatch ticket.
+    Dispatch {
+        request_id: String,
+    },
+    Retire {
+        message_id: String,
+    },
+    /// UI has consumed the original retirement receipt; free only transient
+    /// client correlation after Root independently proved the durable outcome.
+    Release {
+        message_id: String,
+    },
+    Interrupt {
+        message_id: String,
+    },
+    Reconcile {
+        message_id: String,
+    },
     Reconnect,
 }
 
@@ -60,17 +59,47 @@ pub struct TextPrepared {
     pub payload_sha256: [u8; 32],
     pub envelope_sha256: [u8; 32],
     pub text: String,
+    pub delivery_id: String,
+    pub spawn_generation: u64,
+    pub lookup_only: bool,
 }
 
 #[derive(Clone, Debug)]
 pub enum TextWorkerEvent {
     /// Connection identity only; never a readiness or authority attestation.
-    Connected { connection_id: u64 },
-    Prepared { connection_id: u64, reference: TextPrepared },
-    Admission { connection_id: u64, request_id: String, message_id: String, status: AuthBusTextStatus },
+    Connected {
+        connection_id: u64,
+    },
+    /// Only emitted after the actual Root peer authenticated this registered
+    /// UI and the original Agentd confirmed the same session/thread route.
+    Authenticated {
+        connection_id: u64,
+        owner: TextOwnerReceipt,
+    },
+    Prepared {
+        connection_id: u64,
+        reference: TextPrepared,
+    },
+    Admission {
+        connection_id: u64,
+        request_id: String,
+        message_id: String,
+        status: AuthBusTextStatus,
+    },
     Notification(AgentdTextEvent),
-    Reconciled { connection_id: u64, view: TextReconciliation },
-    Unavailable { request_id: Option<String>, message: String },
+    Reconciled {
+        connection_id: u64,
+        view: TextReconciliation,
+    },
+    Retired {
+        connection_id: u64,
+        request_id: String,
+        message_id: String,
+    },
+    Unavailable {
+        request_id: Option<String>,
+        message: String,
+    },
 }
 
 /// A single bounded background worker for a native composition. Draw/IME only
@@ -82,30 +111,64 @@ pub struct AgentdTextWorker {
 }
 
 impl AgentdTextWorker {
-    pub fn start(config: AgentdTextSessionConfig, signer: TextSignerEndpoint, waker: Arc<dyn Fn() + Send + Sync>) -> Result<Self, TextSessionError> {
-        if !signer.socket_path.is_absolute() || signer.owner_pid == 0 { return Err(TextSessionError::Identity); }
+    pub fn start(
+        config: AgentdTextSessionConfig,
+        signer: TextSignerEndpoint,
+        waker: Arc<dyn Fn() + Send + Sync>,
+    ) -> Result<Self, TextSessionError> {
+        Self::start_inner(Some(config), signer, waker)
+    }
+
+    /// The trusted Root receipt selects the existing daemon/thread. No renderer
+    /// setting can substitute another route or construct an OwnerSession.
+    pub fn start_authenticated(
+        signer: TextSignerEndpoint,
+        waker: Arc<dyn Fn() + Send + Sync>,
+    ) -> Result<Self, TextSessionError> {
+        Self::start_inner(None, signer, waker)
+    }
+
+    fn start_inner(
+        config: Option<AgentdTextSessionConfig>,
+        signer: TextSignerEndpoint,
+        waker: Arc<dyn Fn() + Send + Sync>,
+    ) -> Result<Self, TextSessionError> {
+        if !signer.socket_path.is_absolute() || signer.owner_pid == 0 {
+            return Err(TextSessionError::Identity);
+        }
         let (commands, receiver) = tokio::sync::mpsc::channel(8);
         let (sender, events) = mpsc::sync_channel(128);
-        thread::Builder::new().name("hepta-text-session".into()).spawn(move || {
-            let runtime = tokio::runtime::Builder::new_current_thread().enable_all().build();
-            let result = match runtime {
-                Ok(runtime) => {
-                    let result = runtime.block_on(run(config, signer, receiver, &sender, &waker));
-                    runtime.shutdown_timeout(Duration::from_secs(1));
-                    result
+        thread::Builder::new()
+            .name("hepta-text-session".into())
+            .spawn(move || {
+                let runtime = tokio::runtime::Builder::new_current_thread()
+                    .enable_all()
+                    .build();
+                let result = match runtime {
+                    Ok(runtime) => {
+                        let result =
+                            runtime.block_on(run(config, signer, receiver, &sender, &waker));
+                        runtime.shutdown_timeout(Duration::from_secs(1));
+                        result
+                    }
+                    Err(error) => Err(unavailable(error)),
+                };
+                if let Err(error) = result {
+                    let _ = sender.try_send(TextWorkerEvent::Unavailable {
+                        request_id: None,
+                        message: error.to_string(),
+                    });
+                    waker();
                 }
-                Err(error) => Err(unavailable(error)),
-            };
-            if let Err(error) = result {
-                let _ = sender.try_send(TextWorkerEvent::Unavailable { request_id: None, message: error.to_string() });
-                waker();
-            }
-        }).map_err(unavailable)?;
+            })
+            .map_err(unavailable)?;
         Ok(Self { commands, events })
     }
 
     pub fn try_send(&self, command: TextCommand) -> Result<(), TextSessionError> {
-        self.commands.try_send(command).map_err(|_| TextSessionError::Capacity)
+        self.commands
+            .try_send(command)
+            .map_err(|_| TextSessionError::Capacity)
     }
 
     pub fn try_recv(&self) -> Result<Option<TextWorkerEvent>, TextSessionError> {
@@ -117,18 +180,76 @@ impl AgentdTextWorker {
     }
 }
 
-async fn run(config: AgentdTextSessionConfig, signer: TextSignerEndpoint, mut commands: tokio::sync::mpsc::Receiver<TextCommand>, output: &mpsc::SyncSender<TextWorkerEvent>, waker: &Arc<dyn Fn() + Send + Sync>) -> Result<(), TextSessionError> {
-    let mut session = AgentdTextSession::connect(config.clone()).await?;
+async fn run(
+    config: Option<AgentdTextSessionConfig>,
+    signer: TextSignerEndpoint,
+    mut commands: tokio::sync::mpsc::Receiver<TextCommand>,
+    output: &mpsc::SyncSender<TextWorkerEvent>,
+    waker: &Arc<dyn Fn() + Send + Sync>,
+) -> Result<(), TextSessionError> {
     let emit = |event| -> Result<(), TextSessionError> {
-        output.try_send(event).map_err(|_| TextSessionError::Capacity)?;
+        output
+            .try_send(event)
+            .map_err(|_| TextSessionError::Capacity)?;
         waker();
         Ok(())
     };
-    emit(TextWorkerEvent::Connected { connection_id: session.requests.connection_id() })?;
+    let (mut owner, mut session) = loop {
+        let attempt = async {
+            let owner = super::signer::owner(&signer).await?;
+            if config.as_ref().is_some_and(|config| config != &owner.route) {
+                return Err(TextSessionError::Identity);
+            }
+            let session = AgentdTextSession::connect(owner.route.clone()).await?;
+            Ok::<_, TextSessionError>((owner, session))
+        }
+        .await;
+        match attempt {
+            Ok(connected) => break connected,
+            Err(issue) => emit(TextWorkerEvent::Unavailable {
+                request_id: None,
+                message: issue.to_string(),
+            })?,
+        }
+        // No intent has been accepted before authentication. Stay available to
+        // retry the SAME configured Root endpoint after startup/transport loss.
+        loop {
+            match commands.recv().await {
+                Some(TextCommand::Reconnect) => break,
+                Some(TextCommand::Submit { request_id, .. })
+                | Some(TextCommand::Dispatch { request_id }) => {
+                    emit(TextWorkerEvent::Unavailable {
+                        request_id: Some(request_id),
+                        message: "Original Root chat owner is not authenticated".into(),
+                    })?
+                }
+                Some(_) => emit(TextWorkerEvent::Unavailable {
+                    request_id: None,
+                    message: "Original chat owner is not connected".into(),
+                })?,
+                None => return Ok(()),
+            }
+        }
+    };
+    let config = owner.route.clone();
+    emit(TextWorkerEvent::Connected {
+        connection_id: session.requests.connection_id(),
+    })?;
+    emit(TextWorkerEvent::Authenticated {
+        connection_id: session.requests.connection_id(),
+        owner: owner.clone(),
+    })?;
     // A retained request maps to one exact human intent. An ambiguous signing
     // response is subsequently looked up, never reissued as a fresh signature.
     let mut intents = BTreeMap::<String, String>::new();
-    let mut inflight = tokio::task::JoinSet::new();
+    let mut messages = BTreeMap::<String, String>::new();
+    let mut retired = std::collections::BTreeSet::<String>::new();
+    let prepared = Arc::new(Mutex::new(
+        BTreeMap::<String, (AuthBusTextIngress, bool)>::new(),
+    ));
+    let mut inflight: tokio::task::JoinSet<
+        Result<TextWorkerEvent, (Option<String>, TextSessionError)>,
+    > = tokio::task::JoinSet::new();
     let mut stream_open = true;
     let mut poll = tokio::time::interval(Duration::from_millis(250));
     poll.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
@@ -144,7 +265,13 @@ async fn run(config: AgentdTextSessionConfig, signer: TextSignerEndpoint, mut co
             },
             result = inflight.join_next(), if !inflight.is_empty() => {
                 match result.ok_or_else(|| unavailable("request task missing"))?.map_err(unavailable)? {
-                    Ok(event) => emit(event)?,
+                    Ok(event) => {
+                        if let TextWorkerEvent::Retired { request_id, message_id, .. } = &event {
+                            let _ = request_id;
+                            retired.insert(message_id.clone());
+                        }
+                        emit(event)?;
+                    }
                     Err((request_id, error)) => emit(TextWorkerEvent::Unavailable { request_id, message: error.to_string() })?,
                 }
             },
@@ -163,6 +290,17 @@ async fn run(config: AgentdTextSessionConfig, signer: TextSignerEndpoint, mut co
             },
             command = commands.recv() => {
                 let Some(command) = command else { break; };
+                if let TextCommand::Release { message_id } = &command {
+                    if retired.contains(message_id) {
+                        session.requests.retire(message_id)?;
+                        retired.remove(message_id);
+                        if let Some(request_id) = messages.remove(message_id) {
+                            intents.remove(&request_id);
+                            prepared.lock().map_err(|_| TextSessionError::Fenced)?.remove(&request_id);
+                        }
+                    }
+                    continue;
+                }
                 if inflight.len() >= 4 { emit(TextWorkerEvent::Unavailable { request_id: None, message: "text request capacity reached".into() })?; continue; }
                 let interrupt_requested = matches!(&command, TextCommand::Interrupt { .. });
                 match command {
@@ -184,11 +322,11 @@ async fn run(config: AgentdTextSessionConfig, signer: TextSignerEndpoint, mut co
                         let requests = session.requests.clone();
                         let signer = signer.clone();
                         let config = config.clone();
-                        let prepared_output = output.clone();
-                        let prepared_waker = waker.clone();
+                        let prepared = prepared.clone();
                         inflight.spawn(async move {
                             let result = async {
-                                let envelope = signed_input(&signer, &config, &request_id, &text, lookup).await?;
+                                let envelope = super::signer::signed_input(&signer, &config, &request_id, &text, lookup).await?;
+                                let lookup_only = lookup || envelope.body.spawn_generation != config.spawn_generation;
                                 let claims = crate::authbus_text_claims(&config.agent_id, &envelope).map_err(unavailable)?;
                                 let envelope_bytes = serde_json::to_vec(&envelope).map_err(unavailable)?;
                                 let reference = TextPrepared {
@@ -196,19 +334,55 @@ async fn run(config: AgentdTextSessionConfig, signer: TextSignerEndpoint, mut co
                                     message_id: envelope.message_id.clone(), sequence: envelope.sequence, expires_at_ms: envelope.expires_at_ms,
                                     payload_sha256: *claims.payload_digest.as_array(),
                                     envelope_sha256: *Digest32::of_bytes(&envelope_bytes).as_array(), text: envelope.body.text.clone(),
+                                    spawn_generation: envelope.body.spawn_generation, lookup_only,
+                                    delivery_id: super::prepare(&config, envelope.clone())?.delivery_id,
                                 };
-                                prepared_output.try_send(TextWorkerEvent::Prepared { connection_id: requests.connection_id(), reference })
-                                    .map_err(|_| TextSessionError::Capacity)?;
-                                prepared_waker();
-                                let message_id = envelope.message_id.clone();
-                                let status = requests.submit_signed(envelope).await?;
-                                Ok(TextWorkerEvent::Admission { connection_id: requests.connection_id(), request_id: request_id.clone(), message_id, status })
+                                let mut retained = prepared.lock().map_err(|_| TextSessionError::Fenced)?;
+                                if retained.len() >= MAX_RETAINED { return Err(TextSessionError::Capacity); }
+                                if let Some((old, _)) = retained.get(&request_id) {
+                                    if old != &envelope { return Err(TextSessionError::Identity); }
+                                }
+                                retained.insert(request_id.clone(), (envelope, lookup_only));
+                                Ok(TextWorkerEvent::Prepared { connection_id: requests.connection_id(), reference })
+                            }.await;
+                            result.map_err(|error| (Some(request_id), error))
+                        });
+                    }
+                    TextCommand::Dispatch { request_id } => {
+                        let retained = prepared.lock().map_err(|_| TextSessionError::Fenced)?.remove(&request_id);
+                        let Some((envelope, lookup_only)) = retained else {
+                            emit(TextWorkerEvent::Unavailable { request_id: Some(request_id), message: "Original signed input is not prepared".into() })?;
+                            continue;
+                        };
+                        let requests = session.requests.clone();
+                        messages.insert(envelope.message_id.clone(), request_id.clone());
+                        inflight.spawn(async move {
+                            let message_id = envelope.message_id.clone();
+                            let result = if lookup_only { requests.lookup_signed(envelope).await } else { requests.submit_signed(envelope).await };
+                            result.map(|status| TextWorkerEvent::Admission { connection_id: requests.connection_id(), request_id: request_id.clone(), message_id, status })
+                                .map_err(|error| (Some(request_id), error))
+                        });
+                    }
+                    TextCommand::Retire { message_id } => {
+                        let Some(request_id) = messages.get(&message_id).cloned() else { continue; };
+                        let text = intents.get(&request_id).cloned().ok_or(TextSessionError::UnknownRequest)?;
+                        let signer = signer.clone();
+                        let config = config.clone();
+                        let requests = session.requests.clone();
+                        inflight.spawn(async move {
+                            let result = async {
+                                super::signer::retire_input(&signer, &config, &request_id, &text).await?;
+                                Ok(TextWorkerEvent::Retired { connection_id: requests.connection_id(), request_id: request_id.clone(), message_id })
                             }.await;
                             result.map_err(|error| (Some(request_id), error))
                         });
                     }
                     TextCommand::Interrupt { message_id } | TextCommand::Reconcile { message_id } => {
                         let interrupt = interrupt_requested;
+                        if interrupt && !owner.can_interrupt {
+                            emit(TextWorkerEvent::Unavailable { request_id: Some(message_id), message: "Root session does not permit interruption".into() })?;
+                            continue;
+                        }
                         let requests = session.requests.clone();
                         inflight.spawn(async move {
                             let result = if interrupt { requests.interrupt(&message_id).await } else { requests.reconcile(&message_id).await };
@@ -217,18 +391,40 @@ async fn run(config: AgentdTextSessionConfig, signer: TextSignerEndpoint, mut co
                         });
                     }
                     TextCommand::Reconnect => {
-                        if !inflight.is_empty() { emit(TextWorkerEvent::Unavailable { request_id: None, message: "wait for retained requests before reconnect".into() })?; continue; }
-                        let next = session.reattach(config.clone()).await?;
-                        session.events.shutdown().await?;
+                        if !inflight.is_empty() { emit(TextWorkerEvent::Unavailable { request_id: Some("reconnect:busy".into()), message: "wait for retained requests before reconnect".into() })?; continue; }
+                        let attempt = async {
+                            let refreshed = super::signer::owner(&signer).await?;
+                            if !refreshed.same_authorization(&owner) { return Err(TextSessionError::Identity); }
+                            let next = session.reattach(config.clone()).await?;
+                            Ok::<_, TextSessionError>((refreshed, next))
+                        }.await;
+                        let (refreshed, next) = match attempt {
+                            Ok(value) => value,
+                            Err(issue) => {
+                                let _ = session.requests.fence();
+                                stream_open = false;
+                                emit(TextWorkerEvent::Unavailable { request_id: None, message: issue.to_string() })?;
+                                continue;
+                            }
+                        };
+                        let _ = session.events.shutdown().await;
                         session = next;
+                        owner = refreshed.clone();
                         stream_open = true;
                         emit(TextWorkerEvent::Connected { connection_id: session.requests.connection_id() })?;
+                        emit(TextWorkerEvent::Authenticated { connection_id: session.requests.connection_id(), owner: refreshed })?;
                         let ids = session.requests.shared.current()?.pending.keys().cloned().collect::<Vec<_>>();
                         for message_id in ids {
-                            let view = session.requests.reconcile(&message_id).await?;
-                            emit(TextWorkerEvent::Reconciled { connection_id: session.requests.connection_id(), view })?;
+                            match session.requests.reconcile(&message_id).await {
+                                Ok(view) => emit(TextWorkerEvent::Reconciled { connection_id: session.requests.connection_id(), view })?,
+                                Err(issue) => emit(TextWorkerEvent::Unavailable { request_id: Some(message_id.clone()), message: issue.to_string() })?,
+                            }
+                            if retired.contains(&message_id) && let Some(request_id) = messages.get(&message_id) {
+                                emit(TextWorkerEvent::Retired { connection_id: session.requests.connection_id(), request_id: request_id.clone(), message_id })?;
+                            }
                         }
                     }
+                    TextCommand::Release { .. } => unreachable!("release is handled before the work-capacity gate"),
                 }
             }
         }
@@ -239,41 +435,6 @@ async fn run(config: AgentdTextSessionConfig, signer: TextSignerEndpoint, mut co
     session.events.shutdown().await
 }
 
-#[cfg(unix)]
-async fn signed_input(endpoint: &TextSignerEndpoint, config: &AgentdTextSessionConfig, request_id: &str, text: &str, lookup: bool) -> Result<AuthBusTextIngress, TextSessionError> {
-    use tokio::io::AsyncBufReadExt;
-    use tokio::io::AsyncReadExt;
-    use tokio::io::AsyncWriteExt;
-    let work = async {
-        let mut stream = tokio::net::UnixStream::connect(&endpoint.socket_path).await.map_err(unavailable)?;
-        let peer = stream.peer_cred().map_err(unavailable)?;
-        if peer.uid() != endpoint.owner_uid || peer.pid().and_then(|pid| u32::try_from(pid).ok()) != Some(endpoint.owner_pid) {
-            return Err(TextSessionError::Identity);
-        }
-        let mut bytes = serde_json::to_vec(&SignerRequest {
-            schema_version: 1, operation: if lookup { "lookup" } else { "sign" }, request_id,
-            agent_id: &config.agent_id, spawn_generation: config.spawn_generation,
-            thread_id: &config.thread_id, text,
-        }).map_err(unavailable)?;
-        if bytes.len() > 32768 { return Err(TextSessionError::Capacity); }
-        bytes.push(b'\n');
-        stream.write_all(&bytes).await.map_err(unavailable)?;
-        let mut reader = tokio::io::BufReader::new(stream).take(32769);
-        let mut bytes = Vec::new();
-        reader.read_until(b'\n', &mut bytes).await.map_err(unavailable)?;
-        if bytes.len() > 32768 || !bytes.ends_with(b"\n") { return Err(TextSessionError::Capacity); }
-        let response: SignerResponse = serde_json::from_slice(&bytes).map_err(unavailable)?;
-        if response.schema_version != 1 || response.request_id != request_id
-            || response.envelope.body.thread_id != config.thread_id
-            || response.envelope.body.spawn_generation != config.spawn_generation
-            || response.envelope.body.text != text
-        { return Err(TextSessionError::Identity); }
-        Ok(response.envelope)
-    };
-    tokio::time::timeout(REQUEST_TIMEOUT, work).await.map_err(unavailable)?
-}
-
-#[cfg(not(unix))]
-async fn signed_input(_endpoint: &TextSignerEndpoint, _config: &AgentdTextSessionConfig, _request_id: &str, _text: &str, _lookup: bool) -> Result<AuthBusTextIngress, TextSessionError> {
-    Err(unavailable("installed Unix signer transport is unavailable on this platform"))
-}
+#[cfg(test)]
+#[path = "text_session_worker_tests.rs"]
+mod tests;

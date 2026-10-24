@@ -2,7 +2,8 @@
 // Copyright 2023–2026 Project Robius Developers. MIT; see ../licenses/ROBRIX-MIT.txt.
 // Source: src/app.rs Root/Window composition and AppMain registration lifecycle.
 // Hepta owns the nonvisual state; this UI does not create a runtime or credentials.
-use crate::chat_source::{ChatSource, ChatSourceSlot};
+use crate::chat_source::ChatSource;
+use crate::chat_source::ChatSourceSlot;
 use crate::ime_router::ImeRouter;
 #[cfg(feature = "native-host")]
 use crate::native_host::render::RendererHost as NativeRenderer;

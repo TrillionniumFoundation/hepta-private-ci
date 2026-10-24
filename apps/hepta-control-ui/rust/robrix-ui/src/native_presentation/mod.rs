@@ -5,8 +5,8 @@
 //! between unrelated workspaces with coincident RoomKeys is not supported.
 //! This port supplies neither a chat writer nor an owner/readiness witness.
 
-use hepta_control_core::chat::ChatWorkspace;
 use crate::presentation::RoomKey;
+use hepta_control_core::chat::ChatWorkspace;
 use std::sync::Arc;
 
 /// Bounds the text passed to the original Console labels. This is an observed
@@ -116,10 +116,12 @@ pub(crate) fn bounded_console(
     observation
 }
 
-#[cfg(feature = "ui")]
-pub(crate) mod render;
+#[cfg(all(feature = "ui", target_os = "linux"))]
+mod accessibility;
 #[cfg(feature = "ui")]
 pub(crate) mod chat_controls;
+#[cfg(feature = "ui")]
+pub(crate) mod render;
 #[cfg(all(feature = "ui", target_os = "linux"))]
 pub use render::run_native_presentation;
 

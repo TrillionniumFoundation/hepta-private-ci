@@ -19,6 +19,42 @@ pub(super) struct RegisteredWriter {
 }
 
 impl RegisteredWriter {
+    pub(super) fn retire_text(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        identity: &AgentdIdentity,
+        request_id: &str,
+        proof: crate::deployment_issuer::VerifiedTextRetirement,
+    ) -> io::Result<()> {
+        issuer.retire_registered_text(
+            identity,
+            request_id,
+            proof,
+            &self.registration,
+            &self.leases,
+            &self.proof,
+        )
+    }
+
+    pub(super) fn text(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        identity: &AgentdIdentity,
+        request_id: &str,
+        body: crate::AuthBusTextBody,
+        operation: crate::TextIssuerOperation,
+    ) -> io::Result<crate::AuthBusTextIngress> {
+        issuer.registered_writer_text(
+            identity,
+            request_id,
+            body,
+            operation,
+            &self.registration,
+            &self.leases,
+            &self.proof,
+        )
+    }
+
     pub(super) fn matches_notes(&self, notes: &crate::RootNotesGrantAdmission) -> bool {
         notes.matches_writer(&self.registration, &self.proof)
     }

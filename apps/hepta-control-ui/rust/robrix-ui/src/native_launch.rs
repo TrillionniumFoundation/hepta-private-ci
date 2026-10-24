@@ -2,7 +2,8 @@
 //! An observation-only composition never implements or installs NativeHost.
 
 use makepad_widgets::*;
-use std::cell::{Cell, RefCell};
+use std::cell::Cell;
+use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::Arc;
 

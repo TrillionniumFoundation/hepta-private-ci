@@ -1,5 +1,7 @@
 //! Authority-free chat presentation. A local draft is never a sent message.
 use std::collections::BTreeMap;
+mod local_archive;
+pub use local_archive::LocalDraftArchive;
 
 #[path = "chat_stream.rs"]
 mod stream;

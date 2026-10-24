@@ -319,9 +319,7 @@ impl ChatOwnerAdapter {
     ) -> Result<&OwnerScope, ChatOwnerError> {
         if matches!(
             capability,
-            ChatCapability::CreateThread
-                | ChatCapability::InterruptTurn
-                | ChatCapability::ResolveApproval
+            ChatCapability::CreateThread | ChatCapability::ResolveApproval
         ) {
             return Err(ChatOwnerError::Unsupported);
         }
@@ -536,9 +534,31 @@ impl ChatOwnerAdapter {
         }
         pending.in_flight = None;
         pending.view.fresh = false;
-        if pending.view.delivery_id.is_none() {
+        if pending.view.state == DeliveryState::Sending {
             pending.view.state = DeliveryState::Unknown;
         }
+        Ok(())
+    }
+
+    /// The host can retain the canonical signed-envelope correlation before
+    /// I/O. This records no admission/queue outcome and enables lookup after a
+    /// lost first ACK. The digest alone grants neither submit nor completion.
+    pub fn retain_delivery_identity(
+        &mut self,
+        ticket: &DispatchTicket,
+        identity: [u8; 32],
+        now_ms: u64,
+    ) -> Result<(), ChatOwnerError> {
+        self.advance_clock(now_ms)?;
+        self.validate_ticket(ticket, now_ms)?;
+        let pending = self
+            .pending
+            .get_mut(&ticket.envelope.metadata.message_id)
+            .ok_or(ChatOwnerError::UnknownDelivery)?;
+        if identity == [0; 32] || pending.view.delivery_id.is_some_and(|old| old != identity) {
+            return Err(ChatOwnerError::BindingMismatch);
+        }
+        pending.view.delivery_id = Some(identity);
         Ok(())
     }
 

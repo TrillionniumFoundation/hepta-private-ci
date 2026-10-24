@@ -48,18 +48,23 @@ use crate::AgentdClient;
 use crate::AuthBusTextIngress;
 use crate::AuthBusTextStatus;
 
-#[path = "text_session_requests.rs"]
-mod requests;
 #[path = "text_session_events.rs"]
 mod events;
+#[path = "text_session_requests.rs"]
+mod requests;
 pub use events::AgentdTextEvent;
 #[path = "text_session_worker.rs"]
 mod worker;
 pub use worker::AgentdTextWorker;
 pub use worker::TextCommand;
-pub use worker::TextWorkerEvent;
-pub use worker::TextSignerEndpoint;
 pub use worker::TextPrepared;
+pub use worker::TextSignerEndpoint;
+pub use worker::TextWorkerEvent;
+#[path = "text_session_auth.rs"]
+mod auth;
+pub use auth::TextOwnerReceipt;
+#[path = "text_session_signer.rs"]
+mod signer;
 
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(5);
 const MAX_RETAINED: usize = 32;
@@ -163,57 +168,102 @@ impl AgentdTextSession {
     /// Subscribes to one existing thread through Agentd's own session ingress.
     /// No thread, queue entry, signature, grant, or model call is created here.
     pub async fn connect(config: AgentdTextSessionConfig) -> Result<Self, TextSessionError> {
-        if config.thread_id.is_empty() || config.thread_id.len() > 128
-            || config.app_server_session_id.is_empty() || config.app_server_session_id.len() > 256
+        if config.thread_id.is_empty()
+            || config.thread_id.len() > 128
+            || config.app_server_session_id.is_empty()
+            || config.app_server_session_id.len() > 256
             || !config.codex_home.is_absolute()
         {
             return Err(TextSessionError::Identity);
         }
-        let control = AgentdClient::new(config.control_socket.clone(), config.agent_id.clone(), config.spawn_generation)
-            .map_err(unavailable)?;
+        let control = AgentdClient::new(
+            config.control_socket.clone(),
+            config.agent_id.clone(),
+            config.spawn_generation,
+        )
+        .map_err(unavailable)?;
         let ingress = control.session_ingress().await.map_err(unavailable)?;
         let endpoint = RemoteAppServerEndpoint::UnixSocket {
-            socket_path: ingress.socket_path.as_path().try_into().map_err(unavailable)?,
+            socket_path: ingress
+                .socket_path
+                .as_path()
+                .try_into()
+                .map_err(unavailable)?,
         };
-        let client = tokio::time::timeout(REQUEST_TIMEOUT, RemoteAppServerClient::connect_with_bounded_events(
-            RemoteAppServerConnectArgs {
-                endpoint, client_name: "hepta-authenticated-text-session".into(),
-                client_version: env!("CARGO_PKG_VERSION").into(), experimental_api: true,
-                mcp_server_openai_form_elicitation: false, opt_out_notification_methods: Vec::new(),
-                channel_capacity: 8,
-            }, /*event_channel_capacity*/ 128,
-        )).await.map_err(unavailable)?.map_err(unavailable)?;
+        let client = tokio::time::timeout(
+            REQUEST_TIMEOUT,
+            RemoteAppServerClient::connect_with_bounded_events(
+                RemoteAppServerConnectArgs {
+                    endpoint,
+                    client_name: "hepta-authenticated-text-session".into(),
+                    client_version: env!("CARGO_PKG_VERSION").into(),
+                    experimental_api: true,
+                    mcp_server_openai_form_elicitation: false,
+                    opt_out_notification_methods: Vec::new(),
+                    channel_capacity: 8,
+                },
+                /*event_channel_capacity*/ 128,
+            ),
+        )
+        .await
+        .map_err(unavailable)?
+        .map_err(unavailable)?;
         if client.codex_home() != config.codex_home.to_str() {
             let _ = client.shutdown().await;
             return Err(TextSessionError::Identity);
         }
         let shared = Arc::new(Shared {
-            config, control, ingress_socket: ingress.socket_path, connection_id: client.connection_id(),
-            request_id: AtomicI64::new(1), state: Mutex::new(State::default()),
+            config,
+            control,
+            ingress_socket: ingress.socket_path,
+            connection_id: client.connection_id(),
+            request_id: AtomicI64::new(1),
+            state: Mutex::new(State::default()),
         });
-        let requests = AgentdTextRequests { handle: client.request_handle(), shared: shared.clone() };
-        let response: ThreadResumeResponse = requests.call(ClientRequest::ThreadResume {
-            request_id: requests.id(), params: ThreadResumeParams {
-                thread_id: shared.config.thread_id.clone(), exclude_turns: true, ..Default::default()
-            },
-        }).await?;
+        let requests = AgentdTextRequests {
+            handle: client.request_handle(),
+            shared: shared.clone(),
+        };
+        let response: ThreadResumeResponse = requests
+            .call(ClientRequest::ThreadResume {
+                request_id: requests.id(),
+                params: ThreadResumeParams {
+                    thread_id: shared.config.thread_id.clone(),
+                    exclude_turns: true,
+                    ..Default::default()
+                },
+            })
+            .await?;
         if response.thread.id != shared.config.thread_id
-            || response.thread.session_id != shared.config.app_server_session_id || response.thread.ephemeral
+            || response.thread.session_id != shared.config.app_server_session_id
+            || response.thread.ephemeral
         {
             let _ = client.shutdown().await;
             return Err(TextSessionError::Identity);
         }
-        Ok(Self { requests, events: AgentdTextEvents { client, shared, ended: false } })
+        Ok(Self {
+            requests,
+            events: AgentdTextEvents {
+                client,
+                shared,
+                ended: false,
+            },
+        })
     }
 
     /// Fences old callbacks and keeps every exact signed identity. The caller
     /// supplies fresh installed generation data; pending inputs are looked up,
     /// never re-signed or implicitly submitted. Failure leaves the old owner
     /// fenced and its retained identities available for a subsequent attempt.
-    pub async fn reattach(&self, config: AgentdTextSessionConfig) -> Result<Self, TextSessionError> {
+    pub async fn reattach(
+        &self,
+        config: AgentdTextSessionConfig,
+    ) -> Result<Self, TextSessionError> {
         let old = &self.requests.shared.config;
-        if config.agent_id != old.agent_id || config.thread_id != old.thread_id
-            || config.app_server_session_id != old.app_server_session_id || config.codex_home != old.codex_home
+        if config.agent_id != old.agent_id
+            || config.thread_id != old.thread_id
+            || config.app_server_session_id != old.app_server_session_id
+            || config.codex_home != old.codex_home
             || config.spawn_generation < old.spawn_generation
         {
             return Err(TextSessionError::Identity);
@@ -222,7 +272,9 @@ impl AgentdTextSession {
             let mut state = self.requests.shared.state()?;
             state.fenced = true;
             let mut retained = state.pending.clone();
-            for pending in retained.values_mut() { pending.recovered = true; }
+            for pending in retained.values_mut() {
+                pending.recovered = true;
+            }
             retained
         };
         let next = Self::connect(config).await?;
@@ -235,8 +287,14 @@ fn unavailable(error: impl std::fmt::Display) -> TextSessionError {
     TextSessionError::Unavailable(error.to_string())
 }
 
-fn prepare(config: &AgentdTextSessionConfig, envelope: AuthBusTextIngress) -> Result<Pending, TextSessionError> {
-    if envelope.body.thread_id != config.thread_id || envelope.body.spawn_generation != config.spawn_generation {
+fn prepare(
+    config: &AgentdTextSessionConfig,
+    envelope: AuthBusTextIngress,
+) -> Result<Pending, TextSessionError> {
+    if envelope.body.thread_id != config.thread_id
+        || envelope.body.spawn_generation == 0
+        || envelope.body.spawn_generation > config.spawn_generation
+    {
         return Err(TextSessionError::Identity);
     }
     let message = SignedMessage {
@@ -244,9 +302,25 @@ fn prepare(config: &AgentdTextSessionConfig, envelope: AuthBusTextIngress) -> Re
         signature: crate::authbus_trust::hex_bytes(&envelope.signature_hex).map_err(unavailable)?,
     };
     let delivery_id = message.delivery_id().to_string();
-    let input = vec![UserInput::Text { text: envelope.body.text.clone(), text_elements: Vec::new() }];
-    let core_input = input.iter().cloned().map(UserInput::into_core).collect::<Vec<_>>();
+    let input = vec![UserInput::Text {
+        text: envelope.body.text.clone(),
+        text_elements: Vec::new(),
+    }];
+    let core_input = input
+        .iter()
+        .cloned()
+        .map(UserInput::into_core)
+        .collect::<Vec<_>>();
     let input_digest = user_input_payload_sha256(&core_input).map_err(unavailable)?;
-    Ok(Pending { envelope, client_id: format!("hepta.authbus:{delivery_id}"), delivery_id, input,
-        input_digest, turn_id: None, cancellation_requested: false, terminal: false, recovered: false })
+    Ok(Pending {
+        envelope,
+        client_id: format!("hepta.authbus:{delivery_id}"),
+        delivery_id,
+        input,
+        input_digest,
+        turn_id: None,
+        cancellation_requested: false,
+        terminal: false,
+        recovered: false,
+    })
 }

@@ -110,6 +110,56 @@ fn root_issuer_preserves_typed_objective_then_original_final_use_on_one_lane() {
 }
 
 #[test]
+fn root_text_sign_then_lookup_keeps_original_generation_and_signature_identity() {
+    let (provider, mut server) = fixture(Duration::from_secs(3));
+    let original = crate::AuthBusTextIngress {
+        issuer_id: "protocol-fixture-only".into(),
+        key_epoch: 1,
+        message_id: "protocol-fixture-only:text:1:2".into(),
+        sequence: 2,
+        expires_at_ms: 60_000,
+        signature_hex: "11".repeat(64),
+        body: crate::AuthBusTextBody {
+            spawn_generation: 1,
+            thread_id: "existing-thread".into(),
+            text: "原身份".into(),
+        },
+    };
+    let expected = original.clone();
+    let thread = thread::spawn(move || {
+        for mode in ["sign", "lookup"] {
+            let request = read(&mut server);
+            assert_eq!(request["operation"], "runtime.authbus.text.v1");
+            assert_eq!(request["request_id"], "original:1");
+            assert_eq!(request["mode"], mode);
+            send(
+                &mut server,
+                json!({"schema_version":1,"operation":"runtime.authbus.text.signed.v1","request_id":"original:1","ingress":original}),
+            );
+        }
+    });
+    assert_eq!(
+        provider
+            .text(
+                "original:1",
+                &expected.body,
+                crate::TextIssuerOperation::Sign
+            )
+            .unwrap(),
+        expected
+    );
+    let mut newer = expected.body.clone();
+    newer.spawn_generation = 2;
+    assert_eq!(
+        provider
+            .text("original:1", &newer, crate::TextIssuerOperation::Lookup)
+            .unwrap(),
+        expected
+    );
+    thread.join().unwrap();
+}
+
+#[test]
 fn root_issuer_wrong_body_or_extra_field_permanently_closes_both_operations() {
     for extra in [false, true] {
         let (provider, mut server) = fixture(Duration::from_secs(3));

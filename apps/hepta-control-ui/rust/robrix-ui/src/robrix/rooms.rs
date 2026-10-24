@@ -183,7 +183,7 @@ script_mod! {
 }
 
 #[derive(Clone, Debug, Default)]
-struct SelectRoomAction(Option<RoomKey>);
+pub(crate) struct SelectRoomAction(pub(crate) Option<RoomKey>);
 #[derive(Script, ScriptHook, Widget, Animator)]
 pub struct RoomsListEntry {
     #[source]
@@ -194,6 +194,12 @@ pub struct RoomsListEntry {
     animator: Animator,
     #[rust]
     room: Option<RoomKey>,
+}
+#[cfg(all(feature = "native-presentation", target_os = "linux"))]
+impl RoomsListEntry {
+    pub(crate) fn accessible_room(&self) -> Option<RoomKey> {
+        self.room
+    }
 }
 #[derive(Clone, Copy)]
 struct RowState {

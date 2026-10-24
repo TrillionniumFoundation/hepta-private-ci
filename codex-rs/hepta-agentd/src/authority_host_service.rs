@@ -31,6 +31,9 @@ use checkpoint::RegisteredCheckpoint;
 #[path = "authority_host_consumers.rs"]
 mod consumers;
 use consumers::RegisteredConsumers;
+#[path = "authority_host_text_ui.rs"]
+mod text_ui;
+pub use text_ui::HostAuthorityTextUiRegistration;
 
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]
@@ -327,6 +330,33 @@ impl HostAuthorityService {
                     64 * 1024,
                 )
             }
+            IssuerRequest::Text {
+                schema_version,
+                request_id,
+                body,
+                mode,
+            } => {
+                if schema_version != 1 || bytes.len() > 32 * 1024 {
+                    return Err(HostIssuerTransportError::InvalidRequest);
+                }
+                let ingress = self
+                    .writer
+                    .as_ref()
+                    .ok_or(HostIssuerTransportError::Unavailable)?
+                    .text(&self.issuer, &self.identity, &request_id, body, mode)
+                    .map_err(unavailable)?;
+                // A lookup may return an expired original envelope as identity
+                // evidence. It never extends its expiry or permits a new send.
+                encode_bounded(
+                    &TextResponse {
+                        schema_version: 1,
+                        operation: "runtime.authbus.text.signed.v1",
+                        request_id,
+                        ingress,
+                    },
+                    32 * 1024,
+                )
+            }
         }
     }
 }
@@ -353,6 +383,13 @@ struct ObservationResponse<'a> {
 #[derive(Deserialize)]
 #[serde(tag = "operation", deny_unknown_fields)]
 enum IssuerRequest {
+    #[serde(rename = "runtime.authbus.text.v1")]
+    Text {
+        schema_version: u32,
+        request_id: String,
+        body: crate::AuthBusTextBody,
+        mode: crate::TextIssuerOperation,
+    },
     #[serde(rename = "runtime.agentd.production_operation")]
     FinalUse {
         schema_version: u32,
@@ -363,6 +400,14 @@ enum IssuerRequest {
         schema_version: u32,
         body: AuthBusObjectiveBody,
     },
+}
+
+#[derive(Serialize)]
+struct TextResponse {
+    schema_version: u32,
+    operation: &'static str,
+    request_id: String,
+    ingress: crate::AuthBusTextIngress,
 }
 
 #[derive(Serialize)]

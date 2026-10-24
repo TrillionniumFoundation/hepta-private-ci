@@ -47,11 +47,42 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     } else if command == "serve-session" {
         let config = take("--config")?;
         let registration = take("--registration")?;
+        let text_file = options
+            .remove(std::ffi::OsStr::new("--text-ui-registration"))
+            .map(PathBuf::from);
+        let ui_fd = options.remove(std::ffi::OsStr::new("--text-ui-pidfd"));
         if !options.is_empty() || !pidfd_stdin {
             return Err("unknown option or missing pre-held owner pidfd".into());
         }
         let owner = std::io::stdin().as_fd().try_clone_to_owned()?;
-        codex_hepta_agentd::serve_host_authority_session(&config, &registration, owner)?;
+        let text = match (text_file.as_deref(), ui_fd) {
+            (None, None) => None,
+            (Some(file), Some(fd)) => {
+                let fd: i32 = fd.to_str().ok_or("invalid UI pidfd")?.parse()?;
+                if fd < 3 {
+                    return Err("UI pidfd must be a separately inherited descriptor".into());
+                }
+                // SAFETY: F_GETFD only checks a numeric descriptor; startup is
+                // single-threaded and nothing closes it before the clone.
+                if unsafe { libc::fcntl(fd, libc::F_GETFD) } < 0 {
+                    return Err(std::io::Error::last_os_error().into());
+                }
+                // SAFETY: the existence check above precedes this immediate
+                // clone. The original channel independently checks pidfd type,
+                // actual PID and liveness against the Root registration.
+                let borrowed = unsafe { std::os::fd::BorrowedFd::borrow_raw(fd) };
+                Some((file, borrowed.try_clone_to_owned()?))
+            }
+            _ => {
+                return Err("text UI registration and pre-held pidfd are required together".into());
+            }
+        };
+        codex_hepta_agentd::serve_host_authority_session_with_text(
+            &config,
+            &registration,
+            owner,
+            text,
+        )?;
     } else {
         return Err("unknown authority command".into());
     }

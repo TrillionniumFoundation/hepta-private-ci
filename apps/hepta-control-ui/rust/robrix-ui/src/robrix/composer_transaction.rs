@@ -1,6 +1,10 @@
 //! Roll back a rejected edit using the original SDK editor checkpoint.
 //! Text, selection and undo history stay together and never cross a RoomKey.
-use crate::presentation::{ActionResult, PresentationAction, PresentationCommand, RoomKey, apply_action};
+use crate::presentation::ActionResult;
+use crate::presentation::PresentationAction;
+use crate::presentation::PresentationCommand;
+use crate::presentation::RoomKey;
+use crate::presentation::apply_action;
 use hepta_control_core::chat::ChatWorkspace;
 use makepad_widgets::*;
 
@@ -41,10 +45,13 @@ impl ComposerTransaction {
         source: RoomKey,
         text: String,
     ) -> ActionResult {
-        let result = apply_action(workspace, PresentationAction {
-            source,
-            command: PresentationCommand::Edit(text),
-        });
+        let result = apply_action(
+            workspace,
+            PresentationAction {
+                source,
+                command: PresentationCommand::Edit(text),
+            },
+        );
         if result == ActionResult::Rejected
             && let Some((key, state)) = &self.saved
             && *key == source

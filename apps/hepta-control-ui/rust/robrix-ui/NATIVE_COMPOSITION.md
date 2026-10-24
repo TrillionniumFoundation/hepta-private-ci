@@ -45,8 +45,16 @@ three-slot Desktop UI.
 The original App owns exactly one `ImeRouter`. Event dispatch, pointer gating,
 composing state, focus synchronization and adaptive-layout holding remain in
 the original modules. The client does not normalize keys in parallel or install
-another input route. Native IME, accessibility and mobile acceptance still need
-their own implementation and device tests.
+another input route. Native IME and mobile acceptance require their own device
+tests. On Linux, the composition includes an AccessKit Unix adapter for AT-SPI.
+It walks the SDK's active widget visitor after Draw, so cached inactive layout
+branches are omitted. Text fields, original buttons, room choices and labels are
+projected with their actual focus, enabled state and clipped bounds. Caret and
+selection offsets follow the same pinned SDK grapheme segmentation as TextInput.
+Assistive actions enter a bounded mailbox, then use original widget actions or
+TextInput edits on the UI thread. The current RoomKey and IME guard are checked
+again; stale node identities cannot act on a different room. This bridge still
+requires real AT-SPI/Orca execution against the selected binary.
 
 The original native editor snapshots the SDK's complete valid editor state before
 input. A rejected over-limit/NUL edit restores that text, selection and undo

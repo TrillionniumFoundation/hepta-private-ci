@@ -5,7 +5,8 @@ use std::cell::Cell;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use crate::native_launch::{LaunchMode, RunOutcome};
+use crate::native_launch::LaunchMode;
+use crate::native_launch::RunOutcome;
 
 /// A Linux development runner. The original owner/witness and close protocol
 /// remains here; only event-loop admission is shared with presentation mode.
