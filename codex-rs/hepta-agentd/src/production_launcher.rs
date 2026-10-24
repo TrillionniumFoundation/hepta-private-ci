@@ -141,6 +141,18 @@ impl AgentdProductionLaunch {
         let mut mcp: Option<codex_app_server::ConfiguredMcpRuntime> = None;
         let mut android_device: Option<Arc<crate::AgentdAndroidTextDevice>> = None;
         let result = async {
+            // The Root late handoff is already complete. Read the original
+            // sealed Notes deployment once, before receiving its application
+            // offer, so the trusted Session's staged reservation can be
+            // activated only after the actual original owners are ready.
+            let mut notes_ui = notes_ui.map(|ui| {
+                Ok::<_, AgentdError>((
+                    notes_deployment::read(ui.deployment, config.identity())?,
+                    ui.listener,
+                    ui.session_pidfd,
+                ))
+            }).transpose()?;
+            let release = notes_ui.as_mut().and_then(|(deployment, _, _)| deployment.startup_release.take());
             let (attachment, android_deadline) = match primary {
                 PrimaryInputs::Android { server, environment, payload, deadline } => {
                     let payload_json = inputs::read_payload(payload)?;
@@ -164,8 +176,9 @@ impl AgentdProductionLaunch {
                     let (target, device) = crate::prepare_android_runtime_target(android)?;
                     android_device = Some(device);
                     let target: Arc<dyn FinalUseProductionOutboxTarget> = target;
-                    let attachment = crate::attach_root_production_operation_host(
+                    let attachment = crate::attach_root_production_operation_host_with_startup(
                         &mut config, self.root, target, notes, Duration::from_millis(100),
+                        release,
                     ).await?;
                     (attachment, Some(deadline))
                 }
@@ -173,15 +186,15 @@ impl AgentdProductionLaunch {
                     let notes = notes.ok_or_else(|| AgentdError::Invalid(
                         "original Notes primary has no application handoff".into(),
                     ))?;
-                    let attachment = crate::attach_root_notes_operation_host(
+                    let attachment = crate::attach_root_notes_operation_host_with_startup(
                         &mut config, self.root, notes, Duration::from_millis(100),
+                        release,
                     ).await?;
                     (attachment, None)
                 }
             };
-            if let Some(ui) = notes_ui {
-                let notes_deployment::NotesDeployment { bindings, peer, previous_recovery } =
-                    notes_deployment::read(ui.deployment, config.identity())?;
+            if let Some((deployment, listener, session_pidfd)) = notes_ui {
+                let notes_deployment::NotesDeployment { bindings, peer, previous_recovery, startup_release: _ } = deployment;
                 if let Some(previous) = previous_recovery {
                     config = config.with_original_notes_previous_recovery(previous)?;
                 }
@@ -190,9 +203,9 @@ impl AgentdProductionLaunch {
                 )?;
                 config = configured;
                 let expected_path = config.identity().run_root.join("notes-objective.sock");
-                let listener = crate::listen_root_bound_socket(ui.listener, &expected_path)?;
+                let listener = crate::listen_root_bound_socket(listener, &expected_path)?;
                 let runtime = crate::AgentdNotesUiRuntime::from_inherited(
-                    listener, ui.session_pidfd, crate::AgentdNotesUiPeer {
+                    listener, session_pidfd, crate::AgentdNotesUiPeer {
                         uid: peer.uid, pid: peer.pid, boot_id: peer.boot_id,
                         process_start_ticks: peer.process_start_ticks,
                     }, adapter,

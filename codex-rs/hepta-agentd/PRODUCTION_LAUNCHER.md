@@ -100,10 +100,13 @@ Notes action retains its own original protected source/sender deadline.
    unattended approval in the effective original MCP policy. This entry does
    not convert an interactive approval policy into an unattended one.
 6. For `android`, the real Android target is the primary target of
-   `attach_root_production_operation_host`. Optional Notes is attached through
-   its original Session channel before the same recovered writer is published.
-   For `notes`, `attach_root_notes_operation_host` receives that same original
+   `attach_root_production_operation_host_with_startup`. Optional Notes is
+   attached through its original Session channel before the same recovered
+   writer is published. For `notes`,
+   `attach_root_notes_operation_host_with_startup` receives that same original
    Root input bundle and uses the actual Notes target as the only primary.
+   A staged Session reservation is activated once at this point, using the
+   actual target and nonce retained by Root in the sealed Notes deployment.
    The original `run` then owns control/App Server and the operation runtime.
    The launcher retains the Root attachment and MCP manager until it exits,
    invalidates the one-shot Android effect lane and closes the original MCP
@@ -154,6 +157,7 @@ Root authority handoff.
 | `bindings.policy_generation`, `bindings.locale` | Original nonzero policy generation and the admitted `en-US` or `zh-CN` locale |
 | `bindings.runtime_body_digest`, `bindings.preference_state_digest`, `bindings.model_tuple_digest`, `bindings.prompt_registry_digest`, `bindings.artifact_set_digest` | Exact retained runtime/artifact inputs; no default, zero digest or invented no-model identity |
 | Optional `previous_recovery` | Exact original `helper`, `helper_sha256`, `state_directory`, `previous_target`, `operation_id`; no directory discovery or new old-incarnation effect permission |
+| Optional `startup_release` | Actual `target` and `nonce` from the original Session's staged reservation; no replacement target or generated nonce |
 
 The original Session bridge requires both private socket owner and peer UID to
 equal its own UID. Therefore this profile uses the same dedicated UID for
@@ -179,13 +183,29 @@ configured chat socket also does not create that route. The Root service must
 have registered this actual Session target with its retained original Notes
 grant route before any effect can be admitted.
 
-The original Session application offer currently allows two seconds for its
-attachment ACK. The trusted process launcher must coordinate when that offer
-begins with this entry's readiness to receive it; Root and MCP startup can take
-longer than two seconds. The 30-second Root/Android startup budget does not
-extend the existing Session offer or any native effect deadline. A production
-launch must prove that synchronization with the actual retained Session PID;
-inventing a future PID or treating a timed-out offer as attached is invalid.
+The original Session application offer allows two seconds for its attachment
+ACK. Its explicit staged startup mode first holds the actual Notes endpoints
+and sends only a reservation containing the real target and nonce to Root.
+Root uses that reservation to register its original Notes grant route and fill
+`startup_release`; no effect descriptor or attachment ACK is created by the
+reservation. The launcher reads this sealed deployment once before composition
+and passes its release to the protected factory. Only after Root recovery and,
+for `android`, original MCP readiness does the factory send the matching
+activation and receive the original two-descriptor offer. The independent
+30-second reservation wait does not extend the original two-second offer/ACK
+or any effect deadline. A missing or expired reservation fails closed. The old
+nonstaged input continues to use its original offer deadline.
+
+The Root late handoff is also the barrier before reading the Notes deployment.
+If Root creates that deployment after the Agentd child exists, it must complete
+and seal the original memfd before sending the late Root handoff. The child
+inherits only an independently opened `O_RDONLY` descriptor; `dup` of Root's
+`O_RDWR` producer descriptor would retain write access and is refused during
+the child's preflight. Root can open `/proc/self/fd/<producer>` read-only before
+the child drops credentials, then pass the two descriptions only to their
+respective owners. The child cannot fill or reseal deployment data. The same
+read-only input requirement applies to the sealed Android payload. Actual
+process PIDs, births and pidfds remain mandatory at each boundary.
 
 No test fixture, source compilation, listening socket or successful MCP
 initialization proves a real device effect. Qualification must separately

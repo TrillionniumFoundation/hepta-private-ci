@@ -17,11 +17,13 @@ use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdNotesLiteralBindings;
 use crate::AgentdNotesPreviousRecoveryLaunch;
+use crate::AgentdNotesStartupRelease;
 
 pub(super) struct NotesDeployment {
     pub(super) bindings: AgentdNotesLiteralBindings,
     pub(super) peer: NotesUiPeer,
     pub(super) previous_recovery: Option<AgentdNotesPreviousRecoveryLaunch>,
+    pub(super) startup_release: Option<AgentdNotesStartupRelease>,
 }
 
 #[derive(Deserialize)]
@@ -43,6 +45,15 @@ struct Deployment {
     bindings: Bindings,
     #[serde(default)]
     previous_recovery: Option<PreviousRecovery>,
+    #[serde(default)]
+    startup_release: Option<StartupRelease>,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct StartupRelease {
+    target: NotesTargetIdentity,
+    nonce: String,
 }
 
 #[derive(Deserialize)]
@@ -120,7 +131,11 @@ pub(super) fn read(
             operation_id: previous.operation_id,
         })
     }).transpose()?;
-    Ok(NotesDeployment { bindings: frozen, peer: value.session, previous_recovery })
+    let startup_release = value.startup_release.map(|release| AgentdNotesStartupRelease {
+        target: release.target,
+        nonce: release.nonce,
+    });
+    Ok(NotesDeployment { bindings: frozen, peer: value.session, previous_recovery, startup_release })
 }
 
 fn digest(value: &str) -> Result<Digest32, AgentdError> {
