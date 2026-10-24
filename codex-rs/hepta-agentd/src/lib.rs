@@ -87,8 +87,6 @@ pub use authority_host_service::HostAuthorityService;
 #[cfg(target_os = "linux")]
 mod root_authority_session;
 #[cfg(target_os = "linux")]
-mod root_observation_cache;
-#[cfg(target_os = "linux")]
 mod root_observation_stream;
 #[cfg(target_os = "linux")]
 pub use root_authority_session::AgentdRootAuthoritySession;
