@@ -1,0 +1,131 @@
+[
+  {
+    "stage": "install",
+    "command": [
+      "/usr/bin/python3",
+      "/home/qian-qi/workspace/hepta-native-agent-evidence-20261024/effect-clock-gate-v2/installer.py",
+      "--worktree",
+      "/home/qian-qi/workspace/hepta-native-agent-20261024",
+      "--apply"
+    ],
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 0.16447229904588312,
+    "log_sha256": "1cba091b448a4379f66a9d3b8629be9cefcc5d27d5485d6ac9359ad632e07385"
+  },
+  {
+    "stage": "focused-clock",
+    "command": [
+      "just",
+      "test",
+      "-p",
+      "codex-hepta-automation",
+      "effect_clock",
+      "--test-threads",
+      "1",
+      "--retries",
+      "0"
+    ],
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 32.707294735941105,
+    "log_sha256": "c640f72df68c29d9e3120fcf5730dfaade89df51b55754b201ac6459e93f6867"
+  },
+  {
+    "stage": "full-original-owners",
+    "command": [
+      "just",
+      "test",
+      "-p",
+      "codex-hepta-automation",
+      "-p",
+      "codex-hepta-contracts",
+      "--test-threads",
+      "1",
+      "--retries",
+      "0"
+    ],
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 157.35313343803864,
+    "log_sha256": "35cf21dde1a0b5a67d842c82b14cc5a26d976c132e1f644a853b2a202c1bb6e4"
+  },
+  {
+    "stage": "native-loop-qualification",
+    "command": [
+      "just",
+      "test",
+      "-p",
+      "codex-hepta-agent-loop",
+      "-p",
+      "codex-hepta-agent-qualification",
+      "--all-features",
+      "--test-threads",
+      "1",
+      "--retries",
+      "0"
+    ],
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 318.5934673320735,
+    "log_sha256": "474e66700ee22be620bd90963eea1d2f84f3ad79fd0ed23328e597e17df1ade7"
+  },
+  {
+    "stage": "scoped-fix",
+    "command": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-automation",
+      "-p",
+      "codex-hepta-contracts"
+    ],
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 62.83923408098053,
+    "log_sha256": "17c92984cc429ac64993c228cf771980104bad863d731893fdba1418d7b92217"
+  },
+  {
+    "stage": "format",
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 1.769812116981484,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "stage": "clippy-full-dependency-graph",
+    "command": [
+      "cargo",
+      "clippy",
+      "--locked",
+      "-p",
+      "codex-hepta-automation",
+      "-p",
+      "codex-hepta-agent-loop",
+      "-p",
+      "codex-hepta-agent-qualification",
+      "--all-features",
+      "--all-targets"
+    ],
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 67.60755380103365,
+    "log_sha256": "5fc5703eadc74d5960144a17b201dfdca8b8de524a7f936ff64ab73310e57ca6"
+  },
+  {
+    "stage": "diff-check",
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 0.033082762034609914,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

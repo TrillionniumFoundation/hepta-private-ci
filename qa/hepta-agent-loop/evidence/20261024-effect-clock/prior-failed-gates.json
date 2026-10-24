@@ -1,0 +1,34 @@
+[
+  {
+    "stage": "install",
+    "command": [
+      "/usr/bin/python3",
+      "/home/qian-qi/workspace/hepta-native-agent-evidence-20261024/effect-clock-gate-v1/installer.py",
+      "--worktree",
+      "/home/qian-qi/workspace/hepta-native-agent-20261024",
+      "--apply"
+    ],
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 0.5159856509417295,
+    "log_sha256": "bd001601da57ba0495971a5b92b56c3f434a80436f408abc7efb2e53e935b847"
+  },
+  {
+    "stage": "focused-clock",
+    "command": [
+      "just",
+      "test",
+      "-p",
+      "codex-hepta-automation",
+      "effect_clock",
+      "--test-threads",
+      "1",
+      "--retries",
+      "0"
+    ],
+    "returncode": 100,
+    "timed_out": false,
+    "wall_seconds": 189.3292770650005,
+    "log_sha256": "7ca6cd12071a4ae874859eba32e006df25dc51af86eee0312203868765262cc2"
+  }
+]

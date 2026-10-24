@@ -69,6 +69,9 @@ const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 static NEXT_TEST_NONCE: AtomicU64 = AtomicU64::new(1);
 const EFFECT_PAYLOAD: &[u8] = b"effect-payload";
 
+#[path = "support/authorized_effect_clock_tests.rs"]
+mod clock_tests;
+
 struct Fixture {
     _temp: tempfile::TempDir,
     layout: HeptaAgentLayout,
@@ -1227,3 +1230,6 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
     );
     assert_eq!(must_not_dispatch.calls, 0);
 }
+
+#[path = "support/authorized_effect_admission_races.rs"]
+mod admission_races;

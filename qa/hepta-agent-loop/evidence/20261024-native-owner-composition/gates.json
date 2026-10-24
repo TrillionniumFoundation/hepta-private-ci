@@ -1,0 +1,101 @@
+[
+  {
+    "stage": "native-loop-qualification",
+    "command": [
+      "just",
+      "test",
+      "-p",
+      "codex-hepta-agent-loop",
+      "-p",
+      "codex-hepta-agent-qualification",
+      "--features",
+      "codex-hepta-agent-loop/context-v2,codex-hepta-agent-loop/managed-responses,codex-hepta-agent-loop/taskflow-owner,codex-hepta-agent-loop/automation-effects",
+      "--retries",
+      "0"
+    ],
+    "returncode": 0,
+    "wall_seconds": 26.37545988894999,
+    "log_sha256": "d58213632b2b7b78f92dca1722ed0492f4353e97ae3de3c041766d61b7ebf083"
+  },
+  {
+    "stage": "scoped-fix",
+    "command": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-agent-loop",
+      "-p",
+      "codex-hepta-agent-qualification",
+      "-p",
+      "codex-hepta-automation"
+    ],
+    "returncode": 0,
+    "wall_seconds": 64.33415001595858,
+    "log_sha256": "39230a7a48e3a45d2a1036c8e1cf02056d7070d31bee4f0aea2386f9075bd052"
+  },
+  {
+    "stage": "format",
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "returncode": 0,
+    "wall_seconds": 13.465895821922459,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "stage": "bazel-lock",
+    "command": [
+      "just",
+      "bazel-lock-update"
+    ],
+    "returncode": 0,
+    "wall_seconds": 16.465190098038875,
+    "log_sha256": "0c8f22aaa0b04fcd8022677943530ec017ee43f4f4845e9bc993ec4783343e98"
+  },
+  {
+    "stage": "clippy-full-dependency-graph",
+    "command": [
+      "cargo",
+      "clippy",
+      "--locked",
+      "-p",
+      "codex-hepta-agent-loop",
+      "-p",
+      "codex-hepta-agent-qualification",
+      "-p",
+      "codex-hepta-automation",
+      "--all-targets",
+      "--all-features"
+    ],
+    "returncode": 0,
+    "wall_seconds": 284.5158912469633,
+    "log_sha256": "05d38e2248a179d2bcc471e14d2d8961456dd36c7325bf113056705a994418d5"
+  },
+  {
+    "stage": "normal-qualification-binary",
+    "command": [
+      "cargo",
+      "build",
+      "--locked",
+      "-p",
+      "codex-hepta-agent-qualification",
+      "--bin",
+      "hepta-native-provider-qualification"
+    ],
+    "returncode": 0,
+    "wall_seconds": 88.50094641791657,
+    "log_sha256": "e154e7751e254200259402f3ab047110fa0387e42d72f09bbdf4502a61c51709"
+  },
+  {
+    "stage": "diff-check",
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "returncode": 0,
+    "wall_seconds": 0.02435786195565015,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

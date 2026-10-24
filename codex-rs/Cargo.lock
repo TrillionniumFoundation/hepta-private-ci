@@ -3447,6 +3447,35 @@ dependencies = [
 ]
 
 [[package]]
+name = "codex-hepta-agent-loop"
+version = "0.0.0"
+dependencies = [
+ "codex-api",
+ "codex-extension-api",
+ "codex-hepta-automation",
+ "codex-hepta-context-compiler",
+ "codex-hepta-contracts",
+ "codex-hepta-fleet",
+ "codex-hepta-paths",
+ "codex-hepta-types",
+ "codex-http-client",
+ "codex-login",
+ "codex-model-provider",
+ "codex-protocol",
+ "ed25519-dalek",
+ "futures",
+ "http 1.5.0",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "tokio-util",
+ "tracing",
+]
+
+[[package]]
 name = "codex-hepta-agent-protocol"
 version = "0.0.0"
 dependencies = [
@@ -3455,6 +3484,39 @@ dependencies = [
  "codex-hepta-fleet",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "codex-hepta-agent-qualification"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "clap",
+ "codex-api",
+ "codex-core",
+ "codex-extension-api",
+ "codex-features",
+ "codex-hepta-agent-loop",
+ "codex-hepta-contracts",
+ "codex-hepta-governance",
+ "codex-hepta-types",
+ "codex-http-client",
+ "codex-login",
+ "codex-model-provider",
+ "codex-models-manager",
+ "codex-protocol",
+ "codex-state",
+ "codex-utils-absolute-path",
+ "futures",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "tokio-util",
+ "url",
+ "uuid",
 ]
 
 [[package]]

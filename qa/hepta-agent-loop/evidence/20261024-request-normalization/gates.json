@@ -1,0 +1,165 @@
+[
+  {
+    "stage": "install",
+    "command": [
+      "/usr/bin/python3",
+      "/home/qian-qi/workspace/hepta-native-agent-evidence-20261024/normalization-gate-v2/installer.py",
+      "--worktree",
+      "/home/qian-qi/workspace/hepta-native-agent-20261024",
+      "--apply"
+    ],
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 0.21495894703548402,
+    "log_sha256": "e0e88a63bfbfc5acab32b6d517351bed731ec47a83639e0e8a4d9f2ba56e717c"
+  },
+  {
+    "stage": "shared-model-settings",
+    "command": [
+      "just",
+      "test",
+      "-p",
+      "codex-model-provider",
+      "response_settings",
+      "--retries",
+      "0"
+    ],
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 402.57110604504123,
+    "log_sha256": "3130b4f8eff4cefd745014b8eab217ba66366f944fe4fb49e819df2fba6ccd6c"
+  },
+  {
+    "stage": "qualifier",
+    "command": [
+      "just",
+      "test",
+      "-p",
+      "codex-hepta-agent-qualification",
+      "--retries",
+      "0"
+    ],
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 203.30862212495413,
+    "log_sha256": "53a4cb25d0f3941aa362c03becf16ebf491280df20404148644d3a08212a09cb"
+  },
+  {
+    "stage": "dispatch-metadata",
+    "command": [
+      "just",
+      "test",
+      "-p",
+      "codex-api",
+      "dispatch_metadata",
+      "--retries",
+      "0"
+    ],
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 199.54217220004648,
+    "log_sha256": "afd084adbcbe53aca06d9eae59bbb05b7ac635c6b401941a4e226c5188bb6ed3"
+  },
+  {
+    "stage": "core-client",
+    "command": [
+      "just",
+      "test",
+      "-p",
+      "codex-core",
+      "client::tests",
+      "--lib",
+      "--retries",
+      "0"
+    ],
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 965.7028631020803,
+    "log_sha256": "5981877020888fc6bce5ff64d2840c8211b1a56cb7d10c813494e86e453e87e8"
+  },
+  {
+    "stage": "scoped-fix",
+    "command": [
+      "just",
+      "fix",
+      "-p",
+      "codex-model-provider",
+      "-p",
+      "codex-hepta-agent-qualification",
+      "-p",
+      "codex-core"
+    ],
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 491.0517866649898,
+    "log_sha256": "ac415da327782bb48ad15ff47906fab6243e6269607b98974a3a020f8d718aa8"
+  },
+  {
+    "stage": "format",
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 1.1671264870092273,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "stage": "bazel-lock",
+    "command": [
+      "just",
+      "bazel-lock-update"
+    ],
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 39.075837722979486,
+    "log_sha256": "954bf00356962677bf62f82ea79be6fa4932c19bfe92ecc4eda587659485ba58"
+  },
+  {
+    "stage": "clippy-full-dependency-graph",
+    "command": [
+      "cargo",
+      "clippy",
+      "--locked",
+      "-p",
+      "codex-model-provider",
+      "-p",
+      "codex-hepta-agent-qualification",
+      "-p",
+      "codex-core",
+      "--all-targets",
+      "--all-features"
+    ],
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 378.65985211508814,
+    "log_sha256": "45a0cfa2aa9ce2da7df945219eef925c5f0da4b95f0c26c47b6fcdafef44b218"
+  },
+  {
+    "stage": "build-qualifier",
+    "command": [
+      "cargo",
+      "build",
+      "--locked",
+      "-p",
+      "codex-hepta-agent-qualification"
+    ],
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 130.9958554279292,
+    "log_sha256": "d2c5dc06eb628f3e4eb07ca23cf01e8bbc2967d72d533f5a24273b90a0f5ff29"
+  },
+  {
+    "stage": "diff-check",
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 0.6694566359510645,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

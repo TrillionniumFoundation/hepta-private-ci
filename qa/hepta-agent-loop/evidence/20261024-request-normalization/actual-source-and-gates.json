@@ -1,0 +1,141 @@
+{
+  "schema": "hepta.native-normalization.actual-gates:v1",
+  "source_base": "95943a632f607f497f9ce63b001cd297276e1d7e",
+  "installer_sha256": "e8a6e6cda16eb4e653183f3e61e287d95fe20601b11f9c9aeaf64e37bc7cedc6",
+  "gate_job": "1a16d555785-1b6abb-4902",
+  "enclosing_job_terminal_receipt": {
+    "at_unix_ms": 1792838492551,
+    "audit_recorded": true,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a16d555785-1b6abb-4902",
+    "log_bytes": {
+      "stderr": {
+        "seen": 405,
+        "stored": 405
+      },
+      "stdout": {
+        "seen": 3061,
+        "stored": 3061
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "state": "failed",
+    "timed_out": false
+  },
+  "enclosing_job_stderr": "Traceback (most recent call last):\n  File \"<string>\", line 35, in <module>\n  File \"/usr/lib/python3.12/pathlib.py\", line 842, in stat\n    return os.stat(self, follow_symlinks=follow_symlinks)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/home/qian-qi/workspace/hepta-native-agent-target-20261024/debug/codex-hepta-agent-qualification'\n",
+  "gate_command_results_are_separate_from_enclosing_collector": true,
+  "collector_correction": "The enclosing runner used the package name as the executable basename after every gate had completed. The actual Cargo [[bin]] is hepta-native-provider-qualification. This receipt hashes that actual built artifact; no test was rerun or failed test relabelled.",
+  "compiled_binary": {
+    "path": "/home/qian-qi/workspace/hepta-native-agent-target-20261024/debug/hepta-native-provider-qualification",
+    "bytes": 761977232,
+    "sha256": "739866a6c1f260d6036765bd214cb2152195847e44464191764ba7e4dba3311c",
+    "profile": "debug",
+    "core_linked": true,
+    "memory_qualification": false
+  },
+  "actual_test_summaries": {
+    "shared-model-settings": [
+      "    Starting 6 tests across 1 binary (83 tests skipped)",
+      "     Summary [   0.044s] 6 tests run: 6 passed, 83 skipped"
+    ],
+    "qualifier": [
+      "    Starting 20 tests across 1 binary",
+      "     Summary [   0.488s] 20 tests run: 20 passed, 0 skipped"
+    ],
+    "dispatch-metadata": [
+      "    Starting 2 tests across 5 binaries (183 tests skipped)",
+      "     Summary [   0.016s] 2 tests run: 2 passed, 183 skipped"
+    ],
+    "core-client": [
+      "    Starting 24 tests across 1 binary (2411 tests skipped)",
+      "     Summary [   0.847s] 24 tests run: 24 passed, 2411 skipped"
+    ]
+  },
+  "formatted_source_files": [
+    {
+      "path": "codex-rs/core/src/client.rs",
+      "bytes": 161188,
+      "sha256": "0622a1f4ca5628dddb4c084237e95227aa14c2e7985ecd003fd512f191027f76"
+    },
+    {
+      "path": "codex-rs/model-provider/src/lib.rs",
+      "bytes": 2164,
+      "sha256": "fc52c7fa26c50713e67fb71103d9be446c420c5742e9ab37d0eedc292d7fa394"
+    },
+    {
+      "path": "codex-rs/model-provider/Cargo.toml",
+      "bytes": 1300,
+      "sha256": "556120ae461f73fb59be6eb34c79dbffb97bed84d0c9366d2133c5d3d1924232"
+    },
+    {
+      "path": "codex-rs/hepta-agent-qualification/Cargo.toml",
+      "bytes": 1470,
+      "sha256": "5d1ccfb0f4f42d2701ea822f69b88fc82cc091117d4e0560af4266c70b5a6610"
+    },
+    {
+      "path": "codex-rs/hepta-agent-qualification/src/main.rs",
+      "bytes": 4248,
+      "sha256": "c04f7fb61305fa66fc7905ad4a2f14794ddc69e9a0d45939c401a0ea0a2b78bb"
+    },
+    {
+      "path": "codex-rs/hepta-agent-qualification/src/probe.rs",
+      "bytes": 15841,
+      "sha256": "bb336db9cf6bca31718555dfbf04cae5a101f03b9983d2aab288747103ce563e"
+    },
+    {
+      "path": "codex-rs/hepta-agent-qualification/src/policy.rs",
+      "bytes": 7240,
+      "sha256": "5842e00e512a6606dfacf6df41dc71ee4fcdddceb4c578b150c2fc4e7060b915"
+    },
+    {
+      "path": "codex-rs/model-provider/src/response_settings.rs",
+      "bytes": 2805,
+      "sha256": "7a4f7d6dc5bb04639f30632ea55484aae8f5db7a2669887a9c4580033f70cbae"
+    },
+    {
+      "path": "codex-rs/model-provider/src/response_settings_tests.rs",
+      "bytes": 4006,
+      "sha256": "f50380081a2f1c503abd3588950e3833b79cffda76429c4b4dffe1df4d7fa1eb"
+    },
+    {
+      "path": "codex-rs/hepta-agent-qualification/src/probe_settings.rs",
+      "bytes": 4812,
+      "sha256": "34b64087a3113c28041e78aaf2549afa66f34778d66154da4aed1445a92f5c56"
+    },
+    {
+      "path": "codex-rs/hepta-agent-qualification/src/probe_settings_tests.rs",
+      "bytes": 931,
+      "sha256": "718317be6777aa054a4d9017156632674569aedc3f6bcfbf77c851a212b60820"
+    },
+    {
+      "path": "codex-rs/hepta-agent-qualification/src/request_wire.rs",
+      "bytes": 2716,
+      "sha256": "44401beb9ebec480da680bc1595465a0541273a65d5f053ebbbd25dcb863b648"
+    },
+    {
+      "path": "codex-rs/hepta-agent-qualification/src/request_wire_tests.rs",
+      "bytes": 1568,
+      "sha256": "56f2a5838eacfec143cfdf835d08e040dba6df5d538bf8a91b52bf6f66b6f152"
+    },
+    {
+      "path": "codex-rs/hepta-agent-qualification/REQUEST_NORMALIZATION.md",
+      "bytes": 6337,
+      "sha256": "c125c45ee18056f3217acf0b2d0a11378f2a9a83320f313637e9f8e4710ee08f"
+    }
+  ],
+  "source_capture_boundary": "Source and actual binary are hashed at publication after gates. The failed enclosing collector did not create a gate-end source/binary snapshot. Continuity relies on the isolated worktree's single writer with no source mutation between gates and publication; this is not a separately timestamped cryptographic gate-end binding.",
+  "original_failed_provider_attempt_retried": false,
+  "new_live_provider_calls": 0,
+  "primary_task_ab_attempts": 0,
+  "deployed_runtime_or_service_changed": false,
+  "required_full_workspace_gate": "pending final bounded source composition; root AGENTS requires this after Core changes"
+}

@@ -1,0 +1,35 @@
+{
+  "command": [
+    "cargo",
+    "tree",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agent-loop",
+    "--all-features",
+    "--edges",
+    "normal",
+    "--target",
+    "x86_64-unknown-linux-gnu",
+    "--prefix",
+    "none"
+  ],
+  "returncode": 0,
+  "unique_tree_lines": 1138,
+  "core_or_app_server": [],
+  "agentd": [],
+  "hepta_dependencies": [
+    "codex-hepta-agent-loop v0.0.0 (/home/qian-qi/workspace/hepta-native-agent-20261024/codex-rs/hepta-agent-loop)",
+    "codex-hepta-automation v0.0.0 (/home/qian-qi/workspace/hepta-native-agent-20261024/codex-rs/hepta-automation)",
+    "codex-hepta-context-compiler v0.0.0 (/home/qian-qi/workspace/hepta-native-agent-20261024/codex-rs/hepta-context-compiler)",
+    "codex-hepta-contracts v0.0.0 (/home/qian-qi/workspace/hepta-native-agent-20261024/codex-rs/hepta-contracts)",
+    "codex-hepta-contracts v0.0.0 (/home/qian-qi/workspace/hepta-native-agent-20261024/codex-rs/hepta-contracts) (*)",
+    "codex-hepta-operations v0.0.0 (/home/qian-qi/workspace/hepta-native-agent-20261024/codex-rs/hepta-operations)",
+    "codex-hepta-paths v0.0.0 (/home/qian-qi/workspace/hepta-native-agent-20261024/codex-rs/hepta-paths)",
+    "codex-hepta-types v0.0.0 (/home/qian-qi/workspace/hepta-native-agent-20261024/codex-rs/hepta-types)",
+    "codex-hepta-types v0.0.0 (/home/qian-qi/workspace/hepta-native-agent-20261024/codex-rs/hepta-types) (*)",
+    "codex-hepta-wire v0.0.0 (/home/qian-qi/workspace/hepta-native-agent-20261024/codex-rs/hepta-wire)"
+  ],
+  "stderr": "",
+  "scope": "normal Linux dependency edges; no dev/build edges; no performance/RSS claim"
+}

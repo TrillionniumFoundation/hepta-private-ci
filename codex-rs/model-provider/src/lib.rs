@@ -4,6 +4,7 @@ mod bearer_auth_provider;
 mod models_endpoint;
 mod provider;
 mod provider_effect;
+mod response_settings;
 mod shared_state;
 
 pub use amazon_bedrock::is_supported_amazon_bedrock_region;
@@ -41,3 +42,7 @@ pub use provider_effect::PROVIDER_EFFECT_PAYLOAD_SHA256_HEADER;
 pub use provider_effect::PROVIDER_EFFECT_SCHEMA_VERSION_HEADER;
 pub use provider_effect::PreparedProviderEffectDispatch;
 pub use provider_effect::prepare_provider_effect_dispatch;
+pub use response_settings::ResponsesModelSettings;
+pub use response_settings::normalized_response_effort;
+pub use response_settings::normalized_response_reasoning;
+pub use response_settings::normalized_response_verbosity;

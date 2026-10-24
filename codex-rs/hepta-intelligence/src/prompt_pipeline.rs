@@ -170,6 +170,11 @@ pub enum PromptPipelineErrorV1 {
     SerializedPayloadMissing(String),
     SerializationProofDrift,
     ProviderEvidenceRequired,
+    SelectedTokenCountMismatch {
+        realization_id: String,
+        registered: u64,
+        observed: u64,
+    },
     Arithmetic,
 }
 
@@ -412,12 +417,39 @@ pub fn compile_exercised_prompt_context_v1(
     })
 }
 
+/// Compatibility path using stored fragment counts. Hosts that have the
+/// original profile-bound tokenizer should use
+/// `prepare_prompt_delivery_with_tokenizer_v1` to count final framing as well.
 pub fn prepare_prompt_delivery_v1(
     registry: &DurablePromptRegistry,
     portfolio: &SelectedPromptPortfolioV1,
     prepared: &PreparedPromptContextV1,
     request: PromptDeliveryPrepareRequestV1,
 ) -> Result<PreparedPromptDeliveryV1, PromptPipelineErrorV1> {
+    prepare_prompt_delivery_internal_v1(
+        registry,
+        portfolio,
+        prepared,
+        request,
+        None::<&RegistryBoundTokenizer>,
+    )
+}
+
+pub(crate) fn prepare_prompt_delivery_internal_v1(
+    registry: &DurablePromptRegistry,
+    portfolio: &SelectedPromptPortfolioV1,
+    prepared: &PreparedPromptContextV1,
+    request: PromptDeliveryPrepareRequestV1,
+    exact_tokenizer: Option<&impl ExactTokenizerV2>,
+) -> Result<PreparedPromptDeliveryV1, PromptPipelineErrorV1> {
+    if exact_tokenizer.is_some_and(|tokenizer| {
+        tokenizer.tokenizer_digest() != prepared.model_profile.tokenizer_digest
+    }) {
+        return Err(PromptPipelineErrorV1::ContextCompiler(format!(
+            "{:?}",
+            ContextCompilerV2Error::TokenizerProfileMismatch
+        )));
+    }
     let receipt = prepared.compiled.receipt();
     if receipt.objective_digest() != portfolio.objective_digest
         || receipt.prompt_portfolio_digest() != portfolio.receipt.receipt_digest
@@ -463,10 +495,20 @@ pub fn prepare_prompt_delivery_v1(
             | PromptRoleV2::DeveloperInstruction
             | PromptRoleV2::UserTemplate => ContextRoleV2::TrustedInstruction,
         };
-        counts.insert(
-            payload.binding.payload_digest,
-            u64::from(payload.binding.token_cost),
-        );
+        let registered_count = u64::from(payload.binding.token_cost);
+        if let Some(tokenizer) = exact_tokenizer {
+            let observed = tokenizer
+                .count_tokens(&payload.payload)
+                .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
+            if observed != registered_count {
+                return Err(PromptPipelineErrorV1::SelectedTokenCountMismatch {
+                    realization_id: item_id.to_string(),
+                    registered: registered_count,
+                    observed,
+                });
+            }
+        }
+        counts.insert(payload.binding.payload_digest, registered_count);
         serialized_count = serialized_count
             .checked_add(u64::from(payload.binding.token_cost))
             .ok_or(PromptPipelineErrorV1::Arithmetic)?;
@@ -490,14 +532,24 @@ pub fn prepare_prompt_delivery_v1(
         tool_schema_digest: prepared.model_profile.tool_schema_digest,
         payload: serialized_payload.clone(),
     };
-    let serialized_context = record_serialization(
-        &prepared.compiled,
-        &prepared.model_profile,
-        serialization_id,
-        realizations,
-        &serializer,
-        &tokenizer,
-    )
+    let serialized_context = match exact_tokenizer {
+        Some(tokenizer) => record_serialization(
+            &prepared.compiled,
+            &prepared.model_profile,
+            serialization_id,
+            realizations,
+            &serializer,
+            tokenizer,
+        ),
+        None => record_serialization(
+            &prepared.compiled,
+            &prepared.model_profile,
+            serialization_id,
+            realizations,
+            &serializer,
+            &tokenizer,
+        ),
+    }
     .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
     let serialization = serialized_context.receipt().clone();
     let attachment = build_attachment(

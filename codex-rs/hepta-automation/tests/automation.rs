@@ -999,6 +999,7 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         "DROP TRIGGER IF EXISTS automation_runs_schedule_revision_required_insert",
         "DROP TRIGGER IF EXISTS automation_runs_schedule_revision_no_update",
         "DROP TRIGGER IF EXISTS automation_task_default_policy",
+        "DROP TABLE IF EXISTS taskflow_native_cursors",
         "DROP TABLE IF EXISTS taskflow_effect_dispatch_reconciliations",
         "DROP TABLE IF EXISTS taskflow_effect_dispatch_observations",
         "DROP TABLE IF EXISTS taskflow_effect_dispatch_attempts",
