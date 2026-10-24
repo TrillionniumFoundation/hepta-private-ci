@@ -1,0 +1,106 @@
+{
+  "abstract_database_license": "ODC-By-1.0; no blanket individual-content copyright grant",
+  "acquisition": {
+    "error": "KeyError: 'claim_text'",
+    "files": [],
+    "protocol_sha256": "d93d962b849ce225962db8f27f077e0cc979e34ab83db118a6bdac423d89cebe",
+    "requests": [
+      {
+        "bytes": 3115079,
+        "end_unix": 1792770417.1429222,
+        "etag": "\"cb7da4d8609e30f2c7483b61aa447f7e\"",
+        "final_url": "https://scifact.s3-us-west-2.amazonaws.com/release/latest/data.tar.gz",
+        "last_modified": "Tue, 26 Jan 2021 02:28:59 GMT",
+        "sha256": "11c621288d41ac144d29b13b0f8503b3820b7d6e8b1f6ff24dff335c196d76be",
+        "start_unix": 1792770410.4947257,
+        "status": 200,
+        "url": "https://scifact.s3-us-west-2.amazonaws.com/release/latest/data.tar.gz"
+      },
+      {
+        "bytes": 4053606,
+        "end_unix": 1792770420.0756571,
+        "etag": "\"40473aee0b0ba5b68d157d0b2489b846\"",
+        "final_url": "https://scifact.s3-us-west-2.amazonaws.com/release/latest/claims_with_citances.jsonl",
+        "last_modified": "Tue, 26 Jan 2021 02:28:59 GMT",
+        "sha256": "a12af8640b5079dc6ceccbf1a31e755b28158643ddd1928f91b92caa0c388704",
+        "start_unix": 1792770417.2520883,
+        "status": 200,
+        "url": "https://scifact.s3-us-west-2.amazonaws.com/release/latest/claims_with_citances.jsonl"
+      }
+    ],
+    "status": "STOPPED_NO_RETRY"
+  },
+  "claims_license": "CC-BY-4.0",
+  "cumulative_requests": 3,
+  "cumulative_response_bytes": 11222291,
+  "data_and_projection_hashes": [
+    {
+      "bytes": 4053606,
+      "path": "local-data/citances-local-only.jsonl",
+      "sha256": "a12af8640b5079dc6ceccbf1a31e755b28158643ddd1928f91b92caa0c388704"
+    },
+    {
+      "bytes": 65007,
+      "path": "local-data/claims_dev.jsonl",
+      "sha256": "86f0435d08fdb65d1aa41d1472684f57e6e71930626497bdf4d7a9ec1a632217"
+    },
+    {
+      "bytes": 175616,
+      "path": "local-data/claims_train.jsonl",
+      "sha256": "f4c8fa82d8bd0653a9cc8d61a6ea48c25eacea64e90af5dbf390ebb1b74372f0"
+    },
+    {
+      "bytes": 8307875,
+      "path": "local-data/corpus.jsonl",
+      "sha256": "b8d6c89624cb2ed74dee8938effc4f5d8bd2086887880af8110d64be4ceade62"
+    },
+    {
+      "bytes": 3115079,
+      "path": "local-data/data.tar.gz",
+      "sha256": "11c621288d41ac144d29b13b0f8503b3820b7d6e8b1f6ff24dff335c196d76be"
+    },
+    {
+      "bytes": 23668,
+      "path": "prepared/custodian-gold.jsonl",
+      "sha256": "53ad915dc5e2abb4c618a5c12b687d4821a94a85a3851ade182eb180868fe176"
+    },
+    {
+      "bytes": 104088,
+      "path": "prepared/source-paper-map.json",
+      "sha256": "887240a585bf047876d3cf350773a9612bbdf273e87cf8a7858ac0231dcf271e"
+    },
+    {
+      "bytes": 109753,
+      "path": "prepared/split.json",
+      "sha256": "b7933f4016265f4f88752ea8527a2e537475186e8d776c9cd22345d1d8be9014"
+    },
+    {
+      "bytes": 375,
+      "path": "prepared/summary.json",
+      "sha256": "eb48dfb0b97a091902ab055ced5d7925e77692aca2f821dc17fd1a8356d0e6b2"
+    },
+    {
+      "bytes": 17237,
+      "path": "prepared/worker-queries.jsonl",
+      "sha256": "86f5211f478fdeac76c96f1a60681b9f6cc825764c8f46ef84b0a9f9c6940b48"
+    }
+  ],
+  "download_url_is_mutable": true,
+  "future_groups": 0,
+  "license_url": "https://github.com/allenai/scifact/blob/68b98a56d93e0f9da0d2aab4e6c3294699a0f72e/LICENSE.md",
+  "official_repository": "https://github.com/allenai/scifact",
+  "original_material_seal_sha256": "df3d0aba579063bb60b46a41ad457974da6732a8ed6f1ffb23e4258c2773a89e",
+  "original_protocol_sha256": "d93d962b849ce225962db8f27f077e0cc979e34ab83db118a6bdac423d89cebe",
+  "paper": "https://aclanthology.org/2020.emnlp-main.609/",
+  "private_inputs_not_redistributed": true,
+  "recovery": {
+    "bytes": 4053606,
+    "etag": "\"40473aee0b0ba5b68d157d0b2489b846\"",
+    "last_modified": "Tue, 26 Jan 2021 02:28:59 GMT",
+    "sha256": "a12af8640b5079dc6ceccbf1a31e755b28158643ddd1928f91b92caa0c388704",
+    "status": 200,
+    "url": "https://scifact.s3-us-west-2.amazonaws.com/release/latest/claims_with_citances.jsonl"
+  },
+  "repository_revision": "68b98a56d93e0f9da0d2aab4e6c3294699a0f72e",
+  "revision_does_not_pin_s3_bytes": true
+}
