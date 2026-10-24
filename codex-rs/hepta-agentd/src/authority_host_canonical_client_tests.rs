@@ -106,6 +106,8 @@ fn canonical_owner_child() {
         for entry in std::fs::read_dir("/proc/self/fd").unwrap() {
             if let Ok(path) = std::fs::read_link(entry.unwrap().path()) {
                 assert!(!path.starts_with(layout.cognitive_root()),"no inherited owner/source database handle");
+                assert!(!path.starts_with(std::path::PathBuf::from(std::env::var_os("HEPTA_SERVICE_STATE").unwrap())),
+                    "no inherited protected authority or material descriptor");
             }
         }
         let store = CognitiveStore::open_with_recovery(&layout,
