@@ -247,6 +247,30 @@ def product_source(text: str, qualification_disabled: bool) -> str:
     return "".join(output)
 
 
+def _read_attribute_scope(code: str) -> tuple[str, list[tuple[int, int]]]:
+    """A derive on a separate plain type cannot rewrite a sibling read arm.
+
+    Keep its complete type region ineligible for exemptions. Every other
+    unknown attribute still refuses read classification, including attributes
+    on functions, modules, impls, or macro input. This is not macro expansion.
+    """
+    inspected = list(code)
+    type_regions = []
+    for match in re.finditer(r"#\s*\[\s*derive\s*\(", code):
+        end = _closing(code, code.index("[", match.start()), "[", "]")
+        declaration = re.match(
+            r"\s*(?:pub(?:\([^)]*\))?\s+)?(?:struct|enum)\s+\w+\s*\{",
+            code[end:],
+        )
+        if declaration is None:
+            continue
+        body = end + declaration.end() - 1
+        close = _closing(code, body, "{", "}")
+        type_regions.append((match.start(), close))
+        inspected[match.start():end] = " " * (end - match.start())
+    return "".join(inspected), type_regions
+
+
 def writer_uses(code: str) -> set[str]:
     """Return suspicious write uses; simple field-reading match arms are reads."""
     aliases = {"LedgerEvent"}
@@ -269,12 +293,24 @@ def writer_uses(code: str) -> set[str]:
         rf"\b{event}\s*::\s*({LEGACY_VARIANTS})\s*\(\s*(\w+)\s*\)"
         r"\s*=>\s*&\s*\2\s*\.\s*record_id\s*,"
     )
+    # An unbound wildcard payload is a Rust pattern, not a constructor value.
+    # Admit only match-arm continuations; the arm body remains fully scanned.
+    ignored_payload_arm = re.compile(
+        rf"\b{event}\s*::\s*({LEGACY_VARIANTS})\s*\(\s*_\s*\)"
+        r"(?=\s*(?:\||=>))"
+    )
     reads = {match.start(): match for match in read_arm.finditer(code)}
+    reads.update({match.start(): match for match in ignored_payload_arm.finditer(code)})
     masked = list(code)
+    attribute_scope, type_regions = _read_attribute_scope(code)
     safe_reads = (
-        set() if _has_unknown_attributes(code) else _outside_macros(code, set(reads))
+        set()
+        if _has_unknown_attributes(attribute_scope)
+        else _outside_macros(code, set(reads))
     )
     for start in safe_reads:
+        if any(first <= start < last for first, last in type_regions):
+            continue
         match = reads[start]
         masked[start : match.end()] = " " * (match.end() - start)
     code = "".join(masked)

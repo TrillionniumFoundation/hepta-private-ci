@@ -72,9 +72,17 @@ impl AgentdControlServer {
                 continue;
             };
             let state = Arc::clone(&self.state);
+            let cancellation = self.cancellation.child_token();
+            let execution = crate::NeuralCognitiveExecutionV1::with_deadline(
+                std::time::Instant::now() + IO_TIMEOUT, cancellation.clone(),
+            );
             tokio::spawn(async move {
                 let _permit = permit;
-                let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
+                let _cancel_on_exit = cancellation.drop_guard();
+                let _ = tokio::time::timeout_at(
+                    tokio::time::Instant::from_std(execution.deadline()),
+                    serve_connection(stream, state, &execution),
+                ).await;
             });
         }
     }
@@ -93,7 +101,9 @@ impl Drop for AgentdControlServer {
     }
 }
 
-async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result<(), AgentdError> {
+async fn serve_connection(
+    stream: UnixStream, state: Arc<AgentdState>, execution: &crate::NeuralCognitiveExecutionV1,
+) -> Result<(), AgentdError> {
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
@@ -114,7 +124,7 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
         )
     } else {
         match state
-            .response(request.request_id, request.spawn_generation, request.method)
+            .response_with_execution(request.request_id, request.spawn_generation, request.method, execution)
             .await
         {
             Ok(response) => response,
