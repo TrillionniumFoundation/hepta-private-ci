@@ -276,3 +276,7 @@ pub use private_owner_lock::PrivateFileAccess;
 
 pub use private_owner_lock::LockedStateStage;
 pub use private_owner_lock::StageReplaceError;
+
+pub use private_owner_lock::OriginalFileAccess;
+pub use private_owner_lock::OriginalStoreFile;
+pub use private_owner_lock::PrivateStoreDirectory;

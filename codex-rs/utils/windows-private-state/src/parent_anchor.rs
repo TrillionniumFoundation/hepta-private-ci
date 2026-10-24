@@ -210,3 +210,7 @@ pub use fresh_private_directory::PrivateFileAccess;
 
 pub use fresh_private_directory::LockedStateStage;
 pub use fresh_private_directory::StageReplaceError;
+
+pub use fresh_private_directory::OriginalFileAccess;
+pub use fresh_private_directory::OriginalStoreFile;
+pub use fresh_private_directory::PrivateStoreDirectory;

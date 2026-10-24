@@ -211,3 +211,9 @@ pub use owner_file::PrivateFileAccess;
 mod owner_stage;
 pub use owner_stage::LockedStateStage;
 pub use owner_stage::StageReplaceError;
+
+#[path = "original_store_file.rs"]
+mod original_store_file;
+pub use original_store_file::OriginalFileAccess;
+pub use original_store_file::OriginalStoreFile;
+pub use original_store_file::PrivateStoreDirectory;
