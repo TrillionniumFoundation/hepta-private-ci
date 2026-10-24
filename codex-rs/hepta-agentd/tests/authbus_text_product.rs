@@ -259,6 +259,211 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn cancellation_reconnect_and_duplicate_keep_the_original_real_turn() -> Result<()> {
+    let mut fleet = FleetHarness::new()?;
+    let agent = fleet.register(AGENT_ID, "signed-text-cancellation-workspace")?;
+    let model = responses::start_mock_server().await;
+    MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
+    // Keep the real provider HTTP request in flight until the original turn is
+    // interrupted. The provider is controlled; Agentd, AuthBus, Core's queue,
+    // rollout persistence, UDS transport, and cancellation are real.
+    wiremock::Mock::given(wiremock::matchers::method("POST"))
+        .and(wiremock::matchers::path_regex(".*/responses"))
+        .respond_with(
+            wiremock::ResponseTemplate::new(200)
+                .insert_header("content-type", "text/event-stream")
+                .set_body_string(responses::sse(vec![responses::ev_completed(
+                    "cancelled-response-must-not-complete",
+                )]))
+                .set_delay(Duration::from_secs(30)),
+        )
+        .mount(&model)
+        .await;
+    let key = SigningKey::from_bytes(&[93; 32]);
+    let trust_file = agent.layout.home_root().join("authbus-trust.json");
+    std::fs::set_permissions(
+        agent.layout.home_root(),
+        std::fs::Permissions::from_mode(0o700),
+    )?;
+    write_trust(&trust_file, &agent.agent_id, &key, &[], false)?;
+    let checkpoint_root = tempfile::tempdir()?;
+    std::fs::set_permissions(
+        checkpoint_root.path(),
+        std::fs::Permissions::from_mode(0o700),
+    )?;
+    let checkpoint_file = checkpoint_root
+        .path()
+        .join("authbus-replay-checkpoint.json");
+    let home = AbsolutePathBuf::from_absolute_path(agent.layout.home_root())?;
+    let evidence = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home)).await?;
+    let frontier = evidence.authbus_replay_frontier_digest().await?;
+    drop(evidence);
+    write_checkpoint(&checkpoint_file, &agent.agent_id, 1, frontier)?;
+    fleet.start_with_authbus_trust_file(&agent, &trust_file, &checkpoint_file)?;
+    let (control, _) = fleet.wait_ready(&agent, 1).await?;
+    let ingress = control.session_ingress().await?;
+    let client = connect_app_server_with_experimental(
+        &ingress.socket_path,
+        "hepta-text-cancellation-product",
+        64,
+        true,
+    )
+    .await?;
+    let mut request_id = 1;
+    let thread = start_thread(&client, &mut request_id, &agent.workspace).await?;
+    write_trust(
+        &trust_file,
+        &agent.agent_id,
+        &key,
+        std::slice::from_ref(&thread),
+        false,
+    )?;
+    let thread_view: ThreadReadResponse = client
+        .request_typed(ClientRequest::ThreadRead {
+            request_id: take_request_id(&mut request_id),
+            params: ThreadReadParams {
+                thread_id: thread.clone(),
+                include_turns: false,
+            },
+        })
+        .await?;
+    let config = AgentdTextSessionConfig {
+        control_socket: agent.layout.agentd_control_socket().to_path_buf(),
+        agent_id: agent.agent_id.clone(),
+        spawn_generation: 1,
+        thread_id: thread.clone(),
+        app_server_session_id: thread_view.thread.session_id,
+        codex_home: agent.layout.home_root().to_path_buf(),
+    };
+    let mut session = AgentdTextSession::connect(config.clone())
+        .await
+        .context("cancel stage: attach original session")?;
+    let signed = signed_text(&agent.agent_id, &key, &thread, 1)?;
+    let admitted = session
+        .requests
+        .submit_signed(signed.clone())
+        .await
+        .context("cancel stage: submit signed input")?;
+    let accepted = wait_queue_accepted(&control, &admitted.delivery_id)
+        .await
+        .context("cancel stage: durable queue acceptance")?;
+    let active_turn_id = timeout(WAIT_TIMEOUT, async {
+        loop {
+            let observed = session
+                .requests
+                .reconcile(&signed.message_id)
+                .await
+                .context("cancel stage: reconcile active turn")?;
+            if let Some(turn) = observed.turn
+                && turn.status == TurnStatus::InProgress
+                && physical_send_count(&model).await == 1
+            {
+                return Ok::<_, anyhow::Error>(turn.id);
+            }
+            tokio::time::sleep(Duration::from_millis(25)).await;
+        }
+    })
+    .await
+    .context("original turn did not reach the controlled provider")??;
+
+    // An interrupt ACK is not a terminal receipt. Observe the original stream
+    // and then independently reconcile its persisted interrupted turn.
+    session
+        .requests
+        .interrupt(&signed.message_id)
+        .await
+        .context("cancel stage: request original interruption")?;
+    timeout(WAIT_TIMEOUT, async {
+        loop {
+            let event = session
+                .events
+                .next()
+                .await
+                .context("cancel stage: observe interrupted event")?
+                .context("text stream ended")?;
+            if let ServerNotification::TurnCompleted(completed) = event.notification {
+                ensure!(event.message_id == signed.message_id);
+                ensure!(event.delivery_id == admitted.delivery_id);
+                ensure!(event.thread_id == thread);
+                ensure!(event.turn_id == active_turn_id);
+                ensure!(completed.turn.status == TurnStatus::Interrupted);
+                return Ok::<_, anyhow::Error>(());
+            }
+        }
+    })
+    .await
+    .context("original stream did not observe interrupted completion")??;
+
+    let old_requests = session.requests.clone();
+    let resumed = session
+        .reattach(config)
+        .await
+        .context("cancel stage: reattach after interrupted event")?;
+    ensure!(matches!(
+        old_requests.interrupt(&signed.message_id).await,
+        Err(TextSessionError::Fenced)
+    ));
+    timeout(WAIT_TIMEOUT, async {
+        loop {
+            let recovered = resumed
+                .requests
+                .reconcile(&signed.message_id)
+                .await
+                .context("cancel stage: reconcile interrupted turn")?;
+            ensure!(recovered.delivery == accepted);
+            if let Some(turn) = recovered.turn {
+                ensure!(turn.id == active_turn_id);
+                if turn.status == TurnStatus::Interrupted {
+                    return Ok::<_, anyhow::Error>(());
+                }
+            }
+            tokio::time::sleep(Duration::from_millis(25)).await;
+        }
+    })
+    .await
+    .context("reconnected owner did not persist the original interruption")??;
+    let duplicate = resumed
+        .requests
+        .submit_signed(signed)
+        .await
+        .context("cancel stage: duplicate after cancellation")?;
+    ensure!(duplicate == accepted);
+    tokio::time::sleep(Duration::from_millis(750)).await;
+    let persisted: ThreadReadResponse = client
+        .request_typed(ClientRequest::ThreadRead {
+            request_id: take_request_id(&mut request_id),
+            params: ThreadReadParams {
+                thread_id: thread,
+                include_turns: true,
+            },
+        })
+        .await?;
+    ensure!(persisted.thread.turns.len() == 1);
+    ensure!(persisted.thread.turns[0].id == active_turn_id);
+    ensure!(persisted.thread.turns[0].status == TurnStatus::Interrupted);
+    ensure!(
+        physical_send_count(&model).await == 1,
+        "cancel, reconnect or duplicate caused a second provider request"
+    );
+    session
+        .events
+        .shutdown()
+        .await
+        .context("cancel stage: shutdown original subscriber")?;
+    resumed
+        .events
+        .shutdown()
+        .await
+        .context("cancel stage: shutdown resumed subscriber")?;
+    client
+        .shutdown()
+        .await
+        .context("cancel stage: shutdown auxiliary client")?;
+    drop(fleet);
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_agentd_without_explicit_trust_rejects_signed_text() -> Result<()> {
     let mut fleet = FleetHarness::new()?;
     let agent = fleet.register(AGENT_ID, "no-authbus-trust-workspace")?;

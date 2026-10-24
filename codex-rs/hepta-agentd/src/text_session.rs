@@ -9,31 +9,20 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::MutexGuard;
-use std::sync::atomic::AtomicI64;
-use std::sync::atomic::Ordering;
 use std::time::Duration;
 
+use codex_app_server_client::AppServerRequestHandle;
 use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_client::RemoteAppServerConnectArgs;
 use codex_app_server_client::RemoteAppServerEndpoint;
-use codex_app_server_client::RemoteAppServerRequestHandle;
-use codex_app_server_protocol::ClientRequest;
-use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::ServerNotification;
-use codex_app_server_protocol::SortDirection;
 use codex_app_server_protocol::ThreadItem;
-use codex_app_server_protocol::ThreadQueueDeleteParams;
 use codex_app_server_protocol::ThreadQueueDeleteResponse;
-use codex_app_server_protocol::ThreadQueueReconcileMode;
 use codex_app_server_protocol::ThreadQueueReconcileOutcome;
-use codex_app_server_protocol::ThreadQueueReconcileParams;
 use codex_app_server_protocol::ThreadQueueReconcileResponse;
-use codex_app_server_protocol::ThreadResumeParams;
 use codex_app_server_protocol::ThreadResumeResponse;
-use codex_app_server_protocol::ThreadTurnsListParams;
 use codex_app_server_protocol::ThreadTurnsListResponse;
 use codex_app_server_protocol::Turn;
-use codex_app_server_protocol::TurnInterruptParams;
 use codex_app_server_protocol::TurnInterruptResponse;
 use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStatus;
@@ -48,6 +37,9 @@ use crate::AgentdClient;
 use crate::AuthBusTextIngress;
 use crate::AuthBusTextStatus;
 
+#[path = "text_session_backend.rs"]
+mod backend;
+use backend::CodexTextBackend;
 #[path = "text_session_events.rs"]
 mod events;
 #[path = "text_session_requests.rs"]
@@ -115,6 +107,8 @@ struct Pending {
     input_digest: String,
     turn_id: Option<String>,
     cancellation_requested: bool,
+    interrupt_attempted: bool,
+    interrupt_acknowledged: bool,
     terminal: bool,
     recovered: bool,
 }
@@ -130,7 +124,7 @@ struct Shared {
     control: AgentdClient,
     ingress_socket: PathBuf,
     connection_id: u64,
-    request_id: AtomicI64,
+    backend: CodexTextBackend,
     state: Mutex<State>,
 }
 
@@ -149,7 +143,6 @@ impl Shared {
 
 #[derive(Clone)]
 pub struct AgentdTextRequests {
-    handle: RemoteAppServerRequestHandle,
     shared: Arc<Shared>,
 }
 
@@ -212,28 +205,23 @@ impl AgentdTextSession {
             let _ = client.shutdown().await;
             return Err(TextSessionError::Identity);
         }
+        let backend = CodexTextBackend::new(
+            AppServerRequestHandle::Remote(client.request_handle()),
+            config.thread_id.clone(),
+        );
         let shared = Arc::new(Shared {
             config,
             control,
             ingress_socket: ingress.socket_path,
             connection_id: client.connection_id(),
-            request_id: AtomicI64::new(1),
+            backend,
             state: Mutex::new(State::default()),
         });
         let requests = AgentdTextRequests {
-            handle: client.request_handle(),
             shared: shared.clone(),
         };
-        let response: ThreadResumeResponse = requests
-            .call(ClientRequest::ThreadResume {
-                request_id: requests.id(),
-                params: ThreadResumeParams {
-                    thread_id: shared.config.thread_id.clone(),
-                    exclude_turns: true,
-                    ..Default::default()
-                },
-            })
-            .await?;
+        let response: ThreadResumeResponse =
+            requests.observe(shared.backend.resume_existing()).await?;
         if response.thread.id != shared.config.thread_id
             || response.thread.session_id != shared.config.app_server_session_id
             || response.thread.ephemeral
@@ -274,6 +262,9 @@ impl AgentdTextSession {
             let mut retained = state.pending.clone();
             for pending in retained.values_mut() {
                 pending.recovered = true;
+                // Only unacknowledged connection-local attempts may be tried
+                // again after authoritative reconciliation on the new owner.
+                pending.interrupt_attempted = pending.interrupt_acknowledged;
             }
             retained
         };
@@ -320,6 +311,8 @@ fn prepare(
         input_digest,
         turn_id: None,
         cancellation_requested: false,
+        interrupt_attempted: false,
+        interrupt_acknowledged: false,
         terminal: false,
         recovered: false,
     })

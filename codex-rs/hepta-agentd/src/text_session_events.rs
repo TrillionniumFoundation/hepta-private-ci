@@ -46,18 +46,8 @@ impl AgentdTextEvents {
                     return Err(unavailable("original approval channel required"));
                 }
             };
-            let (thread_id, turn_id) = match notification {
-                ServerNotification::ItemStarted(value) => (&value.thread_id, &value.turn_id),
-                ServerNotification::ItemCompleted(value) => (&value.thread_id, &value.turn_id),
-                ServerNotification::AgentMessageDelta(value) => (&value.thread_id, &value.turn_id),
-                ServerNotification::CommandExecutionOutputDelta(value) => {
-                    (&value.thread_id, &value.turn_id)
-                }
-                ServerNotification::PlanDelta(value) => (&value.thread_id, &value.turn_id),
-                ServerNotification::TurnDiffUpdated(value) => (&value.thread_id, &value.turn_id),
-                ServerNotification::TurnPlanUpdated(value) => (&value.thread_id, &value.turn_id),
-                ServerNotification::TurnCompleted(value) => (&value.thread_id, &value.turn.id),
-                _ => continue,
+            let Some((thread_id, turn_id)) = backend::notification_route(notification) else {
+                continue;
             };
             if thread_id != &self.shared.config.thread_id {
                 continue;
@@ -101,14 +91,7 @@ impl AgentdTextEvents {
                 // App Server deltas have no replay cursor. After reconnect an
                 // active snapshot can overlap queued deltas; use replacement
                 // snapshots and final items for that turn until it terminates.
-                if pending.recovered
-                    && matches!(
-                        notification,
-                        ServerNotification::AgentMessageDelta(_)
-                            | ServerNotification::CommandExecutionOutputDelta(_)
-                            | ServerNotification::PlanDelta(_)
-                    )
-                {
+                if pending.recovered && backend::is_nonreplayable_delta(notification) {
                     continue;
                 }
                 if let ServerNotification::TurnCompleted(completed) = notification {
@@ -118,6 +101,7 @@ impl AgentdTextEvents {
                     pending.terminal = true;
                 }
                 let cancel = pending.cancellation_requested
+                    && !pending.interrupt_attempted
                     && matches!(notification, ServerNotification::ItemStarted(value) if matches!(&value.item, ThreadItem::UserMessage { .. }));
                 (
                     AgentdTextEvent {
@@ -133,7 +117,6 @@ impl AgentdTextEvents {
             };
             if cancel {
                 let requests = AgentdTextRequests {
-                    handle: self.client.request_handle(),
                     shared: self.shared.clone(),
                 };
                 requests.interrupt_turn(turn_id.clone()).await?;

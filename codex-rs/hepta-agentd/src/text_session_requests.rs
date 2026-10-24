@@ -1,19 +1,14 @@
 use super::*;
 
 impl AgentdTextRequests {
-    pub(super) fn id(&self) -> RequestId {
-        RequestId::Integer(self.shared.request_id.fetch_add(1, Ordering::Relaxed))
-    }
-
-    pub(super) async fn call<T: serde::de::DeserializeOwned>(
+    // Owner fencing stays outside the protocol adapter and is checked across
+    // every await. A transport substitution cannot bypass the original owner.
+    pub(super) async fn observe<T>(
         &self,
-        request: ClientRequest,
+        response: impl std::future::Future<Output = Result<T, TextSessionError>>,
     ) -> Result<T, TextSessionError> {
         drop(self.shared.current()?);
-        let response = tokio::time::timeout(REQUEST_TIMEOUT, self.handle.request_typed(request))
-            .await
-            .map_err(unavailable)?
-            .map_err(unavailable)?;
+        let response = response.await?;
         drop(self.shared.current()?);
         Ok(response)
     }
@@ -115,16 +110,11 @@ impl AgentdTextRequests {
             return Err(TextSessionError::Identity);
         }
         let response: ThreadQueueReconcileResponse = self
-            .call(ClientRequest::ThreadQueueReconcile {
-                request_id: self.id(),
-                params: ThreadQueueReconcileParams {
-                    thread_id: self.shared.config.thread_id.clone(),
-                    input: pending.input.clone(),
-                    client_user_message_id: pending.client_id.clone(),
-                    expected_payload_sha256: pending.input_digest.clone(),
-                    mode: ThreadQueueReconcileMode::ReconcileOnly,
-                },
-            })
+            .observe(self.shared.backend.reconcile_original(
+                pending.input.clone(),
+                pending.client_id.clone(),
+                pending.input_digest.clone(),
+            ))
             .await?;
         if response.client_user_message_id != pending.client_id
             || response.payload_sha256 != pending.input_digest
@@ -148,13 +138,11 @@ impl AgentdTextRequests {
                 if pending.cancellation_requested {
                     self.check_current_ingress().await?;
                     let _: ThreadQueueDeleteResponse = self
-                        .call(ClientRequest::ThreadQueueDelete {
-                            request_id: self.id(),
-                            params: ThreadQueueDeleteParams {
-                                thread_id: self.shared.config.thread_id.clone(),
-                                queued_submission_id: queued_submission.id.clone(),
-                            },
-                        })
+                        .observe(
+                            self.shared
+                                .backend
+                                .delete_queued(queued_submission.id.clone()),
+                        )
                         .await?;
                     // A racing dequeue can return false. Only a later observed
                     // Cancelled or terminal turn is a cancellation outcome.
@@ -208,16 +196,7 @@ impl AgentdTextRequests {
         let mut cursor = None;
         for _ in 0..32 {
             let page: ThreadTurnsListResponse = self
-                .call(ClientRequest::ThreadTurnsList {
-                    request_id: self.id(),
-                    params: ThreadTurnsListParams {
-                        thread_id: self.shared.config.thread_id.clone(),
-                        cursor,
-                        limit: Some(16),
-                        sort_direction: Some(SortDirection::Desc),
-                        items_view: Some(TurnItemsView::Full),
-                    },
-                })
+                .observe(self.shared.backend.read_turn_page(cursor))
                 .await?;
             if serde_json::to_vec(&page).map_err(unavailable)?.len() > MAX_OBSERVATION_BYTES {
                 return Err(TextSessionError::Capacity);
@@ -262,15 +241,34 @@ impl AgentdTextRequests {
 
     pub(super) async fn interrupt_turn(&self, turn_id: String) -> Result<(), TextSessionError> {
         self.check_current_ingress().await?;
+        {
+            let mut state = self.shared.current()?;
+            let pending = state
+                .pending
+                .values_mut()
+                .find(|pending| pending.turn_id.as_ref() == Some(&turn_id))
+                .ok_or(TextSessionError::UnknownRequest)?;
+            if pending.terminal || pending.interrupt_attempted {
+                return Ok(());
+            }
+            // A buffered UserMessage ItemStarted may precede an interruption
+            // that already reached Core. Do not issue that cancellation twice
+            // while waiting to consume the original terminal observation.
+            // Record before I/O so concurrent callers also share this attempt.
+            pending.interrupt_attempted = true;
+        }
         let _: TurnInterruptResponse = self
-            .call(ClientRequest::TurnInterrupt {
-                request_id: self.id(),
-                params: TurnInterruptParams {
-                    thread_id: self.shared.config.thread_id.clone(),
-                    turn_id,
-                },
-            })
+            .observe(self.shared.backend.interrupt_turn(turn_id.clone()))
             .await?;
+        let mut state = self.shared.current()?;
+        let pending = state
+            .pending
+            .values_mut()
+            .find(|pending| pending.turn_id.as_ref() == Some(&turn_id))
+            .ok_or(TextSessionError::UnknownRequest)?;
+        pending.interrupt_acknowledged = true;
+        // Neither an attempt nor its ACK is a completion receipt. Only the
+        // original observed terminal event/snapshot can set pending.terminal.
         Ok(())
     }
 
