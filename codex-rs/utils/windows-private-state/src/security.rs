@@ -118,6 +118,10 @@ pub struct CurrentUser {
 }
 
 impl CurrentUser {
+    pub(crate) fn sid_bytes(&self) -> &[u8] {
+        &self.sid.bytes[..self.sid.length]
+    }
+
     /// Capture the thread token when impersonating; only NO_TOKEN falls back.
     pub fn capture_effective() -> Result<Self, ValidationError> {
         Self::from_token(&open_effective_token()?)
@@ -214,7 +218,7 @@ pub(crate) fn open_effective_token() -> Result<OwnedHandle, ValidationError> {
     Ok(unsafe { OwnedHandle::from_raw_handle(raw as *mut c_void) })
 }
 
-struct LocalDescriptor(NonNull<c_void>);
+pub(crate) struct LocalDescriptor(NonNull<c_void>);
 
 impl Drop for LocalDescriptor {
     fn drop(&mut self) {
@@ -226,7 +230,7 @@ impl Drop for LocalDescriptor {
 }
 
 impl LocalDescriptor {
-    fn read(file: &File) -> Result<Self, ValidationError> {
+    pub(crate) fn read(file: &File) -> Result<Self, ValidationError> {
         let mut raw = ptr::null_mut();
         // SAFETY: borrow the live File, request a single owned descriptor; no
         // borrowed component pointer or raw allocation escapes this module.
@@ -249,7 +253,7 @@ impl LocalDescriptor {
         owned.ok_or(ValidationError::MalformedDescriptor)
     }
 
-    fn bytes(&self) -> Result<&[u8], ValidationError> {
+    pub(crate) fn bytes(&self) -> Result<&[u8], ValidationError> {
         // SAFETY: this is the still-live LocalAlloc allocation, not a component.
         let allocated = unsafe { LocalSize(self.0.as_ptr()) };
         if !(20..=1_048_576).contains(&allocated) {

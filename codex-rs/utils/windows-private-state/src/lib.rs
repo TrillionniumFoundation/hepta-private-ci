@@ -6,6 +6,8 @@
 
 #[cfg(windows)]
 pub mod mechanism;
+#[cfg(windows)]
+mod namespace_acl;
 
 #[cfg(windows)]
 pub mod primary_owner;
