@@ -317,6 +317,30 @@ impl CognitiveStore {
         let root = create_private_directory(layout.cognitive_root())?;
         let open_guard = CognitiveStoreOpenGuard::acquire_shared(&root)?;
         let path = resolve_active_database_path(&root)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+
+            // SQLite copies the database's creation mode to its WAL and SHM.
+            // Protect a new database before any SQLite connection can create
+            // sidecars. Existing objects are not adopted or chmodded here.
+            match OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .mode(0o600)
+                .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
+                .open(&path)
+            {
+                Ok(file) => {
+                    file.sync_all().map_err(unavailable)?;
+                    File::open(&root)
+                        .and_then(|directory| directory.sync_all())
+                        .map_err(unavailable)?;
+                }
+                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
+                Err(error) => return Err(unavailable(error)),
+            }
+        }
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
@@ -1667,3 +1691,7 @@ fn protect_database_file(_path: &Path) -> Result<(), CognitiveStoreError> {
 #[cfg(test)]
 #[path = "cognitive_schema_tests.rs"]
 mod schema_tests;
+
+#[cfg(all(test, unix))]
+#[path = "cognitive_store_bootstrap_tests.rs"]
+mod bootstrap_tests;
