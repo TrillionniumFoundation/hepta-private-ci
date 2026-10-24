@@ -1,0 +1,157 @@
+{
+  "pin": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "verified_files": [
+    {
+      "path": "LICENSE",
+      "bytes": 11357,
+      "git_blob_sha": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    {
+      "path": "berkeley-function-call-leaderboard/bfcl_eval/data/BFCL_v4_multi_turn_base.json",
+      "bytes": 390425,
+      "git_blob_sha": "656fbd5e56969373353cd58b880234a6cc4edc99",
+      "sha256": "1a21a995d06fd6f20ba55de7bced30ef953ec35e998f502ec2ecf4d66ef1c43a"
+    },
+    {
+      "path": "berkeley-function-call-leaderboard/bfcl_eval/data/BFCL_v4_multi_turn_miss_func.json",
+      "bytes": 401159,
+      "git_blob_sha": "28e7987841719aec4e4f3f3f4b6c2f1915c831f3",
+      "sha256": "87d28ce10e37d864b72de85d5732eef2a867b241d6c1c99b4ae682c9e3ea921c"
+    },
+    {
+      "path": "berkeley-function-call-leaderboard/bfcl_eval/data/BFCL_v4_multi_turn_miss_param.json",
+      "bytes": 402974,
+      "git_blob_sha": "2e87caf87fb48f7807a18610311bdfa1138d0599",
+      "sha256": "f0c66dda3795f5f53e3e1c0cc8ba0246b6761c8f58bdba8317203bf451ab8838"
+    },
+    {
+      "path": "berkeley-function-call-leaderboard/bfcl_eval/data/multi_turn_func_doc/gorilla_file_system.json",
+      "bytes": 13953,
+      "git_blob_sha": "b9a6d2d314febe8ccf201887ef87cfe081ffbf4e",
+      "sha256": "c4c1b741c71e2a17c97a5dc9c4a91d89978c4eaece56494d14272d5df6c650e9"
+    },
+    {
+      "path": "berkeley-function-call-leaderboard/bfcl_eval/data/multi_turn_func_doc/math_api.json",
+      "bytes": 9158,
+      "git_blob_sha": "52a911035a2b71390027e02af70c1abb904c71b3",
+      "sha256": "83fa31708c89442bdcf12ac4dfbe3be8663ec9183a1b1524a9fda98164bc7e0b"
+    },
+    {
+      "path": "berkeley-function-call-leaderboard/bfcl_eval/data/multi_turn_func_doc/message_api.json",
+      "bytes": 6027,
+      "git_blob_sha": "a178734ad47f269571c877e6e433b26171516024",
+      "sha256": "4d58ea933a5d2b280d7a52366617fb47fecd333d7b0e08e724db6fa12fb5f847"
+    },
+    {
+      "path": "berkeley-function-call-leaderboard/bfcl_eval/data/multi_turn_func_doc/posting_api.json",
+      "bytes": 10573,
+      "git_blob_sha": "2a8737a376640ba304c313d23d63049927f823eb",
+      "sha256": "87f9fc404a06e4107d7c366f1399c596440e84c16cb119faf374b2f532d86e8b"
+    },
+    {
+      "path": "berkeley-function-call-leaderboard/bfcl_eval/data/multi_turn_func_doc/ticket_api.json",
+      "bytes": 6648,
+      "git_blob_sha": "f8281657b64c4b6410a8590cc82b9584bc39729f",
+      "sha256": "31324e0380782664fe82ba05bd23517808ad55692b45a5fe7c3d4d395fe4f0f8"
+    },
+    {
+      "path": "berkeley-function-call-leaderboard/bfcl_eval/data/multi_turn_func_doc/trading_bot.json",
+      "bytes": 12608,
+      "git_blob_sha": "7dce37326156f65efc55df30db26064d68e8dc8c",
+      "sha256": "1a7933fd8f0cb8fbec38aeae05cb8c24132747cad4904fe1c13ac3d01fc22c2d"
+    },
+    {
+      "path": "berkeley-function-call-leaderboard/bfcl_eval/data/multi_turn_func_doc/travel_booking.json",
+      "bytes": 16979,
+      "git_blob_sha": "95008945fa5a9bc104a77647e4990d1e36ce7ec5",
+      "sha256": "f17b950c13adddf41d0848077df58788252e4c2e7cad5cfa71c8c4bf04f57b26"
+    },
+    {
+      "path": "berkeley-function-call-leaderboard/bfcl_eval/data/multi_turn_func_doc/vehicle_control.json",
+      "bytes": 17545,
+      "git_blob_sha": "7139dfc3bf2646be8f71ac383760f28899b17f85",
+      "sha256": "0c8a66292844874ef7b168f343bc394d8615d2d9e1f4387999a9ee23011eac78"
+    }
+  ],
+  "total_bytes": 1299406,
+  "counts": {
+    "base": {
+      "records": 200,
+      "total_turn_blocks": 734,
+      "schema_field_sets": [
+        "excluded_function,id,initial_config,involved_classes,path,question",
+        "id,initial_config,involved_classes,path,question"
+      ]
+    },
+    "miss_func": {
+      "records": 200,
+      "total_turn_blocks": 934,
+      "schema_field_sets": [
+        "excluded_function,id,initial_config,involved_classes,missed_function,path,question",
+        "id,initial_config,involved_classes,missed_function,path,question"
+      ]
+    },
+    "miss_param": {
+      "records": 200,
+      "total_turn_blocks": 934,
+      "schema_field_sets": [
+        "excluded_function,id,initial_config,involved_classes,path,question",
+        "id,initial_config,involved_classes,path,question"
+      ]
+    }
+  },
+  "groups": 200,
+  "variants": 600,
+  "differences_to_base": {
+    "miss_func:question": 200,
+    "miss_param:initial_config": 9,
+    "miss_param:question": 200,
+    "miss_func:initial_config": 7
+  },
+  "base_group_hash_collisions": {
+    "path": [
+      [
+        21,
+        22
+      ],
+      [
+        40,
+        43
+      ],
+      [
+        116,
+        117
+      ]
+    ],
+    "initial_config": [
+      [
+        63,
+        83
+      ],
+      [
+        66,
+        70,
+        74
+      ],
+      [
+        100,
+        104,
+        133
+      ]
+    ]
+  },
+  "distinct_path_functions": 76,
+  "base_domain_count": {
+    "TwitterAPI": 39,
+    "GorillaFileSystem": 50,
+    "TicketAPI": 31,
+    "MessageAPI": 40,
+    "MathAPI": 25,
+    "VehicleControlAPI": 50,
+    "TradingBot": 50,
+    "TravelAPI": 50
+  },
+  "all_groups_path_config_classes_identical": false,
+  "no_training_scoring_or_task_execution": true
+}

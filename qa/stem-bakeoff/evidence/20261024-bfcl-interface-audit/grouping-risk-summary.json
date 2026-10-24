@@ -1,0 +1,33 @@
+{
+  "mandatory_variant_groups": 200,
+  "conservative_cross_base_components": 192,
+  "cross_base_components": [
+    [
+      21,
+      22
+    ],
+    [
+      40,
+      43
+    ],
+    [
+      63,
+      83
+    ],
+    [
+      66,
+      70,
+      74
+    ],
+    [
+      100,
+      104,
+      133
+    ],
+    [
+      116,
+      117
+    ]
+  ],
+  "note": "Optional conservative grouping for identical path OR initial state; template reuse is potential leakage, not proof of identical task. No actual train/cal/test assignment created. All variants of a base must stay together."
+}
