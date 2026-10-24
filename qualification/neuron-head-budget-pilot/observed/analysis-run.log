@@ -1,0 +1,40 @@
+{
+  "metrics": {
+    "320": {
+      "logistic_accuracy": 0.883125,
+      "centroid_accuracy": 0.8775,
+      "delta": 0.005625000000000102
+    },
+    "640": {
+      "logistic_accuracy": 0.9,
+      "centroid_accuracy": 0.885625,
+      "delta": 0.014375000000000027
+    },
+    "1280": {
+      "logistic_accuracy": 0.90375,
+      "centroid_accuracy": 0.886875,
+      "delta": 0.016875000000000084
+    },
+    "2560": {
+      "logistic_accuracy": 0.9,
+      "centroid_accuracy": 0.8875,
+      "delta": 0.012500000000000067
+    }
+  },
+  "primary": {
+    "endpoint_delta_2560": {
+      "estimate": 0.0125,
+      "bootstrap97_5": [
+        0.00375,
+        0.02125
+      ]
+    },
+    "budget_gain_2560_minus_320": {
+      "estimate": 0.006875,
+      "bootstrap97_5": [
+        -0.005,
+        0.01875
+      ]
+    }
+  }
+}

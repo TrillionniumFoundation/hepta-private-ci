@@ -1,0 +1,41 @@
+name: Harrier head budget evidence replay (no model inference)
+on:
+  push:
+    branches: ["dot/neuron-head-budget-*"]
+    paths:
+      - "qualification/neuron-head-budget-pilot/**"
+      - ".github/workflows/hepta-neuron-head-budget.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: hepta-head-budget-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  replay:
+    name: Recorded correctness arithmetic, not model qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      OMP_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Exact source and pinned numerical library
+        run: |
+          git rev-parse HEAD HEAD^{tree}
+          git diff --check
+          python3 -m pip install --user numpy==2.2.6
+      - name: Replay all recorded head accuracies and both primary intervals
+        run: python3 qualification/neuron-head-budget-pilot/replay_observed.py
+      - name: Keep source unchanged
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+          git diff --cached --exit-code
