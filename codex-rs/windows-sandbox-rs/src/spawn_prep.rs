@@ -456,7 +456,6 @@ pub(crate) fn prepare_elevated_spawn_context_for_permissions(
         },
         filesystem_root_overrides,
     )?;
-    let caps = load_or_create_cap_sids(codex_home)?;
     let (psid_to_use, cap_sids) = if uses_write_capabilities {
         let cap_sids = root_capability_sids(codex_home, cwd, effective_write_roots)?
             .into_iter()
@@ -467,10 +466,15 @@ pub(crate) fn prepare_elevated_spawn_context_for_permissions(
         }
         (LocalSid::from_string(&cap_sids[0])?, cap_sids)
     } else {
-        (
-            LocalSid::from_string(&caps.readonly)?,
-            vec![caps.readonly.clone()],
-        )
+        let cap_sids = filesystem_roles
+            .capability_sids(crate::FilesystemCapabilityRole::Read)
+            .into_iter()
+            .map(str::to_owned)
+            .collect::<Vec<_>>();
+        let first = cap_sids
+            .first()
+            .ok_or_else(|| anyhow::anyhow!("readonly sandbox has no declared read capability"))?;
+        (LocalSid::from_string(first)?, cap_sids)
     };
 
     unsafe {

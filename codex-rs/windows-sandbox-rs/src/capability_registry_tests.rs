@@ -8,6 +8,7 @@ fn registry() -> CapSids {
         readonly: "S-1-5-21-2-3-4-5".into(),
         workspace_by_cwd: HashMap::new(),
         writable_root_by_path: HashMap::new(),
+        readable_root_by_path: HashMap::new(),
     }
 }
 
@@ -60,4 +61,27 @@ fn serialized_duplicate_roots_and_oversized_paths_are_refused() {
     );
     assert!(caps.validate().is_err());
     assert!(serde_json::from_slice::<CapSids>(&serde_json::to_vec(&caps).unwrap()).is_err());
+}
+
+#[test]
+fn read_roles_share_the_capacity_bound_and_cannot_reuse_another_role_identity() {
+    let mut caps = registry();
+    for index in 0..MAX_REGISTERED_ROOTS {
+        caps.readable_root_by_path.insert(
+            format!("read-{index}"),
+            format!("S-1-5-21-90-91-92-{}", index + 100),
+        );
+    }
+    caps.validate().unwrap();
+    caps.writable_root_by_path
+        .insert("overflow".into(), "S-1-5-21-80-81-82-83".into());
+    assert!(caps.validate().is_err());
+    let mut duplicate = registry();
+    duplicate
+        .readable_root_by_path
+        .insert("read".into(), duplicate.readonly.clone());
+    assert!(duplicate.validate().is_err());
+    let mut old = serde_json::to_value(registry()).unwrap();
+    old["version"] = 2.into();
+    assert!(serde_json::from_value::<CapSids>(old).is_err());
 }

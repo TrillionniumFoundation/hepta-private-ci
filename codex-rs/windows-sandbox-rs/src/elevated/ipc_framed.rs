@@ -26,7 +26,7 @@ use std::path::PathBuf;
 const MAX_FRAME_LEN: usize = 8 * 1024 * 1024;
 
 /// Protocol version shared by the parent process and elevated command runner.
-pub const IPC_PROTOCOL_VERSION: u8 = 6;
+pub const IPC_PROTOCOL_VERSION: u8 = 7;
 
 /// Length-prefixed, JSON-encoded frame.
 #[derive(Debug, Serialize, Deserialize, Clone)]

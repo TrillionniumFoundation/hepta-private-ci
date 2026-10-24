@@ -12,6 +12,10 @@ fn registry() -> CapSids {
         readonly: "S-1-5-21-2-3-4-5".into(),
         workspace_by_cwd: HashMap::from([("cwd".into(), "S-1-5-21-3-4-5-6".into())]),
         writable_root_by_path: HashMap::new(),
+        readable_root_by_path: HashMap::from([
+            ("runtime".into(), "S-1-5-21-50-51-52-53".into()),
+            ("same".into(), "S-1-5-21-60-61-62-63".into()),
+        ]),
     }
 }
 
@@ -49,7 +53,7 @@ fn roles_round_trip_without_becoming_prepared_authority() {
     assert!(decoded.matches_roots("cwd", &["runtime".into()], &["cwd".into()]));
     assert_eq!(
         decoded.read_sids().collect::<Vec<_>>(),
-        vec![caps.readonly.as_str()]
+        vec![caps.readable_root_by_path["runtime"].as_str()]
     );
     assert_eq!(
         decoded.write_sids().collect::<Vec<_>>(),
@@ -77,7 +81,13 @@ fn stale_generation_or_role_reassignment_is_refused() {
 
 #[test]
 fn active_root_bound_and_duplicate_roles_are_refused_without_truncation() {
-    let caps = registry();
+    let mut caps = registry();
+    for index in 0..=MAX_ACTIVE_ROOTS {
+        caps.readable_root_by_path.insert(
+            format!("read-{index}"),
+            format!("S-1-5-21-100-101-102-{}", index + 200),
+        );
+    }
     let roots: Vec<_> = (0..MAX_ACTIVE_ROOTS)
         .map(|index| format!("read-{index}"))
         .collect();
@@ -85,7 +95,7 @@ fn active_root_bound_and_duplicate_roles_are_refused_without_truncation() {
         FilesystemCapabilityPlan::declare(&caps, "cwd".into(), roots.clone(), vec![]).unwrap();
     assert_eq!(plan.read.len(), MAX_ACTIVE_ROOTS);
     let mut over = roots;
-    over.push("one-too-many".into());
+    over.push(format!("read-{MAX_ACTIVE_ROOTS}"));
     assert!(FilesystemCapabilityPlan::declare(&caps, "cwd".into(), over, vec![]).is_err());
     assert!(
         FilesystemCapabilityPlan::declare(
@@ -106,6 +116,13 @@ fn network_route_cannot_reuse_a_filesystem_identity() {
             .unwrap();
     assert!(
         plan.clone()
+            .with_network_route(Some(caps.readable_root_by_path["runtime"].clone()))
+            .unwrap()
+            .validate_registry(&caps)
+            .is_err()
+    );
+    assert!(
+        plan.clone()
             .with_network_route(Some(caps.readonly.clone()))
             .unwrap()
             .validate_registry(&caps)
@@ -123,9 +140,52 @@ fn network_route_cannot_reuse_a_filesystem_identity() {
 }
 
 #[test]
+fn disjoint_read_plan_never_adds_an_identity_to_the_prior_plan() {
+    let mut caps = registry();
+    let first =
+        FilesystemCapabilityPlan::declare(&caps, "cwd".into(), vec!["runtime".into()], vec![])
+            .unwrap();
+    caps.readable_root_by_path
+        .insert("new-root".into(), "S-1-5-21-70-71-72-73".into());
+    let second = FilesystemCapabilityPlan::declare(
+        &caps,
+        "cwd".into(),
+        vec!["runtime".into(), "new-root".into()],
+        vec![],
+    )
+    .unwrap();
+    first.validate_registry(&caps).unwrap();
+    assert_eq!(
+        first.read_root_sids().collect::<Vec<_>>(),
+        vec![("runtime", caps.readable_root_by_path["runtime"].as_str())]
+    );
+    assert_eq!(
+        second.read_root_sids().collect::<Vec<_>>(),
+        vec![
+            ("runtime", caps.readable_root_by_path["runtime"].as_str()),
+            ("new-root", caps.readable_root_by_path["new-root"].as_str())
+        ]
+    );
+    assert!(
+        !first
+            .read_sids()
+            .any(|sid| sid == caps.readable_root_by_path["new-root"])
+    );
+    assert_ne!(
+        caps.readable_root_by_path["runtime"],
+        caps.readable_root_by_path["new-root"]
+    );
+    let mut old_wire = serde_json::to_value(&first).unwrap();
+    old_wire["version"] = 1.into();
+    assert!(serde_json::from_value::<FilesystemCapabilityPlan>(old_wire).is_err());
+}
+
+#[test]
 fn registry_capacity_and_duplicate_identity_are_refused() {
     let mut caps = registry();
-    for index in 1..MAX_REGISTERED_ROOTS {
+    for index in
+        (caps.workspace_by_cwd.len() + caps.readable_root_by_path.len())..MAX_REGISTERED_ROOTS
+    {
         caps.writable_root_by_path.insert(
             format!("root-{index}"),
             format!("S-1-5-21-10-11-12-{}", index + 100),

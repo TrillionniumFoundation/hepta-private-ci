@@ -7,8 +7,8 @@ use anyhow::ensure;
 use serde::Deserialize;
 use serde::Serialize;
 
-const PLAN_VERSION: u32 = 1;
-const MAX_ACTIVE_ROOTS: usize = 64;
+const PLAN_VERSION: u32 = 2;
+pub(crate) const MAX_ACTIVE_ROOTS: usize = 64;
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
@@ -129,6 +129,7 @@ impl RootRequestBinding {
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
 pub struct FilesystemCapabilityPlan {
+    #[serde(deserialize_with = "current_plan_version")]
     version: u32,
     registry_generation: String,
     cwd: String,
@@ -140,6 +141,18 @@ pub struct FilesystemCapabilityPlan {
     child_objects: ChildObjectRole,
     network_route: Option<NetworkRouteCapability>,
     request: Option<RootRequestBinding>,
+}
+
+fn current_plan_version<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<u32, D::Error> {
+    let version = u32::deserialize(deserializer)?;
+    if version != PLAN_VERSION {
+        return Err(serde::de::Error::custom(
+            "unsupported filesystem plan version",
+        ));
+    }
+    Ok(version)
 }
 
 fn bounded_active_roots<'de, D: serde::Deserializer<'de>>(
@@ -187,11 +200,17 @@ impl FilesystemCapabilityPlan {
             cwd: cwd.clone(),
             read: read
                 .into_iter()
-                .map(|path| RootCapability {
-                    path,
-                    sid: caps.readonly.clone(),
+                .map(|path| {
+                    let sid = caps
+                        .readable_root_by_path
+                        .get(&path)
+                        .cloned()
+                        .ok_or_else(|| {
+                            anyhow::anyhow!("read root has no registered immutable capability")
+                        })?;
+                    Ok(RootCapability { path, sid })
                 })
-                .collect(),
+                .collect::<Result<_>>()?,
             write: write
                 .into_iter()
                 .map(|path| {
@@ -276,7 +295,9 @@ impl FilesystemCapabilityPlan {
             }
         }
         ensure!(
-            self.read.iter().all(|root| root.sid == caps.readonly),
+            self.read
+                .iter()
+                .all(|root| caps.readable_root_by_path.get(&root.path) == Some(&root.sid)),
             "read capability role mismatch"
         );
         for root in &self.write {
@@ -299,6 +320,7 @@ impl FilesystemCapabilityPlan {
                         .workspace_by_cwd
                         .values()
                         .chain(caps.writable_root_by_path.values())
+                        .chain(caps.readable_root_by_path.values())
                         .any(|sid| sid == &route.sid),
                 "network-route identity overlaps filesystem role"
             );
@@ -364,6 +386,13 @@ impl FilesystemCapabilityPlan {
     /// Returns the declared capability identities; this cannot authorize a token.
     pub fn read_sids(&self) -> impl Iterator<Item = &str> {
         self.read.iter().map(|root| root.sid.as_str())
+    }
+
+    /// Exact root-to-RX identity pairs; one root's SID must never be granted to another.
+    pub fn read_root_sids(&self) -> impl Iterator<Item = (&str, &str)> {
+        self.read
+            .iter()
+            .map(|root| (root.path.as_str(), root.sid.as_str()))
     }
 
     /// Returns the declared write identities; prepared ACLs remain separate.

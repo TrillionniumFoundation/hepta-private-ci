@@ -443,7 +443,7 @@ fn write_secrets(
             password: BASE64.encode(online_blob),
         },
     };
-    let users_path = secrets_dir.join("sandbox_users.v6.json");
+    let users_path = secrets_dir.join("sandbox_users.v7.json");
     let users_json = serde_json::to_vec_pretty(&users).map_err(|err| {
         anyhow::Error::new(SetupFailure::new(
             SetupErrorCode::HelperUsersFileWriteFailed,
@@ -467,7 +467,7 @@ fn write_secrets(
 // modify, or replace it. Once every setup step succeeds, `commit_setup_marker` writes the valid
 // marker contents without changing the file's ACL.
 pub(super) fn prepare_setup_marker(codex_home: &Path, real_user: &str) -> Result<()> {
-    let marker_path = sandbox_dir(codex_home).join("setup_marker.v6.json");
+    let marker_path = sandbox_dir(codex_home).join("setup_marker.v7.json");
     // CREATE_NEW below preserves every existing valid or uncertain marker.
 
     let real_user_sid = resolve_sid(real_user)
@@ -556,7 +556,7 @@ pub(super) fn commit_setup_marker(
         read_roots: Vec::new(),
         write_roots: Vec::new(),
     };
-    let marker_path = sandbox_dir(codex_home).join("setup_marker.v6.json");
+    let marker_path = sandbox_dir(codex_home).join("setup_marker.v7.json");
     let marker_json = serde_json::to_vec_pretty(&marker).map_err(|err| {
         anyhow::Error::new(SetupFailure::new(
             SetupErrorCode::HelperSetupMarkerWriteFailed,

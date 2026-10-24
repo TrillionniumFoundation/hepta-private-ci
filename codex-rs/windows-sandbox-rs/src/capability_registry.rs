@@ -6,7 +6,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use std::collections::HashMap;
 
-pub(crate) const REGISTRY_VERSION: u32 = 2;
+pub(crate) const REGISTRY_VERSION: u32 = 3;
 pub(crate) const MAX_REGISTERED_ROOTS: usize = 256;
 pub(crate) const MAX_PATH_BYTES: usize = 4096;
 const MAX_SID_BYTES: usize = 184;
@@ -14,6 +14,7 @@ const MAX_SID_BYTES: usize = 184;
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
 pub struct CapSids {
+    #[serde(deserialize_with = "current_registry_version")]
     pub(crate) version: u32,
     pub(crate) generation: String,
     pub workspace: String,
@@ -22,6 +23,20 @@ pub struct CapSids {
     pub workspace_by_cwd: HashMap<String, String>,
     #[serde(deserialize_with = "bounded_roots")]
     pub writable_root_by_path: HashMap<String, String>,
+    #[serde(deserialize_with = "bounded_roots")]
+    pub readable_root_by_path: HashMap<String, String>,
+}
+
+fn current_registry_version<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<u32, D::Error> {
+    let version = u32::deserialize(deserializer)?;
+    if version != REGISTRY_VERSION {
+        return Err(serde::de::Error::custom(
+            "unsupported capability registry version",
+        ));
+    }
+    Ok(version)
 }
 
 pub(crate) fn sid_is_bounded(sid: &str) -> bool {
@@ -94,6 +109,7 @@ impl CapSids {
             self.workspace_by_cwd
                 .len()
                 .saturating_add(self.writable_root_by_path.len())
+                .saturating_add(self.readable_root_by_path.len())
                 <= MAX_REGISTERED_ROOTS,
             "capability registry capacity exceeded"
         );
@@ -109,6 +125,7 @@ impl CapSids {
             .workspace_by_cwd
             .iter()
             .chain(&self.writable_root_by_path)
+            .chain(&self.readable_root_by_path)
         {
             ensure!(
                 !path.is_empty() && path.len() <= MAX_PATH_BYTES,

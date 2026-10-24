@@ -47,7 +47,7 @@ use windows_sys::Win32::Security::CheckTokenMembership;
 use windows_sys::Win32::Security::FreeSid;
 use windows_sys::Win32::Security::SECURITY_NT_AUTHORITY;
 
-pub const SETUP_VERSION: u32 = 6;
+pub const SETUP_VERSION: u32 = 7;
 pub const OFFLINE_USERNAME: &str = "CodexSandboxOffline";
 pub const ONLINE_USERNAME: &str = "CodexSandboxOnline";
 const ERROR_CANCELLED: u32 = 1223;
@@ -195,11 +195,11 @@ pub fn sandbox_secrets_dir(codex_home: &Path) -> PathBuf {
 }
 
 pub fn setup_marker_path(codex_home: &Path) -> PathBuf {
-    sandbox_dir(codex_home).join("setup_marker.v6.json")
+    sandbox_dir(codex_home).join("setup_marker.v7.json")
 }
 
 pub fn sandbox_users_path(codex_home: &Path) -> PathBuf {
-    sandbox_secrets_dir(codex_home).join("sandbox_users.v6.json")
+    sandbox_secrets_dir(codex_home).join("sandbox_users.v7.json")
 }
 
 pub struct SandboxSetupRequest<'a> {

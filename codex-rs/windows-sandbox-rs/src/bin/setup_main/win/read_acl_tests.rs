@@ -14,11 +14,16 @@ fn subjects(plan: &FilesystemCapabilityPlan) -> ReadAclSubjects {
             LocalSid::from_string("S-1-1-0").unwrap(),
         ],
         restrictive_rx: plan
-            .capability_sids(FilesystemCapabilityRole::Read)
-            .into_iter()
-            .map(|sid| LocalSid::from_string(sid).unwrap())
+            .read_root_sids()
+            .map(|(root, sid)| (root.to_owned(), LocalSid::from_string(sid).unwrap()))
             .collect(),
     }
+}
+
+fn observe(file: &File, plan: &FilesystemCapabilityPlan) -> Result<(bool, bool)> {
+    let subjects = subjects(plan);
+    let restrictive = subjects.restrictive_rx.values().next().unwrap();
+    readback(file, &subjects, restrictive)
 }
 
 fn acl_bytes(file: &File) -> Vec<u8> {
@@ -53,10 +58,7 @@ fn broad_normal_rx_cannot_skip_same_plan_restrictive_readback() {
     // SAFETY: mutate only this fresh owned fixture; retain the broad-identity control.
     unsafe { ensure_allow_mask_aces(&root, &[normal.as_ptr()], FILE_ALL_ACCESS) }.unwrap();
     let held = open_root(&root, QUERY).unwrap();
-    assert_eq!(
-        readback(&held, &subjects(&plan)).unwrap(),
-        (true, vec![false])
-    );
+    assert_eq!(observe(&held, &plan).unwrap(), (true, false));
     let mut log = Vec::new();
     let prepared = prepare_roots(
         plan.clone(),
@@ -82,10 +84,7 @@ fn broad_normal_rx_cannot_skip_same_plan_restrictive_readback() {
             0
         );
     }
-    assert_eq!(
-        readback(&held, &subjects(&plan)).unwrap(),
-        (true, vec![true])
-    );
+    assert_eq!(observe(&held, &plan).unwrap(), (true, true));
     // A competing request does not mistake a live mutex for this plan's completion.
     assert!(
         prepare_roots(
@@ -109,8 +108,14 @@ fn broad_normal_rx_cannot_skip_same_plan_restrictive_readback() {
     drop(repeated);
     // Generic write-deny overlaps SYNCHRONIZE. A matching RX allow must not mask it.
     let identities = subjects(&plan);
-    unsafe { add_deny_write_ace(&root, identities.restrictive_rx[0].as_ptr()) }.unwrap();
-    assert!(readback(&held, &subjects(&plan)).is_err());
+    unsafe {
+        add_deny_write_ace(
+            &root,
+            identities.restrictive_rx.values().next().unwrap().as_ptr(),
+        )
+    }
+    .unwrap();
+    assert!(observe(&held, &plan).is_err());
     let denied = acl_bytes(&held);
     let identities = subjects(&plan);
     assert!(prepare_roots(plan, std::slice::from_ref(&root), identities, &mut log).is_err());

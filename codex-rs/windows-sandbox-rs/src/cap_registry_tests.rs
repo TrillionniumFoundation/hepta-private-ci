@@ -57,7 +57,7 @@ fn locked_registry_and_missing_checkpoint_do_not_adopt_or_overwrite_state() {
     let temp = tempfile::tempdir().unwrap();
     load_or_create_cap_sids(temp.path()).unwrap();
     let before = fs::read(cap_sid_file(temp.path())).unwrap();
-    let path = temp.path().join("cap_sid.v2.lock");
+    let path = temp.path().join("cap_sid.v3.lock");
     let lock = fs::OpenOptions::new()
         .read(true)
         .write(true)
@@ -88,7 +88,7 @@ fn old_same_generation_json_cannot_restore_issued_identity_quota() {
     writable_root_cap_sid_for_path(temp.path(), &temp.path().join("root-a")).unwrap();
     let old = fs::read(cap_sid_file(temp.path())).unwrap();
     writable_root_cap_sid_for_path(temp.path(), &temp.path().join("root-b")).unwrap();
-    let checkpoint_path = temp.path().join("cap_sid.v2.lock");
+    let checkpoint_path = temp.path().join("cap_sid.v3.lock");
     let checkpoint = fs::read(&checkpoint_path).unwrap();
     fs::write(cap_sid_file(temp.path()), &old).unwrap();
     assert!(load_or_create_cap_sids(temp.path()).is_err());
@@ -102,7 +102,7 @@ fn fixed_pending_stage_is_preserved_and_fences_all_later_use() {
     load_or_create_cap_sids(temp.path()).unwrap();
     let before = fs::read(cap_sid_file(temp.path())).unwrap();
     let plan = filesystem_capability_plan(temp.path(), temp.path(), &[], &[]).unwrap();
-    let stage = temp.path().join("cap_sid.v2.stage");
+    let stage = temp.path().join("cap_sid.v3.stage");
     fs::write(&stage, b"interrupted update").unwrap();
     assert!(load_or_create_cap_sids(temp.path()).is_err());
     assert!(validate_filesystem_capability_plan(temp.path(), &plan).is_err());
@@ -119,7 +119,7 @@ fn malformed_or_excessive_checkpoint_is_never_rewritten() {
         let temp = tempfile::tempdir().unwrap();
         load_or_create_cap_sids(temp.path()).unwrap();
         let before = fs::read(cap_sid_file(temp.path())).unwrap();
-        let checkpoint = temp.path().join("cap_sid.v2.lock");
+        let checkpoint = temp.path().join("cap_sid.v3.lock");
         fs::write(&checkpoint, &fault).unwrap();
         assert!(load_or_create_cap_sids(temp.path()).is_err());
         assert_eq!(fs::read(checkpoint).unwrap(), fault);
@@ -136,12 +136,12 @@ fn dangling_legacy_link_is_not_an_empty_namespace() {
     assert!(load_or_create_cap_sids(temp.path()).is_err());
     assert_eq!(fs::read_link(&old).unwrap(), missing);
     assert!(!cap_sid_file(temp.path()).exists());
-    assert!(!temp.path().join("cap_sid.v2.lock").exists());
+    assert!(!temp.path().join("cap_sid.v3.lock").exists());
 }
 
 #[test]
 fn registry_and_checkpoint_links_are_refused_without_mutating_targets() {
-    for leaf in ["cap_sid.v2.json", "cap_sid.v2.lock"] {
+    for leaf in ["cap_sid.v3.json", "cap_sid.v3.lock"] {
         let temp = tempfile::tempdir().unwrap();
         load_or_create_cap_sids(temp.path()).unwrap();
         let path = temp.path().join(leaf);
@@ -176,6 +176,11 @@ fn every_legacy_namespace_object_is_preserved_without_v2_birth() {
         ".sandbox/setup_marker.json",
         ".sandbox/sandbox_users.json",
         ".sandbox-secrets/sandbox_users.json",
+        "cap_sid.v2.json",
+        "cap_sid.v2.lock",
+        "cap_sid.v2.stage",
+        ".sandbox/setup_marker.v6.json",
+        ".sandbox-secrets/sandbox_users.v6.json",
     ] {
         let temp = tempfile::tempdir().unwrap();
         let old = temp.path().join(relative);
@@ -187,6 +192,18 @@ fn every_legacy_namespace_object_is_preserved_without_v2_birth() {
             b"existing-valid-or-uncertain-state"
         );
         assert!(!cap_sid_file(temp.path()).exists());
-        assert!(!temp.path().join("cap_sid.v2.lock").exists());
+        assert!(!temp.path().join("cap_sid.v3.lock").exists());
+    }
+}
+
+#[test]
+fn overbound_first_read_plan_does_not_birth_or_quarantine_a_registry() {
+    let temp = tempfile::tempdir().unwrap();
+    let roots: Vec<_> = (0..=crate::capability_plan::MAX_ACTIVE_ROOTS)
+        .map(|index| temp.path().join(format!("root-{index}")))
+        .collect();
+    assert!(filesystem_capability_plan(temp.path(), temp.path(), &roots, &[]).is_err());
+    for name in ["cap_sid.v3.json", "cap_sid.v3.lock", "cap_sid.v3.stage"] {
+        assert!(!temp.path().join(name).exists());
     }
 }

@@ -1,4 +1,6 @@
 //! Exact-request read-role ACL preparation. No token or launch authority is produced.
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::ffi::c_void;
 use std::fs::File;
 use std::fs::OpenOptions;
@@ -12,7 +14,6 @@ use std::path::PathBuf;
 
 use anyhow::Result;
 use codex_windows_sandbox::FilesystemCapabilityPlan;
-use codex_windows_sandbox::FilesystemCapabilityRole;
 use codex_windows_sandbox::LocalSid;
 use codex_windows_sandbox::validate_filesystem_capability_plan_roots;
 use windows_sys::Win32::Foundation::HLOCAL;
@@ -79,7 +80,7 @@ impl Drop for LocalAllocation {
 struct ReadAclSubjects {
     normal_identity: LocalSid,
     ambient_rx: [LocalSid; 3],
-    restrictive_rx: Vec<LocalSid>,
+    restrictive_rx: BTreeMap<String, LocalSid>,
 }
 
 /// Root allow-ACE readback only; not effective-token, descendant, namespace,
@@ -150,7 +151,11 @@ fn descriptor(file: &File) -> Result<(LocalAllocation, *mut ACL)> {
     Ok((allocation, dacl))
 }
 
-fn readback(file: &File, subjects: &ReadAclSubjects) -> Result<(bool, Vec<bool>)> {
+fn readback(
+    file: &File,
+    subjects: &ReadAclSubjects,
+    restrictive_sid: &LocalSid,
+) -> Result<(bool, bool)> {
     let (_descriptor, dacl) = descriptor(file)?;
     let mut information: ACL_SIZE_INFORMATION = unsafe { std::mem::zeroed() };
     // SAFETY: GetSecurityInfo returned a live kernel-validated ACL.
@@ -171,7 +176,7 @@ fn readback(file: &File, subjects: &ReadAclSubjects) -> Result<(bool, Vec<bool>)
         "read ACL ACE bound exceeded"
     );
     let mut normal = false;
-    let mut restrictive = vec![false; subjects.restrictive_rx.len()];
+    let mut restrictive = false;
     let mapping = GENERIC_MAPPING {
         GenericRead: FILE_GENERIC_READ,
         GenericWrite: FILE_GENERIC_WRITE,
@@ -227,9 +232,7 @@ fn readback(file: &File, subjects: &ReadAclSubjects) -> Result<(bool, Vec<bool>)
             normal |= std::iter::once(&subjects.normal_identity)
                 .chain(&subjects.ambient_rx)
                 .any(|subject| unsafe { EqualSid(sid, subject.as_ptr()) } != 0);
-            for (allowed, subject) in restrictive.iter_mut().zip(&subjects.restrictive_rx) {
-                *allowed |= unsafe { EqualSid(sid, subject.as_ptr()) } != 0;
-            }
+            restrictive |= unsafe { EqualSid(sid, restrictive_sid.as_ptr()) } != 0;
         }
     }
     Ok((normal, restrictive))
@@ -298,8 +301,8 @@ pub(super) fn prepare(
     let group = resolve_sandbox_users_group_sid()?;
     let group = codex_windows_sandbox::string_from_sid_bytes(&group).map_err(anyhow::Error::msg)?;
     let normal_identity = LocalSid::from_string(&group)?;
-    let mut restrictive_rx = Vec::new();
-    for sid in plan.capability_sids(FilesystemCapabilityRole::Read) {
+    let mut restrictive_rx = BTreeMap::new();
+    for (root, sid) in plan.read_root_sids() {
         let sid = LocalSid::from_string(sid)?;
         let mut ambient_member = 0;
         // SAFETY: NULL selects the caller's actual effective token; SID/output are owned.
@@ -312,7 +315,7 @@ pub(super) fn prepare(
             ambient_member == 0 && unsafe { EqualSid(sid.as_ptr(), normal_identity.as_ptr()) } == 0,
             "read capability is an ambient identity"
         );
-        restrictive_rx.push(sid);
+        restrictive_rx.insert(root.to_owned(), sid);
     }
     let subjects = ReadAclSubjects {
         normal_identity,
@@ -350,21 +353,29 @@ fn prepare_roots(
     let serialization = acquire_read_acl_mutex()?
         .ok_or_else(|| anyhow::anyhow!("read ACL setup is busy; no same-plan completion"))?;
     let mut held_roots = Vec::with_capacity(roots.len());
+    let mut seen = BTreeSet::new();
     for path in roots {
         anyhow::ensure!(
             dunce::canonicalize(path)? == *path,
             "read ACL root alias changed"
         );
+        let key = path
+            .to_string_lossy()
+            .replace('\\', "/")
+            .to_ascii_lowercase();
+        anyhow::ensure!(seen.insert(key.clone()), "duplicate prepared read root");
+        let restrictive_sid = subjects
+            .restrictive_rx
+            .get(&key)
+            .ok_or_else(|| anyhow::anyhow!("read root has no matching restrictive role"))?;
         let mut held = open_root(path, QUERY)?;
-        let (normal, restrictive) = readback(&held, &subjects)?;
+        let (normal, restrictive) = readback(&held, &subjects, restrictive_sid)?;
         let mut missing = Vec::new();
         if !normal {
             missing.push(subjects.normal_identity.as_ptr());
         }
-        for (allowed, subject) in restrictive.iter().zip(&subjects.restrictive_rx) {
-            if !allowed {
-                missing.push(subject.as_ptr());
-            }
+        if !restrictive {
+            missing.push(restrictive_sid.as_ptr());
         }
         if !missing.is_empty() {
             let writable = open_root(path, QUERY | WRITE_DAC)?;
@@ -375,13 +386,17 @@ fn prepare_roots(
             repair(&writable, &missing)?;
             held = writable;
         }
-        let (normal, restrictive) = readback(&held, &subjects)?;
+        let (normal, restrictive) = readback(&held, &subjects, restrictive_sid)?;
         anyhow::ensure!(
-            normal && restrictive.iter().all(|allowed| *allowed),
+            normal && restrictive,
             "incomplete normal/restrictive read ACL readback"
         );
         held_roots.push(held);
     }
+    anyhow::ensure!(
+        seen.len() == subjects.restrictive_rx.len(),
+        "incomplete prepared read cohort"
+    );
     log_line(
         log,
         &format!(
@@ -399,3 +414,7 @@ fn prepare_roots(
 #[cfg(test)]
 #[path = "read_acl_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "read_acl_cross_root_tests.rs"]
+mod cross_root_tests;

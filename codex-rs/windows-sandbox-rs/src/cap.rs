@@ -27,7 +27,7 @@ use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 const MAX_REGISTRY_BYTES: u64 = 4 * 1024 * 1024;
 
 pub fn cap_sid_file(codex_home: &Path) -> PathBuf {
-    codex_home.join("cap_sid.v2.json")
+    codex_home.join("cap_sid.v3.json")
 }
 
 fn make_random_cap_sid_string() -> String {
@@ -95,9 +95,14 @@ fn read_caps(path: &Path, checkpoint: &mut fs::File) -> Result<CapSids> {
 pub fn require_fresh_filesystem_namespace(codex_home: &Path) -> Result<()> {
     for relative in [
         "cap_sid",
+        "cap_sid.v2.json",
+        "cap_sid.v2.lock",
+        "cap_sid.v2.stage",
         ".sandbox/setup_marker.json",
+        ".sandbox/setup_marker.v6.json",
         ".sandbox/sandbox_users.json",
         ".sandbox-secrets/sandbox_users.json",
+        ".sandbox-secrets/sandbox_users.v6.json",
     ] {
         require_absent(&codex_home.join(relative))
             .context("legacy setup requires a fresh namespace; refusing migration or reset")?;
@@ -112,9 +117,9 @@ fn with_registry<T>(
     require_fresh_filesystem_namespace(codex_home)?;
     fs::create_dir_all(codex_home)?;
     let path = cap_sid_file(codex_home);
-    let stage_path = codex_home.join("cap_sid.v2.stage");
+    let stage_path = codex_home.join("cap_sid.v3.stage");
     require_absent(&stage_path).context("uncertain registry stage; refusing automatic recovery")?;
-    let lock_path = codex_home.join("cap_sid.v2.lock");
+    let lock_path = codex_home.join("cap_sid.v3.lock");
     let (mut lock, fresh) = match fs::OpenOptions::new()
         .read(true)
         .write(true)
@@ -151,6 +156,7 @@ fn with_registry<T>(
             readonly: make_random_cap_sid_string(),
             workspace_by_cwd: HashMap::new(),
             writable_root_by_path: HashMap::new(),
+            readable_root_by_path: HashMap::new(),
         }
     } else {
         read_caps(&path, &mut lock)
@@ -191,13 +197,14 @@ pub fn load_or_create_cap_sids(codex_home: &Path) -> Result<CapSids> {
 enum RootRole {
     Workspace,
     Additional,
+    Read,
 }
 
 fn register_root(caps: &mut CapSids, key: String, role: RootRole) -> Result<String> {
-    let existing = if matches!(role, RootRole::Workspace) {
-        caps.workspace_by_cwd.get(&key)
-    } else {
-        caps.writable_root_by_path.get(&key)
+    let existing = match role {
+        RootRole::Workspace => caps.workspace_by_cwd.get(&key),
+        RootRole::Additional => caps.writable_root_by_path.get(&key),
+        RootRole::Read => caps.readable_root_by_path.get(&key),
     };
     if let Some(sid) = existing {
         return Ok(sid.clone());
@@ -206,14 +213,21 @@ fn register_root(caps: &mut CapSids, key: String, role: RootRole) -> Result<Stri
         caps.workspace_by_cwd
             .len()
             .saturating_add(caps.writable_root_by_path.len())
+            .saturating_add(caps.readable_root_by_path.len())
             < MAX_REGISTERED_ROOTS,
         "capability registry full; refusing live identity eviction"
     );
     let sid = make_random_cap_sid_string();
-    if matches!(role, RootRole::Workspace) {
-        caps.workspace_by_cwd.insert(key, sid.clone());
-    } else {
-        caps.writable_root_by_path.insert(key, sid.clone());
+    match role {
+        RootRole::Workspace => {
+            caps.workspace_by_cwd.insert(key, sid.clone());
+        }
+        RootRole::Additional => {
+            caps.writable_root_by_path.insert(key, sid.clone());
+        }
+        RootRole::Read => {
+            caps.readable_root_by_path.insert(key, sid.clone());
+        }
     }
     Ok(sid)
 }
@@ -249,20 +263,33 @@ pub fn filesystem_capability_plan(
     read: &[PathBuf],
     write: &[PathBuf],
 ) -> Result<FilesystemCapabilityPlan> {
+    ensure!(
+        read.len() <= crate::capability_plan::MAX_ACTIVE_ROOTS
+            && write.len() <= crate::capability_plan::MAX_ACTIVE_ROOTS,
+        "active filesystem root capacity exceeded"
+    );
     let cwd = canonical_path_key(cwd);
+    let read: Vec<_> = read
+        .iter()
+        .map(|root| canonical_path_key(root))
+        .collect::<std::collections::BTreeSet<_>>()
+        .into_iter()
+        .collect();
+    let write: Vec<_> = write
+        .iter()
+        .map(|root| canonical_path_key(root))
+        .collect::<std::collections::BTreeSet<_>>()
+        .into_iter()
+        .collect();
+    ensure!(
+        read.len() <= crate::capability_plan::MAX_ACTIVE_ROOTS
+            && write.len() <= crate::capability_plan::MAX_ACTIVE_ROOTS,
+        "active filesystem root capacity exceeded"
+    );
     with_registry(codex_home, |caps| {
-        let read: Vec<_> = read
-            .iter()
-            .map(|root| canonical_path_key(root))
-            .collect::<std::collections::BTreeSet<_>>()
-            .into_iter()
-            .collect();
-        let write: Vec<_> = write
-            .iter()
-            .map(|root| canonical_path_key(root))
-            .collect::<std::collections::BTreeSet<_>>()
-            .into_iter()
-            .collect();
+        for root in &read {
+            register_root(caps, root.clone(), RootRole::Read)?;
+        }
         for root in &write {
             register_root(
                 caps,
@@ -284,8 +311,8 @@ pub fn validate_filesystem_capability_plan(
     plan: &FilesystemCapabilityPlan,
 ) -> Result<()> {
     require_fresh_filesystem_namespace(codex_home)?;
-    require_absent(&codex_home.join("cap_sid.v2.stage"))?;
-    let checkpoint_path = codex_home.join("cap_sid.v2.lock");
+    require_absent(&codex_home.join("cap_sid.v3.stage"))?;
+    let checkpoint_path = codex_home.join("cap_sid.v3.lock");
     require_plain_file(&checkpoint_path)?;
     let mut checkpoint = fs::OpenOptions::new()
         .read(true)
@@ -294,7 +321,7 @@ pub fn validate_filesystem_capability_plan(
     checkpoint
         .try_lock_shared()
         .context("capability registry is busy or uncertain")?;
-    require_absent(&codex_home.join("cap_sid.v2.stage"))?;
+    require_absent(&codex_home.join("cap_sid.v3.stage"))?;
     let caps = read_caps(&cap_sid_file(codex_home), &mut checkpoint)?;
     plan.validate_registry(&caps)
 }
