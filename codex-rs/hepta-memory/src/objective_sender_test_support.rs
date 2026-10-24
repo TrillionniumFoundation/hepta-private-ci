@@ -128,6 +128,8 @@ pub(super) struct Fixture {
 }
 
 impl Fixture {
+    // The synthetic live-writer opener belongs only to the test-only fixture.
+    #[cfg(test)]
     pub async fn new() -> Self {
         let temp = TempDir::new().expect("test root");
         let owner = agent_id(OWNER);
