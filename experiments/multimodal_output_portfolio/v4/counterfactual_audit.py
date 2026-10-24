@@ -31,6 +31,11 @@ def scenarios(horizon: int, law: tuple[float, float, float]):
         raise ValueError("unadmitted enumeration horizon")
     for path in product(range(3), repeat=horizon):
         probability = math.prod(law[shock] for shock in path)
+        # A positive supported path must not disappear from the tail audit.
+        # Zero factors are impossible events; positive products rounded to zero
+        # exceed this float enumerator's domain and must fail closed instead.
+        if probability == 0 and all(law[shock] > 0 for shock in path):
+            raise ValueError("positive path probability underflow")
         if probability > 0:
             yield path, probability
 
@@ -75,6 +80,8 @@ def dependent_scenarios(horizon: int, regime):
         raise ValueError("unadmitted enumeration horizon")
     for rows in product(regime, repeat=horizon):
         probability = math.prod(row[1] for row in rows)
+        if probability == 0 and all(row[1] > 0 for row in rows):
+            raise ValueError("positive path probability underflow")
         if probability > 0:
             yield tuple(row[0] for row in rows), probability
 
