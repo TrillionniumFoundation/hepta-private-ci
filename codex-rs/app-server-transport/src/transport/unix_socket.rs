@@ -86,6 +86,7 @@ async fn run_control_socket_acceptor(
     shutdown_token: CancellationToken,
     socket_guard: Option<ControlSocketFileGuard>,
 ) {
+    #[cfg(target_os = "linux")]
     let inherited = socket_guard.is_none();
     let _socket_guard = socket_guard;
     loop {
@@ -112,7 +113,8 @@ async fn run_control_socket_acceptor(
             }
         };
 
-        if inherited && let Err(error) = stream.ensure_current_user_peer() {
+        #[cfg(target_os = "linux")]
+        if inherited && let Err(error) = stream.ensure_current_user_or_root_peer() {
             warn!(%error, "refused inherited control socket peer before protocol admission");
             continue;
         }

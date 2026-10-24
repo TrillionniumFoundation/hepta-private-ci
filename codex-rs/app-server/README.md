@@ -10,7 +10,8 @@ construct `InheritedControlSocket::from_inherited` and call
 runtime and preserves its JSON-RPC, thread store, extensions and drain behavior.
 The descriptor must be a listening Unix stream at the exact absolute canonical
 pathname, with a single socket node owned by the effective UID and mode `0600`.
-Accepted peers must have that same user identity before WebSocket admission.
+Accepted peers must have that same user identity or the actual Root supervisor's
+UID before WebSocket admission; Root already owns private pathname access.
 
 The embedding retains pathname creation and cleanup. This entry does not run
 the ordinary stale-socket probe, parent-directory permission repair, bind or
