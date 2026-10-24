@@ -1,0 +1,29 @@
+{"command": ["/usr/bin/python3", "/tmp/hepta-cell-retention-v2-20261024.py", "--worktree", "/home/qian-qi/workspace/hepta-cell-retention-repair-20261024", "--expected-branch", "research/cell-retention-objective-20261024"], "cwd": "/home/qian-qi/workspace/hepta-cell-retention-repair-20261024"}
+{
+  "worktree": "/home/qian-qi/workspace/hepta-cell-retention-repair-20261024",
+  "head_before": "ff5baef731f36420370c5bcc049c50a567cda06a",
+  "branch": "research/cell-retention-objective-20261024",
+  "installed": [
+    "qa/stem-bakeoff/CELL_FIELD_RETENTION.md",
+    "qa/stem-bakeoff/cell_field_retention.py",
+    "qa/stem-bakeoff/cell_field_retention_protocol.draft.json",
+    "qa/stem-bakeoff/test_cell_field_retention.py"
+  ],
+  "exact_payload_files": [
+    "qa/stem-bakeoff/CELL_FIELD_RETENTION.md",
+    "qa/stem-bakeoff/cell_field_retention.py",
+    "qa/stem-bakeoff/cell_field_retention_protocol.draft.json",
+    "qa/stem-bakeoff/test_cell_field_retention.py"
+  ],
+  "legacy_preimages_unchanged": true,
+  "training_model_remote_or_git_mutations": false
+}
+{"command": ["/usr/bin/python3", "/tmp/hepta-cell-retention-v2-20261024.py", "--worktree", "/home/qian-qi/workspace/hepta-cell-retention-repair-20261024", "--expected-branch", "research/cell-retention-objective-20261024"], "returncode": 0, "wall_seconds": 6.834684922010638}
+{"command": ["/usr/bin/python3", "-W", "error", "-m", "unittest", "test_cell_field_retention", "test_cell_field_control", "-v"], "cwd": "/home/qian-qi/workspace/hepta-cell-retention-repair-20261024/qa/stem-bakeoff"}
+{"command": ["/usr/bin/python3", "-W", "error", "-m", "unittest", "test_cell_field_retention", "test_cell_field_control", "-v"], "returncode": 0, "wall_seconds": 2.663251032005064}
+{"command": ["just", "fmt"], "cwd": "/home/qian-qi/workspace/hepta-cell-retention-repair-20261024/codex-rs"}
+No changed files need formatting. Use --all for a full repository check.
+{"command": ["just", "fmt"], "returncode": 0, "wall_seconds": 0.2533958109561354}
+{"command": ["git", "diff", "--check"], "cwd": "/home/qian-qi/workspace/hepta-cell-retention-repair-20261024"}
+{"command": ["git", "diff", "--check"], "returncode": 0, "wall_seconds": 0.009537673089653254}
+{"python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]", "numpy": "1.26.4", "results": [{"command": ["/usr/bin/python3", "/tmp/hepta-cell-retention-v2-20261024.py", "--worktree", "/home/qian-qi/workspace/hepta-cell-retention-repair-20261024", "--expected-branch", "research/cell-retention-objective-20261024"], "returncode": 0, "wall_seconds": 6.834684922010638}, {"command": ["/usr/bin/python3", "-W", "error", "-m", "unittest", "test_cell_field_retention", "test_cell_field_control", "-v"], "returncode": 0, "wall_seconds": 2.663251032005064}, {"command": ["just", "fmt"], "returncode": 0, "wall_seconds": 0.2533958109561354}, {"command": ["git", "diff", "--check"], "returncode": 0, "wall_seconds": 0.009537673089653254}], "status": "?? qa/stem-bakeoff/CELL_FIELD_RETENTION.md\n?? qa/stem-bakeoff/cell_field_retention.py\n?? qa/stem-bakeoff/cell_field_retention_protocol.draft.json\n?? qa/stem-bakeoff/test_cell_field_retention.py\n"}

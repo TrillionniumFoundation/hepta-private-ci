@@ -1,0 +1,45 @@
+{
+  "child_cpu_seconds": 0.7414229999999999,
+  "child_maxrss": 32416,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-W",
+    "error",
+    "-m",
+    "unittest",
+    "test_cell_field_retention",
+    "test_cell_field_control",
+    "-v"
+  ],
+  "exit_code": 0,
+  "legacy_sources_match_published_hashes_and_unchanged": {
+    "cell_field_control.py": "b91260462b26492e29d17da4daaa7f16be429e3b6f33e4af587bf0471e15780b",
+    "cell_field_state.py": "1e30b346070056123cd198413c8d82b24040179f5aa732f25dadf506e795805f",
+    "cell_learning_models.py": "5b6babba7e036be6273d96455db4cf0c93699a9e6a705805f4caf6ba66f45005"
+  },
+  "log_sha256": "70d181067a759479706b85712aacdf52a5e193e2b588241dec329d72b04b1897",
+  "maxrss_unit": "KiB on this Linux host",
+  "not_run": [
+    "repository just fmt (no just/full Rust workspace locally)",
+    "new nonlinear runner",
+    "new data validation",
+    "production integration"
+  ],
+  "numpy": "2.3.5",
+  "patch_files": {
+    "qa/stem-bakeoff/CELL_FIELD_RETENTION.md": "251e0bb4f0cac89f9e2c6cf437c47df6ebfd0c8314c68bb32a1496a5717330e0",
+    "qa/stem-bakeoff/cell_field_retention.py": "3916daf97710c23fcccca55a3dd2d42484f2cb03350c2530ecbd49d301db54d3",
+    "qa/stem-bakeoff/cell_field_retention_protocol.draft.json": "eef56869211a0376a7d3f798a14d30d10d495465c90ee557a5f689d35ccfefae",
+    "qa/stem-bakeoff/test_cell_field_retention.py": "d4e34bc31230367a96b08faf132b5cd82d70481d32e14e715fdf0da74d1dd2fe"
+  },
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "preparation_failure_retained_in_session": "First test discovery failed before tests because the exact-base metrics import was absent locally; supplied the unchanged dependency, then reran.",
+  "python": "3.12.14",
+  "schema": "hepta.retention-math-verification.v1",
+  "scope": "Mathematical arrays and existing synthetic-Head software fixture only; no Encoder, scientific cohort, old May/June labels, remote worker or new empirical benefit experiment",
+  "threads": {
+    "OMP_NUM_THREADS": 1,
+    "OPENBLAS_NUM_THREADS": 1
+  },
+  "wall_seconds": 0.7458435250009643
+}

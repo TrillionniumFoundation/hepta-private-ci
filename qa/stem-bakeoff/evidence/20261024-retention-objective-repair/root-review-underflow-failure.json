@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.retention-root-review-failure.v1",
+  "status": "confirmed before patch",
+  "source_sha256": "72138529421f0e37f8c6164e796ab593dd1ef1713619b525871c5d6ec5a48f86",
+  "input": {
+    "fields": [
+      [
+        0.0,
+        1e+150
+      ],
+      [
+        0.0,
+        0.0
+      ]
+    ],
+    "actions": [
+      [
+        0.0
+      ]
+    ],
+    "target": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0
+      ]
+    ],
+    "dt": 1e-200,
+    "effort_price": 1e+200,
+    "old_weight": 1e-200
+  },
+  "observed": {
+    "total": 0.0,
+    "current_tracking": 0.0,
+    "retention_violation": 0.0,
+    "effort": 0.0
+  },
+  "expected_old_cost_decimal_exact_float_inputs": "4.999999999999999629358585715201352165406215098838150477228796070081792975352830796376766574626846916E-101",
+  "expected_old_cost_float": 4.9999999999999995e-101,
+  "failure": "sqrt(dt*old_weight) underflowed before multiplying a large but finite old loss; silent zero penalty",
+  "old_installer_sha256": "7587084fcfbe85319f02962bb782f4ecf4c02865918114cd9da2fbc1fad92e33"
+}

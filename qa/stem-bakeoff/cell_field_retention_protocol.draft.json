@@ -1,0 +1,115 @@
+{
+  "schema": "hepta.cell-retention.validation-draft.v1",
+  "status": "DRAFT_BLOCKED_NOT_EXECUTABLE",
+  "claim": "Test one-sided objective repair on unused historical source groups; not agent-task, split, meta-network, AGI or net-cost benefit evidence",
+  "published_reference": "ff5baef731f36420370c5bcc049c50a567cda06a",
+  "no_existing_acceptance_replacement": true,
+  "no_old_final_labels_for_selection": true,
+  "required_before_freeze": [
+    "Independent review of new explicit nonlinear runner, target identity and complete-state/cost recording",
+    "Pin actual new source and exclusion manifests, prepared without model outputs",
+    "Freeze code commit, environment, new dataset hashes, all conditions and resource caps before any new Encoder run",
+    "Fail preparation if any predeclared count is unavailable; retain failure, no silent source/window fallback",
+    "Preserve the original published objective and opened May/June outcomes unchanged"
+  ],
+  "source_proposal": {
+    "dataset": "UCI News Aggregator historical four-class headlines, one task family",
+    "archive_sha256": "1f5f08691f0ce576cb0b5cfdbcb8c55e0ec14dda8f3e07933da72c500338845a",
+    "old_month": "2014-04",
+    "current_month": "2014-05",
+    "future_months": [
+      "2014-07",
+      "2014-08"
+    ],
+    "counts": {
+      "old_train": 64,
+      "old_probe": 32,
+      "old_test": 64,
+      "current_train": 64,
+      "current_probe": 32,
+      "future_july": 128,
+      "future_august": 128
+    },
+    "grouping": "Global story-ID/normalized-title union components before splitting; exclude cross-month and conflicting-label components",
+    "exclude": "Every component touching every role of all prior news cohorts including PFT; inventory all additional prepared/active cohorts before freeze",
+    "selection": "One row per component, class-balanced fixed SHA256 ordering with salt cell-retention-v1-20261024; no outcome-dependent selection",
+    "exclusion_manifest_sha256": null,
+    "new_cohort_manifest_sha256": null,
+    "pretraining_exposure": "unknown; not prospective or unseen-task-family evidence"
+  },
+  "common_model": {
+    "encoder": "Granite97m",
+    "encoder_revision": "835ad14087e140460703cf0fae09f97d469d65c2",
+    "encoder_max_tokens": 192,
+    "encoder_batch_size": 16,
+    "cpu_threads": 2,
+    "features": "one shared exact encoding; no per-arm extraction; frozen label-independent QR384-to-8 seed20261024",
+    "heads": [
+      "linear",
+      "gated"
+    ],
+    "seeds": [
+      7,
+      17,
+      29
+    ],
+    "warmup_steps": 64,
+    "current_updates": 24,
+    "optimizer": "same frozen full-batch Adam protocol as PFT; preserve all moments/step/context",
+    "h": 0.02,
+    "mask": "bias",
+    "observation": "same full theta/m/v reference-relative state for both control arms",
+    "geometry": "same frozen A/E/C per seed/head; no extra information given only to hinge"
+  },
+  "conditions": [
+    "zero_additional_control_with_ordinary_Adam",
+    "legacy_full_quadratic",
+    "retention_hinge_suffix_solve"
+  ],
+  "new_objective": {
+    "profile": "hepta.cell-retention.hinge-squared.v1",
+    "current_target": -0.03,
+    "anchor": "old-probe NLL at original warmup endpoint; immutable across all suffix solves",
+    "tolerance_nats": 0.02,
+    "old_weight": 1.0,
+    "effort_price": 0.1,
+    "tolerance_basis": "prospective fixed tolerance, not selected from published May/June results"
+  },
+  "solver": {
+    "max_iterations_per_suffix": 64,
+    "max_backtracks_per_iteration": 40,
+    "gradient_tolerance": 1e-09,
+    "no_clipping": true,
+    "no_legacy_fallback": true,
+    "failed_condition_retained": true
+  },
+  "resource_caps": {
+    "controller_cpu_seconds_per_condition": 10,
+    "controller_wall_seconds_per_condition": 60,
+    "same_caps_all_arms": true,
+    "accounting": "Measure warmup/reference shared work, all policy/suffix solves, rejected/nonfinite trials, online state/probe work, final evaluation, state/checkpoint bytes and reload; do not double-count overlapping wall spans",
+    "energy": "unmeasured unless independent instrumentation provided"
+  },
+  "primary": {
+    "comparison": "hinge minus legacy, separately for each predeclared head; no best-head selection",
+    "metric": "equal-weight July/August mean NLL after all trajectories and predictions are sealed",
+    "uncertainty": "paired source-component bootstrap conditional on all three fixed fits; 2000 replicates seed820241; report each month and every seed",
+    "retention_gate": "old-test NLL difference one-sided upper97.5 percentile bound <= 0.02 nats",
+    "future_gate": "future NLL difference one-sided upper97.5 percentile bound < 0; otherwise inconclusive or negative",
+    "multiplicity": "Two predeclared heads: nominal Bonferroni alpha=0.025 per head; within each head require both future and retention gates (intersection-union). Bootstrap coverage remains an approximation conditional on source sampling and fixed fits.",
+    "cost_gate": "both cap compliance and measured incremental cost must be reported; this protocol alone does not certify net-cost benefit"
+  },
+  "secondary": [
+    "all-zero comparator",
+    "balanced accuracy",
+    "old-probe violation integral and terminal value",
+    "old-test NLL",
+    "unilateral and original quadratic objectives reported separately",
+    "controller-gradient residuals and bounds",
+    "full process tree CPU/RSS and cold/warm load separation"
+  ],
+  "failures": "All unavailable sources, rejected identities, numerical/cap failures and lost observations retained; no omission, retry-to-positive or substitution",
+  "authority": "DENY_ALL",
+  "production_activation": false,
+  "execution_authorized_by_this_file": false
+}

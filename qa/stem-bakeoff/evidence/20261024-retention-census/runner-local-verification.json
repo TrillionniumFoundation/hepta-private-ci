@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.retention-runner.local-verification.v1",
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-W",
+    "error",
+    "-m",
+    "unittest",
+    "test_cell_field_retention_run",
+    "test_cell_field_retention_experiment",
+    "test_cell_field_retention_score",
+    "test_cell_field_retention_sources",
+    "test_cell_field_retention_data",
+    "test_cell_field_retention",
+    "test_cell_field_control",
+    "-v"
+  ],
+  "modules": [
+    "test_cell_field_retention_run",
+    "test_cell_field_retention_experiment",
+    "test_cell_field_retention_score",
+    "test_cell_field_retention_sources",
+    "test_cell_field_retention_data",
+    "test_cell_field_retention",
+    "test_cell_field_control"
+  ],
+  "exit_code": 0,
+  "wall_seconds": 17.83341657800338,
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "scope": "constructed numerical and temporary source-assignment fixtures only; no public corpus/model run",
+  "log_sha256": "d61a51095da5edd2bb110b7c0f0f8a1682f8e24ebc1c7c55e281376485a32a74",
+  "runtime_sources": {
+    "protocol_sha256": "5f963295e4e49a64cde085aa2a4dde92c291df3b0450d768f986264e482d3832",
+    "source_code_sha256": {
+      "cell_field_retention_experiment.py": "69e93a6e55d5027463294f4fb12e27ec19675bcf74d3c1e72031a33c401cfb04",
+      "cell_field_retention_run.py": "f747fa3364ae0c1e9f2f55be3c44a93cce57404e6f0479e945adc043fbdf35b5",
+      "cell_field_retention_checkpoint.py": "c3c65bd752d6eb589f6f42d2f5dd07ac4fbc8a2c3ffcd4eb8bae217b0f258a59",
+      "cell_field_retention.py": "3916daf97710c23fcccca55a3dd2d42484f2cb03350c2530ecbd49d301db54d3",
+      "cell_field_control.py": "b91260462b26492e29d17da4daaa7f16be429e3b6f33e4af587bf0471e15780b",
+      "cell_field_state.py": "1e30b346070056123cd198413c8d82b24040179f5aa732f25dadf506e795805f",
+      "cell_field_run.py": "ad69aad9fd309c3e260a029eebbcb29fa65504e07b98d0c010ccd15aa5e32004",
+      "cell_field_replay.py": "321b5e5c1768d85a1c908b330d317b37013d32bf971dbd7ed78b49fe8319e795",
+      "cell_field_features.py": "e0ed725bcceac72c7c72eff680fb60cc7e117c989f6f7841ef9a6b27e1f24eb9",
+      "cell_learning_models.py": "5b6babba7e036be6273d96455db4cf0c93699a9e6a705805f4caf6ba66f45005",
+      "cell_learning_metrics.py": "8c20c79dff3cf0e7cbee08648e2409ddb065438a72fcf9c2be56c0646a9aaf16"
+    },
+    "scorer_source_sha256": "a14d0ebc3fc7c154514133c80f8d5f5273c18949e6743179e2f2b8347d989270",
+    "parent_source_commit": "eebec960513dc9f58b830a8674a924a605fa532e",
+    "cohort_receipt_sha256": "7af61dfa851583d6d31c0163b5d9453841e21bef106058206731870d706364df"
+  }
+}

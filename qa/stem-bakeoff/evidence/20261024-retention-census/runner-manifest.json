@@ -1,0 +1,100 @@
+{
+  "schema": "hepta.retention-experiment-patch.v1",
+  "expected_base_commit": "eebec960513dc9f58b830a8674a924a605fa532e",
+  "source_selection_preceded_actual_selection": true,
+  "new_files": {
+    "qa/stem-bakeoff/cell_field_retention_run.py": {
+      "bytes": 18431,
+      "sha256": "f747fa3364ae0c1e9f2f55be3c44a93cce57404e6f0479e945adc043fbdf35b5"
+    },
+    "qa/stem-bakeoff/cell_field_retention_checkpoint.py": {
+      "bytes": 7048,
+      "sha256": "c3c65bd752d6eb589f6f42d2f5dd07ac4fbc8a2c3ffcd4eb8bae217b0f258a59"
+    },
+    "qa/stem-bakeoff/test_cell_field_retention_run.py": {
+      "bytes": 15244,
+      "sha256": "057cb22df1e4d3afea2b59d5d7c1362bea995016b84f798ebc50f44f240c4712"
+    },
+    "qa/stem-bakeoff/cell_field_retention_experiment.py": {
+      "bytes": 22019,
+      "sha256": "69e93a6e55d5027463294f4fb12e27ec19675bcf74d3c1e72031a33c401cfb04"
+    },
+    "qa/stem-bakeoff/test_cell_field_retention_experiment.py": {
+      "bytes": 6813,
+      "sha256": "518647cd5b6ebece6e85cad548229dfdcb793d77364cbf0b9991784b8e60af26"
+    },
+    "qa/stem-bakeoff/cell_field_retention_score.py": {
+      "bytes": 10771,
+      "sha256": "a14d0ebc3fc7c154514133c80f8d5f5273c18949e6743179e2f2b8347d989270"
+    },
+    "qa/stem-bakeoff/test_cell_field_retention_score.py": {
+      "bytes": 5259,
+      "sha256": "74add5fc17e700d006d87fc773b7c29b80e07f391fa380dfb92dc70d0618eeb8"
+    },
+    "qa/stem-bakeoff/cell_field_retention_experiment_protocol.json": {
+      "bytes": 8416,
+      "sha256": "5f963295e4e49a64cde085aa2a4dde92c291df3b0450d768f986264e482d3832"
+    },
+    "qa/stem-bakeoff/CELL_FIELD_RETENTION_RUN.md": {
+      "bytes": 9760,
+      "sha256": "991a508c45e27852a6b0c7c8664e6e540f4fb36adc853953e44d86919752c3f2"
+    },
+    "qa/stem-bakeoff/cell_field_retention_environment.json": {
+      "bytes": 1156,
+      "sha256": "d34897cf10e6771fd95a239b436850dcba3cebd86433b3dd9b456103f73b5f59"
+    },
+    "qa/stem-bakeoff/verify_cell_retention_environment.py": {
+      "bytes": 2661,
+      "sha256": "7304ed5dc1a0b4dc4c00e37a243039bca257faa08875ac5bc6ad6dcaa9628196"
+    }
+  },
+  "protected_existing_files": {
+    "qa/stem-bakeoff/cell_field_control.py": "b91260462b26492e29d17da4daaa7f16be429e3b6f33e4af587bf0471e15780b",
+    "qa/stem-bakeoff/cell_field_protocol.json": "d0f3f8bc92a47bfac4afbb6595b93772b68aa248bf09d6b71fb90be6c64a64f1",
+    "qa/stem-bakeoff/cell_field_run.py": "ad69aad9fd309c3e260a029eebbcb29fa65504e07b98d0c010ccd15aa5e32004",
+    "qa/stem-bakeoff/cell_field_state.py": "1e30b346070056123cd198413c8d82b24040179f5aa732f25dadf506e795805f",
+    "qa/stem-bakeoff/cell_learning_models.py": "5b6babba7e036be6273d96455db4cf0c93699a9e6a705805f4caf6ba66f45005",
+    "qa/stem-bakeoff/CELL_FIELD_RETENTION.md": "251e0bb4f0cac89f9e2c6cf437c47df6ebfd0c8314c68bb32a1496a5717330e0",
+    "qa/stem-bakeoff/cell_field_retention.py": "3916daf97710c23fcccca55a3dd2d42484f2cb03350c2530ecbd49d301db54d3",
+    "qa/stem-bakeoff/cell_field_retention_protocol.draft.json": "eef56869211a0376a7d3f798a14d30d10d495465c90ee557a5f689d35ccfefae",
+    "qa/stem-bakeoff/test_cell_field_retention.py": "d4e34bc31230367a96b08faf132b5cd82d70481d32e14e715fdf0da74d1dd2fe",
+    "qa/stem-bakeoff/cell_field_retention_sources.py": "770a512249e4aea301c910d63d044f533750a2c68871a5ece0620eafcc677a13",
+    "qa/stem-bakeoff/test_cell_field_retention_sources.py": "4b339295ad82e7c4eb4ce35324e24dad82a737f9160a55f50b932abc0de7e086",
+    "qa/stem-bakeoff/cell_field_retention_data.py": "41c8a74345d5c56bee401aa5f899a1680a8c464c3675f187a7c6971e7b97bc4d",
+    "qa/stem-bakeoff/test_cell_field_retention_data.py": "0463a60a38ae6ec4ddea77ad7624c1382e87285884f67d6cbcbdd79d5d1c2281",
+    "qa/stem-bakeoff/cell_field_retention_cohort_protocol.json": "f7841a47d6ce5599e68d91f1a9d53449ca3c050c978eaca85cf53173f235f404",
+    "qa/stem-bakeoff/cell_field_replay.py": "321b5e5c1768d85a1c908b330d317b37013d32bf971dbd7ed78b49fe8319e795",
+    "qa/stem-bakeoff/cell_field_features.py": "e0ed725bcceac72c7c72eff680fb60cc7e117c989f6f7841ef9a6b27e1f24eb9",
+    "qa/stem-bakeoff/cell_learning_metrics.py": "8c20c79dff3cf0e7cbee08648e2409ddb065438a72fcf9c2be56c0646a9aaf16",
+    "qa/stem-bakeoff/prepare_news_cohorts.py": "33fa46322d4e9ee341b1f5ea80f37b79713a7f9420f14df9204766f38b6b45b1"
+  },
+  "installer_bytes": 151577,
+  "installer_sha256": "adcd8ddcfd9ef7778f6f97f38d835d2b94a385b3be32781cccab3f3713cdbdd7",
+  "experiment_protocol_sha256": "5f963295e4e49a64cde085aa2a4dde92c291df3b0450d768f986264e482d3832",
+  "environment_contract_sha256": "d34897cf10e6771fd95a239b436850dcba3cebd86433b3dd9b456103f73b5f59",
+  "cohort_receipt_sha256": "7af61dfa851583d6d31c0163b5d9453841e21bef106058206731870d706364df",
+  "verification_sha256": "a5eaabf4df0d7f18b0e3a84a8f865b695b38719c8f86f0a959cf709c3421838d",
+  "independent_review_sha256": "f8fdb08b5e320870000d223f0a200c81c5abaff08a64ccfd0fe386e0bd989c7d",
+  "local_tests": 58,
+  "review_groups": {
+    "1_core_and_checkpoint": [
+      "cell_field_retention_run.py",
+      "cell_field_retention_checkpoint.py",
+      "test_cell_field_retention_run.py"
+    ],
+    "2_fresh_worker_census": [
+      "cell_field_retention_experiment.py",
+      "test_cell_field_retention_experiment.py"
+    ],
+    "3_scoring_frozen_protocol_docs_environment": [
+      "cell_field_retention_score.py",
+      "test_cell_field_retention_score.py",
+      "cell_field_retention_experiment_protocol.json",
+      "CELL_FIELD_RETENTION_RUN.md",
+      "cell_field_retention_environment.json",
+      "verify_cell_retention_environment.py"
+    ]
+  },
+  "remote_or_model_execution_by_installer": false,
+  "new_actual_task_efficacy_result": false
+}
