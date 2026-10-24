@@ -50,6 +50,8 @@ mod text_close_product;
 mod text_large_history_product;
 #[path = "support/text_slow_approval_product.rs"]
 mod text_slow_approval_product;
+#[path = "support/text_snapshot_boundary_product.rs"]
+mod text_snapshot_boundary_product;
 
 use support::fleet::FleetHarness;
 use support::fleet::connect_app_server_with_experimental;

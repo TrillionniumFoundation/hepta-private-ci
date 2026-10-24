@@ -1053,6 +1053,14 @@ impl PlatformNode {
         if !NodeWrapper(&node).supports_editable_text() {
             return Err(Error::UnsupportedInterface);
         }
+        let action = if operation == TextEditOperation::Paste {
+            if !node.supports_action(Action::PasteText) {
+                return Ok(false);
+            }
+            Action::PasteText
+        } else {
+            Action::EditText
+        };
         let range = match offsets {
             None => node.document_range(),
             Some((start, end)) if start >= 0 && end >= start => {
@@ -1084,7 +1092,7 @@ impl PlatformNode {
             }
         }
         let request = ActionRequest {
-            action: Action::EditText,
+            action,
             target: node.id(),
             data: Some(ActionData::EditText(TextEdit {
                 range: range.to_text_selection(),
@@ -1133,6 +1141,10 @@ impl PlatformNode {
 
     pub fn delete_text(&self, start: i32, end: i32) -> Result<bool> {
         self.edit_text(Some((start, end)), TextEditOperation::Replace("".into()))
+    }
+
+    pub fn paste_text(&self, position: i32) -> Result<bool> {
+        self.edit_text(Some((position, position)), TextEditOperation::Paste)
     }
 
     pub fn set_caret_offset(&self, offset: i32) -> Result<bool> {

@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 """Exercise actual original Makepad EditableText on a caller-owned private bus.
 
-This tests the five implemented atomic methods. PasteText must explicitly
-refuse while the original SDK lacks a request-scoped clipboard-read API; the
-receipt therefore never claims full EditableText or human Orca qualification.
+The baseline tests five atomic methods. --request-scoped-paste additionally
+requires the exact original-SDK clipboard patch and verifies real asynchronous
+PasteText effects. Neither mode claims physical or human Orca qualification.
 """
 import argparse
 import importlib.util
 import json
 from pathlib import Path
 import subprocess
+import select
+import sys
 import time
 
 import gi
@@ -130,14 +132,69 @@ def run(args, result):
     SMOKE.wait_for(lambda: value() == sample, "original redo after refused external requests")
     record("standard-EditableText-limit-UTF8-grapheme-and-range-refusals-preserve-history")
 
-    # A false result is a documented missing SDK primitive, never a full pass.
-    assert editable().paste_text(0) is False
-    settle(0.2)
-    assert value() == sample
-    result["paste_text"] = "explicitly-unavailable-no-mutation"
+    if args.request_scoped_paste:
+        clipboard.set_text("你好", -1)
+        assert editable().paste_text(1)
+        pasted = sample[:1] + "你好" + sample[1:]
+        SMOKE.wait_for(lambda: value() == pasted, "native request-scoped PasteText readback")
+        key("ctrl+z")
+        SMOKE.wait_for(lambda: value() == sample, "original undo after native semantic paste")
+        key("ctrl+shift+z")
+        SMOKE.wait_for(lambda: value() == pasted, "original redo after native semantic paste")
+        key("ctrl+z")
+        SMOKE.wait_for(lambda: value() == sample, "return to exact pre-paste text")
+        clipboard.set_text("界" * 6000, -1)
+        assert editable().paste_text(0)
+        settle(0.5)
+        assert value() == sample
+        record("request-scoped-PasteText-CJK-readback-undo-redo-and-oversize-refusal")
+        result["paste_text"] = "native-X11-request-scoped-readback-passed"
+    else:
+        # A false result is a documented missing primitive, never a full pass.
+        assert editable().paste_text(0) is False
+        settle(0.2)
+        assert value() == sample
+        result["paste_text"] = "explicitly-unavailable-no-mutation"
 
     old = editable()
-    SMOKE.click(SMOKE.wait_for(lambda: named("+ New draft"), "original room action"))
+    delayed = None
+    try:
+        if args.request_scoped_paste:
+            delayed = subprocess.Popen([sys.executable, str(Path(__file__).with_name("native-clipboard-owner.py")),
+                                        "--text", "late old-room reply"], stdin=subprocess.PIPE,
+                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+            def owner_event(expected):
+                def poll():
+                    readable, _, _ = select.select([delayed.stdout], [], [], 0)
+                    if not readable:
+                        return None
+                    event = json.loads(delayed.stdout.readline())
+                    assert event["event"] == expected, event
+                    return event
+                return SMOKE.wait_for(poll, "owned native clipboard " + expected, timeout=5)
+
+            owner_event("ready")
+            assert editable().paste_text(0)
+            requested = owner_event("requested")
+        SMOKE.click(SMOKE.wait_for(lambda: named("+ New draft"), "original room action"))
+        SMOKE.wait_for(lambda: value() == "", "new original room")
+        if delayed:
+            delayed.stdin.write("release\n")
+            delayed.stdin.flush()
+            answered = owner_event("answered")
+            assert answered["monotonic"] - requested["monotonic"] < 1.8
+            settle(0.4)
+            assert value() == "", "A late reply must not follow the selected room"
+            assert delayed.wait(timeout=3) == 0, delayed.stderr.read()
+            record("actual-delayed-native-clipboard-reply-cannot-follow-room-change")
+    finally:
+        if delayed:
+            if delayed.poll() is None:
+                delayed.terminate()
+                delayed.wait(timeout=3)
+            for stream in (delayed.stdin, delayed.stdout, delayed.stderr):
+                stream.close()
     SMOKE.wait_for(lambda: value() == "", "new original room")
     assert editable().set_text_contents("new room")
     SMOKE.wait_for(lambda: value() == "new room", "new-room semantic edit")
@@ -156,11 +213,14 @@ if __name__ == "__main__":
     parser.add_argument("--pid", type=int, required=True)
     parser.add_argument("--window-id", required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--request-scoped-paste", action="store_true",
+                        help="Require the exact prepared original SDK clipboard candidate")
     options = parser.parse_args()
     receipt = {"schema": "hepta.native-atomic-editable-text.v1", "pid": options.pid,
                "passed": False, "checks": [], "supported_methods_passed": False,
                "full_editable_text_qualified": False, "orca_human_evaluation": False,
                "physical_keyboard_qualified": False, "synthetic_ime_events_used": False}
+    receipt["request_scoped_paste_requested"] = options.request_scoped_paste
     try:
         run(options, receipt)
         receipt["passed"] = True

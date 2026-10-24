@@ -370,6 +370,11 @@ pub enum Action {
     /// Requires [`ActionData::EditText`]. The application must validate the
     /// observed text and range identity again before changing its editor.
     EditText,
+
+    /// Request a native clipboard read for an observed text insertion point.
+    /// Requires [`ActionData::EditText`] with [`TextEditOperation::Paste`].
+    /// Applications advertise this separately from synchronous text edits.
+    PasteText,
 }
 
 impl Action {
@@ -408,6 +413,7 @@ impl Action {
             22 => Some(Action::SetValue),
             23 => Some(Action::ShowContextMenu),
             24 => Some(Action::EditText),
+            25 => Some(Action::PasteText),
             _ => None,
         }
     }
@@ -2390,6 +2396,9 @@ pub enum TextEditOperation {
     Replace(Box<str>),
     Copy,
     Cut,
+    /// Read the native clipboard and insert only if this editor revision is
+    /// still current when the asynchronous result arrives.
+    Paste,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -2489,7 +2498,8 @@ mod tests {
         assert_eq!(Action::n(22), Some(Action::SetValue));
         assert_eq!(Action::n(23), Some(Action::ShowContextMenu));
         assert_eq!(Action::n(24), Some(Action::EditText));
-        assert_eq!(Action::n(25), None);
+        assert_eq!(Action::n(25), Some(Action::PasteText));
+        assert_eq!(Action::n(26), None);
     }
 
     #[test]

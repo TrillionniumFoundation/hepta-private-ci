@@ -1,5 +1,7 @@
 //! Linux AT-SPI projection of the original active Makepad widget tree.
 //! The adapter owns no draft, transcript, runtime or authentication state.
+#[cfg(feature = "native-clipboard-sdk")]
+mod clipboard;
 mod edit;
 mod text;
 mod tree;
@@ -110,6 +112,8 @@ pub(crate) struct NativeAccessibility {
     next_id: u64,
     ids: BTreeMap<(WidgetUid, usize), NodeId>,
     targets: BTreeMap<NodeId, Target>,
+    #[cfg(feature = "native-clipboard-sdk")]
+    pending_paste: Option<clipboard::PendingPaste>,
     dpi: f64,
 }
 
@@ -125,11 +129,17 @@ impl NativeAccessibility {
             next_id: 2,
             ids: BTreeMap::new(),
             targets: BTreeMap::new(),
+            #[cfg(feature = "native-clipboard-sdk")]
+            pending_paste: None,
             dpi: 1.0,
         }
     }
 
     pub(crate) fn invalidate(&mut self) {
+        #[cfg(feature = "native-clipboard-sdk")]
+        {
+            self.pending_paste = None;
+        }
         self.ids.clear();
         self.targets.clear();
     }
@@ -143,6 +153,25 @@ impl NativeAccessibility {
     ) {
         if matches!(event, Event::Draw(_)) {
             return;
+        }
+        // Raw input/focus changes retire an earlier asynchronous paste before
+        // the original ImeRouter handles them. Even a cancelled preedit must
+        // never resurrect a clipboard request from before that composition.
+        #[cfg(feature = "native-clipboard-sdk")]
+        if matches!(
+            event,
+            Event::TextInput(_)
+                | Event::TextRangeReplace(_)
+                | Event::TextCut(_)
+                | Event::KeyDown(_)
+                | Event::KeyFocus(_)
+                | Event::KeyFocusLost(_)
+                | Event::WindowLostFocus(_)
+                | Event::MouseDown(_)
+                | Event::TouchUpdate(_)
+                | Event::SelectionHandleDrag(_)
+        ) {
+            self.pending_paste = None;
         }
         if matches!(event, Event::LiveEdit | Event::ScriptReapply) {
             self.invalidate();
@@ -183,6 +212,8 @@ impl NativeAccessibility {
                 Request::Action(request) => self.action(cx, ui, workspace, request),
             }
         }
+        #[cfg(feature = "native-clipboard-sdk")]
+        self.poll_paste(cx, ui, workspace);
     }
 
     fn action(
@@ -227,6 +258,16 @@ impl NativeAccessibility {
         let input = target.widget.as_text_input();
         if input.is_composing() {
             return;
+        }
+        #[cfg(feature = "native-clipboard-sdk")]
+        {
+            let paste_request = matches!(&request.data,
+                Some(ActionData::EditText(edit)) if edit.operation == TextEditOperation::Paste);
+            if !paste_request {
+                // A later semantic intent wins even before its queued original
+                // widget action is reduced (for example, selecting another room).
+                self.pending_paste = None;
+            }
         }
         match request.action {
             Action::Focus => {
@@ -310,10 +351,15 @@ impl NativeAccessibility {
                     );
                 }
             }
-            Action::EditText => {
+            Action::EditText | Action::PasteText => {
                 if let Kind::Input { name, runs, value } = &target.kind
                     && let Some(ActionData::EditText(edit)) = request.data
                 {
+                    if (request.action == Action::PasteText)
+                        != (edit.operation == TextEditOperation::Paste)
+                    {
+                        return;
+                    }
                     let current_text = input.text();
                     // A prior SDK Changed action must reach the sole reducer
                     // before another accessibility edit can use that draft.
@@ -340,6 +386,32 @@ impl NativeAccessibility {
                                 cx.copy_to_clipboard(selected);
                             }
                         }
+                        #[cfg(feature = "native-clipboard-sdk")]
+                        TextEditOperation::Paste => {
+                            if self.pending_paste.is_some() {
+                                return;
+                            }
+                            let Some(window) = ui.window(cx, ids!(main_window)).window_id() else {
+                                return;
+                            };
+                            match cx.read_clipboard_text(window, limit) {
+                                Ok(ticket) => {
+                                    self.pending_paste = Some(clipboard::PendingPaste::new(
+                                        request.target,
+                                        current,
+                                        window,
+                                        edit,
+                                        ticket,
+                                    ));
+                                }
+                                Err(error) => {
+                                    workspace.presentation_note =
+                                        Some(format!("Clipboard paste unavailable: {error:?}"));
+                                }
+                            }
+                        }
+                        #[cfg(not(feature = "native-clipboard-sdk"))]
+                        TextEditOperation::Paste => return,
                     }
                 }
             }

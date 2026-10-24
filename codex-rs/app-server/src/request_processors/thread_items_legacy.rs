@@ -94,7 +94,7 @@ impl ThreadRequestProcessor {
         };
         let active = if loaded.is_some() {
             let state = self.thread_state_manager.thread_state(thread_id).await;
-            
+
             state.lock().await.active_turn_snapshot()
         } else {
             None

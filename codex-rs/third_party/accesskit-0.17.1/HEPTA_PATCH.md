@@ -38,17 +38,26 @@ application may process it asynchronously and must refuse a subsequently stale
 request. Verify the resulting original text/selection/history; a true dispatch
 boolean alone is not mutation evidence.
 
-`PasteText` currently returns `false` and leaves text unchanged. The pinned
-Makepad public API has `copy_to_clipboard` but no request-scoped asynchronous
-clipboard read. Its X11 KeyV path generates an uncorrelated global text input
-event. Do not read the `XlibApp` global reentrantly, synthesize key input, or
-route that later response to an unverified room. A complete paste implementation
-requires the original SDK to expose a bounded clipboard request/response carrying
-the same target identity; that extension remains separate from this patch.
+The independent PasteText candidate additionally requires the exact original
+SDK source and patch in `third_party/makepad-patches`, and the explicit original
+UI `native-clipboard-sdk` feature. EditableText alone never advertises native
+clipboard capability: the original UI adds the separate `PasteText` action only
+with that feature. Without the action, the standard method returns false before
+queueing. This remains true even when another crate enables a dependency's
+features. The candidate queues a degenerate
+revision-bound `Paste` action, starts the original SDK's unique clipboard ticket,
+and revalidates the same room, text-run and complete text after its asynchronous
+reply. Raw input/IME/focus and later semantic intents retire the pending request.
+Returned text uses the same atomic `Replace` validation and original undo path.
+No global `TextInput` event, synthetic key, or uncorrelated Xlib read is used.
+Unsupported backends report unavailable; no reply can select a different room.
 
-The five implemented methods therefore do not establish complete EditableText,
-physical IME, Wayland or human Orca qualification. The test harness retains these
-limits explicitly. Run the upstream core/consumer tests, new AT-SPI boundary
+Five-method baseline evidence does not establish PasteText; the candidate must
+run `native-editable-text-smoke.py --request-scoped-paste` on its exact built
+source, including native clipboard readback and a held response released only
+after an actual room change. None of these tests establishes physical IME,
+Wayland or human Orca qualification. The test harness retains these limits
+explicitly. Run the upstream core/consumer tests, new AT-SPI boundary
 tests, original Hepta editor tests and the real D-Bus window test before promotion:
 
 ```sh

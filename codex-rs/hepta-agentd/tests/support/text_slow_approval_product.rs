@@ -17,6 +17,15 @@ use tokio::io::AsyncWriteExt;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn slow_original_file_approval_preview_survives_repeated_select_cancellation() -> Result<()> {
+    run_original_file_approval(/*exceed_preview_deadline*/ false).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn original_file_preview_total_deadline_keeps_callback_declineable() -> Result<()> {
+    run_original_file_approval(/*exceed_preview_deadline*/ true).await
+}
+
+async fn run_original_file_approval(exceed_preview_deadline: bool) -> Result<()> {
     let mut fleet = FleetHarness::new()?;
     let agent = fleet.register(AGENT_ID, "slow-original-file-approval")?;
     let marker = agent.workspace.join("declined-native-patch.txt");
@@ -53,7 +62,12 @@ async fn slow_original_file_approval_preview_survives_repeated_select_cancellati
         .await?;
     // The fixture only delays the bytes of the exact original socket. The
     // already connected primary retains the same real thread and callback.
-    let delay = OriginalSocketDelay::start(&ingress.socket_path)?;
+    let (reply_delay, preview_delay) = if exceed_preview_deadline {
+        (Duration::ZERO, Duration::from_secs(6))
+    } else {
+        (Duration::from_millis(900), Duration::from_millis(900))
+    };
+    let delay = OriginalSocketDelay::start(&ingress.socket_path, reply_delay, preview_delay)?;
     let mut session = AgentdTextSession::connect(AgentdTextSessionConfig {
         control_socket: agent.layout.agentd_control_socket().to_path_buf(),
         agent_id: agent.agent_id.clone(),
@@ -64,6 +78,7 @@ async fn slow_original_file_approval_preview_survives_repeated_select_cancellati
     })
     .await?;
     delay.armed.store(true, Ordering::SeqCst);
+    let began = tokio::time::Instant::now();
     let _: TurnStartResponse = client
         .request_typed(ClientRequest::TurnStart {
             request_id: take_request_id(&mut request_id),
@@ -94,17 +109,21 @@ async fn slow_original_file_approval_preview_survives_repeated_select_cancellati
             }
         }
     }).await??;
-    ensure!(ticks >= 3 && delay.delayed_chunks.load(Ordering::SeqCst) >= 2);
+    ensure!(ticks >= 3);
     ensure!(
         delay.saw_item_page.load(Ordering::SeqCst),
         "no actual original item page crossed the delayed transport"
     );
     ensure!(pending.thread_id == thread && pending.item_id == "slow-original-patch");
-    ensure!(
-        pending.can_accept
-            && pending.can_decline
-            && pending.details.contains("original proposed content")
-    );
+    ensure!(pending.can_decline);
+    if exceed_preview_deadline {
+        ensure!(!pending.can_accept && pending.details.contains("total deadline"));
+        ensure!(began.elapsed() >= Duration::from_secs(5));
+        delay.armed.store(false, Ordering::SeqCst);
+    } else {
+        ensure!(pending.can_accept && pending.details.contains("original proposed content"));
+        ensure!(delay.delayed_chunks.load(Ordering::SeqCst) >= 2);
+    }
     ensure!(!marker.exists());
     // An explicit original test client declines; no synthetic human Root
     // permission or UI authorization is installed by this regression test.
@@ -152,7 +171,7 @@ struct OriginalSocketDelay {
 }
 
 impl OriginalSocketDelay {
-    fn start(path: &Path) -> Result<Self> {
+    fn start(path: &Path, reply_delay: Duration, preview_delay: Duration) -> Result<Self> {
         let original = path.with_file_name("text-delay-original");
         let permissions = std::fs::metadata(path)?.permissions();
         std::fs::rename(path, &original)?;
@@ -194,15 +213,21 @@ impl OriginalSocketDelay {
                         // observation proves original item pages traversed the
                         // delayed path; it never changes a frame or response.
                         tail.extend_from_slice(&bytes[..size]);
-                        if tail.windows(6).any(|part| part == b"\"data\"")
-                            && tail.windows(8).any(|part| part == b"\"turnId\"")
-                        {
+                        let is_item_page = tail.windows(6).any(|part| part == b"\"data\"")
+                            && tail.windows(8).any(|part| part == b"\"turnId\"");
+                        if is_item_page {
                             item_page.store(true, Ordering::SeqCst);
+                            tail.clear();
                         }
                         if tail.len() > 8192 {
                             tail.drain(..tail.len() - 8192);
                         }
-                        tokio::time::sleep(Duration::from_millis(900)).await;
+                        tokio::time::sleep(if is_item_page {
+                            preview_delay
+                        } else {
+                            reply_delay
+                        })
+                        .await;
                         count.fetch_add(1, Ordering::SeqCst);
                     }
                     client_write.write_all(&bytes[..size]).await?;

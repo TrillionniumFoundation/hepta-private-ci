@@ -58,9 +58,9 @@ impl EditableTextInterface {
             .map_err(self.map_error())
     }
 
-    fn paste_text(&self, _position: i32) -> fdo::Result<bool> {
-        // The original Makepad API has no request-scoped clipboard read. Do
-        // not emulate keys, read another window, or report an unperformed edit.
-        Ok(false)
+    fn paste_text(&self, position: i32) -> fdo::Result<bool> {
+        // As with the other semantic edits, true means queued. The original
+        // editor revalidates this exact revision after its clipboard reply.
+        self.node.paste_text(position).map_err(self.map_error())
     }
 }

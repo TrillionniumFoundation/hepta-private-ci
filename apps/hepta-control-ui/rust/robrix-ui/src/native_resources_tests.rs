@@ -1,4 +1,5 @@
 use super::*;
+use makepad_widgets::makepad_platform::CxOsApi;
 use makepad_widgets::makepad_platform::script::res::CxScriptResource;
 
 fn resource(path: &str, dependency_path: Option<&str>) -> CxScriptResource {
@@ -67,6 +68,11 @@ fn the_sdk_loader_reads_policy_fonts_and_retains_real_missing_errors() {
     std::fs::create_dir_all(font.parent().unwrap()).unwrap();
     std::fs::write(font, b"resource loader test bytes").unwrap();
     let mut cx = Cx::new(Box::new(|_, _| {}));
+    // Match app_main!: init_cx_os establishes the platform clock before
+    // Startup registers resources and the real loader records its timing.
+    // This initializes no window/event loop and keeps the actual missing-file
+    // result below as an Error; it does not replace the loader with a fixture.
+    cx.init_cx_os();
     cx.set_font_set(FontSet::International);
     // Exercise the actual SDK package loader. No renderer/window or font
     // shaping success is inferred from these deliberately non-font bytes.

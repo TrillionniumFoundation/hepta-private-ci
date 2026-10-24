@@ -56,11 +56,26 @@ impl AgentdTextEvents {
     pub async fn next_observation(
         &mut self,
     ) -> Result<Option<AgentdTextObservation>, TextSessionError> {
-        match self.observations.recv().await {
-            Some(observation) => observation.map(Some),
-            None => {
-                self.shared.state()?.fenced = true;
-                Ok(None)
+        loop {
+            drop(self.shared.current()?);
+            match self.observations.recv().await {
+                Some(Ok(observation)) => {
+                    // History may have installed a full snapshot after this
+                    // event was projected or while its bounded send waited.
+                    // Never append these old deltas/started items over it.
+                    let state = self.shared.current()?;
+                    if let AgentdTextObservation::Notification(event) = &observation
+                        && state.snapshot_turns.contains_key(&event.turn_id)
+                    {
+                        continue;
+                    }
+                    return Ok(Some(observation));
+                }
+                Some(Err(error)) => return Err(error),
+                None => {
+                    self.shared.state()?.fenced = true;
+                    return Ok(None);
+                }
             }
         }
     }
@@ -98,6 +113,9 @@ impl Drop for AgentdTextEvents {
     fn drop(&mut self) {
         // Do not abort the producer during ordinary polling. Closing this
         // subscription explicitly signals it to shut down its original client.
+        if let Ok(mut state) = self.shared.state() {
+            state.fenced = true;
+        }
         if let Some(stop) = self.stop.take() {
             let _ = stop.send(());
         }

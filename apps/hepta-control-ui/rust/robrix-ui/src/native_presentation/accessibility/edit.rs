@@ -95,4 +95,24 @@ mod tests {
         assert!(validate(&runs, original, original, &edit, 16384).is_none());
         assert_eq!(original, "中文");
     }
+
+    #[test]
+    fn clipboard_reply_must_still_match_original_text_and_run_identity() {
+        let original = "中文";
+        let (runs, mut edit) = request(original);
+        edit.range.focus = edit.range.anchor;
+        edit.operation = TextEditOperation::Paste;
+        assert_eq!(
+            validate(&runs, original, original, &edit, 16384),
+            Some(0..0)
+        );
+        edit.operation = TextEditOperation::Replace("你好".into());
+        assert_eq!(
+            validate(&runs, original, original, &edit, 16384),
+            Some(0..0)
+        );
+        assert!(validate(&runs, original, "新稿", &edit, 16384).is_none());
+        edit.range.anchor.node = NodeId(999);
+        assert!(validate(&runs, original, original, &edit, 16384).is_none());
+    }
 }

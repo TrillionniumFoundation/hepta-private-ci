@@ -99,36 +99,48 @@ impl AgentdTextRequests {
         if matches!(request, ServerRequest::FileChangeRequestApproval { .. }) {
             // The callback has no patch body. Approval is enabled only when the
             // exact original file-change item is visible in full to the human.
-            let mut cursor = None;
-            for _ in 0..256 {
-                let page: ThreadItemsListResponse = self
-                    .call(ClientRequest::ThreadItemsList {
-                        request_id: self.id(),
-                        params: ThreadItemsListParams {
-                            thread_id: thread.clone(),
-                            turn_id: Some(turn.clone()),
-                            cursor,
-                            limit: Some(1),
-                            sort_direction: Some(SortDirection::Asc),
-                        },
-                    })
-                    .await?;
-                if page.data.len() > 1 || page.data.iter().any(|entry| &entry.turn_id != turn) {
-                    return Err(TextSessionError::Identity);
+            let preview = async {
+                let mut cursor = None;
+                for _ in 0..256 {
+                    let page: ThreadItemsListResponse = self
+                        .call(ClientRequest::ThreadItemsList {
+                            request_id: self.id(),
+                            params: ThreadItemsListParams {
+                                thread_id: thread.clone(),
+                                turn_id: Some(turn.clone()),
+                                cursor,
+                                limit: Some(1),
+                                sort_direction: Some(SortDirection::Asc),
+                            },
+                        })
+                        .await?;
+                    if page.data.len() > 1 || page.data.iter().any(|entry| &entry.turn_id != turn) {
+                        return Err(TextSessionError::Identity);
+                    }
+                    if let Some(original) = page.data.into_iter().find(|entry| matches!(&entry.item, ThreadItem::FileChange { id, .. } if id == item)) {
+                        return serde_json::to_string_pretty(&original.item).map(Some).map_err(unavailable);
+                    }
+                    cursor = page.next_cursor;
+                    if cursor.is_none() {
+                        break;
+                    }
                 }
-                if let Some(original) = page.data.into_iter().find(
-                    |entry| matches!(&entry.item, ThreadItem::FileChange { id, .. } if id == item),
-                ) {
+                Ok(None)
+            };
+            // One total budget, not 256 independent five-second waits. This
+            // cancels only a read-only preview; the original callback remains
+            // pending and can still be explicitly declined on this connection.
+            match tokio::time::timeout(REQUEST_TIMEOUT, preview).await {
+                Ok(Ok(Some(preview))) => {
                     details.push_str("\nOriginal proposed changes:\n");
-                    details.push_str(
-                        &serde_json::to_string_pretty(&original.item).map_err(unavailable)?,
-                    );
+                    details.push_str(&preview);
                     can_accept = true;
-                    break;
                 }
-                cursor = page.next_cursor;
-                if cursor.is_none() {
-                    break;
+                Ok(Err(error @ (TextSessionError::Identity | TextSessionError::Fenced))) => {
+                    return Err(error);
+                }
+                Ok(Ok(None)) | Ok(Err(_)) | Err(_) => {
+                    details.push_str("\nOriginal file preview is incomplete or exceeded its total deadline. Approval is disabled; you can still decline this pending request.");
                 }
             }
         }

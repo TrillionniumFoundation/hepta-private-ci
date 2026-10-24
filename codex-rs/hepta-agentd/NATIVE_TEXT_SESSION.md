@@ -212,6 +212,11 @@ approved only after its exact original proposed item is loaded for review.
 Oversized or incomplete previews cannot be approved. No session-wide grant,
 execpolicy amendment or network-policy amendment is exposed here.
 
+File preview loading has one five-second total deadline across all original
+item pages. An incomplete or timed-out preview retains the original pending
+callback with approval disabled and Decline available. A preview timeout
+neither grants permission nor resolves the original request.
+
 The original App Server retains and replays pending callbacks on resume. The
 single per-connection event reader remains alive while a file preview awaits
 the original item API. Native poll/history/command timers receive through a

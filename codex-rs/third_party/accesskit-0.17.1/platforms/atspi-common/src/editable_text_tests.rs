@@ -155,3 +155,40 @@ fn clipboard_and_defunct_node_preserve_original_range_identity() {
     assert!(matches!(node.delete_text(0, 1), Err(Error::Defunct)));
     assert_eq!(requests.lock().unwrap().len(), 2);
 }
+
+#[test]
+fn paste_is_one_degenerate_revision_bound_clipboard_request() {
+    let (context, node, requests) = setup();
+    // EditableText alone never claims native clipboard support. The standard
+    // D-Bus method returns false without queueing an unavailable operation.
+    assert!(!node.paste_text(1).unwrap());
+    assert!(requests.lock().unwrap().is_empty());
+    let mut enabled = snapshot(true);
+    enabled
+        .nodes
+        .iter_mut()
+        .find(|(id, _)| *id == NodeId(2))
+        .unwrap()
+        .1
+        .add_action(Action::PasteText);
+    context.tree.write().unwrap().update(enabled);
+    assert!(matches!(node.paste_text(2), Err(Error::IndexOutOfRange)));
+    assert!(requests.lock().unwrap().is_empty());
+    assert!(node.paste_text(1).unwrap());
+    let requests = requests.lock().unwrap();
+    assert_eq!(requests.len(), 1);
+    assert_eq!(requests[0].action, Action::PasteText);
+    let Some(ActionData::EditText(edit)) = &requests[0].data else {
+        panic!()
+    };
+    assert_eq!(edit.operation, TextEditOperation::Paste);
+    assert_eq!(edit.expected.as_ref(), "中e\u{301}🙂");
+    assert_eq!(
+        edit.range.anchor,
+        TextPosition {
+            node: NodeId(3),
+            character_index: 1
+        }
+    );
+    assert_eq!(edit.range.anchor, edit.range.focus);
+}

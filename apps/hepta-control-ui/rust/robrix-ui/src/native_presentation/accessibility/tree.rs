@@ -109,6 +109,8 @@ impl NativeAccessibility {
                 if !workspace.composing && !input.is_composing() && runs.len() == text_nodes.len() {
                     node.add_action(Action::SetTextSelection);
                     node.add_action(Action::EditText);
+                    #[cfg(feature = "native-clipboard-sdk")]
+                    node.add_action(Action::PasteText);
                 }
                 node.set_children(text_nodes.iter().map(|(id, _)| *id).collect::<Vec<_>>());
                 let selection = input.selection();

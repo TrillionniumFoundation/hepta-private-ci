@@ -27,6 +27,14 @@ pub const NATIVE_DEPENDENCY_NOTICE_MANIFEST_JSON: &str = include_str!(concat!(
     "/../../../hepta-native/resources/NATIVE-DEPENDENCIES.json"
 ));
 
+/// Exact original-SDK patch and license contract for the request-scoped
+/// clipboard candidate. This is separate from the unchanged font inventory.
+#[cfg(feature = "native-clipboard-sdk")]
+pub const NATIVE_SDK_NOTICE_MANIFEST_JSON: &str = include_str!(concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../../../hepta-native/resources/NATIVE-SDK-PATCH.json"
+));
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct NativeConsoleObservation {
     pub text: String,

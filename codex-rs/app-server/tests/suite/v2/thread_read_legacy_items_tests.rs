@@ -1,5 +1,6 @@
 //! The legacy path is exercised through the original public JSON-RPC owner.
 use super::*;
+use pretty_assertions::assert_eq;
 
 #[tokio::test]
 async fn thread_items_list_legacy_pages_original_items_and_rejects_removed_anchor() -> Result<()> {

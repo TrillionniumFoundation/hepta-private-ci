@@ -24,6 +24,13 @@ Console observations without implementing `NativeHost` or enabling Send. See
 [NATIVE_COMPOSITION.md](NATIVE_COMPOSITION.md) for the fixed-workspace contract,
 original resource/notice inputs and the separate native verification gates.
 
+`native-presentation` continues to compile with the original pinned Makepad
+`337566c8` source. The separate, default-off `native-clipboard-sdk` feature
+enables the reviewed request-scoped SDK clipboard candidate. Only that feature
+imports its new API and advertises the native PasteText action. It requires the
+complete all-crate override described in `third_party/makepad-patches/README.md`;
+the ordinary native renderer needs no external SDK configuration.
+
 ## Commands and evidence limits
 
 From `apps/hepta-control-ui`, `npm run build` produces the Makepad Web package,

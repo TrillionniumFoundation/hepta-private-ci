@@ -45,7 +45,7 @@ index a7cd1f2..afc1f5d 100644
  /// A 2D affine transform. Derived from [kurbo](https://github.com/linebender/kurbo).
  #[derive(Clone, Copy, Debug, PartialEq)]
 diff --git a/common/src/lib.rs b/common/src/lib.rs
-index b630f21..050cb8b 100644
+index b630f21..fed429a 100644
 --- a/common/src/lib.rs
 +++ b/common/src/lib.rs
 @@ -12,25 +12,49 @@
@@ -110,7 +110,7 @@ index b630f21..050cb8b 100644
  
  /// The type of an accessibility node.
  ///
-@@ -341,6 +365,11 @@ pub enum Action {
+@@ -341,6 +365,16 @@ pub enum Action {
      SetValue,
  
      ShowContextMenu,
@@ -119,18 +119,24 @@ index b630f21..050cb8b 100644
 +    /// Requires [`ActionData::EditText`]. The application must validate the
 +    /// observed text and range identity again before changing its editor.
 +    EditText,
++
++    /// Request a native clipboard read for an observed text insertion point.
++    /// Requires [`ActionData::EditText`] with [`TextEditOperation::Paste`].
++    /// Applications advertise this separately from synchronous text edits.
++    PasteText,
  }
  
  impl Action {
-@@ -378,6 +407,7 @@ impl Action {
+@@ -378,6 +412,8 @@ impl Action {
              21 => Some(Action::SetSequentialFocusNavigationStartingPoint),
              22 => Some(Action::SetValue),
              23 => Some(Action::ShowContextMenu),
 +            24 => Some(Action::EditText),
++            25 => Some(Action::PasteText),
              _ => None,
          }
      }
-@@ -2332,6 +2362,34 @@ pub enum ActionData {
+@@ -2332,6 +2368,37 @@ pub enum ActionData {
      /// of the action's target node.
      SetScrollOffset(Point),
      SetTextSelection(TextSelection),
@@ -162,16 +168,20 @@ index b630f21..050cb8b 100644
 +    Replace(Box<str>),
 +    Copy,
 +    Cut,
++    /// Read the native clipboard and insert only if this editor revision is
++    /// still current when the asynchronous result arrives.
++    Paste,
  }
  
  #[derive(Clone, Debug, PartialEq)]
-@@ -2430,7 +2488,8 @@ mod tests {
+@@ -2430,7 +2497,9 @@ mod tests {
          );
          assert_eq!(Action::n(22), Some(Action::SetValue));
          assert_eq!(Action::n(23), Some(Action::ShowContextMenu));
 -        assert_eq!(Action::n(24), None);
 +        assert_eq!(Action::n(24), Some(Action::EditText));
-+        assert_eq!(Action::n(25), None);
++        assert_eq!(Action::n(25), Some(Action::PasteText));
++        assert_eq!(Action::n(26), None);
      }
  
      #[test]
@@ -525,10 +535,10 @@ index dbf02c4..470e6b5 100644
  
 diff --git a/platforms/atspi-common/src/editable_text_tests.rs b/platforms/atspi-common/src/editable_text_tests.rs
 new file mode 100644
-index 0000000..4867842
+index 0000000..ddbab3f
 --- /dev/null
 +++ b/platforms/atspi-common/src/editable_text_tests.rs
-@@ -0,0 +1,157 @@
+@@ -0,0 +1,194 @@
 +use super::*;
 +use crate::context::ActionHandlerWrapper;
 +use accesskit::ActionHandler;
@@ -686,6 +696,43 @@ index 0000000..4867842
 +    assert!(matches!(node.delete_text(0, 1), Err(Error::Defunct)));
 +    assert_eq!(requests.lock().unwrap().len(), 2);
 +}
++
++#[test]
++fn paste_is_one_degenerate_revision_bound_clipboard_request() {
++    let (context, node, requests) = setup();
++    // EditableText alone never claims native clipboard support. The standard
++    // D-Bus method returns false without queueing an unavailable operation.
++    assert!(!node.paste_text(1).unwrap());
++    assert!(requests.lock().unwrap().is_empty());
++    let mut enabled = snapshot(true);
++    enabled
++        .nodes
++        .iter_mut()
++        .find(|(id, _)| *id == NodeId(2))
++        .unwrap()
++        .1
++        .add_action(Action::PasteText);
++    context.tree.write().unwrap().update(enabled);
++    assert!(matches!(node.paste_text(2), Err(Error::IndexOutOfRange)));
++    assert!(requests.lock().unwrap().is_empty());
++    assert!(node.paste_text(1).unwrap());
++    let requests = requests.lock().unwrap();
++    assert_eq!(requests.len(), 1);
++    assert_eq!(requests[0].action, Action::PasteText);
++    let Some(ActionData::EditText(edit)) = &requests[0].data else {
++        panic!()
++    };
++    assert_eq!(edit.operation, TextEditOperation::Paste);
++    assert_eq!(edit.expected.as_ref(), "中e\u{301}🙂");
++    assert_eq!(
++        edit.range.anchor,
++        TextPosition {
++            node: NodeId(3),
++            character_index: 1
++        }
++    );
++    assert_eq!(edit.range.anchor, edit.range.focus);
++}
 diff --git a/platforms/atspi-common/src/events.rs b/platforms/atspi-common/src/events.rs
 index 6c95ab3..c5f9a1a 100644
 --- a/platforms/atspi-common/src/events.rs
@@ -743,7 +790,7 @@ index fa2ba07..d7b11da 100644
  pub use rect::*;
  pub use util::WindowBounds;
 diff --git a/platforms/atspi-common/src/node.rs b/platforms/atspi-common/src/node.rs
-index 3151870..c8787a7 100644
+index 3151870..bb52564 100644
 --- a/platforms/atspi-common/src/node.rs
 +++ b/platforms/atspi-common/src/node.rs
 @@ -8,29 +8,56 @@
@@ -850,7 +897,7 @@ index 3151870..c8787a7 100644
          if self.supports_value() {
              interfaces.insert(Interface::Value);
          }
-@@ -1000,6 +1037,104 @@ impl PlatformNode {
+@@ -1000,6 +1037,116 @@ impl PlatformNode {
          })
      }
  
@@ -870,6 +917,14 @@ index 3151870..c8787a7 100644
 +        if !NodeWrapper(&node).supports_editable_text() {
 +            return Err(Error::UnsupportedInterface);
 +        }
++        let action = if operation == TextEditOperation::Paste {
++            if !node.supports_action(Action::PasteText) {
++                return Ok(false);
++            }
++            Action::PasteText
++        } else {
++            Action::EditText
++        };
 +        let range = match offsets {
 +            None => node.document_range(),
 +            Some((start, end)) if start >= 0 && end >= start => {
@@ -901,7 +956,7 @@ index 3151870..c8787a7 100644
 +            }
 +        }
 +        let request = ActionRequest {
-+            action: Action::EditText,
++            action,
 +            target: node.id(),
 +            data: Some(ActionData::EditText(TextEdit {
 +                range: range.to_text_selection(),
@@ -950,6 +1005,10 @@ index 3151870..c8787a7 100644
 +
 +    pub fn delete_text(&self, start: i32, end: i32) -> Result<bool> {
 +        self.edit_text(Some((start, end)), TextEditOperation::Replace("".into()))
++    }
++
++    pub fn paste_text(&self, position: i32) -> Result<bool> {
++        self.edit_text(Some((position, position)), TextEditOperation::Paste)
 +    }
 +
      pub fn set_caret_offset(&self, offset: i32) -> Result<bool> {
@@ -1241,7 +1300,7 @@ index ac99efe..ea066d5 100644
      bus_name: OwnedUniqueName,
 diff --git a/platforms/unix/src/atspi/interfaces/editable_text.rs b/platforms/unix/src/atspi/interfaces/editable_text.rs
 new file mode 100644
-index 0000000..e292ed5
+index 0000000..dd8e497
 --- /dev/null
 +++ b/platforms/unix/src/atspi/interfaces/editable_text.rs
 @@ -0,0 +1,66 @@
@@ -1305,10 +1364,10 @@ index 0000000..e292ed5
 +            .map_err(self.map_error())
 +    }
 +
-+    fn paste_text(&self, _position: i32) -> fdo::Result<bool> {
-+        // The original Makepad API has no request-scoped clipboard read. Do
-+        // not emulate keys, read another window, or report an unperformed edit.
-+        Ok(false)
++    fn paste_text(&self, position: i32) -> fdo::Result<bool> {
++        // As with the other semantic edits, true means queued. The original
++        // editor revalidates this exact revision after its clipboard reply.
++        self.node.paste_text(position).map_err(self.map_error())
 +    }
 +}
 diff --git a/platforms/unix/src/atspi/interfaces/mod.rs b/platforms/unix/src/atspi/interfaces/mod.rs

@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "upstream_repository": "https://github.com/kevinaboos/makepad",
+  "upstream_commit": "337566c8b25d47f7e4fff6a202157b65bf183330",
+  "patched_tree": "f9efec87ff9d5690b8c9fd23ea0c8f3535a9d8eb",
+  "package": {
+    "name": "makepad-platform",
+    "version": "2.0.0"
+  },
+  "patches": [
+    {
+      "file": "native-clipboard-read.patch",
+      "sha256": "0edf1c0f806fec15ce29f03670e722d3eda4ec3943911537874087e8a8d4fa1f",
+      "bytes": 19919
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "platform/src/clipboard.rs",
+      "upstream_sha256": null,
+      "patched_sha256": "484a54b17511e726acf851f9faaaf80051d8b4bc8854fcaf2b8eeea2f809d366",
+      "bytes": 2809
+    },
+    {
+      "path": "platform/src/cx_api.rs",
+      "upstream_sha256": "b13547415ee0f9ad855a668ef6c749566d3caa7285d90ee275bf4cfc70004d99",
+      "patched_sha256": "6a6dddbde9e70e2274a6db17b50e0c8509b9d92ffe82fecaf155d03ff9c5cafd",
+      "bytes": 106728
+    },
+    {
+      "path": "platform/src/lib.rs",
+      "upstream_sha256": "d4be527bc5dc73d9bc2c1f581ad57244c6d5647f1e726124232d8eecba960584",
+      "patched_sha256": "7c983bb8d815cda7eaf3d9598bf8f65116eb2c7ea1c1a13817cf6a39545ec890",
+      "bytes": 11453
+    },
+    {
+      "path": "platform/src/os/linux/wayland/linux_wayland.rs",
+      "upstream_sha256": "b3c167f0f65287cad6ddab9b381052db335aa623d68b13688f8f0517ff67c141",
+      "patched_sha256": "a3ba95081eeaf62bdb3808d581e97a5d4fc00e59a2b7ce995225836918b25706",
+      "bytes": 79882
+    },
+    {
+      "path": "platform/src/os/linux/x11/clipboard_read.rs",
+      "upstream_sha256": null,
+      "patched_sha256": "e2142ed7593fa62d87257f6707f11176410f2089d169cf5db429ca5c7a8f55cf",
+      "bytes": 5415
+    },
+    {
+      "path": "platform/src/os/linux/x11/linux_x11.rs",
+      "upstream_sha256": "4a9e57c0f5bcdf32760e33045e66204844e5821b4be44a9274dc150fac1fb848",
+      "patched_sha256": "318302b974a8755d0cd959a55b78e38603ac71cff8a3a4422888c621f63d8420",
+      "bytes": 46624
+    },
+    {
+      "path": "platform/src/os/linux/x11/linux_x11_stdin.rs",
+      "upstream_sha256": "26c87aca9cf729693142a007c83025b7723340c1cb26546b65c657f12811484e",
+      "patched_sha256": "92a2be3592289ed34df4a2bca2023825bfef942c1fee2851c9a5287af4a71ffc",
+      "bytes": 64472
+    },
+    {
+      "path": "platform/src/os/linux/x11/mod.rs",
+      "upstream_sha256": "6a2dd186bc23a8606b50893635d3f89ace8a618cc421d41c78072cc1c87ccdce",
+      "patched_sha256": "42b0a22a00b97523c5a7f42743b5aa24bd28a9b6073ffcde11fc2964f4450e92",
+      "bytes": 180
+    },
+    {
+      "path": "platform/src/os/linux/x11/x11_sys.rs",
+      "upstream_sha256": "8e4dd0f1645ba321888124e041e794f06b798cac854b1490cbddb643c60a1b59",
+      "patched_sha256": "fe1e8d7779b8a668589309674b743ffe804403d917ea60896dada76b978e0089",
+      "bytes": 33951
+    },
+    {
+      "path": "platform/src/os/linux/x11/xlib_app.rs",
+      "upstream_sha256": "747aaf90ecb6dd2616488cb74152aad9c7a1f07d2fd43ad04000befe60be429f",
+      "patched_sha256": "e8002f6985cf92f9ea83920667cc701a0ecb609ba87c6cf318612734d732d207",
+      "bytes": 79083
+    }
+  ],
+  "license": {
+    "path": "LICENSE",
+    "sha256": "3855d73a873244ec424ac5781d5d8fc8e2a789ff9d2f1cb804bec585a64ea88f",
+    "bytes": 1069
+  },
+  "integration_mode": "explicit_prepared_source_override",
+  "effects_authority": false,
+  "automatic_update": false
+}
