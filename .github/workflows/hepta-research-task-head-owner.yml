@@ -37,6 +37,8 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE_HEAD"
           echo "verified-source-head=$SOURCE_HEAD"
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: clippy
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
