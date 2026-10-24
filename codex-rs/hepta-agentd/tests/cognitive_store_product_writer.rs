@@ -47,13 +47,15 @@ use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
+use codex_hepta_memory::LocalLeaseOutboxError;
 use codex_hepta_memory::LocalOutcomeState;
+use codex_hepta_memory::ProductionWriterError;
 use codex_hepta_paths::HeptaFleetRoot;
 use tempfile::TempDir;
 
 #[tokio::test]
 #[cfg(feature = "qualification-cognitive-write")]
-async fn agentd_product_host_commits_through_canonical_cognitive_store()
+async fn agentd_product_host_persists_queued_intent_and_fences_release()
 -> Result<(), Box<dyn Error>> {
     let temp = TempDir::new()?;
     let fleet_root = temp.path().join("fleet");
@@ -106,6 +108,22 @@ async fn agentd_product_host_commits_through_canonical_cognitive_store()
 
     let after = host.writer().recovery_anchor().await?;
     assert_ne!(after, before);
+    let release = host.writer().release().await;
+    assert!(matches!(
+        release,
+        Err(ProductionWriterError::Local(LocalLeaseOutboxError::IllegalTransition(ref reason)))
+            if reason.contains("occurrence:product-writer:1")
+    ));
+    assert_eq!(
+        host.writer().status(&queued.occurrence_key).await?,
+        LocalOutcomeState::Queued
+    );
+    let settled = host
+        .writer()
+        .rollback_occurrence(&queued.occurrence_key, "qualification fixture never dispatched")
+        .await?;
+    assert_eq!(settled.state, LocalOutcomeState::RolledBack);
+    assert!(!settled.external_effect);
     host.writer().release().await?;
     drop(host);
 
@@ -143,7 +161,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
 
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
     let expected = store.recovery_anchor().await?;
-    drop(store);
+    store.close().await;
 
     let authority = ProductionAuthorityLease::from_verified_parts(
         owner.clone(),

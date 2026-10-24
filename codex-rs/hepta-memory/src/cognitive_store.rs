@@ -343,6 +343,16 @@ impl CognitiveStore {
         })
     }
 
+    /// Close this handle's shared connection pool before releasing its store fence.
+    ///
+    /// Dropping a pool does not await its SQLite connection workers. A host
+    /// handing the database to exact-cut recovery must await this method and
+    /// drop any other cloned handles before opening the recovered generation.
+    /// The pool closes for every clone; surviving clones retain their fences.
+    pub async fn close(self) {
+        self.pool.close().await;
+    }
+
     pub fn path(&self) -> &Path {
         &self.path
     }
