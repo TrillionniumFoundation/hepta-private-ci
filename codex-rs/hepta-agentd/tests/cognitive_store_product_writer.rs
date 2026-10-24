@@ -47,8 +47,8 @@ use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
-use codex_hepta_memory::LocalOutcomeState;
 use codex_hepta_memory::LocalLeaseHeadDisposition;
+use codex_hepta_memory::LocalOutcomeState;
 use codex_hepta_memory::ProductionDurableWriter;
 use codex_hepta_paths::HeptaFleetRoot;
 use tempfile::TempDir;
@@ -176,24 +176,53 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
     let before_lease = store.recovery_anchor().await?;
     let original_writer = ProductionDurableWriter::open_with_live_verifier(
-        store.clone(), authority.clone(), Arc::clone(&verifier),
-        "agentd-product-recovery-test", 1,
-    ).await?;
-    assert!(ProductionDurableWriter::open_with_live_verifier(
-        store.clone(), authority.clone(), Arc::clone(&verifier),
-        "agentd-product-recovery-test", 1,
-    ).await.is_err(), "the original writer fence must remain exclusive");
-    let lease_head = store.inspect_local_lease_head("agentd-product-recovery-test").await?;
+        store.clone(),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "agentd-product-recovery-test",
+        1,
+    )
+    .await?;
+    assert!(
+        ProductionDurableWriter::open_with_live_verifier(
+            store.clone(),
+            authority.clone(),
+            Arc::clone(&verifier),
+            "agentd-product-recovery-test",
+            1,
+        )
+        .await
+        .is_err(),
+        "the original writer fence must remain exclusive"
+    );
+    let lease_head = store
+        .inspect_local_lease_head("agentd-product-recovery-test")
+        .await?;
     assert_eq!(lease_head.disposition, LocalLeaseHeadDisposition::Active);
-    assert_eq!(lease_head.head.as_ref().map(|head| head.generation), Some(1));
+    assert_eq!(
+        lease_head.head.as_ref().map(|head| head.generation),
+        Some(1)
+    );
     let expected = original_writer.recovery_anchor().await?;
-    assert_ne!(expected, before_lease, "the genuine lease must advance the full owner cut");
+    assert_ne!(
+        expected, before_lease,
+        "the genuine lease must advance the full owner cut"
+    );
     drop(original_writer);
     store.close().await;
-    assert!(AgentdProductionWriterHost::open_with_recovery(
-        &config, CognitiveRecoveryRequirement::ExactCurrentCut(&before_lease),
-        authority.clone(), Arc::clone(&verifier), "agentd-product-recovery-test", 1,
-    ).await.is_err(), "a cut predating the genuine lease must be refused");
+    assert!(
+        AgentdProductionWriterHost::open_with_recovery(
+            &config,
+            CognitiveRecoveryRequirement::ExactCurrentCut(&before_lease),
+            authority.clone(),
+            Arc::clone(&verifier),
+            "agentd-product-recovery-test",
+            1,
+        )
+        .await
+        .is_err(),
+        "a cut predating the genuine lease must be refused"
+    );
 
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,

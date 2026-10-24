@@ -22,7 +22,8 @@ async fn fresh_cognitive_bootstrap_protects_live_database_and_both_sidecars() ->
 }
 
 #[tokio::test]
-async fn explicit_close_keeps_original_guard_until_checked_out_sqlite_connection_returns() -> TestResult {
+async fn explicit_close_keeps_original_guard_until_checked_out_sqlite_connection_returns()
+-> TestResult {
     use std::future::Future;
     use std::task::Poll;
 
@@ -37,7 +38,8 @@ async fn explicit_close_keeps_original_guard_until_checked_out_sqlite_connection
     std::future::poll_fn(|context| {
         assert!(closing.as_mut().poll(context).is_pending());
         Poll::Ready(())
-    }).await;
+    })
+    .await;
     assert!(pool.is_closed());
     assert!(CognitiveStoreOpenGuard::acquire_exclusive(layout.cognitive_root()).is_err());
     drop(connection);
