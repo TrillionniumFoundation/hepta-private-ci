@@ -343,3 +343,7 @@ fn fresh_agent_roots_satisfy_private_owner_contract() -> Result<(), FleetRegistr
     }
     Ok(())
 }
+
+#[cfg(unix)]
+#[path = "registry_control_owner_tests.rs"]
+mod control_owner_tests;

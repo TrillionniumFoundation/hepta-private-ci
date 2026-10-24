@@ -16,6 +16,8 @@ mod commands;
 mod evidence;
 #[path = "native_cpu_host.rs"]
 mod host;
+#[path = "native_cpu_permissions.rs"]
+mod permissions;
 #[path = "native_cpu_platform.rs"]
 mod platform;
 #[path = "native_cpu_root.rs"]

@@ -5,6 +5,11 @@
 mod authbus;
 mod capabilities;
 mod evidence;
+mod lifecycle;
+pub use lifecycle::AgentdLifecycleMethod;
+pub use lifecycle::AgentdLifecyclePayload;
+pub use lifecycle::AgentdLifecycleRequest;
+pub use lifecycle::AgentdLifecycleResponse;
 mod objective_history;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
@@ -209,12 +214,14 @@ pub struct AgentRunCancellation {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
-pub struct AgentdRequest {
+pub struct AgentdRequestFrame<M> {
     pub schema_version: u32,
     pub request_id: u64,
     pub spawn_generation: u64,
-    pub method: AgentdMethod,
+    pub method: M,
 }
+
+pub type AgentdRequest = AgentdRequestFrame<AgentdMethod>;
 
 impl AgentdRequest {
     pub fn capabilities(request_id: u64, spawn_generation: u64) -> Self {
@@ -732,14 +739,16 @@ pub struct AutomationEffectReconcileSnapshot {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
-pub struct AgentdResponse {
+pub struct AgentdResponseFrame<P> {
     pub schema_version: u32,
     pub request_id: u64,
     pub agent_id: AgentId,
     pub spawn_generation: u64,
     pub current_generation: u64,
-    pub payload: AgentdPayload,
+    pub payload: P,
 }
+
+pub type AgentdResponse = AgentdResponseFrame<AgentdPayload>;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]

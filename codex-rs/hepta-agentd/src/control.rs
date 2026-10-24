@@ -27,6 +27,16 @@ use crate::state::AgentdRuntimeProfile;
 use crate::state::FullRuntimeOwners;
 #[cfg(target_os = "linux")]
 use crate::state::NativeCpuRuntimeOwners;
+#[cfg(target_os = "linux")]
+use codex_hepta_agent_protocol::AgentdLifecycleMethod;
+#[cfg(target_os = "linux")]
+use codex_hepta_agent_protocol::AgentdLifecyclePayload;
+#[cfg(target_os = "linux")]
+use codex_hepta_agent_protocol::AgentdLifecycleRequest;
+#[cfg(target_os = "linux")]
+use codex_hepta_agent_protocol::AgentdLifecycleResponse;
+use codex_hepta_agent_protocol::AgentdRequestFrame;
+use codex_hepta_agent_protocol::AgentdResponseFrame;
 
 const CONNECTION_CAPACITY: usize = 32;
 const IO_TIMEOUT: Duration = Duration::from_secs(2);
@@ -35,10 +45,13 @@ const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
 /// Static host composition keeps finite Organ dispatch out of the full router.
 /// Neither the request schema nor the peer chooses this profile.
 trait ControlProfile<S: AgentdRuntimeProfile> {
+    type Method: serde::de::DeserializeOwned + Send;
+    type Payload: serde::Serialize + Send;
     fn response(
         state: &AgentdState<S>,
-        request: crate::AgentdRequest,
-    ) -> impl std::future::Future<Output = Result<AgentdResponse, AgentdError>> + Send;
+        request: AgentdRequestFrame<Self::Method>,
+    ) -> impl std::future::Future<Output = Result<AgentdResponseFrame<Self::Payload>, AgentdError>> + Send;
+    fn error_payload(code: String, message: String) -> Self::Payload;
 }
 
 struct FullControlProfile;
@@ -48,6 +61,11 @@ struct NotesControlProfile;
 struct NativeCpuControlProfile;
 
 impl ControlProfile<FullRuntimeOwners> for FullControlProfile {
+    type Method = crate::AgentdMethod;
+    type Payload = AgentdPayload;
+    fn error_payload(code: String, message: String) -> Self::Payload {
+        AgentdPayload::Error { code, message }
+    }
     async fn response(
         state: &AgentdState,
         request: crate::AgentdRequest,
@@ -60,6 +78,11 @@ impl ControlProfile<FullRuntimeOwners> for FullControlProfile {
 
 #[cfg(target_os = "linux")]
 impl ControlProfile<FullRuntimeOwners> for NotesControlProfile {
+    type Method = crate::AgentdMethod;
+    type Payload = AgentdPayload;
+    fn error_payload(code: String, message: String) -> Self::Payload {
+        AgentdPayload::Error { code, message }
+    }
     async fn response(
         state: &AgentdState,
         request: crate::AgentdRequest,
@@ -72,10 +95,15 @@ impl ControlProfile<FullRuntimeOwners> for NotesControlProfile {
 
 #[cfg(target_os = "linux")]
 impl ControlProfile<NativeCpuRuntimeOwners> for NativeCpuControlProfile {
+    type Method = AgentdLifecycleMethod;
+    type Payload = AgentdLifecyclePayload;
+    fn error_payload(code: String, message: String) -> Self::Payload {
+        AgentdLifecyclePayload::Error { code, message }
+    }
     async fn response(
         state: &AgentdState<NativeCpuRuntimeOwners>,
-        request: crate::AgentdRequest,
-    ) -> Result<AgentdResponse, AgentdError> {
+        request: AgentdLifecycleRequest,
+    ) -> Result<AgentdLifecycleResponse, AgentdError> {
         state
             .native_cpu_response(request.request_id, request.spawn_generation, request.method)
             .await
@@ -178,9 +206,9 @@ async fn serve_connection<P: ControlProfile<S>, S: AgentdRuntimeProfile>(
             "agentd control request must be one bounded newline JSON frame".to_string(),
         ));
     }
-    let request: AgentdRequest = serde_json::from_slice(&frame)?;
+    let request: AgentdRequestFrame<P::Method> = serde_json::from_slice(&frame)?;
     let response = if request.schema_version != AGENTD_CONTROL_SCHEMA_VERSION {
-        error_response(
+        error_response::<P, S>(
             &state,
             request.request_id,
             request.spawn_generation,
@@ -192,7 +220,7 @@ async fn serve_connection<P: ControlProfile<S>, S: AgentdRuntimeProfile>(
         let spawn_generation = request.spawn_generation;
         match P::response(&state, request).await {
             Ok(response) => response,
-            Err(error) => error_response(
+            Err(error) => error_response::<P, S>(
                 &state,
                 request_id,
                 spawn_generation,
@@ -213,23 +241,20 @@ async fn serve_connection<P: ControlProfile<S>, S: AgentdRuntimeProfile>(
     Ok(())
 }
 
-fn error_response<S: AgentdRuntimeProfile>(
+fn error_response<P: ControlProfile<S>, S: AgentdRuntimeProfile>(
     state: &AgentdState<S>,
     request_id: u64,
     spawn_generation: u64,
     code: &str,
     message: &str,
-) -> AgentdResponse {
-    AgentdResponse {
+) -> AgentdResponseFrame<P::Payload> {
+    AgentdResponseFrame {
         schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
         request_id,
         agent_id: state.identity().agent_id.clone(),
         spawn_generation: state.identity().spawn_generation,
         current_generation: spawn_generation,
-        payload: AgentdPayload::Error {
-            code: code.to_string(),
-            message: bounded_message(message),
-        },
+        payload: P::error_payload(code.to_string(), bounded_message(message)),
     }
 }
 

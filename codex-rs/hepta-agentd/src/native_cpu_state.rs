@@ -1,8 +1,8 @@
 //! Explicit native CPU readiness over the original registered Agentd state.
 use super::*;
-use crate::AgentdMethod;
-use crate::AgentdPayload;
-use crate::AgentdResponse;
+use codex_hepta_agent_protocol::AgentdLifecycleMethod as AgentdMethod;
+use codex_hepta_agent_protocol::AgentdLifecyclePayload as AgentdPayload;
+use codex_hepta_agent_protocol::AgentdLifecycleResponse as AgentdResponse;
 
 impl AgentdState<NativeCpuRuntimeOwners> {
     pub(crate) fn check_native_cpu_authority(&self) -> Result<(), AgentdError> {
@@ -173,11 +173,6 @@ impl AgentdState<NativeCpuRuntimeOwners> {
                 admission_open: admission,
             }),
             AgentdMethod::Drain => AgentdPayload::Drain(self.request_native_cpu_drain().await?),
-            _ => {
-                return Err(AgentdError::Invalid(
-                    "method is outside the native CPU lifecycle profile".into(),
-                ));
-            }
         };
         self.check_native_cpu_authority()?;
         Ok(AgentdResponse {

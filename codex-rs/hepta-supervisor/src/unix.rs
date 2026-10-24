@@ -16,9 +16,9 @@ use std::sync::mpsc::TryRecvError;
 use std::time::Duration;
 
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
-use codex_hepta_agent_protocol::AgentdPayload;
-use codex_hepta_agent_protocol::AgentdRequest;
-use codex_hepta_agent_protocol::AgentdResponse;
+use codex_hepta_agent_protocol::AgentdLifecyclePayload as AgentdPayload;
+use codex_hepta_agent_protocol::AgentdLifecycleRequest as AgentdRequest;
+use codex_hepta_agent_protocol::AgentdLifecycleResponse as AgentdResponse;
 use codex_hepta_agent_protocol::MAX_CONTROL_FRAME_BYTES;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;

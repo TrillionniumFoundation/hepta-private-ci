@@ -216,6 +216,15 @@ async fn native_drain_keeps_pending_work_across_an_actual_expired_writer_handoff
             (&queued.payload_json, expected)
         );
         assert_eq!(successor.writer.hos2_drain_blockers().await?, 1);
+        let cut = successor.writer.recovery_anchor().await?;
+        let startup = successor.writer.retained_pending_hos2(16).await?;
+        assert_eq!(startup.len(), 1);
+        assert_eq!(startup[0].0, OPERATION);
+        assert_eq!(
+            (&startup[0].1.payload_json, startup[0].1.state),
+            (&queued.payload_json, expected)
+        );
+        assert_eq!(successor.writer.recovery_anchor().await?, cut);
         assert!(
             successor
                 .prepare("hos2:successor-before-terminal", /*sequence*/ 2)
@@ -343,5 +352,93 @@ async fn native_retained_terminal_keeps_the_same_event_across_expired_owner_reco
     assert_eq!(successor.writer.recovery_anchor().await?, cut);
     assert_eq!(successor.device.calls.load(Ordering::SeqCst), 0);
     assert_eq!(successor.device.queries.load(Ordering::SeqCst), 0);
+    Ok(())
+}
+
+#[tokio::test]
+async fn native_pending_snapshot_keeps_original_payload_and_stops_at_terminal() -> TestResult {
+    let temp = tempfile::tempdir()?;
+    let fixture = Fixture::open(temp.path()).await?;
+    assert!(fixture.writer.retained_pending_hos2(16).await?.is_empty());
+    let queued = fixture.prepare(OPERATION, 1).await?;
+    let cut = fixture.writer.recovery_anchor().await?;
+    let snapshot = fixture.writer.retained_pending_hos2(16).await?;
+    assert_eq!(snapshot.len(), 1);
+    assert_eq!(
+        (
+            &snapshot[0].0,
+            snapshot[0].1.topic.as_str(),
+            &snapshot[0].1.payload_json,
+            snapshot[0].1.state
+        ),
+        (
+            &OPERATION.to_string(),
+            HOS2_INSTALL_TOPIC_V1,
+            &queued.payload_json,
+            LocalOutcomeState::Queued
+        )
+    );
+    assert_eq!(fixture.writer.recovery_anchor().await?, cut);
+    assert_eq!(fixture.device.calls.load(Ordering::SeqCst), 0);
+
+    fixture.device.lose_ack.store(true, Ordering::SeqCst);
+    let (binding, signed) = fixture.signed(&queued, 1).await?;
+    let unknown = fixture
+        .dispatcher
+        .dispatch(&fixture.writer, &signed, &binding, queued)
+        .await?;
+    assert_eq!(unknown.state, LocalOutcomeState::Indeterminate);
+    let cut = fixture.writer.recovery_anchor().await?;
+    let snapshot = fixture.writer.retained_pending_hos2(16).await?;
+    assert_eq!(snapshot.len(), 1);
+    assert_eq!(snapshot[0].0, OPERATION);
+    assert_eq!(snapshot[0].1.state, LocalOutcomeState::Indeterminate);
+    assert_eq!(fixture.writer.recovery_anchor().await?, cut);
+    assert_eq!(fixture.device.calls.load(Ordering::SeqCst), 1);
+    assert_eq!(fixture.dispatcher.reconcile(&fixture.writer, 8).await?, 1);
+    let cut = fixture.writer.recovery_anchor().await?;
+    assert!(fixture.writer.retained_pending_hos2(16).await?.is_empty());
+    assert_eq!(fixture.writer.recovery_anchor().await?, cut);
+    assert_eq!(fixture.device.calls.load(Ordering::SeqCst), 1);
+    Ok(())
+}
+
+#[tokio::test]
+async fn native_pending_snapshot_refuses_invalid_or_truncating_bounds() -> TestResult {
+    let temp = tempfile::tempdir()?;
+    let fixture = Fixture::open(temp.path()).await?;
+    for (id, space) in [("hos2:pending:a", [2; 16]), ("hos2:pending:b", [3; 16])] {
+        let mut request = fixture.request(1)?;
+        request.delivery = Hos2DeliveryId::new([1; 16], space, 1)?;
+        fixture
+            .writer
+            .prepare_operation(
+                fixture.operation(id, &request)?,
+                HOS2_INSTALL_TOPIC_V1,
+                request.to_json()?,
+            )
+            .await?;
+    }
+    let cut = fixture.writer.recovery_anchor().await?;
+    for limit in [0, 1, 257, usize::MAX] {
+        assert!(fixture.writer.retained_pending_hos2(limit).await.is_err());
+    }
+    let snapshot = fixture.writer.retained_pending_hos2(2).await?;
+    assert_eq!(snapshot.len(), 2);
+    assert_eq!(
+        snapshot
+            .iter()
+            .map(|(id, _)| id.as_str())
+            .collect::<Vec<_>>(),
+        vec!["hos2:pending:a", "hos2:pending:b"]
+    );
+    assert!(
+        snapshot
+            .iter()
+            .all(|(_, retained)| retained.state == LocalOutcomeState::Queued)
+    );
+    assert_eq!(fixture.writer.recovery_anchor().await?, cut);
+    assert_eq!(fixture.writer.hos2_drain_blockers().await?, 2);
+    assert_eq!(fixture.device.calls.load(Ordering::SeqCst), 0);
     Ok(())
 }

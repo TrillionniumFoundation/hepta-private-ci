@@ -155,11 +155,7 @@ impl Installation {
             store.close().await;
             Ok::<_, io::Error>(cut)
         })?;
-        std::fs::set_permissions(layout.agent_root(), std::fs::Permissions::from_mode(0o755))?;
-        for path in [layout.home_root(), layout.run_root(), layout.matrix_root()] {
-            platform::chown_tree(path, 60001, 60001)?;
-            std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700))?;
-        }
+        permissions::handoff_fresh(fleet.layout(), &layout)?;
         let protected = Path::new(STATE).join("protected");
         let metadata = std::fs::metadata(&protected)?;
         let required_bind = HostAuthorityBindIdentity {

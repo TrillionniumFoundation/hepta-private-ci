@@ -94,6 +94,12 @@ impl<P: AgentdRuntimeProfile> std::ops::Deref for AgentdState<P> {
     }
 }
 
+impl<P: AgentdRuntimeProfile> std::ops::DerefMut for AgentdState<P> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.owners
+    }
+}
+
 pub(crate) trait AgentdRuntimeProfile: Send + Sync + 'static {
     fn begin_drain(&self, reason: &str) -> Result<(), AgentdError>;
     fn request_turn_drain(&self);
