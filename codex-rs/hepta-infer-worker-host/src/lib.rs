@@ -7,6 +7,7 @@
 
 #![forbid(unsafe_code)]
 
+pub mod generation_driver;
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 
