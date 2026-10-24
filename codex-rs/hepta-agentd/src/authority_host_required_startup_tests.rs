@@ -79,8 +79,9 @@ fn required_pending_reads_preserve_all_original_heads_and_refuse_mutations() {
         }).unwrap()).unwrap();
         let response: codex_hepta_contracts::HostConsumerFrontierResponseV1 = serde_json::from_slice(&response).unwrap();
         assert_eq!(response.status, codex_hepta_contracts::HostConsumerFrontierStatusV1::Ack);
+        let frontier = response.frontier.unwrap();
         let raw = serde_json::to_vec(&codex_hepta_contracts::HostConsumerFrontierRequestV1::CompareAndSet {
-            schema_version:1, request_id:2, expected:response.frontier.unwrap(), next:response.frontier.unwrap(),
+            schema_version:1, request_id:2, expected:frontier, next:frontier,
         }).unwrap();
         assert!(service.handle(lane, &raw).is_err());
     }
