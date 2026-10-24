@@ -567,14 +567,38 @@ impl FinalUseAuthority {
         self.persist_or_fence(&mut state, next)
     }
 
-    /// Atomically validate and claim one nonce immediately before dispatch.
-    /// A failed or uncertain dispatch does not refund the nonce: retry needs a
-    /// new owner-signed grant, after the caller has reconciled any unknown effect.
-    pub fn claim(
+    /// Read-only readiness check against this original owner's current issuer,
+    /// clock, revocation head and nonce state. It grants no capability and does
+    /// not reserve a nonce: callers still must claim and recheck at final entry.
+    pub fn check_unclaimed_grant(
         &self,
         signed: &SignedFinalUseGrant,
         expected: &FinalUseBinding,
-    ) -> Result<VerifiedUseToken, FinalUseError> {
+    ) -> Result<(), FinalUseError> {
+        self.grant_signing_input(signed, expected)?;
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        validate_live(&signed.grant, &state.head, self.now_unix_ms()?)?;
+        if state.used_nonces.contains(&signed.grant.nonce) {
+            return Err(FinalUseError::AlreadyClaimed);
+        }
+        if state.used_nonces.len() >= MAX_CLAIMS {
+            return Err(FinalUseError::CapacityExceeded);
+        }
+        Ok(())
+    }
+
+    fn grant_signing_input(
+        &self,
+        signed: &SignedFinalUseGrant,
+        expected: &FinalUseBinding,
+    ) -> Result<Vec<u8>, FinalUseError> {
         let input = signed.grant.signing_bytes()?;
         if signed.grant.signer_id != self.0.signer_id || &signed.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
@@ -589,6 +613,18 @@ impl FinalUseAuthority {
         if !verified {
             return Err(FinalUseError::InvalidSignature);
         }
+        Ok(input)
+    }
+
+    /// Atomically validate and claim one nonce immediately before dispatch.
+    /// A failed or uncertain dispatch does not refund the nonce: retry needs a
+    /// new owner-signed grant, after the caller has reconciled any unknown effect.
+    pub fn claim(
+        &self,
+        signed: &SignedFinalUseGrant,
+        expected: &FinalUseBinding,
+    ) -> Result<VerifiedUseToken, FinalUseError> {
+        let input = self.grant_signing_input(signed, expected)?;
         let mut state = self
             .0
             .state
