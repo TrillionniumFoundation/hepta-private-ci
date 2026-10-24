@@ -343,6 +343,7 @@ async fn notes_objective_session_registration_returns_observer_for_the_same_priv
                 let (notes_only, observer) = crate::notes_bootstrap::primary_notes_runtime(
                     &config, &host, parent, final_use, issuer.clone(),
                     operations.verifier.clone(), Duration::from_millis(20),
+                    /*expected*/ None,
                 ).await?;
                 let target = observer.target().clone();
                 let (host, interval) = notes_only.attach(Arc::new(host)).await?;

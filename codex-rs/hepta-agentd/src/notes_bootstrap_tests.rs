@@ -59,6 +59,33 @@ fn send_offer(socket: &UnixDatagram, payload: &[u8], descriptors: &[RawFd]) -> i
 }
 
 #[test]
+fn notes_startup_mismatched_offer_is_rejected_before_target_composition_or_attached_ack()
+-> TestResult {
+    let fixture = fixture();
+    let offer: NotesOffer = serde_json::from_str(&fixture.offer_utf8)?;
+    let mut reserved = offer.target;
+    reserved.incarnation = "f".repeat(32);
+    let (host, session) = UnixDatagram::pair()?;
+    let (effect, mut app) = UnixStream::pair()?;
+    let (recovery, _recovery_app) = UnixDatagram::pair()?;
+    send_offer(&session, fixture.offer_utf8.as_bytes(), &[effect.as_raw_fd(), recovery.as_raw_fd()])?;
+    drop(effect);
+    drop(recovery);
+    assert!(receive_session(&host, Instant::now() + Duration::from_secs(2), Some(&reserved)).is_err());
+    session.set_read_timeout(Some(Duration::from_millis(500)))?;
+    let mut raw = [0_u8; MAX_BOOTSTRAP_BYTES];
+    let count = session.recv(&mut raw)?;
+    let actual: serde_json::Value = serde_json::from_slice(&raw[..count])?;
+    let expected: serde_json::Value = serde_json::from_str(&fixture.rejected_ack_utf8)?;
+    assert_eq!(actual, expected);
+    app.set_read_timeout(Some(Duration::from_millis(500)))?;
+    assert_eq!(app.read(&mut [0_u8; 1])?, 0, "mismatched actual effect descriptor is closed");
+    session.set_nonblocking(true)?;
+    assert_eq!(session.recv(&mut raw).unwrap_err().kind(), io::ErrorKind::WouldBlock);
+    Ok(())
+}
+
+#[test]
 fn bootstrap_golden_transfers_two_ordered_cloexec_endpoints_and_correlates_only_registration()
 -> TestResult {
     let fixture = fixture();

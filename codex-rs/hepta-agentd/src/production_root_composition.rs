@@ -124,11 +124,9 @@ pub async fn attach_root_production_operation_host_with_startup(
                 crate::notes_bootstrap::activate_startup(&channel, release)?;
             }
             let (operations, _identity, observer) = operations
-                .with_notes_from_session_with_observer(config, &host, channel, notes)
+                .with_notes_from_session_expected(config, &host, channel, notes,
+                    release.as_ref().map(|release| &release.target))
                 .await?;
-            if release.as_ref().is_some_and(|release| observer.target() != &release.target) {
-                return Err(AgentdError::Invalid("actual Notes offer differs from Root's original reservation".into()));
-            }
             let operations = operations.with_notes_receipt_recovery(observer.clone())?;
             (operations, Some(observer))
         }
@@ -197,10 +195,8 @@ pub async fn attach_root_notes_operation_host_with_startup(
     let operation_grants: Arc<dyn AgentdFinalUseGrantProvider> = grants.clone();
     let (operations, observer) = crate::notes_bootstrap::primary_notes_runtime(
         config, &host, notes_bootstrap, notes, operation_grants, verifier, reconcile_interval,
+        release.as_ref().map(|release| &release.target),
     ).await?;
-    if release.as_ref().is_some_and(|release| observer.target() != &release.target) {
-        return Err(AgentdError::Invalid("actual Notes primary differs from Root's original reservation".into()));
-    }
     let operations = operations.with_notes_receipt_recovery(observer.clone())?;
     // The same final live verifier and atomic installer as the joint profile.
     config.install_production_hosts(Arc::new(host), operations)?;

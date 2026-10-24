@@ -63,7 +63,9 @@ The actual launcher passes that sealed `AgentdNotesStartupRelease` to
 `attach_root_production_operation_host_with_startup` or the explicit Notes-only
 `attach_root_notes_operation_host_with_startup`. After original protected writer
 recovery, the factory sends a metadata-only activation and checks that the
-subsequent actual target equals the sealed reservation. No application rights,
+subsequent actual target equals the sealed reservation before constructing its
+target or sending an Attached ACK. A mismatched offer receives Rejected and
+its received descriptors close. No application rights,
 grant or attachment ACK are sent by the activation. Session retains its two
 original descriptors during a separate absolute 30-second startup window;
 only the matching activation starts the unchanged two-second Offer/ACK phase.

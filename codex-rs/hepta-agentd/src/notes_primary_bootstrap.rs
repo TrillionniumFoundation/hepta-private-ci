@@ -12,6 +12,7 @@ pub(crate) async fn primary_notes_runtime(
     grants: Arc<dyn AgentdFinalUseGrantProvider>,
     verifier: Arc<dyn ProductionAuthorityVerifier>,
     reconcile_interval: Duration,
+    expected: Option<&NotesTargetIdentity>,
 ) -> Result<(AgentdProductionOperationRuntimeConfig, AgentdNotesDocumentObserver), AgentdError> {
     let deadline = Instant::now() + Duration::from_secs(2);
     let writer = recovered_host.writer();
@@ -22,7 +23,7 @@ pub(crate) async fn primary_notes_runtime(
     verifier.verify(writer.authority(), writer.owner_agent_id()).map_err(AgentdError::GenerationFenced)?;
     tokio::time::timeout(remaining(deadline)?, writer.verify_current_authority()).await
         .map_err(|_| io::Error::new(io::ErrorKind::TimedOut, "primary Notes owner deadline"))??;
-    let (offer, endpoint, recovery) = receive_session(&bootstrap, deadline)?;
+    let (offer, endpoint, recovery) = receive_session(&bootstrap, deadline, expected)?;
     let configured = tokio::time::timeout(remaining(deadline)?, async {
         let channel = Arc::new(AgentdNotesChannel::from_private_channels(endpoint, recovery)?);
         let target = ProductionNotesTarget::new(offer.target.clone(), channel).map_err(AgentdError::Invalid)?;

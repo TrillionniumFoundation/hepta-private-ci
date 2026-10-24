@@ -131,7 +131,7 @@ impl AgentdProductionWriterHost {
         attachment: Attachment,
     ) -> Result<(Self, NotesTargetIdentity, AgentdNotesDocumentObserver), AgentdError> {
         let deadline = Instant::now() + Duration::from_secs(2);
-        let (offer, endpoint, recovery) = receive_session(&bootstrap, deadline)?;
+        let (offer, endpoint, recovery) = receive_session(&bootstrap, deadline, /*expected*/ None)?;
         let identity = offer.target.clone();
         let attached = tokio::time::timeout(remaining(deadline)?, async {
             let target = self
@@ -196,11 +196,24 @@ impl AgentdProductionOperationRuntimeConfig {
         bootstrap: UnixDatagram,
         final_use: FinalUseAuthority,
     ) -> Result<(Self, NotesTargetIdentity, AgentdNotesDocumentObserver), AgentdError> {
+        self.with_notes_from_session_expected(config, recovered_host, bootstrap, final_use,
+            /*expected*/ None).await
+    }
+
+    pub(crate) async fn with_notes_from_session_expected(
+        self,
+        config: &AgentdConfig,
+        recovered_host: &AgentdProductionWriterHost,
+        bootstrap: UnixDatagram,
+        final_use: FinalUseAuthority,
+        expected: Option<&NotesTargetIdentity>,
+    ) -> Result<(Self, NotesTargetIdentity, AgentdNotesDocumentObserver), AgentdError> {
         self.with_notes_from_session_channel(
             config,
             recovered_host,
             bootstrap,
             final_use,
+            expected,
             |effect, recovery| {
                 let channel = AgentdNotesChannel::from_private_channels(effect, recovery)?;
                 Ok(Arc::new(channel) as Arc<dyn NotesPrivateChannel>)
@@ -229,6 +242,7 @@ impl AgentdProductionOperationRuntimeConfig {
             recovered_host,
             bootstrap,
             final_use,
+            /*expected*/ None,
             channel_factory,
         )
         .await?;
@@ -241,6 +255,7 @@ impl AgentdProductionOperationRuntimeConfig {
         recovered_host: &AgentdProductionWriterHost,
         bootstrap: UnixDatagram,
         final_use: FinalUseAuthority,
+        expected: Option<&NotesTargetIdentity>,
         channel_factory: F,
     ) -> Result<(Self, NotesTargetIdentity, AgentdNotesDocumentObserver), AgentdError>
     where
@@ -259,7 +274,7 @@ impl AgentdProductionOperationRuntimeConfig {
         .map_err(|_| {
             io::Error::new(io::ErrorKind::TimedOut, "Notes owner validation deadline")
         })??;
-        let (offer, endpoint, recovery) = receive_session(&bootstrap, deadline)?;
+        let (offer, endpoint, recovery) = receive_session(&bootstrap, deadline, expected)?;
         let identity = offer.target.clone();
         let target =
             ProductionNotesTarget::new(identity.clone(), channel_factory(endpoint, recovery)?)
@@ -280,6 +295,7 @@ impl AgentdProductionOperationRuntimeConfig {
 fn receive_session(
     bootstrap: &UnixDatagram,
     deadline: Instant,
+    expected: Option<&NotesTargetIdentity>,
 ) -> Result<(NotesOffer, UnixStream, UnixDatagram), AgentdError> {
     require_socket(bootstrap.as_raw_fd(), libc::SOCK_DGRAM)?;
     if !bootstrap.local_addr()?.is_unnamed() || !bootstrap.peer_addr()?.is_unnamed() {
@@ -288,7 +304,12 @@ fn receive_session(
         ));
     }
     bootstrap.set_nonblocking(false)?;
-    receive_offer(bootstrap, deadline)
+    let received = receive_offer(bootstrap, deadline)?;
+    if expected.is_some_and(|expected| expected != &received.0.target) {
+        let _ = acknowledge(bootstrap, &received.0, RegistrationStatus::Rejected, deadline);
+        return Err(AgentdError::Invalid("actual Notes offer differs from Root's original reservation".into()));
+    }
+    Ok(received)
 }
 
 fn receive_offer(
