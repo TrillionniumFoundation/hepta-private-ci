@@ -1,0 +1,49 @@
+{
+  "old_source": "b98961ceb71414490e1c6ae397cf635bca3093f4",
+  "new_source": "b2964156764e174b396407c0c981d6fad043b204",
+  "old_worktree": "hepta-holdout-legacy-writer",
+  "new_worktree": "hepta-holdout-migration-reader",
+  "cwd_for_rust": "codex-rs",
+  "environment": {
+    "RUSTUP_HOME": "../hepta-native-dot-resume/rustup (absolute at execution)",
+    "CARGO_HOME": "../hepta-native-dot-resume/cargo (absolute at execution)",
+    "RUSTUP_TOOLCHAIN": "1.95.0",
+    "CARGO_TARGET_DIR": "hepta-holdout-target (absolute at execution)",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "HEPTA_GOLDEN_DIRECTORY": "hepta-holdout-migration-evidence/old-generated (absolute; generator only)"
+  },
+  "runs": [
+    {
+      "log": "old-writer.log",
+      "cmd": "just test --offline --locked -p codex-hepta-intelligence-eval --test legacy_golden_writer",
+      "result": "exit101 missing arbitrary registry metadata; no compilation/tests"
+    },
+    {
+      "log": "old-writer-registry.log",
+      "cmd": "just test --locked -p codex-hepta-intelligence-eval --test legacy_golden_writer",
+      "result": "exit0 1pass"
+    },
+    {
+      "log": "new-reader.log",
+      "cmd": "just test --offline --locked -p codex-hepta-intelligence-eval --lib legacy_byte_migration_tests",
+      "result": "exit0 3pass127filtered"
+    },
+    {
+      "log": "full-library.log",
+      "cmd": "just test --offline --locked -p codex-hepta-intelligence-eval --lib",
+      "result": "exit0 130pass0skip"
+    },
+    {
+      "log": "fmt.log",
+      "cmd": "just fmt",
+      "result": "exit0; after all tests; no test rerun"
+    },
+    {
+      "log": "clippy.log",
+      "cmd": "cargo clippy --offline --locked -p codex-hepta-intelligence-eval --lib --tests --no-deps -- -D warnings",
+      "result": "exit0"
+    }
+  ]
+}
