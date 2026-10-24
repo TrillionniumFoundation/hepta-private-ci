@@ -28,7 +28,9 @@ pub fn propose_native_shadow_execution_v1(
         || !matches!(intent.binding.final_use, FinalUse::NotGranted)
         || intent.binding.predecessor.is_some()
     {
-        return Err(ExecutionError::Binding("shadow candidate cannot carry authority"));
+        return Err(ExecutionError::Binding(
+            "shadow candidate cannot carry authority",
+        ));
     }
     let mut journal = ExecutionJournal::new();
     let record_digest = journal.append(ExecutionRecord::ExecutionIntent(intent.clone()))?;

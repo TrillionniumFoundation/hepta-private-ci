@@ -1,8 +1,10 @@
 //! The native entrypoint must not require a Codex session or carry authority.
 use super::*;
-use codex_execution_core::{
-    Currentness, ExecutionBinding, ExecutionClass, FinalUse, EXECUTION_SCHEMA_VERSION,
-};
+use codex_execution_core::Currentness;
+use codex_execution_core::EXECUTION_SCHEMA_VERSION;
+use codex_execution_core::ExecutionBinding;
+use codex_execution_core::ExecutionClass;
+use codex_execution_core::FinalUse;
 
 fn digest(value: u8) -> String {
     format!("{value:064x}")

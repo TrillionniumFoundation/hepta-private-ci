@@ -165,14 +165,10 @@ fn validate(
 }
 
 fn within_increase(candidate: u64, baseline: u64, extra_ppm: u32) -> bool {
-    u128::from(candidate) * 1_000_000
-        <= u128::from(baseline) * (1_000_000 + u128::from(extra_ppm))
+    u128::from(candidate) * 1_000_000 <= u128::from(baseline) * (1_000_000 + u128::from(extra_ppm))
 }
 
-fn passes(
-    plan: &FrozenStructuralComparisonV1,
-    result: &StructuralComparisonObservationV1,
-) -> bool {
+fn passes(plan: &FrozenStructuralComparisonV1, result: &StructuralComparisonObservationV1) -> bool {
     let minimum_ablation = result
         .ablated_utility_q24
         .checked_add(plan.minimum_ablation_delta_q24);
@@ -210,8 +206,8 @@ pub fn structural_comparison_signing_payload_v1(
     let mut bytes = b"hepta.eval.structural-comparison.v1\0".to_vec();
     for id in [&plan.candidate_id, &plan.predecessor_id, &plan.no_change_id] {
         let data = id.as_str().as_bytes();
-        let len = u32::try_from(data.len())
-            .map_err(|_| StructuralComparisonErrorV1::InvalidDesign)?;
+        let len =
+            u32::try_from(data.len()).map_err(|_| StructuralComparisonErrorV1::InvalidDesign)?;
         bytes.extend_from_slice(&len.to_be_bytes());
         bytes.extend_from_slice(data);
     }

@@ -48,9 +48,11 @@ fn all_four_shadow_candidates_preserve_no_change_and_authority() {
     let candidates = [&a.no_change, &a.action, &a.routing, &a.topology];
     for (index, candidate) in candidates.iter().enumerate() {
         assert!(!candidate.authority.grants_any());
-        assert!(candidates[..index].iter().all(|prior| {
-            prior.candidate_digest != candidate.candidate_digest
-        }));
+        assert!(
+            candidates[..index]
+                .iter()
+                .all(|prior| { prior.candidate_digest != candidate.candidate_digest })
+        );
     }
 }
 

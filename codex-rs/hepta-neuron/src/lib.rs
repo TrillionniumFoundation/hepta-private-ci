@@ -25,8 +25,8 @@ mod protocol;
 mod qualification;
 mod runtime;
 mod runtime_types;
-mod sparse;
 mod shadow_candidates;
+mod sparse;
 mod witness;
 
 pub use deletion::DeletionRebuildError;

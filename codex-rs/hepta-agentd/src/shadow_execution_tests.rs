@@ -1,7 +1,10 @@
 //! Compare Codex Bridge translation with the independent native admission path.
 use super::*;
-use codex_execution_core::{Currentness, FinalUse, EXECUTION_SCHEMA_VERSION};
-use codex_hepta_types::{Digest32, StableId};
+use codex_execution_core::Currentness;
+use codex_execution_core::EXECUTION_SCHEMA_VERSION;
+use codex_execution_core::FinalUse;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
 fn fixture() -> (ExecutionBinding, CodexOperationIntent) {
     let payload = Digest32::of_bytes(b"checked-bridge-payload");
@@ -47,12 +50,9 @@ fn codex_bridge_and_native_entry_yield_identical_non_authorizing_intents() {
     )
     .unwrap();
     let native = propose_native_shadow_execution_v1(canonical).unwrap();
-    let codex = propose_shadow_execution_v1(
-        binding,
-        &operation,
-        ExecutionClass::ReadOnlyInspection,
-    )
-    .unwrap();
+    let codex =
+        propose_shadow_execution_v1(binding, &operation, ExecutionClass::ReadOnlyInspection)
+            .unwrap();
     assert_eq!(native, codex);
 }
 

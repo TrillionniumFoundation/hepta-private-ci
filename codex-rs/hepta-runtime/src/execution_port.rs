@@ -69,10 +69,14 @@ impl RuntimeExecutionPortV1 {
         event: ExecutionStarted,
         verifier: &impl ExecutionVerifier,
     ) -> Result<String, ExecutionError> {
-        let class = self.journal.events().first().and_then(|record| match record {
-            ExecutionRecord::ExecutionIntent(intent) => Some(intent.class),
-            _ => None,
-        });
+        let class = self
+            .journal
+            .events()
+            .first()
+            .and_then(|record| match record {
+                ExecutionRecord::ExecutionIntent(intent) => Some(intent.class),
+                _ => None,
+            });
         if !class.is_some_and(|class| self.cutover.permits(class)) {
             return Err(ExecutionError::AuthorizationDenied);
         }
