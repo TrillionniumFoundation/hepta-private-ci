@@ -1,0 +1,92 @@
+{
+  "primary": {
+    "shared_minus_individual_nll": 3.0049348356391452e-05,
+    "conditional_source_bootstrap95": [
+      -1.8330899077294685e-05,
+      7.610640251825998e-05
+    ]
+  },
+  "summary": {
+    "raw": {
+      "nll": 0.46665154403522235,
+      "brier": 0.21771610036925287,
+      "ece10": 0.1783076993736579,
+      "accuracy": 0.8953906249999999,
+      "coverage": 0.615703125,
+      "wrong_accepted_over_all": 0.021171875,
+      "accepted_min_max": [
+        381,
+        408
+      ],
+      "conditional_error_unweighted_mean_defined_heads": 0.034373755478159906,
+      "conditional_error_undefined_heads": 0,
+      "mean_per_row_confidence_variance_across_heads": 0.001357545554564764
+    },
+    "individual_temperature": {
+      "nll": 0.3507375104263737,
+      "brier": 0.16881539625682324,
+      "ece10": 0.026432648934782265,
+      "accuracy": 0.8953906249999999,
+      "coverage": 0.845078125,
+      "wrong_accepted_over_all": 0.047812499999999994,
+      "accepted_min_max": [
+        535,
+        552
+      ],
+      "conditional_error_unweighted_mean_defined_heads": 0.05657605573766742,
+      "conditional_error_undefined_heads": 0,
+      "mean_per_row_confidence_variance_across_heads": 0.001981260559806538
+    },
+    "shared_temperature": {
+      "nll": 0.3507675597747302,
+      "brier": 0.16883695606706745,
+      "ece10": 0.026620193878353394,
+      "accuracy": 0.8953906249999999,
+      "coverage": 0.8456249999999998,
+      "wrong_accepted_over_all": 0.0478125,
+      "accepted_min_max": [
+        531,
+        553
+      ],
+      "conditional_error_unweighted_mean_defined_heads": 0.056536151753307506,
+      "conditional_error_undefined_heads": 0,
+      "mean_per_row_confidence_variance_across_heads": 0.00198535352290364
+    }
+  },
+  "shared_temperature": {
+    "T": 0.5322665183306494,
+    "uniform": false,
+    "logT": -0.6306109407804932,
+    "boundary": false,
+    "calibration_nll": 0.3468190595890809
+  },
+  "individual_T_range": [
+    0.5163886796873327,
+    0.5479595619402831
+  ],
+  "constant_prior_metrics": {
+    "nll": 1.3859155210745606,
+    "brier": 0.749819825141777,
+    "ece10": 0.028086180124223564,
+    "ece_bin_counts": [
+      0,
+      0,
+      640,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "accuracy": 0.228125,
+    "accepted": 0,
+    "wrong_accepted": 0,
+    "coverage": 0.0,
+    "wrong_accepted_over_all": 0.0,
+    "conditional_error": null,
+    "conditional_error_wilson95": null
+  },
+  "seconds": 5.452946770004928
+}
