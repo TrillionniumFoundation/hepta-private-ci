@@ -2,6 +2,7 @@
 
 use std::future::Future;
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
@@ -9,7 +10,8 @@ use std::time::Duration;
 use codex_hepta_contracts::Sha256Digest;
 use sha2::Digest;
 use sha2::Sha256;
-use tokio::sync::Mutex;
+use tokio::sync::Semaphore;
+use tokio::sync::SemaphorePermit;
 
 use crate::CognitiveRecoveryAnchor;
 use crate::ObjectiveSenderCheckpoint;
@@ -43,6 +45,10 @@ pub trait CognitiveCheckpointTransport: Send + Sync {
 /// lifetimes, and independent restart reconciliation.
 pub struct ProtectedCognitiveCheckpoint<T: CognitiveCheckpointTransport> {
     transport: Arc<T>,
+    // One admission spans every read/transition and both publication RPCs.
+    // Receipt data guards never cross an await. This is an operation permit,
+    // not a second owner or permission to reopen a fenced generation.
+    operation: Semaphore,
     receipt: Mutex<CognitiveCheckpointReceipt>,
     sequence: AtomicU64,
     gate: CognitiveCommitGate,
@@ -74,6 +80,7 @@ impl<T: CognitiveCheckpointTransport> ProtectedCognitiveCheckpoint<T> {
         }
         Ok(Self {
             sequence: AtomicU64::new(receipt.head.last_mutation_sequence + 1),
+            operation: Semaphore::new(1),
             receipt: Mutex::new(receipt),
             transport,
             gate,
@@ -82,8 +89,9 @@ impl<T: CognitiveCheckpointTransport> ProtectedCognitiveCheckpoint<T> {
     }
 
     pub(crate) async fn verify_initial(&self) -> Result<(), ObjectiveSenderCheckpointError> {
-        let expected = self.receipt.lock().await;
-        if self.read_head(&expected).await? != *expected {
+        let _operation = self.admit_operation().await?;
+        let expected = self.receipt_snapshot()?;
+        if self.read_head(&expected).await? != expected {
             return Err(ObjectiveSenderCheckpointError::Refused);
         }
         Ok(())
@@ -95,10 +103,15 @@ impl<T: CognitiveCheckpointTransport> ProtectedCognitiveCheckpoint<T> {
         if self.gate.is_fenced() {
             return;
         }
-        let mut receipt = self.receipt.lock().await;
+        let Ok(_operation) = self.admit_operation().await else {
+            return;
+        };
         if self.gate.is_fenced() {
             return;
         }
+        let Ok(receipt) = self.receipt_snapshot() else {
+            return;
+        };
         if receipt.head.phase == CognitiveCheckpointPhase::Dirty {
             self.gate.allow_dirty_commits();
             return;
@@ -111,10 +124,52 @@ impl<T: CognitiveCheckpointTransport> ProtectedCognitiveCheckpoint<T> {
             .transition(&receipt, CognitiveCheckpointCommand::BeginWrites, None)
             .await
         {
-            *receipt = next;
+            if self.retain_receipt(&receipt, next).is_err() {
+                return;
+            }
             self.gate.allow_dirty_commits();
             attempt.acknowledge();
         }
+    }
+
+    async fn admit_operation(&self) -> Result<SemaphorePermit<'_>, ObjectiveSenderCheckpointError> {
+        self.operation
+            .acquire()
+            .await
+            .map_err(|_| self.local_state_failure())
+    }
+
+    fn receipt_snapshot(
+        &self,
+    ) -> Result<CognitiveCheckpointReceipt, ObjectiveSenderCheckpointError> {
+        let receipt = self
+            .receipt
+            .lock()
+            .map_err(|_| self.local_state_failure())?;
+        Ok(receipt.clone())
+    }
+
+    fn retain_receipt(
+        &self,
+        expected: &CognitiveCheckpointReceipt,
+        next: CognitiveCheckpointReceipt,
+    ) -> Result<(), ObjectiveSenderCheckpointError> {
+        let mut receipt = self
+            .receipt
+            .lock()
+            .map_err(|_| self.local_state_failure())?;
+        if *receipt != *expected {
+            return Err(self.local_state_failure());
+        }
+        *receipt = next;
+        Ok(())
+    }
+
+    fn local_state_failure(&self) -> ObjectiveSenderCheckpointError {
+        // Poison, admission closure or unexpected predecessor drift cannot
+        // reopen commits. Reuse the original permanent uncertainty fence.
+        drop(self.gate.transition_attempt());
+        ObjectiveSenderCheckpointError::Unavailable
     }
 
     fn request(
@@ -276,7 +331,10 @@ impl<T: CognitiveCheckpointTransport> ObjectiveSenderCheckpoint
         committed: &CognitiveRecoveryAnchor,
         writer: &ObjectiveSenderWriterFence,
     ) -> Result<CognitiveRecoveryAnchor, ObjectiveSenderCheckpointError> {
-        let mut receipt = self.receipt.lock().await;
+        // Keep the permit outside the attempt guard's lifetime: cancellation
+        // drops the uncertainty fence before another operation is admitted.
+        let _operation = self.admit_operation().await?;
+        let receipt = self.receipt_snapshot()?;
         if committed.owner_agent_id != receipt.head.owner_agent_id
             || writer.owner_agent_id != receipt.head.owner_agent_id
             || !receipt.head.writer_binding.matches(writer)
@@ -293,15 +351,14 @@ impl<T: CognitiveCheckpointTransport> ObjectiveSenderCheckpoint
             {
                 return Err(ObjectiveSenderCheckpointError::Unavailable);
             }
-            *receipt = observed;
+            self.retain_receipt(&receipt, observed)?;
             return Ok(committed.clone());
         }
         if receipt.head.phase == CognitiveCheckpointPhase::Current {
             // The original sender holds a real BEGIN IMMEDIATE writer lock
             // on its lock-only connection. An identical protected head confirms
             // this cut without invalidating it or incrementing any counter.
-            if receipt.head.last_current != *committed
-                || self.read_head(&receipt).await? != *receipt
+            if receipt.head.last_current != *committed || self.read_head(&receipt).await? != receipt
             {
                 return Err(ObjectiveSenderCheckpointError::Unavailable);
             }
@@ -309,7 +366,7 @@ impl<T: CognitiveCheckpointTransport> ObjectiveSenderCheckpoint
         }
         self.gate.close_commits();
         let attempt = self.gate.checkpoint_attempt();
-        *receipt = self
+        let publishing = self
             .transition(
                 &receipt,
                 CognitiveCheckpointCommand::PreparePublication,
@@ -319,13 +376,17 @@ impl<T: CognitiveCheckpointTransport> ObjectiveSenderCheckpoint
                 }),
             )
             .await?;
-        *receipt = self
+        // Retain the acknowledged intermediate state before the next await,
+        // exactly as the original owner did while holding its data guard.
+        self.retain_receipt(&receipt, publishing.clone())?;
+        let current = self
             .transition(
-                &receipt,
+                &publishing,
                 CognitiveCheckpointCommand::CommitPublication,
                 None,
             )
             .await?;
+        self.retain_receipt(&publishing, current)?;
         // Stay closed. The next checkout must independently invalidate Current
         // with a durable Dirty ACK before any original-owner commit is possible.
         attempt.acknowledge();
