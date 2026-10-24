@@ -2,6 +2,7 @@
 
 use std::io::BufRead;
 use std::io::BufReader;
+use std::io::Read;
 use std::io::Write;
 use std::os::unix::net::UnixListener;
 use std::path::Path;
@@ -14,9 +15,12 @@ use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
 use codex_hepta_agent_protocol::AgentdPayload;
+use codex_hepta_agent_protocol::AgentdMethod;
 use codex_hepta_agent_protocol::AgentdRequest;
 use codex_hepta_agent_protocol::AgentdResponse;
 use codex_hepta_agent_protocol::HealthSnapshot;
+use codex_hepta_agent_protocol::DrainSnapshot;
+use codex_hepta_agent_protocol::MAX_CONTROL_FRAME_BYTES;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
@@ -532,10 +536,15 @@ fn run_agent_child() -> Result<()> {
     let socket = layout.agentd_control_socket().to_path_buf();
     prepare_fixture_socket(&socket)?;
     let listener = UnixListener::bind(&socket)?;
+    let mut admission_closed = false;
     for stream in listener.incoming() {
-        let mut reader = BufReader::new(stream?);
+        let stream = stream?;
+        stream.set_read_timeout(Some(Duration::from_millis(200)))?;
+        stream.set_write_timeout(Some(Duration::from_millis(200)))?;
+        let mut reader = BufReader::new(stream);
         let mut bytes = Vec::new();
-        reader.read_until(b'\n', &mut bytes)?;
+        reader.by_ref().take(MAX_CONTROL_FRAME_BYTES + 1).read_until(b'\n', &mut bytes)?;
+        anyhow::ensure!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES && bytes.ends_with(b"\n"), "fixture requires one bounded complete control frame");
         let request: AgentdRequest = serde_json::from_slice(&bytes)?;
         let run_root = PathBuf::from(
             std::env::var_os("HEPTA_AGENT_RUN_ROOT").context("HEPTA_AGENT_RUN_ROOT")?,
@@ -544,28 +553,87 @@ fn run_agent_child() -> Result<()> {
             PathBuf::from(std::env::var_os("HEPTA_AGENT_HOME").context("HEPTA_AGENT_HOME")?);
         let workspace = std::env::current_dir()?;
         let lifecycle = latest_lifecycle(&run_root)?;
-        let running = lifecycle.lifecycle == AgentLifecycle::Running;
+        let running = lifecycle.lifecycle == AgentLifecycle::Running && !admission_closed;
+        let payload = agent_fixture_payload(&request, &agent_id, spawn_generation, &lifecycle, HealthSnapshot {
+            promotion_ready: true, ready: running, fenced: false,
+            lifecycle: lifecycle.lifecycle, process_id: std::process::id(),
+            workspace, home_root, run_root,
+        }, &mut admission_closed)?;
         let response = AgentdResponse {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id: request.request_id,
             agent_id: agent_id.clone(),
             spawn_generation,
             current_generation: lifecycle.generation,
-            payload: AgentdPayload::Health(HealthSnapshot {
-                promotion_ready: true,
-                ready: running,
-                fenced: false,
-                lifecycle: lifecycle.lifecycle,
-                process_id: std::process::id(),
-                workspace,
-                home_root,
-                run_root,
-            }),
+            payload,
         };
         let mut stream = reader.into_inner();
         serde_json::to_writer(&mut stream, &response)?;
         stream.write_all(b"\n")?;
     }
+    Ok(())
+}
+
+// This controlled stand-in has no turn/task/ingress implementation. Refusing
+// every work-bearing method establishes its actual zero-work drain state;
+// it does not qualify a real Agentd runtime's resource/queue terminality.
+fn agent_fixture_payload(
+    request: &AgentdRequest,
+    agent_id: &AgentId,
+    spawn_generation: u64,
+    lifecycle: &AgentLifecycleState,
+    health: HealthSnapshot,
+    admission_closed: &mut bool,
+) -> Result<AgentdPayload> {
+    anyhow::ensure!(request.schema_version == AGENTD_CONTROL_SCHEMA_VERSION && request.request_id != 0 && request.spawn_generation == spawn_generation && lifecycle.agent_id == *agent_id, "fixture control request identity differs");
+    match request.method {
+        AgentdMethod::Health => Ok(AgentdPayload::Health(health)),
+        AgentdMethod::Drain => {
+            anyhow::ensure!(lifecycle.lifecycle == AgentLifecycle::Draining && spawn_generation.checked_add(2) == Some(lifecycle.generation), "fixture drain generation is not current");
+            *admission_closed = true;
+            Ok(AgentdPayload::Drain(DrainSnapshot {
+                admission_closed: true, running_turns: 0, drained: true,
+                lifecycle: AgentLifecycle::Draining, fenced: false,
+            }))
+        }
+        _ => anyhow::bail!("fixture does not admit work or implement this control method"),
+    }
+}
+
+#[test]
+fn paired_empty_child_drain_refuses_foreign_frames_and_work_before_acknowledging() -> Result<()> {
+    let agent_id = AgentId::parse(IDS[0])?;
+    let lifecycle = AgentLifecycleState {
+        schema_version: 1, agent_id: agent_id.clone(), generation: 9,
+        lifecycle: AgentLifecycle::Draining,
+    };
+    let health = HealthSnapshot {
+        promotion_ready: true, ready: false, fenced: false,
+        lifecycle: AgentLifecycle::Draining, process_id: std::process::id(),
+        workspace: PathBuf::from("/tmp/fixture-workspace"),
+        home_root: PathBuf::from("/tmp/fixture-home"), run_root: PathBuf::from("/tmp/fixture-run"),
+    };
+    for case in 0..7 {
+        let mut request = AgentdRequest::drain(1, 7);
+        let mut state = lifecycle.clone();
+        match case {
+            0 => request.schema_version += 1,
+            1 => request.request_id = 0,
+            2 => request.spawn_generation += 1,
+            3 => state.agent_id = AgentId::parse(IDS[1])?,
+            4 => state.generation -= 1,
+            5 => state.lifecycle = AgentLifecycle::Running,
+            6 => request.method = AgentdMethod::SessionIngress,
+            _ => unreachable!(),
+        }
+        let mut closed = false;
+        assert!(agent_fixture_payload(&request, &agent_id, 7, &state, health.clone(), &mut closed).is_err());
+        assert!(!closed, "a refused control frame cannot change admission");
+    }
+    let mut closed = false;
+    let payload = agent_fixture_payload(&AgentdRequest::drain(1, 7), &agent_id, 7, &lifecycle, health, &mut closed)?;
+    assert!(closed);
+    assert!(matches!(payload, AgentdPayload::Drain(DrainSnapshot { admission_closed: true, running_turns: 0, drained: true, lifecycle: AgentLifecycle::Draining, fenced: false })));
     Ok(())
 }
 
