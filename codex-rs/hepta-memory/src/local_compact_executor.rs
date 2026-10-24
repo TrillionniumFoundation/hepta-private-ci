@@ -273,6 +273,16 @@ impl LocalCompactExecutor {
 
     /// Reopens and verifies the durable append-only journal.
     pub async fn snapshot(&self) -> Result<CompactPersistenceSnapshot, LocalCompactExecutorError> {
+        let journal = self.read_verified_journal().await?;
+        Ok(journal.snapshot())
+    }
+
+    // Keep the verified journal from this read, rather than cloning its entries
+    // into a snapshot and replaying that same in-memory chain a second time.
+    // Every caller still reads and validates the complete durable journal.
+    async fn read_verified_journal(
+        &self,
+    ) -> Result<CompactPersistenceJournal, LocalCompactExecutorError> {
         let mut transaction = self
             .store
             .pool
@@ -284,7 +294,7 @@ impl LocalCompactExecutor {
             .commit()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
-        Ok(journal.snapshot())
+        Ok(journal)
     }
 
     /// Returns the durable state for one operation after chain verification.
@@ -293,8 +303,7 @@ impl LocalCompactExecutor {
         operation_id: &str,
     ) -> Result<Option<CompactPersistenceState>, LocalCompactExecutorError> {
         validate_text(operation_id, "operation id", /*max_bytes*/ 512)?;
-        let snapshot = self.snapshot().await?;
-        let journal = CompactPersistenceJournal::reopen(snapshot)?;
+        let journal = self.read_verified_journal().await?;
         Ok(journal.state(operation_id))
     }
 
@@ -317,8 +326,7 @@ impl LocalCompactExecutor {
         let plan = checkpoint
             .rehydration_plan(expected_revision)
             .map_err(|error| LocalCompactExecutorError::Invalid(error.to_string()))?;
-        let snapshot = self.snapshot().await?;
-        let journal = CompactPersistenceJournal::reopen(snapshot)?;
+        let journal = self.read_verified_journal().await?;
         if journal.state(operation_id) != Some(CompactPersistenceState::Committed) {
             return Err(LocalCompactExecutorError::Invalid(format!(
                 "operation {operation_id} is not durably committed"
@@ -394,8 +402,7 @@ impl LocalCompactExecutor {
         operation_id: &str,
     ) -> Result<Option<CompactRehydrationRecord>, LocalCompactExecutorError> {
         validate_text(operation_id, "operation id", /*max_bytes*/ 512)?;
-        let snapshot = self.snapshot().await?;
-        let journal = CompactPersistenceJournal::reopen(snapshot)?;
+        let journal = self.read_verified_journal().await?;
         Ok(journal.rehydration(operation_id).cloned())
     }
 

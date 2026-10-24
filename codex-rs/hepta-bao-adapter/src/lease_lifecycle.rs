@@ -576,7 +576,19 @@ fn sync_parent_directory(path: &Path) -> std::io::Result<()> {
         .ok_or_else(|| std::io::Error::other("lease registry has no parent directory"))?;
     #[cfg(test)]
     tests::fail_directory_sync_if_requested()?;
-    File::open(parent).and_then(|directory| directory.sync_all())
+    #[cfg(windows)]
+    let directory = {
+        use std::os::windows::fs::OpenOptionsExt;
+
+        File::options()
+            .read(true)
+            .write(true)
+            .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+            .open(parent)?
+    };
+    #[cfg(not(windows))]
+    let directory = File::open(parent)?;
+    directory.sync_all()
 }
 
 fn identifier(value: &str) -> bool {

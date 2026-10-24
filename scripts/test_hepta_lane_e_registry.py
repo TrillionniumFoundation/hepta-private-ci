@@ -9,6 +9,7 @@ import unittest
 from unittest.mock import patch
 
 SCRIPTS = Path(__file__).resolve().parent
+sys.path.insert(0, str(SCRIPTS))
 SPEC = importlib.util.spec_from_file_location(
     "lane_e_registry", SCRIPTS / "hepta-lane-e-closure.py"
 )
@@ -165,6 +166,309 @@ class RegisteredSourceTests(unittest.TestCase):
             [finding.code for finding in findings.items],
             ["legacy_learning_writer_product_bypass"],
         )
+
+
+class ProductWriterClassificationTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+        self.patch = patch.object(lane, "ROOT", self.root)
+        self.patch.start()
+        self.addCleanup(self.patch.stop)
+        self.manifest = self.root / "codex-rs/product/Cargo.toml"
+        self.manifest.parent.mkdir(parents=True)
+        self.manifest.write_text(
+            '[package]\nname = "product"\n[features]\ndefault = []\n'
+            'qualification-legacy-learning-write = ["ledger/qualification-legacy-write"]\n'
+        )
+        self.source = self.manifest.parent / "src/lib.rs"
+        self.source.parent.mkdir()
+
+    def verify(self, source):
+        self.source.write_text(source)
+        findings = lane.Findings()
+        lane.verify_product_writer_exclusivity(findings)
+        return findings.items
+
+    def test_read_only_record_patterns_and_read_trait_import_are_not_appends(self):
+        self.assertEqual(
+            self.verify("""
+use codex_hepta_learning_ledger::DurableLearningJournal;
+fn id(event: &LedgerEvent) {
+    match event {
+        LedgerEvent::Decision(value) => &value.record_id,
+        LedgerEvent::Outcome(value) => &value.record_id,
+        LedgerEvent::Credit(value) => &value.record_id,
+        LedgerEvent::Revocation(value) => &value.record_id,
+    }
+}
+"""),
+            [],
+        )
+
+    def test_explicit_disabled_qualification_function_is_not_product_write(self):
+        self.assertEqual(
+            self.verify("""
+#[cfg(feature = "qualification-legacy-learning-write")]
+#[allow(clippy::too_many_arguments)]
+pub fn fixture() {
+    if ready() { journal.append_qualification(head, LedgerEvent::Decision(value)); }
+}
+"""),
+            [],
+        )
+
+    def test_adjacent_product_function_is_not_hidden_by_qualification_attribute(self):
+        findings = self.verify("""
+#[cfg(feature = "qualification-legacy-learning-write")]
+fn fixture() { LedgerEvent::Decision(value); }
+fn product() { LedgerEvent::Outcome(value); }
+""")
+        self.assertEqual(len(findings), 1)
+        self.assertIn("Outcome", findings[0].message)
+
+    def test_runtime_cfg_and_unknown_compile_condition_never_exempt_writes(self):
+        for source in [
+            'fn product() { if cfg!(feature = "qualification-legacy-learning-write") { LedgerEvent::Decision(value); } }',
+            '#[cfg(any(feature = "qualification-legacy-learning-write", feature = "product"))]\nfn product() { LedgerEvent::Decision(value); }',
+            '#[cfg(feature = "qualification-legacy-learning-write")]\nfn broken() { LedgerEvent::Decision(value);',
+        ]:
+            with self.subTest(source=source):
+                self.assertTrue(self.verify(source))
+
+    def test_default_feature_cannot_turn_qualification_into_product_write(self):
+        self.manifest.write_text(
+            '[package]\nname = "product"\n[features]\n'
+            'default = ["enabled"]\nenabled = ["qualification-legacy-learning-write"]\n'
+            'qualification-legacy-learning-write = ["ledger/qualification-legacy-write"]\n'
+        )
+        self.assertTrue(
+            self.verify("""
+#[cfg(feature = "qualification-legacy-learning-write")]
+fn product() { LedgerEvent::Decision(value); }
+""")
+        )
+
+    def test_normal_consumer_cannot_enable_qualification_for_product_writer(self):
+        consumer = self.root / "codex-rs/consumer/Cargo.toml"
+        consumer.parent.mkdir()
+        consumer.write_text(
+            '[package]\nname = "consumer"\n[dependencies]\n'
+            'renamed = { package = "product", path = "../product", features = ["qualification-legacy-learning-write"] }\n'
+        )
+        self.assertTrue(
+            self.verify("""
+#[cfg(feature = "qualification-legacy-learning-write")]
+fn product() { LedgerEvent::Decision(value); }
+""")
+        )
+
+    def test_consumer_feature_alias_and_workspace_inheritance_do_not_hide_enablement(
+        self,
+    ):
+        self.manifest.write_text(
+            self.manifest.read_text()
+            + 'indirect = ["qualification-legacy-learning-write"]\n'
+        )
+        workspace = self.root / "codex-rs/Cargo.toml"
+        workspace.write_text(
+            '[workspace.dependencies]\nrenamed = { package = "product", path = "product" }\n'
+        )
+        consumer = self.root / "codex-rs/consumer/Cargo.toml"
+        consumer.parent.mkdir()
+        for activation in [
+            '[dependencies]\nrenamed = { workspace = true, features = ["indirect"] }\n',
+            '[features]\ndefault = ["renamed/indirect"]\n[dependencies]\nrenamed = { workspace = true }\n',
+        ]:
+            consumer.write_text('[package]\nname = "consumer"\n' + activation)
+            with self.subTest(activation=activation):
+                self.assertTrue(
+                    self.verify("""
+#[cfg(feature = "qualification-legacy-learning-write")]
+fn product() { LedgerEvent::Decision(value); }
+""")
+                )
+
+    def test_transitive_default_or_optional_consumer_route_prevents_exemption(self):
+        mid = self.root / "codex-rs/mid/Cargo.toml"
+        mid.parent.mkdir()
+        mid.write_text(
+            '[package]\nname = "mid"\n[features]\ndefault = []\n'
+            'enable = ["product/qualification-legacy-learning-write"]\n'
+            '[dependencies]\nproduct = { path = "../product", optional = true }\n'
+        )
+        source = """
+#[cfg(feature = "qualification-legacy-learning-write")]
+fn product() { LedgerEvent::Decision(value); }
+"""
+        # A declared opt-in route is already enough to deny the exemption.
+        with self.subTest(route="declared_optional_feature"):
+            self.assertTrue(self.verify(source))
+        app = self.root / "codex-rs/app/Cargo.toml"
+        app.parent.mkdir()
+        app.write_text(
+            '[package]\nname = "app"\n[features]\ndefault = ["mid/enable"]\n'
+            '[dependencies]\nmid = { path = "../mid" }\n'
+        )
+        with self.subTest(route="transitive_app_default"):
+            self.assertTrue(self.verify(source))
+
+    def test_dependency_alias_is_resolved_in_its_own_workspace(self):
+        for directory, package in [("a", "product"), ("z", "unrelated")]:
+            workspace = self.root / "codex-rs" / directory
+            workspace.mkdir()
+            (workspace / "Cargo.toml").write_text(
+                '[workspace.dependencies]\nrenamed = { package = "'
+                + package
+                + '", path = "../'
+                + package
+                + '" }\n'
+            )
+            member = workspace / "member"
+            member.mkdir()
+            (member / "Cargo.toml").write_text(
+                '[package]\nname = "' + directory + '-consumer"\n'
+                '[features]\ndefault = ["renamed/qualification-legacy-learning-write"]\n'
+                "[dependencies]\nrenamed = { workspace = true }\n"
+            )
+        source = """
+#[cfg(feature = "qualification-legacy-learning-write")]
+fn product() { LedgerEvent::Decision(value); }
+"""
+        original_rglob = Path.rglob
+        with patch.object(
+            Path,
+            "rglob",
+            lambda path, pattern: iter(sorted(original_rglob(path, pattern))),
+        ):
+            self.assertTrue(self.verify(source))
+            consumer = self.root / "codex-rs/a/member/Cargo.toml"
+            consumer.write_text(
+                consumer.read_text().replace(
+                    'default = ["renamed/qualification-legacy-learning-write"]',
+                    "default = []",
+                )
+            )
+            self.assertEqual(self.verify(source), [])
+
+    def test_string_dependency_and_nondefault_route_prevent_exemption(self):
+        consumer = self.root / "codex-rs/consumer/Cargo.toml"
+        consumer.parent.mkdir()
+        consumer.write_text(
+            '[package]\nname = "consumer"\n'
+            '[features]\ndefault = []\nopt_in = ["product/qualification-legacy-learning-write"]\n'
+            '[dependencies]\nproduct = "1"\n'
+        )
+        self.assertTrue(
+            self.verify("""
+#[cfg(feature = "qualification-legacy-learning-write")]
+fn product() { LedgerEvent::Decision(value); }
+""")
+        )
+
+    def test_explicit_workspace_takes_precedence_over_nearest_workspace(self):
+        for directory, package in [("selected", "product"), ("nearest", "unrelated")]:
+            workspace = self.root / "codex-rs" / directory
+            workspace.mkdir()
+            (workspace / "Cargo.toml").write_text(
+                '[workspace.dependencies]\nrenamed = { package = "'
+                + package
+                + '", path = "../'
+                + package
+                + '" }\n'
+            )
+        consumer = self.root / "codex-rs/nearest/member/Cargo.toml"
+        consumer.parent.mkdir()
+        consumer.write_text(
+            '[package]\nname = "consumer"\nworkspace = "../../selected"\n'
+            '[features]\ndefault = []\noptional_route = ["renamed/qualification-legacy-learning-write"]\n'
+            "[dependencies]\nrenamed = { workspace = true }\n"
+        )
+        self.assertTrue(
+            self.verify("""
+#[cfg(feature = "qualification-legacy-learning-write")]
+fn product() { LedgerEvent::Decision(value); }
+""")
+        )
+
+    def test_unknown_outer_attributes_cannot_establish_read_or_cfg_exemption(self):
+        for source in [
+            '#[rewrite]\n#[cfg(feature = "qualification-legacy-learning-write")]\nfn product() { LedgerEvent::Decision(value); }',
+            '#[cfg(feature = "qualification-legacy-learning-write")]\n#[rewrite]\nfn product() { LedgerEvent::Decision(value); }',
+            '#[rewrite]\nmod product { #[cfg(feature = "qualification-legacy-learning-write")] fn write() { LedgerEvent::Decision(value); } }',
+            "#[rewrite]\nfn product(event: LedgerEvent) { match event { LedgerEvent::Decision(value) => &value.record_id, } }",
+        ]:
+            with self.subTest(source=source):
+                self.assertTrue(self.verify(source))
+
+    def test_alias_and_grouped_variant_import_cannot_hide_raw_constructor(self):
+        for source in [
+            "use codex_hepta_learning_ledger::LedgerEvent as Event; fn product() { Event::Decision(value); }",
+            "use codex_hepta_learning_ledger::LedgerEvent::{Decision as D}; fn product() { D(value); }",
+            "use codex_hepta_learning_ledger::LedgerEvent::*; fn product() { Decision(value); }",
+        ]:
+            with self.subTest(source=source):
+                self.assertTrue(self.verify(source))
+
+    def test_comments_and_literals_do_not_claim_a_writer(self):
+        self.assertEqual(
+            self.verify("""
+// LedgerEvent::Decision(value)
+/* LedgerEvent::Outcome(value) */
+const NOTE: &str = r###"LedgerEvent::Revocation(value)"###;
+"""),
+            [],
+        )
+
+    def test_qualification_attribute_in_literal_cannot_hide_next_real_write(self):
+        self.assertTrue(
+            self.verify("""
+const NOTE: &str = r#"#[cfg(feature = "qualification-legacy-learning-write")]
+fn fixture() { LedgerEvent::Decision(value); }"#;
+fn product() { LedgerEvent::Outcome(value); }
+""")
+        )
+
+    def test_macro_tokens_never_claim_a_read_only_match_exemption(self):
+        self.assertTrue(
+            self.verify("""
+fn product() {
+    transform!(LedgerEvent::Decision(value) => &value.record_id,);
+}
+""")
+        )
+
+    def test_macro_tokens_cannot_claim_a_compile_time_qualification_boundary(self):
+        self.assertTrue(
+            self.verify("""
+transform! {
+    #[cfg(feature = "qualification-legacy-learning-write")]
+    fn product() { LedgerEvent::Decision(value); }
+}
+""")
+        )
+
+    def test_trait_read_import_does_not_hide_legacy_method_write(self):
+        self.assertTrue(
+            self.verify("""
+use codex_hepta_learning_ledger::DurableLearningJournal;
+fn product() { journal.append_decision(head, decision); }
+""")
+        )
+
+    def test_ufcs_and_trait_alias_do_not_hide_legacy_write(self):
+        for source in [
+            "fn product() { DurableLedger::append_qualification(journal, head, event); }",
+            "fn product() { let write = DurableLedger::append_qualification; write(journal, head, event); }",
+            "use codex_hepta_learning_ledger::DurableLearningJournal as Journal; fn product() { Journal::append_decision(journal, head, decision); }",
+            "use codex_hepta_learning_ledger::DurableLearningJournal as Journal; fn product() { let write = Journal::append_decision; write(journal, head, decision); }",
+            "fn product<T: DurableLearningJournal>() { <T as DurableLearningJournal>::append_decision(journal, head, decision); }",
+            "use codex_hepta_learning_ledger::DurableLearningJournal; fn product() { DurableLedger::append_decision(journal, head, decision); }",
+            "use codex_hepta_learning_ledger::DurableLearningJournal; use codex_hepta_learning_ledger::DurableLedger as Ledger; fn product() { let write = Ledger::append_decision; write(journal, head, decision); }",
+        ]:
+            with self.subTest(source=source):
+                self.assertTrue(self.verify(source))
 
 
 class DefaultAuthoritySurfaceTests(unittest.TestCase):

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
-    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
+    "commit": "a63d11817919062cfa2994101c16efbe0f2183e3",
+    "tree": "2ec1eb84c99f02a6e7d89990c908780bcfb70e42"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.authority",
@@ -11,10 +11,12 @@
   "deputy": "kernel-contracts",
   "technicalGuide": "docs/modules/kernel.authority/TECHNICAL.md",
   "declaredRoots": [
-    "codex-rs/hepta-contracts"
+    "codex-rs/hepta-contracts",
+    "codex-rs/utils/windows-private-state"
   ],
   "resolvedRoots": [
-    "codex-rs/hepta-contracts"
+    "codex-rs/hepta-contracts",
+    "codex-rs/utils/windows-private-state"
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
@@ -177,7 +179,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceRoot": [
-    "codex-rs/hepta-contracts"
+    "codex-rs/hepta-contracts",
+    "codex-rs/utils/windows-private-state"
   ],
   "traceability": "docs/modules/kernel.authority/TRACEABILITY.md",
   "trustDecision": "docs/modules/kernel.authority/ADR-0001-LEASE-TRUST-MODEL.md",
@@ -218,7 +221,7 @@
   "sourceObjects": [
     {
       "path": "apps/hepta-browser/src/runtime-host.js",
-      "object": "543407f89cd69f00804136ef8ba9f8cc2d0540f4"
+      "object": "5c78dd73331c8d5f456ec2ce2282c9691ed45a65"
     },
     {
       "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
@@ -234,7 +237,7 @@
     },
     {
       "path": "codex-rs/hepta-contracts",
-      "object": "a77e5952e0c6ddf697e49013476a9b0bec596f76"
+      "object": "f3ffe93a7e2b2243d315ec1f2e89e74fd4a4146a"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
@@ -246,15 +249,15 @@
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use.rs",
-      "object": "3cc75fab4185789514e4ecc7522e52f1ca59249f"
+      "object": "32c5f8f823f898d88b429c4fa3dea2d07910be75"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
-      "object": "41b1d83586fdab55b143471dab85679c3efebbe8"
+      "object": "56c0a1a9430b9845020e43e7436736be0d8097f0"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
-      "object": "7e7aadbaf3139eccfeb49e9695ef5384c90d5a5e"
+      "object": "84890afa419ce4919bc32daf504784cba3e8d593"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
@@ -277,8 +280,48 @@
       "object": "6d60b7d6923bc0b1ef8c4f71857f903a8bf6bd52"
     },
     {
+      "path": "codex-rs/utils/windows-private-state",
+      "object": "5999594efd26bd122c020992d11bb95d4b8e71d0"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/BUILD.bazel",
+      "object": "53361cda070da058781628e4c0b89b3856731698"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/Cargo.toml",
+      "object": "2e15ccd7e7b2ed90bbba3dfe457bba7d033e7f02"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/lib.rs",
+      "object": "d009c23443902fd95a7f97393f052bcf794bb0b4"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/mechanism.rs",
+      "object": "6ed18e9bd88b85a642e4869961143d714adb6712"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/security.rs",
+      "object": "631c87d94d5288a272c5dd486920010c16f997ac"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/security_tests.rs",
+      "object": "fd75b1548238989c3ccce744dde51b161e63496b"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/token_test_observation.rs",
+      "object": "12f15fcad9dd8bbc8247184a79fd3bdc067efd8f"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/volume.rs",
+      "object": "b4ea3b8f1ff0f7130ab833c94ea3f9967e06ffd1"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/tests/native_volume.rs",
+      "object": "4118d5ef3de5a8536aad9d9d9c890773b8f99339"
+    },
+    {
       "path": "docs/modules/kernel.authority/TECHNICAL.md",
-      "object": "26694ea19236ed2260858c9c8ddd2bab8c420934"
+      "object": "a43cbbcba550dd305b8526ec362ee199dbf92722"
     }
   ]
 }

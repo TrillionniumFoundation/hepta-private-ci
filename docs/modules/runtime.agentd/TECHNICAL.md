@@ -202,6 +202,49 @@ decisions. Consensus/verifier/root changes require an explicit protocol
 context and migration/replay. A better score, vote, sealed binary or chain
 confirmation alone cannot authorize any higher-level upgrade.
 
+### Ordinary PoN-to-model composition remediation
+
+Use existing `P0.8D-VERTICAL-SLICE` and `INT-2-AGENTD-CODEX-COMPOSITION` with
+`TASKFLOW-1-EXECUTION-BOUNDARY` co-ownership. agent-runtime hosts the ordinary
+caller; automation-platform owns effect intent/terminal reconciliation;
+learning-platform owns artifact/evaluation/selection facts and inference-platform
+owns loading. Agentd adds no durable product journal or self-issued authority.
+The required path and three-round acceptance are in the
+[Lane E sequence](../../lane-e/END_TO_END_LEARNING_SEQUENCE.md#8-real-neural-model-upgrade-through-the-ordinary-product-path).
+
+Bind `ProviderEffectIntent` and independently retained
+`ExpectedAutomationTaskAcceptanceV1` to the original task/output/packet and policy;
+consume the bounded `AutomationEffectChainObservation` version rather than a
+boolean success or height alone. Register a named non-test product caller for
+settlement → current artifact/withdrawal checks → independent local selection →
+verified closure fetch → safe loader → generation-fenced route/readback.
+Keep chain generation/work policy separate from local authority generations.
+I08 settlement cannot issue FinalUse, installation, export or replay permission.
+I10 admission consumes the actual owner-issued selection and required fresh
+`VerifiedUseToken<C>` at its governed boundary, never one minted by observation.
+
+After spawn, timeout, partial output and lost acknowledgement remain Unknown.
+Reconcile with the existing durable TaskFlow logical-effect key and exact payload;
+local retries do not create another semantic effect. A reorg invalidates the
+current chain observation and blocks new admission until re-observed; it cannot
+erase an already performed local/external effect or authorize duplicate replay.
+The artifact/selector owner records quarantine or an explicitly authorized
+continuation/rollback; already admitted Unknown effects stay under their original
+reconciler. Withdrawal invalidates future use even if chain settlement persists.
+Exercise crash before/after load/route/ack, reorg after install, stale token,
+revocation during fetch and ambiguous effect recovery through that real caller.
+
+Chain PN1 work correctness/effective-cost/honest-service and PN2 witness/state
+qualification remain upstream public-deployment prerequisites. Chain's existing
+node owns I03/I04 parent/witness execution. Agentd consumes bounded I08 task
+observations under their explicit verifier/trust contract, current root and
+unavailable/rejected outcomes; it adds no second Chain state executor, per-task
+full-history replay or unbounded fallback. Under
+`P0.8C-RESOURCE-BUDGETS`, measure preparation copy/hash/process overhead separately
+from load/inference and preserve total concurrency/deadline limits. Batching or
+caching requires authenticated freshness/invalidation and immutable-executable
+semantics; faster unsafe reuse cannot qualify the P2 throughput target.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

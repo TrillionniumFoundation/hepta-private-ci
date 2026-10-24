@@ -243,15 +243,51 @@ fn spawn_ipc_process(req: &SpawnRequest) -> Result<IpcSpawnedProcess> {
     require_qualified_windows_filesystem()?;
     let log_dir = req.codex_home.clone();
     hide_current_user_profile_dir(req.codex_home.as_path());
+    let root_resolution = req
+        .root_resolution
+        .as_ref()
+        .context("runner: missing original root-resolution context")?;
+    let root_environment = root_resolution.request_environment(&req.env)?;
     let token_mode = token_mode_for_permission_profile(
         &req.permission_profile,
         &req.workspace_roots,
         &req.cwd,
-        &req.env,
+        &root_environment,
     )
     .context("resolve permission profile token mode")?;
+    let filesystem_roles = req
+        .filesystem_roles
+        .as_ref()
+        .context("runner: missing versioned filesystem role plan")?;
+    let permissions = codex_windows_sandbox::ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
+        &req.permission_profile, &req.workspace_roots,
+    )?;
+    codex_windows_sandbox::validate_filesystem_plan_for_request(
+        codex_windows_sandbox::SandboxSetupRequest {
+            permissions: &permissions,
+            command_cwd: &req.cwd,
+            env_map: &req.env,
+            codex_home: &req.real_codex_home,
+            proxy_enforced: req.network_proxy_restricting_sid.is_some(),
+        },
+        root_resolution,
+        filesystem_roles,
+    )?;
+    let role = match token_mode {
+        WindowsSandboxTokenMode::ReadOnlyCapability => {
+            codex_windows_sandbox::FilesystemCapabilityRole::Read
+        }
+        WindowsSandboxTokenMode::WritableRootsCapability => {
+            codex_windows_sandbox::FilesystemCapabilityRole::Write
+        }
+    };
+    filesystem_roles.validate_transport_mirror(
+        role,
+        &req.cap_sids,
+        req.network_proxy_restricting_sid.as_deref(),
+    )?;
     let mut cap_psids: Vec<LocalSid> = Vec::new();
-    for sid in &req.cap_sids {
+    for sid in filesystem_roles.capability_sids(role) {
         cap_psids.push(
             LocalSid::from_string(sid)
                 .context("ConvertStringSidToSidW failed for capability SID")?,

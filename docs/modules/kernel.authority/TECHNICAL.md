@@ -29,15 +29,18 @@ Plane `kernel`, kind `authority`, state model `stateful` and architecture role `
 Declared exclusive target roots:
 
 - `codex-rs/hepta-contracts`
+- `codex-rs/utils/windows-private-state`
 
 Existing declared roots at this exact source snapshot:
 
 - `codex-rs/hepta-contracts`
+- `codex-rs/utils/windows-private-state`
 
 Non-authoritative implementation evidence roots:
 
 - `codex-rs/hepta-contracts`
 - `codex-rs/ext/hepta-governance`
+- `codex-rs/utils/windows-private-state`
 
 Declared roots not yet present:
 
@@ -46,6 +49,63 @@ None.
 `existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish runtime composition, operator acceptance, selection, promotion or release. Any source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
 
 ### Native source and scope
+
+The existing PN0 security owner also owns the narrow Windows OS utility root.
+Its held-file mechanisms and read-only captured-owner/SID/DACL observations are
+supporting source, with native Windows controls still pending. This registration
+does not by itself qualify production storage, provide a new authority owner or
+transfer broad sandbox ownership. Explicit FinalUse and registry backends now
+consume the actual opaque directory capability; their native qualification and
+production caller composition remain required.
+
+The existing C3/C4 publication calls pass the exact synced source handle to
+[stage.rs](../../../codex-rs/utils/windows-private-state/src/stage.rs), through
+the contracts crate's safe re-export. Its bounded native relative rename mechanism
+and [four native controls](../../../codex-rs/hepta-contracts/src/windows_state_stage_tests.rs)
+cover exact-source identity, missing DELETE access, destination sharing and
+invalid leaves. The safe mechanism accepts only a stage produced by actual
+synchronous native creation; the owner path retains its proven producer and lock.
+Native FileRenameInformation uses the exact stage and non-null held root, without
+Win32 path conversion or an asynchronous borrowed-File assumption. Both native
+completion statuses must succeed. The original error-87 observation remains
+failed until new native execution confirms the repair. These mechanisms do not
+construct a private owner; ordinary Windows store
+constructors remain closed pending trusted-parent and recovery qualification.
+The utility's anonymous-token fixture now constructs and reads back an actual
+anonymous-level token, and its volume query opens the held kernel file ID on
+the original volume. These repairs retain all original negative assertions;
+cross-target compilation is not native acceptance.
+
+[primary_owner.rs](../../../codex-rs/utils/windows-private-state/src/primary_owner.rs)
+adds the bounded, sticky live-primary prerequisite for C2b provisioning. Actual
+token elevation, restrictions, AppContainer state, enabled Administrators group
+and handle inheritance are read from the retained kernel token. It has no
+production constructor caller or directory authority; its four native tests
+remain pending. Protected-parent creation and complete C3/C4 recovery still
+precede any Windows owner activation.
+
+The same C2b prerequisite now includes
+[ParentAnchor](../../../codex-rs/utils/windows-private-state/src/parent_anchor.rs)
+and create-only
+[FreshPrivateDirectory](../../../codex-rs/utils/windows-private-state/src/fresh_private_directory.rs).
+They retain the actual local-volume ancestry and primary context, refuse
+untrusted mutation/reparse/unknown ACL forms, and atomically create a new
+sole-owner protected directory. A failed readback retains the uncertain object;
+actual self/parent synchronization errors stay failed. Private shared context
+keeps these original handles alive and never recovers poisoned state. Root
+access omits unnecessary DELETE while preserving no-delete sharing, allowing
+the later original lock to arbitrate two owners. These are source prerequisites,
+with native execution, complete lock/journal roles and consumer recovery still
+pending; ordinary Windows store constructors remain closed.
+
+The explicit `FinalUseAuthority::open_windows_private_with_trust` and
+`open_windows_private_with_issuer_keys` paths share the original store parser,
+marker/OS lock, bounded claims and recovery protocol. Cold schema, trust, claims
+and external frontier must validate before any migration write. The registry
+backend consumes the same directory roles. Uncertain errors after entering the
+native publication helper retain indeterminate durability. Ordinary path-based
+constructors remain closed; source and cross-target checks are not native or
+power-loss acceptance.
 
 The registered primary source is [codex-rs/hepta-contracts/src/final_use.rs](../../../codex-rs/hepta-contracts/src/final_use.rs); the general lease owner is [authority_lease.rs](../../../codex-rs/hepta-contracts/src/authority_lease.rs), and external trust interfaces are in [authority_trust.rs](../../../codex-rs/hepta-contracts/src/authority_trust.rs). This is source navigation, not proof that every target port or production consumer exists. The canonical target → native API → product caller → test → qualification status is [TRACEABILITY.md](TRACEABILITY.md). The V1 general-lease trust model is frozen by [ADR-0001](ADR-0001-LEASE-TRUST-MODEL.md), and final-use ordering is normative in [LINEARIZATION.md](LINEARIZATION.md).
 
@@ -181,7 +241,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-contracts/src/final_use_tests.rs](../../../codex-rs/hepta-contracts/src/final_use_tests.rs); named case: `signed_claim_is_single_use_and_delivers_under_same_owner`.
 - [codex-rs/hepta-contracts/src/agent_id_tests.rs](../../../codex-rs/hepta-contracts/src/agent_id_tests.rs); named case: `canonical_id_is_stable_across_display_parse_and_serde`.
-The previously listed dedicated kernel-authority traceability test is not present in this source tree. Its target-port and Browser B4 closed-set coverage must not be inferred from these source references.
+  The previously listed dedicated kernel-authority traceability test is not present in this source tree. Its target-port and Browser B4 closed-set coverage must not be inferred from these source references.
 
 In `codex-rs`, run `just test -p codex-hepta-contracts`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.authority.md) separately labels target acceptance designs.
 
@@ -403,13 +463,13 @@ The following additional work packages are source-planning envelopes introduced 
 
 This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
 
-| Operation | Native symbol | Source path | Tests |
-|---|---|---|---|
-| `finaluseauthority` | `FinalUseAuthority`, `VerifiedUseToken`, `dispatch_final_use` | `codex-rs/hepta-contracts/src/final_use.rs` | `final_use_tests.rs`, `tests/final_use_linearization.rs` |
-| `store` | `Store` | `codex-rs/hepta-contracts/src/final_use_store.rs` | `final_use_tests.rs` |
-| `authority_lease` / `capability_revocation` | `AuthorityLeaseRegistry`, `AuthorityLeaseVerifier` | `codex-rs/hepta-contracts/src/authority_lease.rs` | inline unit tests |
-| trusted time / anti-rollback interface | `AuthorityClock`, `AuthorityFrontierStore` | `codex-rs/hepta-contracts/src/authority_trust.rs` | lease + FinalUse restored-snapshot tests |
-| independent approval / revocation feed | `FinalUseApprovalVerifier`, `FinalUseRevocationFeedVerifier`, `FinalUseTrustKey` | `codex-rs/hepta-contracts/src/final_use_control.rs` | inline unit tests |
+| Operation                                   | Native symbol                                                                    | Source path                                         | Tests                                                    |
+| ------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------- | -------------------------------------------------------- |
+| `finaluseauthority`                         | `FinalUseAuthority`, `VerifiedUseToken`, `dispatch_final_use`                    | `codex-rs/hepta-contracts/src/final_use.rs`         | `final_use_tests.rs`, `tests/final_use_linearization.rs` |
+| `store`                                     | `Store`                                                                          | `codex-rs/hepta-contracts/src/final_use_store.rs`   | `final_use_tests.rs`                                     |
+| `authority_lease` / `capability_revocation` | `AuthorityLeaseRegistry`, `AuthorityLeaseVerifier`                               | `codex-rs/hepta-contracts/src/authority_lease.rs`   | inline unit tests                                        |
+| trusted time / anti-rollback interface      | `AuthorityClock`, `AuthorityFrontierStore`                                       | `codex-rs/hepta-contracts/src/authority_trust.rs`   | lease + FinalUse restored-snapshot tests                 |
+| independent approval / revocation feed      | `FinalUseApprovalVerifier`, `FinalUseRevocationFeedVerifier`, `FinalUseTrustKey` | `codex-rs/hepta-contracts/src/final_use_control.rs` | inline unit tests                                        |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.

@@ -7,11 +7,22 @@
 
 #![forbid(unsafe_code)]
 
+pub mod controlled_aggregate;
+pub mod controlled_funding;
+
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 
 pub mod final_use_authorizer;
+pub mod final_use_grant_courier;
 pub mod native_app_server;
+mod ordinary_cpu_owner;
+mod ordinary_cpu_registration;
+mod ordinary_cpu_target;
+
+pub use ordinary_cpu_registration::OrdinaryCpuBinding;
+pub use ordinary_cpu_registration::OrdinaryCpuRegistration;
+pub use ordinary_cpu_target::OrdinaryCpuTarget;
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -267,3 +278,6 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+pub use ordinary_cpu_registration::DESTINATION as ORDINARY_CPU_DESTINATION_V1;
+pub use ordinary_cpu_registration::TOPIC as ORDINARY_CPU_TOPIC_V1;

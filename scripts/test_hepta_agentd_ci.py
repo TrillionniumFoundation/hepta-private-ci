@@ -130,11 +130,12 @@ class WorkflowDependencyTests(unittest.TestCase):
     def test_terminal_gate_is_always_run_and_binds_all_lanes(self):
         job = self.jobs["qualification-result"]
         self.assertIn("if: ${{ always() }}", job)
-        matched = re.search(r"(?m)^    needs: \[([^\]]+)\]$", job)
+        matched = re.search(r"(?m)^    needs:\s*\[([^\]]+)\][ \t]*$", job)
         self.assertIsNotNone(matched)
-        self.assertEqual(
-            {name.strip() for name in matched.group(1).split(",")}, set(LANES)
-        )
+        dependencies = [
+            name.strip() for name in matched.group(1).split(",") if name.strip()
+        ]
+        self.assertEqual(sorted(dependencies), sorted(LANES))
         self.assertIn("EXPECTED_NEEDS:", job)
         self.assertNotIn("ALLOWED_SKIPPED", job)
         self.assertIn("python3 .github/scripts/check_ci_results.py", job)
@@ -185,7 +186,12 @@ class WorkflowDependencyTests(unittest.TestCase):
         self.assertIn("args+=(--lane source-head)", process)
         self.assertIn("steps.execution.outputs.run_native == 'true'", process)
         terminal = self.jobs["qualification-result"]
-        self.assertIn("process-qualification]", terminal)
+        matched = re.search(r"(?m)^    needs:\s*\[([^\]]+)\][ \t]*$", terminal)
+        self.assertIsNotNone(matched)
+        self.assertIn(
+            "process-qualification",
+            [name.strip() for name in matched.group(1).split(",") if name.strip()],
+        )
         self.assertIn(
             "scripts.tests.test_hepta_ci_candidate", self.jobs["derived-projections"]
         )

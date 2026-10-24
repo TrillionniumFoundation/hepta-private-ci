@@ -19,6 +19,7 @@ use base64::Engine;
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
 use std::collections::HashMap;
 use std::fs;
+use std::io::Read;
 use std::path::Path;
 use std::path::PathBuf;
 
@@ -47,49 +48,32 @@ pub fn sandbox_setup_is_complete(codex_home: &Path) -> bool {
     matches!(load_users(codex_home), Ok(Some(users)) if users.version_matches())
 }
 
-fn load_marker(codex_home: &Path) -> Result<Option<SetupMarker>> {
-    let path = setup_marker_path(codex_home);
-    let marker = match fs::read_to_string(&path) {
-        Ok(contents) => match serde_json::from_str::<SetupMarker>(&contents) {
-            Ok(m) => Some(m),
-            Err(err) => {
-                debug_log(
-                    &format!("sandbox setup marker parse failed: {err}"),
-                    Some(codex_home),
-                );
-                None
-            }
-        },
-        Err(err) if err.kind() == std::io::ErrorKind::NotFound => None,
-        Err(err) => {
-            debug_log(
-                &format!("sandbox setup marker read failed: {err}"),
-                Some(codex_home),
-            );
-            None
-        }
+pub(crate) fn read_state_record(path: &Path) -> Result<Option<Vec<u8>>> {
+    let mut file = match fs::File::open(path) {
+        Ok(file) => file,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(error.into()),
     };
-    Ok(marker)
+    let mut bytes = Vec::new();
+    Read::by_ref(&mut file)
+        .take(4 * 1024 * 1024 + 1)
+        .read_to_end(&mut bytes)?;
+    anyhow::ensure!(
+        bytes.len() <= 4 * 1024 * 1024,
+        "private sandbox state exceeds byte bound; refusing reset"
+    );
+    Ok(Some(bytes))
 }
 
-fn load_users(codex_home: &Path) -> Result<Option<SandboxUsersFile>> {
-    let path = sandbox_users_path(codex_home);
-    let file = match fs::read_to_string(&path) {
-        Ok(contents) => contents,
-        Err(err) if err.kind() == std::io::ErrorKind::NotFound => return Ok(None),
-        Err(err) => {
-            debug_log(
-                &format!("sandbox users read failed: {err}"),
-                Some(codex_home),
-            );
-            return Ok(None);
-        }
+fn load_marker(codex_home: &Path) -> Result<Option<SetupMarker>> {
+    let Some(bytes) = read_state_record(&setup_marker_path(codex_home))? else {
+        return Ok(None);
     };
-    match serde_json::from_str::<SandboxUsersFile>(&file) {
-        Ok(users) => Ok(Some(users)),
-        Err(err) => {
+    match serde_json::from_slice(&bytes) {
+        Ok(marker) => Ok(Some(marker)),
+        Err(error) => {
             debug_log(
-                &format!("sandbox users parse failed: {err}"),
+                &format!("sandbox setup marker parse failed: {error}"),
                 Some(codex_home),
             );
             Ok(None)
@@ -97,6 +81,25 @@ fn load_users(codex_home: &Path) -> Result<Option<SandboxUsersFile>> {
     }
 }
 
+fn load_users(codex_home: &Path) -> Result<Option<SandboxUsersFile>> {
+    let Some(bytes) = read_state_record(&sandbox_users_path(codex_home))? else {
+        return Ok(None);
+    };
+    match serde_json::from_slice(&bytes) {
+        Ok(users) => Ok(Some(users)),
+        Err(error) => {
+            debug_log(
+                &format!("sandbox users parse failed: {error}"),
+                Some(codex_home),
+            );
+            Ok(None)
+        }
+    }
+}
+
+// Retained solely for the original diagnostic deletion controls. Production v6
+// login retry never deletes credentials or replaces an uncertain namespace.
+#[cfg(test)]
 fn remove_sandbox_users_file(codex_home: &Path, reason: &str) -> Result<()> {
     let path = sandbox_users_path(codex_home);
     debug_log(
@@ -286,8 +289,7 @@ pub(crate) fn refresh_logon_sandbox_creds(
     proxy_enforced: bool,
     proxy_settings_mode: crate::WindowsSandboxProxySettingsMode,
 ) -> Result<SandboxCreds> {
-    remove_sandbox_users_file(codex_home, "sandbox user login failed")?;
-    require_logon_sandbox_creds(
+    let _request = (
         permissions,
         command_cwd,
         env_map,
@@ -299,6 +301,9 @@ pub(crate) fn refresh_logon_sandbox_creds(
         deny_write_paths_override,
         proxy_enforced,
         proxy_settings_mode,
+    );
+    anyhow::bail!(
+        "sandbox login failed; preserving versioned credentials and marker; automatic history reset is unsupported"
     )
 }
 
@@ -340,6 +345,7 @@ mod tests {
     fn preserving_proxy_settings_uses_the_existing_marker() {
         let marker = SetupMarker {
             version: crate::setup::SETUP_VERSION,
+            filesystem_roles: None,
             offline_username: "offline".to_string(),
             online_username: "online".to_string(),
             created_at: None,
@@ -376,6 +382,7 @@ mod tests {
     fn guardian_preserve_mode_does_not_churn_marker_with_empty_proxy_ports() {
         let marker = SetupMarker {
             version: crate::setup::SETUP_VERSION,
+            filesystem_roles: None,
             offline_username: "offline".to_string(),
             online_username: "online".to_string(),
             created_at: None,
@@ -404,3 +411,7 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+#[path = "identity_role_tests.rs"]
+mod role_tests;

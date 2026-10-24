@@ -16,7 +16,7 @@ use std::path::PathBuf;
 /// Most Windows sandbox code needs resolved runtime permissions plus a few
 /// Windows-specific path conventions, not the user/config-facing
 /// `PermissionProfile` enum itself.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
 pub struct ResolvedWindowsSandboxPermissions {
     file_system: FileSystemSandboxPolicy,
     network: NetworkSandboxPolicy,
