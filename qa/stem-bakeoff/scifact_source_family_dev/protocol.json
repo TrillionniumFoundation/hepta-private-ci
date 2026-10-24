@@ -1,0 +1,99 @@
+{
+  "schema": "hepta.scifact.historical-retrieval-development.v1",
+  "created_at": "2026-10-23T15:45:00Z",
+  "purpose": "Historical CPU retrieval development only; not prospective Memory A-I or medical guidance.",
+  "upstream_repo": "https://github.com/allenai/scifact",
+  "upstream_revision": "68b98a56d93e0f9da0d2aab4e6c3294699a0f72e",
+  "data_urls": [
+    "https://scifact.s3-us-west-2.amazonaws.com/release/latest/data.tar.gz",
+    "https://scifact.s3-us-west-2.amazonaws.com/release/latest/claims_with_citances.jsonl"
+  ],
+  "licenses": {
+    "claims_annotations": "CC-BY-4.0 per upstream LICENSE.md",
+    "abstract_database": "ODC-By-1.0 per upstream LICENSE.md; individual content rights are not blanket relicensed",
+    "code": "new local code; no upstream scripts executed",
+    "redistribution": "Do not publish abstract/citation text or archives; release own code, hashes, IDs, aggregate results with attribution only."
+  },
+  "data_identity_rule": "latest URL is mutable, so downloaded response bytes, ETag/Last-Modified, file hashes and semantic counts must be sealed before worker runs; do not imply repo SHA fixes the S3 dataset.",
+  "budget": {
+    "network_requests_max": 2,
+    "network_bytes_each_max": 8388608,
+    "network_bytes_total_max": 16777216,
+    "archive_uncompressed_max": 33554432,
+    "training": false,
+    "models": false,
+    "cpu_threads": 1,
+    "worker_cpu_seconds_max": 240,
+    "worker_address_space_bytes_max": 1073741824
+  },
+  "grouping": {
+    "universe": "official labeled train+dev only; do not use hidden test labels",
+    "union_rules": [
+      "same normalized claim text",
+      "same source s2orc_id from claims-with-citances mapping",
+      "shared cited_doc_ids or evidence doc IDs"
+    ],
+    "claim_normalization": "lowercase Unicode words joined by single space",
+    "missing_source_rule": "quarantine any connected component with a claim lacking source-paper mapping; report counts, never replace or silently count independent",
+    "split": "SHA256(seed NUL sorted claim IDs joined by comma) modulo 5 == 0 heldout; all others development; never tune using heldout",
+    "seed": "hepta-scifact-families-20261023-v1",
+    "independence": "observed paper/citation components only; unobserved shared study/lab/pretraining ancestry remains unknown"
+  },
+  "worker_visibility": [
+    "corpus doc_id/title/abstract",
+    "heldout claim id/text only"
+  ],
+  "forbidden_worker_inputs": [
+    "evidence labels/sentence IDs",
+    "cited_doc_ids",
+    "source-paper mapping",
+    "train labels",
+    "gold files"
+  ],
+  "lexical": {
+    "tokenization": "Unicode word regex, lowercase; no stemming or stopword removal",
+    "document": "title once + all abstract sentences",
+    "bm25": {
+      "k1": 1.2,
+      "b": 0.75,
+      "idf": "ln(1+(N-df+0.5)/(df+0.5))"
+    },
+    "ranking_ties": "numeric document ID ascending",
+    "rank_depth": 100
+  },
+  "graph": {
+    "kind": "corpus-only typed lexical incidence, not semantic or learned GraphRAG",
+    "nodes": "documents and typed(title|abstract,token) nodes",
+    "edges": "term present in field, token length>=3, document frequency in that field 2..50; title cap8/abstract cap16 per doc ranked by ascending df then token",
+    "walk": "BM25 top5 seeds; each selected feature contributes 1/(seed_rank * number_of_seed_features * feature_document_degree), self-return excluded",
+    "fusion": "RRF k60, weight1 BM25 plus weight1 graph; graph scores and ranks descending with doc ID tie break",
+    "arms": [
+      "bm25",
+      "title_graph_rrf",
+      "title_abstract_graph_rrf",
+      "permuted_title_abstract_graph_rrf"
+    ],
+    "negative_control": "permutation over corpus IDs sorted by SHA256(seed NUL doc_id), conjugate document incidence; preserves graph degree distribution but not document identity",
+    "seed": "hepta-scifact-graph-control-20261023-v1"
+  },
+  "reader_boundary": {
+    "reader": "NONE; never infer entailment/answer correctness from retrieval",
+    "context": "top5 docs, up to8 query-overlap-ranked abstract sentences per doc, global4096 UTF-8 bytes including rendered doc_id/sentence_id prefixes; whole sentences only",
+    "rationale": "same fixed sentence packer for every arm; score actual retained sentence IDs; no gold-aware packing"
+  },
+  "metrics": {
+    "population": "heldout claims with annotated evidence; no-evidence claims reported separately and not labeled false",
+    "document": [
+      "any_gold_doc_hit@5,@10",
+      "all_gold_docs_hit@5,@10",
+      "macro_gold_doc_recall@5,@10"
+    ],
+    "context": [
+      "at_least_one_complete_gold_rationale_in_actual_context",
+      "all_gold_docs_have_a_complete_rationale_in_actual_context"
+    ],
+    "answer_accuracy": null,
+    "grouping": "report claim micro and observed-family macro, paired differences vs BM25; no significance/advantage claim on historical developer-known data"
+  },
+  "freeze": "This plan hash written before data fetch; code/data material seal before retrieval; preserve raw failures and results; no post-outcome tuning."
+}
