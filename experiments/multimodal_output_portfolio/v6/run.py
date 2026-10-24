@@ -23,6 +23,8 @@ import torch
 from .control import ControllerConfig, WorkBudget, choose
 from .data import Observation, load_corpus, make_batch, render_tokens
 from .forecast import fit_forecast
+from .joint_contract import PROFILE as JOINT_CONTRACT_PROFILE
+from .joint_contract import bind_v6_output, latent_digest, require_v6_capabilities
 from .neural import TrainConfig, train_profiles
 from .observer import METRIC, METRIC_DIGEST, fit_observer, observe_tensors, read_bundle, write_bundle
 from .plan_training import ALLOCATION_PLAN, ControlledSnapshot, PLANS, fit_plan_head
@@ -120,6 +122,9 @@ def rollout(snapshot, forecast, observation, policy, budget_limit, config,
         "actions": actions, "initial_content_plan": initial_actions,
         "decisions": choices, "calls": work.calls,
         "final_state_sha256": snapshot.state_key(state),
+        "latent_sha256": {"shared": latent_digest(state.neural.h),
+                          "image": latent_digest(state.neural.image),
+                          "text": latent_digest(state.neural.text)},
         "cost": {"wall_ns": time.perf_counter_ns() - start_wall,
                  "cpu_ns": time.process_time_ns() - start_cpu,
                  "encode_ns": encode_ns, "controller_ns": controller_ns,
@@ -139,6 +144,7 @@ def run(config, cache, output, native_binary=None):
     write_json(output / "status.json", {"state": "initializing"})
     try:
         write_json(output / "requested-config.json", config)
+        required_modalities = require_v6_capabilities(config.get("hard_output_modalities"))
         started = time.perf_counter_ns()
         torch.set_num_threads(config["training"]["threads"])
         torch.use_deterministic_algorithms(True)
@@ -156,11 +162,12 @@ def run(config, cache, output, native_binary=None):
                                      "source_ids": list(batch.source_ids[0]),
                                      "corruption": corruption, "index": index})
         protocol = {**config, "cases": cases, "metric": METRIC,
+                    "joint_contract": JOINT_CONTRACT_PROFILE,
                     "metric_sha256": METRIC_DIGEST, "source": source,
                     "dataset_manifest": corpus.manifest,
                     "native_binary_sha256": hashlib.sha256(native_binary.read_bytes()).hexdigest()
                     if native_binary else None}
-        objective_digest = digest({"metric": METRIC, "requirements": ["text", "image"]})
+        objective_digest = digest({"metric": METRIC, "requirements": required_modalities})
         write_json(output / "protocol.json", protocol)
         write_json(output / "status.json", {"state": "running", "protocol_sha256": digest(protocol)})
         os.chdir(output)
@@ -232,6 +239,10 @@ def run(config, cache, output, native_binary=None):
                                 paths = write_bundle(output / "outputs" / key, caption, pixels)
                                 observed_start = time.perf_counter_ns()
                                 raw_pixels, raw_caption, hashes = read_bundle(paths)
+                                joint_output = bind_v6_output(
+                                    required_modalities, snapshot.fingerprint,
+                                    trace["final_state_sha256"], trace["latent_sha256"],
+                                    hashes, case["case_id"])
                                 metrics = observe_tensors(audit_observer, raw_pixels, [raw_caption],
                                                           batch.target.pixels,
                                                           batch.target.labels)[0]
@@ -250,6 +261,7 @@ def run(config, cache, output, native_binary=None):
                                        "output_paths": {kind: str(Path(path).relative_to(output))
                                                         for kind, path in paths.items()},
                                        "execution_order": order,
+                                       "joint_output_contract": joint_output,
                                        "output_hashes": hashes, **trace}
                                 row["receipt_sha256"] = digest(row)
                                 rows.append(row)

@@ -15,6 +15,9 @@ import re
 import statistics
 import subprocess
 
+from .joint_contract import PROFILE as JOINT_CONTRACT_PROFILE
+from .joint_contract import bind_v6_output, require_v6_capabilities
+
 
 Q32 = 1 << 32
 WEIGHTS = {"text_fact": .30, "relation": .15, "image_fact": .35,
@@ -177,6 +180,11 @@ def _aggregate_rows(rows, seeds):
 def summarize(rows, protocol):
     """Validate the full registered census before any favorable aggregation."""
     rows = list(rows)
+    required = (require_v6_capabilities(protocol["hard_output_modalities"])
+                if "hard_output_modalities" in protocol else None)
+    bind_joint = "joint_contract" in protocol
+    if bind_joint and (protocol["joint_contract"] != JOINT_CONTRACT_PROFILE or required is None):
+        raise ValueError("Joint output profile or requirements differ from the contract")
     seeds, trainings, policies, budgets = (protocol[key] for key in
                                          ("seeds", "trainings", "policies", "budgets"))
     for values in (seeds, trainings, policies, budgets):
@@ -221,6 +229,17 @@ def summarize(rows, protocol):
     groups, corruption_groups = defaultdict(list), defaultdict(list)
     for row in rows:
         _validate_row(row)
+        if bind_joint:
+            try:
+                expected_joint = bind_v6_output(
+                    required, row["snapshot_sha256"], row["final_state_sha256"],
+                    row["latent_sha256"], row["output_hashes"], row["case_id"])
+            except (KeyError, TypeError) as error:
+                raise ValueError("Missing or malformed joint state binding") from error
+            if row.get("joint_output_contract") != expected_joint:
+                raise ValueError("Missing or changed joint output contract")
+        elif "joint_output_contract" in row:
+            raise ValueError("Unannounced joint output contract")
         if bind_observers:
             observer_identities.add((_hex(row.get("observer_sha256")),
                                      _hex(row.get("reward_observer_sha256"))))

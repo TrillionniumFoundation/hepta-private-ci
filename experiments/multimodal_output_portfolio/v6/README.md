@@ -18,6 +18,10 @@ encoder 的共享 context 保留输入条件；初始 latent 噪声有显式 see
 
 模态传输 schema 保留 `text=1`、`image=2`、`audio=4`、`video=8`。当前必需 mask 为 `3`，只有 text 与 image 两种神经 decoder。音频/视频的 schema 位不代表相应能力已经实现。
 
+[joint_contract.py](joint_contract.py) 为后续四模态扩展定义有限的联合状态契约：四个固定槽位、共享 latent 与模型/状态身份、精确必需输出集、共同 clock、语义 event 覆盖和最大对齐偏差。当前运行把实际 text/image latent 及回读的输出摘要绑定到同一静态任务 event；audio/video 槽位明确为 `unsupported`，没有伪造 latent 或输出。静态任务使用无物理时长的 `logical_event` clock；该绑定不证明音画同步、口型同步或语义正确性。未来的 timed media 必须使用明确单位的 presentation clock，并由真实 decoder/媒体观察器验证原生时间戳映射。
+
+`hard_output_modalities` 现在在数据加载和生成前检查。缺失、重复、未知模态、未实现的必需 decoder，或偏离当前 text+image 配对任务的输出集都会进入 `failed` 状态；不能把四模态请求静默降为双模态。完成状态必须具有精确的必需 mask 和全部 event 绑定；pending、unsupported、部分输出或 abstain 均不能算完成。每行记录中的 `joint_output_contract` 由原行摘要绑定，汇总器另按冻结 profile、实际 state/output 摘要重新构建并核验，不能仅靠重算行摘要掩盖契约篡改。旧版未声明该 profile 的结果仍按原双模态范围复核。逻辑 event 对齐是声明的绑定元数据，不是外部事实或真实 presentation-clock 测量。这是研究 backend 的执行契约，尚未接入生产 `NeuronInferenceControlPort`、worker 或 neuron checkpoint owner。
+
 ## 2. 数据来源、公开信息与两个 observer
 
 MNIST gzip 来自 [PyTorch 的 MNIST 镜像](https://ossci-datasets.s3.amazonaws.com/mnist/)，按 torchvision 使用的已发表 MD5 校验；运行 manifest 另存原 URL、SHA256、字节数和 split 身份哈希。split 先按完整源像素 SHA256 去重，排除相同像素的标签冲突，并从训练派生池排除官方 test 中出现的像素身份。

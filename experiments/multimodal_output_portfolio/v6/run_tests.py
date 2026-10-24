@@ -11,7 +11,8 @@ from .run import run, source_identity
 
 class RunCustodyTests(unittest.TestCase):
     def test_preparation_failure_is_preserved_without_changing_cwd(self):
-        config = {"training": {"threads": 1}, "observer_sources": 100}
+        config = {"training": {"threads": 1}, "observer_sources": 100,
+                  "hard_output_modalities": ["text", "image"]}
         previous = Path.cwd()
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "failed-run"
