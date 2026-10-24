@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.p41-macos-native-fixture-convergence.v1",
+  "date_utc": "2026-10-24",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_parent_pr": 3617,
+  "source_parent_sha": "d1619f1d2dd433f958d76143309011c73b4c5cf5",
+  "source_parent_tree": "651eb338b43dad625028f13c0ba536372faa7674",
+  "mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "decision": "HOLD_NO_GO",
+  "source_validation": {
+    "parent_owner_boundary_run": 40054422989,
+    "parent_owner_boundary_job": 120754121578,
+    "observed": "24 selected Rust tests PASS, 100 others not selected; 16 synthetic Python fixture tests PASS, scoped Clippy PASS; not full Agentd or native macOS qualification"
+  },
+  "native_failure": {
+    "integration_pr": 3426,
+    "source_sha": "de01c346d65a964f741ce1901b8c10ed5c580e6d",
+    "run": 39921328328,
+    "macos_intel_job": 120380753536,
+    "tests": [
+      "cognitive_store::recovery::tests::cold_read_only::crash_reopen_refuses_pending_wal",
+      "exec_server_http_request_honors_optional_timeout"
+    ]
+  },
+  "cherry_picked_exact_blobs": [
+    {
+      "upstream_pr": 3583,
+      "upstream_sha": "842685349b48089349b8b858b1f837d57b4e127b",
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+      "expected_base_blob": "b6f2d1b35b708cadae9db5978efd4dfea71a0ded",
+      "new_blob": "3d11af372fb267d661569a524f91e8f2e88bfa0d",
+      "detail": "canonicalize existing CHILD_ROOT fixture before subprocess; original exit code and negative assertions unchanged"
+    },
+    {
+      "upstream_pr": 3606,
+      "upstream_sha": "2eb0e474d1e4185b60e048f118d39346d5333475",
+      "path": "codex-rs/exec-server/tests/http_request.rs",
+      "expected_base_blob": "55144de11eca27bf9f4e6654162dba43c6c429b1",
+      "new_blob": "c71ced541df0867d77ee9b845ca959704f6c6bf6",
+      "detail": "increase explicit timeout 10 ms to 1000 ms and delayed server response 100 ms to 3000 ms; complete request parse, positive and negative JSON-RPC assertions unchanged; race root cause remains hypothesis"
+    }
+  ],
+  "upstream_qualification_receipts": [
+    "qualification/ci/p41-macos-cold-recovery-fixture-20261023/source-and-native-review.json",
+    "qualification/ci/p41-exec-http-timeout-macos-20261023/receipt.json"
+  ],
+  "preimage_check": "Both original source blobs at exact parent match original #3426 integration base; neither edited by P42 or owner downstream",
+  "repository_validation": "Current source integration is source-only. No Rust toolchain or macOS host in this isolated runtime; all native checks pending on integrated exact HEAD.",
+  "acceptance": "Pass original macOS Intel Bazel owning tests and all applicable Linux/Windows/Bazel/Architecture/V8/Stem/security gates on exact required composition. No qualification until actual terminal success.",
+  "research_p39_scope": "CLOSED_FOR_DECLARED_SOURCE_PAIRING_RESEARCH_TASK",
+  "windows_outside_root_delete": "OPEN",
+  "appserver_plugin_ttl": "OPEN",
+  "rustsec_ctutils": "OPEN",
+  "full_owner_policy_episode": "OPEN",
+  "target_device_latency_energy": "OPEN",
+  "production_activation_allowed": false
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.exec-server-http-timeout-native-followup.v1",
+  "observed_at_utc": "2026-10-23",
+  "source_pr": 3426,
+  "source_head": "de01c346d65a964f741ce1901b8c10ed5c580e6d",
+  "source_run": 39921328328,
+  "source_job": 120380753536,
+  "source_platform": "macos-intel",
+  "source_failing_test": "exec_server_http_request_honors_optional_timeout",
+  "source_native_error": "HTTP header should contain colon: ",
+  "diagnosis": "When the 10 ms timeout fires before client request headers are written on a contended runner, accept() may return a connection with no parseable header. This is an evidenced failure plus a plausible race explanation, not independently proven root cause.",
+  "base_pr": 3426,
+  "base_sha": "5fbb4474d851d8592224b9ecb883d12500cc1412",
+  "source_fix_commit": "f46f637bb7e9da4478e5ce51996305b0bda5b168",
+  "source_fix_path": "codex-rs/exec-server/tests/http_request.rs",
+  "changes": [
+    "explicit timeout budget 10 ms => 1000 ms",
+    "delayed server response 100 ms => 3000 ms",
+    "original complete request-header parse, no-timeout positive response, JSON-RPC timeout error code and message assertions retained"
+  ],
+  "production_logic_modified": false,
+  "required_gates_modified": false,
+  "dependency_change": false,
+  "validation": {
+    "static_source_scope": "two value changes plus test comment only",
+    "real_macos_owning_test": "PENDING",
+    "original_bazel_matrix": "PENDING",
+    "current_required_ci": "PENDING",
+    "closure_claimed": false
+  },
+  "close_when": "Current candidate HEAD's original exec-server-http_request-test passes on macOS Intel and applicable required composed CI reaches success. A separate independent probe is needed before asserting the race root cause.",
+  "mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "production_activation": "HOLD_NO_GO"
+}
