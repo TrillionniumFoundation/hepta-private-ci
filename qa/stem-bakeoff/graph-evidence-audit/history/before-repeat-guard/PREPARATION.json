@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.fixed-cell-graph.actual-evidence-audit-preparation.v1",
+  "created_utc": "2026-10-24T10:06:28.893713+00:00",
+  "files": {
+    "PUBLISH_ACTUAL_EVIDENCE.md": {
+      "bytes": 10055,
+      "sha256": "791e48cc09f6e282a3e8017b4b6721860651acbe1a87c0fe9964afea3b665262"
+    },
+    "audit_cell_graph_evidence.py": {
+      "bytes": 29281,
+      "sha256": "19d3977252b7cbbe0dadac5cdb50cb38e1dd927839e50093fb129822b8a98f14"
+    },
+    "graph_actual_cost_recipe.js": {
+      "bytes": 6963,
+      "sha256": "876c523a0a1a34fd2eb2f7f31cc8dc343c60472f18e542978352d80d239d2d97"
+    }
+  },
+  "validation": "Python AST parse and Node syntax check only; no new test cases or experimental data run",
+  "new_protocol_or_thresholds": false,
+  "remote_calls": 0,
+  "new_inference_or_training": false,
+  "actual_results_prefilled": false,
+  "actual_evidence_audit_status": "waiting for root actual original-owner artifacts",
+  "owner_exact_timestamp_fields": {
+    "executeCellGraph": [
+      "started_ms",
+      "completed_ms",
+      "critical_path_ms",
+      "collect_path_ms",
+      "reducer_service_path_ms"
+    ],
+    "recoverCellGraphNode": [
+      "started_ms",
+      "completed_ms"
+    ]
+  },
+  "unreturned_original_store_keys": [
+    "<adapter.storePrefix>owner:<graph_id>",
+    "<adapter.storePrefix>recovery:<request_id>"
+  ],
+  "original_owner_and_adapter_unchanged": true
+}

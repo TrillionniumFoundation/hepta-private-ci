@@ -1,0 +1,105 @@
+{
+  "scope": "local declared-index metadata only; no original native evidence/report/model execution",
+  "cases": [
+    {
+      "case": "full",
+      "passed": true,
+      "observed": {
+        "complete": true,
+        "first_expected_index": 0,
+        "declared_raw_count": 2,
+        "observed_records": 2,
+        "missing_indices": [],
+        "unexpected_indices": [],
+        "duplicates": 0
+      }
+    },
+    {
+      "case": "tail",
+      "passed": true,
+      "observed": {
+        "complete": true,
+        "first_expected_index": 2,
+        "declared_raw_count": 4,
+        "observed_records": 2,
+        "missing_indices": [],
+        "unexpected_indices": [],
+        "duplicates": 0
+      }
+    },
+    {
+      "case": "truncated-tail",
+      "passed": true,
+      "observed": {
+        "complete": false,
+        "first_expected_index": 2,
+        "declared_raw_count": 4,
+        "observed_records": 1,
+        "missing_indices": [
+          3
+        ],
+        "unexpected_indices": [],
+        "duplicates": 0
+      }
+    },
+    {
+      "case": "truncated-merged",
+      "passed": true,
+      "observed": {
+        "complete": false,
+        "first_expected_index": 0,
+        "declared_raw_count": 4,
+        "observed_records": 3,
+        "missing_indices": [
+          3
+        ],
+        "unexpected_indices": [],
+        "duplicates": 0
+      }
+    },
+    {
+      "case": "interior-hole",
+      "passed": true,
+      "observed": {
+        "complete": false,
+        "first_expected_index": 0,
+        "declared_raw_count": 4,
+        "observed_records": 3,
+        "missing_indices": [
+          1
+        ],
+        "unexpected_indices": [],
+        "duplicates": 0
+      }
+    },
+    {
+      "case": "duplicate",
+      "passed": true,
+      "observed": {
+        "complete": false,
+        "first_expected_index": 0,
+        "declared_raw_count": 2,
+        "observed_records": 3,
+        "missing_indices": [],
+        "unexpected_indices": [],
+        "duplicates": 1
+      }
+    },
+    {
+      "case": "empty-missing-tail",
+      "passed": true,
+      "observed": {
+        "complete": false,
+        "first_expected_index": 2,
+        "declared_raw_count": 4,
+        "observed_records": 0,
+        "missing_indices": [
+          2,
+          3
+        ],
+        "unexpected_indices": [],
+        "duplicates": 0
+      }
+    }
+  ]
+}
