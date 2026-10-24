@@ -2,6 +2,7 @@ use super::windows_common::finish_driver_spawn;
 use crate::conpty::ConptyInstance;
 use crate::conpty::spawn_conpty_process_as_user;
 use crate::desktop::LaunchDesktop;
+use crate::legacy_policy::ensure_legacy_write_policy;
 use crate::logging::log_failure;
 use crate::logging::log_note;
 use crate::logging::log_success;
@@ -338,6 +339,11 @@ pub(crate) async fn spawn_windows_sandbox_session_legacy(
     if !additional_deny_read_paths.is_empty() {
         anyhow::bail!("deny-read overrides require the elevated Windows sandbox backend");
     }
+    ensure_legacy_write_policy(
+        &common.permissions,
+        common.uses_write_capabilities,
+        !additional_deny_write_paths.is_empty(),
+    )?;
     let additional_deny_write_paths = additional_deny_write_paths
         .iter()
         .map(AbsolutePathBuf::to_path_buf)

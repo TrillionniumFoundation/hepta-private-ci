@@ -3,6 +3,8 @@
 #![allow(unsafe_op_in_unsafe_fn)]
 
 #[cfg(any(target_os = "windows", test))]
+mod legacy_policy;
+#[cfg(any(target_os = "windows", test))]
 mod ssh_config_dependencies;
 
 use std::fmt;
@@ -76,7 +78,7 @@ mod logging;
 mod path_normalization;
 #[cfg(target_os = "windows")]
 mod process;
-#[cfg(target_os = "windows")]
+#[cfg(any(target_os = "windows", test))]
 mod resolved_permissions;
 #[cfg(target_os = "windows")]
 mod token;
@@ -362,6 +364,7 @@ pub use stub::run_windows_sandbox_legacy_preflight;
 #[cfg(target_os = "windows")]
 mod windows_impl {
     use super::WindowsSandboxCancellationToken;
+    use super::legacy_policy::ensure_legacy_write_policy;
     use super::logging::log_failure;
     use super::logging::log_note;
     use super::logging::log_success;
@@ -552,6 +555,11 @@ mod windows_impl {
         if !additional_deny_read_paths.is_empty() {
             anyhow::bail!("deny-read overrides require the elevated Windows sandbox backend");
         }
+        ensure_legacy_write_policy(
+            &permissions,
+            uses_write_capabilities,
+            !additional_deny_write_paths.is_empty(),
+        )?;
         let capability_roots =
             legacy_session_capability_roots(&permissions, &current_dir, &env_map, codex_home);
         let security = prepare_legacy_session_security(
