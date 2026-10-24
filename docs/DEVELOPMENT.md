@@ -920,6 +920,17 @@ impersonation level, directory volume reopening and other original failures
 remain separate PN0 blockers; the original eight-second terminal deadline and
 all assertions stay required.
 
+The same PN0 CI repair runs all 819 existing Hepta Python regressions. The first
+full run exposed five wiring failures: multiline YAML dependency formatting,
+an obsolete path-filter owner, and inconsistent Clippy argument expectations.
+The actual dependency list is now checked independent of line wrapping, with
+exact membership and duplicate rejection; automatic trigger coverage is checked
+against `blocking-ci` and its real scope selector. The original strict
+`-D warnings` behavior is restored in the dependency executor and all command
+expectations agree. No test, lane, assertion intent or terminal deadline is
+removed. All 819 pass in the repaired source. These include command stand-ins
+and source-wiring controls, not 819 native product or model executions.
+
 The same PN0 signature-portability slice now uses one bounded in-process verifier
 in `hepta-operator-acceptance::sshsig` for operator and G5 read-only trust
 verification. It checks SSHSIG V1 framing, exact pinned raw Ed25519 key and

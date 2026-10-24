@@ -162,18 +162,37 @@ class NativeFeedbackPolicyTests(unittest.TestCase):
             self.assertTrue(fnmatch.fnmatchcase("owner-test.json.1234.log", pattern))
 
     def test_build_inputs_cannot_miss_the_outer_path_filter(self):
-        text = WORKFLOW.read_text().split("permissions:", 1)[0]
+        from scripts.hepta_ci_scope import select
+
+        # The reusable deep workflow no longer owns automatic dispatch. The
+        # aggregate must admit every path before its real scope selector runs.
+        outer = ROOT / ".github/workflows/blocking-ci.yml"
+        text = outer.read_text().split("permissions:", 1)[0]
+        self.assertIn("  pull_request: {}", text)
+        self.assertIn("  push:\n    branches: [main]", text)
+        self.assertNotRegex(text, r"(?m)^\s+paths(?:-ignore)?:")
+        source = outer.read_text()
+        self.assertIn('python3 scripts/hepta_ci_scope.py "${args[@]}"', source)
+        self.assertIn("uses: ./.github/workflows/rust-ci.yml", source)
+        self.assertIn("uses: ./.github/workflows/repo-checks.yml", source)
         for path in (
-            ".cargo/**",
-            "codex-rs/.cargo/**",
+            ".cargo/config.toml",
+            "codex-rs/.cargo/config.toml",
             "rust-toolchain",
             "rust-toolchain.toml",
             "codex-rs/rust-toolchain",
             "codex-rs/rust-toolchain.toml",
+        ):
+            with self.subTest(path=path):
+                selected = select([path])
+                self.assertTrue(selected["full_repo"])
+                self.assertTrue(selected["native"])
+        for path in (
             "scripts/hepta_workspace.py",
             "scripts/test_hepta_native_feedback.py",
         ):
-            self.assertIn('      - "' + path + '"', text)
+            with self.subTest(path=path):
+                self.assertTrue(select([path])["derived"])
 
 
 class NativeFeedbackExecutionTests(unittest.TestCase):
