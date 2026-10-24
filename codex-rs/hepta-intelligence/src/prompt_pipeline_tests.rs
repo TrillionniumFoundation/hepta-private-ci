@@ -203,3 +203,190 @@ fn revocation_after_compilation_blocks_attachment_preparation() {
         )
     );
 }
+
+// Controlled count fixtures only; these do not install a provider tokenizer.
+
+struct SuppliedTokenizer {
+    identity: Digest32,
+    selected_count: u64,
+    serialized_payload: Vec<u8>,
+    serialized_count: u64,
+}
+
+impl ExactTokenizerV2 for SuppliedTokenizer {
+    fn tokenizer_digest(&self) -> Digest32 {
+        self.identity
+    }
+
+    fn count_tokens(&self, bytes: &[u8]) -> Result<u64, ContextCompilerV2Error> {
+        if bytes == b"payload:a" {
+            return Ok(self.selected_count);
+        }
+        if bytes == self.serialized_payload {
+            return Ok(self.serialized_count);
+        }
+        Err(ContextCompilerV2Error::InvalidSerializedTokenCount)
+    }
+}
+
+fn tokenizer_fixture(
+    prepared: &PreparedPromptContextV1,
+    payload: &[u8],
+    serialized_count: u64,
+) -> SuppliedTokenizer {
+    SuppliedTokenizer {
+        identity: prepared.model_profile.tokenizer_digest,
+        selected_count: u64::from(prepared.materialization.payloads[0].binding.token_cost),
+        serialized_payload: payload.to_vec(),
+        serialized_count,
+    }
+}
+
+fn tokenizer_request(
+    exercise: PromptExerciseRequestV1,
+    payload: &[u8],
+) -> PromptDeliveryPrepareRequestV1 {
+    PromptDeliveryPrepareRequestV1 {
+        exercise,
+        serialization_id: id("serialization:profile-tokenizer"),
+        serialized_payload: payload.to_vec(),
+        attachment_id: id("attachment:profile-tokenizer"),
+    }
+}
+
+#[test]
+fn supplied_tokenizer_counts_the_complete_serialization_and_preserves_compatibility() {
+    let (_temp, registry, portfolio, exercise) = fixture();
+    let prepared = compile_exercised_prompt_context_v1(
+        &registry,
+        &portfolio,
+        compile_request(exercise.clone()),
+    )
+    .expect("compile");
+    let payload = b"provider-prefix|payload:a|provider-suffix";
+    let tokenizer = tokenizer_fixture(&prepared, payload, 41);
+    let request = tokenizer_request(exercise, payload);
+    let compatibility =
+        prepare_prompt_delivery_v1(&registry, &portfolio, &prepared, request.clone())
+            .expect("compatibility delivery");
+    let exact = crate::prepare_prompt_delivery_with_tokenizer_v1(
+        &registry, &portfolio, &prepared, request, &tokenizer,
+    )
+    .expect("profile tokenizer delivery");
+    assert_eq!(
+        compatibility.serialization.serialized_token_count(),
+        tokenizer.selected_count
+    );
+    assert_eq!(exact.serialization.serialized_token_count(), 41);
+    assert_eq!(exact.serialized_payload, payload);
+    assert_eq!(exact.serialization_proof, compatibility.serialization_proof);
+    assert_eq!(exact.materialization, compatibility.materialization);
+    assert_ne!(exact.serialization, compatibility.serialization);
+    assert!(!exact.attachment.authority().grants_any());
+}
+
+#[test]
+fn supplied_tokenizer_rejects_framing_overflow_even_when_registered_fragments_fit() {
+    let (_temp, registry, portfolio, exercise) = fixture();
+    let mut compilation = compile_request(exercise.clone());
+    compilation.token_budget = 16;
+    let prepared = compile_exercised_prompt_context_v1(&registry, &portfolio, compilation)
+        .expect("selected fragments fit");
+    let payload = b"provider-prefix|payload:a|provider-suffix";
+    let tokenizer = tokenizer_fixture(&prepared, payload, 17);
+    let request = tokenizer_request(exercise, payload);
+    assert!(prepare_prompt_delivery_v1(&registry, &portfolio, &prepared, request.clone()).is_ok());
+    let result = crate::prepare_prompt_delivery_with_tokenizer_v1(
+        &registry, &portfolio, &prepared, request, &tokenizer,
+    );
+    assert!(
+        matches!(result, Err(PromptPipelineErrorV1::ContextCompiler(error))
+        if error.contains("SerializedTokenBudgetExceeded"))
+    );
+}
+
+#[test]
+fn supplied_tokenizer_rejects_registered_item_count_drift_and_profile_drift() {
+    let (_temp, registry, portfolio, exercise) = fixture();
+    let prepared = compile_exercised_prompt_context_v1(
+        &registry,
+        &portfolio,
+        compile_request(exercise.clone()),
+    )
+    .expect("compile");
+    let payload = b"provider-prefix|payload:a|provider-suffix";
+    let mut tokenizer = tokenizer_fixture(&prepared, payload, 41);
+    let registered = tokenizer.selected_count;
+    tokenizer.selected_count += 1;
+    let request = tokenizer_request(exercise, payload);
+    let result = crate::prepare_prompt_delivery_with_tokenizer_v1(
+        &registry,
+        &portfolio,
+        &prepared,
+        request.clone(),
+        &tokenizer,
+    );
+    assert_eq!(
+        result,
+        Err(PromptPipelineErrorV1::SelectedTokenCountMismatch {
+            realization_id: "realization:verify".to_string(),
+            registered,
+            observed: registered + 1,
+        })
+    );
+    tokenizer.selected_count = registered;
+    tokenizer.identity = digest("different-tokenizer");
+    let result = crate::prepare_prompt_delivery_with_tokenizer_v1(
+        &registry, &portfolio, &prepared, request, &tokenizer,
+    );
+    assert!(
+        matches!(result, Err(PromptPipelineErrorV1::ContextCompiler(error))
+        if error.contains("TokenizerProfileMismatch"))
+    );
+}
+
+#[test]
+fn supplied_tokenizer_keeps_registry_revocation_and_selected_byte_checks() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let (mut registry, tuple, authority, signing_key, now) =
+        admitted_registry(&temp.path().join("registry"), b"payload:a");
+    let selected = canonical_selection(&registry, &tuple, 100);
+    let prepared = compile_exercised_prompt_context_v1(
+        &registry,
+        &selected.portfolio,
+        compile_request(selected.exercise_request.clone()),
+    )
+    .expect("compile");
+    let payload = b"provider-prefix|payload:a|provider-suffix";
+    let tokenizer = tokenizer_fixture(&prepared, payload, 41);
+    let absent = crate::prepare_prompt_delivery_with_tokenizer_v1(
+        &registry,
+        &selected.portfolio,
+        &prepared,
+        tokenizer_request(
+            selected.exercise_request.clone(),
+            b"no-selected-realization",
+        ),
+        &tokenizer,
+    );
+    assert_eq!(
+        absent,
+        Err(PromptPipelineErrorV1::SerializedPayloadMissing(
+            "realization:verify".to_string(),
+        ))
+    );
+    revoke_registry(&mut registry, &authority, &signing_key, now);
+    let revoked = crate::prepare_prompt_delivery_with_tokenizer_v1(
+        &registry,
+        &selected.portfolio,
+        &prepared,
+        tokenizer_request(selected.exercise_request, payload),
+        &tokenizer,
+    );
+    assert_eq!(
+        revoked,
+        Err(PromptPipelineErrorV1::ExerciseRejected(
+            codex_hepta_prompt_optimizer::canonical::PromptExerciseActionV1::RejectStale,
+        ))
+    );
+}

@@ -108,7 +108,7 @@ where
                 if items.len() >= limits.maximum_items {
                     return Err(Error::Limit("retained provider items"));
                 }
-                let encoded = serde_json::to_vec(&item)
+                let encoded = serde_json::to_vec(&crate::response_item_evidence(&item)?)
                     .map_err(|_| Error::Contract("provider item serialization"))?;
                 retained_bytes = retained_bytes
                     .checked_add(encoded.len())

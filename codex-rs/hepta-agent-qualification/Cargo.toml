@@ -1,0 +1,41 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-agent-qualification"
+version.workspace = true
+
+[[bin]]
+name = "hepta-native-provider-qualification"
+path = "src/main.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { workspace = true, features = ["derive"] }
+codex-api = { workspace = true }
+# Only this isolated qualification executable uses Core's real config loader.
+codex-core = { workspace = true }
+codex-extension-api = { workspace = true }
+codex-features = { workspace = true }
+codex-hepta-agent-loop = { workspace = true, features = ["managed-responses"] }
+codex-hepta-contracts = { workspace = true }
+codex-hepta-governance = { workspace = true }
+codex-hepta-types = { workspace = true }
+codex-http-client = { workspace = true }
+codex-login = { workspace = true }
+codex-model-provider = { workspace = true }
+codex-protocol = { workspace = true }
+codex-state = { workspace = true }
+codex-utils-absolute-path = { workspace = true }
+futures = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt", "sync", "time"] }
+tokio-util = { workspace = true }
+url = { workspace = true }
+uuid = { workspace = true, features = ["v4"] }
+
+[dev-dependencies]
+tempfile = { workspace = true }

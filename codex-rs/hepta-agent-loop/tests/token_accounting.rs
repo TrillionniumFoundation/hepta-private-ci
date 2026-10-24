@@ -1,3 +1,7 @@
+#![allow(
+    clippy::expect_used,
+    reason = "isolated integration fixtures fail loudly"
+)]
 use codex_hepta_agent_loop::*;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;

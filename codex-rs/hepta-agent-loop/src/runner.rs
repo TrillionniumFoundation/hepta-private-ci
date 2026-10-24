@@ -210,7 +210,7 @@ async fn cancel<C: TurnOwner, I: InferenceOwner, E: EffectOwner>(
     effects: &mut E,
     binding: &TurnBinding,
 ) -> Result<Outcome> {
-    let mut frame = context.load(binding).await?;
+    let mut frame = context.load_for_cancel(binding).await?;
     if frame.binding != *binding {
         return Err(Error::Contract("cancellation binding"));
     }
@@ -238,7 +238,7 @@ async fn cancel<C: TurnOwner, I: InferenceOwner, E: EffectOwner>(
     Ok(Outcome::Cancelled)
 }
 
-fn validate_frame(frame: &Frame, binding: &TurnBinding, limits: &Limits) -> Result<()> {
+pub(crate) fn validate_frame(frame: &Frame, binding: &TurnBinding, limits: &Limits) -> Result<()> {
     if frame.binding != *binding {
         return Err(Error::Contract("turn binding"));
     }
@@ -266,7 +266,7 @@ fn validate_frame(frame: &Frame, binding: &TurnBinding, limits: &Limits) -> Resu
     Ok(())
 }
 
-fn validate_calls(calls: &[ToolCall], limits: &Limits) -> Result<()> {
+pub(crate) fn validate_calls(calls: &[ToolCall], limits: &Limits) -> Result<()> {
     if calls.len() > limits.maximum_calls {
         return Err(Error::Limit("tool count"));
     }
@@ -282,7 +282,7 @@ fn validate_calls(calls: &[ToolCall], limits: &Limits) -> Result<()> {
     Ok(())
 }
 
-fn operation_key(frame: &Frame, call: &ToolCall) -> Digest32 {
+pub(crate) fn operation_key(frame: &Frame, call: &ToolCall) -> Digest32 {
     let generation = frame.binding.generation.get().to_be_bytes();
     let round = frame.round.to_be_bytes();
     let parts = [

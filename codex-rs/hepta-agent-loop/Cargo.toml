@@ -11,6 +11,8 @@ path = "src/lib.rs"
 doctest = false
 
 [features]
+taskflow-owner = ["dep:codex-hepta-automation", "dep:serde", "dep:serde_json"]
+managed-responses = ["responses-api", "dep:codex-extension-api", "dep:codex-http-client", "dep:codex-login", "dep:codex-model-provider", "dep:tracing", "tokio/rt"]
 responses-api = ["dep:codex-api", "dep:codex-protocol", "dep:futures", "dep:serde_json"]
 context-v2 = ["dep:codex-hepta-context-compiler"]
 
@@ -18,6 +20,13 @@ context-v2 = ["dep:codex-hepta-context-compiler"]
 workspace = true
 
 [dependencies]
+codex-hepta-automation = { workspace = true, optional = true }
+serde = { workspace = true, optional = true, features = ["derive"] }
+tracing = { workspace = true, optional = true }
+codex-model-provider = { workspace = true, optional = true }
+codex-login = { workspace = true, optional = true }
+codex-http-client = { workspace = true, optional = true }
+codex-extension-api = { workspace = true, optional = true }
 codex-api = { workspace = true, optional = true }
 codex-protocol = { workspace = true, optional = true }
 futures = { workspace = true, optional = true }
@@ -29,5 +38,9 @@ tokio = { workspace = true, features = ["macros", "sync", "time"] }
 tokio-util = { workspace = true }
 
 [dev-dependencies]
+tempfile = { workspace = true }
+codex-hepta-paths = { workspace = true }
+codex-hepta-fleet = { workspace = true }
+codex-hepta-contracts = { workspace = true }
 pretty_assertions = { workspace = true }
 tokio = { workspace = true, features = ["macros", "rt", "sync", "time", "test-util"] }

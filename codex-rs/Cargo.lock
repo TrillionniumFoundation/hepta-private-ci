@@ -3451,15 +3451,26 @@ name = "codex-hepta-agent-loop"
 version = "0.0.0"
 dependencies = [
  "codex-api",
+ "codex-extension-api",
+ "codex-hepta-automation",
  "codex-hepta-context-compiler",
+ "codex-hepta-contracts",
+ "codex-hepta-fleet",
+ "codex-hepta-paths",
  "codex-hepta-types",
+ "codex-http-client",
+ "codex-login",
+ "codex-model-provider",
  "codex-protocol",
  "futures",
  "pretty_assertions",
+ "serde",
  "serde_json",
+ "tempfile",
  "thiserror 2.0.21",
  "tokio",
  "tokio-util",
+ "tracing",
 ]
 
 [[package]]
@@ -3471,6 +3482,36 @@ dependencies = [
  "codex-hepta-fleet",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "codex-hepta-agent-qualification"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "codex-api",
+ "codex-core",
+ "codex-extension-api",
+ "codex-features",
+ "codex-hepta-agent-loop",
+ "codex-hepta-contracts",
+ "codex-hepta-governance",
+ "codex-hepta-types",
+ "codex-http-client",
+ "codex-login",
+ "codex-model-provider",
+ "codex-protocol",
+ "codex-state",
+ "codex-utils-absolute-path",
+ "futures",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "tokio-util",
+ "url",
+ "uuid",
 ]
 
 [[package]]

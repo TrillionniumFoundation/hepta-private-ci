@@ -8,20 +8,54 @@ use codex_hepta_types::StableId;
 use tokio::sync::mpsc;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(
+    feature = "taskflow-owner",
+    derive(serde::Deserialize, serde::Serialize)
+)]
+#[cfg_attr(feature = "taskflow-owner", serde(deny_unknown_fields))]
 pub struct TurnBinding {
+    #[cfg_attr(
+        feature = "taskflow-owner",
+        serde(with = "crate::taskflow_serde::stable_id")
+    )]
     pub run_id: StableId,
+    #[cfg_attr(
+        feature = "taskflow-owner",
+        serde(with = "crate::taskflow_serde::stable_id")
+    )]
     pub turn_id: StableId,
+    #[cfg_attr(
+        feature = "taskflow-owner",
+        serde(with = "crate::taskflow_serde::generation")
+    )]
     pub generation: Generation,
     /// Digest of the admitted request, including its objective and principal.
+    #[cfg_attr(
+        feature = "taskflow-owner",
+        serde(with = "crate::taskflow_serde::digest")
+    )]
     pub admission_digest: Digest32,
     /// Original owner deadline; reconnecting must not reset the turn's budget.
     pub deadline_unix_ms: u64,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(
+    feature = "taskflow-owner",
+    derive(serde::Deserialize, serde::Serialize)
+)]
+#[cfg_attr(feature = "taskflow-owner", serde(deny_unknown_fields))]
 pub struct ModelRequest {
+    #[cfg_attr(
+        feature = "taskflow-owner",
+        serde(with = "crate::taskflow_serde::stable_id")
+    )]
     pub request_id: StableId,
     pub payload: Arc<str>,
+    #[cfg_attr(
+        feature = "taskflow-owner",
+        serde(with = "crate::taskflow_serde::digest")
+    )]
     pub context_digest: Digest32,
     /// Exact count from the compiled-context tokenizer, before provider framing.
     pub input_tokens: u64,
@@ -34,24 +68,55 @@ pub struct ModelRequest {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(
+    feature = "taskflow-owner",
+    derive(serde::Deserialize, serde::Serialize)
+)]
+#[cfg_attr(feature = "taskflow-owner", serde(deny_unknown_fields))]
 pub struct ToolCall {
+    #[cfg_attr(
+        feature = "taskflow-owner",
+        serde(with = "crate::taskflow_serde::stable_id")
+    )]
     pub call_id: StableId,
+    #[cfg_attr(
+        feature = "taskflow-owner",
+        serde(with = "crate::taskflow_serde::stable_id")
+    )]
     pub name: StableId,
     /// Complete arguments; the inference adapter assembles partial wire deltas.
     pub arguments: String,
 }
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+#[cfg_attr(
+    feature = "taskflow-owner",
+    derive(serde::Deserialize, serde::Serialize)
+)]
+#[cfg_attr(feature = "taskflow-owner", serde(deny_unknown_fields))]
 pub struct Usage {
     pub input_tokens: u64,
     pub output_tokens: u64,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(
+    feature = "taskflow-owner",
+    derive(serde::Deserialize, serde::Serialize)
+)]
+#[cfg_attr(feature = "taskflow-owner", serde(deny_unknown_fields))]
 pub struct ModelOutput {
+    #[cfg_attr(
+        feature = "taskflow-owner",
+        serde(with = "crate::taskflow_serde::stable_id")
+    )]
     pub request_id: StableId,
     /// Owner-retained full provider output, including opaque reasoning items.
     /// The context owner resolves this receipt when constructing continuation.
+    #[cfg_attr(
+        feature = "taskflow-owner",
+        serde(with = "crate::taskflow_serde::digest")
+    )]
     pub continuation_digest: Digest32,
     pub text: String,
     pub calls: Vec<ToolCall>,
@@ -59,6 +124,11 @@ pub struct ModelOutput {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(
+    feature = "taskflow-owner",
+    derive(serde::Deserialize, serde::Serialize)
+)]
+#[cfg_attr(feature = "taskflow-owner", serde(deny_unknown_fields))]
 pub enum Phase {
     Model(ModelRequest),
     Tools { calls: Vec<ToolCall>, next: usize },
@@ -69,6 +139,11 @@ pub enum Phase {
 
 /// An owned view of the existing context/TaskFlow cursor, never a second store.
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(
+    feature = "taskflow-owner",
+    derive(serde::Deserialize, serde::Serialize)
+)]
+#[cfg_attr(feature = "taskflow-owner", serde(deny_unknown_fields))]
 pub struct Frame {
     pub binding: TurnBinding,
     pub revision: u64,
@@ -78,9 +153,18 @@ pub struct Frame {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(
+    feature = "taskflow-owner",
+    derive(serde::Deserialize, serde::Serialize)
+)]
+#[cfg_attr(feature = "taskflow-owner", serde(deny_unknown_fields))]
 pub enum Transition {
     ModelCompleted(ModelOutput),
     ToolCompleted {
+        #[cfg_attr(
+            feature = "taskflow-owner",
+            serde(with = "crate::taskflow_serde::digest")
+        )]
         operation_key: Digest32,
         output: String,
     },
@@ -168,6 +252,17 @@ pub type Result<T> = std::result::Result<T, Error>;
 /// mandatory instructions and unresolved calls must survive compaction.
 pub trait TurnOwner: Send {
     fn load(&mut self, binding: &TurnBinding) -> impl Future<Output = Result<Frame>> + Send;
+    /// Observe the original frame solely to stop its existing owners. This
+    /// grants no model/tool dispatch or generation handoff. Stateful adapters
+    /// may permit this under a live waiting/retry fence while normal load is
+    /// blocked. Terminal or expired/reclaimed active owners must still refuse.
+    fn load_for_cancel(
+        &mut self,
+        binding: &TurnBinding,
+    ) -> impl Future<Output = Result<Frame>> + Send {
+        self.load(binding)
+    }
+
     fn commit(
         &mut self,
         previous: &Frame,

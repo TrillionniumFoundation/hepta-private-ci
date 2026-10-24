@@ -10,6 +10,8 @@
 #[cfg(feature = "context-v2")]
 mod context;
 mod runner;
+#[cfg(feature = "taskflow-owner")]
+mod taskflow_serde;
 mod types;
 
 pub use runner::run;
@@ -52,3 +54,30 @@ pub use responses::ResponsesContinuation;
 pub use responses::ResponsesContinuationOwner;
 #[cfg(feature = "responses-api")]
 pub use responses::forward_responses_stream;
+
+#[cfg(feature = "responses-api")]
+mod responses_evidence;
+#[cfg(feature = "responses-api")]
+pub use responses_evidence::response_item_evidence;
+#[cfg(feature = "responses-api")]
+pub use responses_evidence::response_items_evidence;
+
+#[cfg(feature = "managed-responses")]
+mod managed_responses;
+#[cfg(feature = "managed-responses")]
+pub use managed_responses::ManagedResponsesAttempt;
+#[cfg(feature = "managed-responses")]
+pub use managed_responses::ManagedResponsesClient;
+#[cfg(feature = "managed-responses")]
+pub use managed_responses::ManagedResponsesObservation;
+
+#[cfg(feature = "taskflow-owner")]
+mod taskflow_owner;
+#[cfg(feature = "taskflow-owner")]
+pub use taskflow_owner::ObservedTaskFlowTurn;
+#[cfg(feature = "taskflow-owner")]
+pub use taskflow_owner::RetainedObservation;
+#[cfg(feature = "taskflow-owner")]
+pub use taskflow_owner::TaskFlowContextPreparer;
+#[cfg(feature = "taskflow-owner")]
+pub use taskflow_owner::TaskFlowTurnOwner;

@@ -1,3 +1,7 @@
+#![allow(
+    clippy::expect_used,
+    reason = "isolated integration fixtures fail loudly"
+)]
 #![cfg(feature = "responses-api")]
 
 use codex_api::ResponseEvent;
@@ -311,4 +315,33 @@ async fn duplicate_completed_item_cannot_duplicate_visible_context() {
         Err(Error::Contract("duplicate completed provider item"))
     ));
     assert!(owner.continuation.is_none());
+}
+
+#[tokio::test]
+async fn plain_reasoning_content_counts_toward_the_retained_byte_limit() {
+    let reasoning = item(json!({
+        "type":"reasoning", "id":"reasoning:large", "summary":[],
+        "content":[{"type":"text", "text":"x".repeat(8192)}],
+        "encrypted_content":"opaque",
+    }));
+    // The provider request serializer omits this content. Retention accounting
+    // must still reject it before publishing a completion or retaining it.
+    assert!(
+        serde_json::to_vec(&reasoning)
+            .expect("request fixture")
+            .len()
+            < 4096
+    );
+    let mut owner = Owner::default();
+    let (result, events) = forward(
+        vec![ResponseEvent::OutputItemDone(reasoning), completed()],
+        &mut owner,
+    )
+    .await;
+    assert!(matches!(
+        result,
+        Err(Error::Limit("retained provider bytes"))
+    ));
+    assert!(owner.continuation.is_none());
+    assert!(events.is_empty());
 }
