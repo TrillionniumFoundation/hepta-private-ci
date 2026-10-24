@@ -166,6 +166,8 @@ mod final_use_issuer;
 mod grant_provider_worker;
 #[cfg(target_os = "linux")]
 mod hos2_device;
+#[cfg(target_os = "linux")]
+mod cpu_policy;
 mod intelligence_ingress;
 mod intelligence_product;
 mod intuition_policy;
@@ -341,6 +343,22 @@ pub use final_use_issuer::AgentdUnixFinalUseGrantProvider;
 pub use hos2_device::AgentdHos2Device;
 #[cfg(target_os = "linux")]
 pub use hos2_device::AgentdHos2Usage;
+#[cfg(target_os = "linux")]
+pub use cpu_policy::CPU_POLICY_INTERVAL_NS;
+#[cfg(target_os = "linux")]
+pub use cpu_policy::CPU_POLICY_MAX_AGE_NS;
+#[cfg(target_os = "linux")]
+pub use cpu_policy::CpuBudgetProposal;
+#[cfg(target_os = "linux")]
+pub use cpu_policy::CpuDemandSample;
+#[cfg(target_os = "linux")]
+pub use cpu_policy::CpuPolicy;
+#[cfg(target_os = "linux")]
+pub use cpu_policy::CpuPolicyError;
+#[cfg(target_os = "linux")]
+pub use cpu_policy::CpuPolicyKind;
+#[cfg(target_os = "linux")]
+pub use cpu_policy::ObservedCpuDemand;
 pub use intelligence_ingress::AgentdIntelligenceInvocationProviderV1;
 pub use intelligence_ingress::AgentdIntelligenceInvocationV1;
 pub use intelligence_product::AgentdEvaluationBindingV1;
