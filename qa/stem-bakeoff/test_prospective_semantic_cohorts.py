@@ -92,6 +92,20 @@ class ProspectiveSemanticCohortTests(unittest.TestCase):
         with self.assertRaisesRegex(m.SemanticCohortError,'four declared'):
             m.choose_sources(instances,registry,captions)
 
+    def test_short_original_source_quota_fails_closed_with_exact_receipt(self):
+        instances, registry, captions = fixture()
+        # Keep only seven eligible original cow photos for the frozen OOD
+        # requirement of eight. No substitute photos or lower quota allowed.
+        for im in instances["images"]:
+            if 13007 <= im["id"] < 13120:
+                im["license"] = 3
+        with self.assertRaisesRegex(
+            m.SemanticCohortError,
+            r"official photos insufficient.*split=ood, category=cow, "
+            r"remaining=7, required=8, total_eligible=7",
+        ):
+            m.choose_sources(instances, registry, captions)
+
     def test_prior_photo_id_and_flickr_entity_exclusion(self):
         instances,registry,captions=fixture()
         protected=registry['images'][0]
