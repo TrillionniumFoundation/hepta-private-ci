@@ -45,7 +45,7 @@ impl ProductionDurableWriter {
                 .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
             let checkpoint = self.store.bound_owner_publication()
                 .ok_or(ProductionWriterError::CheckpointFenced)?;
-            self.store.commit_gate.require_open()?;
+            self.store.commit_gate.require_open().map_err(|_| ProductionWriterError::CheckpointFenced)?;
             self.retirement_live_check()?;
             let acknowledged = tokio::time::timeout(checkpoint.deadline(), checkpoint.acknowledge(&cut, &fence))
                 .await.map_err(|_| ProductionWriterError::CheckpointFenced)?
@@ -57,11 +57,11 @@ impl ProductionDurableWriter {
             // validates the original retained authority after all publication
             // I/O. The exact terminal handle cannot enqueue, claim or enter.
             self.retirement_live_check()?;
-            self.store.commit_gate.require_open()?;
+            self.store.commit_gate.require_open().map_err(|_| ProductionWriterError::CheckpointFenced)?;
             transaction.rollback().await
                 .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
             self.retirement_live_check()?;
-            self.store.commit_gate.require_open()?;
+            self.store.commit_gate.require_open().map_err(|_| ProductionWriterError::CheckpointFenced)?;
             attempt.acknowledge();
             Ok(())
         }.await;
