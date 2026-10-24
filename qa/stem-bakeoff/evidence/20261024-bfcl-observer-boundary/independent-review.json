@@ -1,0 +1,24 @@
+{
+  "status": "PASS_NARROW_STRUCTURAL_ARTIFACT_ONLY",
+  "files_sha256": {
+    "boundary.py": "198148c2a7c8dd6e6a5d3b4988e6afe46fe7c4ab8d865377659ebedfe54621a6",
+    "test_boundary.py": "43b659ab8c5d45dd0df5b614094e94e8cea2b0d07f087ad9df5fd8d1ec6cd0b6",
+    "DESIGN.md": "2acc5dd5500e46c34fd5754b16568bc80f0cb64b21ef5a065c8d58b3dc4d645b",
+    "upstream-manifest.json": "ce9c54640ee0847a0f19611115ba729e89fa7deb443cb4cd7622d94a93a8dea3"
+  },
+  "tests": 16,
+  "upstream_pin_tree_and_blob_verified": true,
+  "official_source_files": 5,
+  "official_source_bytes": 129928,
+  "fixed_review_findings": [
+    "illegal schema keyword container bypass",
+    "OpenAI response schema branch attribution"
+  ],
+  "remaining_limitations": [
+    "caller assertions do not authenticate source/turn/step",
+    "visible text and JSON literals are not semantic DLP screened",
+    "unsupported function.response rejects; not full official handler compatibility",
+    "no actual capture or upstream code execution",
+    "not hostile Python process isolation or resource exhaustion protection"
+  ]
+}

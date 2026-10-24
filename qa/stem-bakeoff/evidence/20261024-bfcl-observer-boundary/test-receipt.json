@@ -1,0 +1,24 @@
+{
+  "utc": "2026-10-24T11:11:08.168768+00:00",
+  "scope": "synthetic boundary unit tests only",
+  "test_command": "python -m unittest discover -s cell-bfcl-observer-boundary -p test_boundary.py -v",
+  "tests": 16,
+  "passed": 16,
+  "sha256": {
+    "boundary.py": "198148c2a7c8dd6e6a5d3b4988e6afe46fe7c4ab8d865377659ebedfe54621a6",
+    "test_boundary.py": "43b659ab8c5d45dd0df5b614094e94e8cea2b0d07f087ad9df5fd8d1ec6cd0b6",
+    "test.log": "ffe9b83bb60a8d1ba626f697d3dbcd97c22e5c8b2675e5ad266e347d21850cf5",
+    "DESIGN.md": "2acc5dd5500e46c34fd5754b16568bc80f0cb64b21ef5a065c8d58b3dc4d645b",
+    "upstream-manifest.json": "ce9c54640ee0847a0f19611115ba729e89fa7deb443cb4cd7622d94a93a8dea3"
+  },
+  "real_request_capture": false,
+  "upstream_code_executed": false,
+  "model_scores": false,
+  "new_labels": false,
+  "remote_ci_queried": false,
+  "fixed_independent_review_findings": [
+    "illegal keyword container bypass",
+    "OpenAI response-schema branch interpretation"
+  ],
+  "real_bfcl_ingestion_ready": false
+}
