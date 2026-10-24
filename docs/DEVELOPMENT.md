@@ -806,16 +806,25 @@ all complete executable hashes, process counts, assertions and the 60-second
 test cutoff. A dedicated first-party fixture omits only its link-time debug
 information. These are controlled fixtures, not real Agentd/model qualification.
 
-The combined ten-package ordinary Linux suite executes 1,042 passing cases;
-its 17 inherited explicit qualifications remain separately accounted. The
+At published owner-native source `0cb5b74d`, the combined ten-package ordinary
+Linux suite ran 1,042 passing cases; its 17 inherited explicit qualifications
+remain separately accounted. The
 original four-case durability qualification first produced two passes and two
 60-second watchdog failures. Its two thousand-operation cases now use the
 existing serialized, ten-minute durability-capacity budget, with their complete
-workloads, child bounds and assertions retained. The actual 1,000 child-process
-kill/reopen/replay study passes in 582.764 seconds, and both original crash
-probes pass. The 1,000-operation SQLite study still times out at 600.030 seconds;
-that performance blocker remains open. This is no throughput or eight-second
-runtime acceptance. The original failures are retained.
+workloads, child bounds and assertions retained. The earlier 1,000 child-process
+kill/reopen/replay study passed in 582.764 seconds; the SQLite study twice timed
+out at 600.030 seconds. The original failures are retained. The same-read journal
+reuse and atomic rehydration change `df1b0c7f` keeps every fresh database read,
+full chain/metadata check and original write-owner lease check, while avoiding
+replay of an already verified in-memory snapshot and an extra read before the
+same write transaction. Five row texts are borrowed from their actual SQL rows.
+Its 279 routine cases and all four original qualifications pass: SQLite 1,000
+operations in 554.851 seconds, 1,000 real child-process cycles in 467.420 seconds,
+and both original crash probes. This closes that finite controlled timeout; it
+does not establish sustained throughput, eight-second runtime acceptance,
+Windows execution, global I05 bounds or real model qualification. The separate
+4,096-event capacity and cold-load allocation boundaries remain under repair.
 
 Within the same PN0/PN4 boundary, AuthBus owns current settlement-issuer trust.
 `AuthBusAuthorityStore::settle` retains its registration parameter as an exact
@@ -975,7 +984,13 @@ matching the checksum-verified sandbox artifact already selected by the full CI
 and the existing Bazel target. The original linked-library identity assertion
 is unchanged. All six Linux V8 tests pass against the original verified artifact
 pair; this is not a Windows native result.
-New native execution is still required to confirm these repairs.
+The published owner-native candidate is `0cb5b74d` with actual original-base
+preview `c9d1b1dd`; the ordered preview parents are `[c38e7727, 0cb5b74d]` and
+the computed and GitHub trees match. Its
+[original full native workflow](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40111835033)
+and [source/preview Windows diagnostics](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40111843149)
+have been requested; they are not passing receipts. New native execution is
+still required to confirm these repairs.
 
 The same PN0 CI repair runs all 819 existing Hepta Python regressions. The first
 full run exposed five wiring failures: multiline YAML dependency formatting,
