@@ -19,6 +19,7 @@ use crate::model::datetime_to_epoch_millis;
 use crate::model::datetime_to_epoch_seconds;
 use crate::model::epoch_millis_to_datetime;
 use crate::paths::file_modified_time_utc;
+use crate::sqlite::RuntimeSqliteConfigExt;
 use crate::telemetry::DbKind;
 use crate::telemetry::DbTelemetry;
 use chrono::DateTime;

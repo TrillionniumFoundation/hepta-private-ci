@@ -6,7 +6,66 @@ use codex_hepta_contracts::RootAuthorityDirectory;
 use codex_hepta_memory::CognitiveCheckpointReceipt;
 use codex_hepta_memory::VerifiedCognitiveMaterial;
 
+/// Read-only original canonical metadata for trusted Root reconciliation.
+/// There is no verified-use token, live lease assertion or signing operation.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct RetainedWriterStateForRoot {
+    pub(crate) registration: HostAuthorityWriterRegistration,
+    pub(crate) proof: HostSignedWriterAuthorizationV1,
+    pub(crate) policies: Vec<DeploymentGrantPolicy>,
+    pub(crate) revocations: FinalUseRevocations,
+    pub(crate) sequence: u64,
+}
+
 impl DeploymentFinalUseIssuer {
+    /// Observe the exact original signed identity even after its time-limited
+    /// runtime authorization ended. The protected factory must already have
+    /// checked the independently installed public-key pin. This read neither
+    /// retires a registry lease nor admits a successor or checkpoint.
+    pub(crate) fn retained_writer_state_for_root(&self) -> io::Result<RetainedWriterStateForRoot> {
+        if unsafe { libc::geteuid() } != 0 || self.lease.is_none() {
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "actual Root and protected canonical issuer required",
+            ));
+        }
+        let _guard = self
+            .request_lock
+            .lock()
+            .map_err(|_| io::Error::other("issuer fenced"))?;
+        let state = self.store.load(STATE_OWNER).map_err(io::Error::other)?;
+        let proof = state
+            .writer_authorization
+            .as_ref()
+            .ok_or_else(|| io::Error::other("original retained writer absent"))?;
+        let claims = &proof.claims;
+        let registration = HostAuthorityWriterRegistration {
+            registered_agent_id: claims.registered_agent_id.clone(),
+            spawn_generation: claims.spawn_generation,
+            owner_epoch: claims.owner_epoch,
+            local_lease_id: claims.local_lease_id.clone(),
+            local_lease_generation: claims.local_lease_generation,
+            authority_lease: claims.authority_lease.clone(),
+        };
+        // This is the same strict signature/identity verifier used by original
+        // retired-predecessor rotation. Do not call its runtime time verifier,
+        // and do not turn this observation into a verified-use capability.
+        self.validate_writer_proof_identity(&state, &registration, proof)?;
+        let result = RetainedWriterStateForRoot {
+            registration,
+            proof: proof.clone(),
+            policies: state.policies.clone(),
+            revocations: state.head.clone(),
+            sequence: state.sequence,
+        };
+        if self.store.load(STATE_OWNER).map_err(io::Error::other)? != state {
+            return Err(io::Error::other(
+                "canonical issuer changed during Root observation",
+            ));
+        }
+        Ok(result)
+    }
+
     /// Trusted Root only. A failed launch can leave its signed authorization
     /// durable while the complete checkpoint still names the retired original
     /// predecessor. Retire that failed lease, then replace its proof under the

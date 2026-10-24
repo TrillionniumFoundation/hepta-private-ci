@@ -34,6 +34,10 @@ mod windows;
 mod pair_boundary;
 pub use pair_boundary::AuthorityLeaseRetirement;
 
+#[path = "authority_lease_admin_read.rs"]
+mod admin_read;
+pub use admin_read::AuthorityLeaseUnretiredReadV1;
+
 const LEASE_SCHEMA_VERSION: u32 = 1;
 const STORE_SCHEMA_VERSION: u32 = 2;
 pub const MAX_AUTHORITY_LEASES: usize = 16_384;

@@ -1,8 +1,8 @@
 //! Fixed active-generation registration, separate from each copy attempt.
 
 use super::*;
-use codex_state::RootSqliteMaterialIdentity;
-use codex_state::RootSqliteMaterialRegistration;
+use codex_sqlite::RootSqliteMaterialIdentity;
+use codex_sqlite::RootSqliteMaterialRegistration;
 
 /// A Root-only registration of the actual original active generation. The
 /// launcher binds this AFTER the original recovery factory returns the sole

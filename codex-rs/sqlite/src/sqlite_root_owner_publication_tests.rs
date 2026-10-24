@@ -45,7 +45,7 @@ impl Fixture {
         directory::require_root().unwrap();
         let parent = std::env::var_os("HEPTA_TEST_ROOT_MATERIAL_DESTINATION")
             .expect("protected actual Root fixture destination");
-        let name = crate::runtime::test_support::unique_temp_dir();
+        let name = crate::test_support::unique_temp_dir();
         let root = PathBuf::from(parent).join(name.file_name().unwrap());
         std::fs::create_dir(&root).unwrap();
         std::fs::set_permissions(&root, std::fs::Permissions::from_mode(0o700)).unwrap();

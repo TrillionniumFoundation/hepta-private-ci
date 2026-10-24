@@ -41,6 +41,14 @@ pub(crate) struct NativeCopyoutSnapshot {
     pub(crate) last: Option<NativeCopyoutDiagnostic>,
 }
 
+/// Counts of calls through the original live FileTransport. These observations
+/// do not allocate D, assert an effect or authorize any history request.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+pub(crate) struct NativeIoctlCounts {
+    pub(crate) install_ioctl_count: u64,
+    pub(crate) query_ioctl_count: u64,
+}
+
 #[derive(Default)]
 pub(super) struct NativeCopyoutProbe {
     state: Mutex<State>,
@@ -49,6 +57,7 @@ pub(super) struct NativeCopyoutProbe {
 #[derive(Default)]
 struct State {
     install_ioctl_count: u64,
+    query_ioctl_count: u64,
     selected_ioctl_count: u64,
     efault_count: u64,
     armed: Option<Armed>,
@@ -109,6 +118,17 @@ impl Drop for InaccessibleOutput {
 }
 
 impl NativeCopyoutProbe {
+    pub(super) fn ioctl_counts(&self) -> Result<NativeIoctlCounts, String> {
+        let state = self
+            .state
+            .lock()
+            .map_err(|_| "native copyout observation lock poisoned")?;
+        Ok(NativeIoctlCounts {
+            install_ioctl_count: state.install_ioctl_count,
+            query_ioctl_count: state.query_ioctl_count,
+        })
+    }
+
     pub(super) fn arm(
         &self,
         frame: &[u8],
@@ -159,6 +179,7 @@ impl NativeCopyoutProbe {
         output: &mut [u8],
     ) -> Result<(), String> {
         let install = input.get(8..10) == Some(&3_u16.to_le_bytes());
+        let query = input.get(8..10) == Some(&4_u16.to_le_bytes());
         let mut selected = {
             let mut state = self
                 .state
@@ -178,6 +199,12 @@ impl NativeCopyoutProbe {
                     .install_ioctl_count
                     .checked_add(1)
                     .ok_or("native Install observation count exhausted")?;
+            }
+            if query {
+                state.query_ioctl_count = state
+                    .query_ioctl_count
+                    .checked_add(1)
+                    .ok_or("native Query observation count exhausted")?;
             }
             if matches {
                 state.selected_ioctl_count = state
@@ -270,3 +297,7 @@ impl NativeCopyoutProbe {
 #[cfg(test)]
 #[path = "hos2_copyout_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "hos2_ioctl_counts_tests.rs"]
+mod counts_tests;

@@ -7,7 +7,7 @@ use std::time::UNIX_EPOCH;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_paths::HeptaAgentLayout;
-use codex_state::SqliteConfig;
+use codex_sqlite::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use serde::Serialize;
 use sha2::Digest;
@@ -1263,3 +1263,7 @@ fn from_i64(value: i64, label: &str) -> Result<u64, CognitiveStoreError> {
     u64::try_from(value)
         .map_err(|_| CognitiveStoreError::Corrupt(format!("negative federation {label}")))
 }
+
+#[cfg(test)]
+#[path = "cognitive_federation_profile.rs"]
+pub(crate) mod sqlite_profile;

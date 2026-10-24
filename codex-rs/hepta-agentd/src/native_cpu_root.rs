@@ -42,8 +42,11 @@ use std::os::unix::net::UnixListener;
 use std::path::PathBuf;
 use std::sync::Mutex;
 
+#[path = "native_cpu_cold_open.rs"]
+mod cold_open;
 #[path = "native_cpu_continuity.rs"]
 mod continuity;
+
 #[path = "native_cpu_successor.rs"]
 mod successor;
 use successor::OwnerImage;
@@ -202,7 +205,13 @@ impl Installation {
         let initialized = crate::initialize_host_authority(&state, &bootstrap)?;
         let runtime_dir = Path::new(RUNTIME).join("owner");
         platform::private_dir(&runtime_dir, 0, 60001, 0o2710)?;
-        platform::private_dir(&runtime_dir.join("consumer-local"), 60001, 60001, 0o700)?;
+        platform::private_dir(
+            &Path::new(STATE).join("consumer-local"),
+            60001,
+            60001,
+            0o700,
+        )?;
+        platform::mount_consumer_state()?;
         let config = HostAuthorityServiceConfig {
             schema_version: 1,
             state_dir: state.clone(),
@@ -274,6 +283,9 @@ impl Installation {
             notes: consumer("notes-consumer")?,
         });
         installation.config.checkpoint_state_dir = Some(installation.checkpoint.clone());
+        // The independently installed public-key pin survives process/boot
+        // loss. A cold opener never learns trust by reading the issuer's key.
+        cold_open::InstalledPin::save(&installation.config, boot)?;
         write_json(
             &Path::new(RUNTIME).join("owner-installed"),
             &serde_json::json!({"agent":owner}),
@@ -310,15 +322,7 @@ impl Installation {
             ));
         }
         if !first {
-            let generation = self
-                .recovery
-                .as_ref()
-                .unwrap()
-                .writer
-                .local_lease_generation
-                .checked_add(1)
-                .ok_or_else(|| invalid("original writer generation overflow"))?;
-            self.refresh_canonical_root_lease(generation)?;
+            self.refresh_canonical_root_lease(spec)?;
         }
         let recovery = self.recovery.as_ref();
         let pid = image.pid;
@@ -363,7 +367,7 @@ impl Installation {
                 local_lease_generation: 1,
                 authority_lease: AuthorityLease {
                     schema_version: 1,
-                    lease_id: "native-cpu-writer-1".into(),
+                    lease_id: cold_open::lease_id("writer", spec)?,
                     authority_epoch: 1,
                     revision: 1,
                     binding: AuthorityLeaseBinding {
@@ -407,6 +411,19 @@ impl Installation {
             self.scopes =
                 self.issuer
                     .replace_native_cpu_namespaces(&writer, kernel, self.scopes)?;
+        }
+        if image.kernel.is_none()
+            && image.role == 1
+            && let Some(previous) = recovery
+            && previous.previous.head.peer_lifetime.boot_id != root.boot_id
+        {
+            self.scopes = self.issuer.replace_native_cpu_namespaces_after_boot(
+                &writer,
+                &self.launcher,
+                &previous.previous,
+                &previous.retired,
+                self.scopes,
+            )?;
         }
         let admission = if image.role == 5 {
             crate::deployment_issuer::RootNativeCpuGrantAdmission::from_registered_history(
@@ -596,9 +613,13 @@ impl Installation {
 }
 
 pub(super) fn run(boot: NativeBootstrap) -> io::Result<()> {
-    platform::mount_platform()?;
+    let mounted = platform::mount_platform()?;
     let mut evidence = evidence::Evidence::load()?;
-    let installation = Arc::new(Mutex::new(Installation::fresh(&boot)?));
+    let installation = match mounted {
+        platform::StateMount::Fresh => Installation::fresh(&boot)?,
+        platform::StateMount::Retained => Installation::cold_open(&boot, end()?)?,
+    };
+    let installation = Arc::new(Mutex::new(installation));
     let fleet = installation.lock().map_err(error)?.fleet.clone();
     let active = Arc::new(Mutex::new(None));
     let ready = active.clone();

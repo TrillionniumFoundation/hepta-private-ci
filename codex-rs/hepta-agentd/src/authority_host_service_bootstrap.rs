@@ -66,6 +66,12 @@ impl RegisteredBootstrap {
 }
 
 impl HostAuthorityService {
+    /// Read the same actual Root identity used by bootstrap registration.
+    /// This is observation only: no service, lease or publisher is activated.
+    pub(crate) fn current_root_lifetime_for_admin() -> io::Result<CognitiveCheckpointPeerLifetime> {
+        process::current_root()
+    }
+
     /// Attach one launcher's pre-held actual Host pidfd to this exact assembled
     /// service. The launcher attests namespace provenance; this method never
     /// opens a numeric PID. No lease, proof, cut, consumer or sequence is made.

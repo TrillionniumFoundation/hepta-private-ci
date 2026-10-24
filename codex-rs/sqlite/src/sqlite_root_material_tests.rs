@@ -16,7 +16,7 @@ struct Fixture {
 impl Fixture {
     fn root_owned() -> anyhow::Result<Self> {
         assert_eq!(super::super::OwnerRule::CurrentUser.expected_uid()?, 0);
-        let root = crate::runtime::test_support::unique_temp_dir();
+        let root = crate::test_support::unique_temp_dir();
         std::fs::create_dir(&root)?;
         std::fs::set_permissions(&root, std::fs::Permissions::from_mode(0o700))?;
         let root = root.canonicalize()?;
@@ -71,7 +71,7 @@ impl Drop for Fixture {
 
 #[test]
 fn registered_material_refuses_zero_source_before_filesystem_access() -> anyhow::Result<()> {
-    let home = crate::runtime::test_support::unique_temp_dir();
+    let home = crate::test_support::unique_temp_dir();
     let source = SqliteConfig::new_for_testing(home.as_path().abs());
     let destination = SqliteConfig::new_for_testing(home.join("absent").as_path().abs());
     assert!(

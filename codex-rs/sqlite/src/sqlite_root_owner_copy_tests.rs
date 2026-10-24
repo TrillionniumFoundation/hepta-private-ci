@@ -51,7 +51,7 @@ impl Fixture {
         );
         let protected = std::env::var_os("HEPTA_TEST_ROOT_MATERIAL_DESTINATION")
             .expect("actual Root fixture requires its protected destination");
-        let name = crate::runtime::test_support::unique_temp_dir();
+        let name = crate::test_support::unique_temp_dir();
         let root = PathBuf::from(protected).join(name.file_name().unwrap());
         std::fs::create_dir(&root).unwrap();
         std::fs::set_permissions(&root, std::fs::Permissions::from_mode(0o700)).unwrap();
@@ -135,7 +135,7 @@ fn assert_non_root_refusal() {
         super::super::OwnerRule::CurrentUser.expected_uid().unwrap(),
         0
     );
-    let absent = crate::runtime::test_support::unique_temp_dir();
+    let absent = crate::test_support::unique_temp_dir();
     assert!(!absent.exists());
     assert!(
         RootSqliteOwnerCopy::bind_registered(&config(absent.clone()), OsStr::new(LOCK)).is_err()

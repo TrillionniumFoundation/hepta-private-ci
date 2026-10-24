@@ -6,7 +6,7 @@ use super::verify_store;
 use crate::cognitive_checkpoint::CognitiveCheckpointTransport;
 use crate::cognitive_checkpoint::ProtectedCognitiveCheckpoint;
 use crate::cognitive_checkpoint_wire::CognitiveCheckpointReceipt;
-use codex_state::SqliteConfig;
+use codex_sqlite::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use std::sync::Arc;
 use std::time::Duration;

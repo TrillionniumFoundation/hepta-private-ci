@@ -1,4 +1,4 @@
-//! Root-only handoff of an already authenticated clean Current head.
+//! Root-only handoff of the original full head and retained Current material.
 
 use super::*;
 use codex_hepta_memory::CognitiveCheckpointReceipt;
@@ -22,7 +22,9 @@ impl RetainedCut<'_> {
                 if material.anchor() != &head.last_current {
                     return Err(AuthorityTrustError::Invalid);
                 }
-                material.verify_unchanged().map_err(|_| AuthorityTrustError::Unavailable)
+                material
+                    .verify_unchanged()
+                    .map_err(|_| AuthorityTrustError::Unavailable)
             }
         }
     }
@@ -40,6 +42,28 @@ impl Predecessor<'_> {
         match self {
             Self::Retained(publisher) => publisher.require_exited(),
             Self::Retired(publisher) => publisher.require_retired(),
+        }
+    }
+
+    fn validate_boot_transition(
+        &self,
+        previous: &CognitiveCheckpointReceipt,
+        successor: &CognitiveCheckpointPeerLifetime,
+        material: &RetainedCut<'_>,
+    ) -> Result<(), AuthorityTrustError> {
+        match (self, material) {
+            (Self::Retained(publisher), _) => {
+                if publisher.lifetime.boot_id != successor.boot_id {
+                    return Err(AuthorityTrustError::Invalid);
+                }
+                Ok(())
+            }
+            (Self::Retired(publisher), RetainedCut::CleanCurrent) => {
+                publisher.require_same_boot_successor(successor)
+            }
+            (Self::Retired(publisher), RetainedCut::Physical(_)) => {
+                publisher.require_physical_successor(previous, successor)
+            }
         }
     }
 }
@@ -94,6 +118,9 @@ impl HostCognitiveCheckpoint {
 
     /// Root-only administrative recovery from the independently retained last
     /// Current physical image after the old publisher's actual retirement.
+    /// Prior-boot retirement must come from the original checkpoint owner's
+    /// separate actual-Root/clock/full-head observation. Ordinary pidfd
+    /// retirement retains its original same-boot requirement.
     /// Dirty/proposal bytes are never a recovery source. The trusted caller
     /// holds the new original canonical writer dispatch fence throughout.
     /// This does not install owner files, open a writer or release Session.
@@ -126,7 +153,8 @@ impl HostCognitiveCheckpoint {
         clock: Arc<dyn AuthorityClock>,
         material: RetainedCut<'_>,
     ) -> Result<Self, AuthorityTrustError> {
-        let next = Self::successor_head(previous, &predecessor, &registration, successor, &material)?;
+        let next =
+            Self::successor_head(previous, &predecessor, &registration, successor, &material)?;
         let old = &previous.head;
         let new_writer = &registration.writer_binding;
         let store = HostAuthorityFrontierStore::open(directory, STORE_OWNER.into())?;
@@ -153,7 +181,9 @@ impl HostCognitiveCheckpoint {
         predecessor
             .require_retired()
             .map_err(|_| AuthorityTrustError::Unavailable)?;
-        material.validate(old).map_err(|_| AuthorityTrustError::Unavailable)?;
+        material
+            .validate(old)
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
         // All blocking metadata and retirement I/O precedes this final clock.
         // Only the original nonblocking successor pidfd poll follows it.
         let after = clock
@@ -203,7 +233,6 @@ impl HostCognitiveCheckpoint {
             || successor.lifetime != registration.peer_lifetime
             || old.peer_lifetime == registration.peer_lifetime
             || old.peer_lifetime.uid != registration.peer_lifetime.uid
-            || old.peer_lifetime.boot_id != registration.peer_lifetime.boot_id
             || old_writer.lease_id != new_writer.lease_id
             || old_writer.generation.checked_add(1) != Some(new_writer.generation)
             || (old_writer.authority_epoch, old_writer.owner_epoch)
@@ -213,6 +242,10 @@ impl HostCognitiveCheckpoint {
         {
             return Err(AuthorityTrustError::Invalid);
         }
+        // The ordinary retained/same-boot paths keep their original boot
+        // equality. Only a separate Root observation of the actual prior boot
+        // and its exact protected head can admit a physical cross-boot cut.
+        predecessor.validate_boot_transition(previous, &registration.peer_lifetime, material)?;
         predecessor.require_retired()?;
         successor.require_alive()?;
         let mut next = old.clone();
@@ -245,8 +278,11 @@ impl HostCognitiveCheckpoint {
         successor: &RetainedCheckpointPublisher,
         material: codex_hepta_memory::VerifiedCognitiveMaterial,
         layout: &codex_hepta_paths::HeptaAgentLayout,
-        validate_after: impl FnOnce(&codex_hepta_memory::InstalledCognitiveMaterial, u64, u64)
-            -> Result<(), AuthorityTrustError>,
+        validate_after: impl FnOnce(
+            &codex_hepta_memory::InstalledCognitiveMaterial,
+            u64,
+            u64,
+        ) -> Result<(), AuthorityTrustError>,
     ) -> Result<codex_hepta_memory::InstalledCognitiveMaterial, AuthorityTrustError> {
         let _guard = self.exchange_lock.lock().map_err(|_| self.close())?;
         let result = (|| {
@@ -254,8 +290,11 @@ impl HostCognitiveCheckpoint {
                 return Err(AuthorityTrustError::Unavailable);
             }
             let expected = Self::successor_head(
-                previous, &Predecessor::Retired(predecessor), &self.registration,
-                successor, &RetainedCut::Physical(&material),
+                previous,
+                &Predecessor::Retired(predecessor),
+                &self.registration,
+                successor,
+                &RetainedCut::Physical(&material),
             )?;
             if self.load()? != expected || layout.agent_id() != &expected.owner_agent_id {
                 return Err(AuthorityTrustError::Invalid);
@@ -265,7 +304,8 @@ impl HostCognitiveCheckpoint {
             if before >= expiry {
                 return Err(AuthorityTrustError::Unavailable);
             }
-            let installed = material.install_for_registered_owner(layout, &expected.last_current)
+            let installed = material
+                .install_for_registered_owner(layout, &expected.last_current)
                 .map_err(|_| AuthorityTrustError::Unavailable)?;
             // Publication may already be durable. Later uncertainty is always
             // Unknown; never delete or retry the new image or changed pointer.
@@ -273,7 +313,9 @@ impl HostCognitiveCheckpoint {
                 return Err(AuthorityTrustError::Unavailable);
             }
             predecessor.require_retired()?;
-            installed.verify_unchanged().map_err(|_| AuthorityTrustError::Unavailable)?;
+            installed
+                .verify_unchanged()
+                .map_err(|_| AuthorityTrustError::Unavailable)?;
             validate_after(&installed, before, expiry)?;
             // Only this nonblocking held-pidfd poll follows the finalizer's
             // protected clock, while both original locks remain held.
@@ -282,7 +324,6 @@ impl HostCognitiveCheckpoint {
         })();
         result.map_err(|_| self.close())
     }
-
 }
 
 #[cfg(test)]

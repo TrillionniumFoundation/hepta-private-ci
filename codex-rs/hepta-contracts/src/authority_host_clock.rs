@@ -79,13 +79,34 @@ impl HostAuthorityClock {
         root: Arc<RootAuthorityDirectory>,
         owner_id: String,
     ) -> Result<Self, AuthorityTrustError> {
+        #[cfg(debug_assertions)]
+        let mut timing = ClockPhaseTiming::new("initialize");
+        #[cfg(debug_assertions)]
+        timing.stage("initial_os_sample_enter");
         let initial = initial_record(sample_os_clock()?)?;
+        #[cfg(debug_assertions)]
+        timing.stage("initial_record_complete");
         let store = Arc::new(HostAuthorityFrontierStore::initialize(
             root,
             owner_id.clone(),
             initial.clone(),
         )?);
-        observe_after_io(&initial, sample_os_clock()?)?;
+        #[cfg(debug_assertions)]
+        timing.stage("frontier_initialize_complete");
+        let observed_sample = sample_os_clock()?;
+        #[cfg(debug_assertions)]
+        timing.stage("post_io_os_sample_complete");
+        #[cfg(debug_assertions)]
+        let diagnostic = ClockInitializationObservation::capture(&initial, &observed_sample);
+        let observed = observe_after_io(&initial, observed_sample);
+        #[cfg(debug_assertions)]
+        {
+            if let Err(error) = &observed {
+                diagnostic.rejected(error);
+            }
+            timing.finish(observed.is_ok());
+        }
+        observed?;
         Ok(Self {
             store,
             owner_id,
@@ -334,6 +355,115 @@ fn to_ns(value: Timespec) -> Result<u64, AuthorityTrustError> {
 #[path = "authority_host_clock_slow_tests.rs"]
 mod slow_tests;
 
+#[cfg(debug_assertions)]
+struct ClockPhaseTiming {
+    phase: &'static str,
+    started: std::time::Instant,
+    started_unix_us: Option<u128>,
+    thread: std::thread::ThreadId,
+    stages: Vec<(&'static str, u128)>,
+    success: Option<bool>,
+}
+
+#[cfg(debug_assertions)]
+impl ClockPhaseTiming {
+    fn new(phase: &'static str) -> Self {
+        Self {
+            phase,
+            started: std::time::Instant::now(),
+            started_unix_us: std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .ok()
+                .map(|value| value.as_micros()),
+            thread: std::thread::current().id(),
+            stages: Vec::new(),
+            success: None,
+        }
+    }
+    fn stage(&mut self, stage: &'static str) {
+        self.stages
+            .push((stage, self.started.elapsed().as_micros()));
+    }
+    fn finish(&mut self, success: bool) {
+        self.stage("return");
+        self.success = Some(success);
+    }
+}
+
+#[cfg(debug_assertions)]
+impl Drop for ClockPhaseTiming {
+    fn drop(&mut self) {
+        let elapsed_us = self.started.elapsed().as_micros();
+        if elapsed_us >= 100_000 || self.success != Some(true) {
+            eprintln!(
+                "HEPTA_ROOT_CLOCK_PHASE_V1 phase={} thread={:?} started_unix_us={:?} elapsed_us={} success={:?} stages={:?}",
+                self.phase,
+                self.thread,
+                self.started_unix_us,
+                elapsed_us,
+                self.success,
+                self.stages
+            );
+        }
+    }
+}
+
+// Diagnostic values are copied from the two original samples, without taking
+// another authority-clock sample, performing I/O or changing any return path.
+// Only relative durations/booleans are printed; this is never a clock proof.
+#[cfg(debug_assertions)]
+struct ClockInitializationObservation {
+    same_boot: bool,
+    sample_span_ns: Option<u64>,
+    elapsed_since_anchor_ns: Option<u64>,
+    horizon_ns: Option<u64>,
+    wall_ahead_of_projection_ns: Option<i128>,
+    projection_past_ceiling_ns: Option<i128>,
+}
+
+#[cfg(debug_assertions)]
+impl ClockInitializationObservation {
+    fn capture(durable: &ClockRecord, sample: &ClockSample) -> Self {
+        let elapsed = sample.after_ns.checked_sub(durable.boottime_ns);
+        let projected = elapsed.and_then(|elapsed| durable.unix_ns.checked_add(elapsed));
+        Self {
+            same_boot: sample.boot_id == durable.boot_id,
+            sample_span_ns: sample.after_ns.checked_sub(sample.before_ns),
+            elapsed_since_anchor_ns: elapsed,
+            horizon_ns: durable.ceiling_ns.checked_sub(durable.unix_ns),
+            wall_ahead_of_projection_ns: projected
+                .map(|actual| i128::from(sample.realtime_ns) - i128::from(actual)),
+            projection_past_ceiling_ns: projected
+                .map(|actual| i128::from(actual) - i128::from(durable.ceiling_ns)),
+        }
+    }
+
+    fn rejected(&self, error: &AuthorityTrustError) {
+        // Classify only the already returned error. The original observer
+        // remains authoritative, including its preceding Invalid checks.
+        let class = if !matches!(error, AuthorityTrustError::Unavailable) {
+            "original_non_unavailable_error"
+        } else if !self.same_boot {
+            "boot_changed"
+        } else if self.wall_ahead_of_projection_ns.is_some_and(|gap| gap > 0) {
+            "wall_ahead_of_durable_projection"
+        } else if self.projection_past_ceiling_ns.is_some_and(|gap| gap > 0) {
+            "durable_one_second_horizon_elapsed"
+        } else {
+            "unclassified_original_unavailable"
+        };
+        eprintln!(
+            "HEPTA_ROOT_CLOCK_INITIAL_OBSERVATION_V1 error={error:?} class={class} same_boot={} sample_span_ns={:?} elapsed_since_anchor_ns={:?} horizon_ns={:?} wall_ahead_of_projection_ns={:?} projection_past_ceiling_ns={:?}",
+            self.same_boot,
+            self.sample_span_ns,
+            self.elapsed_since_anchor_ns,
+            self.horizon_ns,
+            self.wall_ahead_of_projection_ns,
+            self.projection_past_ceiling_ns,
+        );
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -542,59 +672,6 @@ mod tests {
             let old_now = old.anchor_unix_ms + (boot - old.anchor_boottime_ns) / 1_000_000;
             let new_now = new.anchor_unix_ms + (boot - new.anchor_boottime_ns) / 1_000_000;
             assert_eq!(new_now, old_now);
-        }
-    }
-}
-
-#[cfg(debug_assertions)]
-struct ClockPhaseTiming {
-    phase: &'static str,
-    started: std::time::Instant,
-    started_unix_us: Option<u128>,
-    thread: std::thread::ThreadId,
-    stages: Vec<(&'static str, u128)>,
-    success: Option<bool>,
-}
-
-#[cfg(debug_assertions)]
-impl ClockPhaseTiming {
-    fn new(phase: &'static str) -> Self {
-        Self {
-            phase,
-            started: std::time::Instant::now(),
-            started_unix_us: std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .ok()
-                .map(|value| value.as_micros()),
-            thread: std::thread::current().id(),
-            stages: Vec::new(),
-            success: None,
-        }
-    }
-    fn stage(&mut self, stage: &'static str) {
-        self.stages
-            .push((stage, self.started.elapsed().as_micros()));
-    }
-    fn finish(&mut self, success: bool) {
-        self.stage("return");
-        self.success = Some(success);
-    }
-}
-
-#[cfg(debug_assertions)]
-impl Drop for ClockPhaseTiming {
-    fn drop(&mut self) {
-        let elapsed_us = self.started.elapsed().as_micros();
-        if elapsed_us >= 100_000 || self.success != Some(true) {
-            eprintln!(
-                "HEPTA_ROOT_CLOCK_PHASE_V1 phase={} thread={:?} started_unix_us={:?} elapsed_us={} success={:?} stages={:?}",
-                self.phase,
-                self.thread,
-                self.started_unix_us,
-                elapsed_us,
-                self.success,
-                self.stages
-            );
         }
     }
 }

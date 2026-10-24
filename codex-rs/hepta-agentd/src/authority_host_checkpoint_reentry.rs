@@ -84,11 +84,9 @@ impl HostCognitiveCheckpoint {
             || failed.owner_epoch <= old.writer_binding.owner_epoch
             || failed_publisher.lifetime == old.peer_lifetime
             || failed_publisher.lifetime.uid != old.peer_lifetime.uid
-            || failed_publisher.lifetime.boot_id != old.peer_lifetime.boot_id
             || successor.lifetime == old.peer_lifetime
             || successor.lifetime == failed_publisher.lifetime
             || successor.lifetime.uid != old.peer_lifetime.uid
-            || successor.lifetime.boot_id != old.peer_lifetime.boot_id
             || material.anchor() != &old.last_current
         {
             return Err(io::Error::new(
@@ -96,6 +94,16 @@ impl HostCognitiveCheckpoint {
                 "unactivated writer differs from original predecessor",
             ));
         }
+        // Ordinary evidence retains exact same-boot equality. A prior-boot
+        // predecessor can be used only with its original full-head token and
+        // actual new-boot Root; both failed and replacement lives must belong
+        // to that same new boot. Their own retirement/liveness remains below.
+        predecessor
+            .require_physical_successor(previous, &failed_publisher.lifetime)
+            .map_err(io::Error::other)?;
+        predecessor
+            .require_physical_successor(previous, &successor.lifetime)
+            .map_err(io::Error::other)?;
         let store = HostAuthorityFrontierStore::<CognitiveCheckpointHead>::open(
             directory,
             STORE_OWNER.into(),
@@ -128,3 +136,6 @@ impl HostCognitiveCheckpoint {
             .map_err(|_| io::Error::other(AuthorityTrustError::Unavailable))?
     }
 }
+
+#[path = "authority_host_checkpoint_observation.rs"]
+mod observation;

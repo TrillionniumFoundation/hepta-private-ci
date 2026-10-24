@@ -26,6 +26,27 @@ pub struct RootStoredObservation {
 }
 
 impl RootAuthorityDirectory {
+    /// Open a complete existing observation without creating or repairing its
+    /// record. The original protected inode, exact bytes and durability checks
+    /// remain in force. This supplies no authority or recovery permission.
+    pub fn open_observation(
+        self: &Arc<Self>,
+        observation_id: &str,
+    ) -> Result<RootStoredObservation, AuthorityTrustError> {
+        let name = observation_name(observation_id)?;
+        let _lock = self.lock(&format!("{name}.lock"))?;
+        let (payload, record) = read_record(self, &name, observation_id)?;
+        record.file.sync_all().map_err(unavailable)?;
+        self.sync_directory()?;
+        Ok(RootStoredObservation {
+            root: self.clone(),
+            observation_id: observation_id.to_string(),
+            name,
+            record,
+            payload,
+        })
+    }
+
     /// Save one authenticated observation exactly once. Identity should bind
     /// the complete boot and external transaction identity; no untrusted path
     /// is accepted. An existing unequal record is a conflict, never replaced.
@@ -140,3 +161,7 @@ fn read_record(
     }
     Ok((record.payload, DurableRecord { file, bytes }))
 }
+
+#[cfg(test)]
+#[path = "authority_host_observation_open_tests.rs"]
+mod open_tests;

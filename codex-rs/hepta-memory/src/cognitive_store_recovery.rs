@@ -13,8 +13,8 @@
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_paths::HeptaAgentLayout;
-use codex_state::SqliteConfig;
-use codex_state::SqliteRecoveryError;
+use codex_sqlite::SqliteConfig;
+use codex_sqlite::SqliteRecoveryError;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use sha2::Digest;
 use sha2::Sha256;

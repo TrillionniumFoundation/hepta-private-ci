@@ -18,7 +18,7 @@ pub use registration::RootCognitiveMaterialRegistration;
 pub struct VerifiedCognitiveMaterial {
     path: PathBuf,
     anchor: CognitiveRecoveryAnchor,
-    retained: codex_state::ExistingSqliteRecoveryGuard,
+    retained: codex_sqlite::ExistingSqliteRecoveryGuard,
 }
 
 impl VerifiedCognitiveMaterial {

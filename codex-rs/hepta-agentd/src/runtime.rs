@@ -25,6 +25,7 @@ use crate::CognitiveRetrievalMode;
 use crate::RuntimeTasks;
 use crate::app_runtime::run_app_server;
 use crate::automation::spawn_automation_service;
+pub(crate) use crate::lifecycle_signal::shutdown_signal;
 
 const EVENT_CAPACITY: usize = 128;
 const GENERATION_POLL_INTERVAL: Duration = Duration::from_millis(50);
@@ -609,26 +610,6 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
             "agentd shutdown left {unresolved} indeterminate run(s); owner recovery is required"
         )))
     }
-}
-
-#[cfg(unix)]
-pub(crate) async fn shutdown_signal() -> Result<(), AgentdError> {
-    let mut terminate = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())?;
-    let mut interrupt = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::interrupt())?;
-    tokio::select! {
-        signal = terminate.recv() => signal.ok_or_else(|| {
-            AgentdError::Protocol("SIGTERM listener closed before receiving a signal".to_string())
-        })?,
-        signal = interrupt.recv() => signal.ok_or_else(|| {
-            AgentdError::Protocol("SIGINT listener closed before receiving a signal".to_string())
-        })?,
-    }
-    Ok(())
-}
-
-#[cfg(not(unix))]
-pub(crate) async fn shutdown_signal() -> Result<(), AgentdError> {
-    tokio::signal::ctrl_c().await.map_err(Into::into)
 }
 
 #[cfg(test)]

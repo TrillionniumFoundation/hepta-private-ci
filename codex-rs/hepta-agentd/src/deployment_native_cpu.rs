@@ -223,6 +223,15 @@ impl DeploymentFinalUseIssuer {
                 "fresh kernel namespaces reused an old exact CPU scope",
             ));
         }
+        self.replace_native_cpu_exact_scopes(registration, expected_scopes, next_scopes)
+    }
+
+    fn replace_native_cpu_exact_scopes(
+        &self,
+        registration: &HostAuthorityWriterRegistration,
+        expected_scopes: [[u8; 32]; 2],
+        next_scopes: [[u8; 32]; 2],
+    ) -> io::Result<[[u8; 32]; 2]> {
         let policy = |scope| DeploymentGrantPolicy {
             subject_id: registration.registered_agent_id.to_string(),
             destination_id: codex_hepta_memory::HOS2_DESTINATION_V1.into(),
@@ -285,3 +294,6 @@ impl DeploymentFinalUseIssuer {
         Ok(next_scopes)
     }
 }
+
+#[path = "deployment_native_cpu_boot.rs"]
+mod boot;

@@ -1,5 +1,5 @@
 use super::*;
-use crate::runtime::test_support::unique_temp_dir;
+use crate::test_support::unique_temp_dir;
 use anyhow::Context;
 use codex_utils_absolute_path::test_support::PathExt;
 use pretty_assertions::assert_eq;

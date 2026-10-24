@@ -1,0 +1,16 @@
+// Final G2 image composed from the same original shared owner sources.
+// Full Agentd APIs remain in lib.rs; this root has no Full execution owner.
+
+#[cfg(target_os = "linux")]
+include!("native_owner_modules.rs");
+
+#[cfg(target_os = "linux")]
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    run_native_cpu_daemon()?;
+    Ok(())
+}
+#[cfg(not(target_os = "linux"))]
+fn main() {
+    eprintln!("native CPU roles require the reviewed Asterinas kernel");
+    std::process::exit(1);
+}

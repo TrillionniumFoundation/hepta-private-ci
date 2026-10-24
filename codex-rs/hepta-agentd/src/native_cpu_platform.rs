@@ -38,7 +38,31 @@ pub(super) fn private_dir(path: &Path, uid: u32, gid: u32, mode: u32) -> io::Res
     std::fs::set_permissions(path, std::fs::Permissions::from_mode(mode))?;
     File::open(path.parent().ok_or_else(|| invalid("directory parent"))?)?.sync_all()
 }
-pub(super) fn mount_platform() -> io::Result<()> {
+pub(super) enum StateMount {
+    Fresh,
+    Retained,
+}
+
+pub(super) fn existing_directory(path: &Path, uid: u32, gid: u32, mode: u32) -> io::Result<()> {
+    use std::os::unix::fs::MetadataExt;
+    let file = std::fs::OpenOptions::new()
+        .read(true)
+        .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC)
+        .open(path)?;
+    let actual = file.metadata()?;
+    if !actual.is_dir()
+        || actual.uid() != uid
+        || actual.gid() != gid
+        || actual.mode() & 0o7777 != mode
+    {
+        return Err(invalid(
+            "retained native directory identity or mode differs",
+        ));
+    }
+    file.sync_all()
+}
+
+pub(super) fn mount_platform() -> io::Result<StateMount> {
     if unsafe { libc::geteuid() } != 0 || std::process::id() != 1 {
         return Err(invalid("actual Root required"));
     }
@@ -51,12 +75,26 @@ pub(super) fn mount_platform() -> io::Result<()> {
     std::fs::create_dir_all("/sys/fs/cgroup")?;
     mount("none", "/sys/fs/cgroup", "cgroup2", 0)?;
     mount("/dev/vda", "/state", "ext2", 0)?;
-    // Only a fresh explicit installation is accepted by this entry revision.
-    // In particular, a partial existing authority tree never becomes genesis.
-    private_dir(Path::new(STATE), 0, 0, 0o711)?;
+    // Presence never means a fresh installation. Existing/partial state must
+    // pass the original open-only owners below; it is never reset or repaired.
+    let retained = match std::fs::symlink_metadata(STATE) {
+        Ok(_) => {
+            existing_directory(Path::new(STATE), 0, 0, 0o711)?;
+            StateMount::Retained
+        }
+        Err(error) if error.kind() == io::ErrorKind::NotFound => {
+            private_dir(Path::new(STATE), 0, 0, 0o711)?;
+            StateMount::Fresh
+        }
+        Err(error) => return Err(error),
+    };
     private_dir(Path::new(RUNTIME), 0, 0, 0o755)?;
     for child in ["protected-source", "protected"] {
-        private_dir(&Path::new(STATE).join(child), 0, 0, 0o700)?;
+        let path = Path::new(STATE).join(child);
+        match &retained {
+            StateMount::Fresh => private_dir(&path, 0, 0, 0o700)?,
+            StateMount::Retained => existing_directory(&path, 0, 0, 0o700)?,
+        }
     }
     mount(
         &format!("{STATE}/protected-source"),
@@ -89,8 +127,42 @@ pub(super) fn mount_platform() -> io::Result<()> {
         .open(Path::new(RUNTIME).join("platform-ready"))?;
     ready.write_all(b"g2-root-mounted-v1\n")?;
     ready.sync_all()?;
-    File::open(RUNTIME)?.sync_all()
+    File::open(RUNTIME)?.sync_all()?;
+    Ok(retained)
 }
+/// Keep the original sealed runtime path/ancestor policy while retaining the
+/// same FinalUse local stores on the state disk. Root owns both parent entries;
+/// the Host cannot replace the mount source or target directory itself.
+pub(super) fn mount_consumer_state() -> io::Result<()> {
+    use std::os::unix::fs::MetadataExt;
+    let source = Path::new(STATE).join("consumer-local");
+    existing_directory(&source, 60001, 60001, 0o700)?;
+    let held = std::fs::OpenOptions::new()
+        .read(true)
+        .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC)
+        .open(&source)?;
+    let target = Path::new(RUNTIME).join("owner/consumer-local");
+    private_dir(&target, 60001, 60001, 0o700)?;
+    mount(
+        &source.to_string_lossy(),
+        &target.to_string_lossy(),
+        "none",
+        libc::MS_BIND,
+    )?;
+    let current = std::fs::OpenOptions::new()
+        .read(true)
+        .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC)
+        .open(&target)?;
+    let retained = held.metadata()?;
+    let observed = current.metadata()?;
+    if (retained.dev(), retained.ino()) != (observed.dev(), observed.ino()) {
+        return Err(invalid(
+            "original consumer bind differs from its retained state inode",
+        ));
+    }
+    existing_directory(&target, 60001, 60001, 0o700)
+}
+
 pub(super) fn wait_platform() -> io::Result<()> {
     let deadline = Instant::now() + Duration::from_secs(30);
     loop {

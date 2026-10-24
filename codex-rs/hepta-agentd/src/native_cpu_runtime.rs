@@ -91,7 +91,7 @@ where
         .run_until(async move {
             tokio::pin!(owner_control);
             let completed = tokio::select! {
-                result = crate::runtime::shutdown_signal() => { result?; None },
+                result = crate::lifecycle_signal::shutdown_signal() => { result?; None },
                 result = &mut owner_control => Some(result),
             };
             // Close new admission first. An already entered command is retained

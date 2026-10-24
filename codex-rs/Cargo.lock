@@ -3993,7 +3993,7 @@ dependencies = [
  "codex-hepta-operations",
  "codex-hepta-paths",
  "codex-hepta-types",
- "codex-state",
+ "codex-sqlite",
  "codex-utils-absolute-path",
  "ed25519-dalek",
  "futures",
@@ -5225,6 +5225,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "codex-sqlite"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "codex-utils-absolute-path",
+ "libc",
+ "libsqlite3-sys",
+ "log",
+ "pretty_assertions",
+ "sqlx",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
 name = "codex-state"
 version = "0.0.0"
 dependencies = [
@@ -5233,6 +5248,7 @@ dependencies = [
  "codex-git-utils",
  "codex-history",
  "codex-protocol",
+ "codex-sqlite",
  "codex-utils-absolute-path",
  "libc",
  "libsqlite3-sys",

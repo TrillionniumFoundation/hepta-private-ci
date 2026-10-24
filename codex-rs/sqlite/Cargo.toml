@@ -1,0 +1,21 @@
+[package]
+name = "codex-sqlite"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+codex-utils-absolute-path = { workspace = true }
+libsqlite3-sys = { workspace = true }
+libc = { workspace = true }
+log = { workspace = true }
+sqlx = { workspace = true }
+
+[dev-dependencies]
+anyhow = { workspace = true }
+pretty_assertions = { workspace = true }
+tokio = { workspace = true, features = ["fs", "io-util", "macros", "rt-multi-thread", "sync", "time"] }
+uuid = { workspace = true, features = ["v4"] }
+
+[lints]
+workspace = true

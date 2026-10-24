@@ -25,6 +25,7 @@ mod copyout;
 pub(crate) use copyout::AfterCopyoutFault;
 pub(crate) use copyout::NativeCopyoutDiagnostic;
 pub(crate) use copyout::NativeCopyoutSnapshot;
+pub(crate) use copyout::NativeIoctlCounts;
 
 const HEADER_BYTES: usize = 64;
 const HOS2_IOCTL: libc::c_ulong = 0xc020_4802;
@@ -373,6 +374,13 @@ impl AgentdHos2Device {
             .native_copyout_probe()
             .ok_or("native syscall diagnostics require the original actual FileTransport")?
             .snapshot()
+    }
+
+    pub(crate) fn native_ioctl_counts(&self) -> Result<NativeIoctlCounts, String> {
+        self.transport
+            .native_copyout_probe()
+            .ok_or("native syscall diagnostics require the original actual FileTransport")?
+            .ioctl_counts()
     }
 
     fn history_slot(&self, delivery: &Hos2DeliveryId) -> Result<(u64, u64), String> {

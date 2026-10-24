@@ -1,5 +1,5 @@
 //! Independently derive the schema from compiled migrations, never owner bytes.
-use codex_state::SqliteConfig;
+use codex_sqlite::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
 use super::*;

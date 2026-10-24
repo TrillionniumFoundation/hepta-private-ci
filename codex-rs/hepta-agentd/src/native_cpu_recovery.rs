@@ -32,16 +32,15 @@ impl Installation {
         }
         // The old signed proof is authenticated as a retired predecessor by
         // the original registry rotation, not accepted as a live authority.
-        self.leases
-            .revoke(
-                &previous.writer.authority_lease.lease_id,
-                previous.writer.authority_lease.revision,
-                Sha256::digest(
-                    serde_json::to_vec(&previous.previous.head.peer_lifetime).map_err(error)?,
-                )
-                .into(),
+        cold_open::retire_lease_for_handoff(
+            &self.leases,
+            &self.clock,
+            &previous.writer.authority_lease,
+            Sha256::digest(
+                serde_json::to_vec(&previous.previous.head.peer_lifetime).map_err(error)?,
             )
-            .map_err(error)?;
+            .into(),
+        )?;
         let mut writer = previous.writer.clone();
         writer.spawn_generation = spec.generation;
         writer.owner_epoch = writer
@@ -52,8 +51,7 @@ impl Installation {
             .local_lease_generation
             .checked_add(1)
             .ok_or_else(|| invalid("original local generation overflow"))?;
-        writer.authority_lease.lease_id =
-            format!("native-cpu-writer-{}", writer.local_lease_generation);
+        writer.authority_lease.lease_id = cold_open::lease_id("writer", spec)?;
         writer.authority_lease.revision = 1;
         writer.authority_lease.issued_at_unix_ms = self.clock.now_unix_ms().map_err(error)?;
         writer.authority_lease.expires_at_unix_ms = writer

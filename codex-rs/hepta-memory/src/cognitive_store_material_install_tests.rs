@@ -40,7 +40,7 @@ fn owner_file(path: &Path, bytes: &[u8]) {
 
 impl Fixture {
     async fn new() -> (Self, VerifiedCognitiveMaterial) {
-        codex_state::RootSqliteMaterialRegistration::verify_caller(/*registered_uid*/ 60001)
+        codex_sqlite::RootSqliteMaterialRegistration::verify_caller(/*registered_uid*/ 60001)
             .unwrap();
         let parent = std::env::var_os("HEPTA_TEST_ROOT_OWNER_INSTALL_DESTINATION")
             .expect("separate Root0/0711 owner-traversable fixture namespace");

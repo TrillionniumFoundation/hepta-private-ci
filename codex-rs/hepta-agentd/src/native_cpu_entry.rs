@@ -125,8 +125,9 @@ impl NativeBootstrap {
 
 /// Run the actual kernel-created role. This is a finite native CPU profile,
 /// with an explicit fresh Root installation and the original restricted
-/// kernel factory for subsequent final images. Existing/partial authority
-/// state is refused; it is never reset on startup. Native qualification still
+/// kernel factory for subsequent final images. Retained installations reopen
+/// only their original pinned owners and physical cut; partial state never
+/// becomes a fresh installation. Native qualification still
 /// requires actual full-owner execution of each accepted scenario.
 pub fn run_native_cpu_daemon() -> io::Result<()> {
     let boot = NativeBootstrap::read()?;

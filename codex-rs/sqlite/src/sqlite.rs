@@ -1,0 +1,339 @@
+//! Shared SQLite connection configuration.
+
+#![expect(
+    clippy::disallowed_methods,
+    reason = "this is the centralized SQLite connection shim"
+)]
+
+use codex_utils_absolute_path::AbsolutePathBuf;
+use log::LevelFilter;
+use sqlx::ConnectOptions;
+use sqlx::Connection;
+use sqlx::Error;
+use sqlx::SqlitePool;
+use sqlx::sqlite::SqliteAutoVacuum;
+use sqlx::sqlite::SqliteConnectOptions;
+use sqlx::sqlite::SqliteJournalMode;
+use sqlx::sqlite::SqlitePoolOptions;
+use sqlx::sqlite::SqliteSynchronous;
+use std::path::Path;
+use std::path::PathBuf;
+use std::sync::Arc;
+use std::time::Duration;
+
+const LOGS_DB_FILENAME: &str = "logs_2.sqlite";
+const GOALS_DB_FILENAME: &str = "goals_1.sqlite";
+const MEMORIES_DB_FILENAME: &str = "memories_1.sqlite";
+const QUEUE_DB_FILENAME: &str = "queue_1.sqlite";
+const STATE_DB_FILENAME: &str = "state_5.sqlite";
+const THREAD_HISTORY_DB_FILENAME: &str = "thread_history_1.sqlite";
+
+#[derive(Clone, Copy)]
+struct RuntimeDbSpec {
+    label: &'static str,
+    filename: &'static str,
+}
+
+impl RuntimeDbSpec {
+    fn path(self, codex_home: &Path) -> PathBuf {
+        codex_home.join(self.filename)
+    }
+}
+
+const STATE_DB: RuntimeDbSpec = RuntimeDbSpec {
+    label: "state DB",
+    filename: STATE_DB_FILENAME,
+};
+
+const LOGS_DB: RuntimeDbSpec = RuntimeDbSpec {
+    label: "log DB",
+    filename: LOGS_DB_FILENAME,
+};
+
+const GOALS_DB: RuntimeDbSpec = RuntimeDbSpec {
+    label: "goals DB",
+    filename: GOALS_DB_FILENAME,
+};
+
+const MEMORIES_DB: RuntimeDbSpec = RuntimeDbSpec {
+    label: "memories DB",
+    filename: MEMORIES_DB_FILENAME,
+};
+
+const QUEUE_DB: RuntimeDbSpec = RuntimeDbSpec {
+    label: "queue DB",
+    filename: QUEUE_DB_FILENAME,
+};
+
+const THREAD_HISTORY_DB: RuntimeDbSpec = RuntimeDbSpec {
+    label: "thread history DB",
+    filename: THREAD_HISTORY_DB_FILENAME,
+};
+
+const RUNTIME_DBS: [RuntimeDbSpec; 6] = [
+    STATE_DB,
+    LOGS_DB,
+    GOALS_DB,
+    MEMORIES_DB,
+    QUEUE_DB,
+    THREAD_HISTORY_DB,
+];
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RuntimeDbPath {
+    pub label: &'static str,
+    pub path: PathBuf,
+}
+
+/// Resolved configuration shared by all Codex SQLite connections.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct SqliteConfig {
+    sqlite_home: AbsolutePathBuf,
+}
+
+impl SqliteConfig {
+    pub fn from_sqlite_home(sqlite_home: AbsolutePathBuf) -> Self {
+        Self { sqlite_home }
+    }
+
+    pub fn new_for_testing(sqlite_home: AbsolutePathBuf) -> Self {
+        Self::from_sqlite_home(sqlite_home)
+    }
+
+    pub fn home(&self) -> &Path {
+        self.sqlite_home.as_path()
+    }
+
+    /// Return the path to the primary state database.
+    pub fn state_db_path(&self) -> PathBuf {
+        STATE_DB.path(self.home())
+    }
+
+    /// Return the path to the logs database.
+    pub fn logs_db_path(&self) -> PathBuf {
+        LOGS_DB.path(self.home())
+    }
+
+    /// Return the path to the goals database.
+    pub fn goals_db_path(&self) -> PathBuf {
+        GOALS_DB.path(self.home())
+    }
+
+    /// Return the path to the memories database.
+    pub fn memories_db_path(&self) -> PathBuf {
+        MEMORIES_DB.path(self.home())
+    }
+
+    /// Return the path to the durable user-message queue database.
+    pub fn queue_db_path(&self) -> PathBuf {
+        QUEUE_DB.path(self.home())
+    }
+
+    /// Return the path to the paginated thread-history database.
+    pub fn thread_history_db_path(&self) -> PathBuf {
+        THREAD_HISTORY_DB.path(self.home())
+    }
+
+    /// Return the paths to every database managed by the state runtime.
+    pub fn runtime_db_paths(&self) -> Vec<RuntimeDbPath> {
+        RUNTIME_DBS
+            .iter()
+            .map(|spec| RuntimeDbPath {
+                label: spec.label,
+                path: spec.path(self.home()),
+            })
+            .collect()
+    }
+
+    /// Open a writable Codex SQLite database, creating it if necessary.
+    pub async fn open_read_write_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
+        let options = SqliteConnectOptions::new()
+            .filename(path)
+            .create_if_missing(true)
+            .journal_mode(SqliteJournalMode::Wal)
+            .synchronous(SqliteSynchronous::Normal)
+            .auto_vacuum(SqliteAutoVacuum::Incremental)
+            .busy_timeout(Duration::from_secs(5))
+            .log_statements(LevelFilter::Off);
+        SqlitePoolOptions::new()
+            .max_connections(5)
+            .connect_with(options)
+            .await
+    }
+
+    /// Open an append-only evidence database with full synchronous durability.
+    ///
+    /// Evidence owners remain responsible for their own migrations and must
+    /// not route authoritative corruption through the rebuildable state-DB
+    /// recovery path.
+    pub async fn open_durable_evidence_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
+        self.open_durable_evidence_pool_guarded(path, || true).await
+    }
+
+    /// Open a FULL-durability pool whose every connection checks the same
+    /// owner-supplied guard at SQLite's commit boundary, including implicit
+    /// transactions and connections created after the pool was opened.
+    ///
+    /// Returning false rolls the transaction back. The callback must be bounded,
+    /// nonblocking, and must not access SQLite. This does not supply authority,
+    /// persist a recovery fence, or cover separately opened pools.
+    pub async fn open_durable_evidence_pool_guarded<F>(
+        &self,
+        path: &Path,
+        commit_allowed: F,
+    ) -> Result<SqlitePool, Error>
+    where
+        F: Fn() -> bool + Send + Sync + 'static,
+    {
+        self.open_coordinated_durable_evidence_pool(path, commit_allowed, || std::future::ready(()))
+            .await
+    }
+
+    /// Asynchronously coordinate both new and reused connections before owner
+    /// code receives them. The hook is still the final synchronous commit
+    /// boundary. Checkout may conservatively invalidate a recovery witness even
+    /// for a later read; it must never re-enter this pool or block an executor.
+    pub async fn open_coordinated_durable_evidence_pool<F, C, Fut>(
+        &self,
+        path: &Path,
+        commit_allowed: F,
+        before_checkout: C,
+    ) -> Result<SqlitePool, Error>
+    where
+        F: Fn() -> bool + Send + Sync + 'static,
+        C: Fn() -> Fut + Send + Sync + 'static,
+        Fut: std::future::Future<Output = ()> + Send + 'static,
+    {
+        let commit_allowed = Arc::new(commit_allowed);
+        let before_checkout = Arc::new(before_checkout);
+        let before_reuse = Arc::clone(&before_checkout);
+        let options = SqliteConnectOptions::new()
+            .filename(path)
+            .create_if_missing(true)
+            .journal_mode(SqliteJournalMode::Wal)
+            .synchronous(SqliteSynchronous::Full)
+            .foreign_keys(true)
+            .busy_timeout(Duration::from_secs(5))
+            .log_statements(LevelFilter::Off);
+        SqlitePoolOptions::new()
+            .max_connections(5)
+            .after_connect(move |connection, _metadata| {
+                let commit_allowed = Arc::clone(&commit_allowed);
+                let before_checkout = Arc::clone(&before_checkout);
+                Box::pin(async move {
+                    connection
+                        .lock_handle()
+                        .await?
+                        .set_commit_hook(move || commit_allowed());
+                    before_checkout().await;
+                    Ok(())
+                })
+            })
+            .before_acquire(move |_connection, _metadata| {
+                let before_checkout = Arc::clone(&before_reuse);
+                Box::pin(async move {
+                    before_checkout().await;
+                    Ok(true)
+                })
+            })
+            .connect_with(options)
+            .await
+    }
+
+    /// Checkpoint a private recovery candidate after all validation handles close.
+    ///
+    /// The owner must hold its recovery fence and pass a newly materialized copy,
+    /// never the suspect source. A single connection permits the journal-mode
+    /// switch that a pool's other live handles would otherwise block.
+    pub async fn checkpoint_private_recovery_database(&self, path: &Path) -> Result<(), Error> {
+        let options = SqliteConnectOptions::new()
+            .filename(path)
+            .create_if_missing(false)
+            .synchronous(SqliteSynchronous::Full)
+            .foreign_keys(true)
+            .busy_timeout(Duration::from_secs(5))
+            .log_statements(LevelFilter::Off);
+        let mut connection = options.connect().await?;
+        let checkpoint = async {
+            let (busy, _, _): (i32, i32, i32) = sqlx::query_as("PRAGMA wal_checkpoint(TRUNCATE)")
+                .fetch_one(&mut connection)
+                .await?;
+            if busy != 0 {
+                return Err(Error::Protocol(
+                    "recovery candidate checkpoint is busy".to_string(),
+                ));
+            }
+            let journal_mode: String = sqlx::query_scalar("PRAGMA journal_mode=DELETE")
+                .fetch_one(&mut connection)
+                .await?;
+            if !journal_mode.eq_ignore_ascii_case("delete") {
+                return Err(Error::Protocol(
+                    "recovery candidate could not checkpoint to a single-file cut".to_string(),
+                ));
+            }
+            Ok(())
+        }
+        .await;
+        let close = connection.close().await;
+        checkpoint?;
+        close
+    }
+
+    /// Retained only so callers fail closed instead of reopening a suspect
+    /// lexical source path with a reconnect-capable writer pool.
+    ///
+    /// Writable recovery binds [`Self::bind_existing_recovery_database`],
+    /// captures an identity-checked copy from retained descriptors, validates
+    /// that copy against an independently retained current-cut witness, and
+    /// opens only the new generation. This path-based source reopen therefore
+    /// remains deliberately unavailable.
+    pub async fn open_existing_durable_evidence_pool(
+        &self,
+        path: &Path,
+    ) -> Result<SqlitePool, Error> {
+        let _ = (self, path);
+        Err(Error::Protocol(
+            "path-based SQLite recovery is disabled".to_string(),
+        ))
+    }
+
+    /// Open an existing Codex SQLite database without creating or modifying it.
+    ///
+    /// A live original-owner observer uses READONLY file-open flags and a
+    /// permanently rejecting commit hook on every replacement connection.
+    /// BEGIN IMMEDIATE on READONLY does not exclude writers. Use the separate
+    /// lock-only barrier for checkpoint publication; roll back ordinary reads.
+    pub async fn open_durable_observation_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
+        let options = SqliteConnectOptions::new()
+            .filename(path)
+            .create_if_missing(false)
+            .read_only(true)
+            .synchronous(SqliteSynchronous::Full)
+            .foreign_keys(true)
+            .busy_timeout(Duration::from_secs(5))
+            .log_statements(LevelFilter::Off);
+        SqlitePoolOptions::new()
+            .max_connections(5)
+            .after_connect(|connection, _metadata| {
+                Box::pin(async move {
+                    connection.lock_handle().await?.set_commit_hook(|| false);
+                    Ok(())
+                })
+            })
+            .connect_with(options)
+            .await
+    }
+
+    /// Open an existing Codex SQLite database without creating or modifying it.
+    pub async fn open_read_only_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
+        let options = SqliteConnectOptions::new()
+            .filename(path)
+            .create_if_missing(false)
+            .read_only(true)
+            .log_statements(LevelFilter::Off);
+        SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect_with(options)
+            .await
+    }
+}

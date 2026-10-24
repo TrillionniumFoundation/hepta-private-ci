@@ -3,6 +3,9 @@
 //! This crate is intentionally small and focused: it extracts rollout metadata
 //! from JSONL rollouts and mirrors it into a local SQLite database. Backfill
 //! orchestration and rollout scanning live in `codex-core`.
+//!
+//! Shared SQLite connections and physical recovery types are reexported
+//! from `codex-sqlite`; runtime migrations and telemetry remain here.
 
 const _: () = assert!(
     libsqlite3_sys::SQLITE_VERSION_NUMBER >= 3_051_003,
@@ -17,10 +20,18 @@ mod model;
 mod paths;
 mod runtime;
 mod sqlite;
-mod sqlite_read_barrier;
-mod sqlite_recovery;
 mod telemetry;
 
+pub use codex_sqlite::ExistingSqliteRecoveryGuard;
+pub use codex_sqlite::RootSqliteMaterialIdentity;
+pub use codex_sqlite::RootSqliteMaterialRegistration;
+pub use codex_sqlite::RootSqliteMaterialSource;
+pub use codex_sqlite::RootSqliteOwnerCandidate;
+pub use codex_sqlite::RootSqliteOwnerCopy;
+pub use codex_sqlite::RootSqliteOwnerPublication;
+pub use codex_sqlite::RootSqliteOwnerPublished;
+pub use codex_sqlite::SqliteReadBarrier;
+pub use codex_sqlite::SqliteRecoveryError;
 pub use model::CreatedProject;
 pub use model::LogEntry;
 pub use model::LogQuery;
@@ -46,16 +57,6 @@ pub use model::RolloutMigrationState;
 /// Preferred entrypoint: owns configuration and metrics.
 pub use runtime::StateRuntime;
 pub use sqlite::SqliteConfig;
-pub use sqlite_read_barrier::SqliteReadBarrier;
-pub use sqlite_recovery::ExistingSqliteRecoveryGuard;
-pub use sqlite_recovery::RootSqliteMaterialIdentity;
-pub use sqlite_recovery::RootSqliteMaterialRegistration;
-pub use sqlite_recovery::RootSqliteMaterialSource;
-pub use sqlite_recovery::RootSqliteOwnerCandidate;
-pub use sqlite_recovery::RootSqliteOwnerCopy;
-pub use sqlite_recovery::RootSqliteOwnerPublication;
-pub use sqlite_recovery::RootSqliteOwnerPublished;
-pub use sqlite_recovery::SqliteRecoveryError;
 
 pub use audit::ThreadStateAuditRow;
 pub use audit::read_thread_state_audit_rows;

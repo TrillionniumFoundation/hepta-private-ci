@@ -13,7 +13,7 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_kg::publish_generation;
 use codex_hepta_paths::HeptaAgentLayout;
-use codex_state::SqliteConfig;
+use codex_sqlite::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use sha2::Digest;
 use sha2::Sha256;
@@ -248,7 +248,7 @@ pub use codex_hepta_authority_types::CognitiveStoreError;
 pub struct CognitiveStore {
     pub(crate) pool: SqlitePool,
     observation_pool: Option<SqlitePool>,
-    checkpoint_barrier: Option<codex_state::SqliteReadBarrier>,
+    checkpoint_barrier: Option<codex_sqlite::SqliteReadBarrier>,
     bound_publication: Option<Arc<dyn crate::cognitive_checkpoint::BoundOwnerPublication>>,
     pub(crate) owner_agent_id: AgentId,
     path: PathBuf,

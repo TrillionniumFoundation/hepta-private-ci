@@ -6,9 +6,9 @@ use super::super::super::COGNITIVE_STORE_LOCK_FILENAME;
 use super::super::super::active_pointer_temporary_name;
 use super::super::super::parse_active_pointer;
 use super::*;
-use codex_state::RootSqliteMaterialRegistration;
-use codex_state::RootSqliteOwnerCopy;
-use codex_state::RootSqliteOwnerPublished;
+use codex_sqlite::RootSqliteMaterialRegistration;
+use codex_sqlite::RootSqliteOwnerCopy;
+use codex_sqlite::RootSqliteOwnerPublished;
 use std::ffi::OsStr;
 
 /// Physical installed bytes, still holding the original exclusive store lock.

@@ -1,4 +1,6 @@
-//! Retained kernel process identity for a trusted same-boot publisher handoff.
+//! Retained kernel process identity for a trusted publisher handoff.
+//! Same-boot pidfd evidence and original Root-observed prior-boot retirement
+//! are separate constructions. Neither retires an authority lease.
 
 use std::os::fd::AsRawFd;
 use std::os::fd::FromRawFd;
@@ -6,6 +8,11 @@ use std::os::fd::OwnedFd;
 
 use codex_hepta_contracts::AuthorityTrustError;
 use codex_hepta_memory::CognitiveCheckpointPeerLifetime;
+use codex_hepta_memory::CognitiveCheckpointReceipt;
+use codex_hepta_memory::CognitiveCheckpointToken;
+
+#[path = "authority_host_checkpoint_boot_retirement.rs"]
+mod boot_retirement;
 
 /// A pidfd captured while the exact recorded publisher is alive. This is not
 /// deserializable. A PID supplied after its owner exited cannot create evidence
@@ -15,13 +22,28 @@ pub struct RetainedCheckpointPublisher {
     descriptor: OwnedFd,
 }
 
-/// Kernel-observed retirement after Root lost its old retained pidfd. This is
-/// not deserializable and never accepts an exit claim from an ordinary peer.
-/// The exact protected predecessor lifetime is checked again by adoption.
+/// Kernel-observed retirement after Root lost its old retained pidfd, or after
+/// the original protected checkpoint observes a different actual boot. The
+/// public `observe` constructor remains strictly same-boot. Prior-boot proof
+/// is constructed only by the Root checkpoint owner's separate physical-cut
+/// observation, and cannot be consumed by the clean-Current adoption API.
+/// This is not deserializable and never accepts a peer's termination claim.
 pub struct RetiredCheckpointPublisher {
     pub(super) lifetime: CognitiveCheckpointPeerLifetime,
+    evidence: RetirementEvidence,
+}
+
+enum RetirementEvidence {
     // When a PID exists, retain the actual kernel object used for observation.
-    _descriptor: Option<OwnedFd>,
+    SameBoot {
+        _descriptor: Option<OwnedFd>,
+    },
+    // Constructed only by the original checkpoint owner's Root read, with an
+    // exact durable full-head token and its independently verified image.
+    PriorBoot {
+        root: CognitiveCheckpointPeerLifetime,
+        predecessor: CognitiveCheckpointToken,
+    },
 }
 
 impl RetiredCheckpointPublisher {
@@ -46,7 +68,7 @@ impl RetiredCheckpointPublisher {
             return if std::io::Error::last_os_error().raw_os_error() == Some(libc::ESRCH) {
                 Ok(Self {
                     lifetime,
-                    _descriptor: None,
+                    evidence: RetirementEvidence::SameBoot { _descriptor: None },
                 })
             } else {
                 Err(AuthorityTrustError::Unavailable)
@@ -57,7 +79,9 @@ impl RetiredCheckpointPublisher {
         if descriptor_exited(&descriptor)? {
             return Ok(Self {
                 lifetime,
-                _descriptor: Some(descriptor),
+                evidence: RetirementEvidence::SameBoot {
+                    _descriptor: Some(descriptor),
+                },
             });
         }
         let stat = std::fs::read_to_string(format!("/proc/{}/stat", lifetime.pid));
@@ -67,7 +91,9 @@ impl RetiredCheckpointPublisher {
         if descriptor_exited(&descriptor)? {
             return Ok(Self {
                 lifetime,
-                _descriptor: Some(descriptor),
+                evidence: RetirementEvidence::SameBoot {
+                    _descriptor: Some(descriptor),
+                },
             });
         }
         let stat = stat.map_err(|_| AuthorityTrustError::Unavailable)?;
@@ -90,14 +116,79 @@ impl RetiredCheckpointPublisher {
         }
         Ok(Self {
             lifetime,
-            _descriptor: Some(descriptor),
+            evidence: RetirementEvidence::SameBoot {
+                _descriptor: Some(descriptor),
+            },
         })
     }
 
     pub(super) fn require_retired(&self) -> Result<(), AuthorityTrustError> {
         // The observed termination of a former process lifetime is monotonic.
         // A later process at that PID cannot revive the old kernel lifetime.
-        require_same_boot(&self.lifetime)
+        match &self.evidence {
+            RetirementEvidence::SameBoot { .. } => require_same_boot(&self.lifetime),
+            RetirementEvidence::PriorBoot { root, .. } => {
+                let actual = crate::HostAuthorityService::current_root_lifetime_for_admin()
+                    .map_err(|_| AuthorityTrustError::Unavailable)?;
+                if actual != *root || actual.boot_id == self.lifetime.boot_id {
+                    return Err(AuthorityTrustError::Invalid);
+                }
+                Ok(())
+            }
+        }
+    }
+
+    pub(super) fn require_same_boot_successor(
+        &self,
+        successor: &CognitiveCheckpointPeerLifetime,
+    ) -> Result<(), AuthorityTrustError> {
+        if !matches!(&self.evidence, RetirementEvidence::SameBoot { .. })
+            || successor.boot_id != self.lifetime.boot_id
+        {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        self.require_retired()
+    }
+
+    /// Observe the actual new Root boot bound by this private prior-boot
+    /// retirement evidence. CPU policy administration separately requires an
+    /// actual kernel launch receipt and the original live writer/issuer CAS.
+    pub(crate) fn prior_boot_root_for_namespace(
+        &self,
+        previous: &CognitiveCheckpointReceipt,
+    ) -> Result<CognitiveCheckpointPeerLifetime, AuthorityTrustError> {
+        self.require_retired()?;
+        let RetirementEvidence::PriorBoot { root, predecessor } = &self.evidence else {
+            return Err(AuthorityTrustError::Invalid);
+        };
+        if previous.head.peer_lifetime != self.lifetime
+            || previous.token != *predecessor
+            || super::state::token_for(&previous.head)? != *predecessor
+        {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        Ok(root.clone())
+    }
+
+    /// Only physical adoption can consume prior-boot evidence. The full-head
+    /// token is fixed by its original durable read, never supplied by a peer.
+    pub(super) fn require_physical_successor(
+        &self,
+        previous: &CognitiveCheckpointReceipt,
+        successor: &CognitiveCheckpointPeerLifetime,
+    ) -> Result<(), AuthorityTrustError> {
+        if previous.head.peer_lifetime != self.lifetime {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        match &self.evidence {
+            RetirementEvidence::SameBoot { .. } => self.require_same_boot_successor(successor),
+            RetirementEvidence::PriorBoot { root, predecessor } => {
+                if previous.token != *predecessor || successor.boot_id != root.boot_id {
+                    return Err(AuthorityTrustError::Invalid);
+                }
+                self.require_retired()
+            }
+        }
     }
 }
 

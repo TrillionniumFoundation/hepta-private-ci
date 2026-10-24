@@ -459,12 +459,28 @@ async fn product_v2_reports_peer_truncation_before_aggregation() {
     }
 
     let runtime = CognitiveRuntime::from_open_result(Ok(consumer))
-        .with_federation_sources(consumer_id.clone(), owner_layouts);
-    let access = FederationConsumerAccess::new(consumer_id, consumer_workspace);
+        .with_federation_sources(consumer_id.clone(), owner_layouts.clone());
+    let access = FederationConsumerAccess::new(consumer_id.clone(), consumer_workspace);
     let (batch, coverage) = runtime
         .retrieve_product_federated(&access, &RetrievalRequest::new("anything", 150))
         .await
         .expect("bounded product retrieval");
+    if !batch.candidates.is_empty()
+        || coverage.requested_peers != 16
+        || coverage.completed_peers != 16
+        || coverage.failed_peers != 0
+        || coverage.truncated_peers != 1
+        || coverage.omitted_peer_candidates != 0
+    {
+        // Diagnose only after the original two-second request has returned.
+        // Its result and all assertions below remain unchanged.
+        crate::cognitive_federation::sqlite_profile::failed_product_attempt(
+            &owner_layouts,
+            &consumer_id,
+            150,
+        )
+        .await;
+    }
     assert!(batch.candidates.is_empty());
     assert_eq!(coverage.requested_peers, 16);
     assert_eq!(coverage.completed_peers, 16, "{coverage:?}");

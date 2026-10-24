@@ -20,6 +20,12 @@ use fixture::Publisher;
 use fixture::checkpoint_registration;
 use fixture::current;
 
+#[path = "authority_host_boot_retirement_tests.rs"]
+mod boot_retirement;
+
+#[path = "authority_host_writer_state_tests.rs"]
+mod writer_state;
+
 #[tokio::test]
 #[ignore = "requires isolated actual Root checkpoint directory and UID60001 peers"]
 async fn root_unactivated_writer_replacement_retains_original_generation_and_exact_lost_reply() {
@@ -373,3 +379,6 @@ async fn root_real_death_after_checkpoint_cas_recovers_actual_head_without_skipp
     assert_eq!(actual.head.last_current, f.previous.head.last_current);
     f.material.verify_unchanged().unwrap();
 }
+
+#[path = "authority_host_checkpoint_observation_tests.rs"]
+mod checkpoint_observation;
