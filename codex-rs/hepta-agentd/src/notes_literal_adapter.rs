@@ -39,6 +39,8 @@ use crate::notes_literal_prepare::utc_millis;
 #[path = "notes_literal_read.rs"]
 mod read;
 pub use read::AgentdNotesRetainedIntents;
+#[path = "notes_literal_history.rs"]
+mod history;
 
 type RootCheckpoint = ProtectedCognitiveCheckpoint<AgentdUnixCognitiveCheckpointTransport>;
 

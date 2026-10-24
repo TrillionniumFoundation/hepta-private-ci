@@ -14,6 +14,9 @@ use std::os::unix::fs::MetadataExt;
 use std::os::unix::fs::PermissionsExt;
 use std::os::unix::net::UnixListener;
 
+#[path = "notes_literal_receipts_tests.rs"]
+mod receipt_tests;
+
 async fn retained(
     config: &AgentdConfig,
     sender: &ProductionObjectiveSender<CheckpointProbe>,
