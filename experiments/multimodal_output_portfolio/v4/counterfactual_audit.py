@@ -136,13 +136,37 @@ def empirical_cvar90(losses: list[float], probabilities: list[float]) -> float:
     return total / 0.1
 
 
+def _public_state_policy(
+    policy: Callable[[State], Allocation],
+) -> Callable[[State], Allocation]:
+    """Reject path-order dependent actions when replaying one public state.
+
+    Each scenario separately traverses the same finite tree. Reusing an opaque,
+    stateful callback without this guard could compare different decisions at
+    identical observable states and falsely report a single feedback policy.
+    This checks reproducibility, not provenance against hostile Python code.
+    """
+    observed: dict[State, Allocation] = {}
+
+    def checked(state: State) -> Allocation:
+        action = policy(state)
+        if state in observed and observed[state] != action:
+            raise ValueError(
+                "non-deterministic public-state counterfactual policy")
+        observed[state] = action
+        return action
+
+    return checked
+
+
 def evaluate(initial: State, cfg: Config,
              policy: Callable[[State], Allocation],
              law: tuple[float, float, float] = SHOCK_PROBS) -> dict:
     if (not isinstance(initial, State) or initial.step != 0
         or initial.remaining < cfg.emission_reserve):
         raise ValueError("unfunded four-modal emission")
-    records = [(rollout(initial, cfg, path, policy), prob)
+    checked = _public_state_policy(policy)
+    records = [(rollout(initial, cfg, path, checked), prob)
                for path, prob in scenarios(cfg.horizon, law)]
     return summarize_records(cfg, records)
 
@@ -152,7 +176,8 @@ def evaluate_dependence(initial: State, cfg: Config,
     if (not isinstance(initial, State) or initial.step != 0
         or initial.remaining < cfg.emission_reserve):
         raise ValueError("unfunded or noninitial four-modal emission")
-    records = [(rollout(initial, cfg, path, policy), prob)
+    checked = _public_state_policy(policy)
+    records = [(rollout(initial, cfg, path, checked), prob)
                for path, prob in dependent_scenarios(cfg.horizon, regime)]
     return summarize_records(cfg, records)
 
