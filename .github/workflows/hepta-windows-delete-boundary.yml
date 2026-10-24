@@ -48,7 +48,7 @@ jobs:
           set -euo pipefail
           test ! -e "$RUNNER_TEMP/windows-delete-boundary"
           mkdir -p "$RUNNER_TEMP/windows-delete-boundary"
-          printf 'Three existing native Windows deletion-boundary regressions, four native private-state mechanism probes, five read-only owner-descriptor controls, all eight current ACL unit controls, a test-only full-restriction token candidate, three read-only same-handle local-NTFS controls, and four live effective-token continuity controls. Real remote-device rejection remains a C2b acceptance gap. AccessCheck output is diagnostic; original deletion assertions determine success. Candidate success does not admit a production sandbox. Mechanism and descriptor control success does not establish Windows private-state owner support, parent or volume admission, power-loss durability, whole-project or PoN qualification.\n' > "$RUNNER_TEMP/windows-delete-boundary/SCOPE.txt"
+          printf 'Three existing native Windows deletion-boundary regressions, four native private-state mechanism probes, all 37 private-state library controls including the original five owner-descriptor controls, four native owner-lock process controls, all eight current ACL unit controls, a test-only full-restriction token candidate, four read-only same-handle local-NTFS controls, and four live effective-token continuity controls. Real remote-device rejection remains a C2b acceptance gap. AccessCheck output is diagnostic; original deletion assertions determine success. Candidate success does not admit a production sandbox. Mechanism and descriptor control success does not establish Windows private-state owner support, parent or volume admission, power-loss durability, whole-project or PoN qualification.\n' > "$RUNNER_TEMP/windows-delete-boundary/SCOPE.txt"
           git config --global core.autocrlf false
           git config --global core.longpaths true
           printf 'CARGO_TARGET_DIR=%s/windows-delete-boundary-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
@@ -110,8 +110,40 @@ jobs:
               "security::tests::native_rejects_wrong_expected_sid_and_unsafe_object_shapes",
               "security::tests::native_readback_parser_rejects_altered_forms_and_every_truncation",
               "security::tests::native_unqueryable_thread_token_never_falls_back_to_process_user",
+              "namespace_acl::tests::ancestor_parser_distinguishes_new_sibling_creation_from_existing_mutation",
+              "namespace_acl::tests::inherited_effective_mutator_is_not_treated_as_inherit_only",
+              "namespace_acl::tests::missing_truncated_and_unbounded_acl_are_refused",
+              "namespace_acl::tests::unknown_owner_and_ace_forms_do_not_grant_namespace_admission",
+              "parent_anchor::fresh_private_directory::private_owner_lock::original_store_file::tests::actual_original_io_keeps_marker_and_payload_bytes_across_cold_open",
+              "parent_anchor::fresh_private_directory::private_owner_lock::owner_file::tests::actual_private_file_extent_error_refuses_later_writes_without_growth",
+              "parent_anchor::fresh_private_directory::private_owner_lock::owner_file::tests::actual_private_journal_reopens_original_bytes_and_appends_under_same_lock",
+              "parent_anchor::fresh_private_directory::private_owner_lock::owner_file::tests::actual_read_only_private_file_cannot_write_truncate_or_create_missing",
+              "parent_anchor::fresh_private_directory::private_owner_lock::owner_read::tests::actual_locked_read_descriptor_change_is_not_absence_or_repairable",
+              "parent_anchor::fresh_private_directory::private_owner_lock::owner_read::tests::actual_locked_read_keeps_ancestry_alive_and_missing_is_only_observation",
+              "parent_anchor::fresh_private_directory::private_owner_lock::owner_read::tests::actual_locked_read_rejects_real_hardlink_without_adopting_it",
+              "parent_anchor::fresh_private_directory::private_owner_lock::owner_read::tests::actual_locked_read_size_error_fences_later_larger_read_without_reset",
+              "parent_anchor::fresh_private_directory::private_owner_lock::owner_stage::tests::actual_locked_stage_replaces_synced_original_without_path_reopen",
+              "parent_anchor::fresh_private_directory::private_owner_lock::owner_stage::tests::actual_locked_stage_share_conflict_never_replaces_or_repairs_state",
+              "parent_anchor::fresh_private_directory::private_owner_lock::tests::actual_marker_sharing_error_is_rejection_not_state_locked_and_stays_refused",
+              "parent_anchor::fresh_private_directory::private_owner_lock::tests::actual_owner_lock_refuses_shared_context_poison_without_recovery",
+              "parent_anchor::fresh_private_directory::tests::actual_cold_candidate_never_creates_missing_or_adopts_changed_dacl",
+              "parent_anchor::fresh_private_directory::tests::actual_cold_candidate_preserves_existing_bytes_and_shared_identity",
+              "parent_anchor::fresh_private_directory::tests::actual_directory_context_poison_never_recovers_into_success",
+              "parent_anchor::fresh_private_directory::tests::actual_new_directory_has_exact_protected_owner_dacl_on_original_handle",
+              "parent_anchor::fresh_private_directory::tests::actual_parent_flush_uses_held_id_after_former_path_is_replaced",
+              "parent_anchor::fresh_private_directory::tests::actual_parent_write_sharing_conflict_is_not_retried_or_repaired",
+              "parent_anchor::fresh_private_directory::tests::actual_private_root_allows_compatible_second_owner_open_before_lock",
+              "parent_anchor::fresh_private_directory::tests::actual_writable_directory_syncs_new_entry_without_noop_or_fallback",
+              "parent_anchor::fresh_private_directory::tests::changed_child_descriptor_cannot_be_repaired_into_same_fresh_role",
+              "parent_anchor::fresh_private_directory::tests::create_only_collision_never_adopts_or_overwrites_existing_state",
+              "parent_anchor::tests::actual_ancestor_chain_revalidates_and_reopens_without_touching_state",
+              "parent_anchor::tests::actual_parent_delete_child_rights_reject_live_and_cold_anchor",
+              "primary_owner::tests::actual_elevated_primary_owner_remains_live",
+              "primary_owner::tests::primary_owner_stays_refused_after_impersonation_is_restored",
+              "primary_owner::tests::real_restricted_primary_token_is_refused",
+              "primary_owner::tests::same_user_impersonation_cannot_mint_primary_owner",
           )
-          required = ("partial-delete-deny", "broad-identity-delete", "legacy-delete-boundary", *probes, "acl-unit-controls", "private-owner-descriptor", "full-restriction-candidate", "private-local-ntfs", "private-principal-continuity")
+          required = ("partial-delete-deny", "broad-identity-delete", "legacy-delete-boundary", *probes, "acl-unit-controls", "private-owner-descriptor", "full-restriction-candidate", "private-local-ntfs", "private-principal-continuity", "private-owner-lock")
           if sys.argv[1] == "tests":
               name, minimum = sys.argv[2], int(sys.argv[3])
               assert name in required, "unknown native test receipt"
@@ -121,6 +153,11 @@ jobs:
               text = re.sub(r"\x1b\[[0-9;]*m", "", text)
               passed, failed = observed_test_counts(text)
               ok = code == log_code == 0 and passed >= minimum and failed == 0 and re.search(r"Summary[^\n]*?\d+ tests? run:", text) is not None
+              if name in {"private-owner-descriptor", "private-owner-lock", "private-principal-continuity", "private-local-ntfs"}:
+                  ok = ok and not re.search(r"\b[1-9][0-9]* skipped\b", text)
+              def exact_names(selectors):
+                  names = re.findall(r"^test (.+?) \.\.\. ok\s*$", text, re.MULTILINE)
+                  return len(names) == len(selectors) and set(names) == set(selectors)
               proof = {}
               if name in probes:
                   selector, stage = probes[name]
@@ -144,8 +181,19 @@ jobs:
               elif name == "private-owner-descriptor":
                   observed = {selector: re.search(r"^test " + re.escape(selector) + r" \.\.\. ok\s*$", text, re.MULTILINE) is not None for selector in owner_selectors}
                   runs = re.findall(r"Summary[^\n]*?(\d+) tests? run:", text)
-                  ok = ok and minimum == passed == len(owner_selectors) and runs[-1:] == [str(len(owner_selectors))] and all(observed.values())
+                  ok = ok and minimum == passed == len(owner_selectors) and runs == [str(len(owner_selectors))] and all(observed.values()) and exact_names(owner_selectors)
                   proof = {"test_package": "codex-utils-windows-private-state", "required_test_names_observed": observed, "owner_supported": False, "power_loss_qualified": False}
+              elif name == "private-owner-lock":
+                  selectors = (
+                      "native_owner_lock_child",
+                      "actual_second_process_reports_state_locked_then_owner_drop_releases",
+                      "actual_natural_process_exit_releases_original_os_lock_without_destructor",
+                      "actual_cold_missing_marker_and_nonempty_marker_never_reset",
+                  )
+                  observed = {selector: re.search(r"^test " + re.escape(selector) + r" \.\.\. ok\s*$", text, re.MULTILINE) is not None for selector in selectors}
+                  runs = re.findall(r"Summary[^\n]*?(\d+) tests? run:", text)
+                  ok = ok and minimum == passed == 4 and runs == ["4"] and all(observed.values()) and exact_names(selectors)
+                  proof = {"test_target": "native_owner_lock", "required_test_names_observed": observed, "owner_supported": False, "power_loss_qualified": False, "whole_unit_qualified": False}
               elif name == "private-principal-continuity":
                   selectors = (
                       "native_same_effective_token_revalidates",
@@ -155,13 +203,14 @@ jobs:
                   )
                   observed = {selector: re.search(r"^test " + re.escape(selector) + r" \.\.\. ok\s*$", text, re.MULTILINE) is not None for selector in selectors}
                   runs = re.findall(r"Summary[^\n]*?(\d+) tests? run:", text)
-                  ok = ok and minimum == passed == 4 and runs == ["4"] and all(observed.values())
+                  ok = ok and minimum == passed == 4 and runs == ["4"] and all(observed.values()) and exact_names(selectors)
                   proof = {"test_target": "native_principal", "required_test_names_observed": observed, "owner_supported": False, "trusted_parent": False, "power_loss_qualified": False}
               elif name == "private-local-ntfs":
                   selectors = (
                       "native_local_ntfs_file_and_directory_report_same_volume",
                       "native_nondisk_handle_is_rejected",
                       "native_volume_observation_stays_bound_to_renamed_held_object",
+                      "native_directory_volume_observation_stays_bound_after_rename",
                   )
                   observed = {selector: re.search(r"^test " + re.escape(selector) + r" \.\.\. ok\s*$", text, re.MULTILINE) is not None for selector in selectors}
                   runs = re.findall(r"Summary[^\n]*?(\d+) tests? run:", text)
@@ -171,10 +220,10 @@ jobs:
                           records.append(json.loads(payload))
                       except ValueError:
                           malformed = True
-                  expected_stages = {"local_ntfs_complete", "nondisk_complete", "held_binding_complete"}
+                  expected_stages = {"local_ntfs_complete", "nondisk_complete", "held_binding_complete", "held_directory_binding_complete"}
                   scopes = all(isinstance(row, dict) and set(row) == {"stage", "owner_supported", "trusted_parent", "power_loss_qualified"} and row.get("owner_supported") is False and row.get("trusted_parent") is False and row.get("power_loss_qualified") is False and isinstance(row.get("stage"), str) for row in records)
-                  completed = len(records) == 3 and scopes and {row["stage"] for row in records} == expected_stages
-                  ok = ok and minimum == passed == 3 and runs == ["3"] and all(observed.values()) and completed and not malformed
+                  completed = len(records) == 4 and scopes and {row["stage"] for row in records} == expected_stages
+                  ok = ok and minimum == passed == 4 and runs == ["4"] and all(observed.values()) and exact_names(selectors) and completed and not malformed
                   proof = {"test_target": "native_volume", "required_test_names_observed": observed, "completion_observed": completed, "owner_supported": False, "trusted_parent": False, "power_loss_qualified": False, "remote_device_native_executed": False}
               elif name == "full-restriction-candidate":
                   selector = "token::tests::full_restriction::native_full_restriction_preserves_reads_and_refuses_parent_delete"
@@ -193,7 +242,7 @@ jobs:
               save(name + ".json", {"returncode": code, "logging_returncode": log_code, "minimum_tests": minimum, "observed_passed_tests": passed, "observed_failed_tests": failed, "log_sha256": hashlib.sha256(raw).hexdigest(), "status": "passed" if ok else "failed", **proof})
               sys.exit(0 if ok else 1)
           phase = sys.argv[2]
-          result = {"scope": "three native Windows deletion regressions, four private-state mechanism probes, five read-only descriptor controls, eight current ACL controls, one test-only full-restriction candidate and three read-only local-NTFS controls; real remote-device rejection is untested; no Windows owner support, production sandbox admission or power-loss qualification", "production_sandbox_admitted": False, "windows_private_state_owners_supported": False, "power_loss_qualified": False, "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"], "status": "running"}
+          result = {"scope": "three native Windows deletion regressions, four private-state mechanism probes, 37 private-state library controls including five original descriptor controls, four owner-lock process controls, eight current ACL controls, one test-only full-restriction candidate and four read-only local-NTFS controls; real remote-device rejection is untested; no Windows owner support, production sandbox admission or power-loss qualification", "production_sandbox_admitted": False, "windows_private_state_owners_supported": False, "power_loss_qualified": False, "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"], "status": "running"}
           save("result.json", result)
           assert sys.argv[1] == "source" and phase in {"before", "after"}
           if phase == "before":
@@ -248,14 +297,14 @@ jobs:
           assert result["status"] != "failed"
           PY
           python "$RUNNER_TEMP/windows-delete-boundary/check.py" source before
-      - name: Run all five read-only native owner-descriptor controls
+      - name: Run all 37 current private-state controls including the five original descriptors
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
         run: |
           set +e
           just test --locked -p codex-utils-windows-private-state --lib --test-threads 1 --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-delete-boundary/private-owner-descriptor.log"
           codes="${PIPESTATUS[*]}"
           set -e
-          python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests private-owner-descriptor 5 "$codes"
+          python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests private-owner-descriptor 37 "$codes"
       - name: Run four live effective-token native continuity controls
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
         run: |
@@ -264,14 +313,22 @@ jobs:
           codes="${PIPESTATUS[*]}"
           set -e
           python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests private-principal-continuity 4 "$codes"
-      - name: Run three read-only same-handle native local-NTFS controls
+      - name: Run all four same-handle native local-NTFS controls
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
         run: |
           set +e
           just test --locked -p codex-utils-windows-private-state --test native_volume --test-threads 1 --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-delete-boundary/private-local-ntfs.log"
           codes="${PIPESTATUS[*]}"
           set -e
-          python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests private-local-ntfs 3 "$codes"
+          python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests private-local-ntfs 4 "$codes"
+      - name: Run all four native owner-lock process controls
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: |
+          set +e
+          just test --locked -p codex-utils-windows-private-state --test native_owner_lock --test-threads 1 --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-delete-boundary/private-owner-lock.log"
+          codes="${PIPESTATUS[*]}"
+          set -e
+          python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests private-owner-lock 4 "$codes"
       - name: Run test-only full-restriction token candidate with original destructive controls
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
         run: |
@@ -344,7 +401,7 @@ jobs:
           codes="${PIPESTATUS[*]}"
           set -e
           python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests acl-unit-controls 8 "$codes"
-      - name: Require unchanged source and all twelve completed Windows result receipts
+      - name: Require unchanged source and all thirteen completed Windows result receipts
         if: ${{ always() && steps.source.outcome == 'success' }}
         run: python "$RUNNER_TEMP/windows-delete-boundary/check.py" source after
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
