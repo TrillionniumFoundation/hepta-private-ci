@@ -115,7 +115,14 @@ pub(crate) fn serve_lanes(
                 request_bound: 1,
                 response_bound: 1,
             };
-            workers.push(scope.spawn(move || service.serve(lane, stream, policy, pidfd)));
+            workers.push(scope.spawn(move || {
+                service
+                    .serve(lane, stream, policy, pidfd)
+                    .inspect_err(|_error| {
+                        #[cfg(debug_assertions)]
+                        eprintln!("root authority lane stage=serve lane={lane:?} error={_error:?}");
+                    })
+            }));
         }
         for worker in workers {
             worker

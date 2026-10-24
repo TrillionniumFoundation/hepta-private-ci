@@ -16,13 +16,36 @@ pub enum KernelSuccessorRole {
 
 /// One actual final image named by the authenticated kernel launch receipt.
 /// Private fields prevent the activation callback from choosing another PID.
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct KernelSuccessorImage {
     launch: KernelLaunchReceipt,
     role: KernelSuccessorRole,
     pid: u32,
+    retirement: KernelPolicyRetirement,
+    durable_observation: Arc<codex_hepta_contracts::RootStoredObservation>,
+}
+impl std::fmt::Debug for KernelSuccessorImage {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter
+            .debug_struct("KernelSuccessorImage")
+            .field("launch", &self.launch)
+            .field("role", &self.role)
+            .field("pid", &self.pid)
+            .field("retirement", &self.retirement)
+            .field("observation_id", &self.durable_observation.observation_id())
+            .finish()
+    }
 }
 impl KernelSuccessorImage {
+    /// Actual original retirement at the same kernel launch transaction.
+    pub fn retirement(&self) -> &KernelPolicyRetirement {
+        &self.retirement
+    }
+    /// The exact Root observation whose durable save and kernel ACK completed
+    /// before this image was constructed. It is observational, not authority.
+    pub fn durable_observation(&self) -> &codex_hepta_contracts::RootStoredObservation {
+        &self.durable_observation
+    }
     pub fn launch(&self) -> &KernelLaunchReceipt {
         &self.launch
     }
@@ -98,8 +121,11 @@ impl KernelSuccessorSource {
             // Root administration saves independently of Host startup. A failed
             // save/ACK retains this same pending receipt for exact retry. No
             // child is released and no further Advance is attempted here.
-            self.launcher
-                .save_and_acknowledge(&self.observations, launch, &retirement)?;
+            let durable_observation = Arc::new(self.launcher.save_and_acknowledge(
+                &self.observations,
+                launch,
+                &retirement,
+            )?);
             let mut images = VecDeque::new();
             for (role, pid) in [
                 (KernelSuccessorRole::Manager, launch.manager_pid()),
@@ -111,6 +137,8 @@ impl KernelSuccessorSource {
                         launch: launch.clone(),
                         role,
                         pid,
+                        retirement: retirement.clone(),
+                        durable_observation: durable_observation.clone(),
                     });
                 }
             }

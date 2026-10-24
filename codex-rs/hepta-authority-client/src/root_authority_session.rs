@@ -135,7 +135,13 @@ impl AgentdRootAuthoritySession {
         let created = boottime_ns()?;
         let boot_id = peer.boot_id.clone();
         let stream =
-            RootObservationStream::from_stream(stream, peer, root_pidfd, timeout, lifetime)?;
+            RootObservationStream::from_stream(stream, peer, root_pidfd, timeout, lifetime)
+                .inspect_err(|_error| {
+                    #[cfg(debug_assertions)]
+                    eprintln!(
+                        "root authority connect stage=construct_observation_stream error={_error:?}"
+                    );
+                })?;
         Self::connect_owned_stream(stream, boot_id, created, lifetime, trust).await
     }
     async fn connect_owned_stream(
@@ -150,11 +156,23 @@ impl AgentdRootAuthoritySession {
                 schema_version: 1,
                 operation: HOST_WRITER_AUTHORIZATION_V1.into(),
             })
-            .await?;
+            .await
+            .inspect_err(|_error| {
+                #[cfg(debug_assertions)]
+                eprintln!(
+                    "root authority connect stage=read_original_writer_proof error={_error:?}"
+                );
+            })?;
         if response.schema_version != 1 || response.operation != HOST_WRITER_AUTHORIZATION_V1 {
             return Err(AgentdRootAuthorityError::Refused);
         }
-        let proof = VerifiedRootWriterProof::verify(response.proof, &trust)?;
+        let proof =
+            VerifiedRootWriterProof::verify(response.proof, &trust).inspect_err(|_error| {
+                #[cfg(debug_assertions)]
+                eprintln!(
+                    "root authority connect stage=verify_original_writer_proof error={_error:?}"
+                );
+            })?;
         let live = Arc::new(LiveRoot {
             proof,
             cache: RootObservationCache::new(boot_id),
@@ -169,7 +187,10 @@ impl AgentdRootAuthoritySession {
             consumers: Mutex::new(Vec::new()),
             serial: tokio::sync::Mutex::new(()),
         });
-        refresh(&live, &stream).await?;
+        refresh(&live, &stream).await.inspect_err(|_error| {
+            #[cfg(debug_assertions)]
+            eprintln!("root authority connect stage=first_observation_refresh error={_error:?}");
+        })?;
         let background = Arc::clone(&live);
         let worker = tokio::spawn(async move {
             let _fence = FenceOnDrop(Arc::clone(&background));
@@ -270,7 +291,11 @@ async fn refresh(
             schema_version: 2,
             operation: HOST_AUTHORITY_OBSERVATION_V2.into(),
         })
-        .await?;
+        .await
+        .inspect_err(|_error| {
+            #[cfg(debug_assertions)]
+            eprintln!("root authority refresh stage=read_observation_feed error={_error:?}");
+        })?;
     let ended = boottime_ns()?;
     live.proof.matches_observation(&observation)?;
     let head = observation.revocations.clone();
@@ -290,7 +315,10 @@ async fn refresh(
         synchronize_consumers(consumers, head, started).await?;
         live.cache.end_update();
     }
-    live.current()?;
+    live.current().inspect_err(|_error| {
+        #[cfg(debug_assertions)]
+        eprintln!("root authority refresh stage=post_refresh_current error={_error:?}");
+    })?;
     Ok(())
 }
 async fn synchronize_consumers(

@@ -292,7 +292,11 @@ where
     Ok(next)
 }
 
-fn observe_child_exit(pid: u32, held: &OwnedFd, deadline: u64) -> io::Result<(i16, i32)> {
+pub(super) fn observe_child_exit(
+    pid: u32,
+    held: &OwnedFd,
+    deadline: u64,
+) -> io::Result<(i16, i32)> {
     loop {
         remaining(deadline)?;
         let mut poll = libc::pollfd {
@@ -340,7 +344,7 @@ fn observe_child_exit(pid: u32, held: &OwnedFd, deadline: u64) -> io::Result<(i1
     }
 }
 
-fn observe_watchdog(deadline: u64) -> io::Result<(String, String)> {
+pub(super) fn observe_watchdog(deadline: u64) -> io::Result<(String, String)> {
     let membership = std::fs::read_to_string("/proc/3/cgroup")?;
     let path = membership
         .strip_prefix("0::")

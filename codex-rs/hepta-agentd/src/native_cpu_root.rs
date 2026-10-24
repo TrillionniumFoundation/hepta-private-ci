@@ -23,6 +23,9 @@ use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_supervisor::AgentCommand;
 use codex_hepta_supervisor::KernelInitialProcessDriver;
 use codex_hepta_supervisor::KernelInitialRole;
+use codex_hepta_supervisor::KernelSuccessorImage;
+use codex_hepta_supervisor::KernelSuccessorRole;
+use codex_hepta_supervisor::RootKernelLauncher;
 use codex_hepta_supervisor::SpawnSpec;
 use codex_hepta_supervisor::Supervisor;
 use codex_hepta_supervisor::SupervisorConfig;
@@ -39,6 +42,11 @@ use std::os::unix::net::UnixListener;
 use std::path::PathBuf;
 use std::sync::Mutex;
 
+#[path = "native_cpu_continuity.rs"]
+mod continuity;
+#[path = "native_cpu_successor.rs"]
+mod successor;
+use successor::OwnerImage;
 #[path = "native_cpu_lost_copyout.rs"]
 mod lost_copyout;
 #[path = "native_cpu_recovery.rs"]
@@ -55,16 +63,21 @@ struct Installation {
     checkpoint: PathBuf,
     scopes: [[u8; 32]; 2],
     recovery: Option<recovery::PreparedRecovery>,
+    launcher: Arc<RootKernelLauncher>,
+    launch_observations: Arc<RootAuthorityDirectory>,
 }
 pub(super) struct Active {
     pub(super) service: Arc<crate::HostAuthorityService>,
     pub(super) registration: HostAuthorityRegistration,
     pub(super) bundle: crate::HostAuthorityPublicBootstrapV1,
     pub(super) rpc: commands::Rpc,
+    release: commands::Rpc,
     pub(super) archive: PathBuf,
     pub(super) retained: crate::RetainedCheckpointPublisher,
     server: Option<std::thread::JoinHandle<io::Result<()>>>,
     adopted: Option<codex_hepta_memory::CognitiveCheckpointReceipt>,
+    image: OwnerImage,
+    root_lease: AuthorityLease,
 }
 
 impl Active {
@@ -220,6 +233,11 @@ impl Installation {
         for path in [&archive, &checkpoint] {
             platform::private_dir(path, 0, 0, 0o700)?;
         }
+        let launch_observations = state.join("native-launch-observations");
+        platform::private_dir(&launch_observations, 0, 0, 0o700)?;
+        let launch_observations =
+            RootAuthorityDirectory::open(&launch_observations).map_err(error)?;
+        let launcher = Arc::new(RootKernelLauncher::open(&boot.bytes)?);
         let mut installation = Self {
             fleet,
             config,
@@ -231,6 +249,8 @@ impl Installation {
             checkpoint,
             scopes,
             recovery: None,
+            launcher,
+            launch_observations,
         };
         let head = installation.issuer.revocations()?;
         let consumer = |name: &str| -> io::Result<crate::HostAuthorityConsumerConfig> {
@@ -268,29 +288,47 @@ impl Installation {
         owner: OwnedFd,
         deadline: u64,
     ) -> io::Result<Active> {
-        let recovery = match role {
-            KernelInitialRole::Manager
-                if self.config.writer.is_none() && self.recovery.is_none() =>
-            {
-                None
-            }
-            KernelInitialRole::Recovery => Some(
-                self.recovery
-                    .take()
-                    .ok_or_else(|| invalid("independent original recovery material required"))?,
-            ),
-            KernelInitialRole::Manager => {
-                return Err(invalid("initial original owner is already installed"));
-            }
-        };
-        let (pid, name, scope) = match role {
-            KernelInitialRole::Manager => (2, "manager", self.scopes[0]),
-            KernelInitialRole::Recovery => (4, "recovery", self.scopes[1]),
-        };
+        let image = OwnerImage::initial(role);
+        self.activate_image(spec, image, owner, deadline)
+    }
+
+    fn activate_image(
+        &mut self,
+        spec: &SpawnSpec,
+        image: OwnerImage,
+        owner: OwnedFd,
+        deadline: u64,
+    ) -> io::Result<Active> {
+        let first = image.kernel.is_none()
+            && image.role == 1
+            && image.pid == 2
+            && self.config.writer.is_none()
+            && self.recovery.is_none();
+        if !first && self.recovery.is_none() {
+            return Err(invalid(
+                "independent original predecessor Current and physical material required",
+            ));
+        }
+        if !first {
+            let generation = self
+                .recovery
+                .as_ref()
+                .unwrap()
+                .writer
+                .local_lease_generation
+                .checked_add(1)
+                .ok_or_else(|| invalid("original writer generation overflow"))?;
+            self.refresh_canonical_root_lease(generation)?;
+        }
+        let recovery = self.recovery.as_ref();
+        let pid = image.pid;
+        let name = image.runtime_name()?;
         let owner_peer = peer(pid, 60001)?;
         let root = peer(1, 0)?;
         let launch_listener = listener(&Path::new(RUNTIME).join(format!("{name}.launch")), 60001)?;
         let rpc_listener = listener(&Path::new(RUNTIME).join(format!("{name}.rpc")), 60001)?;
+        let release_listener =
+            listener(&Path::new(RUNTIME).join(format!("{name}.release")), 60001)?;
         let launch_stream = accept(&launch_listener, deadline)?;
         let mut launch = crate::RootNotesLaunchChannel::from_peer_stream(
             launch_stream,
@@ -314,7 +352,7 @@ impl Installation {
         };
         let identity = crate::authority_host_config::registered_identity(&registered)?;
         let now = self.clock.now_unix_ms().map_err(error)?;
-        let writer = if let Some(previous) = &recovery {
+        let writer = if let Some(previous) = recovery {
             self.recovered_writer(spec, previous)?
         } else {
             let writer = crate::HostAuthorityWriterRegistration {
@@ -353,7 +391,7 @@ impl Installation {
                 .register_writer_authorization(&writer, &self.leases.verifier())?;
             writer
         };
-        let epoch = recovery.as_ref().map_or(Ok(1), |previous| {
+        let epoch = recovery.map_or(Ok(1), |previous| {
             previous
                 .previous
                 .head
@@ -363,14 +401,33 @@ impl Installation {
         })?;
         let retained =
             crate::RetainedCheckpointPublisher::capture(owner_peer.clone()).map_err(error)?;
-        let admission =
+        if let Some(kernel) = &image.kernel
+            && kernel.role() == KernelSuccessorRole::Manager
+        {
+            self.scopes =
+                self.issuer
+                    .replace_native_cpu_namespaces(&writer, kernel, self.scopes)?;
+        }
+        let admission = if image.role == 5 {
+            crate::deployment_issuer::RootNativeCpuGrantAdmission::from_registered_history(
+                &self.issuer,
+                self.leases.clone(),
+                writer.clone(),
+                image
+                    .kernel
+                    .as_ref()
+                    .ok_or_else(|| invalid("history-only original factory witness absent"))?,
+            )?
+        } else {
+            let scope = self.scopes[if image.role == 1 { 0 } else { 1 }];
             crate::deployment_issuer::RootNativeCpuGrantAdmission::from_registered_namespace(
                 &self.issuer,
                 self.leases.clone(),
                 writer.clone(),
                 scope,
                 5_000,
-            )?;
+            )?
+        };
         let service = crate::HostAuthorityService::from_registered_owner(
             self.issuer.clone(),
             self.clock.clone(),
@@ -378,7 +435,7 @@ impl Installation {
         )?
         .with_registered_writer(writer.clone(), self.leases.verifier())?;
         let directory = RootAuthorityDirectory::open(&self.checkpoint).map_err(error)?;
-        let service = match &recovery {
+        let service = match recovery {
             Some(previous) => service.with_recovered_checkpoint(
                 directory,
                 &previous.previous,
@@ -418,7 +475,7 @@ impl Installation {
             owner.try_clone()?,
         )?);
         let bundle = service.capture_public_bootstrap()?;
-        let adopted = if let Some(previous) = recovery {
+        let adopted = if let Some(previous) = self.recovery.take() {
             if [
                 bundle.consumers.device.frontier.clone(),
                 bundle.consumers.notes.frontier.clone(),
@@ -510,16 +567,30 @@ impl Installation {
             pidfd(bundle.consumer.pid)?,
             deadline,
         )?;
+        let release = commands::Rpc::new(
+            accept(&release_listener, deadline)?,
+            &bundle.consumer,
+            pidfd(bundle.consumer.pid)?,
+            deadline,
+        )?;
         self.config.writer = Some(writer);
         Ok(Active {
             service,
             registration,
             bundle,
             rpc,
+            release,
             archive: self.archive.clone(),
             retained,
             server: Some(server),
             adopted,
+            image,
+            root_lease: self
+                .leases
+                .read_lease(&self.config.lease_id)
+                .map_err(error)?
+                .ok_or_else(|| invalid("actual canonical Root lease absent"))?
+                .lease,
         })
     }
 }
@@ -533,7 +604,13 @@ pub(super) fn run(boot: NativeBootstrap) -> io::Result<()> {
     let ready = active.clone();
     let owner_install = installation.clone();
     let command = AgentCommand::new("/test/hepta-g2-owner", Vec::new()).map_err(error)?;
-    let deadline = end()?;
+    let deadline = if evidence.scenario() == "successor-renewal-v1" {
+        now()?
+            .checked_add(600_000_000_000)
+            .ok_or_else(|| invalid("campaign deadline overflow"))?
+    } else {
+        end()?
+    };
     let driver =
         KernelInitialProcessDriver::new(&boot.bytes, command.clone(), move |spec, role, owner| {
             let generation = owner_install
@@ -545,7 +622,7 @@ pub(super) fn run(boot: NativeBootstrap) -> io::Result<()> {
                     owner
                         .try_clone_to_owned()
                         .map_err(codex_hepta_supervisor::ProcessDriverError::from)?,
-                    deadline,
+                    end().map_err(codex_hepta_supervisor::ProcessDriverError::from)?,
                 )
                 .map_err(|e| codex_hepta_supervisor::ProcessDriverError::new(e.to_string()))?;
             *ready
@@ -554,6 +631,40 @@ pub(super) fn run(boot: NativeBootstrap) -> io::Result<()> {
                 Some(generation);
             Ok(())
         })
+        .map_err(error)?;
+    let next_install = installation.clone();
+    let next_active = active.clone();
+    let (launcher, observations) = {
+        let retained = installation.lock().map_err(error)?;
+        (
+            retained.launcher.clone(),
+            retained.launch_observations.clone(),
+        )
+    };
+    let driver = driver
+        .with_successors(
+            &boot.bytes,
+            launcher,
+            observations,
+            move |spec, image, owner| {
+                let generation = next_install
+                    .lock()
+                    .map_err(|e| codex_hepta_supervisor::ProcessDriverError::new(e.to_string()))?
+                    .activate_image(
+                        spec,
+                        OwnerImage::successor(image.clone()),
+                        owner
+                            .try_clone_to_owned()
+                            .map_err(codex_hepta_supervisor::ProcessDriverError::from)?,
+                        end().map_err(codex_hepta_supervisor::ProcessDriverError::from)?,
+                    )
+                    .map_err(codex_hepta_supervisor::ProcessDriverError::from)?;
+                *next_active.lock().map_err(|e| {
+                    codex_hepta_supervisor::ProcessDriverError::new(e.to_string())
+                })? = Some(generation);
+                Ok(())
+            },
+        )
         .map_err(error)?;
     let (mut supervisor, report) = Supervisor::recover(
         fleet,
@@ -614,43 +725,38 @@ pub(super) fn run(boot: NativeBootstrap) -> io::Result<()> {
                 deadline,
             )?;
         }
+        "successor-renewal-v1" => {
+            generation = continuity::renewal(
+                &mut evidence,
+                generation,
+                &installation,
+                &active,
+                &mut supervisor,
+                &agent,
+                deadline,
+            )?;
+        }
+        "history-only-after-both-owner-exit-v1" => {
+            generation = continuity::history_only(
+                &mut evidence,
+                generation,
+                &installation,
+                &active,
+                &mut supervisor,
+                &agent,
+                deadline,
+            )?;
+        }
         _ => return Err(invalid("unsupported native acceptance scenario")),
     }
-    supervisor.stop(&agent, Instant::now()).map_err(error)?;
-    while supervisor
-        .snapshot(&agent)
-        .is_some_and(|snapshot| snapshot.active)
-    {
-        remaining(deadline)?;
-        let report = supervisor.tick(Instant::now());
-        if !report.faults.is_empty() {
-            return Err(invalid("original Supervisor reported a shutdown fault"));
-        }
-        std::thread::sleep(Duration::from_millis(10));
-    }
-    let stopped = supervisor
-        .snapshot(&agent)
-        .ok_or_else(|| invalid("original shutdown snapshot missing"))?;
-    let exited = stopped
-        .events
-        .iter()
-        .rev()
-        .find_map(|event| match &event.kind {
-            codex_hepta_supervisor::SupervisorEventKind::Exited(exit) => {
-                Some((event.generation, *exit))
-            }
-            _ => None,
-        });
-    if stopped.active
-        || !matches!(exited,
-        Some((generation_number, codex_hepta_supervisor::ProcessExit { success: true, code: Some(0) }))
-            if generation_number >= generation.bundle.writer.spawn_generation)
-    {
-        return Err(invalid(
-            "original native owner did not finish shutdown successfully",
-        ));
-    }
-    generation.join_retired_lanes()?;
+    let _final_release = continuity::stop_owner(
+        &mut evidence,
+        &mut generation,
+        &mut supervisor,
+        &agent,
+        deadline,
+        /*publish_evidence*/ false,
+    )?;
     drop(supervisor); // The unused initial Recovery child is killed and reaped by its held guard.
     let workload = pidfd(3)?;
     let rc = unsafe {

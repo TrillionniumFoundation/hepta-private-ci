@@ -71,6 +71,17 @@ impl RootObservationCache {
         if self.fenced.load(Ordering::Acquire) {
             return Err(AgentdRootAuthorityError::Unavailable);
         }
+        #[cfg(debug_assertions)]
+        let diagnostic = (
+            started,
+            ended,
+            now,
+            observation.clock.anchor_boottime_ns,
+            observation.clock.anchor_unix_ms,
+            observation.clock.ceiling_unix_ms,
+            observation.observed_unix_ms,
+            observation.clock.boot_id == self.boot_id,
+        );
         let result = (|| {
             let mut slot = self
                 .retained
@@ -149,6 +160,10 @@ impl RootObservationCache {
             Ok(())
         })();
         if result.is_err() {
+            #[cfg(debug_assertions)]
+            eprintln!(
+                "root observation cache stage=accept started_ended_now_anchor_ns_anchor_ms_ceiling_ms_observed_ms_same_boot={diagnostic:?}"
+            );
             self.fence();
         }
         result

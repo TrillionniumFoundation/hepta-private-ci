@@ -161,14 +161,30 @@ impl RegisteredWriter {
         }
         self.registration
             .with_live(&self.leases, |store_revision| {
-                let proof = issuer.retained_writer_authorization(&self.registration)?;
+                let proof = issuer
+                    .retained_writer_authorization(&self.registration)
+                    .inspect_err(|_error| {
+                        #[cfg(debug_assertions)]
+                        eprintln!("root writer observation stage=retained_proof error={_error}");
+                    })?;
                 if proof != self.proof {
                     return Err(io::Error::other("retained writer proof changed"));
                 }
-                let revocations = issuer.revocations()?;
+                let revocations = issuer.revocations().inspect_err(|_error| {
+                    #[cfg(debug_assertions)]
+                    eprintln!("root writer observation stage=revocations error={_error}");
+                })?;
                 // All blocking reads precede this final projection. Nothing after
                 // it writes a clock or substitutes a durable future ceiling for now.
-                let observation = clock.refresh_projection().map_err(io::Error::other)?;
+                let observation = clock
+                    .refresh_projection()
+                    .inspect_err(|_error| {
+                        #[cfg(debug_assertions)]
+                        eprintln!(
+                            "root writer observation stage=clock_projection error={_error:?}"
+                        );
+                    })
+                    .map_err(io::Error::other)?;
                 validate_observation_lease(
                     &self.registration.authority_lease,
                     &revocations,
@@ -208,6 +224,13 @@ impl RegisteredWriter {
                     16 * 1024,
                 )
                 .map_err(io::Error::other)
+            })
+            .inspect_err(|_error| {
+                #[cfg(debug_assertions)]
+                eprintln!(
+                    "root writer observation stage=registered_live operation={} error={_error}",
+                    request.operation
+                );
             })
             .map_err(unavailable)
     }

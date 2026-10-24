@@ -94,6 +94,30 @@ impl Rpc {
             deadline,
         })
     }
+    pub(super) fn readable(&self) -> io::Result<bool> {
+        use std::os::fd::AsRawFd;
+        self.check()?;
+        let mut poll = libc::pollfd {
+            fd: self.stream.as_raw_fd(),
+            events: libc::POLLIN,
+            revents: 0,
+        };
+        // SAFETY: poll borrows exactly this one initialized descriptor record.
+        let observed = unsafe { libc::poll(&mut poll, 1, 0) };
+        // Capture errno before peer checks can issue unrelated syscalls.
+        let failure = (observed < 0).then(io::Error::last_os_error);
+        self.check()?;
+        if let Some(failure) = failure {
+            return Err(failure);
+        }
+        match (observed, poll.revents) {
+            (0, 0) => Ok(false),
+            (1, libc::POLLIN) => Ok(true),
+            _ => Err(invalid(
+                "authenticated observation channel is not readable or live",
+            )),
+        }
+    }
     pub(super) fn abort_stream(&self) -> io::Result<UnixStream> {
         self.stream.try_clone()
     }
@@ -214,10 +238,16 @@ pub(super) struct Owner<T: codex_hepta_memory::CognitiveCheckpointTransport + 's
     // Captured once through the original writer after recovery and before its
     // ordinary monitor is started. Later Inspect only copies this observation.
     pub(super) startup_retained: Vec<StartupRetained>,
+    pub(super) kernel_bootstrap: Vec<u8>,
     pub(super) ingress: Arc<crate::native_cpu_ingress::NativeCpuIngress>,
 }
 
 pub(super) fn usage(device: &crate::AgentdHos2Device) -> io::Result<serde_json::Value> {
+    if device.is_history_only() {
+        // The original workload PID is only historical metadata for role5.
+        // No CPU observation or heartbeat is attempted by this authority.
+        return Ok(serde_json::Value::Null);
+    }
     let value = device.read_usage(1).map_err(error)?;
     Ok(
         serde_json::json!({"boot_id":value.boot_id,"observer_space_id":value.observer_space_id,
@@ -284,6 +314,19 @@ impl<T: codex_hepta_memory::CognitiveCheckpointTransport + 'static> Owner<T> {
     }
     async fn execute(&mut self, command: Command) -> Result<serde_json::Value, crate::AgentdError> {
         let fail = |e: String| crate::AgentdError::Protocol(e);
+        if self.device.is_history_only()
+            && matches!(
+                &command,
+                Command::Prepare { .. }
+                    | Command::Dispatch { .. }
+                    | Command::DispatchCopyout { .. }
+                    | Command::Window
+            )
+        {
+            return Err(fail(
+                "history-only owner cannot admit, dispatch or observe CPU work".into(),
+            ));
+        }
         let _mutation = if matches!(
             &command,
             Command::Prepare { .. }
@@ -319,7 +362,8 @@ impl<T: codex_hepta_memory::CognitiveCheckpointTransport + 'static> Owner<T> {
                     "store_device":database.dev(),"store_inode":database.ino(),
                     "startup_retained":self.startup_retained,
                     "copyout":self.device.native_copyout_snapshot().map_err(fail)?,
-                    "usage":usage(&self.device)?}),
+                    "usage":usage(&self.device)?,"history_only":self.device.is_history_only(),
+                    "kernel_bootstrap":self.kernel_bootstrap}),
                 )
             }
 
@@ -506,6 +550,11 @@ impl<T: codex_hepta_memory::CognitiveCheckpointTransport + 'static> Owner<T> {
         occurrence_key: String,
         after_fault: Option<crate::hos2_device::AfterCopyoutFault>,
     ) -> Result<serde_json::Value, crate::AgentdError> {
+        if self.device.is_history_only() {
+            return Err(crate::AgentdError::Protocol(
+                "history-only owner cannot dispatch CPU work".into(),
+            ));
+        }
         let fail = |e: String| crate::AgentdError::Protocol(e);
         let _mutation = self.ingress.begin_mutation().await?;
         self.host.writer().verify_current_authority().await?;
@@ -579,4 +628,45 @@ impl<T: codex_hepta_memory::CognitiveCheckpointTransport + 'static> Owner<T> {
             "after":usage(&self.device)?,"copyout":snapshot}),
         )
     }
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct ReleaseAck {
+    pub(super) schema_version: u32,
+    pub(super) operation: String,
+    pub(super) receipt_sha256: codex_hepta_contracts::Sha256Digest,
+    pub(super) current: codex_hepta_memory::CognitiveCheckpointReceipt,
+}
+
+pub(super) fn finish_release(
+    mut rpc: Rpc,
+    receipt: codex_hepta_memory::ProductionLeaseReceipt,
+) -> io::Result<()> {
+    if receipt.state != "released" || receipt.external_effect {
+        return Err(invalid(
+            "original native writer did not return a complete release",
+        ));
+    }
+    let expected = codex_hepta_contracts::Sha256Digest::for_bytes(
+        &serde_json::to_vec(&receipt).map_err(error)?,
+    );
+    rpc.send(&receipt)?;
+    let ack: ReleaseAck = rpc.read()?;
+    if ack.schema_version != 1
+        || ack.operation != "runtime.native-cpu.release-observed.v1"
+        || ack.receipt_sha256 != expected
+        || ack.current.head.phase != codex_hepta_memory::CognitiveCheckpointPhase::Current
+        || ack.current.head.owner_agent_id != receipt.owner_agent_id
+        || ack.current.head.writer_binding.lease_id != receipt.lease_id
+        || ack.current.head.writer_binding.generation != receipt.generation
+        || ack.current.head.writer_binding.authority_epoch != receipt.authority_epoch
+        || ack.current.head.writer_binding.owner_epoch != receipt.owner_epoch
+        || ack.current.head.writer_binding.authority_grant_digest != receipt.authority_grant_digest
+    {
+        return Err(invalid(
+            "Root did not acknowledge this actual original release and Current",
+        ));
+    }
+    Ok(())
 }

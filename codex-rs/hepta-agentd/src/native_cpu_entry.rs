@@ -60,33 +60,63 @@ impl NativeBootstrap {
         };
         let word = |offset| u64::from_le_bytes(bytes[offset..offset + 8].try_into().unwrap());
         let role = word(16);
-        let pid = match role {
-            4 => 1,
-            1 => 2,
-            2 => 3,
-            3 => 4,
-            _ => 0,
+        let (pid, size) = match word(8) {
+            3 => {
+                let pid = match role {
+                    4 => 1,
+                    1 => 2,
+                    2 => 3,
+                    3 => 4,
+                    _ => 0,
+                };
+                if word(144) != 2
+                    || word(152) != 3
+                    || word(160) != 4
+                    || word(168) != 50_000_000
+                    || word(184) != 300_000_000_000
+                {
+                    return Err(invalid("original four-role initial topology differs"));
+                }
+                (pid, 200)
+            }
+            4 if matches!(role, 1 | 3 | 5) => {
+                // The original device adapter validates the complete v4 ABI,
+                // capability slots and namespace topology before opening the
+                // current Process's own fd. This entry only routes that image.
+                if word(224) == 0 || word(232) != 0 || word(152) != 3 {
+                    return Err(invalid("kernel successor identity differs"));
+                }
+                (word(200), 240)
+            }
+            _ => return Err(invalid("unsupported native bootstrap version or role")),
         };
         if &bytes[..8] != b"HOS2BOOT"
-            || word(8) != 3
-            || word(24) != 200
-            || word(144) != 2
-            || word(152) != 3
-            || word(160) != 4
+            || word(24) != size as u64
             || word(192) != 1
-            || word(168) != 50_000_000
             || word(176) != 100_000_000
-            || word(184) != 300_000_000_000
             || pid == 0
-            || std::process::id() != pid
-            || bytes[200..].iter().any(|byte| *byte != 0)
+            || pid > i32::MAX as u64
+            || u64::from(std::process::id()) != pid
+            || bytes[size..].iter().any(|byte| *byte != 0)
             || bytes[96..112].iter().all(|byte| *byte == 0)
             || bytes[112..128] == bytes[128..144]
             || (role != 4 && unsafe { libc::getppid() } != 1)
         {
-            return Err(invalid("actual four-role G2 bootstrap required"));
+            return Err(invalid("actual frozen-image G2 bootstrap required"));
         }
         Ok(Self { bytes, role })
+    }
+    fn byte_count(&self) -> usize {
+        if self.word(8) == 4 { 240 } else { 200 }
+    }
+    fn word(&self, offset: usize) -> u64 {
+        u64::from_le_bytes(self.bytes[offset..offset + 8].try_into().unwrap())
+    }
+    fn kernel_generation(&self) -> u64 {
+        if self.word(8) == 4 { self.word(224) } else { 0 }
+    }
+    fn owner_runtime_name(&self) -> io::Result<String> {
+        owner_runtime_name(self.kernel_generation(), std::process::id(), self.role)
     }
     fn id(&self, offset: usize) -> [u8; 16] {
         self.bytes[offset..offset + 16].try_into().unwrap()
@@ -94,14 +124,15 @@ impl NativeBootstrap {
 }
 
 /// Run the actual kernel-created role. This is a finite native CPU profile,
-/// with explicit fresh Root installation and two pre-created owner slots.
-/// Existing/partial authority state is refused; it is never reset on startup.
-/// This entry does not claim cross-boot recovery or native-grant renewal.
+/// with an explicit fresh Root installation and the original restricted
+/// kernel factory for subsequent final images. Existing/partial authority
+/// state is refused; it is never reset on startup. Native qualification still
+/// requires actual full-owner execution of each accepted scenario.
 pub fn run_native_cpu_daemon() -> io::Result<()> {
     let boot = NativeBootstrap::read()?;
     match boot.role {
         4 => root::run(boot),
-        1 | 3 => {
+        1 | 3 | 5 => {
             platform::wait_platform()?;
             let device = Arc::new(
                 crate::AgentdHos2Device::from_kernel_bootstrap(&boot.bytes).map_err(error)?,
@@ -187,4 +218,21 @@ fn runtime() -> io::Result<tokio::runtime::Runtime> {
         .worker_threads(2)
         .enable_all()
         .build()
+}
+
+fn owner_runtime_name(kernel_generation: u64, pid: u32, role: u64) -> io::Result<String> {
+    match (kernel_generation, pid, role) {
+        (0, 2, 1) => Ok("manager".into()),
+        (0, 4, 3) => Ok("recovery".into()),
+        (generation, pid, role)
+            if generation > 0
+                && (5..=i32::MAX as u32).contains(&pid)
+                && matches!(role, 1 | 3 | 5) =>
+        {
+            Ok(format!("owner-{generation:016x}-{pid}-{role}"))
+        }
+        _ => Err(invalid(
+            "native owner runtime name differs from actual image",
+        )),
+    }
 }

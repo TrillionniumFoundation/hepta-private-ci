@@ -18,8 +18,9 @@ pub(crate) async fn run_native_cpu_owner_until<S>(
     config: NativeCpuConfig,
     root: Arc<AgentdRootAuthoritySession>,
     ingress: Arc<crate::native_cpu_ingress::NativeCpuIngress>,
+    allow_effects: bool,
     owner_control: S,
-) -> Result<(), AgentdError>
+) -> Result<codex_hepta_memory::ProductionLeaseReceipt, AgentdError>
 where
     S: Future<Output = Result<(), AgentdError>> + Send,
 {
@@ -70,7 +71,13 @@ where
         tasks.spawn_required("native-cpu-lifecycle", control.run_native_cpu())?;
         tasks.spawn_required(
             "native-cpu-owner-monitor",
-            monitor(state.clone(), host.clone(), ingress.clone(), cancellation),
+            monitor(
+                state.clone(),
+                host.clone(),
+                ingress.clone(),
+                allow_effects,
+                cancellation,
+            ),
         )?;
         Ok::<_, AgentdError>(())
     })();
@@ -114,7 +121,8 @@ where
         .await?;
     // All runtime workers are joined before the one original owner publishes
     // its terminal Current and permanently retires the same SQLite pool.
-    host.writer()
+    let released = host
+        .writer()
         .release()
         .await
         .map_err(|error| AgentdError::Protocol(error.to_string()))?;
@@ -122,13 +130,14 @@ where
     // shuts the same shared SQLite pools; it opens no new owner or database.
     // Remaining handles are dropped before this Host exits and Root may reap it.
     store.as_ref().clone().close().await;
-    Ok(())
+    Ok(released)
 }
 
 async fn monitor(
     state: Arc<AgentdState<NativeCpuRuntimeOwners>>,
     host: Arc<crate::AgentdProductionWriterHost>,
     ingress: Arc<crate::native_cpu_ingress::NativeCpuIngress>,
+    allow_effects: bool,
     cancellation: CancellationToken,
 ) -> Result<(), AgentdError> {
     loop {
@@ -150,7 +159,7 @@ async fn monitor(
                     "native CPU owner is fenced".into(),
                 ));
             }
-            if !ingress.closed() && state.native_cpu_admission_open()? {
+            if allow_effects && !ingress.closed() && state.native_cpu_admission_open()? {
                 host.reauthorize_pending_for_destination(
                     codex_hepta_memory::HOS2_DESTINATION_V1,
                     /*limit*/ 256,

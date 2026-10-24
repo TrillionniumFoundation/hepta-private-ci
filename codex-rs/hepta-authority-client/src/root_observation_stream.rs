@@ -102,7 +102,15 @@ impl RootObservationStream {
         // ownership or mutable access escapes this client.
         let root =
             unsafe { AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE) }
-                .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+                .map_err(|_error| {
+                #[cfg(debug_assertions)]
+                eprintln!(
+                    "root observation stage=register_pidfd kind={:?} errno={:?}",
+                    _error.kind(),
+                    _error.raw_os_error()
+                );
+                AgentdRootAuthorityError::Unavailable
+            })?;
         check_lifetime(root.get_ref())?;
         Ok(Self {
             stream: Mutex::new(Some(stream)),
@@ -142,16 +150,30 @@ impl RootObservationStream {
         }
         let response = tokio::select! {
             biased;
-            _ = self.root.readable() => return Err(AgentdRootAuthorityError::Unavailable),
+            _ = self.root.readable() => {
+                #[cfg(debug_assertions)]
+                eprintln!("root observation stage=pidfd_readable");
+                return Err(AgentdRootAuthorityError::Unavailable);
+            }
             _ = tokio::time::sleep_until(tokio::time::Instant::from_std(deadline)) => {
+                #[cfg(debug_assertions)]
+                eprintln!("root observation stage=exchange_timeout timeout_ms={} lifetime_remaining_ms={}", self.timeout.as_millis(), self.end.saturating_duration_since(Instant::now()).as_millis());
                 return Err(AgentdRootAuthorityError::Unavailable);
             }
             response = framed_exchange(&mut stream, &request) => response?,
         };
         check_lifetime(self.root.get_ref())?;
-        let parsed =
-            serde_json::from_slice(&response).map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        let parsed = serde_json::from_slice(&response).map_err(|_error| {
+            #[cfg(debug_assertions)]
+            eprintln!(
+                "root observation stage=decode_response bytes={} error={_error}",
+                response.len()
+            );
+            AgentdRootAuthorityError::Unavailable
+        })?;
         if Instant::now() >= deadline {
+            #[cfg(debug_assertions)]
+            eprintln!("root observation stage=post_response_deadline");
             return Err(AgentdRootAuthorityError::Unavailable);
         }
         *slot = Some(stream);
@@ -216,7 +238,13 @@ pub(crate) fn check_lifetime(pidfd: &OwnedFd) -> Result<(), AgentdRootAuthorityE
     Err(AgentdRootAuthorityError::Unavailable)
 }
 
-fn unavailable(_: std::io::Error) -> AgentdRootAuthorityError {
+fn unavailable(_error: std::io::Error) -> AgentdRootAuthorityError {
+    #[cfg(debug_assertions)]
+    eprintln!(
+        "root observation stage=io kind={:?} errno={:?}",
+        _error.kind(),
+        _error.raw_os_error()
+    );
     AgentdRootAuthorityError::Unavailable
 }
 

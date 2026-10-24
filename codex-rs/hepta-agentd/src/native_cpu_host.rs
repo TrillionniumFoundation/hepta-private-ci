@@ -19,11 +19,9 @@ pub(super) fn run(boot: NativeBootstrap, device: Arc<crate::AgentdHos2Device>) -
     let deadline = end()?;
     let root_peer = peer(1, 0)?;
     let root_fd = pidfd(1)?;
-    let name = if boot.role == 1 {
-        "manager"
-    } else {
-        "recovery"
-    };
+    let name = boot.owner_runtime_name()?;
+    let kernel_bootstrap = boot.bytes[..boot.byte_count()].to_vec();
+    let allow_effects = !device.is_history_only();
     let launch_stream = connect(&Path::new(RUNTIME).join(format!("{name}.launch")), deadline)?;
     let mut launch = crate::RootNotesLaunchChannel::from_peer_stream(
         launch_stream,
@@ -160,11 +158,22 @@ pub(super) fn run(boot: NativeBootstrap, device: Arc<crate::AgentdHos2Device>) -
         let sender=config.original_objective_sender(coordinator,IO_TIMEOUT).map_err(error)?;
         sender.acknowledge_owner_cut().await.map_err(error)?;
         let rpc_stream=connect(&Path::new(RUNTIME).join(format!("{name}.rpc")),deadline)?;
+        let release_stream=connect(&Path::new(RUNTIME).join(format!("{name}.release")),deadline)?;
+        let release_rpc=commands::Rpc::new(release_stream,&root_peer,transferred_root.try_clone()?,deadline)?;
         let rpc=commands::Rpc::new(rpc_stream,&root_peer,transferred_root,deadline)?;
+        // Retain these exact original owners through the authenticated release
+        // observation/ACK. No worker can mutate the retired SQLite pool.
+        let retained_host=host.clone();
         let ingress=Arc::new(crate::native_cpu_ingress::NativeCpuIngress::new());
         let control=commands::Owner {host,device,target,sender,root:session.clone(),
             device_owner:owners[0].clone(),notes_owner:owners[1].clone(),bundle,queue:None,
-            startup_retained,ingress:ingress.clone()};
-        crate::native_cpu_runtime::run_native_cpu_owner_until(config,session,ingress,control.run(rpc)).await.map_err(error)
+            startup_retained,kernel_bootstrap,ingress:ingress.clone()};
+        let released=crate::native_cpu_runtime::run_native_cpu_owner_until(config,session.clone(),ingress,
+            allow_effects,control.run(rpc)).await.map_err(error)?;
+        tokio::task::spawn_blocking(move || commands::finish_release(release_rpc,released))
+            .await.map_err(error)??;
+        drop(retained_host);
+        drop(session);
+        Ok(())
     })
 }

@@ -64,6 +64,8 @@ impl Evidence {
                 "manager-exit-after-terminal-v1",
                 "lost-copyout-live-v1",
                 "manager-exit-before-terminal-v1",
+                "history-only-after-both-owner-exit-v1",
+                "successor-renewal-v1",
             ]
             .contains(&plan.scenario.as_str())
             || plan.nonce.len() != 64
@@ -172,6 +174,8 @@ impl Evidence {
             .cloned()
             .ok_or_else(|| invalid("original owner inspection shape"))?;
         ready.remove("usage");
+        ready.remove("history_only");
+        ready.remove("kernel_bootstrap");
         ready.remove("store_device");
         ready.remove("store_inode");
         ready.remove("startup_retained");
