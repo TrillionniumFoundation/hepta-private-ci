@@ -438,7 +438,7 @@ index bbdfdf7..a27ccc4 100644
  
  #[derive(Deserialize, Serialize, Type)]
 diff --git a/platforms/atspi-common/src/adapter.rs b/platforms/atspi-common/src/adapter.rs
-index e44de30..3d07240 100644
+index e44de30..486addf 100644
 --- a/platforms/atspi-common/src/adapter.rs
 +++ b/platforms/atspi-common/src/adapter.rs
 @@ -8,24 +8,38 @@
@@ -498,6 +498,15 @@ index e44de30..3d07240 100644
  
  struct AdapterChangeHandler<'a> {
      adapter: &'a Adapter,
+@@ -527,7 +541,7 @@ impl Adapter {
+     }
+ }
+ 
+-fn root_window(current_state: &TreeState) -> Option<Node> {
++fn root_window(current_state: &TreeState) -> Option<Node<'_>> {
+     const WINDOW_ROLES: &[Role] = &[Role::AlertDialog, Role::Dialog, Role::Window];
+     let root = current_state.root();
+     if WINDOW_ROLES.contains(&root.role()) {
 diff --git a/platforms/atspi-common/src/callback.rs b/platforms/atspi-common/src/callback.rs
 index deb1df8..612f964 100644
 --- a/platforms/atspi-common/src/callback.rs
@@ -790,10 +799,10 @@ index fa2ba07..d7b11da 100644
  pub use rect::*;
  pub use util::WindowBounds;
 diff --git a/platforms/atspi-common/src/node.rs b/platforms/atspi-common/src/node.rs
-index 3151870..bb52564 100644
+index 3151870..ffa7855 100644
 --- a/platforms/atspi-common/src/node.rs
 +++ b/platforms/atspi-common/src/node.rs
-@@ -8,29 +8,56 @@
+@@ -8,29 +8,60 @@
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE.chromium file.
  
@@ -870,10 +879,32 @@ index 3151870..bb52564 100644
 +#[cfg(test)]
 +#[path = "editable_text_tests.rs"]
 +mod editable_text_tests;
++
++#[cfg(test)]
++#[path = "state_tests.rs"]
++mod state_tests;
  
  pub(crate) struct NodeWrapper<'a>(pub(crate) &'a Node<'a>);
  
-@@ -376,6 +403,13 @@ impl<'a> NodeWrapper<'a> {
+@@ -287,7 +318,7 @@ impl<'a> NodeWrapper<'a> {
+         if state.parent_id().is_none() && state.role() == Role::Window && is_window_focused {
+             atspi_state.insert(State::Active);
+         }
+-        if state.is_text_input() && !state.is_read_only() {
++        if state.is_text_input() && !state.is_read_only_or_disabled() {
+             atspi_state.insert(State::Editable);
+         }
+         // TODO: Focus and selection.
+@@ -341,7 +372,7 @@ impl<'a> NodeWrapper<'a> {
+ 
+         if state.is_read_only_supported() && state.is_read_only_or_disabled() {
+             atspi_state.insert(State::ReadOnly);
+-        } else {
++        } else if !state.is_disabled() {
+             atspi_state.insert(State::Enabled | State::Sensitive);
+         }
+ 
+@@ -376,6 +407,13 @@ impl<'a> NodeWrapper<'a> {
          self.0.supports_text_ranges()
      }
  
@@ -887,7 +918,7 @@ index 3151870..bb52564 100644
      fn supports_value(&self) -> bool {
          self.current_value().is_some()
      }
-@@ -391,6 +425,9 @@ impl<'a> NodeWrapper<'a> {
+@@ -391,6 +429,9 @@ impl<'a> NodeWrapper<'a> {
          if self.supports_text() {
              interfaces.insert(Interface::Text);
          }
@@ -897,7 +928,7 @@ index 3151870..bb52564 100644
          if self.supports_value() {
              interfaces.insert(Interface::Value);
          }
-@@ -1000,6 +1037,116 @@ impl PlatformNode {
+@@ -1000,6 +1041,116 @@ impl PlatformNode {
          })
      }
  
@@ -1067,6 +1098,75 @@ index b2ee51e..c2543b1 100644
  
  #[derive(Clone, Hash, PartialEq)]
  pub enum Accessible {
+diff --git a/platforms/atspi-common/src/state_tests.rs b/platforms/atspi-common/src/state_tests.rs
+new file mode 100644
+index 0000000..3b5eab6
+--- /dev/null
++++ b/platforms/atspi-common/src/state_tests.rs
+@@ -0,0 +1,63 @@
++use super::*;
++use accesskit::Node as RawNode;
++use accesskit::Tree as RawTree;
++use accesskit::TreeUpdate;
++
++fn projected_state(node: RawNode) -> StateSet {
++    let mut root = RawNode::new(Role::Window);
++    root.set_children(vec![NodeId(2)]);
++    let tree = accesskit_consumer::Tree::new(
++        TreeUpdate {
++            nodes: vec![(NodeId(1), root), (NodeId(2), node)],
++            tree: Some(RawTree::new(NodeId(1))),
++            focus: NodeId(1),
++        },
++        /*is_host_focused*/ true,
++    );
++    let node = tree.state().node_by_id(NodeId(2)).unwrap();
++    NodeWrapper(&node).state(true)
++}
++
++#[test]
++fn disabled_buttons_are_never_advertised_as_enabled_or_sensitive() {
++    for disabled in [false, true] {
++        let mut button = RawNode::new(Role::Button);
++        button.set_label("Send");
++        if disabled {
++            button.set_disabled();
++        }
++        let state = projected_state(button);
++        assert_eq!(
++            (
++                state.contains(State::Enabled),
++                state.contains(State::Sensitive),
++                state.contains(State::ReadOnly),
++            ),
++            (!disabled, !disabled, false),
++        );
++    }
++}
++
++#[test]
++fn disabled_and_read_only_text_inputs_do_not_advertise_editability() {
++    for role in [Role::TextInput, Role::MultilineTextInput] {
++        for disabled in [false, true] {
++            let mut input = RawNode::new(role);
++            if disabled {
++                input.set_disabled();
++            } else {
++                input.set_read_only();
++            }
++            let state = projected_state(input);
++            assert_eq!(
++                (
++                    state.contains(State::Enabled),
++                    state.contains(State::Sensitive),
++                    state.contains(State::Editable),
++                    state.contains(State::ReadOnly),
++                ),
++                (false, false, false, true),
++            );
++        }
++    }
++}
 diff --git a/platforms/atspi-common/src/util.rs b/platforms/atspi-common/src/util.rs
 index 2632af4..9f8f63b 100644
 --- a/platforms/atspi-common/src/util.rs

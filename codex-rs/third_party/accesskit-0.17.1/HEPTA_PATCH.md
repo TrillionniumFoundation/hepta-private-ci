@@ -14,6 +14,11 @@ original AccessKit Unix D-Bus connection. It is advertised only when a text
 input explicitly supports the new `EditText` action and is not read-only or
 disabled. It has no socket driver, private text model or keyboard emulator.
 
+Disabled controls also retain their actual state in AT-SPI. A disabled button
+must not advertise `Enabled` or `Sensitive`, even though its role does not
+support `ReadOnly`; a disabled text input must not advertise `Editable`.
+The original widget and owner still decide whether an action is admitted.
+
 `SetTextContents`, `InsertText`, `DeleteText`, `CopyText`, and `CutText` create one
 typed request containing the complete observed text and the original text-run
 range identity. Insertion positions use AT-SPI Unicode scalar offsets; insertion

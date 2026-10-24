@@ -59,6 +59,10 @@ use crate::Result;
 #[path = "editable_text_tests.rs"]
 mod editable_text_tests;
 
+#[cfg(test)]
+#[path = "state_tests.rs"]
+mod state_tests;
+
 pub(crate) struct NodeWrapper<'a>(pub(crate) &'a Node<'a>);
 
 impl<'a> NodeWrapper<'a> {
@@ -314,7 +318,7 @@ impl<'a> NodeWrapper<'a> {
         if state.parent_id().is_none() && state.role() == Role::Window && is_window_focused {
             atspi_state.insert(State::Active);
         }
-        if state.is_text_input() && !state.is_read_only() {
+        if state.is_text_input() && !state.is_read_only_or_disabled() {
             atspi_state.insert(State::Editable);
         }
         // TODO: Focus and selection.
@@ -368,7 +372,7 @@ impl<'a> NodeWrapper<'a> {
 
         if state.is_read_only_supported() && state.is_read_only_or_disabled() {
             atspi_state.insert(State::ReadOnly);
-        } else {
+        } else if !state.is_disabled() {
             atspi_state.insert(State::Enabled | State::Sensitive);
         }
 
