@@ -87,6 +87,61 @@ also compare the uninterrupted result with legacy microbatch training under
 the previously fixed atol=rtol1e-10. Count all actual updates and failed work.
 No new learning-quality statement follows from trajectory equality.
 
+### Frozen 17-Cell continuation run
+
+Use `probe_cell_optimizer_resume.py` and `cell_optimizer_resume_worker.py` after
+committing their source, both new optimizer modules and this protocol. The driver
+requires a full `--source-commit` and verifies every executed source/protocol file
+against that local Git object before loading inputs. It seals `plan.json` before
+the first update and passes its external SHA to every worker. The bundle is the
+fixed manifest above; it is not selected or regenerated during this experiment.
+
+For each of linear, gated and residual, initialize exactly 17 distinct Cells with
+seeds `1000000 + i`, `i=0..16`, width770/classes2/rank4. All use the same 32 TRAIN
+rows and one task, `action_usefulness`. Use 20 Adam steps per Cell, microbatch8
+(blocks 8+8+1), learning rate0.02, L2=0.001, beta1=0.9, beta2=0.999, epsilon1e-8,
+gradient norm clip5 and the unchanged inverse-frequency class weights. Preserve
+the legacy microbatch-major order and exact source-row order. There is no random
+sampler. The complete run has 60 block-step boundaries per mode.
+
+| Checkpoint cursor | Completed private Cell updates | Additional updates in this segment |
+| --- | ---: | ---: |
+| 3 | 24 | 24 |
+| 20 | 160 | 136 |
+| 27 | 216 | 56 |
+| 40 | 320 | 104 |
+| 59 | 339 | 19 |
+| 60 | 340 | 1 |
+
+Execute modes in linear/gated/residual order. Within each mode execute one new
+uninterrupted worker, then six continuation workers at these exact cursors, then
+one legacy `MicrobatchCellTrainer` worker. Every worker is a fresh process with
+one BLAS thread; every continuation segment after the first consumes only its
+predecessor's externally pinned checkpoint and the sealed execution plan. Its
+raw/normalized bank, labels, source-record digests, Adam moments and cursor are
+recovered from the checkpoint. A checkpoint at cursor60 is complete and performs
+no further optimization when verified.
+
+Require bitwise equality between the two new paths for every parameter, both
+moments, per-Cell step, saved loss/norm diagnostic, input array and trajectory
+chain. Compare every final parameter and initial/final loss with the legacy path
+at the unchanged atol=rtol1e-10; verify matched initial parameter identities.
+The successful matrix has 24 worker processes, 3 paths × 3 modes × 17 Cells ×
+20 steps = **3,060 private optimizer updates**, and **97,920 example updates**.
+Initial setup, checkpoint I/O and later `--kind verify` workers add zero updates.
+They still incur measured resource costs. All modes share one historical task.
+
+Keep every checkpoint, worker report and controller-side outer receipt in a new
+attempt directory. Preserve failed attempts; do not automatically retry or treat
+unobserved partial work as zero. Worker diagnostics are nested in the complete
+controller process tree; charge the caller's complete outer receipt once. Record
+separate nonadditive parent/child RSS peaks and fixed tensor reservations. Final
+fresh-process `--kind verify` checks require the original execution-plan SHA and
+terminal-checkpoint SHA and must not load the original bundle or update weights.
+There are no Encoder calls, calibration fits, holdout scores or quality claims.
+Mid-step exceptions invalidate the in-memory owner; this protocol does not test
+process kill, power interruption or production publication.
+
 ## Evidence and closing
 
 Retain original inputs, states, failures and outer process costs. Separate
