@@ -17,6 +17,7 @@
   "branch": "codex/cell-local-next-20261024",
   "code_repository": "https://github.com/TrillionniumFoundation/hepta-private-ci",
   "evidence_cutoff": "raw archive before packaging; subsequent complete restore/replay receipts in Git closing-evidence; terminal format/publication separate",
+  "final_scoped_format_passed": true,
   "logical_bytes": 154374750,
   "logical_file_count": 234,
   "native_production_integrated": false,
@@ -41,8 +42,15 @@
       "filename": "runtime-summary.png",
       "sha256": "462d6a1e46472684013c84462b087ddaf14223cdb7a69fd3111ce5ad049d8603",
       "workspace_path": "/workspace/scratch/f1f83ab8f2f0/hepta/qa/stem-bakeoff/evidence/20261024-cell-runtime/runtime-summary.png"
+    },
+    "terminal-evidence.json": {
+      "bytes": 7307,
+      "filename": "terminal-evidence.json",
+      "sha256": "f757bca3de2b96d533df35c95c9fd46a39df3965fdb87d99fa1a7dea7038ab79",
+      "workspace_path": "/workspace/scratch/f1f83ab8f2f0/hepta/qa/stem-bakeoff/evidence/20261024-cell-runtime/terminal-evidence.json"
     }
   },
   "schema": "hepta.runtime-770-delivery-index.v1",
+  "tests_after_final_format": 0,
   "unique_content_objects": 230
 }

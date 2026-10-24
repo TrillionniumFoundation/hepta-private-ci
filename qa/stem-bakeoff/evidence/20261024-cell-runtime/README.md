@@ -158,3 +158,5 @@ Linear 三个规模的最终参数逐位一致；gated 最大参数差 **4.163e�
 下一项科学投入应先获得新的、未被本轮和前轮选择过程暴露的任务与 outcome，再预注册表示和 Head 对照。只读审计找到了 pandas/keras/spacy 共 224 条候选元数据，但本轮新增 prepared rows、outcomes 和 features 均为 0；这些候选不能直接算成 224 条有效标签或宣称 n128 已补齐。共同表示瓶颈、跨任务迁移和门控收益都需要这类新证据。
 
 本地系统资格、任务质量资格和原生生产集成分别验收。详细关闭记录保留在 [CLOSURE.md](CLOSURE.md)，不以一个笼统的“全部通过”替代这三个不同问题。
+
+最终 scoped `just fmt` 已成功，之后未运行测试；报告与已保存 Git tree 完全对齐。[terminal-evidence.json](terminal-evidence.json) 保存这部分实际输出、后续成本范围与环境恢复记录。

@@ -62,3 +62,7 @@ Facts SHA256   aa3641e69da7c4202b4b49ef62ddb7b355330aa157e9211802e578c8c6fb4be6
 ## 收尾约定
 
 所有数值实验和 fresh-process 恢复均在最终格式化之前完成。按根 `AGENTS.md` 执行 `codex-rs` 下的 `just fmt` 后不再运行测试。实际 formatter 输出、最终源码提交/树对齐及后续 terminal 成本保存为独立收据；它们不回写主账和本页引用的 closing cutoff。没有 Rust 源码变更，不把 formatter 成功说成全 Rust 编译或生产集成通过。
+
+最终已执行 `/tmp/hepta-tools/just fmt`，exit code 为 0，输出为 `No changed files need formatting. Use --all for a full repository check.`。随后没有运行测试或修改数值代码。报告提交 `23799938d175ca4ff19fd61f14e19acbbd82d787` 已取回并与本地 tree 完全对齐；此前所有既有 tracked files 均未改变，本轮采用新增文件实现。
+
+这一 terminal cutoff 的已记录工作和短暂执行环境断连/恢复事件保存在 [terminal-evidence.json](terminal-evidence.json)。最后保存该 metadata 本身的提交/发布另属 terminal 尾项，不递归改写前面任何成本账。
