@@ -12,6 +12,7 @@ use super::valid_head;
 use serde::Deserialize;
 use serde::Serialize;
 use std::collections::BTreeSet;
+#[cfg(not(windows))]
 use std::fs::File;
 use std::io::Seek;
 use std::io::SeekFrom;
@@ -67,15 +68,16 @@ struct StoredV3 {
 }
 
 #[derive(Clone, Copy, Deserialize, Eq, PartialEq, Serialize)]
-enum StoreTrust {
+pub(super) enum StoreTrust {
     SingleKey([u8; 32]),
     IssuerKeyRing([u8; 32]),
 }
 
 pub(super) struct Store {
-    root: File,
+    root: io::Directory,
     signer_id: String,
     trust: StoreTrust,
+    #[cfg(not(windows))]
     _lock: File,
 }
 
@@ -132,15 +134,55 @@ impl Store {
         initial: FinalUseRevocations,
         allow_startup_head_advance: bool,
     ) -> Result<(Self, State), FinalUseError> {
-        let root = prepare_directory(root)?;
-        let initialized = entry_exists(&root, "authority.lock")?;
-        let lock = open_private(&root, "authority.lock", Access::Create)?;
-        lock.try_lock().map_err(|_| FinalUseError::StateLocked)?;
+        let opened = io::lock_directory(root)?;
+        Self::open_locked(
+            opened,
+            signer_id,
+            trust,
+            initial,
+            allow_startup_head_advance,
+            #[cfg(windows)]
+            /*frontier_store*/
+            None,
+        )
+    }
+
+    #[cfg(windows)]
+    pub(super) fn open_windows(
+        directory: crate::windows_private_owner::PrivateStoreDirectory,
+        signer_id: &str,
+        trust: StoreTrust,
+        initial: FinalUseRevocations,
+        frontier_store: &dyn crate::AuthorityFrontierStore<super::FinalUseFrontier>,
+    ) -> Result<(Self, State), FinalUseError> {
+        let opened = io::LockedDirectory::from_windows(directory)?;
+        Self::open_locked(
+            opened,
+            signer_id,
+            trust,
+            initial,
+            /*allow_startup_head_advance*/ false,
+            Some(frontier_store),
+        )
+    }
+
+    fn open_locked(
+        opened: io::LockedDirectory,
+        signer_id: &str,
+        trust: StoreTrust,
+        initial: FinalUseRevocations,
+        allow_startup_head_advance: bool,
+        #[cfg(windows)] frontier_store: Option<
+            &dyn crate::AuthorityFrontierStore<super::FinalUseFrontier>,
+        >,
+    ) -> Result<(Self, State), FinalUseError> {
+        let initialized = opened.initialized;
         let store = Self {
-            root,
+            root: opened.root,
             signer_id: signer_id.to_owned(),
             trust,
-            _lock: lock,
+            #[cfg(not(windows))]
+            _lock: opened.lock,
         };
         let has_state = entry_exists(&store.root, "authority.json")?;
         let mut state = if has_state {
@@ -206,6 +248,8 @@ impl Store {
                 return Err(FinalUseError::InvalidTrust);
             }
             state.failed = false;
+            #[cfg(windows)]
+            io::validate_windows_prewrite(&state, &initial, signer_id, frontier_store)?;
             if header.schema != STATE_SCHEMA_V3 {
                 // Publish a complete legacy nonce set before its journal-based
                 // snapshot. Retrying an interrupted migration is idempotent.
@@ -227,6 +271,8 @@ impl Store {
                 used_nonces: Default::default(),
                 failed: false,
             };
+            #[cfg(windows)]
+            io::validate_windows_prewrite(&state, &initial, signer_id, frontier_store)?;
             store.replace_claims(initial.authority_epoch, &state.used_nonces)?;
             store.persist_snapshot(&initial)?;
             state
@@ -368,7 +414,6 @@ mod io;
 use io::Access;
 use io::entry_exists;
 use io::open_private;
-use io::prepare_directory;
 use io::read_bounded;
 use io::replace_claims;
 use io::replace_state;

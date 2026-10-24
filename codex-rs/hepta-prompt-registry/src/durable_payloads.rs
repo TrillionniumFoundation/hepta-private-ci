@@ -5,8 +5,8 @@
 //! Recovery verifies every referenced byte before trimming only an orphan tail.
 //! This reduces payload write amplification, not metadata or hot-memory growth.
 
+use super::Directory;
 use std::collections::BTreeMap;
-use std::fs::File;
 use std::io::Read;
 use std::io::Seek;
 use std::io::SeekFrom;
@@ -75,7 +75,7 @@ impl PayloadState {
     }
 
     pub fn hydrate(
-        directory: &File,
+        directory: &Directory,
         mut stored: StoredV3,
     ) -> Result<(Self, StoredV2), DurableRegistryError> {
         if stored.schema != 3
@@ -135,7 +135,10 @@ impl PayloadState {
     /// Only called after full V2 semantic/configuration validation succeeded.
     /// The selected manifest already proves the prefix; shortening that prefix
     /// is never recovery. No committed record or revoked payload is collected.
-    pub fn discard_unselected_tail(&self, directory: &File) -> Result<(), DurableRegistryError> {
+    pub fn discard_unselected_tail(
+        &self,
+        directory: &Directory,
+    ) -> Result<(), DurableRegistryError> {
         let file = open_private(directory, FILE_NAME, Access::Create)?;
         let length = file.metadata().map_err(map_precommit_io)?.len();
         if length < self.committed_end {
@@ -198,7 +201,7 @@ impl PayloadState {
         &self,
         successor: &Self,
         registry: &PromptRegistry,
-        directory: &File,
+        directory: &Directory,
     ) -> Result<(), DurableRegistryError> {
         if self.initialized && successor.committed_end == self.committed_end {
             let mut file = open_private(directory, FILE_NAME, Access::Read)?;
@@ -239,12 +242,12 @@ impl PayloadState {
             file.write_all(payload).map_err(map_precommit_io)?;
         }
         file.sync_all().map_err(map_precommit_io)?;
-        directory.sync_all().map_err(map_precommit_io)?;
+        super::platform::sync_directory(directory)?;
         Ok(())
     }
 }
 
-fn require_header(file: &mut File) -> Result<(), DurableRegistryError> {
+fn require_header(file: &mut (impl Read + Seek)) -> Result<(), DurableRegistryError> {
     file.seek(SeekFrom::Start(0)).map_err(map_precommit_io)?;
     let mut magic = [0; MAGIC.len()];
     file.read_exact(&mut magic)

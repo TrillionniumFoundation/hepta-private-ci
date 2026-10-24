@@ -1,12 +1,17 @@
 //! Original platform I/O boundary; parsing and journal formats stay in Store.
 
 use super::FinalUseError;
+#[cfg(windows)]
+pub(super) use crate::windows_private_owner::OwnerLock as Directory;
+#[cfg(not(windows))]
 use std::fs::File;
+#[cfg(not(windows))]
+pub(super) use std::fs::File as Directory;
 use std::io::Read;
 use std::path::Path;
 
 pub(super) fn read_bounded(
-    directory: &File,
+    directory: &Directory,
     name: &str,
     maximum: usize,
 ) -> Result<Vec<u8>, FinalUseError> {
@@ -87,11 +92,11 @@ pub(super) fn open_private(
     Ok(file)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 pub(super) fn prepare_directory(_root: &Path) -> Result<File, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 pub(super) fn open_private(
     _directory: &File,
     _name: &str,
@@ -126,13 +131,17 @@ pub(super) fn replace_claims(directory: &File, _stage: &File) -> Result<(), Fina
     .map_err(|_| FinalUseError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 pub(super) fn entry_exists(_directory: &File, _name: &str) -> Result<bool, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
 #[cfg(windows)]
-pub(super) fn replace_state(directory: &File, stage: &File) -> Result<(), FinalUseError> {
-    crate::replace_synced_state_stage(directory, stage, "authority.json")
+pub(super) fn replace_state(
+    _directory: &Directory,
+    stage: &crate::windows_private_owner::OriginalStoreFile<'_>,
+) -> Result<(), FinalUseError> {
+    stage
+        .replace_synced("authority.json")
         .map_err(|_| FinalUseError::Unavailable)
 }
 #[cfg(not(any(unix, windows)))]
@@ -140,11 +149,97 @@ pub(super) fn replace_state(_directory: &File, _stage: &File) -> Result<(), Fina
     Err(FinalUseError::UnsafeStateDirectory)
 }
 #[cfg(windows)]
-pub(super) fn replace_claims(directory: &File, stage: &File) -> Result<(), FinalUseError> {
-    crate::replace_synced_state_stage(directory, stage, "authority.claims")
+pub(super) fn replace_claims(
+    _directory: &Directory,
+    stage: &crate::windows_private_owner::OriginalStoreFile<'_>,
+) -> Result<(), FinalUseError> {
+    stage
+        .replace_synced("authority.claims")
         .map_err(|_| FinalUseError::Unavailable)
 }
 #[cfg(not(any(unix, windows)))]
 pub(super) fn replace_claims(_directory: &File, _stage: &File) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
+}
+
+pub(super) struct LockedDirectory {
+    pub(super) root: Directory,
+    pub(super) initialized: bool,
+    #[cfg(not(windows))]
+    pub(super) lock: File,
+}
+#[cfg(not(windows))]
+pub(super) fn lock_directory(path: &Path) -> Result<LockedDirectory, FinalUseError> {
+    let root = prepare_directory(path)?;
+    let initialized = entry_exists(&root, "authority.lock")?;
+    let lock = open_private(&root, "authority.lock", Access::Create)?;
+    lock.try_lock().map_err(|_| FinalUseError::StateLocked)?;
+    Ok(LockedDirectory {
+        root,
+        initialized,
+        lock,
+    })
+}
+#[cfg(windows)]
+pub(super) fn lock_directory(_path: &Path) -> Result<LockedDirectory, FinalUseError> {
+    // Ordinary path factories stay closed pending complete native qualification.
+    Err(FinalUseError::UnsafeStateDirectory)
+}
+#[cfg(windows)]
+impl LockedDirectory {
+    pub(super) fn from_windows(
+        input: crate::windows_private_owner::PrivateStoreDirectory,
+    ) -> Result<Self, FinalUseError> {
+        use crate::windows_private_owner::OwnerLockError;
+        use crate::windows_private_owner::OwnerLockOrigin;
+        let root = input
+            .lock_original_marker("authority.lock")
+            .map_err(|error| match error {
+                OwnerLockError::StateLocked => FinalUseError::StateLocked,
+                OwnerLockError::Rejected(_) => FinalUseError::UnsafeStateDirectory,
+            })?;
+        let initialized = root.origin() == &OwnerLockOrigin::Existing;
+        Ok(Self { root, initialized })
+    }
+}
+#[cfg(windows)]
+pub(super) fn open_private<'owner>(
+    directory: &'owner Directory,
+    name: &str,
+    access: Access,
+) -> Result<crate::windows_private_owner::OriginalStoreFile<'owner>, FinalUseError> {
+    use crate::windows_private_owner::OriginalFileAccess;
+    let access = match access {
+        Access::Read => OriginalFileAccess::Read,
+        Access::Write => OriginalFileAccess::Write,
+        Access::Create => OriginalFileAccess::Stage,
+    };
+    directory
+        .open_original_file(name, 64 * 1024 * 1024, access)
+        .map_err(|_| FinalUseError::Unavailable)
+}
+#[cfg(windows)]
+pub(super) fn entry_exists(directory: &Directory, name: &str) -> Result<bool, FinalUseError> {
+    directory
+        .entry_exists(name)
+        .map_err(|_| FinalUseError::Unavailable)
+}
+#[cfg(windows)]
+pub(super) fn validate_windows_prewrite(
+    state: &super::State,
+    initial: &super::FinalUseRevocations,
+    signer_id: &str,
+    frontier: Option<&dyn crate::AuthorityFrontierStore<super::super::FinalUseFrontier>>,
+) -> Result<(), FinalUseError> {
+    if &state.head != initial {
+        return Err(FinalUseError::InvalidTrust);
+    }
+    let trusted = frontier
+        .ok_or(FinalUseError::Unavailable)?
+        .load(signer_id)
+        .map_err(super::super::map_trust_error)?;
+    if trusted != super::super::frontier_for_state(state) {
+        return Err(FinalUseError::AntiRollbackViolation);
+    }
+    Ok(())
 }
