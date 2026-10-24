@@ -11,6 +11,7 @@ use codex_hepta_neuron::NeuronModelError;
 use codex_hepta_neuron::NeuronModelOutputV1;
 use codex_hepta_neuron::NeuronModelPort;
 use codex_hepta_neuron::NeuronModelRequestV1;
+use codex_hepta_neuron::NeuronTickInputV1;
 use codex_hepta_neuron::canonical_model_output_digest_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -19,6 +20,7 @@ use serde::Serialize;
 
 use crate::native_memory_process;
 use crate::native_memory_types::*;
+use crate::native_memory_tick_binding::NativeTickBindingV1;
 
 pub(crate) struct NativeMemoryModelPort {
     writer: Arc<ProductionDurableWriter>,
@@ -26,6 +28,7 @@ pub(crate) struct NativeMemoryModelPort {
     config: NativeMemoryModelConfigV1,
     handle: tokio::runtime::Handle,
     expected: NeuronModelRequestV1,
+    tick_binding: Option<NativeTickBindingV1>,
     execution: Option<NativeMemoryExecutionV1>,
     attempted: bool,
     failure: Option<String>,
@@ -48,6 +51,8 @@ struct WorkerRequest<'a> {
     query_digest: String,
     source_binding_digest: String,
     neuron_request: NativeNeuronRequestV1<'a>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    tick_binding: Option<&'a NativeTickBindingV1>,
 }
 
 impl NativeMemoryModelPort {
@@ -84,12 +89,33 @@ impl NativeMemoryModelPort {
             config,
             handle,
             expected,
+            tick_binding: None,
             execution: None,
             attempted: false,
             failure: None,
             dispatches,
             cancellation,
         })
+    }
+
+    /// Preserve the registered model tuple and source admission while binding
+    /// the full live tick. A source hash cannot stand in for objective or NDU.
+    pub(crate) fn bind_tick(
+        &mut self,
+        input: &NeuronTickInputV1,
+        request: &NeuronModelRequestV1,
+    ) -> Result<(), NativeMemoryError> {
+        let mut expected = self.expected.clone();
+        expected.input_digest = input.semantic_digest()
+            .map_err(|e| NativeMemoryError::Rejected(e.to_string()))?;
+        if self.attempted || self.tick_binding.is_some() || request != &expected
+            || request.request_id != input.tick_id
+            || request.feature_vector_q24 != input.feature_vector_q24 {
+            return Err(NativeMemoryError::Rejected("tick differs from admitted native model tuple".to_string()));
+        }
+        self.tick_binding = Some(NativeTickBindingV1::new(input, self.admission.binding())?);
+        self.expected = expected;
+        Ok(())
     }
 
     pub(crate) fn request(&self) -> NeuronModelRequestV1 {
@@ -129,7 +155,7 @@ impl NativeMemoryModelPort {
             .question()
             .map_err(|e| reject(e.to_string()))?;
         let wire = WorkerRequest {
-            schema: "hepta.memory-cell.native-request.v1",
+            schema: if self.tick_binding.is_some() { "hepta.memory-cell.native-request.v2" } else { "hepta.memory-cell.native-request.v1" },
             repo: &self.config.repo,
             model: &self.config.model,
             checkpoint: &self.config.checkpoint,
@@ -142,6 +168,7 @@ impl NativeMemoryModelPort {
             query_digest: self.admission.binding().query_digest.to_string(),
             source_binding_digest: self.admission.binding().binding_digest.to_string(),
             neuron_request: request.into(),
+            tick_binding: self.tick_binding.as_ref(),
         };
         let input = serde_json::to_vec(&wire).map_err(|e| reject(e.to_string()))?;
         let request_digest = Digest32::of_bytes(&input).to_string();
@@ -268,3 +295,7 @@ impl NeuronModelPort for NativeMemoryModelPort {
 #[cfg(test)]
 #[path = "native_memory_model_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "native_memory_tick_binding_tests.rs"]
+mod tick_binding_tests;
