@@ -43,6 +43,7 @@ use root::ProtectedLease;
 #[path = "deployment_writer.rs"]
 mod writer;
 pub use writer::HostAuthorityWriterRegistration;
+pub(crate) use writer::WriterRegistrationExt;
 
 #[path = "deployment_notes.rs"]
 mod notes;

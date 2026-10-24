@@ -329,7 +329,7 @@ fn policy(peer: &CognitiveCheckpointPeerLifetime, lifetime: Duration) -> HostAut
     }
 }
 fn now() -> io::Result<u64> {
-    crate::root_observation_cache::boottime_ns().map_err(io::Error::other)
+    codex_hepta_authority_client::boottime_ns().map_err(io::Error::other)
 }
 fn remaining(end: u64) -> io::Result<Duration> {
     end.checked_sub(now()?)

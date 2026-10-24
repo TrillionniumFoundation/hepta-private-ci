@@ -224,7 +224,7 @@ fn project_unbounded(
         .checked_add(elapsed.div_ceil(1_000_000))
         .ok_or(AgentdRootAuthorityError::Unavailable)
 }
-pub(crate) fn boottime_ns() -> Result<u64, AgentdRootAuthorityError> {
+pub fn boottime_ns() -> Result<u64, AgentdRootAuthorityError> {
     let mut stamp = libc::timespec {
         tv_sec: 0,
         tv_nsec: 0,

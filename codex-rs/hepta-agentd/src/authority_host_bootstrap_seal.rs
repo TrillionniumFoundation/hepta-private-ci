@@ -36,7 +36,9 @@ pub fn seal_host_authority_bootstrap(bundle: &HostAuthorityPublicBootstrapV1) ->
     seal_bytes(&encode_public_bootstrap(bundle)?)
 }
 
-pub(crate) fn encode_public_bootstrap(bundle: &HostAuthorityPublicBootstrapV1) -> io::Result<Vec<u8>> {
+pub(crate) fn encode_public_bootstrap(
+    bundle: &HostAuthorityPublicBootstrapV1,
+) -> io::Result<Vec<u8>> {
     let mut bytes = BoundedBytes(Vec::new());
     serde_json::to_writer(&mut bytes, bundle).map_err(io::Error::other)?;
     Ok(bytes.0)
@@ -53,7 +55,7 @@ fn require_root() -> io::Result<()> {
     Ok(())
 }
 
-fn seal_bytes(bytes: &[u8]) -> io::Result<File> {
+pub(crate) fn seal_bytes(bytes: &[u8]) -> io::Result<File> {
     require_root()?;
     if bytes.is_empty() || bytes.len() > HOST_AUTHORITY_BOOTSTRAP_BOUND {
         return Err(io::Error::new(
@@ -97,7 +99,7 @@ fn seal_bytes(bytes: &[u8]) -> io::Result<File> {
     Ok(file)
 }
 
-fn validate_sealed(file: &File, expected_len: u64) -> io::Result<()> {
+pub(crate) fn validate_sealed(file: &File, expected_len: u64) -> io::Result<()> {
     let metadata = file.metadata()?;
     // SAFETY: F_GET_SEALS reads the seals of our retained live descriptor.
     let seals = unsafe { libc::fcntl(file.as_raw_fd(), libc::F_GET_SEALS) };

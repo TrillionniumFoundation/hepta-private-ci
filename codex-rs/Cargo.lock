@@ -3450,6 +3450,7 @@ dependencies = [
 name = "codex-hepta-agent-protocol"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-authority-types",
  "codex-hepta-automation",
  "codex-hepta-contracts",
  "codex-hepta-fleet",
@@ -3471,6 +3472,8 @@ dependencies = [
  "codex-features",
  "codex-hepta-agent-protocol",
  "codex-hepta-authbus",
+ "codex-hepta-authority-client",
+ "codex-hepta-authority-types",
  "codex-hepta-automation",
  "codex-hepta-bellman-operator",
  "codex-hepta-codex-adapter",
@@ -3531,6 +3534,7 @@ dependencies = [
 name = "codex-hepta-authbus"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-authority-types",
  "codex-hepta-types",
  "codex-state",
  "codex-utils-absolute-path",
@@ -3550,6 +3554,40 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-authbus",
  "codex-hepta-types",
+]
+
+[[package]]
+name = "codex-hepta-authority-client"
+version = "0.0.0"
+dependencies = [
+ "codex-hepta-authority-types",
+ "codex-hepta-contracts",
+ "codex-hepta-fleet",
+ "codex-hepta-paths",
+ "codex-hepta-types",
+ "ed25519-dalek",
+ "libc",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "codex-hepta-authority-types"
+version = "0.0.0"
+dependencies = [
+ "codex-hepta-contracts",
+ "codex-hepta-fleet",
+ "codex-hepta-paths",
+ "codex-hepta-types",
+ "ed25519-dalek",
+ "serde",
+ "serde_json",
+ "sha2 0.10.9",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -3944,6 +3982,7 @@ name = "codex-hepta-memory"
 version = "0.0.0"
 dependencies = [
  "base64 0.22.1",
+ "codex-hepta-authority-types",
  "codex-hepta-cognitive-read",
  "codex-hepta-cognitive-types",
  "codex-hepta-contracts",

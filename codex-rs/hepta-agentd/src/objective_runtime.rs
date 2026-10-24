@@ -9,7 +9,6 @@
 use std::collections::BTreeMap;
 use std::fs::OpenOptions;
 use std::path::Path;
-use std::str::FromStr;
 use std::sync::Mutex;
 
 use codex_hepta_authbus::Error as AuthBusError;
@@ -46,8 +45,6 @@ use crate::authbus_trust::hex_bytes;
 use crate::authbus_trust::invalid;
 use crate::authbus_trust::read_private_owner_file;
 
-const PRODUCT_SOURCE_JSON_BYTES: usize = 32 * 1024;
-const PRODUCT_BODY_JSON_BYTES: usize = 48 * 1024;
 const MAX_RUN_START_RECORDS: usize = 4_096;
 const RUN_START_DIRECTORY: &str = "objective-run-start-v1";
 const RUN_START_FILE: &str = "journal.bin";
@@ -175,76 +172,33 @@ pub(crate) fn objective_payload(
     body: &AuthBusObjectiveBody,
     current_generation: u64,
 ) -> Result<Vec<u8>, AgentdError> {
-    if body.spawn_generation != identity.spawn_generation || current_generation == 0 {
-        return Err(invalid("objective generation is invalid"));
-    }
-    objective_body_payload(body)
+    codex_hepta_authority_client::objective_payload(identity, body, current_generation)
+        .map_err(objective_claims_error)
 }
 
-fn objective_body_payload(body: &AuthBusObjectiveBody) -> Result<Vec<u8>, AgentdError> {
-    if body.spawn_generation == 0
-        || body.objective_revision == 0
-        || body.authority_epoch == 0
-        || body.source_envelope_json.is_empty()
-        || body.source_envelope_json.len() > PRODUCT_SOURCE_JSON_BYTES
-    {
-        return Err(invalid(
-            "objective generation, revision, authority or source bound is invalid",
-        ));
-    }
-    StableId::new(&body.run_id).map_err(|error| invalid(&format!("objective run id: {error}")))?;
-    for (digest, field) in [
-        (&body.runtime_body_digest, "runtime body"),
-        (&body.preference_state_digest, "preference state"),
-        (&body.model_tuple_digest, "model tuple"),
-        (&body.prompt_registry_digest, "prompt registry"),
-        (&body.artifact_set_digest, "artifact set"),
-    ] {
-        parse_digest(digest, field)?;
-    }
-    let bytes = serde_json::to_vec(body)?;
-    if bytes.len() > PRODUCT_BODY_JSON_BYTES {
-        return Err(invalid("encoded objective body exceeds 48 KiB"));
-    }
-    Ok(bytes)
-}
-
-/// Build the exact preimage claims used by original Objective admission.
-/// This validates the structured body and binds the original owner/route; it
-/// neither signs, admits, advances replay state nor grants effect authority.
+/// Build the same complete canonical claims through the finite implementation.
+/// This supplies no signature, replay admission or effect authority.
 pub fn authbus_objective_claims(
     identity: &AgentdIdentity,
     request: &AuthBusObjectiveIngress,
 ) -> Result<SignedMessageClaims, AgentdError> {
-    let payload = objective_payload(identity, &request.body, identity.spawn_generation)?;
-    objective_claims(identity, request, &payload)
-}
-
-fn objective_claims(
-    identity: &AgentdIdentity,
-    request: &AuthBusObjectiveIngress,
-    payload: &[u8],
-) -> Result<SignedMessageClaims, AgentdError> {
-    Ok(SignedMessageClaims {
-        issuer_id: StableId::new(&request.issuer_id)
-            .map_err(|error| invalid(&format!("objective issuer: {error}")))?,
-        key_epoch: Generation::new(request.key_epoch)
-            .map_err(|error| invalid(&format!("objective key epoch: {error}")))?,
-        message_id: StableId::new(&request.message_id)
-            .map_err(|error| invalid(&format!("objective message id: {error}")))?,
-        subject_id: StableId::new(identity.agent_id.as_str())
-            .map_err(|error| invalid(&format!("objective subject: {error}")))?,
-        scope_digest: objective_scope(identity),
-        payload_digest: Digest32::of_bytes(payload),
-        sequence: request.sequence,
-        expires_at_ms: request.expires_at_ms,
-    })
+    codex_hepta_authority_client::authbus_objective_claims(identity, request)
+        .map_err(objective_claims_error)
 }
 
 pub(crate) fn objective_scope(identity: &AgentdIdentity) -> Digest32 {
-    let mut bytes = b"hepta:agentd:signed-objective:v1\0".to_vec();
-    bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
-    Digest32::of_bytes(&bytes)
+    codex_hepta_authority_client::objective_scope(identity)
+}
+
+fn objective_claims_error(
+    error: codex_hepta_authority_client::ObjectiveClaimsError,
+) -> AgentdError {
+    match error {
+        codex_hepta_authority_client::ObjectiveClaimsError::Invalid(message) => {
+            AgentdError::Invalid(message)
+        }
+        codex_hepta_authority_client::ObjectiveClaimsError::Json(error) => AgentdError::Json(error),
+    }
 }
 
 fn objective_fence(identity: &AgentdIdentity, current_generation: u64) -> Digest32 {
@@ -256,12 +210,8 @@ fn objective_fence(identity: &AgentdIdentity, current_generation: u64) -> Digest
 }
 
 fn parse_digest(value: &str, field: &'static str) -> Result<Digest32, AgentdError> {
-    let digest =
-        Digest32::from_str(value).map_err(|_| invalid(&format!("invalid {field} digest")))?;
-    if digest.is_zero() {
-        return Err(invalid(&format!("empty {field} digest")));
-    }
-    Ok(digest)
+    codex_hepta_authority_client::parse_objective_digest(value, field)
+        .map_err(objective_claims_error)
 }
 
 fn run_start_binding(identity: &AgentdIdentity, profile_digest: Digest32) -> Digest32 {

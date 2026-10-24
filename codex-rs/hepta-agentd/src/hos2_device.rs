@@ -100,22 +100,53 @@ impl ControlTransport for FileTransport {
 
 impl AgentdHos2Device {
     /// Attach only through an explicitly supplied, already-open process file
-    /// and the existing HOS2BOOT v2 page. No environment switch enables effects
+    /// and an existing HOS2BOOT v2/v3 page. No environment switch enables effects
     /// and no authority, writer or signer is manufactured by this constructor.
     pub fn from_bootstrap(file: File, bootstrap: &[u8]) -> Result<Self, String> {
         Self::attach(Box::new(FileTransport { file }), bootstrap)
     }
 
-    fn attach(transport: Box<dyn ControlTransport>, bootstrap: &[u8]) -> Result<Self, String> {
-        if bootstrap.len() < 192
-            || &bootstrap[..8] != b"HOS2BOOT"
-            || read64(bootstrap, /*offset*/ 8)? != 2
-            || read64(bootstrap, /*offset*/ 24)? != 192
-            || bootstrap[192..].iter().any(|byte| *byte != 0)
-            || read64(bootstrap, /*offset*/ 176)? != HOS2_CPU_PERIOD_NS
-        {
-            return Err("invalid sealed HOS2 bootstrap discovery page".to_string());
+    /// Open the control device in the final kernel-created G2 manager or
+    /// recovery Process, before that same image drops its root credentials.
+    /// `bootstrap` is the copied read-only AT_HEPTA_BOOT page. Its fields are
+    /// discovery only: QueryAbi and every subsequent ioctl still authenticate
+    /// the actual Process and image. No caller-supplied file crosses a role.
+    pub fn from_kernel_bootstrap(bootstrap: &[u8]) -> Result<Self, String> {
+        validate_bootstrap(bootstrap)?;
+        if read64(bootstrap, /*offset*/ 8)? != 3 {
+            return Err("kernel-initial Agentd requires HOS2BOOT v3".to_string());
         }
+        let expected_pid = match read64(bootstrap, /*offset*/ 16)? {
+            1 => read64(bootstrap, /*offset*/ 144)?,
+            3 => read64(bootstrap, /*offset*/ 160)?,
+            _ => return Err("kernel-initial role is not an Agentd owner".to_string()),
+        };
+        // SAFETY: these process/credential queries take no pointer arguments.
+        let identity_matches = unsafe {
+            u64::from(std::process::id()) == expected_pid
+                && libc::getppid() == 1
+                && libc::getuid() == 0
+                && libc::geteuid() == 0
+                && libc::getgid() == 0
+                && libc::getegid() == 0
+        };
+        if !identity_matches {
+            return Err(
+                "kernel-initial Agentd must open in its actual final root image".to_string(),
+            );
+        }
+        use std::os::unix::fs::OpenOptionsExt;
+        let file = std::fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
+            .open("/dev/hepta-control")
+            .map_err(|error| format!("opening this Process's HOS2 control device: {error}"))?;
+        Self::attach(Box::new(FileTransport { file }), bootstrap)
+    }
+
+    fn attach(transport: Box<dyn ControlTransport>, bootstrap: &[u8]) -> Result<Self, String> {
+        validate_bootstrap(bootstrap)?;
         let manager_space = read16(bootstrap, /*offset*/ 112)?;
         let recovery_space = read16(bootstrap, /*offset*/ 128)?;
         let local_space = match read64(bootstrap, /*offset*/ 16)? {
@@ -174,7 +205,7 @@ impl AgentdHos2Device {
             || read64(&response.payload, /*offset*/ 32)? != 62
             || read64(&response.payload, /*offset*/ 40)? != 0
         {
-            return Err("native QueryAbi differs from HOS2BOOT v2".to_string());
+            return Err("native QueryAbi differs from HOS2BOOT discovery".to_string());
         }
         Ok(device)
     }
@@ -539,6 +570,39 @@ fn read16(bytes: &[u8], offset: usize) -> Result<[u8; 16], String> {
         .ok_or_else(|| "truncated HOS2 identity".to_string())?
         .try_into()
         .map_err(|_| "invalid HOS2 identity length".to_string())
+}
+
+// The v2 profile remains byte-for-byte compatible with the three-role G1d
+// consumer. G2 is a distinct four-role initial transaction, never inferred from
+// a new PID, an environment variable or a transferred file descriptor.
+fn validate_bootstrap(bootstrap: &[u8]) -> Result<(), String> {
+    if bootstrap.len() < 192
+        || &bootstrap[..8] != b"HOS2BOOT"
+        || read64(bootstrap, /*offset*/ 176)? != HOS2_CPU_PERIOD_NS
+    {
+        return Err("invalid sealed HOS2 bootstrap discovery page".to_string());
+    }
+    let bytes = match read64(bootstrap, /*offset*/ 8)? {
+        2 => 192,
+        3 => {
+            if !matches!(bootstrap.len(), 200 | 4096)
+                || read64(bootstrap, /*offset*/ 144)? != 2
+                || read64(bootstrap, /*offset*/ 152)? != 3
+                || read64(bootstrap, /*offset*/ 160)? != 4
+                || read64(bootstrap, /*offset*/ 192)? != 1
+            {
+                return Err("invalid G2 kernel-initial process topology".to_string());
+            }
+            200
+        }
+        _ => return Err("unsupported HOS2 bootstrap version".to_string()),
+    };
+    if read64(bootstrap, /*offset*/ 24)? != bytes as u64
+        || bootstrap[bytes..].iter().any(|byte| *byte != 0)
+    {
+        return Err("invalid sealed HOS2 bootstrap discovery page".to_string());
+    }
+    Ok(())
 }
 
 #[cfg(test)]

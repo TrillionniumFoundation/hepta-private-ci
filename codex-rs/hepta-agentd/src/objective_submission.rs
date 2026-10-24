@@ -114,7 +114,7 @@ impl ObjectiveRuntimeHost {
         let trust = authbus.trust(agentd)?;
         let issuer = trust.issuer()?;
         let message = SignedMessage {
-            claims: objective_claims(agentd.identity(), &request, &payload)?,
+            claims: authbus_objective_claims(agentd.identity(), &request)?,
             signature: hex_bytes(&request.signature_hex)?,
         };
         let authenticated = message

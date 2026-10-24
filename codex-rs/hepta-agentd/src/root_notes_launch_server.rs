@@ -11,8 +11,8 @@ use codex_hepta_memory::CognitiveCheckpointPeerLifetime;
 use codex_hepta_memory::NotesTargetIdentity;
 use std::fs::File;
 use std::io::Read;
-use std::time::Duration;
 use std::sync::Mutex;
+use std::time::Duration;
 
 /// Root owns this exact pending service. The caller has already installed any
 /// recovered image, spawned the actual Host, and retained its real Child/pidfd.
@@ -30,7 +30,9 @@ pub struct RootNotesLaunchServer {
 /// Exactly [Session FD0 offer, Session FD4 planned startup], made by Host.
 pub struct RootNotesSessionChannels([OwnedFd; 2]);
 impl RootNotesSessionChannels {
-    pub fn into_descriptors(self) -> [OwnedFd; 2] { self.0 }
+    pub fn into_descriptors(self) -> [OwnedFd; 2] {
+        self.0
+    }
 }
 
 /// Root must now spawn its fixed UID1000 Session with the transferred channels
@@ -75,17 +77,31 @@ enum StartupCancellationState {
 
 impl RootNotesStartupCancellation {
     pub fn cancel(&self) {
-        let mut state = self.0.state.lock().unwrap_or_else(|error| error.into_inner());
+        let mut state = self
+            .0
+            .state
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
         if matches!(*state, StartupCancellationState::Armed(_)) {
-            drop(std::mem::replace(&mut *state, StartupCancellationState::Cancelled));
+            drop(std::mem::replace(
+                &mut *state,
+                StartupCancellationState::Cancelled,
+            ));
             self.0.service.fail_material_startup();
         }
     }
 
     fn complete(&self) -> io::Result<()> {
-        let mut state = self.0.state.lock().unwrap_or_else(|error| error.into_inner());
+        let mut state = self
+            .0
+            .state
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
         match std::mem::replace(&mut *state, StartupCancellationState::Completed) {
-            StartupCancellationState::Armed(abort) => { abort.disarm(); Ok(()) }
+            StartupCancellationState::Armed(abort) => {
+                abort.disarm();
+                Ok(())
+            }
             StartupCancellationState::Cancelled => {
                 *state = StartupCancellationState::Cancelled;
                 Err(io::Error::other("Root Notes startup was cancelled"))
@@ -106,14 +122,27 @@ impl RootNotesLaunchServer {
         preheld_root_pidfd: OwnedFd,
         preparation_end_boottime_ns: u64,
     ) -> io::Result<Self> {
-        if !service.material_startup.as_ref().is_some_and(|state| state.is_pending())
-            || service.checkpoint.as_ref().and_then(|c| c.recovered.as_ref())
-                .is_some_and(|recovered| !recovered.installed.load(std::sync::atomic::Ordering::Acquire))
+        if !service
+            .material_startup
+            .as_ref()
+            .is_some_and(|state| state.is_pending())
+            || service
+                .checkpoint
+                .as_ref()
+                .and_then(|c| c.recovered.as_ref())
+                .is_some_and(|recovered| {
+                    !recovered
+                        .installed
+                        .load(std::sync::atomic::Ordering::Acquire)
+                })
         {
             return Err(invalid());
         }
         let bundle = service.capture_public_bootstrap()?;
-        if bundle.consumer.uid != 60001 || bundle.root.uid != 0 || bundle.root.pid != std::process::id() {
+        if bundle.consumer.uid != 60001
+            || bundle.root.uid != 0
+            || bundle.root.pid != std::process::id()
+        {
             return Err(invalid());
         }
         let lifetime = remaining(preparation_end_boottime_ns)?;
@@ -128,42 +157,84 @@ impl RootNotesLaunchServer {
             let before = now()?;
             let observed = service.clock.now_unix_ms().map_err(io::Error::other)?;
             let writer = service.writer.as_ref().ok_or_else(invalid)?;
-            let expiry = lease.expires_at_unix_ms.min(writer.registration.authority_lease.expires_at_unix_ms);
-            let remaining_ms = expiry.checked_sub(observed).and_then(|left| left.checked_sub(1))
-                .filter(|left| *left > 0).ok_or_else(invalid)?;
-            let lease_end = before.checked_add(remaining_ms.checked_mul(1_000_000).ok_or_else(invalid)?)
+            let expiry = lease
+                .expires_at_unix_ms
+                .min(writer.registration.authority_lease.expires_at_unix_ms);
+            let remaining_ms = expiry
+                .checked_sub(observed)
+                .and_then(|left| left.checked_sub(1))
+                .filter(|left| *left > 0)
+                .ok_or_else(invalid)?;
+            let lease_end = before
+                .checked_add(remaining_ms.checked_mul(1_000_000).ok_or_else(invalid)?)
                 .ok_or_else(invalid)?;
             Ok(preparation_end_boottime_ns.min(lease_end))
         })?;
         let lifetime = remaining(preparation_end_boottime_ns)?;
-        HostAuthorityOwnerLifetime::from_pidfd(preheld_root_pidfd.try_clone()?, bundle.root.pid, lifetime)
-            .map_err(io::Error::other)?.check_alive().map_err(io::Error::other)?;
-        let channel = RootNotesLaunchChannel::from_peer_stream(stream, bundle.consumer, preheld_host_pidfd,
-            preparation_end_boottime_ns)?;
+        HostAuthorityOwnerLifetime::from_pidfd(
+            preheld_root_pidfd.try_clone()?,
+            bundle.root.pid,
+            lifetime,
+        )
+        .map_err(io::Error::other)?
+        .check_alive()
+        .map_err(io::Error::other)?;
+        let channel = RootNotesLaunchChannel::from_peer_stream(
+            stream,
+            bundle.consumer,
+            preheld_host_pidfd,
+            preparation_end_boottime_ns,
+        )?;
         let mut random = [0u8; 16];
         File::open("/dev/urandom")?.read_exact(&mut random)?;
         let nonce = random.iter().map(|byte| format!("{byte:02x}")).collect();
-        Ok(Self { service, channel, root_pidfd: preheld_root_pidfd, root:bundle.root, nonce,
-            phase_end:0, preparation_end:preparation_end_boottime_ns })
+        Ok(Self {
+            service,
+            channel,
+            root_pidfd: preheld_root_pidfd,
+            root: bundle.root,
+            nonce,
+            phase_end: 0,
+            preparation_end: preparation_end_boottime_ns,
+        })
     }
 
     /// Start Phase A once, after slow physical installation. Its original five
     /// seconds and Parent's already fixed total end are distinct absolute values.
-    pub fn prepare_session(mut self) -> io::Result<(RootNotesAwaitingSession, RootNotesSessionChannels)> {
+    pub fn prepare_session(
+        mut self,
+    ) -> io::Result<(RootNotesAwaitingSession, RootNotesSessionChannels)> {
         self.service.capture_public_bootstrap()?;
-        self.phase_end = now()?.checked_add(ROOT_NOTES_PREPARATION_NS).ok_or_else(invalid)?;
-        if self.phase_end >= self.preparation_end { return Err(invalid()); }
-        self.channel.send(&RootNotesLaunchFrame::PrepareSessionV1 {
-            schema_version:1, launch_nonce:self.nonce.clone(), end_boottime_ns:self.phase_end,
-            preparation_end_boottime_ns:self.preparation_end,
-        }, &[], self.phase_end)?;
+        self.phase_end = now()?
+            .checked_add(ROOT_NOTES_PREPARATION_NS)
+            .ok_or_else(invalid)?;
+        if self.phase_end >= self.preparation_end {
+            return Err(invalid());
+        }
+        self.channel.send(
+            &RootNotesLaunchFrame::PrepareSessionV1 {
+                schema_version: 1,
+                launch_nonce: self.nonce.clone(),
+                end_boottime_ns: self.phase_end,
+                preparation_end_boottime_ns: self.preparation_end,
+            },
+            &[],
+            self.phase_end,
+        )?;
         let (frame, descriptors) = self.channel.read(self.phase_end)?;
         require_nonce(&frame, &self.nonce)?;
-        if !matches!(frame, RootNotesLaunchFrame::SessionChannelsV1 { .. }) { return Err(invalid()); }
-        for descriptor in &descriptors { crate::root_notes_launch_io::require_connected_unix_datagram(descriptor)?; }
+        if !matches!(frame, RootNotesLaunchFrame::SessionChannelsV1 { .. }) {
+            return Err(invalid());
+        }
+        for descriptor in &descriptors {
+            crate::root_notes_launch_io::require_connected_unix_datagram(descriptor)?;
+        }
         let channels: [OwnedFd; 2] = descriptors.try_into().map_err(|_| invalid())?;
         self.channel.check(self.phase_end)?;
-        Ok((RootNotesAwaitingSession(self), RootNotesSessionChannels(channels)))
+        Ok((
+            RootNotesAwaitingSession(self),
+            RootNotesSessionChannels(channels),
+        ))
     }
 }
 
@@ -176,88 +247,183 @@ impl RootNotesAwaitingSession {
         preheld_session_pidfd: OwnedFd,
     ) -> io::Result<RootNotesReservedTarget> {
         let launch = &mut self.0;
-        if session.uid != 1000 || session.boot_id != launch.root.boot_id
-            || session.pid == launch.root.pid || session.pid == launch.channel.peer().pid {
+        if session.uid != 1000
+            || session.boot_id != launch.root.boot_id
+            || session.pid == launch.root.pid
+            || session.pid == launch.channel.peer().pid
+        {
             return Err(invalid());
         }
         crate::root_notes_launch_channel::validate_process(&session)?;
-        let owner = HostAuthorityOwnerLifetime::from_pidfd(preheld_session_pidfd.try_clone()?, session.pid,
-            remaining(launch.preparation_end)?).map_err(io::Error::other)?;
+        let owner = HostAuthorityOwnerLifetime::from_pidfd(
+            preheld_session_pidfd.try_clone()?,
+            session.pid,
+            remaining(launch.preparation_end)?,
+        )
+        .map_err(io::Error::other)?;
         owner.check_alive().map_err(io::Error::other)?;
-        launch.channel.send(&RootNotesLaunchFrame::SessionSpawnedV1 {
-            schema_version:1, launch_nonce:launch.nonce.clone(), session,
-        }, &[preheld_session_pidfd], launch.phase_end)?;
+        launch.channel.send(
+            &RootNotesLaunchFrame::SessionSpawnedV1 {
+                schema_version: 1,
+                launch_nonce: launch.nonce.clone(),
+                session,
+            },
+            &[preheld_session_pidfd],
+            launch.phase_end,
+        )?;
         let (frame, descriptors) = launch.channel.read(launch.phase_end)?;
         require_nonce(&frame, &launch.nonce)?;
-        let RootNotesLaunchFrame::TargetReservedV1 { target, .. } = frame else { return Err(invalid()); };
-        if !descriptors.is_empty() { return Err(invalid()); }
+        let RootNotesLaunchFrame::TargetReservedV1 { target, .. } = frame else {
+            return Err(invalid());
+        };
+        if !descriptors.is_empty() {
+            return Err(invalid());
+        }
         owner.check_alive().map_err(io::Error::other)?;
         launch.channel.check(launch.phase_end)?;
-        Ok(RootNotesReservedTarget { launch:self.0, session:owner, target })
+        Ok(RootNotesReservedTarget {
+            launch: self.0,
+            session: owner,
+            target,
+        })
     }
 }
 
 impl RootNotesReservedTarget {
-    pub fn target(&self) -> &NotesTargetIdentity { &self.target }
+    pub fn target(&self) -> &NotesTargetIdentity {
+        &self.target
+    }
 
     /// First real target: add no placeholder policy at initial installation.
     pub fn install_first_notes(
-        self, registry: Arc<AuthorityLeaseRegistry>, lifetime_ms: u64,
+        self,
+        registry: Arc<AuthorityLeaseRegistry>,
+        lifetime_ms: u64,
     ) -> io::Result<RootNotesAuthorityStartup> {
-        let writer = &self.launch.service.writer.as_ref().ok_or_else(invalid)?.registration;
-        self.launch.service.issuer.install_registered_notes_policy(writer, &self.target, lifetime_ms)?;
+        let writer = &self
+            .launch
+            .service
+            .writer
+            .as_ref()
+            .ok_or_else(invalid)?
+            .registration;
+        self.launch.service.issuer.install_registered_notes_policy(
+            writer,
+            &self.target,
+            lifetime_ms,
+        )?;
         self.register_admission(registry, lifetime_ms)
     }
 
     /// Recovery has an independently retained previous actual target. This is
     /// the existing full issuer-state CAS, never a clear-and-recreate policy.
     pub fn replace_notes(
-        self, registry: Arc<AuthorityLeaseRegistry>, previous_target: &NotesTargetIdentity,
-        previous_lifetime_ms: u64, lifetime_ms: u64,
+        self,
+        registry: Arc<AuthorityLeaseRegistry>,
+        previous_target: &NotesTargetIdentity,
+        previous_lifetime_ms: u64,
+        lifetime_ms: u64,
     ) -> io::Result<RootNotesAuthorityStartup> {
-        let writer = &self.launch.service.writer.as_ref().ok_or_else(invalid)?.registration;
-        self.launch.service.issuer.replace_registered_notes_policy(writer, previous_target,
-            previous_lifetime_ms, &self.target, lifetime_ms)?;
+        let writer = &self
+            .launch
+            .service
+            .writer
+            .as_ref()
+            .ok_or_else(invalid)?
+            .registration;
+        self.launch.service.issuer.replace_registered_notes_policy(
+            writer,
+            previous_target,
+            previous_lifetime_ms,
+            &self.target,
+            lifetime_ms,
+        )?;
         self.register_admission(registry, lifetime_ms)
     }
 
-    fn register_admission(self, registry: Arc<AuthorityLeaseRegistry>, lifetime_ms: u64)
-        -> io::Result<RootNotesAuthorityStartup> {
-        let Self { launch, session, target } = self;
-        let RootNotesLaunchServer { service, mut channel, root_pidfd, root, nonce, phase_end, preparation_end } = launch;
-        let registration = service.writer.as_ref().ok_or_else(invalid)?.registration.clone();
-        let notes = crate::RootNotesGrantAdmission::from_registered_notes(&service.issuer, registry,
-            registration, &target, lifetime_ms)?;
+    fn register_admission(
+        self,
+        registry: Arc<AuthorityLeaseRegistry>,
+        lifetime_ms: u64,
+    ) -> io::Result<RootNotesAuthorityStartup> {
+        let Self {
+            launch,
+            session,
+            target,
+        } = self;
+        let RootNotesLaunchServer {
+            service,
+            mut channel,
+            root_pidfd,
+            root,
+            nonce,
+            phase_end,
+            preparation_end,
+        } = launch;
+        let registration = service
+            .writer
+            .as_ref()
+            .ok_or_else(invalid)?
+            .registration
+            .clone();
+        let notes = crate::RootNotesGrantAdmission::from_registered_notes(
+            &service.issuer,
+            registry,
+            registration,
+            &target,
+            lifetime_ms,
+        )?;
         let service = Arc::new(service.with_registered_notes(notes)?);
         let bundle = service.capture_public_bootstrap()?;
-        if bundle.root != root || bundle.consumer != *channel.peer() { return Err(invalid()); }
+        if bundle.root != root || bundle.consumer != *channel.peer() {
+            return Err(invalid());
+        }
         let sealed = crate::seal_host_authority_bootstrap(&bundle)?;
         session.check_alive().map_err(io::Error::other)?;
         channel.check(phase_end)?;
-        channel.send(&RootNotesLaunchFrame::OriginalBootstrapV1 {
-            schema_version:1, launch_nonce:nonce.clone(),
-        }, &[sealed.into(), root_pidfd], phase_end)?;
+        channel.send(
+            &RootNotesLaunchFrame::OriginalBootstrapV1 {
+                schema_version: 1,
+                launch_nonce: nonce.clone(),
+            },
+            &[sealed.into(), root_pidfd],
+            phase_end,
+        )?;
         channel.check(phase_end)?;
         let cancellation = RootNotesStartupCancellation(Arc::new(StartupCancellation {
-            service:Arc::clone(&service), state:Mutex::new(StartupCancellationState::Armed(channel.abort_handle()?)),
+            service: Arc::clone(&service),
+            state: Mutex::new(StartupCancellationState::Armed(channel.abort_handle()?)),
         }));
-        Ok(RootNotesAuthorityStartup { service, channel, session, nonce, preparation_end, cancellation })
+        Ok(RootNotesAuthorityStartup {
+            service,
+            channel,
+            session,
+            nonce,
+            preparation_end,
+            cancellation,
+        })
     }
 }
 
 impl RootNotesAuthorityStartup {
     /// Every runtime lane must serve this same allocation, including its
     /// permanent Unknown state, original clock, canonical issuer and peer pin.
-    pub fn service(&self) -> Arc<HostAuthorityService> { Arc::clone(&self.service) }
+    pub fn service(&self) -> Arc<HostAuthorityService> {
+        Arc::clone(&self.service)
+    }
 
-    pub fn cancellation(&self) -> RootNotesStartupCancellation { self.cancellation.clone() }
+    pub fn cancellation(&self) -> RootNotesStartupCancellation {
+        self.cancellation.clone()
+    }
 
     /// Original recovered-owner-ready, zero material inputs, exactly once.
     /// Any error or cancellation permanently closes this launch's service.
     pub fn wait_and_confirm(mut self) -> io::Result<Arc<HostAuthorityService>> {
         let (frame, descriptors) = self.channel.read(self.preparation_end)?;
         require_nonce(&frame, &self.nonce)?;
-        if !descriptors.is_empty() || !matches!(frame, RootNotesLaunchFrame::RecoveredOwnerReadyV1 { .. }) {
+        if !descriptors.is_empty()
+            || !matches!(frame, RootNotesLaunchFrame::RecoveredOwnerReadyV1 { .. })
+        {
             return Err(invalid());
         }
         self.session.check_alive().map_err(io::Error::other)?;
@@ -265,9 +431,14 @@ impl RootNotesAuthorityStartup {
         self.service.confirm_recovered_owner_ready()?;
         self.session.check_alive().map_err(io::Error::other)?;
         self.channel.check(self.preparation_end)?;
-        self.channel.send(&RootNotesLaunchFrame::RecoveredOwnerRegisteredV1 {
-            schema_version:1, launch_nonce:self.nonce.clone(),
-        }, &[], self.preparation_end)?;
+        self.channel.send(
+            &RootNotesLaunchFrame::RecoveredOwnerRegisteredV1 {
+                schema_version: 1,
+                launch_nonce: self.nonce.clone(),
+            },
+            &[],
+            self.preparation_end,
+        )?;
         self.session.check_alive().map_err(io::Error::other)?;
         self.channel.check(self.preparation_end)?;
         self.cancellation.complete()?;
@@ -281,11 +452,18 @@ impl Drop for RootNotesAuthorityStartup {
     }
 }
 
-fn now() -> io::Result<u64> { crate::root_observation_cache::boottime_ns().map_err(io::Error::other) }
+fn now() -> io::Result<u64> {
+    codex_hepta_authority_client::boottime_ns().map_err(io::Error::other)
+}
 fn remaining(end: u64) -> io::Result<Duration> {
-    end.checked_sub(now()?).filter(|left| *left > 0).map(Duration::from_nanos)
+    end.checked_sub(now()?)
+        .filter(|left| *left > 0)
+        .map(Duration::from_nanos)
         .ok_or_else(|| io::Error::new(io::ErrorKind::TimedOut, "Root Notes launch deadline"))
 }
 fn require_nonce(frame: &RootNotesLaunchFrame, nonce: &str) -> io::Result<()> {
-    if frame.launch_nonce() != nonce { return Err(invalid()); } Ok(())
+    if frame.launch_nonce() != nonce {
+        return Err(invalid());
+    }
+    Ok(())
 }

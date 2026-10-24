@@ -1,6 +1,5 @@
 //! One protected checkpoint coordinator shared by an original owner pool.
 
-use std::future::Future;
 use std::sync::Arc;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -22,20 +21,7 @@ use crate::cognitive_store::CognitiveCommitGate;
 mod publication;
 pub(crate) use publication::BoundOwnerPublication;
 
-/// Fixed-peer, bounded asynchronous transport for the private protected-host
-/// protocol. The caller supplies exact UTF-8 JSON bytes. Implementations frame
-/// them with a four-byte big-endian length, enforce the 32-KiB response limit,
-/// and authenticate the configured server process lifetime. No automatic retry,
-/// reconnect, new publisher registration, or alternate endpoint is permitted.
-/// A dropped exchange must invalidate its stream, so a late response cannot be
-/// consumed as another request's ACK. Every Future poll must be nonblocking.
-/// This boundary supplies no issuer or fallback protected-host implementation.
-pub trait CognitiveCheckpointTransport: Send + Sync {
-    fn exchange<'a>(
-        &'a self,
-        request_json: &'a [u8],
-    ) -> impl Future<Output = Result<Vec<u8>, ObjectiveSenderCheckpointError>> + Send + 'a;
-}
+pub use codex_hepta_authority_types::CognitiveCheckpointTransport;
 
 /// Created only by consuming an exclusively recovered CognitiveStore. Every
 /// checkout and commit in that store shares this coordinator and atomic gate.
@@ -268,6 +254,19 @@ impl<T: CognitiveCheckpointTransport> ProtectedCognitiveCheckpoint<T> {
     }
 }
 
+fn checkpoint_writer_matches(
+    binding: &CognitiveCheckpointWriterBinding,
+    fence: &ObjectiveSenderWriterFence,
+) -> bool {
+    binding.lease_id == fence.lease_id
+        && binding.generation == fence.generation
+        && binding.authority_epoch == fence.authority_epoch
+        && binding.owner_epoch == fence.owner_epoch
+        && binding.authority_grant_digest == fence.authority_grant_digest
+        && binding.fencing_token_digest == fence.fencing_token_digest
+        && binding.expires_at_unix_seconds == fence.expires_at_unix_seconds
+}
+
 impl<T: CognitiveCheckpointTransport> ObjectiveSenderCheckpoint
     for ProtectedCognitiveCheckpoint<T>
 {
@@ -279,7 +278,7 @@ impl<T: CognitiveCheckpointTransport> ObjectiveSenderCheckpoint
         let mut receipt = self.receipt.lock().await;
         if committed.owner_agent_id != receipt.head.owner_agent_id
             || writer.owner_agent_id != receipt.head.owner_agent_id
-            || !receipt.head.writer_binding.matches(writer)
+            || !checkpoint_writer_matches(&receipt.head.writer_binding, writer)
         {
             return Err(ObjectiveSenderCheckpointError::Refused);
         }

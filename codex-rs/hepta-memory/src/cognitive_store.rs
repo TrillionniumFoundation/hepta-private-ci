@@ -242,19 +242,7 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
     "55a697816bedf97c5fa3ef36a4d9d39d98f6f572d825a38541afe62e19203773";
 
-#[derive(Debug, thiserror::Error)]
-pub enum CognitiveStoreError {
-    #[error("invalid cognitive record: {0}")]
-    Invalid(String),
-    #[error("cognitive scope denied: {0}")]
-    AccessDenied(String),
-    #[error("cognitive revision conflict: {0}")]
-    Conflict(String),
-    #[error("cognitive store is corrupt: {0}")]
-    Corrupt(String),
-    #[error("cognitive store is unavailable: {0}")]
-    Unavailable(String),
-}
+pub use codex_hepta_authority_types::CognitiveStoreError;
 
 #[derive(Clone)]
 pub struct CognitiveStore {

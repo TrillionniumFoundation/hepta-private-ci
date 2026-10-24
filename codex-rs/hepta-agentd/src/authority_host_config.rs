@@ -12,7 +12,6 @@ use std::path::PathBuf;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::RootAuthorityDirectory;
-use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_paths::HeptaFleetRoot;
 use serde::Deserialize;
 use serde::Serialize;
@@ -125,44 +124,33 @@ pub struct HostAuthorityRegistration {
     pub publisher_epoch: u64,
 }
 
-/// Exact original identity fields attested by the root launcher. Derived layout
-/// paths come from HeptaFleetRoot; opening AgentdConfig here would incorrectly
-/// compete with the actual daemon's exclusive original writer lock.
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct HostAuthorityRegisteredIdentity {
-    pub agent_id: AgentId,
-    pub spawn_generation: u64,
-    pub fleet_root: PathBuf,
-    pub workspace: PathBuf,
-    pub resources: ResourceBudget,
-}
+pub use codex_hepta_authority_types::HostAuthorityRegisteredIdentity;
 
-impl HostAuthorityRegisteredIdentity {
-    pub(super) fn identity(&self) -> io::Result<AgentdIdentity> {
-        if self.spawn_generation == 0
-            || self.fleet_root.canonicalize()? != self.fleet_root
-            || self.workspace.canonicalize()? != self.workspace
-        {
-            return Err(io::Error::other("invalid registered identity"));
-        }
-        let layout = HeptaFleetRoot::parse(self.fleet_root.clone())
-            .map_err(io::Error::other)?
-            .layout()
-            .agent(&self.agent_id);
-        Ok(AgentdIdentity {
-            agent_id: self.agent_id.clone(),
-            spawn_generation: self.spawn_generation,
-            fleet_root: self.fleet_root.clone(),
-            workspace: self.workspace.clone(),
-            resources: self.resources.clone(),
-            home_root: layout.home_root().to_path_buf(),
-            run_root: layout.run_root().to_path_buf(),
-            control_socket: layout.agentd_control_socket().to_path_buf(),
-            app_server_socket: layout.app_server_socket().to_path_buf(),
-            layout,
-        })
+pub(super) fn registered_identity(
+    registered: &HostAuthorityRegisteredIdentity,
+) -> io::Result<AgentdIdentity> {
+    if registered.spawn_generation == 0
+        || registered.fleet_root.canonicalize()? != registered.fleet_root
+        || registered.workspace.canonicalize()? != registered.workspace
+    {
+        return Err(io::Error::other("invalid registered identity"));
     }
+    let layout = HeptaFleetRoot::parse(registered.fleet_root.clone())
+        .map_err(io::Error::other)?
+        .layout()
+        .agent(&registered.agent_id);
+    Ok(AgentdIdentity {
+        agent_id: registered.agent_id.clone(),
+        spawn_generation: registered.spawn_generation,
+        fleet_root: registered.fleet_root.clone(),
+        workspace: registered.workspace.clone(),
+        resources: registered.resources.clone(),
+        home_root: layout.home_root().to_path_buf(),
+        run_root: layout.run_root().to_path_buf(),
+        control_socket: layout.agentd_control_socket().to_path_buf(),
+        app_server_socket: layout.app_server_socket().to_path_buf(),
+        layout,
+    })
 }
 
 pub(super) fn read_root_json<T: serde::de::DeserializeOwned>(path: &Path) -> io::Result<T> {

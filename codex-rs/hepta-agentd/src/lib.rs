@@ -89,19 +89,47 @@ pub use authority_host_runtime::serve_host_authority_session;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityBootstrapLocations;
 #[cfg(target_os = "linux")]
-pub use authority_host_service::{RootNotesAuthorityStartup, RootNotesAwaitingSession,
-    RootNotesLaunchServer, RootNotesReservedTarget, RootNotesSessionChannels,
-    RootNotesStartupCancellation};
-#[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityLane;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityService;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::RootNotesAuthorityStartup;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::RootNotesAwaitingSession;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::RootNotesLaunchServer;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::RootNotesReservedTarget;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::RootNotesSessionChannels;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::RootNotesStartupCancellation;
 #[cfg(target_os = "linux")]
 mod root_notes_host_config;
 #[cfg(target_os = "linux")]
 mod root_role_executable;
 #[cfg(target_os = "linux")]
 pub use root_role_executable::RootRoleExecutable;
+#[cfg(target_os = "linux")]
+mod root_notes_native_launcher;
+#[cfg(target_os = "linux")]
+mod root_role_child;
+#[cfg(target_os = "linux")]
+mod root_role_fork;
+#[cfg(target_os = "linux")]
+pub use root_notes_native_launcher::RootNativeHostDescriptors;
+#[cfg(target_os = "linux")]
+pub use root_notes_native_launcher::RootSessionEnvironment;
+#[cfg(target_os = "linux")]
+pub use root_notes_native_launcher::seal_root_notes_host_config;
+#[cfg(target_os = "linux")]
+pub use root_notes_native_launcher::spawn_root_native_notes_host;
+#[cfg(target_os = "linux")]
+pub use root_notes_native_launcher::spawn_root_notes_host;
+#[cfg(target_os = "linux")]
+pub use root_notes_native_launcher::spawn_root_notes_session;
+#[cfg(target_os = "linux")]
+pub use root_role_child::RootRoleChild;
 #[cfg(target_os = "linux")]
 mod root_notes_launch_channel;
 #[cfg(target_os = "linux")]
@@ -140,8 +168,6 @@ pub use root_notes_launch_wire::ROOT_NOTES_TOTAL_PREPARATION_NS;
 pub use root_notes_launch_wire::RootNotesLaunchFrame;
 #[cfg(target_os = "linux")]
 mod root_authority_session;
-#[cfg(target_os = "linux")]
-mod root_observation_cache;
 #[cfg(target_os = "linux")]
 mod root_observation_stream;
 #[cfg(target_os = "linux")]

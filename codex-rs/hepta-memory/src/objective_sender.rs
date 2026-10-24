@@ -9,7 +9,6 @@ use crate::cognitive_store::unavailable;
 use codex_hepta_contracts::Sha256Digest;
 use sqlx::Sqlite;
 use sqlx::Transaction;
-use std::future::Future;
 use std::sync::Arc;
 use std::sync::Weak;
 use std::sync::atomic::AtomicU8;
@@ -42,35 +41,8 @@ const CANCELLED: u8 = 3;
 const RECOVERED: u8 = 4;
 const MAX_CHECKPOINT_DEADLINE: Duration = Duration::from_secs(5);
 
-/// Independent protected host acknowledgement, not a SQLite or journal anchor
-/// constructor. An implementation must durably authenticate and retain the exact
-/// CURRENT owner/schema/state cut and fence stale publishers. There is no default
-/// implementation. Never re-enter this CognitiveStore: the future runs while its
-/// original BEGIN IMMEDIATE write lock is held. Cancellation must release
-/// caller-owned resources and invalidate the transport. Already accepted host
-/// I/O may finish only under the protected publisher CAS while the entire owner
-/// remains fenced; it must never publish a stale cut. No hard cancellation of
-/// external filesystem sync is implied.
-/// Each future poll must be bounded and nonblocking. The Tokio deadline is
-/// cooperative, not a preemptive wall-clock limit.
-/// An uncertain result also fences every commit through this owner pool before
-/// its SQLite write lock is released. This interlock is not an external durable
-/// publisher fence and does not waive the provider's cancellation obligations.
-pub trait ObjectiveSenderCheckpoint: Send + Sync {
-    fn acknowledge_current<'a>(
-        &'a self,
-        committed: &'a CognitiveRecoveryAnchor,
-        writer: &'a ObjectiveSenderWriterFence,
-    ) -> impl Future<Output = Result<CognitiveRecoveryAnchor, ObjectiveSenderCheckpointError>> + Send + 'a;
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
-pub enum ObjectiveSenderCheckpointError {
-    #[error("independent Objective sender checkpoint is unavailable")]
-    Unavailable,
-    #[error("independent Objective sender checkpoint was refused")]
-    Refused,
-}
+pub use codex_hepta_authority_types::ObjectiveSenderCheckpoint;
+pub use codex_hepta_authority_types::ObjectiveSenderCheckpointError;
 
 #[derive(Debug, thiserror::Error)]
 pub enum ObjectiveSenderError {

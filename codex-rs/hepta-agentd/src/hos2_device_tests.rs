@@ -820,3 +820,129 @@ fn native_usage_requires_an_existing_manager_or_recovery_observe_handle() -> Tes
     );
     Ok(())
 }
+
+fn g2_bootstrap_for_role(role: u64) -> Vec<u8> {
+    let mut bootstrap = bootstrap_for_role(role);
+    for (offset, value) in [
+        (8, 3_u64),
+        (24, 200),
+        (144, 2),
+        (152, 3),
+        (160, 4),
+        (192, 1),
+    ] {
+        bootstrap[offset..offset + 8].copy_from_slice(&value.to_le_bytes());
+    }
+    bootstrap
+}
+
+#[test]
+fn g2_bootstrap_keeps_the_original_manager_history_in_both_owner_roles() -> TestResult {
+    for role in [1, 3] {
+        let bootstrap = g2_bootstrap_for_role(role);
+        let mut abi = vec![0; 48];
+        abi[..16].copy_from_slice(if role == 1 { &[2; 16] } else { &[3; 16] });
+        for (offset, value) in [(16, 4096_u32), (20, 40), (24, 64)] {
+            abi[offset..offset + 4].copy_from_slice(&value.to_le_bytes());
+        }
+        abi[32..40].copy_from_slice(&62_u64.to_le_bytes());
+        let script = Arc::new(Mutex::new(Script {
+            replies: VecDeque::from([
+                (
+                    1,
+                    Ok(Response {
+                        status: 0,
+                        revision: 0,
+                        payload: abi,
+                    }),
+                ),
+                (
+                    4,
+                    Ok(applied_query(
+                        /*previous_revision*/ 1,
+                        /*effective_ns*/ HOS2_CPU_PERIOD_NS + 1_001,
+                        /*consumed_ns*/ 999,
+                    )),
+                ),
+            ]),
+            requests: Vec::new(),
+        }));
+        let device =
+            AgentdHos2Device::attach(Box::new(ScriptedTransport(script.clone())), &bootstrap)?;
+        let mut request = device.install_request(
+            /*sequence*/ 1, /*expected_revision*/ 1, /*cap_ns*/ 25_000_000,
+        )?;
+        request.delivery = Hos2DeliveryId::new([1; 16], [2; 16], /*sequence*/ 1)?;
+        assert_eq!(
+            device.observe(&request)?,
+            Hos2InstallOutcome::Observed(Hos2DeliveryObservation::Applied {
+                stable_object_id: [9; 16],
+                previous_revision: 1,
+                revision: 2,
+                effective_ns: HOS2_CPU_PERIOD_NS + 1_001,
+                consumed_ns: 999
+            })
+        );
+        let script = script.lock().map_err(|error| error.to_string())?;
+        assert_eq!((script.requests.len(), script.replies.len()), (2, 0));
+        assert_eq!(
+            (
+                read64(&script.requests[1], /*offset*/ 40)?,
+                read64(&script.requests[1], /*offset*/ 48)?,
+                read16(&script.requests[1], /*offset*/ 80)?
+            ),
+            (3, 1, [2; 16])
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn g2_bootstrap_rejects_topology_or_trailing_bytes_before_query_abi() -> TestResult {
+    let valid = g2_bootstrap_for_role(/*role*/ 1);
+    let mut invalid = Vec::new();
+    for offset in [8, 24, 144, 152, 160, 192, 200, 4095] {
+        let mut page = valid.clone();
+        page[offset] ^= 0xff;
+        invalid.push(page);
+    }
+    for length in [0, 191, 192, 199, 201, 4095] {
+        invalid.push(valid[..length].to_vec());
+    }
+    for page in invalid {
+        let script = Arc::new(Mutex::new(Script {
+            replies: VecDeque::new(),
+            requests: Vec::new(),
+        }));
+        assert!(
+            AgentdHos2Device::attach(Box::new(ScriptedTransport(script.clone())), &page).is_err()
+        );
+        assert!(
+            script
+                .lock()
+                .map_err(|error| error.to_string())?
+                .requests
+                .is_empty()
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn g2_root_workload_and_foreign_process_cannot_open_an_agentd_owner() {
+    for role in [2, 4] {
+        assert!(AgentdHos2Device::from_kernel_bootstrap(&g2_bootstrap_for_role(role)).is_err());
+    }
+    let foreign_role = if std::process::id() == 2 { 3 } else { 1 };
+    let error = AgentdHos2Device::from_kernel_bootstrap(&g2_bootstrap_for_role(foreign_role))
+        .err()
+        .expect("foreign Process must fail before opening any device");
+    assert_eq!(
+        error,
+        "kernel-initial Agentd must open in its actual final root image"
+    );
+    let error = AgentdHos2Device::from_kernel_bootstrap(&bootstrap_for_role(/*role*/ 1))
+        .err()
+        .expect("legacy G1d cannot select the G2 opening path");
+    assert_eq!(error, "kernel-initial Agentd requires HOS2BOOT v3");
+}

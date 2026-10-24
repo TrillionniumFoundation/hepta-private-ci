@@ -2,10 +2,8 @@
 //! Ordinary reads return a retained proof; they never mint a replacement grant.
 
 use super::*;
-use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::VerifiedUseAuthorityRefV1;
-use codex_hepta_contracts::authority_lease::AuthorityLease;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
 use codex_hepta_contracts::authority_lease::dispatch_authority_lease_with_witness;
 use ed25519_dalek::Signature;
@@ -13,21 +11,19 @@ use ed25519_dalek::Signature;
 use crate::HostSignedWriterAuthorizationV1;
 use crate::HostWriterAuthorizationClaimsV1;
 
-/// Exact trusted launcher inputs. This is an administrative registration,
-/// never a value accepted from an ordinary service request or audit witness.
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct HostAuthorityWriterRegistration {
-    pub registered_agent_id: AgentId,
-    pub spawn_generation: u64,
-    pub owner_epoch: u64,
-    pub local_lease_id: String,
-    pub local_lease_generation: u64,
-    pub authority_lease: AuthorityLease,
+pub use codex_hepta_authority_types::HostAuthorityWriterRegistration;
+
+pub(crate) trait WriterRegistrationExt {
+    fn validate(&self) -> io::Result<()>;
+    fn with_live<T>(
+        &self,
+        verifier: &AuthorityLeaseVerifier,
+        dispatch: impl FnOnce(u64) -> io::Result<T>,
+    ) -> io::Result<T>;
 }
 
-impl HostAuthorityWriterRegistration {
-    pub(crate) fn validate(&self) -> io::Result<()> {
+impl WriterRegistrationExt for HostAuthorityWriterRegistration {
+    fn validate(&self) -> io::Result<()> {
         if self.spawn_generation == 0
             || self.owner_epoch == 0
             || self.local_lease_generation == 0
@@ -42,7 +38,7 @@ impl HostAuthorityWriterRegistration {
         Ok(())
     }
 
-    pub(crate) fn with_live<T>(
+    fn with_live<T>(
         &self,
         verifier: &AuthorityLeaseVerifier,
         dispatch: impl FnOnce(u64) -> io::Result<T>,

@@ -303,10 +303,13 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
             .build()
             .unwrap()
             .block_on(async {
-                let store =
-                    codex_hepta_memory::CognitiveStore::open(&identity.identity().unwrap().layout)
-                        .await
-                        .unwrap();
+                let store = codex_hepta_memory::CognitiveStore::open(
+                    &crate::authority_host_config::registered_identity(&identity)
+                        .unwrap()
+                        .layout,
+                )
+                .await
+                .unwrap();
                 let cut = store.recovery_anchor().await.unwrap();
                 store.close().await;
                 cut
@@ -323,7 +326,7 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
     let bootstrap = root.join("bootstrap.json");
     write_json(
         &bootstrap,
-        &serde_json::json!({"schema_version":1,"required_bind":required_bind,"signer_id":"root-service-qualification","policies":[DeploymentGrantPolicy {subject_id:owner.to_string(),destination_id:b.destination_id.clone(),scope_sha256:b.scope_sha256,lifetime_ms:30000},DeploymentGrantPolicy {subject_id:owner.to_string(),destination_id:DeploymentFinalUseIssuer::OBJECTIVE_DESTINATION.into(),scope_sha256:*crate::objective_runtime::objective_scope(&identity.identity().unwrap()).as_array(),lifetime_ms:300000}],"lease_id":"root-service-qualification","lease_binding":AuthorityLeaseBinding {principal_id:b.subject_id,operation_class:"runtime.agentd.production_operation".into(),destination_id:b.destination_id,scope_sha256:b.scope_sha256,payload_sha256:b.payload_sha256},"lease_lifetime_ms":if expiry_qualification() {2000} else {60000}}),
+        &serde_json::json!({"schema_version":1,"required_bind":required_bind,"signer_id":"root-service-qualification","policies":[DeploymentGrantPolicy {subject_id:owner.to_string(),destination_id:b.destination_id.clone(),scope_sha256:b.scope_sha256,lifetime_ms:30000},DeploymentGrantPolicy {subject_id:owner.to_string(),destination_id:DeploymentFinalUseIssuer::OBJECTIVE_DESTINATION.into(),scope_sha256:*crate::objective_runtime::objective_scope(&crate::authority_host_config::registered_identity(&identity).unwrap()).as_array(),lifetime_ms:300000}],"lease_id":"root-service-qualification","lease_binding":AuthorityLeaseBinding {principal_id:b.subject_id,operation_class:"runtime.agentd.production_operation".into(),destination_id:b.destination_id,scope_sha256:b.scope_sha256,payload_sha256:b.payload_sha256},"lease_lifetime_ms":if expiry_qualification() {2000} else {60000}}),
     );
     let state = root.join("authority");
     let initialized = initialize_host_authority(&state, &bootstrap).unwrap();
@@ -564,7 +567,8 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
         let service = HostAuthorityService::from_registered_owner(
             issuer.clone(),
             clock.clone(),
-            registration.registered_identity.identity().unwrap(),
+            crate::authority_host_config::registered_identity(&registration.registered_identity)
+                .unwrap(),
         )
         .unwrap()
         .with_registered_writer(config.writer.clone().unwrap(), leases.verifier())
@@ -627,7 +631,11 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
     let retained = consumer_fixture::release(&mut child, &config, &registration, &pidfd);
     let result = match retained {
         Some(service) => crate::authority_host_runtime::listeners::serve_lanes(
-            &service, &config, &registration, &pidfd),
+            &service,
+            &config,
+            &registration,
+            &pidfd,
+        ),
         None => serve_host_authority_session(&config_path, &registration_path, pidfd),
     };
     let status = child.wait().unwrap();
