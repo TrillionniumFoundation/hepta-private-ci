@@ -17,6 +17,8 @@ mod fenced_holdout_file;
 mod holdout_envelope;
 mod holdout_journal;
 mod paired_plan;
+#[cfg(test)]
+mod paired_owner_tests;
 pub use holdout_envelope::HoldoutJournalRecordV2;
 pub use holdout_envelope::HoldoutJournalSnapshotV2;
 pub use holdout_envelope::HoldoutPlanEnvelopeV2;
