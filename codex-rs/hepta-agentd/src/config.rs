@@ -13,6 +13,12 @@ use codex_hepta_paths::HeptaFleetRoot;
 
 use crate::AgentdError;
 
+#[cfg(target_os = "linux")]
+#[path = "config_root_handoff.rs"]
+mod root_handoff;
+#[cfg(target_os = "linux")]
+pub use root_handoff::PreparedRootAgentdConfig;
+
 pub const HEPTA_AGENT_ID_ENV: &str = "HEPTA_AGENT_ID";
 pub const HEPTA_AGENT_GENERATION_ENV: &str = "HEPTA_AGENT_GENERATION";
 pub const HEPTA_AGENT_HOME_ENV: &str = "HEPTA_AGENT_HOME";
