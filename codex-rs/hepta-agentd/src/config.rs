@@ -286,6 +286,22 @@ impl AgentdConfig {
         self.objective_profile_file.as_deref()
     }
 
+    /// Read the installed Objective profile with the SAME original owner-file
+    /// validator and decoder used by ObjectiveRuntimeHost::open. This opens no
+    /// journal/store and grants no admission or writer authority.
+    pub fn original_objective_profile_digest(
+        &self,
+    ) -> Result<codex_hepta_types::Digest32, AgentdError> {
+        let path = self.objective_profile_file().ok_or_else(|| {
+            AgentdError::Invalid("original Objective profile is not configured".into())
+        })?;
+        let bytes = crate::authbus_trust::read_private_owner_file(path, &self.identity, 262_144)?;
+        codex_hepta_objective::decode_admission_profile_json_v1(&bytes)
+            .map_err(|error| AgentdError::Invalid(format!("objective profile: {error}")))?
+            .digest()
+            .map_err(|error| AgentdError::Invalid(format!("objective profile: {error}")))
+    }
+
     /// Independently retained replay witness. Production signed ingress requires
     /// this alongside the trust file; it must live outside the Agent home.
     pub fn with_authbus_checkpoint_file(mut self, path: PathBuf) -> Self {
