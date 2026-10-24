@@ -111,3 +111,19 @@ filter = 'package(codex-hepta-operations) & test(growing_history_keeps_early_ide
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
+
+# Narrow original-owner fixture qualification; ordinary local/default unchanged.
+[profile.native-fixtures]
+inherits = "local"
+
+[profile.native-fixtures.junit]
+path = "junit.xml"
+report-name = "native-fixtures"
+store-success-output = true
+store-failure-output = true
+report-skipped = "none"
+
+# Report even an ignored/filtered selected test, so absence cannot look green.
+[[profile.native-fixtures.overrides]]
+filter = 'test(=real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends) | test(=agentd_product_host_commits_through_canonical_cognitive_store)'
+junit.report-skipped = "all"
