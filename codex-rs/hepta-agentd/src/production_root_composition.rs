@@ -119,3 +119,41 @@ pub async fn attach_root_production_operation_host(
         notes: observer,
     })
 }
+
+/// Explicit Notes-only profile. It still consumes the same authenticated Root
+/// session and both already activated frontier owners, but only the actual
+/// inherited Notes application is an effect destination. No Android payload,
+/// device signer, mock primary or second recovered writer is constructed.
+pub async fn attach_root_notes_operation_host(
+    config: &mut AgentdConfig,
+    inputs: AgentdRootProductionInputs,
+    notes_bootstrap: UnixDatagram,
+    reconcile_interval: Duration,
+) -> Result<AgentdRootProductionAttachment, AgentdError> {
+    config.require_unconfigured_production_hosts()?;
+    if reconcile_interval.is_zero() {
+        return Err(AgentdError::Invalid("Notes reconciliation interval must be nonzero".into()));
+    }
+    let AgentdRootProductionInputs { session, checkpoint, device: _device, notes, grants, bootstrap } = inputs;
+    // The retained live Root session already holds clones of both original
+    // FinalUse owners. The unused Device owner acquires no target or effect.
+    bootstrap.writer.validate()?;
+    if bootstrap.writer.registered_agent_id != config.identity().agent_id
+        || bootstrap.writer.spawn_generation != config.identity().spawn_generation
+    { return Err(AgentdError::GenerationFenced("Root Notes handoff differs from actual Agentd identity".into())); }
+    let root_session = Arc::new(session);
+    let authority = root_session.authority();
+    let verifier = root_session.verifier();
+    verifier.verify(&authority, &config.identity().agent_id).map_err(AgentdError::GenerationFenced)?;
+    let (host, checkpoint) = AgentdProductionWriterHost::open_with_protected_recovery(
+        config, authority, Arc::clone(&verifier), bootstrap.writer.local_lease_id,
+        bootstrap.writer.local_lease_generation, checkpoint,
+    ).await?;
+    let operation_grants: Arc<dyn AgentdFinalUseGrantProvider> = grants.clone();
+    let (operations, observer) = crate::notes_bootstrap::primary_notes_runtime(
+        config, &host, notes_bootstrap, notes, operation_grants, verifier, reconcile_interval,
+    ).await?;
+    // The same final live verifier and atomic installer as the joint profile.
+    config.install_production_hosts(Arc::new(host), operations)?;
+    Ok(AgentdRootProductionAttachment { root_session, checkpoint, grants, notes: Some(observer) })
+}

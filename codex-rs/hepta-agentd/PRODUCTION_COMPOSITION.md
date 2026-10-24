@@ -13,8 +13,18 @@ unprotected local current cut.
 The launcher supplies its actual primary target, optional inherited Session
 Notes bootstrap datagram, and reconciliation interval. The primary may be the
 real original Android runtime target; an absent device is not replaced with a
-no-op or fabricated HOS2 consumer. This combined profile is distinct from a
-future Notes-only primary composition.
+no-op or fabricated HOS2 consumer.
+
+The explicit `attach_root_notes_operation_host(config, inputs, notes_bootstrap,
+reconcile_interval)` profile makes the actual inherited Notes application its
+sole primary destination. It uses the same protected recovery once, original
+Notes FinalUse owner/provider, live verifier and final atomic installation.
+The original Root session still retains both already activated frontier owners;
+unused Device authority has no target and creates no effect. No Android payload,
+MCP connection or substitute device is required for this profile. The same
+literal adapter and required UI runtime then enter the ordinary Agentd `run`.
+Joint Android/Notes remains a separate explicit profile with all its actual
+device inputs and checks. Notes-only success cannot qualify Android authority.
 
 The factory performs `open_with_protected_recovery` once, using the exact original
 writer lease/generation and live verifier. The whole-owner checkpoint is bound

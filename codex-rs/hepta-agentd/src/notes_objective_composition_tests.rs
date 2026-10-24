@@ -231,8 +231,9 @@ async fn notes_objective_session_registration_returns_observer_for_the_same_priv
     enum RegistrationPath {
         DirectHost,
         Runtime,
+        NotesPrimaryRuntime,
     }
-    for path in [RegistrationPath::DirectHost, RegistrationPath::Runtime] {
+    for path in [RegistrationPath::DirectHost, RegistrationPath::Runtime, RegistrationPath::NotesPrimaryRuntime] {
         let NotesHostFixture {
             directory: _directory,
             config,
@@ -335,6 +336,20 @@ async fn notes_objective_session_registration_returns_observer_for_the_same_priv
                     .await?;
                 let (host, _) = operations.attach(Arc::new(host)).await?;
                 assert!(Arc::ptr_eq(&writer, &host.writer()));
+                (host.as_ref().clone(), target, observer)
+            }
+            RegistrationPath::NotesPrimaryRuntime => {
+                let writer = host.writer();
+                let (notes_only, observer) = crate::notes_bootstrap::primary_notes_runtime(
+                    &config, &host, parent, final_use, issuer.clone(),
+                    operations.verifier.clone(), Duration::from_millis(20),
+                ).await?;
+                let target = observer.target().clone();
+                let (host, interval) = notes_only.attach(Arc::new(host)).await?;
+                assert!(Arc::ptr_eq(&writer, &host.writer()));
+                assert_eq!(host.destination_count(), 1);
+                assert_eq!(interval, Duration::from_millis(20));
+                assert!(!host.has_destination(HOS2_DESTINATION_V1));
                 (host.as_ref().clone(), target, observer)
             }
         };
