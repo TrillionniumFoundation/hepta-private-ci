@@ -68,6 +68,14 @@ anonymous-level token, and its volume query opens the held kernel file ID on
 the original volume. These repairs retain all original negative assertions;
 cross-target compilation is not native acceptance.
 
+[primary_owner.rs](../../../codex-rs/utils/windows-private-state/src/primary_owner.rs)
+adds the bounded, sticky live-primary prerequisite for C2b provisioning. Actual
+token elevation, restrictions, AppContainer state, enabled Administrators group
+and handle inheritance are read from the retained kernel token. It has no
+production constructor caller or directory authority; its four native tests
+remain pending. Protected-parent creation and complete C3/C4 recovery still
+precede any Windows owner activation.
+
 The registered primary source is [codex-rs/hepta-contracts/src/final_use.rs](../../../codex-rs/hepta-contracts/src/final_use.rs); the general lease owner is [authority_lease.rs](../../../codex-rs/hepta-contracts/src/authority_lease.rs), and external trust interfaces are in [authority_trust.rs](../../../codex-rs/hepta-contracts/src/authority_trust.rs). This is source navigation, not proof that every target port or production consumer exists. The canonical target → native API → product caller → test → qualification status is [TRACEABILITY.md](TRACEABILITY.md). The V1 general-lease trust model is frozen by [ADR-0001](ADR-0001-LEASE-TRUST-MODEL.md), and final-use ordering is normative in [LINEARIZATION.md](LINEARIZATION.md).
 
 ## 3. Boundary, responsibilities and non-goals

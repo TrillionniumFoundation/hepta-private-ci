@@ -712,13 +712,31 @@ Publishing these pins still requires new CodeQL and full native Windows results
 on the published source. The older source-bound campaign observations below
 remain unchanged.
 
-The paired PN2/PN3 M09 cache now uses fresh TCL2/schema2 with explicit shared
-`--cache-max-bytes`, `--cache-max-chunks` and `--cache-max-manifests` on every
-writer. Stored limits must match on reopen; repeated fetches and failed downloads
+The published PN2/PN3 pair above retains TCL2. Its next same-plan M09 increment
+uses fresh TCL4/schema4, rejecting TCL1/TCL2/TCL3 without an old-writer fallback.
+It requires explicit shared `--cache-max-bytes`, `--cache-max-chunks`,
+`--cache-max-manifests` and `--cache-max-db-bytes` on all six Cell writers,
+discovery fetch and the existing handoff script. Stored limits must match on reopen;
+repeated fetches and failed downloads
 retain their committed occupancy, while exact content retries do not charge twice.
 Serving reads the existing cache without creating or repairing it. These limits
-cover live payload, manifest wire bytes, 32-byte content keys and catalog rows;
-physical DB/WAL/SHM/temp/output bounds remain open. Disposable cache deletion or
+cover live payload, manifest wire bytes, 32-byte content keys and catalog rows.
+Each writer reapplies and reads back the immutable 4096-byte-page main-image cap.
+One persistent OS writer lock serializes complete zero-WAL checkpoint admission
+and a spill-free FULL transaction, sharing the original five-second contention
+budget. A pinned reader refuses the next write before mutation. For main cap C,
+the locked SQLite 3.46.0 protocol derives WAL length
+`32 + (C/4096 + 16) * 4120` and separate SHM length
+`32768 * (1 + ceil((C/4096 + 16)/4096))`, including FULL-sector padding.
+Cold catalog audit precedes checkpoint; automatic and close-time checkpoints
+are disabled, so a coherent cold copy must retain committed WAL too. The original
+TCL3 WAL-over-main-cap counterexample remains test-only with unchanged assertions.
+Allocated blocks, backing reservation, initialization rollback journal,
+TEMP/memory/output, global ledger roots and funded I05 duties remain open;
+arbitrary SQL/custom VFS/namespace replacement are outside this cache-owner
+protocol. Source/preview qualification and cross-repository pins must advance
+together before merge; the old published pair is not relabeled as TCL4 evidence.
+Disposable cache deletion or
 quota refusal cannot retire M12 paid retention, release an AuthBus reservation,
 authorize installation or qualify the three real-model upgrade rounds.
 
@@ -1069,6 +1087,17 @@ Clippy are `NOT_NATIVE`. Original journals, claims, precommit/indeterminate
 handling and unsupported owner-construction guards remain intact. Trusted
 parent/creation, owner consumers and native recovery are still dependencies;
 this stage primitive alone does not close C2b, C3, C4 or C5.
+
+The C2b prerequisite `CapturedPrimaryOwner` now captures and retains the real
+query-only primary token with unchanged effective-principal continuity checks.
+It additionally requires elevated, unrestricted, non-AppContainer state, a
+non-inherited handle, and an actual enabled, non-deny-only Administrators SID.
+Kernel group queries are bounded to 64KiB and 256 groups; failed validation is
+sticky. Its four native controls cover the real primary context, same-SID
+impersonation, refusal after context restoration and an actual restricted token.
+They remain unexecuted on Windows in this increment. Capturing a primary token
+does not provide the protected-parent producer, create a directory or open an
+ordinary Windows store owner.
 
 Creation must use one internal native-open implementation with typed
 existing-versus-new requests: `FILE_CREATE`, the captured SID/protected descriptor
