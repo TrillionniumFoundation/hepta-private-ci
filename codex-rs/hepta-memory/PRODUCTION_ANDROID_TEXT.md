@@ -16,11 +16,15 @@ That manual supplies source generation, actual SDK, preserved APK resources,
 original signer, installed-byte and rollback gates. Resolve it at the exact
 Desktop source-profile commit for execution; the link itself is not a pin.
 
-Current source qualification consists of a synthetic cross-language wire
-fixture and focused owner-adapter cases. Compilation, original FinalUse/owner
-runtime composition and real device effects must be recorded separately. A
-trait implementation or synthetic reply does not establish a trusted host,
-original helper/source pin, package signature, peer identity or live grant.
+The concrete `OriginalRuntimeAndroidTextDevice` now performs fixed-helper
+process calls over the original retained `rmcp::Peer<RoleClient>`. It uses
+`call_tool_once` and the original Tokio runtime, with no client construction,
+authentication refresh, transport recovery, detached effect task or retry.
+Source qualification includes synthetic cross-language wire, owner-adapter and
+in-process MCP connector cases. Compilation, original FinalUse/owner runtime
+composition and real device effects must still be recorded separately. A peer
+handle or synthetic reply does not establish the original helper/source pin,
+package signature, authenticated host identity or live grant.
 
 ## Development map
 
@@ -28,6 +32,9 @@ original helper/source pin, package signature, peer identity or live grant.
 | --- | --- |
 | [src/production_android_wire.rs](src/production_android_wire.rs) | Bounded canonical native observation and exact text payload |
 | [src/production_android.rs](src/production_android.rs) | Original intent, typed device seam, synchronous FinalUse destination |
+| [src/production_android_runtime.rs](src/production_android_runtime.rs) | Concrete retained-peer connector, bounded original jobs, cancellation and permanent effect fencing |
+| [src/production_android_runtime_wire.rs](src/production_android_runtime_wire.rs) | Actual Runtime start/status/read metadata and lossless output verification |
+| [src/production_android_runtime_tests.rs](src/production_android_runtime_tests.rs) | Real in-process MCP transport with synthetic source/receiver fixtures; no retry after unknown, cancellation, revocation or reused jobs |
 | [src/production_android_response.rs](src/production_android_response.rs) | Actual apply acknowledgement and independent native readback validation |
 | [src/production_android_tests.rs](src/production_android_tests.rs) | Exact bytes, no deferred entry, lost ack, stale/changed identity regressions |
 | [tests/fixtures/android-bound-text-v1.json](tests/fixtures/android-bound-text-v1.json) | Python-generated UTF-8/hash fixture, explicitly synthetic |
@@ -36,14 +43,16 @@ original helper/source pin, package signature, peer identity or live grant.
 Run from `codex-rs` with the repository toolchain:
 
 ```sh
-just fmt
 just test -p codex-hepta-memory production_android
 just fix -p codex-hepta-memory
+just fmt
 ```
 
 The focused cases do not launch Android. Original device acceptance must use
 the separately recorded native runner/helper sources and the actual original
-host capability. No Rust dependency or lockfile change is needed.
+host capability. The connector adds the workspace-pinned `rmcp` client to this
+crate; its tests additionally use the SDK server and async I/O transport. Keep
+the Cargo and Bazel lockfiles current when changing that dependency surface.
 
 ## Payload and recipient identity
 
@@ -100,18 +109,23 @@ separate read-only invocation. The adapter passes the exact original payload
 base64 and SHA256 in both calls. Changing operation identity, rebinding a
 deadline or routing to a fresh cell is forbidden.
 
-This source increment does not invent an implementation of that capability
-from a hostname, user request, JSON boolean or a synthetic grant. The actual
-original connector implementation and its measured deployment remain required
-composition evidence. The default read-only Desktop profile stays unchanged.
+The concrete connector requires an `OriginalAndroidRuntimeSession` from the
+original trusted embedding. That object retains the same initialized MCP peer
+and original runtime and implements live source verification; this crate has
+no production implementation that accepts a hostname, JSON boolean, generic
+process permission or synthetic grant as that verification. The default
+read-only Desktop profile stays unchanged.
 
-### Concrete original bootstrap locations and missing connector
+### Concrete original bootstrap locations and remaining trusted inputs
 
-A full local source search on 2026-10-24 found no Runtime Full Operator server,
-client bootstrap or concrete production `OriginalAndroidTextDevice` in either
-Desktop or Hepta. The only implementation in these trees is the deliberately
-synthetic test device. The installed ChatGPT Runtime connector's availability
-does not by itself install its authenticated client into an Agentd process.
+A full local source search on 2026-10-24 found no Runtime Full Operator server
+or original authenticated client bootstrap in Desktop or Hepta. This increment
+implements `OriginalAndroidTextDevice` using an already retained low-level MCP
+peer, but does not invent that missing bootstrap. The installed ChatGPT Runtime
+connector's availability does not install its authenticated client into an
+Agentd process. The existing `codex_rmcp_client::RmcpClient::call_tool` wrapper
+is intentionally not used: its transient retries and session reinitialization
+are incompatible with this effect lane.
 
 The existing integration points are:
 
@@ -120,12 +134,14 @@ The existing integration points are:
 - [hepta-agentd/src/production_writer_host.rs](../hepta-agentd/src/production_writer_host.rs): `with_additional_target` accepts
   the original destination-specific FinalUse authority and target; `attach`
   verifies that it is the same recovered writer/lease before registration.
+  `with_original_android_text_target` constructs this concrete connector and
+  target using those same inputs and returns its cancellation/diagnostic handle.
 - [hepta-agentd/src/notes_bootstrap.rs](../hepta-agentd/src/notes_bootstrap.rs): existing channel-factory → target →
   additional-target wiring is a useful model. Its inherited Notes descriptors
   are not Android capabilities and cannot be repurposed as such.
 
-When the original host supplies its real retained Runtime connector, the
-concrete connector implementation must satisfy this fixed one-shot contract:
+The connector enforces the following fixed process contract. The source gates
+remain the responsibility of the original session's independent live verifier:
 
 | Boundary | Exact input / required behavior |
 | --- | --- |
@@ -139,6 +155,67 @@ concrete connector implementation must satisfy this fixed one-shot contract:
 | Runtime job identity | Retain the returned original Runtime job ID with the same operation. A successful `process_start` acknowledgement is not a native effect receipt |
 | Deadline and cancellation | Bound the synchronous host call and every poll; never reset native payload expiry. Cancellation invalidates the effect lane; stopping a process does not prove that Android did not act |
 | Source gates | Exact deployed root-owned helper hash, original Droidloom file/owner, installed APK hash and original signer, original host/peer and same cell generation before use |
+
+The actual Runtime protocol used here is `process_start`, `process_status`,
+and `process_read`, with the original configured `pocket4` host on every call.
+Responses require the original audit acknowledgement. Start metadata must match
+the fixed executable, argv, absent cwd/environment overrides, original job and
+operation-derived idempotency key. Reused jobs remain unresolved. Only a
+successful zero-exit job with complete, untruncated logs permits `process_read`.
+Read begins at byte offset zero, uses a bounded 8 KiB plus one request, and
+checks both streams' size/offset/end-of-file against terminal metadata. Exact
+`bytes_hex` must decode as UTF-8 and equal the accompanying text; an incomplete
+page, wrong job, conflicting content or oversized output is refused. The native
+receipt parser still separately verifies the real apply acknowledgement and
+independent readback; Runtime process success is not that receipt.
+
+Each call stays synchronous inside the original FinalUse consumer. The
+connector creates no runtime or queued worker. The retained original Tokio
+runtime must have at least two workers; a current-thread caller is refused.
+One immutable deadline covers start, bounded status polls and final output.
+Native elapsed-time expiry is never edited. Any failed source/deadline check or
+ambiguous exchange permanently closes the effect lane. `invalidate()` closes
+it without waiting for a blocked request; a late returned job is retained as
+diagnostic evidence, not accepted as completion. Independent readback may still
+run through the retained live read-only session after invalidation.
+
+The connector retains at most 128 original effect attempts and 256 unique jobs
+in memory and never evicts an attempt to permit replay. Exhaustion fails closed.
+These are correlation records, not an alternate operation database. After
+process loss the original durable writer and Runtime job records remain the
+recovery owners; constructing another connector cannot establish causal success
+or justify replay. A readback starts a new job without an effect idempotency key
+and cannot reuse a job already returned by this connector.
+
+For an additional destination, the trusted embedding can use the following
+composition after it has supplied the original session and consumer authority:
+
+```rust,ignore
+let (operations, android_device) = operations.with_original_android_text_target(
+    original_android_final_use,
+    &original_native_observation,
+    original_runtime_session,
+    std::time::Duration::from_secs(10),
+)?;
+// Attach `operations` to the same recovered writer using the existing host
+// path. Retain `android_device` for invalidate() and retained_attempts().
+```
+
+For a primary destination, create `OriginalRuntimeAndroidTextDevice` with
+`from_retained_session`, wrap it in `ProductionAndroidTextTarget`, and supply
+that target to `AgentdProductionHostInputs.target` before
+`attach_production_operation_host`. Neither path opens another writer or
+constructs a signer, nonce journal, issuer or substitute authorization.
+
+The missing production inputs are therefore precise: the already authenticated
+original `Peer<RoleClient>` and its live multi-worker runtime; a verifier tied
+to that same original peer and fixed tool definitions; measured installed
+helper/Droidloom/APK hashes and owners plus the original APK signer; the original
+current native cell/editor observation; and the original destination-specific
+FinalUse consumer/policy/effect lease from the table below. No permissive
+production session implementation or automatic registration is supplied until
+the original embedding can provide these inputs. Host-only MCP tests do not
+replace any of them.
 
 If the original Runtime method accepts an idempotency key, bind the first effect
 attempt to a deterministic digest of the original operation ID and payload hash.
@@ -173,7 +250,7 @@ made valid by inserting example identifiers or public keys.
 | `AgentdFinalUseHostInputs` in [production_authority.rs](../hepta-agentd/src/production_authority.rs) | Existing original Device consumer journal, canonical signer identity and trusted public key, current authenticated revocations, protected clock and independent original frontier store. An added Android destination does not justify a second nonce journal or a newly initialized frontier. |
 | `AgentdUnixFinalUseGrantProvider` in [final_use_issuer.rs](../hepta-agentd/src/final_use_issuer.rs) and [root_issuer_client.rs](../hepta-agentd/src/root_issuer_client.rs) | Preconnected original issuer stream and exact peer. The Root host path additionally retains the actual Root pidfd and lifetime with `from_root_stream`; it does not discover, reconnect to, or replace the issuer. |
 | `DeploymentGrantPolicy` and `ProtectedLease` in [deployment_issuer.rs](../hepta-agentd/src/deployment_issuer.rs) and [deployment_issuer_root.rs](../hepta-agentd/src/deployment_issuer_root.rs) | Original policy must match subject, destination and scope. The pinned original effect lease ID/revision must match principal, `runtime.agentd.production_operation`, destination, scope and the exact payload hash, and remain live under the original registry fence. |
-| `Arc<dyn OriginalAndroidTextDevice>` in [production_android.rs](src/production_android.rs) | Actual retained authenticated original host/device connector satisfying the fixed-helper table above. Neither repository supplies a production implementation; the test device is synthetic. Generic process execution permission is not this capability or a FinalUse grant. |
+| `OriginalRuntimeAndroidTextDevice` in [production_android_runtime.rs](src/production_android_runtime.rs) | Concrete fixed-helper connector supplied with the original retained `OriginalAndroidRuntimeSession`; its independent live source verifier and authenticated peer/bootstrap must come from the original host. Generic process execution permission is not this capability or a FinalUse grant. |
 
 [HostAuthorityPublicBootstrapV1](../hepta-agentd/src/authority_host_bootstrap.rs)
 contains public handoff metadata for the original writer, checkpoint and two
