@@ -12,6 +12,8 @@ pub use authority_host_consumer_frontier::HostConsumerFrontier;
 #[cfg(target_os = "linux")]
 mod authority_host_checkpoint;
 #[cfg(target_os = "linux")]
+mod authority_host_material;
+#[cfg(target_os = "linux")]
 pub use authority_host_checkpoint::HostCognitiveCheckpoint;
 #[cfg(target_os = "linux")]
 pub use authority_host_checkpoint::HostCognitiveCheckpointRegistration;
@@ -85,9 +87,57 @@ pub use authority_host_runtime::register_host_writer_authorization;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::serve_host_authority_session;
 #[cfg(target_os = "linux")]
+pub use authority_host_service::HostAuthorityBootstrapLocations;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::{RootNotesAuthorityStartup, RootNotesAwaitingSession,
+    RootNotesLaunchServer, RootNotesReservedTarget, RootNotesSessionChannels,
+    RootNotesStartupCancellation};
+#[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityLane;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityService;
+#[cfg(target_os = "linux")]
+mod root_notes_host_config;
+#[cfg(target_os = "linux")]
+mod root_role_executable;
+#[cfg(target_os = "linux")]
+pub use root_role_executable::RootRoleExecutable;
+#[cfg(target_os = "linux")]
+mod root_notes_launch_channel;
+#[cfg(target_os = "linux")]
+mod root_notes_launch_io;
+#[cfg(target_os = "linux")]
+pub use root_notes_host_config::ROOT_NOTES_HOST_CONFIG_BOUND;
+#[cfg(target_os = "linux")]
+pub use root_notes_host_config::ROOT_NOTES_HOST_CONFIG_OPERATION_V1;
+#[cfg(target_os = "linux")]
+pub use root_notes_host_config::RootNotesAgentPathsV1;
+#[cfg(target_os = "linux")]
+pub use root_notes_host_config::RootNotesAuthBusPathsV1;
+#[cfg(target_os = "linux")]
+pub use root_notes_host_config::RootNotesDeploymentV1;
+#[cfg(target_os = "linux")]
+pub use root_notes_host_config::RootNotesHostConfigV1;
+#[cfg(target_os = "linux")]
+pub use root_notes_host_config::RootNotesInstalledBindingsV1;
+#[cfg(target_os = "linux")]
+pub use root_notes_host_config::RootNotesInstalledBundleV1;
+#[cfg(target_os = "linux")]
+pub use root_notes_host_config::RootNotesLaunchEndpointV1;
+#[cfg(target_os = "linux")]
+pub use root_notes_launch_channel::RootNotesLaunchAbort;
+#[cfg(target_os = "linux")]
+pub use root_notes_launch_channel::RootNotesLaunchChannel;
+#[cfg(target_os = "linux")]
+mod root_notes_launch_wire;
+#[cfg(target_os = "linux")]
+pub use root_notes_launch_wire::ROOT_NOTES_LAUNCH_FRAME_BOUND;
+#[cfg(target_os = "linux")]
+pub use root_notes_launch_wire::ROOT_NOTES_PREPARATION_NS;
+#[cfg(target_os = "linux")]
+pub use root_notes_launch_wire::ROOT_NOTES_TOTAL_PREPARATION_NS;
+#[cfg(target_os = "linux")]
+pub use root_notes_launch_wire::RootNotesLaunchFrame;
 #[cfg(target_os = "linux")]
 mod root_authority_session;
 #[cfg(target_os = "linux")]
@@ -177,6 +227,8 @@ mod qualification_writer;
 mod runtime;
 #[cfg(target_os = "linux")]
 pub use notes_organ::run_notes_organ;
+#[cfg(target_os = "linux")]
+pub use notes_organ::run_notes_organ_until;
 mod runtime_tasks;
 mod shared_terminal_cell;
 mod state;

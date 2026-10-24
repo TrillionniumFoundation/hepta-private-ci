@@ -86,6 +86,25 @@ fn root_two_original_stores_are_isolated_and_exact_cas_survives_reopen() {
 
 #[test]
 #[ignore = "requires explicit root-owned data bind; no production authority"]
+fn root_retained_frontier_spends_no_request_and_never_revives_unknown() {
+    let f = Fixture::new();
+    assert_eq!(f.backend.retained_frontier_for_root("original-device", &f.head), Ok(f.initial()));
+    assert_eq!(f.backend.session.lock().unwrap().last_request_id, 0);
+    assert_eq!(f.backend.retained_frontier_for_root("foreign-owner", &f.head), Err(AuthorityTrustError::Invalid));
+    assert_eq!(f.response(/*id*/ 1, None), Response {
+        schema_version: 1, request_id: 1, status: Status::Ack, frontier: Some(f.initial()),
+    });
+    f.clock.reads.store(0, Ordering::SeqCst);
+    f.clock.expire_on.store(1, Ordering::SeqCst);
+    assert_eq!(f.backend.retained_frontier_for_root("original-device", &f.head), Err(AuthorityTrustError::Invalid));
+    f.clock.expire_on.store(0, Ordering::SeqCst);
+    assert_eq!(f.backend.retained_frontier_for_root("original-device", &f.head), Err(AuthorityTrustError::Unavailable));
+    assert_eq!(f.backend.store.load("original-device").unwrap(), f.initial());
+    assert_eq!(f.backend.session.lock().unwrap().last_request_id, 1);
+}
+
+#[test]
+#[ignore = "requires explicit root-owned data bind; no production authority"]
 fn root_post_cas_expiry_returns_no_ack_and_never_revives_the_uncertain_object() {
     let f = Fixture::new(); let next = changed(f.initial(), /*marker*/ 2);
     f.clock.reads.store(0, Ordering::SeqCst); f.clock.expire_on.store(2, Ordering::SeqCst);

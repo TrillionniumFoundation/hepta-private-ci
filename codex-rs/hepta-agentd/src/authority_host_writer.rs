@@ -11,10 +11,13 @@ use crate::HostSignedWriterAuthorizationV1;
 use crate::HostWriterAuthorizationReadResponseV1;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
+use codex_hepta_contracts::RootAuthorityDirectory;
+use codex_hepta_memory::CognitiveCheckpointReceipt;
+use codex_hepta_memory::VerifiedCognitiveMaterial;
 
 pub(super) struct RegisteredWriter {
     pub(super) registration: HostAuthorityWriterRegistration,
-    leases: AuthorityLeaseVerifier,
+    pub(super) leases: AuthorityLeaseVerifier,
     pub(super) proof: HostSignedWriterAuthorizationV1,
 }
 
@@ -54,15 +57,16 @@ impl RegisteredWriter {
         &self,
         issuer: &DeploymentFinalUseIssuer,
         clock: &HostAuthorityClock,
-        backend: &crate::HostCognitiveCheckpoint,
+        backend: &RegisteredCheckpoint,
         bytes: &[u8],
     ) -> Result<Vec<u8>, HostIssuerTransportError> {
+        let material = backend.prepare_material(bytes).map_err(unavailable)?;
         self.registration
             .with_live(&self.leases, |_| {
                 if issuer.retained_writer_authorization(&self.registration)? != self.proof {
                     return Err(io::Error::other("retained writer proof changed"));
                 }
-                let response = backend.exchange(bytes).map_err(io::Error::other)?;
+                let response = backend.backend.exchange_with_material(bytes, material.as_ref()).map_err(io::Error::other)?;
                 let head = issuer.revocations()?;
                 let now = clock
                     .refresh_projection()
@@ -72,6 +76,27 @@ impl RegisteredWriter {
                 Ok(response)
             })
             .map_err(unavailable)
+    }
+
+    pub(super) fn accept_material_registration(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        clock: &HostAuthorityClock,
+        checkpoint: &RegisteredCheckpoint,
+        expected: &codex_hepta_memory::CognitiveCheckpointHead,
+        material: &crate::authority_host_material::PreparedCheckpointMaterial,
+    ) -> io::Result<()> {
+        self.registration.with_live(&self.leases, |_| {
+            if issuer.retained_writer_authorization(&self.registration)? != self.proof
+                || checkpoint.backend.retained_current_for_root().map_err(io::Error::other)? != *expected
+            {
+                return Err(io::Error::other("writer or Current changed during material registration"));
+            }
+            material.validate(b"root:initial-current-material:v1", &expected.last_current)?;
+            let head = issuer.revocations()?;
+            let now = clock.refresh_projection().map_err(io::Error::other)?.observed_unix_ms;
+            validate_observation_lease(&self.registration.authority_lease, &head, now)
+        })
     }
 
     pub(super) fn open(
@@ -172,5 +197,42 @@ impl RegisteredWriter {
                 .map_err(io::Error::other)
             })
             .map_err(unavailable)
+    }
+}
+
+
+impl RegisteredWriter {
+    pub(super) fn adopt_material_checkpoint(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        clock: &Arc<HostAuthorityClock>,
+        directory: Arc<RootAuthorityDirectory>,
+        previous: &CognitiveCheckpointReceipt,
+        predecessor: &crate::RetiredCheckpointPublisher,
+        registration: crate::HostCognitiveCheckpointRegistration,
+        successor: &crate::RetainedCheckpointPublisher,
+        material: &VerifiedCognitiveMaterial,
+    ) -> io::Result<crate::HostCognitiveCheckpoint> {
+        self.registration.with_live(&self.leases, |_| {
+            if issuer.retained_writer_authorization(&self.registration)? != self.proof {
+                return Err(io::Error::other("retained writer proof changed"));
+            }
+            let head = issuer.revocations()?;
+            let backend = crate::HostCognitiveCheckpoint::adopt_retained_material_after_root_restart(
+                directory, previous, predecessor, registration, successor, clock.clone(), material,
+            ).map_err(io::Error::other)?;
+            // A durable CAS may already have committed. Later uncertainty is
+            // never reported as an unchanged predecessor or an installed lane.
+            if issuer.retained_writer_authorization(&self.registration)? != self.proof
+                || issuer.revocations()? != head
+            {
+                return Err(io::Error::other("canonical writer changed after recovery CAS"));
+            }
+            material.verify_unchanged().map_err(io::Error::other)?;
+            let now = clock.now_unix_ms().map_err(io::Error::other)?;
+            validate_observation_lease(&self.registration.authority_lease, &head, now)?;
+            successor.check_alive_for_root().map_err(io::Error::other)?;
+            Ok(backend)
+        })
     }
 }

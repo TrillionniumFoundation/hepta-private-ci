@@ -15,6 +15,29 @@ use std::time::Instant;
 
 const MAX_SESSION_LIFETIME: Duration = Duration::from_secs(300);
 
+/// Retain a launcher's already held actual pidfd for a bounded lifetime.
+/// This is only a liveness guard: it grants no Root, issuer, lease or Current
+/// authority. The launcher still attests namespace provenance and must verify
+/// boot/start/credentials independently. There is no descriptor accessor,
+/// cloning, serialization, numeric-PID reopen, renewal or reconnect operation.
+pub struct HostAuthorityOwnerLifetime(OwnerChannel);
+
+impl HostAuthorityOwnerLifetime {
+    pub fn from_pidfd(
+        owner: OwnedFd,
+        pid: u32,
+        lifetime: Duration,
+    ) -> Result<Self, HostIssuerTransportError> {
+        OwnerChannel::new(owner, pid, lifetime).map(Self)
+    }
+
+    /// Owner exit wins immediately; successful checks never reset the original
+    /// hard deadline. The existing channel implementation owns both checks.
+    pub fn check_alive(&self) -> Result<(), HostIssuerTransportError> {
+        self.0.check(self.0.end())
+    }
+}
+
 pub(crate) struct OwnerChannel {
     owner: OwnedFd,
     end: Instant,

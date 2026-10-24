@@ -3,6 +3,46 @@ use pretty_assertions::assert_eq;
 use std::process::Stdio;
 
 #[test]
+fn retained_owner_guard_uses_original_pidfd_identity_and_hard_limit() {
+    use crate::HostAuthorityOwnerLifetime;
+    let pid = std::process::id();
+    assert!(matches!(HostAuthorityOwnerLifetime::from_pidfd(
+        std::fs::File::open("/dev/null").unwrap().into(), pid, Duration::from_secs(1)),
+        Err(HostIssuerTransportError::InvalidConfiguration)));
+    assert!(matches!(HostAuthorityOwnerLifetime::from_pidfd(
+        owner_pidfd(pid), pid + 1, Duration::from_secs(1)),
+        Err(HostIssuerTransportError::PeerDenied)));
+    for lifetime in [Duration::ZERO, Duration::from_secs(301)] {
+        assert!(matches!(HostAuthorityOwnerLifetime::from_pidfd(owner_pidfd(pid), pid, lifetime),
+            Err(HostIssuerTransportError::InvalidConfiguration)));
+    }
+    let guard = HostAuthorityOwnerLifetime::from_pidfd(owner_pidfd(pid), pid,
+        Duration::from_millis(50)).unwrap();
+    assert_eq!(guard.check_alive(), Ok(()));
+    std::thread::sleep(Duration::from_millis(100));
+    assert_eq!(guard.check_alive(), Err(HostIssuerTransportError::DeadlineElapsed));
+}
+
+#[test]
+fn retained_owner_guard_cannot_outlive_the_original_owned_child() {
+    struct Child(std::process::Child);
+    impl Drop for Child {
+        fn drop(&mut self) {
+            let _ = self.0.kill();
+            let _ = self.0.wait();
+        }
+    }
+    let mut child = Child(Command::new("/usr/bin/sleep").arg("10")
+        .stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::null()).spawn().unwrap());
+    let guard = crate::HostAuthorityOwnerLifetime::from_pidfd(owner_pidfd(child.0.id()),
+        child.0.id(), Duration::from_secs(5)).unwrap();
+    assert_eq!(guard.check_alive(), Ok(()));
+    child.0.kill().unwrap();
+    child.0.wait().unwrap();
+    assert_eq!(guard.check_alive(), Err(HostIssuerTransportError::PeerDenied));
+}
+
+#[test]
 fn idle_may_exceed_frame_timeout_but_partial_frame_cannot() {
     let fixture = Fixture::new();
     fixture.authorize();

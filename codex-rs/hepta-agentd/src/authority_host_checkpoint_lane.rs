@@ -8,10 +8,24 @@ use codex_hepta_contracts::HostIssuerPeer;
 use codex_hepta_contracts::RootAuthorityDirectory;
 use codex_hepta_memory::CognitiveCheckpointPeerLifetime;
 use codex_hepta_memory::CognitiveCheckpointWriterBinding;
+use crate::authority_host_checkpoint::MaterialIntent;
+use crate::authority_host_material::PreparedCheckpointMaterial;
+use crate::authority_host_material::RegisteredMaterialArchive;
 
 pub(super) struct RegisteredCheckpoint {
     pub(super) backend: HostCognitiveCheckpoint,
-    peer: CognitiveCheckpointPeerLifetime,
+    pub(super) peer: CognitiveCheckpointPeerLifetime,
+    pub(super) material: std::sync::OnceLock<RegisteredMaterialArchive>,
+    pub(super) material_attempted: std::sync::atomic::AtomicBool,
+    pub(super) recovered: Option<RecoveredCheckpointInstall>,
+}
+
+// Ephemeral receipt retained by the one trusted recovery composition. This is
+// not serialized, cloned, remotely selectable or an independent authority head.
+pub(super) struct RecoveredCheckpointInstall {
+    pub(super) previous: codex_hepta_memory::CognitiveCheckpointReceipt,
+    pub(super) attempted: std::sync::atomic::AtomicBool,
+    pub(super) installed: std::sync::atomic::AtomicBool,
 }
 
 impl RegisteredCheckpoint {
@@ -21,10 +35,33 @@ impl RegisteredCheckpoint {
         clock: Arc<HostAuthorityClock>,
     ) -> io::Result<Self> {
         Ok(Self {
+            recovered: None,
+            material: std::sync::OnceLock::new(),
+            material_attempted: std::sync::atomic::AtomicBool::new(false),
             peer: registration.peer_lifetime.clone(),
             backend: HostCognitiveCheckpoint::open(directory, registration, clock)
                 .map_err(io::Error::other)?,
         })
+    }
+
+    /// Large copy/schema/integrity work precedes the registry writer fence.
+    /// The original handler independently rechecks full request/predecessor
+    /// and the held image immediately before its existing durable CAS.
+    pub(super) fn prepare_material(&self, bytes: &[u8]) -> io::Result<Option<PreparedCheckpointMaterial>> {
+        let prepared = (|| {
+            let Some(intent) = self.backend.material_intent(bytes).map_err(io::Error::other)? else {
+                return Ok(None);
+            };
+            let archive = self.material.get().ok_or_else(|| io::Error::other("registered physical material archive required"))?;
+            match intent {
+                MaterialIntent::Prepare(cut) => archive.prepare(bytes, &cut),
+                MaterialIntent::Retained(cut) => archive.retained(bytes, &cut),
+            }.map(Some)
+        })();
+        if prepared.is_err() {
+            self.backend.close();
+        }
+        prepared
     }
 
     pub(super) fn validate_peer(&self, peer: HostIssuerPeer) -> io::Result<()> {

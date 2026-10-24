@@ -34,7 +34,7 @@ use crate::authority_host_config::HostAuthorityServiceConfig;
 use crate::authority_host_config::read_root_json;
 
 #[path = "authority_host_listeners.rs"]
-mod listeners;
+pub(crate) mod listeners;
 use listeners::serve_lanes;
 
 const CLOCK_OWNER: &str = "root-authority-clock-v1";

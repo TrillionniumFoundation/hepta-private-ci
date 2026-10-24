@@ -31,6 +31,31 @@ use checkpoint::RegisteredCheckpoint;
 #[path = "authority_host_consumers.rs"]
 mod consumers;
 use consumers::RegisteredConsumers;
+#[path = "authority_host_service_bootstrap.rs"]
+mod bootstrap;
+use bootstrap::RegisteredBootstrap;
+pub use bootstrap::HostAuthorityBootstrapLocations;
+
+#[path = "authority_host_cold_recovery.rs"]
+mod cold_recovery;
+#[path = "authority_host_material_install.rs"]
+mod material_install;
+#[path = "authority_host_material_startup.rs"]
+mod material_startup;
+use material_startup::RequiredMaterialStartup;
+
+#[path = "authority_host_delivery.rs"]
+mod delivery;
+use delivery::ServiceDelivery;
+
+#[path = "root_notes_launch_server.rs"]
+mod notes_launch;
+pub use notes_launch::RootNotesAuthorityStartup;
+pub use notes_launch::RootNotesAwaitingSession;
+pub use notes_launch::RootNotesLaunchServer;
+pub use notes_launch::RootNotesReservedTarget;
+pub use notes_launch::RootNotesSessionChannels;
+pub use notes_launch::RootNotesStartupCancellation;
 
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]
@@ -53,6 +78,9 @@ pub struct HostAuthorityService {
     notes: Option<crate::RootNotesGrantAdmission>,
     checkpoint: Option<RegisteredCheckpoint>,
     consumers: Option<RegisteredConsumers>,
+    bootstrap: Option<RegisteredBootstrap>,
+    material_startup: Option<RequiredMaterialStartup>,
+    delivery: ServiceDelivery,
 }
 
 impl HostAuthorityService {
@@ -72,6 +100,9 @@ impl HostAuthorityService {
             notes: None,
             checkpoint: None,
             consumers: None,
+            bootstrap: None,
+            material_startup: None,
+            delivery: ServiceDelivery::default(),
         })
     }
 
@@ -82,6 +113,9 @@ impl HostAuthorityService {
         registration: crate::HostAuthorityWriterRegistration,
         leases: codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier,
     ) -> io::Result<Self> {
+        if self.bootstrap.is_some() {
+            return Err(io::Error::other("Root bootstrap registration is immutable"));
+        }
         self.writer = Some(RegisteredWriter::open(
             &self.issuer,
             &self.identity,
@@ -116,6 +150,9 @@ impl HostAuthorityService {
         publisher_epoch: u64,
         peer: codex_hepta_memory::CognitiveCheckpointPeerLifetime,
     ) -> io::Result<Self> {
+        if self.bootstrap.is_some() {
+            return Err(io::Error::other("Root bootstrap registration is immutable"));
+        }
         let writer = self
             .writer
             .as_ref()
@@ -129,6 +166,43 @@ impl HostAuthorityService {
         Ok(self)
     }
 
+    /// Trusted Root launch only, after the sole recovered owner is quiescent
+    /// and before checkpoint binding/Session release. The source generation is
+    /// derived from this service's original fixed layout, never a wire path.
+    /// Initial exact Current material must be durable before assembly returns.
+    /// There is no runtime generation setter, replacement or recovery fallback.
+    pub fn with_registered_material_archive(self, archive_root: &std::path::Path) -> io::Result<Self> {
+        if self.material_startup.is_some() {
+            return Err(io::Error::other("required startup uses its zero-argument readiness confirmation"));
+        }
+        self.register_material_archive_for_root(archive_root)?;
+        Ok(self)
+    }
+
+    fn register_material_archive_for_root(&self, archive_root: &std::path::Path) -> io::Result<()> {
+        use std::sync::atomic::Ordering;
+        let checkpoint = self.checkpoint.as_ref().ok_or_else(|| io::Error::other("registered checkpoint required"))?;
+        if checkpoint.material_attempted.swap(true, Ordering::AcqRel) {
+            return Err(io::Error::other("material registration already attempted"));
+        }
+        let result = (|| {
+            self.check_bootstrap_lifetime().map_err(io::Error::other)?;
+            let writer = self.writer.as_ref().ok_or_else(|| io::Error::other("registered writer required"))?;
+            let expected = checkpoint.backend.retained_current_for_root().map_err(io::Error::other)?;
+            let archive = crate::authority_host_material::RegisteredMaterialArchive::register(
+                &self.identity.layout, checkpoint.peer.uid, archive_root,
+            )?;
+            let material = archive.prepare(b"root:initial-current-material:v1", &expected.last_current)?;
+            writer.accept_material_registration(&self.issuer, &self.clock, checkpoint, &expected, &material)?;
+            self.check_bootstrap_lifetime().map_err(io::Error::other)?;
+            checkpoint.material.set(archive).map_err(|_| io::Error::other("material registration already installed"))
+        })();
+        if result.is_err() {
+            checkpoint.backend.close();
+        }
+        result
+    }
+
     /// Open both existing original consumer stores with fixed root namespaces.
     /// The trusted launcher supplies these fields; no wire initializes an owner.
     pub fn with_registered_consumers(
@@ -136,6 +210,9 @@ impl HostAuthorityService {
         protected_state: &std::path::Path,
         config: &crate::HostAuthorityConsumersConfig,
     ) -> io::Result<Self> {
+        if self.bootstrap.is_some() {
+            return Err(io::Error::other("Root bootstrap registration is immutable"));
+        }
         let writer = self
             .writer
             .as_ref()
@@ -160,6 +237,10 @@ impl HostAuthorityService {
         mut policy: HostAuthorityPeerPolicy,
         owner_pidfd: OwnedFd,
     ) -> Result<(), HostIssuerTransportError> {
+        self.check_bootstrap_lifetime()?;
+        if let Some(bootstrap) = &self.bootstrap {
+            bootstrap.validate_peer(policy.peer).map_err(unavailable)?;
+        }
         let bound = match lane {
             HostAuthorityLane::Observation => 16 * 1024,
             HostAuthorityLane::Issuer => 64 * 1024,
@@ -174,8 +255,10 @@ impl HostAuthorityService {
         {
             checkpoint.validate_peer(policy.peer).map_err(unavailable)?;
         }
+        let _shutdown_pin = self.delivery.register(&stream)?;
         let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)?;
-        while channel.exchange(|bytes| self.handle(lane, bytes))? {}
+        while channel.exchange_with_response_guard(|bytes| self.handle(lane, bytes),
+            || self.delivery.response_guard())? {}
         Ok(())
     }
 
@@ -184,7 +267,9 @@ impl HostAuthorityService {
         lane: HostAuthorityLane,
         bytes: &[u8],
     ) -> Result<Vec<u8>, HostIssuerTransportError> {
-        match lane {
+        self.check_bootstrap_lifetime()?;
+        self.require_startup_read(lane, bytes).map_err(unavailable)?;
+        let result = match lane {
             HostAuthorityLane::Observation => self.observe(bytes),
             HostAuthorityLane::Issuer => self.issue(bytes),
             HostAuthorityLane::Checkpoint => self
@@ -194,11 +279,10 @@ impl HostAuthorityService {
                 .exchange_checkpoint(
                     &self.issuer,
                     &self.clock,
-                    &self
+                    self
                         .checkpoint
                         .as_ref()
-                        .ok_or(HostIssuerTransportError::Unavailable)?
-                        .backend,
+                        .ok_or(HostIssuerTransportError::Unavailable)?,
                     bytes,
                 ),
             HostAuthorityLane::DeviceConsumerFrontier
@@ -217,7 +301,17 @@ impl HostAuthorityService {
                     .ok_or(HostIssuerTransportError::Unavailable)?
                     .exchange_consumer(&self.issuer, &self.clock, backend, bytes)
             }
+        };
+        self.check_bootstrap_lifetime()?;
+        result
+    }
+
+    fn check_bootstrap_lifetime(&self) -> Result<(), HostIssuerTransportError> {
+        self.delivery.require_open()?;
+        if let Some(bootstrap) = &self.bootstrap {
+            bootstrap.check_serving().map_err(unavailable)?;
         }
+        Ok(())
     }
 
     fn observe(&self, bytes: &[u8]) -> Result<Vec<u8>, HostIssuerTransportError> {
@@ -266,6 +360,7 @@ impl HostAuthorityService {
 
     fn issue(&self, bytes: &[u8]) -> Result<Vec<u8>, HostIssuerTransportError> {
         let request: IssuerRequest = decode(bytes)?;
+        self.require_material_startup_complete().map_err(unavailable)?;
         match request {
             IssuerRequest::FinalUse {
                 schema_version,

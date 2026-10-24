@@ -5,6 +5,7 @@
 //! App Server, automation plane or federation reader. It does not install
 //! authority, initialize an owner, or retry an unknown application effect.
 
+use std::future::Future;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -27,6 +28,22 @@ pub async fn run_notes_organ(
     config: AgentdConfig,
     root: Arc<AgentdRootAuthoritySession>,
 ) -> Result<(), AgentdError> {
+    run_notes_organ_until(config, root, std::future::pending()).await
+}
+
+/// Run the SAME finite Organ while retaining a required embedding component's
+/// lifetime. External failure uses the original RuntimeTasks cancellation and
+/// join path; it never acknowledges an effect or grants a replacement owner.
+/// SIGINT/SIGTERM and successful external stop retain the original drain path.
+/// The caller must keep this future alive until it returns, including cleanup.
+pub async fn run_notes_organ_until<S>(
+    config: AgentdConfig,
+    root: Arc<AgentdRootAuthoritySession>,
+    external_stop: S,
+) -> Result<(), AgentdError>
+where
+    S: Future<Output = Result<(), AgentdError>> + Send,
+{
     let runtime_handle = tokio::runtime::Handle::current();
     if runtime_handle.runtime_flavor() != tokio::runtime::RuntimeFlavor::MultiThread
         || runtime_handle.metrics().num_workers() < 2
@@ -130,7 +147,10 @@ pub async fn run_notes_organ(
     }
     tasks
         .run_until(async move {
-            crate::runtime::shutdown_signal().await?;
+            tokio::select! {
+                result = crate::runtime::shutdown_signal() => result?,
+                result = external_stop => result?,
+            }
             crate::runtime::drain_runtime(state).await
         })
         .await

@@ -73,8 +73,19 @@ impl HostAuthorityPeerChannel {
         &mut self,
         handle: impl FnOnce(&[u8]) -> Result<Vec<u8>, HostIssuerTransportError>,
     ) -> Result<bool, HostIssuerTransportError> {
+        self.exchange_with_response_guard(handle, || Ok(()))
+    }
+
+    /// Hold the launcher's publication guard across the actual bounded frame
+    /// writes. Acquire it only after handler I/O; cancellation must never wait
+    /// for a stalled durability operation before shutting down lane sockets.
+    pub fn exchange_with_response_guard<G>(
+        &mut self,
+        handle: impl FnOnce(&[u8]) -> Result<Vec<u8>, HostIssuerTransportError>,
+        response_guard: impl FnOnce() -> Result<G, HostIssuerTransportError>,
+    ) -> Result<bool, HostIssuerTransportError> {
         let mut stream = self.stream.take().ok_or(HostIssuerTransportError::Closed)?;
-        let result = self.exchange_inner(&mut stream, handle);
+        let result = self.exchange_inner(&mut stream, handle, response_guard);
         match result {
             Ok(true) => {
                 self.stream = Some(stream);
@@ -88,10 +99,11 @@ impl HostAuthorityPeerChannel {
         }
     }
 
-    fn exchange_inner(
+    fn exchange_inner<G>(
         &self,
         stream: &mut UnixStream,
         handle: impl FnOnce(&[u8]) -> Result<Vec<u8>, HostIssuerTransportError>,
+        response_guard: impl FnOnce() -> Result<G, HostIssuerTransportError>,
     ) -> Result<bool, HostIssuerTransportError> {
         let mut length = [0; 4];
         if self
@@ -115,6 +127,8 @@ impl HostAuthorityPeerChannel {
         if response.is_empty() || response.len() > self.policy.response_bound {
             return Err(HostIssuerTransportError::Unavailable);
         }
+        let _publication = response_guard()?;
+        self.owner.check(deadline)?;
         self.owner
             .write_until(stream, &(response.len() as u32).to_be_bytes(), deadline)?;
         self.owner.write_until(stream, &response, deadline)?;

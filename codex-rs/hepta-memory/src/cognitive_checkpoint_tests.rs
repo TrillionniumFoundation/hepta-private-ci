@@ -17,6 +17,8 @@ struct ProtocolPeer {
     receipt: Mutex<CognitiveCheckpointReceipt>,
     commands: Mutex<Vec<CognitiveCheckpointCommand>>,
     hold_current_reply: AtomicBool,
+    unavailable_prepare: AtomicBool,
+    expire_commit_reply_at: std::sync::atomic::AtomicU64,
     wrong_owner_reply: AtomicBool,
     published: Notify,
     revoke_after_publication: AtomicBool,
@@ -27,6 +29,15 @@ impl CognitiveCheckpointTransport for ProtocolPeer {
     async fn exchange(&self, bytes: &[u8]) -> Result<Vec<u8>, ObjectiveSenderCheckpointError> {
         let request: CognitiveCheckpointRequest = serde_json::from_slice(bytes).unwrap();
         self.commands.lock().unwrap().push(request.command);
+        if request.command == CognitiveCheckpointCommand::PreparePublication
+            && self.unavailable_prepare.load(Ordering::SeqCst)
+        {
+            return Ok(serde_json::to_vec(&CognitiveCheckpointResponse {
+                schema_version:1, request_id:request.request_id,
+                status:CognitiveCheckpointStatus::Unknown,
+                reason:Some(CognitiveCheckpointReason::Unavailable), token:None, head:None,
+            }).unwrap());
+        }
         let current = {
             let mut current = self.receipt.lock().unwrap();
             if request.command != CognitiveCheckpointCommand::ReadHead {
@@ -90,6 +101,13 @@ impl CognitiveCheckpointTransport for ProtocolPeer {
             self.published.notify_one();
             std::future::pending::<()>().await;
         }
+        if request.command == CognitiveCheckpointCommand::CommitPublication {
+            let deadline = self.expire_commit_reply_at.load(Ordering::SeqCst);
+            if deadline != 0 {
+                let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_millis() as u64;
+                tokio::time::sleep(Duration::from_millis(deadline.saturating_sub(now))).await;
+            }
+        }
         let mut head = current.head;
         if self.wrong_owner_reply.load(Ordering::SeqCst) {
             head.owner_agent_id = AgentId::parse("fe4d9e62-67be-4ca8-bfed-8080d473e6a9").unwrap();
@@ -130,13 +148,18 @@ impl ManagedFixture {
     }
 
     async fn in_directory(temp: tempfile::TempDir) -> Self {
+        Self::with_expiry(temp, /*expires_at_unix_seconds*/ 4_000_000_000).await
+    }
+
+    async fn with_expiry(temp: tempfile::TempDir, expires_at_unix_seconds: u64) -> Self {
         let owner = crate::cognitive_test_support::agent_id(OWNER);
         let layout = crate::cognitive_test_support::layout(&temp, &owner);
         let genesis = crate::CognitiveStore::open(&layout).await.unwrap();
         let cut = genesis.recovery_anchor().await.unwrap();
         genesis.close().await;
         let verifier = Arc::new(TestVerifier::new());
-        let grant = authority(&owner, 87);
+        let mut grant = authority(&owner, 87);
+        grant.lease_expires_at_unix_seconds = expires_at_unix_seconds;
         let store = crate::CognitiveStore::open_with_recovery(
             &layout,
             crate::CognitiveRecoveryRequirement::ExactCurrentCut(&cut),
@@ -192,6 +215,8 @@ impl ManagedFixture {
             receipt: Mutex::new(receipt.clone()),
             commands: Mutex::new(Vec::new()),
             hold_current_reply: AtomicBool::new(false),
+            unavailable_prepare: AtomicBool::new(false),
+            expire_commit_reply_at: std::sync::atomic::AtomicU64::new(0),
             wrong_owner_reply: AtomicBool::new(false),
             published: Notify::new(),
             revoke_after_publication: AtomicBool::new(false),
@@ -383,3 +408,6 @@ mod hos2_retirement_tests;
 #[cfg(unix)]
 #[path = "cognitive_checkpoint_effect_entry_tests.rs"]
 mod effect_entry_tests;
+
+#[path = "cognitive_checkpoint_terminal_tests.rs"]
+mod terminal_tests;
