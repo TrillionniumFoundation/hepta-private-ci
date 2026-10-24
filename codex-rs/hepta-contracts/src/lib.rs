@@ -19,6 +19,8 @@ mod canonical;
 mod final_use;
 mod final_use_control;
 #[cfg(windows)]
+pub use codex_utils_windows_private_state::stage::SynchronousStageFile;
+#[cfg(windows)]
 pub use codex_utils_windows_private_state::stage::replace_synced_state_stage;
 mod identity;
 mod memory;

@@ -1,3 +1,4 @@
+use super::SynchronousStageFile;
 use super::replace_synced_state_stage;
 use pretty_assertions::assert_eq;
 use std::fs::File;
@@ -21,14 +22,13 @@ fn root(path: &Path) -> io::Result<File> {
         .open(path)
 }
 
-fn stage(path: &Path, contents: &[u8], access: u32) -> io::Result<File> {
-    let mut file = OpenOptions::new()
-        .read(true)
-        .write(true)
-        .access_mode(access)
-        .share_mode(SHARE_READ_WRITE)
-        .create_new(true)
-        .open(path)?;
+fn stage(
+    directory: &File,
+    leaf: &str,
+    contents: &[u8],
+    access: u32,
+) -> io::Result<SynchronousStageFile> {
+    let mut file = SynchronousStageFile::create_relative(directory, leaf, access)?;
     file.write_all(contents)?;
     Ok(file)
 }
@@ -39,7 +39,8 @@ fn windows_stage_replaces_relative_to_held_directory_using_exact_source() -> io:
     let temp = tempfile::tempdir().expect("temporary directory");
     let directory = root(temp.path())?;
     let source = stage(
-        &temp.path().join("authority.next"),
+        &directory,
+        "authority.next",
         b"held-stage",
         GENERIC_READ_WRITE | DELETE,
     )?;
@@ -64,11 +65,7 @@ fn windows_stage_replaces_relative_to_held_directory_using_exact_source() -> io:
 fn windows_stage_without_delete_access_cannot_replace() -> io::Result<()> {
     let temp = tempfile::tempdir().expect("temporary directory");
     let directory = root(temp.path())?;
-    let source = stage(
-        &temp.path().join("authority.next"),
-        b"stage",
-        GENERIC_READ_WRITE,
-    )?;
+    let source = stage(&directory, "authority.next", b"stage", GENERIC_READ_WRITE)?;
     std::fs::write(temp.path().join("authority.json"), b"previous").expect("destination");
     assert!(replace_synced_state_stage(&directory, &source, "authority.json").is_err());
     assert_eq!(
@@ -87,7 +84,8 @@ fn windows_stage_respects_destination_delete_sharing() -> io::Result<()> {
     let temp = tempfile::tempdir().expect("temporary directory");
     let directory = root(temp.path())?;
     let source = stage(
-        &temp.path().join("registry.next"),
+        &directory,
+        "registry.next",
         b"stage",
         GENERIC_READ_WRITE | DELETE,
     )?;
@@ -114,7 +112,8 @@ fn windows_stage_rejects_escaped_leaf_without_publication() -> io::Result<()> {
     let temp = tempfile::tempdir().expect("temporary directory");
     let directory = root(temp.path())?;
     let source = stage(
-        &temp.path().join("registry.next"),
+        &directory,
+        "registry.next",
         b"stage",
         GENERIC_READ_WRITE | DELETE,
     )?;

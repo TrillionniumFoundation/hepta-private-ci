@@ -110,8 +110,18 @@ impl LockedStateStage<'_> {
             .map_err(before)?;
         held.continuity = Continuity::Refused;
         self.inner.inspect(&mut held).map_err(before)?;
-        crate::stage::replace_synced_state_stage(&held.directory.file, &self.inner.file, leaf)
-            .map_err(|error| StageReplaceError::Indeterminate(error.into()))?;
+        // SAFETY: OwnerLock::open_file admits only mechanism::open_nt files,
+        // created/opened with FILE_SYNCHRONOUS_IO_NONALERT and SYNCHRONIZE. The
+        // exact file has no public raw/clone escape; the original owner lock
+        // and context guard remain held through native completion.
+        unsafe {
+            crate::stage::replace_synced_synchronous_stage(
+                &held.directory.file,
+                &self.inner.file,
+                leaf,
+            )
+        }
+        .map_err(|error| StageReplaceError::Indeterminate(error.into()))?;
         self.inner
             .inspect(&mut held)
             .map_err(StageReplaceError::Indeterminate)?;
