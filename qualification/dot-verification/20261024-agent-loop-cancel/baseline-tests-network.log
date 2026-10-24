@@ -1,0 +1,71 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+    Updating crates.io index
+ Downloading crates ...
+  Downloaded pin-project-lite v0.2.17
+  Downloaded diff v0.1.13
+  Downloaded futures-core v0.3.34
+  Downloaded bytes v1.12.1
+  Downloaded tokio-macros v2.7.2
+  Downloaded futures-sink v0.3.34
+  Downloaded thiserror-impl v2.0.21
+  Downloaded cfg-if v1.0.5
+  Downloaded unicode-ident v1.0.27
+  Downloaded quote v1.0.47
+  Downloaded thiserror v2.0.21
+  Downloaded yansi v1.0.1
+  Downloaded proc-macro2 v1.0.107
+  Downloaded typenum v1.20.1
+  Downloaded pretty_assertions v1.4.1
+  Downloaded tokio-util v0.7.20
+  Downloaded syn v3.0.9
+  Downloaded tokio v1.53.3
+   Compiling proc-macro2 v1.0.107
+   Compiling version_check v0.9.5
+   Compiling unicode-ident v1.0.27
+   Compiling quote v1.0.47
+   Compiling generic-array v0.14.7
+   Compiling typenum v1.20.1
+   Compiling syn v3.0.9
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling digest v0.10.7
+   Compiling tokio-macros v2.7.2
+   Compiling cpufeatures v0.2.17
+   Compiling thiserror v2.0.21
+   Compiling pin-project-lite v0.2.17
+   Compiling cfg-if v1.0.5
+   Compiling sha2 v0.10.9
+   Compiling tokio v1.53.3
+   Compiling thiserror-impl v2.0.21
+   Compiling futures-sink v0.3.34
+   Compiling futures-core v0.3.34
+   Compiling bytes v1.12.1
+   Compiling tokio-util v0.7.20
+   Compiling codex-hepta-types v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-loop-review/codex-rs/hepta-types)
+   Compiling diff v0.1.13
+   Compiling yansi v1.0.1
+   Compiling pretty_assertions v1.4.1
+   Compiling codex-hepta-agent-loop v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-loop-review/codex-rs/hepta-agent-loop)
+    Finished `test` profile [unoptimized] target(s) in 21.74s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 540b8ac6-f114-4d1e-997d-146366ff6374 with nextest profile: local
+    Starting 12 tests across 2 binaries
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop oversized_context_is_rejected_before_provider_dispatch
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop duplicate_provider_calls_are_rejected_before_any_effect
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop foreign_completion_cannot_dispatch_a_tool
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop cancellation_waits_for_effect_owner_acknowledgement
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop deadline_cancels_a_stalled_stream_without_terminal_success
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop partial_stream_never_executes_tools_and_reconnect_uses_original_request
+        PASS [   0.005s] codex-hepta-agent-loop::owner_loop commit_interruption_reconciles_effect_without_executing_it_twice
+        PASS [   0.005s] codex-hepta-agent-loop::owner_loop reconnect_does_not_reset_the_original_deadline
+        PASS [   0.006s] codex-hepta-agent-loop::owner_loop stalled_model_cancellation_does_not_prevent_effect_cancellation
+        PASS [   0.003s] codex-hepta-agent-loop::owner_loop text_only_completion_without_retained_provider_items_is_rejected
+        PASS [   0.003s] codex-hepta-agent-loop::owner_loop unresolved_effect_keeps_exact_key_across_loop_instances
+        PASS [   0.003s] codex-hepta-agent-loop::owner_loop streamed_tool_turn_commits_before_dispatch_and_resumes_model
+────────────
+     Summary [   0.008s] 12 tests run: 12 passed, 0 skipped
