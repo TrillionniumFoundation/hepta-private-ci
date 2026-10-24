@@ -1,0 +1,15 @@
+test_filter_flag_forms_multiple_filters_and_test_arguments (test_run_nextest.FilterMetadataStrategyTests.test_filter_flag_forms_multiple_filters_and_test_arguments) ... ok
+test_graph_expansion_unknown_and_opaque_syntax_keep_full_metadata (test_run_nextest.FilterMetadataStrategyTests.test_graph_expansion_unknown_and_opaque_syntax_keep_full_metadata) ... ok
+test_graph_words_inside_matchers_do_not_become_dependencies (test_run_nextest.FilterMetadataStrategyTests.test_graph_words_inside_matchers_do_not_become_dependencies) ... ok
+test_dependency_opaque_and_config_filters_keep_normal_metadata (test_run_nextest.ScopedNextestTests.test_dependency_opaque_and_config_filters_keep_normal_metadata) ... ok
+test_explicit_manifest_preserves_nextest_workspace_selection (test_run_nextest.ScopedNextestTests.test_explicit_manifest_preserves_nextest_workspace_selection) ... ok
+test_explicit_manifest_runs_the_selected_workspace_and_preserves_failures (test_run_nextest.ScopedNextestTests.test_explicit_manifest_runs_the_selected_workspace_and_preserves_failures) ... ok
+test_pure_filters_preserve_real_selection_and_feature_failure (test_run_nextest.ScopedNextestTests.test_pure_filters_preserve_real_selection_and_feature_failure) ... ok
+test_pure_test_filter_uses_scoped_metadata_and_no_tests_is_an_error (test_run_nextest.ScopedNextestTests.test_pure_test_filter_uses_scoped_metadata_and_no_tests_is_an_error) ... ok
+test_reused_metadata_is_forwarded_and_full_path_can_be_forced (test_run_nextest.ScopedNextestTests.test_reused_metadata_is_forwarded_and_full_path_can_be_forced) ... ok
+test_scoped_test_reaches_real_nextest_and_propagates_feature_failure (test_run_nextest.ScopedNextestTests.test_scoped_test_reaches_real_nextest_and_propagates_feature_failure) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 3.693s
+
+OK
