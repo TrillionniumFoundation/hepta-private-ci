@@ -1,0 +1,66 @@
+[
+  {
+    "stage": "install",
+    "command": [
+      "/usr/bin/python3",
+      "/home/qian-qi/workspace/hepta-cell-graph-evidence-20261024/native-adapter-gate-v1/installer.py",
+      "--worktree",
+      "/home/qian-qi/workspace/hepta-cell-graph-benchmark-20261024",
+      "--expected-head",
+      "f9578a69563df3884f4d0114e1946f42504ec4fc",
+      "--expected-branch",
+      "research/cell-graph-placement-20261024"
+    ],
+    "returncode": 0,
+    "wall_seconds": 0.6160164459142834,
+    "log_sha256": "dd1c35f0b5cf2805cb4100005a4ec5b49d814e5c0c18a66f36a32e0fdbac1d60"
+  },
+  {
+    "stage": "native-adapter-js",
+    "command": [
+      "node",
+      "test_cell_graph_native_adapter.js"
+    ],
+    "returncode": 0,
+    "wall_seconds": 16.559997883974575,
+    "log_sha256": "f59b7ea7e9ab4259156bd8e697a16492105c19c67fadbc9073a1c598de9ddb96"
+  },
+  {
+    "stage": "native-wrapper-python",
+    "command": [
+      "/data/hepta-cell-input-20261024/.venv/bin/python",
+      "-W",
+      "error",
+      "-m",
+      "unittest",
+      "test_cell_graph_native_wrapper",
+      "-v"
+    ],
+    "returncode": 0,
+    "wall_seconds": 2.247350713936612,
+    "log_sha256": "78f7ed6353d263f7297e11224b2b3c5c25cefac478a13a80a5e40110b4934f72"
+  },
+  {
+    "stage": "bundle",
+    "command": [
+      "/usr/bin/python3",
+      "/home/qian-qi/workspace/hepta-cell-graph-benchmark-20261024/qa/stem-bakeoff/build_cell_graph_native_bundle.py",
+      "--output",
+      "/home/qian-qi/workspace/hepta-cell-graph-evidence-20261024/native-adapter-gate-v1/bundle.json"
+    ],
+    "returncode": 0,
+    "wall_seconds": 0.06492264091502875,
+    "log_sha256": "5a79f34feeab5f79cccf468e943678cfb69b2d1e0a9dcc39543d12f589a8d9c9"
+  },
+  {
+    "stage": "diff-check",
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "returncode": 0,
+    "wall_seconds": 0.016821617959067225,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]
