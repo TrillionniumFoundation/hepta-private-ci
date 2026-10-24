@@ -1,0 +1,20 @@
+{
+  "status": "PASS_INTERFACE_AUDIT_ONLY",
+  "official_pin": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "verified_files": 15,
+  "bytes": 1372382,
+  "variants": 600,
+  "base_groups": 200,
+  "all_variant_cross_base_components": 192,
+  "distinct_path_names": 76,
+  "missing_schema_and_source_names": [
+    "MessageAPI.view_messages_received",
+    "TradingBot.add_stock_to_watchlist",
+    "TradingBot.logout",
+    "TradingBot.make_transaction",
+    "TradingBot.update_market_status",
+    "TravelAPI.authenticate"
+  ],
+  "exact_hepta_mapping_verified": false,
+  "trained_scored_or_executed_upstream": false
+}
