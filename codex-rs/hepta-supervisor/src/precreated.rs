@@ -4,6 +4,7 @@
 //! select these children from their verified kernel bootstrap before binding.
 
 use super::*;
+use crate::AgentCommand;
 use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_contracts::HostAuthorityPeerPolicy;
 use codex_hepta_contracts::HostIssuerPeer;
