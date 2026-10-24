@@ -49,6 +49,27 @@ original 8 MiB ELF / 16 MiB LOAD gate, or full Agentd availability on Asterinas.
 Those require the fixed final binary and actual Root/owner/application failure tests.
 The original full-daemon size rejection must remain in the qualification record.
 
+## Staged real Session startup
+
+The explicit Desktop `--notes-root-bootstrap-stdin` mode first reserves its
+actual initial Notes target and a fresh nonce on the inherited private pair.
+Root consumes that metadata using the actual Session sender credentials and
+held pidfd, installs the exact existing policy, and seals those same values in
+the Notes deployment. Root then disables `SO_PASSCRED` on its shared receiving
+endpoint and closes its duplicate before the original late authority handoff.
+Agentd must not concurrently consume the reservation.
+
+The actual launcher passes that sealed `AgentdNotesStartupRelease` to
+`attach_root_production_operation_host_with_startup` or the explicit Notes-only
+`attach_root_notes_operation_host_with_startup`. After original protected writer
+recovery, the factory sends a metadata-only activation and checks that the
+subsequent actual target equals the sealed reservation. No application rights,
+grant or attachment ACK are sent by the activation. Session retains its two
+original descriptors during a separate absolute 30-second startup window;
+only the matching activation starts the unchanged two-second Offer/ACK phase.
+Legacy direct factories still use the original unstaged behavior. A missed
+startup window fails launch rather than extending an effect deadline.
+
 ## An explicitly retained old Notes operation
 
 `run_notes_organ_with_previous_recovery(config, root, launch)` runs the same

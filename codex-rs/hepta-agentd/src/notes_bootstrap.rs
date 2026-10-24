@@ -35,6 +35,10 @@ const MAX_BOOTSTRAP_BYTES: usize = 1024;
 #[path = "notes_primary_bootstrap.rs"]
 mod primary;
 pub(crate) use primary::primary_notes_runtime;
+#[path = "notes_startup.rs"]
+mod startup;
+pub use startup::AgentdNotesStartupRelease;
+pub(crate) use startup::activate_startup;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]

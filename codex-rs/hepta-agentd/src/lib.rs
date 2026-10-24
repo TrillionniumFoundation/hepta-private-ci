@@ -435,6 +435,8 @@ pub use notes_document_observer::AgentdNotesDocumentObserver;
 #[cfg(target_os = "linux")]
 pub use notes_literal_adapter::AgentdNotesLiteralAdapter;
 #[cfg(target_os = "linux")]
+pub use notes_bootstrap::AgentdNotesStartupRelease;
+#[cfg(target_os = "linux")]
 pub use notes_literal_adapter::AgentdNotesLiteralBindings;
 #[cfg(target_os = "linux")]
 pub use notes_literal_adapter::AgentdNotesPreparedObjective;
@@ -501,6 +503,10 @@ pub use production_root_composition::attach_root_notes_operation_host;
 pub use production_launcher::AgentdProductionLaunch;
 #[cfg(target_os = "linux")]
 pub use production_launcher::AgentdProductionStartup;
+#[cfg(target_os = "linux")]
+pub use production_root_composition::attach_root_notes_operation_host_with_startup;
+#[cfg(target_os = "linux")]
+pub use production_root_composition::attach_root_production_operation_host_with_startup;
 pub use production_writer_host::AgentdFinalUseGrantProvider;
 pub use production_writer_host::AgentdProductionOperationRuntimeConfig;
 pub use production_writer_host::AgentdProductionWriterHost;
