@@ -22,6 +22,8 @@ use tokio_util::sync::CancellationToken;
 use crate::Error;
 use crate::ModelEvent;
 use crate::ModelRequest;
+use crate::ResponsesFailure;
+use crate::ResponsesFailureStage;
 use crate::Result;
 use crate::ToolCall;
 use crate::TurnBinding;
@@ -99,7 +101,12 @@ where
         let Some(event) = event else {
             return Ok(ResponsesBridgeStatus::Incomplete);
         };
-        match event.map_err(|_| Error::Owner("Responses stream failed".into()))? {
+        match event.map_err(|error| {
+            Error::Responses(ResponsesFailure::from_api(
+                ResponsesFailureStage::Stream,
+                &error,
+            ))
+        })? {
             ResponseEvent::OutputTextDelta(delta) => {
                 checked_extend(&mut visible, &delta, limits.maximum_visible_bytes)?;
                 send(&events, ModelEvent::TextDelta(delta), cancellation).await?;

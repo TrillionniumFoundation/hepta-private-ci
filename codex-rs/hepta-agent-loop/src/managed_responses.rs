@@ -28,6 +28,8 @@ use crate::ModelRequest;
 use crate::ResponsesBridgeLimits;
 use crate::ResponsesBridgeStatus;
 use crate::ResponsesContinuationOwner;
+use crate::ResponsesFailure;
+use crate::ResponsesFailureStage;
 use crate::Result;
 use crate::TurnBinding;
 use crate::forward_responses_stream;
@@ -166,7 +168,12 @@ impl ManagedResponsesClient {
                     .client
                     .stream_request_single_attempt(api_request, options, dispatch.clone())
                     .await
-                    .map_err(|_| Error::Owner("Responses request failed".into()))?;
+                    .map_err(|error| {
+                        Error::Responses(ResponsesFailure::from_api(
+                            ResponsesFailureStage::Request,
+                            &error,
+                        ))
+                    })?;
                 forward_responses_stream(
                     binding,
                     request,

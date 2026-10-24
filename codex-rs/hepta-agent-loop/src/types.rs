@@ -241,6 +241,9 @@ pub enum Error {
     Contract(&'static str),
     #[error("owner operation failed: {0}")]
     Owner(String),
+    #[cfg(feature = "responses-api")]
+    #[error("Responses failure: {0}")]
+    Responses(crate::ResponsesFailure),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

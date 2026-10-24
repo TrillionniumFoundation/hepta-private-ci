@@ -43,6 +43,15 @@ pub use context::PreparedNativeContextV2;
 pub use context::prepare_native_context_v2;
 
 #[cfg(feature = "responses-api")]
+mod responses_failure;
+#[cfg(feature = "responses-api")]
+pub use responses_failure::ResponsesFailure;
+#[cfg(feature = "responses-api")]
+pub use responses_failure::ResponsesFailureCategory;
+#[cfg(feature = "responses-api")]
+pub use responses_failure::ResponsesFailureStage;
+
+#[cfg(feature = "responses-api")]
 mod responses;
 #[cfg(feature = "responses-api")]
 pub use responses::ResponsesBridgeLimits;

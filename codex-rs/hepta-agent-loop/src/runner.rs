@@ -46,6 +46,8 @@ pub async fn run<C: TurnOwner, I: InferenceOwner, E: EffectOwner>(
     match result {
         Some(Ok(outcome)) => Ok(outcome),
         Some(Err(error @ Error::Owner(_))) => Err(error),
+        #[cfg(feature = "responses-api")]
+        Some(Err(error @ Error::Responses(_))) => Err(error),
         Some(Err(error)) => {
             // A validation failure can arrive while a provider is still live.
             // Record and request cancellation before returning the original error.
