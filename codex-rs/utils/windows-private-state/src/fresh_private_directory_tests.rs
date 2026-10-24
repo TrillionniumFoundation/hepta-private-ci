@@ -60,7 +60,7 @@ fn actual_writable_directory_syncs_new_entry_without_noop_or_fallback() -> Resul
     let mut directory =
         ParentAnchor::for_create_only(&fixture.0)?.create_private_directory("private")?;
     let mut file = crate::mechanism::open_relative(
-        &directory.lock_context()?.created.file,
+        &directory.lock_context()?.directory.file,
         "state",
         FILE_GENERIC_READ | FILE_GENERIC_WRITE,
         FILE_SHARE_READ | FILE_SHARE_WRITE,
@@ -131,7 +131,7 @@ fn actual_new_directory_has_exact_protected_owner_dacl_on_original_handle() -> R
     directory.revalidate()?;
     let context = directory.lock_context()?;
     let observed = validate_owner_descriptor(
-        &context.created.file,
+        &context.directory.file,
         &CurrentUser::capture_effective()?,
         ObjectKind::Directory,
     )?;
@@ -166,5 +166,54 @@ fn changed_child_descriptor_cannot_be_repaired_into_same_fresh_role() -> Result 
     assert!(directory.revalidate().is_err());
     set_fixture_dacl(&fixture.0.join("private"), "")?;
     assert!(directory.revalidate().is_err());
+    Ok(())
+}
+
+#[test]
+fn actual_cold_candidate_preserves_existing_bytes_and_shared_identity() -> Result {
+    let fixture = Fixture::new()?;
+    let directory =
+        ParentAnchor::for_create_only(&fixture.0)?.create_private_directory("private")?;
+    fs::write(fixture.0.join("private/state"), b"original-cold-state")?;
+    let mut candidate =
+        ParentAnchor::for_create_only(&fixture.0)?.open_existing_candidate("private")?;
+    candidate.revalidate()?;
+    assert_eq!(
+        candidate
+            .context
+            .lock()
+            .map_err(|_| io::Error::other("poison"))?
+            .identity,
+        directory.lock_context()?.identity
+    );
+    assert_eq!(
+        fs::read(fixture.0.join("private/state"))?,
+        b"original-cold-state"
+    );
+    Ok(())
+}
+
+#[test]
+fn actual_cold_candidate_never_creates_missing_or_adopts_changed_dacl() -> Result {
+    let fixture = Fixture::new()?;
+    assert!(
+        ParentAnchor::for_create_only(&fixture.0)?
+            .open_existing_candidate("private")
+            .is_err()
+    );
+    assert!(!fixture.0.join("private").exists());
+    let _directory =
+        ParentAnchor::for_create_only(&fixture.0)?.create_private_directory("private")?;
+    let mut candidate =
+        ParentAnchor::for_create_only(&fixture.0)?.open_existing_candidate("private")?;
+    set_fixture_dacl(&fixture.0.join("private"), "(A;;FR;;;WD)")?;
+    assert!(candidate.revalidate().is_err());
+    assert!(
+        ParentAnchor::for_create_only(&fixture.0)?
+            .open_existing_candidate("private")
+            .is_err()
+    );
+    set_fixture_dacl(&fixture.0.join("private"), "")?;
+    assert!(candidate.revalidate().is_err());
     Ok(())
 }
