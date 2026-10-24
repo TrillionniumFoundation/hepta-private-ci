@@ -11,10 +11,14 @@ fn fixture() -> (tempfile::TempDir, PathBuf, FilesystemCapabilityPlan) {
     let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("owned fixture: {error}"));
     let home = temporary.path().join("home");
     let root = temporary.path().join("root");
+    let other = temporary.path().join("other");
     std::fs::create_dir(&root).unwrap_or_else(|error| panic!("owned directory: {error}"));
+    std::fs::create_dir(&other).unwrap_or_else(|error| panic!("second owned directory: {error}"));
     let root =
         dunce::canonicalize(root).unwrap_or_else(|error| panic!("actual fixture root: {error}"));
-    let plan = crate::filesystem_capability_plan(&home, &root, std::slice::from_ref(&root), &[])
+    let other =
+        dunce::canonicalize(other).unwrap_or_else(|error| panic!("second actual root: {error}"));
+    let plan = crate::filesystem_capability_plan(&home, &root, &[root.clone(), other], &[])
         .unwrap_or_else(|error| panic!("actual ReadV3 declaration: {error}"));
     (temporary, home, plan)
 }
@@ -73,6 +77,16 @@ fn grant(plan: &FilesystemCapabilityPlan, access: u32) {
 #[test]
 fn actual_readv3_query_retains_same_plan_noninherited_handles_without_acl_repair() {
     let (_temporary, home, plan) = fixture();
+    assert!(observe_filesystem_read_acl(&home, &plan).is_err());
+    let (first, _) = plan
+        .read_root_sids()
+        .next()
+        .unwrap_or_else(|| panic!("nonempty fixture cohort"));
+    let first = PathBuf::from(first);
+    let partial =
+        crate::filesystem_capability_plan(&home, &first, std::slice::from_ref(&first), &[])
+            .unwrap_or_else(|error| panic!("same registry, first-root-only declaration: {error}"));
+    grant(&partial, read_role_descriptor::RX);
     assert!(observe_filesystem_read_acl(&home, &plan).is_err());
     grant(&plan, read_role_descriptor::RX);
     let mut proof = observe_filesystem_read_acl(&home, &plan)
