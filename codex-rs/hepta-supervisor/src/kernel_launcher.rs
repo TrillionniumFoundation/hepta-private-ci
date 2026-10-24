@@ -190,6 +190,56 @@ impl RootKernelLauncher {
         Ok(())
     }
 
+    /// Save the complete actual observation through the original Root
+    /// administration primitive, then ACK that exact kernel generation. Host
+    /// startup is not part of this persistence prerequisite. A later boot may
+    /// inspect the old record but cannot use it as launch or CPU authority.
+    pub fn save_and_acknowledge(
+        &self,
+        directory: &std::sync::Arc<codex_hepta_contracts::RootAuthorityDirectory>,
+        launch: &KernelLaunchReceipt,
+        retirement: &KernelPolicyRetirement,
+    ) -> io::Result<codex_hepta_contracts::RootStoredObservation> {
+        self.check_boot(launch.boot_id)?;
+        self.check_boot(retirement.boot_id)?;
+        if launch.generation() == 0 || launch.generation() != retirement.generation() {
+            return Err(invalid("native retirement observation generation differs"));
+        }
+        #[derive(serde::Serialize)]
+        struct Observation<'a> {
+            schema_version: u32,
+            operation: &'static str,
+            boot_id: [u8; 16],
+            launch_generation: u64,
+            launch_receipt: &'a [u8],
+            retirement_receipt: &'a [u8],
+        }
+        let bytes = serde_json::to_vec(&Observation {
+            schema_version: 1,
+            operation: "kernel.g2.launch-observation.v1",
+            boot_id: self.boot_id,
+            launch_generation: launch.generation(),
+            launch_receipt: launch.bytes(),
+            retirement_receipt: retirement.bytes(),
+        })
+        .map_err(io::Error::other)?;
+        let boot: String = self
+            .boot_id
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect();
+        let id = format!("native-launch:{boot}:{:016x}", launch.generation());
+        let saved = directory
+            .save_observation(&id, &bytes)
+            .map_err(io::Error::other)?;
+        if saved.payload() != bytes.as_slice() {
+            return Err(invalid("original Root observation readback differs"));
+        }
+        saved.verify_durable().map_err(io::Error::other)?;
+        self.acknowledge_saved(launch, retirement)?;
+        Ok(saved)
+    }
+
     fn check_boot(&self, boot_id: [u8; 16]) -> io::Result<()> {
         if self.boot_id != boot_id {
             return Err(invalid("native launch belongs to a different boot"));

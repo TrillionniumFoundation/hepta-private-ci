@@ -9,6 +9,7 @@ use codex_hepta_memory::ObjectiveSenderOrigin;
 use codex_hepta_memory::ObjectiveSenderRequest;
 use codex_hepta_memory::ObjectiveSenderRetainedPosition;
 use codex_hepta_memory::ProductionWriterError;
+use codex_hepta_memory::ProtectedCognitiveCheckpoint;
 use pretty_assertions::assert_eq;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -140,6 +141,7 @@ struct ColdFixture {
     registry: FleetRegistry,
     host: Arc<AgentdProductionWriterHost>,
     peer: Arc<ConstructionPeer>,
+    protected: Arc<ProtectedCognitiveCheckpoint<ConstructionPeer>>,
     expiry: u64,
 }
 impl ColdFixture {
@@ -185,15 +187,17 @@ impl ColdFixture {
         .await?;
         let host = Arc::new(host);
         let config = config.with_production_writer_host(host.clone())?;
-        let sender = config.original_objective_sender(protected, Duration::from_secs(2))?;
+        let sender = config.original_objective_sender(protected.clone(), Duration::from_secs(2))?;
         let writer = host.writer();
         writer.admit("pending-handoff", "test", "{}").await?;
         writer.admit("unknown-handoff", "test", "{}").await?;
         writer
             .mark_indeterminate("unknown-handoff", "lost-reply")
             .await?;
-        assert!(writer.release().await.is_err());
-        assert!(writer.rollback_lease().await.is_err());
+        // A failed managed terminal attempt permanently fences this owner.
+        // Separate disposable fixtures below cover those refusals; the owner
+        // handed off here must still be able to publish its original Current.
+        assert!(!writer.checkpoint_fenced());
         // Seal the owner before any Objective exists. No dummy ticket is needed.
         sender.acknowledge_owner_cut().await?;
         assert!(
@@ -214,6 +218,7 @@ impl ColdFixture {
             registry,
             host,
             peer,
+            protected,
             expiry,
         })
     }
@@ -234,6 +239,7 @@ impl ColdFixture {
             registry,
             host,
             peer,
+            protected,
             expiry,
         } = self;
         let identity = config.identity().clone();
@@ -248,6 +254,7 @@ impl ColdFixture {
             .close()
             .await;
         drop(runtime);
+        drop(protected);
         drop(config);
         drop(host);
         // Real Fleet API; each lifecycle transition increments its own generation.
@@ -274,6 +281,107 @@ impl ColdFixture {
         )?;
         Ok((_directory, next, cut, expiry))
     }
+}
+
+#[derive(Clone, Copy, Debug)]
+enum TerminalAttempt {
+    Release,
+    Rollback,
+}
+
+async fn assert_failed_terminal_attempt_preserves_work(
+    attempt: TerminalAttempt,
+) -> Result<(), Box<dyn Error>> {
+    // Each caller owns a distinct actual SQLite store, writer lock and gate.
+    // No failed terminal attempt is reused as a live handoff fixture.
+    let fixture = ColdFixture::new(300).await?;
+    let writer = fixture.host.writer();
+    let sender = fixture
+        .config
+        .original_objective_sender(fixture.protected.clone(), Duration::from_secs(2))?;
+    let runtime = fixture.host.cognitive_runtime();
+    let store = runtime.available_store().unwrap();
+    // Open a real Dirty interval before taking the baseline, so the later
+    // terminal refusal must preserve both the complete cut and protected head.
+    writer
+        .admit("terminal-refusal-baseline", "test", "{}")
+        .await?;
+    let before_cut = writer.recovery_anchor().await?;
+    let before_lease = store.inspect_local_lease_head(LEASE).await?;
+    assert_eq!(before_lease.disposition, LocalLeaseHeadDisposition::Active);
+    let before_checkpoint = fixture.peer.receipt.lock().unwrap().clone();
+    assert_eq!(
+        before_checkpoint.head.phase,
+        CognitiveCheckpointPhase::Dirty
+    );
+    assert!(!writer.checkpoint_fenced());
+    let result = match attempt {
+        TerminalAttempt::Release => writer.release().await,
+        TerminalAttempt::Rollback => writer.rollback_lease().await,
+    };
+    assert!(result.is_err(), "{attempt:?} must refuse outstanding work");
+    assert!(writer.checkpoint_fenced());
+    assert_eq!(writer.recovery_anchor().await?, before_cut);
+    assert_eq!(store.inspect_local_lease_head(LEASE).await?, before_lease);
+    assert_eq!(*fixture.peer.receipt.lock().unwrap(), before_checkpoint);
+    assert_eq!(
+        writer.status("pending-handoff").await?,
+        LocalOutcomeState::Queued
+    );
+    assert_eq!(
+        writer.status("unknown-handoff").await?,
+        LocalOutcomeState::Indeterminate
+    );
+    assert!(matches!(
+        writer.verify_current_authority().await,
+        Err(ProductionWriterError::CheckpointFenced)
+    ));
+    assert!(matches!(
+        sender.acknowledge_owner_cut().await,
+        Err(ObjectiveSenderError::AcknowledgementUnknown)
+    ));
+    assert!(matches!(
+        sender
+            .retain_before_send(request(&fixture.config.identity().agent_id, 1))
+            .await,
+        Err(ObjectiveSenderError::Writer(
+            ProductionWriterError::CheckpointFenced
+        ))
+    ));
+    assert!(
+        writer
+            .admit("after-terminal-refusal", "test", "{}")
+            .await
+            .is_err()
+    );
+    assert!(writer.checkpoint_fenced());
+    // Neither the retained sender nor a failed acknowledgement can rearm
+    // writes, append a terminal lease row, settle Unknown, or fabricate Current.
+    assert_eq!(writer.recovery_anchor().await?, before_cut);
+    assert_eq!(store.inspect_local_lease_head(LEASE).await?, before_lease);
+    assert_eq!(*fixture.peer.receipt.lock().unwrap(), before_checkpoint);
+    assert_eq!(
+        writer.status("pending-handoff").await?,
+        LocalOutcomeState::Queued
+    );
+    assert_eq!(
+        writer.status("unknown-handoff").await?,
+        LocalOutcomeState::Indeterminate
+    );
+    store.as_ref().clone().close().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn notes_local_failed_release_preserves_pending_and_unknown_in_fenced_owner()
+-> Result<(), Box<dyn Error>> {
+    assert_failed_terminal_attempt_preserves_work(TerminalAttempt::Release).await
+}
+
+#[tokio::test]
+async fn notes_local_failed_rollback_preserves_pending_and_unknown_in_fenced_owner()
+-> Result<(), Box<dyn Error>> {
+    assert_failed_terminal_attempt_preserves_work(TerminalAttempt::Rollback).await
 }
 
 #[tokio::test]

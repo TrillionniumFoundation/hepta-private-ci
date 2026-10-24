@@ -206,7 +206,7 @@ impl NativeCopyoutProbe {
             unsafe { libc::ioctl(file.as_raw_fd(), super::HOS2_IOCTL, descriptor.as_mut_ptr()) };
         // Capture errno immediately, before a mutex, allocation, unmap,
         // formatter or callback can perform another syscall and change it.
-        let syscall_error = (result != 0).then(std::io::Error::last_os_error);
+        let syscall_error = (result == -1).then(std::io::Error::last_os_error);
         if let Some(mut armed) = selected.take() {
             let errno = syscall_error
                 .as_ref()
@@ -257,6 +257,11 @@ impl NativeCopyoutProbe {
             return Err(format!(
                 "HOS2 ioctl did not return a complete result: {error}"
             ));
+        }
+        if result != 0 {
+            // errno is meaningful only for -1. A positive ioctl return is an
+            // unexpected protocol result, never the thread's previous errno.
+            return Err(format!("HOS2 ioctl returned an unexpected value: {result}"));
         }
         Ok(())
     }

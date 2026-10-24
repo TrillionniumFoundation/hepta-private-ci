@@ -129,10 +129,22 @@ fn deployment_notes_first_policy_refuses_ambiguous_or_full_routes() {
     );
 }
 
-struct UnavailableClock;
-impl AuthorityClock for UnavailableClock {
+// Fail at the actual publication boundary, not the first clock read. The
+// original issuer now verifies its retained writer proof before policy CAS.
+// An always-unavailable clock would exercise that earlier refusal instead.
+struct UnavailableAfterPolicyCas {
+    store: crate::DeploymentFrontierStore<IssuerState>,
+    before: IssuerState,
+    clock: Arc<Clock>,
+    observed_publication: Arc<std::sync::atomic::AtomicBool>,
+}
+impl AuthorityClock for UnavailableAfterPolicyCas {
     fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
-        Err(AuthorityTrustError::Unavailable)
+        if self.store.load(STATE_OWNER)? != self.before {
+            self.observed_publication.store(true, Ordering::SeqCst);
+            return Err(AuthorityTrustError::Unavailable);
+        }
+        self.clock.now_unix_ms()
     }
 }
 
@@ -141,12 +153,19 @@ fn deployment_notes_first_policy_post_cas_unknown_retains_exact_policy_and_key()
     let mut f = Fixture::new();
     let before = objective_only(&f);
     let key = f.issuer.trust_key().unwrap();
-    f.issuer.clock = Arc::new(UnavailableClock);
+    let observed_publication = Arc::new(std::sync::atomic::AtomicBool::new(false));
+    f.issuer.clock = Arc::new(UnavailableAfterPolicyCas {
+        store: crate::DeploymentFrontierStore::open(&f._root.path().join("issuer")).unwrap(),
+        before: before.clone(),
+        clock: f.clock.clone(),
+        observed_publication: observed_publication.clone(),
+    });
     assert!(
         f.issuer
             .install_first_notes_policy(&f.writer, &f.target, 1_000)
             .is_err()
     );
+    assert!(observed_publication.load(Ordering::SeqCst));
     let retained = f.issuer.store.load(STATE_OWNER).unwrap();
     assert_eq!(retained.policies.len(), before.policies.len() + 1);
     assert_eq!(retained.sequence, before.sequence);

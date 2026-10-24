@@ -195,4 +195,8 @@ pub use kernel_initial::KernelLaunchReceipt;
 #[cfg(target_os = "linux")]
 pub use kernel_initial::KernelPolicyRetirement;
 #[cfg(target_os = "linux")]
+pub use kernel_initial::KernelSuccessorImage;
+#[cfg(target_os = "linux")]
+pub use kernel_initial::KernelSuccessorRole;
+#[cfg(target_os = "linux")]
 pub use kernel_initial::RootKernelLauncher;
