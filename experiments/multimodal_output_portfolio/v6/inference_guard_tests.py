@@ -89,7 +89,8 @@ class InferenceGuardTests(unittest.TestCase):
 
     def test_guarded_and_strict_real_rollouts_have_identical_decisions_and_outputs(self):
         strict = SimpleNamespace(static_sequence=self.forecast.static_sequence,
-                                 backend=lambda snapshot, context: StrictBackend(snapshot, self.forecast, context))
+                                 public_summary_work=self.forecast.public_summary_work,
+                                 backend=lambda snapshot, context, observation=None: StrictBackend(snapshot, self.forecast, context))
         config = {"inference_horizon": 2, "control": {"horizon": 2, "search_fraction": .5}}
         for policy in ("fixed", "risk_aware_recursive", "allocation_only"):
             with self.subTest(policy=policy):

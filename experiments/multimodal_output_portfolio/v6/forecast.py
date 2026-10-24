@@ -9,6 +9,7 @@ Offline observer labels never enter the inference backend. Calls are counted.
 from copy import deepcopy
 from contextlib import contextmanager
 import hashlib
+import io
 import json
 import math
 from pathlib import Path
@@ -60,6 +61,8 @@ class RidgeHead(nn.Module):
 
 class ForecastBundle:
     """Data-only checkpoint: frozen forecast/router heads and residual support."""
+
+    public_summary_work = 0.0
 
     def __init__(self, utility_head, action_head, residuals, snapshot_digest,
                  static_sequence, metric_digest=METRIC_DIGEST, threshold=None, profiles=None):
@@ -118,7 +121,7 @@ class ForecastBundle:
             raise RuntimeError("Frozen forecast parameters or calibration profile changed")
         return self.fingerprint
 
-    def backend(self, snapshot, context_id):
+    def backend(self, snapshot, context_id, observation=None):
         return ForecastBackend(snapshot, self, context_id)
 
     def save(self, path):
@@ -141,6 +144,10 @@ class ForecastBundle:
     @classmethod
     def load(cls, path):
         record = torch.load(Path(path), map_location="cpu", weights_only=True)
+        return cls.from_record(record)
+
+    @classmethod
+    def from_record(cls, record):
         if record.get("schema") != "hepta.ndu-v6.forecast.v1":
             raise ValueError("Unsupported forecast checkpoint schema")
         utility, actions = RidgeHead(record["features"], 1), RidgeHead(record["features"], len(ACTIONS))
@@ -151,6 +158,21 @@ class ForecastBundle:
         if bundle.fingerprint != record["fingerprint"]:
             raise ValueError("Forecast checkpoint fingerprint mismatch")
         return bundle
+
+
+class ForecastArtifact:
+    """Load an explicitly identified forecast schema from one immutable read."""
+
+    @staticmethod
+    def load(path, expected_file_sha256=None):
+        raw = Path(path).read_bytes()
+        if expected_file_sha256 is not None and hashlib.sha256(raw).hexdigest() != expected_file_sha256:
+            raise ValueError("Forecast file SHA-256 mismatch")
+        record = torch.load(io.BytesIO(raw), map_location="cpu", weights_only=True)
+        if record.get("schema") == "hepta.ndu-v6.forecast.v1":
+            return ForecastBundle.from_record(record)
+        from .distribution import ConditionalForecastBundle
+        return ConditionalForecastBundle.from_record(record)
 
 
 class ForecastBackend:
@@ -313,8 +335,15 @@ def _calibration_profiles(means, utilities, groups, threshold):
 
 @torch.inference_mode()
 def fit_forecast(snapshot, corpus, observer_model, seed, fit_pairs=128,
-                 calibration_pairs=64, dev_pairs=64, horizon=3, action_cost_penalty=.002):
+                 calibration_pairs=64, dev_pairs=64, horizon=3, action_cost_penalty=.002,
+                 *, distribution="empirical_residual_v1"):
     """Fit on validation-fit; calibrate and tune on separate source identities."""
+    if distribution == "heteroskedastic_terminal_v1":
+        from .distribution_fit import fit_conditional_forecast
+        return fit_conditional_forecast(snapshot, corpus, observer_model, seed, fit_pairs,
+                                       calibration_pairs, dev_pairs, horizon, action_cost_penalty)
+    if distribution != "empirical_residual_v1":
+        raise ValueError("Unknown terminal forecast distribution")
     if (any(not isinstance(n, int) or isinstance(n, bool) or n < 2 for n in (fit_pairs, calibration_pairs, dev_pairs))
             or not isinstance(horizon, int) or isinstance(horizon, bool) or horizon < 1):
         raise ValueError("Positive horizon and at least two pairs per forecast partition required")
