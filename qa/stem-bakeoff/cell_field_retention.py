@@ -53,6 +53,16 @@ def _half_squared_norm(values):
     return (0.5 * norm) * norm
 
 
+def _retention_roots(roots, old, old_weight):
+    factors = roots * math.sqrt(old_weight)
+    # A subnormal product can lose a large fraction before a large residual
+    # rescales it. Reject this unsupported active scale instead of returning
+    # a materially understated cost, gradient, or optimality certificate.
+    if np.any((old > 0) & (factors < np.finfo(np.float64).tiny)):
+        raise ValueError("unsupported subnormal active retention scaling factor")
+    return factors
+
+
 def retention_violation(old_losses, *, anchor, tolerance, weight=1.0):
     """Penalty and derivatives w.r.t. scalar old loss; anchor never drifts.
 
@@ -115,7 +125,7 @@ def _cost(fields, actions, target, dt, effort_price, old_weight):
         current_cost = _half_squared_norm(_scaled(errors[:, 0], roots))
         old_cost = 0.0
         if old_weight:
-            old_cost = _half_squared_norm(_scaled(old, roots * math.sqrt(old_weight)))
+            old_cost = _half_squared_norm(_scaled(old, _retention_roots(roots, old, old_weight)))
             if np.any(old > 0) and old_cost == 0:
                 raise ValueError("unrepresentable nonzero retention penalty")
         effort = _half_squared_norm(math.sqrt(dt * effort_price) * actions)
@@ -177,7 +187,7 @@ def _evaluate(problem, actions):
     current_residual = _scaled(errors[:, 0], roots)
     state_gradient = _scaled(_scaled(C[:, 0], roots[:, None]), current_residual[:, None])
     if old_weight:
-        old_roots = roots * math.sqrt(old_weight)
+        old_roots = _retention_roots(roots, old, old_weight)
         old_residual = _scaled(old, old_roots)
         old_jacobian = np.where(old[:, None] > 0, C[:, 1], 0.0)
         state_gradient += _scaled(_scaled(old_jacobian, old_roots[:, None]), old_residual[:, None])
