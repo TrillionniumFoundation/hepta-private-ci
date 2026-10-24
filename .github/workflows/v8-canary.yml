@@ -291,6 +291,7 @@ jobs:
 
       - name: Smoke test staged artifact with Cargo
         env:
+          RUSTUP_TOOLCHAIN: "1.96.0"
           SANDBOX: ${{ matrix.sandbox }}
           TARGET: ${{ matrix.target }}
         shell: bash
@@ -403,6 +404,7 @@ jobs:
         run: git submodule status --recursive > git_submodule_status.txt
 
       - name: Restore upstream source-build cache
+        id: source_cache
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
         with:
           path: |
@@ -413,6 +415,7 @@ jobs:
             rusty-v8-source-${{ matrix.target }}-${{ matrix.runner }}-sandbox-
 
       - name: Install and start sccache
+        id: source_sccache
         shell: pwsh
         env:
           SCCACHE_CACHE_SIZE: 256M
@@ -435,14 +438,44 @@ jobs:
         working-directory: upstream-rusty-v8
         run: python3 tools/clang/scripts/update.py
 
+      - name: Record upstream source-build inputs and initial cache statistics
+        shell: bash
+        env:
+          TARGET: ${{ matrix.target }}
+          SOURCE_CACHE_HIT: ${{ steps.source_cache.outputs.cache-hit }}
+        run: |
+          set -euo pipefail
+          sccache --show-stats > "${RUNNER_TEMP}/v8-source-cache-before.txt"
+          python3 .github/scripts/v8_source_build_receipt.py \
+            --target "${TARGET}" --target-dir "${CARGO_TARGET_DIR}" \
+            --cache-hit "${SOURCE_CACHE_HIT}" --phase before \
+            --upstream-sha "$(git -C upstream-rusty-v8 rev-parse HEAD)" \
+            --stats "${RUNNER_TEMP}/v8-source-cache-before.txt"
+
       - name: Build upstream rusty_v8 sandbox release pair
         env:
           SCCACHE_IDLE_TIMEOUT: 0
           TARGET: ${{ matrix.target }}
           V8_FROM_SOURCE: "1"
+          PRINT_GN_ARGS: "1"
         shell: bash
         working-directory: upstream-rusty-v8
-        run: cargo +1.91.0 build --locked --release --target "${TARGET}" --features v8_enable_sandbox
+        run: cargo +1.91.0 build -vv --locked --release --target "${TARGET}" --features v8_enable_sandbox
+
+      - name: Record final upstream source-build cache statistics
+        if: always() && !cancelled() && steps.source_sccache.outcome == 'success'
+        shell: bash
+        env:
+          TARGET: ${{ matrix.target }}
+          SOURCE_CACHE_HIT: ${{ steps.source_cache.outputs.cache-hit }}
+        run: |
+          set -euo pipefail
+          sccache --show-stats > "${RUNNER_TEMP}/v8-source-cache-after.txt"
+          python3 .github/scripts/v8_source_build_receipt.py \
+            --target "${TARGET}" --target-dir "${CARGO_TARGET_DIR}" \
+            --cache-hit "${SOURCE_CACHE_HIT}" --phase after \
+            --upstream-sha "$(git -C upstream-rusty-v8 rev-parse HEAD)" \
+            --stats "${RUNNER_TEMP}/v8-source-cache-after.txt"
 
       - name: Stage upstream sandbox release pair
         env:

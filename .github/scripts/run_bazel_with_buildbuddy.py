@@ -160,7 +160,15 @@ def bazel_args_without_remote_execution(
     requested_native_windows_msvc = option_contains_value(
         prefix, "--platforms", "//:windows_x86_64_msvc"
     )
-    prefix = [arg for arg in prefix if arg not in REMOTE_EXECUTION_CONFIGS]
+    # ci-macos contains only the common CI flags and local TestRunner policy;
+    # authenticated endpoints come from the separately injected BuildBuddy
+    # configs. Keep that base on macOS even when no API key is available.
+    local_configs = {"--config=ci-macos"} if env.get("RUNNER_OS") == "macOS" else set()
+    prefix = [
+        arg
+        for arg in prefix
+        if arg not in REMOTE_EXECUTION_CONFIGS or arg in local_configs
+    ]
     suffix = list(args[separator_idx:])
     if env.get("RUNNER_OS") != "Windows":
         return [*prefix, *suffix]
