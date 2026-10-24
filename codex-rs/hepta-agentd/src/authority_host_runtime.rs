@@ -37,6 +37,10 @@ use crate::authority_host_config::read_root_json;
 mod listeners;
 use listeners::serve_lanes;
 
+#[path = "authority_host_session.rs"]
+mod session;
+pub use session::PreparedHostAuthoritySession;
+
 const CLOCK_OWNER: &str = "root-authority-clock-v1";
 const LEASE_OWNER: &str = "root-authority-leases-v1";
 
@@ -160,7 +164,7 @@ pub fn serve_host_authority_session(
     registration_file: &Path,
     owner_pidfd: OwnedFd,
 ) -> io::Result<()> {
-    serve_host_authority_session_with_text(config_file, registration_file, owner_pidfd, None)
+    PreparedHostAuthoritySession::open(config_file, registration_file, owner_pidfd)?.serve()
 }
 
 /// Open the existing Root service with an optional fixed native UI peer. The
@@ -171,56 +175,8 @@ pub fn serve_host_authority_session_with_text(
     owner_pidfd: OwnedFd,
     text_ui: Option<(&Path, OwnedFd)>,
 ) -> io::Result<()> {
-    let config: HostAuthorityServiceConfig = read_root_json(config_file)?;
-    let registration: HostAuthorityRegistration = read_root_json(registration_file)?;
-    if text_ui.is_some()
-        && config.issuer_record_profile
-            != crate::authority_host_config::HostIssuerRecordProfile::TextRecovery
-    {
-        return Err(io::Error::other(
-            "native text requires the explicit text_recovery issuer record profile",
-        ));
-    }
-    let service = open_registered_service(&config, &registration)?;
-    if let Some((text_file, ui_pidfd)) = text_ui {
-        let text: crate::HostAuthorityTextUiRegistration = read_root_json(text_file)?;
-        if text.peer_uid != config.peer_uid {
-            return Err(io::Error::other(
-                "text UI must share the registered Agentd owner UID for its existing private ingress",
-            ));
-        }
-        text.validate(&service)?;
-        if [
-            &config.sockets.observation,
-            &config.sockets.issuer,
-            &config.sockets.checkpoint,
-        ]
-        .into_iter()
-        .chain(config.sockets.device_frontier.iter())
-        .chain(config.sockets.notes_frontier.iter())
-        .any(|path| path == &text.socket_path)
-        {
-            return Err(io::Error::other("text UI requires a distinct private lane"));
-        }
-        std::thread::scope(|scope| {
-            let worker = scope.spawn(|| {
-                service.serve_text_ui(
-                    &text,
-                    &ui_pidfd,
-                    &owner_pidfd,
-                    std::time::Duration::from_millis(config.timeout_ms),
-                    std::time::Duration::from_millis(config.lifetime_ms),
-                )
-            });
-            let original = serve_lanes(&service, &config, &registration, &owner_pidfd);
-            let ui = worker
-                .join()
-                .map_err(|_| io::Error::other("text UI lane panicked"))?;
-            original.and(ui)
-        })
-    } else {
-        serve_lanes(&service, &config, &registration, &owner_pidfd)
-    }
+    PreparedHostAuthoritySession::open(config_file, registration_file, owner_pidfd)?
+        .serve_with_text(text_ui)
 }
 
 /// Shared open-only factory for serving and capturing the same original
@@ -228,6 +184,7 @@ pub fn serve_host_authority_session_with_text(
 pub(super) fn open_registered_service(
     config: &HostAuthorityServiceConfig,
     registration: &HostAuthorityRegistration,
+    owner_pidfd: &OwnedFd,
 ) -> io::Result<HostAuthorityService> {
     if config.schema_version != 1
         || registration.schema_version != 1
@@ -240,7 +197,8 @@ pub(super) fn open_registered_service(
     {
         return Err(io::Error::other("invalid service registration"));
     }
-    verify_process(registration, config.peer_uid, config.peer_gid)?;
+    verify_pinned_process(registration, config.peer_uid, config.peer_gid, owner_pidfd,
+        Instant::now() + std::time::Duration::from_secs(30))?;
     let (clock, leases, issuer) = open_registered_issuer(config)?;
     let service = HostAuthorityService::from_registered_owner(
         issuer,
@@ -451,6 +409,30 @@ pub(crate) fn verify_process(
 #[cfg(test)]
 #[path = "authority_host_process_tests.rs"]
 mod process_tests;
+
+pub(crate) fn verify_pinned_process(
+    registration: &HostAuthorityRegistration,
+    uid: u32,
+    gid: u32,
+    owner: &OwnedFd,
+    end: Instant,
+) -> io::Result<()> {
+    use std::io::Read;
+    let number = owner.as_raw_fd();
+    if std::fs::read_link(format!("/proc/self/fd/{number}"))? != Path::new("anon_inode:[pidfd]") {
+        return Err(io::Error::other("retained actual pidfd required"));
+    }
+    let mut info = String::new();
+    File::open(format!("/proc/self/fdinfo/{number}"))?.take(4097).read_to_string(&mut info)?;
+    let actual = info.lines().find_map(|line| line.strip_prefix("Pid:")
+        .and_then(|value| value.trim().parse::<u32>().ok()));
+    if info.len() > 4096 || actual != Some(registration.peer_pid) {
+        return Err(io::Error::other("pidfd does not pin the registered daemon"));
+    }
+    owner_alive(owner, end)?;
+    verify_process(registration, uid, gid)?;
+    owner_alive(owner, end)
+}
 
 pub(crate) fn owner_alive(owner: &OwnedFd, end: Instant) -> io::Result<()> {
     if Instant::now() >= end {

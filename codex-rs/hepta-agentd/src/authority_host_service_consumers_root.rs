@@ -4,9 +4,6 @@ use pretty_assertions::assert_eq;
 use std::os::fd::AsRawFd;
 use std::os::unix::process::CommandExt;
 
-#[path = "authority_host_service_bootstrap_root.rs"]
-mod bootstrap;
-
 pub(super) fn root_peer_fd(command: &mut Command) -> std::os::fd::OwnedFd {
     // SAFETY: pidfd_open has no borrowed memory and pins this actual root
     // process before the dedicated child exists or receives a stream.
@@ -81,32 +78,34 @@ pub(super) fn create_local(runtime: &Path) {
 pub(super) fn release(
     child: &mut std::process::Child,
     config: &HostAuthorityServiceConfig,
-    registration: &HostAuthorityRegistration,
     config_path: &Path,
     registration_path: &Path,
     owner_pidfd: &OwnedFd,
+    prepared: &crate::PreparedHostAuthoritySession,
+    expected: Option<crate::HostAuthorityPublicBootstrapV1>,
 ) {
     let bytes = config.consumers.as_ref().map(|_| {
         let local = config.sockets.observation.parent().unwrap().join("consumer-local");
         // Keep the test-only capture as a readback oracle, never as input to
         // the production capture API or the descriptor delivered below.
-        let bundle = bootstrap::capture(config, registration);
+        let bundle = expected.as_ref().expect("independent prior readback required");
         let mut wrong = config.clone();
         wrong.peer_gid += 1;
         let wrong_path = config_path.with_extension("bootstrap-wrong-gid.json");
         write_json(&wrong_path, &wrong);
-        assert!(crate::seal_registered_host_authority_bootstrap(
-            &wrong_path, registration_path, owner_pidfd, &local).is_err());
+        assert!(crate::PreparedHostAuthoritySession::open(
+            &wrong_path, registration_path, owner_pidfd.try_clone().unwrap()).err()
+            .expect("same UID with different expected GID must be refused").to_string().contains("UID/GID"));
         // SAFETY: this pins the actual Root solely as a deliberately wrong
         // daemon descriptor. It never changes credentials or selects a peer.
         let raw = unsafe { libc::syscall(libc::SYS_pidfd_open, std::process::id(), 0) };
         assert!(raw >= 0);
         // SAFETY: successful pidfd_open transfers one fresh owned descriptor.
         let wrong_pidfd = unsafe { OwnedFd::from_raw_fd(raw as i32) };
-        assert!(crate::seal_registered_host_authority_bootstrap(
-            config_path, registration_path, &wrong_pidfd, &local).is_err());
-        let mut sealed = crate::seal_registered_host_authority_bootstrap(
-            config_path, registration_path, owner_pidfd, &local).unwrap();
+        assert!(crate::PreparedHostAuthoritySession::open(
+            config_path, registration_path, wrong_pidfd).err()
+            .expect("wrong original pidfd must be refused").to_string().contains("pidfd does not pin"));
+        let mut sealed = prepared.seal_bootstrap(&local).unwrap();
         let mut bytes = Vec::new();
         std::io::Read::read_to_end(&mut sealed, &mut bytes).unwrap();
         assert_eq!(bytes, serde_json::to_vec(&bundle).unwrap());

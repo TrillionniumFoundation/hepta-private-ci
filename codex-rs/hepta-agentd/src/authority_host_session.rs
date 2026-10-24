@@ -1,0 +1,77 @@
+//! Capture and serve using one retained set of the original Root objects.
+
+use super::*;
+
+/// One Root session's immutable registration, retained actual process handle
+/// and original service. This wrapper is not Clone and creates no additional
+/// issuer, clock, checkpoint or consumer owner during bootstrap capture.
+pub struct PreparedHostAuthoritySession {
+    config: HostAuthorityServiceConfig,
+    registration: HostAuthorityRegistration,
+    owner_pidfd: OwnedFd,
+    service: HostAuthorityService,
+}
+
+impl PreparedHostAuthoritySession {
+    /// Open existing Root state once through the original service factory.
+    /// No file, lease, signer, consumer or checkpoint is initialized here.
+    pub fn open(
+        config_file: &Path,
+        registration_file: &Path,
+        owner_pidfd: OwnedFd,
+    ) -> io::Result<Self> {
+        let config = read_root_json(config_file)?;
+        let registration = read_root_json(registration_file)?;
+        let service = open_registered_service(&config, &registration, &owner_pidfd)?;
+        Ok(Self { config, registration, owner_pidfd, service })
+    }
+
+    /// Read and seal this same service's original heads, then retain it for
+    /// serving. The paths/config/proof/owner cannot be replaced at this call.
+    /// The returned descriptor is an observation; live owner checks remain
+    /// mandatory when the daemon connects to the five original lanes.
+    pub fn seal_bootstrap(&self, consumer_state_root: &Path) -> io::Result<File> {
+        self.service.seal_registered_bootstrap(
+            &self.config, &self.registration, &self.owner_pidfd, consumer_state_root,
+        )
+    }
+
+    /// Consume this retained service and serve its original fixed lanes.
+    pub fn serve(self) -> io::Result<()> {
+        self.serve_with_text(None)
+    }
+
+    pub(super) fn serve_with_text(self, text_ui: Option<(&Path, OwnedFd)>) -> io::Result<()> {
+        let Self { config, registration, owner_pidfd, service } = self;
+        if text_ui.is_some()
+            && config.issuer_record_profile != crate::authority_host_config::HostIssuerRecordProfile::TextRecovery
+        {
+            return Err(io::Error::other("native text requires the explicit text_recovery issuer record profile"));
+        }
+        if let Some((text_file, ui_pidfd)) = text_ui {
+            let text: crate::HostAuthorityTextUiRegistration = read_root_json(text_file)?;
+            if text.peer_uid != config.peer_uid {
+                return Err(io::Error::other("text UI must share the registered Agentd owner UID for its existing private ingress"));
+            }
+            text.validate(&service)?;
+            if [&config.sockets.observation, &config.sockets.issuer, &config.sockets.checkpoint]
+                .into_iter().chain(config.sockets.device_frontier.iter())
+                .chain(config.sockets.notes_frontier.iter()).any(|path| path == &text.socket_path)
+            {
+                return Err(io::Error::other("text UI requires a distinct private lane"));
+            }
+            std::thread::scope(|scope| {
+                let worker = scope.spawn(|| service.serve_text_ui(
+                    &text, &ui_pidfd, &owner_pidfd,
+                    std::time::Duration::from_millis(config.timeout_ms),
+                    std::time::Duration::from_millis(config.lifetime_ms),
+                ));
+                let original = serve_lanes(&service, &config, &registration, &owner_pidfd);
+                let ui = worker.join().map_err(|_| io::Error::other("text UI lane panicked"))?;
+                original.and(ui)
+            })
+        } else {
+            serve_lanes(&service, &config, &registration, &owner_pidfd)
+        }
+    }
+}

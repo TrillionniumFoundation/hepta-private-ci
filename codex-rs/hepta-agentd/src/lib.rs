@@ -97,11 +97,11 @@ pub use authority_host_runtime::serve_host_authority_session;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::serve_host_authority_session_with_text;
 #[cfg(target_os = "linux")]
+pub use authority_host_runtime::PreparedHostAuthoritySession;
+#[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityLane;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityService;
-#[cfg(target_os = "linux")]
-pub use authority_host_service::seal_registered_host_authority_bootstrap;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityTextUiRegistration;
 #[cfg(target_os = "linux")]

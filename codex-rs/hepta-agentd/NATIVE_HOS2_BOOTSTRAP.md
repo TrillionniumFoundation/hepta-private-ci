@@ -91,10 +91,19 @@ This Linux host regression still does not qualify native G2 execution.
 
 ## Root handoff from original registered state
 
-`seal_registered_host_authority_bootstrap` fills the production gap between
-the original Root service and its existing sealed public descriptor. It reads
-the same Root0600 service/registration files, verifies the retained actual
-daemon pidfd, and uses the same open-only service factory as the serving path.
+`PreparedHostAuthoritySession` fills the production gap between the original
+Root service and its existing sealed public descriptor. Its single open-only
+factory reads the Root0600 service/registration files, verifies the retained
+actual daemon pidfd, and retains the original service. `seal_bootstrap` reads
+that same service's issuer, clock, checkpoint and consumer objects, including
+their locks and closed state. It never reopens those objects by file path.
+`serve` consumes the same non-Clone handle to serve the original fixed lanes.
+The established `serve_host_authority_session` entry delegates to this same
+factory; its optional native-text sibling retains the original text path.
+The original `AuthorityLeaseRegistry` retains its exclusive file lock in
+`Store::_lock`; verifier clones share the same `Arc<Inner>`. Both the retained
+issuer and writer keep that original verifier alive. A second open is refused
+as `StateLocked`, and capture must not work around that original owner lock.
 It requires the existing writer, protected Current and both original consumer
 frontiers. It never initializes a missing record, signs a proof, invents a
 writer identity, or resets a nonce journal.
@@ -114,9 +123,11 @@ currentness. The producer must retain its own actual pidfd for the daemon and
 serve the original five fixed lanes. The G2 Root entry still has to perform
 that FD transfer and full finite writer/device/recovery sequence.
 
-The existing explicit privileged five-lane service qualification now consumes
-this production capture API, compares its bytes with an independent readback
+The existing explicit privileged five-lane service qualification now captures
+and serves with this same prepared handle, compares its bytes with an independent readback
 oracle, and rejects wrong daemon pidfd and same UID/wrong expected GID. The
+same test requires a second valid session open to fail with the original
+`AuthorityLeaseError::StateLocked`, not an unrelated admission error. The
 backend qualifications also check that capture refuses a Dirty checkpoint and
 cannot revive a closed consumer. These checks need their existing explicit
 Root/data-bind environment and must actually run; compilation or ignored

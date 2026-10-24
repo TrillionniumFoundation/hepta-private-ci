@@ -4,14 +4,9 @@
 use super::*;
 use crate::authority_host_config::HostAuthorityRegistration;
 use crate::authority_host_config::HostAuthorityServiceConfig;
-use crate::authority_host_config::read_root_json;
-use crate::authority_host_runtime::open_registered_service;
-use crate::authority_host_runtime::owner_alive;
-use crate::authority_host_runtime::verify_process;
+use crate::authority_host_runtime::verify_pinned_process;
 use codex_hepta_memory::CognitiveCheckpointPeerLifetime;
 use std::fs::File;
-use std::io::Read;
-use std::os::fd::AsRawFd;
 use std::os::unix::fs::MetadataExt;
 use std::path::Path;
 use std::time::Duration;
@@ -23,9 +18,11 @@ use std::time::Instant;
 /// daemon-owned private local-journal parent, distinct from Root's frontiers.
 /// The original live feed, checkpoint client and FinalUse owners still verify
 /// currentness after delivery. This is neither genesis nor a live grant.
-pub fn seal_registered_host_authority_bootstrap(
-    config_file: &Path,
-    registration_file: &Path,
+impl HostAuthorityService {
+pub(crate) fn seal_registered_bootstrap(
+    &self,
+    config: &HostAuthorityServiceConfig,
+    registration: &HostAuthorityRegistration,
     owner_pidfd: &OwnedFd,
     consumer_state_root: &Path,
 ) -> io::Result<File> {
@@ -33,22 +30,9 @@ pub fn seal_registered_host_authority_bootstrap(
     if unsafe { libc::geteuid() } != 0 {
         return Err(io::Error::new(io::ErrorKind::PermissionDenied, "Root producer required"));
     }
-    let config: HostAuthorityServiceConfig = read_root_json(config_file)?;
-    let registration: HostAuthorityRegistration = read_root_json(registration_file)?;
-    let number = owner_pidfd.as_raw_fd();
-    if std::fs::read_link(format!("/proc/self/fd/{number}"))? != Path::new("anon_inode:[pidfd]") {
-        return Err(io::Error::other("bootstrap requires a retained actual pidfd"));
-    }
-    let mut info = String::new();
-    File::open(format!("/proc/self/fdinfo/{number}"))?.take(4097).read_to_string(&mut info)?;
-    let actual = info.lines().find_map(|line| line.strip_prefix("Pid:")
-        .and_then(|value| value.trim().parse::<u32>().ok()));
-    if info.len() > 4096 || actual != Some(registration.peer_pid) {
-        return Err(io::Error::other("bootstrap pidfd does not pin the registered daemon"));
-    }
     let end = Instant::now() + Duration::from_secs(30);
-    owner_alive(owner_pidfd, end)?;
-    let service = open_registered_service(&config, &registration)?;
+    verify_pinned_process(registration, config.peer_uid, config.peer_gid, owner_pidfd, end)?;
+    let service = self;
     let writer = service.writer.as_ref().ok_or_else(|| io::Error::other("registered writer required"))?;
     let checkpoint = service.checkpoint.as_ref().ok_or_else(|| io::Error::other("registered Current required"))?;
     let consumers = service.consumers.as_ref().ok_or_else(|| io::Error::other("both original consumers required"))?;
@@ -119,10 +103,10 @@ pub fn seal_registered_host_authority_bootstrap(
         {
             return Err(io::Error::other("original authority state changed during handoff capture"));
         }
-        verify_process(&registration, config.peer_uid, config.peer_gid)?;
         validate_observation_lease(&writer.registration.authority_lease, &revocations,
             service.clock.now_unix_ms().map_err(io::Error::other)?)?;
-        owner_alive(owner_pidfd, end)?;
+        verify_pinned_process(registration, config.peer_uid, config.peer_gid, owner_pidfd, end)?;
         Ok(sealed)
     })
+}
 }

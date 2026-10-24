@@ -32,6 +32,9 @@ use std::time::Instant;
 #[path = "authority_host_service_consumers_root.rs"]
 mod consumer_fixture;
 
+#[path = "authority_host_service_bootstrap_root.rs"]
+mod bootstrap;
+
 fn expiry_qualification() -> bool {
     [
         "HEPTA_SERVICE_EXPECT_EXPIRED_FEED",
@@ -622,8 +625,19 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
     } else {
         config_path
     };
-    consumer_fixture::release(&mut child, &config, &registration, &config_path, &registration_path, &pidfd);
-    let result = serve_host_authority_session(&config_path, &registration_path, pidfd);
+    // The test-only independent oracle releases its temporary original store
+    // handle before the sole prepared production session acquires ownership.
+    let expected = config.consumers.as_ref().map(|_| bootstrap::capture(&config, &registration));
+    let prepared = crate::PreparedHostAuthoritySession::open(
+        &config_path, &registration_path, pidfd.try_clone().unwrap()).unwrap();
+    let second = crate::PreparedHostAuthoritySession::open(
+        &config_path, &registration_path, pidfd.try_clone().unwrap()).err()
+        .expect("the original retained lease owner must reject a second open");
+    assert_eq!(second.get_ref().and_then(|error| error.downcast_ref::<
+        codex_hepta_contracts::authority_lease::AuthorityLeaseError>()),
+        Some(&codex_hepta_contracts::authority_lease::AuthorityLeaseError::StateLocked));
+    consumer_fixture::release(&mut child, &config, &config_path, &registration_path, &pidfd, &prepared, expected);
+    let result = prepared.serve();
     let status = child.wait().unwrap();
     assert!(
         status.success(),
