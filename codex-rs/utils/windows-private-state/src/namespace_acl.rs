@@ -65,6 +65,25 @@ fn validate(bytes: &[u8], user: &CurrentUser) -> Result<(), ValidationError> {
         return Err(ValidationError::MalformedDescriptor);
     }
     if !trusted(sid(component(bytes, dword(bytes, /*offset*/ 4)?)?)?, user) {
+        #[cfg(test)]
+        {
+            use std::io::Write as _;
+
+            // Re-read only the same bounded, already-validated descriptor SID.
+            // Diagnostics never query another object or change the refusal.
+            if let Ok(owner_sid) = dword(bytes, /*offset*/ 4)
+                .and_then(|offset| component(bytes, offset))
+                .and_then(sid)
+            {
+                let captured_sid = user.sid_bytes();
+                if owner_sid.len() <= 68 && captured_sid.len() <= 68 {
+                    let _ = writeln!(
+                        std::io::stderr().lock(),
+                        "HEPTA_NAMESPACE_OWNER_REFUSAL owner_sid={owner_sid:02x?} captured_sid={captured_sid:02x?}"
+                    );
+                }
+            }
+        }
         return Err(ValidationError::WrongOwner);
     }
     let acl = component(bytes, dword(bytes, /*offset*/ 16)?)?;
