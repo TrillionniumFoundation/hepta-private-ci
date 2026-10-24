@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.native-ab.preparation-log.v1",
+  "model_invocations": 0,
+  "events": [
+    {
+      "event": "initial_authored_fixture_check",
+      "tasks": 8,
+      "hidden_cases": 65,
+      "all_references_passed": true,
+      "all_initials_partially_passed_and_failed": true,
+      "receipt": "author-selfcheck-preclarification.json"
+    },
+    {
+      "event": "before_freeze_contract_clarification",
+      "task": "transform_overlay",
+      "change": "DELETE allowed only in override dictionary values; no base/list sentinel input. Hidden cases and executable fixtures unchanged. No model exposure."
+    },
+    {
+      "event": "root_review_protocol_revision",
+      "change": "Strict sequential alternating paired order, cold-only primary, exact round/input/output budget identity, separate controller fault fixtures, preserve run/request/effect identity, indeterminate not task success, no Core-free RSS claim from Core-linked config bootstrap."
+    },
+    {
+      "event": "python312_repository_convention",
+      "change": "Removed unnecessary future-annotation imports from seven preparation helpers to follow repository Python guidance. Task source, public task contracts and hidden expected values are unchanged. Nine helper tests and all author-reference checks passed again; no model or real controller-owner run occurred.",
+      "receipt": "author-selfcheck-python312.json"
+    }
+  ]
+}

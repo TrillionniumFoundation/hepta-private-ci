@@ -1,0 +1,275 @@
+{
+  "schema": "hepta.native-codex.execution-ab.registration.v1",
+  "status": "draft_root_review_required",
+  "study_id": "native-codex-authored-python-20261024-v1",
+  "task_pack_id": "authored-python-execution-20261024-v1",
+  "claim_scope": "Finite newly authored execution-layer qualification; not cell learning, split, migration, SWE-bench or AGI evidence",
+  "pack_git_commit": null,
+  "pack_manifest_sha256": null,
+  "task_index_sha256": "07368fe805de6da23a80346279d999261e9b806aff958ff56cd99d587fb04483",
+  "protocol_sha256": "c1478557c0d3a4ab5889995a90564358b88601a54db4d384b4c9d106badbdc19",
+  "model_contract": {
+    "provider": null,
+    "endpoint_or_deployment_identity": null,
+    "model_identifier": null,
+    "immutable_revision": null,
+    "immutable_revision_available": null,
+    "reasoning_effort": null,
+    "decoding_controls": null,
+    "service_tier": null,
+    "region": null,
+    "provider_usage_semantics": null,
+    "common_additional_instruction_sha256": null
+  },
+  "executors": {
+    "native": {
+      "source_commit": null,
+      "binary_sha256": null,
+      "resolved_configuration_sha256": null,
+      "system_prompt_sha256": null,
+      "tool_schema_sha256": null,
+      "executable_purpose": null,
+      "real_model_tool_loop_owner": null,
+      "dependency_inventory_sha256": null,
+      "core_linkage_class": null
+    },
+    "codex": {
+      "source_commit": null,
+      "binary_sha256": null,
+      "resolved_configuration_sha256": null,
+      "system_prompt_sha256": null,
+      "tool_schema_sha256": null,
+      "executable_purpose": null,
+      "real_model_tool_loop_owner": null,
+      "dependency_inventory_sha256": null,
+      "core_linkage_class": null
+    }
+  },
+  "common_enforcement": {
+    "supervisor_source_commit": null,
+    "supervisor_binary_sha256": null,
+    "container_or_runtime_image_digest": null,
+    "python_version": "3.12",
+    "capability_profile_sha256": null,
+    "native_effective_policy_receipt_sha256": null,
+    "codex_effective_policy_receipt_sha256": null,
+    "independent_preflight_receipt_sha256": null,
+    "model_side_credentials_excluded_from_tools": null,
+    "tool_side_network": "none",
+    "host_filesystem": "not_mounted",
+    "hidden_evidence": "not_mounted",
+    "workspace": "fresh_per_attempt",
+    "same_effective_capabilities_verified_by_operator": null,
+    "token_budget_reservations_enforced_before_calls": null,
+    "complete_dedicated_process_tree_attribution": null
+  },
+  "primary_budget": {
+    "wall_seconds": 180,
+    "model_requests": 12,
+    "logical_tool_requests": 24,
+    "generated_tokens_including_charged_reasoning": 8192,
+    "aggregate_input_tokens": 65536,
+    "tool_output_bytes_each": 32768,
+    "tool_output_bytes_total": 262144,
+    "submitted_source_bytes": 65536,
+    "workspace_written_bytes": 16777216,
+    "cpu_equivalents": 2,
+    "full_tree_memory_bytes": 2147483648,
+    "pids": 32,
+    "automatic_retries": 0,
+    "agent_decision_rounds": 12
+  },
+  "grading_budget": {
+    "wall_seconds": 10,
+    "cpu_seconds": 5,
+    "memory_bytes": 268435456,
+    "pids": 8
+  },
+  "assignment": {
+    "seed": "hepta-native-codex-ab-20261024-v1",
+    "rule": "Hash-order families and their two tasks; strictly serial task pairs alternate native→codex and codex→native with one of each per family",
+    "primary_tasks": 8,
+    "primary_attempts": 16,
+    "attempts_per_task_per_executor": 1,
+    "resolved_order": [
+      {
+        "ordinal": 1,
+        "pair": 1,
+        "family_id": "authored.temporal-state.20261024",
+        "task_id": "state_schedule.v1.126248433d7b",
+        "slug": "state_schedule",
+        "arm": "native"
+      },
+      {
+        "ordinal": 2,
+        "pair": 1,
+        "family_id": "authored.temporal-state.20261024",
+        "task_id": "state_schedule.v1.126248433d7b",
+        "slug": "state_schedule",
+        "arm": "codex"
+      },
+      {
+        "ordinal": 3,
+        "pair": 2,
+        "family_id": "authored.temporal-state.20261024",
+        "task_id": "state_window.v1.61ba3078b4a4",
+        "slug": "state_window",
+        "arm": "codex"
+      },
+      {
+        "ordinal": 4,
+        "pair": 2,
+        "family_id": "authored.temporal-state.20261024",
+        "task_id": "state_window.v1.61ba3078b4a4",
+        "slug": "state_window",
+        "arm": "native"
+      },
+      {
+        "ordinal": 5,
+        "pair": 3,
+        "family_id": "authored.immutable-transforms.20261024",
+        "task_id": "transform_intervals.v1.b1079a061219",
+        "slug": "transform_intervals",
+        "arm": "native"
+      },
+      {
+        "ordinal": 6,
+        "pair": 3,
+        "family_id": "authored.immutable-transforms.20261024",
+        "task_id": "transform_intervals.v1.b1079a061219",
+        "slug": "transform_intervals",
+        "arm": "codex"
+      },
+      {
+        "ordinal": 7,
+        "pair": 4,
+        "family_id": "authored.immutable-transforms.20261024",
+        "task_id": "transform_overlay.v1.6fd5cce77466",
+        "slug": "transform_overlay",
+        "arm": "codex"
+      },
+      {
+        "ordinal": 8,
+        "pair": 4,
+        "family_id": "authored.immutable-transforms.20261024",
+        "task_id": "transform_overlay.v1.6fd5cce77466",
+        "slug": "transform_overlay",
+        "arm": "native"
+      },
+      {
+        "ordinal": 9,
+        "pair": 5,
+        "family_id": "authored.incremental-parsers.20261024",
+        "task_id": "stream_frames.v1.148df58f3443",
+        "slug": "stream_frames",
+        "arm": "native"
+      },
+      {
+        "ordinal": 10,
+        "pair": 5,
+        "family_id": "authored.incremental-parsers.20261024",
+        "task_id": "stream_frames.v1.148df58f3443",
+        "slug": "stream_frames",
+        "arm": "codex"
+      },
+      {
+        "ordinal": 11,
+        "pair": 6,
+        "family_id": "authored.incremental-parsers.20261024",
+        "task_id": "stream_lines.v1.212911654ab5",
+        "slug": "stream_lines",
+        "arm": "codex"
+      },
+      {
+        "ordinal": 12,
+        "pair": 6,
+        "family_id": "authored.incremental-parsers.20261024",
+        "task_id": "stream_lines.v1.212911654ab5",
+        "slug": "stream_lines",
+        "arm": "native"
+      },
+      {
+        "ordinal": 13,
+        "pair": 7,
+        "family_id": "authored.local-durable-formats.20261024",
+        "task_id": "durable_journal.v1.b83c6d13f89a",
+        "slug": "durable_journal",
+        "arm": "native"
+      },
+      {
+        "ordinal": 14,
+        "pair": 7,
+        "family_id": "authored.local-durable-formats.20261024",
+        "task_id": "durable_journal.v1.b83c6d13f89a",
+        "slug": "durable_journal",
+        "arm": "codex"
+      },
+      {
+        "ordinal": 15,
+        "pair": 8,
+        "family_id": "authored.local-durable-formats.20261024",
+        "task_id": "durable_store.v1.1a0d207d4ecc",
+        "slug": "durable_store",
+        "arm": "codex"
+      },
+      {
+        "ordinal": 16,
+        "pair": 8,
+        "family_id": "authored.local-durable-formats.20261024",
+        "task_id": "durable_store.v1.1a0d207d4ecc",
+        "slug": "durable_store",
+        "arm": "native"
+      }
+    ]
+  },
+  "outcomes": {
+    "primary": "All hidden checks pass on sealed source and execution remains admitted and within registered budgets",
+    "task_is_unit": true,
+    "hidden_assertions_are_independent_samples": false,
+    "population_superiority_claim": false,
+    "record_failed_and_cancelled_attempts": true,
+    "capped_time_to_success_seconds": 180,
+    "unknown_usage_or_resource_values": null
+  },
+  "recovery": {
+    "status": "pending_real_owner_and_common_contract_preflight",
+    "is_separate_controller_fixture_phase": true,
+    "model_invocations": 0,
+    "application_repair_grades_are_recovery_evidence": false,
+    "scenarios": [
+      "acknowledged_effect",
+      "indeterminate_effect"
+    ],
+    "preserve_original_logical_identity": [
+      "run_id",
+      "request_id",
+      "effect_id"
+    ],
+    "physical_attempt_identity": "invocation_id",
+    "wall_seconds_per_case": 30,
+    "cpu_equivalents": 2,
+    "memory_bytes": 268435456,
+    "pids": 8,
+    "restart_delay_seconds": 2,
+    "injections_per_case": 1,
+    "indeterminate_counts_as_task_success": false,
+    "indeterminate_safety_disposition_may_pass": true,
+    "native_owner": null,
+    "codex_owner": null,
+    "same_boundary_semantic_contract_receipt_sha256": null,
+    "not_run_reason": null
+  },
+  "freeze": {
+    "reviewed_by": null,
+    "reviewed_at_utc": null,
+    "first_model_exposure_must_follow_freeze": true,
+    "model_calls_already_performed": 0
+  },
+  "startup_treatment": {
+    "primary": "fresh_process_cold_start",
+    "os_page_cache_reset": false,
+    "remote_provider_cold_cache_assumed": false,
+    "one_time_build_install_separately_accounted": true,
+    "warm_reused_process_trial": "not_registered"
+  }
+}
