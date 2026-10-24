@@ -82,7 +82,11 @@ pub struct UnixManagedProcess {
 
 enum UnixProcessHandle {
     Child(Child),
-    Adopted { process_id: u32 },
+    Adopted {
+        process_id: u32,
+    },
+    #[cfg(target_os = "linux")]
+    KernelInitial(crate::kernel_initial::KernelInitialChild),
 }
 
 impl UnixProcessHandle {
@@ -90,6 +94,8 @@ impl UnixProcessHandle {
         match self {
             Self::Child(child) => child.id(),
             Self::Adopted { process_id } => *process_id,
+            #[cfg(target_os = "linux")]
+            Self::KernelInitial(child) => child.pid(),
         }
     }
 }
@@ -119,6 +125,17 @@ impl ManagedProcess for UnixManagedProcess {
             },
             UnixProcessHandle::Adopted { process_id } => {
                 if let Some(exit) = poll_adopted_process(*process_id)? {
+                    self.health_probe.shutdown();
+                    return Ok(ProcessObservation {
+                        state: ProcessState::Exited(exit),
+                        logs,
+                    });
+                }
+                true
+            }
+            #[cfg(target_os = "linux")]
+            UnixProcessHandle::KernelInitial(child) => {
+                if let Some(exit) = child.try_wait()? {
                     self.health_probe.shutdown();
                     return Ok(ProcessObservation {
                         state: ProcessState::Exited(exit),
@@ -164,10 +181,18 @@ impl ManagedProcess for UnixManagedProcess {
     }
 
     fn request_stop(&mut self) -> Result<(), ProcessDriverError> {
+        #[cfg(target_os = "linux")]
+        if let UnixProcessHandle::KernelInitial(child) = &self.handle {
+            return child.signal(libc::SIGTERM);
+        }
         send_signal(self.handle.process_id(), libc::SIGTERM)
     }
 
     fn kill(&mut self) -> Result<(), ProcessDriverError> {
+        #[cfg(target_os = "linux")]
+        if let UnixProcessHandle::KernelInitial(child) = &self.handle {
+            return child.signal(libc::SIGKILL);
+        }
         send_signal(self.handle.process_id(), libc::SIGKILL)
     }
 }
@@ -859,6 +884,12 @@ fn poll_adopted_process(process_id: u32) -> Result<Option<ProcessExit>, ProcessD
     }
     Err(error.into())
 }
+
+#[cfg(target_os = "linux")]
+#[path = "unix_kernel_initial.rs"]
+mod kernel_initial;
+#[cfg(target_os = "linux")]
+pub(crate) use kernel_initial::prove_kernel_initial_adoption;
 
 #[cfg(test)]
 #[path = "unix_tests.rs"]
