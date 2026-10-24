@@ -81,3 +81,14 @@ pub use taskflow_owner::RetainedObservation;
 pub use taskflow_owner::TaskFlowContextPreparer;
 #[cfg(feature = "taskflow-owner")]
 pub use taskflow_owner::TaskFlowTurnOwner;
+
+#[cfg(feature = "automation-effects")]
+mod automation_effects;
+#[cfg(feature = "automation-effects")]
+pub use automation_effects::AUTOMATION_STATUS_TOOL_NAME;
+#[cfg(feature = "automation-effects")]
+pub use automation_effects::AutomationStatusEffectOwner;
+#[cfg(feature = "automation-effects")]
+pub use automation_effects::PreboundAutomationStatusEffect;
+#[cfg(feature = "automation-effects")]
+pub use automation_effects::automation_status_effect_run_id;
