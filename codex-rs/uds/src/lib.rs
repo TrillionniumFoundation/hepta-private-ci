@@ -10,6 +10,9 @@ use tokio::io::AsyncRead;
 use tokio::io::AsyncWrite;
 use tokio::io::ReadBuf;
 
+#[cfg(target_os = "linux")]
+mod inherited;
+
 /// Creates `socket_dir` if needed and restricts it to the current user where
 /// the platform exposes Unix permissions.
 pub async fn prepare_private_socket_directory(socket_dir: impl AsRef<Path>) -> IoResult<()> {
@@ -156,6 +159,11 @@ mod platform {
 
     pub(super) async fn bind_listener(socket_path: &Path) -> IoResult<Listener> {
         UnixListener::bind(socket_path).map(Listener)
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(super) fn from_std(listener: std::os::unix::net::UnixListener) -> IoResult<Listener> {
+        UnixListener::from_std(listener).map(Listener)
     }
 
     impl Listener {

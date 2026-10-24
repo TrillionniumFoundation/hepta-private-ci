@@ -2,6 +2,25 @@
 
 `codex app-server` is the interface Codex uses to power rich interfaces such as the [Codex VS Code extension](https://marketplace.visualstudio.com/items?itemName=openai.chatgpt).
 
+## Embedding an inherited Unix listener
+
+On Linux an embedding that already owns a private listening descriptor can
+construct `InheritedControlSocket::from_inherited` and call
+`run_main_with_inherited_unix_listener`. This enters the original App Server
+runtime and preserves its JSON-RPC, thread store, extensions and drain behavior.
+The descriptor must be a listening Unix stream at the exact absolute canonical
+pathname, with a single socket node owned by the effective UID and mode `0600`.
+Accepted peers must have that same user identity before WebSocket admission.
+
+The embedding retains pathname creation and cleanup. This entry does not run
+the ordinary stale-socket probe, parent-directory permission repair, bind or
+unlink path. For a Root-created bound descriptor, the embedding must finish its
+credential transition and call `listen` as the final server process before
+adoption; listening as Root and merely transferring the descriptor preserves
+the wrong kernel peer credentials. There is no CLI or JSON-RPC method that
+constructs this descriptor capability, and ordinary `--listen` behavior is
+unchanged.
+
 ## Table of Contents
 
 - [Protocol](#protocol)
