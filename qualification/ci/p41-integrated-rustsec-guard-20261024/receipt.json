@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.p41-composed-rustsec-nosuppression.v1",
+  "observed_at_utc": "2026-10-24T08:48:45Z",
+  "mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "go_no_go": "HOLD_NO_GO",
+  "parent_pr": 3621,
+  "parent_sha": "e25f6453364f0d526dfdda561fa5a797e9d861c1",
+  "parent_tree": "eb294fff68085455f1669933dba69b401acbf704",
+  "donor_pr": 3668,
+  "donor_head": "bc1ea434c64ba645b517da70c12acad3cf353dce",
+  "exact_donor_git_blobs": {
+    ".github/workflows/cargo-deny.yml": "4e592e22b03d15dfdd585073797331c1e9f0cba9",
+    "scripts/check_hepta_rustsec_advisories.py": "17d6c69560bed461aa44bda8f15ddd78e4dc0d84",
+    "scripts/tests/test_hepta_rustsec_guard.py": "d73f978b520acf4592118eaf858f40f9d2ac68a5"
+  },
+  "original_policy_blobs_unchanged": {
+    "codex-rs/deny.toml": "33f7bedaffa58bd4f448e9cce4480311912eaa44",
+    "codex-rs/.cargo/audit.toml": "e8883f3d37384f3078b1b56911e6842fbfcb3d6e"
+  },
+  "purpose": "Add original cargo-deny workflow predecessor check to reject hiding 14 tracked advisories including RUSTSEC-2026-0385. Do not suppress the advisory or alter dependency lockfiles.",
+  "local_exact_donor_blob_test": {
+    "command": "python3 -m unittest -v scripts.tests.test_hepta_rustsec_guard",
+    "tests": 5,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "python_environment": "transient local Linux Python 3.11+, not GitHub runner or original configured cloud Rust workspace",
+    "source_blob_sha_verification": "git hash-object byte-exact donor 2 Python blobs",
+    "stdout_stderr_sha256": "ad56bbd608922c0300be0b11dc54d991d1607adc2cdb296e77d262da3bbb8e91"
+  },
+  "scoped_source_scan": {
+    "observed": "Both parent policy file contents checked; none of the 14 tracked advisory IDs appears, existing 11 unrelated ignore entries are retained.",
+    "not_equivalent_to": "cargo-deny original native execution"
+  },
+  "no_rust_dependencies_changed": true,
+  "no_test_assertions_removed": true,
+  "no_required_gates_weakened": true,
+  "no_production_authority_change": true,
+  "outstanding": [
+    "ctutils 0.4.2 remains in parent Cargo.lock; actual upgrade to >=0.4.4 and original bazel-lock-update plus cargo-deny still required",
+    "current exact-child native cargo-deny/Architecture/V8/blocking-ci and Windows/macOS/Linux/Bazel must reach actual terminal success",
+    "Windows outside-root DELETE escape and AppServer plugin TTL remain open",
+    "full owner-backed policy learning and target device p95/p99+energy remain open"
+  ]
+}
