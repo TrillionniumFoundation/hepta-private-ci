@@ -99,6 +99,10 @@ pub use authority_host_service::HostAuthorityService;
 #[cfg(target_os = "linux")]
 mod root_notes_host_config;
 #[cfg(target_os = "linux")]
+mod root_role_executable;
+#[cfg(target_os = "linux")]
+pub use root_role_executable::RootRoleExecutable;
+#[cfg(target_os = "linux")]
 mod root_notes_launch_channel;
 #[cfg(target_os = "linux")]
 mod root_notes_launch_io;
