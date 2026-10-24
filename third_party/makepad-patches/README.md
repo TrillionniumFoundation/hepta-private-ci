@@ -1,4 +1,4 @@
-# Original Makepad clipboard candidate
+# Original Makepad clipboard and X11 preedit candidate
 
 This directory carries a reviewable patch to the original pinned Makepad SDK,
 not a new renderer. `MANIFEST.json` fixes upstream commit
@@ -16,6 +16,33 @@ unchanged. The unrelated registry 0.2.19 package remains separate. The earlier
 clipboard-only `f9efec87ff9d5690b8c9fd23ea0c8f3535a9d8eb` candidate failed this
 graph gate; its receipts remain evidence of that failure. The original
 `native-clipboard-read.patch` bytes and default Git SDK are unchanged.
+
+`native-ime-preedit.patch` is applied after those two unchanged patches. It
+repairs two X11 issues observed together in the original private IBus/Orca
+window: a candidate popup's `VisibilityNotify` was published as window focus
+even though `XGetInputFocus` stayed on the same window, and the preferred
+Position input style did not deliver callback preedit to the application's
+composition guard. Visibility now reaches the normal paint path without a
+synthetic focus notification. Real `FocusIn`/`FocusOut`, including their
+existing grab/pointer filters, remain unchanged.
+
+The candidate prefers callback preedit when the original XIM service supports
+it. Callback caret updates send only `XNSpotLocation`, retaining the original
+caret/DPI and above/below-screen placement calculation. The original libX11
+[release history](https://sources.debian.org/src/libx11/2:1.8.12-1/README.md/)
+records callback/OnTheSpot `XNSpotLocation` support in 1.8.2 and `XNArea`
+support in 1.8.11; sending both to the observed 1.8.7 client rejects the latter.
+Position retains its own spot/area update and remains a creation fallback,
+followed by Nothing. These fallback styles still deliver committed text, but
+cannot establish the callback-based composition qualification.
+
+A refused callback caret update keeps the existing XIC and preedit; it never
+switches a live composition to Position. Position's first spot-at-creation
+refresh is limited to an inactive XIC. Unsupported callback placement must
+remain an explicit runtime coverage gap, not a reason to discard composition.
+The exact candidate still requires the original real IBus guard/commit/undo,
+candidate placement inspection, focus, clipboard and Orca consumer gates;
+this patch manifest grants none of those results.
 
 The change adds one bounded, request-scoped clipboard read to the original
 `CxOsOp` path and X11 connection. It returns a unique nonblocking ticket. It
@@ -99,8 +126,8 @@ native builds use `hepta-native-makepad`; candidate builds use the explicit
 clipboard feature and the generated config together.
 
 `apps/hepta-native/resources/NATIVE-SDK-PATCH.json` separately binds the actual
-original MIT license, exact source manifest, both complete patches and this
-provenance note. These five files are installed under `dependency-notices/makepad/`; the
+original MIT license, exact source manifest, all three complete patches and this
+provenance note. These six files are installed under `dependency-notices/makepad/`; the
 font resource inventory remains unchanged. The native UI exports the compiled
 notice contract so startup can refuse a mismatched bundle.
 

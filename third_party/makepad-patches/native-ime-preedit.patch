@@ -1,0 +1,149 @@
+diff --git a/platform/src/os/linux/x11/xlib_app.rs b/platform/src/os/linux/x11/xlib_app.rs
+index 2201b89..61a3268 100644
+--- a/platform/src/os/linux/x11/xlib_app.rs
++++ b/platform/src/os/linux/x11/xlib_app.rs
+@@ -416,11 +416,10 @@ unsafe fn create_xim_nothing_input_context(
+ 
+ /// Creates an input context for `window`.
+ ///
+-/// Prefer standard over-the-spot (`XIMPreeditPosition`) because XIM only
+-/// specifies `XNSpotLocation` for that style. Callback/on-the-spot spot
+-/// forwarding was added to libX11 later and remains implementation-defined, so
+-/// it is only used when position style is unavailable. Committed text still
+-/// arrives through `Xutf8LookupString` in every supported style.
++/// Prefer callback/on-the-spot preedit so the application can track the actual
++/// composition. libX11 1.8.2 and later also accept `XNSpotLocation` for this
++/// style. Position and Nothing remain fallbacks when callbacks are unavailable;
++/// committed text still arrives through `Xutf8LookupString` in every style.
+ pub unsafe fn create_xim_input_context(
+     xim: x11_sys::XIM,
+     window: x11_sys::Window,
+@@ -433,22 +432,22 @@ pub unsafe fn create_xim_input_context(
+     let supported_styles = supported_styles.as_deref();
+ 
+     for status_style in xim_status_candidates() {
+-        let input_style = x11_sys::XIMPreeditPosition as c_ulong | status_style;
++        let input_style = x11_sys::XIMPreeditCallbacks as c_ulong | status_style;
+         if !xim_style_supported(supported_styles, input_style) {
+             continue;
+         }
+-        if let Some(position_context) = create_xim_position_input_context(xim, window, status_style) {
+-            return Some(position_context);
++        if let Some(callback_context) = create_xim_callback_input_context(xim, window, status_style) {
++            return Some(callback_context);
+         }
+     }
+ 
+     for status_style in xim_status_candidates() {
+-        let input_style = x11_sys::XIMPreeditCallbacks as c_ulong | status_style;
++        let input_style = x11_sys::XIMPreeditPosition as c_ulong | status_style;
+         if !xim_style_supported(supported_styles, input_style) {
+             continue;
+         }
+-        if let Some(callback_context) = create_xim_callback_input_context(xim, window, status_style) {
+-            return Some(callback_context);
++        if let Some(position_context) = create_xim_position_input_context(xim, window, status_style) {
++            return Some(position_context);
+         }
+     }
+ 
+@@ -1212,13 +1211,9 @@ pub unsafe fn event_loop_poll(&mut self) {
+                     */
+                 }
+                 x11_sys::VisibilityNotify => {
+-                    let event = event.xvisibility;
+-                    if event.state != x11_sys::VisibilityFullyObscured {
+-                        if let Some(window_ptr) = self.window_map.get(&event.window) {
+-                            let window = &mut (**window_ptr);
+-                            window.send_focus_event();
+-                        }
+-                    }
++                    // Candidate popups can cover/uncover this window without
++                    // changing keyboard focus. The normal Paint below handles
++                    // visibility changes; only FocusIn may publish focus.
+                 }
+                 x11_sys::FocusIn => {
+                     let event = event.xfocus;
+diff --git a/platform/src/os/linux/x11/xlib_window.rs b/platform/src/os/linux/x11/xlib_window.rs
+index d4ae1de..7897a50 100644
+--- a/platform/src/os/linux/x11/xlib_window.rs
++++ b/platform/src/os/linux/x11/xlib_window.rs
+@@ -729,6 +729,7 @@ pub fn set_ime_rect(&mut self, rect: Rect, area_rect: Rect) {
+             let mut xic = xim_context.xic;
+             if xim_context.preedit_style == XimPreeditStyle::Position
+                 && !xim_context.spot_initialized_at_creation
++                && !self.ime_active
+             {
+                 if let Some(new_context) = self.create_position_xic_with_spot(
+                     xim_context.status_style(),
+@@ -739,49 +740,39 @@ pub fn set_ime_rect(&mut self, rect: Rect, area_rect: Rect) {
+                     self.xic = Some(new_context);
+                     xim_context = new_context;
+                     xic = new_context.xic;
+-                    if self.ime_active {
+-                        x11_sys::XSetICFocus(xic);
+-                    }
+                 }
+             }
+ 
+-            let preedit_attr = x11_sys::XVaCreateNestedList(
+-                0,
+-                x11_sys::XNSpotLocation.as_ptr(),
+-                &spot_px,
+-                x11_sys::XNArea.as_ptr(),
+-                &area_px,
+-                ptr::null_mut::<c_void>(),
+-            );
++            // OnTheSpot accepts SpotLocation since libX11 1.8.2, but XNArea
++            // only since 1.8.11. Keep callbacks on the same XIC even if a
++            // server refuses placement; replacing it would lose composition.
++            let preedit_attr = match xim_context.preedit_style {
++                XimPreeditStyle::Callback => x11_sys::XVaCreateNestedList(
++                    0,
++                    x11_sys::XNSpotLocation.as_ptr(),
++                    &spot_px,
++                    ptr::null_mut::<c_void>(),
++                ),
++                XimPreeditStyle::Position => x11_sys::XVaCreateNestedList(
++                    0,
++                    x11_sys::XNSpotLocation.as_ptr(),
++                    &spot_px,
++                    x11_sys::XNArea.as_ptr(),
++                    &area_px,
++                    ptr::null_mut::<c_void>(),
++                ),
++                XimPreeditStyle::Nothing => return,
++            };
+             if preedit_attr.is_null() {
+                 return;
+             }
+ 
+-            let failed_attr = x11_sys::XSetICValues(
++            let _ = x11_sys::XSetICValues(
+                 xic,
+                 x11_sys::XNPreeditAttributes.as_ptr(),
+                 preedit_attr,
+                 ptr::null_mut::<c_void>(),
+             );
+-            if !failed_attr.is_null() && xim_context.preedit_style != XimPreeditStyle::Position {
+-                if let Some(new_context) = self.create_position_xic_with_spot(
+-                    xim_context.status_style(),
+-                    spot_px,
+-                    area_px,
+-                ) {
+-                    x11_sys::XDestroyIC(xic);
+-                    self.xic = Some(new_context);
+-                    if self.ime_active {
+-                        x11_sys::XSetICFocus(new_context.xic);
+-                    }
+-                    let _ = x11_sys::XSetICValues(
+-                        new_context.xic,
+-                        x11_sys::XNPreeditAttributes.as_ptr(),
+-                        preedit_attr,
+-                        ptr::null_mut::<c_void>(),
+-                    );
+-                }
+-            }
+             x11_sys::XFree(preedit_attr);
+         }
+     }
