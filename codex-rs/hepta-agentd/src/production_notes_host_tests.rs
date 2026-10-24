@@ -22,6 +22,8 @@ mod objective_tests;
 mod composition_tests;
 #[path = "notes_previous_host_tests.rs"]
 mod previous_tests;
+#[path = "notes_literal_prepare_tests.rs"]
+mod literal_prepare_tests;
 
 struct NotesHostFixture {
     directory: tempfile::TempDir,

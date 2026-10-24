@@ -58,6 +58,47 @@ Native text/App Server chat is a separate route and does not implicitly perform
 that Notes action. The final composition execution record must cover the actual
 caller, not merely these callable APIs.
 
+## Finite Notes preparation on that same writer
+
+The unique launcher can call `AgentdConfig::with_root_notes_literal_adapter`
+after attaching the Root inputs and selecting the original Objective profile
+file. It returns the configured `AgentdConfig` and a non-cloneable
+`AgentdNotesLiteralAdapter` to retain alongside ordinary `run`. The profile must
+equal the shared `hepta-objective` literal Notes profile in full. Deployment
+supplies its principal scope, issuer, policy generation, locale and five actual
+runtime/artifact digests explicitly. This code supplies no guessed digest,
+default model, authentication, protected Current or signing key.
+
+`prepare(client_intent_id, text)` accepts only those two untrusted values. It
+derives a bounded run ID from the original owner, principal and navigation ID;
+an existing original sender record is returned for read/reconciliation without
+observation, signing or another send permit. A new request reads the actual
+private Notes predecessor, refuses a pending application receipt, uses the
+original 4096-text/8192-payload validator and retains the exact original operation
+before typed Root signing. Protected time comes from that same live Root session,
+and the source has a five-second deadline. No destination, predecessor, subject,
+generation, scope, digest or signing body comes from the renderer.
+
+Signing and observer I/O run in one bounded blocking slot; started work keeps
+the slot across cancellation. Expiry is rechecked before signing, after signing
+and after the original sender acknowledges its durable fence. A timeout does
+not erase preparation, roll back a checkpoint, resign a retained request or
+create a second ledger. `Ready` contains the original sender/ticket and exact
+signed ingress already retained by that owner. Its trusted caller must still
+consume `mark_send_started`, use authenticated original control ingress and
+retain the actual transport observation. This API does not directly dispatch,
+issue a FinalUse grant or claim that a document was changed.
+
+Original-owner tests verify pending-receipt and escaped-payload refusal before
+preparation, exact UTF-8/predecessor retention, duplicate operation identity
+protection and zero grant/device calls. The separate shared compiler tests run
+the real Objective decoder/admission/compiler with explicitly synthetic source
+authentication. Run `just test --locked --offline -p codex-hepta-agentd --lib
+-E 'test(notes_literal)'` and the corresponding `codex-hepta-objective` test.
+Actual UI submission, original Root terminal, lost-reply recovery and final
+receipt retirement remain execution gates until the unique launcher calls this
+adapter through its complete original transport path.
+
 ## Scope and entry point
 
 On Linux, the embedding host may call `attach_production_operation_host` with

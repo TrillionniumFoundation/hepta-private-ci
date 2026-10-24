@@ -194,6 +194,10 @@ mod notes_channel;
 #[cfg(target_os = "linux")]
 mod notes_document_observer;
 #[cfg(target_os = "linux")]
+mod notes_literal_adapter;
+#[cfg(target_os = "linux")]
+mod notes_literal_prepare;
+#[cfg(target_os = "linux")]
 mod notes_organ;
 #[cfg(target_os = "linux")]
 mod notes_recovery_process;
@@ -414,6 +418,12 @@ pub use notes_channel::AgentdNotesChannel;
 pub use notes_channel::AgentdNotesRecoveryChannel;
 #[cfg(target_os = "linux")]
 pub use notes_document_observer::AgentdNotesDocumentObserver;
+#[cfg(target_os = "linux")]
+pub use notes_literal_adapter::AgentdNotesLiteralAdapter;
+#[cfg(target_os = "linux")]
+pub use notes_literal_adapter::AgentdNotesLiteralBindings;
+#[cfg(target_os = "linux")]
+pub use notes_literal_adapter::AgentdNotesPreparedObjective;
 pub use objective_runtime::authbus_objective_claims;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
