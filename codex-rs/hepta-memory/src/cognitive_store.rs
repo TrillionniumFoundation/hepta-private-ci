@@ -371,6 +371,15 @@ impl CognitiveStore {
         &self.path
     }
 
+    /// Drain this store's shared SQLite pool before releasing this handle's
+    /// original open guard. Outstanding operations must finish first. Other
+    /// store clones retain their own shared guard and must also be dropped
+    /// before exclusive recovery. A cancelled close proves no closed state;
+    /// ordinary Drop still provides no asynchronous-drain guarantee.
+    pub async fn close(self) {
+        self.pool.close().await;
+    }
+
     pub fn owner_agent_id(&self) -> &AgentId {
         &self.owner_agent_id
     }
