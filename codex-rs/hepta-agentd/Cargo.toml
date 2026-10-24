@@ -35,6 +35,11 @@ name = "h4_persistent_writer"
 path = "examples/h4_persistent_writer.rs"
 required-features = ["qualification-cognitive-write"]
 
+[[example]]
+name = "native_memory_daemon"
+path = "examples/native_memory_daemon.rs"
+required-features = ["qualification-cognitive-write"]
+
 [lints]
 workspace = true
 
