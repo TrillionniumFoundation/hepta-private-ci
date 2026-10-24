@@ -33,7 +33,11 @@ use codex_hepta_cognitive_store::StableMemoryId;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_memory::AndroidNativeTextObservation;
 use codex_hepta_memory::FinalUseProductionOutboxTarget;
+use codex_hepta_memory::OriginalAndroidRuntimeSession;
+use codex_hepta_memory::OriginalRuntimeAndroidTextDevice;
+use codex_hepta_memory::ProductionAndroidTextTarget;
 use codex_hepta_memory::ProductionFinalUseOutboxDispatcher;
 
 use crate::AgentdConfig;
@@ -136,6 +140,27 @@ impl AgentdProductionOperationRuntimeConfig {
         }
         self.additional_targets.push((final_use, target));
         Ok(self)
+    }
+
+    /// Register the qualified original Android peer beside existing destinations
+    /// under this same recovered writer. The host supplies the existing Android
+    /// FinalUse consumer; no writer, signer, journal or transport is created.
+    /// Keep the returned handle for cancellation and original job diagnostics.
+    pub fn with_original_android_text_target(
+        self,
+        final_use: FinalUseAuthority,
+        observation: &AndroidNativeTextObservation,
+        session: Arc<dyn OriginalAndroidRuntimeSession>,
+        timeout: Duration,
+    ) -> Result<(Self, Arc<OriginalRuntimeAndroidTextDevice>), AgentdError> {
+        let device = Arc::new(
+            OriginalRuntimeAndroidTextDevice::from_retained_session(session, observation, timeout)
+                .map_err(AgentdError::Protocol)?,
+        );
+        let target = ProductionAndroidTextTarget::new(observation, device.clone())
+            .map_err(AgentdError::Protocol)?;
+        let configured = self.with_additional_target(final_use, Arc::new(target))?;
+        Ok((configured, device))
     }
 
     pub fn validate_for(&self, config: &AgentdConfig) -> Result<(), AgentdError> {
