@@ -24,7 +24,6 @@ const H_Q24: i64 = 8 * Q24;
 const MAX_PREDICTION_ERROR_Q24: i64 = 16 * Q24;
 const PPM: u64 = 1_000_000;
 const MAX_INPUT_FEATURES: usize = 512;
-const MAX_MODULATORS: usize = 8;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct LocalModelRuntimeReceiptV1 {
@@ -160,38 +159,7 @@ pub struct NeuronRuntimeConfigV1 {
 
 impl NeuronRuntimeConfigV1 {
     pub(crate) fn validate_native(&self, native: &SparseConfig) -> Result<(), NeuronRuntimeError> {
-        for (field, digest) in [
-            ("model manifest", self.model_manifest_digest),
-            ("encoder", self.encoder_digest),
-            ("head", self.head_digest),
-            ("weights", self.weights_digest),
-            ("tokenizer", self.tokenizer_digest),
-            ("preprocessor", self.preprocessor_digest),
-            ("quantization", self.quantization_digest),
-            ("runtime", self.runtime_digest),
-            ("device", self.device_digest),
-            ("normalization", self.normalization_digest),
-            ("native config", self.native_config_digest),
-        ] {
-            if digest.is_zero() {
-                return Err(NeuronRuntimeError::EmptyDigest(field));
-            }
-        }
-        if self.generation != native.generation
-            || self.head_digest != native.model_digest
-            || self.normalization_digest != native.normalization_digest
-            || self.native_config_digest != native.digest().map_err(JournalError::Mechanism)?
-            || self.state_width != native.width
-            || !(1..=MAX_INPUT_FEATURES).contains(&self.input_feature_dimension)
-            || !(1..=MAX_MODULATORS).contains(&self.modulator_dimension)
-            || self.resource_envelope.p95_latency_micros == 0
-            || self.resource_envelope.p99_latency_micros < self.resource_envelope.p95_latency_micros
-            || self.resource_envelope.transient_allocation_bytes == 0
-            || self.resource_envelope.checkpoint_bytes == 0
-            || !(1_000_000..=4_000_000).contains(&self.resource_envelope.write_amplification_ppm)
-        {
-            return Err(NeuronRuntimeError::InvalidConfig);
-        }
+        crate::NeuronShadowConfigV1::from(self).validate_native(native)?;
         self.calibration.validate(self.generation)
     }
 }
@@ -592,7 +560,7 @@ pub(crate) fn digest_q24_vector(domain: &[u8], values: &[i64]) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
-fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), NeuronRuntimeError> {
+pub(crate) fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), NeuronRuntimeError> {
     let raw = value.as_str().as_bytes();
     let length = u32::try_from(raw.len()).map_err(|_| NeuronRuntimeError::Arithmetic)?;
     bytes.extend_from_slice(&length.to_be_bytes());
