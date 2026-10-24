@@ -399,3 +399,20 @@ pub(crate) fn create_protected_file(
         observe,
     )
 }
+
+pub(crate) fn create_protected_stage(
+    root: &File,
+    name: &str,
+    descriptor: &ProtectedDescriptor,
+    observe: impl FnOnce(OpenObservation),
+) -> io::Result<File> {
+    open_nt(
+        root.as_raw_handle() as HANDLE,
+        leaf_name(name)?,
+        FILE_GENERIC_READ | FILE_GENERIC_WRITE | 0x0001_0000,
+        FILE_SHARE_READ | FILE_SHARE_WRITE,
+        FILE_CREATE,
+        ObjectOpen::ProtectedFile(descriptor),
+        observe,
+    )
+}

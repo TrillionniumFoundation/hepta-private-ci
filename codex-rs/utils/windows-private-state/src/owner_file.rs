@@ -36,8 +36,8 @@ impl PrivateFileAccess {
 /// No raw File, cloned handle or deserialization is available. Store consumers
 /// must finish their original recovery/trust/frontier checks before writing.
 pub struct LockedPrivateFile<'owner> {
-    file: File,
-    owner: &'owner OwnerLock,
+    pub(super) file: File,
+    pub(super) owner: &'owner OwnerLock,
     identity: Identity,
     maximum: u64,
     access: PrivateFileAccess,
@@ -66,16 +66,16 @@ impl OwnerLock {
             leaf,
             maximum,
             PrivateFileAccess::ReadWrite,
-            Some(CreatePrivate),
+            Some(PrivateCreation::Ordinary),
         )
     }
 
-    fn open_file(
+    pub(super) fn open_file(
         &self,
         leaf: &str,
         maximum: usize,
         access: PrivateFileAccess,
-        creation: Option<CreatePrivate>,
+        creation: Option<PrivateCreation>,
     ) -> Result<LockedPrivateFile<'_>, ValidationError> {
         if maximum == 0 || maximum > owner_read::MAX_OWNER_READ_BYTES || leaf.len() > 128 {
             return Err(ValidationError::UnsafeObject);
@@ -87,18 +87,30 @@ impl OwnerLock {
             .map_err(|_| ValidationError::UnsafeObject)?;
         self.validate_locked(&mut held)?;
         held.continuity = Continuity::Refused;
+        let extra_access = match creation {
+            Some(PrivateCreation::Stage) => 0x0001_0000,
+            Some(PrivateCreation::Ordinary) | None => 0,
+        };
         let created = match creation {
             None => None,
-            Some(CreatePrivate) => {
+            Some(kind) => {
                 let descriptor =
                     ProtectedDescriptor::for_user(held.directory.parent.owner.current_user()?)?;
                 let mut event = None;
-                let result = mechanism::create_protected_file(
-                    &held.directory.file,
-                    leaf,
-                    &descriptor,
-                    |value| event = Some(value),
-                );
+                let result = match kind {
+                    PrivateCreation::Ordinary => mechanism::create_protected_file(
+                        &held.directory.file,
+                        leaf,
+                        &descriptor,
+                        |value| event = Some(value),
+                    ),
+                    PrivateCreation::Stage => mechanism::create_protected_stage(
+                        &held.directory.file,
+                        leaf,
+                        &descriptor,
+                        |value| event = Some(value),
+                    ),
+                };
                 match (result, event) {
                     (Ok(file), Some(event)) if event.ntstatus == 0 && event.information == 2 => {
                         let identity = owner_read::inspect(&file, &mut held)?;
@@ -112,7 +124,7 @@ impl OwnerLock {
         };
         let (file, identity) = match created {
             Some(value) => value,
-            None => owner_read::open(&mut held, leaf, access.rights())?
+            None => owner_read::open(&mut held, leaf, access.rights() | extra_access)?
                 .ok_or_else(|| ValidationError::Os(io::Error::from_raw_os_error(2)))?,
         };
         if file.metadata()?.len() > maximum as u64 {
@@ -129,7 +141,10 @@ impl OwnerLock {
         })
     }
 }
-struct CreatePrivate;
+pub(super) enum PrivateCreation {
+    Ordinary,
+    Stage,
+}
 
 impl LockedPrivateFile<'_> {
     // Only internal synchronous bounded filesystem operations run while held.
@@ -153,7 +168,7 @@ impl LockedPrivateFile<'_> {
             .map_err(io::Error::other)?;
         Ok(result)
     }
-    fn inspect(&self, held: &mut DirectoryContext) -> Result<(), ValidationError> {
+    pub(super) fn inspect(&self, held: &mut DirectoryContext) -> Result<(), ValidationError> {
         if owner_read::inspect(&self.file, held)? != self.identity
             || self.file.metadata()?.len() > self.maximum
         {

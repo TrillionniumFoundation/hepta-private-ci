@@ -207,3 +207,6 @@ pub use fresh_private_directory::OwnerLockOrigin;
 
 pub use fresh_private_directory::LockedPrivateFile;
 pub use fresh_private_directory::PrivateFileAccess;
+
+pub use fresh_private_directory::LockedStateStage;
+pub use fresh_private_directory::StageReplaceError;

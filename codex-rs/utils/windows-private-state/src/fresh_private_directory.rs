@@ -273,3 +273,6 @@ pub use private_owner_lock::OwnerLockOrigin;
 
 pub use private_owner_lock::LockedPrivateFile;
 pub use private_owner_lock::PrivateFileAccess;
+
+pub use private_owner_lock::LockedStateStage;
+pub use private_owner_lock::StageReplaceError;

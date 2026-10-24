@@ -206,3 +206,8 @@ mod owner_read;
 mod owner_file;
 pub use owner_file::LockedPrivateFile;
 pub use owner_file::PrivateFileAccess;
+
+#[path = "owner_stage.rs"]
+mod owner_stage;
+pub use owner_stage::LockedStateStage;
+pub use owner_stage::StageReplaceError;
