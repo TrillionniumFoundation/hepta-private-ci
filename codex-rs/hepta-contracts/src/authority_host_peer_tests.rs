@@ -1,4 +1,5 @@
 use super::*;
+use pretty_assertions::assert_eq;
 use std::io::Read;
 use std::io::Write;
 use std::sync::atomic::AtomicBool;
@@ -98,4 +99,62 @@ fn handler_finishing_after_total_deadline_cannot_emit_success() {
     let mut response = Vec::new();
     client.read_to_end(&mut response).unwrap();
     assert!(response.is_empty());
+}
+
+#[test]
+fn pinned_client_preserves_complete_request_response_boundaries() {
+    let (mut client, mut peer) = channel(32);
+    let server = std::thread::spawn(move || {
+        for expected in [b"first".as_slice(), b"second".as_slice()] {
+            let mut length = [0; 4];
+            peer.read_exact(&mut length).unwrap();
+            let mut request = vec![0; u32::from_be_bytes(length) as usize];
+            peer.read_exact(&mut request).unwrap();
+            assert_eq!(request, expected);
+            send(&mut peer, expected);
+        }
+    });
+    assert_eq!(client.request(b"first"), Ok(b"first".to_vec()));
+    assert_eq!(client.request(b"second"), Ok(b"second".to_vec()));
+    server.join().unwrap();
+}
+
+#[test]
+fn pinned_client_invalid_input_emits_nothing_and_closes() {
+    for request in [Vec::new(), vec![0; 17]] {
+        let (mut client, mut peer) = channel(16);
+        assert_eq!(
+            client.request(&request),
+            Err(HostIssuerTransportError::InvalidRequest)
+        );
+        let mut bytes = Vec::new();
+        peer.read_to_end(&mut bytes).unwrap();
+        assert!(bytes.is_empty());
+        assert_eq!(
+            client.request(b"retry"),
+            Err(HostIssuerTransportError::Closed)
+        );
+    }
+}
+
+#[test]
+fn pinned_client_rejects_truncated_oversized_and_late_replies_without_retry() {
+    for reply in [Vec::new(), vec![0, 0, 0, 4, 1, 2], vec![0, 0, 0, 33]] {
+        let (mut client, mut peer) = channel(32);
+        let server = std::thread::spawn(move || {
+            let mut request = [0; 8];
+            peer.read_exact(&mut request).unwrap();
+            assert_eq!(&request[4..], b"once");
+            peer.write_all(&reply).unwrap();
+        });
+        assert!(client.request(b"once").is_err());
+        assert_eq!(client.request(b"once"), Err(HostIssuerTransportError::Closed));
+        server.join().unwrap();
+    }
+    let (mut client, _silent_peer) = channel(32);
+    assert_eq!(
+        client.request(b"once"),
+        Err(HostIssuerTransportError::DeadlineElapsed)
+    );
+    assert_eq!(client.request(b"once"), Err(HostIssuerTransportError::Closed));
 }

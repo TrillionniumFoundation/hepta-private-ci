@@ -20,8 +20,8 @@ pub struct HostAuthorityPeerPolicy {
     pub response_bound: usize,
 }
 
-/// Server-side channel only. Construction checks the existing SO_PEERCRED and
-/// pre-held pidfd. No discovery, authorization policy or issuer is created.
+/// One peer-pinned framed channel. Construction checks the existing SO_PEERCRED
+/// and pre-held pidfd. No discovery, authorization policy or issuer is created.
 pub struct HostAuthorityPeerChannel {
     stream: Option<UnixStream>,
     policy: HostAuthorityPeerPolicy,
@@ -62,6 +62,47 @@ impl HostAuthorityPeerChannel {
             policy,
             owner,
         })
+    }
+
+    /// Send one complete bounded request to the same pinned peer and receive
+    /// one complete response. The whole exchange shares one deadline. A lost
+    /// response or any other uncertainty closes the channel permanently; this
+    /// method never reconnects or retries a possibly delivered request.
+    pub fn request(&mut self, request: &[u8]) -> Result<Vec<u8>, HostIssuerTransportError> {
+        let mut stream = self.stream.take().ok_or(HostIssuerTransportError::Closed)?;
+        let result = (|| {
+            if request.is_empty() || request.len() > self.policy.request_bound {
+                return Err(HostIssuerTransportError::InvalidRequest);
+            }
+            let deadline = self.owner.deadline(self.policy.timeout);
+            self.owner.check(deadline)?;
+            self.owner.write_until(
+                &mut stream,
+                &(request.len() as u32).to_be_bytes(),
+                deadline,
+            )?;
+            self.owner.write_until(&mut stream, request, deadline)?;
+            let mut length = [0; 4];
+            self.owner.read_until(&mut stream, &mut length, deadline)?;
+            let length = u32::from_be_bytes(length) as usize;
+            if length == 0 || length > self.policy.response_bound {
+                return Err(HostIssuerTransportError::Unavailable);
+            }
+            let mut response = vec![0; length];
+            self.owner.read_until(&mut stream, &mut response, deadline)?;
+            self.owner.check(deadline)?;
+            Ok(response)
+        })();
+        match result {
+            Ok(response) => {
+                self.stream = Some(stream);
+                Ok(response)
+            }
+            Err(error) => {
+                let _ = stream.shutdown(Shutdown::Both);
+                Err(error)
+            }
+        }
     }
 
     /// Serve one frame. The handler must return a complete bounded response.
