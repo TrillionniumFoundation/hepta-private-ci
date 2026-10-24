@@ -1,0 +1,166 @@
+{
+  "schema": "hepta.native-resume-phase-facts.v1",
+  "measured_source_commit": "3257b035e5dc3c381e1a2342ba69d55a0a35293b",
+  "reporting_source_commit": "92bc5d9913eb60316a9620e677e47e21ee96d19d",
+  "remote_ci_consulted": false,
+  "native": {
+    "heads": 27,
+    "rows": 64,
+    "logit_values": 3456,
+    "maximum_absolute_error": 3.1086244689504383e-15,
+    "absolute_tolerance": 1e-09,
+    "argmax_exact": true,
+    "binary_sha256": "a4efd3bac9676ce09bd93955ade0955daf87f2057a51566ebe856ab09394b89a",
+    "export_manifest_sha256": "f9ce2af5bc4e4634463bd9b7275690b36742c005fb6a86714ca4e4cf4a9ee13c"
+  },
+  "native_numeric_storage": {
+    "feature_imports": 1,
+    "feature_tensor_bytes": 394240,
+    "total_parameter_bytes_read": 998352,
+    "peak_owned_head_parameter_bytes": 73936
+  },
+  "resume": {
+    "actual_optimizer_updates": 3060,
+    "actual_example_updates": 97920,
+    "fresh_worker_commands": 24,
+    "task_count": 1,
+    "original_bundle_reverified_after_training": true,
+    "execution_plan_reverified_after_training": true
+  },
+  "resume_comparisons": [
+    {
+      "cells": 17,
+      "complete_steps_per_cell": [
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20
+      ],
+      "legacy_atol": 1e-10,
+      "legacy_max_loss_errors": {
+        "final_loss": 0.0,
+        "initial_loss": 0.0
+      },
+      "legacy_max_parameter_error": 0.0,
+      "legacy_rtol": 1e-10,
+      "mode": "linear",
+      "new_paths_bitwise_equal": true,
+      "task_count": 1,
+      "trajectory_sha256": "2de83b3fd56db1ed5ce1171ddf1831a3d9fbc247af8307e55e5852bdc947a490"
+    },
+    {
+      "cells": 17,
+      "complete_steps_per_cell": [
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20
+      ],
+      "legacy_atol": 1e-10,
+      "legacy_max_loss_errors": {
+        "final_loss": 0.0,
+        "initial_loss": 0.0
+      },
+      "legacy_max_parameter_error": 0.0,
+      "legacy_rtol": 1e-10,
+      "mode": "gated",
+      "new_paths_bitwise_equal": true,
+      "task_count": 1,
+      "trajectory_sha256": "c4a89145ea732745a5512f33cc1436be572903a40719ab06f2f3f7b73ba68886"
+    },
+    {
+      "cells": 17,
+      "complete_steps_per_cell": [
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20
+      ],
+      "legacy_atol": 1e-10,
+      "legacy_max_loss_errors": {
+        "final_loss": 0.0,
+        "initial_loss": 0.0
+      },
+      "legacy_max_parameter_error": 0.0,
+      "legacy_rtol": 1e-10,
+      "mode": "residual",
+      "new_paths_bitwise_equal": true,
+      "task_count": 1,
+      "trajectory_sha256": "1e8dc3ce80c2a77e1dc71d28e75c778264a7b17a3ed5f27e19091e9808bfb0a9"
+    }
+  ],
+  "pandas": {
+    "status": "passed",
+    "file_records_checked": 6446,
+    "build_history": "2 native launches:1 complete success+1 resource failure;38 candidate binaries matched before3 controlled copies; no third native build.",
+    "finding": "The original primary demonstrates ordinary sem/std AssertionError failure-to-pass; its whole-action label remains null because both original runs contain6 expected failures and3 skips. Three fixed comparators are valid negatives.",
+    "valid_negative_action_labels": 3,
+    "valid_positive_action_labels": 0,
+    "unknown_action_labels": 1,
+    "new_train_bug_groups_attempted": 1,
+    "new_holdout_groups": 0,
+    "n128_supported": false
+  },
+  "restoration": {
+    "files": 608,
+    "objects": 507,
+    "independent_ordinary_files": true,
+    "native_parity_repeated": true,
+    "optimizer_fresh_zero_update_verifiers": 3,
+    "optimizer_summary_sha256": "a718447c30b081022c1fbdffd5510ed44e8905fe531a542b075a5e81bc16b4e7",
+    "pandas_source_and_native_artifacts_verified": true,
+    "empty_git_refs_directory_recreated": true
+  },
+  "archive": {
+    "filename": "hepta-cell-native-resume-pandas-evidence-v1.tar.gz",
+    "bytes": 55762229,
+    "sha256": "3ac97d19ac129517e49df6ff880de6df6126193fe92a81b80f14a76690a1413e",
+    "index_filename": "hepta-cell-native-resume-pandas-evidence-v1.tar.gz.index.json",
+    "index_bytes": 59440,
+    "index_sha256": "6ce025c85a10060fc57b9c103773adcb323f37025847b6f575d4cdf2689dbb8a"
+  },
+  "task_quality_qualified": false,
+  "native_calibration": null,
+  "authority": "DENY_ALL",
+  "new_encoder_calls": 0,
+  "new_calibration_fits": 0
+}
