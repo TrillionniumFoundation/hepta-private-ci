@@ -514,3 +514,6 @@ fn deletion_rebuild_starts_fresh_successor_generation_without_old_state() {
         predecessor.checkpoint_digest
     );
 }
+
+#[path = "runtime_shadow_tests.rs"]
+mod shadow_tests;

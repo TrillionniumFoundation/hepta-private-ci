@@ -6,11 +6,11 @@ use codex_hepta_types::AuthorityPosture;
 use crate::SparseTick;
 
 impl<W: AnchorWitnessStore> NeuronRuntime<W> {
-    pub fn tick(
+    pub(super) fn tick_profile(
         &mut self,
         model: &mut impl NeuronModelPort,
         input: NeuronTickInputV1,
-    ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+    ) -> Result<ProfileOutput, NeuronRuntimeError> {
         let model_request = self.model_request(&input)?;
         let input_digest = model_request.input_digest;
         if let Some(pending) = self.pending.clone() {
@@ -65,11 +65,6 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             .journal
             .current()?
             .ok_or(NeuronRuntimeError::CheckpointMismatch)?;
-        let (confidence_ppm, ood_ppm, mut abstain) = calibrate(
-            &self.config.calibration,
-            &sparse_receipt,
-            input.logical_sequence,
-        )?;
         let execution_micros = u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
         let checkpoint_bytes = checkpoint.bounded_encoded_bytes() as u64;
         let journal_bytes_written = u64::try_from(304_usize + 16 * self.config.state_width)
@@ -85,14 +80,11 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
                 / denominator;
             u32::try_from(rounded_up).map_err(|_| NeuronRuntimeError::Arithmetic)?
         };
-        if execution_micros > self.config.resource_envelope.p99_latency_micros
+        let resource_exceeded = execution_micros > self.config.resource_envelope.p99_latency_micros
             || model_output.transient_allocation_bytes
                 > self.config.resource_envelope.transient_allocation_bytes
             || checkpoint_bytes > self.config.resource_envelope.checkpoint_bytes
-            || write_amplification_ppm > self.config.resource_envelope.write_amplification_ppm
-        {
-            abstain = true;
-        }
+            || write_amplification_ppm > self.config.resource_envelope.write_amplification_ppm;
         let active_indices = checkpoint
             .activation_q24()
             .iter()
@@ -112,6 +104,11 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             saturation_count: sparse_receipt.projection_count,
             queue_age_micros: model_output.queue_age_micros,
         };
+        let output = if let Some(config) = &self.calibrated {
+            let (confidence_ppm, ood_ppm, abstain) = calibrate(
+                &config.calibration, &sparse_receipt, input.logical_sequence,
+            )?;
+            let abstain = abstain || resource_exceeded;
         let tick_receipt = NeuronTickReceiptV1 {
             tick_id: input.tick_id.clone(),
             checkpoint_before: sparse_receipt.checkpoint_before,
@@ -137,10 +134,27 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             abstain,
             authority: AuthorityPosture::DENY_ALL,
         };
-        let output = NeuronRuntimeOutputV1 {
+        ProfileOutput::Calibrated(NeuronRuntimeOutputV1 {
             tick: tick_receipt,
             signal,
             model_runtime: model_output.runtime_receipt,
+        })
+        } else {
+            ProfileOutput::Shadow(NeuronShadowOutputV1 {
+                tick_id: input.tick_id,
+                input_digest,
+                checkpoint_before: sparse_receipt.checkpoint_before,
+                checkpoint_after: sparse_receipt.checkpoint_after,
+                activation_digest,
+                temporal_state_digest: checkpoint.temporal_state_digest(),
+                model_runtime_digest,
+                signals_q24: sparse_receipt.activation_q24.clone(),
+                sparsity_ppm: sparse_receipt.active_fraction_ppm,
+                resource_receipt,
+                model_runtime: model_output.runtime_receipt,
+                abstain: true,
+                authority: AuthorityPosture::DENY_ALL,
+            })
         };
         let next_anchor = JournalAnchor {
             sequence: input.logical_sequence,
