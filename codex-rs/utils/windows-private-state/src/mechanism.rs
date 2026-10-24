@@ -25,11 +25,14 @@ use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_NORMAL;
 use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_REPARSE_POINT;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
+use windows_sys::Win32::Storage::FileSystem::FILE_READ_ATTRIBUTES;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
+use windows_sys::Win32::Storage::FileSystem::FILE_TRAVERSE;
 use windows_sys::Win32::Storage::FileSystem::FILE_TYPE_DISK;
 use windows_sys::Win32::Storage::FileSystem::GetFileInformationByHandle;
 use windows_sys::Win32::Storage::FileSystem::GetFileType;
+use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK_0;
 use windows_sys::Win32::System::Kernel::OBJ_CASE_INSENSITIVE;
@@ -245,6 +248,49 @@ pub fn open_root(path: &Path, observe: impl FnOnce(OpenObservation)) -> io::Resu
         return Err(invalid("probe root is not an ordinary directory"));
     }
     Ok(file)
+}
+
+pub(crate) fn open_namespace_volume(
+    path: &Path,
+    observe: impl FnOnce(OpenObservation),
+) -> io::Result<File> {
+    open_nt(
+        /*root*/ 0,
+        local_nt_path(path)?,
+        READ_CONTROL | FILE_READ_ATTRIBUTES | FILE_TRAVERSE,
+        FILE_SHARE_READ | FILE_SHARE_WRITE,
+        FILE_OPEN,
+        FILE_DIRECTORY_FILE,
+        observe,
+    )
+}
+
+pub(crate) fn open_namespace_child(
+    root: &File,
+    name: &OsStr,
+    observe: impl FnOnce(OpenObservation),
+) -> io::Result<File> {
+    let name: Vec<u16> = name.encode_wide().collect();
+    if name.is_empty()
+        || name.len() > 255
+        || name == [46]
+        || name == [46, 46]
+        || matches!(name.last(), Some(32 | 46))
+        || name.iter().any(|unit| matches!(*unit, 0 | 47 | 58 | 92))
+    {
+        return Err(invalid(
+            "namespace child must be one bounded literal component",
+        ));
+    }
+    open_nt(
+        root.as_raw_handle() as HANDLE,
+        name,
+        READ_CONTROL | FILE_READ_ATTRIBUTES | FILE_TRAVERSE,
+        FILE_SHARE_READ | FILE_SHARE_WRITE,
+        FILE_OPEN,
+        FILE_DIRECTORY_FILE,
+        observe,
+    )
 }
 
 /// Open a single-link regular leaf relative to a live held directory handle.
