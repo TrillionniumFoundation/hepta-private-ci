@@ -1,5 +1,6 @@
 //! File mechanisms only: no owner ACL or durability qualification.
 
+use crate::protected_descriptor::ProtectedDescriptor;
 use std::ffi::OsStr;
 use std::ffi::c_void;
 use std::fs::File;
@@ -126,15 +127,24 @@ pub fn leaf_name(name: &str) -> io::Result<Vec<u16>> {
     Ok(name.encode_utf16().collect())
 }
 
+enum ObjectOpen<'a> {
+    Probe(u32),
+    ProtectedDirectory(&'a ProtectedDescriptor),
+}
+
 fn open_nt(
     root: HANDLE,
     mut name: Vec<u16>,
     access: u32,
     sharing: u32,
     disposition: u32,
-    options: u32,
+    open: ObjectOpen<'_>,
     observe: impl FnOnce(OpenObservation),
 ) -> io::Result<File> {
+    let (options, security_descriptor) = match open {
+        ObjectOpen::Probe(options) => (options, ptr::null()),
+        ObjectOpen::ProtectedDirectory(descriptor) => (FILE_DIRECTORY_FILE, descriptor.as_ptr()),
+    };
     let length = u16::try_from(name.len() * size_of::<u16>())
         .map_err(|_| invalid("probe name is too long"))?;
     let object_name = UNICODE_STRING {
@@ -147,9 +157,7 @@ fn open_nt(
         root_directory: root,
         object_name: &object_name,
         attributes: OBJ_CASE_INSENSITIVE as u32 | OBJ_DONT_REPARSE as u32,
-        // Fixtures carry no authority or secret material. Private ACL creation
-        // and validation remain a separate prerequisite, not a claim here.
-        security_descriptor: ptr::null(),
+        security_descriptor,
         security_quality_of_service: ptr::null(),
     };
     let mut status_block = IO_STATUS_BLOCK {
@@ -238,7 +246,7 @@ pub fn open_root(path: &Path, observe: impl FnOnce(OpenObservation)) -> io::Resu
         FILE_GENERIC_READ | FILE_GENERIC_WRITE,
         FILE_SHARE_READ | FILE_SHARE_WRITE,
         FILE_OPEN,
-        FILE_DIRECTORY_FILE,
+        ObjectOpen::Probe(FILE_DIRECTORY_FILE),
         observe,
     )?;
     let info = identity(&file)?;
@@ -260,7 +268,7 @@ pub(crate) fn open_namespace_volume(
         READ_CONTROL | FILE_READ_ATTRIBUTES | FILE_TRAVERSE,
         FILE_SHARE_READ | FILE_SHARE_WRITE,
         FILE_OPEN,
-        FILE_DIRECTORY_FILE,
+        ObjectOpen::Probe(FILE_DIRECTORY_FILE),
         observe,
     )
 }
@@ -288,7 +296,7 @@ pub(crate) fn open_namespace_child(
         READ_CONTROL | FILE_READ_ATTRIBUTES | FILE_TRAVERSE,
         FILE_SHARE_READ | FILE_SHARE_WRITE,
         FILE_OPEN,
-        FILE_DIRECTORY_FILE,
+        ObjectOpen::Probe(FILE_DIRECTORY_FILE),
         observe,
     )
 }
@@ -309,7 +317,7 @@ pub fn open_relative(
         access,
         sharing,
         disposition,
-        FILE_NON_DIRECTORY_FILE,
+        ObjectOpen::Probe(FILE_NON_DIRECTORY_FILE),
         observe,
     )?;
     let info = identity(&file)?;
@@ -335,7 +343,24 @@ pub fn open_relative_directory(
         FILE_GENERIC_READ,
         FILE_SHARE_READ | FILE_SHARE_WRITE,
         FILE_OPEN,
-        FILE_DIRECTORY_FILE,
+        ObjectOpen::Probe(FILE_DIRECTORY_FILE),
+        observe,
+    )
+}
+
+pub(crate) fn create_protected_directory(
+    root: &File,
+    name: &str,
+    descriptor: &ProtectedDescriptor,
+    observe: impl FnOnce(OpenObservation),
+) -> io::Result<File> {
+    open_nt(
+        root.as_raw_handle() as HANDLE,
+        leaf_name(name)?,
+        FILE_GENERIC_READ | FILE_GENERIC_WRITE | 0x0001_0000,
+        FILE_SHARE_READ | FILE_SHARE_WRITE,
+        FILE_CREATE,
+        ObjectOpen::ProtectedDirectory(descriptor),
         observe,
     )
 }

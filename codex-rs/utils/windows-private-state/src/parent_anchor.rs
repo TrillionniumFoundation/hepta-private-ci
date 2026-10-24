@@ -192,3 +192,9 @@ impl ParentAnchor {
 #[cfg(test)]
 #[path = "parent_anchor_tests.rs"]
 mod tests;
+
+#[path = "fresh_private_directory.rs"]
+mod fresh_private_directory;
+pub use fresh_private_directory::CreationFailure;
+pub use fresh_private_directory::FreshPrivateDirectory;
+pub use fresh_private_directory::UnverifiedCreatedDirectory;

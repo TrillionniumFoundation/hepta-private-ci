@@ -26,9 +26,9 @@ use windows_sys::Win32::Storage::FileSystem::CreateDirectoryW;
 
 type Result<T = ()> = std::result::Result<T, Box<dyn Error>>;
 static NEXT: AtomicU64 = AtomicU64::new(0);
-struct Fixture(PathBuf);
+pub(super) struct Fixture(pub(super) PathBuf);
 impl Fixture {
-    fn new() -> Result<Self> {
+    pub(super) fn new() -> Result<Self> {
         let sequence = NEXT.fetch_add(1, Ordering::Relaxed);
         let nanos = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)?
@@ -59,6 +59,8 @@ impl Fixture {
 }
 impl Drop for Fixture {
     fn drop(&mut self) {
+        let _ = fs::remove_file(self.0.join("private/state"));
+        let _ = fs::remove_dir(self.0.join("private"));
         let _ = fs::remove_file(self.0.join("state"));
         let _ = fs::remove_dir(&self.0); // only this newly created exact directory
     }
@@ -102,7 +104,7 @@ fn with_descriptor(
     result
 }
 
-fn set_fixture_dacl(path: &Path, extra_ace: &str) -> Result {
+pub(super) fn set_fixture_dacl(path: &Path, extra_ace: &str) -> Result {
     with_descriptor(extra_ace, |raw| {
         let mut present = 0;
         let mut defaulted = 0;

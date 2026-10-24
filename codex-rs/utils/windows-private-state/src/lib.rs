@@ -1,8 +1,9 @@
-//! Low-level Windows file mechanisms, without private-owner qualification.
+//! Windows mechanisms and bounded create-only private-directory provisioning.
 //!
-//! Held handles and no-reparse opens do not establish owner SID/DACL policy,
-//! sandbox isolation, or power-loss durability. No private-owner constructor is
-//! exposed here; authoritative stores retain their existing support boundaries.
+//! Primitive observations do not establish namespace authority. Fresh-directory
+//! creation requires live primary-owner and actual bounded ancestry checks; it
+//! provides no legacy adoption, journal recovery, sandbox or power-loss
+//! qualification. Authoritative stores retain their existing support boundaries.
 
 #[cfg(windows)]
 pub mod mechanism;
@@ -15,6 +16,8 @@ pub mod parent_anchor;
 pub mod primary_owner;
 #[cfg(windows)]
 pub mod principal;
+#[cfg(windows)]
+mod protected_descriptor;
 #[cfg(windows)]
 pub mod security;
 #[cfg(windows)]
