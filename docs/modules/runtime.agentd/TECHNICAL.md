@@ -751,3 +751,57 @@ rejects fresh handoff options. Optional text serving uses the same original
 text validation; Notes target admission still requires the typed original
 Session capability rather than a JSON target argument. This host startup seam
 does not itself provide the kernel-precreated roles with their native handoff.
+
+### Staged original Notes startup
+
+`serve-fresh-session` accepts one optional complete group:
+`--notes-launch-profile`, `--notes-reservation-fd`, `--notes-session-pidfd`,
+and `--notes-deployment-fd`. The profile is a Root0600 file under the original
+Root custody checks, with schema `hepta.root.notes_launch_profile.v1`, a
+`grant_lifetime_ms`, the original frozen literal compiler `bindings`, and an
+optional explicit `previous_recovery`. It cannot contain a Session target,
+PID or nonce. The bindings and previous-recovery fields use the original
+sealed `hepta.agentd.original_notes_launch.v1` representation.
+
+The same Root process creates the anonymous Session pair before launch and
+enables `SO_PASSCRED` on its receiving endpoint. Agentd inherits a duplicate of
+that endpoint but waits behind the late Root handoff. Session retains both
+application descriptors and sends just its actual `notes_target_reserved`
+metadata. Root pins the real Session through its inherited pidfd, checks its
+dedicated UID/GID and original credential restrictions, and accepts exactly
+one matching kernel `SCM_CREDENTIALS` message without any transferred rights.
+The target, destination and nonzero 32-character lowercase hexadecimal nonce
+must agree. Root then turns `SO_PASSCRED` off on the shared endpoint before
+closing its duplicate, so the subsequent original two-rights Offer has no
+additional credential ancillary data.
+
+`with_notes_startup_from_session` installs this target through the same
+retained service's `with_registered_notes_from_session`. Its original issuer
+must already contain the exact Notes policy, including target scope and grant
+lifetime. A fresh trusted runner must obtain the actual Session target before
+calling the original initializer, for example by peeking the same Reserved
+packet without consuming it; it must provision the exact original policy and
+writer proof through the existing Root factories. This entry never invents a
+target, adds a missing policy, replaces a lease, or bypasses the opaque
+original lease Registry check.
+
+The deployment FD is a pre-created empty Root0600 sealable memfd. Before
+launching the child, Root opens `/proc/self/fd/<memfd>` independently with
+`O_RDONLY` and passes only that file description to Agentd; `dup` of the
+producer's `O_RDWR` description is not a read-only handoff. Root fills the public deployment with
+the actual Session birth and `startup_release: { target, nonce }`, changes its
+mode to Root0400, applies all four seals and verifies the complete readback.
+Only then does it send the original late Root bootstrap. After five-lane
+connection, original recovery and optional MCP readiness, Agentd sends the
+matching Activate and starts the existing two-second Offer/ACK exchange.
+Root never fabricates an attached acknowledgement or receives either Notes
+effect/recovery descriptor. Session's independent staged wait remains bounded;
+this sequence does not lengthen the original Offer deadline.
+
+The source regression tests use actual Unix credentials/rights and reject a
+wrong sending PID, unknown fields, invalid nonce/destination, missing
+credential option and unexpected transferred descriptors. They also exercise
+switching back to the original strict rights parser. The separate ignored
+Root test checks the empty-file/read-only boundary and irreversible seals;
+it must use the same isolated ordinary-user-built ELF workflow. These checks
+are component evidence, not a claim of completed native G2 or product launch.

@@ -64,7 +64,7 @@ fn validate_bootstrap(file: &File) -> Result<(), AgentdError> {
     Ok(())
 }
 
-fn root_pair(socket: &UnixDatagram, timeout: Duration) -> Result<libc::ucred, AgentdError> {
+pub(crate) fn root_pair(socket: &UnixDatagram, timeout: Duration) -> Result<libc::ucred, AgentdError> {
     if timeout.is_zero() || timeout > Duration::from_secs(30) {
         return Err(refused("bounded original handoff timeout required"));
     }

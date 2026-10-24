@@ -103,40 +103,50 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let ui_fd = options.remove(std::ffi::OsStr::new("--text-ui-pidfd"));
         let handoff = options.remove(std::ffi::OsStr::new("--root-handoff-fd"));
         let root_fd = options.remove(std::ffi::OsStr::new("--root-pidfd"));
+        let notes_profile = options.remove(std::ffi::OsStr::new("--notes-launch-profile")).map(PathBuf::from);
+        let notes_reservation = options.remove(std::ffi::OsStr::new("--notes-reservation-fd"));
+        let notes_session = options.remove(std::ffi::OsStr::new("--notes-session-pidfd"));
+        let notes_deployment = options.remove(std::ffi::OsStr::new("--notes-deployment-fd"));
         if !options.is_empty() || !pidfd_stdin {
             return Err("unknown option or missing pre-held owner pidfd".into());
         }
-        let owner = std::io::stdin().as_fd().try_clone_to_owned()?;
+        // Claim every numeric inherited FD before any clone/open/runtime can
+        // reuse a missing number. One slot owns each FD and closes the original.
+        let mut claimed = std::collections::BTreeSet::new();
+        let handoff = handoff.as_deref().map(|fd| inherited_descriptor(fd, &mut claimed)).transpose()?;
+        let root_fd = root_fd.as_deref().map(|fd| inherited_descriptor(fd, &mut claimed)).transpose()?;
+        let notes = match (notes_profile, notes_reservation, notes_session, notes_deployment) {
+            (None, None, None, None) => None,
+            (Some(profile), Some(reservation), Some(session), Some(deployment))
+                if command == "serve-fresh-session" => Some((
+                    profile, inherited_descriptor(&reservation, &mut claimed)?,
+                    inherited_descriptor(&session, &mut claimed)?, inherited_descriptor(&deployment, &mut claimed)?,
+                )),
+            _ => return Err("fresh Notes requires its complete inherited reservation, Session pidfd, deployment memfd and Root profile".into()),
+        };
         let text = match (text_file.as_deref(), ui_fd) {
             (None, None) => None,
-            (Some(file), Some(fd)) => {
-                let fd: i32 = fd.to_str().ok_or("invalid UI pidfd")?.parse()?;
-                if fd < 3 {
-                    return Err("UI pidfd must be a separately inherited descriptor".into());
-                }
-                // SAFETY: F_GETFD only checks a numeric descriptor; startup is
-                // single-threaded and nothing closes it before the clone.
-                if unsafe { libc::fcntl(fd, libc::F_GETFD) } < 0 {
-                    return Err(std::io::Error::last_os_error().into());
-                }
-                // SAFETY: the existence check above precedes this immediate
-                // clone. The original channel independently checks pidfd type,
-                // actual PID and liveness against the Root registration.
-                let borrowed = unsafe { std::os::fd::BorrowedFd::borrow_raw(fd) };
-                Some((file, borrowed.try_clone_to_owned()?))
-            }
+            (Some(file), Some(fd)) => Some((file, inherited_descriptor(&fd, &mut claimed)?)),
             _ => {
                 return Err("text UI registration and pre-held pidfd are required together".into());
             }
         };
+        let owner = std::io::stdin().as_fd().try_clone_to_owned()?;
         let prepared = if command == "serve-fresh-session" {
-            let handoff = inherited_descriptor(handoff.as_deref().ok_or("fresh session requires the original Root handoff descriptor")?)?;
-            let root = inherited_descriptor(root_fd.as_deref().ok_or("fresh session requires the pre-held current Root pidfd")?)?;
+            let handoff = handoff.ok_or("fresh session requires the original Root handoff descriptor")?;
+            let root = root_fd.ok_or("fresh session requires the pre-held current Root pidfd")?;
             let runtime = tokio::runtime::Builder::new_current_thread().enable_all().build()?;
             let prepared = runtime.block_on(codex_hepta_agentd::PreparedHostAuthoritySession::prepare_fresh_from_registered(
                 &config, &registration, owner,
             ))?;
             let (prepared, consumers) = prepared.handoff_fresh_agent_filesystem()?;
+            let prepared = match notes {
+                Some((profile, reservation, session, deployment)) => prepared.with_notes_startup_from_session(
+                    &profile, std::os::unix::net::UnixDatagram::from(reservation), session,
+                    std::fs::File::from(deployment),
+                )?,
+                None => prepared,
+            };
             let bootstrap = prepared.seal_bootstrap(&consumers)?;
             codex_hepta_agentd::send_root_production_handoff(
                 std::os::unix::net::UnixDatagram::from(handoff), &bootstrap, &root,
@@ -160,22 +170,34 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 #[cfg(target_os = "linux")]
-fn inherited_descriptor(value: &std::ffi::OsStr) -> Result<std::os::fd::OwnedFd, Box<dyn std::error::Error>> {
+fn inherited_descriptor(
+    value: &std::ffi::OsStr,
+    claimed: &mut std::collections::BTreeSet<i32>,
+) -> Result<std::os::fd::OwnedFd, Box<dyn std::error::Error>> {
+    use std::os::fd::FromRawFd;
     let fd: i32 = value.to_str().ok_or("invalid inherited descriptor")?.parse()?;
-    if fd < 3 {
-        return Err("a separately inherited descriptor numbered at least 3 is required".into());
+    if fd < 3 || !claimed.insert(fd) {
+        return Err("one distinct inherited descriptor numbered at least 3 is required per slot".into());
     }
-    // SAFETY: F_GETFD checks only a descriptor number. Parsing occurs before
-    // runtime threads, and no operation closes this descriptor before cloning.
-    if unsafe { libc::fcntl(fd, libc::F_GETFD) } < 0 {
+    // SAFETY: all numeric descriptors are claimed before any runtime, open or
+    // stdin clone. No Rust owner exists for these inherited descriptors yet.
+    let flags = unsafe { libc::fcntl(fd, libc::F_GETFD) };
+    if flags < 0 {
         return Err(std::io::Error::last_os_error().into());
     }
-    // SAFETY: the live inherited descriptor is immediately cloned. The
-    // original handoff independently checks socket type, Root creator, sealed
-    // file and pidfd lifetime before any authenticated bootstrap is accepted.
-    let borrowed = unsafe { std::os::fd::BorrowedFd::borrow_raw(fd) };
-    Ok(borrowed.try_clone_to_owned()?)
+    // SAFETY: this is the first and only owner of the checked inherited FD;
+    // the per-parse set rejects aliases before a second adoption is possible.
+    let descriptor = unsafe { std::os::fd::OwnedFd::from_raw_fd(fd) };
+    // SAFETY: the now-owned descriptor remains live across this flags update.
+    if unsafe { libc::fcntl(fd, libc::F_SETFD, flags | libc::FD_CLOEXEC) } < 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    Ok(descriptor)
 }
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "../root_cli_descriptor_tests.rs"]
+mod descriptor_tests;
 
 #[cfg(not(target_os = "linux"))]
 fn main() {
