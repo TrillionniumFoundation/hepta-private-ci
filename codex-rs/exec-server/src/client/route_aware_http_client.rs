@@ -62,6 +62,7 @@ const HTTP_HEADER_ENV_DENYLIST: &[&str] = &[
 pub struct RouteAwareHttpClient {
     follow_redirects: RouteAwareClientPool,
     stop_redirects: RouteAwareClientPool,
+    single_attempt: RouteAwareClientPool,
 }
 
 /// Streaming response state held between the initial HTTP response and
@@ -87,10 +88,14 @@ impl RouteAwareHttpClient {
             ),
             stop_redirects:
                 RouteAwareClientPool::with_chatgpt_cloudflare_cookies_without_redirects_or_request_logging(
-                    http_client_factory,
+                    http_client_factory.clone(),
                     // Proxy routing comes from the factory, not this diagnostic-only route class.
                     ClientRouteClass::Other,
                 ),
+            single_attempt: RouteAwareClientPool::with_chatgpt_cloudflare_cookies_for_single_attempts(
+                http_client_factory,
+                ClientRouteClass::Other,
+            ),
         }
     }
 
@@ -114,6 +119,41 @@ impl RouteAwareHttpClient {
 }
 
 impl HttpClient for RouteAwareHttpClient {
+    fn supports_single_attempt_requests(&self) -> bool {
+        true
+    }
+
+    fn http_request_stream_once(
+        &self,
+        params: HttpRequestParams,
+    ) -> BoxFuture<'_, Result<(HttpRequestResponse, HttpResponseBodyStream), ExecServerError>> {
+        async move {
+            if params.redirect_policy != HttpRedirectPolicy::Stop {
+                return Err(ExecServerError::Protocol(
+                    "single-attempt HTTP requests must disable redirects".to_string(),
+                ));
+            }
+            let runner = RouteAwareHttpRequestRunner {
+                // with_tls_backend_fallback deliberately never changes this pool.
+                client: self.single_attempt.clone(),
+            };
+            let (response, pending_stream) = runner
+                .run(HttpRequestParams {
+                    stream_response: true,
+                    ..params
+                })
+                .await
+                .map_err(|error| ExecServerError::HttpRequest(error.message))?;
+            let pending_stream = pending_stream.ok_or_else(|| {
+                ExecServerError::Protocol(
+                    "single-attempt HTTP response omitted its body stream".to_string(),
+                )
+            })?;
+            Ok((response, HttpResponseBodyStream::local(pending_stream.response)))
+        }
+        .boxed()
+    }
+
     fn http_request(
         &self,
         params: HttpRequestParams,

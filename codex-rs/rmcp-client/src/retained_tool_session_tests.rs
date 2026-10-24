@@ -6,6 +6,12 @@ use std::time::Duration;
 use codex_config::types::AuthKeyringBackendKind;
 use codex_config::types::OAuthCredentialsStoreMode;
 use codex_exec_server::Environment;
+use codex_exec_server::ExecServerError;
+use codex_exec_server::HttpClient;
+use codex_exec_server::HttpRequestParams;
+use codex_exec_server::HttpRequestResponse;
+use codex_exec_server::HttpResponseBodyStream;
+use futures::future::BoxFuture;
 use pretty_assertions::assert_eq;
 use rmcp::model::ClientCapabilities;
 use rmcp::model::Implementation;
@@ -25,21 +31,52 @@ use crate::RmcpClient;
 use crate::StreamableHttpBearerToken;
 use crate::StreamableHttpRedirectMode;
 
+#[derive(Clone, Copy)]
+enum FixtureAuth {
+    Bearer,
+    RuntimeHeader,
+    DelegatedBearer,
+}
+
 async fn client(
     server: &MockServer,
     redirects: StreamableHttpRedirectMode,
 ) -> anyhow::Result<RmcpClient> {
+    authenticated_client(
+        server,
+        redirects,
+        FixtureAuth::Bearer,
+        Environment::default_for_tests().get_http_client(),
+    )
+    .await
+}
+
+async fn authenticated_client(
+    server: &MockServer,
+    redirects: StreamableHttpRedirectMode,
+    auth: FixtureAuth,
+    http_client: Arc<dyn HttpClient>,
+) -> anyhow::Result<RmcpClient> {
+    let (bearer, headers) = match auth {
+        FixtureAuth::Bearer => (Some(StreamableHttpBearerToken::Resolved(
+            "fixture-only-original-token".to_string(),
+        )), None),
+        FixtureAuth::RuntimeHeader => (None, Some(std::collections::HashMap::from([
+            ("X-Hepta-Token".to_string(), "fixture-only-original-token".to_string()),
+        ]))),
+        FixtureAuth::DelegatedBearer => (Some(StreamableHttpBearerToken::ProvidedByHttpClient), Some(std::collections::HashMap::from([
+            ("Authorization".to_string(), "Bearer fixture-only-original-token".to_string()),
+        ]))),
+    };
     let client = RmcpClient::new_streamable_http_client_with_protocol_mode_and_redirect_mode(
         "retained-session-fixture",
         &format!("{}/mcp", server.uri()),
-        Some(StreamableHttpBearerToken::Resolved(
-            "fixture-only-original-token".to_string(),
-        )),
-        /*http_headers*/ None,
+        bearer,
+        headers,
         /*env_http_headers*/ None,
         OAuthCredentialsStoreMode::File,
         AuthKeyringBackendKind::default(),
-        Environment::default_for_tests().get_http_client(),
+        http_client,
         /*auth_provider*/ None,
         McpProtocolMode::Legacy,
         redirects,
@@ -62,6 +99,10 @@ async fn client(
 }
 
 async fn server(status: u16, delay: Duration) -> (MockServer, Arc<AtomicUsize>, Arc<AtomicUsize>) {
+    authenticated_server(status, delay, FixtureAuth::Bearer).await
+}
+
+async fn authenticated_server(status: u16, delay: Duration, auth: FixtureAuth) -> (MockServer, Arc<AtomicUsize>, Arc<AtomicUsize>) {
     let server = MockServer::start().await;
     let initializes = Arc::new(AtomicUsize::new(0));
     let calls = Arc::new(AtomicUsize::new(0));
@@ -70,7 +111,13 @@ async fn server(status: u16, delay: Duration) -> (MockServer, Arc<AtomicUsize>, 
     Mock::given(method("POST")).and(path("/mcp"))
         .respond_with(move |request: &Request| {
             let body: Value = request.body_json().expect("MCP request");
-            assert_eq!(request.headers["authorization"], "Bearer fixture-only-original-token");
+            match auth {
+                FixtureAuth::Bearer | FixtureAuth::DelegatedBearer => assert_eq!(request.headers["authorization"], "Bearer fixture-only-original-token"),
+                FixtureAuth::RuntimeHeader => {
+                    assert_eq!(request.headers["x-hepta-token"], "fixture-only-original-token");
+                    assert!(!request.headers.contains_key("authorization"));
+                }
+            }
             match body["method"].as_str() {
                 Some("initialize") => {
                     init_count.fetch_add(1, Ordering::SeqCst);
@@ -88,7 +135,10 @@ async fn server(status: u16, delay: Duration) -> (MockServer, Arc<AtomicUsize>, 
                             "jsonrpc":"2.0","id":body["id"],"result":{"content":[{"type":"text","text":"actual fixture reply"}]}
                         }))
                     } else {
-                        ResponseTemplate::new(status).insert_header("www-authenticate", "Bearer resource_metadata=\"http://127.0.0.1/unused\"")
+                        ResponseTemplate::new(status)
+                            .insert_header("www-authenticate", "DPoP error=\"use_dpop_nonce\"")
+                            .insert_header("dpop-nonce", "fixture-server-nonce")
+                            .insert_header("location", "/unexpected-auth-replay")
                     }
                 }
                 _ => ResponseTemplate::new(400),
@@ -100,9 +150,9 @@ async fn server(status: u16, delay: Duration) -> (MockServer, Arc<AtomicUsize>, 
 #[tokio::test]
 async fn retained_session_never_recovers_404_or_retries_auth_or_transient_failures()
 -> anyhow::Result<()> {
-    for status in [404, 401, 502] {
-        let (server, initializes, calls) = server(status, Duration::ZERO).await;
-        let client = client(&server, StreamableHttpRedirectMode::AgentPluginV1).await?;
+    for (auth, status) in [FixtureAuth::Bearer, FixtureAuth::RuntimeHeader].into_iter().flat_map(|auth| [404, 401, 400, 403, 502, 307].map(|status| (auth, status))) {
+        let (server, initializes, calls) = authenticated_server(status, Duration::ZERO, auth).await;
+        let client = authenticated_client(&server, StreamableHttpRedirectMode::AgentPluginV1, auth, Environment::default_for_tests().get_http_client()).await?;
         let retained = client.retain_tool_session().await?;
         assert!(
             retained
@@ -117,8 +167,40 @@ async fn retained_session_never_recovers_404_or_retries_auth_or_transient_failur
             ),
             (1, 1)
         );
+        let requests = server.received_requests().await.expect("recorded requests");
+        assert!(requests.iter().all(|request| request.url.path() == "/mcp"));
+        assert_eq!(requests.iter().filter(|request| request.body_json::<Value>().is_ok_and(|body| body["method"] == "tools/call")).count(), 1);
         client.shutdown().await;
     }
+    Ok(())
+}
+
+/// An ordinary authenticated HTTP wrapper with no single-attempt contract.
+/// Retention must not infer its behavior from successful initialization.
+struct OpaqueHttpClient(Arc<dyn HttpClient>);
+
+impl HttpClient for OpaqueHttpClient {
+    fn http_request(&self, params: HttpRequestParams) -> BoxFuture<'_, Result<HttpRequestResponse, ExecServerError>> {
+        self.0.http_request(params)
+    }
+
+    fn http_request_stream(&self, params: HttpRequestParams) -> BoxFuture<'_, Result<(HttpRequestResponse, HttpResponseBodyStream), ExecServerError>> {
+        self.0.http_request_stream(params)
+    }
+}
+
+#[tokio::test]
+async fn retained_session_refuses_opaque_transport_and_delegated_auth_before_tool_call() -> anyhow::Result<()> {
+    let (server, initializes, calls) = server(200, Duration::ZERO).await;
+    for (auth, http_client) in [
+        (FixtureAuth::Bearer, Arc::new(OpaqueHttpClient(Environment::default_for_tests().get_http_client())) as Arc<dyn HttpClient>),
+        (FixtureAuth::DelegatedBearer, Environment::default_for_tests().get_http_client()),
+    ] {
+        let client = authenticated_client(&server, StreamableHttpRedirectMode::AgentPluginV1, auth, http_client).await?;
+        assert!(client.retain_tool_session().await.is_err());
+        client.shutdown().await;
+    }
+    assert_eq!((initializes.load(Ordering::SeqCst), calls.load(Ordering::SeqCst)), (2, 0));
     Ok(())
 }
 

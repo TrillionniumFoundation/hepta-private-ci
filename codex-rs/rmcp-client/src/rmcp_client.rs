@@ -7,6 +7,7 @@ use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
 use std::sync::OnceLock;
 use std::sync::PoisonError;
+use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
@@ -163,6 +164,7 @@ enum TransportRecipe {
         auth_provider: Option<SharedAuthProvider>,
         redirect_mode: StreamableHttpRedirectMode,
         initialize_deadline: Arc<StdMutex<Option<Instant>>>,
+        single_attempt_requests: Arc<AtomicBool>,
     },
 }
 
@@ -389,8 +391,9 @@ impl RmcpClient {
 
     /// Retain the exact initialized peer for calls which must never be repaired
     /// or replayed. HTTP requires the existing no-redirect authenticated mode;
-    /// OAuth transports (including access-token-only fallback) are refused
-    /// because their challenge handling can resend a request below this layer.
+    /// OAuth transports (including access-token-only fallback) and opaque
+    /// delegated HTTP credentials are refused. The original HTTP capability
+    /// must explicitly support sending once below its authentication layer.
     pub async fn retain_tool_session(&self) -> Result<crate::RetainedMcpToolSession> {
         let state = self.state.lock().await;
         let transport_allowed = match &self.transport_recipe {
@@ -400,11 +403,16 @@ impl RmcpClient {
                 http_headers,
                 env_http_headers,
                 pinned_credential_store,
+                http_client,
+                auth_provider,
                 redirect_mode,
                 ..
             } => {
                 *redirect_mode == StreamableHttpRedirectMode::AgentPluginV1
                     && pinned_credential_store.get().is_none()
+                    && auth_provider.is_none()
+                    && !matches!(bearer_token, Some(StreamableHttpBearerToken::ProvidedByHttpClient))
+                    && http_client.supports_single_attempt_requests()
                     && (bearer_token.is_some()
                         || http_headers
                             .as_ref()
@@ -424,10 +432,17 @@ impl RmcpClient {
                 service,
                 retained_lifetime,
                 ..
-            } => Ok(crate::RetainedMcpToolSession {
-                service: Arc::clone(service),
-                lifetime: retained_lifetime.0.clone(),
-            }),
+            } => {
+                if let TransportRecipe::StreamableHttp { single_attempt_requests, .. } = &self.transport_recipe {
+                    // Monotonic for this original peer: subsequent HTTP posts use
+                    // the existing transport's no-retry capability, never a new client.
+                    single_attempt_requests.store(true, Ordering::Release);
+                }
+                Ok(crate::RetainedMcpToolSession {
+                    service: Arc::clone(service),
+                    lifetime: retained_lifetime.0.clone(),
+                })
+            }
             ClientState::Connecting { .. } => Err(anyhow!("MCP client not initialized")),
             ClientState::Closed => Err(anyhow!("MCP client is shut down")),
         }
@@ -611,6 +626,7 @@ impl RmcpClient {
             auth_provider,
             redirect_mode,
             initialize_deadline: Arc::new(StdMutex::new(None)),
+            single_attempt_requests: Arc::default(),
         };
         let transport = Self::create_pending_transport(&transport_recipe).await?;
         Ok(Self {
@@ -1075,6 +1091,7 @@ impl RmcpClient {
                 auth_provider,
                 redirect_mode,
                 initialize_deadline,
+                single_attempt_requests,
             } => {
                 let has_configured_headers = matches!(
                     bearer_token,
@@ -1212,7 +1229,7 @@ impl RmcpClient {
                             has_configured_headers,
                             *redirect_mode,
                             Arc::clone(initialize_deadline),
-                        ),
+                        ).with_single_attempt_requests(Arc::clone(single_attempt_requests)),
                         http_config,
                     );
                     Ok(PendingTransport::StreamableHttp { transport })

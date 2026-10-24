@@ -129,7 +129,14 @@ with `retain_tool_session`. The client must keep its original lifetime alive.
 HTTP requires the original authenticated `AgentPluginV1` no-redirect mode and
 legacy MCP request protocol. OAuth-managed transports, including the SDK's
 access-token-only OAuth path, are refused because challenge handling can resend
-a request below the application layer. There is no new authentication client.
+a request below the application layer. Opaque delegated bearer credentials and
+dynamic authentication providers are also refused. The existing HTTP capability
+must explicitly implement a single-attempt request. Local `RouteAwareHttpClient`
+uses the original route factory with reqwest retries, redirects and TLS fallback
+disabled for that call; ordinary HTTP availability is insufficient. Remote
+exec-server HTTP and opaque wrappers default to unsupported, so an older or
+unproved transport cannot silently ignore this requirement. There is no new
+authentication client or wire-protocol fallback.
 Changing the original `RmcpClient` session or shutting it down revokes all
 retained handles from that session. A handle never follows a replacement peer.
 
@@ -200,6 +207,12 @@ Desktop's `support/android/receiver/qualify_receiver.py` provides local `java`,
 The process envelope is based on the original Runtime `src/mcp/runtime/jobs.rs`
 and its Linux system jobctl result, inspected at source SHA256
 `dd0b1c3fa391f9452eb543f172843e03e9714ebec051009ab65de8e2909f79eb`.
+This initial system-jobctl backend assumption is not yet sufficient for the
+currently deployed Full Operator backend: actual `main` and `pocket4` starts
+report `execution_mode=operator` and `system_jobctl=false`. The connector still
+rejects those jobs until the original operator's authenticated start/status/read
+and custody implementation is source-qualified. Neither the flag alone nor a
+successful read-only probe establishes that qualification.
 Successful `process_start` is never interpreted as a device receipt. Its
 original job ID remains available through `AndroidRuntimeAttempt`; the Runtime
 owns persistence and the original writer owns effect outcomes. An unknown start

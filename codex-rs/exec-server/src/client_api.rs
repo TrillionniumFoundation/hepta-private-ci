@@ -168,6 +168,28 @@ impl ExecServerTransportParams {
 /// use it when they need environment-owned network requests but should not
 /// depend on the concrete connection type or how that connection is established.
 pub trait HttpClient: Send + Sync {
+    /// Whether this exact transport implements the single-attempt contract
+    /// below. Opaque wrappers and remote executors fail closed by default;
+    /// support must not be inferred from ordinary HTTP request availability.
+    fn supports_single_attempt_requests(&self) -> bool {
+        false
+    }
+
+    /// Send once using the existing route and credentials, without redirects,
+    /// HTTP/authentication retries, TLS fallback, or connection recovery.
+    /// A failure after transmission remains an unknown remote outcome. This
+    /// default never sends a request, including to older remote executors.
+    fn http_request_stream_once(
+        &self,
+        _params: HttpRequestParams,
+    ) -> BoxFuture<'_, Result<(HttpRequestResponse, HttpResponseBodyStream), ExecServerError>> {
+        Box::pin(async {
+            Err(ExecServerError::Protocol(
+                "HTTP transport does not support single-attempt requests".to_string(),
+            ))
+        })
+    }
+
     /// Perform an HTTP request and buffer the response body.
     fn http_request(
         &self,

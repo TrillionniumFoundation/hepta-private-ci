@@ -12,6 +12,8 @@ use std::io;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::PoisonError;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::Instant;
 
@@ -85,6 +87,7 @@ pub(crate) struct StreamableHttpClientAdapter {
     has_configured_headers: bool,
     redirect_mode: StreamableHttpRedirectMode,
     initialize_deadline: Arc<Mutex<Option<Instant>>>,
+    single_attempt_requests: Arc<AtomicBool>,
 }
 
 struct EventStreamCancellation {
@@ -130,7 +133,13 @@ impl StreamableHttpClientAdapter {
             has_configured_headers,
             redirect_mode,
             initialize_deadline,
+            single_attempt_requests: Arc::default(),
         }
+    }
+
+    pub(crate) fn with_single_attempt_requests(mut self, mode: Arc<AtomicBool>) -> Self {
+        self.single_attempt_requests = mode;
+        self
     }
 
     fn redirect_policy(&self, headers: &HeaderMap) -> HttpRedirectPolicy {
@@ -235,7 +244,7 @@ impl StreamableHttpClient for StreamableHttpClientAdapter {
             return Ok(StreamableHttpPostResponse::Accepted);
         }
 
-        let request = self.http_client.http_request_stream(HttpRequestParams {
+        let params = HttpRequestParams {
             method: "POST".to_string(),
             url: uri.to_string(),
             headers: protocol_headers(&headers),
@@ -244,7 +253,12 @@ impl StreamableHttpClient for StreamableHttpClientAdapter {
             redirect_policy,
             request_id: "buffered-request".to_string(),
             stream_response: true,
-        });
+        };
+        let request = if self.single_attempt_requests.load(Ordering::Acquire) {
+            self.http_client.http_request_stream_once(params)
+        } else {
+            self.http_client.http_request_stream(params)
+        };
         let response = if is_event_stream_request {
             tokio::time::timeout(EVENT_STREAM_RESPONSE_TIMEOUT, request)
                 .await
