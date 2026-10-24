@@ -1,4 +1,7 @@
 use super::*;
+
+#[path = "binding_retained_tests.rs"]
+mod retained_binding_tests;
 use crate::McpBinding;
 use crate::elicitation::ElicitationLifecycle;
 use crate::elicitation::ElicitationRequestManager;

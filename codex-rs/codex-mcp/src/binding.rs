@@ -1,5 +1,9 @@
 //! Immutable MCP catalog and execution handles.
 
+#[path = "binding_retained.rs"]
+mod retained;
+pub use retained::RetainedMcpCalls;
+
 use std::collections::HashMap;
 use std::fmt;
 use std::future::Future;
