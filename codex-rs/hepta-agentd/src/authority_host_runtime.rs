@@ -249,7 +249,7 @@ pub(super) fn open_registered_writer(
     } else {
         service
     };
-    Ok(service)
+    Ok(service.retain_original_root_registry(leases))
 }
 
 /// Explicit root administration authorizes a new original registry writer

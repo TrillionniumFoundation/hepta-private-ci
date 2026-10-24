@@ -53,6 +53,25 @@ impl PreparedHostAuthoritySession {
         )
     }
 
+    /// Trusted Root obtains this target from the original Session's Reserved
+    /// capability before forwarding that same offer/endpoint to Agentd. This
+    /// is a one-time startup composition, never a peer JSON registration path.
+    /// The exact pre-existing issuer policy must match; no policy, issuer or
+    /// lease Registry is opened or created by this method.
+    pub fn with_registered_notes_from_session(
+        mut self,
+        target: &codex_hepta_memory::NotesTargetIdentity,
+        lifetime_ms: u64,
+    ) -> io::Result<Self> {
+        let end = Instant::now() + std::time::Duration::from_secs(30);
+        verify_pinned_process(&self.registration, self.config.peer_uid, self.config.peer_gid,
+            &self.owner_pidfd, end)?;
+        self.service = self.service.with_notes_from_original_session(target, lifetime_ms)?;
+        verify_pinned_process(&self.registration, self.config.peer_uid, self.config.peer_gid,
+            &self.owner_pidfd, end)?;
+        Ok(self)
+    }
+
     /// Consume this retained service and serve its original fixed lanes.
     pub fn serve(self) -> io::Result<()> {
         self.serve_selected(/*text_ui*/ None)

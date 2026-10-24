@@ -55,6 +55,9 @@ pub struct HostAuthorityService {
     identity: AgentdIdentity,
     writer: Option<RegisteredWriter>,
     notes: Option<crate::RootNotesGrantAdmission>,
+    // The exact Registry object opened by the original Root factory. Its Arc
+    // shares the existing lock/owner; Notes registration must never reopen it.
+    root_registry: Option<Arc<codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry>>,
     checkpoint: Option<RegisteredCheckpoint>,
     consumers: Option<RegisteredConsumers>,
 }
@@ -74,6 +77,7 @@ impl HostAuthorityService {
             identity,
             writer: None,
             notes: None,
+            root_registry: None,
             checkpoint: None,
             consumers: None,
         })
@@ -110,6 +114,31 @@ impl HostAuthorityService {
         }
         self.notes = Some(notes);
         Ok(self)
+    }
+
+    pub(crate) fn retain_original_root_registry(
+        mut self,
+        registry: Arc<codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry>,
+    ) -> Self {
+        self.root_registry = Some(registry);
+        self
+    }
+
+    pub(crate) fn with_notes_from_original_session(
+        self,
+        target: &codex_hepta_memory::NotesTargetIdentity,
+        lifetime_ms: u64,
+    ) -> io::Result<Self> {
+        if self.notes.is_some() {
+            return Err(io::Error::other("the original Notes route is already registered"));
+        }
+        let registry = self.root_registry.as_ref()
+            .ok_or_else(|| io::Error::other("retained original Root Registry required for Notes"))?;
+        let writer = self.writer.as_ref().ok_or_else(|| io::Error::other("original registered writer required"))?;
+        let notes = crate::RootNotesGrantAdmission::from_registered_notes(
+            &self.issuer, Arc::clone(registry), writer.registration.clone(), target, lifetime_ms,
+        )?;
+        self.with_registered_notes(notes)
     }
 
     /// Open the existing protected checkpoint for this verified writer and
