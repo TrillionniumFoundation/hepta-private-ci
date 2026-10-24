@@ -1,0 +1,127 @@
+diff --git a/codex-rs/core/tests/common/test_codex.rs b/codex-rs/core/tests/common/test_codex.rs
+index a25b835a9..86b4903ed 100644
+--- a/codex-rs/core/tests/common/test_codex.rs
++++ b/codex-rs/core/tests/common/test_codex.rs
+@@ -77,7 +77,6 @@ use crate::responses::output_value_to_text;
+ use crate::responses::start_mock_server;
+ use crate::streaming_sse::StreamingSseServer;
+ use crate::test_environment;
+-use crate::wait_for_event;
+ use crate::wait_for_event_match;
+ use crate::wait_for_event_with_timeout;
+ use wiremock::Match;
+@@ -937,7 +936,18 @@ impl TestCodex {
+             }]))
+             .await?;
+ 
+-        wait_for_event(&self.codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
++        tokio::time::timeout(Duration::from_secs(10), async {
++            let turn_id = wait_for_event_match(&self.codex, |event| match event {
++                EventMsg::TurnComplete(event) => Some(event.turn_id.clone()),
++                _ => None,
++            })
++            .await;
++            if let Some(completion) = self.codex.pending_normal_turn_finish_completion(&turn_id) {
++                completion.await;
++            }
++        })
++        .await
++        .context("text turn completion and finish owner exceeded the original event budget")?;
+         Ok(())
+     }
+ 
+@@ -1091,15 +1101,25 @@ impl TestCodex {
+             _ => None,
+         })
+         .await;
+-        wait_for_event_with_timeout(
+-            &self.codex,
+-            |event| match event {
+-                EventMsg::TurnComplete(event) => event.turn_id == turn_id,
+-                _ => false,
+-            },
+-            SUBMIT_TURN_COMPLETE_TIMEOUT,
+-        )
+-        .await;
++        tokio::time::timeout(SUBMIT_TURN_COMPLETE_TIMEOUT, async {
++            wait_for_event_with_timeout(
++                &self.codex,
++                |event| match event {
++                    EventMsg::TurnComplete(event) => event.turn_id == turn_id,
++                    _ => false,
++                },
++                SUBMIT_TURN_COMPLETE_TIMEOUT,
++            )
++            .await;
++            // TurnComplete precedes the finish owner's post-terminal work.
++            // Observe that exact owner before the fixture starts another turn;
++            // this grants no admission authority and shares the original budget.
++            if let Some(completion) = self.codex.pending_normal_turn_finish_completion(&turn_id) {
++                completion.await;
++            }
++        })
++        .await
++        .context("turn completion and its finish owner exceeded the original fixture budget")?;
+         Ok(())
+     }
+ }
+diff --git a/codex-rs/core/tests/suite/remote_env.rs b/codex-rs/core/tests/suite/remote_env.rs
+index 6e0c3161e..388abcb83 100644
+--- a/codex-rs/core/tests/suite/remote_env.rs
++++ b/codex-rs/core/tests/suite/remote_env.rs
+@@ -833,10 +833,18 @@ async fn settings_update_does_not_retarget_active_turn_environment() -> Result<(
+             },
+         })
+         .await?;
+-    wait_for_event(&test.codex, |event| {
+-        matches!(event, EventMsg::TurnComplete(_))
++    timeout(Duration::from_secs(10), async {
++        let turn_id = wait_for_event_match(&test.codex, |event| match event {
++            EventMsg::TurnComplete(event) => Some(event.turn_id.clone()),
++            _ => None,
++        })
++        .await;
++        if let Some(completion) = test.codex.pending_normal_turn_finish_completion(&turn_id) {
++            completion.await;
++        }
+     })
+-    .await;
++    .await
++    .context("the completed settings turn must finish within the original event budget")?;
+     test.submit_turn("start the next turn").await?;
+ 
+     let request_texts = response_mock
+@@ -2012,9 +2020,13 @@ async fn deferred_executor_stays_pending_after_materialization() -> Result<()> {
+     let mut builder = test_codex_with_wait_for_environment().with_config(|config| {
+         assert!(config.features.enable(Feature::DeferredExecutor).is_ok());
+     });
++    let startup_started = std::time::Instant::now();
+     let test = timeout(Duration::from_secs(5), builder.build(&server))
+-        .await
+-        .context("thread startup should not wait for the remote environment")??;
++    .await
++    .inspect_err(|error| eprintln!("STARTUP_DIAG deferred_executor_stays_pending_after_materialization timeout elapsed={:?} error={error}", startup_started.elapsed()))
++    .context("thread startup should not wait for the remote environment")?
++    .inspect_err(|error| eprintln!("STARTUP_DIAG deferred_executor_stays_pending_after_materialization inner error={error:#}"))?;
++    eprintln!("STARTUP_DIAG deferred_executor_stays_pending_after_materialization built elapsed={:?}", startup_started.elapsed());
+     let environment_manager = test.thread_manager.environment_manager();
+     let provider = Arc::new(FailingNoiseConnectProvider::default());
+     environment_manager.materialize_pending_noise_environment(
+@@ -2154,12 +2166,16 @@ async fn deferred_executor_spawn_agent_inherits_ready_step_environments(
+         attach_rx,
+         shutdown_rx,
+     ));
++    let startup_started = std::time::Instant::now();
+     let test = timeout(
+         Duration::from_secs(5),
+         builder.build_with_remote_and_local_env(&server),
+     )
+     .await
+-    .context("thread startup should not wait for the remote environment")??;
++    .inspect_err(|error| eprintln!("STARTUP_DIAG deferred_executor_spawn_agent_inherits_ready_step_environments timeout elapsed={:?} error={error}", startup_started.elapsed()))
++    .context("thread startup should not wait for the remote environment")?
++    .inspect_err(|error| eprintln!("STARTUP_DIAG deferred_executor_spawn_agent_inherits_ready_step_environments inner error={error:#}"))?;
++    eprintln!("STARTUP_DIAG deferred_executor_spawn_agent_inherits_ready_step_environments built elapsed={:?}", startup_started.elapsed());
+     let owner_active_profile = ActivePermissionProfile::new("owner-read-only");
+     let owner_profile_workspace_root = test.config.cwd.join("owner-profile-root");
+     let remote_selection = TurnEnvironmentSelection {
