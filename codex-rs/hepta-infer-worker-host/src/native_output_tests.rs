@@ -25,10 +25,11 @@ fn completed(items: Vec<ThreadItem>) -> ServerNotification {
 #[test]
 fn terminal_message_recovers_missing_deltas_and_replaces_partial_text_once() {
     for streamed in ["", "partial", "final answer"] {
+        let mut observation = NativeTurnObservation::new(binding());
         let mut output = output();
         output.output = streamed.to_string();
         assert!(
-            observe_for_test(
+            observe_for_test(&mut observation,
                 &mut output,
                 completed(vec![message("final", "final answer")])
             )
@@ -38,9 +39,10 @@ fn terminal_message_recovers_missing_deltas_and_replaces_partial_text_once() {
         assert!(output.terminal_observed);
         assert_eq!(output.status, NativeRunStatus::Completed);
     }
+    let mut observation = NativeTurnObservation::new(binding());
     let mut output = output();
     output.output = "streamed only".to_string();
-    observe_for_test(&mut output, completed(Vec::new())).unwrap();
+    observe_for_test(&mut observation, &mut output, completed(Vec::new())).unwrap();
     assert_eq!(output.output, "streamed only");
 }
 
@@ -56,12 +58,14 @@ fn invalid_terminal_binding_never_replaces_output_or_becomes_terminal() {
         notification.thread_id = "other-thread".to_string();
     }
     for notification in [wrong_turn, wrong_thread] {
+        let mut observation = NativeTurnObservation::new(binding());
         let mut output = output();
         output.output = "trusted partial".to_string();
         let before = output.clone();
-        assert!(!observe_for_test(&mut output, notification).unwrap());
+        assert!(!observe_for_test(&mut observation, &mut output, notification).unwrap());
         assert_eq!(output, before);
     }
+    let mut observation = NativeTurnObservation::new(binding());
     let mut output = output();
     output.output = "trusted partial".to_string();
     let before = output.clone();
@@ -71,25 +75,26 @@ fn invalid_terminal_binding_never_replaces_output_or_becomes_terminal() {
         Some("test-app-server".to_string()),
         Some("/home/agent".to_string()),
     );
-    assert!(observe_event(&mut output, &wrong_connection, &binding()).is_err());
+    assert!(observation.observe_event(&mut output, &wrong_connection).is_err());
     assert_eq!(output, before);
 }
 
 #[test]
 fn terminal_item_text_is_bounded_in_aggregate_bytes_before_mutation() {
+    let mut observation = NativeTurnObservation::new(binding());
     let mut output = output();
     output.output = "trusted partial".to_string();
     let before = output.clone();
     let full = "é".repeat(MAX_OUTPUT_BYTES / 2);
     assert!(
-        observe_for_test(
+        observe_for_test(&mut observation,
             &mut output,
             completed(vec![message("first", &full), message("second", "x")])
         )
         .is_err()
     );
     assert_eq!(output, before);
-    observe_for_test(&mut output, completed(vec![message("first", &full)])).unwrap();
+    observe_for_test(&mut observation, &mut output, completed(vec![message("first", &full)])).unwrap();
     assert_eq!(output.output, full);
     assert!(output.terminal_observed);
 }

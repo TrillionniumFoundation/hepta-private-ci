@@ -364,6 +364,25 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/independent-selection.json" --minimum-tests 117 -- just test --locked -p codex-hepta-intelligence-eval --lib --no-capture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/evaluated-ranker.json" --minimum-tests 6 -- just test --locked -p codex-hepta-agentd --lib -E 'test(cognitive_ranker::tests)' --no-capture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/selection-ranker-composition.json" --minimum-tests 4 -- just test --locked -p codex-hepta-agentd --lib -E 'test(cognitive_ranker::tests::evaluated_selection)' --no-capture
+      - name: Require registered neural host and bounded session controls
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/neural-host-controls.json" --minimum-tests 8 -- just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(smollm_cognitive_) | test(smollm_neural_read::tests::original_) | test(smollm_neural_read::tests::expired_)' --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/neural-session-controls.json" --minimum-tests 4 -- just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(smollm_neural_read::driver::session::tests::)' --no-capture
+      - name: Require original neural bootstrap qualification refusals
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/neural-ranker-controls.json" --minimum-tests 4 -- just test --locked -p codex-hepta-agentd --lib -E 'test(cognitive_ranker::neural::tests::)' --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/neural-bootstrap-refusals.json" --minimum-tests 3 -- just test --locked -p codex-hepta-agentd --test neural_cognitive_bootstrap --no-capture
+      - name: Build and inspect the original neural CLI without loading model material
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/neural-cli-build-help.json" -- bash -c 'cd codex-rs && exec cargo run --locked -p codex-hepta-infer-worker-host --bin hepta-neural-agentd -- --help'
       - name: Require the existing retained local three-generation study
         env:
           CARGO_NET_OFFLINE: "true"

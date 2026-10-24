@@ -24,6 +24,17 @@ pub use ordinary_cpu_registration::OrdinaryCpuBinding;
 pub use ordinary_cpu_registration::OrdinaryCpuRegistration;
 pub use ordinary_cpu_target::OrdinaryCpuTarget;
 
+// This profile uses the existing Linux pidfd/wait4 CPU supervisor. Other
+// platforms remain unavailable until they have equivalent process evidence.
+#[cfg(target_os = "linux")]
+pub mod smollm_neural_read;
+
+#[cfg(target_os = "linux")]
+pub mod smollm_cognitive_host;
+
+#[cfg(target_os = "linux")]
+pub mod smollm_cognitive_process;
+
 use std::error::Error as StdError;
 use std::fmt;
 

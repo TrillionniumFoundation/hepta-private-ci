@@ -17,6 +17,7 @@ workspace = true
 codex-hepta-types = { path = "../hepta-types" }
 codex-app-server-client = { workspace = true }
 codex-app-server-protocol = { workspace = true }
+codex-arg0 = { workspace = true }
 codex-hepta-agentd = { workspace = true }
 codex-hepta-authbus = { path = "../hepta-authbus" }
 codex-hepta-codex-adapter = { path = "../hepta-codex-adapter" }
@@ -24,6 +25,7 @@ codex-hepta-contracts = { workspace = true }
 codex-hepta-memory = { workspace = true }
 codex-hepta-operations = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
+codex-utils-home-dir = { workspace = true }
 libc = { workspace = true }
 rustix = { workspace = true, features = ["process"] }
 serde = { workspace = true, features = ["derive"] }
