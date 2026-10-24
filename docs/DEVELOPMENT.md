@@ -666,7 +666,7 @@ npm, Python, build or exact-source CI gates. Complete PN0 before treating later
 PoN or model experiments as a qualified integration baseline.
 
 Cross-repository qualification follows the Chain plan's single
-[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/8e0f7adc53418a60b03a4e27a519358988616f43/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
+[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/3ca7df5fec2a8c77123df8336149666a9bc023ff/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
 PN0 exact-source/security baseline → PN1 work security and PN2 bounded state →
 PN3 real-model closure → PN4 five-budget/effect-liability qualification →
 PN5 independent-operator WAN/discovery/availability → PN6 governed migration and
@@ -681,39 +681,37 @@ optimizer, durable journal or authority issuer. Parameter, topology, executable
 and consensus upgrades retain their separate admission and release boundaries.
 
 PN0's native pair pins Chain source
-`8e0f7adc53418a60b03a4e27a519358988616f43`, tree
-`009fa641f5f9cfd97c79efd5d5d3396f08310598`, against unchanged default main
+`3ca7df5fec2a8c77123df8336149666a9bc023ff`, tree
+`8ed26849f0e0363d9176c0eb40a5289e1efb682d`, against unchanged default main
 `9fedf7ecbbe07177069c030592b4e03dcffebb81`. Its source-head lane tests that source;
 its base-merge lane pins the published main qualification object
-`09d6fc8c6c547cbc7e63abd814df8d6f87f024fe`, with ordered parents `[9fedf7ec, 8e0f7adc]`
+`cda6f8af4edea33b4b654114404fe5ddddd60d71`, with ordered parents `[9fedf7ec, 3ca7df5f]`
 and the original exact merge-tree checks. The separate original-integration base
-`57c1ed545d067937cbd7aaa7570d5f22123265e6` retains prospective merge
-`374ae9477d1290c567ee7a5bd96acfb467ee6861`, ordered parents `[57c1ed54, 8e0f7adc]`.
+`57c1ed545d067937cbd7aaa7570d5f22123265e6` now has actual GitHub PR preview
+`53dcaf0400740314883cc89c4a0ac197c0c457dd`, ordered parents `[57c1ed54, 3ca7df5f]`.
 Both prospective trees equal the source tree; their different parent identities
-and required executions remain distinct. Neither baseline replaces the other,
-and publication or a pin refresh supplies no passing execution evidence.
-The GitHub App source object has distinct commit metadata from locally reviewed
-`8caa6699d4dde7c20dea01f6938191335c2bee3f` while preserving its exact tree. The
-qualification branch `fix/chain-main-pair-concurrent-20261024` publishes the main
-qualification object; this is not an executed GitHub PR merge. New source and
-prospective-merge runs must still verify the published objects. The concurrent
-integration preserves both source-import controls, the pidfd/procfs namespace
-fixture, the exact durable-opener mutants and shared funding through the real
-account's next nonce. Their local checks pass; the original eight-second terminal
-deadline, all retained assertions and TCL2 interfaces remain unchanged. The
-campaign reader adds complete fixed-cohort cost and unknown-subclock accounting
-for retained records. Measurements on historical Chain source
-`4e49725f1b457a422dbb12f620101903c21599d7` remain observations of that source,
-with no native campaign rerun or current-source/public qualification implied.
-Its retained Rust baseline runs
-runtime and quality shards concurrently; both must pass the exact-source and
-current-run checks before either original required baseline name can pass.
-Publishing these pins still requires new CodeQL and full native Windows results
-on the published source. The older source-bound campaign observations below
-remain unchanged.
+and required executions remain distinct. The qualification branch
+`fix/chain-controller-main-pair-20261024` publishes the main object; it is not
+an executed GitHub PR merge. Source and actual original-integration preview CI
+are pending, including required baseline run
+[40104063630](https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40104063630).
+Publication, a matching tree or a pin refresh supplies no passing execution.
 
-The published PN2/PN3 pair above retains TCL2. Its next same-plan M09 increment
-uses fresh TCL4/schema4, rejecting TCL1/TCL2/TCL3 without an old-writer fallback.
+The source preserves all concurrent `8e0f7adc` fixes and adds the TCL4 cache,
+fresh host child preparation and private controller mechanics. Its 213 local
+owner/cleanup controls pass with zero skips; strict workspace Clippy, exact
+Cargo graph, source-integrity checks and 1,151 local links pass. The controller
+still supplies no funded entry, complete C-to-A execution or whole-U return.
+The controlled empty-child observation on source `03b67a95` remains partial,
+with the original conservative overall outcome Unknown. Neither it nor these
+controls qualify the later combined source as a successful native model run.
+The original eight-second terminal deadline and retained assertions stay fixed.
+Historical campaign measurements remain tied to their recorded source; no
+current campaign, work-hardness or public qualification is inferred. Both native
+pair lanes, CodeQL, full Windows and original integration CI remain required.
+
+This PN2/PN3 pair now uses fresh TCL4/schema4, rejecting TCL1/TCL2/TCL3 without
+an old-writer fallback.
 It requires explicit shared `--cache-max-bytes`, `--cache-max-chunks`,
 `--cache-max-manifests` and `--cache-max-db-bytes` on all six Cell writers,
 discovery fetch and the existing handoff script. Stored limits must match on reopen;
@@ -950,7 +948,18 @@ set remain unexplained. Neither missing group is accepted as passing or waived.
 Private-owner construction, parent delete-child access, effective anonymous
 impersonation level, directory volume reopening and other original failures
 remain separate PN0 blockers; the original eight-second terminal deadline and
-all assertions stay required.
+all assertions stay required. The later isolated source `291ae1b5` also has four
+completed Windows ARM shards in
+[run 40096855579](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40096855579):
+18,386 executions, 18,000 passed, 354 failed and 32 timed out. Those terminal
+counts exclude transient first-attempt failures. That source predates the new
+explicit store backends. Its failures include the restriction BOOLEAN readback,
+anonymous-token diagnostics, ordinary private-owner guards, parent deletion,
+Matrix socket paths and V8 feature identity. The BOOLEAN query now decodes only
+its one reported byte; other token DWORD fields retain exact four-byte checks.
+Anonymous-token queries execute without diagnostic I/O until the original
+identity has been restored, retaining all original error and sticky assertions.
+New native execution is still required to confirm these repairs.
 
 The same PN0 CI repair runs all 819 existing Hepta Python regressions. The first
 full run exposed five wiring failures: multiline YAML dependency formatting,
