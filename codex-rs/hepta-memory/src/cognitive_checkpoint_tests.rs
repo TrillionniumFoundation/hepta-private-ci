@@ -17,6 +17,7 @@ struct ProtocolPeer {
     receipt: Mutex<CognitiveCheckpointReceipt>,
     commands: Mutex<Vec<CognitiveCheckpointCommand>>,
     hold_current_reply: AtomicBool,
+    unavailable_prepare: AtomicBool,
     wrong_owner_reply: AtomicBool,
     published: Notify,
     revoke_after_publication: AtomicBool,
@@ -27,6 +28,15 @@ impl CognitiveCheckpointTransport for ProtocolPeer {
     async fn exchange(&self, bytes: &[u8]) -> Result<Vec<u8>, ObjectiveSenderCheckpointError> {
         let request: CognitiveCheckpointRequest = serde_json::from_slice(bytes).unwrap();
         self.commands.lock().unwrap().push(request.command);
+        if request.command == CognitiveCheckpointCommand::PreparePublication
+            && self.unavailable_prepare.load(Ordering::SeqCst)
+        {
+            return Ok(serde_json::to_vec(&CognitiveCheckpointResponse {
+                schema_version:1, request_id:request.request_id,
+                status:CognitiveCheckpointStatus::Unknown,
+                reason:Some(CognitiveCheckpointReason::Unavailable), token:None, head:None,
+            }).unwrap());
+        }
         let current = {
             let mut current = self.receipt.lock().unwrap();
             if request.command != CognitiveCheckpointCommand::ReadHead {
@@ -192,6 +202,7 @@ impl ManagedFixture {
             receipt: Mutex::new(receipt.clone()),
             commands: Mutex::new(Vec::new()),
             hold_current_reply: AtomicBool::new(false),
+            unavailable_prepare: AtomicBool::new(false),
             wrong_owner_reply: AtomicBool::new(false),
             published: Notify::new(),
             revoke_after_publication: AtomicBool::new(false),

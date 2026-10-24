@@ -47,9 +47,11 @@ async fn managed_rollback_publishes_exact_terminal_cut_and_double_terminal_is_re
 }
 
 #[tokio::test]
-async fn managed_terminal_missing_original_publication_capability_stays_dirty_and_fenced() {
-    let mut f = ManagedFixture::new().await;
-    Arc::get_mut(&mut f.writer).unwrap().store.bound_publication = None;
+async fn managed_terminal_unknown_prepare_stays_dirty_and_fenced() {
+    let f = ManagedFixture::new().await;
+    // Model a withheld Prepare ACK in the existing test-only protocol peer.
+    // Actual missing-image admission is qualified separately on the Root path.
+    f.peer.unavailable_prepare.store(true, Ordering::SeqCst);
     assert!(matches!(f.writer.release().await, Err(ProductionWriterError::CheckpointFenced)));
     assert_eq!(f.store.inspect_local_lease_head(LEASE).await.unwrap().disposition, LocalLeaseHeadDisposition::Released);
     assert_eq!(f.peer.receipt.lock().unwrap().head.phase, CognitiveCheckpointPhase::Dirty);
