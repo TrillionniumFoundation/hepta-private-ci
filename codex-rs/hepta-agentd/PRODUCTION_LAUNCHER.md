@@ -116,6 +116,14 @@ remote shell or a multi-operation device controller after that deadline. Lost,
 late, revoked or disconnected effect replies remain unresolved and do not
 cause another POST, Runtime launch or native effect.
 
+This entry registers the Android destination; registration does not prepare or
+dispatch the payload. The existing durable writer and admitted Objective path
+must retain that exact original operation before the original Device FinalUse
+can enter it. The Notes literal Objective adapter described below is specific
+to Notes and is not an Android operation caller. Until an original Android
+Objective preparation/dispatch caller is connected and exercised, this entry
+alone must not be reported as end-to-end Android control.
+
 The retained HTTP capability disables the original SDK session reinitialization
 and underlying replay mechanisms on that same transport. Static original
 authentication is preserved. Managed OAuth refresh, opaque dynamic auth and
@@ -170,6 +178,14 @@ for completion. An application handoff ACK is not a Notes write receipt. A
 configured chat socket also does not create that route. The Root service must
 have registered this actual Session target with its retained original Notes
 grant route before any effect can be admitted.
+
+The original Session application offer currently allows two seconds for its
+attachment ACK. The trusted process launcher must coordinate when that offer
+begins with this entry's readiness to receive it; Root and MCP startup can take
+longer than two seconds. The 30-second Root/Android startup budget does not
+extend the existing Session offer or any native effect deadline. A production
+launch must prove that synchronization with the actual retained Session PID;
+inventing a future PID or treating a timed-out offer as attached is invalid.
 
 No test fixture, source compilation, listening socket or successful MCP
 initialization proves a real device effect. Qualification must separately

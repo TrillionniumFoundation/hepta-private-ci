@@ -215,5 +215,5 @@ impl AgentdProductionLaunch {
 fn remaining(deadline: Instant) -> Result<Duration, AgentdError> {
     deadline.checked_duration_since(Instant::now())
         .filter(|value| !value.is_zero() && *value <= Duration::from_secs(30))
-        .ok_or_else(|| AgentdError::Protocol("original Android launch deadline expired".into()))
+        .ok_or_else(|| AgentdError::Protocol("original production launch deadline expired".into()))
 }
