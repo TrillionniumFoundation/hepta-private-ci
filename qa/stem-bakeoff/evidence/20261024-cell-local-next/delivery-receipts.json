@@ -1,0 +1,262 @@
+{
+  "approval_rejection": {
+    "action": "Save final Part C archive and index to the user file destination using the official Library upload helper",
+    "decision": "rejected_before_process_creation",
+    "execution_started": false,
+    "mechanism": "exec_command sandbox escalation automatic approval review",
+    "rejected_archive_sha256": "47b9b1644f1d7d56d56e2494798bae663a19cb1af24072f16427947fac47ecf5",
+    "rejected_archive_version": 1,
+    "stated_reason": "User authorization was interpreted as local research only; explicit authorization to disclose possibly sensitive organization data to the external Library destination was not established.",
+    "subsequent_action": "Completed unaffected local work; did not retry through another upload path. Corrected v2 remains local and awaits explicit authorization.",
+    "transfer_started": false
+  },
+  "corrected_part_c_v2": {
+    "build": {
+      "archive_bytes": 88155047,
+      "archive_sha256": "5c9c6e73578eb3d163f2095830a8121bbac50d53864946319ad67c67f38862e7",
+      "child_cpu_ns": 5635329000,
+      "child_peak_rss_bytes": 59592704,
+      "command": [
+        "python3",
+        "/workspace/scratch/f1f83ab8f2f0/hepta/qa/stem-bakeoff/package_cell_local_evidence.py",
+        "build",
+        "--repo",
+        "/workspace/scratch/f1f83ab8f2f0/hepta",
+        "--commit",
+        "dfac558075b980f403274c5f50a3ca64dbe4925b",
+        "--roots",
+        "/tmp/hepta-local-checkpoint-20261024/roots-c.json",
+        "--output",
+        "/workspace/scratch/f1f83ab8f2f0/cell-evidence-delivery-20261024/hepta-cell-local-native-operational-closure-evidence-v2.tar.gz"
+      ],
+      "completed": true,
+      "exit_code": 0,
+      "parent_cpu_ns": 526984,
+      "schema": "hepta.evidence-package-process-cost.v1",
+      "scope": "Popen through wait4; complete child build/pins/serialization. Excludes observer startup, post-build index parsing and this receipt serialization. Linux process maximum RSS, not aggregate concurrent memory.",
+      "total_cpu_ns": 5635855984,
+      "wall_ns": 5632465164
+    },
+    "independence": {
+      "all_sha256_verified_by_independent_restore": true,
+      "archive_sha256": "5c9c6e73578eb3d163f2095830a8121bbac50d53864946319ad67c67f38862e7",
+      "audit_cpu_ns": 91796220,
+      "audit_scope": "Post-restore path/type/inode enumeration only; excludes child restore and receipt serialization.",
+      "audit_wall_ns": 91795504,
+      "distinct_file_inodes": 4782,
+      "index_sha256": "ef808d1dd98bf5ead54647d855630b21b37973a2a61c1cef71c54e3aac069bea",
+      "logical_bytes": 169928721,
+      "no_shared_file_inodes": true,
+      "no_symlinks": true,
+      "ordinary_file_count": 4782,
+      "restored_path": "/tmp/hepta-cell-part-c-v2-independent-restore-20261024",
+      "schema": "hepta.evidence-restore-independence.v1"
+    },
+    "metadata_difference": {
+      "all_other_logical_files_byte_identical": true,
+      "changed_logical_files": {
+        "cost-ledger/archive-dependency-coverage.json": {
+          "after": {
+            "bytes": 121390,
+            "path": "cost-ledger/archive-dependency-coverage.json",
+            "sha256": "dc33a353d6db6d6b657c36bd2f1a3594c87600e9a6c47d65428549cfddd21d4a"
+          },
+          "before": {
+            "bytes": 121390,
+            "path": "cost-ledger/archive-dependency-coverage.json",
+            "sha256": "3b2e1a07710312df90ad9e6f46190eca4f1ec0d5df06d9d3329dd2a6f6be21e7"
+          }
+        },
+        "cost-ledger/verification.json": {
+          "after": {
+            "bytes": 22573,
+            "path": "cost-ledger/verification.json",
+            "sha256": "c0bf3155751881044b53563874a1132959b413c1c0777417345df7891ef7c2f8"
+          },
+          "before": {
+            "bytes": 22507,
+            "path": "cost-ledger/verification.json",
+            "sha256": "9609dd3c1b3e36490f192779082ac210082f890cc8a9424e87a5903e463e5f50"
+          }
+        }
+      },
+      "corrected_archive_sha256": "5c9c6e73578eb3d163f2095830a8121bbac50d53864946319ad67c67f38862e7",
+      "correction_receipt_sha256": "15250b3d12f0cc537786b7693fb54ece7e5b6ba48ddfaae82123a7cb598a2e26",
+      "old_archive_sha256": "47b9b1644f1d7d56d56e2494798bae663a19cb1af24072f16427947fac47ecf5",
+      "reason": "Remove inaccurate all-owners-sequential wording; actual owners partly overlapped. All numerical experiment files remain byte-identical. Prior external save was rejected before execution; no external replacement occurred.",
+      "root_map_unchanged": true,
+      "schema": "hepta.cell-archive-metadata-correction.v1"
+    },
+    "restore": {
+      "archive_bytes": 88155047,
+      "archive_sha256": "5c9c6e73578eb3d163f2095830a8121bbac50d53864946319ad67c67f38862e7",
+      "child_cpu_ns": 1222080000,
+      "child_peak_rss_bytes": 117608448,
+      "command": [
+        "python3",
+        "/workspace/scratch/f1f83ab8f2f0/hepta/qa/stem-bakeoff/package_cell_local_evidence.py",
+        "restore",
+        "--archive",
+        "/workspace/scratch/f1f83ab8f2f0/cell-evidence-delivery-20261024/hepta-cell-local-native-operational-closure-evidence-v2.tar.gz",
+        "--index",
+        "/workspace/scratch/f1f83ab8f2f0/cell-evidence-delivery-20261024/hepta-cell-local-native-operational-closure-evidence-v2.tar.gz.index.json",
+        "--output",
+        "/tmp/hepta-cell-part-c-v2-independent-restore-20261024"
+      ],
+      "completed": true,
+      "exit_code": 0,
+      "parent_cpu_ns": 355509,
+      "schema": "hepta.evidence-package-process-cost.v1",
+      "scope": "Popen through wait4; complete archive validation and every restored logical-file SHA. Excludes observer startup, independence/difference audits and receipt serialization. Linux process maximum RSS, not aggregate concurrent memory.",
+      "total_cpu_ns": 1222435509,
+      "wall_ns": 1225742357
+    }
+  },
+  "schema": "hepta.cell-local-next-delivery-receipts.v1",
+  "scope": "Post-seal packaging, restoration and approval receipts. Separate from the scientific cost ledger; preserving them in Git avoids self-referential archive hashes.",
+  "superseded_part_c_v1": {
+    "build": {
+      "archive_bytes": 88155724,
+      "archive_sha256": "47b9b1644f1d7d56d56e2494798bae663a19cb1af24072f16427947fac47ecf5",
+      "child_cpu_ns": 6183633000,
+      "child_peak_rss_bytes": 59412480,
+      "command": [
+        "python3",
+        "/workspace/scratch/f1f83ab8f2f0/hepta/qa/stem-bakeoff/package_cell_local_evidence.py",
+        "build",
+        "--repo",
+        "/workspace/scratch/f1f83ab8f2f0/hepta",
+        "--commit",
+        "dfac558075b980f403274c5f50a3ca64dbe4925b",
+        "--roots",
+        "/tmp/hepta-local-checkpoint-20261024/roots-c.json",
+        "--output",
+        "/workspace/scratch/f1f83ab8f2f0/cell-evidence-delivery-20261024/hepta-cell-local-native-operational-closure-evidence.tar.gz"
+      ],
+      "completed": true,
+      "created_utc": "2026-10-24T08:25:21.548493+00:00",
+      "exit_code": 0,
+      "parent_cpu_ns": 589267,
+      "schema": "hepta.evidence-build-process-cost.v1",
+      "scope": "Popen launch through wait4 completion, child packager and its waited subprocesses. Excludes this observer interpreter startup, parsing the resulting index and serializing this receipt. Linux ru_maxrss is a process maximum, not concurrent aggregate memory.",
+      "total_cpu_ns": 6184222267,
+      "wall_ns": 6627661955
+    },
+    "independence": {
+      "all_sha256_verified_by_independent_restore": true,
+      "archive_sha256": "47b9b1644f1d7d56d56e2494798bae663a19cb1af24072f16427947fac47ecf5",
+      "audit_cpu_ns": 83878758,
+      "audit_scope": "Post-restore path/type/inode enumeration only; excludes child restore and receipt serialization.",
+      "audit_wall_ns": 83878046,
+      "distinct_file_inodes": 4782,
+      "index_sha256": "46c670c9c2e3a3307c9dce758a6bd5b185201e9678813d45ac5c202344c227ac",
+      "logical_bytes": 169928655,
+      "no_shared_file_inodes": true,
+      "no_symlinks": true,
+      "ordinary_file_count": 4782,
+      "restored_path": "/tmp/hepta-cell-part-c-independent-restore-20261024",
+      "schema": "hepta.evidence-restore-independence.v1"
+    },
+    "restore": {
+      "archive_sha256": "47b9b1644f1d7d56d56e2494798bae663a19cb1af24072f16427947fac47ecf5",
+      "child_cpu_ns": 1226062000,
+      "child_peak_rss_bytes": 117673984,
+      "command": [
+        "python3",
+        "/workspace/scratch/f1f83ab8f2f0/hepta/qa/stem-bakeoff/package_cell_local_evidence.py",
+        "restore",
+        "--archive",
+        "/workspace/scratch/f1f83ab8f2f0/cell-evidence-delivery-20261024/hepta-cell-local-native-operational-closure-evidence.tar.gz",
+        "--index",
+        "/workspace/scratch/f1f83ab8f2f0/cell-evidence-delivery-20261024/hepta-cell-local-native-operational-closure-evidence.tar.gz.index.json",
+        "--output",
+        "/tmp/hepta-cell-part-c-independent-restore-20261024"
+      ],
+      "completed": true,
+      "exit_code": 0,
+      "parent_cpu_ns": 517710,
+      "schema": "hepta.evidence-restore-process-cost.v1",
+      "scope": "Popen launch through wait4 completion. Includes archive/hash/member validation, reconstruction and every restored logical-file SHA check in the child. Excludes observer startup, post-restore independence audit, cleanup and this receipt serialization. Linux process maximum RSS is not concurrent aggregate memory.",
+      "total_cpu_ns": 1226579710,
+      "wall_ns": 1233359859
+    }
+  },
+  "wording_correction": {
+    "after": {
+      "coverage": {
+        "bytes": 121390,
+        "sha256": "dc33a353d6db6d6b657c36bd2f1a3594c87600e9a6c47d65428549cfddd21d4a"
+      },
+      "ledger": {
+        "bytes": 3296398,
+        "sha256": "f7f56c35b938fea6db925b20364d68ae416b6447fba63f881ed0092a3a8e8754"
+      },
+      "registry": {
+        "bytes": 179310,
+        "sha256": "33e08dc5399b17844b2ae1a091a26200b73721fa01471f8c94f235e2ca2ab05a"
+      },
+      "roots_c": {
+        "bytes": 1059245,
+        "sha256": "9f469b639299a64d705e58ad745796dd1e5e5cd64b801588354a7eb40770362c"
+      },
+      "verification": {
+        "bytes": 22573,
+        "sha256": "c0bf3155751881044b53563874a1132959b413c1c0777417345df7891ef7c2f8"
+      }
+    },
+    "all_numeric_costs_and_counts_unchanged": true,
+    "artifact_file_size_metadata_updated": true,
+    "before": {
+      "coverage": {
+        "bytes": 121390,
+        "sha256": "3b2e1a07710312df90ad9e6f46190eca4f1ec0d5df06d9d3329dd2a6f6be21e7"
+      },
+      "ledger": {
+        "bytes": 3296398,
+        "sha256": "f7f56c35b938fea6db925b20364d68ae416b6447fba63f881ed0092a3a8e8754"
+      },
+      "registry": {
+        "bytes": 179310,
+        "sha256": "33e08dc5399b17844b2ae1a091a26200b73721fa01471f8c94f235e2ca2ab05a"
+      },
+      "roots_c": {
+        "bytes": 1059245,
+        "sha256": "9f469b639299a64d705e58ad745796dd1e5e5cd64b801588354a7eb40770362c"
+      },
+      "verification": {
+        "bytes": 22507,
+        "sha256": "9609dd3c1b3e36490f192779082ac210082f890cc8a9424e87a5903e463e5f50"
+      }
+    },
+    "coverage_changed_fields": [
+      "/verification_sha256",
+      "/required_files/7/sha256",
+      "/required_files/7/bytes"
+    ],
+    "covered_required_files": 292,
+    "final_cost_files_scanned_for_sequential_or_serial_claims": [
+      "registry.json",
+      "ledger.json",
+      "verification.json",
+      "archive-dependency-coverage.json",
+      "portability-replay.json",
+      "calibrated-serving-verification.json",
+      "native-serving-verification.json",
+      "cifar10-acquisition-unit-conversion.json",
+      "full-source-replay-time-conversions.json"
+    ],
+    "logical_tasks": 43,
+    "models_or_tests_executed": false,
+    "new_scope": "Separate observed experimental process lifecycles; some overlap in time, and these counts do not imply simultaneously resident deployment owners. Historical prefix extraction is retained earlier-phase work.",
+    "old_scope": "Sequential experimental process lifecycles; not simultaneous deployment owners. Historical prefix extraction is retained earlier-phase work.",
+    "owner_lifecycles": 8,
+    "physical_forwards": 2897,
+    "reason": "Operational Granite extraction/reconciliation and repair EG2 extraction overlapped; separate observed owner lifecycles must not be described as sequential.",
+    "registry_ledger_and_roots_c_byte_identical": true,
+    "remaining_matching_claims": [],
+    "schema": "hepta.cost-owner-wording-correction.v1",
+    "verification_changed_fields": [
+      "/physical_owner_lifecycles/scope"
+    ]
+  }
+}
