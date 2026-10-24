@@ -17,6 +17,9 @@ struct ProtocolPeer {
     receipt: Mutex<CognitiveCheckpointReceipt>,
     commands: Mutex<Vec<CognitiveCheckpointCommand>>,
     hold_current_reply: AtomicBool,
+    hold_prepare_reply: AtomicBool,
+    prepared: Notify,
+    resume_prepare: Notify,
     wrong_owner_reply: AtomicBool,
     published: Notify,
     revoke_after_publication: AtomicBool,
@@ -79,6 +82,12 @@ impl CognitiveCheckpointTransport for ProtocolPeer {
             }
             current.clone()
         };
+        if request.command == CognitiveCheckpointCommand::PreparePublication
+            && self.hold_prepare_reply.load(Ordering::SeqCst)
+        {
+            self.prepared.notify_one();
+            self.resume_prepare.notified().await;
+        }
         if request.command == CognitiveCheckpointCommand::CommitPublication
             && self.revoke_after_publication.load(Ordering::SeqCst)
         {
@@ -192,6 +201,9 @@ impl ManagedFixture {
             receipt: Mutex::new(receipt.clone()),
             commands: Mutex::new(Vec::new()),
             hold_current_reply: AtomicBool::new(false),
+            hold_prepare_reply: AtomicBool::new(false),
+            prepared: Notify::new(),
+            resume_prepare: Notify::new(),
             wrong_owner_reply: AtomicBool::new(false),
             published: Notify::new(),
             revoke_after_publication: AtomicBool::new(false),
@@ -383,3 +395,6 @@ mod hos2_retirement_tests;
 #[cfg(unix)]
 #[path = "cognitive_checkpoint_effect_entry_tests.rs"]
 mod effect_entry_tests;
+
+#[path = "cognitive_checkpoint_serialization_tests.rs"]
+mod serialization_tests;
