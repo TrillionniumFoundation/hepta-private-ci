@@ -1,0 +1,27 @@
+{
+  "schema": "hepta-normalized-marker-admission:v1",
+  "source_head": "396a54cbf83d5b031089b8e5573bc88f93d55ea3",
+  "binary_sha256": "739866a6c1f260d6036765bd214cb2152195847e44464191764ba7e4dba3311c",
+  "binary_bytes": 761977232,
+  "argv": [
+    "/home/qian-qi/workspace/hepta-native-agent-target-20261024/debug/hepta-native-provider-qualification",
+    "--run",
+    "--evidence-dir",
+    "/home/qian-qi/workspace/hepta-native-agent-evidence-20261024/normalized-marker-v1/provider",
+    "--expected-model",
+    "gpt-6.1-sol",
+    "--maximum-provider-input-tokens",
+    "8192",
+    "--maximum-output-tokens",
+    "1024",
+    "--maximum-elapsed-seconds",
+    "60"
+  ],
+  "maximum_new_calls": 1,
+  "automatic_retry": false,
+  "previous_indeterminate_attempt_repaired": false,
+  "primary_task_ab": false,
+  "token_numbers_are_reservations_not_hard_caps": true,
+  "source_reason": "Shared original ordinary Responses settings normalization and safe failure diagnostics passed all recorded gates.",
+  "deployed_runtime_or_service_changed": false
+}
