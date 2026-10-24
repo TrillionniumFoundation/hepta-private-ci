@@ -223,6 +223,8 @@ mod qualification_writer;
 mod runtime;
 #[cfg(target_os = "linux")]
 pub use notes_organ::run_notes_organ;
+#[cfg(target_os = "linux")]
+pub use notes_organ::run_notes_organ_until;
 mod runtime_tasks;
 mod shared_terminal_cell;
 mod state;
