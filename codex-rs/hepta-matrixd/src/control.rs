@@ -557,6 +557,9 @@ pub enum MatrixdControlError {
 fn control_test_directory(prefix: &str) -> std::io::Result<tempfile::TempDir> {
     // Keep Darwin's short socket path fixture while using the platform temp
     // directory on Windows, where an absolute /tmp directory does not exist.
+    // Windows' canonical temp parent is longer: reserve room for the actual
+    // fleet/run/identity socket suffix, retaining tempfile's random component.
+    let prefix = if cfg!(windows) { "m" } else { prefix };
     #[cfg(unix)]
     let root = std::path::PathBuf::from("/tmp");
     #[cfg(not(unix))]
