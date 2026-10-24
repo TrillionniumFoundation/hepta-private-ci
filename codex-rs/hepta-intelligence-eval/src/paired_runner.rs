@@ -394,3 +394,7 @@ fn push_interval(bytes: &mut Vec<u8>, value: &Option<PairedBoundedIntervalV1>) {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "paired_runner_tests.rs"]
+mod tests;
