@@ -17,6 +17,8 @@ pub(super) const UNKNOWN: usize = 1;
 pub(super) const HOLD_AFTER_PERSIST: usize = 2;
 pub(super) const BEFORE_CONTACT: usize = 3;
 pub(super) const WRONG_PAYLOAD: usize = 4;
+pub(super) const RELEASE_MATCHING_ACK: usize = 5;
+pub(super) const RELEASE_CONTRADICTORY_ACK: usize = 6;
 
 #[derive(Clone)]
 pub(super) struct FileProvider {
@@ -26,6 +28,7 @@ pub(super) struct FileProvider {
     pub(super) dispatch_mode: Arc<AtomicUsize>,
     pub(super) lookup_mode: Arc<AtomicUsize>,
     pub(super) entered: Arc<Notify>,
+    pub(super) release: Arc<Notify>,
 }
 
 impl FileProvider {
@@ -39,6 +42,7 @@ impl FileProvider {
             dispatch_mode: Arc::new(AtomicUsize::new(COMPLETE)),
             lookup_mode: Arc::new(AtomicUsize::new(COMPLETE)),
             entered: Arc::new(Notify::new()),
+            release: Arc::new(Notify::new()),
         }
     }
 
@@ -140,6 +144,15 @@ impl ProviderEffectAdapter for FileProvider {
                 HOLD_AFTER_PERSIST => {
                     std::future::pending::<()>().await;
                     ProviderEffectDispatch::Unknown
+                }
+                RELEASE_MATCHING_ACK | RELEASE_CONTRADICTORY_ACK => {
+                    self.release.notified().await;
+                    let mut late = ack;
+                    if mode == RELEASE_CONTRADICTORY_ACK {
+                        // Alter only the late return, never the retained lookup receipt.
+                        late.status = ProviderEffectAckStatus::Rejected;
+                    }
+                    ProviderEffectDispatch::Ack(late)
                 }
                 _ => ProviderEffectDispatch::Ack(ack),
             }

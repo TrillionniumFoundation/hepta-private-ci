@@ -1,0 +1,38 @@
+    Checking codex-utils-absolute-path v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/utils/absolute-path)
+    Checking codex-utils-rustls-provider v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/utils/rustls-provider)
+    Checking codex-utils-cache v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/utils/cache)
+    Checking codex-utils-home-dir v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/utils/home-dir)
+    Checking codex-utils-path-uri v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/utils/path-uri)
+    Checking codex-utils-string v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/utils/string)
+    Checking codex-execpolicy v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/execpolicy)
+    Checking codex-network-proxy v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/network-proxy)
+    Checking codex-utils-image v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/utils/image)
+    Checking codex-http-client v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/http-client)
+    Checking codex-extension-items v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/ext/items)
+    Checking codex-utils-redacted-string v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/utils/redacted-string)
+    Checking codex-async-utils v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/async-utils)
+    Checking codex-protocol v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/protocol)
+    Checking codex-hepta-contracts v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/hepta-contracts)
+    Checking codex-utils-pty v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/utils/pty)
+warning: use of deprecated associated function `tokio::io::unix::AsyncFd::<T>::new`: unsound due to lack of I/O safety; use `AsyncFd::register` instead (see https://github.com/tokio-rs/tokio/pull/8587)
+  --> utils/pty/src/unix_io.rs:38:60
+   |
+38 |         let fd = std::panic::catch_unwind(move || AsyncFd::new(File::from(fd)))
+   |                                                            ^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-utils-pty` (lib) generated 1 warning
+    Checking codex-file-system v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/file-system)
+    Checking codex-hepta-types v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/hepta-types)
+    Checking codex-git-utils v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/git-utils)
+    Checking codex-history v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/history)
+    Checking codex-state v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/state)
+    Checking codex-hepta-paths v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/hepta-paths)
+    Checking codex-hepta-operations v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/hepta-operations)
+    Checking codex-hepta-wire v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/hepta-wire)
+    Checking codex-hepta-context-compiler v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/hepta-context-compiler)
+    Checking codex-hepta-automation v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/hepta-automation)
+    Checking codex-hepta-agent-loop v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/hepta-agent-loop)
+    Checking codex-hepta-fleet v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-serde-review/codex-rs/hepta-fleet)
+    Finished `dev` profile [unoptimized] target(s) in 28.41s

@@ -91,16 +91,26 @@ fn retained_generation_rejects_zero_and_non_u64_wire_values() {
         candidate["binding"]["generation"] = malformed;
         assert!(serde_json::from_value::<Frame>(candidate).is_err());
     }
+    let mut missing = original.clone();
+    missing["binding"]
+        .as_object_mut()
+        .expect("binding object")
+        .remove("generation");
+    assert!(serde_json::from_value::<Frame>(missing).is_err());
+    let overflow = serde_json::to_string(&original)
+        .expect("frame JSON")
+        .replace("\"generation\":7", "\"generation\":18446744073709551616");
+    assert!(serde_json::from_str::<Frame>(&overflow).is_err());
     for generation in [1, u64::MAX] {
-        let mut candidate = original.clone();
-        candidate["binding"]["generation"] = json!(generation);
-        assert_eq!(
-            serde_json::from_value::<Frame>(candidate)
-                .expect("nonzero u64")
-                .binding
-                .generation,
-            Generation::new(generation).expect("same constructor")
-        );
+        let mut expected = frame();
+        expected.binding.generation = Generation::new(generation).expect("same constructor");
+        let encoded = serde_json::to_value(&expected).expect("encode generation boundary");
+        assert_eq!(encoded["binding"]["generation"], json!(generation));
+        assert_eq!(encoded["binding"]["generation"].as_u64(), Some(generation));
+        let bytes = serde_json::to_vec(&expected).expect("encode full frame");
+        let decoded: Frame = serde_json::from_slice(&bytes).expect("nonzero u64 boundary");
+        assert_eq!(decoded, expected);
+        assert_eq!(serde_json::to_vec(&decoded).expect("same bytes"), bytes);
     }
 }
 
