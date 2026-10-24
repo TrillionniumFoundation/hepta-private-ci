@@ -1,0 +1,75 @@
+name: Hepta retained baseline log readback
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-baseline-retained-log-readback.yml
+permissions:
+  actions: read
+  contents: read
+jobs:
+  retained-logs:
+    if: github.event.pull_request.head.ref == 'diagnostic/hepta-retained-baseline-20261009'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      EXPECTED_REPOSITORY: TrillionniumFoundation/hepta-private-ci
+      RETAINED_RUN: "37942810656"
+      RETAINED_HEAD: 650536d4446531c2c0aebff626d7bb5a4b833747
+    steps:
+      - name: Retrieve only exact retained failed-job metadata and original logs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "$EXPECTED_REPOSITORY"
+          out="$RUNNER_TEMP/retained-baseline-logs"
+          mkdir -p "$out"
+          echo "OUT=$out" >> "$GITHUB_ENV"
+          gh api "repos/$EXPECTED_REPOSITORY/actions/runs/$RETAINED_RUN" > "$out/run.json"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          p = Path(os.environ['RUNNER_TEMP']) / 'retained-baseline-logs'
+          run = json.loads((p / 'run.json').read_text())
+          assert run['id'] == int(os.environ['RETAINED_RUN'])
+          assert run['head_sha'] == os.environ['RETAINED_HEAD']
+          assert run['repository']['full_name'] == os.environ['EXPECTED_REPOSITORY']
+          assert run['name'] == 'blocking-ci'
+          PY
+          failed=0
+          for job in 113861522859 113861522964 113861523059; do
+            gh api "repos/$EXPECTED_REPOSITORY/actions/jobs/$job" > "$out/job-$job.json"
+            python3 - "$out/job-$job.json" "$job" <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          job = json.loads(Path(sys.argv[1]).read_text())
+          assert job['id'] == int(sys.argv[2])
+          assert job['run_id'] == int(os.environ['RETAINED_RUN'])
+          assert job['status'] == 'completed' and job['conclusion'] == 'failure'
+          PY
+            status=0
+            # Preserve raw log bytes in files only; do not render their escapes in a terminal.
+            gh api --allow-escape-sequences "repos/$EXPECTED_REPOSITORY/actions/jobs/$job/logs" > "$out/job-$job.log" 2> "$out/job-$job-download.stderr" || status=$?
+            printf '%s\n' "$status" > "$out/job-$job-download.exit"
+            if test "$status" != 0 || ! test -s "$out/job-$job.log"; then
+              failed=1
+            fi
+          done
+          exit "$failed"
+      - name: Preserve byte identities and diagnostic-only scope
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/retained-baseline-logs"
+          mkdir -p "$out"
+          printf 'Read-only historical baseline diagnostics. This does not rerun, repair or qualify any failed job, new source, build, test or acceptance axis. No source checkout or runtime execution.\n' > "$out/SCOPE.txt"
+          cd "$out"
+          find . -maxdepth 1 -type f ! -name files.sha256 -print0 | sort -z | xargs -0 -r sha256sum > files.sha256
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: retained-baseline-37942810656-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/retained-baseline-logs/
+          if-no-files-found: error
+          retention-days: 14
