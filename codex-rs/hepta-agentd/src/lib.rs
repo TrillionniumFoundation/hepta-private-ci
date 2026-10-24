@@ -96,9 +96,29 @@ pub use authority_host_service::HostAuthorityLane;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityService;
 #[cfg(target_os = "linux")]
+mod root_notes_host_config;
+#[cfg(target_os = "linux")]
 mod root_notes_launch_channel;
 #[cfg(target_os = "linux")]
 mod root_notes_launch_io;
+#[cfg(target_os = "linux")]
+pub use root_notes_host_config::ROOT_NOTES_HOST_CONFIG_BOUND;
+#[cfg(target_os = "linux")]
+pub use root_notes_host_config::ROOT_NOTES_HOST_CONFIG_OPERATION_V1;
+#[cfg(target_os = "linux")]
+pub use root_notes_host_config::RootNotesAgentPathsV1;
+#[cfg(target_os = "linux")]
+pub use root_notes_host_config::RootNotesAuthBusPathsV1;
+#[cfg(target_os = "linux")]
+pub use root_notes_host_config::RootNotesDeploymentV1;
+#[cfg(target_os = "linux")]
+pub use root_notes_host_config::RootNotesHostConfigV1;
+#[cfg(target_os = "linux")]
+pub use root_notes_host_config::RootNotesInstalledBindingsV1;
+#[cfg(target_os = "linux")]
+pub use root_notes_host_config::RootNotesInstalledBundleV1;
+#[cfg(target_os = "linux")]
+pub use root_notes_host_config::RootNotesLaunchEndpointV1;
 #[cfg(target_os = "linux")]
 pub use root_notes_launch_channel::RootNotesLaunchAbort;
 #[cfg(target_os = "linux")]
