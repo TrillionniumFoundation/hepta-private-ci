@@ -23,3 +23,10 @@ pub(crate) use codex_hepta_authority_types::HostSignedWriterAuthorizationV1;
 pub(crate) use codex_hepta_authority_types::HostWriterAuthorizationClaimsV1;
 pub(crate) use codex_hepta_authority_types::HostWriterAuthorizationReadRequestV1;
 pub(crate) use codex_hepta_authority_types::HostWriterAuthorizationReadResponseV1;
+
+mod final_use_issuer;
+pub(crate) use codex_hepta_authority_types::AuthBusObjectiveBody;
+pub(crate) use codex_hepta_authority_types::AuthBusObjectiveIngress;
+pub use final_use_issuer::AgentdFinalUseIssuerError;
+pub use final_use_issuer::AgentdFinalUseIssuerPeer;
+pub use final_use_issuer::AgentdUnixFinalUseGrantProvider;
