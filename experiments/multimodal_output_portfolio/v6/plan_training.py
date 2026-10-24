@@ -22,7 +22,8 @@ from torch import nn
 from torch.nn import functional as F
 
 from .data import make_batch, render_tokens
-from .neural import NeuralPortfolio, NeuralSnapshot, NeuralState, PROFILES, parameter_hash
+from .neural import (CONDITIONED_SCHEMA, LEGACY_ARCHITECTURE, NeuralPortfolio, NeuralSnapshot,
+                     NeuralState, PROFILES, parameter_hash, read_checkpoint, snapshot_from_record)
 from .observer import METRIC_DIGEST, observe_tensors
 
 
@@ -112,11 +113,18 @@ class ControlledSnapshot:
         self.fingerprint = self._combined_hash()
 
     def _combined_hash(self):
-        bound = {"schema": "hepta.ndu-v6.controlled-snapshot.v1",
+        schema = self._checkpoint_schema()
+        bound = {"schema": schema,
                  "base": self._base.fingerprint, "gate": self._gate_hash,
                  "plans": PLANS, "selection": "deterministic_argmax",
                  "initial_plan_cost": self.initial_plan_cost}
+        if schema.endswith(".v2"):
+            bound["gate_config"] = self._gate.config
         return hashlib.sha256(json.dumps(bound, sort_keys=True).encode()).hexdigest()
+
+    def _checkpoint_schema(self):
+        legacy = self._base.config.get("architecture", LEGACY_ARCHITECTURE) == LEGACY_ARCHITECTURE
+        return f"hepta.ndu-v6.controlled-snapshot.v{1 if legacy else 2}"
 
     def verify_integrity(self):
         self._base.verify_integrity()
@@ -209,19 +217,30 @@ class ControlledSnapshot:
                   "gate_state_dict": self._gate.state_dict(),
                   "gate_sha256": self._gate_hash, "plans": PLANS,
                   "metadata": self.metadata, "combined_sha256": self.fingerprint}
+        if self._checkpoint_schema().endswith(".v2"):
+            for key in ("base_config", "base_state_dict", "base_metadata"):
+                del record[key]
+            record["schema"] = self._checkpoint_schema()
+            record["base_record"] = self._base.to_record()
         torch.save(record, temporary)
         temporary.replace(path)
         return self.fingerprint
 
     @classmethod
-    def load(cls, path):
-        record = torch.load(Path(path), map_location="cpu", weights_only=True)
-        if (record.get("schema") != "hepta.ndu-v6.controlled-snapshot.v1"
+    def load(cls, path, *, expected_file_sha256=None):
+        record = read_checkpoint(path, expected_file_sha256)
+        if (record.get("schema") not in {"hepta.ndu-v6.controlled-snapshot.v1",
+                                         "hepta.ndu-v6.controlled-snapshot.v2"}
                 or record.get("plans") != PLANS):
             raise ValueError("Unsupported controlled snapshot/plan set")
-        model = NeuralPortfolio(**record["base_config"])
-        model.load_state_dict(record["base_state_dict"], strict=True)
-        base = NeuralSnapshot(model, record["base_metadata"])
+        if record["schema"].endswith(".v1"):
+            model = NeuralPortfolio(**record["base_config"])
+            model.load_state_dict(record["base_state_dict"], strict=True)
+            base = NeuralSnapshot(model, record["base_metadata"])
+        else:
+            if record.get("base_record", {}).get("schema") != CONDITIONED_SCHEMA:
+                raise ValueError("Controlled v2 requires an explicit config-bound conditioned base")
+            base = snapshot_from_record(record["base_record"])
         gate = PlanHead(**record["gate_config"])
         gate.load_state_dict(record["gate_state_dict"], strict=True)
         result = cls(base, gate, record["metadata"])

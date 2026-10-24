@@ -9,6 +9,7 @@ inference; controls change learned latent states, including shared semantics.
 from copy import deepcopy
 from dataclasses import asdict, dataclass, replace
 import hashlib
+import io
 import math
 from pathlib import Path
 import time
@@ -22,6 +23,9 @@ from .data import BOS, CAPTION_LENGTH, Observation, Target, VOCAB, make_batch
 
 ACTIONS = ("refine_semantic", "refine_image", "refine_text", "couple")
 PROFILES = ("supervised", "terminal_entropic_ndu")
+LEGACY_ARCHITECTURE = "legacy"
+CONDITIONED_ARCHITECTURE = "public-command-film-layernorm-v1"
+CONDITIONED_SCHEMA = "hepta.ndu-v6.conditioned-snapshot.v2"
 
 
 @dataclass(frozen=True)
@@ -53,6 +57,7 @@ class TrainConfig:
     noise_scale: float = .15
     refinement_steps: int = 3
     threads: int = 2
+    architecture: str = LEGACY_ARCHITECTURE
 
 
 def parameter_hash(model):
@@ -64,6 +69,53 @@ def parameter_hash(model):
         digest.update(str(tuple(value.shape)).encode())
         digest.update(value.numpy().tobytes())
     return digest.hexdigest()
+
+
+def checkpoint_file_sha256(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def read_checkpoint(path, expected_file_sha256=None):
+    """Verify caller-pinned bytes before safely reading a checkpoint record."""
+    raw = Path(path).read_bytes()
+    if (expected_file_sha256 is not None
+            and hashlib.sha256(raw).hexdigest() != expected_file_sha256):
+        raise ValueError("Checkpoint file SHA-256 mismatch")
+    return torch.load(io.BytesIO(raw), map_location="cpu", weights_only=True)
+
+
+def model_from_config(config):
+    config = dict(config)
+    architecture = config.pop("architecture", LEGACY_ARCHITECTURE)
+    if architecture == LEGACY_ARCHITECTURE:
+        return NeuralPortfolio(**config)
+    if architecture == CONDITIONED_ARCHITECTURE:
+        from .conditioned import ConditionedPortfolio
+        return ConditionedPortfolio(**config)
+    raise ValueError(f"Unsupported neural architecture: {architecture}")
+
+
+def snapshot_from_model(model, metadata=None):
+    architecture = model.config.get("architecture", LEGACY_ARCHITECTURE)
+    if architecture == LEGACY_ARCHITECTURE:
+        return NeuralSnapshot(model, metadata)
+    if architecture == CONDITIONED_ARCHITECTURE:
+        from .conditioned import ConditionedSnapshot
+        return ConditionedSnapshot(model, metadata)
+    raise ValueError(f"Unsupported neural architecture: {architecture}")
+
+
+def snapshot_from_record(record):
+    if record.get("schema") == "hepta.ndu-v6.neural-snapshot.v1":
+        return NeuralSnapshot._from_record(record)
+    if record.get("schema") == CONDITIONED_SCHEMA:
+        from .conditioned import ConditionedSnapshot
+        return ConditionedSnapshot._from_record(record)
+    raise ValueError("Unsupported neural snapshot schema")
+
+
+def load_snapshot(path, *, expected_file_sha256=None):
+    return snapshot_from_record(read_checkpoint(path, expected_file_sha256))
 
 
 class NeuralPortfolio(nn.Module):
@@ -174,6 +226,9 @@ class NeuralSnapshot:
     """Independent frozen parameter copy; public methods never accept Target."""
 
     def __init__(self, model, metadata=None):
+        if (type(self) is NeuralSnapshot
+                and model.config.get("architecture", LEGACY_ARCHITECTURE) != LEGACY_ARCHITECTURE):
+            raise ValueError("Use snapshot_from_model for an explicit nonlegacy architecture")
         self._model = deepcopy(model).cpu().eval()
         for parameter in self._model.parameters():
             parameter.requires_grad_(False)
@@ -233,15 +288,22 @@ class NeuralSnapshot:
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         temporary = path.with_suffix(path.suffix + ".tmp")
-        torch.save({"schema": "hepta.ndu-v6.neural-snapshot.v1",
-                    "config": self.config, "state_dict": self._model.state_dict(),
-                    "parameter_sha256": self.fingerprint, "metadata": self.metadata}, temporary)
+        torch.save(self.to_record(), temporary)
         temporary.replace(path)
         return self.fingerprint
 
+    def to_record(self):
+        self.verify_integrity()
+        return {"schema": "hepta.ndu-v6.neural-snapshot.v1",
+                "config": self.config, "state_dict": self._model.state_dict(),
+                "parameter_sha256": self.fingerprint, "metadata": self.metadata}
+
     @classmethod
-    def load(cls, path):
-        record = torch.load(Path(path), map_location="cpu", weights_only=True)
+    def load(cls, path, *, expected_file_sha256=None):
+        return cls._from_record(read_checkpoint(path, expected_file_sha256))
+
+    @classmethod
+    def _from_record(cls, record):
         if record.get("schema") != "hepta.ndu-v6.neural-snapshot.v1":
             raise ValueError("Unsupported neural snapshot schema")
         model = NeuralPortfolio(**record["config"])
@@ -270,7 +332,8 @@ def train_profiles(corpus, config=None, progress=None):
     torch.set_num_threads(config.threads)
     with torch.random.fork_rng(devices=[]):
         torch.manual_seed(config.seed)
-        original = NeuralPortfolio(config.hidden, config.noise_scale)
+        original = model_from_config({"hidden": config.hidden, "noise_scale": config.noise_scale,
+                                      "architecture": config.architecture})
     initial_sha = parameter_hash(original)
     snapshots, reports = {}, {}
     for profile in PROFILES:
@@ -281,6 +344,8 @@ def train_profiles(corpus, config=None, progress=None):
         gradient_evidence = {name: 0. for name in
                              ("pixel_encoder", "pixel_decoder", "text_decoder",
                               "semantic_cell", "image_cell", "text_cell", "coupling_cell")}
+        if config.architecture == CONDITIONED_ARCHITECTURE:
+            gradient_evidence.update({"command_embedding": 0., "command_film": 0., "fuse": 0.})
         for iteration in range(config.steps):
             batch_seed = config.seed * 1000003 + iteration
             batch = make_batch(corpus, "train", config.batch_size, batch_seed)
@@ -330,9 +395,10 @@ def train_profiles(corpus, config=None, progress=None):
         metadata = {"profile": profile, "config": asdict(config),
                     "initial_parameter_sha256": initial_sha,
                     "source_manifest_sha256": corpus.manifest["manifest_sha256"]}
-        snapshots[profile] = NeuralSnapshot(model, metadata)
+        snapshots[profile] = snapshot_from_model(model, metadata)
         reports[profile] = {
-            **metadata, "final_parameter_sha256": snapshots[profile].fingerprint,
+            **metadata, "final_parameter_sha256": parameter_hash(model),
+            "final_snapshot_sha256": snapshots[profile].fingerprint,
             "batch_action_schedule_sha256": schedule_digest.hexdigest(),
             "optimizer_updates": config.steps, "history": history,
             "gradient_abs_sum_max": gradient_evidence,
