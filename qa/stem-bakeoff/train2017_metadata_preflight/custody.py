@@ -45,6 +45,18 @@ def pinned_file(path, size, digest):
         )
         stream.seek(0)
         yield stream
+        # A same-size rewrite can escape timestamp-only checks on some file
+        # systems. Verify the full byte pin again after the caller finishes.
+        stream.seek(0)
+        verified, verified_bytes = hashlib.sha256(), 0
+        while chunk := stream.read(min(1024**2, size + 1 - verified_bytes)):
+            verified_bytes += len(chunk)
+            require(verified_bytes <= size, "source grew during final hash")
+            verified.update(chunk)
+        require(
+            verified_bytes == size and verified.hexdigest() == digest,
+            "source bytes changed during preflight",
+        )
         require(
             signature(before)
             == signature(os.fstat(stream.fileno()))

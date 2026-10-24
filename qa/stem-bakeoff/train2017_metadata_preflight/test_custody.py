@@ -33,6 +33,13 @@ class CustodyTests(unittest.TestCase):
             with self.assertRaises(PreflightError), p.pinned_file(file, 8, digest):
                 file.write_bytes(b"modified")
 
+            # Model coarse/colliding stat timestamps: changed bytes must still
+            # fail even if the metadata signature appears unchanged.
+            file.write_bytes(b"original")
+            with patch.object(p, "signature", return_value=(0, 0, 8, 0, 0)):
+                with self.assertRaises(PreflightError), p.pinned_file(file, 8, digest):
+                    file.write_bytes(b"modified")
+
     def test_zip_member_sizes_hashes_duplicates_and_type(self):
         raw = b'{"info":{},"images":[]}'
         profile = (len(raw), len(raw), hashlib.sha256(raw).hexdigest(), len(raw))
