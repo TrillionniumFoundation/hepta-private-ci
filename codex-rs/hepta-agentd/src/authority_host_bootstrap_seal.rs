@@ -93,7 +93,7 @@ fn seal_bytes(bytes: &[u8]) -> io::Result<File> {
     Ok(file)
 }
 
-fn validate_sealed(file: &File, expected_len: u64) -> io::Result<()> {
+pub(crate) fn validate_sealed(file: &File, expected_len: u64) -> io::Result<()> {
     let metadata = file.metadata()?;
     // SAFETY: F_GET_SEALS reads the seals of our retained live descriptor.
     let seals = unsafe { libc::fcntl(file.as_raw_fd(), libc::F_GET_SEALS) };

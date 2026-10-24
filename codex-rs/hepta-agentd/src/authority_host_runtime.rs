@@ -37,6 +37,7 @@ use crate::authority_host_config::read_root_json;
 mod listeners;
 use listeners::serve_lanes;
 pub(crate) use listeners::validate_runtime_lanes;
+pub(crate) use listeners::validate_lane_paths;
 
 #[path = "authority_host_session.rs"]
 mod session;

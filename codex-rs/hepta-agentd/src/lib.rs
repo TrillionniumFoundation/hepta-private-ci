@@ -109,6 +109,12 @@ pub use authority_host_service::HostAuthorityTextUiRegistration;
 #[cfg(target_os = "linux")]
 mod root_authority_session;
 #[cfg(target_os = "linux")]
+mod root_production_inputs;
+#[cfg(target_os = "linux")]
+pub use root_production_inputs::AgentdRootProductionInputs;
+#[cfg(target_os = "linux")]
+pub use root_production_inputs::receive_root_production_inputs;
+#[cfg(target_os = "linux")]
 mod root_observation_cache;
 #[cfg(target_os = "linux")]
 mod root_observation_stream;

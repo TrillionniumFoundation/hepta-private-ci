@@ -34,6 +34,16 @@ pub(crate) fn validate_runtime_lanes(
         lanes.push((HostAuthorityLane::NotesConsumerFrontier, notes));
     }
     let paths: Vec<_> = lanes.iter().map(|(_, path)| *path).collect();
+    validate_lane_paths(&paths, config.peer_gid)?;
+    Ok(lanes)
+}
+
+/// The authenticated consumer repeats the same path custody check before
+/// connecting. This contains no registration, issuer or listener owner.
+pub(crate) fn validate_lane_paths(paths: &[&std::path::PathBuf], peer_gid: u32) -> io::Result<()> {
+    if paths.is_empty() {
+        return Err(io::Error::other("lane sockets required"));
+    }
     if paths
         .iter()
         .collect::<std::collections::BTreeSet<_>>()
@@ -48,7 +58,7 @@ pub(crate) fn validate_runtime_lanes(
     let metadata = std::fs::symlink_metadata(parent)?;
     if !metadata.is_dir()
         || metadata.uid() != 0
-        || metadata.gid() != config.peer_gid
+        || metadata.gid() != peer_gid
         || metadata.mode() & 0o7777 != 0o2710
         || paths
             .iter()
@@ -67,7 +77,7 @@ pub(crate) fn validate_runtime_lanes(
             return Err(io::Error::other("unsafe runtime ancestor"));
         }
     }
-    Ok(lanes)
+    Ok(())
 }
 
 pub(super) fn serve_lanes(
