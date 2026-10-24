@@ -4,8 +4,8 @@
 
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::sync::atomic::AtomicU64;
 use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::SystemTime;
@@ -179,7 +179,9 @@ impl ControlContext {
                 .into_array(),
         };
         execution.check()?;
-        let claim_deadline = execution.deadline().min(std::time::Instant::now() + Duration::from_millis(250));
+        let claim_deadline = execution
+            .deadline()
+            .min(std::time::Instant::now() + Duration::from_millis(250));
         let token = self.runtime.block_on(async {
             tokio::select! {
                 biased;
@@ -352,7 +354,8 @@ impl SmolLmNeuralReadPortV1 {
             model_digest,
         };
         let load_execution = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(
-            std::time::Instant::now() + Duration::from_secs(120), cancellation.clone(),
+            std::time::Instant::now() + Duration::from_secs(120),
+            cancellation.clone(),
         );
         let mailbox = Arc::new(Mutex::new(None));
         let driver = SmolLmDriver::new(
@@ -434,7 +437,9 @@ impl NeuralCognitiveInferencePortV1 for SmolLmNeuralReadPortV1 {
     ) -> Result<NeuralCognitiveObservationV1, String> {
         execution.check()?;
         if self.admission_closed.load(Ordering::SeqCst) {
-            return Err("neural session has unresolved physical execution; unload required".to_owned());
+            return Err(
+                "neural session has unresolved physical execution; unload required".to_owned(),
+            );
         }
         if request.owner_id != self.context.owner_id
             || request.body_generation != self.context.body_generation
@@ -471,19 +476,27 @@ impl NeuralCognitiveInferencePortV1 for SmolLmNeuralReadPortV1 {
             request.query_digest.as_array(),
             &action_bytes,
         ]);
-        let remaining_ms = u64::try_from(execution.remaining()?.as_millis()).map_err(|error| error.to_string())?;
-        if remaining_ms == 0 { return Err("neural read execution deadline".to_owned()); }
+        // Keep the original read admission cap even for a direct host caller
+        // supplying a longer startup/evaluation window. This can only shorten
+        // the original caller's remaining window, never renew it.
+        let remaining_ms = u64::try_from(execution.remaining()?.as_millis())
+            .map_err(|error| error.to_string())?
+            .min(2_000);
+        if remaining_ms == 0 {
+            return Err("neural read execution deadline".to_owned());
+        }
         let admitted = self.context.admit(payload, remaining_ms)?;
-        let entered = match self
-            .context
-            .enter(&admitted, self.pin.compatibility_digest(), execution)
-        {
-            Ok(token) => token,
-            Err(error) => {
-                self.context.settle(&admitted, None, true, 0)?;
-                return Err(error);
-            }
-        };
+        let entered =
+            match self
+                .context
+                .enter(&admitted, self.pin.compatibility_digest(), execution)
+            {
+                Ok(token) => token,
+                Err(error) => {
+                    self.context.settle(&admitted, None, true, 0)?;
+                    return Err(error);
+                }
+            };
         *self
             .mailbox
             .lock()
@@ -495,7 +508,10 @@ impl NeuralCognitiveInferencePortV1 for SmolLmNeuralReadPortV1 {
             response: None,
         });
         if let Err(error) = execution.check() {
-            self.mailbox.lock().map_err(|_| "neural exchange poisoned")?.take();
+            self.mailbox
+                .lock()
+                .map_err(|_| "neural exchange poisoned")?
+                .take();
             self.context.settle(&admitted, None, true, 0)?;
             return Err(error);
         }

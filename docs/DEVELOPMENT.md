@@ -666,7 +666,7 @@ npm, Python, build or exact-source CI gates. Complete PN0 before treating later
 PoN or model experiments as a qualified integration baseline.
 
 Cross-repository qualification follows the Chain plan's single
-[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/3ca7df5fec2a8c77123df8336149666a9bc023ff/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
+[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/7bce5ff4850790d939b40840494bc1ddb3614eb1/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
 PN0 exact-source/security baseline → PN1 work security and PN2 bounded state →
 PN3 real-model closure → PN4 five-budget/effect-liability qualification →
 PN5 independent-operator WAN/discovery/availability → PN6 governed migration and
@@ -681,27 +681,31 @@ optimizer, durable journal or authority issuer. Parameter, topology, executable
 and consensus upgrades retain their separate admission and release boundaries.
 
 PN0's native pair pins Chain source
-`3ca7df5fec2a8c77123df8336149666a9bc023ff`, tree
-`8ed26849f0e0363d9176c0eb40a5289e1efb682d`, against unchanged default main
+`7bce5ff4850790d939b40840494bc1ddb3614eb1`, tree
+`b97351201aaf05728b0839a64d679afcca59e79a`, against unchanged default main
 `9fedf7ecbbe07177069c030592b4e03dcffebb81`. Its source-head lane tests that source;
 its base-merge lane pins the published main qualification object
-`cda6f8af4edea33b4b654114404fe5ddddd60d71`, with ordered parents `[9fedf7ec, 3ca7df5f]`
+`fc71756516693d8e5d49eecd9b08c0c0b831a184`, with ordered parents `[9fedf7ec, 7bce5ff4]`
 and the original exact merge-tree checks. The separate original-integration base
 `57c1ed545d067937cbd7aaa7570d5f22123265e6` now has actual GitHub PR preview
-`53dcaf0400740314883cc89c4a0ac197c0c457dd`, ordered parents `[57c1ed54, 3ca7df5f]`.
+`3ee8d3a901c3a39e509e185b92304cb6a5951f83`, ordered parents `[57c1ed54, 7bce5ff4]`.
 Both prospective trees equal the source tree; their different parent identities
 and required executions remain distinct. The qualification branch
-`fix/chain-controller-main-pair-20261024` publishes the main object; it is not
+`fix/chain-retained-owner-main-pair-20261024` publishes the main object; it is not
 an executed GitHub PR merge. Source and actual original-integration preview CI
 are pending, including required baseline run
-[40104063630](https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40104063630).
+[40116162665](https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40116162665).
 Publication, a matching tree or a pin refresh supplies no passing execution.
 
 The source preserves all concurrent `8e0f7adc` fixes and adds the TCL4 cache,
-fresh host child preparation and private controller mechanics. Its 213 local
-owner/cleanup controls pass with zero skips; strict workspace Clippy, exact
-Cargo graph, source-integrity checks and 1,151 local links pass. The controller
-still supplies no funded entry, complete C-to-A execution or whole-U return.
+fresh host child preparation and the private C-to-A launch composition. Its
+146 original-owner controls pass with zero skips. Strict workspace Clippy, the
+exact Cargo graph, source-integrity checks and 1,151 local links pass. Original
+C retains its A wait slot after unknown syscall results; original O retains C,
+and one fixed C/A owner root survives loss of all temporary caller references.
+The root is retained even after a timely receipt, pending actual retirement.
+This supplies no funded entry, real fresh-cgroup execution or whole-U return.
+Scope-only preparation still requires the original caller to retain its cap.
 The controlled empty-child observation on source `03b67a95` remains partial,
 with the original conservative overall outcome Unknown. Neither it nor these
 controls qualify the later combined source as a successful native model run.
@@ -824,7 +828,15 @@ operations in 554.851 seconds, 1,000 real child-process cycles in 467.420 second
 and both original crash probes. This closes that finite controlled timeout; it
 does not establish sustained throughput, eight-second runtime acceptance,
 Windows execution, global I05 bounds or real model qualification. The separate
-4,096-event capacity and cold-load allocation boundaries remain under repair.
+4,096-event count boundary is repaired by `0ca2b9dd`: the loader reads at most
+4,097 rows and still refuses oversize state; the original write transaction
+rejects a new 4,097th event before its first insert. Full valid cold reopen and
+no-event replay remain legal; refused writes preserve database/WAL bytes, and a
+valid oversized cold database remains intact and rejected. All three new real
+SQLite controls and 282 ordinary memory cases pass. The combined owner, atomic
+rehydration and capacity source `cd30140a` passes 1,045 ordinary cases; its 17
+inherited qualifications remain separately accounted. Per-row byte costs,
+global history/retention and physical filesystem bounds remain separate exits.
 
 Within the same PN0/PN4 boundary, AuthBus owns current settlement-issuer trust.
 `AuthBusAuthorityStore::settle` retains its registration parameter as an exact
@@ -989,8 +1001,24 @@ preview `c9d1b1dd`; the ordered preview parents are `[c38e7727, 0cb5b74d]` and
 the computed and GitHub trees match. Its
 [original full native workflow](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40111835033)
 and [source/preview Windows diagnostics](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40111843149)
-have been requested; they are not passing receipts. New native execution is
-still required to confirm these repairs.
+are separate from the actual two ARM diagnostic lanes. Both source and preview
+ran all 37 library cases: 14 passed and 23 failed; all four primary-owner and all
+five original security cases passed. The four original synchronous-stage cases,
+four principal cases and four volume cases also passed in each lane. Three
+FinalUse owners, three Registry owners and three real owner-lock cases still
+fail with `WrongOwner`; the owner-lock child entry alone is not that protocol.
+The nine sandbox groups did not execute because of compilation failures
+(inner-module `PathBuf` import and serialization of a nonserializable runtime
+filesystem policy). These are NOT_RUN, not passing or assertion failures.
+The import is repaired and request binding uses the original fallible raw-policy
+codec, retaining all filesystem fields and network identity. Its two real-code
+portable codec controls and all 25 existing Linux sandbox cases pass. A complete
+local MSVC check was attempted and stopped in the AWS-LC native build because
+this host lacks the Windows C toolchain; it is not native acceptance. Fresh
+Windows compilation/execution and x64 source/preview lanes remain required.
+Owner diagnostics add only bounded test-time ancestor/SID observations; no
+trusted subject, production guard, original assertion or eight-second cutoff is
+relaxed.
 
 The same PN0 CI repair runs all 819 existing Hepta Python regressions. The first
 full run exposed five wiring failures: multiline YAML dependency formatting,
@@ -1224,8 +1252,11 @@ root and bounded literal leaf, preserving real stage synchronization and checkin
 both completed NT and I/O status. It never converts the source or destination to
 paths. The original four controls and all their assertions remain mandatory.
 The earlier Win32 route's actual source-291 positive test failed with error 87;
-new native execution must confirm this repair. Cross-target checks and the
-227-case Linux contracts/registry suite are not Windows or power-loss acceptance.
+both actual ARM source-`0cb5b74d` and preview-`c9d1b1dd` lanes now pass all four
+original stage cases. This closes that finite error-87 mechanism regression,
+while their original opaque-owner consumers still fail with `WrongOwner`.
+Cross-target checks and the 227-case Linux contracts/registry suite do not
+establish cold-owner, x64 or power-loss acceptance.
 
 C3 and C4 now expose explicit `open_windows_private` entry points consuming the
 actual opaque fresh/existing directory capability. FinalUse shares its original

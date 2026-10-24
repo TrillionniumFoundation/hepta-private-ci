@@ -52,7 +52,10 @@ None.
 
 The existing PN0 security owner also owns the narrow Windows OS utility root.
 Its held-file mechanisms and read-only captured-owner/SID/DACL observations are
-supporting source, with native Windows controls still pending. This registration
+supporting source. The actual ARM source `0cb5b74d` and actual preview `c9d1b1dd`
+execute the original cases: all four primary-owner, five security, four principal
+and four volume controls pass. The complete library still has 23 owner failures
+out of 37; no aggregate native pass is claimed. This registration
 does not by itself qualify production storage, provide a new authority owner or
 transfer broad sandbox ownership. Explicit FinalUse and registry backends now
 consume the actual opaque directory capability; their native qualification and
@@ -67,9 +70,12 @@ invalid leaves. The safe mechanism accepts only a stage produced by actual
 synchronous native creation; the owner path retains its proven producer and lock.
 Native FileRenameInformation uses the exact stage and non-null held root, without
 Win32 path conversion or an asynchronous borrowed-File assumption. Both native
-completion statuses must succeed. The original error-87 observation remains
-failed until new native execution confirms the repair. These mechanisms do not
-construct a private owner; ordinary Windows store
+completion statuses must succeed. Both actual ARM lanes now pass all four
+original stage controls, closing that finite error-87 mechanism regression.
+All three explicit FinalUse and all three Registry native owners still fail
+with `WrongOwner`; bounded test-only ancestor/SID diagnostics retain the same
+production policy and errors. These mechanisms do not construct a private owner;
+ordinary Windows store
 constructors remain closed pending trusted-parent and recovery qualification.
 The utility's anonymous-token fixture now constructs and reads back an actual
 anonymous-level token, and its volume query opens the held kernel file ID on

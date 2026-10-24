@@ -31,7 +31,7 @@ pub fn material(
         payload_digest: Digest32::of_bytes(bytes),
         objective_digest: dataset.snapshot.objective_digest,
         dataset_digest: dataset.snapshot.dataset_digest,
-        generation: Generation::new(generation).unwrap(),
+        generation: Generation::new(generation).unwrap_or_else(|error| panic!("{error:?}")),
         family_digest: hash("explicit-controlled-test-port-not-model-family"),
         execution_profile_digest: hash("explicit-controlled-test-port-not-neural-execution"),
     };
@@ -97,7 +97,9 @@ pub fn plans(
                 minimum_clusters: 32,
             },
         };
-        plan.plan_digest = plan.canonical_digest().unwrap();
+        plan.plan_digest = plan
+            .canonical_digest()
+            .unwrap_or_else(|error| panic!("{error:?}"));
         plan
     };
     let candidate = temporal("controlled-candidate-evaluation");
@@ -137,7 +139,9 @@ pub fn plans(
             })
             .collect(),
         final_holdout_window_id: material.final_window_id.clone(),
-        final_holdout_digest: material.manifest_digest().unwrap(),
+        final_holdout_digest: material
+            .manifest_digest()
+            .unwrap_or_else(|error| panic!("{error:?}")),
     };
     let roles = vec![eval::MetricRoleContractV2 {
         metric_id: id("binary-correctness"),
@@ -151,7 +155,7 @@ pub fn plans(
     }];
     (
         eval::freeze_product_evaluation_plan_v1(raw, roles, sources, &candidate, &baseline)
-            .unwrap(),
+            .unwrap_or_else(|error| panic!("{error:?}")),
         candidate,
         baseline,
     )
@@ -159,8 +163,10 @@ pub fn plans(
 
 pub fn runner(path: &Path) -> Runner {
     let binding = hash("controlled-neural-original-holdout-owner");
-    let store = eval::LockedFileFinalHoldoutCasStoreV1::create(create(path), binding).unwrap();
-    let owner = eval::FencedFinalHoldoutOwnerV1::initialize(store, binding, fence()).unwrap();
+    let store = eval::LockedFileFinalHoldoutCasStoreV1::create(create(path), binding)
+        .unwrap_or_else(|error| panic!("{error:?}"));
+    let owner = eval::FencedFinalHoldoutOwnerV1::initialize(store, binding, fence())
+        .unwrap_or_else(|error| panic!("{error:?}"));
     eval::ProductEvaluationRunnerV1::new(owner)
 }
 

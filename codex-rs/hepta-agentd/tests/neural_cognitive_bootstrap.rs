@@ -86,23 +86,26 @@ impl NeuralCognitiveInferencePortV1 for UnadmittedOwners {
 
 fn config(root: &Path) -> AgentdConfig {
     let fleet_path = root.join("fleet");
-    let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).unwrap();
-    let registry = FleetRegistry::initialize(fleet_root.clone()).unwrap();
+    let fleet_root =
+        HeptaFleetRoot::parse(fleet_path.clone()).unwrap_or_else(|error| panic!("{error:?}"));
+    let registry =
+        FleetRegistry::initialize(fleet_root.clone()).unwrap_or_else(|error| panic!("{error:?}"));
     let workspace = root.join("workspace");
-    std::fs::create_dir(&workspace).unwrap();
+    std::fs::create_dir(&workspace).unwrap_or_else(|error| panic!("{error:?}"));
     let record = registry
         .register(
             AgentManifest::new(
                 owner(),
-                WorkspaceBinding::new(&workspace, &fleet_root).unwrap(),
+                WorkspaceBinding::new(&workspace, &fleet_root)
+                    .unwrap_or_else(|error| panic!("{error:?}")),
                 ResourceBudget::local_default(),
             )
-            .unwrap(),
+            .unwrap_or_else(|error| panic!("{error:?}")),
         )
-        .unwrap();
+        .unwrap_or_else(|error| panic!("{error:?}"));
     registry
         .compare_and_transition(&owner(), 0, AgentLifecycle::Starting)
-        .unwrap();
+        .unwrap_or_else(|error| panic!("{error:?}"));
     AgentdConfig::load(
         fleet_path,
         owner(),
@@ -112,7 +115,7 @@ fn config(root: &Path) -> AgentdConfig {
         record.layout.home_root().into(),
         workspace,
     )
-    .unwrap()
+    .unwrap_or_else(|error| panic!("{error:?}"))
 }
 
 #[test]

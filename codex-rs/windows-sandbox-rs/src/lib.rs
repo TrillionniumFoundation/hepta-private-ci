@@ -101,6 +101,8 @@ mod deny_read_resolver;
 mod capability_plan;
 #[cfg(any(target_os = "windows", test))]
 mod capability_registry;
+#[cfg(any(target_os = "windows", test))]
+mod permission_binding;
 
 #[cfg(target_os = "windows")]
 mod conpty;

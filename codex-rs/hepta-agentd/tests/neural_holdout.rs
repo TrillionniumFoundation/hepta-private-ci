@@ -37,7 +37,10 @@ impl NeuralCognitiveInferencePortV1 for ControlledDouble {
         _execution: &codex_hepta_agentd::NeuralCognitiveExecutionV1,
     ) -> Result<NeuralCognitiveObservationV1, String> {
         assert_eq!(Digest32::of_bytes(bytes), request.pin.payload_digest);
-        self.calls.lock().unwrap().push(request.clone());
+        self.calls
+            .lock()
+            .unwrap_or_else(|error| panic!("{error:?}"))
+            .push(request.clone());
         let mut observed = NeuralCognitiveObservationV1 {
             request: request.clone(),
             scores_q32: Some(vec![2, 1]),

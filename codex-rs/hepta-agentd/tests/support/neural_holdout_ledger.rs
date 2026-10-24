@@ -19,7 +19,7 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
 pub fn id(value: &str) -> StableId {
-    StableId::new(value).unwrap()
+    StableId::new(value).unwrap_or_else(|error| panic!("{error:?}"))
 }
 pub fn hash(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
@@ -27,13 +27,14 @@ pub fn hash(value: &str) -> Digest32 {
 pub fn micros() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .unwrap()
+        .unwrap_or_else(|error| panic!("{error:?}"))
         .as_micros()
         .try_into()
-        .unwrap()
+        .unwrap_or_else(|error| panic!("{error:?}"))
 }
 pub fn owner() -> AgentId {
-    AgentId::parse("00000000-0000-4000-8000-000000000219").unwrap()
+    AgentId::parse("00000000-0000-4000-8000-000000000219")
+        .unwrap_or_else(|error| panic!("{error:?}"))
 }
 pub fn create(path: &Path) -> File {
     OpenOptions::new()
@@ -41,7 +42,7 @@ pub fn create(path: &Path) -> File {
         .read(true)
         .write(true)
         .open(path)
-        .unwrap()
+        .unwrap_or_else(|error| panic!("{error:?}"))
 }
 pub fn actions() -> [StableId; 2] {
     [id("neural-no"), id("neural-yes")]
@@ -97,7 +98,8 @@ impl ControlledRoles {
                 })
                 .collect(),
         };
-        let verifier = ledger::LearningEvidenceVerifierV1::new(trust.clone()).unwrap();
+        let verifier = ledger::LearningEvidenceVerifierV1::new(trust.clone())
+            .unwrap_or_else(|error| panic!("{error:?}"));
         Self {
             keys,
             principals,
@@ -133,7 +135,8 @@ impl ControlledRoles {
         bundle: &eval::IndependentEvaluationBundleV1,
         roles: &[eval::MetricRoleContractV2],
     ) -> eval::SignedEvaluationEvidenceV1 {
-        let payload = eval::evaluation_signing_payload_v2(bundle, roles).unwrap();
+        let payload = eval::evaluation_signing_payload_v2(bundle, roles)
+            .unwrap_or_else(|error| panic!("{error:?}"));
         eval::SignedEvaluationEvidenceV1 {
             generator_plan: self.sign(/*index*/ 0, bundle.frozen_plan.plan_digest.as_array()),
             evaluator_bundle: self.sign(/*index*/ 1, &payload),
@@ -153,7 +156,7 @@ impl ControlledRoles {
         &mut self,
         root: &Path,
     ) -> (ledger::DatasetSnapshotReceiptV3, ledger::LedgerSnapshot) {
-        std::fs::create_dir(root).unwrap();
+        std::fs::create_dir(root).unwrap_or_else(|error| panic!("{error:?}"));
         let root_key = SigningKey::from_bytes(&[61; 32]);
         let root_trust = ledger::LearningTrustRootV1 {
             root_id: id("controlled-neural-test-root"),
@@ -177,19 +180,23 @@ impl ControlledRoles {
             signature: [0; 64],
         };
         distribution.signature = root_key
-            .sign(&distribution.signing_bytes().unwrap())
+            .sign(
+                &distribution
+                    .signing_bytes()
+                    .unwrap_or_else(|error| panic!("{error:?}")),
+            )
             .to_bytes();
-        let activated =
-            ledger::activate_learning_trust(&root_trust, distribution, None, micros()).unwrap();
+        let activated = ledger::activate_learning_trust(&root_trust, distribution, None, micros())
+            .unwrap_or_else(|error| panic!("{error:?}"));
         let binding = hash("controlled-neural-estimator-ledger");
-        let durable =
-            ledger::DurableLedger::create(create(&root.join("ledger")), binding, 512).unwrap();
-        let witness =
-            ledger::LedgerWitnessStore::create(create(&root.join("witness")), binding).unwrap();
-        let directory = File::open(root).unwrap();
+        let durable = ledger::DurableLedger::create(create(&root.join("ledger")), binding, 512)
+            .unwrap_or_else(|error| panic!("{error:?}"));
+        let witness = ledger::LedgerWitnessStore::create(create(&root.join("witness")), binding)
+            .unwrap_or_else(|error| panic!("{error:?}"));
+        let directory = File::open(root).unwrap_or_else(|error| panic!("{error:?}"));
         let mut writer =
             ledger::LedgerWriter::from_durable(durable, witness, activated, &directory, &directory)
-                .unwrap();
+                .unwrap_or_else(|error| panic!("{error:?}"));
         let mut candidates = actions().to_vec();
         candidates.push(id("abstain"));
         // Earlier calibration observations for the original nuisance estimator.
@@ -225,12 +232,17 @@ impl ControlledRoles {
                 };
                 let signed = self.sign(
                     /*index*/ 0,
-                    &ledger::decision_signing_payload_v2(&decision).unwrap(),
+                    &ledger::decision_signing_payload_v2(&decision)
+                        .unwrap_or_else(|error| panic!("{error:?}")),
                 );
-                let head = writer.witness_frontier().unwrap().anchor.chain_digest;
+                let head = writer
+                    .witness_frontier()
+                    .unwrap_or_else(|error| panic!("{error:?}"))
+                    .anchor
+                    .chain_digest;
                 let decision_receipt = writer
                     .append_decision(head, decision, &signed, micros())
-                    .unwrap();
+                    .unwrap_or_else(|error| panic!("{error:?}"));
                 let now = micros();
                 let correct = (a > b) == (action_index == 1);
                 let outcome = ledger::AuthenticatedOutcomeV1 {
@@ -261,7 +273,7 @@ impl ControlledRoles {
                 );
                 writer
                     .append_outcome(decision_receipt.chain_digest, outcome, &signed, micros())
-                    .unwrap();
+                    .unwrap_or_else(|error| panic!("{error:?}"));
             }
         }
         let plan = ledger::DatasetFreezePlanV2 {
@@ -271,12 +283,22 @@ impl ControlledRoles {
         };
         let signed = self.sign(
             /*index*/ 1,
-            &ledger::dataset_freeze_signing_payload_v2(&writer.snapshot().unwrap(), &plan).unwrap(),
+            &ledger::dataset_freeze_signing_payload_v2(
+                &writer
+                    .snapshot()
+                    .unwrap_or_else(|error| panic!("{error:?}")),
+                &plan,
+            )
+            .unwrap_or_else(|error| panic!("{error:?}")),
         );
-        let dataset = writer.freeze_dataset(plan, &signed, micros()).unwrap();
-        let snapshot = writer.snapshot().unwrap();
+        let dataset = writer
+            .freeze_dataset(plan, &signed, micros())
+            .unwrap_or_else(|error| panic!("{error:?}"));
+        let snapshot = writer
+            .snapshot()
+            .unwrap_or_else(|error| panic!("{error:?}"));
         ledger::verify_dataset_snapshot_receipt_against_ledger_v3(&dataset, &snapshot, micros())
-            .unwrap();
+            .unwrap_or_else(|error| panic!("{error:?}"));
         (dataset, snapshot)
     }
 }

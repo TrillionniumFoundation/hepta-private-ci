@@ -55,6 +55,7 @@ mod windows_impl {
     use codex_utils_absolute_path::AbsolutePathBuf;
     use std::fs::File;
     use std::path::Path;
+    use std::path::PathBuf;
     use std::sync::Arc;
     use std::sync::atomic::AtomicBool;
     use std::sync::atomic::Ordering;

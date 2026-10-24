@@ -1180,7 +1180,7 @@ fn request_binding(
     // process environment or profile enumeration occurs in the runner.
     context.request_environment(request.env_map)?;
     Ok(crate::capability_plan::RootRequestBinding {
-        permissions: serde_json::to_value(request.permissions)?,
+        permissions: request.permissions.request_binding_value()?,
         cwd: canonical_path_key(request.command_cwd),
         codex_home: canonical_path_key(request.codex_home),
         context: context.clone(),

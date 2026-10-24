@@ -41,7 +41,7 @@ struct Input {
 }
 
 fn id(text: &str) -> StableId {
-    StableId::new(text).unwrap()
+    StableId::new(text).unwrap_or_else(|error| panic!("{error:?}"))
 }
 fn hash(text: &str) -> Digest32 {
     Digest32::of_bytes(text.as_bytes())
@@ -49,7 +49,7 @@ fn hash(text: &str) -> Digest32 {
 fn seconds() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .unwrap()
+        .unwrap_or_else(|error| panic!("{error:?}"))
         .as_secs()
 }
 fn bounded(path: &Path, maximum: u64) -> Result<Vec<u8>> {

@@ -114,7 +114,7 @@ impl SmolLmDriver {
             || !config.script.is_absolute()
             || !config.materials.is_absolute()
             || !config.run_directory.is_absolute()
-            || config.source_pins.get(&config.script).is_none()
+            || !config.source_pins.contains_key(&config.script)
             || config.target_contract.len() > 1024 * 1024
             || config.wrapped_adapter.len() > 1024 * 1024
             || config.action_completions.is_empty()
@@ -310,7 +310,10 @@ impl ModelDriver for SmolLmDriver {
                 return Err("neural response does not match actual requested execution".to_owned());
             }
             exchange.execution.check()?;
-            self.session.as_ref().ok_or("neural session unavailable")?.acknowledge_response();
+            self.session
+                .as_ref()
+                .ok_or("neural session unavailable")?
+                .acknowledge_response();
             let output = Digest32::of_bytes(&raw);
             let observed_memory_bytes = response.observed_rss_bytes;
             exchange.response = Some((response, output));
