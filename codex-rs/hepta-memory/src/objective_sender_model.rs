@@ -248,22 +248,7 @@ impl ObjectiveSenderObservation {
     }
 }
 
-/// Exact current original writer identity presented to the independent host.
-/// These values are a binding, not a substitute for host authentication or a
-/// fencing grant. The capability derives them from its checked original lease.
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct ObjectiveSenderWriterFence {
-    pub owner_agent_id: AgentId,
-    pub lease_id: String,
-    pub lease_sha256: Sha256Digest,
-    pub generation: u64,
-    pub authority_epoch: u64,
-    pub owner_epoch: u64,
-    pub authority_grant_digest: Sha256Digest,
-    pub fencing_token_digest: Sha256Digest,
-    pub expires_at_unix_seconds: u64,
-}
+pub use codex_hepta_authority_types::ObjectiveSenderWriterFence;
 
 pub(super) type OwnerFence = ObjectiveSenderWriterFence;
 

@@ -30,3 +30,27 @@ pub use authority_host_wire::HostWriterAuthorizationReadResponseV1;
 mod identity;
 pub use identity::AgentdIdentity;
 pub use identity::HostAuthorityRegisteredIdentity;
+
+mod cognitive_values;
+pub use cognitive_values::CognitiveCheckpointTransport;
+pub use cognitive_values::CognitiveRecoveryAnchor;
+pub use cognitive_values::ObjectiveSenderCheckpoint;
+pub use cognitive_values::ObjectiveSenderCheckpointError;
+pub use cognitive_values::ObjectiveSenderWriterFence;
+
+mod cognitive_checkpoint_wire;
+pub use cognitive_checkpoint_wire::COGNITIVE_CHECKPOINT_FRAME_LIMIT;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointCommand;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointHead;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointPeerLifetime;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointPhase;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointProposal;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointReason;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointReceipt;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointRequest;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointResponse;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointRetainedProposal;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointRetainedRequest;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointStatus;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointToken;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointWriterBinding;

@@ -16,8 +16,6 @@ use codex_hepta_paths::HeptaAgentLayout;
 use codex_state::SqliteConfig;
 use codex_state::SqliteRecoveryError;
 use codex_utils_absolute_path::AbsolutePathBuf;
-use serde::Deserialize;
-use serde::Serialize;
 use sha2::Digest;
 use sha2::Sha256;
 use sqlx::Row;
@@ -53,18 +51,7 @@ const MAX_BYTES: i64 = 128 * 1024 * 1024;
 const MAX_ROW_BYTES: i64 = 2 * 1024 * 1024;
 const MAX_SCHEMA_BYTES: i64 = 1024 * 1024;
 
-/// An exact logical state cut, including all registered owner tables and their
-/// current tombstones/revocations. The host must independently persist and
-/// authenticate this value and establish that it is CURRENT before recovery.
-/// The digest is an integrity comparison, not a signature or write authority.
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct CognitiveRecoveryAnchor {
-    pub profile: String,
-    pub owner_agent_id: AgentId,
-    pub schema_digest: Sha256Digest,
-    pub state_digest: Sha256Digest,
-}
+pub use codex_hepta_authority_types::CognitiveRecoveryAnchor;
 
 /// Current recovery disposition supplied by the trusted host. Revocation wins
 /// before any filesystem access. An exact witness is an integrity input, not a
