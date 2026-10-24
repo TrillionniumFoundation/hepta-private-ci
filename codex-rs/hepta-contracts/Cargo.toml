@@ -19,11 +19,14 @@ workspace = true
 
 [dependencies]
 ed25519-dalek = { workspace = true }
-rustix = { workspace = true, features = ["fs", "process"] }
+rustix = { workspace = true, features = ["event", "fs", "process", "time"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 sha2 = { workspace = true }
 zeroize = { workspace = true }
+
+[target.'cfg(windows)'.dependencies]
+codex-utils-path = { workspace = true }
 
 [dev-dependencies]
 codex-utils-cargo-bin = { workspace = true }

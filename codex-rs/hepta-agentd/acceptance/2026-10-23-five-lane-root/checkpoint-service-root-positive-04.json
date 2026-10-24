@@ -1,0 +1,37 @@
+{
+  "command": [
+    "sudo",
+    "-n",
+    "env",
+    "HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT=/var/lib/hepta-authority-os3-20261023",
+    "HEPTA_HOST_AUTHORITY_QUALIFICATION_SOURCE=/data/hepta-authority-private-os3-20261023",
+    "HEPTA_HOST_AUTHORITY_QUALIFICATION_CLIENT_BIN=/data/hepta-checkpoint-wire-peer-04.ezpydgmi/authority_host_peer_qualification",
+    "HEPTA_SERVICE_WRITER_PROOF=1",
+    "HEPTA_SERVICE_CHECKPOINT=1",
+    "/data/hepta-root-service-196-target.e3i3hcbg/debug/deps/codex_hepta_agentd-376538b093a2091c",
+    "--exact",
+    "authority_host_service::tests::root::root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer",
+    "--ignored",
+    "--nocapture"
+  ],
+  "exit": 101,
+  "seconds": 13.94950402493123,
+  "artifacts": {
+    "source": {
+      "head": "4ba7155cc2239a2333fe3a246a9090f7240697e9",
+      "tree": "3942613e01ef9c4b5ed4a5fac23efe8f7a92cb3a",
+      "status": "M codex-rs/hepta-agentd/HOST_COGNITIVE_CHECKPOINT.md\n M codex-rs/hepta-agentd/examples/authority_host_peer_qualification.rs\n M codex-rs/hepta-agentd/src/authority_host_config.rs\n M codex-rs/hepta-agentd/src/authority_host_runtime.rs\n M codex-rs/hepta-agentd/src/authority_host_service.rs\n M codex-rs/hepta-agentd/src/authority_host_service_root_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_writer.rs\n?? codex-rs/hepta-agentd/examples/authority_host_peer_qualification/checkpoint.rs\n?? codex-rs/hepta-agentd/src/authority_host_checkpoint_lane.rs",
+      "index_flags": [
+        "H"
+      ],
+      "files": 9333,
+      "live_source_sha256": "e095c66ee43a5e98e39c7f1ecb26d22456f959cfb548b438e69afa071b75e252"
+    },
+    "test_binary": "/data/hepta-root-service-196-target.e3i3hcbg/debug/deps/codex_hepta_agentd-376538b093a2091c",
+    "test_sha256": "3984b4de0d2adb96a05b15867f649d1b8a87f54177d9b82bfebdc3c0134c55f8",
+    "client_binary": "/data/hepta-checkpoint-wire-peer-04.ezpydgmi/authority_host_peer_qualification",
+    "client_sha256": "7add14c7b49fd4cfedac1997de982ead70c3a1e5a7100e643f57e5fcb3a87fbb",
+    "source_counter": 0,
+    "scope": "limited original checkpoint wire and writer expiry; not fresh wholewriter bind or full publication/recovery"
+  }
+}

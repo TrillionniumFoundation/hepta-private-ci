@@ -8,6 +8,9 @@ use super::*;
 use crate::AgentRunCoordinator;
 use crate::RuntimeComposition;
 
+#[path = "objective_history_tests.rs"]
+mod history;
+
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
@@ -82,6 +85,7 @@ fn state_with(record: RunStartRecordV1) -> (TempDir, ObjectiveHostState) {
     (
         temp,
         ObjectiveHostState {
+            notes_cursor: 0,
             journal,
             highest_sequences,
         },

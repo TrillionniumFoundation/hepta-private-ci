@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "schema": "r10.owner-scoped-ci-timeout-diagnosis-and-local-fix",
+  "saved_at_utc": "2026-10-19T01:13:46.928396+00:00",
+  "original_source_commit": "2be5fc052ae7b2e9fb08c68a3ae7e5a218ad37d5",
+  "original_run": {
+    "id": 39114831266,
+    "head_sha": "2be5fc052ae7b2e9fb08c68a3ae7e5a218ad37d5",
+    "path": ".github/workflows/blocking-ci.yml",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "run_attempt": 1,
+    "created_at": "2026-10-18T09:18:44Z",
+    "run_started_at": "2026-10-18T09:18:44Z",
+    "updated_at": "2026-10-18T12:58:34Z"
+  },
+  "original_scoped_job": {
+    "id": 117665655613,
+    "name": "Hepta scoped native checks",
+    "head_sha": "2be5fc052ae7b2e9fb08c68a3ae7e5a218ad37d5",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "started_at": "2026-10-18T12:06:04Z",
+    "completed_at": "2026-10-18T12:51:04Z",
+    "runner_id": 1000165577,
+    "duration_seconds": 2700,
+    "unfinished_step": {
+      "name": "Test affected owners and reverse consumers, not a hand-written package list",
+      "status": "in_progress",
+      "conclusion": null,
+      "number": 8,
+      "started_at": "2026-10-18T12:06:58Z",
+      "completed_at": null
+    },
+    "artifact_retention_step": {
+      "name": "Retain dependency plan and real command output",
+      "status": "pending",
+      "conclusion": null,
+      "number": 9,
+      "started_at": null,
+      "completed_at": null
+    }
+  },
+  "required_job": {
+    "id": 117680130373,
+    "name": "CI required",
+    "head_sha": "2be5fc052ae7b2e9fb08c68a3ae7e5a218ad37d5",
+    "status": "completed",
+    "conclusion": "failure",
+    "started_at": "2026-10-18T12:58:24Z",
+    "completed_at": "2026-10-18T12:58:33Z",
+    "runner_id": 1000166264
+  },
+  "directly_observed_failure_reason": {
+    "aggregate_message": "CI dependencies did not succeed: hepta-scoped: cancelled",
+    "aggregate_exit_code": 1,
+    "aggregate_behavior_correct": true,
+    "native_compile_or_test_assertion_failure_observed": false
+  },
+  "retrieval_limits": {
+    "cancelled_job_log": {
+      "error": "GitHub API error 404: \ufeff<?xml version=\"1.0\" encoding=\"utf-8\"?><Error><Code>BlobNotFound</Code><Message>The specified blob does not exist.\nRequestId:ba7ef5c8-901e-008b-1464-5f246f000000\nTime:2026-10-19T00:54:48.8108028Z</Message></Error>",
+      "error_code": "NOT_FOUND",
+      "error_data": {
+        "error_str": "GitHub API error 404: \ufeff<?xml version=\"1.0\" encoding=\"utf-8\"?><Error><Code>BlobNotFound</Code><Message>The specified blob does not exist.\nRequestId:ba7ef5c8-901e-008b-1464-5f246f000000\nTime:2026-10-19T00:54:48.8108028Z</Message></Error>"
+      }
+    },
+    "run_artifact_count": 0,
+    "individual_check_annotations": "GitHub connector URL validation rejected direct check-run/annotation URLs with INVALID_ARGUMENT; their content was not obtained.",
+    "original_native_terminal_compiler_or_test_phase_unknown": true
+  },
+  "timeout_analysis": {
+    "original_outer_job_seconds": 2400,
+    "original_executor_default_seconds": 3600,
+    "workflow_executor_invocation_count": 1,
+    "executor_bound_scope": "One complete dependency planner plus its one selected just test --locked invocation, including compilation and all selected tests; not a separate budget per package.",
+    "bounded_child_invocation_excludes": "Pre-command source identity checks, post-command identity/record finalization, earlier native setup, and later artifact upload.",
+    "observed_native_setup_seconds": 54,
+    "observed_job_seconds": 2700,
+    "inference": "The 45-minute cancelled job duration is consistent with the configured 40-minute outer timeout and GitHub's documented five-minute forced cancellation window. This cause is inferred; no direct native cancellation log or annotation was recovered.",
+    "official_cancellation_reference": "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-cancellation"
+  },
+  "recovery_decision": {
+    "blind_same_head_rerun_performed": false,
+    "change_scope_or_accept_cancelled": false,
+    "implemented_outer_seconds": 4500,
+    "implemented_explicit_inner_seconds": 3600,
+    "non_child_budget_seconds": 900,
+    "whole_repository_policy_consequence": "The existing selector treats workflow changes as full_repo=true. This is retained and accepted; a fresh full-repository CI run must not be described as a fresh scoped-lane run."
+  },
+  "local_fix": {
+    "worktree": "/workspace/scratch/499c7902de8e/r10-hepta-ci-fix",
+    "branch": "agents/r10-scoped-ci-timeout-20261019",
+    "commit": "1c06c2cf9b6d2b4a95e10be11f720e70ec52e17f",
+    "tree": "66cb84f603f30a17e23af3ecd8ad356ee670cc7d",
+    "parent": "2be5fc052ae7b2e9fb08c68a3ae7e5a218ad37d5",
+    "changed_paths": [
+      ".github/workflows/blocking-ci.yml",
+      "qualification/ci/scoped-native-timeout-2026-10-19.md"
+    ],
+    "workflow_changed_lines": {
+      "added": 2,
+      "removed": 2
+    },
+    "all_other_tracked_product_and_contract_inputs_unchanged": true,
+    "worktree_clean": true,
+    "original_owner_worktree_clean_at_base": true,
+    "patch": {
+      "path": "/workspace/scratch/499c7902de8e/r10-evidence/owner-ci/ci-timeout-fix.patch",
+      "bytes": 5246,
+      "sha256": "fb9ea1ba8cd30ccf1ed605988af8c8fafad30c5662be302414dae8674bbe8e80"
+    },
+    "pushed": false,
+    "remote_ci_started_or_retried_by_this_agent": false
+  },
+  "validation": {
+    "status": "passed",
+    "started_at_utc": "2026-10-19T01:08:37.819144+00:00",
+    "finished_at_utc": "2026-10-19T01:08:49.880280+00:00",
+    "existing_python_tests_passed": 71,
+    "python_failures": 0,
+    "python_skips": 0,
+    "unittest_raw_log_sha256": "3eb98c93ef57321f451d1d385c12093f638cffdea2fd659b856570aba7f06498",
+    "receipt_sha256": "5ce3f40c980f5c055401306e5306bda407c0a5216f22dc10946790e2075cbcbf",
+    "yaml_semantic_comparison": "Only the two authorized fields/arguments changed; child argv, upload and final fan-in remained identical.",
+    "bash_blocks": 9,
+    "actionlint_version": "1.7.12",
+    "actionlint_exit_code": 0,
+    "optional_shellcheck_and_pyflakes_available": false,
+    "required_just_fmt_exit_code": 0,
+    "fmt_scope": "No changed files have an owning formatter group; no Rust source formatting is claimed.",
+    "tests_rerun_after_fmt": false,
+    "precommit_whitespace_issue": "A new extra EOF blank line in the verification note was caught before commit, removed, and the required formatter run repeated; workflow and tested implementation inputs did not change. The failed check was retained.",
+    "compiled_rust_or_runtime_qualification_executed": false,
+    "final_commit_input_hashes_equal_validated_working_bytes": true
+  },
+  "publication_state_observed_before_fix": {
+    "owner_pr": 2815,
+    "head": "2be5fc052ae7b2e9fb08c68a3ae7e5a218ad37d5",
+    "draft": true,
+    "state": "open",
+    "merged": false,
+    "auto_merge": null,
+    "observation_only_no_actor_or_cause_inferred": true
+  },
+  "evidence_manifest": {
+    "path": "/workspace/scratch/499c7902de8e/r10-evidence/owner-ci/evidence-manifest.json",
+    "bytes": 6792,
+    "sha256": "c95c9099c0f916fccb258577cf6d60a87b093340b5a9364218f5b838a82de171"
+  },
+  "primary_ci_observation_time_range_utc": [
+    "2026-10-19 00:54:48 UTC",
+    "2026-10-19 00:55:42 UTC"
+  ]
+}

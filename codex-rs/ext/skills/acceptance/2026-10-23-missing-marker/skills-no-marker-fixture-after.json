@@ -1,0 +1,27 @@
+{
+  "name": "skills-no-marker-fixture-after",
+  "cwd": "/data/hepta-mcp-implementation-closure",
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-skills-extension",
+    "--locked",
+    "--test-threads",
+    "2",
+    "-E",
+    "test(repo_ancestry_without_project_marker_does_not_walk_parents)"
+  ],
+  "baseSha": "a47dcc783fdb6c7deae6bc23bb83354a0052f5e6",
+  "workingDiffSha256": "cfcc0a43e36167404bef5f68fcbeac35942da31deef32d76b275f81837739fad",
+  "startedAt": "2026-10-23T21:05:30.887136+00:00",
+  "finishedAt": "2026-10-23T21:06:26.862924+00:00",
+  "elapsedSeconds": 55.975784612004645,
+  "exitCode": 100,
+  "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/skills-no-marker-fixture-after.log",
+  "environment": {
+    "CARGO_TARGET_DIR": "/data/hepta-mcp-integer-target",
+    "CARGO_BUILD_JOBS": "1",
+    "RUSTUP_TOOLCHAIN": "1.95.0"
+  }
+}

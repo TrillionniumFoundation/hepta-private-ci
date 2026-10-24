@@ -1,0 +1,137 @@
+{
+  "passed": false,
+  "native_qualification": false,
+  "retries": 0,
+  "test_threads": 1,
+  "source_batch_sha256": "92195d287d06a2b363251b810215a6e1a5cf49430ca8b9f31ade527571dc2462",
+  "original_seven_crate_failures_preserved": "hepta-original-seven-crates/result.json",
+  "steps": [
+    {
+      "label": "fmt",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt"
+      ],
+      "cwd": "/data/trillionnium-closure-20261024/hepta-types-merge/codex-rs",
+      "exit_code": 0,
+      "elapsed_seconds": 0.9704751810058951
+    },
+    {
+      "label": "diff-check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/data/trillionnium-closure-20261024/hepta-types-merge",
+      "exit_code": 0,
+      "elapsed_seconds": 0.02077347203157842
+    },
+    {
+      "label": "stage",
+      "argv": [
+        "git",
+        "add",
+        "--",
+        "codex-rs/hepta-agentd/NATIVE_CONTINUITY.md",
+        "codex-rs/hepta-agentd/src/deployment_native_cpu.rs",
+        "codex-rs/hepta-agentd/src/native_cpu_commands.rs",
+        "codex-rs/hepta-agentd/src/native_cpu_continuity.rs",
+        "codex-rs/hepta-agentd/src/native_cpu_continuity_history.rs",
+        "codex-rs/hepta-agentd/src/native_cpu_continuity_renewal.rs",
+        "codex-rs/hepta-agentd/src/native_cpu_entry.rs",
+        "codex-rs/hepta-agentd/src/native_cpu_evidence.rs",
+        "codex-rs/hepta-agentd/src/native_cpu_host.rs",
+        "codex-rs/hepta-agentd/src/native_cpu_recovery.rs",
+        "codex-rs/hepta-agentd/src/native_cpu_root.rs",
+        "codex-rs/hepta-agentd/src/native_cpu_runtime.rs",
+        "codex-rs/hepta-agentd/src/native_cpu_successor.rs",
+        "codex-rs/hepta-supervisor/src/kernel_initial_successor.rs",
+        "codex-rs/hepta-authority-client/src/root_authority_session.rs",
+        "codex-rs/hepta-authority-client/src/root_observation_stream.rs",
+        "codex-rs/hepta-authority-client/src/root_observation_cache.rs",
+        "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+        "codex-rs/hepta-agentd/src/authority_host_writer.rs"
+      ],
+      "cwd": "/data/trillionnium-closure-20261024/hepta-types-merge",
+      "exit_code": 0,
+      "elapsed_seconds": 0.03938976803328842
+    },
+    {
+      "label": "commit",
+      "argv": [
+        "git",
+        "commit",
+        "-m",
+        "Continue original native CPU owners through bounded successor generations"
+      ],
+      "cwd": "/data/trillionnium-closure-20261024/hepta-types-merge",
+      "exit_code": 0,
+      "elapsed_seconds": 0.05552873096894473
+    },
+    {
+      "label": "converge-integration",
+      "argv": [
+        "git",
+        "merge",
+        "--ff-only",
+        "f5be86d2f0d4bc602f2ea4097e5f0cc72490c1d1"
+      ],
+      "cwd": "/data/trillionnium-closure-20261024/hepta-integration",
+      "exit_code": 0,
+      "elapsed_seconds": 0.09490284707862884
+    },
+    {
+      "label": "targeted-regression-tests",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-supervisor",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-fleet",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-types",
+        "--lib",
+        "-E",
+        "test(native_cpu_) | test(kernel_initial) | test(native_profile_) | test(lifecycle::tests::)",
+        "--retries",
+        "0",
+        "--test-threads",
+        "1"
+      ],
+      "cwd": "/data/trillionnium-closure-20261024/hepta-types-merge/codex-rs",
+      "exit_code": 101,
+      "elapsed_seconds": 26.565161565085873
+    }
+  ],
+  "changed_paths": [
+    "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+    "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+    "codex-rs/hepta-agentd/src/deployment_native_cpu.rs",
+    "codex-rs/hepta-agentd/src/native_cpu_commands.rs",
+    "codex-rs/hepta-agentd/src/native_cpu_entry.rs",
+    "codex-rs/hepta-agentd/src/native_cpu_evidence.rs",
+    "codex-rs/hepta-agentd/src/native_cpu_host.rs",
+    "codex-rs/hepta-agentd/src/native_cpu_recovery.rs",
+    "codex-rs/hepta-agentd/src/native_cpu_root.rs",
+    "codex-rs/hepta-agentd/src/native_cpu_runtime.rs",
+    "codex-rs/hepta-authority-client/src/root_authority_session.rs",
+    "codex-rs/hepta-authority-client/src/root_observation_cache.rs",
+    "codex-rs/hepta-authority-client/src/root_observation_stream.rs",
+    "codex-rs/hepta-supervisor/src/kernel_initial_successor.rs"
+  ],
+  "source_head": "f5be86d2f0d4bc602f2ea4097e5f0cc72490c1d1",
+  "source_tree": "11bcf723e42b42b0a9185844a5abfaef01387d36",
+  "error": "RuntimeError('targeted-regression-tests failed')",
+  "source_bytes_unchanged": true
+}

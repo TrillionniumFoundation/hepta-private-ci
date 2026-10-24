@@ -23,23 +23,105 @@ use crate::AgentdResponse;
 use crate::AgentdState;
 use crate::MAX_CONTROL_FRAME_BYTES;
 use crate::error::io_context;
+use crate::state::AgentdRuntimeProfile;
+use crate::state::FullRuntimeOwners;
+#[cfg(target_os = "linux")]
+use crate::state::NativeCpuRuntimeOwners;
+#[cfg(target_os = "linux")]
+use codex_hepta_agent_protocol::AgentdLifecycleMethod;
+#[cfg(target_os = "linux")]
+use codex_hepta_agent_protocol::AgentdLifecyclePayload;
+#[cfg(target_os = "linux")]
+use codex_hepta_agent_protocol::AgentdLifecycleRequest;
+#[cfg(target_os = "linux")]
+use codex_hepta_agent_protocol::AgentdLifecycleResponse;
+use codex_hepta_agent_protocol::AgentdRequestFrame;
+use codex_hepta_agent_protocol::AgentdResponseFrame;
 
 const CONNECTION_CAPACITY: usize = 32;
 const IO_TIMEOUT: Duration = Duration::from_secs(2);
 const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
 
-pub(crate) struct AgentdControlServer {
+/// Static host composition keeps finite Organ dispatch out of the full router.
+/// Neither the request schema nor the peer chooses this profile.
+trait ControlProfile<S: AgentdRuntimeProfile> {
+    type Method: serde::de::DeserializeOwned + Send;
+    type Payload: serde::Serialize + Send;
+    fn response(
+        state: &AgentdState<S>,
+        request: AgentdRequestFrame<Self::Method>,
+    ) -> impl std::future::Future<Output = Result<AgentdResponseFrame<Self::Payload>, AgentdError>> + Send;
+    fn error_payload(code: String, message: String) -> Self::Payload;
+}
+
+struct FullControlProfile;
+#[cfg(target_os = "linux")]
+struct NotesControlProfile;
+#[cfg(target_os = "linux")]
+struct NativeCpuControlProfile;
+
+impl ControlProfile<FullRuntimeOwners> for FullControlProfile {
+    type Method = crate::AgentdMethod;
+    type Payload = AgentdPayload;
+    fn error_payload(code: String, message: String) -> Self::Payload {
+        AgentdPayload::Error { code, message }
+    }
+    async fn response(
+        state: &AgentdState,
+        request: crate::AgentdRequest,
+    ) -> Result<AgentdResponse, AgentdError> {
+        state
+            .response(request.request_id, request.spawn_generation, request.method)
+            .await
+    }
+}
+
+#[cfg(target_os = "linux")]
+impl ControlProfile<FullRuntimeOwners> for NotesControlProfile {
+    type Method = crate::AgentdMethod;
+    type Payload = AgentdPayload;
+    fn error_payload(code: String, message: String) -> Self::Payload {
+        AgentdPayload::Error { code, message }
+    }
+    async fn response(
+        state: &AgentdState,
+        request: crate::AgentdRequest,
+    ) -> Result<AgentdResponse, AgentdError> {
+        state
+            .notes_response(request.request_id, request.spawn_generation, request.method)
+            .await
+    }
+}
+
+#[cfg(target_os = "linux")]
+impl ControlProfile<NativeCpuRuntimeOwners> for NativeCpuControlProfile {
+    type Method = AgentdLifecycleMethod;
+    type Payload = AgentdLifecyclePayload;
+    fn error_payload(code: String, message: String) -> Self::Payload {
+        AgentdLifecyclePayload::Error { code, message }
+    }
+    async fn response(
+        state: &AgentdState<NativeCpuRuntimeOwners>,
+        request: AgentdLifecycleRequest,
+    ) -> Result<AgentdLifecycleResponse, AgentdError> {
+        state
+            .native_cpu_response(request.request_id, request.spawn_generation, request.method)
+            .await
+    }
+}
+
+pub(crate) struct AgentdControlServer<S: AgentdRuntimeProfile = FullRuntimeOwners> {
     listener: UnixListener,
     socket_path: PathBuf,
-    state: Arc<AgentdState>,
+    state: Arc<AgentdState<S>>,
     cancellation: CancellationToken,
     connections: Arc<Semaphore>,
 }
 
-impl AgentdControlServer {
+impl<S: AgentdRuntimeProfile> AgentdControlServer<S> {
     pub(crate) async fn bind(
         socket_path: PathBuf,
-        state: Arc<AgentdState>,
+        state: Arc<AgentdState<S>>,
         cancellation: CancellationToken,
     ) -> Result<Self, AgentdError> {
         prepare_socket(&socket_path).await?;
@@ -56,7 +138,7 @@ impl AgentdControlServer {
         })
     }
 
-    pub(crate) async fn run(mut self) -> Result<(), AgentdError> {
+    async fn run_for<P: ControlProfile<S> + 'static>(mut self) -> Result<(), AgentdError> {
         loop {
             let stream = tokio::select! {
                 _ = self.cancellation.cancelled() => return Ok(()),
@@ -74,13 +156,31 @@ impl AgentdControlServer {
             let state = Arc::clone(&self.state);
             tokio::spawn(async move {
                 let _permit = permit;
-                let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
+                let _ = timeout(IO_TIMEOUT, serve_connection::<P, S>(stream, state)).await;
             });
         }
     }
 }
 
-impl Drop for AgentdControlServer {
+impl AgentdControlServer {
+    pub(crate) async fn run(self) -> Result<(), AgentdError> {
+        self.run_for::<FullControlProfile>().await
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) async fn run_notes(self) -> Result<(), AgentdError> {
+        self.run_for::<NotesControlProfile>().await
+    }
+}
+
+#[cfg(target_os = "linux")]
+impl AgentdControlServer<NativeCpuRuntimeOwners> {
+    pub(crate) async fn run_native_cpu(self) -> Result<(), AgentdError> {
+        self.run_for::<NativeCpuControlProfile>().await
+    }
+}
+
+impl<S: AgentdRuntimeProfile> Drop for AgentdControlServer<S> {
     fn drop(&mut self) {
         if let Err(error) = std::fs::remove_file(&self.socket_path)
             && error.kind() != ErrorKind::NotFound
@@ -93,7 +193,10 @@ impl Drop for AgentdControlServer {
     }
 }
 
-async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result<(), AgentdError> {
+async fn serve_connection<P: ControlProfile<S>, S: AgentdRuntimeProfile>(
+    stream: UnixStream,
+    state: Arc<AgentdState<S>>,
+) -> Result<(), AgentdError> {
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
@@ -103,9 +206,9 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
             "agentd control request must be one bounded newline JSON frame".to_string(),
         ));
     }
-    let request: AgentdRequest = serde_json::from_slice(&frame)?;
+    let request: AgentdRequestFrame<P::Method> = serde_json::from_slice(&frame)?;
     let response = if request.schema_version != AGENTD_CONTROL_SCHEMA_VERSION {
-        error_response(
+        error_response::<P, S>(
             &state,
             request.request_id,
             request.spawn_generation,
@@ -113,15 +216,14 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
             "unsupported agentd control schema",
         )
     } else {
-        match state
-            .response(request.request_id, request.spawn_generation, request.method)
-            .await
-        {
+        let request_id = request.request_id;
+        let spawn_generation = request.spawn_generation;
+        match P::response(&state, request).await {
             Ok(response) => response,
-            Err(error) => error_response(
+            Err(error) => error_response::<P, S>(
                 &state,
-                request.request_id,
-                request.spawn_generation,
+                request_id,
+                spawn_generation,
                 "request_rejected",
                 &error.to_string(),
             ),
@@ -139,23 +241,20 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
     Ok(())
 }
 
-fn error_response(
-    state: &AgentdState,
+fn error_response<P: ControlProfile<S>, S: AgentdRuntimeProfile>(
+    state: &AgentdState<S>,
     request_id: u64,
     spawn_generation: u64,
     code: &str,
     message: &str,
-) -> AgentdResponse {
-    AgentdResponse {
+) -> AgentdResponseFrame<P::Payload> {
+    AgentdResponseFrame {
         schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
         request_id,
         agent_id: state.identity().agent_id.clone(),
         spawn_generation: state.identity().spawn_generation,
         current_generation: spawn_generation,
-        payload: AgentdPayload::Error {
-            code: code.to_string(),
-            message: bounded_message(message),
-        },
+        payload: P::error_payload(code.to_string(), bounded_message(message)),
     }
 }
 
@@ -180,14 +279,30 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
                 ),
             )));
         }
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
-        Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
-        Err(_error) if !socket_path.exists() => return Ok(()),
+        Err(error)
+            if matches!(
+                error.kind(),
+                ErrorKind::NotFound | ErrorKind::ConnectionRefused
+            ) => {}
         Err(error) => {
             return Err(io_context(
                 /* operation */ "probe existing agentd control socket",
                 /* path */ socket_path,
                 /* source */ error,
+            ));
+        }
+    }
+    // Windows may refuse a missing rendezvous or report NotFound when following
+    // an existing AF_UNIX entry. Inspect the entry itself before deciding that
+    // cleanup is unnecessary; a dangling symlink is not an absent path.
+    match tokio::fs::symlink_metadata(socket_path).await {
+        Ok(_) => {}
+        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
+        Err(error) => {
+            return Err(io_context(
+                "inspect agentd control socket entry",
+                socket_path,
+                error,
             ));
         }
     }
@@ -230,3 +345,7 @@ async fn set_owner_only(path: &Path) -> Result<(), AgentdError> {
 async fn set_owner_only(_path: &Path) -> Result<(), AgentdError> {
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "control_socket_tests.rs"]
+mod tests;

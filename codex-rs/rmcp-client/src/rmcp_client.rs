@@ -77,6 +77,7 @@ use crate::http_client_adapter::StreamableHttpClientAdapter;
 use crate::http_client_adapter::StreamableHttpClientAdapterError;
 use crate::http_client_adapter::StreamableHttpRedirectMode;
 use crate::in_process_transport::InProcessTransportFactory;
+use crate::mrtr::InputRequestOwner;
 use crate::oauth::OAuthPersistor;
 use crate::oauth::ResolvedOAuthCredentialStore;
 use crate::oauth::ResolvedOAuthTokens;
@@ -187,7 +188,7 @@ pub(crate) struct ElicitationPauseState {
 }
 
 impl ElicitationPauseState {
-    fn new() -> Self {
+    pub(crate) fn new() -> Self {
         let (paused, _rx) = watch::channel(false);
         Self {
             active_count: Arc::new(AtomicUsize::new(0)),
@@ -746,17 +747,20 @@ impl RmcpClient {
         timeout: Option<Duration>,
     ) -> Result<ReadResourceResult> {
         self.refresh_oauth_if_needed().await?;
+        let owner = InputRequestOwner::new();
+        let owner_ref = owner.reference();
         let requested_modern = self.protocol_mode == McpProtocolMode::V20260728;
         let result = self
             .run_service_operation("resources/read", timeout, move |service| {
                 let params = params.clone();
+                let owner_ref = owner_ref.clone();
                 async move {
                     let modern_session = requested_modern
                         && service.peer().peer_info().is_some_and(|info| {
                             info.protocol_version == ProtocolVersion::V_2026_07_28
                         });
                     if modern_session {
-                        service.read_resource(params).await
+                        crate::mrtr::read_resource(&service, params, &owner_ref).await
                     } else {
                         service.peer().read_resource(params).await
                     }
@@ -796,11 +800,14 @@ impl RmcpClient {
         };
         let mut rmcp_params = CallToolRequestParams::new(name);
         rmcp_params.arguments = arguments;
+        let owner = InputRequestOwner::new();
+        let owner_ref = owner.reference();
         let requested_modern = self.protocol_mode == McpProtocolMode::V20260728;
         let result = self
             .run_service_operation("tools/call", timeout, move |service| {
                 let mut rmcp_params = rmcp_params.clone();
                 let meta = meta.clone();
+                let owner_ref = owner_ref.clone();
                 async move {
                     let modern_session = requested_modern
                         && service.peer().peer_info().is_some_and(|info| {
@@ -808,7 +815,7 @@ impl RmcpClient {
                         });
                     if modern_session {
                         rmcp_params.meta = meta;
-                        return service.call_tool(rmcp_params).await;
+                        return crate::mrtr::call_tool(&service, rmcp_params, &owner_ref).await;
                     }
                     let mut options = rmcp::service::PeerRequestOptions::no_options();
                     options.meta = meta;

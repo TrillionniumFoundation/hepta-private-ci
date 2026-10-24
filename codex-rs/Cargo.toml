@@ -46,6 +46,8 @@ members = [
     "hooks",
     "hepta-agent-protocol",
     "hepta-agentd",
+    "hepta-authority-types",
+    "hepta-authority-client",
     "hepta-automation",
     "hepta-contracts",
     "hepta-evidence",
@@ -188,6 +190,11 @@ members = [
     "plugin",
     "model-provider",
 ]
+exclude = [
+    "third_party/i18n-config-0.4.8",
+    "third_party/secret-service-6.0.0",
+    "third_party/zbus-secret-service-keyring-store-1.0.1",
+]
 resolver = "2"
 
 [workspace.package]
@@ -234,6 +241,8 @@ codex-hepta-agent-protocol = { path = "hepta-agent-protocol" }
 codex-hepta-agentd = { path = "hepta-agentd" }
 codex-hepta-automation = { path = "hepta-automation" }
 codex-hepta-operations = { path = "hepta-operations" }
+codex-hepta-authority-types = { path = "hepta-authority-types" }
+codex-hepta-authority-client = { path = "hepta-authority-client" }
 codex-hepta-contracts = { path = "hepta-contracts" }
 codex-hepta-codex-adapter = { path = "hepta-codex-adapter" }
 codex-hepta-evidence = { path = "hepta-evidence" }
@@ -408,7 +417,7 @@ eventsource-stream = "0.2.3"
 flate2 = "1.1.8"
 futures = { version = "0.3", default-features = false }
 gethostname = "1.1.0"
-gix = { version = "0.81.0", default-features = false, features = ["sha1"] }
+gix = { version = "0.83.0", default-features = false, features = ["sha1"] }
 glob = "0.3"
 globset = "0.4"
 hmac = "0.12.1"
@@ -427,7 +436,8 @@ inventory = "0.3.19"
 itertools = "0.14.0"
 jsonptr = { version = "0.7.1", default-features = false }
 jsonwebtoken = "9.3.1"
-keyring = { version = "3.6", default-features = false }
+keyring = { version = "4.2", default-features = false, features = ["v1"] }
+keyring-core = "1.0.0"
 landlock = "0.4.4"
 lazy_static = "1"
 libc = "0.2.182"
@@ -490,7 +500,7 @@ serde_ignored = "0.1.14"
 serde_json = "1"
 serde_path_to_error = "0.1.20"
 serde_with = "3.17"
-serde_yaml = "0.9"
+serde_yaml = { package = "noyalib-serde-yaml", version = "=0.0.58" }
 serial_test = "3.2.0"
 sha1 = "0.10.6"
 scopeguard = "1.2.0"
@@ -568,7 +578,7 @@ which = "8"
 whoami = "1.6.1"
 wildmatch = "2.6.1"
 winapi-util = "0.1.11"
-zip = "2.4.2"
+zip = "9.0.0"
 zstd = "0.13"
 
 wiremock = "0.6"
@@ -655,12 +665,21 @@ lto = false
 strip = false
 
 [profile.ci-test]
-# Reduce binary size to reduce disk pressure.
+# Reduce binary size to keep multi-platform nextest archives within runner disk budgets.
 debug = "limited"
+strip = "debuginfo"
 inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Retain the existing encrypted Secret Service backend with maintained zbus 6
+# and replace the archived i18n parser without changing its 0.4 public variants.
+i18n-config = { path = "third_party/i18n-config-0.4.8" }
+secret-service = { path = "third_party/secret-service-6.0.0" }
+zbus-secret-service-keyring-store = { path = "third_party/zbus-secret-service-keyring-store-1.0.1" }
+# Matrix SDK 0.18 still exposes anymap2 in its event handler API. Keep that
+# API stable while replacing the unmaintained implementation with anymap3.
+anymap2 = { path = "third_party/anymap2-compat" }
 # Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2
 # bitmap import and patched chunk dependency without changing their public API.
 imbl = { path = "third_party/imbl-6.1.0" }
@@ -670,6 +689,9 @@ imbl = { path = "third_party/imbl-6.1.0" }
 # crate is upstream matrix-sdk-sqlite 0.18.0 with only its rusqlite constraint
 # advanced to 0.39, which uses the already-selected libsqlite3-sys 0.37.
 matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.18.0" }
+# Backport Matrix SDK's upstream IdentityBasedStrategy panic fix while the
+# workspace remains on the Rust-1.95-compatible 0.18 release line.
+matrix-sdk-crypto = { path = "third_party/matrix-sdk-crypto-0.18.0" }
 # Uncomment to debug local changes.
 # ratatui = { path = "../../ratatui" }
 crossterm = { git = "https://github.com/openai-oss-forks/crossterm", rev = "45fecb9508105988f42fe6ff0441783ed3717f92" }

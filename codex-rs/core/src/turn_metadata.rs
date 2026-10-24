@@ -122,7 +122,9 @@ pub(crate) struct TurnMetadataState {
     enriched_workspaces: RwLock<Option<BTreeMap<String, TurnMetadataWorkspace>>>,
     tool_namespaces_info: RwLock<Option<TurnToolNamespacesInfo>>,
     turn_started_at_unix_ms: RwLock<Option<i64>>,
-    responses_api_metadata: RwLock<BTreeMap<String, String>>,
+    // Recovery stores merged metadata without provenance. `None` preserves that
+    // distinction so its unknown fields remain bound to WebSocket reuse.
+    responses_api_metadata: RwLock<Option<BTreeMap<String, String>>>,
     responsesapi_client_metadata: RwLock<BTreeMap<String, String>>,
     root_turn_ambiguous: AtomicBool,
     user_input_requested_during_turn: AtomicBool,
@@ -185,7 +187,7 @@ impl TurnMetadataState {
             enriched_workspaces: RwLock::new(None),
             tool_namespaces_info: RwLock::new(None),
             turn_started_at_unix_ms: RwLock::new(None),
-            responses_api_metadata: RwLock::new(BTreeMap::new()),
+            responses_api_metadata: RwLock::new(Some(BTreeMap::new())),
             responsesapi_client_metadata: RwLock::new(BTreeMap::new()),
             root_turn_ambiguous: AtomicBool::new(false),
             user_input_requested_during_turn: AtomicBool::new(false),
@@ -341,10 +343,10 @@ impl TurnMetadataState {
             .write()
             .unwrap_or_else(std::sync::PoisonError::into_inner) =
             start.responses_metadata_extra.clone();
-        self.responses_api_metadata
+        *self
+            .responses_api_metadata
             .write()
-            .unwrap_or_else(std::sync::PoisonError::into_inner)
-            .clear();
+            .unwrap_or_else(std::sync::PoisonError::into_inner) = None;
     }
 
     pub(crate) fn set_responses_api_metadata(
@@ -354,7 +356,7 @@ impl TurnMetadataState {
         *self
             .responses_api_metadata
             .write()
-            .unwrap_or_else(std::sync::PoisonError::into_inner) = responses_api_metadata;
+            .unwrap_or_else(std::sync::PoisonError::into_inner) = Some(responses_api_metadata);
     }
 
     pub(crate) fn workspace_kind(&self) -> Option<String> {
@@ -366,29 +368,42 @@ impl TurnMetadataState {
     }
 
     fn responses_metadata_template(&self) -> CodexResponsesMetadata {
-        let mut metadata = self.mcp_metadata_template();
-        metadata.extra.extend(
-            self.responses_api_metadata
-                .read()
-                .unwrap_or_else(std::sync::PoisonError::into_inner)
-                .clone(),
-        );
+        // Use one configuration snapshot for filtering, the outgoing merged map,
+        // and connection compatibility, even if the setter runs concurrently.
+        let configured_extra = self
+            .responses_api_metadata
+            .read()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .clone();
+        let mut metadata = self.metadata_template(configured_extra.as_ref());
+        if let Some(configured_extra) = configured_extra {
+            metadata.extra.extend(configured_extra.clone());
+            metadata.websocket_connection_extra = Some(configured_extra);
+        }
         metadata
     }
 
     fn mcp_metadata_template(&self) -> CodexResponsesMetadata {
+        let configured_extra = self
+            .responses_api_metadata
+            .read()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        self.metadata_template(configured_extra.as_ref())
+    }
+
+    fn metadata_template(
+        &self,
+        configured_extra: Option<&BTreeMap<String, String>>,
+    ) -> CodexResponsesMetadata {
         let mut extra = self
             .responsesapi_client_metadata
             .read()
             .unwrap_or_else(std::sync::PoisonError::into_inner)
             .clone();
-        for key in self
-            .responses_api_metadata
-            .read()
-            .unwrap_or_else(std::sync::PoisonError::into_inner)
-            .keys()
-        {
-            extra.remove(key);
+        if let Some(configured_extra) = configured_extra {
+            for key in configured_extra.keys() {
+                extra.remove(key);
+            }
         }
         CodexResponsesMetadata {
             turn_id: Some(self.turn_id.clone()),

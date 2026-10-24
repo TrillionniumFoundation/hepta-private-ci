@@ -5,6 +5,12 @@
 mod authbus;
 mod capabilities;
 mod evidence;
+mod lifecycle;
+pub use lifecycle::AgentdLifecycleMethod;
+pub use lifecycle::AgentdLifecyclePayload;
+pub use lifecycle::AgentdLifecycleRequest;
+pub use lifecycle::AgentdLifecycleResponse;
+mod objective_history;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
 pub use authbus::AuthBusTextBody;
@@ -28,6 +34,12 @@ pub use evidence::KernelEvidenceResult;
 pub use evidence::KernelEvidenceVerifyV1;
 pub use evidence::MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES;
 pub use evidence::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES;
+pub use objective_history::ObjectiveAdmissionOutcome;
+pub use objective_history::ObjectiveAdmissionPublication;
+pub use objective_history::ObjectiveAdmissionQuery;
+pub use objective_history::ObjectiveAdmissionUnknownReason;
+pub use objective_history::ObjectiveJournalAnchor;
+pub use objective_history::ObjectivePublicationOutcome;
 
 use std::path::PathBuf;
 
@@ -202,12 +214,14 @@ pub struct AgentRunCancellation {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
-pub struct AgentdRequest {
+pub struct AgentdRequestFrame<M> {
     pub schema_version: u32,
     pub request_id: u64,
     pub spawn_generation: u64,
-    pub method: AgentdMethod,
+    pub method: M,
 }
+
+pub type AgentdRequest = AgentdRequestFrame<AgentdMethod>;
 
 impl AgentdRequest {
     pub fn capabilities(request_id: u64, spawn_generation: u64) -> Self {
@@ -580,6 +594,9 @@ pub enum AgentdMethod {
     ObjectiveStart {
         request: AuthBusObjectiveIngress,
     },
+    ObjectiveAdmission {
+        query: ObjectiveAdmissionQuery,
+    },
     AuthBusText {
         request: AuthBusTextIngress,
     },
@@ -722,14 +739,16 @@ pub struct AutomationEffectReconcileSnapshot {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
-pub struct AgentdResponse {
+pub struct AgentdResponseFrame<P> {
     pub schema_version: u32,
     pub request_id: u64,
     pub agent_id: AgentId,
     pub spawn_generation: u64,
     pub current_generation: u64,
-    pub payload: AgentdPayload,
+    pub payload: P,
 }
+
+pub type AgentdResponse = AgentdResponseFrame<AgentdPayload>;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
@@ -741,6 +760,9 @@ pub enum AgentdPayload {
     Drain(DrainSnapshot),
     SessionIngress(SessionIngress),
     ObjectiveRun(ObjectiveRunAdmission),
+    ObjectiveAdmission {
+        outcome: ObjectiveAdmissionOutcome,
+    },
     ObjectiveConflict {
         run_id: String,
         conflict_digest: String,
@@ -815,7 +837,7 @@ pub struct CognitiveContextItem {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct HealthSnapshot {
-    /// True once the App Server initialized while this exact spawn still owns Starting.
+    /// True once the configured execution service initialized while this exact spawn still owns Starting.
     pub promotion_ready: bool,
     /// True only after the supervisor promoted this spawn to Running.
     pub ready: bool,
@@ -1072,7 +1094,7 @@ mod tests {
                 read_digest: snapshot.read_digest.clone(),
                 omitted_records: snapshot.omitted_records,
                 items: snapshot.items.clone(),
-                plan: snapshot.plan.clone(),
+                plan: snapshot.plan,
             },
         };
         let bytes = serde_json::to_vec(&request).expect("serialize revalidation request");
@@ -1318,13 +1340,8 @@ mod tests {
             attach
         );
 
-        let cancel = AgentdRequest::run_cancel(
-            14,
-            3,
-            snapshot.run_id.clone(),
-            2,
-            "operator_request".to_string(),
-        );
+        let cancel =
+            AgentdRequest::run_cancel(14, 3, snapshot.run_id, 2, "operator_request".to_string());
         let cancel_bytes = serde_json::to_vec(&cancel).expect("serialize cancellation");
         assert!(cancel_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(

@@ -33,6 +33,9 @@ mod supervisor_qualification;
 mod tick;
 mod writer_handoff;
 
+#[cfg(target_os = "linux")]
+mod kernel_initial;
+
 #[cfg(unix)]
 mod unix;
 
@@ -180,3 +183,20 @@ pub use writer_handoff::WriterHandoffPlanV1;
 pub use unix::UnixManagedProcess;
 #[cfg(unix)]
 pub use unix::UnixProcessDriver;
+
+#[cfg(target_os = "linux")]
+pub use kernel_initial::KernelInitialProcessDriver;
+#[cfg(target_os = "linux")]
+pub use kernel_initial::KernelInitialRole;
+#[cfg(target_os = "linux")]
+pub use kernel_initial::KernelLaunchMode;
+#[cfg(target_os = "linux")]
+pub use kernel_initial::KernelLaunchReceipt;
+#[cfg(target_os = "linux")]
+pub use kernel_initial::KernelPolicyRetirement;
+#[cfg(target_os = "linux")]
+pub use kernel_initial::KernelSuccessorImage;
+#[cfg(target_os = "linux")]
+pub use kernel_initial::KernelSuccessorRole;
+#[cfg(target_os = "linux")]
+pub use kernel_initial::RootKernelLauncher;

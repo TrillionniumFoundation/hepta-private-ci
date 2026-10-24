@@ -1,0 +1,14 @@
+//! Original Agentd paths refer to the canonical closed wire types.
+
+pub use codex_hepta_authority_types::HOST_AUTHORITY_OBSERVATION_V2;
+pub use codex_hepta_authority_types::HOST_WRITER_AUTHORIZATION_V1;
+pub use codex_hepta_authority_types::HostAuthorityObservationRequestV2;
+pub use codex_hepta_authority_types::HostAuthorityObservationResponseV2;
+pub use codex_hepta_authority_types::HostAuthorityWriterObservationV2;
+pub use codex_hepta_authority_types::HostConsumerFrontierRequestV1;
+pub use codex_hepta_authority_types::HostConsumerFrontierResponseV1;
+pub use codex_hepta_authority_types::HostConsumerFrontierStatusV1;
+pub use codex_hepta_authority_types::HostSignedWriterAuthorizationV1;
+pub use codex_hepta_authority_types::HostWriterAuthorizationClaimsV1;
+pub use codex_hepta_authority_types::HostWriterAuthorizationReadRequestV1;
+pub use codex_hepta_authority_types::HostWriterAuthorizationReadResponseV1;

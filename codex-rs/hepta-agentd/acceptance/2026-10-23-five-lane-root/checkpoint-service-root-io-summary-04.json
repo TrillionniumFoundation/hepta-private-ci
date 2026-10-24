@@ -1,0 +1,2340 @@
+{
+  "diagnostic_only": true,
+  "trace_buffers_not_for_publication": true,
+  "clock_owner_sha256": "d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba",
+  "syncs": [
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787526.288127,
+      "call": "fsync",
+      "fd": 3,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet",
+      "seconds": 0.207719
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787526.498816,
+      "call": "fsync",
+      "fd": 3,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/.staging-018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12-834193-1/agent.toml",
+      "seconds": 0.412017
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787526.911485,
+      "call": "fsync",
+      "fd": 3,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/.staging-018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12-834193-1/run/lifecycle-00000000000000000000.json",
+      "seconds": 1.649012
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787528.560873,
+      "call": "fsync",
+      "fd": 3,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/.staging-018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12-834193-1/run",
+      "seconds": 0.236399
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787528.797963,
+      "call": "fsync",
+      "fd": 3,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/.staging-018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12-834193-1/releases/.release-state-0-834193-1.tmp",
+      "seconds": 0.045751
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787528.844167,
+      "call": "fsync",
+      "fd": 3,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/.staging-018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12-834193-1/releases",
+      "seconds": 0.040215
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787528.884771,
+      "call": "fsync",
+      "fd": 3,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/.staging-018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12-834193-1/releases",
+      "seconds": 0.10682
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787528.9919,
+      "call": "fsync",
+      "fd": 3,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/.staging-018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12-834193-1",
+      "seconds": 0.191671
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787529.184191,
+      "call": "fsync",
+      "fd": 3,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents",
+      "seconds": 0.007052
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787529.198517,
+      "call": "fsync",
+      "fd": 3,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/run/.lifecycle-1-834193-2.tmp",
+      "seconds": 0.006536
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787529.205521,
+      "call": "fsync",
+      "fd": 3,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/run",
+      "seconds": 0.010672
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.54031,
+      "call": "fsync",
+      "fd": 3,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/bootstrap.json",
+      "seconds": 0.005772
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.546334,
+      "call": "fsync",
+      "fd": 4,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk",
+      "seconds": 0.005411
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.561511,
+      "call": "fsync",
+      "fd": 3,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk",
+      "seconds": 0.006613
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.572567,
+      "call": "fsync",
+      "fd": 5,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.007027
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.579894,
+      "call": "fsync",
+      "fd": 4,
+      "target": "authority",
+      "seconds": 0.011751
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.595184,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-bbcfcea153c4d46418d29ce3fe25110290875cb15fdc62a7f705c256d71ed4e2.json.next",
+      "seconds": 0.035096
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.630599,
+      "call": "fsync",
+      "fd": 4,
+      "target": "authority",
+      "seconds": 0.006547
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.638617,
+      "call": "fsync",
+      "fd": 3,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/authority",
+      "seconds": 0.005954
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.64837,
+      "call": "fsync",
+      "fd": 5,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.007291
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.655967,
+      "call": "fsync",
+      "fd": 4,
+      "target": "authority",
+      "seconds": 0.006985
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.665468,
+      "call": "fsync",
+      "fd": 10,
+      "target": "authority-leases.next",
+      "seconds": 0.007104
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.672796,
+      "call": "fsync",
+      "fd": 3,
+      "target": "frontier-v1-bbcfcea153c4d46418d29ce3fe25110290875cb15fdc62a7f705c256d71ed4e2.json.lock",
+      "seconds": 0.00719
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.682273,
+      "call": "fsync",
+      "fd": 5,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.010338
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.692787,
+      "call": "fsync",
+      "fd": 4,
+      "target": "authority",
+      "seconds": 0.046896
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.744252,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-bbcfcea153c4d46418d29ce3fe25110290875cb15fdc62a7f705c256d71ed4e2.json.next",
+      "seconds": 0.008425
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.753039,
+      "call": "fsync",
+      "fd": 4,
+      "target": "authority",
+      "seconds": 0.007872
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.762882,
+      "call": "fsync",
+      "fd": 10,
+      "target": "authority-leases.next",
+      "seconds": 0.008108
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.771285,
+      "call": "fsync",
+      "fd": 3,
+      "target": "frontier-v1-bbcfcea153c4d46418d29ce3fe25110290875cb15fdc62a7f705c256d71ed4e2.json.lock",
+      "seconds": 0.007382
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.782739,
+      "call": "fsync",
+      "fd": 5,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.008539
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.791589,
+      "call": "fsync",
+      "fd": 4,
+      "target": "authority",
+      "seconds": 0.00674
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.801509,
+      "call": "fsync",
+      "fd": 10,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/authority",
+      "seconds": 0.018007
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.821882,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/authority/issuer/issuer.key",
+      "seconds": 0.065974
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.889322,
+      "call": "fsync",
+      "fd": 13,
+      "target": "frontier-v1-c981f880a222eba54255e921cf3f3315c92c95996ba6252bf99b80262cf7bbec.json.next",
+      "seconds": 0.008789
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.898345,
+      "call": "fsync",
+      "fd": 10,
+      "target": "issuer",
+      "seconds": 0.007741
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.907454,
+      "call": "fsync",
+      "fd": 12,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/authority/issuer",
+      "seconds": 0.007311
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.917847,
+      "call": "fsync",
+      "fd": 15,
+      "target": "frontier-v1-c981f880a222eba54255e921cf3f3315c92c95996ba6252bf99b80262cf7bbec.json",
+      "seconds": 0.001395
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.919321,
+      "call": "fsync",
+      "fd": 12,
+      "target": "issuer",
+      "seconds": 2e-05
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.924456,
+      "call": "fsync",
+      "fd": 5,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.008689
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.933422,
+      "call": "fsync",
+      "fd": 4,
+      "target": "authority",
+      "seconds": 0.006788
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.977401,
+      "call": "fsync",
+      "fd": 5,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/service.json",
+      "seconds": 0.008434
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.985989,
+      "call": "fsync",
+      "fd": 8,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk",
+      "seconds": 1.6e-05
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.986596,
+      "call": "fsync",
+      "fd": 5,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/registered-spawn.json",
+      "seconds": 0.008312
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787530.995126,
+      "call": "fsync",
+      "fd": 8,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk",
+      "seconds": 2.1e-05
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.008087,
+      "call": "fsync",
+      "fd": 10,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json",
+      "seconds": 0.000976
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.00914,
+      "call": "fsync",
+      "fd": 9,
+      "target": "authority",
+      "seconds": 0.028417
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.042613,
+      "call": "fsync",
+      "fd": 10,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.00818
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.051136,
+      "call": "fsync",
+      "fd": 9,
+      "target": "authority",
+      "seconds": 0.006751
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.060666,
+      "call": "fsync",
+      "fd": 11,
+      "target": "frontier-v1-bbcfcea153c4d46418d29ce3fe25110290875cb15fdc62a7f705c256d71ed4e2.json",
+      "seconds": 0.000448
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.061171,
+      "call": "fsync",
+      "fd": 9,
+      "target": "authority",
+      "seconds": 0.006603
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.071378,
+      "call": "fsync",
+      "fd": 10,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.008098
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.07979,
+      "call": "fsync",
+      "fd": 9,
+      "target": "authority",
+      "seconds": 0.008207
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.095071,
+      "call": "fsync",
+      "fd": 15,
+      "target": "frontier-v1-c981f880a222eba54255e921cf3f3315c92c95996ba6252bf99b80262cf7bbec.json",
+      "seconds": 0.001612
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.096742,
+      "call": "fsync",
+      "fd": 13,
+      "target": "issuer",
+      "seconds": 0.006986
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.110837,
+      "call": "fsync",
+      "fd": 10,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.007622
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.118822,
+      "call": "fsync",
+      "fd": 9,
+      "target": "authority",
+      "seconds": 0.039609
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.166037,
+      "call": "fsync",
+      "fd": 5,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/wrong-key.json",
+      "seconds": 0.007638
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.17393,
+      "call": "fsync",
+      "fd": 8,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk",
+      "seconds": 0.007461
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.195086,
+      "call": "fsync",
+      "fd": 10,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json",
+      "seconds": 0.000141
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.195272,
+      "call": "fsync",
+      "fd": 9,
+      "target": "authority",
+      "seconds": 0.0055
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.204401,
+      "call": "fsync",
+      "fd": 10,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.005322
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.210001,
+      "call": "fsync",
+      "fd": 9,
+      "target": "authority",
+      "seconds": 0.006302
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.219139,
+      "call": "fsync",
+      "fd": 11,
+      "target": "frontier-v1-bbcfcea153c4d46418d29ce3fe25110290875cb15fdc62a7f705c256d71ed4e2.json",
+      "seconds": 0.000537
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.21974,
+      "call": "fsync",
+      "fd": 9,
+      "target": "authority",
+      "seconds": 0.005978
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.22943,
+      "call": "fsync",
+      "fd": 10,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.005492
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.23526,
+      "call": "fsync",
+      "fd": 9,
+      "target": "authority",
+      "seconds": 0.046168
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.291943,
+      "call": "fsync",
+      "fd": 15,
+      "target": "frontier-v1-c981f880a222eba54255e921cf3f3315c92c95996ba6252bf99b80262cf7bbec.json",
+      "seconds": 0.000388
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.292405,
+      "call": "fsync",
+      "fd": 13,
+      "target": "issuer",
+      "seconds": 0.005356
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.305264,
+      "call": "fsync",
+      "fd": 10,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.005973
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.31162,
+      "call": "fsync",
+      "fd": 9,
+      "target": "authority",
+      "seconds": 0.007473
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.326029,
+      "call": "fsync",
+      "fd": 5,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/missing-state.json",
+      "seconds": 0.00665
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.332941,
+      "call": "fsync",
+      "fd": 8,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk",
+      "seconds": 3.7e-05
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.349299,
+      "call": "fsync",
+      "fd": 5,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/unmounted.json",
+      "seconds": 0.006026
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.355595,
+      "call": "fsync",
+      "fd": 8,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk",
+      "seconds": 4e-05
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.366037,
+      "call": "fsync",
+      "fd": 5,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/service-active.json",
+      "seconds": 0.004776
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.371061,
+      "call": "fsync",
+      "fd": 8,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk",
+      "seconds": 3.6e-05
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.380306,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json",
+      "seconds": 0.000281
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.380637,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.005412
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.389408,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.052933
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.442736,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.005911
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.452148,
+      "call": "fsync",
+      "fd": 10,
+      "target": "frontier-v1-bbcfcea153c4d46418d29ce3fe25110290875cb15fdc62a7f705c256d71ed4e2.json",
+      "seconds": 0.000122
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.452342,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.00588
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.462545,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.005684
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.468586,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.005535
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.481117,
+      "call": "fsync",
+      "fd": 14,
+      "target": "frontier-v1-c981f880a222eba54255e921cf3f3315c92c95996ba6252bf99b80262cf7bbec.json",
+      "seconds": 0.000123
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.481293,
+      "call": "fsync",
+      "fd": 12,
+      "target": "issuer",
+      "seconds": 0.005315
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.491518,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.006127
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.49793,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.00587
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.510372,
+      "call": "fsync",
+      "fd": 10,
+      "target": "frontier-v1-bbcfcea153c4d46418d29ce3fe25110290875cb15fdc62a7f705c256d71ed4e2.json.next",
+      "seconds": 0.013849
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.524494,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.051996
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.578387,
+      "call": "fsync",
+      "fd": 13,
+      "target": "authority-leases.next",
+      "seconds": 0.005292
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.583992,
+      "call": "fsync",
+      "fd": 5,
+      "target": "frontier-v1-bbcfcea153c4d46418d29ce3fe25110290875cb15fdc62a7f705c256d71ed4e2.json.lock",
+      "seconds": 0.005683
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.593811,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.005378
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.599484,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.006191
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.610034,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.006067
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.61637,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.006737
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.629179,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.019631
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.649083,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.026945
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.680056,
+      "call": "fsync",
+      "fd": 14,
+      "target": "frontier-v1-c981f880a222eba54255e921cf3f3315c92c95996ba6252bf99b80262cf7bbec.json.next",
+      "seconds": 0.006075
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.686403,
+      "call": "fsync",
+      "fd": 12,
+      "target": "issuer",
+      "seconds": 0.005185
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.696425,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.005649
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.702341,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.005514
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.711385,
+      "call": "fsync",
+      "fd": 14,
+      "target": "frontier-v1-c981f880a222eba54255e921cf3f3315c92c95996ba6252bf99b80262cf7bbec.json.next",
+      "seconds": 0.005404
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.717098,
+      "call": "fsync",
+      "fd": 12,
+      "target": "issuer",
+      "seconds": 0.005725
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.754423,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.006918
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.761674,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.030267
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.801313,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json",
+      "seconds": 0.005936
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.80732,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 2.4e-05
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.810658,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.006126
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.817066,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.005311
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.824931,
+      "call": "fsync",
+      "fd": 10,
+      "target": "frontier-v1-bbcfcea153c4d46418d29ce3fe25110290875cb15fdc62a7f705c256d71ed4e2.json",
+      "seconds": 0.000105
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.825085,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.005578
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.83422,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.005817
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.840276,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.00561
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.851562,
+      "call": "fsync",
+      "fd": 14,
+      "target": "frontier-v1-c981f880a222eba54255e921cf3f3315c92c95996ba6252bf99b80262cf7bbec.json",
+      "seconds": 0.000725
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.852329,
+      "call": "fsync",
+      "fd": 12,
+      "target": "issuer",
+      "seconds": 0.010924
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.868227,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.028711
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.897225,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.006781
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.910936,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.006423
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.917669,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.006491
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.928569,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.007547
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.936397,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.007234
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.975544,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.006888
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787531.98275,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.013824
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.003624,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json",
+      "seconds": 0.031689
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.035394,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.00442
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.043216,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.004657
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.048154,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.004483
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.055075,
+      "call": "fsync",
+      "fd": 10,
+      "target": "frontier-v1-bbcfcea153c4d46418d29ce3fe25110290875cb15fdc62a7f705c256d71ed4e2.json",
+      "seconds": 0.000101
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.055229,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.004428
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.06311,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.004718
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.068105,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.005065
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.080468,
+      "call": "fsync",
+      "fd": 14,
+      "target": "frontier-v1-c981f880a222eba54255e921cf3f3315c92c95996ba6252bf99b80262cf7bbec.json",
+      "seconds": 0.000383
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.080923,
+      "call": "fsync",
+      "fd": 12,
+      "target": "issuer",
+      "seconds": 0.005368
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.091688,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.052932
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.144967,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.005935
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.158318,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.005705
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.164305,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.005574
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.17443,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.00587
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.180584,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.006131
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.211082,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.005234
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.216616,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.005523
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.246258,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.049137
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.295712,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.004733
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.303007,
+      "call": "fsync",
+      "fd": 16,
+      "target": "frontier-v1-cd76d36f8dc417bd825648a1a1955c4a86c484500c449a415d5026ab30a0fe4f.json.next",
+      "seconds": 0.006098
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.309336,
+      "call": "fsync",
+      "fd": 13,
+      "target": "checkpoint",
+      "seconds": 0.005939
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.321212,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.005027
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.32651,
+      "call": "fsync",
+      "fd": 8,
+      "target": "authority",
+      "seconds": 0.004541
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.333228,
+      "call": "fsync",
+      "fd": 13,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/service-checkpoint.json",
+      "seconds": 0.005917
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.339325,
+      "call": "fsync",
+      "fd": 15,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk",
+      "seconds": 2.1e-05
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.34213,
+      "call": "fsync",
+      "fd": 16,
+      "target": "frontier-v1-cd76d36f8dc417bd825648a1a1955c4a86c484500c449a415d5026ab30a0fe4f.json",
+      "seconds": 0.000675
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.342875,
+      "call": "fsync",
+      "fd": 13,
+      "target": "checkpoint",
+      "seconds": 1.8e-05
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.355109,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json",
+      "seconds": 0.002092
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.357244,
+      "call": "fsync",
+      "fd": 5,
+      "target": "authority",
+      "seconds": 0.009771
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.370081,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.045656
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.415961,
+      "call": "fsync",
+      "fd": 5,
+      "target": "authority",
+      "seconds": 0.006146
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.424264,
+      "call": "fsync",
+      "fd": 9,
+      "target": "frontier-v1-bbcfcea153c4d46418d29ce3fe25110290875cb15fdc62a7f705c256d71ed4e2.json",
+      "seconds": 0.000103
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.424404,
+      "call": "fsync",
+      "fd": 5,
+      "target": "authority",
+      "seconds": 0.004412
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.432235,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.004672
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.437209,
+      "call": "fsync",
+      "fd": 5,
+      "target": "authority",
+      "seconds": 0.004425
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.449345,
+      "call": "fsync",
+      "fd": 13,
+      "target": "frontier-v1-c981f880a222eba54255e921cf3f3315c92c95996ba6252bf99b80262cf7bbec.json",
+      "seconds": 0.000321
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.449714,
+      "call": "fsync",
+      "fd": 11,
+      "target": "issuer",
+      "seconds": 0.004418
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.459529,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.004683
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.464396,
+      "call": "fsync",
+      "fd": 5,
+      "target": "authority",
+      "seconds": 0.005001
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.476324,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.028439
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.504994,
+      "call": "fsync",
+      "fd": 5,
+      "target": "authority",
+      "seconds": 0.004833
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.513434,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.004574
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.518207,
+      "call": "fsync",
+      "fd": 5,
+      "target": "authority",
+      "seconds": 0.004469
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.546991,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.004609
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.551858,
+      "call": "fsync",
+      "fd": 5,
+      "target": "authority",
+      "seconds": 0.004484
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.578385,
+      "call": "fsync",
+      "fd": 15,
+      "target": "frontier-v1-cd76d36f8dc417bd825648a1a1955c4a86c484500c449a415d5026ab30a0fe4f.json",
+      "seconds": 0.000114
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834196",
+      "time": 1792787532.578571,
+      "call": "fsync",
+      "fd": 12,
+      "target": "checkpoint",
+      "seconds": 0.004412
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.116885,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.005731
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.122903,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.005325
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.132818,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.007203
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.140315,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.031343
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.202706,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.004569
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.207591,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.004429
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.218488,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.004619
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.223405,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.005301
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.232776,
+      "call": "fsync",
+      "fd": 13,
+      "target": "frontier-v1-c981f880a222eba54255e921cf3f3315c92c95996ba6252bf99b80262cf7bbec.json.next",
+      "seconds": 0.005222
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.238287,
+      "call": "fsync",
+      "fd": 11,
+      "target": "unknown",
+      "seconds": 0.004432
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.248124,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.009735
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.258147,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.035593
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.298271,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.004712
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.303281,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.004474
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.341398,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.093116
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.434879,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.043216
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.484351,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.034906
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.519632,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.107692
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.66905,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.147971
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.817373,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.059999
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.881895,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.114144
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787533.996408,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.009366
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787534.012137,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.063846
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787534.076323,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.012384
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787534.093079,
+      "call": "fsync",
+      "fd": 13,
+      "target": "frontier-v1-c981f880a222eba54255e921cf3f3315c92c95996ba6252bf99b80262cf7bbec.json.next",
+      "seconds": 0.033626
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787534.127038,
+      "call": "fsync",
+      "fd": 11,
+      "target": "unknown",
+      "seconds": 0.048326
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787534.406249,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.172951
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787534.579537,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.234862
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787534.820761,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.204583
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834328",
+      "time": 1792787535.025705,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.05262
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787532.598169,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.006168
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787532.60462,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.041459
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787532.650542,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.005822
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787532.656718,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.005892
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787532.695261,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.005174
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787532.700742,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.004429
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787532.711327,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.004992
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787532.71663,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.005248
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787532.754,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.010136
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787532.76442,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.044957
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787532.814087,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.005964
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787532.820335,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.007214
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787532.859822,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.005276
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787532.865387,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.005193
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787532.876813,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.006017
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787532.883115,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.005161
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787532.895275,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.015954
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787532.911568,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.048184
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787532.964467,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.005234
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787532.96999,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.004815
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787533.007016,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.005773
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787533.013109,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.005751
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787533.02513,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.005194
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787533.030632,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.005638
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787533.04219,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.007455
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787533.049934,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.02702
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787533.081818,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.005568
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787533.087718,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.005785
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787533.09987,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.005527
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834327",
+      "time": 1792787533.1057,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.004535
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.224282,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-journal",
+      "seconds": 0.025357
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.249832,
+      "call": "fsync",
+      "fd": 12,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive",
+      "seconds": 1.7e-05
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.249996,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-journal",
+      "seconds": 0.00571
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.255858,
+      "call": "fsync",
+      "fd": 10,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3",
+      "seconds": 0.006044
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.266436,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.007298
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.273946,
+      "call": "fsync",
+      "fd": 13,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive",
+      "seconds": 1.9e-05
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.274388,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.00636
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.298762,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.006788
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.30659,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.006224
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.318005,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.012539
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.331506,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.037191
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.393005,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.00687
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.400703,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.007463
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.411674,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.006691
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.41924,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.007035
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.439661,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.006551
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.447239,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.006515
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.468752,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.012131
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.482189,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.044538
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.575965,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.006196
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.583108,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.00693
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.599313,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.006018
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.606287,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.006444
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.61508,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.006041
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.622321,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.00642
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.639051,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.00619
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.646161,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.049229
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.702595,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.00715
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.710866,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.007013
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.723584,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.007045
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.731588,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.006467
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.743319,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.006159
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.750401,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.006054
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.768823,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.006481
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.776305,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.030558
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.811958,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.005851
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.818861,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.006098
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.830025,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.006471
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.959633,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.006782
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.976173,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.006226
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834251",
+      "time": 1792787529.983513,
+      "call": "fsync",
+      "fd": 11,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.006068
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834265",
+      "time": 1792787530.008464,
+      "call": "fsync",
+      "fd": 14,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.006739
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834265",
+      "time": 1792787530.015397,
+      "call": "fsync",
+      "fd": 15,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive",
+      "seconds": 1.9e-05
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834265",
+      "time": 1792787530.476901,
+      "call": "fsync",
+      "fd": 14,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "seconds": 0.035751
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834265",
+      "time": 1792787530.52678,
+      "call": "fsync",
+      "fd": 13,
+      "target": "/var/lib/hepta-authority-os3-20261023/root-service-qualification-lR55dk/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3",
+      "seconds": 0.006866
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834329",
+      "time": 1792787535.109516,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.036316
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834329",
+      "time": 1792787535.146182,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.348674
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834329",
+      "time": 1792787535.499688,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.250637
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834329",
+      "time": 1792787535.750703,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.059761
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834329",
+      "time": 1792787535.842735,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.297042
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834329",
+      "time": 1792787536.140132,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.20344
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834329",
+      "time": 1792787536.348381,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.047213
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834329",
+      "time": 1792787536.395943,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.004837
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834329",
+      "time": 1792787536.406866,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.07648
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834329",
+      "time": 1792787536.483777,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.349544
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834329",
+      "time": 1792787536.84047,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.450625
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834329",
+      "time": 1792787537.291443,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.124927
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834329",
+      "time": 1792787537.422645,
+      "call": "fsync",
+      "fd": 8,
+      "target": "frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.next",
+      "seconds": 0.227812
+    },
+    {
+      "trace": "checkpoint-service-root-init-trace-04.834329",
+      "time": 1792787538.131432,
+      "call": "fsync",
+      "fd": 5,
+      "target": "unknown",
+      "seconds": 0.34929
+    }
+  ],
+  "total_sync_seconds": 9.541951,
+  "fixed_horizon_ms": 1000,
+  "feed_freshness_ms": 500,
+  "positive_qualification": false,
+  "expired_writer_qualification": true
+}

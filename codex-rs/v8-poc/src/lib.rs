@@ -36,6 +36,9 @@ mod tests {
         INIT.call_once(|| {
             v8::V8::initialize_platform(v8::new_default_platform(0, false).make_shared());
             v8::V8::initialize();
+            // The sandbox allocator must finish its lazy pool initialization
+            // before the concurrent smoke tests create their first isolates.
+            drop(v8::new_default_allocator());
         });
     }
 
@@ -66,7 +69,22 @@ mod tests {
 
     #[test]
     fn sandbox_feature_matches_linked_v8() {
-        assert_eq!(super::linked_v8_has_sandbox(), cfg!(feature = "sandbox"));
+        let linked_sandbox = super::linked_v8_has_sandbox();
+        // Cargo can unify v8's sandbox feature through another workspace crate,
+        // even when this crate did not request it. A requested sandbox is still
+        // mandatory; staged supplier smoke tests also assert their exact variant.
+        assert!(
+            !cfg!(feature = "sandbox") || linked_sandbox,
+            "the requested V8 sandbox must be enabled in the linked library"
+        );
+        if let Some(expected) = std::env::var_os("RUSTY_V8_EXPECT_SANDBOX") {
+            let expected = expected
+                .into_string()
+                .expect("RUSTY_V8_EXPECT_SANDBOX must be UTF-8")
+                .parse::<bool>()
+                .expect("RUSTY_V8_EXPECT_SANDBOX must be true or false");
+            assert_eq!(linked_sandbox, expected);
+        }
     }
 
     #[test]

@@ -1,0 +1,6 @@
+# rules_rs generates this excluded path patch with its resolved dependencies.
+alias(
+    name = "i18n-config",
+    actual = "@crates//:i18n-config-0.4.8",
+    visibility = ["//visibility:public"],
+)

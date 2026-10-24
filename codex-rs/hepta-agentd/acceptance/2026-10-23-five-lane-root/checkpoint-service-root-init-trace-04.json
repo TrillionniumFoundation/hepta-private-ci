@@ -1,0 +1,29 @@
+{
+  "command": [
+    "sudo",
+    "-n",
+    "strace",
+    "-ff",
+    "-ttt",
+    "-T",
+    "-o",
+    "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/checkpoint-service-root-init-trace-04",
+    "-e",
+    "trace=openat,close,read,write,fsync,fdatasync,rename,renameat,renameat2,flock,clock_gettime,newfstatat",
+    "env",
+    "HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT=/var/lib/hepta-authority-os3-20261023",
+    "HEPTA_HOST_AUTHORITY_QUALIFICATION_SOURCE=/data/hepta-authority-private-os3-20261023",
+    "HEPTA_HOST_AUTHORITY_QUALIFICATION_CLIENT_BIN=/data/hepta-checkpoint-wire-peer-04.ezpydgmi/authority_host_peer_qualification",
+    "HEPTA_SERVICE_WRITER_PROOF=1",
+    "HEPTA_SERVICE_CHECKPOINT=1",
+    "/data/hepta-root-service-196-target.e3i3hcbg/debug/deps/codex_hepta_agentd-376538b093a2091c",
+    "--exact",
+    "authority_host_service::tests::root::root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer",
+    "--ignored",
+    "--nocapture"
+  ],
+  "exit": 101,
+  "seconds": 12.301134687964804,
+  "diagnostic_only": true,
+  "original_failure": "checkpoint-service-root-positive-04.json"
+}

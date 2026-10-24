@@ -9,7 +9,6 @@
 use std::collections::BTreeMap;
 use std::fs::OpenOptions;
 use std::path::Path;
-use std::str::FromStr;
 use std::sync::Mutex;
 
 use codex_hepta_authbus::Error as AuthBusError;
@@ -46,11 +45,15 @@ use crate::authbus_trust::hex_bytes;
 use crate::authbus_trust::invalid;
 use crate::authbus_trust::read_private_owner_file;
 
-const PRODUCT_SOURCE_JSON_BYTES: usize = 32 * 1024;
-const PRODUCT_BODY_JSON_BYTES: usize = 48 * 1024;
 const MAX_RUN_START_RECORDS: usize = 4_096;
 const RUN_START_DIRECTORY: &str = "objective-run-start-v1";
 const RUN_START_FILE: &str = "journal.bin";
+
+#[path = "objective_history.rs"]
+mod history;
+
+#[path = "objective_submission.rs"]
+mod submission;
 
 pub(crate) enum ObjectiveStartResult {
     Admitted(ObjectiveRunAdmission),
@@ -69,6 +72,7 @@ pub(crate) struct ObjectiveRuntimeHost {
 struct ObjectiveHostState {
     journal: DurableRunStartJournal,
     highest_sequences: BTreeMap<(String, u64), u64>,
+    notes_cursor: usize,
 }
 
 impl ObjectiveRuntimeHost {
@@ -95,6 +99,7 @@ impl ObjectiveRuntimeHost {
             state: Mutex::new(ObjectiveHostState {
                 journal,
                 highest_sequences,
+                notes_cursor: 0,
             }),
         })
     }
@@ -107,7 +112,7 @@ impl ObjectiveRuntimeHost {
     ) -> Result<(), AgentdError> {
         // Startup attaches the durable service before App Server readiness.
         // Runtime projection is deferred until the daemon owner admits runs.
-        if !agentd.automation_admission_ready()? {
+        if !agentd.objective_admission_ready()? {
             return Ok(());
         }
         let trust = authbus_ingress::attached(agentd)?.trust(agentd)?;
@@ -137,255 +142,63 @@ impl ObjectiveRuntimeHost {
         Ok(())
     }
 
-    pub(crate) async fn submit(
-        &self,
-        agentd: &AgentdState,
-        request: AuthBusObjectiveIngress,
-        current_generation: u64,
-    ) -> Result<ObjectiveStartResult, AgentdError> {
-        authbus_ingress::require_ready(agentd)?;
-        let now_ms = authbus_ingress::now_ms()?;
-        let payload = objective_payload(agentd.identity(), &request.body, current_generation)?;
-        if request.expires_at_ms <= now_ms || request.expires_at_ms.saturating_sub(now_ms) > 300_000
-        {
-            return Err(invalid("objective expiry must be within five minutes"));
+    pub(crate) async fn reconcile_notes(&self, agentd: &AgentdState) -> Result<(), AgentdError> {
+        if agentd.notes_objective.get().is_none() {
+            return Ok(());
         }
-
-        let authbus = authbus_ingress::attached(agentd)?;
-        let trust = authbus.trust(agentd)?;
-        let issuer = trust.issuer()?;
-        let message = SignedMessage {
-            claims: objective_claims(agentd.identity(), &request, &payload)?,
-            signature: hex_bytes(&request.signature_hex)?,
+        let records = {
+            let mut state = self
+                .state
+                .lock()
+                .map_err(|_| invalid("objective runtime mutex poisoned"))?;
+            let records = state.journal.records().map_err(store_error)?;
+            let end = (state.notes_cursor + 16).min(records.len());
+            let batch = records[state.notes_cursor.min(records.len())..end]
+                .iter()
+                .map(|record| (**record).clone())
+                .collect::<Vec<_>>();
+            state.notes_cursor = if end == records.len() { 0 } else { end };
+            batch
         };
-        let authenticated = message
-            .authenticate(
-                &issuer,
-                objective_scope(agentd.identity()),
-                Digest32::of_bytes(&payload),
-                now_ms,
-            )
-            .map_err(|error| invalid(&format!("objective signature: {error}")))?;
-
-        let source = decode_source_envelope_json_v1(request.body.source_envelope_json.as_bytes())
-            .map_err(|error| invalid(&format!("objective source: {error}")))?;
-        let now_unix_micros = now_ms
-            .checked_mul(1_000)
-            .ok_or_else(|| invalid("objective host clock overflow"))?;
-        let context = ObjectiveAdmissionContextV1 {
-            revision: Revision::new(request.body.objective_revision)
-                .map_err(|error| invalid(&format!("objective revision: {error}")))?,
-            now_unix_micros,
-            selected_profile_digest: self.profile_digest,
-            source_authentication: ObjectiveSourceAuthenticationV1::AuthorizedAdapter {
-                source_identity: issuer.issuer_id,
-                source_digest: source.structured_intent.provenance.source_digest,
-            },
-        };
-
-        let runtime_body_digest = parse_digest(&request.body.runtime_body_digest, "runtime body")?;
-        let preference_state_digest =
-            parse_digest(&request.body.preference_state_digest, "preference state")?;
-        let model_tuple_digest = parse_digest(&request.body.model_tuple_digest, "model tuple")?;
-        let prompt_registry_digest =
-            parse_digest(&request.body.prompt_registry_digest, "prompt registry")?;
-        let artifact_set_digest = parse_digest(&request.body.artifact_set_digest, "artifact set")?;
-        let run_id = StableId::new(&request.body.run_id)
-            .map_err(|error| invalid(&format!("objective run id: {error}")))?;
-        let authentication = RunStartAuthenticationV1 {
-            issuer_id: authenticated.claims().issuer_id.clone(),
-            key_epoch: authenticated.claims().key_epoch.get(),
-            message_id: authenticated.claims().message_id.clone(),
-            sequence: authenticated.claims().sequence,
-            expires_at_ms: authenticated.claims().expires_at_ms,
-            scope_digest: authenticated.claims().scope_digest,
-            signed_body_digest: authenticated.claims().payload_digest,
-            signature: message.signature,
-        };
-
-        // Durable publication and replay-frontier mutation remain serialized,
-        // but the guard is deliberately dropped before seven-owner execution.
-        let (published, record) = {
-            let mut state = self.state.lock().map_err(|_| {
-                AgentdError::Protocol("objective runtime mutex is poisoned".to_string())
-            })?;
-            require_replay_admission(&state, &authentication, &run_id)?;
-
-            let expected_run_start_head = state.journal.head_digest();
-            let published = match compile_and_publish_objective_run_v1(
-                &source,
-                &self.profile,
-                &context,
-                ObjectiveRunBindingsV1 {
-                    authentication,
-                    run_id: run_id.clone(),
-                    runtime_body_digest,
-                    preference_state_digest,
-                    model_tuple_digest,
-                    prompt_registry_digest,
-                    artifact_set_digest,
-                    authority_epoch: request.body.authority_epoch,
-                    generation: current_generation,
-                    fence_digest: objective_fence(agentd.identity(), current_generation),
-                    expected_run_start_head,
-                },
-                &mut state.journal,
-            ) {
-                Ok(published) => published,
-                Err(ObjectiveRunError::Conflict {
-                    conflict,
-                    publication: _,
-                }) => {
-                    let record = state
-                        .journal
-                        .get_conflict(&run_id)
-                        .map_err(store_error)?
-                        .cloned()
-                        .ok_or_else(|| {
-                            invalid("durable objective conflict publication disappeared")
-                        })?;
-                    let key = (
-                        record.authentication.issuer_id.to_string(),
-                        record.authentication.key_epoch,
-                    );
-                    state
-                        .highest_sequences
-                        .entry(key)
-                        .and_modify(|value| *value = (*value).max(record.authentication.sequence))
-                        .or_insert(record.authentication.sequence);
-                    return Ok(ObjectiveStartResult::Conflict {
-                        run_id: request.body.run_id,
-                        conflict_digest: conflict.conflict_digest.to_string(),
-                    });
-                }
-                Err(error) => {
-                    return Err(invalid(&format!("objective publication: {error}")));
-                }
-            };
-
-            let record = state
-                .journal
-                .get(&run_id)
-                .map_err(store_error)?
-                .cloned()
-                .ok_or_else(|| invalid("durable objective publication disappeared"))?;
-            let key = (
-                record.authentication.issuer_id.to_string(),
-                record.authentication.key_epoch,
-            );
-            state
-                .highest_sequences
-                .entry(key)
-                .and_modify(|value| *value = (*value).max(record.authentication.sequence))
-                .or_insert(record.authentication.sequence);
-            (published, record)
-        };
-
-        authbus_ingress::require_ready(agentd)?;
-        let current = authbus.trust(agentd)?;
-        if !authentication_is_current(
-            &record,
-            &current,
-            agentd.identity(),
-            authbus_ingress::now_ms()?,
-        )? {
-            return Err(invalid(
-                "objective trust changed after durable publication; retry after reconciliation",
-            ));
+        for record in records {
+            agentd.execute_notes_objective(&record).await?;
         }
-
-        let disposition = match record.disposition {
-            RunStartObjectiveDispositionV1::Compiled => {
-                match agentd.start_canonical_intelligence(&record).await? {
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { .. }) => {
-                        "canonical_ready"
-                    }
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained) => {
-                        "canonical_abstained"
-                    }
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::SlowPath) => {
-                        "canonical_slow_path"
-                    }
-                    None => {
-                        agentd.start_current_run_start_record(&record)?;
-                        "compiled"
-                    }
-                }
-            }
-            RunStartObjectiveDispositionV1::ExplicitAbstain => "explicit_abstain",
-        };
-
-        Ok(ObjectiveStartResult::Admitted(ObjectiveRunAdmission {
-            run_id: published.run_start.run_id.to_string(),
-            objective_digest: published.run_start.objective_digest.to_string(),
-            hard_constraint_digest: published.run_start.hard_constraint_digest.to_string(),
-            publication_digest: published.publication.record_digest.to_string(),
-            chain_digest: published.publication.chain_digest.to_string(),
-            disposition: disposition.to_string(),
-            idempotent: published.publication.disposition
-                == RunStartAppendDisposition::IdempotentReplay,
-        }))
+        Ok(())
     }
 }
 
-fn objective_payload(
+pub(crate) fn objective_payload(
     identity: &AgentdIdentity,
     body: &AuthBusObjectiveBody,
     current_generation: u64,
 ) -> Result<Vec<u8>, AgentdError> {
-    if body.spawn_generation != identity.spawn_generation
-        || body.objective_revision == 0
-        || body.authority_epoch == 0
-        || current_generation == 0
-        || body.source_envelope_json.is_empty()
-        || body.source_envelope_json.len() > PRODUCT_SOURCE_JSON_BYTES
-    {
-        return Err(invalid(
-            "objective generation, revision, authority or source bound is invalid",
-        ));
-    }
-    StableId::new(&body.run_id).map_err(|error| invalid(&format!("objective run id: {error}")))?;
-    for (digest, field) in [
-        (&body.runtime_body_digest, "runtime body"),
-        (&body.preference_state_digest, "preference state"),
-        (&body.model_tuple_digest, "model tuple"),
-        (&body.prompt_registry_digest, "prompt registry"),
-        (&body.artifact_set_digest, "artifact set"),
-    ] {
-        parse_digest(digest, field)?;
-    }
-    let bytes = serde_json::to_vec(body)?;
-    if bytes.len() > PRODUCT_BODY_JSON_BYTES {
-        return Err(invalid("encoded objective body exceeds 48 KiB"));
-    }
-    Ok(bytes)
+    codex_hepta_authority_client::objective_payload(identity, body, current_generation)
+        .map_err(objective_claims_error)
 }
 
-fn objective_claims(
+/// Build the same complete canonical claims through the finite implementation.
+/// This supplies no signature, replay admission or effect authority.
+pub fn authbus_objective_claims(
     identity: &AgentdIdentity,
     request: &AuthBusObjectiveIngress,
-    payload: &[u8],
 ) -> Result<SignedMessageClaims, AgentdError> {
-    Ok(SignedMessageClaims {
-        issuer_id: StableId::new(&request.issuer_id)
-            .map_err(|error| invalid(&format!("objective issuer: {error}")))?,
-        key_epoch: Generation::new(request.key_epoch)
-            .map_err(|error| invalid(&format!("objective key epoch: {error}")))?,
-        message_id: StableId::new(&request.message_id)
-            .map_err(|error| invalid(&format!("objective message id: {error}")))?,
-        subject_id: StableId::new(identity.agent_id.as_str())
-            .map_err(|error| invalid(&format!("objective subject: {error}")))?,
-        scope_digest: objective_scope(identity),
-        payload_digest: Digest32::of_bytes(payload),
-        sequence: request.sequence,
-        expires_at_ms: request.expires_at_ms,
-    })
+    codex_hepta_authority_client::authbus_objective_claims(identity, request)
+        .map_err(objective_claims_error)
 }
 
-fn objective_scope(identity: &AgentdIdentity) -> Digest32 {
-    let mut bytes = b"hepta:agentd:signed-objective:v1\0".to_vec();
-    bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
-    Digest32::of_bytes(&bytes)
+pub(crate) fn objective_scope(identity: &AgentdIdentity) -> Digest32 {
+    codex_hepta_authority_client::objective_scope(identity)
+}
+
+fn objective_claims_error(
+    error: codex_hepta_authority_client::ObjectiveClaimsError,
+) -> AgentdError {
+    match error {
+        codex_hepta_authority_client::ObjectiveClaimsError::Invalid(message) => {
+            AgentdError::Invalid(message)
+        }
+        codex_hepta_authority_client::ObjectiveClaimsError::Json(error) => AgentdError::Json(error),
+    }
 }
 
 fn objective_fence(identity: &AgentdIdentity, current_generation: u64) -> Digest32 {
@@ -397,12 +210,8 @@ fn objective_fence(identity: &AgentdIdentity, current_generation: u64) -> Digest
 }
 
 fn parse_digest(value: &str, field: &'static str) -> Result<Digest32, AgentdError> {
-    let digest =
-        Digest32::from_str(value).map_err(|_| invalid(&format!("invalid {field} digest")))?;
-    if digest.is_zero() {
-        return Err(invalid(&format!("empty {field} digest")));
-    }
-    Ok(digest)
+    codex_hepta_authority_client::parse_objective_digest(value, field)
+        .map_err(objective_claims_error)
 }
 
 fn run_start_binding(identity: &AgentdIdentity, profile_digest: Digest32) -> Digest32 {

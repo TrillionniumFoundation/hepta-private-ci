@@ -15,5 +15,7 @@ trustPolicy: no-downgrade
 trustPolicyIgnoreAfter: 10080
 trustPolicyExclude: []
 allowBuilds:
-  # Build only the official MCP conformance CLI pinned by the TypeScript SDK.
+  # Build only pinned suppliers needed by the TypeScript SDK test tools.
   "@modelcontextprotocol/conformance@https://codeload.github.com/modelcontextprotocol/conformance/tar.gz/49103de6ed70804e940637bf3e9e29e4a3f54e64": true
+  "@parcel/watcher@2.6.0": true
+  "unrs-resolver@1.12.2": true

@@ -429,6 +429,9 @@ async fn product_v2_reports_peer_truncation_before_aggregation() {
         .expect("consumer store");
     let consumer_workspace = workspace("runtime-v2-peer-truncation");
     let mut owner_layouts = Vec::new();
+    // The peer writers remain alive throughout the actual federated request.
+    // Dropping each pool in the setup loop starts concurrent asynchronous close.
+    let mut owner_stores = Vec::new();
     for raw_id in 1..=17 {
         let owner_id = agent_id(raw_id);
         let owner_layout = layout(&temp, &owner_id);
@@ -452,6 +455,7 @@ async fn product_v2_reports_peer_truncation_before_aggregation() {
             .await
             .expect("grant");
         owner_layouts.push(owner_layout);
+        owner_stores.push(owner);
     }
 
     let runtime = CognitiveRuntime::from_open_result(Ok(consumer))
@@ -463,8 +467,11 @@ async fn product_v2_reports_peer_truncation_before_aggregation() {
         .expect("bounded product retrieval");
     assert!(batch.candidates.is_empty());
     assert_eq!(coverage.requested_peers, 16);
-    assert_eq!(coverage.completed_peers, 16);
+    assert_eq!(coverage.completed_peers, 16, "{coverage:?}");
     assert_eq!(coverage.failed_peers, 0);
     assert_eq!(coverage.truncated_peers, 1);
     assert_eq!(coverage.omitted_peer_candidates, 0);
+    for owner in owner_stores {
+        owner.close().await;
+    }
 }

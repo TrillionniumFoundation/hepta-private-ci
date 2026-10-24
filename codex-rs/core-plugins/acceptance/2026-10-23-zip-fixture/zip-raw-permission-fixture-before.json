@@ -1,0 +1,28 @@
+{
+  "name": "zip-raw-permission-fixture-before",
+  "cwd": "/data/hepta-cur-decoding-closure",
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-core-plugins",
+    "--lib",
+    "--locked",
+    "--test-threads",
+    "2",
+    "-E",
+    "test(startup_sync::tests::extract_zipball_masks_special_permission_bits)"
+  ],
+  "baseSha": "58882f852e64d5c2562c5dfb441c2bb8daa05179",
+  "workingDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "startedAt": "2026-10-23T19:20:16.487127+00:00",
+  "finishedAt": "2026-10-23T19:33:56.953782+00:00",
+  "elapsedSeconds": 820.4666497280123,
+  "exitCode": 100,
+  "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/zip-raw-permission-fixture-before.log",
+  "environment": {
+    "CARGO_TARGET_DIR": "/data/hepta-cur-decoding-target",
+    "CARGO_BUILD_JOBS": "1",
+    "RUSTUP_TOOLCHAIN": "1.95.0"
+  }
+}

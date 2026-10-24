@@ -30,6 +30,11 @@ test = false
 name = "hepta-agentd-browser"
 path = "src/bin/hepta-agentd-browser.rs"
 test = false
+[[bin]]
+name = "hepta-authority-host"
+path = "src/bin/hepta-authority-host.rs"
+test = false
+
 [[example]]
 name = "h4_persistent_writer"
 path = "examples/h4_persistent_writer.rs"
@@ -55,6 +60,8 @@ codex-hepta-intuition = { path = "../hepta-intuition" }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
 codex-hepta-authbus = { path = "../hepta-authbus" }
 codex-hepta-evidence = { workspace = true }
+codex-hepta-authority-types = { workspace = true }
+codex-hepta-authority-client = { workspace = true }
 codex-hepta-contracts = { workspace = true }
 codex-hepta-codex-adapter = { workspace = true }
 codex-hepta-prompt-registry = { path = "../hepta-prompt-registry" }
@@ -66,6 +73,8 @@ codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-fleet = { workspace = true }
 codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }
 codex-hepta-ndu = { path = "../hepta-ndu" }
+codex-hepta-supervisor = { workspace = true }
+codex-hepta-operations = { workspace = true }
 codex-hepta-neuron = { path = "../hepta-neuron" }
 codex-hepta-objective = { path = "../hepta-objective" }
 codex-hepta-context-compiler = { path = "../hepta-context-compiler" }
@@ -98,17 +107,22 @@ tokio = { workspace = true, features = [
 ] }
 tokio-util = { workspace = true }
 
+[target.'cfg(windows)'.dependencies]
+codex-utils-path = { workspace = true }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+libc = { workspace = true }
+
 [dev-dependencies]
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
-codex-hepta-operations = { workspace = true }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
 app_test_support = { workspace = true }
 codex-hepta-infer-worker-host = { path = "../hepta-infer-worker-host" }
 codex-hepta-context-compiler = { path = "../hepta-context-compiler" }
-codex-hepta-supervisor = { workspace = true }
 codex-utils-cargo-bin = { workspace = true }
 core_test_support = { workspace = true }
+pretty_assertions = { workspace = true }
 sqlx = { workspace = true }
 tempfile = { workspace = true }
 wiremock = { workspace = true }

@@ -3,7 +3,7 @@ use pretty_assertions::assert_eq;
 
 fn registry() -> (tempfile::TempDir, DurableLeaseRegistryV1) {
     let directory = tempfile::tempdir().unwrap();
-    let path = directory.path().join("lease-registry.json");
+    let path = directory.path().join("owner").join("lease-registry.json");
     let registry = DurableLeaseRegistryV1::open(path).unwrap();
     (directory, registry)
 }
@@ -51,7 +51,8 @@ fn issue_unknown_reconciles_without_duplicate_issue() {
 
     drop(registry);
     let reopened =
-        DurableLeaseRegistryV1::open(directory.path().join("lease-registry.json")).unwrap();
+        DurableLeaseRegistryV1::open(directory.path().join("owner").join("lease-registry.json"))
+            .unwrap();
     assert_eq!(
         reopened.lease("lease:db:1").unwrap().state,
         SecretLeaseStateV1::Active
@@ -82,7 +83,7 @@ fn issue_rejects_non_active_provider_observations_without_durable_mutation() {
         let prepared = registry
             .prepare_issue("op:issue:1".into(), [3; 32])
             .unwrap();
-        let path = directory.path().join("lease-registry.json");
+        let path = directory.path().join("owner").join("lease-registry.json");
         let persisted = std::fs::read(&path).unwrap();
         let mut lease = active_lease();
         lease.state = state;
@@ -232,7 +233,8 @@ fn expiry_is_durable_and_terminal_for_renewal() {
 
     drop(registry);
     let reopened =
-        DurableLeaseRegistryV1::open(directory.path().join("lease-registry.json")).unwrap();
+        DurableLeaseRegistryV1::open(directory.path().join("owner").join("lease-registry.json"))
+            .unwrap();
     assert_eq!(
         reopened.lease("lease:db:1").unwrap().state,
         SecretLeaseStateV1::Expired
