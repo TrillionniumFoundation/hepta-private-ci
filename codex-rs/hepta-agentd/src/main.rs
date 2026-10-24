@@ -1,6 +1,9 @@
 use std::path::PathBuf;
 
+#[cfg(not(target_os = "linux"))]
 use codex_hepta_agentd::AgentdConfig;
+#[cfg(target_os = "linux")]
+use codex_hepta_agentd::AgentdProductionStartup;
 use codex_hepta_agentd::AgentdIntelligenceProductRunnerV1;
 use codex_hepta_agentd::IntelligenceAuthorityVerifierV1;
 use codex_hepta_agentd::load_plasticity_process_bootstrap_v1;
@@ -10,12 +13,24 @@ use std::ffi::OsString;
 use std::sync::Arc;
 
 fn main() -> anyhow::Result<()> {
-    let mut config = AgentdConfig::from_process_environment()?;
-    let codex_home = AbsolutePathBuf::from_absolute_path(&config.identity().home_root)?;
-    codex_utils_home_dir::set_process_codex_home_override(codex_home)?;
-    codex_arg0::arg0_dispatch_or_else(move |arg0_paths| async move {
-        // Helper re-execs must reach arg0 dispatch before daemon-only flags.
-        let mut args = std::env::args_os().skip(1);
+    codex_arg0::arg0_dispatch_or_else_with_preflight(|| {
+        // Original helper dispatch has already run. Root preparation and the
+        // process-wide credential drop must precede arg0's first runtime thread.
+        let arguments = std::env::args_os().skip(1).collect::<Vec<_>>();
+        #[cfg(target_os = "linux")]
+        let (startup, arguments) = AgentdProductionStartup::from_process_environment(arguments)?;
+        #[cfg(not(target_os = "linux"))]
+        let mut config = AgentdConfig::from_process_environment()?;
+        #[cfg(target_os = "linux")]
+        let identity = startup.identity();
+        #[cfg(not(target_os = "linux"))]
+        let identity = config.identity();
+        let codex_home = AbsolutePathBuf::from_absolute_path(&identity.home_root)?;
+        codex_utils_home_dir::set_process_codex_home_override(codex_home)?;
+        Ok(move |arg0_paths| async move {
+        #[cfg(target_os = "linux")]
+        let (mut config, production) = startup.receive().await?;
+        let mut args = arguments.into_iter();
         let mut authbus_trust = None;
         let mut intelligence_authority_file = None;
         let mut intelligence_authority_signer = None;
@@ -180,8 +195,15 @@ fn main() -> anyhow::Result<()> {
             ),
         }
 
+        #[cfg(target_os = "linux")]
+        match production {
+            Some(launch) => launch.run(config, arg0_paths).await?,
+            None => codex_hepta_agentd::run(config, arg0_paths).await?,
+        }
+        #[cfg(not(target_os = "linux"))]
         codex_hepta_agentd::run(config, arg0_paths).await?;
         Ok(())
+        })
     })
 }
 
