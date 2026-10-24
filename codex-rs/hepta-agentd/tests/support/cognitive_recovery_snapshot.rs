@@ -65,13 +65,16 @@ pub(super) async fn snapshot(path: &Path) -> Result<LogicalSnapshot, Box<dyn Err
             .iter()
             .map(|name| format!("\"{}\"", name.replace('"', "\"\"")))
             .collect();
-        let sql = format!(
-            "SELECT {} FROM \"{}\"",
-            quoted.join(", "),
-            table.replace('"', "\"\"")
-        );
+        // Only identifiers from this owned fixture's SQLite schema are dynamic.
+        // Quote and escape each identifier; never interpolate SQL values.
+        let mut query = sqlx::QueryBuilder::<sqlx::Sqlite>::new("SELECT ");
+        query
+            .push(quoted.join(", "))
+            .push(" FROM \"")
+            .push(table.replace('"', "\"\""))
+            .push("\"");
         let mut rows = Vec::new();
-        for row in sqlx::query(&sql).fetch_all(&mut *transaction).await? {
+        for row in query.build().fetch_all(&mut *transaction).await? {
             let mut cells = Vec::new();
             for index in 0..columns.len() {
                 let value = row.try_get_raw(index)?;

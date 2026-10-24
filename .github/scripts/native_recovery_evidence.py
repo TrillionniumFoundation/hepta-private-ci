@@ -12,19 +12,17 @@ import xml.etree.ElementTree as ET
 
 import native_fixture_evidence as common
 
-BASE = "852c44e62e828f41a3e91348c3186814cc8787e8"
-BASE_TREE = "23e35c75c0cb558f58aa5ec0381c4e787bfc4883"
+BASE = "94451951d04c9b9d05be24687379893371575116"
+BASE_TREE = "a2df538ee2e19c9a3f49f423ddcd74406dc9de05"
 PINS = {
-    "codex-rs/hepta-agentd/tests/support/cognitive_recovery_snapshot.rs": "eb184ba98cab5b30fe3614bc8fe2bc48757a27975ea36133dae4a35e834f1378",
+    "codex-rs/hepta-agentd/tests/support/cognitive_recovery_snapshot.rs": "24497b34a69d2b2227c7a2e015d1d7bf3853672ccb2a5e1e7cc20aafc236ec78",
     "codex-rs/hepta-memory/src/cognitive_store.rs": "78f4dfde7bde04d95e4d8e3d7a27ba8397c9c82680589bf531e4cdff8eb2f007",
     "codex-rs/hepta-memory/src/cognitive_store_lifecycle_tests.rs": "a8b942fec47a920006fbc2b06685d06acb73ded75023d5dd4dcfd94d0cecba62",
     "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs": "d89ea0a6290adbbc0decf468c37ef3447edda48dff69ae95d1b2fde598f7903c",
     "codex-rs/.config/nextest.toml": "2c13217e00ea45a022286aa217bcc04c2cf1ea6eedb56284a55dc3e48c99de07",
 }
 CHANGED_SOURCES = {
-    "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
     "codex-rs/hepta-agentd/tests/support/cognitive_recovery_snapshot.rs",
-    "codex-rs/.config/nextest.toml",
 }
 TOOL_VERSIONS = {
     "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
@@ -38,12 +36,10 @@ TOOL_VERSIONS = {
         "host: x86_64-unknown-linux-gnu"
     ),
 }
-CI_FILES = {
-    ".github/workflows/hepta-native-recovery.yml",
-    ".github/scripts/native_recovery_evidence.py",
-    ".github/scripts/test_native_recovery_evidence.py",
-}
+CI_FILES = {".github/scripts/native_recovery_evidence.py"}
 SUPPORT = {
+    ".github/workflows/hepta-native-recovery.yml",
+    ".github/scripts/test_native_recovery_evidence.py",
     ".github/workflows/hepta-native-preflight-reads.yml",
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
