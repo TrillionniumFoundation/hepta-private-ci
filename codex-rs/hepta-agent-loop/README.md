@@ -63,3 +63,18 @@ remain outside this adapter qualification.
 
 Run just test -p codex-hepta-agent-loop --features context-v2 for both the
 loop and actual context-compiler integration tests (16 tests at this revision).
+
+## Responses API stream composition
+
+The optional `responses-api` feature projects the existing Codex API response
+parser into the native loop without depending on Codex Core or App Server.
+It accepts a previously admitted, single-attempt stream; it never dispatches or
+retries a model request. Complete provider items, opaque reasoning, message
+phases and reported usage are handed to the original continuation owner before
+completion is published. Unfinished or duplicate item identities, projection
+drift, missing usage and unsupported tool namespaces fail closed.
+
+The retained-item tests use real protocol types and a controlled stream. They
+do not qualify provider authentication, live model quality, durable product
+owners, remote cancellation, or production compaction/recovery. Stopping local
+stream consumption is explicitly not a provider cancellation acknowledgement.

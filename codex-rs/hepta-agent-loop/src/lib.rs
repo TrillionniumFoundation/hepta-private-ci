@@ -39,3 +39,16 @@ pub use context::NativeContextInputV2;
 pub use context::PreparedNativeContextV2;
 #[cfg(feature = "context-v2")]
 pub use context::prepare_native_context_v2;
+
+#[cfg(feature = "responses-api")]
+mod responses;
+#[cfg(feature = "responses-api")]
+pub use responses::ResponsesBridgeLimits;
+#[cfg(feature = "responses-api")]
+pub use responses::ResponsesBridgeStatus;
+#[cfg(feature = "responses-api")]
+pub use responses::ResponsesContinuation;
+#[cfg(feature = "responses-api")]
+pub use responses::ResponsesContinuationOwner;
+#[cfg(feature = "responses-api")]
+pub use responses::forward_responses_stream;

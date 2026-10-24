@@ -11,12 +11,17 @@ path = "src/lib.rs"
 doctest = false
 
 [features]
+responses-api = ["dep:codex-api", "dep:codex-protocol", "dep:futures", "dep:serde_json"]
 context-v2 = ["dep:codex-hepta-context-compiler"]
 
 [lints]
 workspace = true
 
 [dependencies]
+codex-api = { workspace = true, optional = true }
+codex-protocol = { workspace = true, optional = true }
+futures = { workspace = true, optional = true }
+serde_json = { workspace = true, optional = true }
 codex-hepta-context-compiler = { path = "../hepta-context-compiler", optional = true }
 codex-hepta-types = { path = "../hepta-types" }
 thiserror = { workspace = true }
