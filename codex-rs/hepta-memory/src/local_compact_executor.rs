@@ -446,6 +446,11 @@ impl LocalCompactExecutor {
         let mut journal = self.load_journal(&mut transaction).await?;
         let before = journal.entries().len();
         let result = mutation(&mut journal)?;
+        if journal.entries().len() > MAX_JOURNAL_EVENTS {
+            return Err(LocalCompactExecutorError::Invalid(format!(
+                "journal exceeds {MAX_JOURNAL_EVENTS} event append limit"
+            )));
+        }
         for entry in &journal.entries()[before..] {
             self.insert_event(&mut transaction, entry).await?;
         }
@@ -468,7 +473,8 @@ impl LocalCompactExecutor {
                     compact_event_binding_sha256
              FROM cognitive_compact_events
              WHERE journal_id = ?
-             ORDER BY sequence",
+             ORDER BY sequence
+             LIMIT 4097",
         )
         .bind(&self.journal_id)
         .fetch_all(&mut **transaction)
