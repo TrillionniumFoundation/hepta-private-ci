@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.fixed-cell-graph.actual-recovery-archive-union-audit.v1",
+  "source_bundle_sha256": "366bc1fc39a93361f761fadbd22c60070ec0d3a8f63ab7f5e67b155ff61d9b6e",
+  "final_state_sha256": "79fca1231bea4a70441e8474b2dcdd2c95a4a9551b8432886f26233aaaa584af",
+  "all_three_archive_bytes_manifests_and_actual_write_acks_match": true,
+  "all_59_final_checkpoint_files_present_and_exact": true,
+  "all_25_native_intent_result_pairs_present": true,
+  "union_journal_files_including_staged_chunks": 75,
+  "archives": [
+    {
+      "case": "A",
+      "archive_bytes": 570932,
+      "archive_sha256": "e5029a8ae54e5c8096d8b810cb208ea5289b8d0cfa044c44931682cf1e17f1ce",
+      "journal_delta_files": 30,
+      "archive_members": 32,
+      "actual_remote_write_ack_sha256": "7bbc015228393479192abd7a092835db4ec785e1408d0715cc5e32581fbcf7dd"
+    },
+    {
+      "case": "B",
+      "archive_bytes": 340706,
+      "archive_sha256": "93ca89e25dcda67917c6c4893b166d40f74d77a99195e9ab7626c8eacd18ff51",
+      "journal_delta_files": 21,
+      "archive_members": 23,
+      "actual_remote_write_ack_sha256": "40cf9eeb84f060a6d9fc5a131c001f7b5b43649263bf15b62a94d625a7d325ef"
+    },
+    {
+      "case": "C",
+      "archive_bytes": 358659,
+      "archive_sha256": "169b45a7da7f7eff9e3d51158708e761a40a9dc55263b27be73a67332c34a52a",
+      "journal_delta_files": 24,
+      "archive_members": 26,
+      "actual_remote_write_ack_sha256": "76421b97d31bb4444e3734db339268a9a90b1f22ac1bb39e05de6839e68c66a0"
+    }
+  ],
+  "original_full_ledger_recovered": false,
+  "whole_original_cost_complete": false,
+  "no_extraction_no_new_native_or_model_calls": true
+}

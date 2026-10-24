@@ -1,0 +1,1337 @@
+{
+  "artifact_pins": {
+    "controller-continuity-v1/independent-partial-audit-v2/partial-audit.json": "33824ede8355be4e27786209956329da5e3ce8e8dcba4ab1d5ac0c0a159a6b16",
+    "controller-continuity-v1/original-report.json": "6df19c646c3b610011b138a3f0cc870bc4523d23d5ae1bc2b52f78778dc39102",
+    "controller-continuity-v1/recovered-prefix-v1/complete-prefix-records.json": "bc9d9bf887c5f68fd34815f3ef7e71403bd888c06ff622f4c8c117f63d5cd913",
+    "controller-continuity-v1/recovered-prefix-v1/original-prefix.bin": "c0e41a7adf1c83943f61e146d49b43ff70ffb57800b82cb45f906275a1cfbcfc",
+    "graphs/recovery/b0-A-s0.json": "758f4ffa3dbeede3a6cf9bb59694b56a8382c845d71d6e5b3733ff217b536c32",
+    "raw/a8cd6fc298c63d525e8794c00d6e738800898c968b30b8ad52e589ad87807589/manifest.json": "b1b07b3dcdce1d3698436ed98b11bfaf884055e392e1840a465ba3c9cd51ecc3",
+    "raw/a8cd6fc298c63d525e8794c00d6e738800898c968b30b8ad52e589ad87807589/part-000000.bin": "53ba531fbba0b0619574134b97c12f4f8779502d0b27f257e1427d8a1762fdc7",
+    "raw/a8cd6fc298c63d525e8794c00d6e738800898c968b30b8ad52e589ad87807589/part-000001.bin": "7314dec0da2b750adb2cb3e26bfe65d888a45288a2b26f2c5872994ede931ad6",
+    "raw/a8cd6fc298c63d525e8794c00d6e738800898c968b30b8ad52e589ad87807589/part-000002.bin": "f7bcb391c3071a2e2610e40bf2feab63cc32b3e4637af7a5025bb63e453dae9b",
+    "raw/a8cd6fc298c63d525e8794c00d6e738800898c968b30b8ad52e589ad87807589/part-000003.bin": "ddbb504d20a15b6f919a0926af57989f534c9d427f789abfb34d53290a5e31ad",
+    "recovery-validation-v2-inputs/case-A-journal.tar.gz": "e5029a8ae54e5c8096d8b810cb208ea5289b8d0cfa044c44931682cf1e17f1ce",
+    "recovery-validation-v2-inputs/case-B-journal.tar.gz": "93ca89e25dcda67917c6c4893b166d40f74d77a99195e9ab7626c8eacd18ff51",
+    "recovery-validation-v2-inputs/case-C-journal.tar.gz": "169b45a7da7f7eff9e3d51158708e761a40a9dc55263b27be73a67332c34a52a",
+    "requests-v1/dispatch.json": "595d40d93a9ba394c21c39fd41c5c8b60ab5ceddfcdb8bdd9f5102ce193fa4ae"
+  },
+  "base_head": "4435d4b93e130d12bfc24c45ead93fb4a30c4577",
+  "branch": "research/cell-graph-placement-20261024",
+  "custody_audit_bundle_path": "neuron-audit/graph-inference-benchmark/evidence-audit/verification/actual-recovery-archive-custody.json",
+  "destination": "qa/stem-bakeoff/evidence/cell-graph-placement-20261024",
+  "evidence_root": "/home/qian-qi/workspace/hepta-cell-graph-evidence-20261024",
+  "limits": {
+    "git_single_archive_bytes_max": 67108864,
+    "remote_all_regular_files_max": 4096,
+    "remote_single_file_bytes_max": 16777216,
+    "remote_total_bytes_max": 268435456
+  },
+  "local_bundle": {
+    "bytes": 2116610,
+    "files": [
+      {
+        "bytes": 8166,
+        "path": "backend_graph_independent_review.md",
+        "sha256": "1d4755b0d2a265135cba9e6885b7ecf5976c21f40bbd11b32b76c3665749e513"
+      },
+      {
+        "bytes": 7253,
+        "path": "backend_graph_native_adapter_review.md",
+        "sha256": "fd3d3e6524c752c1dfa449ed8cc24ed4cd640a49f51c82a89b692579e861059b"
+      },
+      {
+        "bytes": 3900,
+        "path": "backend_graph_partial_audit_review.md",
+        "sha256": "b575026fcdff1c76d42240a4399e15d80a74737fa51bf0cdc8ad94dd0c5af06f"
+      },
+      {
+        "bytes": 6637,
+        "path": "backend_graph_recovery_v2_review.md",
+        "sha256": "ea8440c05804922803e9df6dd72e86f2ea2631f07d852110135cfb7543dbae79"
+      },
+      {
+        "bytes": 2429,
+        "path": "continued-session/graph_inventory_intent.json",
+        "sha256": "2a1241a8c656de3c664c144ed92c790032222f14d314290a556cec1fadcbcbd8"
+      },
+      {
+        "bytes": 25456,
+        "path": "continued-session/graph_inventory_read.json",
+        "sha256": "9aec7d337019fe37f9786e01972d6411a28c3b919c1953b8e8453c2e33a75fd3"
+      },
+      {
+        "bytes": 230,
+        "path": "continued-session/graph_inventory_start.json",
+        "sha256": "7eec0e0d3778fbac6a6807ea49051c123414df2dcd72145661bd7e5bb9d2ba59"
+      },
+      {
+        "bytes": 3763,
+        "path": "continued-session/graph_inventory_start_retry.json",
+        "sha256": "11b04f083092019ea04ed9348cf785688c000caa0e1ad93bd38377216e7c9660"
+      },
+      {
+        "bytes": 679,
+        "path": "continued-session/graph_inventory_status.json",
+        "sha256": "b76f3c3dcc9837434cb59ac3ea079dcc1b5c27e46cbd10ecf7e0e3d85c5c0a06"
+      },
+      {
+        "bytes": 85620,
+        "path": "continued-session/graph_original_report.json",
+        "sha256": "6df19c646c3b610011b138a3f0cc870bc4523d23d5ae1bc2b52f78778dc39102"
+      },
+      {
+        "bytes": 87873,
+        "path": "continued-session/graph_original_report_chunk0.json",
+        "sha256": "8128943b3920421fb53b9550e8d334c6c767e35ec28b66205e1f5457880b90ff"
+      },
+      {
+        "bytes": 27272,
+        "path": "continued-session/graph_original_report_chunk1.json",
+        "sha256": "9cc2e2572b108ba465e99c064bee41855dfb6e2abf42476e8d4be4d2d78e6e5d"
+      },
+      {
+        "bytes": 12170,
+        "path": "continued-session/graph_partial_audit_actual.json",
+        "sha256": "33824ede8355be4e27786209956329da5e3ce8e8dcba4ab1d5ac0c0a159a6b16"
+      },
+      {
+        "bytes": 15988,
+        "path": "continued-session/graph_partial_audit_full_read.json",
+        "sha256": "b67c55bf20e4dab074c61e5bd3d19ea49f0ef7caa266b67589cea5c3b47cb199"
+      },
+      {
+        "bytes": 2195,
+        "path": "continued-session/graph_partial_audit_intent.json",
+        "sha256": "42c5b260d81d349982b86751465f85a0ccb817bb8d8ca93a990a0c96d49852ed"
+      },
+      {
+        "bytes": 5095,
+        "path": "continued-session/graph_partial_audit_read.json",
+        "sha256": "0ef25478188a895d0d2c6acdd33be01a22cbe6a8c59595a6fe6707ad5894cde8"
+      },
+      {
+        "bytes": 3206,
+        "path": "continued-session/graph_partial_audit_start.json",
+        "sha256": "9c159c2fb754d6c2c9da7feb8f72d0d2fb57d4551bc83b314d32a70539766693"
+      },
+      {
+        "bytes": 679,
+        "path": "continued-session/graph_partial_audit_status.json",
+        "sha256": "6fdb7ee27c30b3869e072f2498c999ca49d54ffe9bfd0fb712d9bf18a40ce8aa"
+      },
+      {
+        "bytes": 20612,
+        "path": "continued-session/graph_partial_auditor_upload_payload.json",
+        "sha256": "bf9aaae77a1597d49ec9db2709fc82fb173fe88963bfbd178f80d65ddd10bb92"
+      },
+      {
+        "bytes": 824440,
+        "path": "continued-session/graph_pr3676_prepublication.json",
+        "sha256": "f2ce26a39933af2d2835fb11abae1aee296a64bf3af90e4a91c2337eba00252b"
+      },
+      {
+        "bytes": 2671,
+        "path": "continued-session/original_graph_report_intent.json",
+        "sha256": "2a51d60f20aecca04a9836b7ad2ffce2842f37b66e63eb27fa80b4920ed11734"
+      },
+      {
+        "bytes": 20038,
+        "path": "continued-session/original_graph_report_read.json",
+        "sha256": "10f389ced87027381df7cd20d0813ec6ab62b28b4600b158c2b4b3195f219e87"
+      },
+      {
+        "bytes": 3836,
+        "path": "continued-session/original_graph_report_start.json",
+        "sha256": "2e1d2710b610d85ee4ed6caf098819cd9c1555050cd1b81f47ad9df2bffebb7c"
+      },
+      {
+        "bytes": 679,
+        "path": "continued-session/original_graph_report_status.json",
+        "sha256": "9601468f69470c7bf914a9a0579867b65eff532fe0f3dd745a94309eb24a5246"
+      },
+      {
+        "bytes": 2103,
+        "path": "continued-session/prefix_extract_intent.json",
+        "sha256": "9f4d96e40b10789a6ae1a52cce7fff16b7d9c4e988778e93dd2c2a1eaec4f72d"
+      },
+      {
+        "bytes": 4582,
+        "path": "continued-session/prefix_extract_read.json",
+        "sha256": "17d660dc8e3e8ffefd5a5e72186a351f94491f3675921c55d1607dbc08dd47e2"
+      },
+      {
+        "bytes": 3195,
+        "path": "continued-session/prefix_extract_start.json",
+        "sha256": "39f3a2a8cb730ce1435653f1bb617303dc9cc7c576372be5d5efe988155fc75d"
+      },
+      {
+        "bytes": 679,
+        "path": "continued-session/prefix_extract_status.json",
+        "sha256": "5d783a53f5145d2bcf3743bec31fdf3c3c76d07a6a6c19cc264b88468dadf76b"
+      },
+      {
+        "bytes": 13598,
+        "path": "continued-session/prefix_tools_upload_payload.json",
+        "sha256": "ffacd5f35d998829581b10f275305c52f117e49bf8bf4947bcbf32fe792e125e"
+      },
+      {
+        "bytes": 172,
+        "path": "continued-session/recovery-v2-custody/case-A-receipt.json",
+        "sha256": "d8c2c0584a979f13e07449de53a76cbd504d0507fb069df1440ecca3aba0a83c"
+      },
+      {
+        "bytes": 283,
+        "path": "continued-session/recovery-v2-custody/case-B-receipt.json",
+        "sha256": "b34673416dbc3f7bec667cef217aace17ad7f76093da42eac22e0f07543593aa"
+      },
+      {
+        "bytes": 283,
+        "path": "continued-session/recovery-v2-custody/case-C-receipt.json",
+        "sha256": "3e6e01db9029545c3d2ec5b9088222495ca420f489420619e3e702a0cad4e361"
+      },
+      {
+        "bytes": 623611,
+        "path": "continued-session/recovery_v2_actual_source.json",
+        "sha256": "366bc1fc39a93361f761fadbd22c60070ec0d3a8f63ab7f5e67b155ff61d9b6e"
+      },
+      {
+        "bytes": 40122,
+        "path": "continued-session/recovery_v2_after_A_state.json",
+        "sha256": "b6a31308bed8009d29588f3e43f3f76da8814f8563632b8a63c3328336d6edb2"
+      },
+      {
+        "bytes": 67083,
+        "path": "continued-session/recovery_v2_after_B_state.json",
+        "sha256": "753a6c106e8a2611d22ea0097f306676c73db60b3d16da5d043209759b4c4ed9"
+      },
+      {
+        "bytes": 95681,
+        "path": "continued-session/recovery_v2_after_C_state.json",
+        "sha256": "79fca1231bea4a70441e8474b2dcdd2c95a4a9551b8432886f26233aaaa584af"
+      },
+      {
+        "bytes": 329,
+        "path": "continued-session/recovery_v2_case_A_archive_ack.json",
+        "sha256": "7bbc015228393479192abd7a092835db4ec785e1408d0715cc5e32581fbcf7dd"
+      },
+      {
+        "bytes": 276,
+        "path": "continued-session/recovery_v2_case_A_archive_intent.json",
+        "sha256": "544e51ec68ac7ae6abf20a594302562cae5633fefa1e7de1841737da15ffebf5"
+      },
+      {
+        "bytes": 244,
+        "path": "continued-session/recovery_v2_case_B_archive_ack.json",
+        "sha256": "d3a16749b458584206230ee6525f44fe51b97a60ce68115020ac0081e0189613"
+      },
+      {
+        "bytes": 393,
+        "path": "continued-session/recovery_v2_case_B_archive_copy_cost.json",
+        "sha256": "27d4cd0e9ede425a9891cea0262027b9f02c7cff1c9830761b4b6bd0c1704290"
+      },
+      {
+        "bytes": 381,
+        "path": "continued-session/recovery_v2_case_B_archive_intent.json",
+        "sha256": "ee997ae4963c3b47280066a07d47d653370a6e9c5621308b668fd5ae3155654c"
+      },
+      {
+        "bytes": 301,
+        "path": "continued-session/recovery_v2_case_B_archive_reconciliation.json",
+        "sha256": "91504455ac395c26df6eec7674d9185b8a2f4eb060ec8af229467611f217e6f5"
+      },
+      {
+        "bytes": 320,
+        "path": "continued-session/recovery_v2_case_B_chunk0_ack.json",
+        "sha256": "47a691948f2b5e88497719d1433991aa92c74d10565128c579b1e4be72f17ea9"
+      },
+      {
+        "bytes": 468,
+        "path": "continued-session/recovery_v2_case_B_chunk0_intent.json",
+        "sha256": "506de57cc50172d36572dbd3b490d38a065f047d9bb7fa950069681650170c57"
+      },
+      {
+        "bytes": 372,
+        "path": "continued-session/recovery_v2_case_B_chunk1_ack.json",
+        "sha256": "c73e951c625417fe682f80d4fc89211b68fbbe1d3bfe6faa5fa2ad6808977413"
+      },
+      {
+        "bytes": 374,
+        "path": "continued-session/recovery_v2_case_B_chunk2_ack.json",
+        "sha256": "89a1fb6c831cb4e2bc8dfd938440dfd77fb7055b8ad7819c1fa6b382d942bab7"
+      },
+      {
+        "bytes": 375,
+        "path": "continued-session/recovery_v2_case_B_chunk3_ack.json",
+        "sha256": "3b0314aa6c4b2e5071430d4c533cc91b608e1954e1ce4b67690a5e36044c2ab1"
+      },
+      {
+        "bytes": 375,
+        "path": "continued-session/recovery_v2_case_B_chunk4_ack.json",
+        "sha256": "2b77f67bf03f44534e7ba04deb4c3c272a41def5edb69740fa1f47fcccfb9f43"
+      },
+      {
+        "bytes": 375,
+        "path": "continued-session/recovery_v2_case_B_chunk5_ack.json",
+        "sha256": "57f0249ede3115105ccd5666e8a0b6b6b1a85c11e8045e9ae3cf5e64c99c872a"
+      },
+      {
+        "bytes": 375,
+        "path": "continued-session/recovery_v2_case_B_chunk6_ack.json",
+        "sha256": "c6a49a958d5e4d2d4f218635d72fe788c138e30bb5987fcfcff712abfa9b7855"
+      },
+      {
+        "bytes": 444,
+        "path": "continued-session/recovery_v2_case_B_chunked_commit_ack.json",
+        "sha256": "40cf9eeb84f060a6d9fc5a131c001f7b5b43649263bf15b62a94d625a7d325ef"
+      },
+      {
+        "bytes": 1689,
+        "path": "continued-session/recovery_v2_case_B_durable_copy_intent.json",
+        "sha256": "071e7b15400362fac4d5d34646c745b76fc5cf715f309fa6da914f173da2ca27"
+      },
+      {
+        "bytes": 245,
+        "path": "continued-session/recovery_v2_case_B_durable_copy_start.json",
+        "sha256": "874d0188d1f655d4f95e6738ff72634e953675192ee86070e92c709d41d27358"
+      },
+      {
+        "bytes": 22294,
+        "path": "continued-session/recovery_v2_case_B_reconcile2_0.json",
+        "sha256": "b3edd2464bed214fa512d96d2003e14596301055515238ee8862674c9ddbb869"
+      },
+      {
+        "bytes": 301,
+        "path": "continued-session/recovery_v2_case_B_reconcile2_1.json",
+        "sha256": "91504455ac395c26df6eec7674d9185b8a2f4eb060ec8af229467611f217e6f5"
+      },
+      {
+        "bytes": 454,
+        "path": "continued-session/recovery_v2_case_C_chunk0_ack.json",
+        "sha256": "0b537e8876752b037422109c4c5cc8d54aafcc0cbc7d309b1f3d6449484a30f3"
+      },
+      {
+        "bytes": 458,
+        "path": "continued-session/recovery_v2_case_C_chunk1_ack.json",
+        "sha256": "415e06e556a39756350feaa9f765007cb0f985dcd75658e71eb814afc22478a9"
+      },
+      {
+        "bytes": 460,
+        "path": "continued-session/recovery_v2_case_C_chunk2_ack.json",
+        "sha256": "9e8fa1e8bc4bf2d4c424f5f4279641f24344de263a22945558c6881861491777"
+      },
+      {
+        "bytes": 461,
+        "path": "continued-session/recovery_v2_case_C_chunk3_ack.json",
+        "sha256": "9f51b9bbf8c227fd2f518527494254743d902e9ef25e445f58833781311fd51a"
+      },
+      {
+        "bytes": 461,
+        "path": "continued-session/recovery_v2_case_C_chunk4_ack.json",
+        "sha256": "dd6cabf40adec54e429246a78f2d69b305ce7599a35de0375dc8dfe794e928fe"
+      },
+      {
+        "bytes": 461,
+        "path": "continued-session/recovery_v2_case_C_chunk5_ack.json",
+        "sha256": "09c4296cb2b7abc35740c8ef6a34cde184d8287ef938449bd4b8caccf286d8a3"
+      },
+      {
+        "bytes": 461,
+        "path": "continued-session/recovery_v2_case_C_chunk6_ack.json",
+        "sha256": "081aaba8f84f395fa8889e60af49af68e9bbf6689fe9a16b21607d739aca7d2a"
+      },
+      {
+        "bytes": 461,
+        "path": "continued-session/recovery_v2_case_C_chunk7_ack.json",
+        "sha256": "c3576e8f4ee07d192a1693f59a5dfd91d5fabf668dcf9e7d3acd9ecc2f761592"
+      },
+      {
+        "bytes": 444,
+        "path": "continued-session/recovery_v2_case_C_commit_ack.json",
+        "sha256": "76421b97d31bb4444e3734db339268a9a90b1f22ac1bb39e05de6839e68c66a0"
+      },
+      {
+        "bytes": 391,
+        "path": "continued-session/recovery_v2_case_C_copy_cost.json",
+        "sha256": "ad9bafa47291bb5c684ed7163c60bf143035c848f9a8a4d8941deda6fdc022a4"
+      },
+      {
+        "bytes": 437,
+        "path": "continued-session/recovery_v2_case_C_upload_manifest.json",
+        "sha256": "1ca726552bca475b402f12f48385a5c7f04f76c003b43ab7db6d4721badd2597"
+      },
+      {
+        "bytes": 615,
+        "path": "continued-session/recovery_v2_preflight.json",
+        "sha256": "175bd1653daa1c9009af337fa5ddc2738add97d4006904e622f134876f7d309a"
+      },
+      {
+        "bytes": 2517,
+        "path": "continued-session/recovery_v2_prepare_intent.json",
+        "sha256": "7689bf8417161f127753f4318ec59c8a249863bc6a081f5dbeda23b3e3cc0e3d"
+      },
+      {
+        "bytes": 18132,
+        "path": "continued-session/recovery_v2_prepare_payload.json",
+        "sha256": "f68c6a94602669206edebf07c99069d38907f8af24c7de85bb7aa2ec39db6146"
+      },
+      {
+        "bytes": 3328,
+        "path": "continued-session/recovery_v2_prepare_read.json",
+        "sha256": "c247fcec085c2989e156e01d7975c5ced01b4450649b348b2c453d834d8ad9b5"
+      },
+      {
+        "bytes": 3651,
+        "path": "continued-session/recovery_v2_prepare_start.json",
+        "sha256": "5708ed23c3ca2a0e218f4e6662fb5024c27b5308aeaa9b3433ef45455e1c8b52"
+      },
+      {
+        "bytes": 677,
+        "path": "continued-session/recovery_v2_prepare_status.json",
+        "sha256": "d569c7ed7093793ee55d75a7f977f77a0d9518299c5cfc42badd164cd7113e0c"
+      },
+      {
+        "bytes": 87880,
+        "path": "continued-session/recovery_v2_source_chunk0.json",
+        "sha256": "84e091c34e2609c4986a0fde7242c3c2c6e5d3cabfb9ab609e4cbc80da8de5d8"
+      },
+      {
+        "bytes": 87885,
+        "path": "continued-session/recovery_v2_source_chunk1.json",
+        "sha256": "902c84691594b86eda48f9c0a7e000980aefff9922c6de626adf81cde78dc9c0"
+      },
+      {
+        "bytes": 87886,
+        "path": "continued-session/recovery_v2_source_chunk2.json",
+        "sha256": "dc43de6a1bdfe1ba3638353cc5fb24ce4f0b3fbe6983c7a917b756944d3a1827"
+      },
+      {
+        "bytes": 87886,
+        "path": "continued-session/recovery_v2_source_chunk3.json",
+        "sha256": "ac3a14f09be75c6e6df7a832b20af611b2811e79f8977f298f0563b74601d1a6"
+      },
+      {
+        "bytes": 87886,
+        "path": "continued-session/recovery_v2_source_chunk4.json",
+        "sha256": "0b95dcfc33827294c7e44f60997a675fd63134cd0af1586dcdeeca93d14dbc9c"
+      },
+      {
+        "bytes": 87886,
+        "path": "continued-session/recovery_v2_source_chunk5.json",
+        "sha256": "fac70c3553f725349cb5a44e390f51ec198c1c2c1b5ecd9a1426449d9d0325e5"
+      },
+      {
+        "bytes": 87886,
+        "path": "continued-session/recovery_v2_source_chunk6.json",
+        "sha256": "64e0cbc653c4ff7a2046a2034f52d6d1cf377df26bdb4450411660afff096b22"
+      },
+      {
+        "bytes": 87886,
+        "path": "continued-session/recovery_v2_source_chunk7.json",
+        "sha256": "23fdad57da7bc86dd617c690f46831e4d5feacc32a31be6df52f48717cc26d99"
+      },
+      {
+        "bytes": 87886,
+        "path": "continued-session/recovery_v2_source_chunk8.json",
+        "sha256": "10e36eb47f52c6c6895ff8295603c558e94bee6c86c0154dbb89333ffb83b50e"
+      },
+      {
+        "bytes": 45553,
+        "path": "continued-session/recovery_v2_source_chunk9.json",
+        "sha256": "f0c744dc83f8df5a26f22b703659fc8ea3068cf35b5d400e5c706864aeab9598"
+      },
+      {
+        "bytes": 106378,
+        "path": "graph_actual_recovery_failure.json",
+        "sha256": "36c3d163aa25c8c3182eaedc19e356399b3aea5308a4d2b73eff9210744a61cd"
+      },
+      {
+        "bytes": 2553,
+        "path": "graph_native_api_contract.txt",
+        "sha256": "62d7a886fdc17bfc01ad327fc36191d3e73394787d9eb654350f59914bf2ba6e"
+      },
+      {
+        "bytes": 5386,
+        "path": "graph_native_api_sample.json",
+        "sha256": "0cb918cadf4f4ad77a78d9557711f179a4680e6a6431e586b94e1704df978986"
+      },
+      {
+        "bytes": 665,
+        "path": "graph_native_current_status_sample.json",
+        "sha256": "d46f6f737f822b0833fc906a74828dcf9d544a3f9693dd302708bf10af1678e5"
+      },
+      {
+        "bytes": 679,
+        "path": "graph_native_terminal_status_sample.json",
+        "sha256": "ef564881d3f17c3b37c191c4633e582d8244f907581363462180b1498c90f67f"
+      },
+      {
+        "bytes": 438,
+        "path": "neuron-audit/graph-inference-benchmark/DELIVERY.json",
+        "sha256": "5ac99424a1859cd0b274633a69c335e663b972b8f2dd29ccbf34ce1125f5cf4c"
+      },
+      {
+        "bytes": 8208,
+        "path": "neuron-audit/graph-inference-benchmark/HANDOFF.md",
+        "sha256": "cc889225a60b2b3683c6779465725e56d66ae808a078512c6f4905d94bd65e51"
+      },
+      {
+        "bytes": 3142,
+        "path": "neuron-audit/graph-inference-benchmark/PATCH_MANIFEST.json",
+        "sha256": "ebd4962b9af3a1cffd9746d952da6e9864d4ca06f972e31c5000ffdd2cc7889d"
+      },
+      {
+        "bytes": 161815,
+        "path": "neuron-audit/graph-inference-benchmark/cell-graph-frozen-v1.tar.gz",
+        "sha256": "13a69ac89f66948e6e8cffce5d375b2ec483e29b88f83c406db7231c2fdc0ffc"
+      },
+      {
+        "bytes": 12750,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/ACTUAL_FIXED_GRAPH_FINDINGS.md",
+        "sha256": "58097e339241237a1c2a71220ea0ebd3f87f6ee85d6c839bb24636cb76880d59"
+      },
+      {
+        "bytes": 4072,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/PARTIAL_HANDOFF.json",
+        "sha256": "4ca522c8e0e64bce9cfc9d1e192246d13a05427248d6f4c09e0649e61ff3c52c"
+      },
+      {
+        "bytes": 1970,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/PREPARATION.json",
+        "sha256": "c5534c9a056b000940d8549c9a2875d0cbc0df97d9abef0843d04314a390c177"
+      },
+      {
+        "bytes": 10674,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/PUBLISH_ACTUAL_EVIDENCE.md",
+        "sha256": "eb7b3a8456edef343d50d174a9a58ec86153b42dfbf370099ab7bc72206cdfe3"
+      },
+      {
+        "bytes": 8791,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/PUBLISH_PARTIAL_ACTUAL_EVIDENCE.md",
+        "sha256": "f69d78d8537aee88b6955e88c99c4bc2df97c887ceaa54555c970f0a3e4ac3ab"
+      },
+      {
+        "bytes": 12170,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/actual-primary-partial-audit.json",
+        "sha256": "33824ede8355be4e27786209956329da5e3ce8e8dcba4ab1d5ac0c0a159a6b16"
+      },
+      {
+        "bytes": 6696,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/actual-report-derived-summary.json",
+        "sha256": "ccc82811b6708140d2abb2f56a8d064623d37795067155fd68324b5f2b971f70"
+      },
+      {
+        "bytes": 19197,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/actual-v2-recovery-audit-final.json",
+        "sha256": "c18b3f5b4c2e7978bfccfebb3d1d41835872a85e99c5592762939a153baed6d5"
+      },
+      {
+        "bytes": 14388,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/actual-v2-recovery-audit-through-B.json",
+        "sha256": "ade5a23d03fbad881ba18bdf46e7dc01e3c811f1ec3f3a4a858e985710d01834"
+      },
+      {
+        "bytes": 30784,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/audit_cell_graph_evidence.py",
+        "sha256": "2c469d563153fe407b5ca52359acd53e910f5d94853ca936e995e736531da9ac"
+      },
+      {
+        "bytes": 19553,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/audit_cell_graph_partial_v2.py",
+        "sha256": "aee46b227c9bcec695dcffae44e941d674d67a23b0799890240969f2b7529392"
+      },
+      {
+        "bytes": 12596,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/audit_recovery_cases_v2.py",
+        "sha256": "0d142a8c06b106994c9208f7bfc4a508abbf44645539e5f2bf3ed6ca4e6d64da"
+      },
+      {
+        "bytes": 8017,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/graph_actual_cost_recipe.js",
+        "sha256": "2db9bd2800c53dbbbf062d3d5497628fd9115019054121894f63f9c8b2374912"
+      },
+      {
+        "bytes": 8032,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/history/before-actual-v2-results/ACTUAL_FIXED_GRAPH_FINDINGS.md",
+        "sha256": "9264fde045381aae3d627cf2a83160b933a968feb163a49ba01eba675500e179"
+      },
+      {
+        "bytes": 6233,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/history/before-actual-v2-results/PUBLISH_PARTIAL_ACTUAL_EVIDENCE.md",
+        "sha256": "308e2b7071f7fccd6497a07210ca60b78453e8d848a6e7014bc69987fccf455c"
+      },
+      {
+        "bytes": 1870,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/history/before-recovery-census-binding/PARTIAL_HANDOFF.json",
+        "sha256": "33543be5363d6faa20c69be9b5c56131dbc8abd4b8dfbb1702a416d95d18c0ea"
+      },
+      {
+        "bytes": 17653,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/history/before-recovery-census-binding/audit_cell_graph_partial_v2.py",
+        "sha256": "28502a6785593e20b71686943764316afb3b774022f4e4db60209fade5c49f1f"
+      },
+      {
+        "bytes": 1383,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/history/before-repeat-guard/PREPARATION.json",
+        "sha256": "418bbfc4408b89a0d90e9cfb4c091e478cd9edd337e789388b82b9ee1aabf325"
+      },
+      {
+        "bytes": 10055,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/history/before-repeat-guard/PUBLISH_ACTUAL_EVIDENCE.md",
+        "sha256": "791e48cc09f6e282a3e8017b4b6721860651acbe1a87c0fe9964afea3b665262"
+      },
+      {
+        "bytes": 29281,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/history/before-repeat-guard/audit_cell_graph_evidence.py",
+        "sha256": "19d3977252b7cbbe0dadac5cdb50cb38e1dd927839e50093fb129822b8a98f14"
+      },
+      {
+        "bytes": 6963,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/history/before-repeat-guard/graph_actual_cost_recipe.js",
+        "sha256": "876c523a0a1a34fd2eb2f7f31cc8dc343c60472f18e542978352d80d239d2d97"
+      },
+      {
+        "bytes": 3900,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/reviews/backend_graph_partial_audit_review.md",
+        "sha256": "b575026fcdff1c76d42240a4399e15d80a74737fa51bf0cdc8ad94dd0c5af06f"
+      },
+      {
+        "bytes": 6637,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/reviews/backend_graph_recovery_v2_review.md",
+        "sha256": "ea8440c05804922803e9df6dd72e86f2ea2631f07d852110135cfb7543dbae79"
+      },
+      {
+        "bytes": 6908,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/test_cell_graph_partial_v2.py",
+        "sha256": "072cfe23eb1a1304178b1bdc84146460f2ea52820fcbd5459122ea71329ded7f"
+      },
+      {
+        "bytes": 1634,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/verification/actual-recovery-archive-custody.json",
+        "sha256": "66e37f7db07520b8145fe08c03e1dd797e4b4bc7c94074fae92284ed79491ee1"
+      },
+      {
+        "bytes": 1961,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/verification/actual-v2-recovery-final.log",
+        "sha256": "d510e065c3c750d4822eb9e82db4d6ab3119915c5ab45a6f441a9d927aaddb39"
+      },
+      {
+        "bytes": 1457,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/verification/actual-v2-recovery-through-B.log",
+        "sha256": "f83cd852b768aa9226843bf8e68bf095c93da0e19d68e3e72f6fdfb036d58896"
+      },
+      {
+        "bytes": 4895,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/verification/check_actual_recovery_archives.py",
+        "sha256": "03ab521c6271797211bfe911d349f7977fe29b1c89cfd035802be8cb2bda1597"
+      },
+      {
+        "bytes": 5786,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/verification/check_outer_capture.js",
+        "sha256": "719eb01e0215340e73f7606e7d743b47726247d2189e469f67d3e2cb8b31544a"
+      },
+      {
+        "bytes": 1222,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/verification/final-original-source-preservation.json",
+        "sha256": "8bca025b5db59aa49b363bfb57e6b404042e37b77b8b0444c7764236e2e177f6"
+      },
+      {
+        "bytes": 706,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/verification/outer-capture-v2.log",
+        "sha256": "b24cc30a8e51aba63cf7d8d3139090cded2b373a3338d31decafa10b216a9e4b"
+      },
+      {
+        "bytes": 1352,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/verification/partial-v2-recovery-binding-tests.log",
+        "sha256": "73601ce38a6375650d7dffb5e0f9a3504d7572ddbb81748cd2d1f8d326b01024"
+      },
+      {
+        "bytes": 1018,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/verification/partial-v2-tests.log",
+        "sha256": "43156964e8fe974855efebc6cdbce27b3ae51ddbb9fd1eab05d52f656ea3ff17"
+      },
+      {
+        "bytes": 2366,
+        "path": "neuron-audit/graph-inference-benchmark/evidence-audit/verification/raw-coverage-v2.json",
+        "sha256": "bda72402af443d324d6fd42cd20f4513b44519165b306bdec75cb248839bf409"
+      },
+      {
+        "bytes": 149437,
+        "path": "neuron-audit/graph-inference-benchmark/history/install_before_independent_review_81516dd4.py",
+        "sha256": "81516dd41499c3aa7973e9ff30b44d03e15768ace6e0dbe424a41e7cfe085856"
+      },
+      {
+        "bytes": 3268,
+        "path": "neuron-audit/graph-inference-benchmark/history/manifest_before_independent_review.json",
+        "sha256": "833a3563546804040d9869f440932228b602d70699d861964a476a0cdb2ab3fe"
+      },
+      {
+        "bytes": 8746,
+        "path": "neuron-audit/graph-inference-benchmark/history/protocol_before_independent_review_159ce3a0.json",
+        "sha256": "159ce3a0c01b4887b488b46d4072835ff1b2363b292712f3eb20ec5e25a7b654"
+      },
+      {
+        "bytes": 11239,
+        "path": "neuron-audit/graph-inference-benchmark/history/protocol_reviewed_cae0f27b.json",
+        "sha256": "cae0f27b93b2e4bf00b80b16916882dbc8523ce05d41e10e95f87e1546ba2883"
+      },
+      {
+        "bytes": 180441,
+        "path": "neuron-audit/graph-inference-benchmark/install_cell_graph_benchmark.py",
+        "sha256": "dec03ef8ee82916c35928fdb0df9a9e331353b52ea4973cbcf5df8ee9a8dbd61"
+      },
+      {
+        "bytes": 11289,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/CELL_GRAPH_NATIVE_ADAPTER.md",
+        "sha256": "14a2f038c1b0473e1179a6c029337d3f21135d27e06268b371ebca86a6ace48d"
+      },
+      {
+        "bytes": 1170,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/DELIVERY.json",
+        "sha256": "5227950c6e08abab8db6f3b97bb024640724994c0208384d0f5dbab13b46b566"
+      },
+      {
+        "bytes": 2321,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/PATCH_MANIFEST.json",
+        "sha256": "fd8b58e5e43e1a7637b70a5f18d3865b591f8783711663c35ebb393fd39d08e6"
+      },
+      {
+        "bytes": 2141,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/build_cell_graph_native_bundle.py",
+        "sha256": "e00666bef61bc78e969249c8fcbfd6f9c7e4b11b47ed58f89274e946cbdc264b"
+      },
+      {
+        "bytes": 141103,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/cell-graph-native-adapter-v2.tar.gz",
+        "sha256": "131e801e82c9ca6f45262a48fd92c0344b70371fdc35606833f79f2e0e0edb28"
+      },
+      {
+        "bytes": 28854,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/cell_graph_native_adapter.js",
+        "sha256": "df31a3a5a1fcedc8ff1b348e256f9a9a23176dc90dea873011361b8b4ed09f29"
+      },
+      {
+        "bytes": 8499,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/cell_graph_native_helpers.js",
+        "sha256": "a906c1516e7de1ef006a903b20ee4a0b12646d695b47449b0c593ed94dc870ca"
+      },
+      {
+        "bytes": 4333,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/cell_graph_native_protocol.json",
+        "sha256": "90e3aebfb50cb25809e18477fa99af4ecd4ac8557350114d2d5ad85b2eead972"
+      },
+      {
+        "bytes": 1866,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/cell_graph_native_start_fixture.json",
+        "sha256": "bd3fe34f9e0a06e59766985631731615ba927ad6fa7ebc14732b8f484abd65d0"
+      },
+      {
+        "bytes": 14011,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/cell_graph_native_wrapper.py",
+        "sha256": "fced1311223adde960d9e0c04fc40c8e816d01a4e078f09f802b67b20d3e5b45"
+      },
+      {
+        "bytes": 26864,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/history/review-candidate-v1/cell_graph_native_adapter.js",
+        "sha256": "df19cc9c8961490ef9cfc36c6bf0570567d6b74eacebc2c91df3fbea81e56ca2"
+      },
+      {
+        "bytes": 8499,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/history/review-candidate-v1/cell_graph_native_helpers.js",
+        "sha256": "a906c1516e7de1ef006a903b20ee4a0b12646d695b47449b0c593ed94dc870ca"
+      },
+      {
+        "bytes": 3599,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/history/review-candidate-v1/cell_graph_native_protocol.json",
+        "sha256": "c930235c402a0d258aaeb2d3992ddc5d53fff05c74334ba99baf083e0a08ed98"
+      },
+      {
+        "bytes": 13400,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/history/review-candidate-v1/cell_graph_native_wrapper.py",
+        "sha256": "0e9a8ce910717f3fa0e7c2f910e3facd9052641e2c2a99210dc4665dc17446e8"
+      },
+      {
+        "bytes": 18455,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/history/review-candidate-v1/test_cell_graph_native_adapter.js",
+        "sha256": "22b7564014a3280c43fd37471294ad4ce3707caf8e4e53670765516acaa9778e"
+      },
+      {
+        "bytes": 9986,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/history/review-candidate-v1/test_cell_graph_native_wrapper.py",
+        "sha256": "0e5acc2751365e8f460997221aebb234d8bb62a5432aed498700c58e13f10cee"
+      },
+      {
+        "bytes": 7253,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/independent-review.md",
+        "sha256": "fd3d3e6524c752c1dfa449ed8cc24ed4cd640a49f51c82a89b692579e861059b"
+      },
+      {
+        "bytes": 140434,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/install_cell_graph_native_adapter.py",
+        "sha256": "4e6f82387e53d0ee5eab4957d7e3cc8e73d4582942c7beb29acc1986c228d9a2"
+      },
+      {
+        "bytes": 19948,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/test_cell_graph_native_adapter.js",
+        "sha256": "948a0e4669e0cba9ef08cd12bfa087ed88804b01b36f6be9aee0c2665636a826"
+      },
+      {
+        "bytes": 11116,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/test_cell_graph_native_wrapper.py",
+        "sha256": "584e18e0031a89e81556dd7c7ac7a5040e4649d0a85023e107e6cd5b57d2a1b3"
+      },
+      {
+        "bytes": 48067,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/verification/bundle-candidate-v1.json",
+        "sha256": "d21f333da976d34b87ff026cb425aa964567fdcb259c76d70172ae65ebb188be"
+      },
+      {
+        "bytes": 50282,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/verification/bundle-review-v2.json",
+        "sha256": "58ecee83e6326df9d278705cc0a4a48f0a0fcc0dfcf5a334d3ca0d552c17a1dc"
+      },
+      {
+        "bytes": 3775,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/verification/final-v2.json",
+        "sha256": "4f7b7b3cb2abe6f7aa7fb03660b68fd90cdb87125597830ff86a729a4d8e02bb"
+      },
+      {
+        "bytes": 372,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/verification/installer-v2.json",
+        "sha256": "d72ed2d433fd4f5af64209bde77af2f48140119b89cbe0e4e2fa2481197abc51"
+      },
+      {
+        "bytes": 1177,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/verification/node-attempt1.log",
+        "sha256": "9cb9a04d2d3f08f1bfc08748e194a3ca26482bd4cf27b76bf069cef5bf638056"
+      },
+      {
+        "bytes": 1352,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/verification/node-attempt2.log",
+        "sha256": "82689ce081088fbf3a5b9d1e618b68ca34fb954709441682a775d4af948b7f2f"
+      },
+      {
+        "bytes": 1514,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/verification/node-review-fixes.log",
+        "sha256": "f59b7ea7e9ab4259156bd8e697a16492105c19c67fadbc9073a1c598de9ddb96"
+      },
+      {
+        "bytes": 4202,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/verification/package-files.json",
+        "sha256": "a815418304d6c91f6b23cda9e4b7fe19e25bf5fc30791374a72cf64fd4732947"
+      },
+      {
+        "bytes": 1544,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/verification/python-attempt1.log",
+        "sha256": "df52d6fc87e9871b056c63f21429e70d8d7edfa55bc636bb77fe94e2568a4646"
+      },
+      {
+        "bytes": 1713,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/verification/python-attempt2.log",
+        "sha256": "4db78cca19c5c24c57e6da607904b2c6c316329045a79bed3b28c77587b262f4"
+      },
+      {
+        "bytes": 1913,
+        "path": "neuron-audit/graph-inference-benchmark/native-adapter/verification/python-review-fixes.log",
+        "sha256": "1b2f08aa8dd117a79fd5d7a4af456c0fc1e4b586f5580b0d7f72719bc75f01bd"
+      },
+      {
+        "bytes": 22927,
+        "path": "neuron-audit/graph-inference-benchmark/native-dispatch-metadata.json",
+        "sha256": "9772f800955ab3b1fa22953666ca4b5e521a615f85e2880561a2fb641edabf14"
+      },
+      {
+        "bytes": 17472,
+        "path": "neuron-audit/graph-inference-benchmark/patch/qa/stem-bakeoff/CELL_GRAPH_BENCHMARK.md",
+        "sha256": "a1dbe9fe717a1221ccc20882163a33095434f464c323a8c8de8408d019d63655"
+      },
+      {
+        "bytes": 15746,
+        "path": "neuron-audit/graph-inference-benchmark/patch/qa/stem-bakeoff/cell_graph_benchmark.py",
+        "sha256": "7d77c2c0ba63013ac22bd996ee3c612d0d086f9edacfffe29d58f5111ad8bd65"
+      },
+      {
+        "bytes": 10728,
+        "path": "neuron-audit/graph-inference-benchmark/patch/qa/stem-bakeoff/cell_graph_owner.js",
+        "sha256": "a8f1e561f3bff60b0247351c27619a874403006cd44ee40035b2cc3c8a1de112"
+      },
+      {
+        "bytes": 11311,
+        "path": "neuron-audit/graph-inference-benchmark/patch/qa/stem-bakeoff/cell_graph_protocol.json",
+        "sha256": "2c88c2a47f56c05ea86f221ad26806fb5190bd17b8b32a9284a0ae31dfbe85e5"
+      },
+      {
+        "bytes": 15226,
+        "path": "neuron-audit/graph-inference-benchmark/patch/qa/stem-bakeoff/cell_graph_reduce.py",
+        "sha256": "5ac4bba925d161f8fe3eda5c5c036207d7182ec84733f6c1f310befa0da54efb"
+      },
+      {
+        "bytes": 14114,
+        "path": "neuron-audit/graph-inference-benchmark/patch/qa/stem-bakeoff/cell_graph_report.py",
+        "sha256": "7a5b7dfaccda71143e0de6b1087d2744bc5ee16e14d0e146f06b77734621544d"
+      },
+      {
+        "bytes": 14860,
+        "path": "neuron-audit/graph-inference-benchmark/patch/qa/stem-bakeoff/cell_graph_worker.py",
+        "sha256": "bb9a6ddc30cc267d22a530e9486e6590cdef15247d1546905b4a051e8eed8358"
+      },
+      {
+        "bytes": 24562,
+        "path": "neuron-audit/graph-inference-benchmark/patch/qa/stem-bakeoff/test_cell_graph_benchmark.py",
+        "sha256": "d8c053884c09ca4beef2899a959f21afc0bb4b4c3825e757a810027f440d68c6"
+      },
+      {
+        "bytes": 6323,
+        "path": "neuron-audit/graph-inference-benchmark/patch/qa/stem-bakeoff/test_cell_graph_owner.js",
+        "sha256": "3082a2c137fc9ea0c67fd94d4d6573a42fc6b0c2f3284af33a088fcf0ba44934"
+      },
+      {
+        "bytes": 5599,
+        "path": "neuron-audit/graph-inference-benchmark/publication-v1/PR_BODY.md",
+        "sha256": "2b4bb28d1c14355f930792e272df1ce0d59bb8c24d9518a62f84eb5475150888"
+      },
+      {
+        "bytes": 7337,
+        "path": "neuron-audit/graph-inference-benchmark/publication-v1/RUNBOOK.md",
+        "sha256": "1f0532fd4b856ee4af585b1d471a7f33ce482b34e812039d922bcba11bbae01a"
+      },
+      {
+        "bytes": 8080,
+        "path": "neuron-audit/graph-inference-benchmark/publication-v1/build_publication_bundle.py",
+        "sha256": "c59c14ac8aabf9e0146925ed20b56284faaaf3eb59f9ad5974be41f1d05bc2eb"
+      },
+      {
+        "bytes": 6950,
+        "path": "neuron-audit/graph-inference-benchmark/publication-v1/history/before-staged-tree-binding/RUNBOOK.md",
+        "sha256": "de81c8b0f993e291ccd5dd11dae7d45ce0e489f9e569932ba60201e22ad8cab1"
+      },
+      {
+        "bytes": 1905,
+        "path": "neuron-audit/graph-inference-benchmark/publication-v1/history/before-staged-tree-binding/publication-tests.log",
+        "sha256": "bff152a3b45d9af1aab9b6df8d238b61000a38589a0f828856ba84af378608fe"
+      },
+      {
+        "bytes": 24376,
+        "path": "neuron-audit/graph-inference-benchmark/publication-v1/history/before-staged-tree-binding/publish_graph_evidence.py",
+        "sha256": "fdafd6e7caa08778b0383405aeb04bfc6f6423c4e5a0fd1e4100b1a35333e71c"
+      },
+      {
+        "bytes": 10846,
+        "path": "neuron-audit/graph-inference-benchmark/publication-v1/history/before-staged-tree-binding/test_publish_graph_evidence.py",
+        "sha256": "3dc475a8b9fa7f04a60df7a1d3a9ebc340b6bc766e57b595f88f8e87ee209d7c"
+      },
+      {
+        "bytes": 2255,
+        "path": "neuron-audit/graph-inference-benchmark/publication-v1/publication-tests-v2.log",
+        "sha256": "09f43bb951dc4becf66ad2aaa7a5b58aa5769f3655a6bec40e49cf5da1578df4"
+      },
+      {
+        "bytes": 1905,
+        "path": "neuron-audit/graph-inference-benchmark/publication-v1/publication-tests.log",
+        "sha256": "bff152a3b45d9af1aab9b6df8d238b61000a38589a0f828856ba84af378608fe"
+      },
+      {
+        "bytes": 27508,
+        "path": "neuron-audit/graph-inference-benchmark/publication-v1/publish_graph_evidence.py",
+        "sha256": "97eb79c049075977751fc0b5fec8088c28a76dc3c34ec48b8ffa5899681ba054"
+      },
+      {
+        "bytes": 13292,
+        "path": "neuron-audit/graph-inference-benchmark/publication-v1/test_publish_graph_evidence.py",
+        "sha256": "54b925948a976ad7c9f1556d09af9fd6c0ed62d34d6d87d2973bd0af74443b96"
+      },
+      {
+        "bytes": 10478,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/RECOVERY_VALIDATION_V2.md",
+        "sha256": "68703ab04a55533d8b064ac5de6d5057be00eba67807086eab245d1fa908f9cf"
+      },
+      {
+        "bytes": 8483,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/actual_reused_start_fixture.json",
+        "sha256": "8549d2cdd3562472cc0587a3b2b2fe212fa9ca5fba5e3c914445850df4fa5e49"
+      },
+      {
+        "bytes": 2029,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/build_recovery_validation_v2.py",
+        "sha256": "5351fdf514519a5b6c9e7327bcc7068841874211d1b8ddc1f123e3e27c346228"
+      },
+      {
+        "bytes": 3420,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/cell_graph_recovery_journal_v2.js",
+        "sha256": "01f54c25a372ffb549584951e95ed37261f68435485cd87cb7ac7ba45b605c1a"
+      },
+      {
+        "bytes": 4446,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/cell_graph_recovery_start_v2.js",
+        "sha256": "2ce1d1db6986bed1aa4936dc4364ad433ba3e4e512b8c91ec0bf99d586dae006"
+      },
+      {
+        "bytes": 21434,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/cell_graph_recovery_validation_v2.js",
+        "sha256": "de3a52ce433139686cae68558069a0950b3f1e67cc570bb210e49a1a4a2e163a"
+      },
+      {
+        "bytes": 8972,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/extract_complete_raw_prefix.py",
+        "sha256": "cad09c15e4f36b512ae464eedee1a655d04b68055ee8c967b0c4c9c51104c9dc"
+      },
+      {
+        "bytes": 2120,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/history/before-command-bound/cell_graph_recovery_journal_v2.js",
+        "sha256": "7134c7a9db414667eee4ef7d5e163b774a4f6ccb3c01b4576d5a7b4d35cedd3a"
+      },
+      {
+        "bytes": 4740,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/history/before-command-bound/recovery_validation_protocol_v2.json",
+        "sha256": "72e86c9b26611bad955e71b22b1d1a6411bbfa5cdc8f885479022a3ec8f49f5a"
+      },
+      {
+        "bytes": 3251,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/history/before-command-bound/write_recovery_journal_v2.py",
+        "sha256": "0bf8fd47716182b932b181016d7e6c27ecbc7a4b3e7f2d0afd890b2a0bbf2a9c"
+      },
+      {
+        "bytes": 11837,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/prepare_recovery_validation_v2.py",
+        "sha256": "a0bd15b809a7118c9607c29a5dcab2670ee12b8cf404ab4908e9aa12f91a4964"
+      },
+      {
+        "bytes": 5008,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/recovery_validation_protocol_v2.json",
+        "sha256": "7e73a090d4942afc88aa188b8735388e7585ca54a987c79fc1d1b9b69ee66e50"
+      },
+      {
+        "bytes": 5001,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/test_extract_complete_raw_prefix.py",
+        "sha256": "a27bfb5e7cd808e242a19a52f5ecf95a84933b4ac64525978975524a47a909bc"
+      },
+      {
+        "bytes": 9685,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/test_prepare_recovery_validation_v2.py",
+        "sha256": "ee95e13117c8b7908a45574876ad25990e2f8b9fa12ccfd3297365ea3e72ff53"
+      },
+      {
+        "bytes": 3775,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/test_recovery_journal_exec_v2.js",
+        "sha256": "f9f1d25f0f3146ce6b4f2d4c0ba41cbcc062bc7e15db74d99bb98b1bafc30d25"
+      },
+      {
+        "bytes": 20561,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/test_recovery_validation_v2.js",
+        "sha256": "52e09876ae80fd15c2fb6847290900069a400a721344eaa8d4a5bc796a7eeaf4"
+      },
+      {
+        "bytes": 3013,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/test_write_recovery_journal_v2.py",
+        "sha256": "c4e2704d1e3bf0c62da2eafbad84f07ed311903c35f93abed9373c93469bce88"
+      },
+      {
+        "bytes": 7266,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/FINAL_HANDOFF.json",
+        "sha256": "cdaed17c138f81f46c7e9c7b2130789f2696758114c01292c31d765aaddb891d"
+      },
+      {
+        "bytes": 222,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/journal-exec-eyaPQF/journal/1c9264c0446b92c59ba901c781d07a8c37137232bab8c04122a689beca4f0aef/.case-b0-A-s0-record.json.parts/manifest.json",
+        "sha256": "6bedec003b0e90a8e89e1ef1e986ca4c9f53718c2f242cb3fea1ded84d449e39"
+      },
+      {
+        "bytes": 65536,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/journal-exec-eyaPQF/journal/1c9264c0446b92c59ba901c781d07a8c37137232bab8c04122a689beca4f0aef/.case-b0-A-s0-record.json.parts/part-000000.bin",
+        "sha256": "2072e9fe157ad3d8fbde970d02da73c0409d059cba4cfa519478bdfa27d591d7"
+      },
+      {
+        "bytes": 65536,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/journal-exec-eyaPQF/journal/1c9264c0446b92c59ba901c781d07a8c37137232bab8c04122a689beca4f0aef/.case-b0-A-s0-record.json.parts/part-000001.bin",
+        "sha256": "803ed80196eb3ae15ba9b194f7f08b73b5d750b6b43675144097872160422d42"
+      },
+      {
+        "bytes": 65536,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/journal-exec-eyaPQF/journal/1c9264c0446b92c59ba901c781d07a8c37137232bab8c04122a689beca4f0aef/.case-b0-A-s0-record.json.parts/part-000002.bin",
+        "sha256": "803ed80196eb3ae15ba9b194f7f08b73b5d750b6b43675144097872160422d42"
+      },
+      {
+        "bytes": 16829,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/journal-exec-eyaPQF/journal/1c9264c0446b92c59ba901c781d07a8c37137232bab8c04122a689beca4f0aef/.case-b0-A-s0-record.json.parts/part-000003.bin",
+        "sha256": "b58aa915f61b636a40be3bb6d51fa59df119954431e2c30d4d0ab42e04943a46"
+      },
+      {
+        "bytes": 213437,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/journal-exec-eyaPQF/journal/1c9264c0446b92c59ba901c781d07a8c37137232bab8c04122a689beca4f0aef/case-b0-A-s0-record.json",
+        "sha256": "ca8a1cd09ad9e4827d84ddc4a4bd81eab30abce986ba2fe89e193b235efc32d1"
+      },
+      {
+        "bytes": 29,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/journal-exec-eyaPQF/journal/1c9264c0446b92c59ba901c781d07a8c37137232bab8c04122a689beca4f0aef/raw-000000-intent.json",
+        "sha256": "115db03112c06bd871fc290c2b8f7a9e1b561a2363598f6f067c4bb52960b339"
+      },
+      {
+        "bytes": 7175,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/journal-exec-eyaPQF/writer.py",
+        "sha256": "85af9281ef6231635968c43b81b6b911a472b1c1b920a6aa6300075225fa97bc"
+      },
+      {
+        "bytes": 445,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/journal-large-exec.log",
+        "sha256": "962fd5db0d37e5b93ebdaf73e579bbf4fbe6a0ca5acabbee270aa3ecbaac51d6"
+      },
+      {
+        "bytes": 1762,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/node-final-run.log",
+        "sha256": "cefc40b86a598d5afb0eea727f7a09471a703144fe5c6466a1bb69c02058a6ff"
+      },
+      {
+        "bytes": 1335,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/node-first-run.log",
+        "sha256": "9b71a0201979365b8e1017335128beb6af94d4c565aa93e493056b38015ca122"
+      },
+      {
+        "bytes": 1762,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/node-frozen-run.log",
+        "sha256": "cefc40b86a598d5afb0eea727f7a09471a703144fe5c6466a1bb69c02058a6ff"
+      },
+      {
+        "bytes": 1679,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/node-journal-run.log",
+        "sha256": "d7c3b364a618af5710866e762ba46410e38c86002ec09310885450a253357140"
+      },
+      {
+        "bytes": 915,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/prefix-first-run.log",
+        "sha256": "edaaf25b22f8b6383af942c9097148aeb982468173c867e10d316b8f0b6c5735"
+      },
+      {
+        "bytes": 2924,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/python-command-bound-run.log",
+        "sha256": "effb9c3ae139c454472d662ab82e4f223ffb0e9759dd3186c95c6f2a214ed5c2"
+      },
+      {
+        "bytes": 2401,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/python-final-run.log",
+        "sha256": "732adc059ac13e52bb15440081007f0adb09ffb2d54cbbf3174ebf42a5b754a4"
+      },
+      {
+        "bytes": 920,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/python-first-run.log",
+        "sha256": "32f2dce8ed908361311bf6191eba0597d40534d1d04d4e9ed44ddc64ade527ec"
+      },
+      {
+        "bytes": 2401,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/python-frozen-run.log",
+        "sha256": "5170d9af61844ec1da1478f90ab8178f11821c4412c748f42b0e1dcbf1b25ee9"
+      },
+      {
+        "bytes": 52157,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/recovery-bundle.json",
+        "sha256": "9ca6b0066452b7183b7ce46ce561188c04a27955b8f3c224a99e17e22a56c46a"
+      },
+      {
+        "bytes": 761,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/verification/writer-staging-run.log",
+        "sha256": "728487d31c7ebef886d2310d161664f36e3d473fdf12ed0860e80756bfefb190"
+      },
+      {
+        "bytes": 7127,
+        "path": "neuron-audit/graph-inference-benchmark/recovery-v2/write_recovery_journal_v2.py",
+        "sha256": "79cdafa66be0b84d012ebd1ac3bb8420141519347c9234d673e340a33c422a16"
+      },
+      {
+        "bytes": 711,
+        "path": "neuron-audit/graph-inference-benchmark/verification/cold-worker-failure.stderr",
+        "sha256": "7f19f2a595f0ea9a2ff31f28e13429380a6d024b2f46fc27082dc19844db6164"
+      },
+      {
+        "bytes": 0,
+        "path": "neuron-audit/graph-inference-benchmark/verification/cold-worker-failure.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 1536,
+        "path": "neuron-audit/graph-inference-benchmark/verification/final-v2.json",
+        "sha256": "4b0a0672d23f797171c75951dd476994d53abc9888b08cbe6270291cdbf8f354"
+      },
+      {
+        "bytes": 776,
+        "path": "neuron-audit/graph-inference-benchmark/verification/final.json",
+        "sha256": "34da378033a0f071c295f003ca8391919549999237aa2541e139cecb4a12bc03"
+      },
+      {
+        "bytes": 942,
+        "path": "neuron-audit/graph-inference-benchmark/verification/freeze.json",
+        "sha256": "2b317a6456d5daa451a871f2e00e877b92a8064b221433783c65744b1a0d5959"
+      },
+      {
+        "bytes": 253,
+        "path": "neuron-audit/graph-inference-benchmark/verification/installer-final.json",
+        "sha256": "d02e6be71bb864e3168e0fdcadcdf14bd0ff13e3263e50183837098e999eee93"
+      },
+      {
+        "bytes": 361,
+        "path": "neuron-audit/graph-inference-benchmark/verification/installer.json",
+        "sha256": "8e31cc32c15e6ea491f19a89b99b2aefe7df1dcfc3e54f4211b8479f68940d47"
+      },
+      {
+        "bytes": 80,
+        "path": "neuron-audit/graph-inference-benchmark/verification/owner-final-v2.log",
+        "sha256": "6a09741b5c9e54a6a5d7647890eb280f72724d9a7654c82344bd029e0a68ae34"
+      },
+      {
+        "bytes": 80,
+        "path": "neuron-audit/graph-inference-benchmark/verification/owner-final.log",
+        "sha256": "5987541030d1cdf06c9958ae73cd6a092414f79c981a6d8a100a0f23b0dd8972"
+      },
+      {
+        "bytes": 80,
+        "path": "neuron-audit/graph-inference-benchmark/verification/owner-freeze.log",
+        "sha256": "7fc7b7e154a79ef8c04bc95167f7e07cd12676ee04051f5e438d2409e775f2b6"
+      },
+      {
+        "bytes": 80,
+        "path": "neuron-audit/graph-inference-benchmark/verification/owner-review-fixes.log",
+        "sha256": "6a09741b5c9e54a6a5d7647890eb280f72724d9a7654c82344bd029e0a68ae34"
+      },
+      {
+        "bytes": 3075,
+        "path": "neuron-audit/graph-inference-benchmark/verification/python-final-v2.log",
+        "sha256": "8ec094bad4824f62d70e7b26e70c234dd76eb4d8ca2600743c09bd74f06c2312"
+      },
+      {
+        "bytes": 2573,
+        "path": "neuron-audit/graph-inference-benchmark/verification/python-final.log",
+        "sha256": "c2c50f4feeb676051fc4256f7c5d7e9d086bb6f553c4471d7b4601fc81807209"
+      },
+      {
+        "bytes": 2573,
+        "path": "neuron-audit/graph-inference-benchmark/verification/python-freeze.log",
+        "sha256": "2e90499a2cd9472301caa244c011bc890df948759e86cde5ddcbe2fe1dabc7a8"
+      },
+      {
+        "bytes": 3075,
+        "path": "neuron-audit/graph-inference-benchmark/verification/python-review-fixes.log",
+        "sha256": "4e754ce42a146c21e4795cae65980c5837950ef49df2fd08fd084be9b59c1059"
+      },
+      {
+        "bytes": 982,
+        "path": "neuron-audit/graph-inference-benchmark/verification/review-fixes.json",
+        "sha256": "74246b19806c911979c77ef49c385295741a06be88e7e5f6c0746e57996a9aac"
+      },
+      {
+        "bytes": 17472,
+        "path": "neuron-audit/graph-inference-benchmark/verification/source/CELL_GRAPH_BENCHMARK.md",
+        "sha256": "a1dbe9fe717a1221ccc20882163a33095434f464c323a8c8de8408d019d63655"
+      },
+      {
+        "bytes": 8416,
+        "path": "neuron-audit/graph-inference-benchmark/verification/source/cell_field_retention_experiment_protocol.json",
+        "sha256": "5f963295e4e49a64cde085aa2a4dde92c291df3b0450d768f986264e482d3832"
+      },
+      {
+        "bytes": 17653,
+        "path": "neuron-audit/graph-inference-benchmark/verification/source/cell_field_state.py",
+        "sha256": "1e30b346070056123cd198413c8d82b24040179f5aa732f25dadf506e795805f"
+      },
+      {
+        "bytes": 15746,
+        "path": "neuron-audit/graph-inference-benchmark/verification/source/cell_graph_benchmark.py",
+        "sha256": "7d77c2c0ba63013ac22bd996ee3c612d0d086f9edacfffe29d58f5111ad8bd65"
+      },
+      {
+        "bytes": 10728,
+        "path": "neuron-audit/graph-inference-benchmark/verification/source/cell_graph_owner.js",
+        "sha256": "a8f1e561f3bff60b0247351c27619a874403006cd44ee40035b2cc3c8a1de112"
+      },
+      {
+        "bytes": 11239,
+        "path": "neuron-audit/graph-inference-benchmark/verification/source/cell_graph_protocol.json",
+        "sha256": "cae0f27b93b2e4bf00b80b16916882dbc8523ce05d41e10e95f87e1546ba2883"
+      },
+      {
+        "bytes": 15226,
+        "path": "neuron-audit/graph-inference-benchmark/verification/source/cell_graph_reduce.py",
+        "sha256": "5ac4bba925d161f8fe3eda5c5c036207d7182ec84733f6c1f310befa0da54efb"
+      },
+      {
+        "bytes": 14114,
+        "path": "neuron-audit/graph-inference-benchmark/verification/source/cell_graph_report.py",
+        "sha256": "7a5b7dfaccda71143e0de6b1087d2744bc5ee16e14d0e146f06b77734621544d"
+      },
+      {
+        "bytes": 14860,
+        "path": "neuron-audit/graph-inference-benchmark/verification/source/cell_graph_worker.py",
+        "sha256": "bb9a6ddc30cc267d22a530e9486e6590cdef15247d1546905b4a051e8eed8358"
+      },
+      {
+        "bytes": 5148,
+        "path": "neuron-audit/graph-inference-benchmark/verification/source/cell_learning_metrics.py",
+        "sha256": "8c20c79dff3cf0e7cbee08648e2409ddb065438a72fcf9c2be56c0646a9aaf16"
+      },
+      {
+        "bytes": 11338,
+        "path": "neuron-audit/graph-inference-benchmark/verification/source/cell_learning_models.py",
+        "sha256": "5b6babba7e036be6273d96455db4cf0c93699a9e6a705805f4caf6ba66f45005"
+      },
+      {
+        "bytes": 24562,
+        "path": "neuron-audit/graph-inference-benchmark/verification/source/test_cell_graph_benchmark.py",
+        "sha256": "d8c053884c09ca4beef2899a959f21afc0bb4b4c3825e757a810027f440d68c6"
+      },
+      {
+        "bytes": 6323,
+        "path": "neuron-audit/graph-inference-benchmark/verification/source/test_cell_graph_owner.js",
+        "sha256": "3082a2c137fc9ea0c67fd94d4d6573a42fc6b0c2f3284af33a088fcf0ba44934"
+      },
+      {
+        "bytes": 3343,
+        "path": "neuron-audit/graph-inference-benchmark/verification/test-attempt1.log",
+        "sha256": "b15782e0922ceb074157808913526ff9fff1d345b7edf0adc24849a1e555bb6d"
+      },
+      {
+        "bytes": 2217,
+        "path": "neuron-audit/graph-inference-benchmark/verification/test-attempt2.log",
+        "sha256": "8cbc978fa0fc2806ac982ac581a3c879cb03a419fee99fe978fbbe0b523af169"
+      },
+      {
+        "bytes": 1207,
+        "path": "neuron-audit/graph-inference-benchmark/verification/wording-amendment.json",
+        "sha256": "08d7ff3c1028c86f27e590719327ea1bd96f06758c340046e1e8dec29ed44602"
+      }
+    ],
+    "sha256": "fa416619551bf4ff77321f2a4adef5cc47e33823bd3ff8ca4cb1501a3b287be4"
+  },
+  "must_remain_absent": [
+    "raw/a8cd6fc298c63d525e8794c00d6e738800898c968b30b8ad52e589ad87807589/ledger.json",
+    "graphs/recovery/b0-B-s0.json",
+    "graphs/recovery/b0-C-s0.json"
+  ],
+  "partial_audit_path": "controller-continuity-v1/independent-partial-audit-v2/partial-audit.json",
+  "protected_source_pins": {
+    "qa/stem-bakeoff/cell_graph_benchmark.py": "7d77c2c0ba63013ac22bd996ee3c612d0d086f9edacfffe29d58f5111ad8bd65",
+    "qa/stem-bakeoff/cell_graph_native_adapter.js": "df31a3a5a1fcedc8ff1b348e256f9a9a23176dc90dea873011361b8b4ed09f29",
+    "qa/stem-bakeoff/cell_graph_native_helpers.js": "a906c1516e7de1ef006a903b20ee4a0b12646d695b47449b0c593ed94dc870ca",
+    "qa/stem-bakeoff/cell_graph_native_protocol.json": "90e3aebfb50cb25809e18477fa99af4ecd4ac8557350114d2d5ad85b2eead972",
+    "qa/stem-bakeoff/cell_graph_native_wrapper.py": "fced1311223adde960d9e0c04fc40c8e816d01a4e078f09f802b67b20d3e5b45",
+    "qa/stem-bakeoff/cell_graph_owner.js": "a8f1e561f3bff60b0247351c27619a874403006cd44ee40035b2cc3c8a1de112",
+    "qa/stem-bakeoff/cell_graph_protocol.json": "2c88c2a47f56c05ea86f221ad26806fb5190bd17b8b32a9284a0ae31dfbe85e5",
+    "qa/stem-bakeoff/cell_graph_reduce.py": "5ac4bba925d161f8fe3eda5c5c036207d7182ec84733f6c1f310befa0da54efb",
+    "qa/stem-bakeoff/cell_graph_report.py": "7a5b7dfaccda71143e0de6b1087d2744bc5ee16e14d0e146f06b77734621544d",
+    "qa/stem-bakeoff/cell_graph_worker.py": "bb9a6ddc30cc267d22a530e9486e6590cdef15247d1546905b4a051e8eed8358"
+  },
+  "raw_directory": "raw/a8cd6fc298c63d525e8794c00d6e738800898c968b30b8ad52e589ad87807589",
+  "readable_local_files": {
+    "PR_BODY.md": "neuron-audit/graph-inference-benchmark/publication-v1/PR_BODY.md",
+    "PUBLISHING.md": "neuron-audit/graph-inference-benchmark/evidence-audit/PUBLISH_PARTIAL_ACTUAL_EVIDENCE.md",
+    "README.md": "neuron-audit/graph-inference-benchmark/evidence-audit/ACTUAL_FIXED_GRAPH_FINDINGS.md",
+    "RUNBOOK.md": "neuron-audit/graph-inference-benchmark/publication-v1/RUNBOOK.md",
+    "publish_graph_evidence.py": "neuron-audit/graph-inference-benchmark/publication-v1/publish_graph_evidence.py",
+    "recovery-archive-custody.json": "neuron-audit/graph-inference-benchmark/evidence-audit/verification/actual-recovery-archive-custody.json",
+    "recovery-v2-audit.json": "neuron-audit/graph-inference-benchmark/evidence-audit/actual-v2-recovery-audit-final.json"
+  },
+  "recovery_audit_bundle_path": "neuron-audit/graph-inference-benchmark/evidence-audit/actual-v2-recovery-audit-final.json",
+  "report_path": "controller-continuity-v1/original-report.json",
+  "required_content_hashes": [
+    "d586621af590751edf604d362a8a7a80045eb9a5748421976df93c74ba65a63e",
+    "0da796e185bd8e0d65718ef2137f11b72c0372344078d9785574a8d31ea33ddc"
+  ],
+  "schema": "hepta.fixed-cell-graph.publication-spec.v1",
+  "scope": "Publication only. Exact retained census and explicit missing ledger/cost scope. No original experiment or native recovery call is rerun.",
+  "worktree": "/home/qian-qi/workspace/hepta-cell-graph-benchmark-20261024"
+}
