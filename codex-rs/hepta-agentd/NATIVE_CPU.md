@@ -71,15 +71,42 @@ and protected material must be recovered by a legitimate successor.
 The current entry implements `steady-state-v1`: lower to 25 ms, pause at zero,
 and resume to 50 ms per original 100 ms period. Root transcribes actual prepared
 payloads, terminal receipts, Current and physical material, consumer frontiers,
-history retirement and measured CPU/heartbeat windows. It also reports actual
+history retirement and measured CPU/heartbeat windows. Store device/inode
+come from the running writer's actual active database path after its original
+recovery factory, not the earlier fresh-administration database. It also reports actual
 role credentials and privilege-boundary refusals. The final VM return must be
 the original kernel poweroff/debug-exit result; a transcript alone is not a pass.
 
-`manager-exit-after-terminal-v1` is explicitly refused until the original
-retired-publisher/material/local-lease successor composition is installed in this
-entry. Cross-boot adoption, more than the two initial management images, grant
-renewal beyond the original 300-second native lease and power-loss qualification
-remain separate requirements. None is implied by a finite steady-state run.
+`manager-exit-after-terminal-v1` retains the Manager's complete actual Current,
+physical image and both complete consumer frontiers before an actual pidfd
+SIGKILL. Root observes `POLLIN` and `waitid(WNOWAIT)` for that same child; the
+original Supervisor remains the exclusive reaper and owns Failed, restart
+budget, the actual next Starting generation and Health promotion. Root waits
+for the independent original watchdog and the original local lease's real
+expiry. Process death alone never retires a local writer lease.
+
+The trusted fresh installation issues 20-second writer authority leases. This
+leaves recovery headroom within the unchanged native Recovery grace of 30
+seconds after Manager closure. A successor receives a new original lease,
+never an extension of the old lease; the 5-second watchdog/effect policy and
+300-second native grant retain their original bounds. Actual guest execution
+must verify that startup, physical material and operation timing fit these
+bounds. Expiry or a missed window fails acceptance.
+
+The same canonical issuer rotates the actual retained writer proof. The
+original recovered-checkpoint CAS and physical installer adopt only the retained
+Current image, retain the original owner lock through checks, then release that
+lock before the same Host factory and zero-argument Ready handshake. Recovery
+opens its own native descriptor, queries the original D using the complete
+immutable request, and compares it with the original ledger's verified terminal
+and event ID. The read-only terminal accessor adds no event or effect. Only
+then does the original writer retire the durable prefix. A fresh request after
+the watchdog has consumed the recovery allowance must retain an actual native
+refusal without another CPU revision.
+
+Cross-boot adoption, more than the two initial management images, grant renewal
+beyond the original 300-second native lease and power-loss qualification remain
+separate requirements. Neither finite scenario establishes those results.
 
 Compile and test the affected original crates with `just test --locked -p
 codex-hepta-agentd -p codex-hepta-memory -p codex-hepta-supervisor --lib`.

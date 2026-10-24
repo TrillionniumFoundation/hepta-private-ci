@@ -221,3 +221,105 @@ async fn native_drain_keeps_pending_work_across_an_actual_expired_writer_handoff
     }
     Ok(())
 }
+
+#[tokio::test]
+async fn native_retained_terminal_reads_the_original_event_without_mutating_the_cut() -> TestResult
+{
+    for status in [0, 2] {
+        let temp = tempfile::tempdir()?;
+        let fixture = Fixture::open(temp.path()).await?;
+        let queued = fixture.prepare(OPERATION, /*sequence*/ 1).await?;
+        assert!(
+            fixture
+                .writer
+                .retained_hos2_terminal(OPERATION)
+                .await
+                .is_err()
+        );
+        fixture
+            .device
+            .terminal_status
+            .store(status, Ordering::SeqCst);
+        let (binding, signed) = fixture.signed(&queued, /*nonce*/ 1).await?;
+        let dispatched = fixture
+            .dispatcher
+            .dispatch(&fixture.writer, &signed, &binding, queued)
+            .await?;
+        let expected = ProductionOutcomeReceipt {
+            lease_id: LEASE.into(),
+            occurrence_key: OPERATION.into(),
+            state: dispatched.state,
+            event_id: dispatched.local_event_id,
+            external_effect: false,
+        };
+        let terminal = dispatched
+            .target_receipt
+            .or(dispatched.target_reason)
+            .ok_or("native terminal absent")?;
+        let cut = fixture.writer.recovery_anchor().await?;
+        let retained = fixture.writer.retained_hos2_terminal(OPERATION).await?;
+        assert_eq!(retained, (fixture.request(1)?, expected, terminal));
+        assert_eq!(
+            fixture.writer.retained_hos2_terminal(OPERATION).await?,
+            retained
+        );
+        assert_eq!(fixture.writer.recovery_anchor().await?, cut);
+        assert_eq!(fixture.device.calls.load(Ordering::SeqCst), 1);
+    }
+    let temp = tempfile::tempdir()?;
+    let fixture = Fixture::open(temp.path()).await?;
+    let queued = fixture.prepare(OPERATION, /*sequence*/ 1).await?;
+    fixture.device.lose_ack.store(true, Ordering::SeqCst);
+    let (binding, signed) = fixture.signed(&queued, /*nonce*/ 1).await?;
+    let unknown = fixture
+        .dispatcher
+        .dispatch(&fixture.writer, &signed, &binding, queued)
+        .await?;
+    assert_eq!(unknown.state, LocalOutcomeState::Indeterminate);
+    let cut = fixture.writer.recovery_anchor().await?;
+    assert!(
+        fixture
+            .writer
+            .retained_hos2_terminal(OPERATION)
+            .await
+            .is_err()
+    );
+    assert_eq!(fixture.writer.recovery_anchor().await?, cut);
+    assert_eq!(fixture.device.calls.load(Ordering::SeqCst), 1);
+    Ok(())
+}
+
+#[tokio::test]
+async fn native_retained_terminal_keeps_the_same_event_across_expired_owner_recovery() -> TestResult
+{
+    let temp = tempfile::tempdir()?;
+    let expiry = now_unix_seconds()? + 4;
+    let old = Fixture::open_generation(temp.path(), /*generation*/ 1, expiry).await?;
+    let queued = old.prepare(OPERATION, /*sequence*/ 1).await?;
+    let (binding, signed) = old.signed(&queued, /*nonce*/ 1).await?;
+    let dispatched = old
+        .dispatcher
+        .dispatch(&old.writer, &signed, &binding, queued)
+        .await?;
+    let original = old.writer.retained_hos2_terminal(OPERATION).await?;
+    assert_eq!(original.1.event_id, dispatched.local_event_id);
+    drop(old);
+    let delay = expiry.saturating_sub(now_unix_seconds()?);
+    tokio::time::sleep(Duration::from_secs(delay) + Duration::from_millis(20)).await;
+    assert!(now_unix_seconds()? >= expiry);
+    let successor = Fixture::open_generation(
+        temp.path(),
+        /*generation*/ 2,
+        /*expiry*/ 4_000_000_000,
+    )
+    .await?;
+    let cut = successor.writer.recovery_anchor().await?;
+    assert_eq!(
+        successor.writer.retained_hos2_terminal(OPERATION).await?,
+        original
+    );
+    assert_eq!(successor.writer.recovery_anchor().await?, cut);
+    assert_eq!(successor.device.calls.load(Ordering::SeqCst), 0);
+    assert_eq!(successor.device.queries.load(Ordering::SeqCst), 0);
+    Ok(())
+}

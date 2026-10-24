@@ -41,6 +41,33 @@ pub struct Hos2RetirementObservation {
 }
 
 impl ProductionDurableWriter {
+    /// Observe a complete terminal already retained by the original ledger.
+    /// No caller-supplied receipt or device result can enter this read path.
+    /// It grants no dispatch/retirement authority and creates no new event.
+    pub async fn retained_hos2_terminal(
+        &self,
+        occurrence_key: &str,
+    ) -> Result<(Hos2InstallBudgetV1, ProductionOutcomeReceipt, String), ProductionWriterError>
+    {
+        self.verify_current_authority().await?;
+        let mut transaction = self
+            .store
+            .pool
+            .begin()
+            .await
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+        let (request, receipt, terminal) = self
+            .lease
+            .retained_hos2_terminal(&mut transaction, occurrence_key)
+            .await?;
+        transaction
+            .rollback()
+            .await
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+        self.verify_current_authority().await?;
+        Ok((request, receipt.into(), terminal))
+    }
+
     /// Read a candidate D from this original owner's immutable outbox.
     /// This read grants/reserves nothing. `prepare_operation` is still the
     /// only admission: its original SQLite transaction rejects competing K,
@@ -58,7 +85,7 @@ impl ProductionDurableWriter {
             .pool
             .begin()
             .await
-            .map_err(crate::cognitive_store::unavailable)?;
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
         let sequence = self
             .lease
             .hos2_delivery_candidate(&mut transaction, &namespace)
@@ -66,7 +93,7 @@ impl ProductionDurableWriter {
         transaction
             .rollback()
             .await
-            .map_err(crate::cognitive_store::unavailable)?;
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
         self.verify_current_authority().await?;
         Hos2DeliveryId::new(boot_id, space_id, sequence).map_err(ProductionWriterError::Invalid)
     }

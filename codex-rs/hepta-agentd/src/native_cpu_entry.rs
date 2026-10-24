@@ -26,6 +26,10 @@ const STATE: &str = "/state/hepta-native";
 const AGENT: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13";
 const LIFETIME: Duration = Duration::from_secs(120);
 const IO_TIMEOUT: Duration = Duration::from_secs(5);
+// Explicit fresh Root issuance policy. A full 60-second writer lease could
+// outlive the original 30-second native Recovery grace after Manager death.
+// Each successor receives a newly issued lease; no old lease is extended.
+const ORIGINAL_WRITER_LIFETIME_MS: u64 = 20_000;
 
 fn invalid(message: impl Into<String>) -> io::Error {
     io::Error::other(message.into())

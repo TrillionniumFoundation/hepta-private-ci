@@ -23,10 +23,24 @@ struct Plan {
     scenario: String,
     nonce: String,
 }
+
+pub(super) struct SourceTerminal {
+    pub(super) operation: String,
+    pub(super) key: String,
+    pub(super) request: Hos2InstallBudgetV1,
+    pub(super) state: codex_hepta_memory::LocalOutcomeState,
+    pub(super) local_event_id: String,
+    pub(super) terminal_json: String,
+    pub(super) current: CognitiveCheckpointReceipt,
+    pub(super) material_sha256: String,
+    pub(super) frontiers: [codex_hepta_contracts::FinalUseFrontier; 2],
+}
 pub(super) struct Evidence {
     plan: Plan,
     sequence: u64,
     final_token: Option<codex_hepta_memory::CognitiveCheckpointToken>,
+    final_owner_pid: u32,
+    operation_count: u64,
 }
 impl Evidence {
     pub(super) fn load() -> io::Result<Self> {
@@ -59,12 +73,14 @@ impl Evidence {
             plan,
             sequence: 0,
             final_token: None,
+            final_owner_pid: 0,
+            operation_count: 0,
         })
     }
     pub(super) fn scenario(&self) -> &str {
         &self.plan.scenario
     }
-    fn emit(&mut self, event: &str, payload: impl Serialize) -> io::Result<()> {
+    pub(super) fn emit(&mut self, event: &str, payload: impl Serialize) -> io::Result<()> {
         self.sequence = self
             .sequence
             .checked_add(1)
@@ -81,7 +97,7 @@ impl Evidence {
         stdout.write_all(&bytes)?;
         stdout.flush()
     }
-    pub(super) fn steady_state(
+    pub(super) fn begin(
         &mut self,
         boot: &NativeBootstrap,
         active: &mut root::Active,
@@ -104,7 +120,13 @@ impl Evidence {
             "processes":{"root":process(1,4)?,"manager":process(2,1)?,"workload":process(3,2)?,"recovery":process(4,3)?}}))?;
         let current = active.service.native_cpu_current()?;
         let initial_material = material(active, &current)?;
-        let source = std::fs::metadata(&active.source_database)?;
+        let source = active.rpc.call(commands::Command::Inspect)?;
+        let store_device = source["store_device"]
+            .as_u64()
+            .ok_or_else(|| invalid("actual writer database device absent"))?;
+        let store_inode = source["store_inode"]
+            .as_u64()
+            .ok_or_else(|| invalid("actual writer database inode absent"))?;
         let retained = std::fs::metadata(&initial_material.0)?;
         let mounts = std::fs::read_to_string("/proc/mounts")?;
         if !mounts.lines().any(|line| {
@@ -117,7 +139,7 @@ impl Evidence {
             return Err(invalid("actual retained ext2 mount missing"));
         }
         self.emit("state",serde_json::json!({"source":"/dev/vda","target":"/state","filesystem":"ext2",
-            "mount_device":std::fs::metadata("/state")?.dev(),"store_device":source.dev(),"store_inode":source.ino(),
+            "mount_device":std::fs::metadata("/state")?.dev(),"store_device":store_device,"store_inode":store_inode,
             "root_material_device":retained.dev(),"root_material_inode":retained.ino()}))?;
         let mut boundary = report
             .as_object()
@@ -132,6 +154,12 @@ impl Evidence {
             serde_json::json!(root_denial(boot, 4)?),
         );
         self.emit("boundary", boundary)?;
+        self.owner_ready("manager", active)
+    }
+
+    pub(super) fn owner_ready(&mut self, role: &str, active: &mut root::Active) -> io::Result<()> {
+        let current = active.service.native_cpu_current()?;
+        let retained = material(active, &current)?;
         let mut ready = active
             .rpc
             .call(commands::Command::Inspect)?
@@ -139,95 +167,207 @@ impl Evidence {
             .cloned()
             .ok_or_else(|| invalid("original owner inspection shape"))?;
         ready.remove("usage");
-        ready.insert("role".into(), serde_json::json!("manager"));
+        ready.remove("store_device");
+        ready.remove("store_inode");
+        ready.insert("role".into(), serde_json::json!(role));
         ready.insert(
             "current".into(),
             serde_json::to_value(&current).map_err(error)?,
         );
-        ready.insert(
-            "material_sha256".into(),
-            serde_json::json!(initial_material.1),
-        );
-        self.emit("owner_ready", ready)?;
+        ready.insert("material_sha256".into(), serde_json::json!(retained.1));
+        self.emit("owner_ready", ready)
+    }
+    pub(super) fn steady_state(&mut self, active: &mut root::Active) -> io::Result<()> {
         for (operation, cap_ns) in [("lower", 25_000_000), ("pause", 0), ("resume", 50_000_000)] {
-            let prepared = active.rpc.call(commands::Command::Prepare {
-                operation: operation.into(),
-                cap_ns,
-            })?;
-            let key = prepared["occurrence_key"]
-                .as_str()
-                .ok_or_else(|| invalid("original K missing"))?
-                .to_string();
-            let request = Hos2InstallBudgetV1::from_json(
-                prepared["request_json"]
-                    .as_str()
-                    .ok_or_else(|| invalid("original payload missing"))?,
-            )
-            .map_err(error)?;
-            self.emit("prepared", prepared)?;
-            let actual = active.rpc.call(commands::Command::Dispatch {
-                occurrence_key: key.clone(),
-            })?;
-            let receipt: ProductionDispatchReceipt =
-                serde_json::from_value(actual["receipt"].clone()).map_err(error)?;
-            let terminal = receipt
-                .target_receipt
-                .as_ref()
-                .or(receipt.target_reason.as_ref())
-                .ok_or_else(|| invalid("original source has no terminal receipt"))?;
-            self.emit("native_result",serde_json::json!({"operation":operation,"pid":active.registration.peer_pid,"terminal_json":terminal,
-                "before":actual["before"],"after":actual["after"]}))?;
-            let current = active.service.native_cpu_current()?;
-            let retained = material(active, &current)?;
-            let owner = active.rpc.call(commands::Command::Inspect)?;
-            self.emit("source_terminal",serde_json::json!({"operation":operation,"pid":active.registration.peer_pid,"occurrence_key":key,
-                "state":receipt.state,"terminal_json":terminal,"local_event_id":receipt.local_event_id,
-                "current":current,"material_sha256":retained.1,"device_frontier":owner["device_frontier"],"notes_frontier":owner["notes_frontier"]}))?;
-            let mut ack = active
-                .rpc
-                .call(commands::Command::Retire {
-                    through: request.delivery,
-                })?
-                .as_object()
-                .cloned()
-                .ok_or_else(|| invalid("native retirement observation shape"))?;
-            let after = active.service.native_cpu_current()?;
-            if after.token != current.token {
-                return Err(invalid(
-                    "native retirement changed the acknowledged original terminal cut",
-                ));
-            }
-            ack.insert("operation".into(), serde_json::json!(operation));
-            ack.insert(
-                "current_token".into(),
-                serde_json::to_value(&current.token).map_err(error)?,
-            );
-            self.emit("history_ack", ack)?;
-            let mut window = active
-                .rpc
-                .call(commands::Command::Window)?
-                .as_object()
-                .cloned()
-                .ok_or_else(|| invalid("native usage window shape"))?;
-            window.insert("operation".into(), serde_json::json!(operation));
-            self.emit("usage_window", window)?;
-            self.final_token = Some(current.token);
+            let terminal = self.operation(operation, cap_ns, active)?;
+            self.acknowledge(&terminal, active)?;
+            self.window(operation, active)?;
         }
         Ok(())
+    }
+    pub(super) fn operation(
+        &mut self,
+        operation: &str,
+        cap_ns: u64,
+        active: &mut root::Active,
+    ) -> io::Result<SourceTerminal> {
+        let prepared = active.rpc.call(commands::Command::Prepare {
+            operation: operation.into(),
+            cap_ns,
+        })?;
+        let key = prepared["occurrence_key"]
+            .as_str()
+            .ok_or_else(|| invalid("original K missing"))?
+            .to_owned();
+        let request = Hos2InstallBudgetV1::from_json(
+            prepared["request_json"]
+                .as_str()
+                .ok_or_else(|| invalid("original payload missing"))?,
+        )
+        .map_err(error)?;
+        self.emit("prepared", prepared)?;
+        let actual = active.rpc.call(commands::Command::Dispatch {
+            occurrence_key: key.clone(),
+        })?;
+        let receipt: ProductionDispatchReceipt =
+            serde_json::from_value(actual["receipt"].clone()).map_err(error)?;
+        let terminal = receipt
+            .target_receipt
+            .as_ref()
+            .or(receipt.target_reason.as_ref())
+            .ok_or_else(|| invalid("original source has no terminal receipt"))?
+            .clone();
+        self.emit("native_result",serde_json::json!({"operation":operation,"pid":active.registration.peer_pid,"terminal_json":terminal,
+            "before":actual["before"],"after":actual["after"]}))?;
+        let source = self.source_terminal(
+            operation,
+            key,
+            request,
+            receipt.state,
+            receipt.local_event_id,
+            terminal,
+            active,
+        )?;
+        self.operation_count = self
+            .operation_count
+            .checked_add(1)
+            .ok_or_else(|| invalid("operation counter overflow"))?;
+        Ok(source)
+    }
+    fn source_terminal(
+        &mut self,
+        operation: &str,
+        key: String,
+        request: Hos2InstallBudgetV1,
+        state: codex_hepta_memory::LocalOutcomeState,
+        local_event_id: String,
+        terminal_json: String,
+        active: &mut root::Active,
+    ) -> io::Result<SourceTerminal> {
+        let current = active.service.native_cpu_current()?;
+        let retained = material(active, &current)?;
+        let owner = active.rpc.call(commands::Command::Inspect)?;
+        let frontiers: [codex_hepta_contracts::FinalUseFrontier; 2] = [
+            serde_json::from_value(owner["device_frontier"].clone()).map_err(error)?,
+            serde_json::from_value(owner["notes_frontier"].clone()).map_err(error)?,
+        ];
+        self.emit("source_terminal",serde_json::json!({"operation":operation,"pid":active.registration.peer_pid,"occurrence_key":key,
+            "state":state,"terminal_json":terminal_json,"local_event_id":local_event_id,"current":current,
+            "material_sha256":retained.1,"device_frontier":frontiers[0],"notes_frontier":frontiers[1]}))?;
+        self.final_token = Some(current.token.clone());
+        self.final_owner_pid = active.registration.peer_pid;
+        Ok(SourceTerminal {
+            operation: operation.into(),
+            key,
+            request,
+            state,
+            local_event_id,
+            terminal_json,
+            current,
+            material_sha256: retained.1,
+            frontiers,
+        })
+    }
+    pub(super) fn recovered_terminal(
+        &mut self,
+        old: &SourceTerminal,
+        active: &mut root::Active,
+    ) -> io::Result<SourceTerminal> {
+        let actual = active.rpc.call(commands::Command::ReconcileRetained {
+            occurrence_key: old.key.clone(),
+        })?;
+        let request = Hos2InstallBudgetV1::from_json(
+            actual["request_json"]
+                .as_str()
+                .ok_or_else(|| invalid("retained request absent"))?,
+        )
+        .map_err(error)?;
+        let receipt: codex_hepta_memory::ProductionOutcomeReceipt =
+            serde_json::from_value(actual["receipt"].clone()).map_err(error)?;
+        let terminal = actual["terminal_json"]
+            .as_str()
+            .ok_or_else(|| invalid("retained terminal absent"))?
+            .to_owned();
+        if request != old.request
+            || receipt.occurrence_key != old.key
+            || receipt.event_id != old.local_event_id
+            || receipt.state != old.state
+            || terminal != old.terminal_json
+            || receipt.external_effect
+        {
+            return Err(invalid(
+                "successor changed the original durable K/D terminal",
+            ));
+        }
+        self.emit("reconciled",serde_json::json!({"operation":old.operation,"pid":active.registration.peer_pid,
+            "occurrence_key":receipt.occurrence_key,"request_json":actual["request_json"],"terminal_json":terminal,"usage":actual["usage"]}))?;
+        let recovered = self.source_terminal(
+            &old.operation,
+            old.key.clone(),
+            request,
+            receipt.state,
+            receipt.event_id,
+            terminal,
+            active,
+        )?;
+        if recovered.frontiers != old.frontiers {
+            return Err(invalid("query of original D changed FinalUse frontiers"));
+        }
+        Ok(recovered)
+    }
+    pub(super) fn acknowledge(
+        &mut self,
+        terminal: &SourceTerminal,
+        active: &mut root::Active,
+    ) -> io::Result<()> {
+        let mut ack = active
+            .rpc
+            .call(commands::Command::Retire {
+                through: terminal.request.delivery.clone(),
+            })?
+            .as_object()
+            .cloned()
+            .ok_or_else(|| invalid("native retirement observation shape"))?;
+        let after = active.service.native_cpu_current()?;
+        if after.token != terminal.current.token {
+            return Err(invalid(
+                "native retirement changed the acknowledged original terminal cut",
+            ));
+        }
+        ack.insert("operation".into(), serde_json::json!(terminal.operation));
+        ack.insert(
+            "current_token".into(),
+            serde_json::to_value(&terminal.current.token).map_err(error)?,
+        );
+        self.emit("history_ack", ack)
+    }
+    pub(super) fn window(&mut self, operation: &str, active: &mut root::Active) -> io::Result<()> {
+        let mut window = active
+            .rpc
+            .call(commands::Command::Window)?
+            .as_object()
+            .cloned()
+            .ok_or_else(|| invalid("native usage window shape"))?;
+        window.insert("operation".into(), serde_json::json!(operation));
+        self.emit("usage_window", window)
     }
     pub(super) fn complete(&mut self) -> io::Result<()> {
         let token = self
             .final_token
             .clone()
             .ok_or_else(|| invalid("finite original cycle has no terminal Current"))?;
-        self.emit("complete",serde_json::json!({"root_pid":std::process::id(),"operation_count":3,"final_owner_pid":2,"final_current_token":token}))
+        self.emit(
+            "complete",
+            serde_json::json!({"root_pid":std::process::id(),"operation_count":self.operation_count,
+            "final_owner_pid":self.final_owner_pid,"final_current_token":token}),
+        )
     }
 }
 
-fn material(
+pub(super) fn retained_material(
     active: &root::Active,
     current: &CognitiveCheckpointReceipt,
-) -> io::Result<(std::path::PathBuf, String)> {
+) -> io::Result<codex_hepta_memory::VerifiedCognitiveMaterial> {
     let digest = codex_hepta_contracts::Sha256Digest::for_bytes(
         &serde_json::to_vec(&current.head.last_current).map_err(error)?,
     );
@@ -235,12 +375,18 @@ fn material(
         .map_err(error)?
         .layout()
         .agent(&current.head.owner_agent_id);
-    let material = runtime()?
+    runtime()?
         .block_on(CognitiveStore::verify_retained_root_material(
             &layout,
             &current.head.last_current,
         ))
-        .map_err(error)?;
+        .map_err(error)
+}
+fn material(
+    active: &root::Active,
+    current: &CognitiveCheckpointReceipt,
+) -> io::Result<(std::path::PathBuf, String)> {
+    let material = retained_material(active, current)?;
     material.verify_unchanged().map_err(error)?;
     let mut file = std::fs::OpenOptions::new()
         .read(true)

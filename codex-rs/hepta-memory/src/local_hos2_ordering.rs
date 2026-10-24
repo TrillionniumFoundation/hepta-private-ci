@@ -191,6 +191,47 @@ async fn verified_terminal(
 }
 
 impl LocalLeaseOutbox {
+    /// Read the exact already-durable terminal under the original active
+    /// writer fence. This neither appends an event nor observes/dispatches a
+    /// device. All K/D, operation, event and native terminal checks use the
+    /// same original read transaction as the returned event identity.
+    pub(crate) async fn retained_hos2_terminal(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        operation_id: &str,
+    ) -> Result<(Hos2InstallBudgetV1, LocalOutcomeReceipt, String), LocalLeaseOutboxError> {
+        let lease = self.current_lease(transaction).await?;
+        ensure_current_active(&lease, self)?;
+        let (request, _) = verified_terminal(
+            transaction,
+            &self.owner_agent_id,
+            &self.lease_id,
+            operation_id,
+        )
+        .await?;
+        let event = latest_occurrence_event(
+            transaction,
+            &self.lease_id,
+            operation_id,
+            &self.owner_agent_id,
+        )
+        .await?
+        .ok_or_else(|| corrupt("retained HOS2 terminal event is absent"))?;
+        let state = match event.kind.as_str() {
+            "reconcile_committed" => LocalOutcomeState::Committed,
+            "reconcile_rejected" => LocalOutcomeState::Rejected,
+            _ => return Err(corrupt("retained HOS2 source is not terminal")),
+        };
+        let receipt = LocalOutcomeReceipt {
+            lease_id: self.lease_id.clone(),
+            occurrence_key: operation_id.to_owned(),
+            state,
+            event_id: event.event_id,
+            external_effect: false,
+        };
+        Ok((request, receipt, event.payload_json))
+    }
+
     pub(crate) async fn hos2_delivery_candidate(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,

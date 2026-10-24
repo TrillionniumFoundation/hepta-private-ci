@@ -6,6 +6,8 @@ use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_contracts::HostAuthorityPeerPolicy;
 use codex_hepta_contracts::HostIssuerPeer;
 use codex_hepta_memory::Hos2DeliveryId;
+use codex_hepta_memory::Hos2Device;
+use codex_hepta_memory::Hos2InstallOutcome;
 use codex_hepta_memory::ProductionHos2Target;
 use codex_hepta_memory::ProductionObjectiveSender;
 use codex_hepta_memory::ProductionQueuedReceipt;
@@ -25,6 +27,7 @@ use std::os::unix::net::UnixStream;
 #[serde(tag = "command", rename_all = "snake_case", deny_unknown_fields)]
 pub(super) enum Command {
     Inspect,
+    ReconcileRetained { occurrence_key: String },
     Prepare { operation: String, cap_ns: u64 },
     Dispatch { occurrence_key: String },
     Retire { through: Hos2DeliveryId },
@@ -221,6 +224,7 @@ impl<T: codex_hepta_memory::CognitiveCheckpointTransport + 'static> Owner<T> {
                     .layout
                     .writer_lock(),
                 )?;
+                let database = std::fs::metadata(writer.database_path())?;
                 Ok(
                     serde_json::json!({"pid":std::process::id(),"agent_id":writer.owner_agent_id(),
                     "spawn_generation":self.bundle.writer.spawn_generation,
@@ -229,7 +233,35 @@ impl<T: codex_hepta_memory::CognitiveCheckpointTransport + 'static> Owner<T> {
                     "device_frontier":self.device_owner.frontier().map_err(|e|fail(e.to_string()))?,
                     "notes_frontier":self.notes_owner.frontier().map_err(|e|fail(e.to_string()))?,
                     "owner_lock_device":lock.dev(),"owner_lock_inode":lock.ino(),
+                    "store_device":database.dev(),"store_inode":database.ino(),
                     "usage":usage(&self.device)?}),
+                )
+            }
+
+            Command::ReconcileRetained { occurrence_key } => {
+                let (request, receipt, terminal) =
+                    writer.retained_hos2_terminal(&occurrence_key).await?;
+                // The exact request is recovered from the original ledger.
+                // Query the same retained device/history owner; never install
+                // again and never substitute current CPU cap for old D.
+                let observed = match self.device.observe(&request).map_err(fail)? {
+                    Hos2InstallOutcome::Observed(value) => value,
+                    Hos2InstallOutcome::Contradiction(_) => {
+                        return Err(fail(
+                            "retained native request contradicts its original source".into(),
+                        ));
+                    }
+                };
+                let retained: serde_json::Value = serde_json::from_str(&terminal)?;
+                if retained["observation"] != serde_json::to_value(&observed)? {
+                    return Err(fail(
+                        "actual old D differs from the original durable terminal".into(),
+                    ));
+                }
+                writer.verify_current_authority().await?;
+                Ok(
+                    serde_json::json!({"pid":std::process::id(),"request_json":request.to_json().map_err(fail)?,
+                    "receipt":receipt,"terminal_json":terminal,"usage":usage(&self.device)?}),
                 )
             }
             Command::Prepare { operation, cap_ns } => {

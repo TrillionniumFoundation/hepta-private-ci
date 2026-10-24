@@ -27,8 +27,6 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_operations::OperationIntentV1;
 use serde::Deserialize;
 use serde::Serialize;
-use sha2::Digest;
-use sha2::Sha256;
 
 use crate::CognitiveAccess;
 use crate::CognitiveStore;

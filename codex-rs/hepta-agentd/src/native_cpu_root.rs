@@ -39,6 +39,9 @@ use std::os::unix::net::UnixListener;
 use std::path::PathBuf;
 use std::sync::Mutex;
 
+#[path = "native_cpu_recovery.rs"]
+mod recovery;
+
 struct Installation {
     fleet: FleetRegistry,
     config: HostAuthorityServiceConfig,
@@ -46,10 +49,10 @@ struct Installation {
     leases: Arc<AuthorityLeaseRegistry>,
     issuer: Arc<crate::DeploymentFinalUseIssuer>,
     initial: CognitiveRecoveryAnchor,
-    source_database: PathBuf,
     archive: PathBuf,
     checkpoint: PathBuf,
     scopes: [[u8; 32]; 2],
+    recovery: Option<recovery::PreparedRecovery>,
 }
 pub(super) struct Active {
     pub(super) service: Arc<crate::HostAuthorityService>,
@@ -57,9 +60,9 @@ pub(super) struct Active {
     pub(super) bundle: crate::HostAuthorityPublicBootstrapV1,
     pub(super) rpc: commands::Rpc,
     pub(super) archive: PathBuf,
-    pub(super) source_database: PathBuf,
     pub(super) retained: crate::RetainedCheckpointPublisher,
     server: Option<std::thread::JoinHandle<io::Result<()>>>,
+    adopted: Option<codex_hepta_memory::CognitiveCheckpointReceipt>,
 }
 
 fn write_json(path: &Path, value: &impl serde::Serialize) -> io::Result<()> {
@@ -124,12 +127,11 @@ impl Installation {
         let layout = record.layout;
         // Fresh SQLite administration precedes any writer. Its actual complete
         // cut enters the original protected checkpoint, never a guessed hash.
-        let (initial, source_database) = runtime()?.block_on(async {
+        let initial = runtime()?.block_on(async {
             let store = CognitiveStore::open(&layout).await.map_err(error)?;
             let cut = store.recovery_anchor().await.map_err(error)?;
-            let path = store.path().to_owned();
             store.close().await;
-            Ok::<_, io::Error>((cut, path))
+            Ok::<_, io::Error>(cut)
         })?;
         std::fs::set_permissions(layout.agent_root(), std::fs::Permissions::from_mode(0o755))?;
         for path in [layout.home_root(), layout.run_root(), layout.matrix_root()] {
@@ -205,10 +207,10 @@ impl Installation {
             leases: Arc::new(leases),
             issuer,
             initial,
-            source_database,
             archive,
             checkpoint,
             scopes,
+            recovery: None,
         };
         let head = installation.issuer.revocations()?;
         let consumer = |name: &str| -> io::Result<crate::HostAuthorityConsumerConfig> {
@@ -246,14 +248,27 @@ impl Installation {
         owner: OwnedFd,
         deadline: u64,
     ) -> io::Result<Active> {
-        if role != KernelInitialRole::Manager {
-            return Err(invalid(
-                "native recovered-owner activation is not yet installed",
-            ));
-        }
-        let owner_peer = peer(2, 60001)?;
+        let recovery = match role {
+            KernelInitialRole::Manager
+                if self.config.writer.is_none() && self.recovery.is_none() =>
+            {
+                None
+            }
+            KernelInitialRole::Recovery => Some(
+                self.recovery
+                    .take()
+                    .ok_or_else(|| invalid("independent original recovery material required"))?,
+            ),
+            KernelInitialRole::Manager => {
+                return Err(invalid("initial original owner is already installed"));
+            }
+        };
+        let (pid, name, scope) = match role {
+            KernelInitialRole::Manager => (2, "manager", self.scopes[0]),
+            KernelInitialRole::Recovery => (4, "recovery", self.scopes[1]),
+        };
+        let owner_peer = peer(pid, 60001)?;
         let root = peer(1, 0)?;
-        let name = "manager";
         let launch_listener = listener(&Path::new(RUNTIME).join(format!("{name}.launch")), 60001)?;
         let rpc_listener = listener(&Path::new(RUNTIME).join(format!("{name}.rpc")), 60001)?;
         let launch_stream = accept(&launch_listener, deadline)?;
@@ -279,46 +294,61 @@ impl Installation {
         };
         let identity = crate::authority_host_config::registered_identity(&registered)?;
         let now = self.clock.now_unix_ms().map_err(error)?;
-        let writer = crate::HostAuthorityWriterRegistration {
-            registered_agent_id: spec.agent_id.clone(),
-            spawn_generation: spec.generation,
-            owner_epoch: 1,
-            local_lease_id: "native-cpu-original-writer".into(),
-            local_lease_generation: 1,
-            authority_lease: AuthorityLease {
-                schema_version: 1,
-                lease_id: "native-cpu-writer-1".into(),
-                authority_epoch: 1,
-                revision: 1,
-                binding: AuthorityLeaseBinding {
-                    principal_id: spec.agent_id.to_string(),
-                    operation_class: "runtime.agentd.production_writer".into(),
-                    destination_id: format!("cognitive.owner:{}", spec.agent_id),
-                    scope_sha256: Sha256::digest(
-                        serde_json::to_vec(&(&spec.agent_id, identity.layout.cognitive_root()))
-                            .map_err(error)?,
-                    )
-                    .into(),
-                    payload_sha256: Sha256::digest(
-                        serde_json::to_vec(&self.initial).map_err(error)?,
-                    )
-                    .into(),
+        let writer = if let Some(previous) = &recovery {
+            self.recovered_writer(spec, previous)?
+        } else {
+            let writer = crate::HostAuthorityWriterRegistration {
+                registered_agent_id: spec.agent_id.clone(),
+                spawn_generation: spec.generation,
+                owner_epoch: 1,
+                local_lease_id: "native-cpu-original-writer".into(),
+                local_lease_generation: 1,
+                authority_lease: AuthorityLease {
+                    schema_version: 1,
+                    lease_id: "native-cpu-writer-1".into(),
+                    authority_epoch: 1,
+                    revision: 1,
+                    binding: AuthorityLeaseBinding {
+                        principal_id: spec.agent_id.to_string(),
+                        operation_class: "runtime.agentd.production_writer".into(),
+                        destination_id: format!("cognitive.owner:{}", spec.agent_id),
+                        scope_sha256: Sha256::digest(
+                            serde_json::to_vec(&(&spec.agent_id, identity.layout.cognitive_root()))
+                                .map_err(error)?,
+                        )
+                        .into(),
+                        payload_sha256: Sha256::digest(
+                            serde_json::to_vec(&self.initial).map_err(error)?,
+                        )
+                        .into(),
+                    },
+                    issued_at_unix_ms: now,
+                    expires_at_unix_ms: now + ORIGINAL_WRITER_LIFETIME_MS,
                 },
-                issued_at_unix_ms: now,
-                expires_at_unix_ms: now + 60_000,
-            },
+            };
+            self.leases
+                .put_lease(writer.authority_lease.clone(), 0)
+                .map_err(error)?;
+            self.issuer
+                .register_writer_authorization(&writer, &self.leases.verifier())?;
+            writer
         };
-        self.leases
-            .put_lease(writer.authority_lease.clone(), 0)
-            .map_err(error)?;
-        self.issuer
-            .register_writer_authorization(&writer, &self.leases.verifier())?;
+        let epoch = recovery.as_ref().map_or(Ok(1), |previous| {
+            previous
+                .previous
+                .head
+                .publisher_epoch
+                .checked_add(1)
+                .ok_or_else(|| invalid("original publisher epoch overflow"))
+        })?;
+        let retained =
+            crate::RetainedCheckpointPublisher::capture(owner_peer.clone()).map_err(error)?;
         let admission =
             crate::deployment_issuer::RootNativeCpuGrantAdmission::from_registered_namespace(
                 &self.issuer,
                 self.leases.clone(),
                 writer.clone(),
-                self.scopes[0],
+                scope,
                 5_000,
             )?;
         let service = crate::HostAuthorityService::from_registered_owner(
@@ -326,19 +356,31 @@ impl Installation {
             self.clock.clone(),
             identity,
         )?
-        .with_registered_writer(writer.clone(), self.leases.verifier())?
-        .initialize_native_cpu_checkpoint(
-            RootAuthorityDirectory::open(&self.checkpoint).map_err(error)?,
-            1,
-            owner_peer.clone(),
-            self.initial.clone(),
-        )?
-        .with_native_cpu_admission(admission)?
-        .with_registered_consumers(
-            &self.config.state_dir,
-            self.config.consumers.as_ref().unwrap(),
-        )?
-        .with_required_material_startup(&self.archive)?;
+        .with_registered_writer(writer.clone(), self.leases.verifier())?;
+        let directory = RootAuthorityDirectory::open(&self.checkpoint).map_err(error)?;
+        let service = match &recovery {
+            Some(previous) => service.with_recovered_checkpoint(
+                directory,
+                &previous.previous,
+                &previous.retired,
+                &retained,
+                epoch,
+                &previous.material,
+            )?,
+            None => service.initialize_native_cpu_checkpoint(
+                directory,
+                epoch,
+                owner_peer.clone(),
+                self.initial.clone(),
+            )?,
+        };
+        let service = service
+            .with_native_cpu_admission(admission)?
+            .with_registered_consumers(
+                &self.config.state_dir,
+                self.config.consumers.as_ref().unwrap(),
+            )?
+            .with_required_material_startup(&self.archive)?;
         let paths = &self.config.sockets;
         let service = Arc::new(service.with_bootstrap_registration(
             crate::HostAuthorityBootstrapLocations {
@@ -356,6 +398,38 @@ impl Installation {
             owner.try_clone()?,
         )?);
         let bundle = service.capture_public_bootstrap()?;
+        let adopted = if let Some(previous) = recovery {
+            if [
+                bundle.consumers.device.frontier.clone(),
+                bundle.consumers.notes.frontier.clone(),
+            ] != previous.frontiers
+            {
+                return Err(invalid(
+                    "original consumer handoff differs from the retained terminal frontiers",
+                ));
+            }
+            let receipt = service.native_cpu_current()?;
+            if receipt.head != bundle.checkpoint {
+                return Err(invalid(
+                    "actual original adoption receipt differs from sealed handoff",
+                ));
+            }
+            let installed = service.install_recovered_owner_material(
+                previous.material,
+                &previous.retired,
+                &retained,
+            )?;
+            installed.verify_unchanged().map_err(error)?;
+            if installed.anchor() != &previous.previous.head.last_current {
+                return Err(invalid("installed material differs from original Current"));
+            }
+            // Root releases the actual physical owner lock before sending the
+            // sealed bootstrap and allowing the sole Host factory to open it.
+            drop(installed);
+            Some(receipt)
+        } else {
+            None
+        };
         let registration = HostAuthorityRegistration {
             schema_version: 1,
             peer_pid: owner_peer.pid,
@@ -363,9 +437,8 @@ impl Installation {
             process_start_ticks: owner_peer.process_start_ticks,
             registered_identity: registered,
             checkpoint_owner_agent_id: spec.agent_id.clone(),
-            publisher_epoch: 1,
+            publisher_epoch: epoch,
         };
-        let retained = crate::RetainedCheckpointPublisher::capture(owner_peer)?;
         let mut nonce = [0; 16];
         File::open("/dev/urandom")?.read_exact(&mut nonce)?;
         let nonce = nonce
@@ -424,9 +497,9 @@ impl Installation {
             bundle,
             rpc,
             archive: self.archive.clone(),
-            source_database: self.source_database.clone(),
             retained,
             server: Some(server),
+            adopted,
         })
     }
 }
@@ -434,11 +507,6 @@ impl Installation {
 pub(super) fn run(boot: NativeBootstrap) -> io::Result<()> {
     platform::mount_platform()?;
     let mut evidence = evidence::Evidence::load()?;
-    if evidence.scenario() != "steady-state-v1" {
-        return Err(invalid(
-            "requested native recovery scenario is not implemented by this source",
-        ));
-    }
     let installation = Arc::new(Mutex::new(Installation::fresh(&boot)?));
     let fleet = installation.lock().map_err(error)?.fleet.clone();
     let active = Arc::new(Mutex::new(None));
@@ -500,7 +568,22 @@ pub(super) fn run(boot: NativeBootstrap) -> io::Result<()> {
         .map_err(error)?
         .take()
         .ok_or_else(|| invalid("native activation omitted original service"))?;
-    evidence.steady_state(&boot, &mut generation)?;
+    evidence.begin(&boot, &mut generation)?;
+    match evidence.scenario() {
+        "steady-state-v1" => evidence.steady_state(&mut generation)?,
+        "manager-exit-after-terminal-v1" => {
+            generation = recovery::after_terminal(
+                &mut evidence,
+                generation,
+                &installation,
+                &active,
+                &mut supervisor,
+                &agent,
+                deadline,
+            )?
+        }
+        _ => return Err(invalid("unsupported native acceptance scenario")),
+    }
     evidence.complete()?;
     supervisor.stop(&agent, Instant::now()).map_err(error)?;
     while supervisor
