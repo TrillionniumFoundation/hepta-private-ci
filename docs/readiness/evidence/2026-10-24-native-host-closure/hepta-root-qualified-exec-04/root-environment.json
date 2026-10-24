@@ -1,0 +1,36 @@
+{
+  "created_only_for_this_qualification": true,
+  "source": "/data/trillionnium-closure-20261024/native-evidence/hepta-root-qualified-exec-04/state-source",
+  "state_parent": "/run/hepta-closure-20261024-root-state-04/state",
+  "owner_install": "/var/lib/hepta-closure-20261024-root-exec-04",
+  "native_qualification": false,
+  "bind_identity": {
+    "device": 2067,
+    "inode": 25964768
+  },
+  "mountinfo": [
+    "72 32 8:19 /trillionnium-closure-20261024/native-evidence/hepta-root-qualified-exec-04/state-source /run/hepta-closure-20261024-root-state-04/state rw,relatime shared:87 - ext4 /dev/sdb3 rw"
+  ],
+  "executable_mount": "TARGET SOURCE    FSTYPE OPTIONS\n/      /dev/sda2 ext4   rw,relatime\n",
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "test",
+    "--binaries-metadata",
+    "/data/trillionnium-closure-20261024/native-evidence/hepta-root-qualified-exec-04/binaries-metadata.json",
+    "--cargo-metadata",
+    "/data/trillionnium-closure-20261024/native-evidence/hepta-root-qualified-exec-04/cargo-metadata.json",
+    "--run-ignored",
+    "ignored-only",
+    "-E",
+    "test(native_permissions_keep_original_control_owner_for_real_host_uid) | test(control_creation_refuses_actual_non_owner_write_before_chmod)",
+    "--retries",
+    "0",
+    "--test-threads",
+    "1"
+  ],
+  "exit_code": 100,
+  "unmount": {
+    "exit_code": 0,
+    "stderr": ""
+  }
+}
