@@ -168,7 +168,14 @@ def choose_sources(instances, registry, captions, *, plan=PLAN):
             pool = sorted(candidates[concept], key=lambda x: sha_sort(concept, x["image_id"]))
             selected = [im for im in pool if im["image_id"] not in used][:count]
             if len(selected) != count:
-                raise SemanticCohortError("official photos insufficient for source-disjoint frozen plan")
+                # Report the real shortfall without changing the frozen quotas,
+                # source exclusions, deterministic selection, or any model input.
+                remaining = sum(im["image_id"] not in used for im in pool)
+                raise SemanticCohortError(
+                    "official photos insufficient for source-disjoint frozen plan"
+                    f" (split={split}, category={concept}, remaining={remaining}, "
+                    f"required={count}, total_eligible={len(pool)})"
+                )
             used.update(im["image_id"] for im in selected)
             pair[concept] = selected
         chosen[split] = pair
