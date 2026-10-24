@@ -16,6 +16,8 @@ mod retirement;
 pub(crate) use retirement::VerifiedTextRetirement;
 #[path = "deployment_text_recovery.rs"]
 mod recovery;
+#[path = "deployment_text_unsigned.rs"]
+mod unsigned;
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]

@@ -9,8 +9,11 @@ use codex_app_server_protocol::LoginAccountParams;
 use codex_app_server_protocol::LoginAccountResponse;
 use codex_app_server_protocol::ThreadReadParams;
 use codex_app_server_protocol::ThreadReadResponse;
+#[cfg(unix)]
 use std::io::Read;
+#[cfg(unix)]
 use std::os::unix::fs::MetadataExt;
+#[cfg(unix)]
 use std::os::unix::fs::OpenOptionsExt;
 use std::path::Path;
 
@@ -31,10 +34,12 @@ pub struct ProviderLoginChallenge {
     pub user_code: String,
 }
 
+#[cfg(unix)]
 fn read_route(path: &Path) -> Result<AgentdTextSessionConfig, TextSessionError> {
     let mut file = std::fs::OpenOptions::new()
         .read(true)
-        .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC)
+        // A FIFO must not block before the descriptor type check below.
+        .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK)
         .open(path)
         .map_err(unavailable)?;
     let meta = file.metadata().map_err(unavailable)?;
@@ -57,6 +62,16 @@ fn read_route(path: &Path) -> Result<AgentdTextSessionConfig, TextSessionError> 
         return Err(TextSessionError::Capacity);
     }
     serde_json::from_slice(&bytes).map_err(unavailable)
+}
+
+#[cfg(not(unix))]
+fn read_route(_path: &Path) -> Result<AgentdTextSessionConfig, TextSessionError> {
+    // Preserve the diagnostic API without replacing its Unix identity checks
+    // with a weaker file read or attempting a provider connection.
+    Err(unavailable(std::io::Error::new(
+        std::io::ErrorKind::Unsupported,
+        "the installed Unix provider route is unavailable on this platform",
+    )))
 }
 
 async fn connect(route_file: &Path) -> Result<RemoteAppServerClient, TextSessionError> {
@@ -227,3 +242,7 @@ pub async fn login_existing_provider(
     let _ = client.shutdown().await;
     result
 }
+
+#[cfg(all(test, unix))]
+#[path = "text_session_provider_tests.rs"]
+mod tests;

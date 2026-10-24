@@ -12,6 +12,8 @@ use super::*;
 
 #[path = "text_session_worker_recovery.rs"]
 mod recovery;
+#[path = "text_session_worker_unsigned.rs"]
+mod unsigned;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -103,6 +105,15 @@ pub enum TextWorkerEvent {
     Prepared {
         connection_id: u64,
         reference: TextPrepared,
+    },
+    /// Exact unsigned preparation is proven closed. This is neither an
+    /// admission nor permission to replace or resend an original signed input.
+    PreparationClosed {
+        connection_id: u64,
+        request_id: String,
+        text_sha256: [u8; 32],
+        original_watermark: Option<u64>,
+        message: String,
     },
     /// Original Root reference recovered by lookup; never a new-send ticket.
     Recovered {
@@ -264,13 +275,16 @@ async fn run(
                     last_connect_error = None;
                     break;
                 }
-                Some(TextCommand::Submit { request_id, .. })
-                | Some(TextCommand::Dispatch { request_id }) => {
-                    emit(TextWorkerEvent::Unavailable {
-                        request_id: Some(request_id),
-                        message: "Original Root chat owner is not authenticated".into(),
-                    })?
-                }
+                Some(TextCommand::Submit { request_id, text }) => emit(unsigned::closed(
+                    0,
+                    request_id,
+                    &text,
+                    "Input was not transmitted: original Root chat owner is not authenticated",
+                ))?,
+                Some(TextCommand::Dispatch { request_id }) => emit(TextWorkerEvent::Unavailable {
+                    request_id: Some(request_id),
+                    message: "Original Root chat owner is not authenticated".into(),
+                })?,
                 Some(_) => emit(TextWorkerEvent::Unavailable {
                     request_id: None,
                     message: "Original chat owner is not connected".into(),
@@ -325,6 +339,9 @@ async fn run(
         }
     };
     let mut last_polled = String::new();
+    let mut last_unsigned = String::new();
+    let mut prefer_unsigned = true;
+    let mut accepted_sequence = owner.next_intent_sequence.saturating_sub(1);
     let mut poll = tokio::time::interval(Duration::from_millis(250));
     poll.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
     let mut history_poll = tokio::time::interval(Duration::from_millis(1000));
@@ -350,7 +367,10 @@ async fn run(
             event = session.events.next_observation(), if stream_open => match event {
                 Ok(Some(AgentdTextObservation::Notification(event))) => emit(TextWorkerEvent::Notification(event))?,
                 Ok(Some(AgentdTextObservation::Approval(event))) => emit(TextWorkerEvent::Approval(event))?,
-                Ok(None) => { stream_open = false; ready = false; },
+                Ok(None) => {
+                    stream_open = false; ready = false;
+                    emit(TextWorkerEvent::Unavailable { request_id: None, message: "Original App Server subscription ended; reconnect to its retained identity".into() })?;
+                },
                 Err(error) => {
                     stream_open = false;
                     ready = false;
@@ -360,8 +380,22 @@ async fn run(
             result = inflight.join_next(), if !inflight.is_empty() => {
                 match result.ok_or_else(|| unavailable("request task missing"))?.map_err(unavailable)? {
                     Ok(event) => {
-                        if let TextWorkerEvent::Prepared { reference, .. } = &event {
+                        if let TextWorkerEvent::Prepared { reference, .. } | TextWorkerEvent::Recovered { reference, .. } = &event {
                             messages.insert(reference.message_id.clone(), reference.host_reference.clone());
+                        }
+                        if let TextWorkerEvent::PreparationClosed { request_id, original_watermark, .. } = &event {
+                            if messages.values().any(|value| value == request_id)
+                                || prepared.lock().map_err(|_| TextSessionError::Fenced)?.contains_key(request_id) {
+                                return Err(TextSessionError::Identity);
+                            }
+                            // Publish proof even after disconnection. It can
+                            // only free this unsigned local correlation; it
+                            // cannot install an owner or change a draft.
+                            let request_id = request_id.clone();
+                            if let Some(watermark) = original_watermark { accepted_sequence = accepted_sequence.max(*watermark); }
+                            emit(event)?;
+                            intents.remove(&request_id);
+                            continue;
                         }
                         if let TextWorkerEvent::Retired { request_id, message_id, .. } = &event {
                             let _ = request_id;
@@ -391,6 +425,20 @@ async fn run(
             },
             _ = poll.tick(), if inflight.is_empty() && ready => {
                 let next = recovery::next_work(&session, &prepared, &messages, &last_polled)?;
+                let unissued = unsigned::next(&intents, &messages, &prepared, &last_unsigned)?;
+                if let Some((request_id, text)) = unissued && (prefer_unsigned || next.is_none()) {
+                    last_unsigned = request_id.clone();
+                    prefer_unsigned = false;
+                    let signer = signer.clone();
+                    let config = config.clone();
+                    let requests = session.requests.clone();
+                    inflight.spawn(async move {
+                        unsigned::close(&signer, &config, &requests, &request_id, &text).await
+                            .map_err(|error| (Some(request_id), error))
+                    });
+                    continue;
+                }
+                prefer_unsigned = true;
                 if let Some((message_id, retire)) = next {
                     last_polled = message_id.clone();
                     let requests = session.requests.clone();
@@ -427,9 +475,13 @@ async fn run(
                     }
                     continue;
                 }
-                if inflight.len() >= 4 { emit(TextWorkerEvent::Unavailable { request_id: None, message: "text request capacity reached".into() })?; continue; }
-                if !ready && !matches!(&command, TextCommand::Reconnect) {
-                    emit(TextWorkerEvent::Unavailable { request_id: None, message: "Original references must finish recovery before new work".into() })?;
+                if inflight.len() >= 4 || (!ready && !matches!(&command, TextCommand::Reconnect)) {
+                    let message = "Original requests must finish recovery before new work";
+                    if let TextCommand::Submit { request_id, text } = &command && !intents.contains_key(request_id) {
+                        emit(unsigned::closed(session.requests.connection_id(), request_id.clone(), text, message))?;
+                    } else {
+                        emit(TextWorkerEvent::Unavailable { request_id: Some("worker:busy".into()), message: message.into() })?;
+                    }
                     continue;
                 }
                 let interrupt_requested = matches!(&command, TextCommand::Interrupt { .. });
@@ -474,14 +526,27 @@ async fn run(
                         if request_id.is_empty() || request_id.len() > 192
                             || !request_id.bytes().all(|byte| byte.is_ascii_alphanumeric() || b"._:-".contains(&byte))
                             || text.trim().is_empty() || text.len() > 8192 {
-                            emit(TextWorkerEvent::Unavailable { request_id: Some(request_id), message: "invalid signed text intent".into() })?;
+                            if !intents.contains_key(&request_id) {
+                                emit(unsigned::closed(session.requests.connection_id(), request_id, &text, "Input was not transmitted: invalid signed text intent"))?;
+                            } else { emit(TextWorkerEvent::Unavailable { request_id: Some(request_id), message: "text intent identity conflict".into() })?; }
                             continue;
                         }
                         let lookup = if let Some(prior) = intents.get(&request_id) {
                             if prior != &text { emit(TextWorkerEvent::Unavailable { request_id: Some(request_id), message: "text intent identity conflict".into() })?; continue; }
                             true
                         } else {
-                            if intents.len() >= MAX_RETAINED { return Err(TextSessionError::Capacity); }
+                            let number = match unsigned::intent_number(&owner, &request_id) {
+                                Ok(number) => number,
+                                Err(_) => {
+                                    emit(unsigned::closed(session.requests.connection_id(), request_id, &text, "Input was not transmitted: original Root namespace or sequence is invalid"))?;
+                                    continue;
+                                }
+                            };
+                            if number <= accepted_sequence || intents.len() >= MAX_RETAINED {
+                                emit(unsigned::closed(session.requests.connection_id(), request_id, &text, "Input was not transmitted: original preparation capacity or sequence is unavailable"))?;
+                                continue;
+                            }
+                            accepted_sequence = number;
                             intents.insert(request_id.clone(), text.clone());
                             false
                         };
@@ -491,18 +556,15 @@ async fn run(
                         let prepared = prepared.clone();
                         inflight.spawn(async move {
                             let result = async {
-                                let envelope = super::signer::signed_input(&signer, &config, &request_id, &text, lookup).await?;
-                                let lookup_only = lookup || envelope.body.spawn_generation != config.spawn_generation;
-                                let claims = crate::authbus_text_claims(&config.agent_id, &envelope).map_err(unavailable)?;
-                                let envelope_bytes = serde_json::to_vec(&envelope).map_err(unavailable)?;
-                                let reference = TextPrepared {
-                                    host_reference: request_id.clone(), issuer_id: envelope.issuer_id.clone(), key_epoch: envelope.key_epoch,
-                                    message_id: envelope.message_id.clone(), sequence: envelope.sequence, expires_at_ms: envelope.expires_at_ms,
-                                    payload_sha256: *claims.payload_digest.as_array(),
-                                    envelope_sha256: *Digest32::of_bytes(&envelope_bytes).as_array(), text: envelope.body.text.clone(),
-                                    spawn_generation: envelope.body.spawn_generation, lookup_only,
-                                    delivery_id: super::prepare(&config, envelope.clone())?.delivery_id,
+                                let envelope = match super::signer::signed_input(&signer, &config, &request_id, &text, lookup).await {
+                                    Ok(envelope) => envelope,
+                                    Err(TextSessionError::NotTransmitted(message)) if !lookup => {
+                                        return Ok(unsigned::closed(requests.connection_id(), request_id.clone(), &text, &message));
+                                    }
+                                    Err(error) => return Err(error),
                                 };
+                                let lookup_only = lookup || envelope.body.spawn_generation != config.spawn_generation;
+                                let reference = recovery::reference(&config, &request_id, &envelope, lookup_only)?;
                                 let mut retained = prepared.lock().map_err(|_| TextSessionError::Fenced)?;
                                 if retained.len() >= MAX_RETAINED && !retained.contains_key(&request_id) { return Err(TextSessionError::Capacity); }
                                 if let Some((old, _)) = retained.get(&request_id)
@@ -586,6 +648,7 @@ async fn run(
                         let _ = session.events.shutdown().await;
                         session = next;
                         owner = refreshed.clone();
+                        accepted_sequence = accepted_sequence.max(owner.next_intent_sequence.saturating_sub(1));
                         stream_open = true;
                         emit(TextWorkerEvent::Connected { connection_id: session.requests.connection_id() })?;
                         emit(TextWorkerEvent::Authenticated { connection_id: session.requests.connection_id(), owner: refreshed })?;

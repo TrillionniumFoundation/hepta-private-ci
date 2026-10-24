@@ -27,24 +27,7 @@ pub(super) async fn restore(
         if !intents.contains_key(&request_id) && intents.len() >= MAX_RETAINED {
             return Err(TextSessionError::Capacity);
         }
-        let pending = super::super::prepare(&owner.route, envelope.clone())?;
-        let claims =
-            crate::authbus_text_claims(&owner.route.agent_id, &envelope).map_err(unavailable)?;
-        let bytes = serde_json::to_vec(&envelope).map_err(unavailable)?;
-        let reference = TextPrepared {
-            host_reference: request_id.clone(),
-            issuer_id: envelope.issuer_id.clone(),
-            key_epoch: envelope.key_epoch,
-            message_id: envelope.message_id.clone(),
-            sequence: envelope.sequence,
-            expires_at_ms: envelope.expires_at_ms,
-            payload_sha256: *claims.payload_digest.as_array(),
-            envelope_sha256: *Digest32::of_bytes(&bytes).as_array(),
-            text: envelope.body.text.clone(),
-            delivery_id: pending.delivery_id,
-            spawn_generation: envelope.body.spawn_generation,
-            lookup_only: true,
-        };
+        let reference = reference(&owner.route, &request_id, &envelope, true)?;
         // Retain before publishing the UI projection. Even an early UI command
         // can only status-lookup this recovered identity in AgentdTextRequests.
         session.requests.restore_signed(envelope.clone())?;
@@ -76,6 +59,31 @@ pub(super) async fn restore(
         connection_id: session.requests.connection_id(),
     })?;
     Ok(earlier_cursor)
+}
+
+pub(super) fn reference(
+    config: &AgentdTextSessionConfig,
+    request_id: &str,
+    envelope: &AuthBusTextIngress,
+    lookup_only: bool,
+) -> Result<TextPrepared, TextSessionError> {
+    let pending = super::super::prepare(config, envelope.clone())?;
+    let claims = crate::authbus_text_claims(&config.agent_id, envelope).map_err(unavailable)?;
+    let bytes = serde_json::to_vec(envelope).map_err(unavailable)?;
+    Ok(TextPrepared {
+        host_reference: request_id.into(),
+        issuer_id: envelope.issuer_id.clone(),
+        key_epoch: envelope.key_epoch,
+        message_id: envelope.message_id.clone(),
+        sequence: envelope.sequence,
+        expires_at_ms: envelope.expires_at_ms,
+        payload_sha256: *claims.payload_digest.as_array(),
+        envelope_sha256: *Digest32::of_bytes(&bytes).as_array(),
+        text: envelope.body.text.clone(),
+        delivery_id: pending.delivery_id,
+        spawn_generation: envelope.body.spawn_generation,
+        lookup_only,
+    })
 }
 
 pub(super) fn next_work(

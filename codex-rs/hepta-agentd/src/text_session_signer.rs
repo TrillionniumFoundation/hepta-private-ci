@@ -20,6 +20,82 @@ struct SignerResponse {
     envelope: AuthBusTextIngress,
 }
 
+/// Wire proof is accepted only from the original credential-bound Root lane.
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
+pub(crate) enum TextUnsignedClosure {
+    Retained {
+        envelope: AuthBusTextIngress,
+    },
+    Closed {
+        through_sequence: u64,
+        payload_sha256: [u8; 32],
+    },
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct UnsignedClosureResponse {
+    schema_version: u32,
+    operation: String,
+    request_id: String,
+    outcome: TextUnsignedClosure,
+}
+
+pub(super) async fn close_unsigned(
+    endpoint: &TextSignerEndpoint,
+    config: &AgentdTextSessionConfig,
+    request_id: &str,
+    text: &str,
+) -> Result<TextUnsignedClosure, TextSessionError> {
+    let response: UnsignedClosureResponse = exchange(
+        endpoint,
+        &SignerRequest {
+            schema_version: 1,
+            operation: "close_unsigned",
+            request_id,
+            agent_id: &config.agent_id,
+            spawn_generation: config.spawn_generation,
+            thread_id: &config.thread_id,
+            text,
+        },
+    )
+    .await?;
+    if response.schema_version != 1
+        || response.operation != "close_unsigned"
+        || response.request_id != request_id
+    {
+        return Err(TextSessionError::Identity);
+    }
+    match &response.outcome {
+        TextUnsignedClosure::Retained { envelope } => {
+            validate_input(config, text, envelope)?;
+        }
+        TextUnsignedClosure::Closed {
+            through_sequence,
+            payload_sha256,
+        } => {
+            let number = request_id
+                .rsplit_once(':')
+                .and_then(|(_, suffix)| suffix.parse::<u64>().ok())
+                .ok_or(TextSessionError::Identity)?;
+            let body = crate::AuthBusTextBody {
+                spawn_generation: config.spawn_generation,
+                thread_id: config.thread_id.clone(),
+                text: text.into(),
+            };
+            let bytes = crate::authbus_ingress::payload(&body).map_err(unavailable)?;
+            if number == 0
+                || *through_sequence < number
+                || payload_sha256 != codex_hepta_types::Digest32::of_bytes(&bytes).as_array()
+            {
+                return Err(TextSessionError::Identity);
+            }
+        }
+    }
+    Ok(response.outcome)
+}
+
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct RetainedInput {
@@ -166,16 +242,26 @@ pub(super) async fn signed_input(
         },
     )
     .await?;
-    if response.schema_version != 1
-        || response.request_id != request_id
-        || response.envelope.body.thread_id != config.thread_id
-        || response.envelope.body.text != text
-        || response.envelope.body.spawn_generation == 0
-        || response.envelope.body.spawn_generation > config.spawn_generation
+    if response.schema_version != 1 || response.request_id != request_id {
+        return Err(TextSessionError::Identity);
+    }
+    validate_input(config, text, &response.envelope)?;
+    Ok(response.envelope)
+}
+
+fn validate_input(
+    config: &AgentdTextSessionConfig,
+    text: &str,
+    envelope: &AuthBusTextIngress,
+) -> Result<(), TextSessionError> {
+    if envelope.body.thread_id != config.thread_id
+        || envelope.body.text != text
+        || envelope.body.spawn_generation == 0
+        || envelope.body.spawn_generation > config.spawn_generation
     {
         return Err(TextSessionError::Identity);
     }
-    Ok(response.envelope)
+    Ok(())
 }
 
 #[cfg(unix)]
@@ -185,21 +271,36 @@ async fn exchange<T: serde::de::DeserializeOwned>(
 ) -> Result<T, TextSessionError> {
     use tokio::io::AsyncReadExt;
     use tokio::io::AsyncWriteExt;
-    let work = async {
-        let mut stream = tokio::net::UnixStream::connect(&endpoint.socket_path)
+    let not_transmitted = |error: String| TextSessionError::NotTransmitted(error);
+    let bytes = serde_json::to_vec(request).map_err(|error| not_transmitted(error.to_string()))?;
+    let length = u32::try_from(bytes.len()).map_err(|error| not_transmitted(error.to_string()))?;
+    if length == 0 || length > 32768 {
+        return Err(not_transmitted(
+            "request exceeds the Root lane bound".into(),
+        ));
+    }
+    let connect = async {
+        let stream = tokio::net::UnixStream::connect(&endpoint.socket_path)
             .await
-            .map_err(unavailable)?;
-        let peer = stream.peer_cred().map_err(unavailable)?;
+            .map_err(|error| not_transmitted(error.to_string()))?;
+        let peer = stream
+            .peer_cred()
+            .map_err(|error| not_transmitted(error.to_string()))?;
         if peer.uid() != endpoint.owner_uid
             || peer.pid().and_then(|pid| u32::try_from(pid).ok()) != Some(endpoint.owner_pid)
         {
-            return Err(TextSessionError::Identity);
+            return Err(not_transmitted(
+                "Root peer identity mismatch before request write".into(),
+            ));
         }
-        let bytes = serde_json::to_vec(request).map_err(unavailable)?;
-        let length = u32::try_from(bytes.len()).map_err(unavailable)?;
-        if length == 0 || length > 32768 {
-            return Err(TextSessionError::Capacity);
-        }
+        Ok(stream)
+    };
+    let mut stream = tokio::time::timeout(REQUEST_TIMEOUT, connect)
+        .await
+        .map_err(|error| not_transmitted(error.to_string()))??;
+    // From the FIRST write call onward all errors and timeouts are ambiguous.
+    // Even a partial frame is never returned as a non-transmission proof.
+    let work = async {
         stream
             .write_all(&length.to_be_bytes())
             .await

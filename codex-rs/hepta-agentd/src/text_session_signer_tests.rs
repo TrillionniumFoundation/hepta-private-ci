@@ -4,6 +4,9 @@ use super::*;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 
+#[path = "text_session_unsigned_protocol_tests.rs"]
+mod unsigned_protocol;
+
 async fn response(
     listener: &tokio::net::UnixListener,
     value: serde_json::Value,

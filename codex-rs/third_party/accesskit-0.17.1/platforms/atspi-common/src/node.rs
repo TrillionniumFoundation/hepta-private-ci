@@ -407,7 +407,7 @@ impl<'a> NodeWrapper<'a> {
         self.supports_text()
             && self.0.is_text_input()
             && !self.0.is_read_only_or_disabled()
-            && self.0.data().supports_action(Action::EditText)
+            && self.0.supports_action(Action::EditText)
     }
 
     fn supports_value(&self) -> bool {

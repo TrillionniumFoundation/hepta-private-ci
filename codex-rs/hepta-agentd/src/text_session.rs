@@ -57,6 +57,7 @@ mod history;
 #[path = "text_session_requests.rs"]
 mod requests;
 pub use events::AgentdTextEvent;
+pub use events::AgentdTextEvents;
 pub use history::TextHistorySnapshot;
 #[path = "text_session_worker.rs"]
 mod worker;
@@ -68,6 +69,7 @@ pub use worker::TextWorkerEvent;
 #[path = "text_session_auth.rs"]
 mod auth;
 pub use auth::TextOwnerReceipt;
+pub(crate) use signer::TextUnsignedClosure;
 #[path = "text_session_approvals.rs"]
 mod approvals;
 #[path = "text_session_signer.rs"]
@@ -101,6 +103,10 @@ pub struct AgentdTextSessionConfig {
 
 #[derive(Debug, thiserror::Error)]
 pub enum TextSessionError {
+    /// Only this request attempt is proven not to have written a byte. A
+    /// previous ambiguous attempt must still be reconciled at the Root owner.
+    #[error("text request was not transmitted: {0}")]
+    NotTransmitted(String),
     #[error("text session is unavailable: {0}")]
     Unavailable(String),
     #[error("text session identity mismatch")]
@@ -173,12 +179,6 @@ impl Shared {
 pub struct AgentdTextRequests {
     handle: RemoteAppServerRequestHandle,
     shared: Arc<Shared>,
-}
-
-pub struct AgentdTextEvents {
-    client: RemoteAppServerClient,
-    shared: Arc<Shared>,
-    ended: bool,
 }
 
 pub struct AgentdTextSession {
@@ -265,11 +265,7 @@ impl AgentdTextSession {
         }
         Ok(Self {
             requests,
-            events: AgentdTextEvents {
-                client,
-                shared,
-                ended: false,
-            },
+            events: AgentdTextEvents::start(client, shared),
         })
     }
 

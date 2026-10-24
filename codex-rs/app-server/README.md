@@ -627,8 +627,12 @@ Paginated threads support the same views. Their `full` view is materialized from
 Each returned entry includes the containing `turnId` and its full `item`, so clients can group
 unfiltered pages into turns. Omit `turnId` or pass `null` to page items across the thread. Item
 cursors can be reused with or without `turnId`; the filter does not change the cursor's scope.
-Thread stores that do not implement item pagination return JSON-RPC `-32601` with message
-`thread/items/list is not supported yet`.
+Paginated threads use their original item index. Legacy threads reconstruct items from the same
+rollout and live turn overlay used by `thread/turns/list`, then return the requested bounded item
+count. This compatibility path replays the rollout on each request; individual items retain their
+complete original payload. Legacy cursors bind the thread and original turn/item anchor, reject a
+removed anchor after rollback, and may be reused with or without a turn filter. A cursor from a
+different thread is rejected. Neither path creates or changes a thread, turn, item, or input.
 
 `thread/searchOccurrences` searches one paginated thread without replaying its rollout. It returns
 occurrences in chronological message order from every visible user message, including steering

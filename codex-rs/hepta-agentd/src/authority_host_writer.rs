@@ -19,6 +19,25 @@ pub(super) struct RegisteredWriter {
 }
 
 impl RegisteredWriter {
+    pub(super) fn close_unsigned_text(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        identity: &AgentdIdentity,
+        namespace: &str,
+        request_id: &str,
+        body: crate::AuthBusTextBody,
+    ) -> io::Result<crate::text_session::TextUnsignedClosure> {
+        issuer.registered_writer_close_unsigned_text(
+            identity,
+            namespace,
+            request_id,
+            body,
+            &self.registration,
+            &self.leases,
+            &self.proof,
+        )
+    }
+
     pub(super) fn retire_text(
         &self,
         issuer: &DeploymentFinalUseIssuer,

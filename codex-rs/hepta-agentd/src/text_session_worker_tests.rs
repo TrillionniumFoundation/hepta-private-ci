@@ -48,7 +48,7 @@ fn missing_root_keeps_reconnect_alive_and_cannot_admit_input() {
         })
         .unwrap();
     assert!(
-        matches!(next(&worker), TextWorkerEvent::Unavailable { request_id: Some(id), .. } if id == "test:1")
+        matches!(next(&worker), TextWorkerEvent::PreparationClosed { request_id: id, connection_id: 0, .. } if id == "test:1")
     );
     worker.try_send(TextCommand::Reconnect).unwrap();
     assert!(matches!(

@@ -6,6 +6,20 @@ Both retain the original Fleet process identity, one run coordinator, AuthBus si
 and replay checks, immutable Objective publication, production writer, local lease,
 FinalUse targets and original terminal receipt reconciliation.
 
+## Development entry points
+
+- [Native text session](NATIVE_TEXT_SESSION.md): original Root launcher,
+  registered UI pidfd, same App Server thread, stream/history/approval and
+  original signed-reference recovery; includes source map and build/test commands.
+- [AuthBus text ingress](AUTHBUS_TEXT.md): exact signed body, trust/checkpoint,
+  outbox/queue status and dispatch uncertainty.
+- [Notes Objective](NOTES_OBJECTIVE.md) and
+  [actual process crash qualification](NOTES_RECOVERY_QUALIFICATION.md): finite
+  owner composition, real companion build inputs, exact recovery and retirement.
+- [Android original target](../hepta-memory/PRODUCTION_ANDROID_TEXT.md): existing
+  production-writer/FinalUse attachment, fixed original receiver contract and
+  required retained host capability. Default Agentd does not register it.
+
 ## Trusted composition
 
 Before calling the finite entry, the embedding must recover the original protected

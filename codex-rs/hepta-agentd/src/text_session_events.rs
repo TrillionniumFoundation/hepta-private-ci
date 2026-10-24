@@ -2,6 +2,10 @@ use codex_app_server_client::AppServerEvent;
 
 use super::*;
 
+#[path = "text_session_event_pump.rs"]
+mod pump;
+pub use pump::AgentdTextEvents;
+
 /// Original protocol observations, including tool/file/artifact ThreadItems.
 /// UI consumers upsert item IDs and replace complete items; deltas are only for
 /// this live connection. These observations do not grant execution authority.
@@ -23,18 +27,14 @@ pub enum AgentdTextObservation {
     Approval(TextApprovalObservation),
 }
 
-impl AgentdTextEvents {
-    pub async fn next(&mut self) -> Result<Option<AgentdTextEvent>, TextSessionError> {
-        loop {
-            match self.next_observation().await? {
-                Some(AgentdTextObservation::Notification(event)) => return Ok(Some(event)),
-                Some(AgentdTextObservation::Approval(_)) => {}
-                None => return Ok(None),
-            }
-        }
-    }
+struct TextEventReader {
+    client: RemoteAppServerClient,
+    shared: Arc<Shared>,
+    ended: bool,
+}
 
-    pub async fn next_observation(
+impl TextEventReader {
+    async fn next_observation(
         &mut self,
     ) -> Result<Option<AgentdTextObservation>, TextSessionError> {
         if self.ended {
@@ -187,7 +187,7 @@ impl AgentdTextEvents {
         }
     }
 
-    pub async fn shutdown(self) -> Result<(), TextSessionError> {
+    async fn shutdown(self) -> Result<(), TextSessionError> {
         self.shared.state()?.fenced = true;
         tokio::time::timeout(REQUEST_TIMEOUT, self.client.shutdown())
             .await

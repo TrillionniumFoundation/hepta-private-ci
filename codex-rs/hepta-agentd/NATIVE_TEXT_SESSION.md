@@ -5,6 +5,36 @@ registration, its canonical issuer key/policy/sequence/store, the existing
 Agentd control socket and one existing App Server thread. It starts no Agentd,
 creates no thread and installs no trust or authority from renderer input.
 
+## Development map and checks
+
+| Source | Owner and responsibility |
+| --- | --- |
+| [bin/hepta-authority-host.rs](src/bin/hepta-authority-host.rs), [authority_host_native_launch.rs](src/authority_host_native_launch.rs) | Existing trusted host CLI; diagnose/launch exact verified UI bytes using existing authenticated inputs |
+| [authority_host_text_ui.rs](src/authority_host_text_ui.rs) | Original Root UI registration, kernel peer/pidfd and session boundary |
+| [deployment_text.rs](src/deployment_text.rs), [deployment_text_recovery.rs](src/deployment_text_recovery.rs), [deployment_text_retirement.rs](src/deployment_text_retirement.rs) | Original issuer's exact signed references, watermark, recovery and independently established terminal retirement |
+| [text_session.rs](src/text_session.rs), [text_session_worker.rs](src/text_session_worker.rs), [text_session_worker_recovery.rs](src/text_session_worker_recovery.rs) | Existing Agentd/App Server route and bounded worker, cancellation, reconnect and lookup-only recovery |
+| [text_session_history.rs](src/text_session_history.rs), [text_session_events.rs](src/text_session_events.rs), [text_session_approvals.rs](src/text_session_approvals.rs) | Original history pages, stream projection and original command/file callbacks |
+| [text_session_provider.rs](src/text_session_provider.rs) | Original provider account/status path, separate from Hepta human authority |
+| [authbus_dispatch.rs](src/authbus_dispatch.rs), [AUTHBUS_TEXT](AUTHBUS_TEXT.md) | Original signed ingress, queue reconciliation and dispatch failure semantics |
+| [tests/authbus_text_product.rs](tests/authbus_text_product.rs) | Real supervised Agentd/App Server processes with explicit test trust and local mock model replies |
+| [Desktop text adapter handoff](https://github.com/TrillionniumFoundation/trillionnium-os-desktop/blob/main/services/hepta-session-host/TEXT_SESSION.md) | Same original ChatWorkspace, native renderer callbacks, feature build and presentation tests |
+
+From `codex-rs`, use the repository toolchain and locked graph:
+
+```sh
+cargo build --locked --profile dev-small -p codex-hepta-agentd --bin hepta-authority-host --bin codex-hepta-agentd
+just test --locked -p codex-hepta-agentd --lib -E 'test(text_session) | test(deployment_text) | test(authority_host_native)'
+just test --locked -p codex-hepta-agentd --test authbus_text_product
+```
+
+The first test command covers protocol/store/worker fixtures; the process suite
+starts only its own disposable supervised processes and local model endpoint.
+Neither supplies an installed production human session or provider. Preserve
+complete command results and actual source/binary identities separately; see
+the trusted-input/startup sections below before using the existing host CLI.
+The Desktop link is a navigation entry; read it at the exact companion commit
+used by the two-repository build.
+
 ## Trusted startup inputs
 
 The trusted launcher must already have authenticated the human, opened the
@@ -183,7 +213,12 @@ Oversized or incomplete previews cannot be approved. No session-wide grant,
 execpolicy amendment or network-policy amendment is exposed here.
 
 The original App Server retains and replays pending callbacks on resume. The
-UI fences their RoomKey, physical connection and original request ID, sends
+single per-connection event reader remains alive while a file preview awaits
+the original item API. Native poll/history/command timers receive through a
+one-entry bounded, cancellation-safe channel; they cannot consume and then
+drop an in-progress callback. Only explicit subscription shutdown, connection
+replacement or dropping that subscription cancels its reader. The UI fences
+their RoomKey, physical connection and original request ID, sends
 at most one response per observed callback, and waits for the original
 `serverRequest/resolved` notification before closing the prompt. A transport
 write is not a completion/effect receipt. Other requests (provider credential
@@ -251,6 +286,28 @@ The same record retains a monotonic text-intent watermark, atomically with
 each signature and the original signing sequence. New numbers may skip an
 unissued gap; a missing number at or below the watermark can never be signed.
 Thus removing a proven terminal reference cannot resurrect its old input.
+
+Unsigned preparations have a separate bounded recovery outcome in the same
+original record. A failure before the first request byte is written proves
+only that attempt was never transmitted; only a first attempt can release its
+local unsigned correlation using that proof. Once a write begins, partial
+frames, timeouts, refusal replies and lost replies all remain unknown. The
+worker calls the original Root `close_unsigned` operation with the same exact
+namespace, intent number, current registered generation and text.
+
+Root serializes that operation with Sign under its existing request lock and
+issuer CAS. If the exact original signature exists it returns that same
+envelope; the worker restores it for lookup only and never dispatches it.
+Otherwise Root advances only its existing monotonic intent watermark and
+returns a typed closed outcome bound to the request payload digest. Signing
+sequence and every retained signature remain unchanged. A delayed original
+Sign cannot issue that closed number, including after Root reopens its store.
+Lost closure replies are retried against the same number. This adds no
+signature journal or second ledger. The UI can release only an unsigned
+matching local correlation; signed references still require the independent
+terminal retirement path below, and local drafts remain intact. Periodic
+unsigned closure and original signed-reference reconciliation alternate so
+repeated refused preparations cannot starve the original retirement work.
 
 The registered UI may page these original references one entry per bounded
 reply, limited to its Root-derived principal/agent/thread namespace and the

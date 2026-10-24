@@ -8,9 +8,13 @@ writer nor issues authority. It is not registered by default Agentd startup.
 The original host must supply its existing production lease/verifier, FinalUse
 authority and grant provider, and the already retained device capability.
 
-The matching Desktop receiver lives in `support/android/receiver/`: it patches
+The matching [Desktop receiver manual](https://github.com/TrillionniumFoundation/trillionnium-os-desktop/blob/main/support/android/receiver/README.md)
+lives beside `support/android/receiver/`: it patches
 the same original Pocket4 fixed helper and the same original ActionRunner APK.
 There is no new runtime, device discovery service, ADB route or operation DB.
+That manual supplies source generation, actual SDK, preserved APK resources,
+original signer, installed-byte and rollback gates. Resolve it at the exact
+Desktop source-profile commit for execution; the link itself is not a pin.
 
 Current source qualification consists of a synthetic cross-language wire
 fixture and focused owner-adapter cases. Compilation, original FinalUse/owner
@@ -22,11 +26,11 @@ original helper/source pin, package signature, peer identity or live grant.
 
 | File | Responsibility |
 | --- | --- |
-| `src/production_android_wire.rs` | Bounded canonical native observation and exact text payload |
-| `src/production_android.rs` | Original intent, typed device seam, synchronous FinalUse destination |
-| `src/production_android_response.rs` | Actual apply acknowledgement and independent native readback validation |
-| `src/production_android_tests.rs` | Exact bytes, no deferred entry, lost ack, stale/changed identity regressions |
-| `tests/fixtures/android-bound-text-v1.json` | Python-generated UTF-8/hash fixture, explicitly synthetic |
+| [src/production_android_wire.rs](src/production_android_wire.rs) | Bounded canonical native observation and exact text payload |
+| [src/production_android.rs](src/production_android.rs) | Original intent, typed device seam, synchronous FinalUse destination |
+| [src/production_android_response.rs](src/production_android_response.rs) | Actual apply acknowledgement and independent native readback validation |
+| [src/production_android_tests.rs](src/production_android_tests.rs) | Exact bytes, no deferred entry, lost ack, stale/changed identity regressions |
+| [tests/fixtures/android-bound-text-v1.json](tests/fixtures/android-bound-text-v1.json) | Python-generated UTF-8/hash fixture, explicitly synthetic |
 
 Run from `codex-rs` with the repository toolchain:
 
@@ -110,12 +114,12 @@ does not by itself install its authenticated client into an Agentd process.
 
 The existing integration points are:
 
-- `hepta-agentd/src/production_composition.rs`: constructs the existing
+- [hepta-agentd/src/production_composition.rs](../hepta-agentd/src/production_composition.rs): constructs the existing
   `AgentdProductionOperationRuntimeConfig` using the original recovered owner.
-- `hepta-agentd/src/production_writer_host.rs`: `with_additional_target` accepts
+- [hepta-agentd/src/production_writer_host.rs](../hepta-agentd/src/production_writer_host.rs): `with_additional_target` accepts
   the original destination-specific FinalUse authority and target; `attach`
   verifies that it is the same recovered writer/lease before registration.
-- `hepta-agentd/src/notes_bootstrap.rs`: existing channel-factory → target →
+- [hepta-agentd/src/notes_bootstrap.rs](../hepta-agentd/src/notes_bootstrap.rs): existing channel-factory → target →
   additional-target wiring is a useful model. Its inherited Notes descriptors
   are not Android capabilities and cannot be repurposed as such.
 

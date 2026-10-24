@@ -239,7 +239,7 @@ index 5ab13d3..ed2a129 100644
  
      use crate::FilterResult;
 diff --git a/consumer/src/node.rs b/consumer/src/node.rs
-index e7a0879..e8c13c7 100644
+index e7a0879..7209d88 100644
 --- a/consumer/src/node.rs
 +++ b/consumer/src/node.rs
 @@ -8,22 +8,30 @@
@@ -286,7 +286,18 @@ index e7a0879..e8c13c7 100644
  use crate::tree::State as TreeState;
  
  #[derive(Clone, Copy, PartialEq, Eq)]
-@@ -668,7 +676,13 @@ impl<'a> Node<'a> {
+@@ -448,7 +456,9 @@ impl<'a> Node<'a> {
+ 
+     // The future of the `Action` enum is undecided, so keep the following
+     // function private for now.
+-    fn supports_action(&self, action: Action) -> bool {
++    /// Whether the application advertised this action for the current node.
++    /// This exposes the capability bit without exposing the internal NodeData.
++    pub fn supports_action(&self, action: Action) -> bool {
+         self.data().supports_action(action)
+     }
+ 
+@@ -668,7 +678,13 @@ impl<'a> Node<'a> {
  
  #[cfg(test)]
  mod tests {
@@ -732,7 +743,7 @@ index fa2ba07..d7b11da 100644
  pub use rect::*;
  pub use util::WindowBounds;
 diff --git a/platforms/atspi-common/src/node.rs b/platforms/atspi-common/src/node.rs
-index 3151870..31aa493 100644
+index 3151870..c8787a7 100644
 --- a/platforms/atspi-common/src/node.rs
 +++ b/platforms/atspi-common/src/node.rs
 @@ -8,29 +8,56 @@
@@ -823,7 +834,7 @@ index 3151870..31aa493 100644
 +        self.supports_text()
 +            && self.0.is_text_input()
 +            && !self.0.is_read_only_or_disabled()
-+            && self.0.data().supports_action(Action::EditText)
++            && self.0.supports_action(Action::EditText)
 +    }
 +
      fn supports_value(&self) -> bool {

@@ -183,7 +183,9 @@ pub(super) fn read_root_json<T: serde::de::DeserializeOwned>(path: &Path) -> io:
     .map_err(io::Error::other)?;
     let mut file = OpenOptions::new()
         .read(true)
-        .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC)
+        // Validate the opened descriptor below without first blocking on a
+        // substituted FIFO. Async callers cannot time out a synchronous open.
+        .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK)
         .open(path)?;
     let metadata = file.metadata()?;
     if !metadata.is_file()

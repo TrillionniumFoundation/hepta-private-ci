@@ -456,7 +456,9 @@ impl<'a> Node<'a> {
 
     // The future of the `Action` enum is undecided, so keep the following
     // function private for now.
-    fn supports_action(&self, action: Action) -> bool {
+    /// Whether the application advertised this action for the current node.
+    /// This exposes the capability bit without exposing the internal NodeData.
+    pub fn supports_action(&self, action: Action) -> bool {
         self.data().supports_action(action)
     }
 

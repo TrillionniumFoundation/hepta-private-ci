@@ -69,6 +69,14 @@ enum Request {
         thread_id: String,
         text: String,
     },
+    CloseUnsigned {
+        schema_version: u32,
+        request_id: String,
+        agent_id: codex_hepta_contracts::AgentId,
+        spawn_generation: u64,
+        thread_id: String,
+        text: String,
+    },
 }
 
 impl HostAuthorityTextUiRegistration {
@@ -188,6 +196,7 @@ impl HostAuthorityService {
             TextIssuerOperation::Sign
         };
         let retiring = matches!(&request, Request::Retire { .. });
+        let closing_unsigned = matches!(&request, Request::CloseUnsigned { .. });
         match request {
             Request::Hello { schema_version: 1 } => encode_bounded(&owner, 16 * 1024),
             Request::Hello { .. } => Err(HostIssuerTransportError::InvalidRequest),
@@ -246,6 +255,14 @@ impl HostAuthorityService {
                 spawn_generation,
                 thread_id,
                 text,
+            }
+            | Request::CloseUnsigned {
+                schema_version,
+                request_id,
+                agent_id,
+                spawn_generation,
+                thread_id,
+                text,
             } => {
                 if schema_version != 1
                     || agent_id != owner.route.agent_id
@@ -268,6 +285,27 @@ impl HostAuthorityService {
                 };
                 if retiring {
                     return self.retire_text_ui(registration, &request_id, body);
+                }
+                if closing_unsigned {
+                    let outcome = self
+                        .writer
+                        .as_ref()
+                        .ok_or(HostIssuerTransportError::Unavailable)?
+                        .close_unsigned_text(
+                            &self.issuer,
+                            &self.identity,
+                            &owner.intent_namespace,
+                            &request_id,
+                            body,
+                        )
+                        .map_err(unavailable)?;
+                    self.text_ui_owner(registration)?;
+                    return encode_bounded(
+                        &serde_json::json!({
+                            "schema_version": 1, "operation": "close_unsigned", "request_id": request_id, "outcome": outcome,
+                        }),
+                        32 * 1024,
+                    );
                 }
                 let envelope = self
                     .writer

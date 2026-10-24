@@ -1,4 +1,5 @@
 use super::*;
+use crate::text_session::TextUnsignedClosure;
 
 #[test]
 fn retirement_frees_capacity_without_reissuing_past_intents_after_reopen() {
@@ -142,5 +143,97 @@ fn retiring_later_input_keeps_unknown_earlier_identity_and_rejects_wrong_proof()
                 TextIssuerOperation::Sign
             )
             .is_err()
+    );
+}
+
+#[test]
+fn thirty_two_refused_signs_close_without_eviction_and_next_input_works_after_original_retirement()
+{
+    let directory = tempfile::tempdir().unwrap();
+    let owner = super::super::tests::identity(directory.path());
+    let path = directory.path().join("issuer");
+    let issuer = super::super::tests::issuer(&path, &owner);
+    let mut first = None;
+    for number in 1..=32 {
+        let envelope = issuer
+            .text(
+                &owner,
+                &format!("input:{number}"),
+                super::super::tests::body(),
+                TextIssuerOperation::Sign,
+            )
+            .unwrap();
+        if number == 1 {
+            first = Some(envelope);
+        }
+    }
+    let retained = issuer.store.load(STATE_OWNER).unwrap().text_signatures;
+    for number in 33..=64 {
+        let id = format!("input:{number}");
+        assert!(
+            issuer
+                .text(
+                    &owner,
+                    &id,
+                    super::super::tests::body(),
+                    TextIssuerOperation::Sign
+                )
+                .is_err()
+        );
+        assert!(
+            matches!(issuer.close_unsigned_text_until(&owner, "input", &id, super::super::tests::body(), None).unwrap(),
+            TextUnsignedClosure::Closed { through_sequence, .. } if through_sequence == number)
+        );
+        let state = issuer.store.load(STATE_OWNER).unwrap();
+        assert_eq!(state.sequence, 32);
+        assert!(state.text_signatures == retained);
+    }
+    // Private original-store fixture proof only. Runtime obtains this solely
+    // by independently reading the actual original Core/AuthBus outcome.
+    issuer
+        .retire_verified_text(
+            "input:1",
+            VerifiedTextRetirement {
+                original: first.unwrap(),
+                agent_id: owner.agent_id.clone(),
+                closed_after_expiry: false,
+            },
+        )
+        .unwrap();
+    drop(issuer);
+    let issuer = DeploymentFinalUseIssuer::open(
+        &path,
+        Arc::new(codex_hepta_contracts::SystemAuthorityClock),
+    )
+    .unwrap();
+    let next = issuer
+        .text(
+            &owner,
+            "input:65",
+            super::super::tests::body(),
+            TextIssuerOperation::Sign,
+        )
+        .unwrap();
+    assert_eq!(next.sequence, 33);
+    for number in 33..=64 {
+        assert!(
+            issuer
+                .text(
+                    &owner,
+                    &format!("input:{number}"),
+                    super::super::tests::body(),
+                    TextIssuerOperation::Sign
+                )
+                .is_err()
+        );
+    }
+    assert_eq!(
+        issuer
+            .store
+            .load(STATE_OWNER)
+            .unwrap()
+            .text_signatures
+            .len(),
+        32
     );
 }
