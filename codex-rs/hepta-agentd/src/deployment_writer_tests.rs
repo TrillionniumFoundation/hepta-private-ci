@@ -1,5 +1,7 @@
 use super::*;
+use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::AuthorityTrustError;
+use codex_hepta_contracts::authority_lease::AuthorityLease;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseFrontier;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry;

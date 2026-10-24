@@ -49,12 +49,8 @@ fn retained(owner: &AgentdIdentity, name: &str) -> (ObjectiveAdmissionQuery, Run
             authority_epoch: 7,
         },
     };
-    let claims = objective_claims(
-        owner,
-        &request,
-        &objective_body_payload(&request.body).expect("payload"),
-    )
-    .expect("claims");
+    let claims = codex_hepta_authority_client::historical_authbus_objective_claims(owner, &request)
+        .expect("claims");
     record.authentication = RunStartAuthenticationV1 {
         issuer_id: claims.issuer_id,
         key_epoch: claims.key_epoch.get(),
