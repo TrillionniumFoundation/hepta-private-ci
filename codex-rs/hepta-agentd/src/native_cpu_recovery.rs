@@ -108,6 +108,13 @@ where
     if peer(lifetime.pid, lifetime.uid)? != lifetime {
         return Err(invalid("Manager identity changed before actual fault"));
     }
+    if old
+        .server
+        .as_ref()
+        .is_none_or(|server| server.is_finished())
+    {
+        return Err(invalid("original service ended before the Manager crash"));
+    }
     // This is an actual crash of the retained native Process. The Supervisor
     // remains Running until its normal poll observes and reaps the same child.
     if unsafe {
@@ -131,13 +138,9 @@ where
         "signal":libc::SIGKILL,"wait_kind":"signaled","wait_value":signal,"pidfd_revents":revents,
         "old_current_token":terminal.current.token,"old_material_sha256":terminal.material_sha256}),
     )?;
-    if let Some(server) = old.server.take() {
-        // Peer death normally ends lanes with an error. Joining still proves
-        // no old service worker retains the protected owner during adoption.
-        let _ = server
-            .join()
-            .map_err(|_| invalid("retired original Root lane panicked"))?;
-    }
+    // Joining ends old worker custody only. Inner errors remain diagnostics,
+    // not a successful-service claim or the independent retirement witness.
+    old.join_retired_lanes()?;
     let previous = PreparedRecovery {
         previous: terminal.current.clone(),
         writer: old.bundle.writer.clone(),

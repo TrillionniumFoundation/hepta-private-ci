@@ -101,7 +101,7 @@ impl RootNativeCpuGrantAdmission {
         ))?;
         let lease_id = format!(
             "hos2-effect.{}",
-            codex_hepta_contracts::Sha256Digest::for_bytes(&bytes)
+            codex_hepta_contracts::Sha256Digest::for_bytes(&bytes).as_str()
         );
         super::registered_effect::issue(
             issuer,

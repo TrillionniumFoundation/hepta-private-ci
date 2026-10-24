@@ -117,7 +117,10 @@ where
         .release()
         .await
         .map_err(|error| AgentdError::Protocol(error.to_string()))?;
-    store.close().await;
+    // This clones only the existing store handle. Its original close barrier
+    // shuts the same shared SQLite pools; it opens no new owner or database.
+    // Remaining handles are dropped before this Host exits and Root may reap it.
+    store.as_ref().clone().close().await;
     Ok(())
 }
 

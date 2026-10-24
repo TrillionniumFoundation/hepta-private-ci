@@ -288,7 +288,8 @@ impl<T: codex_hepta_memory::CognitiveCheckpointTransport + 'static> Owner<T> {
                 let payload = request.to_json().map_err(fail)?;
                 let key = format!(
                     "native-cpu:{}:{}",
-                    codex_hepta_contracts::Sha256Digest::for_bytes(&serde_json::to_vec(&delivery)?),
+                    codex_hepta_contracts::Sha256Digest::for_bytes(&serde_json::to_vec(&delivery)?)
+                        .as_str(),
                     operation
                 );
                 let intent = OperationIntentV1::new(

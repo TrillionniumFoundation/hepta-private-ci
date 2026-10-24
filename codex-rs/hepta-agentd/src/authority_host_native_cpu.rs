@@ -49,7 +49,8 @@ impl HostAuthorityService {
             registration,
             initial,
             self.clock.clone(),
-        )?;
+        )
+        .map_err(io::Error::other)?;
         self.with_registered_checkpoint(directory, publisher_epoch, peer)
     }
 

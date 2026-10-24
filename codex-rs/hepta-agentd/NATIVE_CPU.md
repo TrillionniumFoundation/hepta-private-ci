@@ -64,7 +64,18 @@ pool closure. Unknown effects retain the existing fail-closed recovery path.
 Once shutdown has stopped the monitor, pending work may remain unresolved.
 The bounded shutdown then returns an error and does not release the writer;
 a timeout is never reported as successful drain. The retained original ledger
-and protected material must be recovered by a legitimate successor.
+and protected material must be recovered by a legitimate successor. The final
+completion record is emitted only after the original Supervisor has actually
+reaped this owner with exit code zero, shutdown polling has no driver fault,
+and the workload has been reaped. Its Current token remains the last observed
+operation cut; writer release may publish a later terminal owner cut.
+
+Root joins an old lane group only after independently observing its exact
+publisher's retirement. An inner lane error is retained in bounded diagnostics;
+it never proves that the service was previously healthy or shut down cleanly.
+The crash path refuses a lane group already finished before the actual fault.
+Readiness, operation, frontier and material evidence come from their separate
+actual pre-fault observations.
 
 ## Acceptance and remaining scope
 
@@ -117,3 +128,10 @@ with default features, using the existing release profile and environment
 size overrides (`OPT_LEVEL=z`, `LTO=fat`, `CODEGEN_UNITS=1`), and pass that exact
 frozen ELF/build receipt to the native owner runner. A successful host build is
 neither ELF-size admission nor a native owner-cycle result.
+
+The `native_profile_tests` use the original SQLite fixture and device fixture.
+Handoff cases issue a fresh 20-second fixture lease, finish real setup and
+operations, read the actual persisted original expiry, and wait for the real
+clock to pass it before opening a successor. They never renew an issued lease
+or inject time. Run acceptance with retries disabled and two test threads;
+a retried pass does not satisfy the handoff qualification.

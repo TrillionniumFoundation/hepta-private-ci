@@ -65,6 +65,28 @@ pub(super) struct Active {
     adopted: Option<codex_hepta_memory::CognitiveCheckpointReceipt>,
 }
 
+impl Active {
+    fn join_retired_lanes(&mut self) -> io::Result<()> {
+        // A lane error is accepted for teardown only after independent actual
+        // publisher retirement. It is never proof of earlier service health.
+        crate::RetiredCheckpointPublisher::observe(self.retained.lifetime().clone())
+            .map_err(error)?;
+        if let Some(server) = self.server.take() {
+            let result = server
+                .join()
+                .map_err(|_| invalid("original Root lane panicked"))?;
+            if let Err(failure) = result {
+                let diagnostic = failure.to_string().chars().take(512).collect::<String>();
+                eprintln!(
+                    "hepta-native: lane termination after observed publisher exit, pid {}: {diagnostic}",
+                    self.registration.peer_pid
+                );
+            }
+        }
+        Ok(())
+    }
+}
+
 fn write_json(path: &Path, value: &impl serde::Serialize) -> io::Result<()> {
     let mut file = std::fs::OpenOptions::new()
         .write(true)
@@ -584,21 +606,41 @@ pub(super) fn run(boot: NativeBootstrap) -> io::Result<()> {
         }
         _ => return Err(invalid("unsupported native acceptance scenario")),
     }
-    evidence.complete()?;
     supervisor.stop(&agent, Instant::now()).map_err(error)?;
     while supervisor
         .snapshot(&agent)
         .is_some_and(|snapshot| snapshot.active)
     {
         remaining(deadline)?;
-        supervisor.tick(Instant::now());
+        let report = supervisor.tick(Instant::now());
+        if !report.faults.is_empty() {
+            return Err(invalid("original Supervisor reported a shutdown fault"));
+        }
         std::thread::sleep(Duration::from_millis(10));
     }
-    if let Some(server) = generation.server.take() {
-        let _ = server
-            .join()
-            .map_err(|_| invalid("original Root lane panicked"))?;
+    let stopped = supervisor
+        .snapshot(&agent)
+        .ok_or_else(|| invalid("original shutdown snapshot missing"))?;
+    let exited = stopped
+        .events
+        .iter()
+        .rev()
+        .find_map(|event| match &event.kind {
+            codex_hepta_supervisor::SupervisorEventKind::Exited(exit) => {
+                Some((event.generation, *exit))
+            }
+            _ => None,
+        });
+    if stopped.active
+        || !matches!(exited,
+        Some((generation_number, codex_hepta_supervisor::ProcessExit { success: true, code: Some(0) }))
+            if generation_number >= generation.bundle.writer.spawn_generation)
+    {
+        return Err(invalid(
+            "original native owner did not finish shutdown successfully",
+        ));
     }
+    generation.join_retired_lanes()?;
     drop(supervisor); // The unused initial Recovery child is killed and reaped by its held guard.
     let workload = pidfd(3)?;
     let rc = unsafe {
@@ -617,7 +659,13 @@ pub(super) fn run(boot: NativeBootstrap) -> io::Result<()> {
     if unsafe { libc::waitpid(3, &mut status, 0) } != 3 {
         return Err(io::Error::last_os_error());
     }
+    if !libc::WIFSIGNALED(status) || libc::WTERMSIG(status) != libc::SIGTERM {
+        return Err(invalid("actual workload shutdown status differs"));
+    }
     File::open("/state")?.sync_all()?;
+    // The transcript's last operation cut is retained unchanged. Completion
+    // additionally requires real owner exit zero and successful workload reap.
+    evidence.complete()?;
     unsafe {
         libc::sync();
         libc::reboot(libc::RB_POWER_OFF);

@@ -4,6 +4,24 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
+// This is a new fixture issuance, not a renewal or an artificial clock.
+// SQLite setup/prepare under concurrent tests must finish while it is live.
+const HANDOFF_PREPARATION_LIFETIME_SECONDS: u64 = 20;
+
+async fn original_lease_expiry(fixture: &Fixture) -> TestResult<u64> {
+    let head = fixture
+        .writer
+        .store
+        .inspect_local_lease_head(LEASE)
+        .await?
+        .head
+        .ok_or("original persisted lease head missing")?;
+    assert_eq!(head.generation, fixture.writer.generation());
+    Ok(head
+        .lease_expires_at_unix_seconds
+        .ok_or("original persisted expiry missing")?)
+}
+
 #[tokio::test]
 async fn native_candidate_is_read_only_and_prepare_keeps_the_original_cas() -> TestResult {
     let temp = tempfile::tempdir()?;
@@ -157,7 +175,7 @@ async fn native_drain_counts_queued_and_unknown_until_the_original_terminal() ->
 async fn native_drain_keeps_pending_work_across_an_actual_expired_writer_handoff() -> TestResult {
     for unknown in [false, true] {
         let temp = tempfile::tempdir()?;
-        let expiry = now_unix_seconds()? + 4;
+        let expiry = now_unix_seconds()? + HANDOFF_PREPARATION_LIFETIME_SECONDS;
         let old = Fixture::open_generation(temp.path(), /*generation*/ 1, expiry).await?;
         let queued = old.prepare(OPERATION, /*sequence*/ 1).await?;
         let expected = if unknown {
@@ -173,10 +191,12 @@ async fn native_drain_keeps_pending_work_across_an_actual_expired_writer_handoff
             LocalOutcomeState::Queued
         };
         assert_eq!(old.writer.hos2_drain_blockers().await?, 1);
+        let persisted_expiry = original_lease_expiry(&old).await?;
+        assert_eq!(persisted_expiry, expiry);
         drop(old);
-        let delay = expiry.saturating_sub(now_unix_seconds()?);
+        let delay = persisted_expiry.saturating_sub(now_unix_seconds()?);
         tokio::time::sleep(Duration::from_secs(delay) + Duration::from_millis(20)).await;
-        assert!(now_unix_seconds()? >= expiry);
+        assert!(now_unix_seconds()? >= persisted_expiry);
         // The production opener terminalizes the expired predecessor and
         // allocates the next original local lease generation itself.
         let successor = Fixture::open_generation(
@@ -293,7 +313,7 @@ async fn native_retained_terminal_reads_the_original_event_without_mutating_the_
 async fn native_retained_terminal_keeps_the_same_event_across_expired_owner_recovery() -> TestResult
 {
     let temp = tempfile::tempdir()?;
-    let expiry = now_unix_seconds()? + 4;
+    let expiry = now_unix_seconds()? + HANDOFF_PREPARATION_LIFETIME_SECONDS;
     let old = Fixture::open_generation(temp.path(), /*generation*/ 1, expiry).await?;
     let queued = old.prepare(OPERATION, /*sequence*/ 1).await?;
     let (binding, signed) = old.signed(&queued, /*nonce*/ 1).await?;
@@ -303,10 +323,12 @@ async fn native_retained_terminal_keeps_the_same_event_across_expired_owner_reco
         .await?;
     let original = old.writer.retained_hos2_terminal(OPERATION).await?;
     assert_eq!(original.1.event_id, dispatched.local_event_id);
+    let persisted_expiry = original_lease_expiry(&old).await?;
+    assert_eq!(persisted_expiry, expiry);
     drop(old);
-    let delay = expiry.saturating_sub(now_unix_seconds()?);
+    let delay = persisted_expiry.saturating_sub(now_unix_seconds()?);
     tokio::time::sleep(Duration::from_secs(delay) + Duration::from_millis(20)).await;
-    assert!(now_unix_seconds()? >= expiry);
+    assert!(now_unix_seconds()? >= persisted_expiry);
     let successor = Fixture::open_generation(
         temp.path(),
         /*generation*/ 2,
