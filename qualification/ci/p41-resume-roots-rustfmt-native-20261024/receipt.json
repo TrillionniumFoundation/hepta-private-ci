@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.p41-integrated-resume-roots-rustfmt-native.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_parent_sha": "77208a8dd7fb64fc1024ddc744afebf9391d4cc6",
+  "source_parent_tree_sha": "97cf64333d2906bb0a4e1da6e951449cbb4b69ff",
+  "source_parent_pull_request": 3678,
+  "native_evidence": {
+    "owning_pull_request": 3621,
+    "source_sha": "e25f6453364f0d526dfdda561fa5a797e9d861c1",
+    "run_id": 40058539860,
+    "job_id": 120876694503,
+    "job_name": "repo-checks / build-test",
+    "native_outcome": "failure",
+    "failing_step": "Check formatting (run `just fmt` to fix)",
+    "failing_path": "codex-rs/app-server/tests/suite/v2/thread_resume_permission_roots_tests.rs",
+    "hunk_original_line": 295,
+    "rustfmt_diff_kind": "array literal HashMap::from workspace_roots json!([]) collapse",
+    "log_result": "Formatting failed: Rust; fmt-check exit 1"
+  },
+  "source_provenance": {
+    "old_blob_sha": "0fb2606c6aa77bc0bd6754d8a12254e3d592f8e1",
+    "new_blob_sha": "e84a7449bb0fb81c00d4044a6c41cdcd1e1dbd43",
+    "exact_original_occurrences": 1,
+    "changed_files_in_this_candidate": [
+      "codex-rs/app-server/tests/suite/v2/thread_resume_permission_roots_tests.rs",
+      "qualification/ci/p41-resume-roots-rustfmt-native-20261024/receipt.json"
+    ],
+    "change_kind": "formatter-only",
+    "source_assertions_unchanged": true,
+    "other_files_unchanged": true
+  },
+  "validation": {
+    "exact_hunk_matches": 1,
+    "reversible_replacement": true,
+    "original_native_fmt_failure": "OBSERVED_FAIL",
+    "new_exact_head_fmt": "NOT_EXECUTED",
+    "new_base_merge_fmt": "NOT_EXECUTED",
+    "original_cargo_deny": "OPEN_RUSTSEC_2026_0385_AND_0387",
+    "windows_delete": "OPEN",
+    "appserver_plugin_ttl": "OPEN",
+    "full_policy_episode": "OPEN_INPUT_AND_IMPLEMENTATION",
+    "target_device_performance": "OPEN_NO_DEVICE_RECEIPT",
+    "production_activation": "DENIED"
+  },
+  "restrictions": [
+    "No original tests/assertions removed or relaxed",
+    "No dependency/lock/CI/permission modifications",
+    "No claim of current-head native success",
+    "SHADOW_ONLY",
+    "DENY_ALL",
+    "HOLD_NO_GO"
+  ]
+}
