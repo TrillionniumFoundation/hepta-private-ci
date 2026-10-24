@@ -178,7 +178,7 @@ pub fn serve_host_authority_session(
     let service = HostAuthorityService::from_registered_owner(
         issuer,
         clock,
-        registration.registered_identity.identity()?,
+        crate::authority_host_config::registered_identity(&registration.registered_identity)?,
     )?;
     let service = if let Some(writer) = &config.writer {
         service.with_registered_writer(writer.clone(), leases.verifier())?

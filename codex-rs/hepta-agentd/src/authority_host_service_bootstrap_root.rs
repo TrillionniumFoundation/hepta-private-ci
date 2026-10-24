@@ -18,7 +18,8 @@ pub(super) fn capture(
     let service = HostAuthorityService::from_registered_owner(
         issuer.clone(),
         clock.clone(),
-        registration.registered_identity.identity().unwrap(),
+        crate::authority_host_config::registered_identity(&registration.registered_identity)
+            .unwrap(),
     )
     .unwrap()
     .with_registered_writer(writer.clone(), leases.verifier())

@@ -26,3 +26,7 @@ pub use authority_host_wire::HostSignedWriterAuthorizationV1;
 pub use authority_host_wire::HostWriterAuthorizationClaimsV1;
 pub use authority_host_wire::HostWriterAuthorizationReadRequestV1;
 pub use authority_host_wire::HostWriterAuthorizationReadResponseV1;
+
+mod identity;
+pub use identity::AgentdIdentity;
+pub use identity::HostAuthorityRegisteredIdentity;
