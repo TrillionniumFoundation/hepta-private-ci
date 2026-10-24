@@ -157,14 +157,13 @@ impl RootNotesLaunchChannel {
     ) -> io::Result<(RootNotesLaunchFrame, Vec<OwnedFd>)> {
         let mut header = [0; 4];
         let mut descriptors = Vec::new();
-        self.read_exact(
+        let end = self.read_exact(
             stream,
             &mut header[..1],
             &mut descriptors,
             Rights::FirstByte,
             end,
         )?;
-        let end = end.min(now()?.saturating_add(500_000_000));
         self.read_exact(
             stream,
             &mut header[1..],
@@ -192,14 +191,20 @@ impl RootNotesLaunchChannel {
         mut bytes: &mut [u8],
         descriptors: &mut Vec<OwnedFd>,
         mut rights: Rights,
-        end: u64,
-    ) -> io::Result<()> {
+        mut end: u64,
+    ) -> io::Result<u64> {
         while !bytes.is_empty() {
             self.wait(stream, libc::POLLIN, end)?;
+            // Sample before the successful nonblocking first-byte read. A
+            // scheduling delay or later process checks must not renew 500ms.
+            let before_read = now()?;
             let (count, received) = match sys::receive(stream, bytes) {
                 Err(error) if transient(&error) => continue,
                 result => result?,
             };
+            if matches!(rights, Rights::FirstByte) {
+                end = end.min(before_read.saturating_add(500_000_000));
+            }
             self.check(end)?;
             if (!matches!(rights, Rights::FirstByte) && !received.is_empty())
                 || descriptors.len() + received.len() > 2
@@ -210,7 +215,7 @@ impl RootNotesLaunchChannel {
             rights = Rights::Forbidden;
             bytes = &mut bytes[count..];
         }
-        Ok(())
+        Ok(end)
     }
     /// Send a complete frame within 500ms and the supplied absolute deadline.
     pub fn send(
