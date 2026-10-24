@@ -1,0 +1,10 @@
+warning: use of deprecated associated function `tokio::io::unix::AsyncFd::<T>::new`: unsound due to lack of I/O safety; use `AsyncFd::register` instead (see https://github.com/tokio-rs/tokio/pull/8587)
+  --> utils/pty/src/unix_io.rs:38:60
+   |
+38 |         let fd = std::panic::catch_unwind(move || AsyncFd::new(File::from(fd)))
+   |                                                            ^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-utils-pty` (lib) generated 1 warning
+    Finished `dev` profile [unoptimized] target(s) in 0.78s
