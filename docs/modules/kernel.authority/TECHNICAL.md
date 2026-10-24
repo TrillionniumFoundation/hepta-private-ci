@@ -56,6 +56,18 @@ supporting source, with native Windows controls still pending. This registration
 does not provide a trusted private-parent factory, a FinalUse or registry backend,
 a new authority owner, broad sandbox ownership or production storage support.
 
+The existing C3/C4 publication calls pass the exact synced source handle to
+[stage.rs](../../../codex-rs/utils/windows-private-state/src/stage.rs), through
+the contracts crate's safe re-export. Its bounded relative rename mechanism
+and [four native controls](../../../codex-rs/hepta-contracts/src/windows_state_stage_tests.rs)
+cover exact-source identity, missing DELETE access, destination sharing and
+invalid leaves. They do not construct a private owner; ordinary Windows store
+constructors remain closed pending trusted-parent and recovery qualification.
+The utility's anonymous-token fixture now constructs and reads back an actual
+anonymous-level token, and its volume query opens the held kernel file ID on
+the original volume. These repairs retain all original negative assertions;
+cross-target compilation is not native acceptance.
+
 The registered primary source is [codex-rs/hepta-contracts/src/final_use.rs](../../../codex-rs/hepta-contracts/src/final_use.rs); the general lease owner is [authority_lease.rs](../../../codex-rs/hepta-contracts/src/authority_lease.rs), and external trust interfaces are in [authority_trust.rs](../../../codex-rs/hepta-contracts/src/authority_trust.rs). This is source navigation, not proof that every target port or production consumer exists. The canonical target → native API → product caller → test → qualification status is [TRACEABILITY.md](TRACEABILITY.md). The V1 general-lease trust model is frozen by [ADR-0001](ADR-0001-LEASE-TRUST-MODEL.md), and final-use ordering is normative in [LINEARIZATION.md](LINEARIZATION.md).
 
 ## 3. Boundary, responsibilities and non-goals

@@ -993,15 +993,15 @@ modification and degraded/unqueryable impersonation. Cross-compilation is
 restart authority or production sandbox qualification. The existing setup helper
 still needs the create-only held-parent/profile/checkpoint producer below.
 
-The current source-head and original-base-merge Windows runs both failed the
-anonymous-token unit control and the fourth `native_principal` control. The logs
-omit the actual error variant. The test-only bounded diagnostic now reports the
-original result plus an independent query-only `OpenThreadToken`/`TokenStatistics`
-observation; it never supplies the original result, retries principal validation,
-or permits process fallback. The exact `ERROR_CANT_OPEN_ANONYMOUS` assertion and
-sticky refusal remain required. An anonymous logon user is not by itself evidence
-of the token's impersonation level. These failures remain open until an actual
-Windows run identifies and fixes the cause; MSVC checking is `NOT_NATIVE`.
+The preserved source and actual preview's full native Windows runs expose why
+the anonymous-token fixture failed: it produced a type-2, level-2 token, rather
+than the anonymous impersonation level required by the original assertion.
+The replacement test-only fixture uses real `DuplicateTokenEx` to create a
+type-2, level-0 token and independently reads its kernel `TokenStatistics` before
+installing it on the thread. It never supplies the operation's result or permits
+process fallback. The exact `ERROR_CANT_OPEN_ANONYMOUS` assertion, sticky refusal
+and original controls are unchanged. Only a fresh native Windows run can close
+the failures; MSVC checking remains `NOT_NATIVE`.
 
 C2b must derive provenance from actual held kernel objects. Agentd currently
 derives `prompt-registry` from `identity.home_root` and `prompt-runtime` from
@@ -1033,7 +1033,8 @@ persistent ACL support and volume identity, plus native
 length. It rejects remote/unsupported devices and incomplete queries. A mapped drive
 such as `Z:` can report NTFS while still being remote; path syntax and filesystem
 name alone are insufficient. These observations do not prove power-loss behavior.
-The utility uses `ReOpenFile` on the held object to obtain its own synchronous,
+The utility uses `OpenFileById` with the held object's volume hint and kernel-read
+file ID to obtain its own synchronous,
 read-attributes handle and verifies both identities; arbitrary overlapped input
 cannot leave native output storage pending after return. It returns
 `LocalNtfsObservation`, not a trusted parent or owner guard.
@@ -1041,9 +1042,9 @@ Three required `native_volume` integration controls cover actual local file and
 directory queries, a non-disk handle, and an overlapped held object renamed while
 its former path is replaced. The existing Windows workflow retains all ten prior receipts and
 the five original owner-descriptor controls, adding an eleventh receipt for these
-three operations. The current source-head and original-base-merge native local
-file/directory control returned `AccessDenied` (5), without identifying the
-failing API. The additive `inspect_local_ntfs_observed` API reports at most nine
+three operations. The preserved source and actual preview's full native runs
+locate `AccessDenied` (5) at the directory's old `ReOpenFile` call; local file
+queries pass. The additive `inspect_local_ntfs_observed` API reports at most nine
 fixed query stages and the original captured Win32/NT status, with no path or
 handle exposure. Its existing wrapper, query-only access mask, same-object
 identity checks and error results are unchanged. The three original native
@@ -1052,7 +1053,22 @@ closes this failure. Actual SMB or mapped-remote rejection remains a required,
 unexecuted C2b acceptance item;
 no fabricated flags or skipped remote test count toward those three controls.
 Trusted ancestor admission, protected creation and C3–C5 remain open; production
-Windows owner support and power-loss qualification remain false.
+Windows owner support and power-loss qualification remain false. The added
+overlapped-directory/rename control also requires the new ID-based query to
+remain attached to the original held object.
+
+C3/C4 now pass the exact already-synced stage `File` through the existing store
+publication calls to `windows-private-state::stage::replace_synced_state_stage`.
+The mechanism uses real `SetFileInformationByHandle(FileRenameInfo)` with the
+held destination directory and a bounded leaf, never reopening the source by
+name. Its four new native controls require original-handle publication after
+source rename, missing-DELETE refusal, destination delete-sharing refusal and
+escaped-leaf refusal. Their Windows execution is pending; the three-package
+Linux suite passes 226 tests with zero skipped. Windows cross-checking and
+Clippy are `NOT_NATIVE`. Original journals, claims, precommit/indeterminate
+handling and unsupported owner-construction guards remain intact. Trusted
+parent/creation, owner consumers and native recovery are still dependencies;
+this stage primitive alone does not close C2b, C3, C4 or C5.
 
 Creation must use one internal native-open implementation with typed
 existing-versus-new requests: `FILE_CREATE`, the captured SID/protected descriptor
