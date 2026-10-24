@@ -19,6 +19,8 @@ import subprocess
 import tempfile
 from collections import defaultdict
 
+from trace_evidence import TraceEvidenceError, audit_trace
+
 SCHEMA = "hepta.neuron-model-bakeoff.v1"
 ARMS = ("laya-english", "laya-typed", "laya-multilingual", "arctic-head", "harrier-head")
 SPLITS = ("train", "calibration", "test", "future")
@@ -90,6 +92,27 @@ def records(path: Path) -> list[dict]:
             out.append(obj)
     require(bool(out), f"{path}: empty observations")
     return out
+
+
+def candidate_registry() -> dict[str, dict]:
+    """Read the committed candidate source pins; a manifest cannot silently substitute a model."""
+    path = Path(__file__).resolve().parent / "CANDIDATES.json"
+    config = load_json(path)
+    require(config.get("schema") == "hepta.neuron-bakeoff.candidate-source-pins.v1",
+            "registered source-pin schema mismatch")
+    models = config.get("models")
+    require(type(models) is list and len(models) == len(ARMS), "fixed model roster required")
+    pins = {}
+    for model in models:
+        require(type(model) is dict and model.get("arm") in ARMS and model["arm"] not in pins,
+                "duplicate/unregistered candidate in pinned roster")
+        require(type(model.get("revision")) is str and HEX40.fullmatch(model["revision"]) is not None,
+                "pinned model revision must be SHA40")
+        require(all(type(model.get(k)) is str for k in ("repository", "subfolder", "license")),
+                "pinned source identity incomplete")
+        pins[model["arm"]] = model
+    require(set(pins) == set(ARMS), "incomplete fixed model roster")
+    return pins
 
 
 def validate_dataset(data: list[dict]) -> dict:
@@ -238,7 +261,7 @@ def paired_ci(cases: dict, baseline: dict, candidate: dict, split: str,
             "groups": len(keys), "method": "paired-group-bootstrap-seed0-500"}
 
 
-def verify_workload(root: Path, manifest: dict) -> list[dict]:
+def verify_workload(root: Path, manifest: dict, weights_by_arm: dict[str, str]) -> list[dict]:
     rows = records(artifact(root, manifest["workload"]))
     seen = set()
     for row in rows:
@@ -255,6 +278,13 @@ def verify_workload(root: Path, manifest: dict) -> list[dict]:
                 "invalid workload measurement")
         require(type(row.get("host_id")) is str and row["host_id"], "host identity required")
         require(row.get("execution_kind") == "observed-real-model", "synthetic workload cannot qualify")
+        require(row.get("model_weights_sha256") == weights_by_arm[arm],
+                "workload model digest differs from evaluated predictions")
+        require(type(row.get("trace")) is dict, "raw request trace reference required")
+        try:
+            row["recomputed_from_raw_trace"] = audit_trace(row, records(artifact(root, row["trace"])))
+        except TraceEvidenceError as exc:
+            raise EvidenceError(str(exc)) from exc
         seen.add((arm, scale))
     require(seen == {(arm, scale) for arm in ARMS for scale in SCALES},
             "not all 5 models x 64/256/1024/4096 scales are measured")
@@ -312,6 +342,7 @@ def evaluate(root: Path, manifest: dict, trusted_key: Path | None = None) -> dic
     require(type(manifest.get("source_commit")) is str and HEX40.fullmatch(manifest["source_commit"]),
             "exact source SHA required")
     dataset = validate_dataset(records(artifact(root, manifest["dataset"])))
+    pinned_sources = candidate_registry()
     model_specs = manifest.get("models")
     require(type(model_specs) is list and len(model_specs) == len(ARMS), "all five candidate arms required")
     predictions = {}
@@ -323,6 +354,9 @@ def evaluate(root: Path, manifest: dict, trusted_key: Path | None = None) -> dic
         require(arm not in predictions, "duplicate model arm")
         require(type(spec.get("revision")) is str and HEX40.fullmatch(spec["revision"]),
                 f"{arm}: pinned revision required")
+        pin = pinned_sources[arm]
+        require(all(spec.get(k) == pin[k] for k in ("repository", "subfolder", "revision", "license")),
+                f"{arm}: model source revision, subfolder or license differs from committed pins")
         for field in ("weights", "tokenizer", "runtime", "calibration"):
             artifact(root, spec[field])
         require(type(spec.get("license")) is str and spec["license"], "license review required")
@@ -359,9 +393,11 @@ def evaluate(root: Path, manifest: dict, trusted_key: Path | None = None) -> dic
     require(trainer[0] == trainer[1], "Arctic/Harrier heads were not trained with identical budgets")
     out = {"schema": "hepta.neuron-model-bakeoff.report.v1", "source_commit": manifest["source_commit"],
            "dataset_sha256": manifest["dataset"]["sha256"], "models": {}, "paired_accuracy_vs_english": {},
-           "workload": verify_workload(root, manifest),
+           "workload": verify_workload(root, manifest, {s["arm"]: s["weights"]["sha256"] for s in model_specs}),
            "lifecycle": verify_lifecycle(root, manifest, trusted_key),
-           "qualification": "evaluation_evidence_only_not_release_or_promotion"}
+           "qualification": "evaluation_evidence_only_not_release_or_promotion",
+           "independent_acceptance": False, "all_blockers_closed": False,
+           "production_activation_allowed": False}
     for split in ("test", "future"):
         for arm in ARMS:
             rows = [(row, predictions[arm][cid]) for cid, row in dataset.items() if row["split"] == split]

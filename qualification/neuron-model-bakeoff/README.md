@@ -33,11 +33,92 @@ python3 qualification/neuron-model-bakeoff/run_laya.py \
   --output /evidence/laya-english.predictions.jsonl
 ```
 
+The pinned upstream Laya `Agent` has a two-argument `predict(state, questions)`
+interface and the `load(path, device)` loader does **not** accept
+`backend` or `calibration` keyword arguments. This runner calls the
+real pinned interface, uses in-memory declared context budgets, verifies
+its actual device both after loading and after every forward, and
+rejects automatic CPU fallback. The upstream constructor may rewrite
+`tokenizer_config.json`; the runner therefore borrows the audited
+P41 private tokenizer compatibility copy and verifies that original
+weights/config/tokenizer bytes are unchanged.
+
+The `--calibration-file` must be an **already independently prepared**
+JSON object with exactly the following material fields (illustrative
+values are not a fitted calibration and must never be used as evidence):
+
+```json
+{
+  "schema": "hepta.neuron-bakeoff.laya-calibration.v1",
+  "weights_sha256": "<actual 64-hex weight digest>",
+  "calibration_split_sha256": "<sha256 of canonical sorted calibration rows>",
+  "temperature": 1.0,
+  "threshold": 0.8
+}
+```
+
+`calibration_split_sha256` uses the UTF-8 SHA256 of
+`bakeoff.canonical(sorted(calibration_rows, key=lambda r: r["case_id"]))`.
+Only training/calibration outcomes may determine these values;
+test/future labels cannot. `threshold` must equal the frozen
+`--confidence-min` argument; all four train/calibration/test/future
+partitions must exist with disjoint group identifiers. An additional
+temperature is applied to already Laya-calibrated output probabilities,
+so this is a **second-stage calibration** and must be named as such
+when comparing native pretrained Laya probabilities. The original
+SDK probabilities cannot serve as a final-use authorization.
+
 This runner sends `state` and `question`/option criteria to the model but **never** the truth label, OOD flag, group or split. It records measured local latency and RSS; `gpu_peak_bytes=null` because PyTorch allocator peak is not total device-resident GPU usage. Observe GPU usage separately on the target host. Laya `choice` probabilities must be checked for label completeness. Output is not signed and does not certify independent observations by itself. SDK reproducibility: https://nandhakishorm.github.io/laya/reference/agent/ ; the existing reference source pin is in the canonical spec.
 
 For the two embedding models, `run_heads.py` supports `train`, `calibrate`, and `eval` with pre-staged locally audited SentenceTransformer checkpoints. **Both** use the same 256-dimensional fixed random projection and the same 257-parameter linear option-scoring head, batch size, step count, seed and optimizer schedule. Training uses **only** the train split, temperature and abstention fit **only** calibration, evaluation **only** test/future. The experimental Head is not Laya-compatible at the tensor level, and is not connected to production inference. `--reviewed-local-code` permits local third-party Python only after an external audit; it is disabled by default. The train stage writes a safe tensor `.npz`, calibration writes a separate immutable JSON file, and eval writes candidate prediction JSONL. Keep these separated for reproducibility. This is one *candidate experimental protocol*, not a claim of Pareto improvement.
 
 The JSONL dataset requires `case_id`, `group_id`, `split`, `state`, `question`, `labels` (ordered strings), `label`, `language`, `task_family`, `ood` (boolean), and optionally `criteria` (label-to-description map). Every split is mandatory; group IDs must not appear in multiple splits. Every prediction must bind its actual selected calibration SHA256; Encoder Head predictions also bind the trained Head SHA256. The stage-3 head training manifest requires `steps`, `batch_size`, `examples_seen`, `seed`, `target_dim=256`, `optimizer_sha256`, and `training_dataset_sha256` computed over canonical sorted train rows. The Head *must not* read gold labels during eval.
+
+## Phase 1: immutable five-model source roster
+
+`bakeoff.py` now rejects any candidate manifest whose `repository`,
+`subfolder`, `revision` or `license` differs from committed
+`CANDIDATES.json` (all five arms required). Model manifests must include
+these exact fields along with separately hashed weights, tokenizer,
+runtime, calibration and predictions. A pinned **source revision** does
+not establish a verified physical weight download or binary provenance;
+those external evidence gates remain open.
+
+## Phase 5: mandatory raw target-host request spans
+
+The resource verifier previously accepted a summary with arbitrary p99,
+throughput and `execution_kind=observed-real-model`. That is **not** a
+physical measurement. The tightened gate now requires a SHA256-referenced
+**JSONL raw trace per arm and scale**. Every declared logical Cell must
+appear with its own `cell_id`; requests must be at least `max(100, scale)`.
+The model must remain bound to the evaluated weights digest and the exact
+host/device identity. Summary request count, queue-inclusive p95/p99,
+throughput, load duration, process RSS peak, optional CUDA GPU memory and
+observed in-flight concurrency are all **recomputed** from raw records.
+Summary-only, incomplete Cell coverage, forged p99, missing CUDA memory or
+model-identity drift fail the contract gate.
+
+Each workload row additionally includes `device`, `model_weights_sha256`,
+`load_started_ns`, `load_completed_ns`, `peak_gpu_bytes`, and
+`trace: {"path": "...", "sha256": "..."}`. Each raw JSONL record contains
+`request_id`, `cell_id`, `arm`, `host_id`, `device`,
+`model_weights_sha256`, `submitted_ns`, `started_ns`,
+`completed_ns`, `rss_bytes`, `gpu_peak_bytes`.
+Timestamps are monotonic nanoseconds on the same measured host.
+`submitted_ns` must be recorded before queuing, `started_ns` when a
+worker actually starts the request, and `completed_ns` after real model
+completion. Do not submit client-only loopback timestamps as server
+admission evidence. All 20 arm/scale combinations are required.
+Source-only fixtures include synthetic timestamps strictly to test
+**rejection behavior** and provide no physical-host qualification.
+
+Raw JSONL remains a producer claim. An independently provisioned worker,
+signed model-load receipt, trusted host telemetry custody, reproducible
+weight inventory, real Artifact CAS/CNS/Supervisor/Final-use lifecycle
+and independent operator acceptance are still **OPEN**. The report
+always includes `independent_acceptance=false`,
+`all_blockers_closed=false` and `production_activation_allowed=false`;
+even correct trace math cannot grant authorization or promotion.
 
 ## Independent verifier / evidence format
 
