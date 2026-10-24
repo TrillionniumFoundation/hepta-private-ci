@@ -70,8 +70,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     env:
-      HF_HUB_DISABLE_TELEMETRY: '1'
-      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -195,4 +195,3 @@ jobs:
           path: ${{ runner.temp }}/independent-audit.json
           if-no-files-found: error
           retention-days: 30
-
