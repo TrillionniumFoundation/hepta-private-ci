@@ -1,0 +1,100 @@
+{
+  "schema": "hepta.cell-retention.source-selection.v1",
+  "status": "FROZEN_SOURCE_SELECTION",
+  "prepared_against_retention_v2": "838a81322b77312f9fdbbea2777d1679523676c6",
+  "source_archive_sha256": "1f5f08691f0ce576cb0b5cfdbcb8c55e0ec14dda8f3e07933da72c500338845a",
+  "original_feasibility_sha256": "152ea104d9ff19f255c7a56399c4bcf62461ba9d634caa246a11e1b4d1312823",
+  "original_feasibility_code_sha256": "770a512249e4aea301c910d63d044f533750a2c68871a5ece0620eafcc677a13",
+  "source_acquisition_receipt_sha256": "792ea3ea4a9c6603382a9316b8985a338bc6e20d069d2a3de7f772a2c68055a5",
+  "amendment": {
+    "original_draft_sha256": "eef56869211a0376a7d3f798a14d30d10d495465c90ee557a5f689d35ccfefae",
+    "original_proposal_future_counts": {
+      "2014-07": 128,
+      "2014-08": 128
+    },
+    "actual_available_august_per_class": [
+      24,
+      27,
+      3,
+      18
+    ],
+    "original_august_required_per_class": 32,
+    "result": "original proposed confirmation source counts infeasible",
+    "replacement_future_counts": {
+      "2014-06": 96,
+      "2014-07": 128
+    },
+    "reason": "June minimum available class has27 components, supporting24 per class; July minimum60 supports32 per class. Use first two chronological post-May months with these fixed counts; August excluded from confirmation.",
+    "known_class_counts_only": true,
+    "new_encoder_head_controller_predictions_observed": false,
+    "original_failed_plan_and_receipt_preserved": true,
+    "no_silent_window_fallback": true
+  },
+  "registered_exposure_sets": [
+    "legacy_default_768",
+    "evolution_v3_all_1104",
+    "pft_all_512"
+  ],
+  "novelty_scope": "Global raw-story/normalized-title component-disjoint from the three pinned registered News Aggregator datasets (all roles); no assertion of all past or worldwide nonexposure, semantic independence, foundation pretraining independence, new task family or prospective deployment.",
+  "exposure_known_overlap_diagnostic": {
+    "legacy_evolution_components": 47,
+    "evolution_pft_components": 118,
+    "legacy_pft_components": 0,
+    "union_exposed_components": 1414,
+    "raw_components": 3172
+  },
+  "roles_in_order": [
+    [
+      "old_train",
+      "2014-04",
+      64
+    ],
+    [
+      "old_probe",
+      "2014-04",
+      32
+    ],
+    [
+      "old_test",
+      "2014-04",
+      64
+    ],
+    [
+      "current_train",
+      "2014-05",
+      64
+    ],
+    [
+      "current_probe",
+      "2014-05",
+      32
+    ],
+    [
+      "future_june",
+      "2014-06",
+      96
+    ],
+    [
+      "future_july",
+      "2014-07",
+      128
+    ]
+  ],
+  "selection_salt": "cell-retention-v1-20261024",
+  "selection_rule": "Full raw story/title union closure; discard exposed, cross-month, category-conflict or all-OOD-publisher components; choose earliest non-OOD representative; fixed SHA256 component ordering, then role-specific ordering; balanced source categories only.",
+  "source_code_sha256": {
+    "cell_field_retention_data.py": "41c8a74345d5c56bee401aa5f899a1680a8c464c3675f187a7c6971e7b97bc4d",
+    "cell_field_retention_sources.py": "770a512249e4aea301c910d63d044f533750a2c68871a5ece0620eafcc677a13",
+    "prepare_news_cohorts.py": "33fa46322d4e9ee341b1f5ea80f37b79713a7f9420f14df9204766f38b6b45b1"
+  },
+  "failure_rule": "Retain failure and stop if any exact count/input/code/hash differs; no count/window/salt/label-driven fallback.",
+  "output_separation": [
+    "predictors.json",
+    "sources.json",
+    "train_labels.json",
+    "final_labels.json",
+    "data_receipt.json"
+  ],
+  "authority": "DENY_ALL",
+  "model_execution_authorized": false
+}
