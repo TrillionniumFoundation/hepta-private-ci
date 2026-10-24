@@ -81,21 +81,23 @@ jobs:
         id: format
         shell: bash
         run: |
+          set +e
           set -uo pipefail
           formatter=$(rustup which --toolchain 1.95.0 rustfmt) || exit 1
           printf '%s\n' "$formatter" > "$EVIDENCE/rustfmt-path.txt" || exit 1
           "$formatter" --version > "$EVIDENCE/rustfmt-version.txt" || exit 1
           sha256sum "$formatter" > "$EVIDENCE/rustfmt-binary.sha256" || exit 1
-          "$formatter" --edition 2024 --config-path codex-rs/rustfmt.toml --config skip_children=true --check codex-rs/hepta-memory/src/cognitive_store.rs codex-rs/hepta-memory/src/cognitive_store_lifecycle_tests.rs codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs 2>&1 | tee "$EVIDENCE/rustfmt.log"
+          "$formatter" --edition 2024 --config-path codex-rs/rustfmt.toml --config skip_children=true --check codex-rs/hepta-memory/src/cognitive_store.rs codex-rs/hepta-memory/src/cognitive_store_lifecycle_tests.rs codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs codex-rs/hepta-agentd/tests/support/cognitive_recovery_snapshot.rs 2>&1 | tee "$EVIDENCE/rustfmt.log"
           status=("${PIPESTATUS[@]}")
           printf '%s\n' "${status[0]}" > "$EVIDENCE/rustfmt.exit"
           test "${status[1]}" -eq 0 || exit "${status[1]}"
           exit "${status[0]}"
-      - name: Five owning-lib and three original integration cases
+      - name: Five owning-lib and four original integration cases
         if: always() && steps.source.outcome == 'success' && steps.tools.outcome == 'success' && steps.validator.outcome == 'success'
         working-directory: codex-rs
         shell: bash
         run: |
+          set +e
           set -uo pipefail
           script="$GITHUB_WORKSPACE/.github/scripts/native_recovery_evidence.py"
           report="$GITHUB_WORKSPACE/codex-rs/target/nextest/native-recovery/junit.xml"

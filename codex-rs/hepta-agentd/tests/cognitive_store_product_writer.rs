@@ -25,6 +25,8 @@ use codex_hepta_cognitive_store::MemoryVerification;
 use codex_hepta_cognitive_store::ProductionAuthorityLease;
 use codex_hepta_cognitive_store::ProductionAuthorityToken;
 use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
+use codex_hepta_cognitive_store::ProductionDurableWriter;
+use codex_hepta_cognitive_store::ProductionWriterError;
 use codex_hepta_cognitive_store::SourceDraft;
 use codex_hepta_cognitive_store::bind_canonical_event_to_durable_receipt;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
@@ -50,6 +52,9 @@ use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_memory::LocalOutcomeState;
 use codex_hepta_paths::HeptaFleetRoot;
 use tempfile::TempDir;
+
+#[path = "support/cognitive_recovery_snapshot.rs"]
+mod recovery_snapshot;
 
 #[tokio::test]
 #[cfg(feature = "qualification-cognitive-write")]
@@ -177,8 +182,11 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
 
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
     let expected = store.recovery_anchor().await?;
+    let source_path = store.path().to_path_buf();
+    let original_rows = recovery_snapshot::snapshot(&source_path).await?;
     store.close().await;
     drop(store);
+    let original_bytes = fs::read(&source_path)?;
 
     let authority = ProductionAuthorityLease::from_verified_parts(
         owner.clone(),
@@ -208,6 +216,32 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         },
     );
 
+    // Exact-cut admission must reject a different witness before acquiring a
+    // lease or changing any source row. A schema-only/owner-only check is not enough.
+    let mut wrong_cut = expected.clone();
+    wrong_cut.state_digest = Sha256Digest::for_bytes(b"not-the-retained-current-cut");
+    let rejected = AgentdProductionWriterHost::open_with_recovery(
+        &config,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&wrong_cut),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "agentd-product-recovery-test",
+        1,
+    )
+    .await
+    .expect_err("a different retained cut must not acquire a writer lease");
+    assert!(
+        rejected
+            .to_string()
+            .contains("recovery candidate differs from independently retained current cut")
+    );
+    assert_eq!(fs::read(&source_path)?, original_bytes);
+    assert_eq!(
+        recovery_snapshot::snapshot(&source_path).await?,
+        original_rows
+    );
+
+    let admission_started = now_unix_seconds()?;
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,
         CognitiveRecoveryRequirement::ExactCurrentCut(&expected),
@@ -218,7 +252,28 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )
     .await?;
     let recovered_anchor = host.writer().recovery_anchor().await?;
-    assert_eq!(recovered_anchor, expected);
+    // Recovery authenticated the original cut, then writer admission appended
+    // its first lease. That authorized mutation changes the whole-state digest.
+    assert_ne!(recovered_anchor, expected);
+    host.writer().verify_current_authority().await?;
+    let admitted_rows = recovery_snapshot::snapshot(host.writer().database_path()).await?;
+    let admission_interval = admission_started..=now_unix_seconds()?;
+    recovery_snapshot::assert_initial_lease_transition(
+        &original_rows,
+        &admitted_rows,
+        host.writer().authority(),
+        "agentd-product-recovery-test",
+        /*generation*/ 1,
+        admission_interval.clone(),
+    )?;
+    recovery_snapshot::assert_transition_mutations_rejected(
+        &original_rows,
+        &admitted_rows,
+        host.writer().authority(),
+        "agentd-product-recovery-test",
+        /*generation*/ 1,
+        admission_interval,
+    )?;
 
     let now = i64::try_from(now_unix_seconds()?)?;
     let access = CognitiveAccess::agent_private(owner.clone());
@@ -461,6 +516,125 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     let reopened = DurableCognitiveStore::open(&config.identity().layout).await?;
     let post_recovery_anchor = reopened.recovery_anchor().await?;
     assert_ne!(post_recovery_anchor, expected);
+    Ok(())
+}
+
+#[tokio::test]
+async fn agentd_product_host_recovers_existing_active_lease_without_advancing_cut()
+-> Result<(), Box<dyn Error>> {
+    let temp = TempDir::new()?;
+    let root = temp.path().canonicalize()?;
+    let fleet_path = root.join("fleet");
+    let fleet_root = HeptaFleetRoot::parse(fleet_path.clone())?;
+    let registry = FleetRegistry::initialize(fleet_root.clone())?;
+    let workspace = root.join("workspace");
+    fs::create_dir(&workspace)?;
+    let owner = AgentId::parse("00000000-0000-4000-8000-00000000c059")?;
+    let binding = WorkspaceBinding::new(workspace.clone(), &fleet_root)?;
+    let manifest = AgentManifest::new(owner.clone(), binding, ResourceBudget::local_default())?;
+    let record = registry.register(manifest)?;
+    registry.compare_and_transition(&owner, 0, AgentLifecycle::Starting)?;
+
+    let config = AgentdConfig::load(
+        fleet_path,
+        owner.clone(),
+        1,
+        record.layout.home_root().to_path_buf(),
+        record.layout.run_root().to_path_buf(),
+        record.layout.home_root().to_path_buf(),
+        workspace,
+    )?;
+
+    let authority = ProductionAuthorityLease::from_verified_parts(
+        owner.clone(),
+        Sha256Digest::for_bytes(b"active-lease-recovery-grant"),
+        13,
+        17,
+        now_unix_seconds()?.saturating_add(300),
+        ProductionAuthorityToken::from_verified_bytes(b"active-lease-recovery-fence".to_vec())?,
+    )?;
+    let verified_authority = authority.clone();
+    let verifier: Arc<dyn ProductionAuthorityVerifier> = Arc::new(
+        move |lease: &ProductionAuthorityLease, expected_owner: &AgentId| -> Result<(), String> {
+            if lease != &verified_authority || &lease.agent_id != expected_owner {
+                return Err("active recovery authority mismatch".to_string());
+            }
+            Ok(())
+        },
+    );
+    let store = DurableCognitiveStore::open(&config.identity().layout).await?;
+    let empty_cut = store.recovery_anchor().await?;
+    let writer = ProductionDurableWriter::open_with_live_verifier(
+        store.clone(),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "active-lease-recovery",
+        1,
+    )
+    .await?;
+    let expected = writer.recovery_anchor().await?;
+    assert_ne!(expected, empty_cut);
+    let rejected_generation = ProductionDurableWriter::open_with_live_verifier(
+        store.clone(),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "active-lease-recovery",
+        2,
+    )
+    .await;
+    assert!(matches!(
+        rejected_generation,
+        Err(ProductionWriterError::StaleReceipt)
+    ));
+    assert_eq!(store.recovery_anchor().await?, expected);
+    let source_path = store.path().to_path_buf();
+    let original_rows = recovery_snapshot::snapshot(&source_path).await?;
+    drop(writer); // Preserve the active lease; releasing it would change the retained cut.
+    store.close().await;
+    drop(store);
+    let original_bytes = fs::read(&source_path)?;
+
+    let rejected = AgentdProductionWriterHost::open_with_recovery(
+        &config,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&empty_cut),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "active-lease-recovery",
+        1,
+    )
+    .await
+    .expect_err("the pre-lease cut is stale");
+    assert!(
+        rejected
+            .to_string()
+            .contains("recovery candidate differs from independently retained current cut")
+    );
+    assert_eq!(fs::read(&source_path)?, original_bytes);
+    assert_eq!(
+        recovery_snapshot::snapshot(&source_path).await?,
+        original_rows
+    );
+    let host = AgentdProductionWriterHost::open_with_recovery(
+        &config,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&expected),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "active-lease-recovery",
+        1,
+    )
+    .await?;
+    // Reopening this exact active lease is read-only, unlike initial admission.
+    assert_eq!(host.writer().recovery_anchor().await?, expected);
+    assert_eq!(
+        recovery_snapshot::snapshot(host.writer().database_path()).await?,
+        original_rows
+    );
+    assert_eq!(host.writer().authority(), &authority);
+    assert_eq!(host.writer().lease_id(), "active-lease-recovery");
+    assert_eq!(host.writer().generation(), 1);
+    host.writer().verify_current_authority().await?;
+    assert_eq!(host.writer().recovery_anchor().await?, expected);
+    host.writer().release().await?;
     Ok(())
 }
 
