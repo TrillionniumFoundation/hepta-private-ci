@@ -7,8 +7,10 @@
 
 #![forbid(unsafe_code)]
 
+mod runner;
 mod types;
 
+pub use runner::run;
 pub use types::EffectObservation;
 pub use types::EffectOwner;
 pub use types::Error;
