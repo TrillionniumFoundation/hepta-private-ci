@@ -2,6 +2,9 @@
 
 use super::*;
 
+#[path = "root_agentd_filesystem.rs"]
+mod filesystem;
+
 /// One Root session's immutable registration, retained actual process handle
 /// and original service. This wrapper is not Clone and creates no additional
 /// issuer, clock, checkpoint or consumer owner during bootstrap capture.
@@ -10,6 +13,7 @@ pub struct PreparedHostAuthoritySession {
     registration: HostAuthorityRegistration,
     owner_pidfd: OwnedFd,
     service: HostAuthorityService,
+    fresh_filesystem: bool,
 }
 
 impl PreparedHostAuthoritySession {
@@ -27,7 +31,7 @@ impl PreparedHostAuthoritySession {
         let registration = read_root_json(registration_file)?;
         let service = open_registered_writer(&config, &registration, &owner_pidfd)?
             .initialize_fresh_heads(&config, &registration, &owner_pidfd, fresh)?;
-        Ok(Self { config, registration, owner_pidfd, service })
+        Ok(Self { config, registration, owner_pidfd, service, fresh_filesystem: true })
     }
 
     /// Open existing Root state once through the original service factory.
@@ -40,7 +44,31 @@ impl PreparedHostAuthoritySession {
         let config = read_root_json(config_file)?;
         let registration = read_root_json(registration_file)?;
         let service = open_registered_service(&config, &registration, &owner_pidfd)?;
-        Ok(Self { config, registration, owner_pidfd, service })
+        Ok(Self { config, registration, owner_pidfd, service, fresh_filesystem: false })
+    }
+
+    /// Release only the freshly published Agent's original data directories
+    /// to its dedicated UID/GID. Its original Registry, lifecycle, release
+    /// state and writer-lock path remain exclusively writable by Root. This
+    /// first composition is restricted to one Agent; it is never a recovery
+    /// fallback, recursive chown of an existing workspace or authority reset.
+    /// The returned fixed parent is used by `seal_bootstrap` for the original
+    /// two local FinalUse journals. Existing/partial consumer state is refused.
+    pub fn handoff_fresh_agent_filesystem(mut self) -> io::Result<(Self, std::path::PathBuf)> {
+        if !self.fresh_filesystem {
+            return Err(io::Error::other("filesystem handoff requires this session's original fresh publication"));
+        }
+        let end = Instant::now() + std::time::Duration::from_secs(30);
+        verify_pinned_process(&self.registration, self.config.peer_uid, self.config.peer_gid,
+            &self.owner_pidfd, end)?;
+        let identity = self.registration.registered_identity.identity()?;
+        let parent = filesystem::handoff_fresh_filesystem(
+            &identity, self.config.peer_uid, self.config.peer_gid, &self.config.state_dir,
+        )?;
+        verify_pinned_process(&self.registration, self.config.peer_uid, self.config.peer_gid,
+            &self.owner_pidfd, end)?;
+        self.fresh_filesystem = false;
+        Ok((self, parent))
     }
 
     /// Read and seal this same service's original heads, then retain it for
@@ -84,7 +112,7 @@ impl PreparedHostAuthoritySession {
     }
 
     fn serve_selected(self, text_ui: Option<(&Path, OwnedFd)>) -> io::Result<()> {
-        let Self { config, registration, owner_pidfd, service } = self;
+        let Self { config, registration, owner_pidfd, service, .. } = self;
         if text_ui.is_some()
             && config.issuer_record_profile != crate::authority_host_config::HostIssuerRecordProfile::TextRecovery
         {

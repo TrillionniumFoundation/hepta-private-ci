@@ -665,3 +665,76 @@ transaction/failure semantics, owning-package test gates and remaining deploymen
 requirements. This source composition does not qualify production trust inputs,
 activate the default CLI, implement the issuer service, or add Objective signing
 or sender-side durable retention.
+
+### Original Root preparation and filesystem custody
+
+The Linux candidate composes the existing owners through
+`PreparedRootAgentdConfig`, `PreparedHostAuthoritySession`, and
+`receive_root_production_inputs`. These are startup boundaries around the
+original Registry, writer descriptor, lease Registry, issuer, checkpoint and
+two FinalUse owners. They do not define replacement identities or ledgers.
+
+1. The original Agentd constructor consumes the original `Starting` record and
+   opens its existing writer lock while still Root. `prepare_root_handoff`
+   retains that exact configuration and descriptor, then releases the lock so
+   the original Root fresh factory can use it. The configuration cannot be
+   used as a runtime while prepared.
+2. `drop_to_owner` requires the exact same process and one Linux thread before
+   changing credentials. It clears supplementary groups and all capability
+   sets, sets `NoNewPrivs`, drops all UID/GID slots, and repeats the original
+   process credential checks. The CLI preflight must run after helper dispatch
+   and before its runtime threads. Any partial failure terminates startup.
+3. Original Root factories initialize and close a fresh CognitiveStore under
+   the writer lock, then publish protected Current/consumer heads under the
+   existing live lease and writer proof. Recovery uses `open`; it cannot call
+   fresh publication or acquire a fresh-filesystem entitlement.
+4. Only the session that completed fresh publication may call
+   `handoff_fresh_agent_filesystem`. It requires one exact registered Agent,
+   Root-controlled physical ancestry, a bounded physical file set, an absent
+   consumer parent, and a preprovisioned private peer workspace or an empty
+   Root workspace. Existing nonempty Root workspaces, symlinks, hard links,
+   authority/data overlap and additional Agents are refused. The protected
+   authority root stays outside the exposed Fleet/workspace trees. Partial
+   changes remain for Root diagnosis and are never treated as new genesis.
+5. Root captures a sealed, unlinked, Root-owned bootstrap from that same
+   retained service, transfers it with the pre-held Root pidfd over one
+   inherited anonymous datagram pair, and serves its original five lanes.
+   The receiver connects all five before requesting any head, validates the
+   actual Root peer and original signed writer proof, obtains the original
+   opaque checkpoint token, and opens the two original durable consumer
+   owners against those exact protected frontiers.
+6. `finish` requires the same dropped process, unchanged original `Starting`
+   identity and writer inode, and the live original verifier before and after
+   reacquiring the retained writer descriptor. The recovered writer and runtime
+   retain that same Root session. A real Notes route additionally requires the
+   original Session target and an exactly matching pre-existing issuer policy;
+   `with_registered_notes_from_session` uses the already retained Root Registry.
+
+| Path | Owner and mode after fresh handoff | Allowed operation |
+|---|---|---|
+| Fleet/agents/Agent control directories and Agent run/releases | Root, dedicated peer group, `02750` | Peer reads the original manifest and lifecycle/release history; Root alone publishes |
+| Original manifest and lifecycle/release JSON generations | Root, dedicated peer group, `0640` | Peer reads; no peer mutation, replacement or removal |
+| Original writer lock | Root `0600`, same retained open descriptor | Peer can use only its pre-held descriptor after authenticated handoff |
+| Fleet socket directory | Root, dedicated peer group, `02710` | Peer traverses to explicitly prebound endpoints; no peer pathname creation |
+| Home/logs/cognitive/matrix/automation, fixed `final-use` parent | Dedicated Agent UID/GID, directories `0700`, existing files `0600` | Original Agent data owners operate inside their own scope |
+| Protected Root authority, lease, checkpoint and consumer-frontier state | Original Root custody | Remains inaccessible to the Agent |
+
+The original Fleet publication functions preserve `0640` for new immutable
+generations only when Root explicitly established the exact `02750` reader
+directory; ordinary registries retain their original behavior. This lets the
+same `refresh_generation` read the original owner's subsequent `Running` and
+`Draining` records without exposing control writes. Root must bind stream
+sockets without listening; the actual dropped Agent must listen so Linux peer
+credentials reflect the serving process. Socket ownership changes alone are
+not process authentication.
+
+Source: `config_root_handoff.rs`, `config_root_credentials.rs`,
+`authority_host_session.rs`, `root_agentd_filesystem.rs`,
+`root_production_handoff.rs`, and `root_production_inputs.rs` in the Agentd
+source directory. The dedicated Root tests exercise original Registry/SQLite,
+same-UID/different-GID refusal, the retained writer lock, actual unprivileged
+control-write denial, readable later Root generations, and rejected filesystem
+aliases. They require exact ordinary-user-built ELF receipts and an isolated
+Root subprocess; no Cargo build runs as Root. Host component test passes do not
+establish the complete original main/Notes/device product chain, the native G2
+finite execution, or the native `8 MiB` ELF / `16 MiB` load limits.

@@ -901,6 +901,7 @@ fn write_new_json<T: Serialize>(path: &Path, value: &T) -> Result<(), FleetRegis
         .map_err(|error| FleetRegistryError::Corrupt(format!("encode release state: {error}")))?;
     bytes.push(b'\n');
     let mut file = OpenOptions::new().write(true).create_new(true).open(path)?;
+    crate::registry::preserve_root_reader_mode(&file, path)?;
     file.write_all(&bytes)?;
     file.sync_all()?;
     Ok(())

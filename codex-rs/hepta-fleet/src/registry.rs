@@ -465,8 +465,37 @@ fn staging_root(agents_root: &Path, agent_id: &AgentId) -> PathBuf {
 
 fn write_new_file(path: &Path, contents: &[u8]) -> Result<(), FleetRegistryError> {
     let mut file = OpenOptions::new().write(true).create_new(true).open(path)?;
+    preserve_root_reader_mode(&file, path)?;
     file.write_all(contents)?;
     file.sync_all()?;
+    Ok(())
+}
+
+/// Root may explicitly expose an original control directory to one dedicated
+/// reader group using mode02750. Preserve that read-only view on new immutable
+/// generations even under a restrictive Root umask. The original owner and
+/// exclusive directory mutation rights remain Root's; no profile file or
+/// second lifecycle model is introduced. Ordinary private registries are intact.
+#[cfg(unix)]
+pub(crate) fn preserve_root_reader_mode(file: &File, path: &Path) -> Result<(), FleetRegistryError> {
+    use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::PermissionsExt;
+    let parent = path.parent().ok_or_else(|| FleetRegistryError::Invalid("control parent missing".into()))?;
+    let directory = std::fs::symlink_metadata(parent)?;
+    if directory.is_dir() && directory.uid() == 0 && directory.gid() != 0
+        && directory.mode() & 0o7777 == 0o2750
+    {
+        let metadata = file.metadata()?;
+        if !metadata.is_file() || metadata.uid() != 0 || metadata.gid() != directory.gid() || metadata.nlink() != 1 {
+            return Err(FleetRegistryError::Corrupt("Root control publication lost its exact reader-group custody".into()));
+        }
+        file.set_permissions(std::fs::Permissions::from_mode(0o640))?;
+    }
+    Ok(())
+}
+
+#[cfg(not(unix))]
+pub(crate) fn preserve_root_reader_mode(_file: &std::fs::File, _path: &Path) -> Result<(), FleetRegistryError> {
     Ok(())
 }
 

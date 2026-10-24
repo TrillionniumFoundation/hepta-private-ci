@@ -2,10 +2,9 @@
 //! Root preparation barrier. No second Registry, identity or writer is made.
 
 use super::*;
-use codex_hepta_contracts::RootAuthorityDirectory;
 use std::os::unix::fs::MetadataExt;
+use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::fs::PermissionsExt;
-use std::sync::Arc;
 
 #[path = "config_root_credentials.rs"]
 mod credentials;
@@ -20,8 +19,8 @@ pub struct PreparedRootAgentdConfig {
     expected_gid: u32,
     lock_device: u64,
     lock_inode: u64,
-    _agent_custody: Arc<RootAuthorityDirectory>,
-    _run_custody: Arc<RootAuthorityDirectory>,
+    _agent_custody: File,
+    _run_custody: File,
 }
 
 impl AgentdConfig {
@@ -42,8 +41,8 @@ impl AgentdConfig {
             return Err(AgentdError::Invalid("Root preparation requires actual Root and a dedicated non-Root UID/GID".into()));
         }
         self.require_unconfigured_production_hosts()?;
-        let agent = RootAuthorityDirectory::open(self.identity.layout.agent_root()).map_err(root_error)?;
-        let run = RootAuthorityDirectory::open(self.identity.layout.run_root()).map_err(root_error)?;
+        let agent = pin_control_directory(self.identity.layout.agent_root(), expected_gid)?;
+        let run = pin_control_directory(self.identity.layout.run_root(), expected_gid)?;
         let descriptor = self._writer_lock.metadata()?;
         let path = std::fs::symlink_metadata(self.identity.layout.writer_lock())?;
         if !descriptor.is_file() || !path.is_file() || descriptor.uid() != 0 || path.uid() != 0
@@ -140,6 +139,27 @@ fn require_starting(identity: &AgentdIdentity, record: &codex_hepta_fleet::Agent
 
 fn root_error(error: impl std::fmt::Display) -> AgentdError {
     AgentdError::GenerationFenced(format!("original Root configuration handoff: {error}"))
+}
+
+fn pin_control_directory(path: &Path, expected_gid: u32) -> Result<File, AgentdError> {
+    let file = OpenOptions::new().read(true)
+        .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC).open(path)?;
+    let metadata = file.metadata()?;
+    let original = std::fs::symlink_metadata(path)?;
+    if !metadata.is_dir() || !original.is_dir() || metadata.uid() != 0
+        || metadata.dev() != original.dev() || metadata.ino() != original.ino()
+        || !(metadata.mode() & 0o7777 == 0o700
+            || (metadata.mode() & 0o7777 == 0o2750 && metadata.gid() == expected_gid))
+    {
+        return Err(root_error("original control directory must retain private Root or exact read-only peer-group custody"));
+    }
+    for ancestor in path.ancestors() {
+        let entry = std::fs::symlink_metadata(ancestor)?;
+        if !entry.is_dir() || entry.uid() != 0 || entry.mode() & 0o022 != 0 {
+            return Err(root_error("original control directory has a mutable or non-Root ancestor"));
+        }
+    }
+    Ok(file)
 }
 
 #[cfg(test)]
