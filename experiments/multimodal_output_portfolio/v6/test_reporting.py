@@ -3,6 +3,7 @@
 from copy import deepcopy
 import hashlib
 import itertools
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -162,6 +163,50 @@ class ReportingTests(unittest.TestCase):
             seal(rows[-1])
             with self.subTest(mode=mode), self.assertRaises(ValueError):
                 summarize(rows, self.protocol)
+
+    def test_declared_file_pins_bind_checkpoint_bytes_and_every_paired_row(self):
+        root = Path(self.directory.name)
+        protocol = {**self.protocol, "require_artifact_file_pins": True}
+        rows = deepcopy(self.rows)
+        pins = {}
+        # These bytes test artifact custody only; model loading is tested separately.
+        for seed, training in itertools.product(protocol["seeds"], TRAININGS):
+            label = f"seed-{seed}-{training}"
+            pins[label] = {}
+            for kind, suffix in (("snapshot", ""), ("forecast", "-forecast")):
+                content = f"file-custody-fixture:{label}:{kind}".encode()
+                (root / f"{label}{suffix}.pt").write_bytes(content)
+                pins[label][f"{kind}_file_sha256"] = hashlib.sha256(content).hexdigest()
+        for row in rows:
+            row.update(pins[f"seed-{row['seed']}-{row['training']}"])
+            row["cost"]["backend_setup_ns"] = 25
+            seal(row)
+        previous = Path.cwd()
+        try:
+            os.chdir(root)
+            result = summarize(rows, protocol)
+            self.assertEqual(result["checkpoint_files"], pins)
+            self.assertTrue(result["evidence"]["checkpoint_file_pins_verified"])
+            self.assertEqual(result["aggregates"][0]["mean_cost"]["backend_setup_ns"], 25)
+            changed = deepcopy(rows)
+            changed[-1]["snapshot_file_sha256"] = "f" * 64
+            seal(changed[-1])
+            with self.assertRaisesRegex(ValueError, "file pins changed"):
+                summarize(changed, protocol)
+            (root / "seed-17-supervised-forecast.pt").write_bytes(b"changed checkpoint")
+            with self.assertRaisesRegex(ValueError, "Pinned checkpoint file"):
+                summarize(rows, protocol)
+        finally:
+            os.chdir(previous)
+
+    def test_previous_heldout_pixels_are_independently_rejected(self):
+        protocol = deepcopy(self.protocol)
+        excluded = "a" * 64
+        protocol["prior_heldout_exclusion"] = {"protocol_sha256": "b" * 64,
+                                               "source_pixel_sha256": [excluded]}
+        protocol["cases"]["future"][0]["source_ids"][0] = f"renamed:{excluded}"
+        with self.assertRaisesRegex(ValueError, "previously evaluated source"):
+            summarize(self.rows, protocol)
 
     def test_native_export_keeps_risk_unknown_conservative_and_cost_separate(self):
         rows = [row for row in self.rows if row["seed"] == 17 and row["training"] == "supervised" and row["split"] == "future"]

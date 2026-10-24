@@ -78,6 +78,9 @@ def _validate_row(row):
         raise ValueError("A source is reused within a pair")
     _hex(row["snapshot_sha256"])
     _hex(row["forecast_sha256"])
+    for name in ("snapshot_file_sha256", "forecast_file_sha256"):
+        if name in row:
+            _hex(row[name])
     if "observer_sha256" in row or "reward_observer_sha256" in row:
         audit = _hex(row.get("observer_sha256"))
         reward = _hex(row.get("reward_observer_sha256"))
@@ -104,6 +107,10 @@ def _validate_row(row):
         _number(cost[name], 0, 86_400_000_000_000 if name.endswith("_ns") else 1_000_000)
         if name.endswith("_ns") and type(cost[name]) is not int:
             raise ValueError("Physical nanoseconds must be exact integers")
+    if "backend_setup_ns" in cost:
+        _number(cost["backend_setup_ns"], 0, 86_400_000_000_000)
+        if type(cost["backend_setup_ns"]) is not int:
+            raise ValueError("Physical backend setup nanoseconds must be exact integers")
     if cost["wall_ns"] <= 0 or cost["modeled_work"] > row["budget"] + 1e-9:
         raise ValueError("Unmeasured rollout or modeled budget breach")
     if cost["search_units"] + cost["execution_units"] > cost["modeled_work"] + 1e-9:
@@ -162,13 +169,15 @@ def _aggregate_rows(rows, seeds):
     per_seed = [{"seed": seed, **_stats([row for row in rows if row["seed"] == seed])}
                 for seed in seeds]
     wall = [row["cost"]["wall_ns"] for row in rows]
+    cost_fields = (*COST_FIELDS, *(name for name in ("backend_setup_ns",)
+                                  if all(name in row["cost"] for row in rows)))
     return {
         "rows": len(rows), "independent_source_cases": len(rows) // len(seeds),
         "per_seed": per_seed,
         "seed_mean": {name: statistics.fmean(item[name] for item in per_seed)
                       for name in per_seed[0] if name != "seed"},
         "wall_ns": {f"p{int(p * 100)}": _quantile(wall, p) for p in (.50, .95, .99)},
-        "mean_cost": {name: statistics.fmean(row["cost"][name] for row in rows) for name in COST_FIELDS},
+        "mean_cost": {name: statistics.fmean(row["cost"][name] for row in rows) for name in cost_fields},
         "mean_metrics": {name: statistics.fmean(row["metrics"][name] for row in rows) for name in WEIGHTS},
         "caption_valid_rate": statistics.fmean(row["metrics"]["caption_valid"] for row in rows),
         "joint_fact_correct_rate": statistics.fmean(
@@ -183,6 +192,9 @@ def summarize(rows, protocol):
     required = (require_v6_capabilities(protocol["hard_output_modalities"])
                 if "hard_output_modalities" in protocol else None)
     bind_joint = "joint_contract" in protocol
+    bind_artifacts = protocol.get("require_artifact_file_pins", False)
+    if type(bind_artifacts) is not bool:
+        raise ValueError("Artifact pin requirement must be explicit boolean")
     if bind_joint and (protocol["joint_contract"] != JOINT_CONTRACT_PROFILE or required is None):
         raise ValueError("Joint output profile or requirements differ from the contract")
     seeds, trainings, policies, budgets = (protocol[key] for key in
@@ -205,6 +217,14 @@ def summarize(rows, protocol):
         "observer_sha256" in row or "reward_observer_sha256" in row for row in rows)
     observer_identities = set()
     cases, source_owner = {}, {}
+    excluded_sources = set()
+    if "prior_heldout_exclusion" in protocol:
+        exclusion = protocol["prior_heldout_exclusion"]
+        _hex(exclusion.get("protocol_sha256"))
+        supplied = exclusion.get("source_pixel_sha256", [])
+        excluded_sources = {_hex(value) for value in supplied}
+        if not excluded_sources or len(excluded_sources) != len(supplied):
+            raise ValueError("Invalid prior heldout source exclusion")
     if set(protocol["cases"]) != {"future", "retention"}:
         raise ValueError("Future and retention cohorts are mandatory")
     for split, entries in protocol["cases"].items():
@@ -218,6 +238,8 @@ def summarize(rows, protocol):
                 raise ValueError("Invalid registered original-source pair")
             for source in entry["source_ids"]:
                 identity = _source_key(source)
+                if identity in excluded_sources:
+                    raise ValueError("Registered evaluation reuses a previously evaluated source")
                 if identity in source_owner:
                     raise ValueError("Original source reused across cases or splits")
                 source_owner[identity] = key
@@ -226,6 +248,7 @@ def summarize(rows, protocol):
                 for seed, training, policy, budget in itertools.product(seeds, trainings, policies, budgets)
                 for split, case_id in cases}
     seen, receipts, snapshots, forecasts, strata = {}, set(), {}, {}, {}
+    checkpoint_files = {}
     groups, corruption_groups = defaultdict(list), defaultdict(list)
     for row in rows:
         _validate_row(row)
@@ -258,6 +281,21 @@ def summarize(rows, protocol):
             raise ValueError("Model snapshot changed within an inference comparison")
         if forecasts.setdefault(snapshot_key, row["forecast_sha256"]) != row["forecast_sha256"]:
             raise ValueError("Forecast snapshot changed within an inference comparison")
+        if bind_artifacts:
+            label = f"seed-{row['seed']}-{row['training']}"
+            pins = {name: _hex(row.get(name)) for name in
+                    ("snapshot_file_sha256", "forecast_file_sha256")}
+            if label in checkpoint_files:
+                if checkpoint_files[label] != pins:
+                    raise ValueError("Checkpoint file pins changed within an inference comparison")
+            else:
+                for kind, suffix in (("snapshot", ""), ("forecast", "-forecast")):
+                    path = Path(f"{label}{suffix}.pt")
+                    if (path.is_symlink() or not path.is_file()
+                            or path.stat().st_size > 128 * 1024 * 1024
+                            or hashlib.sha256(path.read_bytes()).hexdigest() != pins[f"{kind}_file_sha256"]):
+                        raise ValueError("Pinned checkpoint file is missing, changed, or oversized")
+                checkpoint_files[label] = pins
         seen[key] = row
         receipts.add(row["receipt_sha256"])
         groups[(row["training"], row["policy"], row["split"], row["budget"])].append(row)
@@ -294,12 +332,15 @@ def summarize(rows, protocol):
         "protocol_sha256": canonical_sha256(protocol), "rows": len(rows),
         "independent_training_seeds": len(seeds), "original_source_cases": len(cases),
         "observer_binding": observer_binding,
+        "checkpoint_files": checkpoint_files,
         "small_seed_warning": "Training-seed count is small; seed means are descriptive. Rows and repeated source cases are not independent training replicates.",
         "aggregation": "Each CVaR is computed within one seed and then averaged across seeds; latency quantiles pool actual executions as diagnostics.",
         "aggregates": aggregates, "corruption_aggregates": corruption_aggregates,
         "corruption_scope": "Diagnostic preregistered input strata; small within-stratum source counts are reported and no subgroup superiority decision is issued.",
         "factorial": factorial, "strong_paired_contrasts": comparisons,
         "evidence": {"complete_registered_census": True, "original_output_hashes_verified": True,
+                     "checkpoint_file_pins_verified": bind_artifacts,
+                     "prior_heldout_exclusion_verified": bool(excluded_sources),
                      "frozen_forecast_identities_verified": True,
                      "local_measured_cost_fields_present": True, "external_observer_authenticated": False,
                      "production_authority": False, "confirmatory_superiority_decision": "not issued"},

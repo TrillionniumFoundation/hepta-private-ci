@@ -22,7 +22,7 @@ import torch
 
 from .control import ControllerConfig, WorkBudget, choose
 from .data import Observation, load_corpus, make_batch, render_tokens
-from .forecast import fit_forecast
+from .forecast import ForecastArtifact, fit_forecast
 from .joint_contract import PROFILE as JOINT_CONTRACT_PROFILE
 from .joint_contract import bind_v6_output, latent_digest, require_v6_capabilities
 from .neural import TrainConfig, train_profiles
@@ -49,8 +49,13 @@ def write_json(path, value):
 def source_identity():
     root = Path(__file__).resolve().parents[3]
     paths = sorted(Path(__file__).parent.glob("*.py"))
-    paths.append(Path(__file__).with_name("protocol.json"))
+    paths.extend(sorted(Path(__file__).parent.glob("protocol*.json")))
     paths.extend(sorted(root.glob("codex-rs/hepta-ndu/src/**/*.rs")))
+    for crate in ("hepta-infer-core", "hepta-infer-worker-host"):
+        paths.extend(sorted(root.glob(f"codex-rs/{crate}/src/**/*.rs")))
+        paths.append(root / "codex-rs" / crate / "Cargo.toml")
+    paths.extend(sorted(root.glob("codex-rs/hepta-agentd/tests/generation_owner_execution*.rs")))
+    paths.append(root / "codex-rs/hepta-agentd/Cargo.toml")
     paths.extend(root / path for path in (
         "codex-rs/hepta-ndu/Cargo.toml", "codex-rs/Cargo.toml",
         "codex-rs/Cargo.lock", "codex-rs/rust-toolchain.toml"))
@@ -77,6 +82,45 @@ def case_batch(corpus, split, index, corruption):
     return batch
 
 
+def registered_cases(corpus, config):
+    """Freeze disjoint source identities before any fit or heldout scoring."""
+    offsets = config.get("evaluation_case_offsets", {"future": 0, "retention": 0})
+    if not isinstance(offsets, dict) or set(offsets) != {"future", "retention"} or any(
+            type(value) is not int or value < 0 for value in offsets.values()):
+        raise ValueError("Evaluation offsets must be nonnegative exact integers for both splits")
+    exclusion = config.get("prior_heldout_exclusion")
+    excluded = set()
+    if exclusion is not None:
+        supplied = exclusion.get("source_pixel_sha256", [])
+        prior_digest = exclusion.get("protocol_sha256", "")
+        hashes = [*supplied, prior_digest]
+        if (not supplied or len(set(supplied)) != len(supplied) or any(
+                not isinstance(value, str) or len(value) != 64
+                or any(char not in "0123456789abcdef" for char in value)
+                for value in hashes)):
+            raise ValueError("Prior heldout exclusion requires unique source and protocol hashes")
+        excluded = set(supplied)
+    cases, used = {}, set()
+    for split, count in (("future", config["future_cases"]),
+                         ("retention", config["retention_cases"])):
+        if type(count) is not int or count < 1:
+            raise ValueError("Each evaluation cohort needs a positive exact case count")
+        cases[split] = []
+        for ordinal in range(count):
+            index = offsets[split] + ordinal
+            corruption = (config["corruptions"][ordinal % len(config["corruptions"])]
+                          if split == "future" else "clean")
+            batch = case_batch(corpus, split, index, corruption)
+            sources = list(batch.source_ids[0])
+            pixel_ids = {source.rsplit(":", 1)[-1] for source in sources}
+            if len(pixel_ids) != 2 or pixel_ids & (excluded | used):
+                raise ValueError("Evaluation reuses a source within or across frozen experiments")
+            used.update(pixel_ids)
+            cases[split].append({"case_id": f"{split}-{index:04}", "source_ids": sources,
+                                 "corruption": corruption, "index": index})
+    return cases
+
+
 def rollout(snapshot, forecast, observation, policy, budget_limit, config,
             context_id, noise_seed):
     """No labels or evaluator object cross this function's input boundary."""
@@ -85,9 +129,13 @@ def rollout(snapshot, forecast, observation, policy, budget_limit, config,
                             content_control=policy != "allocation_only")
     encode_ns = time.perf_counter_ns() - start_wall
     initial_actions = list(ALLOCATION_PLAN if state.plan_index == -1 else PLANS[state.plan_index])
-    backend = forecast.backend(snapshot, context_id)
+    started = time.perf_counter_ns()
+    backend = forecast.backend(snapshot, context_id, observation=observation)
+    backend_setup_ns = time.perf_counter_ns() - started
     work = WorkBudget(budget_limit, stop_reserve=4,
-                      initial_work=3 + int(policy != "allocation_only"))
+                      initial_work=3 + int(policy != "allocation_only") + forecast.public_summary_work)
+    if forecast.public_summary_work:
+        work.calls["public_summary"] = 1
     choices, controller_ns, execute_ns, actions = [], 0, 0, []
     controller_config = ControllerConfig(
         policy=policy, fixed_order=tuple(forecast.static_sequence or ("refine_image",))
@@ -128,7 +176,8 @@ def rollout(snapshot, forecast, observation, policy, budget_limit, config,
                           "text": latent_digest(state.neural.text)},
         "cost": {"wall_ns": time.perf_counter_ns() - start_wall,
                  "cpu_ns": time.process_time_ns() - start_cpu,
-                 "encode_ns": encode_ns, "controller_ns": controller_ns,
+                 "encode_ns": encode_ns, "backend_setup_ns": backend_setup_ns,
+                 "controller_ns": controller_ns,
                  "execute_ns": execute_ns, "decode_ns": decode_ns,
                  "modeled_work": work.used, "search_units": work.search_work,
                  "execution_units": work.execution_work + snapshot.initial_plan_cost},
@@ -150,18 +199,10 @@ def run(config, cache, output, native_binary=None):
         torch.set_num_threads(config["training"]["threads"])
         torch.use_deterministic_algorithms(True)
         source = source_identity()
+        if config.get("require_clean_source", False) and source["dirty"]:
+            raise RuntimeError("This registered protocol requires a clean committed source")
         corpus = load_corpus(cache, evaluator_sources=config["observer_sources"])
-        cases = {}
-        for split, count in (("future", config["future_cases"]),
-                             ("retention", config["retention_cases"])):
-            cases[split] = []
-            for index in range(count):
-                corruption = (config["corruptions"][index % len(config["corruptions"])]
-                              if split == "future" else "clean")
-                batch = case_batch(corpus, split, index, corruption)
-                cases[split].append({"case_id": f"{split}-{index:04}",
-                                     "source_ids": list(batch.source_ids[0]),
-                                     "corruption": corruption, "index": index})
+        cases = registered_cases(corpus, config)
         protocol = {**config, "cases": cases, "metric": METRIC,
                     "joint_contract": JOINT_CONTRACT_PROFILE,
                     "metric_sha256": METRIC_DIGEST, "source": source,
@@ -204,13 +245,16 @@ def run(config, cache, output, native_binary=None):
                     fit_pairs=config["plan_fit_pairs"], steps=config["plan_fit_steps"])
                 model_path = output / f"{label}.pt"
                 snapshot.save(model_path)
+                model_file_sha256 = hashlib.sha256(model_path.read_bytes()).hexdigest()
                 # Deserialize the complete selected model before any evaluation.
-                restored = ControlledSnapshot.load(model_path)
+                restored = ControlledSnapshot.load(model_path,
+                                                    expected_file_sha256=model_file_sha256)
                 if restored.fingerprint != snapshot.fingerprint:
                     raise RuntimeError("Fresh model reload changed parameters")
                 snapshot = restored
                 training_reports[label] = {"pretraining": pretraining[training],
                                            "content_plan": plan_report,
+                                           "checkpoint_file_sha256": model_file_sha256,
                                            "snapshot_sha256": snapshot.fingerprint}
                 write_json(output / "training.json", training_reports)
                 forecast, forecast_report = fit_forecast(
@@ -219,8 +263,17 @@ def run(config, cache, output, native_binary=None):
                     calibration_pairs=config["forecast_calibration_pairs"],
                     dev_pairs=config["forecast_dev_pairs"],
                     horizon=config["inference_horizon"],
-                    action_cost_penalty=config["control"]["cost_penalty"])
-                forecast.save(output / f"{label}-forecast.pt")
+                    action_cost_penalty=config["control"]["cost_penalty"],
+                    distribution=config.get("forecast_distribution", "empirical_residual_v1"))
+                forecast_path = output / f"{label}-forecast.pt"
+                forecast.save(forecast_path)
+                forecast_file_sha256 = hashlib.sha256(forecast_path.read_bytes()).hexdigest()
+                restored_forecast = ForecastArtifact.load(
+                    forecast_path, expected_file_sha256=forecast_file_sha256)
+                if restored_forecast.fingerprint != forecast.fingerprint:
+                    raise RuntimeError("Fresh forecast reload changed its frozen identity")
+                forecast = restored_forecast
+                forecast_report["checkpoint_file_sha256"] = forecast_file_sha256
                 forecast_reports[label] = forecast_report
                 write_json(output / "forecast.json", forecast_reports)
                 print(canonical({"trained": label, "snapshot": snapshot.fingerprint}), flush=True)
@@ -255,7 +308,9 @@ def run(config, cache, output, native_binary=None):
                                        "split": split, "case_id": case["case_id"], "budget": budget,
                                        "source_ids": case["source_ids"], "corruption": case["corruption"],
                                        "snapshot_sha256": snapshot.fingerprint,
+                                       "snapshot_file_sha256": model_file_sha256,
                                        "forecast_sha256": forecast.fingerprint,
+                                       "forecast_file_sha256": forecast_file_sha256,
                                        "observer_sha256": observer_report["weights_sha256"]["audit"],
                                        "reward_observer_sha256": observer_report["weights_sha256"]["reward"],
                                        "metrics": metrics,
@@ -283,7 +338,9 @@ def run(config, cache, output, native_binary=None):
                         if case["index"] % 10 == 0:
                             print(canonical({"evaluated": label, "split": split,
                                              "case": case["index"], "rows": len(rows)}), flush=True)
-        if source_identity()["files"] != source["files"]:
+        final_source = source_identity()
+        if (final_source["files"] != source["files"]
+                or (config.get("require_clean_source", False) and final_source != source)):
             raise RuntimeError("Source changed during the experiment")
         report = summarize(rows, protocol)
         try:
