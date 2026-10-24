@@ -197,6 +197,14 @@ fn validate_successor(previous: &Frame, next: &Frame, transition: &Transition) -
                                 }
                     }
             }
+            (
+                Phase::Model(_) | Phase::Tools { .. },
+                Transition::CancelRequested,
+                Phase::CancelRequested,
+            )
+            | (Phase::CancelRequested, Transition::Cancelled, Phase::Cancelled) => {
+                next.round == previous.round && next.consumed_tokens == previous.consumed_tokens
+            }
             _ => false,
         };
     if valid {
@@ -221,10 +229,9 @@ async fn cancel<C: TurnOwner, I: InferenceOwner, E: EffectOwner>(
         Phase::Cancelled => return Ok(Outcome::Cancelled),
         Phase::CancelRequested => {}
         Phase::Model(_) | Phase::Tools { .. } => {
-            frame = context.commit(&frame, Transition::CancelRequested).await?;
-            if frame.binding != *binding || frame.phase != Phase::CancelRequested {
-                return Err(Error::Contract("cancellation was not retained"));
-            }
+            let requested = context.commit(&frame, Transition::CancelRequested).await?;
+            validate_successor(&frame, &requested, &Transition::CancelRequested)?;
+            frame = requested;
         }
     }
     let (model, effect) = tokio::join!(inference.cancel(binding), effects.cancel(binding));
@@ -234,9 +241,7 @@ async fn cancel<C: TurnOwner, I: InferenceOwner, E: EffectOwner>(
         return Ok(Outcome::CancellationPending);
     }
     let stopped = context.commit(&frame, Transition::Cancelled).await?;
-    if stopped.binding != *binding || stopped.phase != Phase::Cancelled {
-        return Err(Error::Contract("cancellation acknowledgement"));
-    }
+    validate_successor(&frame, &stopped, &Transition::Cancelled)?;
     Ok(Outcome::Cancelled)
 }
 
