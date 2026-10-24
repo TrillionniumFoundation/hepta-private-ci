@@ -17,8 +17,9 @@ use std::fs::File;
 /// A failed post-create readback retains the actual new directory and ancestry.
 /// It grants no validated operations; dropping it only closes owned handles.
 pub struct UnverifiedCreatedDirectory {
-    parent: ParentAnchor,
+    // Rust drops fields in declaration order: retain ancestry until this closes.
     file: File,
+    parent: ParentAnchor,
 }
 
 /// Distinguishes no admitted creation handle from a held creation needing reconciliation.
@@ -128,6 +129,18 @@ impl ParentAnchor {
 }
 
 impl FreshPrivateDirectory {
+    /// Flush this held writable directory's data and metadata with real OS I/O.
+    ///
+    /// Failure permanently refuses the role. This does not flush its ancestor's
+    /// initialization entry or by itself establish power-loss qualification.
+    pub fn sync_all(&mut self) -> Result<(), ValidationError> {
+        self.revalidate()?;
+        self.continuity = Continuity::Refused;
+        self.created.file.sync_all()?;
+        self.continuity = Continuity::Live;
+        self.revalidate()
+    }
+
     /// Re-read the same held object's owner/DACL/volume and retained ancestry.
     /// Any error or drift permanently refuses this role.
     pub fn revalidate(&mut self) -> Result<(), ValidationError> {

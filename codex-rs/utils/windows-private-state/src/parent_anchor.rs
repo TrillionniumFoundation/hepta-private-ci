@@ -98,8 +98,9 @@ fn non_inherited(file: &File) -> Result<(), ValidationError> {
 /// revoke historical handles. Cold store recovery still needs its existing
 /// initialization marker/frontier protocol and independent native qualification.
 pub struct ParentAnchor {
-    owner: CapturedPrimaryOwner,
+    // Close held directories before releasing the principal query capability.
     ancestors: Vec<Ancestor>,
+    owner: CapturedPrimaryOwner,
     volume: u32,
     continuity: Continuity,
 }

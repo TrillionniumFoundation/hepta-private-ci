@@ -9,8 +9,37 @@ use crate::security::validate_owner_descriptor;
 use std::error::Error;
 use std::fs;
 use std::io;
+use std::io::Write;
+use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
+use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 
 type Result<T = ()> = std::result::Result<T, Box<dyn Error>>;
+
+#[test]
+fn actual_writable_directory_syncs_new_entry_without_noop_or_fallback() -> Result {
+    let fixture = Fixture::new()?;
+    let mut directory =
+        ParentAnchor::for_create_only(&fixture.0)?.create_private_directory("private")?;
+    let mut file = crate::mechanism::open_relative(
+        &directory.created.file,
+        "state",
+        FILE_GENERIC_READ | FILE_GENERIC_WRITE,
+        FILE_SHARE_READ | FILE_SHARE_WRITE,
+        crate::mechanism::FILE_CREATE,
+        |_| {},
+    )?;
+    file.write_all(b"native-entry-before-directory-flush")?;
+    file.sync_all()?;
+    drop(file);
+    directory.sync_all()?;
+    assert_eq!(
+        fs::read(fixture.0.join("private/state"))?,
+        b"native-entry-before-directory-flush"
+    );
+    Ok(())
+}
 
 #[test]
 fn actual_new_directory_has_exact_protected_owner_dacl_on_original_handle() -> Result {
