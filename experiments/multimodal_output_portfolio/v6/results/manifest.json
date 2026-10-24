@@ -1,0 +1,84 @@
+{
+  "archives": [
+    {
+      "files": 15162,
+      "name": "ndu_v6_full001_evidence.tar.gz",
+      "sha256": "28f1b31d4276e45f4cb10bd393c185fe0531970110c22fd9ca6be3d242933407",
+      "size_bytes": 44459441
+    },
+    {
+      "bytes": 56105777,
+      "files": 15342,
+      "name": "ndu_v6_followup_evidence.tar.gz",
+      "sha256": "46cbb7e7684823fe1e2f193ce5874455792dd0883a14e6b7a0bbb4716306a058"
+    }
+  ],
+  "records": [
+    {
+      "bytes": 33074,
+      "canonical_sha256": "f6521df8436994986ca6a22d0bb95be13142903c1de46356bdd4e4f9461e4267",
+      "file_sha256": "a7bad7f09d418c8d9db383bf6dd83bd72dd10dd084c49237d8efc2a7df901064",
+      "original_file_sha256": "dc22a1aef41852dfd21c42a4ddebf62897f52165a2ef805b08957fa7e8694c26",
+      "path": "full-001/protocol.json"
+    },
+    {
+      "bytes": 445049,
+      "canonical_sha256": "d38a4fcea0772a58db61c6e662145aae7ba08e2d661b36d2b45554102282131f",
+      "file_sha256": "a39b0d193c4b1c1162a5107c92c8d98cd77a47c446ddf42d8eb0f21e51204528",
+      "original_file_sha256": "6810b5ca546c21bac2df467b2f34c0d6c6496da8e642450379c39ae586de9c3d",
+      "path": "full-001/summary.json"
+    },
+    {
+      "bytes": 221271,
+      "canonical_sha256": "222a40075837ab9d38187f74a061c686a0b433f6d0ddd15b5a6aa623a5493dcf",
+      "file_sha256": "912151ca93867529237f05dfbf352a8c8442425966ad23ec402bb9e3cda52d43",
+      "original_file_sha256": "068e5937171370ca14304f1f68d82a434f7eabc267eae33d17ee65bbc44a2df8",
+      "path": "full-001/diagnostics.json"
+    },
+    {
+      "bytes": 500326,
+      "canonical_sha256": "970d0cbb7ca99213b8da3f05de3f2e6f2b08bc5266b40ba7a9798209ff4535b9",
+      "file_sha256": "d5c1df691651435b0ff16b22ec2671c0859b8b2d14af1e7165b2c5c8caf9e438",
+      "original_file_sha256": "867db199f9cfa60b2b336dac61f5592b806b3ff1b097e41b86069a0a2e237149",
+      "path": "replay-001/summary.json"
+    },
+    {
+      "bytes": 51203,
+      "canonical_sha256": "f72bdab20d5d75c214c019e14412c3bc3bdfd49cc80aa3d4a0a642dc226721a0",
+      "file_sha256": "97c9ea8c4cd4ef4f3e64832e230316e39246dcaf0087cf961e092e7e67b6f222",
+      "original_file_sha256": "2727441875e91292f1b38559c129edcca6d4f6b7dc069cf7e0377c90fa379ac0",
+      "path": "replay-001/independent-verification.json"
+    },
+    {
+      "bytes": 20400,
+      "canonical_sha256": "915f370e4bb46233bdbc4be37d53ef967d8dfbc9fd35fe0662e6dd26cc82c0c1",
+      "file_sha256": "fa3ace6c7cbc78cfa988ebcb9a6184cbc9a9cca8237eadd3005f3690852d7ace",
+      "original_file_sha256": "c67d52eb08db55e8309f0d1893a5d8b1016a708eb326b0d6562ba553651d8896",
+      "path": "competence-001/summary.json"
+    },
+    {
+      "bytes": 3611,
+      "canonical_sha256": "637c73ea1b2c672bf7cd8982409f4b77a71237d752d3a8903f38bd10a7fd17cd",
+      "file_sha256": "5a71b9bf23a69c9bfc16859185f55ecc0c8292922a010a920a8290aeb2c90172",
+      "original_file_sha256": "c337df34d918f0f16e4e9cb1333619459034f569a96eaa2f111a353ac105545a",
+      "path": "command-film-001/specification.json"
+    },
+    {
+      "bytes": 28255,
+      "canonical_sha256": "d5951a727413fe0b2dc73db4139d185c908a855e9feeb99251c3ad85504437f5",
+      "file_sha256": "025250c4e519a498e84a37f9a7d39a6216b1332f22b61d817f2a4a36562548f9",
+      "original_file_sha256": "480ae2c960b3a41ef26d9959babc71ab26791e8521ad23667376683856549ca1",
+      "path": "command-film-001/summary.json"
+    },
+    {
+      "bytes": 84834,
+      "canonical_sha256": "a0356d5b3e8efcf2e5373aa9ac373ccd050f72eee1224720635908d811a36740",
+      "file_sha256": "e68473c753e412ec08d2bb852b5e140fd8ca512d36cccb36a2b9d7a72fa1608b",
+      "original_file_sha256": "fd0744af8b07d02c68335914417530e52e97f2af1ad151a570850b9d92c34894",
+      "path": "numeric-oracle.json"
+    }
+  ],
+  "schema": "hepta.ndu-v6.repository-evidence-index.v1",
+  "scope": "Descriptive original full census, byte-identical cost replay, and validation-only architecture diagnosis. No NDU superiority claim.",
+  "serialization": "Each JSON record is canonical sorted compact JSON plus a final newline; original byte identities and canonical identities are separate."
+}
