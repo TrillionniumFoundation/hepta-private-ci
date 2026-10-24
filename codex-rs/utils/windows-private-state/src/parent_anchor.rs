@@ -3,7 +3,7 @@
 use crate::mechanism;
 use crate::namespace_acl;
 use crate::primary_owner::CapturedPrimaryOwner;
-use crate::security::ValidationError;
+pub use crate::security::ValidationError;
 use crate::volume::inspect_local_ntfs;
 use std::fs::File;
 use std::io;
