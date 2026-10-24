@@ -57,11 +57,37 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let config = take("--config")?;
         let registration = take("--registration")?;
         let profile = take("--native-profile")?;
+        let deployment_lock =
+            options
+                .remove(std::ffi::OsStr::new("--deployment-lock-fd"))
+                .map(
+                    |value| -> Result<std::os::fd::OwnedFd, Box<dyn std::error::Error>> {
+                        let fd: i32 = value
+                            .to_str()
+                            .ok_or("invalid deployment lock fd")?
+                            .parse()?;
+                        // SAFETY: F_GETFD only observes a numeric descriptor.
+                        if fd < 3 || unsafe { libc::fcntl(fd, libc::F_GETFD) } < 0 {
+                            return Err(
+                                "deployment lock must be a separately inherited descriptor".into(),
+                            );
+                        }
+                        // SAFETY: the original launcher explicitly transfers this live
+                        // descriptor at single-threaded startup, before we clone stdin.
+                        Ok(unsafe {
+                            <std::os::fd::OwnedFd as std::os::fd::FromRawFd>::from_raw_fd(fd)
+                        })
+                    },
+                )
+                .transpose()?;
         if !options.is_empty() || !pidfd_stdin {
             return Err("existing config, registration, native profile and pre-held owner pidfd are required".into());
         }
         let owner = std::io::stdin().as_fd().try_clone_to_owned()?;
         if command == "diagnose-native" {
+            if deployment_lock.is_some() {
+                return Err("deployment lock is accepted only by launch-native".into());
+            }
             println!(
                 "{}",
                 serde_json::to_string(&codex_hepta_agentd::diagnose_native_launch(
@@ -71,6 +97,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     &owner
                 )?)?
             );
+        } else if let Some(lock) = deployment_lock {
+            codex_hepta_agentd::launch_host_authority_native_session_with_deployment_lock(
+                &config,
+                &registration,
+                &profile,
+                owner,
+                lock,
+            )?;
         } else {
             codex_hepta_agentd::launch_host_authority_native_session(
                 &config,
