@@ -24,6 +24,7 @@ const MAX_INVENTORY_BYTES: usize = 4 * 1024 * 1024;
 const MAX_INVENTORY_ROWS: usize = 4096;
 const MAX_REQUEST_BYTES: usize = 32 * 1024 * 1024;
 const MAX_BATCH_ROWS: usize = 512;
+const MAX_ROW_BYTES: usize = 256 * 1024;
 const LAYOUT: &str = "concat-text-image-product-absolute-difference-cosine-v1";
 
 /// Fixed research cases; their names confer no semantic pairing correctness.
@@ -230,6 +231,7 @@ impl AgentdResearchTaskHeadOwnerV1 {
         {
             return Err(E::Contract);
         }
+        validate_row_byte_bounds(inventory_bytes)?;
         let rows: Inventory = serde_json::from_slice(inventory_bytes).map_err(|_| E::Encoding)?;
         if rows.schema != "hepta.research-task-head-row-inventory.v1"
             || rows.rows.len() != manifest.inventory_rows
@@ -266,6 +268,7 @@ impl AgentdResearchTaskHeadOwnerV1 {
         if request_bytes.is_empty() || request_bytes.len() > MAX_REQUEST_BYTES {
             return Err(E::Bounds);
         }
+        validate_row_byte_bounds(request_bytes)?;
         let request: Request = serde_json::from_slice(request_bytes).map_err(|_| E::Encoding)?;
         if request.rows.is_empty() || request.rows.len() > MAX_BATCH_ROWS {
             return Err(E::Bounds);
@@ -340,6 +343,59 @@ impl AgentdResearchTaskHeadOwnerV1 {
             action_execution_allowed: false,
         })
     }
+}
+
+// Rows are direct containers inside an array one level below the envelope.
+// Scan all such arrays, independent of escaped JSON keys and serde's accepted
+// positional sequence representation of structs (including the envelope).
+// Count each row container's original UTF-8 bytes, including delimiters and
+// internal whitespace, but not whitespace between array elements. This is
+// an allocation-free bounds preflight, not a JSON parser: serde still rejects
+// malformed syntax, wrong types, duplicate keys and unknown fields afterwards.
+fn validate_row_byte_bounds(bytes: &[u8]) -> Result<(), ResearchTaskHeadOwnerError> {
+    let mut depth = 0_usize;
+    let mut root_array = false;
+    let mut in_string = false;
+    let mut escaped = false;
+    let mut row_start = None;
+    for (offset, byte) in bytes.iter().copied().enumerate() {
+        if row_start.is_some_and(|start| offset - start + 1 > MAX_ROW_BYTES) {
+            return Err(ResearchTaskHeadOwnerError::Bounds);
+        }
+        if in_string {
+            if escaped {
+                escaped = false;
+            } else if byte == b'\\' {
+                escaped = true;
+            } else if byte == b'"' {
+                in_string = false;
+            }
+            continue;
+        }
+        match byte {
+            b'"' => in_string = true,
+            b'{' | b'[' => {
+                if depth == 1 && byte == b'[' {
+                    root_array = true;
+                }
+                if depth == 2 && root_array {
+                    row_start = Some(offset);
+                }
+                depth += 1;
+            }
+            b'}' | b']' => {
+                if depth == 3 {
+                    row_start = None;
+                }
+                if depth == 2 && byte == b']' {
+                    root_array = false;
+                }
+                depth = depth.saturating_sub(1);
+            }
+            _ => {}
+        }
+    }
+    Ok(())
 }
 
 fn parse_pin(value: &str) -> Result<Digest32, ResearchTaskHeadOwnerError> {
