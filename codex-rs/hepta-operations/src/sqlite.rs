@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use codex_state::SqliteConfig;
+use codex_sqlite::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use sqlx::SqlitePool;
 

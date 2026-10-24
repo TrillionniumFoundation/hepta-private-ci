@@ -16,7 +16,7 @@ workspace = true
 [dependencies]
 codex-hepta-authority-types = { workspace = true }
 codex-hepta-types = { path = "../hepta-types" }
-codex-state = { workspace = true }
+codex-sqlite = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
 ed25519-dalek = { workspace = true }
 serde = { workspace = true, features = ["derive"] }

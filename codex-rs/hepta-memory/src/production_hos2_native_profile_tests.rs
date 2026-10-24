@@ -442,3 +442,6 @@ async fn native_pending_snapshot_refuses_invalid_or_truncating_bounds() -> TestR
     assert_eq!(fixture.device.calls.load(Ordering::SeqCst), 0);
     Ok(())
 }
+
+#[path = "production_hos2_stop_tests.rs"]
+mod stop_tests;

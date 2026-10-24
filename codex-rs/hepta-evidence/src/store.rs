@@ -10,7 +10,7 @@ use codex_hepta_contracts::GovernanceReceipt;
 use codex_hepta_contracts::PolicyPhase;
 use codex_hepta_contracts::ReceiptId;
 use codex_hepta_contracts::Sha256Digest;
-use codex_state::SqliteConfig;
+use codex_sqlite::SqliteConfig;
 use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::SqlitePool;

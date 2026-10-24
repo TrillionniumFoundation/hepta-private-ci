@@ -2,6 +2,7 @@
 
 use super::super::super::COGNITIVE_ACTIVE_DB_POINTER;
 use super::super::super::COGNITIVE_DB_FILENAME;
+use super::super::super::COGNITIVE_RECOVERED_DB_PREFIX;
 use super::super::super::COGNITIVE_STORE_LOCK_FILENAME;
 use super::super::super::active_pointer_temporary_name;
 use super::super::super::parse_active_pointer;
@@ -59,7 +60,8 @@ impl VerifiedCognitiveMaterial {
         expected_current: &CognitiveRecoveryAnchor,
     ) -> Result<InstalledCognitiveMaterial, CognitiveRecoveryError> {
         let discriminator = Sha256Digest::for_bytes(b"hepta:cognitive:root-material-install:v1");
-        self.install_registered_attempt(layout, expected_current, &discriminator)
+        let candidate_name = recovered_database_filename(expected_current, &discriminator);
+        self.install_registered_attempt(layout, expected_current, &candidate_name)
     }
 
     /// Name one physical installation for the original Root-validated whole
@@ -88,14 +90,21 @@ impl VerifiedCognitiveMaterial {
         let bytes = serde_json::to_vec(&("hepta:cognitive:root-successor-install:v1", successor))
             .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?;
         let discriminator = Sha256Digest::for_bytes(&bytes);
-        self.install_registered_attempt(layout, &successor.last_current, &discriminator)
+        // The Root caller's whole successor head is the physical attempt identity.
+        // The ordinary recovery filename adds a fresh process/time nonce, which
+        // would let this same attempt evade the exclusive-create collision check.
+        let candidate_name = format!(
+            "{COGNITIVE_RECOVERED_DB_PREFIX}{}.sqlite3",
+            discriminator.as_str()
+        );
+        self.install_registered_attempt(layout, &successor.last_current, &candidate_name)
     }
 
     fn install_registered_attempt(
         self,
         layout: &HeptaAgentLayout,
         expected_current: &CognitiveRecoveryAnchor,
-        discriminator: &Sha256Digest,
+        candidate_name: &str,
     ) -> Result<InstalledCognitiveMaterial, CognitiveRecoveryError> {
         RootSqliteMaterialRegistration::verify_caller(/*registered_uid*/ 60001)
             .map_err(recovery_error)?;
@@ -116,15 +125,14 @@ impl VerifiedCognitiveMaterial {
         );
         // This is only a physical install-attempt discriminator, never an
         // authority fence. The original factory still requires its real lease.
-        let name = recovered_database_filename(expected_current, discriminator);
-        let temporary = active_pointer_temporary_name(&name)
+        let temporary = active_pointer_temporary_name(candidate_name)
             .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?;
         let publication = RootSqliteOwnerCopy::bind_registered(
             &config,
             OsStr::new(COGNITIVE_STORE_LOCK_FILENAME),
         )
         .map_err(recovery_error)?
-        .materialize_consolidated_candidate(&self.retained, OsStr::new(&name))
+        .materialize_consolidated_candidate(&self.retained, OsStr::new(candidate_name))
         .map_err(recovery_error)?
         .observe_active_pointer(OsStr::new(COGNITIVE_ACTIVE_DB_POINTER))
         .map_err(recovery_error)?;

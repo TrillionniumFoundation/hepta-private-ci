@@ -13,7 +13,7 @@ use codex_hepta_matrix_protocol::client_user_message_id;
 use codex_hepta_matrix_protocol::room_project_idempotency_key;
 use codex_hepta_matrix_protocol::transaction_id;
 use codex_hepta_paths::HeptaAgentLayout;
-use codex_state::SqliteConfig;
+use codex_sqlite::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use sqlx::Row;
 use sqlx::Sqlite;

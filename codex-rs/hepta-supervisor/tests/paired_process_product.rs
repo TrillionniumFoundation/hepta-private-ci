@@ -13,9 +13,11 @@ use std::time::Instant;
 use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
+use codex_hepta_agent_protocol::AgentdMethod;
 use codex_hepta_agent_protocol::AgentdPayload;
 use codex_hepta_agent_protocol::AgentdRequest;
 use codex_hepta_agent_protocol::AgentdResponse;
+use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_agent_protocol::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
@@ -262,14 +264,31 @@ impl PairFleet {
     }
 
     fn start_all(&mut self) -> Result<()> {
+        let started = Instant::now();
         for agent_id in &self.agents {
+            eprintln!(
+                "paired-stage resolve_release_begin agent={agent_id} elapsed={:?}",
+                started.elapsed()
+            );
             let release =
                 AgentRelease::try_from(self.registry.resolve_release(agent_id, &self.release_id)?)?;
+            eprintln!(
+                "paired-stage resolve_release_end agent={agent_id} elapsed={:?}",
+                started.elapsed()
+            );
             self.supervisor
                 .as_mut()
                 .context("supervisor")?
                 .start_release(agent_id, release, Instant::now())?;
+            eprintln!(
+                "paired-stage start_release_end agent={agent_id} elapsed={:?}",
+                started.elapsed()
+            );
         }
+        eprintln!(
+            "paired-stage start_all_complete elapsed={:?}",
+            started.elapsed()
+        );
         Ok(())
     }
 
@@ -296,9 +315,28 @@ impl PairFleet {
 
     fn wait_agents_ready(&mut self, agents: &[AgentId], timeout: Duration) -> Result<()> {
         let deadline = Instant::now() + timeout;
+        let started = Instant::now();
+        let mut next_trace = started;
         loop {
             let supervisor = self.supervisor.as_mut().context("supervisor")?;
+            let tick_started = Instant::now();
+            let trace_tick = tick_started >= next_trace;
+            if trace_tick {
+                eprintln!(
+                    "paired-stage ready_tick_begin elapsed={:?}",
+                    started.elapsed()
+                );
+                next_trace = tick_started + Duration::from_secs(1);
+            }
             let report = supervisor.tick(Instant::now());
+            if trace_tick || !report.faults.is_empty() {
+                eprintln!(
+                    "paired-stage ready_tick_end elapsed={:?} tick_elapsed={:?}",
+                    started.elapsed(),
+                    tick_started.elapsed()
+                );
+                trace_pair_state(supervisor, agents, "ready", !report.faults.is_empty());
+            }
             anyhow::ensure!(report.faults.is_empty(), "tick faults: {:?}", report.faults);
             if agents.iter().all(|agent_id| {
                 supervisor.snapshot(agent_id).is_some_and(|snapshot| {
@@ -377,9 +415,33 @@ impl PairFleet {
         timeout: Duration,
     ) -> Result<PairRuntimeFence> {
         let deadline = Instant::now() + timeout;
+        let started = Instant::now();
+        let mut next_trace = started;
         loop {
             let supervisor = self.supervisor.as_mut().context("supervisor")?;
+            let tick_started = Instant::now();
+            let trace_tick = tick_started >= next_trace;
+            if trace_tick {
+                eprintln!(
+                    "paired-stage restart_tick_begin elapsed={:?}",
+                    started.elapsed()
+                );
+                next_trace = tick_started + Duration::from_secs(1);
+            }
             let report = supervisor.tick(Instant::now());
+            if trace_tick || !report.faults.is_empty() {
+                eprintln!(
+                    "paired-stage restart_tick_end elapsed={:?} tick_elapsed={:?}",
+                    started.elapsed(),
+                    tick_started.elapsed()
+                );
+                trace_pair_state(
+                    supervisor,
+                    std::slice::from_ref(agent_id),
+                    "restart",
+                    !report.faults.is_empty(),
+                );
+            }
             anyhow::ensure!(report.faults.is_empty(), "tick faults: {:?}", report.faults);
             if let Some(restarted) = supervisor
                 .snapshot(agent_id)
@@ -458,6 +520,39 @@ impl PairFleet {
                 anyhow::bail!("fixture children did not exit: {snapshots:?}");
             }
             std::thread::sleep(Duration::from_millis(10));
+        }
+    }
+}
+
+// Test-only progress. Read the existing bounded snapshot; do not perform an
+// extra tick, health request, lifecycle transition, or deadline extension.
+fn trace_pair_state(
+    supervisor: &Supervisor<UnixProcessDriver>,
+    agents: &[AgentId],
+    phase: &str,
+    include_logs: bool,
+) {
+    for agent in agents {
+        if let Some(snapshot) = supervisor.snapshot(agent) {
+            eprintln!(
+                "paired-state phase={phase} agent={agent} active={} healthy={} pid={:?} spawn={:?} runtime={:?} matrix={:?}",
+                snapshot.active,
+                snapshot.healthy,
+                snapshot.process_system_id,
+                snapshot.spawn_generation,
+                snapshot.runtime_generation,
+                snapshot.matrix,
+            );
+            if include_logs {
+                for event in snapshot.events.iter().rev().take(4).rev() {
+                    eprintln!("paired-event agent={agent} {event:?}");
+                }
+                for log in snapshot.logs.iter().rev().take(4).rev() {
+                    eprintln!("paired-log agent={agent} {log:?}");
+                }
+            }
+        } else {
+            eprintln!("paired-state phase={phase} agent={agent} absent");
         }
     }
 }
@@ -545,13 +640,8 @@ fn run_agent_child() -> Result<()> {
         let workspace = std::env::current_dir()?;
         let lifecycle = latest_lifecycle(&run_root)?;
         let running = lifecycle.lifecycle == AgentLifecycle::Running;
-        let response = AgentdResponse {
-            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
-            request_id: request.request_id,
-            agent_id: agent_id.clone(),
-            spawn_generation,
-            current_generation: lifecycle.generation,
-            payload: AgentdPayload::Health(HealthSnapshot {
+        let payload = match request.method {
+            AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
                 promotion_ready: true,
                 ready: running,
                 fenced: false,
@@ -561,6 +651,40 @@ fn run_agent_child() -> Result<()> {
                 home_root,
                 run_root,
             }),
+            AgentdMethod::Drain
+                if request.schema_version == AGENTD_CONTROL_SCHEMA_VERSION
+                    && request.spawn_generation == spawn_generation
+                    && lifecycle.lifecycle == AgentLifecycle::Draining
+                    && spawn_generation.checked_add(2) == Some(lifecycle.generation) =>
+            {
+                // This controlled child serves only health/drain and owns no
+                // turn queue or effect. Acknowledge only the actual durable
+                // Draining generation; Supervisor still checks the full frame.
+                eprintln!(
+                    "paired-child drain agent={agent_id} pid={} spawn={spawn_generation} runtime={}",
+                    std::process::id(),
+                    lifecycle.generation
+                );
+                AgentdPayload::Drain(DrainSnapshot {
+                    admission_closed: true,
+                    running_turns: 0,
+                    drained: true,
+                    lifecycle: lifecycle.lifecycle,
+                    fenced: false,
+                })
+            }
+            _ => AgentdPayload::Error {
+                code: "fixture_method_or_fence".into(),
+                message: "controlled child requires Health or exact-generation Drain".into(),
+            },
+        };
+        let response = AgentdResponse {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: request.request_id,
+            agent_id: agent_id.clone(),
+            spawn_generation,
+            current_generation: lifecycle.generation,
+            payload,
         };
         let mut stream = reader.into_inner();
         serde_json::to_writer(&mut stream, &response)?;

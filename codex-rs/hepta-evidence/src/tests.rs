@@ -10,7 +10,7 @@ use codex_hepta_contracts::PolicyStamp;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::ToolAction;
 use codex_hepta_contracts::ToolActionSource;
-use codex_state::SqliteConfig;
+use codex_sqlite::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use tempfile::TempDir;
 

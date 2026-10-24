@@ -103,7 +103,7 @@ async fn attach_test_trust(state: &AgentdState, key: &SigningKey) -> Result<(), 
     )?;
     fs::set_permissions(&trust_file, fs::Permissions::from_mode(0o600))?;
     let evidence = codex_hepta_evidence::HeptaEvidenceStore::open(
-        &codex_state::SqliteConfig::from_sqlite_home(
+        &codex_sqlite::SqliteConfig::from_sqlite_home(
             codex_utils_absolute_path::AbsolutePathBuf::from_absolute_path(
                 &state.identity().home_root,
             )?,

@@ -22,7 +22,7 @@ use codex_hepta_operations::DestinationOperationIdentity;
 use codex_hepta_operations::DurableOperationError;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
-use codex_state::SqliteConfig;
+use codex_sqlite::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use sqlx::Row;
 use sqlx::SqlitePool;

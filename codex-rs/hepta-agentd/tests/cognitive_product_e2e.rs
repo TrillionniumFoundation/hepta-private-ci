@@ -48,7 +48,7 @@ use codex_hepta_memory::MemoryLifecycleState;
 use codex_hepta_memory::MemoryRevisionDraft;
 use codex_hepta_memory::MemoryVerification;
 use codex_hepta_memory::SourceDraft;
-use codex_state::SqliteConfig;
+use codex_sqlite::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use core_test_support::responses;
 use core_test_support::responses::ResponseMock;

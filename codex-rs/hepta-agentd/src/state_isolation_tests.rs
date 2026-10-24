@@ -480,7 +480,7 @@ async fn current_durable_run_start_requires_live_owner_trust() {
     // The external fixture witness is captured from the canonical empty owner,
     // never invented from a label or recaptured from a suspect backup.
     let evidence = codex_hepta_evidence::HeptaEvidenceStore::open(
-        &codex_state::SqliteConfig::from_sqlite_home(
+        &codex_sqlite::SqliteConfig::from_sqlite_home(
             codex_utils_absolute_path::AbsolutePathBuf::from_absolute_path(
                 &state.identity.home_root,
             )

@@ -5,6 +5,7 @@ use crate::CognitiveCheckpointHead;
 use crate::CognitiveCheckpointPeerLifetime;
 use crate::CognitiveCheckpointPhase;
 use crate::CognitiveCheckpointWriterBinding;
+use crate::cognitive_store::COGNITIVE_RECOVERED_DB_PREFIX;
 use pretty_assertions::assert_eq;
 
 fn publisher() -> (OwnedChild, CognitiveCheckpointPeerLifetime) {
@@ -116,6 +117,14 @@ async fn root_new_physical_attempt_preserves_partial_and_published_predecessor_f
         "the same attempt must never reuse or overwrite its visible candidate"
     );
     assert_eq!(std::fs::read(&old_path).unwrap(), old_bytes);
+    assert_eq!(
+        std::fs::metadata(&old_path).unwrap().ino(),
+        old_metadata.ino()
+    );
+    assert_eq!(
+        resolve_active_database_path(fixture.owner_layout.cognitive_root()).unwrap(),
+        old_path
+    );
     let (next, peer) = publisher();
     let next_head = naming_head(&fixture, peer, 2);
     let material =
@@ -154,10 +163,12 @@ async fn root_failed_physical_candidate_does_not_block_a_distinct_successor_atte
     let discriminator = Sha256Digest::for_bytes(
         &serde_json::to_vec(&("hepta:cognitive:root-successor-install:v1", &old_head)).unwrap(),
     );
-    let partial = fixture
-        .owner_layout
-        .cognitive_root()
-        .join(recovered_database_filename(&fixture.cut, &discriminator));
+    let partial = fixture.owner_layout.cognitive_root().join(format!(
+        "{COGNITIVE_RECOVERED_DB_PREFIX}{}.sqlite3",
+        discriminator.as_str()
+    ));
+    let previous_path =
+        resolve_active_database_path(fixture.owner_layout.cognitive_root()).unwrap();
     owner_file(
         &partial,
         b"actual incomplete candidate retained for reconciliation",
@@ -168,6 +179,15 @@ async fn root_failed_physical_candidate_does_not_block_a_distinct_successor_atte
             .install_for_registered_successor(&fixture.owner_layout, &old_head)
             .is_err()
     );
+    assert_eq!(
+        resolve_active_database_path(fixture.owner_layout.cognitive_root()).unwrap(),
+        previous_path
+    );
+    assert_eq!(
+        std::fs::read(&partial).unwrap(),
+        b"actual incomplete candidate retained for reconciliation"
+    );
+    assert_eq!(std::fs::metadata(&partial).unwrap().ino(), partial_inode);
     drop(old);
     let (_next, peer) = publisher();
     let next_head = naming_head(&fixture, peer, 2);

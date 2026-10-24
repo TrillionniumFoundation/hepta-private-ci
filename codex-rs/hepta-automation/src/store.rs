@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_paths::HeptaAgentLayout;
-use codex_state::SqliteConfig;
+use codex_sqlite::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use sqlx::Row;
 use sqlx::SqlitePool;
