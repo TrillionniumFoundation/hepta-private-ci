@@ -111,8 +111,14 @@ and exact request binding, then rereads original funding and retains liability
 through the existing dispatch/indeterminate transitions. It creates no second
 ledger or key owner and cannot dispatch a native worker, return resources or
 refund. Seven real SQLite/signed-source test groups cover this narrower funding
-composition; actual Agentd grant-provider and native lifetime-owner integration
-remain required. Existing ordinary Child observations retain their narrower
+composition. `SignedFinalUseGrantCourier` now implements the existing Agentd
+provider for one immutable protected regular file capped at 16 KiB and one exact
+FinalUse binding. Readiness validation is non-consuming; dispatch still uses the
+original signed claim, frontier CAS, nonce owner and final clock checks. The real
+signer CLI, recovered writer and ordinary Child route have a controlled test;
+its SourceLease remains an explicitly signed fixture. Production source policy
+and native whole-unit lifetime-owner integration remain required. No second
+ledger, key or nonce store is created. Existing ordinary Child observations retain their narrower
 semantics, original assertions and eight-second deadline.
 
 Produced contracts:

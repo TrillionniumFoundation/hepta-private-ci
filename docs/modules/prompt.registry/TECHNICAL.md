@@ -153,8 +153,13 @@ payload copy/write amplification, not unlimited-history recovery or retention co
 The [existing PN0/P0 sequence](../../DEVELOPMENT.md#audit-remediation-within-the-existing-roadmap)
 assigns OS namespace/creation primitives to C2b, FinalUse integration to C3 and
 registry plus its actual Agentd runtime caller to C4. This is design work within
-that item. Windows durable-registry support remains closed; C2a's read-only
-descriptor observations and five pending native controls do not qualify it.
+that item. `PromptRegistry::open_windows_private` now consumes the actual opaque
+fresh/existing directory capability and retains the original Store, marker,
+OS lock, V1/V2 migration and V3 extents. Complete manifest/payload restoration
+precedes orphan-tail trimming or migration writes. Three new native controls
+cover process locking/tail recovery, corrupt-manifest non-rewrite and missing
+manifest non-reinitialization; their execution remains pending. Ordinary Windows
+path constructors remain closed, and source checks do not qualify durability.
 
 `utils/windows-private-state` must provide opaque private-directory, lock, input,
 mutable journal/payload and stage roles after local NTFS/device and trusted

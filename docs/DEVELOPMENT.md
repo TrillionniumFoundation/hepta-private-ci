@@ -784,10 +784,29 @@ whole-unit owner, physical entry, terminal receipt, refund or activation.
 Seven real SQLite/signed-source test groups cover restart, current trust,
 foreign authority/binding, exhausted quota and invalid grants. The combined
 five-package Linux suite passes 354 tests with zero skipped; these are not
-Windows or resource-return receipts. The existing Agentd grant-provider port and
-the original native lifetime owner must next compose before settlement or any
-real-model round can qualify. The ordinary Child route, all its assertions and
+Windows or resource-return receipts. The existing Agentd grant-provider port now
+has `SignedFinalUseGrantCourier`: one protected immutable grant file, capped at
+16 KiB, exact five-field binding, current issuer/epoch/revocation and original
+one-shot nonce checks. Its non-consuming readiness check creates no capability;
+the original claim, frontier CAS and final entry checks remain mandatory.
+The real signer CLI feeds the exact-cut recovered Agentd writer and original
+ordinary Child target in a controlled test, including replay refusal and
+Indeterminate-to-Committed reconciliation. Its SourceLease is an explicitly
+signed fixture; production source verification and the native whole-unit lifetime
+owner must still compose before settlement or a real-model round can qualify.
+The ordinary Child route, all its assertions and
 the original eight-second bound remain unchanged.
+
+The same controlled path exposed fresh SQLite sidecars created with mode 0644.
+`cognitive.store` now creates the new database exclusively with mode 0600 before
+opening SQLite, without adopting or chmodding existing objects. Its consuming
+`close(self)` retains the original owner guard until the pool finishes closing;
+default Drop and unconverted callers do not gain that asynchronous guarantee.
+The original recovery equality now exercises a genuine prior writer lease.
+Controlled pair fixtures implement the bounded Health/Drain protocol and retain
+all complete executable hashes, process counts, assertions and the 60-second
+test cutoff. A dedicated first-party fixture omits only its link-time debug
+information. These are controlled fixtures, not real Agentd/model qualification.
 
 Within the same PN0/PN4 boundary, AuthBus owns current settlement-issuer trust.
 `AuthBusAuthorityStore::settle` retains its registration parameter as an exact
@@ -970,9 +989,10 @@ the same held object against the captured effective TokenUser. C2a requires the
 current owner and a protected, non-NULL DACL containing exactly one ordinary,
 non-inherited full-control allow ACE for that owner; SYSTEM and Administrators
 are not implicit exceptions. A descriptor observation is not a private-owner
-capability. Cross-target compilation is not native execution: all five actual
-Windows controls, including the OWNER|DACL Group/SACL-offset readback assumption,
-remain pending until the existing workflow records them. Its original nine required
+capability. Cross-target compilation is not native execution. The existing workflow
+now requires all 37 utility library controls by exact name, retaining the five
+original descriptor cases, plus four process-lock, four principal-continuity and
+four local-volume controls. Its original nine required
 receipts retain the original three deletion tests, four mechanism probes and
 eight ACL controls. A tenth mandatory receipt exercises a `cfg(test)`-only
 all-access-restriction token candidate, with explicit read/execute and write
@@ -1082,11 +1102,12 @@ file ID to obtain its own synchronous,
 read-attributes handle and verifies both identities; arbitrary overlapped input
 cannot leave native output storage pending after return. It returns
 `LocalNtfsObservation`, not a trusted parent or owner guard.
-Three required `native_volume` integration controls cover actual local file and
+Four required `native_volume` integration controls cover actual local file and
 directory queries, a non-disk handle, and an overlapped held object renamed while
 its former path is replaced. The existing Windows workflow retains all ten prior receipts and
-the five original owner-descriptor controls, adding an eleventh receipt for these
-three operations. The preserved source and actual preview's full native runs
+the five original owner-descriptor controls. Thirteen mandatory receipts now
+include the complete library, process-lock, principal and volume targets. The
+preserved source and actual preview's full native runs
 locate `AccessDenied` (5) at the directory's old `ReOpenFile` call; local file
 queries pass. The additive `inspect_local_ntfs_observed` API reports at most nine
 fixed query stages and the original captured Win32/NT status, with no path or
@@ -1095,7 +1116,7 @@ identity checks and error results are unchanged. The three original native
 controls and their positive assertions remain mandatory; no new native result
 closes this failure. Actual SMB or mapped-remote rejection remains a required,
 unexecuted C2b acceptance item;
-no fabricated flags or skipped remote test count toward those three controls.
+no fabricated flags or skipped remote test count toward those four controls.
 Trusted ancestor admission, protected creation and C3–C5 remain open; production
 Windows owner support and power-loss qualification remain false. The added
 overlapped-directory/rename control also requires the new ID-based query to
@@ -1113,6 +1134,18 @@ Clippy are `NOT_NATIVE`. Original journals, claims, precommit/indeterminate
 handling and unsupported owner-construction guards remain intact. Trusted
 parent/creation, owner consumers and native recovery are still dependencies;
 this stage primitive alone does not close C2b, C3, C4 or C5.
+
+C3 and C4 now expose explicit `open_windows_private` entry points consuming the
+actual opaque fresh/existing directory capability. FinalUse shares its original
+marker, lock, claims, journal, migration and external-frontier recovery; registry
+shares its original V1/V2-to-V3 migration, extent digest and restore logic.
+Complete cold validation precedes migration or orphan-tail trimming. Entering
+the native publication helper makes subsequent uncertain I/O indeterminate and
+keeps poison/reopen semantics. No second store or journal is introduced.
+The ordinary path constructors remain refused. Five new real-file native
+consumer controls are present but not yet executed on this combined source;
+parent admission, process-death, full caller composition and native qualification
+remain blockers.
 
 The C2b prerequisite `CapturedPrimaryOwner` now captures and retains the real
 query-only primary token with unchanged effective-principal continuity checks.

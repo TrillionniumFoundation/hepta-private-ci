@@ -53,8 +53,10 @@ None.
 The existing PN0 security owner also owns the narrow Windows OS utility root.
 Its held-file mechanisms and read-only captured-owner/SID/DACL observations are
 supporting source, with native Windows controls still pending. This registration
-does not provide a complete private store owner, a FinalUse or registry backend,
-a new authority owner, broad sandbox ownership or production storage support.
+does not by itself qualify production storage, provide a new authority owner or
+transfer broad sandbox ownership. Explicit FinalUse and registry backends now
+consume the actual opaque directory capability; their native qualification and
+production caller composition remain required.
 
 The existing C3/C4 publication calls pass the exact synced source handle to
 [stage.rs](../../../codex-rs/utils/windows-private-state/src/stage.rs), through
@@ -89,6 +91,15 @@ access omits unnecessary DELETE while preserving no-delete sharing, allowing
 the later original lock to arbitrate two owners. These are source prerequisites,
 with native execution, complete lock/journal roles and consumer recovery still
 pending; ordinary Windows store constructors remain closed.
+
+The explicit `FinalUseAuthority::open_windows_private_with_trust` and
+`open_windows_private_with_issuer_keys` paths share the original store parser,
+marker/OS lock, bounded claims and recovery protocol. Cold schema, trust, claims
+and external frontier must validate before any migration write. The registry
+backend consumes the same directory roles. Uncertain errors after entering the
+native publication helper retain indeterminate durability. Ordinary path-based
+constructors remain closed; source and cross-target checks are not native or
+power-loss acceptance.
 
 The registered primary source is [codex-rs/hepta-contracts/src/final_use.rs](../../../codex-rs/hepta-contracts/src/final_use.rs); the general lease owner is [authority_lease.rs](../../../codex-rs/hepta-contracts/src/authority_lease.rs), and external trust interfaces are in [authority_trust.rs](../../../codex-rs/hepta-contracts/src/authority_trust.rs). This is source navigation, not proof that every target port or production consumer exists. The canonical target → native API → product caller → test → qualification status is [TRACEABILITY.md](TRACEABILITY.md). The V1 general-lease trust model is frozen by [ADR-0001](ADR-0001-LEASE-TRUST-MODEL.md), and final-use ordering is normative in [LINEARIZATION.md](LINEARIZATION.md).
 
