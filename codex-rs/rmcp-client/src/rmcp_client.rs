@@ -127,6 +127,7 @@ enum ClientState {
     Ready {
         service: Arc<RunningService<RoleClient, ElicitationClientService>>,
         oauth: Option<OAuthPersistor>,
+        retained_lifetime: crate::retained_tool_session::RetainedSessionLifetime,
     },
     Closed,
 }
@@ -386,6 +387,42 @@ impl RmcpClient {
         self.protocol_mode
     }
 
+    /// Retain the exact initialized peer for calls which must never be repaired
+    /// or replayed. HTTP requires the existing no-redirect authenticated mode;
+    /// OAuth transports (including access-token-only fallback) are refused
+    /// because their challenge handling can resend a request below this layer.
+    pub async fn retain_tool_session(&self) -> Result<crate::RetainedMcpToolSession> {
+        let state = self.state.lock().await;
+        let transport_allowed = match &self.transport_recipe {
+            TransportRecipe::InProcess { .. } | TransportRecipe::Stdio { .. } => true,
+            TransportRecipe::StreamableHttp {
+                bearer_token,
+                http_headers,
+                env_http_headers,
+                pinned_credential_store,
+                redirect_mode,
+                ..
+            } => {
+                *redirect_mode == StreamableHttpRedirectMode::AgentPluginV1
+                    && pinned_credential_store.get().is_none()
+                    && (bearer_token.is_some()
+                        || http_headers.as_ref().is_some_and(|headers| !headers.is_empty())
+                        || env_http_headers.as_ref().is_some_and(|headers| !headers.is_empty()))
+            }
+        };
+        if !transport_allowed || self.protocol_mode != McpProtocolMode::Legacy {
+            return Err(anyhow!("MCP transport does not support retained single-attempt calls"));
+        }
+        match &*state {
+            ClientState::Ready { service, retained_lifetime, .. } => Ok(crate::RetainedMcpToolSession {
+                service: Arc::clone(service),
+                lifetime: retained_lifetime.0.clone(),
+            }),
+            ClientState::Connecting { .. } => Err(anyhow!("MCP client not initialized")),
+            ClientState::Closed => Err(anyhow!("MCP client is shut down")),
+        }
+    }
+
     pub async fn new_in_process_client(
         factory: Arc<dyn InProcessTransportFactory>,
     ) -> io::Result<Self> {
@@ -635,6 +672,7 @@ impl RmcpClient {
             *guard = ClientState::Ready {
                 service,
                 oauth: oauth_persistor.clone(),
+                retained_lifetime: Default::default(),
             };
         }
 
@@ -1479,6 +1517,7 @@ impl RmcpClient {
             *guard = ClientState::Ready {
                 service,
                 oauth: oauth_persistor.clone(),
+                retained_lifetime: Default::default(),
             };
         }
 
