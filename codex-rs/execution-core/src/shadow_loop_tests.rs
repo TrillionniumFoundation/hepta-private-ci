@@ -1,43 +1,73 @@
 use super::*;
-use crate::{Currentness, ExecutionBinding, FinalUse, EXECUTION_SCHEMA_VERSION};
+use crate::Currentness;
+use crate::EXECUTION_SCHEMA_VERSION;
+use crate::ExecutionBinding;
+use crate::FinalUse;
 
-fn h(i: u8) -> String { format!("{i:064x}") }
+fn h(i: u8) -> String {
+    format!("{i:064x}")
+}
 fn base() -> AgentStepRequestV1 {
     AgentStepRequestV1 {
         binding: ExecutionBinding {
             schema_version: EXECUTION_SCHEMA_VERSION,
-            run_id: "run-1".into(), turn_id: "turn-1".into(),
-            cell_id: Some("cell-1".into()), organ_id: None,
-            operation_id: "op-1".into(), principal: "agent-1".into(),
-            objective_digest: h(1), policy_digest: h(2), candidate_digest: h(3),
-            host: "local".into(), generation: 1, idempotency_key: "idem-1".into(),
-            predecessor: None, currentness: Currentness::Current,
-            final_use: FinalUse::NotGranted, rollback_reference: None,
+            run_id: "run-1".into(),
+            turn_id: "turn-1".into(),
+            cell_id: Some("cell-1".into()),
+            organ_id: None,
+            operation_id: "op-1".into(),
+            principal: "agent-1".into(),
+            objective_digest: h(1),
+            policy_digest: h(2),
+            candidate_digest: h(3),
+            host: "local".into(),
+            generation: 1,
+            idempotency_key: "idem-1".into(),
+            predecessor: None,
+            currentness: Currentness::Current,
+            final_use: FinalUse::NotGranted,
+            rollback_reference: None,
         },
-        step: 0, max_steps: 3, state_digest: h(4), deadline_unix_ms: 100,
+        step: 0,
+        max_steps: 3,
+        state_digest: h(4),
+        deadline_unix_ms: 100,
     }
 }
 struct Reject;
 impl ShadowStepCommitVerifier for Reject {
-    fn verify_step_commit(&self, _: &AgentStepRequestV1, _: &AgentStepObservationV1,
-                          _: &ShadowStepCommitV1) -> Result<(), PortError> {
+    fn verify_step_commit(
+        &self,
+        _: &AgentStepRequestV1,
+        _: &AgentStepObservationV1,
+        _: &ShadowStepCommitV1,
+    ) -> Result<(), PortError> {
         Err(PortError::Denied)
     }
 }
 struct Accept;
 impl ShadowStepCommitVerifier for Accept {
-    fn verify_step_commit(&self, _: &AgentStepRequestV1, _: &AgentStepObservationV1,
-                          _: &ShadowStepCommitV1) -> Result<(), PortError> {
+    fn verify_step_commit(
+        &self,
+        _: &AgentStepRequestV1,
+        _: &AgentStepObservationV1,
+        _: &ShadowStepCommitV1,
+    ) -> Result<(), PortError> {
         Ok(())
     }
 }
 fn response(req: &AgentStepRequestV1, disposition: AgentStepDisposition) -> AgentStepObservationV1 {
-    let action = matches!(disposition, AgentStepDisposition::InvokeModel | AgentStepDisposition::ProposeTool);
+    let action = matches!(
+        disposition,
+        AgentStepDisposition::InvokeModel | AgentStepDisposition::ProposeTool
+    );
     let continues = action || disposition == AgentStepDisposition::Waiting;
     AgentStepObservationV1 {
-        request_digest: req.digest().unwrap(), disposition,
+        request_digest: req.digest().unwrap(),
+        disposition,
         next_state_digest: continues.then(|| h(5)),
-        action_digest: action.then(|| h(6)), observation_digest: h(7),
+        action_digest: action.then(|| h(6)),
+        observation_digest: h(7),
     }
 }
 fn commit(req: &AgentStepRequestV1, proposal: &AgentStepObservationV1) -> ShadowStepCommitV1 {
@@ -60,7 +90,10 @@ fn action_waits_for_independent_commit_and_never_executes_by_staging() {
     s.stage(proposed).unwrap();
     assert_eq!(s.phase(), ShadowLoopPhaseV1::AwaitingCommit);
     assert!(s.next_request().is_err());
-    assert!(matches!(s.commit(witness.clone(), &Reject), Err(PortError::Denied)));
+    assert!(matches!(
+        s.commit(witness.clone(), &Reject),
+        Err(PortError::Denied)
+    ));
     assert_eq!(s.phase(), ShadowLoopPhaseV1::AwaitingCommit);
     let mut mismatched = witness.clone();
     mismatched.request_digest = h(30);
@@ -93,7 +126,10 @@ fn waiting_needs_authorized_wake() {
     s.stage(proposed).unwrap();
     s.commit(witness, &Accept).unwrap();
     assert_eq!(s.phase(), ShadowLoopPhaseV1::Waiting);
-    assert!(s.resume_verified_wait(&h(5), &|_, _| Err(PortError::Denied)).is_err());
+    assert!(
+        s.resume_verified_wait(&h(5), &|_, _| Err(PortError::Denied))
+            .is_err()
+    );
     assert!(s.next_request().is_err());
     s.resume_verified_wait(&h(5), &|_, _| Ok(())).unwrap();
     assert_eq!(s.next_request().unwrap().step, 1);

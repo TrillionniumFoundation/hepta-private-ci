@@ -1,9 +1,9 @@
 use codex_execution_core::Currentness;
+use codex_execution_core::EXECUTION_SCHEMA_VERSION;
 use codex_execution_core::ExecutionBinding;
 use codex_execution_core::ExecutionClass;
 use codex_execution_core::ExecutionError;
 use codex_execution_core::FinalUse;
-use codex_execution_core::EXECUTION_SCHEMA_VERSION;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;

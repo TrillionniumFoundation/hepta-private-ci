@@ -97,8 +97,7 @@ pub fn propose_shadow_cell_candidates_v1(
     if payloads.action == payloads.routing
         || payloads.action == payloads.topology
         || payloads.routing == payloads.topology
-        || [payloads.action, payloads.routing, payloads.topology]
-            .contains(&frozen_topology_digest)
+        || [payloads.action, payloads.routing, payloads.topology].contains(&frozen_topology_digest)
     {
         return Err(ShadowCellCandidateErrorV1::IdentityCollision);
     }

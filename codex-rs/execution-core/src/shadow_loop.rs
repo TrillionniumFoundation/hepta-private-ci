@@ -4,9 +4,11 @@
 //! A trusted run owner must persist each accepted transition, independently
 //! verify actual model/tool outcomes, and enforce FinalUse at physical entry.
 
-use crate::ports::{
-    AgentStepDisposition, AgentStepObservationV1, AgentStepRequestV1, PortError, PortTerminal,
-};
+use crate::ports::AgentStepDisposition;
+use crate::ports::AgentStepObservationV1;
+use crate::ports::AgentStepRequestV1;
+use crate::ports::PortError;
+use crate::ports::PortTerminal;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ShadowLoopPhaseV1 {
@@ -135,8 +137,10 @@ impl ShadowAgentLoopV1 {
             (_, Some(PortTerminal::Failed | PortTerminal::Rejected)) => {
                 ShadowLoopPhaseV1::Indeterminate
             }
-            (AgentStepDisposition::InvokeModel | AgentStepDisposition::ProposeTool,
-             Some(PortTerminal::Succeeded)) => ShadowLoopPhaseV1::Ready,
+            (
+                AgentStepDisposition::InvokeModel | AgentStepDisposition::ProposeTool,
+                Some(PortTerminal::Succeeded),
+            ) => ShadowLoopPhaseV1::Ready,
             (AgentStepDisposition::Waiting, None) => ShadowLoopPhaseV1::Waiting,
             (AgentStepDisposition::Completed, None) => ShadowLoopPhaseV1::Completed,
             (AgentStepDisposition::Abstained, None) => ShadowLoopPhaseV1::Abstained,
@@ -144,7 +148,10 @@ impl ShadowAgentLoopV1 {
             (AgentStepDisposition::Indeterminate, None) => ShadowLoopPhaseV1::Indeterminate,
             _ => return Err(PortError::Invalid("disposition/outcome mismatch")),
         };
-        if matches!(self.phase, ShadowLoopPhaseV1::Ready | ShadowLoopPhaseV1::Waiting) {
+        if matches!(
+            self.phase,
+            ShadowLoopPhaseV1::Ready | ShadowLoopPhaseV1::Waiting
+        ) {
             self.request.step += 1;
             self.request.state_digest = receipt
                 .committed_state_digest

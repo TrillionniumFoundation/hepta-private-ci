@@ -9,13 +9,18 @@
 use std::future::Future;
 use std::pin::Pin;
 
-use serde::{Deserialize, Serialize};
-use sha2::{Digest, Sha256};
+use serde::Deserialize;
+use serde::Serialize;
+use sha2::Digest;
+use sha2::Sha256;
 
-use crate::{
-    Currentness, ExecutionBinding, ExecutionError, ExecutionJournal, ExecutionStarted,
-    ExecutionVerifier, FinalUse,
-};
+use crate::Currentness;
+use crate::ExecutionBinding;
+use crate::ExecutionError;
+use crate::ExecutionJournal;
+use crate::ExecutionStarted;
+use crate::ExecutionVerifier;
+use crate::FinalUse;
 
 /// Object-safe transport for Codex, native inference and future providers.
 pub type PortFuture<'a, T> = Pin<Box<dyn Future<Output = Result<T, PortError>> + Send + 'a>>;
@@ -186,8 +191,10 @@ impl CheckedModelInvocationV1 {
 /// The physical ModelPort accepts only a checked, non-serializable handle.
 /// Provider dispatch still requires a durable owner WAL and a final-use recheck.
 pub trait ModelPort: Send + Sync {
-    fn infer<'a>(&'a self, checked: &'a CheckedModelInvocationV1)
-        -> PortFuture<'a, ModelObservationV1>;
+    fn infer<'a>(
+        &'a self,
+        checked: &'a CheckedModelInvocationV1,
+    ) -> PortFuture<'a, ModelObservationV1>;
 }
 
 /// In-memory verifier-invocation evidence, not an authority token or durable WAL.
