@@ -1321,7 +1321,7 @@ impl AutomationStore {
         Ok(())
     }
 
-    fn check_run_fence(
+    pub(crate) fn check_run_fence(
         &self,
         run: &TaskFlowRun,
         fence: &TaskFlowFence,
@@ -1337,7 +1337,7 @@ impl AutomationStore {
         Ok(())
     }
 
-    fn check_run_identity_fence(
+    pub(crate) fn check_run_identity_fence(
         &self,
         run: &TaskFlowRun,
         fence: &TaskFlowFence,

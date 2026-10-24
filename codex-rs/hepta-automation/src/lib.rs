@@ -24,6 +24,7 @@ mod schedule_v2;
 mod scheduler;
 mod store;
 mod taskflow;
+mod taskflow_cursor;
 mod taskflow_execution_boundary;
 #[cfg(feature = "taskflow-structural-qualification")]
 mod taskflow_kernel;
@@ -150,4 +151,7 @@ pub use taskflow_step::TaskFlowStepState;
 pub use timer_lifecycle::TimerDrainStatus;
 pub use timer_lifecycle::TimerPhase;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 19;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 20;
+
+pub use taskflow_cursor::MAX_TASKFLOW_CURSOR_PAYLOAD_BYTES;
+pub use taskflow_cursor::TaskFlowCursor;
