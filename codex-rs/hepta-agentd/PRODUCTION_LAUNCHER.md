@@ -24,6 +24,11 @@ after dropping credentials. This preserves Root custody of `run/` and the
 Registry lifecycle while the peer credentials identify the actual Agentd. A
 Root-listening socket would carry the wrong peer credentials. The production
 path must not unlink and rebind those paths as the Agentd user.
+Linux documents the credential capture points in
+[unix(7)](https://man7.org/linux/man-pages/man7/unix.7.html); its
+[AF_UNIX implementation](https://github.com/torvalds/linux/blob/master/net/unix/af_unix.c)
+captures the current process credentials in `unix_listen`. Target-machine tests
+of this exact inherited-descriptor implementation are still required.
 
 The fixed Android payload is a read-only, unlinked, Root-owned `0400` memfd with
 all four original seals. It contains the exact existing `AndroidSetTextV1`, not
@@ -84,7 +89,7 @@ Notes action retains its own original protected source/sender deadline.
    requesting any observation. It activates the two original FinalUse owners,
    obtains the opaque current-cut token, and finishes the original Config on
    the same writer lock FD.
-4. `initialize_configured_mcp_server` uses App Server's original ConfigManager,
+4. For `android`, `initialize_configured_mcp_server` uses App Server's original ConfigManager,
    AuthManager, environment registry and McpRuntime. It initializes only the
    explicitly selected, already configured server and freezes its ready
    binding. This is the original manager's new production-startup session; it
