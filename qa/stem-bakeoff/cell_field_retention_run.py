@@ -34,8 +34,9 @@ SOURCE_FILES = ("cell_field_retention_run.py", "cell_field_retention_replay.py",
     "cell_field_retention_audit.py", "cell_field_retention_score_audit.py",
     "cell_field_retention_input_audit.py", "cell_field_retention_data.py",
     "cell_field_source_recovery.py", "cell_field_state.py", "cell_field_control.py",
-    "cell_field_features.py", "cell_field_run.py", "cell_field_evaluate.py",
-    "cell_field_audit.py", "cell_learning_models.py", "cell_learning_metrics.py")
+    "cell_field_features.py", "cell_field_run.py", "cell_field_replay.py",
+    "cell_field_evaluate.py", "cell_field_audit.py", "cell_field_data.py",
+    "prepare_news_cohorts.py", "cell_learning_models.py", "cell_learning_metrics.py")
 
 
 def write_json(path, value):
