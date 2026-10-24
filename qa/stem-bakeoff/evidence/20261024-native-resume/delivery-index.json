@@ -1,0 +1,81 @@
+{
+  "schema": "hepta.native-resume-delivery-index.v1",
+  "measured_commit": "3257b035e5dc3c381e1a2342ba69d55a0a35293b",
+  "reporting_tools_commit": "92bc5d9913eb60316a9620e677e47e21ee96d19d",
+  "branch": "codex/cell-local-next-20261024",
+  "primary_data_archive": {
+    "name": "hepta-cell-native-resume-pandas-evidence-v1.tar.gz",
+    "bytes": 55762229,
+    "sha256": "3ac97d19ac129517e49df6ff880de6df6126193fe92a81b80f14a76690a1413e"
+  },
+  "external_archive_index": {
+    "name": "hepta-cell-native-resume-pandas-evidence-v1.tar.gz.index.json",
+    "bytes": 59440,
+    "sha256": "6ce025c85a10060fc57b9c103773adcb323f37025847b6f575d4cdf2689dbb8a"
+  },
+  "complete_delivery_bundle": "hepta-cell-native-resume-complete-v1.zip",
+  "outer_delivery_receipt": "hepta-cell-native-resume-delivery-receipt-v1.json",
+  "closing_records": {
+    "closing/phase-cost-ledger-consolidated.json": {
+      "bytes": 209925,
+      "sha256": "a3f8e2d2b4f8d62a567f97875bd6547eb95851dbba405c1864c8e4f0619428f7"
+    },
+    "closing/cost-ledger-corrections.json": {
+      "bytes": 2032,
+      "sha256": "37b6ce9d4f18e8d9aa4eaae2480f8d44d50fb7ae0c8292c2a2a60f23cb7954f3"
+    },
+    "closing/closing-cost-supplement.json": {
+      "bytes": 34203,
+      "sha256": "31aa5d969213ffea93a4c7742459bf82b77154a4b31e0ca15f9398f50685b412"
+    },
+    "closing/optimizer-restored-verification-summary.json": {
+      "bytes": 19638,
+      "sha256": "a718447c30b081022c1fbdffd5510ed44e8905fe531a542b075a5e81bc16b4e7"
+    },
+    "closing/native-restored-parity/parity.json": {
+      "bytes": 7028,
+      "sha256": "53e7ef867c6eb2fd1597be955da82d0bb8e60fb273c068fca4fd75c83840f0dd"
+    },
+    "closing/restored-source-audit.json": {
+      "bytes": 1685,
+      "sha256": "a02481e33b460d28a72ba5f085ea5ccfdff2812192557392bfb3acb9b8aaae0e"
+    },
+    "data-audit/pandas-pilot-closure-verification.json": {
+      "bytes": 26576,
+      "sha256": "4911c8ab03ec8b3b5892e98ad83572cea27b2cf1c19f7a269bb63951c61cc2eb"
+    }
+  },
+  "documentation": {
+    "README.md": {
+      "bytes": 11316,
+      "sha256": "45cd84bd87948f28a4cca1fdfdec741820ac61bd5d67bd01c5a5e87f0bbc071d"
+    },
+    "REPRODUCE.md": {
+      "bytes": 5099,
+      "sha256": "ea838e6d715272d3819e7c3862cd89e9e14df3190abbe1182d449ef4dedad623"
+    },
+    "facts.json": {
+      "bytes": 4665,
+      "sha256": "1cab68886511ae3c5ce8222a20508efefefef29d3d6f3aa95a5ed93c00fc9d2d"
+    },
+    "terminal-evidence.json": {
+      "bytes": 2633,
+      "sha256": "cd5dce085e0052aba0e1a01b9436d3b394c6ee850dcbf3856876ecd1eb0d1bc1"
+    },
+    "cost-summary.json": {
+      "bytes": 7529,
+      "sha256": "78ca9f5106a070710a4685aa50c930839150f3c6e9a39ef3d07d34bd849babe3"
+    }
+  },
+  "qualification": {
+    "declared_local_engineering_blockers_closed": true,
+    "new_task_quality_pass": false,
+    "pandas_primary_label": null,
+    "n128_supported": false,
+    "new_holdout_groups": 0,
+    "encoder_calls": 0,
+    "native_calibration": null,
+    "authority": "DENY_ALL"
+  },
+  "remote_ci_consulted": false
+}

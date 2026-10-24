@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.native-resume-terminal.v1",
+  "measured_source_commit": "3257b035e5dc3c381e1a2342ba69d55a0a35293b",
+  "published_reporting_source_commit": "92bc5d9913eb60316a9620e677e47e21ee96d19d",
+  "gates": {
+    "actual_neuron_project_tests": {
+      "tests": 109,
+      "passed": 109,
+      "receipt_sha256": "604d7080ecdde9124a51e8e0a677790528f56c7e8652e7415396da4abdcad578"
+    },
+    "native_real_parity": true,
+    "complete_optimizer_continuation": true,
+    "pandas_execution_and_original_label_policy": true,
+    "complete_archive_restore": true,
+    "fresh_native_and_zero_update_optimizer_recovery": true,
+    "final_fix": {
+      "returncode": 0,
+      "receipt_sha256": "88b3279a581650b0145be60bf4962ad251fbdd9176f70d46ea7b35fc4ee9c4db"
+    },
+    "final_fmt": {
+      "returncode": 0,
+      "receipt_sha256": "c36cdeae8b41b4d6f6a92953893b2e8e01d74ede42320f55b3a3d1a5db8f0527"
+    }
+  },
+  "final_fix_first_attempt": {
+    "status": "sandbox denied local TCP lock listener",
+    "receipt_sha256": "a9199b3d5abcfa35c00cca4a312d355e0a9f2280ade1d76e0c81d31c014eb7a8",
+    "recovery": "offline scoped command succeeded with reviewed escalation"
+  },
+  "format_base": "56b5815a8ae811f6846e92dbbe46ca1a74d83f2f",
+  "formatter_changed_paths": [
+    "codex-rs/hepta-neuron/examples/learned_cell_replay.rs",
+    "codex-rs/hepta-neuron/src/learned_cell_features_tests.rs",
+    "codex-rs/hepta-neuron/src/learned_cell_head.rs",
+    "codex-rs/hepta-neuron/src/learned_cell_head_tests.rs"
+  ],
+  "final_rust_file_sha256": {
+    "codex-rs/hepta-neuron/examples/learned_cell_replay.rs": "35bebdf4c5526fffcb15909b266cb7d0d3f5e6269f73576581f732df0c513fc7",
+    "codex-rs/hepta-neuron/src/learned_cell_features_tests.rs": "df7f01c0b99f2fb113c08899a6c272d15904f1cfc81d507d601633554339133a",
+    "codex-rs/hepta-neuron/src/learned_cell_head.rs": "cfe49e19802c35099810b7b1de7d7148611f58d124221ae47756aec48f758d7f",
+    "codex-rs/hepta-neuron/src/learned_cell_head_tests.rs": "61fe9d7820bc5aff6b53250b3f9d08bf9861a88b2573bba981eb9af9b4ed024a"
+  },
+  "tests_or_numerical_replays_after_final_fix_or_fmt": 0,
+  "source_formatting_boundary": "All measurements and replays used the retained original measured commit. Final Rust formatting is recorded separately; no post-format test claim.",
+  "remaining_blockers_within_declared_engineering_phase": [],
+  "scientific_boundaries": [
+    "No new quality qualification",
+    "No valid pandas positive action label",
+    "No n128 support",
+    "No independent new holdout",
+    "No multimodal gain experiment",
+    "No power-loss recovery qualification"
+  ],
+  "remote_ci_consulted": false
+}

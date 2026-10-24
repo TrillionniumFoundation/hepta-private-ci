@@ -1,0 +1,181 @@
+{
+  "schema": "hepta.native-resume-cost-summary.v1",
+  "authoritative_consolidated_ledger": {
+    "path": "closing/phase-cost-ledger-consolidated.json",
+    "bytes": 209925,
+    "sha256": "a3f8e2d2b4f8d62a567f97875bd6547eb95851dbba405c1864c8e4f0619428f7"
+  },
+  "correction": {
+    "path": "closing/cost-ledger-corrections.json",
+    "bytes": 2032,
+    "sha256": "37b6ce9d4f18e8d9aa4eaae2480f8d44d50fb7ae0c8292c2a2a60f23cb7954f3"
+  },
+  "net_groups": {
+    "audit_and_preparation_bodies": {
+      "cpu_unknown_intervals": 0,
+      "known_cpu_ns_lower_bound": 3116899712,
+      "known_work_wall_ns_sum_not_elapsed": 4619303878,
+      "selected_intervals": 33,
+      "wall_unknown_intervals": 0
+    },
+    "closing_archive_manifest_preparation": {
+      "cpu_unknown_intervals": 0,
+      "known_cpu_ns_lower_bound": 85450244,
+      "known_work_wall_ns_sum_not_elapsed": 104793671,
+      "selected_intervals": 1,
+      "wall_unknown_intervals": 0
+    },
+    "closing_cost_scope_review": {
+      "cpu_unknown_intervals": 0,
+      "known_cpu_ns_lower_bound": 4544693,
+      "known_work_wall_ns_sum_not_elapsed": 4546267,
+      "selected_intervals": 1,
+      "wall_unknown_intervals": 0
+    },
+    "closing_pandas_closure_verification": {
+      "cpu_unknown_intervals": 0,
+      "known_cpu_ns_lower_bound": 690718762,
+      "known_work_wall_ns_sum_not_elapsed": 1207920016,
+      "selected_intervals": 1,
+      "wall_unknown_intervals": 0
+    },
+    "closing_receipt_ledger_derivations": {
+      "cpu_unknown_intervals": 0,
+      "known_cpu_ns_lower_bound": 195995343,
+      "known_work_wall_ns_sum_not_elapsed": 254344273,
+      "selected_intervals": 2,
+      "wall_unknown_intervals": 0
+    },
+    "closing_restored_optimizer_summary": {
+      "cpu_unknown_intervals": 0,
+      "known_cpu_ns_lower_bound": 13519309,
+      "known_work_wall_ns_sum_not_elapsed": 17176716,
+      "selected_intervals": 1,
+      "wall_unknown_intervals": 0
+    },
+    "closing_restored_source_audit": {
+      "cpu_unknown_intervals": 0,
+      "known_cpu_ns_lower_bound": 91209923,
+      "known_work_wall_ns_sum_not_elapsed": 124939576,
+      "selected_intervals": 1,
+      "wall_unknown_intervals": 0
+    },
+    "closing_source_snapshot_housekeeping": {
+      "cpu_unknown_intervals": 0,
+      "known_cpu_ns_lower_bound": 1056062,
+      "known_work_wall_ns_sum_not_elapsed": 1680101,
+      "selected_intervals": 2,
+      "wall_unknown_intervals": 0
+    },
+    "local_build_gates_and_fetch": {
+      "cpu_unknown_intervals": 0,
+      "known_cpu_ns_lower_bound": 77183241591,
+      "known_work_wall_ns_sum_not_elapsed": 82085340439,
+      "selected_intervals": 22,
+      "wall_unknown_intervals": 0
+    },
+    "local_publication_commits": {
+      "cpu_unknown_intervals": 0,
+      "known_cpu_ns_lower_bound": 1148022611,
+      "known_work_wall_ns_sum_not_elapsed": 1081750177,
+      "selected_intervals": 16,
+      "wall_unknown_intervals": 0
+    },
+    "local_resource_and_cache_bodies": {
+      "cpu_unknown_intervals": 1,
+      "known_cpu_ns_lower_bound": 9123697568,
+      "known_work_wall_ns_sum_not_elapsed": 13162455645,
+      "selected_intervals": 8,
+      "wall_unknown_intervals": 1
+    },
+    "native_export": {
+      "cpu_unknown_intervals": 0,
+      "known_cpu_ns_lower_bound": 305994835,
+      "known_work_wall_ns_sum_not_elapsed": 353562731,
+      "selected_intervals": 1,
+      "wall_unknown_intervals": 0
+    },
+    "native_parity": {
+      "cpu_unknown_intervals": 0,
+      "known_cpu_ns_lower_bound": 317814807,
+      "known_work_wall_ns_sum_not_elapsed": 358921188,
+      "selected_intervals": 1,
+      "wall_unknown_intervals": 0
+    },
+    "optimizer_resume": {
+      "cpu_unknown_intervals": 0,
+      "known_cpu_ns_lower_bound": 7699561742,
+      "known_work_wall_ns_sum_not_elapsed": 8229658304,
+      "selected_intervals": 1,
+      "wall_unknown_intervals": 0
+    },
+    "pandas_acquisition_runtime_build_commands": {
+      "cpu_unknown_intervals": 0,
+      "known_cpu_ns_lower_bound": 643429727097,
+      "known_work_wall_ns_sum_not_elapsed": 612446044713,
+      "selected_intervals": 21,
+      "wall_unknown_intervals": 0
+    },
+    "pandas_action_execution": {
+      "cpu_unknown_intervals": 0,
+      "known_cpu_ns_lower_bound": 22809980965,
+      "known_work_wall_ns_sum_not_elapsed": 22830981029,
+      "selected_intervals": 1,
+      "wall_unknown_intervals": 0
+    },
+    "pandas_candidate_artifact_recovery": {
+      "cpu_unknown_intervals": 0,
+      "known_cpu_ns_lower_bound": 2548846084,
+      "known_work_wall_ns_sum_not_elapsed": 2656401836,
+      "selected_intervals": 1,
+      "wall_unknown_intervals": 0
+    },
+    "publication_api_wall": {
+      "cpu_unknown_intervals": 16,
+      "known_cpu_ns_lower_bound": 0,
+      "known_work_wall_ns_sum_not_elapsed": 90076000000,
+      "selected_intervals": 16,
+      "wall_unknown_intervals": 0
+    },
+    "synthetic_development_tests": {
+      "cpu_unknown_intervals": 0,
+      "known_cpu_ns_lower_bound": 5130809268,
+      "known_work_wall_ns_sum_not_elapsed": 5059505014,
+      "selected_intervals": 13,
+      "wall_unknown_intervals": 0
+    },
+    "workspace_materialization": {
+      "cpu_unknown_intervals": 0,
+      "known_cpu_ns_lower_bound": 1461399101,
+      "known_work_wall_ns_sum_not_elapsed": 8256245441,
+      "selected_intervals": 1,
+      "wall_unknown_intervals": 0
+    }
+  },
+  "selected_receipt_lower_bounds": {
+    "cpu_unknown_intervals": 17,
+    "known_cpu_ns_lower_bound": 775358489717,
+    "known_work_wall_ns_sum_not_elapsed": 852931571015,
+    "selected_intervals": 144,
+    "wall_unknown_intervals": 1
+  },
+  "boundaries": [
+    "The raw first/final ledger and raw supplement overcount this one nested restoration interval. Only the consolidated totals apply the owner-confirmed containment correction.",
+    "Work-wall sums are accumulated selected work intervals; parallel activity prevents treating them as calendar elapsed.",
+    "Known CPU is a lower bound. Publication API CPU, interrupted build descendants, failed restored-source first-attempt timing and uninstrumented activity remain unknown.",
+    "An unknown-cost failed Git source read (exit 128, missing empty refs directory) is preserved without substituting zero; recovery did not alter restored file bytes.",
+    "The numerical/model/test stages are finished. This consolidation read only JSON and hashes and did not execute tests, models, native replay, training, fixes or formatters.",
+    "Own supplement/consolidation body timers and any later editorial/publication activity are outside these selected sums; no full-session total is claimed."
+  ],
+  "single_full_session_total": null,
+  "following_delivery_and_publication_receipts_are_retained_separately": true,
+  "unknown_or_outside_measured_intervals": [
+    "Editing, tool orchestration, exploratory reads, source snapshots and freeze operations without a full outer timer.",
+    "Publication API CPU, server work, unrecorded waiting and serialization outside receipt scopes.",
+    "Interrupted pandas candidate-build descendants: preserved waited-child CPU is a lower bound.",
+    "Candidate artifact-reuse plan freeze has no complete outer timing receipt.",
+    "Historical toolchain, package/model downloads, prior learned Heads and Encoder costs are reused inputs, not free work.",
+    "runtime-cache-reclamation-attempt-01.json explicitly has unknown wall and CPU; neither is replaced by zero.",
+    "Native audit preparation reads preceding the timed acceptance body have no reliable complete CPU accounting."
+  ]
+}
