@@ -13,6 +13,18 @@ def signature(info):
     return info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns
 
 
+def verify_bytes(stream, size, digest):
+    computed, read = hashlib.sha256(), 0
+    while chunk := stream.read(min(1024**2, size + 1 - read)):
+        read += len(chunk)
+        require(read <= size, "source grew during hash")
+        computed.update(chunk)
+    require(
+        read == size and computed.hexdigest() == digest,
+        "source byte/hash pin mismatch",
+    )
+
+
 @contextmanager
 def pinned_file(path, size, digest):
     path = Path(path).absolute()
@@ -34,17 +46,13 @@ def pinned_file(path, size, digest):
             signature(before) == signature(os.fstat(stream.fileno())),
             "source changed on open",
         )
-        computed, read = hashlib.sha256(), 0
-        while chunk := stream.read(min(1024**2, size + 1 - read)):
-            read += len(chunk)
-            require(read <= size, "source grew during hash")
-            computed.update(chunk)
-        require(
-            read == size and computed.hexdigest() == digest,
-            "source byte/hash pin mismatch",
-        )
+        verify_bytes(stream, size, digest)
         stream.seek(0)
         yield stream
+        # Bypass buffered reads and timestamp granularity when checking final bytes.
+        with os.fdopen(os.dup(stream.fileno()), "rb", buffering=0) as verify:
+            verify.seek(0)
+            verify_bytes(verify, size, digest)
         require(
             signature(before)
             == signature(os.fstat(stream.fileno()))

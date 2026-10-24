@@ -32,6 +32,26 @@ class CustodyTests(unittest.TestCase):
             alias.unlink()
             with self.assertRaises(PreflightError), p.pinned_file(file, 8, digest):
                 file.write_bytes(b"modified")
+            for consumed in (0, 1, 8):
+                file.write_bytes(b"original")
+                unchanged_signature = p.signature(file.stat())
+                with patch.object(p, "signature", return_value=unchanged_signature):
+                    with self.assertRaisesRegex(PreflightError, "byte/hash pin"):
+                        with p.pinned_file(file, 8, digest) as stream:
+                            self.assertEqual(
+                                stream.read(consumed), b"original"[:consumed]
+                            )
+                            file.write_bytes(b"modified")
+
+            for changed in (b"short", b"expanded!"):
+                file.write_bytes(b"original")
+                unchanged_signature = p.signature(file.stat())
+                with patch.object(p, "signature", return_value=unchanged_signature):
+                    with (
+                        self.assertRaises(PreflightError),
+                        p.pinned_file(file, 8, digest),
+                    ):
+                        file.write_bytes(changed)
 
     def test_zip_member_sizes_hashes_duplicates_and_type(self):
         raw = b'{"info":{},"images":[]}'
