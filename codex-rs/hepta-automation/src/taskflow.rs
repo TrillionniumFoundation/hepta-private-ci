@@ -1280,6 +1280,17 @@ impl AutomationStore {
                 command.expected_revision, run.revision
             )));
         }
+        if matches!(&command.transition, TaskFlowTransition::Cancel { .. }) {
+            // This command asserts terminal cancellation. Once an effect is
+            // durably admitted, only original provider evidence may settle it;
+            // local cancellation cannot clear its reconciliation fence.
+            crate::taskflow_step::reject_cancel_after_effect_admission(
+                self,
+                &mut tx,
+                &command.run_id,
+            )
+            .await?;
+        }
         let transition_name = transition_name(&command.transition);
         apply_transition(&mut run, &definition, &command.transition, command.now_ms)?;
         run.revision = run

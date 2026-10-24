@@ -730,6 +730,7 @@ impl AutomationStore {
                 &nonce_digest,
                 command_id,
                 now_ms,
+                fence,
             )
             .await?;
         let durable = match start {
@@ -947,6 +948,7 @@ impl AutomationStore {
                 &nonce_digest,
                 command_id,
                 now_ms,
+                fence,
             )
             .await?;
         let durable = match start {

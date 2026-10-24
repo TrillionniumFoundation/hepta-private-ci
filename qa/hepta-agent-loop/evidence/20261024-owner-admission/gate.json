@@ -1,0 +1,29 @@
+{
+  "scope": "original AutomationStore atomic effect admission and cancellation ordering",
+  "source_base": "52d6f3ed452192f2851d1aa74c5fd5bad07ea655",
+  "full_automation": {
+    "stage": "automation-full",
+    "command": [
+      "just",
+      "test",
+      "-p",
+      "codex-hepta-automation"
+    ],
+    "returncode": 0,
+    "wall_seconds": 245.82372113701422,
+    "log_sha256": "cccaae35757f721ebaf4aa90342979100d76e4e8df54cb7e9173666547e8d3d9"
+  },
+  "full_test_count": 113,
+  "focused_original_effect_tests": 13,
+  "focused_included_in_full_count": true,
+  "focused_gate": {
+    "returncode": 0,
+    "wall_seconds": 22.97996102599427,
+    "log_sha256": "f789452c9dffcccc823f05f32c89235edb85eb47bf418d74c9ce100f7a5e2a58"
+  },
+  "initial_failure": "new test submodule was accidentally autodiscovered as standalone; moved below tests/support and retained all three new race tests",
+  "elapsed_clock_limit": "legacy caller-owned now_ms remains supplied timestamp; no fresh-clock qualification",
+  "production_services_changed": false,
+  "live_model_calls": 0,
+  "full_dependency_clippy": "running separately on combined source; not asserted by this record"
+}

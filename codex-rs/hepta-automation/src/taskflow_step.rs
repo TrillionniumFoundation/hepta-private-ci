@@ -43,6 +43,12 @@ pub const TASKFLOW_STEP_OUTBOX_EFFECTS: bool = false;
 pub const TASKFLOW_STEP_OUTBOX_PRODUCTION_CALLER: bool = false;
 pub const TASKFLOW_STEP_OUTBOX_SCHEDULER_AUTHORITY: bool = false;
 
+#[path = "taskflow_effect_admission.rs"]
+mod effect_admission;
+pub(crate) use effect_admission::EffectStepAdmission;
+pub(crate) use effect_admission::reject_cancel_after_effect_admission;
+pub(crate) use effect_admission::validate_effect_step_admission;
+
 const STEP_SCHEMA_VERSION: u32 = 1;
 const MAX_TEXT_BYTES: usize = 256;
 const MAX_STEP_ATTEMPT: u32 = 1_000_000;

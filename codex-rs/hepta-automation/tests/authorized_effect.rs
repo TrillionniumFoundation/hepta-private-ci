@@ -1227,3 +1227,6 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
     );
     assert_eq!(must_not_dispatch.calls, 0);
 }
+
+#[path = "support/authorized_effect_admission_races.rs"]
+mod admission_races;
