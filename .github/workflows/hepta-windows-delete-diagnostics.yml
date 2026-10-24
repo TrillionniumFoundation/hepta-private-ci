@@ -1,6 +1,9 @@
 name: Hepta Windows DELETE focused diagnostics
 
 on:
+  push:
+    branches:
+      - fix/dot-windows-delete-controls-20261024
   pull_request:
     paths:
       - ".github/workflows/hepta-windows-delete-diagnostics.yml"
@@ -62,6 +65,7 @@ jobs:
             'codex-rs/windows-sandbox-rs/src/token.rs',
             'codex-rs/windows-sandbox-rs/src/token_tests.rs',
             'codex-rs/windows-sandbox-rs/src/token_delete_diagnostics_tests.rs',
+            'codex-rs/windows-sandbox-rs/src/token_delete_capability_controls_tests.rs',
             'codex-rs/windows-sandbox-rs/src/acl.rs',
             'codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs',
             'codex-rs/windows-sandbox-rs/src/unified_exec/backends/legacy.rs'
@@ -91,7 +95,7 @@ jobs:
         with:
           tool: just@1.51.0,nextest@0.9.103
 
-      - name: Run all three original failures and native DELETE matrix
+      - name: Run original failures, native DELETE matrix and strict capability control
         working-directory: codex-rs
         run: |
           $ErrorActionPreference = 'Stop'
@@ -100,7 +104,8 @@ jobs:
             'token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes',
             'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces',
             'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots',
-            'token::tests::delete_diagnostics::workspace_delete_permission_routes_diagnostic_matrix'
+            'token::tests::delete_diagnostics::workspace_delete_permission_routes_diagnostic_matrix',
+            'token::tests::delete_diagnostics::capability_controls::workspace_delete_capability_controls_without_parent_delete_child'
           )
           $filter = ($expected | ForEach-Object { "test(=$_)" }) -join ' | '
           # nextest 0.9.103 does not inherit default.junit.path into the local profile.
@@ -131,8 +136,8 @@ jobs:
             $cases = @($junit.SelectNodes('//testcase'))
             $selected = @($cases | ForEach-Object { $_.name })
             $failedCount = @($cases | Where-Object { $_.SelectSingleNode('failure') -or $_.SelectSingleNode('error') }).Count
-            if ($selected.Count -ne 4 -or @(Compare-Object ($expected | Sort-Object) ($selected | Sort-Object)).Count -ne 0) {
-              $selectionError = 'The executed JUnit cases do not equal the four exact required tests'
+            if ($selected.Count -ne 5 -or @(Compare-Object ($expected | Sort-Object) ($selected | Sort-Object)).Count -ne 0) {
+              $selectionError = 'The executed JUnit cases do not equal the five exact required tests'
             }
             if (@($cases | Where-Object { $_.SelectSingleNode('skipped') }).Count -ne 0) {
               $selectionError = 'A required test was skipped'
@@ -146,6 +151,11 @@ jobs:
           $routes = @($records | ForEach-Object { $_.Substring('HEPTA_DELETE_DIAGNOSTIC '.Length) | ConvertFrom-Json })
           $expectedRoutes = @('neither', 'direct_delete_only', 'parent_delete_child_only', 'both', 'preexisting_low_both')
           $routesComplete = $routes.Count -eq 5 -and @(Compare-Object ($expectedRoutes | Sort-Object) (@($routes.route) | Sort-Object)).Count -eq 0
+          $controlRecords = @(Get-Content "$env:EVIDENCE_DIR/stdout.log" | ForEach-Object { $_.TrimStart() } | Where-Object { $_.StartsWith('HEPTA_DELETE_CAPABILITY_CONTROL ') })
+          $controlRecords | ForEach-Object { $_.Substring('HEPTA_DELETE_CAPABILITY_CONTROL '.Length) } |
+            Set-Content "$env:EVIDENCE_DIR/strict-controls.jsonl" -Encoding utf8
+          $controls = @($controlRecords | ForEach-Object { $_.Substring('HEPTA_DELETE_CAPABILITY_CONTROL '.Length) | ConvertFrom-Json })
+          $controlsComplete = $controls.Count -eq 1 -and $controls[0].schema -ceq 'hepta.windows-delete-capability-control.v1' -and $controls[0].route -ceq 'object_delete_without_parent_delete_child'
           [ordered]@{
             schema = 'hepta.windows-delete-native-run.v1'
             source_sha = $env:EXPECTED_SHA
@@ -156,14 +166,16 @@ jobs:
             selection_error = $selectionError
             observed_route_count = $routes.Count
             all_routes_recorded = $routesComplete
+            observed_strict_control_count = $controls.Count
+            strict_control_recorded = $controlsComplete
             sandbox_qualified = $false
             production_token_modified = $false
             original_blocking_ci_required = $true
           } | ConvertTo-Json -Depth 8 | Set-Content "$env:EVIDENCE_DIR/native-run.json" -Encoding utf8
-          "### Windows DELETE focused diagnostics`nNative test exit: $testExit`nObserved cases: $($selected.Count)/4`nRoutes: $($routes.Count)/5`nSandbox qualification: **not granted**; original blocking CI remains required." |
+          "### Windows DELETE focused diagnostics`nNative test exit: $testExit`nObserved cases: $($selected.Count)/5`nRoutes: $($routes.Count)/5`nStrict controls: $($controls.Count)/1`nSandbox qualification: **not granted**; original blocking CI remains required." |
             Add-Content $env:GITHUB_STEP_SUMMARY
           if ($testExit -ne 0) { exit $testExit }
-          if ($selectionError -or -not $routesComplete -or $failedCount -ne 0) { throw 'Native evidence is incomplete or failed; see native-run.json' }
+          if ($selectionError -or -not $routesComplete -or -not $controlsComplete -or $failedCount -ne 0) { throw 'Native evidence is incomplete or failed; see native-run.json' }
 
       - name: Verify unchanged source and hash retained evidence
         if: always()

@@ -371,3 +371,6 @@ fn workspace_delete_permission_routes_diagnostic_matrix() -> Result<()> {
     assert_eq!(denied, vec![Some(5); routes.len() * 2]);
     Ok(())
 }
+
+#[path = "token_delete_capability_controls_tests.rs"]
+mod capability_controls;
