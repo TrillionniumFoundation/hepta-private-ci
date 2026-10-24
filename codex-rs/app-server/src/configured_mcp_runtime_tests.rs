@@ -52,7 +52,10 @@ async fn configured_mcp_bootstrap_uses_original_config_auth_and_named_binding() 
     let original = initialize_configured_mcp_server(
         AbsolutePathBuf::from_absolute_path(home.path())?,
         AbsolutePathBuf::from_absolute_path(workspace.path())?,
-        Arg0DispatchPaths::default(),
+        Arg0DispatchPaths {
+            codex_self_exe: Some(std::env::current_exe()?),
+            ..Default::default()
+        },
         "original_runtime", "local", Duration::from_secs(10),
     ).await?;
     assert_eq!(calls.load(Ordering::SeqCst), 0);
