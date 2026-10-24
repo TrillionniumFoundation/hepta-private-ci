@@ -106,12 +106,46 @@ async fn agentd_product_host_commits_through_canonical_cognitive_store()
 
     let after = host.writer().recovery_anchor().await?;
     assert_ne!(after, before);
+    assert_eq!(
+        host.writer().status("occurrence:product-writer:1").await?,
+        LocalOutcomeState::Queued
+    );
+    let release_error = host
+        .writer()
+        .release()
+        .await
+        .expect_err("queued occurrence must prevent lease release");
+    assert!(
+        matches!(
+            &release_error,
+            codex_hepta_cognitive_store::ProductionWriterError::Local(
+                codex_hepta_memory::LocalLeaseOutboxError::IllegalTransition(_)
+            )
+        ),
+        "unexpected queued release error: {release_error}"
+    );
+    assert_eq!(host.writer().recovery_anchor().await?, after);
+    // This fixture commits durable admission, not a target-side effect.
+    // Retain that admission while explicitly settling the undispatched intent.
+    host.writer()
+        .rollback_occurrence(
+            "occurrence:product-writer:1",
+            "fixture teardown: admitted intent was never dispatched",
+        )
+        .await?;
+    assert_eq!(
+        host.writer().status("occurrence:product-writer:1").await?,
+        LocalOutcomeState::RolledBack
+    );
     host.writer().release().await?;
+    let released = host.writer().recovery_anchor().await?;
+    assert_ne!(released, after);
     drop(host);
 
     let reopened = DurableCognitiveStore::open(&layout).await?;
     let reopened_anchor = reopened.recovery_anchor().await?;
     assert_ne!(reopened_anchor, before);
+    assert_eq!(reopened_anchor, released);
     Ok(())
 }
 
