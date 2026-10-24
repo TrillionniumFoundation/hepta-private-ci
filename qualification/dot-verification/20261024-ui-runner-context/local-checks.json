@@ -1,0 +1,18 @@
+{
+  "semantic_changes": [
+    "remove job env CARGO_TARGET_DIR",
+    "add exact donor initializer to existing binding step"
+  ],
+  "jobs": [
+    "robrix-host",
+    "native-presentation",
+    "ui-bazel-lock-generation"
+  ],
+  "bash_scripts_checked": 30,
+  "consumer_order": "passed",
+  "spaced_path_complete_step": "passed",
+  "head_tree_lock_evidence": "passed",
+  "target_creation_unchanged": true,
+  "trigger": "pull_request only",
+  "hosted_execution": false
+}
