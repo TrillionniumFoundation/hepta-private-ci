@@ -45,6 +45,36 @@ class IndependentPoolAuditTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 audit.check_child(*args)
 
+    def test_bool_4096_head_dispatch_counters_fail_independent_audit(self):
+        data, _, artifact, request_sha, reference = fixture()
+        cells = 4096
+        data.update(cells=cells, resident_heads=cells,
+                    private_weights_payload_bytes=cells * artifact["weights_bytes"],
+                    warmup_calls=cells, fanout_predictions_per_sample=cells,
+                    dispatch_calls_per_head=[1] * cells)
+        summary = pool.summarize(data, cells, artifact, request_sha, reference)
+        self.assertEqual(audit.check_child(data, summary, cells, artifact, request_sha, reference), 0.0)
+        data["dispatch_calls_per_head"] = [True] * cells
+        with self.assertRaisesRegex(ValueError, "per-Head dispatch counts must be exact integers"):
+            audit.check_child(data, summary, cells, artifact, request_sha, reference)
+
+    def test_bool_one_head_headers_fail_independent_audit(self):
+        data, _, artifact, request_sha, reference = fixture()
+        cells = 1
+        data.update(cells=cells, resident_heads=cells,
+                    private_weights_payload_bytes=artifact["weights_bytes"],
+                    warmup_calls=cells, fanout_predictions_per_sample=cells,
+                    dispatch_calls_per_head=[4096])
+        summary = pool.summarize(data, cells, artifact, request_sha, reference)
+        self.assertEqual(audit.check_child(data, summary, cells, artifact, request_sha, reference), 0.0)
+        for key in ("cells", "resident_heads", "independently_trained_templates",
+                    "warmup_calls", "fanout_predictions_per_sample"):
+            changed = copy.deepcopy(data)
+            changed[key] = True
+            with self.subTest(field=key):
+                with self.assertRaisesRegex(ValueError, "native count must be an exact integer"):
+                    audit.check_child(changed, summary, cells, artifact, request_sha, reference)
+
     def test_fixed_tolerance_allows_numeric_rounding_but_never_decision_change(self):
         reference = fixture()[4][0]["prediction"]
         actual = copy.deepcopy(reference)
@@ -85,6 +115,26 @@ class IndependentPoolAuditTests(unittest.TestCase):
             mutate(args[0], args[1])
             with self.assertRaises(ValueError):
                 audit.check_child(*args)
+
+    def test_zero_resident_or_virtual_memory_fails_independent_audit(self):
+        for phase in ("baseline", "post_load", "post_warmup", "post_measurement"):
+            for key in ("rss_bytes", "virtual_bytes"):
+                with self.subTest(phase=phase, field=key):
+                    args = observation()
+                    args[0][phase][key] = args[1][phase][key] = 0
+                    if key == "rss_bytes":
+                        args[0][phase]["rss_anon_bytes"] = args[1][phase]["rss_anon_bytes"] = 0
+                    with self.assertRaisesRegex(ValueError, "invalid native resident observation"):
+                        pool.summarize(args[0], *args[2:])
+                    with self.assertRaisesRegex(ValueError, "resident/peak/virtual budget"):
+                        audit.check_child(*args)
+
+    def test_zero_anonymous_pages_remain_valid_with_positive_resident_memory(self):
+        args = observation()
+        for phase in ("baseline", "post_load", "post_warmup", "post_measurement"):
+            args[0][phase]["rss_anon_bytes"] = args[1][phase]["rss_anon_bytes"] = 0
+        self.assertEqual(pool.summarize(args[0], *args[2:]), args[1])
+        self.assertEqual(audit.check_child(*args), 0.0)
 
     def test_digest_bound_reader_rejects_file_change_link_and_byte_overflow(self):
         with tempfile.TemporaryDirectory() as directory:
