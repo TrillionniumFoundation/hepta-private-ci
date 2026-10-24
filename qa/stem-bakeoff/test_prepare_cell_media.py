@@ -1,12 +1,13 @@
 """Check source isolation and label-free predictor planning without model scores."""
 
 import json
+import hashlib
 from pathlib import Path
 import tempfile
 import unittest
 
 from prepare_cell_media import (freeze_dataset, image_records, input_identity,
-                                remove_crossing_groups, unique_representatives)
+                                remove_crossing_groups, unique_representatives, verify_git_blob)
 
 
 class MediaPlanningTests(unittest.TestCase):
@@ -63,6 +64,13 @@ class MediaPlanningTests(unittest.TestCase):
             path.write_bytes(b"not the author dataset")
             with self.assertRaisesRegex(ValueError, "checksum"):
                 image_records(path)
+
+    def test_metadata_label_mutation_cannot_inherit_pinned_git_identity(self):
+        raw = b"filename,target\nexample.wav,1\n"
+        entry = {"size": len(raw), "sha": hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()}
+        verify_git_blob(raw, entry)
+        with self.assertRaisesRegex(ValueError, "pinned Git tree"):
+            verify_git_blob(raw.replace(b",1", b",0"), entry)
 
 
 if __name__ == "__main__":

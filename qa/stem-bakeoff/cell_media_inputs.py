@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import importlib.metadata
+import io
 import json
 from pathlib import Path
 import resource
@@ -96,21 +97,23 @@ def cheap_features(dataset, output):
     features = []
     for row in rows:
         source = source_root / row["record"][modality]
-        if sha_file(source) != row["media_sha256"]:
+        raw = source.read_bytes()
+        if sha(raw) != row["media_sha256"]:
             raise ValueError("media changed before inexpensive extraction")
         if modality == "image":
-            with Image.open(source) as picture:
+            with Image.open(io.BytesIO(raw)) as picture:
                 vector = (np.asarray(picture, dtype=np.float32).reshape(-1) / 127.5 - 1)
         else:
             import librosa
-            signal, rate = librosa.load(source, sr=16000, mono=True)
+            signal, rate = librosa.load(io.BytesIO(raw), sr=16000, mono=True)
             if rate != 16000 or len(signal) != 80000:
                 raise ValueError("full resampled five-second waveform required")
             mfcc = librosa.feature.mfcc(y=signal, sr=rate, n_mfcc=40, n_fft=512, hop_length=160, n_mels=64)
             vector = np.concatenate((mfcc.mean(axis=1), mfcc.std(axis=1)))
         features.append(vector)
-    if sha_file(dataset) != digest:
-        raise ValueError("cohort changed during inexpensive extraction")
+    after_rows, after_modality, after_digest = media_rows(dataset)
+    if rows != after_rows or modality != after_modality or digest != after_digest:
+        raise ValueError("source cohort changed during inexpensive extraction")
     return save_features(root, features, plan, identity,
         {"encoding": {"wall_ns": time.perf_counter_ns() - started,
                       "cpu_ns": time.process_time_ns() - cpu, "encoder_instances": 0,

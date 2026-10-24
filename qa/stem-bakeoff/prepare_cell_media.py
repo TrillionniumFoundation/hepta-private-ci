@@ -45,6 +45,12 @@ def input_identity(modality, text, media_digest):
     return sha(canonical({"modality": modality, "text": text, "media_digest": media_digest}))
 
 
+def verify_git_blob(raw, entry):
+    digest = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+    if len(raw) != entry["size"] or digest != entry["sha"]:
+        raise ValueError("metadata bytes differ from the pinned Git tree")
+
+
 def remove_crossing_groups(rows, partition):
     groups = collections.defaultdict(list)
     for row in rows:
@@ -183,6 +189,7 @@ def prepare_audio(metadata, tree, output):
     metadata, tree = Path(metadata), Path(tree)
     inputs = list(csv.DictReader(io.StringIO(metadata.read_text())))
     objects = {row["path"]: row for row in json.loads(tree.read_bytes())["tree"] if row["type"] == "blob"}
+    verify_git_blob(metadata.read_bytes(), objects["meta/esc50.csv"])
     if len(inputs) != 2000 or len({row["filename"] for row in inputs}) != 2000:
         raise ValueError("complete ESC-50 metadata inventory required")
     rows = []
