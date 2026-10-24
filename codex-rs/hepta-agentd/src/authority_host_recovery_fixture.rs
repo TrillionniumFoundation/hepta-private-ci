@@ -24,7 +24,7 @@ pub(super) struct Peer {
     pub(super) lifetime: CognitiveCheckpointPeerLifetime,
 }
 impl Peer {
-    fn spawn(command: &mut Command) -> Self {
+    pub(super) fn spawn(command: &mut Command) -> Self {
         let child = command.spawn().unwrap();
         // SAFETY: the PID belongs to our retained live Child; no borrowed pointers.
         let raw = unsafe { libc::syscall(libc::SYS_pidfd_open, child.id(), 0) };
@@ -58,7 +58,7 @@ impl Drop for Peer {
     }
 }
 
-fn dedicated() -> Command {
+pub(super) fn dedicated() -> Command {
     let mut command = Command::new("/usr/bin/setpriv");
     command.args(["--reuid=60001", "--regid=60001", "--clear-groups", "--no-new-privs",
         "--inh-caps=-all", "--ambient-caps=-all", "--bounding-set=-all"]);
