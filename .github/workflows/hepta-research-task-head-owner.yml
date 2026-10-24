@@ -1,27 +1,30 @@
 name: Hepta research task Head owner boundaries
+
 on:
   pull_request:
     paths:
-      - 'codex-rs/hepta-agentd/src/research_task_head_owner*.rs'
-      - 'codex-rs/hepta-neuron/**'
-      - 'codex-rs/hepta-infer-core/**'
-      - 'codex-rs/hepta-types/**'
-      - 'codex-rs/Cargo.toml'
-      - 'qa/stem-bakeoff/prepare_research_task_head_owner.py'
-      - 'qa/stem-bakeoff/test_research_task_head_owner_fixture.py'
-      - 'scripts/prepare_research_task_head_check.py'
-      - 'qualification/research-task-head-check/**'
-      - '.github/workflows/hepta-research-task-head-owner.yml'
+      - codex-rs/hepta-agentd/src/research_task_head_owner*.rs
+      - codex-rs/hepta-neuron/**
+      - codex-rs/hepta-infer-core/**
+      - codex-rs/hepta-types/**
+      - codex-rs/Cargo.toml
+      - qa/stem-bakeoff/prepare_research_task_head_owner.py
+      - qa/stem-bakeoff/test_research_task_head_owner_fixture.py
+      - scripts/prepare_research_task_head_check.py
+      - qualification/research-task-head-check/**
+      - .github/workflows/hepta-research-task-head-owner.yml
   workflow_dispatch:
+
 permissions:
   contents: read
+
 jobs:
   actual-owner-module:
     runs-on: ubuntu-slim
     timeout-minutes: 20
     env:
-      CARGO_BUILD_JOBS: '2'
-      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
     defaults:
       run:
         shell: bash

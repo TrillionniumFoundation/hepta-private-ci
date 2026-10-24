@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.native-owner-prettier-minimal-candidate.v1",
+  "source_parent_sha": "3157c8f280059c47e9d1da74422b78d48b532c13",
+  "source_parent_tree": "e75a0cef3e5d204c90f68b05d90fb14097ac72d7",
+  "source_file": ".github/workflows/hepta-research-task-head-owner.yml",
+  "source_file_blob_before": "425873552ec580ae464ff2b01e78c015f9ca0fda",
+  "source_file_blob_after": "da1ddb2622065bafe6ac47ce1dc372ceb0d32bcc",
+  "source_failure": {
+    "workflow": "blocking-ci",
+    "run_id": 40107072179,
+    "job_id": 121005629449,
+    "step": "Check formatting",
+    "observed_failure": "prettier --check flags .github/workflows/hepta-research-task-head-owner.yml; pnpm format exits 1",
+    "source_sha": "7f26349c331cbce03c0493345e522a91832ce873"
+  },
+  "source_comparison": {
+    "preserved_trigger_paths": [
+      "codex-rs/hepta-agentd/src/research_task_head_owner*.rs",
+      "codex-rs/hepta-neuron/**",
+      "codex-rs/hepta-infer-core/**",
+      "codex-rs/hepta-types/**",
+      "codex-rs/Cargo.toml",
+      "qa/stem-bakeoff/prepare_research_task_head_owner.py",
+      "qa/stem-bakeoff/test_research_task_head_owner_fixture.py",
+      "scripts/prepare_research_task_head_check.py",
+      "qualification/research-task-head-check/**",
+      ".github/workflows/hepta-research-task-head-owner.yml"
+    ],
+    "trigger_paths_count": 10,
+    "all_shell_commands_unchanged": true,
+    "all_permission_and_runner_values_unchanged": true,
+    "scalar_values_preserved": true,
+    "change_scope": "YAML blank lines, redundant path quotes, env scalar double quotes"
+  },
+  "validation": {
+    "exact_prettier_run": "PENDING",
+    "current_head_native_blocking_ci": "PENDING",
+    "yaml_owner_regression": "PENDING",
+    "no_owner_or_production_claim": true
+  },
+  "authority": "DENY_ALL",
+  "mode": "SHADOW_ONLY",
+  "release": "HOLD_NO_GO",
+  "note": "Evidence of a deterministic upstream formatting failure and a presentation-only candidate, not proof that current-head required checks succeeded."
+}
