@@ -28,6 +28,8 @@ pub(crate) struct Fixture {
     pub verifier: Arc<Verifier>,
     pub admission: Arc<MemoryCellAdmissionV1>,
     pub config: NativeMemoryModelConfigV1,
+    pub access: CognitiveAccess,
+    pub claim: MemoryCellSourceClaimV1,
 }
 
 pub(crate) async fn fixture() -> Fixture {
@@ -125,12 +127,13 @@ pub(crate) async fn fixture() -> Fixture {
         key,
         deadline_unix_ms: now + 300_000,
     };
+    let claim = MemoryCellSourceClaimV1 { event, production };
     let admission = Arc::new(
         writer
             .admit_memory_cell(
                 &access,
                 &query,
-                &MemoryCellSourceClaimV1 { event, production },
+                &claim,
             )
             .await
             .unwrap(),
@@ -142,6 +145,8 @@ pub(crate) async fn fixture() -> Fixture {
         verifier,
         admission,
         config,
+        access,
+        claim,
     }
 }
 

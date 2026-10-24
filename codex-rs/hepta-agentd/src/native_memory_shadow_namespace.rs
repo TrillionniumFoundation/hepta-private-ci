@@ -99,3 +99,7 @@ pub(crate) fn source_namespace(
 pub(crate) fn reject(error: impl std::fmt::Display) -> NativeMemoryError {
     NativeMemoryError::Rejected(error.to_string())
 }
+
+#[cfg(test)]
+#[path = "native_memory_shadow_namespace_tests.rs"]
+pub(crate) mod tests;
