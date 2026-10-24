@@ -35,6 +35,12 @@ pub(crate) enum Fault {
     Truncated,
     LogError,
     MissingLogError,
+    IsolatedBackend,
+    MissingMode,
+    WrongRequestDigest,
+    UnauditedStart,
+    PendingStartRecord,
+    MissingLaunchAck,
 }
 
 #[derive(Default)]
@@ -91,12 +97,29 @@ async fn serve(stream: DuplexStream, calls: Arc<Calls>, fault: Fault) -> io::Res
                             calls.start_seen.notify_one();
                             calls.resume_start.notified().await;
                         }
-                        json!({"reused":false,"job":{
+                        let mut binding = std::collections::BTreeMap::new();
+                        for key in ["host", "executable", "args", "cwd", "stdin", "timeout_seconds", "nice", "cpu_quota_percent", "memory_max_bytes"] {
+                            binding.insert(key, arguments[key].clone());
+                        }
+                        binding.insert("env", json!({}));
+                        let digest = Sha256Digest::for_bytes(&serde_json::to_vec(&binding)?);
+                        let mut result = json!({"reused":false,
+                            "audit_recorded":!matches!(fault, Fault::UnauditedStart),
+                            "local_record_pending":matches!(fault, Fault::PendingStartRecord),
+                            "launch":{"ok":!matches!(fault, Fault::MissingLaunchAck),"backend":"systemd"},
+                            "job":{
                             "id":format!("fixture-job-{jobs}"),"host":arguments["host"],
                             "executable":arguments["executable"],"args":arguments["args"],
-                            "cwd":null,"env_keys":[],"launch_state":"launched","system_jobctl":true,
+                            "cwd":null,"env_keys":[],"launch_state":"launched",
+                            "system_jobctl":matches!(fault, Fault::IsolatedBackend),
+                            "execution_mode":if matches!(fault, Fault::IsolatedBackend){"isolated"}else{"operator"},
+                            "request_digest":if matches!(fault, Fault::WrongRequestDigest){"0".repeat(64)}else{digest.as_str().to_string()},
                             "idempotency_key":arguments["idempotency_key"]
-                        }})
+                        }});
+                        if matches!(fault, Fault::MissingMode) {
+                            result["job"].as_object_mut().expect("job").remove("execution_mode");
+                        }
+                        result
                     }
                     Some("process_wait") => {
                         let mut status = json!({
@@ -106,7 +129,8 @@ async fn serve(stream: DuplexStream, calls: Arc<Calls>, fault: Fault) -> io::Res
                         "output_complete":!matches!(fault,Fault::UnfinishedOutput),
                         "cancelled":false,"timed_out":false,"audit_recorded":true,
                         "log_bytes":{"stdout":{"seen":if matches!(fault,Fault::InvalidUtf8){1}else{RECEIVER_BYTES.len()},
-                            "stored":if matches!(fault,Fault::InvalidUtf8){1}else{RECEIVER_BYTES.len()}}},
+                            "stored":if matches!(fault,Fault::InvalidUtf8){1}else{RECEIVER_BYTES.len()}},
+                            "stderr":{"seen":0,"stored":0}},
                         "log_truncated":{"stdout":matches!(fault,Fault::Truncated),"stderr":false},
                         "log_errors":{"stdout":if matches!(fault,Fault::LogError){json!("fixture log failure")}else{Value::Null},"stderr":null},
                         });
@@ -286,6 +310,12 @@ async fn android_runtime_requires_terminal_success_complete_lossless_same_job_ou
         Fault::Truncated,
         Fault::LogError,
         Fault::MissingLogError,
+        Fault::IsolatedBackend,
+        Fault::MissingMode,
+        Fault::WrongRequestDigest,
+        Fault::UnauditedStart,
+        Fault::PendingStartRecord,
+        Fault::MissingLaunchAck,
     ] {
         let (inputs, client, calls) = inputs(fault, Duration::from_secs(2)).await?;
         let (device, _) = AgentdAndroidTextDevice::new(inputs)?;

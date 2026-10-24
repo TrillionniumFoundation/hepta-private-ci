@@ -1,11 +1,13 @@
 //! The original Runtime process_start/wait/read wire contract. No shell lane.
 
 use std::sync::atomic::Ordering;
+use std::collections::BTreeMap;
 use std::time::Duration;
 use std::time::Instant;
 
 use serde_json::Value;
 use serde_json::json;
+use codex_hepta_contracts::Sha256Digest;
 
 use super::AgentdAndroidTextDevice;
 
@@ -47,6 +49,24 @@ pub(super) async fn invoke(
             .map_err(|_| "Android original job correlation is unavailable")?
             .start_attempted = true;
     }
+    // e023ce671650's original request_digest covers all ProcessStartParams
+    // except the idempotency key, using serde_json's sorted object keys. Bind
+    // stdin and timeout too: argv metadata alone cannot identify our request.
+    let binding = BTreeMap::from([
+        ("host", arguments["host"].clone()),
+        ("executable", arguments["executable"].clone()),
+        ("args", arguments["args"].clone()),
+        ("cwd", Value::Null),
+        ("env", json!({})),
+        ("stdin", arguments["stdin"].clone()),
+        ("timeout_seconds", arguments["timeout_seconds"].clone()),
+        ("nice", Value::Null),
+        ("cpu_quota_percent", Value::Null),
+        ("memory_max_bytes", Value::Null),
+    ]);
+    let digest = Sha256Digest::for_bytes(
+        &serde_json::to_vec(&binding).map_err(|_| "Runtime request binding cannot be encoded")?,
+    );
     // This is the only effect start. A lost response is never followed by a
     // second process_start, including one with the same idempotency key.
     let started = call(device, "process_start", arguments, deadline).await?;
@@ -76,8 +96,17 @@ pub(super) async fn invoke(
         || !job["cwd"].is_null()
         || job["env_keys"] != json!([])
         || job["launch_state"] != "launched"
-        || job["system_jobctl"] != true
+        // The original Linux operator backend intentionally does not use the
+        // isolated system jobctl. It retains the existing SSH account rights.
+        || job["execution_mode"] != "operator"
+        || job["system_jobctl"] != false
+        || job["request_digest"] != digest.as_str()
         || started["reused"] != false
+        || started["audit_recorded"] != true
+        || started["local_record_pending"] != false
+        || started["launch"]["ok"] != true
+        || started["launch"]["reused_remote"] == true
+        || !matches!(started["launch"]["backend"].as_str(), Some("systemd" | "detached"))
         || (effect && job["idempotency_key"] != device.idempotency_key)
         || (!effect && !job["idempotency_key"].is_null())
     {
@@ -110,6 +139,8 @@ pub(super) async fn invoke(
                     || status["timed_out"] != false
                     || status["audit_recorded"] != true
                     || status["log_bytes"]["stdout"]["seen"] != stored
+                    || !status["log_bytes"]["stderr"]["stored"].is_u64()
+                    || status["log_bytes"]["stderr"]["seen"] != status["log_bytes"]["stderr"]["stored"]
                     || status["log_truncated"]["stdout"] != false
                     || status["log_truncated"]["stderr"] != false
                     || !status

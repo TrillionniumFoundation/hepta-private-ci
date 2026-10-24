@@ -62,7 +62,7 @@ async fn authenticated_client(
             "fixture-only-original-token".to_string(),
         )), None),
         FixtureAuth::RuntimeHeader => (None, Some(std::collections::HashMap::from([
-            ("X-Hepta-Token".to_string(), "fixture-only-original-token".to_string()),
+            ("X-Hepta-Runtime-Token".to_string(), "fixture-only-original-token".to_string()),
         ]))),
         FixtureAuth::DelegatedBearer => (Some(StreamableHttpBearerToken::ProvidedByHttpClient), Some(std::collections::HashMap::from([
             ("Authorization".to_string(), "Bearer fixture-only-original-token".to_string()),
@@ -114,7 +114,7 @@ async fn authenticated_server(status: u16, delay: Duration, auth: FixtureAuth) -
             match auth {
                 FixtureAuth::Bearer | FixtureAuth::DelegatedBearer => assert_eq!(request.headers["authorization"], "Bearer fixture-only-original-token"),
                 FixtureAuth::RuntimeHeader => {
-                    assert_eq!(request.headers["x-hepta-token"], "fixture-only-original-token");
+                    assert_eq!(request.headers["x-hepta-runtime-token"], "fixture-only-original-token");
                     assert!(!request.headers.contains_key("authorization"));
                 }
             }

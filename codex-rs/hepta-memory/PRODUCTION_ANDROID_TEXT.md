@@ -191,7 +191,7 @@ The concrete connector implements this fixed one-shot contract:
 | Original host observation before bootstrap | `{"op":"organ-observe","package":"<verified exact package>","resource_id":"<observed exact full ID>"}` through the same fixed helper; the connector itself accepts the resulting original payload, not a discovery request |
 | Input bound | At most 24 KiB for the outer helper request; the decoded original payload remains at most 16 KiB |
 | Result | Require same job, `succeeded`, zero exit, `output_complete`, no cancellation/timeout/log errors/truncation, and complete terminal byte accounting. Read `stdout.bytes_hex`, verify exact UTF-8 and matching text, size/offset/eof and terminal size; at most 8 KiB. Running-job EOF, old text-only Runtime responses and incomplete output stay unresolved. |
-| Runtime job identity | Retain the returned original Runtime job ID with the same operation. A successful `process_start` acknowledgement is not a native effect receipt |
+| Runtime job identity | Require the original operator backend (`execution_mode=operator`, `system_jobctl=false`), fresh launch ACK, audited start, durable launch record and exact full request digest including stdin and timeout. Retain its original job ID with the same operation. A successful `process_start` acknowledgement is not a native effect receipt |
 | Deadline and cancellation | Bound the synchronous host call and every poll; never reset native payload expiry. Cancellation invalidates the effect lane; stopping a process does not prove that Android did not act |
 | Source gates | Exact deployed root-owned helper hash, original Droidloom file/owner, installed APK hash and original signer, original host/peer and same cell generation before use |
 
@@ -204,15 +204,41 @@ observe state, but cannot upgrade that unknown result to Committed.
 
 Desktop's `support/android/receiver/qualify_receiver.py` provides local `java`,
 `apk` and `installed` gates for the source/signature part of this contract.
-The process envelope is based on the original Runtime `src/mcp/runtime/jobs.rs`
-and its Linux system jobctl result, inspected at source SHA256
-`dd0b1c3fa391f9452eb543f172843e03e9714ebec051009ab65de8e2909f79eb`.
-This initial system-jobctl backend assumption is not yet sufficient for the
-currently deployed Full Operator backend: actual `main` and `pocket4` starts
-report `execution_mode=operator` and `system_jobctl=false`. The connector still
-rejects those jobs until the original operator's authenticated start/status/read
-and custody implementation is source-qualified. Neither the flag alone nor a
-successful read-only probe establishes that qualification.
+The native process envelope is based on original Runtime commit
+[`e023ce671650aa752e3efac1d9d5ed67dad8c8d6`](https://github.com/TrillionniumFoundation/hepta-runtime/commit/e023ce671650aa752e3efac1d9d5ed67dad8c8d6),
+whose exact `src/mcp/runtime/jobs.rs` is SHA256
+`84716d569b266a494a1ee54c3e8737464b379032ade12f5d66465b50a49dfcb7`.
+That source selects system jobctl only for Linux **isolated** hosts. Its
+operator backend deliberately uses the configured SSH account's existing OS
+rights; the original fixed `sudo -n` helper does not gain privileges from this
+connector. Requiring `system_jobctl=true` was an incorrect inference from the
+older default source, rather than an original Android authority requirement.
+The connector now accepts only the explicit original operator profile, not a
+bare false flag or a mode inferred from tool availability. Native MCP results
+use the original `job`/`launch` JSON envelope; presentation wrappers that rename
+these fields are not silently normalized.
+
+The original source persists the job and complete request digest before remote
+launch, holds its configured owner admission fence during submission, and
+retains `launch_unknown` after a lost ACK. Its operator supervisor uses an
+exclusive lifetime lock, durable intent and launch nonce, original UID/start
+identity, atomic terminal record and complete output accounting. Same-key
+operator launches never retry an uncertain prior workload. References:
+[request/host binding and start](https://github.com/TrillionniumFoundation/hepta-runtime/blob/e023ce671650aa752e3efac1d9d5ed67dad8c8d6/src/mcp/runtime/jobs.rs),
+[configured account rights](https://github.com/TrillionniumFoundation/hepta-runtime/blob/e023ce671650aa752e3efac1d9d5ed67dad8c8d6/src/mcp/runtime/config.rs),
+[host-key-checked single SSH submission](https://github.com/TrillionniumFoundation/hepta-runtime/blob/e023ce671650aa752e3efac1d9d5ed67dad8c8d6/src/mcp/runtime/ssh.rs).
+The request digest binds every original `ProcessStartParams` field except its
+separately checked idempotency key, using sorted JSON object keys. Start audit
+failure, pending record publication, a different mode/digest, a reused launch
+or an incomplete terminal log remains unresolved even if the helper ran.
+
+The deployed executable, release manifest and original authenticated native
+endpoint must still be bound to this source profile. A release directory name
+or successful read-only probe alone is insufficient. The Runtime's existing
+[effect-owner fence](https://github.com/TrillionniumFoundation/hepta-runtime/blob/e023ce671650aa752e3efac1d9d5ed67dad8c8d6/src/mcp/runtime/effect_owner_fence.rs)
+is optional in legacy deployments; source presence does not prove it is
+configured or that an owner transfer is qualified. This connector neither
+creates that authority nor changes the original Runtime deployment.
 Successful `process_start` is never interpreted as a device receipt. Its
 original job ID remains available through `AndroidRuntimeAttempt`; the Runtime
 owns persistence and the original writer owns effect outcomes. An unknown start
