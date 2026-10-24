@@ -192,6 +192,7 @@ pub(super) async fn read_events(
     Ok(events)
 }
 
+#[inline(never)]
 pub(crate) async fn verify_sender_store(
     pool: &SqlitePool,
     owner: &AgentId,

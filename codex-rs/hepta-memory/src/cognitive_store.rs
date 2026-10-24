@@ -616,6 +616,7 @@ fn now_unix_seconds() -> Result<i64, CognitiveStoreError> {
         .map_err(|_| CognitiveStoreError::Unavailable("system clock overflow".to_string()))
 }
 
+#[inline(never)]
 async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), CognitiveStoreError> {
     let quick_check = sqlx::query_scalar::<_, String>("PRAGMA quick_check(1)")
         .fetch_all(pool)
@@ -981,6 +982,7 @@ impl From<&ProjectionEdge> for StoredProjectionEdge {
     }
 }
 
+#[inline(never)]
 async fn verify_current_projection_contents(
     pool: &SqlitePool,
     owner: &AgentId,

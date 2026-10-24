@@ -4,6 +4,7 @@ use std::time::UNIX_EPOCH;
 use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -1167,6 +1168,269 @@ async fn replay_sequence_is_consumed_atomically_with_insert() {
             .iter()
             .all(|reference| reference.evidence_id != second.evidence_id)
     );
+}
+
+async fn overwrite_qualification_payload_digest(
+    store: &HeptaEvidenceStore,
+    evidence_id: &EvidenceId,
+    digest: &Sha256Digest,
+) {
+    let mut transaction = store
+        .pool
+        .begin_with("BEGIN IMMEDIATE")
+        .await
+        .expect("begin test corruption transaction");
+    sqlx::query("DROP TRIGGER qualification_evidence_no_update")
+        .execute(&mut *transaction)
+        .await
+        .expect("allow test corruption");
+    let changed =
+        sqlx::query("UPDATE qualification_evidence SET payload_sha256 = ? WHERE evidence_id = ?")
+            .bind(digest.as_str())
+            .bind(evidence_id.as_str())
+            .execute(&mut *transaction)
+            .await
+            .expect("replace stored payload digest");
+    assert_eq!(changed.rows_affected(), 1);
+    sqlx::query(
+        "CREATE TRIGGER qualification_evidence_no_update
+         BEFORE UPDATE ON qualification_evidence
+         BEGIN
+             SELECT RAISE(ABORT, 'qualification evidence is immutable');
+         END",
+    )
+    .execute(&mut *transaction)
+    .await
+    .expect("restore immutable-row trigger");
+    transaction.commit().await.expect("commit test corruption");
+}
+
+#[tokio::test]
+async fn ordinary_append_rejects_corrupted_candidate_evidence_before_replay() {
+    let temp = TempDir::new().expect("temp");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open evidence");
+    let observed = now_ms();
+    let (issuer, key) = issuer("principal:ordinary-integrity", 55);
+    let source = evidence(
+        "evidence:ordinary-integrity-source",
+        candidate('b'),
+        EvidenceClaimClassV1::ExactSource,
+        EvidenceIssuerRoleV1::Evaluator,
+        observed,
+        None,
+        json!({"checked": true}),
+    );
+    append(&store, &issuer, &key, &source, 1)
+        .await
+        .expect("append source");
+    let original = store
+        .qualification()
+        .query_claim(&source.candidate, source.claim_class)
+        .await
+        .expect("read original source")
+        .remove(0);
+    overwrite_qualification_payload_digest(
+        &store,
+        &source.evidence_id,
+        &Sha256Digest::for_bytes(b"tampered stored payload"),
+    )
+    .await;
+
+    // The new row has no lineage reference to the corrupted row and belongs
+    // to another claim class. The whole-candidate integrity gate must remain.
+    let next = evidence(
+        "evidence:ordinary-integrity-next",
+        source.candidate.clone(),
+        EvidenceClaimClassV1::MandatoryTests,
+        EvidenceIssuerRoleV1::Evaluator,
+        observed,
+        None,
+        json!({"passed": true}),
+    );
+    assert!(matches!(
+        append(&store, &issuer, &key, &next, 2).await,
+        Err(EvidenceError::Corrupt(_))
+    ));
+    assert!(
+        store
+            .qualification()
+            .query_claim(&next.candidate, next.claim_class)
+            .await
+            .expect("rejected append leaves no new evidence")
+            .is_empty()
+    );
+    overwrite_qualification_payload_digest(&store, &source.evidence_id, &original.payload_sha256)
+        .await;
+    assert_eq!(
+        append(&store, &issuer, &key, &next, 2)
+            .await
+            .expect("corruption rejection must not consume replay sequence"),
+        next.evidence_id
+    );
+}
+
+#[tokio::test]
+async fn independent_decision_requires_the_complete_intact_order_independent_set() {
+    let temp = TempDir::new().expect("temp");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open evidence");
+    let candidate = candidate('b');
+    let observed = now_ms();
+    let expiry = observed.saturating_add(60_000);
+    let (reviewer, key) = issuer("principal:decision-integrity", 56);
+    let sources = [
+        evidence(
+            "evidence:decision-integrity-z",
+            candidate.clone(),
+            EvidenceClaimClassV1::ExactSource,
+            EvidenceIssuerRoleV1::Architecture,
+            observed,
+            None,
+            json!({"source": true}),
+        ),
+        evidence(
+            "evidence:decision-integrity-a",
+            candidate.clone(),
+            EvidenceClaimClassV1::MandatoryTests,
+            EvidenceIssuerRoleV1::Architecture,
+            observed,
+            None,
+            json!({"tests": true}),
+        ),
+    ];
+    let mut references = Vec::new();
+    for (sequence, source) in (1_u64..).zip(&sources) {
+        append(&store, &reviewer, &key, source, sequence)
+            .await
+            .expect("append evidence from both claim classes");
+        references.extend(
+            store
+                .qualification()
+                .query_claim(&candidate, source.claim_class)
+                .await
+                .expect("read exact source reference"),
+        );
+    }
+    let full_digest = evidence_set_digest(&references).expect("complete evidence-set digest");
+    references.reverse();
+    assert_eq!(
+        evidence_set_digest(&references).expect("reverse-order digest"),
+        full_digest
+    );
+    let decision = |digest| {
+        evidence(
+            "decision:complete-integrity",
+            candidate.clone(),
+            EvidenceClaimClassV1::IndependentDecision,
+            EvidenceIssuerRoleV1::Architecture,
+            observed,
+            Some(expiry),
+            serde_json::to_value(IndependentDecisionReceiptV1 {
+                decision_id: "decision:complete-integrity".to_string(),
+                candidate_id: candidate.candidate_id.clone(),
+                role: IndependentDecisionRoleV1::Architecture,
+                principal_id: reviewer.issuer_id.to_string(),
+                signing_identity_digest: Sha256Digest::for_bytes(reviewer.verifying_key.as_bytes()),
+                evidence_set_digest: digest,
+                decision: IndependentDecisionV1::Accept,
+                conditions: Vec::new(),
+                expires_unix_ms: expiry,
+            })
+            .expect("decision payload"),
+        )
+    };
+    let mut changed_references = references.clone();
+    changed_references[0].payload_sha256 = Sha256Digest::for_bytes(b"changed submitted reference");
+    for digest in [
+        evidence_set_digest(&references[..1]).expect("incomplete set digest"),
+        evidence_set_digest(&changed_references).expect("changed set digest"),
+    ] {
+        assert!(matches!(
+            append(&store, &reviewer, &key, &decision(digest), 3).await,
+            Err(EvidenceError::InvalidRecord(_))
+        ));
+    }
+
+    let source_reference = references
+        .iter()
+        .find(|reference| reference.evidence_id == sources[0].evidence_id)
+        .expect("source reference");
+    overwrite_qualification_payload_digest(
+        &store,
+        &sources[0].evidence_id,
+        &Sha256Digest::for_bytes(b"tampered candidate input"),
+    )
+    .await;
+    let valid_decision = decision(full_digest);
+    assert!(matches!(
+        append(&store, &reviewer, &key, &valid_decision, 3).await,
+        Err(EvidenceError::Corrupt(_))
+    ));
+    assert!(
+        store
+            .qualification()
+            .query_claim(&candidate, EvidenceClaimClassV1::IndependentDecision)
+            .await
+            .expect("no invalid decision was inserted")
+            .is_empty()
+    );
+    overwrite_qualification_payload_digest(
+        &store,
+        &sources[0].evidence_id,
+        &source_reference.payload_sha256,
+    )
+    .await;
+    append(&store, &reviewer, &key, &valid_decision, 3)
+        .await
+        .expect("complete intact set remains admissible at the same replay sequence");
+    let request = VerifyChainRequestV1 {
+        candidate,
+        claim_class: EvidenceClaimClassV1::IndependentDecision,
+        required_roles: vec![EvidenceIssuerRoleV1::Architecture],
+        now_unix_ms: observed,
+    };
+    let trust = [trust_binding(&reviewer, EvidenceIssuerRoleV1::Architecture)];
+    assert!(matches!(
+        store
+            .qualification()
+            .verify_chain(&request, &trust)
+            .await
+            .expect("verify intact decision"),
+        EvidenceDispositionV1::Supported { .. }
+    ));
+
+    // Simulate loss of a previously bound input after admission. This must
+    // invalidate the decision even though the remaining input is well formed.
+    sqlx::query("DROP TRIGGER qualification_evidence_no_delete")
+        .execute(&store.pool)
+        .await
+        .expect("allow test input loss");
+    sqlx::query("DELETE FROM qualification_evidence WHERE evidence_id = ?")
+        .bind(sources[0].evidence_id.as_str())
+        .execute(&store.pool)
+        .await
+        .expect("remove one bound input");
+    sqlx::query(
+        "CREATE TRIGGER qualification_evidence_no_delete
+         BEFORE DELETE ON qualification_evidence
+         BEGIN
+             SELECT RAISE(ABORT, 'qualification evidence is immutable');
+         END",
+    )
+    .execute(&store.pool)
+    .await
+    .expect("restore immutable-row trigger");
+    assert!(matches!(
+        store
+            .qualification()
+            .verify_chain(&request, &trust)
+            .await
+            .expect("verify decision after input loss"),
+        EvidenceDispositionV1::Conflicting { .. }
+    ));
 }
 
 #[tokio::test]
