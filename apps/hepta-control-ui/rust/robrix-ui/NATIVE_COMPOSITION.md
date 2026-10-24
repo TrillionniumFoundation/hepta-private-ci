@@ -1,9 +1,12 @@
 # Original App composition for a fixed external workspace
 
-`native-presentation` adds an observation-only composition mode to the existing
+`native-presentation` adds an external-workspace composition mode to the existing
 Robrix-derived Makepad `App`. It is a candidate Linux development interface. It
 does not install a `NativeHost`, a Chat owner, a signer or an Objective writer.
 The original `PresentationCommand::RequestSend` still returns `SendUnavailable`.
+An independently authenticated host may opt into the bounded `poll_chat`,
+`request_send` and `request_interrupt` port. The default remains unavailable;
+socket connectivity and runtime health never enable these controls.
 
 The intended caller is Desktop's existing Session projection. That caller moves
 its one `DraftBook`, reducer and Bridge into a `NativeChatComposition`; the
@@ -45,17 +48,24 @@ the original modules. The client does not normalize keys in parallel or install
 another input route. Native IME, accessibility and mobile acceptance still need
 their own implementation and device tests.
 
-The original native editor visibly reports rejected over-limit/NUL edits and
-keeps the last valid text. After composition ends, its current reconciliation
-resets the editor state when the widget text differs from that valid draft.
-Selection/undo preservation therefore differs from Desktop's egui transaction
-rollback. This interface does not claim that those editing behaviors are equal.
+The original native editor snapshots the SDK's complete valid editor state before
+input. A rejected over-limit/NUL edit restores that text, selection and undo
+history as one transaction. A checkpoint is never retained across a room or
+principal epoch; it is never taken from active IME preedit. The original focus,
+composition and adaptive-layout router remains the sole event path.
+
+The host's advertised chat availability is bound to the exact rendered room.
+Original Send/Stop widgets emit typed intents after IME dispatch; the receiver
+revalidates the room and capability before queuing host work. The host must still
+revalidate its authenticated scope and original signed envelope at dispatch.
+The signed-input limit is separate from the larger local-draft limit. No
+optimistic transcript, runtime owner or signing key is introduced in the UI.
 
 ## Original lifecycle, two launch modes
 
 `run_native` retains the existing `NativeHost` mode. Its owner, draw witness,
 invalidation and safe-close callbacks remain in `native_host/render.rs`.
-`run_native_presentation` selects the new observation-only mode. Both call the
+`run_native_presentation` selects the external-workspace mode. Both call the
 same original `app::app_main` through `native_launch` and share its thread-local
 admission guard. Reentry on that thread cannot replace a pending launch. This
 is not a cross-thread lock or proof of the operating system's permitted UI

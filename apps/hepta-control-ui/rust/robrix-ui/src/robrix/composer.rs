@@ -42,6 +42,10 @@ script_mod! {
      animator.disabled.default: @on
      margin: Inset{top: 4, left: 8, right: 6, bottom: 6}
     }
+    interrupt_message_button := mod.widgets.SendButton {
+     enabled: false visible: false text: "Stop"
+     margin: Inset{top: 4, left: 2, right: 6, bottom: 6}
+    }
    }
   }
   cannot_send_notice := Label {

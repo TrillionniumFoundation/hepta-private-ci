@@ -4,6 +4,8 @@ use hepta_control_core::chat::WorkspaceTab;
 use makepad_widgets::*;
 use std::cell::RefCell;
 use std::rc::Rc;
+use crate::presentation::RoomKey;
+use super::chat_controls::{ChatIntent, Controls};
 
 /// Run the original App with the caller's sole draft/state owner. This Linux
 /// development mode is neither a NativeHost witness nor production chat send.
@@ -110,6 +112,38 @@ impl RendererPresentation {
     ) {
         if self.closed || matches!(event, Event::Draw(_)) {
             return;
+        }
+        if let Event::Actions(actions) = event {
+            for action in actions.iter() {
+                let controls = cx.global::<Controls>().clone();
+                let result = match action.as_widget_action().cast::<ChatIntent>() {
+                    ChatIntent::Submit(room) if controls.permits_submit(room, composition.inner.workspace()) => {
+                        composition.inner.request_send(room)
+                    }
+                    ChatIntent::Interrupt(room) if controls.permits_interrupt(room, composition.inner.workspace()) => {
+                        composition.inner.request_interrupt(room)
+                    }
+                    _ => continue,
+                };
+                if let Err(error) = result {
+                    composition.inner.workspace_mut().presentation_note = Some(error);
+                }
+            }
+        }
+        let availability = composition.inner.poll_chat();
+        let workspace = composition.inner.workspace();
+        let controls = Controls {
+            room: Some(RoomKey { epoch: workspace.presentation_epoch(), local_id: workspace.active_id() }),
+            availability,
+        };
+        if *cx.global::<Controls>() != controls {
+            *cx.global::<Controls>() = controls;
+            ui.redraw(cx);
+        }
+        if matches!(event, Event::Signal) || self.timer.is_event(event).is_some() {
+            // Timeline deltas need a repaint even while capabilities remain
+            // unchanged. This uses the existing bounded poll/signal cadence.
+            ui.redraw(cx);
         }
         // Inspect refresh only after the original ImeRouter/widget dispatch.
         // No second key/IME pipeline is installed by the Desktop adapter.

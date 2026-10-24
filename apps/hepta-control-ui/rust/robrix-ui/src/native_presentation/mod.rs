@@ -6,6 +6,7 @@
 //! This port supplies neither a chat writer nor an owner/readiness witness.
 
 use hepta_control_core::chat::ChatWorkspace;
+use crate::presentation::RoomKey;
 use std::sync::Arc;
 
 /// Bounds the text passed to the original Console labels. This is an observed
@@ -26,6 +27,14 @@ pub struct NativeConsoleObservation {
     pub refresh_pending: bool,
 }
 
+/// Controls advertised by the independent authenticated host for the current
+/// room. A connected socket or observed runtime health cannot enable them.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct NativeChatAvailability {
+    pub can_submit: bool,
+    pub can_interrupt: bool,
+}
+
 /// Supplies one existing workspace and nonblocking observations to the original
 /// App. Implementations keep the workspace stable, queue only existing read-only
 /// work, and release their own client resources when the App exits.
@@ -35,6 +44,20 @@ pub trait NativeChatComposition {
     fn workspace(&self) -> &ChatWorkspace;
     fn workspace_mut(&mut self) -> &mut ChatWorkspace;
     fn set_waker(&mut self, waker: Arc<dyn Fn() + Send + Sync>);
+    /// Drain bounded, already-received chat events into the same workspace.
+    /// Implementations must fence owner, thread and connection generations.
+    fn poll_chat(&mut self) -> NativeChatAvailability {
+        NativeChatAvailability::default()
+    }
+    /// Queue the existing host's authenticated sign/submit path. No UI key,
+    /// optimistic sent entry, synchronous I/O, or replacement owner is allowed.
+    fn request_send(&mut self, _source: RoomKey) -> Result<(), String> {
+        Err("Authenticated chat host unavailable; draft retained".into())
+    }
+    /// Interrupt only the active host-bound turn; closing the window is separate.
+    fn request_interrupt(&mut self, _source: RoomKey) -> Result<(), String> {
+        Err("No authenticated active turn is available to interrupt".into())
+    }
     /// Nonblocking: consume already received observations and evaluate age.
     /// Called outside Draw and without a live mutable workspace borrow.
     fn poll_console(&mut self) -> NativeConsoleObservation;
@@ -95,6 +118,8 @@ pub(crate) fn bounded_console(
 
 #[cfg(feature = "ui")]
 pub(crate) mod render;
+#[cfg(feature = "ui")]
+pub(crate) mod chat_controls;
 #[cfg(all(feature = "ui", target_os = "linux"))]
 pub use render::run_native_presentation;
 
