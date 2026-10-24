@@ -17,7 +17,8 @@ class CellFieldAuditTests(unittest.TestCase):
             original = b"complete measured predictions\n"
             path = root / "prediction.bin"
             path.write_bytes(original)
-            seal = {"files": {"prediction.bin": {"sha256": sha(original), "bytes": len(original)}}}
+            seal = {"files": {"prediction.bin": {"sha256": sha(original), "bytes": len(original)}},
+                    "final_labels_opened": False}
             (root / "pre_evaluation_seal.json").write_text(json.dumps(seal))
             self.assertEqual(verify_seal(root), seal)
             path.write_bytes(original.replace(b"measured", b"altered!"))

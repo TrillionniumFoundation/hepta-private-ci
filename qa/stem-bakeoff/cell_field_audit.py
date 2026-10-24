@@ -178,6 +178,8 @@ def verify_seal(run_dir):
     """Verify every sealed byte before opening predictions or final labels."""
     root = Path(run_dir)
     seal = json.loads((root / "pre_evaluation_seal.json").read_bytes())
+    if seal.get("final_labels_opened") is not False:
+        raise ValueError("pre-evaluation label boundary is not sealed")
     files = seal["files"]
     actual = {p.relative_to(root).as_posix() for p in root.rglob("*") if p.is_file()}
     if actual != set(files) | {"pre_evaluation_seal.json"}:
@@ -271,8 +273,15 @@ def audit_runs(run_dir, protocol_path, data_dir):
     actual = [(r["seed"], r["head"], r["mask"], r["policy"]) for r in records]
     expected = list(itertools.product(protocol["seeds"], protocol["head_modes"],
                                       protocol["action_masks"], protocol["policies"]))
-    if len(actual) != len(expected) or set(actual) != set(expected):
+    if (len(actual) != len(expected) or set(actual) != set(expected)
+            or seal["record_count"] != len(expected) or runs["record_count"] != len(expected)):
         raise ValueError("registered condition census incomplete or duplicated")
+    initial_keys = [(r["seed"], r["head"]) for r in runs["initial_order"]]
+    initial_expected = list(itertools.product(protocol["seeds"], protocol["head_modes"]))
+    if len(initial_keys) != len(initial_expected) or set(initial_keys) != set(initial_expected):
+        raise ValueError("initial-state census incomplete or duplicated")
+    if any(initial_keys[r["initial_index"]] != (r["seed"], r["head"]) for r in records):
+        raise ValueError("condition uses a different seed or Head initial state")
     prediction = _load_arrays(root / "predictions.npz")
     feature = _load_arrays(root / "projected_features.npz")["features"]
     labels = json.loads((data / "train_labels.json").read_bytes())["roles"]
