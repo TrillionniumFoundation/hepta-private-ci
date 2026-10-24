@@ -1,0 +1,75 @@
+{
+  "analysis": {
+    "decision": "Report whether repeated subset draws show consistently positive/negative or mixed gains; never claim generalization qualification from this post-hoc historical pool.",
+    "multiplicity": "one primary contrast; all secondary descriptive, no best-seed or best-budget selection",
+    "primary": "Mean over20 seeds of [accuracy(logistic1280)-accuracy(centroid1280)]-[accuracy(logistic320)-accuracy(centroid320)] on the fixed512 internal eval rows.",
+    "secondary": [
+      "per-budget per-seed accuracies and relative advantages; mean/std/min/max",
+      "count of positive/zero/negative relative-gain seeds, not a binomial independent-trials significance test",
+      "per-row correctness frequencies and head disagreement rates over20 seeds",
+      "final regularized objective and gradient norm per fit",
+      "wall time and RSS"
+    ],
+    "sequence": "Freeze split and all training subsets before fitting; fit/save all60 logistic and60centroid states before any internal evaluation prediction. No fitting after scoring.",
+    "uncertainty": "10000 bootstrap resamples of512 evaluation source rows, PCG64seed2026102450; preserve all budgets/heads/seeds in each draw.95percent percentile interval is conditional descriptive uncertainty, not unconditional repeated-training inference."
+  },
+  "budgets": [
+    320,
+    640,
+    1280
+  ],
+  "freeze": "local pre-selection/pre-fit receipt, not external preregistration",
+  "heads": {
+    "centroid": "normalize class mean of L2-normalized inputs; cosine score; argmax class-index tie break",
+    "logistic": "float64 zero weight/bias, fullbatch Adam lr0.1 default betas/eps,200steps,mean crossentropy +0.001/2 sumW**2; unpenalized bias; original encoder frozen"
+  },
+  "profile": "historical-training-pool-head-stability-v1",
+  "prohibited": [
+    "accessing original1600 test array or its labels",
+    "new encoder calls",
+    "hyperparameter or seed selection from diagnostic outcomes",
+    "using this internal split as fresh qualification"
+  ],
+  "resources": {
+    "centroid_fits": 60,
+    "encoder_forwards": 0,
+    "logistic_fits": 60,
+    "max_seconds": 300,
+    "rss_limit_mib": 1024,
+    "threads": 2
+  },
+  "sampling": "For each seed PCG64 permutation of2048 training-pool indices; use nested prefixes for three budgets. Twenty draws share a pool/eval and are not independent experiments.",
+  "scope": "Exploratory internal diagnostic in the previously used2560 training pool; NOT fresh heldout qualification or reproduction of the2560 endpoint.",
+  "seeds": [
+    2026102400,
+    2026102401,
+    2026102402,
+    2026102403,
+    2026102404,
+    2026102405,
+    2026102406,
+    2026102407,
+    2026102408,
+    2026102409,
+    2026102410,
+    2026102411,
+    2026102412,
+    2026102413,
+    2026102414,
+    2026102415,
+    2026102416,
+    2026102417,
+    2026102418,
+    2026102419
+  ],
+  "source": "cell-head-budget-research",
+  "source_protocol_sha256": "b73cb06a5e441d07e0c38f0bb02350ee798f6e4cd30c70b51abc2163157faf1c",
+  "source_rows_sha256": "2017a6ba9d4d986c72490ab62c0b7ad57da382a47aa9fa3b2ed44cac3b85b308",
+  "source_train_labels_sha256": "79e95e395a464fd2c26db400916d83f88c904883b93509c7bfac4c5d5375b34b",
+  "source_train_tensor_sha256": "1faf5c88e4cbf227e7a921f0daa3f4692804a50d0705cc516529b2e2a94767fc",
+  "split": {
+    "algorithm": "Rank original training rows by SHA256(hepta-stability-v1|component_key), source row index as tie break; first512 internal eval, remaining2048 training pool. No stratification or reseed. Missing class in any training subset aborts.",
+    "eval": 512,
+    "training_pool": 2048
+  }
+}
