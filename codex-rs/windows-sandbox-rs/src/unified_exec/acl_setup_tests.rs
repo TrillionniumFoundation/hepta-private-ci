@@ -344,22 +344,30 @@ impl AclSetupFailureFixture {
 
     fn assert_rejected(&self, error: anyhow::Error) {
         assert_eq!(
-            (
-                error.to_string(),
-                error.root_cause().to_string(),
-                self.marker.try_exists().expect("inspect process marker"),
+            error.to_string(),
+            format!(
+                "apply legacy deny-write ACL to {}",
+                self.protected_file.display()
             ),
-            (
-                format!(
-                    "apply legacy deny-write ACL to {}",
-                    self.protected_file.display()
-                ),
-                format!(
-                    "SetNamedSecurityInfoW failed for {}: {ERROR_ACCESS_DENIED}",
-                    self.protected_file.display(),
-                ),
-                false,
-            ),
+        );
+        // The same Win32 failure may surface either as the native API
+        // diagnostic or as std::io::Error(os error 5). Check the actual
+        // numeric denial, never just a substring of an arbitrary error.
+        let root_cause = error.root_cause();
+        let native_denial = format!(
+            "SetNamedSecurityInfoW failed for {}: {ERROR_ACCESS_DENIED}",
+            self.protected_file.display(),
+        );
+        let io_denial = root_cause
+            .downcast_ref::<std::io::Error>()
+            .is_some_and(|error| error.raw_os_error() == Some(ERROR_ACCESS_DENIED as i32));
+        assert!(
+            root_cause.to_string() == native_denial || io_denial,
+            "ACL setup failed for an unexpected reason: {root_cause}"
+        );
+        assert!(
+            !self.marker.try_exists().expect("inspect process marker"),
+            "sandbox process started despite ACL setup failure"
         );
     }
 }
