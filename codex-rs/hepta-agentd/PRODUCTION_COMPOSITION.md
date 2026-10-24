@@ -1,5 +1,63 @@
 # Protected original-owner production composition
 
+## Authenticated descriptor launch path
+
+`attach_root_production_operation_host` is the composition entry for the explicit
+original production launcher. It consumes `AgentdRootProductionInputs` from
+`receive_root_production_inputs`: the actual sealed Root handoff, pre-held Root
+pidfd, original live session, already activated Device/Notes consumers, protected
+Current/checkpoint transport and original grant provider. It does not call the
+legacy factory's `from_stream`, reopen either consumer or fall back to an
+unprotected local current cut.
+
+The launcher supplies its actual primary target, optional inherited Session
+Notes bootstrap datagram, and reconciliation interval. The primary may be the
+real original Android runtime target; an absent device is not replaced with a
+no-op or fabricated HOS2 consumer. This combined profile is distinct from a
+future Notes-only primary composition.
+
+The factory performs `open_with_protected_recovery` once, using the exact original
+writer lease/generation and live verifier. The whole-owner checkpoint is bound
+before that writer is constructed. It configures Notes as an additional target,
+then uses the same existing atomic configuration installation and final live
+authority check. Failure leaves the handles unpublished and preserves the
+actual protected durable state for authorized recovery.
+
+Its `AgentdRootProductionAttachment` returns four existing capabilities:
+
+- `root_session`: keep the original feed alive until the runtime stops.
+- `checkpoint`: reuse this exact checkpoint for `original_objective_sender`;
+  do not open another writer or construct a local echo checkpoint.
+- `grants`: a clone of the same original provider, also exposing its existing
+  typed Objective signing method to the trusted compiler; no second socket or
+  signing authority is created.
+- `notes`: the read-only `AgentdNotesDocumentObserver` of the actual inherited
+  Notes target. Its target is the returned application identity, and its private
+  recovery lane supplies the actual predecessor revision immediately before
+  compilation. A serialized target identity cannot substitute for that read.
+
+`with_notes_from_session_with_observer` now preserves this observer in the
+runtime handoff path. The older identity-only method delegates to it and retains
+its existing API. The direct-host and runtime handoff test both use original
+SQLite ownership and actual SCM_RIGHTS/socketpair transport, assert the same
+writer remains installed, read the exact original document state and emit no
+effect or issuer request. Their issuer/application inputs remain explicit
+fixtures; they do not qualify a production Root deployment.
+
+The Root launcher must separately register the actual Session Reserved target's
+Notes grant route with the **same retained Root issuer/lease registry** before
+effects. Activating the Notes FinalUse frontier is not that registration. The
+Session offer/ACK remains bounded and startup-only. Desktop ordinary product
+startup and a configured chat socket cannot manufacture this descriptor custody.
+
+This constructor does not supply the finite literal Notes UI compiler or a
+production implementation of Desktop's `ObjectiveHostAuthority`. Those must
+actually consume the returned observer, original writer/sender/checkpoint and
+typed Root signer, then enter the original Objective run/dispatch/terminal path.
+Native text/App Server chat is a separate route and does not implicitly perform
+that Notes action. The final composition execution record must cover the actual
+caller, not merely these callable APIs.
+
 ## Scope and entry point
 
 On Linux, the embedding host may call `attach_production_operation_host` with

@@ -172,6 +172,22 @@ impl AgentdProductionOperationRuntimeConfig {
         bootstrap: UnixDatagram,
         final_use: FinalUseAuthority,
     ) -> Result<(Self, NotesTargetIdentity), AgentdError> {
+        let (configured, target, _) = self
+            .with_notes_from_session_with_observer(config, recovered_host, bootstrap, final_use)
+            .await?;
+        Ok((configured, target))
+    }
+
+    /// Preserve the read-only observer of this exact inherited application for
+    /// the trusted Notes compiler. Returning an identity alone is insufficient
+    /// to observe its real predecessor revision through the private channel.
+    pub async fn with_notes_from_session_with_observer(
+        self,
+        config: &AgentdConfig,
+        recovered_host: &AgentdProductionWriterHost,
+        bootstrap: UnixDatagram,
+        final_use: FinalUseAuthority,
+    ) -> Result<(Self, NotesTargetIdentity, AgentdNotesDocumentObserver), AgentdError> {
         self.with_notes_from_session_channel(
             config,
             recovered_host,
@@ -200,14 +216,15 @@ impl AgentdProductionOperationRuntimeConfig {
     where
         F: FnOnce(UnixStream, UnixDatagram) -> Result<Arc<dyn NotesPrivateChannel>, AgentdError>,
     {
-        self.with_notes_from_session_channel(
+        let (configured, target, _) = self.with_notes_from_session_channel(
             config,
             recovered_host,
             bootstrap,
             final_use,
             channel_factory,
         )
-        .await
+        .await?;
+        Ok((configured, target))
     }
 
     async fn with_notes_from_session_channel<F>(
@@ -217,7 +234,7 @@ impl AgentdProductionOperationRuntimeConfig {
         bootstrap: UnixDatagram,
         final_use: FinalUseAuthority,
         channel_factory: F,
-    ) -> Result<(Self, NotesTargetIdentity), AgentdError>
+    ) -> Result<(Self, NotesTargetIdentity, AgentdNotesDocumentObserver), AgentdError>
     where
         F: FnOnce(UnixStream, UnixDatagram) -> Result<Arc<dyn NotesPrivateChannel>, AgentdError>,
     {
@@ -239,6 +256,7 @@ impl AgentdProductionOperationRuntimeConfig {
         let target =
             ProductionNotesTarget::new(identity.clone(), channel_factory(endpoint, recovery)?)
                 .map_err(AgentdError::Invalid)?;
+        let observer = AgentdNotesDocumentObserver::new(target.document_observer());
         let configured = match self.with_additional_target(final_use, Arc::new(target)) {
             Ok(configured) => configured,
             Err(error) => {
@@ -247,7 +265,7 @@ impl AgentdProductionOperationRuntimeConfig {
             }
         };
         acknowledge(&bootstrap, &offer, RegistrationStatus::Attached, deadline)?;
-        Ok((configured, identity))
+        Ok((configured, identity, observer))
     }
 }
 
