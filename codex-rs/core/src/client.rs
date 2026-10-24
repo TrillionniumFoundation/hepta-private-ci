@@ -45,7 +45,6 @@ use codex_api::RawMemory as ApiRawMemory;
 use codex_api::RealtimeCallClient as ApiRealtimeCallClient;
 use codex_api::RealtimeSessionConfig as ApiRealtimeSessionConfig;
 use codex_api::Reasoning;
-use codex_api::ReasoningContext;
 use codex_api::RequestDispatchMetadata;
 use codex_api::RequestTelemetry;
 use codex_api::ReqwestTransport;
@@ -160,6 +159,9 @@ use codex_model_provider::ProviderAuthScope;
 use codex_model_provider::ProviderUnauthorizedRecovery;
 use codex_model_provider::SharedModelProvider;
 use codex_model_provider::create_model_provider;
+use codex_model_provider::normalized_response_effort;
+use codex_model_provider::normalized_response_reasoning;
+use codex_model_provider::normalized_response_verbosity;
 #[cfg(test)]
 use codex_model_provider_info::DEFAULT_WEBSOCKET_CONNECT_TIMEOUT_MS;
 use codex_model_provider_info::ModelProviderInfo;
@@ -230,10 +232,7 @@ pub(crate) struct CompactConversationRequestSettings {
 }
 
 fn reasoning_effort_for_request(effort: ReasoningEffortConfig) -> ReasoningEffortConfig {
-    match effort {
-        ReasoningEffortConfig::Ultra => ReasoningEffortConfig::Max,
-        effort => effort,
-    }
+    normalized_response_effort(effort)
 }
 
 fn session_telemetry_for_request(
@@ -1157,19 +1156,7 @@ impl ModelClient {
         effort: Option<ReasoningEffortConfig>,
         summary: ReasoningSummaryConfig,
     ) -> Reasoning {
-        Reasoning {
-            effort: effort
-                .or_else(|| model_info.default_reasoning_level.clone())
-                .map(reasoning_effort_for_request),
-            summary: (model_info.supports_reasoning_summary_parameter
-                && summary != ReasoningSummaryConfig::None)
-                .then_some(summary),
-            // When Responses Lite is disabled, omit context so Responses uses the default,
-            // which is currently `current_turn`.
-            context: model_info
-                .use_responses_lite
-                .then_some(ReasoningContext::AllTurns),
-        }
+        normalized_response_reasoning(model_info, effort, Some(summary))
     }
 
     #[expect(
@@ -1236,17 +1223,13 @@ impl ModelClient {
             reasoning_summary_delivery: codex_api::ReasoningSummaryDelivery::SequentialCutoff,
         });
         let include = vec!["reasoning.encrypted_content".to_string()];
-        let verbosity = if model_info.support_verbosity {
-            self.state.model_verbosity.or(model_info.default_verbosity)
-        } else {
-            if self.state.model_verbosity.is_some() {
-                warn!(
-                    "model_verbosity is set but ignored as the model does not support verbosity: {}",
-                    model_info.slug
-                );
-            }
-            None
-        };
+        if !model_info.support_verbosity && self.state.model_verbosity.is_some() {
+            warn!(
+                "model_verbosity is set but ignored as the model does not support verbosity: {}",
+                model_info.slug
+            );
+        }
+        let verbosity = normalized_response_verbosity(model_info, self.state.model_verbosity);
         let text = create_text_param_for_request(
             verbosity,
             &prompt.output_schema,
