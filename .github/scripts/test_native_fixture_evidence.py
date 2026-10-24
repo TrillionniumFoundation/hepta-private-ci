@@ -1,11 +1,18 @@
-"""Synthetic report-validator controls, never native qualification tests."""
+"""Synthetic evidence-validator controls, never native qualification tests."""
 
+import contextlib
 import copy
+import hashlib
+import json
+import os
 from pathlib import Path
 import tempfile
+import subprocess
 import unittest
+from unittest.mock import patch
 import xml.etree.ElementTree as ET
 
+import native_fixture_evidence as evidence
 from native_fixture_evidence import EXPECTED, validate_report
 
 
@@ -107,6 +114,97 @@ class ReportValidationTests(unittest.TestCase):
             del root.find(node).attrib[attribute]
             with self.assertRaises(ValueError):
                 self.check(root)
+
+
+class PatchEvidenceTests(unittest.TestCase):
+    def test_bind_preserves_final_blank_context_line_and_replay(self):
+        config = (
+            Path(__file__).resolve().parents[2] / "codex-rs/.config/nextest.toml"
+        ).read_bytes()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            repo, out = root / "repo", root / "evidence"
+            repo.mkdir()
+            out.mkdir()
+
+            def git(*args):
+                return subprocess.check_output(
+                    ["git", "-C", str(repo), *args], stderr=subprocess.PIPE
+                )
+
+            def commit(message):
+                git("add", ".")
+                git(
+                    "-c",
+                    "user.name=Evidence test",
+                    "-c",
+                    "user.email=evidence-test@example.invalid",
+                    "commit",
+                    "-qm",
+                    message,
+                )
+                return git("rev-parse", "HEAD").decode().strip()
+
+            git("init", "-q")
+            for path in (
+                "codex-rs/Cargo.lock",
+                "justfile",
+                "scripts/run-nextest.py",
+                "scripts/just-shell.py",
+                "codex-rs/rust-toolchain.toml",
+            ):
+                target = repo / path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("unchanged support file\n")
+            target = repo / "codex-rs/.config/nextest.toml"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(config)
+            fixture = repo / "fixture.txt"
+            fixture.write_bytes(b"before\n\n")
+            base = commit("base")
+            base_tree = git("rev-parse", "HEAD^{tree}").decode().strip()
+            lock = git("rev-parse", "HEAD:codex-rs/Cargo.lock").decode().strip()
+            fixture.write_bytes(b"after\n\n")
+            head = commit("candidate")
+            expected = git("diff", "--binary", "--full-index", base, head)
+            self.assertTrue(expected.endswith(b" \n"))
+            fixture_hash = hashlib.sha256(fixture.read_bytes()).hexdigest()
+            with (
+                contextlib.chdir(repo),
+                patch.dict(os.environ, {"CANDIDATE_SHA": head}),
+                patch.multiple(
+                    evidence,
+                    BASE=base,
+                    BASE_TREE=base_tree,
+                    LOCK=lock,
+                    FIXTURES={"fixture.txt": fixture_hash},
+                    CI_FILES=set(),
+                ),
+            ):
+                evidence.bind(out)
+            exported = out / "candidate.patch"
+            self.assertEqual(exported.read_bytes(), expected)
+            source = json.loads((out / "source.json").read_text())
+            self.assertEqual(source["head"], head)
+            self.assertEqual(source["base_tree"], base_tree)
+            self.assertEqual(source["files"]["codex-rs/Cargo.lock"]["blob"], lock)
+            self.assertEqual(source["files"]["fixture.txt"]["sha256"], fixture_hash)
+            self.assertEqual(
+                set(source["files"]),
+                {
+                    "fixture.txt",
+                    "codex-rs/Cargo.lock",
+                    "justfile",
+                    "scripts/run-nextest.py",
+                    "scripts/just-shell.py",
+                    "codex-rs/rust-toolchain.toml",
+                },
+            )
+            git("checkout", "-q", "--detach", base)
+            git("apply", "--check", str(exported))
+            git("apply", str(exported))
+            self.assertEqual(fixture.read_bytes(), b"after\n\n")
+            self.assertEqual(git("diff", "--binary", "--full-index"), expected)
 
 
 if __name__ == "__main__":

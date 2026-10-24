@@ -106,8 +106,8 @@ def bind(out):
             "files": files,
         },
     )
-    (out / "candidate.patch").write_text(
-        run("git", "diff", "--binary", "--full-index", BASE, head) + "\n"
+    (out / "candidate.patch").write_bytes(
+        subprocess.check_output(["git", "diff", "--binary", "--full-index", BASE, head])
     )
 
 
