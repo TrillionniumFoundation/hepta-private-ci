@@ -5,6 +5,7 @@
 mod authbus;
 mod capabilities;
 mod evidence;
+mod memory_cell;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
 pub use authbus::AuthBusTextBody;
@@ -28,6 +29,10 @@ pub use evidence::KernelEvidenceResult;
 pub use evidence::KernelEvidenceVerifyV1;
 pub use evidence::MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES;
 pub use evidence::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES;
+pub use memory_cell::MemoryCellReadIngress;
+pub use memory_cell::MemoryCellReadSnapshot;
+pub use memory_cell::MemoryCellReadState;
+pub use memory_cell::MemoryCellRole;
 
 use std::path::PathBuf;
 
@@ -571,6 +576,12 @@ impl AgentdRequest {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdMethod {
+    MemoryCellReadStart {
+        request: crate::MemoryCellReadIngress,
+    },
+    MemoryCellReadStatus {
+        invocation_id: String,
+    },
     Capabilities,
     Health,
     Lifecycle,
@@ -734,6 +745,7 @@ pub struct AgentdResponse {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdPayload {
+    MemoryCellRead(crate::MemoryCellReadSnapshot),
     Capabilities(AgentdCapabilitySet),
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
