@@ -1,0 +1,141 @@
+name: P41 ctutils 0.4.4 exact composed-lock evidence (read-only)
+
+on:
+  push:
+    branches:
+      - automation/p41-ctutils-044-exact-lock-evidence-20261024-v1
+    paths:
+      - .github/workflows/hepta-p41-ctutils-044-exact-lock-evidence.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: p41-ctutils-044-exact-lock-evidence-20261024
+  cancel-in-progress: false
+
+jobs:
+  generate-and-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout pinned composed parent without write credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Enforce exact parent, sole workflow change, and original locks
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD^)" = "7f26349c331cbce03c0493345e522a91832ce873"
+          test "$(git diff --name-only HEAD^ HEAD)" = ".github/workflows/hepta-p41-ctutils-044-exact-lock-evidence.yml"
+          test "$(git hash-object codex-rs/Cargo.lock)" = "e4299e4b70dfbcc9929e56e48a603ef20d17632b"
+          test "$(git hash-object MODULE.bazel)" = "a49ef6c1cf4cf6b12f76296cd488c93f0753905b"
+          test "$(git hash-object MODULE.bazel.lock)" = "a46d4831ee23143cf7b11e3f92cd72ff1f8d02c5"
+
+      - name: Prepare pinned Bazel resolver
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: p41-ctutils-044-exact-lock-20261024
+
+      - name: Run exact Cargo resolver and original bazel-lock-update recipe
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal
+          (cd codex-rs && cargo +1.95.0 update -p ctutils --precise 0.4.4)
+          python3 - <<'PY'
+          import pathlib
+          import subprocess
+          import tomllib
+
+          old = tomllib.loads(subprocess.check_output(
+              ["git", "show", "HEAD:codex-rs/Cargo.lock"], text=True,
+          ))
+          new = tomllib.loads(pathlib.Path("codex-rs/Cargo.lock").read_text())
+          def ctutils(lock):
+              return [p for p in lock["package"] if p["name"] == "ctutils"]
+          before, after = ctutils(old), ctutils(new)
+          assert len(before) == len(after) == 1, (before, after)
+          assert before[0]["version"] == "0.4.2", before
+          assert after[0]["version"] == "0.4.4", after
+          assert before[0]["checksum"] != after[0]["checksum"]
+          def without_ctutils(lock):
+              return {**lock, "package": [p for p in lock["package"] if p["name"] != "ctutils"]}
+          assert without_ctutils(old) == without_ctutils(new), "unexpected Cargo graph changes"
+          print("Cargo exact ctutils-only update verified")
+          PY
+          # The exact command used by the repository's just bazel-lock-update target.
+          bazel mod deps --lockfile_mode=update
+          ./scripts/check-module-bazel-lock.sh
+          python3 -m json.tool MODULE.bazel.lock >/dev/null
+          python3 - <<'PY'
+          import json
+          import pathlib
+          import subprocess
+
+          old = json.loads(subprocess.check_output(
+              ["git", "show", "HEAD:MODULE.bazel.lock"], text=True,
+          ))
+          new = json.loads(pathlib.Path("MODULE.bazel.lock").read_text())
+          key_prefix = "@@rules_rs+//rs:extensions.bzl%crate/ctutils_"
+          old_items = {k: v for k, v in old["facts"].items() if k.startswith(key_prefix)}
+          new_items = {k: v for k, v in new["facts"].items() if k.startswith(key_prefix)}
+          assert list(old_items) == [key_prefix + "0.4.2"], old_items
+          assert list(new_items) == [key_prefix + "0.4.4"], new_items
+          old["facts"] = {k: v for k, v in old["facts"].items() if not k.startswith(key_prefix)}
+          new["facts"] = {k: v for k, v in new["facts"].items() if not k.startswith(key_prefix)}
+          assert old == new, "unexpected Bazel lockfile changes"
+          print("Bazel exact ctutils-only update verified")
+          PY
+          git diff --check
+          test "$(git diff --name-only)" = "$(printf 'MODULE.bazel.lock\ncodex-rs/Cargo.lock')"
+
+      - name: Capture original and generated immutable lock provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/p41-ctutils-044-exact-composed-locks"
+          mkdir -p "$out"
+          git diff --binary -- codex-rs/Cargo.lock MODULE.bazel.lock > "$out/generated-locks.patch"
+          test -s "$out/generated-locks.patch"
+          cp codex-rs/Cargo.lock "$out/Cargo.lock"
+          cp MODULE.bazel.lock "$out/MODULE.bazel.lock"
+          {
+            printf 'source_sha=%s\n' "$GITHUB_SHA"
+            printf 'exact_parent=%s\n' "$(git rev-parse HEAD^)"
+            printf 'old_cargo_blob=%s\n' "$(git show HEAD:codex-rs/Cargo.lock | git hash-object --stdin)"
+            printf 'old_bazel_lock_blob=%s\n' "$(git show HEAD:MODULE.bazel.lock | git hash-object --stdin)"
+            printf 'new_cargo_blob=%s\n' "$(git hash-object codex-rs/Cargo.lock)"
+            printf 'new_bazel_lock_blob=%s\n' "$(git hash-object MODULE.bazel.lock)"
+            rustc +1.95.0 --version
+            cargo +1.95.0 --version
+            bazel --version
+            sha256sum codex-rs/Cargo.lock MODULE.bazel.lock
+          } > "$out/provenance.txt"
+          cat "$out/provenance.txt"
+
+      - name: Upload read-only exact generated lock evidence
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: p41-ctutils-044-exact-composed-lock-evidence
+          path: ${{ runner.temp }}/p41-ctutils-044-exact-composed-locks/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Retain tracked no-suppression guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v scripts.tests.test_hepta_rustsec_guard
+          python3 scripts/check_hepta_rustsec_advisories.py --repo-root .
+
+      - name: Execute original cargo-deny check on generated lock
+        uses: EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246 # v2
+        with:
+          rust-version: 1.95.0
+          manifest-path: ./codex-rs/Cargo.toml
