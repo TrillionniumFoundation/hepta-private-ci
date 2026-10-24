@@ -196,6 +196,10 @@ mod notes_document_observer;
 #[cfg(target_os = "linux")]
 mod notes_literal_adapter;
 #[cfg(target_os = "linux")]
+mod notes_literal_control;
+#[cfg(target_os = "linux")]
+mod notes_literal_observation;
+#[cfg(target_os = "linux")]
 mod notes_literal_prepare;
 #[cfg(target_os = "linux")]
 mod notes_organ;
@@ -424,6 +428,14 @@ pub use notes_literal_adapter::AgentdNotesLiteralAdapter;
 pub use notes_literal_adapter::AgentdNotesLiteralBindings;
 #[cfg(target_os = "linux")]
 pub use notes_literal_adapter::AgentdNotesPreparedObjective;
+#[cfg(target_os = "linux")]
+pub use notes_literal_adapter::AgentdNotesRetainedIntents;
+#[cfg(target_os = "linux")]
+pub use notes_literal_observation::AgentdNotesObservationRetention;
+#[cfg(target_os = "linux")]
+pub use notes_literal_observation::AgentdNotesSubmissionObservation;
+#[cfg(target_os = "linux")]
+pub use notes_literal_observation::AgentdNotesSubmissionState;
 pub use objective_runtime::authbus_objective_claims;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;

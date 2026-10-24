@@ -36,6 +36,10 @@ use crate::notes_literal_prepare::LiteralOperationInput;
 use crate::notes_literal_prepare::prepare_original_literal;
 use crate::notes_literal_prepare::utc_millis;
 
+#[path = "notes_literal_read.rs"]
+mod read;
+pub use read::AgentdNotesRetainedIntents;
+
 type RootCheckpoint = ProtectedCognitiveCheckpoint<AgentdUnixCognitiveCheckpointTransport>;
 
 /// Frozen deployment data, supplied by the trusted launcher, never UI IPC.
@@ -56,9 +60,9 @@ pub struct AgentdNotesLiteralBindings {
 
 /// Private host result, never a renderer message. A retained request is only
 /// read/reconciled; it has no new sending permission. `Ready` already occupies
-/// the original durable sender fence. The caller must use that exact sender's
-/// `mark_send_started` before the authenticated original control transport and
-/// retain its observation; losing this result never rearms the request.
+/// the original durable sender fence. `submit_once` consumes that exact sender's
+/// permission before authenticated original control I/O, then retains the
+/// observation. Losing this result never rearms the request.
 pub enum AgentdNotesPreparedObjective {
     Retained(ObjectiveSenderRequest),
     Ready {
@@ -72,13 +76,15 @@ pub enum AgentdNotesPreparedObjective {
 /// The slot remains held by started observation/signing work after cancellation.
 /// It owns no database, nonce, request-ID mapping or parallel admission ledger.
 pub struct AgentdNotesLiteralAdapter {
-    identity: AgentdIdentity,
+    pub(crate) identity: AgentdIdentity,
     writer: Arc<ProductionDurableWriter>,
     sender: Arc<ProductionObjectiveSender<RootCheckpoint>>,
     root: Arc<AgentdRootAuthoritySession>,
     observer: AgentdNotesDocumentObserver,
     grants: Arc<AgentdUnixFinalUseGrantProvider>,
     bindings: AgentdNotesLiteralBindings,
+    input_schema_digest: Digest32,
+    normalization_digest: Digest32,
     blocking: Arc<Semaphore>,
     deadline: Duration,
     next_request: u64,
@@ -138,6 +144,8 @@ impl AgentdConfig {
             identity, writer, sender: Arc::new(sender),
             root: Arc::clone(&attachment.root_session), observer,
             grants: Arc::clone(&attachment.grants), bindings,
+            input_schema_digest: selected.expected_input_schema_digest,
+            normalization_digest: selected.expected_normalization_profile_digest,
             blocking: Arc::new(Semaphore::new(1)), deadline, next_request: 1,
         };
         adapter.check_available()?;
@@ -196,6 +204,10 @@ impl AgentdNotesLiteralAdapter {
             return Ok(AgentdNotesPreparedObjective::Retained(retained));
         }
         self.check_available()?;
+        // Startup cannot consume a durable send opportunity while the original
+        // control listener/profile is still unavailable. This is a bounded,
+        // authenticated read-only query, not a delivery attempt or retry.
+        self.require_objective_ready().await?;
         if text.trim().is_empty() || text.len() > 4096 {
             return Err(invalid("literal Notes text exceeds original bounds"));
         }
@@ -250,18 +262,7 @@ impl AgentdNotesLiteralAdapter {
         {
             return Err(invalid("Notes signed ingress expired or differs from frozen issuer"));
         }
-        let request_id = self.next_request;
-        self.next_request = request_id.checked_add(1)
-            .ok_or_else(|| invalid("Notes control request counter exhausted"))?;
-        // SAFETY: geteuid takes no pointers and only reads this process's UID.
-        let expected_peer_uid = unsafe { libc::geteuid() };
-        let origin = ObjectiveSenderOrigin {
-            agent_id: self.identity.agent_id.clone(), spawn_generation: self.identity.spawn_generation,
-            request_id, expected_peer_uid,
-            expected_peer_pid: std::process::id(),
-            endpoint_identity: self.identity.control_socket.to_str()
-                .ok_or_else(|| invalid("original control path is not UTF-8"))?.into(),
-        };
+        let origin = self.next_origin()?;
         let request = ObjectiveSenderRequest::from_original(serde_json::to_string(&signed)?, origin)
             .map_err(|error| invalid(&error.to_string()))?;
         let ticket = self.sender.retain_before_send(request).await

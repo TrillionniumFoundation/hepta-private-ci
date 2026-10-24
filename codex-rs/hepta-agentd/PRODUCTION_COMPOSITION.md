@@ -73,7 +73,9 @@ default model, authentication, protected Current or signing key.
 derives a bounded run ID from the original owner, principal and navigation ID;
 an existing original sender record is returned for read/reconciliation without
 observation, signing or another send permit. A new request reads the actual
-private Notes predecessor, refuses a pending application receipt, uses the
+authenticated control capabilities before preparation, so a startup gap cannot
+consume a send opportunity. It then reads the private Notes predecessor,
+refuses a pending application receipt, uses the
 original 4096-text/8192-payload validator and retains the exact original operation
 before typed Root signing. Protected time comes from that same live Root session,
 and the source has a five-second deadline. No destination, predecessor, subject,
@@ -84,10 +86,20 @@ the slot across cancellation. Expiry is rechecked before signing, after signing
 and after the original sender acknowledges its durable fence. A timeout does
 not erase preparation, roll back a checkpoint, resign a retained request or
 create a second ledger. `Ready` contains the original sender/ticket and exact
-signed ingress already retained by that owner. Its trusted caller must still
-consume `mark_send_started`, use authenticated original control ingress and
-retain the actual transport observation. This API does not directly dispatch,
-issue a FinalUse grant or claim that a document was changed.
+signed ingress already retained by that owner. The caller's `submit_once` uses
+that same sender's `mark_send_started`, checks the fixed socket node and actual
+kernel UID/PID before sending any bytes, enters original `ObjectiveStart` and
+retains the actual transport observation. It has one absolute bounded deadline,
+records exact byte progress, and preserves Unknown after lost replies. Its
+observation JSON is the existing Desktop submission metadata schema; there is
+no second record store. A recovered request is never sent again. This API does
+not directly dispatch, issue a FinalUse grant or claim a document was changed.
+
+The adapter's `observe_run`, `cancel` and `retained_intents` reuse original
+authenticated read/control methods. Cancel reads a fresh original revision and
+never retries a race. Navigation reads at most 64 original pages and exposes at
+most 128 IDs, with explicit incomplete traversal; it is not a complete paginated
+document archive. No renderer-supplied endpoint or expected revision is accepted.
 
 Original-owner tests verify pending-receipt and escaped-payload refusal before
 preparation, exact UTF-8/predecessor retention, duplicate operation identity
@@ -95,6 +107,11 @@ protection and zero grant/device calls. The separate shared compiler tests run
 the real Objective decoder/admission/compiler with explicitly synthetic source
 authentication. Run `just test --locked --offline -p codex-hepta-agentd --lib
 -E 'test(notes_literal)'` and the corresponding `codex-hepta-objective` test.
+The control tests additionally use real Unix socket I/O and the original SQLite
+sender with explicit checkpoint/reply fixtures: wrong peer emits zero bytes,
+and a reply lost after the complete frame retains one Unknown observation while
+the recovered request remains unable to send. These are component tests, not an
+authenticated production Root service execution.
 Actual UI submission, original Root terminal, lost-reply recovery and final
 receipt retirement remain execution gates until the unique launcher calls this
 adapter through its complete original transport path.

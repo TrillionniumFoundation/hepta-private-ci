@@ -19,6 +19,9 @@ use std::error::Error;
 use std::sync::Mutex;
 use std::sync::atomic::Ordering;
 
+#[path = "notes_literal_control_tests.rs"]
+mod notes_literal_control_tests;
+
 #[derive(Default)]
 struct CheckpointProbe {
     seen: Mutex<Vec<(CognitiveRecoveryAnchor, ObjectiveSenderWriterFence)>>,
