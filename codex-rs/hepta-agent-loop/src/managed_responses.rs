@@ -236,3 +236,7 @@ pub struct ManagedResponsesObservation {
     pub status: ResponsesBridgeStatus,
     pub transport_invoked: bool,
 }
+
+#[cfg(test)]
+#[path = "managed_responses_error_tests.rs"]
+mod error_tests;

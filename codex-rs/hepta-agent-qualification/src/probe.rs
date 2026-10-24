@@ -252,6 +252,7 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
         "schema":"hepta-native-provider-qualification-result:v1",
         "qualified":complete && observed.completed && !observed.unexpected_tool && terminal_recorded && within_reservations && output_matches,
         "status":status, "provider_transport_invoked":dispatch.transport_invoked(),
+        "failure_diagnostic":result.as_ref().err().map(failure_diagnostic),
         "maximum_provider_calls":1, "automatic_retry":false,
         "requested_model":model, "server_model":continuation.as_ref().and_then(|c| c.get("server_model")),
         "configured_reasoning_effort":config.model_reasoning_effort,
@@ -274,6 +275,23 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
         policy.state.close().await;
     }
     Ok(report)
+}
+
+// Error strings can contain provider bodies, URLs or credentials. Only the
+// typed allowlist above the HTTP/stream boundary may enter retained evidence.
+fn failure_diagnostic(error: &codex_hepta_agent_loop::Error) -> Value {
+    use codex_hepta_agent_loop::Error as LoopError;
+    match error {
+        LoopError::Responses(failure) => json!({
+            "stage":failure.stage.as_str(), "category":failure.category.as_str(),
+            "http_status":failure.http_status,
+        }),
+        LoopError::Limit(_) => json!({"stage":"native", "category":"limit", "http_status":null}),
+        LoopError::Contract(_) => {
+            json!({"stage":"native", "category":"contract", "http_status":null})
+        }
+        LoopError::Owner(_) => json!({"stage":"native", "category":"owner", "http_status":null}),
+    }
 }
 
 struct Observation {
@@ -316,3 +334,7 @@ async fn collect(
     }
     observed
 }
+
+#[cfg(test)]
+#[path = "probe_diagnostics_tests.rs"]
+mod diagnostics_tests;

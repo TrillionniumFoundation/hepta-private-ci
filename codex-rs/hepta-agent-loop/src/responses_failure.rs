@@ -125,3 +125,7 @@ impl fmt::Display for ResponsesFailure {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "responses_failure_tests.rs"]
+mod tests;
