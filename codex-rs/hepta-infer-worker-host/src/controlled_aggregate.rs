@@ -1,6 +1,7 @@
 //! Bounded PN4 declarations at the real sealed source route, not native authority.
 
 use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_memory::FinalUseProductionOutboxTarget;
 use codex_hepta_memory::ProductionDispatchFuture;
 use codex_hepta_memory::ProductionDispatchRequest;
@@ -15,6 +16,9 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use serde::Serialize;
+
+use crate::controlled_funding::ControlledLedgerFunding;
+use crate::controlled_funding::LedgerFundedControlledAggregate;
 
 pub const DESTINATION: &str = "infer-worker-host.controlled-aggregate.v1";
 pub const TOPIC: &str = "hepta.controlled-aggregate.v1";
@@ -67,7 +71,7 @@ pub struct ControlledAggregateBinding {
 }
 
 /// One immutable registration, never a growable registry or funding capability.
-pub struct ControlledAggregateRegistration(ControlledAggregateBinding);
+pub struct ControlledAggregateRegistration(pub(super) ControlledAggregateBinding);
 
 impl ControlledAggregateRegistration {
     pub fn new(binding: ControlledAggregateBinding) -> Result<Self, String> {
@@ -174,13 +178,14 @@ impl ControlledAggregateRegistration {
     }
 }
 
-/// Register on the existing final-use dispatcher/Agentd destination seam. Until
-/// original AuthBus funding and native whole-unit ownership are connected, this
-/// adapter refuses admission and reconciliation, including correctly signed IDs.
-/// It never consumes a physical-entry claim or releases an existing reservation.
+/// Register on the existing final-use dispatcher/Agentd destination seam.
+/// Optional original-ledger funding is not native whole-unit ownership. Both
+/// constructors refuse physical admission and terminal release, including for
+/// correctly signed requests. No physical-entry claim is consumed here.
 pub struct ControlledAggregateTarget {
     registration: ControlledAggregateRegistration,
     authority: FinalUseAuthority,
+    ledger_funding: Option<(ControlledLedgerFunding, FinalUseBinding)>,
 }
 
 impl ControlledAggregateTarget {
@@ -191,7 +196,31 @@ impl ControlledAggregateTarget {
         Self {
             registration,
             authority,
+            ledger_funding: None,
         }
+    }
+
+    /// Connect original ledger funding only. No physical resource owner is
+    /// created, no native entry occurs, and no terminal release is available.
+    pub fn ledger_funded_unavailable(
+        funded: LedgerFundedControlledAggregate,
+        authority: FinalUseAuthority,
+        expected: FinalUseBinding,
+    ) -> Result<Self, String> {
+        let operation = funded.registration.operation()?;
+        if expected.subject_id != operation.subject_id().as_str()
+            || expected.destination_id != DESTINATION
+            || expected.request_sha256 == [0; 32]
+            || Digest32::from_array(expected.payload_sha256) != operation.payload_digest()
+            || Digest32::from_array(expected.scope_sha256) != operation.scope_digest()
+        {
+            return Err("controlled funded final-use binding differs".to_owned());
+        }
+        Ok(Self {
+            registration: funded.registration,
+            authority,
+            ledger_funding: Some((funded.funding, expected)),
+        })
     }
 }
 
@@ -216,6 +245,19 @@ impl FinalUseProductionOutboxTarget for ControlledAggregateTarget {
             dispatch.verify_target_authority(&self.authority)?;
             if self.registration.validate(dispatch.request()).is_err() {
                 return Ok(retained("controlled aggregate registration does not match"));
+            }
+            if let Some((funding, expected)) = &self.ledger_funding {
+                if dispatch.binding() != expected {
+                    return Ok(retained("controlled funded source request binding differs"));
+                }
+                if funding.retain_dispatch_liability().await.is_err() {
+                    return Ok(retained(
+                        "original ledger funding is unavailable; native owner remains unavailable",
+                    ));
+                }
+                return Ok(retained(
+                    "original ledger funding retained; whole-unit native owner is unavailable",
+                ));
             }
             // No caller-provided ID, private cgroup fact, std::process::Child
             // exit or dropped claim can become a native owner/funding witness.
