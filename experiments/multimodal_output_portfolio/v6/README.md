@@ -161,6 +161,24 @@ just test -p codex-hepta-ndu
 
 输出目录必须不存在；失败或部分完成目录保留原状。省略 `--native-binary` 不会产生原生 receipt，不能声称完成了这部分核验。修改协议后应使用新目录，并以运行时冻结的协议判断适用范围。
 
+独立数值核验使用 80 位 Decimal 和完整停止路径枚举，比较 128 个已知有限问题的价值与首动作策略。它不调用控制器的 entropic 数值函数，也不代表一般 FBSDE 证明：
+
+```bash
+python experiments/multimodal_output_portfolio/v6/validate_oracle.py \
+  --repo . --expected-commit "$(git rev-parse HEAD)" --output /tmp/ndu-finite-oracle.json
+```
+
+推理使用同步 `inference_guard` 在开始与结束核验模型和 forecast；窗口内只复用模型身份，仍逐次核验 forecast 和父状态。未进入窗口的独立 backend 调用仍核验模型。该窗口不支持并发参数写入，也不是跨 backend 的全局模型锁。持续到退出时的参数修改会阻止 `rollout` 返回。
+
+`replay.py` 可以重放已完成协议的全部冻结 checkpoint，重新计时并调用原生 evaluator。它要求所有动作、决策、状态、实际输出字节、指标和抽象工作量精确相同，原目录保持独立。它拒绝未完成原实验、非干净提交、输入核心代码变化及目录重叠；失败重放保留证据。重放只检验身份一致与描述性成本变化，不增加独立质量样本：
+
+```bash
+/tmp/ndu-v6-env/bin/python -m experiments.multimodal_output_portfolio.v6.replay \
+  --original /tmp/ndu-v6-full-001 --cache /tmp/ndu-v6-data \
+  --output /tmp/ndu-v6-replay-001 \
+  --native-binary /tmp/ndu-v6-target/debug/ndu-generation-rollout
+```
+
 ## 7. 证据身份与完成标准
 
 | 文件 | 内容与核验范围 |

@@ -136,6 +136,16 @@ jobs:
             --minimum-tests 1 --timeout-seconds 600 -- \
             python -m unittest -v "${modules[@]}"
 
+      - name: Compare finite control with an independent numerical oracle
+        id: finite_oracle
+        run: |
+          set -euo pipefail
+          python scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/finite-oracle.json" --timeout-seconds 60 -- \
+            python experiments/multimodal_output_portfolio/v6/validate_oracle.py \
+            --repo "$GITHUB_WORKSPACE" --expected-commit "$TESTED_SHA" \
+            --output "$V6_EVIDENCE/finite-oracle.json"
+
       - name: Verify the Cargo lockfile and run native owner tests
         id: native_tests
         working-directory: codex-rs
