@@ -13,6 +13,9 @@ use crate::security::validate_owner_descriptor;
 use crate::volume::inspect_local_ntfs;
 use std::fmt;
 use std::fs::File;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::MutexGuard;
 
 /// A failed post-create readback retains the actual new directory and ancestry.
 /// It grants no validated operations; dropping it only closes owned handles.
@@ -54,6 +57,10 @@ impl std::error::Error for CreationFailure {}
 /// This role does not qualify sync/power-loss, replay recovery or either owner
 /// store. Those consumers keep their existing closed Windows factories.
 pub struct FreshPrivateDirectory {
+    context: Arc<Mutex<DirectoryContext>>,
+}
+
+struct DirectoryContext {
     created: UnverifiedCreatedDirectory,
     identity: Identity,
     continuity: Continuity,
@@ -116,9 +123,11 @@ impl ParentAnchor {
         })();
         match validate {
             Ok(identity) => Ok(FreshPrivateDirectory {
-                created,
-                identity,
-                continuity: Continuity::Live,
+                context: Arc::new(Mutex::new(DirectoryContext {
+                    created,
+                    identity,
+                    continuity: Continuity::Live,
+                })),
             }),
             Err(error) => Err(CreationFailure::Created {
                 directory: Box::new(created),
@@ -129,13 +138,26 @@ impl ParentAnchor {
 }
 
 impl FreshPrivateDirectory {
+    fn lock_context(&self) -> Result<MutexGuard<'_, DirectoryContext>, ValidationError> {
+        self.context
+            .lock()
+            .map_err(|_| ValidationError::UnsafeObject)
+    }
+
+    /// Re-read the same held object's owner/DACL/volume and retained ancestry.
+    /// Any error, drift or poisoned context permanently refuses access.
+    pub fn revalidate(&mut self) -> Result<(), ValidationError> {
+        self.lock_context()?.revalidate()
+    }
+
     /// Flush this newly created directory's entry in its immediate held parent.
     /// A separate same-ID write handle preserves all retained query handles and
     /// no-delete sharing. Any native or identity error permanently refuses this role.
     pub fn sync_parent_namespace(&mut self) -> Result<(), ValidationError> {
-        self.revalidate()?;
-        self.continuity = Continuity::Refused;
-        let parent = &self
+        let mut context = self.lock_context()?;
+        context.revalidate()?;
+        context.continuity = Continuity::Refused;
+        let parent = &context
             .created
             .parent
             .ancestors
@@ -143,8 +165,8 @@ impl FreshPrivateDirectory {
             .ok_or(ValidationError::UnsafeObject)?
             .file;
         crate::namespace_flush::flush_held_namespace(parent)?;
-        self.continuity = Continuity::Live;
-        self.revalidate()
+        context.continuity = Continuity::Live;
+        context.revalidate()
     }
 
     /// Flush this held writable directory's data and metadata with real OS I/O.
@@ -152,16 +174,17 @@ impl FreshPrivateDirectory {
     /// Failure permanently refuses the role. This does not flush its ancestor's
     /// initialization entry or by itself establish power-loss qualification.
     pub fn sync_all(&mut self) -> Result<(), ValidationError> {
-        self.revalidate()?;
-        self.continuity = Continuity::Refused;
-        self.created.file.sync_all()?;
-        self.continuity = Continuity::Live;
-        self.revalidate()
+        let mut context = self.lock_context()?;
+        context.revalidate()?;
+        context.continuity = Continuity::Refused;
+        context.created.file.sync_all()?;
+        context.continuity = Continuity::Live;
+        context.revalidate()
     }
+}
 
-    /// Re-read the same held object's owner/DACL/volume and retained ancestry.
-    /// Any error or drift permanently refuses this role.
-    pub fn revalidate(&mut self) -> Result<(), ValidationError> {
+impl DirectoryContext {
+    fn revalidate(&mut self) -> Result<(), ValidationError> {
         if let Continuity::Refused = self.continuity {
             return Err(ValidationError::UnsafeObject);
         }

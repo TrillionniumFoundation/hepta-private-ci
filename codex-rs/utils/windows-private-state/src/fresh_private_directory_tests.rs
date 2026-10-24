@@ -20,12 +20,47 @@ use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 type Result<T = ()> = std::result::Result<T, Box<dyn Error>>;
 
 #[test]
+fn actual_private_root_allows_compatible_second_owner_open_before_lock() -> Result {
+    let fixture = Fixture::new()?;
+    let directory =
+        ParentAnchor::for_create_only(&fixture.0)?.create_private_directory("private")?;
+    let second = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE)
+        .custom_flags(0x0220_0000)
+        .open(fixture.0.join("private"))?;
+    assert_eq!(
+        crate::mechanism::identity(&second)?,
+        directory.lock_context()?.identity
+    );
+    Ok(()) // no DELETE request on either root; original OS lock is the next gate
+}
+
+#[test]
+fn actual_directory_context_poison_never_recovers_into_success() -> Result {
+    let fixture = Fixture::new()?;
+    let mut directory =
+        ParentAnchor::for_create_only(&fixture.0)?.create_private_directory("private")?;
+    let context = std::sync::Arc::clone(&directory.context);
+    let failure = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        let _held = context.lock().expect("initially unpoisoned context");
+        panic!("native directory owner interrupted while held");
+    }));
+    assert!(failure.is_err());
+    assert!(directory.revalidate().is_err());
+    assert!(directory.sync_all().is_err());
+    assert!(directory.sync_parent_namespace().is_err());
+    Ok(())
+}
+
+#[test]
 fn actual_writable_directory_syncs_new_entry_without_noop_or_fallback() -> Result {
     let fixture = Fixture::new()?;
     let mut directory =
         ParentAnchor::for_create_only(&fixture.0)?.create_private_directory("private")?;
     let mut file = crate::mechanism::open_relative(
-        &directory.created.file,
+        &directory.lock_context()?.created.file,
         "state",
         FILE_GENERIC_READ | FILE_GENERIC_WRITE,
         FILE_SHARE_READ | FILE_SHARE_WRITE,
@@ -94,12 +129,13 @@ fn actual_new_directory_has_exact_protected_owner_dacl_on_original_handle() -> R
     let mut directory =
         ParentAnchor::for_create_only(&fixture.0)?.create_private_directory("private")?;
     directory.revalidate()?;
+    let context = directory.lock_context()?;
     let observed = validate_owner_descriptor(
-        &directory.created.file,
+        &context.created.file,
         &CurrentUser::capture_effective()?,
         ObjectKind::Directory,
     )?;
-    assert_eq!(observed.identity, directory.identity);
+    assert_eq!(observed.identity, context.identity);
     assert!(fixture.0.join("private").is_dir());
     Ok(())
 }

@@ -357,7 +357,7 @@ pub(crate) fn create_protected_directory(
     open_nt(
         root.as_raw_handle() as HANDLE,
         leaf_name(name)?,
-        FILE_GENERIC_READ | FILE_GENERIC_WRITE | 0x0001_0000,
+        FILE_GENERIC_READ | FILE_GENERIC_WRITE,
         FILE_SHARE_READ | FILE_SHARE_WRITE,
         FILE_CREATE,
         ObjectOpen::ProtectedDirectory(descriptor),
