@@ -310,7 +310,8 @@ fn receive_offer(
     if length < 0 {
         return Err(io::Error::last_os_error().into());
     }
-    let (mut descriptors, ancillary_valid) = received_descriptors(&message);
+    // SAFETY: recvmsg filled the still-live aligned control buffer above.
+    let (mut descriptors, ancillary_valid) = unsafe { received_descriptors(&message) };
     if message.msg_flags & (libc::MSG_TRUNC | libc::MSG_CTRUNC) != 0
         || !ancillary_valid
         || descriptors.len() != 2
@@ -356,7 +357,12 @@ fn receive_offer(
     Ok((offer, endpoint, recovery))
 }
 
-fn received_descriptors(message: &libc::msghdr) -> (Vec<OwnedFd>, bool) {
+/// Adopt all received rights so rejecting a frame closes every owned descriptor.
+///
+/// # Safety
+/// `message` must describe a completed recvmsg into a live, aligned, bounded
+/// ancillary buffer. Its descriptor rights must not have been adopted already.
+pub(crate) unsafe fn received_descriptors(message: &libc::msghdr) -> (Vec<OwnedFd>, bool) {
     let mut descriptors = Vec::new();
     let mut valid = true;
     // SAFETY: recvmsg initialized a kernel-bounded ancillary chain in the
@@ -404,7 +410,7 @@ fn received_descriptors(message: &libc::msghdr) -> (Vec<OwnedFd>, bool) {
     (descriptors, valid)
 }
 
-fn require_socket(descriptor: RawFd, kind: libc::c_int) -> io::Result<()> {
+pub(crate) fn require_socket(descriptor: RawFd, kind: libc::c_int) -> io::Result<()> {
     for (option, expected) in [(libc::SO_DOMAIN, libc::AF_UNIX), (libc::SO_TYPE, kind)] {
         let mut actual: libc::c_int = 0;
         let mut length = mem::size_of_val(&actual) as libc::socklen_t;
