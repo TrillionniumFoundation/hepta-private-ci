@@ -8,6 +8,8 @@
 pub mod mechanism;
 
 #[cfg(windows)]
+pub mod primary_owner;
+#[cfg(windows)]
 pub mod principal;
 #[cfg(windows)]
 pub mod security;

@@ -107,6 +107,19 @@ pub struct CapturedPrincipal {
 }
 
 impl CapturedPrincipal {
+    pub(crate) fn primary_owner_user(&mut self) -> Result<CurrentUser, ValidationError> {
+        self.revalidate_effective()?;
+        self.continuity = Continuity::Refused;
+        if self.original.identity.kind != Kind::Primary {
+            return Err(ValidationError::PrincipalChanged);
+        }
+        crate::primary_owner::validate_primary(&self.token)?;
+        let user = CurrentUser::from_token(&self.token)?;
+        self.continuity = Continuity::Live;
+        self.revalidate_effective()?;
+        Ok(user)
+    }
+
     /// Capture the thread token, falling back only on ERROR_NO_TOKEN.
     ///
     /// Only TOKEN_QUERY is requested. Identification/anonymous impersonation
