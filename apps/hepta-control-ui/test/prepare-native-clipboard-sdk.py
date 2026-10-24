@@ -7,6 +7,7 @@ change. Creates one new checkout only and reports its exact source tree.
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import tomllib
@@ -14,7 +15,10 @@ import tomllib
 BASE = "337566c8b25d47f7e4fff6a202157b65bf183330"
 SOURCE = "https://github.com/kevinaboos/makepad"
 ORIGINAL_SOURCE = "git+" + SOURCE + "?rev=" + BASE + "#" + BASE
-UI_FEATURE = "native-clipboard-sdk"
+PROFILES = {
+    "clipboard": ("", "native-clipboard-sdk", "hepta-native-clipboard-sdk"),
+    "preedit-callbacks": ("preedit-callbacks", "native-presentation", "hepta-native-makepad"),
+}
 # Git package discovery at BASE resolves the original 0.2.20 vendor copy.
 # The explicit path candidate must preserve that same package and source.
 GRAPH_MANIFESTS = {
@@ -23,36 +27,42 @@ GRAPH_MANIFESTS = {
 }
 
 
-def require_clipboard_feature(metadata):
+def require_native_feature(metadata, profile="clipboard"):
     """Require actual resolved opt-in, including Desktop forwarding when present."""
+    _directory, ui_feature, desktop_feature = PROFILES[profile]
     nodes = {entry["id"]: entry for entry in (metadata.get("resolve") or {}).get("nodes", [])}
     for name, feature, required in (
-            ("hepta-robrix-ui", UI_FEATURE, True),
-            ("trill-ui-core", "hepta-native-clipboard-sdk", False),
-            ("trill-shell", "hepta-native-clipboard-sdk", False)):
+            ("hepta-robrix-ui", ui_feature, True),
+            ("trill-ui-core", desktop_feature, False),
+            ("trill-shell", desktop_feature, False)):
         packages = [entry for entry in metadata.get("packages", []) if entry["name"] == name]
         if not packages and not required:
             continue
         if len(packages) != 1 or feature not in nodes.get(packages[0]["id"], {}).get("features", []):
             raise ValueError("SDK candidate requires resolved feature " + name + "/" + feature)
+        if profile == "preedit-callbacks" and any(
+                "clipboard-sdk" in value for value in nodes[packages[0]["id"]].get("features", [])):
+            raise ValueError("Preedit candidate does not provide the separate clipboard SDK API")
 
 
 def git(root, *args):
-    result = subprocess.run(["git", "-C", str(root), *args], stdin=subprocess.DEVNULL,
-                            capture_output=True, timeout=60)
+    environment = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    environment.update(GIT_NO_REPLACE_OBJECTS="1", GIT_OPTIONAL_LOCKS="0")
+    result = subprocess.run(["git", "-c", "core.fsmonitor=false", "-C", str(root), *args],
+                            stdin=subprocess.DEVNULL, capture_output=True, timeout=60, env=environment)
     if result.returncode:
         raise ValueError("Git source preparation failed: " + result.stderr.decode(errors="replace"))
     return result.stdout
 
 
-def cargo_override(metadata, destination):
+def cargo_override(metadata, destination, profile="clipboard"):
     """Patch every resolved crate from this SDK, not just makepad-platform.
 
     A platform-only path patch would introduce path copies of its siblings
     alongside the original Git crates, producing incompatible Cx/Script types.
     The input is the complete Cargo metadata for the product's exact features.
     """
-    require_clipboard_feature(metadata)
+    require_native_feature(metadata, profile)
     candidates = [entry for entry in metadata["packages"]
                   if (entry.get("source") or "").startswith("git+" + SOURCE)]
     if not candidates or any(entry["source"] != ORIGINAL_SOURCE for entry in candidates):
@@ -94,8 +104,8 @@ def check(data, digest, size=None):
         raise ValueError("Source or patch identity differs")
 
 
-def prepare(upstream, destination, hepta):
-    patch_root = hepta / "third_party/makepad-patches"
+def prepare(upstream, destination, hepta, profile="clipboard"):
+    patch_root = hepta / "third_party/makepad-patches" / PROFILES[profile][0]
     manifest_bytes = (patch_root / "MANIFEST.json").read_bytes()
     manifest = json.loads(manifest_bytes)
     if (manifest["schema_version"] != 1 or manifest["upstream_commit"] != BASE
@@ -107,6 +117,10 @@ def prepare(upstream, destination, hepta):
         raise ValueError("Choose a new absolute destination with an existing parent")
     if git(upstream, "rev-parse", BASE + "^{commit}").decode().strip() != BASE:
         raise ValueError("Exact original SDK Git object is unavailable")
+    upstream_tree = git(upstream, "rev-parse", BASE + "^{tree}").decode().strip()
+    if profile == "preedit-callbacks" and (
+            manifest.get("profile") != profile or manifest.get("upstream_tree") != upstream_tree):
+        raise ValueError("Preedit candidate original full tree differs")
     patches = []
     for record in manifest["patches"]:
         name = record["file"]
@@ -150,7 +164,8 @@ def prepare(upstream, destination, hepta):
         raise ValueError("Prepared SDK tree differs from the exact reviewed tree")
     if git(destination, "diff", "--name-only"):
         raise ValueError("Source changed while being prepared")
-    return {"schema": "hepta.original-sdk-patch-source.v1", "upstream_commit": BASE,
+    return {"schema": "hepta.original-sdk-patch-source.v1", "sdk_profile": profile,
+            "upstream_commit": BASE, "upstream_tree": upstream_tree,
             "patched_tree": tree, "manifest_sha256": hashlib.sha256(manifest_bytes).hexdigest(),
             "patches": manifest["patches"], "package": manifest["package"],
             "package_manifest": str(destination / "platform/Cargo.toml"),
@@ -161,6 +176,7 @@ def prepare(upstream, destination, hepta):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--profile", choices=PROFILES, default="clipboard")
     parser.add_argument("--upstream-repo", type=Path, required=True)
     parser.add_argument("--destination", type=Path, required=True)
     parser.add_argument("--hepta-root", type=Path, default=Path(__file__).resolve().parents[3])
@@ -174,10 +190,11 @@ if __name__ == "__main__":
     metadata_bytes = args.metadata.read_bytes() if args.metadata else None
     metadata = json.loads(metadata_bytes) if metadata_bytes is not None else None
     if metadata is not None:
-        require_clipboard_feature(metadata)
-    result = prepare(args.upstream_repo.resolve(strict=True), args.destination, args.hepta_root.resolve(strict=True))
+        require_native_feature(metadata, args.profile)
+    result = prepare(args.upstream_repo.resolve(strict=True), args.destination,
+                     args.hepta_root.resolve(strict=True), args.profile)
     if args.metadata:
-        entries, config = cargo_override(metadata, args.destination)
+        entries, config = cargo_override(metadata, args.destination, args.profile)
         with args.cargo_config_output.open("x") as stream:
             stream.write(config)
         result.update(cargo_patch_packages=entries, original_metadata_sha256=hashlib.sha256(metadata_bytes).hexdigest(),

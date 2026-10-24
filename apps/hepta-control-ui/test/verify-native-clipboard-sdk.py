@@ -19,14 +19,15 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def verify(hepta, prepared, original_bytes, candidate_bytes, config_bytes):
+def verify(hepta, prepared, original_bytes, candidate_bytes, config_bytes, profile="clipboard"):
     original = json.loads(original_bytes)
     candidate = json.loads(candidate_bytes)
     if original.get("version") != 1 or candidate.get("version") != 1 or not original.get("resolve") or not candidate.get("resolve"):
         raise ValueError("Both inputs must be full Cargo metadata with dependency resolution")
-    PREPARE.require_clipboard_feature(original)
-    PREPARE.require_clipboard_feature(candidate)
-    manifest_bytes = (hepta / "third_party/makepad-patches/MANIFEST.json").read_bytes()
+    PREPARE.require_native_feature(original, profile)
+    PREPARE.require_native_feature(candidate, profile)
+    patch_root = hepta / "third_party/makepad-patches" / PREPARE.PROFILES[profile][0]
+    manifest_bytes = (patch_root / "MANIFEST.json").read_bytes()
     manifest = json.loads(manifest_bytes)
     if manifest["upstream_commit"] != PREPARE.BASE or manifest["upstream_repository"] != PREPARE.SOURCE:
         raise ValueError("Unsupported original SDK identity")
@@ -35,16 +36,22 @@ def verify(hepta, prepared, original_bytes, candidate_bytes, config_bytes):
         raise ValueError("Prepared SDK must be the independent source root")
     if PREPARE.git(prepared, "rev-parse", "HEAD").decode().strip() != PREPARE.BASE:
         raise ValueError("Prepared SDK original commit changed")
+    upstream_tree = PREPARE.git(prepared, "rev-parse", "HEAD^{tree}").decode().strip()
+    if profile == "preedit-callbacks" and (
+            manifest.get("profile") != profile or manifest.get("upstream_tree") != upstream_tree):
+        raise ValueError("Preedit candidate original full tree differs")
+    if any(record[:1] != b"H" for record in PREPARE.git(prepared, "ls-files", "-v", "-z").split(b"\0") if record):
+        raise ValueError("Prepared SDK has hidden tracked source flags")
     if PREPARE.git(prepared, "write-tree").decode().strip() != manifest["patched_tree"]:
         raise ValueError("Prepared SDK tree differs from the exact reviewed patch")
     if PREPARE.git(prepared, "diff", "--name-only") or PREPARE.git(prepared, "ls-files", "--others", "--exclude-standard"):
         raise ValueError("Prepared SDK contains undeclared working source changes")
     for record in manifest["patches"]:
-        PREPARE.check((hepta / "third_party/makepad-patches" / record["file"]).read_bytes(), record["sha256"], record["bytes"])
+        PREPARE.check((patch_root / record["file"]).read_bytes(), record["sha256"], record["bytes"])
     for record in manifest["changed_files"]:
         PREPARE.check((prepared / record["path"]).read_bytes(), record["patched_sha256"], record["bytes"])
     PREPARE.check((prepared / manifest["license"]["path"]).read_bytes(), manifest["license"]["sha256"], manifest["license"]["bytes"])
-    entries, config = PREPARE.cargo_override(original, prepared)
+    entries, config = PREPARE.cargo_override(original, prepared, profile)
     if config_bytes != config.encode():
         raise ValueError("Cargo overrides do not cover the exact complete original SDK graph")
     if any((entry.get("source") or "").startswith("git+" + PREPARE.SOURCE) for entry in candidate["packages"]):
@@ -80,14 +87,20 @@ def verify(hepta, prepared, original_bytes, candidate_bytes, config_bytes):
         counterpart = candidate_by_identity[(entry["name"], entry["version"])]
         if package_id not in original_nodes or counterpart["id"] not in candidate_nodes:
             raise ValueError("An SDK package is absent from the actual Cargo dependency graph")
+        if set(original_nodes[package_id]["features"]) != set(candidate_nodes[counterpart["id"]]["features"]):
+            raise ValueError("An SDK package resolved different features: " + entry["name"])
         def edges(node, packages):
-            return {(dependency["name"], packages[dependency["pkg"]]["name"], packages[dependency["pkg"]]["version"])
+            return {(dependency["name"], packages[dependency["pkg"]]["name"], packages[dependency["pkg"]]["version"],
+                     tuple(sorted((kind.get("kind") or "normal", kind.get("target") or "")
+                                  for kind in dependency["dep_kinds"])))
                     for dependency in node["deps"] if dependency["pkg"] in packages}
         if edges(original_nodes[package_id], original_sdk) != edges(candidate_nodes[counterpart["id"]], candidate_sdk):
             raise ValueError("An original SDK dependency edge points to a different source: " + entry["name"])
-    return {"schema": "hepta.verified-original-sdk-source.v1", "native_ui_feature": PREPARE.UI_FEATURE,
+    return {"schema": "hepta.verified-original-sdk-source.v1", "sdk_profile": profile,
+            "native_ui_feature": PREPARE.PROFILES[profile][1],
             "upstream_repository": PREPARE.SOURCE,
-            "upstream_commit": PREPARE.BASE, "patched_tree": manifest["patched_tree"],
+            "upstream_commit": PREPARE.BASE, "upstream_tree": upstream_tree,
+            "patched_tree": manifest["patched_tree"],
             "manifest_sha256": sha(manifest_bytes), "patches": manifest["patches"],
             "prepared_root": str(prepared), "resolved_packages": sorted(resolved, key=lambda item: (item["name"], item["version"])),
             "original_metadata_sha256": sha(original_bytes), "candidate_metadata_sha256": sha(candidate_bytes),
@@ -99,6 +112,7 @@ def verify(hepta, prepared, original_bytes, candidate_bytes, config_bytes):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--profile", choices=PREPARE.PROFILES, default="clipboard")
     parser.add_argument("--hepta-root", type=Path, default=Path(__file__).resolve().parents[3])
     parser.add_argument("--prepared-source", type=Path, required=True)
     parser.add_argument("--original-metadata", type=Path, required=True)
@@ -107,4 +121,4 @@ if __name__ == "__main__":
     options = parser.parse_args()
     print(json.dumps(verify(options.hepta_root.resolve(strict=True), options.prepared_source,
                             options.original_metadata.read_bytes(), options.candidate_metadata.read_bytes(),
-                            options.cargo_config.read_bytes()), indent=2) + "\n")
+                            options.cargo_config.read_bytes(), options.profile), indent=2) + "\n")

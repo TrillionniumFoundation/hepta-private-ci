@@ -1,0 +1,116 @@
+diff --git a/platform/src/os/linux/x11/xlib_app.rs b/platform/src/os/linux/x11/xlib_app.rs
+index 8bd43f179b30ca40279e4b7d7b3a4387c66bbe07..9f21b31d1146fa3b8a4df07329d41df95ee36a45 100644
+--- a/platform/src/os/linux/x11/xlib_app.rs
++++ b/platform/src/os/linux/x11/xlib_app.rs
+@@ -416,21 +416,34 @@
+ 
+ /// Creates an input context for `window`.
+ ///
+-/// Prefer standard over-the-spot (`XIMPreeditPosition`) because XIM only
+-/// specifies `XNSpotLocation` for that style. Callback/on-the-spot spot
+-/// forwarding was added to libX11 later and remains implementation-defined, so
+-/// it is only used when position style is unavailable. Committed text still
+-/// arrives through `Xutf8LookupString` in every supported style.
++/// This explicit SDK candidate prefers on-the-spot callbacks so the original
++/// TextInput/IME owner receives preedit before accepting semantic actions.
++/// Position/Nothing remain compatibility fallbacks, logged as unqualified for
++/// preedit protection. Callback spot forwarding is best-effort; a rejected
++/// spot update must not replace its input context with a non-callback style.
++/// Committed text still arrives through the original `Xutf8LookupString`.
+ pub unsafe fn create_xim_input_context(
+     xim: x11_sys::XIM,
+     window: x11_sys::Window,
+ ) -> Option<XimInputContext> {
+     if xim.is_null() {
++        eprintln!("makepad-x11-ime profile=preedit-callbacks-v1 style=unavailable window={window}");
+         return None;
+     }
+ 
+     let supported_styles = query_xim_supported_styles(xim);
+     let supported_styles = supported_styles.as_deref();
++
++    for status_style in xim_status_candidates() {
++        let input_style = x11_sys::XIMPreeditCallbacks as c_ulong | status_style;
++        if !xim_style_supported(supported_styles, input_style) {
++            continue;
++        }
++        if let Some(callback_context) = create_xim_callback_input_context(xim, window, status_style) {
++            eprintln!("makepad-x11-ime profile=preedit-callbacks-v1 style=callback window={window}");
++            return Some(callback_context);
++        }
++    }
+ 
+     for status_style in xim_status_candidates() {
+         let input_style = x11_sys::XIMPreeditPosition as c_ulong | status_style;
+@@ -438,17 +451,8 @@
+             continue;
+         }
+         if let Some(position_context) = create_xim_position_input_context(xim, window, status_style) {
++            eprintln!("makepad-x11-ime profile=preedit-callbacks-v1 style=position window={window}");
+             return Some(position_context);
+-        }
+-    }
+-
+-    for status_style in xim_status_candidates() {
+-        let input_style = x11_sys::XIMPreeditCallbacks as c_ulong | status_style;
+-        if !xim_style_supported(supported_styles, input_style) {
+-            continue;
+-        }
+-        if let Some(callback_context) = create_xim_callback_input_context(xim, window, status_style) {
+-            return Some(callback_context);
+         }
+     }
+ 
+@@ -458,10 +462,12 @@
+             continue;
+         }
+         if let Some(nothing_context) = create_xim_nothing_input_context(xim, window, status_style) {
++            eprintln!("makepad-x11-ime profile=preedit-callbacks-v1 style=nothing window={window}");
+             return Some(nothing_context);
+         }
+     }
+ 
++    eprintln!("makepad-x11-ime profile=preedit-callbacks-v1 style=unavailable window={window}");
+     None
+ }
+ 
+diff --git a/platform/src/os/linux/x11/xlib_window.rs b/platform/src/os/linux/x11/xlib_window.rs
+index d4ae1de40b1d02d9ef21037c46a4f1e26384c9af..6590f6441e7263e6aae57c077c824b107cb071fa 100644
+--- a/platform/src/os/linux/x11/xlib_window.rs
++++ b/platform/src/os/linux/x11/xlib_window.rs
+@@ -36,6 +36,8 @@
+     pub last_mouse_pos: Vec2d,
+     // When ime_active is false, XSetICFocus is not used so the IME candidate window does not show.
+     pub ime_active: bool,
++    // A rejected optional spot update must not disable callback preedit.
++    xim_callback_spot_warning_logged: bool,
+     pub is_popup: bool,
+     pub popup_parent: Option<WindowId>,
+ }
+@@ -87,6 +89,7 @@
+             current_cursor: MouseCursor::Default,
+             last_mouse_pos: Vec2d::default(),
+             ime_active: false,
++            xim_callback_spot_warning_logged: false,
+             is_popup: false,
+             popup_parent: None,
+         }
+@@ -763,7 +766,17 @@
+                 preedit_attr,
+                 ptr::null_mut::<c_void>(),
+             );
+-            if !failed_attr.is_null() && xim_context.preedit_style != XimPreeditStyle::Position {
++            if !failed_attr.is_null()
++                && xim_context.preedit_style == XimPreeditStyle::Callback
++                && !self.xim_callback_spot_warning_logged
++            {
++                self.xim_callback_spot_warning_logged = true;
++                eprintln!("makepad-x11-ime profile=preedit-callbacks-v1 callback-spot=unsupported context=retained");
++            }
++            // Keep the same callback IC and its composition ownership even on
++            // libX11/IM combinations without callback spot forwarding. Position
++            // fallback here is allowed only for the already non-callback IC.
++            if !failed_attr.is_null() && xim_context.preedit_style == XimPreeditStyle::Nothing {
+                 if let Some(new_context) = self.create_position_xic_with_spot(
+                     xim_context.status_style(),
+                     spot_px,
