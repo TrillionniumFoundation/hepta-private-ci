@@ -5,6 +5,7 @@ use super::*;
 use crate::authority_host_config::HostAuthorityRegistration;
 use crate::authority_host_config::HostAuthorityServiceConfig;
 use crate::authority_host_runtime::verify_pinned_process;
+use crate::authority_host_runtime::validate_runtime_lanes;
 use codex_hepta_memory::CognitiveCheckpointPeerLifetime;
 use std::fs::File;
 use std::os::unix::fs::MetadataExt;
@@ -32,6 +33,7 @@ pub(crate) fn seal_registered_bootstrap(
     }
     let end = Instant::now() + Duration::from_secs(30);
     verify_pinned_process(registration, config.peer_uid, config.peer_gid, owner_pidfd, end)?;
+    validate_runtime_lanes(config)?;
     let service = self;
     let writer = service.writer.as_ref().ok_or_else(|| io::Error::other("registered writer required"))?;
     let checkpoint = service.checkpoint.as_ref().ok_or_else(|| io::Error::other("registered Current required"))?;
@@ -51,12 +53,6 @@ pub(crate) fn seal_registered_bootstrap(
         device_frontier: config.sockets.device_frontier.clone().ok_or_else(|| io::Error::other("missing device lane"))?,
         notes_frontier: config.sockets.notes_frontier.clone().ok_or_else(|| io::Error::other("missing Notes lane"))?,
     };
-    let paths = [&sockets.observation, &sockets.issuer, &sockets.checkpoint, &sockets.device_frontier, &sockets.notes_frontier];
-    if paths.iter().collect::<std::collections::BTreeSet<_>>().len() != paths.len()
-        || paths.iter().any(|path| !path.is_absolute() || path.parent() != sockets.observation.parent())
-    {
-        return Err(io::Error::other("five distinct fixed private lanes required"));
-    }
     writer.registration.with_live(&writer.leases, |_| {
         let proof = service.issuer.retained_writer_authorization(&writer.registration)?;
         if proof != writer.proof {
@@ -105,6 +101,7 @@ pub(crate) fn seal_registered_bootstrap(
         }
         validate_observation_lease(&writer.registration.authority_lease, &revocations,
             service.clock.now_unix_ms().map_err(io::Error::other)?)?;
+        validate_runtime_lanes(config)?;
         verify_pinned_process(registration, config.peer_uid, config.peer_gid, owner_pidfd, end)?;
         Ok(sealed)
     })

@@ -36,6 +36,7 @@ use crate::authority_host_config::read_root_json;
 #[path = "authority_host_listeners.rs"]
 mod listeners;
 use listeners::serve_lanes;
+pub(crate) use listeners::validate_runtime_lanes;
 
 #[path = "authority_host_session.rs"]
 mod session;
@@ -175,8 +176,11 @@ pub fn serve_host_authority_session_with_text(
     owner_pidfd: OwnedFd,
     text_ui: Option<(&Path, OwnedFd)>,
 ) -> io::Result<()> {
-    PreparedHostAuthoritySession::open(config_file, registration_file, owner_pidfd)?
-        .serve_with_text(text_ui)
+    let prepared = PreparedHostAuthoritySession::open(config_file, registration_file, owner_pidfd)?;
+    match text_ui {
+        Some((text_file, ui_pidfd)) => prepared.serve_with_text(text_file, ui_pidfd),
+        None => prepared.serve(),
+    }
 }
 
 /// Shared open-only factory for serving and capturing the same original

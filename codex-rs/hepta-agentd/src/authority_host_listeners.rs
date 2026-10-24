@@ -16,12 +16,11 @@ impl Drop for SocketGuard {
     }
 }
 
-pub(super) fn serve_lanes(
-    service: &HostAuthorityService,
+/// Read-only admission for both handoff capture and the subsequent bind.
+/// This does not reserve names; serving must repeat the check before binding.
+pub(crate) fn validate_runtime_lanes(
     config: &HostAuthorityServiceConfig,
-    registration: &HostAuthorityRegistration,
-    owner: &OwnedFd,
-) -> io::Result<()> {
+) -> io::Result<Vec<(HostAuthorityLane, &std::path::PathBuf)>> {
     let mut lanes = vec![
         (HostAuthorityLane::Observation, &config.sockets.observation),
         (HostAuthorityLane::Issuer, &config.sockets.issuer),
@@ -68,6 +67,16 @@ pub(super) fn serve_lanes(
             return Err(io::Error::other("unsafe runtime ancestor"));
         }
     }
+    Ok(lanes)
+}
+
+pub(super) fn serve_lanes(
+    service: &HostAuthorityService,
+    config: &HostAuthorityServiceConfig,
+    registration: &HostAuthorityRegistration,
+    owner: &OwnedFd,
+) -> io::Result<()> {
+    let lanes = validate_runtime_lanes(config)?;
     let mut guard = SocketGuard(Vec::new());
     let mut listeners = Vec::new();
     for (lane, path) in lanes {

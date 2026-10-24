@@ -329,9 +329,14 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
     let initialized = initialize_host_authority(&state, &bootstrap).unwrap();
     assert!(!initialized.production_ready);
     assert!(initialize_host_authority(&state, &bootstrap).is_err());
-    let runtime = tempfile::Builder::new()
+    let runtime_parent = tempfile::Builder::new()
         .prefix("hepta-root-service-qualification-")
         .tempdir_in("/run")
+        .unwrap();
+    std::fs::set_permissions(runtime_parent.path(), std::fs::Permissions::from_mode(0o755)).unwrap();
+    let runtime = tempfile::Builder::new()
+        .prefix("lanes-")
+        .tempdir_in(runtime_parent.path())
         .unwrap();
     // SAFETY: a NUL-free fixture path is passed to chown; it is root-created.
     let runtime_c = std::ffi::CString::new(runtime.path().as_os_str().as_encoded_bytes()).unwrap();

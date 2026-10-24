@@ -105,6 +105,28 @@ pub(super) fn release(
         assert!(crate::PreparedHostAuthoritySession::open(
             config_path, registration_path, wrong_pidfd).err()
             .expect("wrong original pidfd must be refused").to_string().contains("pidfd does not pin"));
+        // These exercise the retained capture directly, so a second owner's
+        // StateLocked error cannot mask the exact runtime-custody refusal.
+        let runtime = config.sockets.observation.parent().unwrap();
+        std::fs::set_permissions(runtime, std::fs::Permissions::from_mode(0o2730)).unwrap();
+        let invalid_mode = prepared.seal_bootstrap(&local);
+        std::fs::set_permissions(runtime, std::fs::Permissions::from_mode(0o2710)).unwrap();
+        assert_eq!(invalid_mode.unwrap_err().to_string(),
+            "private runtime parent must be root:peer-gid mode02710");
+        let runtime_c = std::ffi::CString::new(runtime.as_os_str().as_encoded_bytes()).unwrap();
+        // SAFETY: the test owns this actual Root-created runtime directory.
+        assert_eq!(unsafe { libc::chown(runtime_c.as_ptr(), /*owner*/ 0, config.peer_gid + 1) }, 0);
+        let invalid_group = prepared.seal_bootstrap(&local);
+        // SAFETY: restore the original group before any assertion can unwind.
+        assert_eq!(unsafe { libc::chown(runtime_c.as_ptr(), /*owner*/ 0, config.peer_gid) }, 0);
+        std::fs::set_permissions(runtime, std::fs::Permissions::from_mode(0o2710)).unwrap();
+        assert_eq!(invalid_group.unwrap_err().to_string(),
+            "private runtime parent must be root:peer-gid mode02710");
+        let ancestor = runtime.parent().unwrap();
+        std::fs::set_permissions(ancestor, std::fs::Permissions::from_mode(0o775)).unwrap();
+        let invalid_ancestor = prepared.seal_bootstrap(&local);
+        std::fs::set_permissions(ancestor, std::fs::Permissions::from_mode(0o755)).unwrap();
+        assert_eq!(invalid_ancestor.unwrap_err().to_string(), "unsafe runtime ancestor");
         let mut sealed = prepared.seal_bootstrap(&local).unwrap();
         let mut bytes = Vec::new();
         std::io::Read::read_to_end(&mut sealed, &mut bytes).unwrap();

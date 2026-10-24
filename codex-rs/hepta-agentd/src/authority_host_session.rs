@@ -38,10 +38,16 @@ impl PreparedHostAuthoritySession {
 
     /// Consume this retained service and serve its original fixed lanes.
     pub fn serve(self) -> io::Result<()> {
-        self.serve_with_text(None)
+        self.serve_selected(/*text_ui*/ None)
     }
 
-    pub(super) fn serve_with_text(self, text_ui: Option<(&Path, OwnedFd)>) -> io::Result<()> {
+    /// Serve this same retained session and the original native text lane.
+    /// The original profile, peer, socket and text registration checks apply.
+    pub fn serve_with_text(self, text_file: &Path, ui_pidfd: OwnedFd) -> io::Result<()> {
+        self.serve_selected(Some((text_file, ui_pidfd)))
+    }
+
+    fn serve_selected(self, text_ui: Option<(&Path, OwnedFd)>) -> io::Result<()> {
         let Self { config, registration, owner_pidfd, service } = self;
         if text_ui.is_some()
             && config.issuer_record_profile != crate::authority_host_config::HostIssuerRecordProfile::TextRecovery

@@ -98,6 +98,9 @@ actual daemon pidfd, and retains the original service. `seal_bootstrap` reads
 that same service's issuer, clock, checkpoint and consumer objects, including
 their locks and closed state. It never reopens those objects by file path.
 `serve` consumes the same non-Clone handle to serve the original fixed lanes.
+The public `serve_with_text(text_file, ui_pidfd)` method consumes that same
+handle for the original native text path, including its profile, identity and
+socket validation; a launcher must not reopen another session after capture.
 The established `serve_host_authority_session` entry delegates to this same
 factory; its optional native-text sibling retains the original text path.
 The original `AuthorityLeaseRegistry` retains its exclusive file lock in
@@ -115,6 +118,11 @@ seals the original public data and rereads those heads before returning the
 descriptor; observed changes or Dirty/Publishing/Fenced state fail closed.
 The two local journal paths come from the explicitly supplied original
 daemon-owned private parent. No journal is created by capture.
+The capture and actual listener bind share the original read-only runtime
+path validation: distinct absolute lane names, one Root:peer-gid parent with
+mode 02710, and Root-owned ancestors without group/other write access. Capture
+checks before sealing and before returning; serving repeats admission before
+binding. This observation neither reserves names nor creates sockets.
 
 This bounded capture is a handoff observation, not an atomic transaction across
 all stores or a live grant. After receiving it, the original Root session,
@@ -128,6 +136,9 @@ and serves with this same prepared handle, compares its bytes with an independen
 oracle, and rejects wrong daemon pidfd and same UID/wrong expected GID. The
 same test requires a second valid session open to fail with the original
 `AuthorityLeaseError::StateLocked`, not an unrelated admission error. The
+retained capture also rejects an actual wrong runtime group, writable runtime
+mode and writable ancestor with the specific custody errors; those checks do
+not open a second owner and cannot be masked by its lifetime lock. The
 backend qualifications also check that capture refuses a Dirty checkpoint and
 cannot revive a closed consumer. These checks need their existing explicit
 Root/data-bind environment and must actually run; compilation or ignored
