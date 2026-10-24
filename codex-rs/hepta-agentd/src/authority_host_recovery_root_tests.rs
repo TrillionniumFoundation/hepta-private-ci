@@ -12,6 +12,8 @@ mod fixture;
 mod client;
 #[path = "authority_host_required_startup_tests.rs"]
 mod required_startup;
+#[path = "authority_host_canonical_lifecycle_tests.rs"]
+mod canonical;
 
 const RECOVERY_CLIENT: &str =
     "authority_host_service::tests::root::recovery::client::recovered_service_client";
