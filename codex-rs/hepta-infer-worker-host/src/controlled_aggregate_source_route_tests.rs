@@ -9,6 +9,10 @@ use crate::controlled_aggregate::TOPIC;
 use codex_hepta_types::Generation;
 use pretty_assertions::assert_eq;
 
+#[cfg(unix)]
+#[path = "controlled_ledger_source_route_tests.rs"]
+mod ledger;
+
 struct ControlledFixture {
     source: SourceFixture,
     target: Arc<ControlledAggregateTarget>,
