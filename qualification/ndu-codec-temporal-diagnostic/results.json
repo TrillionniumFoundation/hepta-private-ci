@@ -1,0 +1,216 @@
+{
+  "schema": "hepta.codec-ordered-temporal-diagnostic.v1",
+  "mode": "exploratory retained-artifact diagnostic, not preregistered efficacy",
+  "source_hashes": {
+    "ingestion-fresh.json": "c6a512198434bf44a5ec824bf5ed38e655759b17402fb134f99e6987a8d41e2e",
+    "codec-fresh.json": "68f538ba703a297d0c66b40ca98a78bad0c59eb753d14f8b4d7d2ae4c6f92906",
+    "run_diagnostic.py": "715d8193a6d67e7fc74c1723f19cee8db642a1075af7bf89a39390a18a7d2902",
+    "temporal_diagnostics.py": "41a23266dabacb7505daf650ce55e1e97a82a53a34726355980bd13709ccd816"
+  },
+  "artifact_hashes": {
+    "original.webm": "bc957c8a0382d9a4d2d54acbfc61c61e5fd57bcef909364bad3f41a5957c91ef",
+    "recorded-four-frames.webm": "f5fadeaae22bbc14eba30211410098f910d09267b26eb09e5f095ae0b0022bef",
+    "input-tensors.npz": "555595f70b23959b93c28b669cabce8c3cb28b5c7ef1523dff9aa03636f3db2d",
+    "codec-tensors.npz": "6494e18ea4ffb00172e463ae339c5626f6b4fca57d019691f7cf8095b5528187",
+    "video-reconstructed.webm": "548f89b37b56aa6f180e0aa3817f1392b27afe7dd73644ca20c4fdc76bcdd322"
+  },
+  "input_frame_timestamps": [
+    {
+      "pts_time": "0.000000",
+      "pkt_dts_time": "0.000000",
+      "best_effort_timestamp_time": "0.000000"
+    },
+    {
+      "pts_time": "1.000000",
+      "pkt_dts_time": "1.000000",
+      "best_effort_timestamp_time": "1.000000"
+    },
+    {
+      "pts_time": "2.000000",
+      "pkt_dts_time": "2.000000",
+      "best_effort_timestamp_time": "2.000000"
+    },
+    {
+      "pts_time": "3.000000",
+      "pkt_dts_time": "3.000000",
+      "best_effort_timestamp_time": "3.000000"
+    }
+  ],
+  "export_frame_timestamps": [
+    {
+      "pts_time": "0.000000",
+      "pkt_dts_time": "0.000000",
+      "best_effort_timestamp_time": "0.000000"
+    },
+    {
+      "pts_time": "1.000000",
+      "pkt_dts_time": "1.000000",
+      "best_effort_timestamp_time": "1.000000"
+    },
+    {
+      "pts_time": "2.000000",
+      "pkt_dts_time": "2.000000",
+      "best_effort_timestamp_time": "2.000000"
+    },
+    {
+      "pts_time": "3.000000",
+      "pkt_dts_time": "3.000000",
+      "best_effort_timestamp_time": "3.000000"
+    }
+  ],
+  "decoded_reference_exact": true,
+  "arms": {
+    "source_identity": {
+      "reference_temporal_magnitude": 0.0795992306063712,
+      "reconstruction_temporal_magnitude": 0.0795992306063712,
+      "ordered_delta_mae": 0.0,
+      "ordered_delta_mae_by_interval": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "aligned_frame_mae": 0.0,
+      "presentation_times_seconds": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "interval_seconds": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "acceptance_threshold": null
+    },
+    "source_reversed": {
+      "reference_temporal_magnitude": 0.0795992306063712,
+      "reconstruction_temporal_magnitude": 0.0795992306063712,
+      "ordered_delta_mae": 0.1175716977793203,
+      "ordered_delta_mae_by_interval": [
+        0.10265083418697166,
+        0.1474134249640176,
+        0.10265083418697166
+      ],
+      "aligned_frame_mae": 0.08073377833938543,
+      "presentation_times_seconds": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "interval_seconds": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "acceptance_threshold": null
+    },
+    "source_frozen": {
+      "reference_temporal_magnitude": 0.0795992306063712,
+      "reconstruction_temporal_magnitude": 0.0,
+      "ordered_delta_mae": 0.0795992306063712,
+      "ordered_delta_mae_by_interval": [
+        0.09418147688645856,
+        0.0737067124820088,
+        0.07090950245064623
+      ],
+      "aligned_frame_mae": 0.06852508013438367,
+      "presentation_times_seconds": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "interval_seconds": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "acceptance_threshold": null
+    },
+    "codec_ordered": {
+      "reference_temporal_magnitude": 0.0795992306063712,
+      "reconstruction_temporal_magnitude": 0.07209408464800224,
+      "ordered_delta_mae": 0.098057039640772,
+      "ordered_delta_mae_by_interval": [
+        0.10769114734459974,
+        0.0940435808177561,
+        0.09243639075996019
+      ],
+      "aligned_frame_mae": 0.0796575938514555,
+      "presentation_times_seconds": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "interval_seconds": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "acceptance_threshold": null
+    },
+    "codec_reversed": {
+      "reference_temporal_magnitude": 0.0795992306063712,
+      "reconstruction_temporal_magnitude": 0.07209408464800224,
+      "ordered_delta_mae": 0.10987272412953812,
+      "ordered_delta_mae_by_interval": [
+        0.11226409529424725,
+        0.1126939268960322,
+        0.1046601501983349
+      ],
+      "aligned_frame_mae": 0.08829513201099973,
+      "presentation_times_seconds": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "interval_seconds": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "acceptance_threshold": null
+    },
+    "codec_frozen": {
+      "reference_temporal_magnitude": 0.0795992306063712,
+      "reconstruction_temporal_magnitude": 0.0,
+      "ordered_delta_mae": 0.0795992306063712,
+      "ordered_delta_mae_by_interval": [
+        0.09418147688645856,
+        0.0737067124820088,
+        0.07090950245064623
+      ],
+      "aligned_frame_mae": 0.08880445584788875,
+      "presentation_times_seconds": [
+        0.0,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "interval_seconds": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "acceptance_threshold": null
+    }
+  },
+  "historical_forward_counter_sums": {
+    "conv2d_calls": 350,
+    "conv2d_macs": 37079285760,
+    "conv2d_bias_adds": 61198848
+  },
+  "historical_forward_counter_match": true,
+  "historical_cost_scope": "Actual Conv2d hook MACs and bias adds; activations, resize, residual adds and memory operations excluded. CPU/wall measures include them.",
+  "new_model_forwards": 0,
+  "new_cost": {
+    "wall_seconds": 0.24880270699213725,
+    "process_cpu_seconds": 0.17460965799999995,
+    "child_cpu_seconds": 0.198104
+  },
+  "scope": "Pixel frame alignment only. Audio/text not evaluated. No output codec quality threshold, neural rerun, model improvement, semantic synchrony, independent source replication or new MAC measurement."
+}
