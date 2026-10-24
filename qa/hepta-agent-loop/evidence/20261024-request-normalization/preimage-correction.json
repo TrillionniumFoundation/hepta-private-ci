@@ -1,0 +1,52 @@
+{
+  "schema": "hepta-native-normalization-preimage-correction:v1",
+  "actual_head": "95943a632f607f497f9ce63b001cd297276e1d7e",
+  "old_driver_sha256": "a59a30199810d89d0c20e7d127885a5415a3a560f795cefc881ff8e5e07bfe68",
+  "core_source_unchanged": true,
+  "relaxed_digest_checks": false,
+  "mutated_remote_source": false,
+  "corrections": [
+    {
+      "path": "codex-rs/model-provider/src/lib.rs",
+      "retained_snapshot_sha256": "586405a71c317b6f7623b4e8a61f88efe67ffaed69741d9b24aa16c8729159d5",
+      "actual_source_sha256": "c5b1bce3e119a5140b506e1b2c5cad4594974fb1807d9952f277eb10c0d350a8",
+      "actual_bytes": 1919,
+      "exact_difference": "retained snapshot has one extra terminal LF; all prior bytes identical"
+    },
+    {
+      "path": "codex-rs/model-provider/Cargo.toml",
+      "retained_snapshot_sha256": "2c7fa8c3416edba19dea429c07206dbab574bfba56bc982665bebb4bfdd09704",
+      "actual_source_sha256": "556120ae461f73fb59be6eb34c79dbffb97bed84d0c9366d2133c5d3d1924232",
+      "actual_bytes": 1300,
+      "exact_difference": "retained snapshot has one extra terminal LF; all prior bytes identical"
+    },
+    {
+      "path": "codex-rs/hepta-agent-qualification/Cargo.toml",
+      "retained_snapshot_sha256": "ed2ea5137e32dc9f5b50714ae8e46f551d426e98653705253b9bfdab71e1e53e",
+      "actual_source_sha256": "ab4c9b398fbbb0fe7aec6823d92a57dfc32a1cbe89c985191b498876c036ef19",
+      "actual_bytes": 1429,
+      "exact_difference": "retained snapshot has one extra terminal LF; all prior bytes identical"
+    },
+    {
+      "path": "codex-rs/hepta-agent-qualification/src/main.rs",
+      "retained_snapshot_sha256": "2efebb1de38b9e42d5b6263e2c2e35518523dc0210556587523ebb9a278d8d42",
+      "actual_source_sha256": "9b3d9fd4cdcdbfc30e3fd9b5879432fa57e65a71add3fbf70d91aaa55461f7be",
+      "actual_bytes": 3994,
+      "exact_difference": "retained snapshot has one extra terminal LF; all prior bytes identical"
+    },
+    {
+      "path": "codex-rs/hepta-agent-qualification/src/probe.rs",
+      "retained_snapshot_sha256": "d6139d0e2e8a30607addbd67e95fe7ccf8df687e2c174b56fee735ce438b8cad",
+      "actual_source_sha256": "6a9e7bfdf8ed777156dabbf78db7a59ff0af36c3832ddbae8fc606946f0a91b1",
+      "actual_bytes": 14745,
+      "exact_difference": "retained snapshot has one extra terminal LF; all prior bytes identical"
+    },
+    {
+      "path": "codex-rs/hepta-agent-qualification/src/policy.rs",
+      "retained_snapshot_sha256": "c9a179eaadbeb97fbc47b10c846d171e49a2ee3661b1dca92468792f415ee89e",
+      "actual_source_sha256": "ce0580e55da69574a0d6e16604d884f814e9dedcd527a225455592676dc2940c",
+      "actual_bytes": 7062,
+      "exact_difference": "retained snapshot has one extra terminal LF; all prior bytes identical"
+    }
+  ]
+}
