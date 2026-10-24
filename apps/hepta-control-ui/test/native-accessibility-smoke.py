@@ -77,10 +77,11 @@ def run(args, receipt):
         return wait_for(lambda: named("Message / 消息"), "original message editor")
 
     def value():
-        return editor().get_text_iface().get_text(0, -1)
+        # PyGI returns Accessible, whose legacy getters shadow Text methods.
+        return Atspi.Text.get_text(editor(), 0, -1)
 
     def selection():
-        selected = editor().get_text_iface().get_selection(0)
+        selected = Atspi.Text.get_selection(editor(), 0)
         return selected.start_offset, selected.end_offset
 
     def record(name):

@@ -53,7 +53,7 @@ def run(args, result):
         return SMOKE.wait_for(lambda: editor().get_editable_text_iface(), "real D-Bus EditableText interface")
 
     def value():
-        return editor().get_text_iface().get_text(0, -1)
+        return Atspi.Text.get_text(editor(), 0, -1)
 
     def key(name):
         SMOKE.require_window_pid(args.window_id, args.pid)
