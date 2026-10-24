@@ -37,11 +37,24 @@ fn page(version: u64, role: u64) -> Vec<u8> {
     let mut bytes = vec![0; 4096];
     bytes[..8].copy_from_slice(b"HOS2BOOT");
     for (offset, value) in [
-        (8, version), (16, role), (24, if version == 3 { 200 } else { 240 }),
-        (32, 1), (40, 1), (48, 2), (56, 1), (64, 3), (72, 1),
-        (80, if role == 3 { 4 } else { 0 }), (88, if role == 3 { 1 } else { 0 }),
-        (144, 700), (152, 701), (160, 702), (168, 50_000_000),
-        (176, HOS2_CPU_PERIOD_NS), (184, 300_000_000_000), (192, 1),
+        (8, version),
+        (16, role),
+        (24, if version == 3 { 200 } else { 240 }),
+        (32, 1),
+        (40, 1),
+        (48, 2),
+        (56, 1),
+        (64, 3),
+        (72, 1),
+        (80, if role == 3 { 4 } else { 0 }),
+        (88, if role == 3 { 1 } else { 0 }),
+        (144, 700),
+        (152, 701),
+        (160, 702),
+        (168, 50_000_000),
+        (176, HOS2_CPU_PERIOD_NS),
+        (184, 300_000_000_000),
+        (192, 1),
     ] {
         bytes[offset..offset + 8].copy_from_slice(&value.to_le_bytes());
     }
@@ -58,13 +71,22 @@ fn page(version: u64, role: u64) -> Vec<u8> {
 
 fn transport(local_space: [u8; 16]) -> (Box<dyn ControlTransport>, Arc<Mutex<Vec<Vec<u8>>>>) {
     let requests = Arc::new(Mutex::new(Vec::new()));
-    (Box::new(AbiTransport { requests: requests.clone(), local_space }), requests)
+    (
+        Box::new(AbiTransport {
+            requests: requests.clone(),
+            local_space,
+        }),
+        requests,
+    )
 }
 
 #[test]
 fn g2_initial_and_successor_attach_only_the_original_matching_role() -> Result<(), String> {
     for role in [1, 3] {
-        let process = ProcessIdentity { pid: if role == 1 { 700 } else { 702 }, parent_pid: 1 };
+        let process = ProcessIdentity {
+            pid: if role == 1 { 700 } else { 702 },
+            parent_pid: 1,
+        };
         for (version, attachment) in [
             (3, Attachment::InitialOwnerV3(process)),
             (4, Attachment::SuccessorOwnerV4(process)),
@@ -75,10 +97,18 @@ fn g2_initial_and_successor_attach_only_the_original_matching_role() -> Result<(
             let expected = Hos2InstallBudgetV1 {
                 schema_version: 1,
                 delivery: Hos2DeliveryId::new([1; 16], local_space, /*sequence*/ 1)?,
-                manage_slot: 2, manage_generation: 1, expected_revision: 7,
-                period_ns: HOS2_CPU_PERIOD_NS, cap_ns: 25_000_000,
+                manage_slot: 2,
+                manage_generation: 1,
+                expected_revision: 7,
+                period_ns: HOS2_CPU_PERIOD_NS,
+                cap_ns: 25_000_000,
             };
-            assert_eq!(device.install_request(/*sequence*/ 1, /*expected_revision*/ 7, /*cap_ns*/ 25_000_000)?, expected);
+            assert_eq!(
+                device.install_request(
+                    /*sequence*/ 1, /*expected_revision*/ 7, /*cap_ns*/ 25_000_000
+                )?,
+                expected
+            );
             let requests = requests.lock().unwrap();
             assert_eq!(requests.len(), 1);
             assert_eq!(read_u16(&requests[0], /*offset*/ 8)?, 1);
@@ -89,15 +119,32 @@ fn g2_initial_and_successor_attach_only_the_original_matching_role() -> Result<(
 
 #[test]
 fn g2_wrong_process_root_role_slot_or_page_is_rejected_before_transport() {
-    let process = ProcessIdentity { pid: 700, parent_pid: 1 };
+    let process = ProcessIdentity {
+        pid: 700,
+        parent_pid: 1,
+    };
     for (version, attachment) in [
         (3, Attachment::InitialOwnerV3(process)),
         (4, Attachment::SuccessorOwnerV4(process)),
     ] {
         let original = page(version, /*role*/ 1);
-        let mut changes = vec![(8, 2_u64), (24, 192), (16, 2), (16, 4), (16, 5), (32, 0),
-            (56, 2), (80, 4), (144, 701), (152, 702), (160, 0), (168, 100_000_000),
-            (176, 1), (184, 0), (192, 2)];
+        let mut changes = vec![
+            (8, 2_u64),
+            (24, 192),
+            (16, 2),
+            (16, 4),
+            (16, 5),
+            (32, 0),
+            (56, 2),
+            (80, 4),
+            (144, 701),
+            (152, 702),
+            (160, 0),
+            (168, 100_000_000),
+            (176, 1),
+            (184, 0),
+            (192, 2),
+        ];
         if version == 4 {
             changes.extend([(24, 232), (200, 702), (224, 0), (232, 1)]);
         }
@@ -115,8 +162,21 @@ fn g2_wrong_process_root_role_slot_or_page_is_rejected_before_transport() {
             assert!(AgentdHos2Device::attach_profile(io, &bytes, attachment).is_err());
             assert!(requests.lock().unwrap().is_empty());
         }
-        for process in [ProcessIdentity { pid: 702, parent_pid: 1 }, ProcessIdentity { pid: 700, parent_pid: 9 }] {
-            let attachment = if version == 3 { Attachment::InitialOwnerV3(process) } else { Attachment::SuccessorOwnerV4(process) };
+        for process in [
+            ProcessIdentity {
+                pid: 702,
+                parent_pid: 1,
+            },
+            ProcessIdentity {
+                pid: 700,
+                parent_pid: 9,
+            },
+        ] {
+            let attachment = if version == 3 {
+                Attachment::InitialOwnerV3(process)
+            } else {
+                Attachment::SuccessorOwnerV4(process)
+            };
             let (io, requests) = transport([2; 16]);
             assert!(AgentdHos2Device::attach_profile(io, &original, attachment).is_err());
             assert!(requests.lock().unwrap().is_empty());
@@ -126,7 +186,10 @@ fn g2_wrong_process_root_role_slot_or_page_is_rejected_before_transport() {
 
 #[test]
 fn g2_truncated_oversized_or_other_version_records_never_reach_ioctl() {
-    let process = ProcessIdentity { pid: 700, parent_pid: 1 };
+    let process = ProcessIdentity {
+        pid: 700,
+        parent_pid: 1,
+    };
     for (version, length, attachment) in [
         (3, 200, Attachment::InitialOwnerV3(process)),
         (4, 240, Attachment::SuccessorOwnerV4(process)),
@@ -140,21 +203,37 @@ fn g2_truncated_oversized_or_other_version_records_never_reach_ioctl() {
         }
         let other_version = if version == 3 { 4 } else { 3 };
         let (io, requests) = transport([2; 16]);
-        assert!(AgentdHos2Device::attach_profile(io, &page(other_version, /*role*/ 1), attachment).is_err());
+        assert!(
+            AgentdHos2Device::attach_profile(io, &page(other_version, /*role*/ 1), attachment)
+                .is_err()
+        );
         assert!(requests.lock().unwrap().is_empty());
     }
 }
 
 #[test]
 fn g2_successor_local_identity_and_queryabi_cannot_alias_old_history() {
-    let process = ProcessIdentity { pid: 700, parent_pid: 1 };
+    let process = ProcessIdentity {
+        pid: 700,
+        parent_pid: 1,
+    };
     let mut bytes = page(/*version*/ 4, /*role*/ 1);
     bytes[208..224].fill(/*value*/ 3);
     let (io, requests) = transport([2; 16]);
-    assert!(AgentdHos2Device::attach_profile(io, &bytes, Attachment::SuccessorOwnerV4(process)).is_err());
+    assert!(
+        AgentdHos2Device::attach_profile(io, &bytes, Attachment::SuccessorOwnerV4(process))
+            .is_err()
+    );
     assert!(requests.lock().unwrap().is_empty());
     let (io, requests) = transport([3; 16]);
-    assert!(AgentdHos2Device::attach_profile(io, &page(/*version*/ 4, /*role*/ 1), Attachment::SuccessorOwnerV4(process)).is_err());
+    assert!(
+        AgentdHos2Device::attach_profile(
+            io,
+            &page(/*version*/ 4, /*role*/ 1),
+            Attachment::SuccessorOwnerV4(process)
+        )
+        .is_err()
+    );
     assert_eq!(requests.lock().unwrap().len(), 1);
 }
 

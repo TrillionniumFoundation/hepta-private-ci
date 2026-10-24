@@ -47,15 +47,22 @@ impl PrecreatedChild {
         std::fs::File::open(format!("/proc/{}/stat", peer.pid))?
             .take(4097)
             .read_to_string(&mut stat)?;
-        let fields: Vec<_> = stat.rsplit_once(") ")
+        let fields: Vec<_> = stat
+            .rsplit_once(") ")
             .ok_or_else(|| ProcessDriverError::new("precreated child stat is invalid"))?
-            .1.split_whitespace().collect();
+            .1
+            .split_whitespace()
+            .collect();
         if stat.len() > 4096
             || fields.get(1).and_then(|field| field.parse::<u32>().ok()) != Some(parent_pid)
         {
-            return Err(ProcessDriverError::new("precreated process is not our actual child"));
+            return Err(ProcessDriverError::new(
+                "precreated process is not our actual child",
+            ));
         }
-        let start = fields.get(19).and_then(|field| field.parse::<u64>().ok())
+        let start = fields
+            .get(19)
+            .and_then(|field| field.parse::<u64>().ok())
             .ok_or_else(|| ProcessDriverError::new("precreated child start identity is absent"))?;
         verify_command(peer.pid, &command)?;
         let channel = HostAuthorityPeerChannel::from_stream(
@@ -68,14 +75,23 @@ impl PrecreatedChild {
                 response_bound: 32,
             },
             owner_pidfd.try_clone()?,
-        ).map_err(|error| ProcessDriverError::new(error.to_string()))?;
+        )
+        .map_err(|error| ProcessDriverError::new(error.to_string()))?;
         let identity = ProcessIdentity::new(
             u64::from(peer.pid),
             format!("precreated-pid-{}-start-{start}", peer.pid),
-        ).map_err(|error| ProcessDriverError::new(error.to_string()))?;
+        )
+        .map_err(|error| ProcessDriverError::new(error.to_string()))?;
         Ok(Self {
-            parent_pid, identity, command, channel,
-            pin: PinnedChild { fd: owner_pidfd, pid: peer.pid, exit: None },
+            parent_pid,
+            identity,
+            command,
+            channel,
+            pin: PinnedChild {
+                fd: owner_pidfd,
+                pid: peer.pid,
+                exit: None,
+            },
         })
     }
 }
@@ -89,44 +105,71 @@ pub struct PrecreatedProcessDriver {
 }
 
 impl PrecreatedProcessDriver {
-    pub fn new(agent_id: AgentId, children: Vec<PrecreatedChild>) -> Result<Self, ProcessDriverError> {
+    pub fn new(
+        agent_id: AgentId,
+        children: Vec<PrecreatedChild>,
+    ) -> Result<Self, ProcessDriverError> {
         if !(1..=2).contains(&children.len())
-            || children.iter().any(|child| child.parent_pid != std::process::id())
+            || children
+                .iter()
+                .any(|child| child.parent_pid != std::process::id())
             || (children.len() == 2 && children[0].pin.pid == children[1].pin.pid)
         {
-            return Err(ProcessDriverError::new("distinct original-parent children are required"));
+            return Err(ProcessDriverError::new(
+                "distinct original-parent children are required",
+            ));
         }
-        Ok(Self { agent_id, pending: children.into() })
+        Ok(Self {
+            agent_id,
+            pending: children.into(),
+        })
     }
 }
 
 impl ProcessDriver for PrecreatedProcessDriver {
     type Process = UnixManagedProcess;
 
-    fn spawn(&mut self, spec: &SpawnSpec) -> Result<SpawnedProcess<Self::Process>, ProcessDriverError> {
-        let child = self.pending.front().ok_or_else(|| ProcessDriverError::new("no unused precreated child"))?;
-        if spec.agent_id != self.agent_id || spec.generation == 0
-            || spec.command != child.command || child.parent_pid != std::process::id()
+    fn spawn(
+        &mut self,
+        spec: &SpawnSpec,
+    ) -> Result<SpawnedProcess<Self::Process>, ProcessDriverError> {
+        let child = self
+            .pending
+            .front()
+            .ok_or_else(|| ProcessDriverError::new("no unused precreated child"))?;
+        if spec.agent_id != self.agent_id
+            || spec.generation == 0
+            || spec.command != child.command
+            || child.parent_pid != std::process::id()
         {
-            return Err(ProcessDriverError::new("SpawnSpec differs from the selected original child"));
+            return Err(ProcessDriverError::new(
+                "SpawnSpec differs from the selected original child",
+            ));
         }
         let mut bytes = PREFIX.to_vec();
         bytes.extend(serde_json::to_vec(spec)?);
         if bytes.len() > FRAME_BOUND {
-            return Err(ProcessDriverError::new("precreated SpawnSpec exceeds the original channel bound"));
+            return Err(ProcessDriverError::new(
+                "precreated SpawnSpec exceeds the original channel bound",
+            ));
         }
         // Removal precedes the first possible delivery. An ambiguous handoff
         // must never retarget the same role with a new Registry generation.
         let mut child = self.pending.pop_front().unwrap();
         let outcome = (|| {
             verify_command(child.pin.pid, &child.command)?;
-            let reply = child.channel.request(&bytes)
+            let reply = child
+                .channel
+                .request(&bytes)
                 .map_err(|error| ProcessDriverError::new(error.to_string()))?;
             if reply != Sha256::digest(&bytes).as_slice() {
-                return Err(ProcessDriverError::new("precreated child did not acknowledge the exact SpawnSpec"));
+                return Err(ProcessDriverError::new(
+                    "precreated child did not acknowledge the exact SpawnSpec",
+                ));
             }
             let agent_control = AgentHealthProbeIdentity::from_spawn(spec, child.pin.pid);
-            let health_probe = HealthProbe::spawn(HealthProbeIdentity::Agentd(agent_control.clone()))?;
+            let health_probe =
+                HealthProbe::spawn(HealthProbeIdentity::Agentd(agent_control.clone()))?;
             Ok((agent_control, health_probe))
         })();
         let (agent_control, health_probe) = match outcome {
@@ -140,8 +183,12 @@ impl ProcessDriver for PrecreatedProcessDriver {
         Ok(SpawnedProcess {
             identity: child.identity,
             process: UnixManagedProcess {
-                handle: UnixProcessHandle::Precreated(child.pin), logs, health_probe,
-                agent_control: Some(agent_control), drain_requested: false, next_drain_request_id: 1,
+                handle: UnixProcessHandle::Precreated(child.pin),
+                logs,
+                health_probe,
+                agent_control: Some(agent_control),
+                drain_requested: false,
+                next_drain_request_id: 1,
             },
         })
     }
@@ -164,25 +211,42 @@ pub fn receive_precreated_spawn(
 ) -> Result<SpawnSpec, ProcessDriverError> {
     // SAFETY: getppid has no pointer arguments and reads the actual parent.
     if unsafe { libc::getppid() } != parent.pid as i32 {
-        return Err(ProcessDriverError::new("precreated handoff peer is not the actual parent"));
+        return Err(ProcessDriverError::new(
+            "precreated handoff peer is not the actual parent",
+        ));
     }
     verify_command(std::process::id(), command)?;
-    let mut channel = HostAuthorityPeerChannel::from_stream(stream, HostAuthorityPeerPolicy {
-        peer: parent, timeout: HANDOFF_TIMEOUT, lifetime: Duration::from_secs(300),
-        request_bound: FRAME_BOUND, response_bound: 32,
-    }, parent_pidfd).map_err(|error| ProcessDriverError::new(error.to_string()))?;
+    let mut channel = HostAuthorityPeerChannel::from_stream(
+        stream,
+        HostAuthorityPeerPolicy {
+            peer: parent,
+            timeout: HANDOFF_TIMEOUT,
+            lifetime: Duration::from_secs(300),
+            request_bound: FRAME_BOUND,
+            response_bound: 32,
+        },
+        parent_pidfd,
+    )
+    .map_err(|error| ProcessDriverError::new(error.to_string()))?;
     let mut received = None;
-    let delivered = channel.exchange(|bytes| {
-        let json = bytes.strip_prefix(PREFIX).ok_or(HostIssuerTransportError::InvalidRequest)?;
-        let spec: SpawnSpec = serde_json::from_slice(json).map_err(|_| HostIssuerTransportError::InvalidRequest)?;
-        if spec.generation == 0 || &spec.command != command {
-            return Err(HostIssuerTransportError::InvalidRequest);
-        }
-        received = Some(spec);
-        Ok(Sha256::digest(bytes).to_vec())
-    }).map_err(|error| ProcessDriverError::new(error.to_string()))?;
+    let delivered = channel
+        .exchange(|bytes| {
+            let json = bytes
+                .strip_prefix(PREFIX)
+                .ok_or(HostIssuerTransportError::InvalidRequest)?;
+            let spec: SpawnSpec = serde_json::from_slice(json)
+                .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
+            if spec.generation == 0 || &spec.command != command {
+                return Err(HostIssuerTransportError::InvalidRequest);
+            }
+            received = Some(spec);
+            Ok(Sha256::digest(bytes).to_vec())
+        })
+        .map_err(|error| ProcessDriverError::new(error.to_string()))?;
     if !delivered {
-        return Err(ProcessDriverError::new("original parent closed before SpawnSpec handoff"));
+        return Err(ProcessDriverError::new(
+            "original parent closed before SpawnSpec handoff",
+        ));
     }
     received.ok_or_else(|| ProcessDriverError::new("no complete original SpawnSpec received"))
 }
@@ -195,20 +259,30 @@ fn verify_command(pid: u32, command: &AgentCommand) -> Result<(), ProcessDriverE
         || command.args.len() > 128
         || argument_bytes.is_none_or(|bytes| bytes > 65_536)
     {
-        return Err(ProcessDriverError::new("precreated command exceeds the original argument bound"));
+        return Err(ProcessDriverError::new(
+            "precreated command exceeds the original argument bound",
+        ));
     }
     if std::fs::read_link(format!("/proc/{pid}/exe"))? != command.program {
-        return Err(ProcessDriverError::new("precreated child is not the selected executable"));
+        return Err(ProcessDriverError::new(
+            "precreated child is not the selected executable",
+        ));
     }
     let mut actual = Vec::new();
-    std::fs::File::open(format!("/proc/{pid}/cmdline"))?.take(69_762).read_to_end(&mut actual)?;
+    std::fs::File::open(format!("/proc/{pid}/cmdline"))?
+        .take(69_762)
+        .read_to_end(&mut actual)?;
     let mut expected = Vec::new();
-    for argument in std::iter::once(command.program.as_os_str()).chain(command.args.iter().map(std::ffi::OsString::as_os_str)) {
+    for argument in std::iter::once(command.program.as_os_str())
+        .chain(command.args.iter().map(std::ffi::OsString::as_os_str))
+    {
         expected.extend_from_slice(argument.as_bytes());
         expected.push(0);
     }
     if actual.len() > 69_761 || actual != expected {
-        return Err(ProcessDriverError::new("precreated child arguments differ from the selected command"));
+        return Err(ProcessDriverError::new(
+            "precreated child arguments differ from the selected command",
+        ));
     }
     Ok(())
 }
@@ -223,29 +297,59 @@ impl PinnedChild {
     pub(super) fn signal(&self, signal: i32) -> Result<(), ProcessDriverError> {
         // SAFETY: the retained descriptor was verified as this original child's
         // pidfd; the fixed signal has no accompanying siginfo. No PID fallback.
-        let result = unsafe { libc::syscall(libc::SYS_pidfd_send_signal, self.fd.as_raw_fd(), signal, std::ptr::null::<libc::siginfo_t>(), 0) };
-        if result != 0 { return Err(std::io::Error::last_os_error().into()); }
+        let result = unsafe {
+            libc::syscall(
+                libc::SYS_pidfd_send_signal,
+                self.fd.as_raw_fd(),
+                signal,
+                std::ptr::null::<libc::siginfo_t>(),
+                0,
+            )
+        };
+        if result != 0 {
+            return Err(std::io::Error::last_os_error().into());
+        }
         Ok(())
     }
 
     pub(super) fn poll(&mut self) -> Result<Option<ProcessExit>, ProcessDriverError> {
-        if self.exit.is_some() { return Ok(self.exit); }
+        if self.exit.is_some() {
+            return Ok(self.exit);
+        }
         // SAFETY: siginfo_t is an initialized C output record, and waitid uses
         // the retained exact pidfd with WNOHANG. This driver is the sole reaper.
         let mut info: libc::siginfo_t = unsafe { std::mem::zeroed() };
-        let result = unsafe { libc::waitid(libc::P_PIDFD, self.fd.as_raw_fd() as libc::id_t, &mut info, libc::WEXITED | libc::WNOHANG) };
-        if result != 0 { return Err(std::io::Error::last_os_error().into()); }
+        let result = unsafe {
+            libc::waitid(
+                libc::P_PIDFD,
+                self.fd.as_raw_fd() as libc::id_t,
+                &mut info,
+                libc::WEXITED | libc::WNOHANG,
+            )
+        };
+        if result != 0 {
+            return Err(std::io::Error::last_os_error().into());
+        }
         // SAFETY: a successful waitid initialized this standard SIGCHLD record.
         let pid = unsafe { info.si_pid() };
-        if pid == 0 { return Ok(None); }
-        if pid != self.pid as i32 { return Err(ProcessDriverError::new("pidfd wait returned a foreign process")); }
+        if pid == 0 {
+            return Ok(None);
+        }
+        if pid != self.pid as i32 {
+            return Err(ProcessDriverError::new(
+                "pidfd wait returned a foreign process",
+            ));
+        }
         let code = match info.si_code {
             // SAFETY: CLD_EXITED selects the standard child status member.
             libc::CLD_EXITED => Some(unsafe { info.si_status() }),
             libc::CLD_KILLED | libc::CLD_DUMPED => None,
             _ => return Err(ProcessDriverError::new("pidfd wait did not observe exit")),
         };
-        self.exit = Some(ProcessExit { success: code == Some(0), code });
+        self.exit = Some(ProcessExit {
+            success: code == Some(0),
+            code,
+        });
         Ok(self.exit)
     }
 }

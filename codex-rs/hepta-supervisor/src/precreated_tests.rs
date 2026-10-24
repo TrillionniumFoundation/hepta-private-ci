@@ -24,16 +24,36 @@ impl Drop for ChildGuard {
     }
 }
 
-fn child_at(root: &Path) -> TestResult<(ChildGuard, UnixStream, OwnedFd, HostIssuerPeer, AgentCommand)> {
+fn child_at(
+    root: &Path,
+) -> TestResult<(
+    ChildGuard,
+    UnixStream,
+    OwnedFd,
+    HostIssuerPeer,
+    AgentCommand,
+)> {
     let socket = root.join("precreated.sock");
     let listener = UnixListener::bind(&socket)?;
     listener.set_nonblocking(true)?;
-    let command = AgentCommand::new(std::env::current_exe()?, vec![
-        "--exact".into(), "unix::precreated::tests::precreated_child".into(), "--nocapture".into(),
-    ])?;
-    let child = ChildGuard(Command::new(&command.program).args(&command.args)
-        .env(CHILD_SOCKET, &socket).env(CHILD_OUTPUT, root.join("received.json"))
-        .stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::null()).spawn()?);
+    let command = AgentCommand::new(
+        std::env::current_exe()?,
+        vec![
+            "--exact".into(),
+            "unix::precreated::tests::precreated_child".into(),
+            "--nocapture".into(),
+        ],
+    )?;
+    let child = ChildGuard(
+        Command::new(&command.program)
+            .args(&command.args)
+            .env(CHILD_SOCKET, &socket)
+            .env(CHILD_OUTPUT, root.join("received.json"))
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn()?,
+    );
     let pid = rustix::process::Pid::from_raw(child.0.id() as i32).ok_or("invalid child pid")?;
     // Retain Child and pin before accepting its connection; never reopen a
     // numeric PID learned from an incoming request.
@@ -42,27 +62,44 @@ fn child_at(root: &Path) -> TestResult<(ChildGuard, UnixStream, OwnedFd, HostIss
     let stream = loop {
         match listener.accept() {
             Ok((stream, _)) => break stream,
-            Err(error) if error.kind() == std::io::ErrorKind::WouldBlock && Instant::now() < deadline => {
+            Err(error)
+                if error.kind() == std::io::ErrorKind::WouldBlock && Instant::now() < deadline =>
+            {
                 std::thread::sleep(Duration::from_millis(2));
             }
             Err(error) => return Err(error.into()),
         }
     };
-    let peer = HostIssuerPeer { uid: rustix::process::getuid().as_raw(), pid: child.0.id() };
+    let peer = HostIssuerPeer {
+        uid: rustix::process::getuid().as_raw(),
+        pid: child.0.id(),
+    };
     Ok((child, stream, pin, peer, command))
 }
 
 #[test]
 fn precreated_child() -> TestResult {
-    let Some(socket) = std::env::var_os(CHILD_SOCKET) else { return Ok(()); };
+    let Some(socket) = std::env::var_os(CHILD_SOCKET) else {
+        return Ok(());
+    };
     let output = std::env::var_os(CHILD_OUTPUT).ok_or("missing output")?;
     // SAFETY: getppid takes no pointers and reads the actual parent.
-    let parent = rustix::process::Pid::from_raw(unsafe { libc::getppid() }).ok_or("missing parent")?;
+    let parent =
+        rustix::process::Pid::from_raw(unsafe { libc::getppid() }).ok_or("missing parent")?;
     let parent_pidfd = rustix::process::pidfd_open(parent, rustix::process::PidfdFlags::empty())?;
-    let command = AgentCommand::new(std::env::current_exe()?, std::env::args_os().skip(1).collect())?;
-    let spec = receive_precreated_spawn(UnixStream::connect(socket)?, parent_pidfd,
-        HostIssuerPeer { uid: rustix::process::getuid().as_raw(), pid: parent.as_raw_nonzero().get() as u32 },
-        &command)?;
+    let command = AgentCommand::new(
+        std::env::current_exe()?,
+        std::env::args_os().skip(1).collect(),
+    )?;
+    let spec = receive_precreated_spawn(
+        UnixStream::connect(socket)?,
+        parent_pidfd,
+        HostIssuerPeer {
+            uid: rustix::process::getuid().as_raw(),
+            pid: parent.as_raw_nonzero().get() as u32,
+        },
+        &command,
+    )?;
     let output = PathBuf::from(output);
     let temporary = output.with_extension("pending");
     std::fs::write(&temporary, serde_json::to_vec(&spec)?)?;
@@ -80,15 +117,26 @@ fn original_supervisor_hands_off_its_real_starting_generation_and_reaps_by_pidfd
     let workspace = root.join("workspace");
     std::fs::create_dir(&workspace)?;
     let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
-    let registered = registry.register(AgentManifest::new(agent.clone(),
-        WorkspaceBinding::new(workspace.clone(), &fleet)?, ResourceBudget::local_default())?)?;
+    let registered = registry.register(AgentManifest::new(
+        agent.clone(),
+        WorkspaceBinding::new(workspace.clone(), &fleet)?,
+        ResourceBudget::local_default(),
+    )?)?;
     let (_child, stream, pin, peer, command) = child_at(&root)?;
     let bound = PrecreatedChild::from_stream(stream, pin, peer, command.clone())?;
     let driver = PrecreatedProcessDriver::new(agent.clone(), vec![bound])?;
-    let (mut supervisor, _) = crate::Supervisor::recover(registry.clone(), driver,
-        crate::SupervisorConfig::local_default(), Instant::now())?;
+    let (mut supervisor, _) = crate::Supervisor::recover(
+        registry.clone(),
+        driver,
+        crate::SupervisorConfig::local_default(),
+        Instant::now(),
+    )?;
     supervisor.start(&agent, command.clone(), Instant::now())?;
-    let state = registry.load()?.agents.remove(&agent).ok_or("missing agent")?;
+    let state = registry
+        .load()?
+        .agents
+        .remove(&agent)
+        .ok_or("missing agent")?;
     assert_eq!(state.lifecycle.lifecycle, AgentLifecycle::Starting);
     assert!(state.lifecycle.generation > registered.lifecycle.generation);
     let deadline = Instant::now() + Duration::from_secs(3);
@@ -97,21 +145,31 @@ fn original_supervisor_hands_off_its_real_starting_generation_and_reaps_by_pidfd
         std::thread::sleep(Duration::from_millis(2));
     }
     let received: SpawnSpec = serde_json::from_slice(&std::fs::read(output)?)?;
-    assert_eq!(received, SpawnSpec {
-        agent_id: agent.clone(), generation: state.lifecycle.generation,
-        fleet_root: fleet.as_path().to_path_buf(), workspace,
-        home_root: registered.layout.home_root().to_path_buf(),
-        run_root: registered.layout.run_root().to_path_buf(),
-        control_socket: registered.layout.agentd_control_socket().to_path_buf(),
-        logs_root: registered.layout.logs_root().to_path_buf(), command: command.clone(),
-    });
+    assert_eq!(
+        received,
+        SpawnSpec {
+            agent_id: agent.clone(),
+            generation: state.lifecycle.generation,
+            fleet_root: fleet.as_path().to_path_buf(),
+            workspace,
+            home_root: registered.layout.home_root().to_path_buf(),
+            run_root: registered.layout.run_root().to_path_buf(),
+            control_socket: registered.layout.agentd_control_socket().to_path_buf(),
+            logs_root: registered.layout.logs_root().to_path_buf(),
+            command: command.clone(),
+        }
+    );
     let snapshot = supervisor.snapshot(&agent).ok_or("missing runtime")?;
     assert_eq!(snapshot.process_system_id, Some(u64::from(peer.pid)));
     assert_eq!(snapshot.spawn_generation, Some(state.lifecycle.generation));
-    assert!(!snapshot.healthy, "handoff must not manufacture Agentd health");
+    assert!(
+        !snapshot.healthy,
+        "handoff must not manufacture Agentd health"
+    );
     supervisor.kill(&agent)?;
     let deadline = Instant::now() + Duration::from_secs(3);
-    while supervisor.snapshot(&agent).ok_or("missing runtime")?.active && Instant::now() < deadline {
+    while supervisor.snapshot(&agent).ok_or("missing runtime")?.active && Instant::now() < deadline
+    {
         supervisor.tick(Instant::now());
         std::thread::sleep(Duration::from_millis(2));
     }
@@ -130,7 +188,10 @@ fn precreated_binding_rejects_a_foreign_pidfd_and_a_changed_executable_command()
         let temp = tempfile::tempdir()?;
         let (_child, stream, pin, peer, mut command) = child_at(temp.path())?;
         let pin = if foreign_fd {
-            rustix::process::pidfd_open(rustix::process::getpid(), rustix::process::PidfdFlags::empty())?
+            rustix::process::pidfd_open(
+                rustix::process::getpid(),
+                rustix::process::PidfdFlags::empty(),
+            )?
         } else {
             command.args.push("unexecuted-extra-argument".into());
             pin

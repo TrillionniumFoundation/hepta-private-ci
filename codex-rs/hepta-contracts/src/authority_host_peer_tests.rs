@@ -148,7 +148,10 @@ fn pinned_client_rejects_truncated_oversized_and_late_replies_without_retry() {
             peer.write_all(&reply).unwrap();
         });
         assert!(client.request(b"once").is_err());
-        assert_eq!(client.request(b"once"), Err(HostIssuerTransportError::Closed));
+        assert_eq!(
+            client.request(b"once"),
+            Err(HostIssuerTransportError::Closed)
+        );
         server.join().unwrap();
     }
     let (mut client, _silent_peer) = channel(32);
@@ -156,5 +159,8 @@ fn pinned_client_rejects_truncated_oversized_and_late_replies_without_retry() {
         client.request(b"once"),
         Err(HostIssuerTransportError::DeadlineElapsed)
     );
-    assert_eq!(client.request(b"once"), Err(HostIssuerTransportError::Closed));
+    assert_eq!(
+        client.request(b"once"),
+        Err(HostIssuerTransportError::Closed)
+    );
 }

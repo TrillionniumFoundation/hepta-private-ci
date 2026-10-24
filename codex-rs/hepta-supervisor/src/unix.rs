@@ -92,7 +92,9 @@ pub struct UnixManagedProcess {
 
 enum UnixProcessHandle {
     Child(Child),
-    Adopted { process_id: u32 },
+    Adopted {
+        process_id: u32,
+    },
     #[cfg(target_os = "linux")]
     Precreated(precreated::PinnedChild),
 }

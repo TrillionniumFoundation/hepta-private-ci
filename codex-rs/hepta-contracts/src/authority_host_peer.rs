@@ -76,11 +76,8 @@ impl HostAuthorityPeerChannel {
             }
             let deadline = self.owner.deadline(self.policy.timeout);
             self.owner.check(deadline)?;
-            self.owner.write_until(
-                &mut stream,
-                &(request.len() as u32).to_be_bytes(),
-                deadline,
-            )?;
+            self.owner
+                .write_until(&mut stream, &(request.len() as u32).to_be_bytes(), deadline)?;
             self.owner.write_until(&mut stream, request, deadline)?;
             let mut length = [0; 4];
             self.owner.read_until(&mut stream, &mut length, deadline)?;
@@ -89,7 +86,8 @@ impl HostAuthorityPeerChannel {
                 return Err(HostIssuerTransportError::Unavailable);
             }
             let mut response = vec![0; length];
-            self.owner.read_until(&mut stream, &mut response, deadline)?;
+            self.owner
+                .read_until(&mut stream, &mut response, deadline)?;
             self.owner.check(deadline)?;
             Ok(response)
         })();
