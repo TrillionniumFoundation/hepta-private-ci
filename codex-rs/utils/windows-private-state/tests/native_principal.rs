@@ -207,11 +207,18 @@ fn native_degraded_and_unqueryable_thread_tokens_never_fall_back() -> Result {
         ));
         install(&anonymous)?;
         let observed = original.revalidate_effective();
-        token_test_observation::observe(&observed);
+        let readback = token_test_observation::capture();
+        drop(_restore);
+        token_test_observation::observe(&observed, &readback);
         assert!(
             matches!(observed, Err(ValidationError::Os(error)) if error.raw_os_error() == Some(ERROR_CANT_OPEN_ANONYMOUS as i32))
         );
-        drop(_restore);
+        assert_eq!(
+            readback,
+            token_test_observation::ThreadObservation::OpenThreadTokenError(Some(
+                ERROR_CANT_OPEN_ANONYMOUS as i32
+            ))
+        );
         assert!(matches!(
             original.revalidate_effective(),
             Err(ValidationError::PrincipalChanged)

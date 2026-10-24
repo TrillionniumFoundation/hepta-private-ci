@@ -408,10 +408,17 @@ fn native_unqueryable_thread_token_never_falls_back_to_process_user() -> Result 
         return Err(io::Error::last_os_error().into());
     }
     let observed = CurrentUser::capture_effective();
-    token_test_observation::observe(&observed);
+    let readback = token_test_observation::capture();
     drop(restore);
+    token_test_observation::observe(&observed, &readback);
     assert!(
         matches!(observed, Err(ValidationError::Os(error)) if error.raw_os_error() == Some(ERROR_CANT_OPEN_ANONYMOUS as i32))
+    );
+    assert_eq!(
+        readback,
+        token_test_observation::ThreadObservation::OpenThreadTokenError(Some(
+            ERROR_CANT_OPEN_ANONYMOUS as i32
+        ))
     );
     assert!(CurrentUser::capture_effective()?.sid == before.sid);
     Ok(())
