@@ -15,6 +15,12 @@ use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 
 const SYSTEM_SID: &[u8] = &[1, 1, 0, 0, 0, 0, 0, 5, 18, 0, 0, 0];
 const ADMIN_SID: &[u8] = &[1, 2, 0, 0, 0, 0, 0, 5, 32, 0, 0, 0, 32, 2, 0, 0];
+// Exact NT SERVICE\TrustedInstaller SID, an OS-maintained namespace principal.
+// Other service SIDs gain no trust; private-store owner checks remain user-only.
+const TRUSTED_INSTALLER_SID: &[u8] = &[
+    1, 6, 0, 0, 0, 0, 0, 5, 80, 0, 0, 0, 181, 137, 251, 56, 25, 132, 194, 203, 92, 108, 35, 109,
+    87, 0, 119, 110, 192, 2, 100, 135,
+];
 const INHERIT_ONLY: u8 = 8;
 const SELF_RELATIVE_DACL_PRESENT: u16 = 0x8004;
 
@@ -52,7 +58,7 @@ fn sid(bytes: &[u8]) -> Result<&[u8], ValidationError> {
 }
 
 fn trusted(sid: &[u8], user: &CurrentUser) -> bool {
-    sid == user.sid_bytes() || sid == SYSTEM_SID || sid == ADMIN_SID
+    sid == user.sid_bytes() || sid == SYSTEM_SID || sid == ADMIN_SID || sid == TRUSTED_INSTALLER_SID
 }
 
 fn validate(bytes: &[u8], user: &CurrentUser) -> Result<(), ValidationError> {

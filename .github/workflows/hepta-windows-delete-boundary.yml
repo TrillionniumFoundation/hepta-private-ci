@@ -59,7 +59,7 @@ jobs:
           set -euo pipefail
           test ! -e "$RUNNER_TEMP/windows-delete-boundary"
           mkdir -p "$RUNNER_TEMP/windows-delete-boundary"
-          printf 'Three existing native Windows deletion-boundary regressions, four native private-state mechanism probes, all 37 private-state library controls including the original five owner-descriptor controls, four native owner-lock process controls, all eight current ACL unit controls, a test-only full-restriction token candidate, four read-only same-handle local-NTFS controls, four live effective-token continuity controls, seven original FinalUse and held-stage controls, and three original Registry controls. Real remote-device rejection remains a C2b acceptance gap. AccessCheck output is diagnostic; original deletion assertions determine success. Candidate success does not admit a production sandbox. Mechanism and descriptor control success does not establish Windows private-state owner support, parent or volume admission, power-loss durability, whole-project or PoN qualification.\n' > "$RUNNER_TEMP/windows-delete-boundary/SCOPE.txt"
+          printf 'Three existing native Windows deletion-boundary regressions, four native private-state mechanism probes, all 40 private-state library controls including the original five owner-descriptor controls, four native owner-lock process controls, all eight current ACL unit controls, a test-only full-restriction token candidate, four read-only same-handle local-NTFS controls, four live effective-token continuity controls, seven original FinalUse and held-stage controls, and three original Registry controls. Real remote-device rejection remains a C2b acceptance gap. AccessCheck output is diagnostic; original deletion assertions determine success. Candidate success does not admit a production sandbox. Mechanism and descriptor control success does not establish Windows private-state owner support, parent or volume admission, power-loss durability, whole-project or PoN qualification.\n' > "$RUNNER_TEMP/windows-delete-boundary/SCOPE.txt"
           git config --global core.autocrlf false
           git config --global core.longpaths true
           printf 'CARGO_TARGET_DIR=%s/windows-delete-boundary-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
@@ -137,6 +137,9 @@ jobs:
               "namespace_acl::tests::inherited_effective_mutator_is_not_treated_as_inherit_only",
               "namespace_acl::tests::missing_truncated_and_unbounded_acl_are_refused",
               "namespace_acl::tests::unknown_owner_and_ace_forms_do_not_grant_namespace_admission",
+              "namespace_acl::tests::exact_trustedinstaller_owner_and_maintenance_ace_are_namespace_only",
+              "namespace_acl::tests::nearby_service_sids_never_gain_namespace_owner_or_mutator_trust",
+              "namespace_acl::tests::trustedinstaller_owned_namespace_keeps_foreign_mutation_and_shape_refusals",
               "parent_anchor::fresh_private_directory::private_owner_lock::original_store_file::tests::actual_original_io_keeps_marker_and_payload_bytes_across_cold_open",
               "parent_anchor::fresh_private_directory::private_owner_lock::owner_file::tests::actual_private_file_extent_error_refuses_later_writes_without_growth",
               "parent_anchor::fresh_private_directory::private_owner_lock::owner_file::tests::actual_private_journal_reopens_original_bytes_and_appends_under_same_lock",
@@ -298,7 +301,7 @@ jobs:
               save(name + ".json", {"returncode": code, "logging_returncode": log_code, "minimum_tests": minimum, "observed_passed_tests": passed, "observed_failed_tests": failed, "log_sha256": hashlib.sha256(raw).hexdigest(), "status": "passed" if ok else "failed", **proof})
               sys.exit(0 if ok else 1)
           phase = sys.argv[2]
-          result = {"scope": "three native Windows deletion regressions, four private-state mechanism probes, 37 private-state library controls including five original descriptor controls, four owner-lock process controls, eight current ACL controls, one test-only full-restriction candidate, four read-only local-NTFS controls, four live principal controls, seven original FinalUse/held-stage controls and three original Registry controls; real remote-device rejection is untested; no Windows owner support, production sandbox admission or power-loss qualification", "production_sandbox_admitted": False, "windows_private_state_owners_supported": False, "power_loss_qualified": False, "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"], "status": "running"}
+          result = {"scope": "three native Windows deletion regressions, four private-state mechanism probes, 40 private-state library controls including five original descriptor controls, four owner-lock process controls, eight current ACL controls, one test-only full-restriction candidate, four read-only local-NTFS controls, four live principal controls, seven original FinalUse/held-stage controls and three original Registry controls; real remote-device rejection is untested; no Windows owner support, production sandbox admission or power-loss qualification", "production_sandbox_admitted": False, "windows_private_state_owners_supported": False, "power_loss_qualified": False, "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"], "status": "running"}
           save("result.json", result)
           assert sys.argv[1] == "source" and phase in {"before", "after"}
           if phase == "before":
@@ -352,14 +355,14 @@ jobs:
           assert result["status"] != "failed"
           PY
           python "$RUNNER_TEMP/windows-delete-boundary/check.py" source before
-      - name: Run all 37 current private-state controls including the five original descriptors
+      - name: Run all 40 current private-state controls including the five original descriptors
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
         run: |
           set +e
           just test --locked -p codex-utils-windows-private-state --lib --test-threads 1 --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-delete-boundary/private-owner-descriptor.log"
           codes="${PIPESTATUS[*]}"
           set -e
-          python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests private-owner-descriptor 37 "$codes"
+          python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests private-owner-descriptor 40 "$codes"
       - name: Run original FinalUse opaque-owner and all four stage controls
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
         run: |

@@ -225,13 +225,13 @@ class WindowsBoundaryReceiptTests(unittest.TestCase):
             return result.returncode
 
     def test_complete_library_receipt_and_original_descriptors_are_required(self):
-        self.assertEqual(len(self.cases), 37)
-        self.assertEqual(len(set(self.cases)), 37)
+        self.assertEqual(len(self.cases), 40)
+        self.assertEqual(len(set(self.cases)), 40)
         self.assertEqual(
             sum(name.startswith("security::tests::") for name in self.cases), 5
         )
         self.assertEqual(
-            self.evaluate("private-owner-descriptor", 37, log(self.cases)), 0
+            self.evaluate("private-owner-descriptor", 40, log(self.cases)), 0
         )
         self.assertEqual(
             self.evaluate("private-owner-descriptor", 5, log(self.cases)), 1
@@ -240,7 +240,7 @@ class WindowsBoundaryReceiptTests(unittest.TestCase):
             name for name in self.cases if name.startswith("security::tests::")
         )
         self.assertEqual(
-            self.evaluate("private-owner-descriptor", 37, log(original)), 1
+            self.evaluate("private-owner-descriptor", 40, log(original)), 1
         )
 
     def test_every_missing_library_case_refuses_even_with_a_green_total(self):
@@ -249,7 +249,7 @@ class WindowsBoundaryReceiptTests(unittest.TestCase):
                 missing = tuple(value for value in self.cases if value != name)
                 self.assertEqual(
                     self.evaluate(
-                        "private-owner-descriptor", 37, log(missing, passed=37)
+                        "private-owner-descriptor", 40, log(missing, passed=40)
                     ),
                     1,
                 )
@@ -258,19 +258,19 @@ class WindowsBoundaryReceiptTests(unittest.TestCase):
         for extra in (self.cases[0], "unregistered::case"):
             with self.subTest(extra=extra):
                 text = "test " + extra + " ... ok\n" + log(self.cases)
-                self.assertEqual(self.evaluate("private-owner-descriptor", 37, text), 1)
+                self.assertEqual(self.evaluate("private-owner-descriptor", 40, text), 1)
 
     def test_failures_skips_mismatched_totals_and_logging_failures_refuse(self):
-        for kwargs in ({"passed": 36}, {"skipped": 1}, {"failed": 1}):
+        for kwargs in ({"passed": 39}, {"skipped": 1}, {"failed": 1}):
             with self.subTest(kwargs=kwargs):
                 self.assertEqual(
                     self.evaluate(
-                        "private-owner-descriptor", 37, log(self.cases, **kwargs)
+                        "private-owner-descriptor", 40, log(self.cases, **kwargs)
                     ),
                     1,
                 )
         self.assertEqual(
-            self.evaluate("private-owner-descriptor", 37, log(self.cases), codes="0 1"),
+            self.evaluate("private-owner-descriptor", 40, log(self.cases), codes="0 1"),
             1,
         )
 
@@ -336,7 +336,7 @@ class WindowsBoundaryReceiptTests(unittest.TestCase):
         for value in (text + text, "\n".join(text.splitlines()[:-1]) + "\n"):
             with self.subTest(value=value[-80:]):
                 self.assertEqual(
-                    self.evaluate("private-owner-descriptor", 37, value), 1
+                    self.evaluate("private-owner-descriptor", 40, value), 1
                 )
 
     def test_all_principal_cases_require_exact_names_and_no_skips(self):
@@ -411,7 +411,7 @@ class WindowsBoundaryReceiptTests(unittest.TestCase):
             )
             self.assertNotIn(" -E ", command)
             self.assertNotIn("--ignored", command)
-        self.assertIn('tests private-owner-descriptor 37 "$codes"', text)
+        self.assertIn('tests private-owner-descriptor 40 "$codes"', text)
         self.assertIn('tests private-local-ntfs 4 "$codes"', text)
         self.assertIn('tests private-owner-lock 4 "$codes"', text)
 
