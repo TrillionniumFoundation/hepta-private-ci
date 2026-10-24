@@ -8,6 +8,7 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from native_ci_support import command, validate_inputs
+from native_backend_tests import NativePreflightTests as NativePreflightTests
 
 
 class NativeEvidenceTests(unittest.TestCase):

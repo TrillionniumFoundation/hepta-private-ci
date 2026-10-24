@@ -7,6 +7,9 @@ import platform
 from pathlib import Path
 import sys
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "memory_cell"))
+from checkpoint_io import MAX_ADAPTER_BYTES, MAX_MANIFEST_BYTES, bounded_read
+
 SYSTEM = (
     "Answer using stored memory in the specified scope. Return only the value. "
     "If unknown, say 'unknown'. Do not cite sources."
@@ -50,6 +53,11 @@ def inspect(repo, model, checkpoint):
     repo, model, checkpoint = map(
         lambda p: Path(p).resolve(strict=True), (repo, model, checkpoint)
     )
+    # Preflight before inventory traversal, including overlapping configured roots.
+    manifest_bytes = bounded_read(checkpoint / "lineage.json", MAX_MANIFEST_BYTES)
+    adapter = sha(
+        bounded_read(checkpoint / "adapter_model.safetensors", MAX_ADAPTER_BYTES)
+    )
     sources = []
     for name in ("memory_cell", "memory_cell_native"):
         sources.extend((repo / "scripts" / name).glob("*.py"))
@@ -85,11 +93,9 @@ def inspect(repo, model, checkpoint):
         for k, v in inventory.items()
         if "token" in k or k in ("vocab.json", "merges.txt")
     }
-    manifest_bytes = (checkpoint / "lineage.json").read_bytes()
     manifest = json.loads(manifest_bytes)
     if manifest["base_identity"] != sha(canonical(inventory)):
         raise ValueError("retained checkpoint base differs from actual model files")
-    adapter = file_sha(checkpoint / "adapter_model.safetensors")
     if adapter != manifest["adapter_sha256"]:
         raise ValueError("adapter bytes changed")
     pins = {

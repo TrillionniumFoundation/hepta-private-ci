@@ -1,0 +1,149 @@
+name: Native checkpoint preflight regression
+
+on:
+  push:
+    branches: [fix/dot-native-preflight-reads-20261024]
+
+permissions:
+  contents: read
+
+jobs:
+  cpu-checkpoint-boundary:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    env:
+      CANDIDATE_SHA: ${{ github.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+          architecture: x64
+      - name: Bind clean exact source before execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/native-preflight"
+          mkdir "$out"
+          uname -a > "$out/platform.txt"
+          test "$(uname -s)" = Linux
+          test "$(uname -m)" = x86_64
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          cat > "$out/source-manifest.sh" <<'SH'
+          set -euo pipefail
+          out="$RUNNER_TEMP/native-preflight"
+          stage="$1"
+          paths=(scripts/memory_cell scripts/memory_cell_native scripts/memory_cell_hardening scripts/memory_cell_network/model_child.py .github/workflows/hepta-native-preflight-reads.yml)
+          git rev-parse HEAD 'HEAD^{tree}' > "$out/$stage.source.txt"
+          git status --porcelain=v1 --untracked-files=all > "$out/$stage.status.txt"
+          git status --porcelain=v1 --untracked-files=all --ignored=matching -- "${paths[@]}" > "$out/$stage.scoped-status.txt"
+          git ls-files --stage -- "${paths[@]}" > "$out/$stage.blobs.txt"
+          git ls-files -z -- "${paths[@]}" | LC_ALL=C sort -z | xargs -0 sha256sum > "$out/$stage.sha256"
+          test ! -s "$out/$stage.status.txt"
+          test ! -s "$out/$stage.scoped-status.txt"
+          SH
+          bash "$out/source-manifest.sh" before
+      - name: Install only fixed official CPU wheels in an isolated environment
+        timeout-minutes: 5
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/native-preflight"
+          export OWNER_VENV="$RUNNER_TEMP/native-preflight-venv"
+          set +e
+          bash -euo pipefail -c '
+            python -m venv "$OWNER_VENV"
+            "$OWNER_VENV/bin/python" -m pip install --disable-pip-version-check --no-cache-dir --retries 0 --timeout 30 --no-deps --require-hashes --only-binary=:all: -r scripts/memory_cell_native/preflight_cpu_requirements.txt
+            "$OWNER_VENV/bin/python" -m pip check
+          ' > "$out/install.stdout.log" 2> "$out/install.stderr.log"
+          status=$?
+          printf '{"exit_code":%s,"attempts":1}\n' "$status" > "$out/install.receipt.json"
+          exit "$status"
+      - name: Run original regression entrypoints normally and with optimization
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/native-preflight"
+          set +e
+          "$RUNNER_TEMP/native-preflight-venv/bin/python" -I -B - > "$out/driver.stdout.log" 2> "$out/driver.stderr.log" <<'PY'
+          import importlib.metadata
+          import os
+          from pathlib import Path
+          import re
+          import sys
+          from urllib.parse import unquote, urlparse
+          from packaging.utils import canonicalize_name, parse_wheel_filename
+          import torch
+          repo = Path.cwd()
+          output = Path(os.environ["RUNNER_TEMP"]) / "native-preflight"
+          sys.path.insert(0, str(repo / "scripts/memory_cell_native"))
+          from native_ci_support import command
+          from native_trial import retain
+          expected = {}
+          for line in (repo / "scripts/memory_cell_native/preflight_cpu_requirements.txt").read_text().splitlines():
+              if line and not line.startswith("#"):
+                  url = line.split(" @ ", 1)[1].split()[0]
+                  name, version, _, _ = parse_wheel_filename(Path(unquote(urlparse(url).path)).name)
+                  expected[name] = str(version)
+          actual = {canonicalize_name(d.metadata["Name"]): d.version for d in importlib.metadata.distributions()}
+          retain(output / "runtime.json", {"python": sys.version, "packages": actual, "torch_cuda_version": torch.version.cuda, "expected": expected})
+          if {k: v for k, v in actual.items() if k != "pip"} != expected or torch.__version__ != "2.5.1+cpu" or torch.version.cuda is not None:
+              raise ValueError("fixed CPU runtime required")
+          environment = {**os.environ, "PYTHONPATH": os.pathsep.join(str(repo / p) for p in ("scripts/memory_cell", "scripts/memory_cell_hardening"))}
+          cases = (
+              ("native", 14, ["-I", "-B", "scripts/memory_cell_native/native_ci_tests.py", "-v"]),
+              ("owner-admission", 7, ["-B", "-m", "unittest", "discover", "-s", "scripts/memory_cell_hardening", "-p", "test_*.py", "-v"]),
+              ("parametric-owner", 9, ["-B", "-m", "unittest", "discover", "-s", "scripts/memory_cell", "-p", "test_parametric_owner.py", "-v"]),
+          )
+          failures = []
+          for mode, flags in (("normal", []), ("optimized", ["-O"])):
+              for name, count, arguments in cases:
+                  stage = f"{name}-{mode}"
+                  try:
+                      directory = command(output, stage, [sys.executable, *flags, *arguments], cwd=repo, timeout=120, environment=environment)
+                      stderr = (directory / "stderr.log").read_text()
+                      if not re.search(rf"^Ran {count} tests in ", stderr, re.MULTILINE) or "skipped=" in stderr:
+                          raise ValueError("expected original regression count without skips")
+                  except (RuntimeError, ValueError) as error:
+                      failures.append({"stage": stage, "error": str(error)})
+          retain(output / "summary.json", {"expected_unique_regression_cases": 30, "modes": ["normal", "optimized"], "failures": failures, "scientific_qualification": False})
+          raise SystemExit(bool(failures))
+          PY
+          status=$?
+          printf '{"exit_code":%s,"attempts":1}\n' "$status" > "$out/driver.receipt.json"
+          exit "$status"
+      - name: Retain and verify final source even after failure
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/native-preflight"
+          mkdir -p "$out"
+          set +e
+          bash -euo pipefail -c '
+            out="$RUNNER_TEMP/native-preflight"
+            bash "$out/source-manifest.sh" after
+            for suffix in source.txt status.txt scoped-status.txt blobs.txt sha256; do
+              cmp "$out/before.$suffix" "$out/after.$suffix"
+            done
+          ' > "$out/source-check.stdout.log" 2> "$out/source-check.stderr.log"
+          status=$?
+          printf '{"exit_code":%s}\n' "$status" > "$out/source-check.receipt.json"
+          exit "$status"
+      - name: Upload complete success or failure records
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: native-preflight-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/native-preflight
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

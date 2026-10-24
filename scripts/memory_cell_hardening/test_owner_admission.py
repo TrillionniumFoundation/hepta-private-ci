@@ -9,7 +9,7 @@ from unittest.mock import Mock, patch
 
 import parametric_owner as owner_module
 from parametric_owner import Frontier, ParametricOwner
-from tensor_contract import bounded_read
+from checkpoint_io import bounded_read
 from test_parametric_owner import checkpoint
 
 
@@ -25,7 +25,7 @@ def fifo_reader(path, queue, replace_during_open):
 
     try:
         if replace_during_open:
-            with patch("tensor_contract.os.open", side_effect=replaced):
+            with patch("checkpoint_io.os.open", side_effect=replaced):
                 bounded_read(path, 32)
         else:
             bounded_read(path, 32)
@@ -177,7 +177,7 @@ class BoundedFileTests(unittest.TestCase):
                 replacement.replace(path)
             return original(candidate, flags, *args, **kwargs)
 
-        with patch("tensor_contract.os.open", side_effect=replaced):
+        with patch("checkpoint_io.os.open", side_effect=replaced):
             with self.assertRaisesRegex(ValueError, "identity changed"):
                 bounded_read(path, 32)
 
@@ -194,7 +194,7 @@ class BoundedFileTests(unittest.TestCase):
                 path.write_bytes(b"changed after read")
             return original(descriptor)
 
-        with patch("tensor_contract.os.fstat", side_effect=mutate):
+        with patch("checkpoint_io.os.fstat", side_effect=mutate):
             with self.assertRaisesRegex(ValueError, "changed during bounded read"):
                 bounded_read(path, 32)
 
