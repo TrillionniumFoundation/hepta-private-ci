@@ -1,0 +1,37 @@
+{
+  "reviewer": "independent multimodal worker",
+  "review_utc": "2026-10-24T04:43:47Z",
+  "reviewed_extract_sha256": "25e465b577b2189deed2ba2079bc333526c5a39c40afda64ec1586aea613e915",
+  "reviewed_analyze_sha256": "355861780f518d4a86011d8225c5b57f5f818714a788117a1b403f77bcd09677",
+  "blocking_findings": [],
+  "verified": [
+    "frozen protocol and raw/row hashes",
+    "row normalized text hashes",
+    "train/test partition labels match raw order",
+    "4160 unique components",
+    "rank monotonicity",
+    "zero old selected fulltext overlap",
+    "all four heads saved before fitter reads test labels",
+    "native pooling parity check",
+    "paired two primary 97.5 percent intervals",
+    "no post-test budget selection"
+  ],
+  "caveats": [
+    "preparation reads labels to exclude conflicts; only fitter is test-label-isolated",
+    "single nested training draw, not four independent draws",
+    "bootstrap conditional on chosen training data"
+  ],
+  "execution_start_utc": "2026-10-24T04:43:59Z",
+  "execution_resources": {
+    "cpu_affinity": [
+      0,
+      1
+    ],
+    "threads": 2,
+    "batch_size": 8,
+    "timeout_seconds": 1800,
+    "rss_stop_gib": 3.5,
+    "memory_available_mib_before_start": 7650,
+    "disk_available_gib_before_start": 23
+  }
+}

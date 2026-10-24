@@ -1,0 +1,164 @@
+{
+  "status": "new disjoint historical same-source pilot, not qualification",
+  "protocol_sha256": "b73cb06a5e441d07e0c38f0bb02350ee798f6e4cd30c70b51abc2163157faf1c",
+  "metrics": {
+    "320": {
+      "logistic_accuracy": 0.883125,
+      "centroid_accuracy": 0.8775,
+      "delta": 0.005625000000000102
+    },
+    "640": {
+      "logistic_accuracy": 0.9,
+      "centroid_accuracy": 0.885625,
+      "delta": 0.014375000000000027
+    },
+    "1280": {
+      "logistic_accuracy": 0.90375,
+      "centroid_accuracy": 0.886875,
+      "delta": 0.016875000000000084
+    },
+    "2560": {
+      "logistic_accuracy": 0.9,
+      "centroid_accuracy": 0.8875,
+      "delta": 0.012500000000000067
+    }
+  },
+  "primary": {
+    "endpoint_delta_2560": {
+      "estimate": 0.0125,
+      "bootstrap97_5": [
+        0.00375,
+        0.02125
+      ]
+    },
+    "budget_gain_2560_minus_320": {
+      "estimate": 0.006875,
+      "bootstrap97_5": [
+        -0.005,
+        0.01875
+      ]
+    }
+  },
+  "budget_related_benefit_demonstrated": false,
+  "training": {
+    "320": {
+      "n": 320,
+      "seconds": 0.9291215680059395,
+      "final_ce": 0.27115907380591747,
+      "final_objective": 0.4808108403817921,
+      "gradient_l2": 2.695486713651887e-05,
+      "curve": [
+        {
+          "step": 1,
+          "preupdate_objective": 1.3862943611198906
+        },
+        {
+          "step": 50,
+          "preupdate_objective": 0.48293896033525785
+        },
+        {
+          "step": 100,
+          "preupdate_objective": 0.4808381357906021
+        },
+        {
+          "step": 150,
+          "preupdate_objective": 0.4808123580043563
+        },
+        {
+          "step": 200,
+          "preupdate_objective": 0.4808108489907889
+        }
+      ]
+    },
+    "640": {
+      "n": 640,
+      "seconds": 0.18688269200356444,
+      "final_ce": 0.3322771365751059,
+      "final_objective": 0.5347159959650232,
+      "gradient_l2": 1.0378657007286313e-05,
+      "curve": [
+        {
+          "step": 1,
+          "preupdate_objective": 1.3862943611198906
+        },
+        {
+          "step": 50,
+          "preupdate_objective": 0.5364713195227986
+        },
+        {
+          "step": 100,
+          "preupdate_objective": 0.5347396054401491
+        },
+        {
+          "step": 150,
+          "preupdate_objective": 0.5347169368901232
+        },
+        {
+          "step": 200,
+          "preupdate_objective": 0.5347159980654721
+        }
+      ]
+    },
+    "1280": {
+      "n": 1280,
+      "seconds": 0.3339537939973525,
+      "final_ce": 0.34969100219305316,
+      "final_objective": 0.5462870032587979,
+      "gradient_l2": 2.8834991821495524e-06,
+      "curve": [
+        {
+          "step": 1,
+          "preupdate_objective": 1.3862943611198904
+        },
+        {
+          "step": 50,
+          "preupdate_objective": 0.5478853932752282
+        },
+        {
+          "step": 100,
+          "preupdate_objective": 0.5463000968328435
+        },
+        {
+          "step": 150,
+          "preupdate_objective": 0.5462871273746635
+        },
+        {
+          "step": 200,
+          "preupdate_objective": 0.5462870033026175
+        }
+      ]
+    },
+    "2560": {
+      "n": 2560,
+      "seconds": 0.6435893750021933,
+      "final_ce": 0.38870175542117436,
+      "final_objective": 0.5756293041585245,
+      "gradient_l2": 2.9460076181435884e-05,
+      "curve": [
+        {
+          "step": 1,
+          "preupdate_objective": 1.3862943611198906
+        },
+        {
+          "step": 50,
+          "preupdate_objective": 0.5774773997889318
+        },
+        {
+          "step": 100,
+          "preupdate_objective": 0.5756739258473982
+        },
+        {
+          "step": 150,
+          "preupdate_objective": 0.5756331510068914
+        },
+        {
+          "step": 200,
+          "preupdate_objective": 0.5756293193956691
+        }
+      ]
+    }
+  },
+  "seconds": 2.363688618002925,
+  "max_rss_kib": 307216,
+  "no_post_test_refit": true
+}

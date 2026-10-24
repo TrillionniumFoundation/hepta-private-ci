@@ -1,0 +1,26 @@
+{
+  "algorithm": "Independent BFS of bipartite row-title/full-hash graph; source normalization recomputed independently. No test predictions read.",
+  "components": 120461,
+  "counts": {
+    "label_conflict_components": 727,
+    "label_conflict_rows": 1705,
+    "old_exposure_components": 960,
+    "old_exposure_rows": 1164,
+    "cross_official_components": 744,
+    "cross_official_rows": 1937
+  },
+  "component_keys_match_selected_manifest": true,
+  "selected_components_unique": true,
+  "selected_old_components_overlap": 0,
+  "empty_normalized_title_rows": 0,
+  "repeated_title_groups": 5821,
+  "repeated_short_title_groups_le_20_chars": 206,
+  "maximum_title_multiplicity": 43,
+  "maximum_component_size": 43,
+  "cross_official_maximum_component_size": 43,
+  "pilot_test_vs_other_split_components": [],
+  "pilot_test_vs_head_train_components": 0,
+  "pilot_test_vs_temperature_components": 0,
+  "pilot_test_vs_conformal_components": 0,
+  "interpretation": "Equal titles are potential contamination proxies, not verified same-event families. Generic titles can overmerge; this is conservative exclusion, not semantic deduplication. Counts do not demonstrate semantic leakage."
+}

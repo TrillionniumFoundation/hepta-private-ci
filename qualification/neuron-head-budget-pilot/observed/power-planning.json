@@ -1,0 +1,27 @@
+{
+  "method": "Normal approximation for a paired accuracy difference; scenario parameters not estimated from old or new test. Not a guarantee; joint two-estimand claim is less powered. Budget-gain variance includes unknown covariance and is not estimated here.",
+  "scenarios": [
+    {
+      "assumed_head_discordance": 0.05,
+      "test_n": 1600,
+      "approx_se_delta_zero_pp": 0.5590169943749475,
+      "approx_two_sided_97_5_halfwidth_pp": 1.252982215969526,
+      "rough_80pct_power_min_delta_pp": 1.7234627883635925
+    },
+    {
+      "assumed_head_discordance": 0.1,
+      "test_n": 1600,
+      "approx_se_delta_zero_pp": 0.7905694150420948,
+      "approx_two_sided_97_5_halfwidth_pp": 1.7719844432363983,
+      "rough_80pct_power_min_delta_pp": 2.437344449549143
+    },
+    {
+      "assumed_head_discordance": 0.2,
+      "test_n": 1600,
+      "approx_se_delta_zero_pp": 1.118033988749895,
+      "approx_two_sided_97_5_halfwidth_pp": 2.505964431939052,
+      "rough_80pct_power_min_delta_pp": 3.446925576727185
+    }
+  ],
+  "interpretation": "At discordance 0.10, about 2.44 percentage points, not sub-1pp effects, are plausibly detectable with 80% marginal power. An inconclusive result does not justify equivalence."
+}
