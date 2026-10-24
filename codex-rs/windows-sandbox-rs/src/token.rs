@@ -1,4 +1,7 @@
 use crate::winutil::to_wide;
+#[cfg(test)]
+#[path = "token_query.rs"]
+mod token_query;
 use anyhow::Result;
 use anyhow::anyhow;
 use std::ffi::c_void;
