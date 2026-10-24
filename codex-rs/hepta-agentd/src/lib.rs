@@ -208,6 +208,8 @@ mod notes_ui_wire;
 #[cfg(target_os = "linux")]
 mod notes_ui_queue;
 #[cfg(target_os = "linux")]
+mod notes_ui_endpoint;
+#[cfg(target_os = "linux")]
 mod notes_organ;
 #[cfg(target_os = "linux")]
 mod notes_recovery_process;
@@ -436,6 +438,8 @@ pub use notes_literal_adapter::AgentdNotesLiteralBindings;
 pub use notes_literal_adapter::AgentdNotesPreparedObjective;
 #[cfg(target_os = "linux")]
 pub use notes_literal_adapter::AgentdNotesRetainedIntents;
+#[cfg(target_os = "linux")]
+pub use notes_ui_endpoint::AgentdNotesUiPeer;
 #[cfg(target_os = "linux")]
 pub use notes_literal_observation::AgentdNotesObservationRetention;
 #[cfg(target_os = "linux")]
