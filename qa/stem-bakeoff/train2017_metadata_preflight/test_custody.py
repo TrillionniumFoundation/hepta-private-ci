@@ -53,7 +53,6 @@ class CustodyTests(unittest.TestCase):
                     ):
                         file.write_bytes(changed)
 
-
             # A partial consumer read must not return stale BufferedReader
             # read-ahead after a same-size source rewrite.
             file.write_bytes(b"original")
@@ -74,6 +73,7 @@ class CustodyTests(unittest.TestCase):
             with zipfile.ZipFile(buffer, "w") as archive:
                 archive.writestr("annotations/fixture.json", payload)
             raw = buffer.getvalue()
+            archive_digest = hashlib.sha256(raw).hexdigest()
             file.write_bytes(raw)
             profile = (
                 len(payload),
@@ -83,7 +83,7 @@ class CustodyTests(unittest.TestCase):
             )
             with (
                 patch.dict(p.MEMBERS, fixture=profile),
-                p.pinned_file(file, len(raw), hashlib.sha256(raw).hexdigest()) as stream,
+                p.pinned_file(file, len(raw), archive_digest) as stream,
                 zipfile.ZipFile(stream) as archive,
             ):
                 receipts = {}
