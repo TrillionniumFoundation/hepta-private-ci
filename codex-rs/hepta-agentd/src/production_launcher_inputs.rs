@@ -137,14 +137,14 @@ pub(super) fn parse(
     let app_server = take_descriptor(app_server)?;
     let primary = match android {
         Some((server, environment, payload, deadline)) => PrimaryInputs::Android {
-            server, environment, payload: File::from(take_descriptor(payload)?), deadline,
+            server, environment, payload: take_readonly_file(payload)?, deadline,
         },
         None => PrimaryInputs::Notes,
     };
     let notes = notes.map(take_descriptor).transpose()?.map(UnixDatagram::from);
     let notes_ui = notes_ui.map(|(deployment, listener, session)| {
         Ok::<_, AgentdError>(NotesUiInputs {
-            deployment: File::from(take_descriptor(deployment)?),
+            deployment: take_readonly_file(deployment)?,
             listener: take_descriptor(listener)?,
             session_pidfd: take_descriptor(session)?,
         })
@@ -192,6 +192,19 @@ fn take_descriptor(number: i32) -> Result<OwnedFd, AgentdError> {
     // SAFETY: the trusted launcher transferred this descriptor to this entry;
     // all duplicate numbers were rejected before any ownership was taken.
     Ok(unsafe { OwnedFd::from_raw_fd(number) })
+}
+
+fn take_readonly_file(number: i32) -> Result<File, AgentdError> {
+    // The late Notes producer may still be filling this memfd while the child
+    // waits for Root. A dup of its writable open-file description is not an
+    // acceptable consumer capability, even if it will later acquire seals.
+    // SAFETY: F_GETFL observes only the still-unclaimed inherited descriptor.
+    let flags = unsafe { libc::fcntl(number, libc::F_GETFL) };
+    if flags < 0 { return Err(std::io::Error::last_os_error().into()); }
+    if flags & libc::O_ACCMODE != libc::O_RDONLY {
+        return Err(invalid("original payload/deployment requires an independently opened read-only descriptor"));
+    }
+    Ok(File::from(take_descriptor(number)?))
 }
 
 fn original_deadline(end: u64) -> Result<Instant, AgentdError> {

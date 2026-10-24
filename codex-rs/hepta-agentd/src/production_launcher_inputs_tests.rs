@@ -1,5 +1,6 @@
 use std::ffi::OsString;
 use std::os::fd::AsRawFd;
+use std::os::fd::IntoRawFd;
 use std::os::unix::net::UnixDatagram;
 use std::time::Duration;
 use std::time::Instant;
@@ -9,6 +10,7 @@ use pretty_assertions::assert_eq;
 use super::original_deadline;
 use super::parse;
 use super::read_payload;
+use super::take_readonly_file;
 
 #[test]
 fn ordinary_daemon_arguments_remain_byte_exact() -> anyhow::Result<()> {
@@ -61,5 +63,27 @@ fn ordinary_payload_file_is_not_a_sealed_original_input() -> anyhow::Result<()> 
     let mut payload = tempfile::tempfile()?;
     payload.write_all(b"{}")?;
     assert!(read_payload(payload).is_err());
+    Ok(())
+}
+
+#[test]
+fn inherited_deployment_cannot_retain_the_root_producers_writable_description() -> anyhow::Result<()> {
+    let producer = tempfile::tempfile()?;
+    let writable_duplicate = producer.try_clone()?;
+    let descriptor = writable_duplicate.as_raw_fd();
+    assert!(take_readonly_file(descriptor).is_err());
+    // Refusal does not adopt or close the caller's writable descriptor.
+    // SAFETY: F_GETFD only observes the live descriptor retained above.
+    assert!(unsafe { libc::fcntl(descriptor, libc::F_GETFD) } >= 0);
+    let reader = std::fs::File::open(format!("/proc/self/fd/{}", producer.as_raw_fd()))?;
+    let reader = take_readonly_file(reader.into_raw_fd())?;
+    // A separate read-only description remains usable after ownership moves.
+    assert_eq!(reader.metadata()?.len(), producer.metadata()?.len());
+    // SAFETY: both queries read metadata of the live consumer descriptor.
+    let (flags, mode) = unsafe {
+        (libc::fcntl(reader.as_raw_fd(), libc::F_GETFD), libc::fcntl(reader.as_raw_fd(), libc::F_GETFL))
+    };
+    assert!(flags & libc::FD_CLOEXEC != 0);
+    assert_eq!(mode & libc::O_ACCMODE, libc::O_RDONLY);
     Ok(())
 }
