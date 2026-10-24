@@ -40,6 +40,8 @@ pub async fn run(
     arg0_paths: Arg0DispatchPaths,
 ) -> Result<(), AgentdError> {
     let production_operations = config.take_production_operations();
+    #[cfg(target_os = "linux")]
+    let notes_ui = config.take_original_notes_ui();
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let trust_file = config
         .authbus_trust_file()
@@ -283,6 +285,10 @@ pub async fn run(
             )?;
         }
         tasks.spawn_required("control-server", control.run())?;
+        #[cfg(target_os = "linux")]
+        if let Some(ui) = notes_ui {
+            tasks.spawn_required("notes-literal-ui", ui.run(cancellation.clone()))?;
+        }
         let app_identity = identity.clone();
         let app_state = Arc::clone(&state);
         let app_drain = state.app_server_drain_handle();

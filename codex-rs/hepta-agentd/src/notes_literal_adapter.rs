@@ -41,6 +41,11 @@ mod read;
 pub use read::AgentdNotesRetainedIntents;
 #[path = "notes_literal_history.rs"]
 mod history;
+#[path = "notes_ui_runtime.rs"]
+mod ui_runtime;
+pub use ui_runtime::AgentdNotesUiRuntime;
+#[path = "notes_ui_worker.rs"]
+mod ui_worker;
 
 type RootCheckpoint = ProtectedCognitiveCheckpoint<AgentdUnixCognitiveCheckpointTransport>;
 
@@ -94,8 +99,9 @@ pub struct AgentdNotesLiteralAdapter {
 
 impl AgentdConfig {
     /// Register the exact existing finite profile and retain the same original
-    /// writer's sender. The caller keeps this adapter beside the ordinary `run`;
-    /// another process cannot reconstruct it from files or the public target.
+    /// writer's sender. The caller installs the adapter into the original
+    /// required Notes UI runtime; another process cannot reconstruct it from
+    /// files or the public target.
     pub fn with_root_notes_literal_adapter(
         self,
         attachment: &AgentdRootProductionAttachment,

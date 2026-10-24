@@ -439,6 +439,8 @@ pub use notes_literal_adapter::AgentdNotesPreparedObjective;
 #[cfg(target_os = "linux")]
 pub use notes_literal_adapter::AgentdNotesRetainedIntents;
 #[cfg(target_os = "linux")]
+pub use notes_literal_adapter::AgentdNotesUiRuntime;
+#[cfg(target_os = "linux")]
 pub use notes_ui_endpoint::AgentdNotesUiPeer;
 #[cfg(target_os = "linux")]
 pub use notes_literal_observation::AgentdNotesObservationRetention;

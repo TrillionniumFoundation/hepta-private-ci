@@ -63,7 +63,7 @@ caller, not merely these callable APIs.
 The unique launcher can call `AgentdConfig::with_root_notes_literal_adapter`
 after attaching the Root inputs and selecting the original Objective profile
 file. It returns the configured `AgentdConfig` and a non-cloneable
-`AgentdNotesLiteralAdapter` to retain alongside ordinary `run`. The profile must
+`AgentdNotesLiteralAdapter` to install into ordinary `run`. The profile must
 equal the shared `hepta-objective` literal Notes profile in full. Deployment
 supplies its principal scope, issuer, policy generation, locale and five actual
 runtime/artifact digests explicitly. This code supplies no guessed digest,
@@ -100,6 +100,54 @@ authenticated read/control methods. Cancel reads a fresh original revision and
 never retries a race. Navigation reads at most 64 original pages and exposes at
 most 128 IDs, with explicit incomplete traversal; it is not a complete paginated
 document archive. No renderer-supplied endpoint or expected revision is accepted.
+
+## Original Session UI receiver under runtime supervision
+
+The unique launcher consumes the actual inherited listening Unix socket, the
+original Session pidfd and sealed Session birth identity with
+`AgentdNotesUiRuntime::from_inherited(listener, session_pidfd, peer, adapter)`.
+It then calls `config.with_original_notes_ui(runtime)` before the original
+`run`. Installation compares the exact writer `Arc`, full Agentd identity and
+actual registered Notes target. The existing `RuntimeTasks` owns the receiver
+and adapter as one required task, `notes-literal-ui`; it supervises failure,
+Session death, shutdown and draining without an extra daemon or runtime.
+
+Root binds without listening and transfers only the socket node to the dedicated
+Session/Agentd UID. The real Agentd process listens after dropping privileges.
+Session and Agentd must share that UID because the original Desktop bridge
+authenticates it in both socket metadata and kernel SO_PEERCRED. Bootstrap
+checks AF_UNIX, SOCK_STREAM, listening state, the exact private node, actual
+held pidfd, boot ID and process birth. Each accepted connection rechecks the
+actual Session UID/PID and held lifetime. The original ObjectiveBridge v1
+newline JSON wire is unchanged: availability, literal ID/text submission,
+ID-only status and ID-only cancellation. Unknown fields are rejected.
+
+The receiver returns a cached view and queues work within a 75 ms exchange
+budget, inside the existing Session's 150 ms limit. Eight FIFO action slots
+keep Cancel behind Submit; at most 128 disposable views and separately
+coalesced passive refreshes bound memory. A queued action has one five-second
+deadline covering its wait and original call. Expired queued actions never
+enter the adapter. A started timeout preserves the original owner uncertainty
+and durable fence. Authenticated control unavailability before new preparation
+is shown as Unavailable and creates no delivery attempt.
+
+After restart, status obtains `snapshot_acknowledged` from the same original
+sender, validates every retained identity/frame/publication field and may query
+original `ObjectiveAdmission` using the exact historical signed ingress.
+Historical generation and body bytes are not rewritten. The first positive
+publication is retained with the existing sender's checked transaction and
+independent checkpoint ACK; contradictory later publication is rejected.
+Missing history is Unknown, never a resend or no-effect proof. Polling unknown
+history does not fill the bounded journal with duplicate negative observations.
+Cancel is permitted only after acknowledged admission of this exact request;
+a conflict cannot cancel a different run. Run completion, application durability
+and Root terminal remain distinct from admission and UI transport success.
+
+`notes_ui_*` tests exercise the real UDS/pidfd boundary and finite FIFO without
+fabricating an execution owner. `notes_literal_*` recovery tests use original
+SQLite with explicit checkpoint/publication fixtures. A complete production
+execution still needs the actual launcher, Root authority, Session application,
+terminal Current and recovery receipts on the frozen source pair.
 
 Original-owner tests verify pending-receipt and escaped-payload refusal before
 preparation, exact UTF-8/predecessor retention, duplicate operation identity

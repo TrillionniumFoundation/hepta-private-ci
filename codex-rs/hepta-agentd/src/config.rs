@@ -92,6 +92,8 @@ pub struct AgentdConfig {
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
     production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
     notes_objective: Option<crate::AgentdNotesObjectiveConfig>,
+    #[cfg(target_os = "linux")]
+    notes_ui: Option<crate::AgentdNotesUiRuntime>,
     cognitive_retrieval_mode: CognitiveRetrievalMode,
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
@@ -216,6 +218,8 @@ impl AgentdConfig {
             production_operations: None,
             production_writer_host: None,
             notes_objective: None,
+            #[cfg(target_os = "linux")]
+            notes_ui: None,
             cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
@@ -390,6 +394,23 @@ impl AgentdConfig {
         &mut self,
     ) -> Option<crate::AgentdProductionOperationRuntimeConfig> {
         self.production_operations.take()
+    }
+
+    /// Install the actual Session UI beside the same original protected writer.
+    /// `run` supervises it as a required task; a Session exit drains this host.
+    #[cfg(target_os = "linux")]
+    pub fn with_original_notes_ui(mut self, runtime: crate::AgentdNotesUiRuntime) -> Result<Self, AgentdError> {
+        if self.notes_ui.is_some() {
+            return Err(AgentdError::Invalid("original Notes UI already configured".into()));
+        }
+        runtime.validate_for(&self)?;
+        self.notes_ui = Some(runtime);
+        Ok(self)
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn take_original_notes_ui(&mut self) -> Option<crate::AgentdNotesUiRuntime> {
+        self.notes_ui.take()
     }
 
     /// Attach an externally verified production cognitive writer to normal

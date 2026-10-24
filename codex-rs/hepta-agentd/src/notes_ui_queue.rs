@@ -118,6 +118,14 @@ impl NotesUiQueue {
         } else { state.availability = view; }
         Ok(())
     }
+
+    pub(crate) fn current(&self, command: &ObjectiveCommand) -> Result<ObjectiveObservation, ()> {
+        let state = self.state.lock().map_err(|_| ())?;
+        match command.client_intent_id() {
+            Some(id) => state.intents.get(id).cloned().ok_or(()),
+            None => Ok(state.availability.clone()),
+        }
+    }
 }
 
 #[cfg(test)]
