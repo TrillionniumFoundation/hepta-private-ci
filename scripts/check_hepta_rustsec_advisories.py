@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail closed if the 13 tracked RustSec advisories are ignored by policy."""
+"""Fail closed if the 14 tracked RustSec advisories are ignored by policy."""
 
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ TRACKED_RUSTSEC = frozenset(
     ["RUSTSEC-2024-0449", "RUSTSEC-2026-0318", "RUSTSEC-2026-0319"]
     + [f"RUSTSEC-2026-{number:04d}" for number in range(346, 350)]
     + [f"RUSTSEC-2026-{number:04d}" for number in range(367, 373)]
+    + ["RUSTSEC-2026-0385"]
 )
 
 POLICIES = (Path("codex-rs/deny.toml"), Path("codex-rs/.cargo/audit.toml"))
