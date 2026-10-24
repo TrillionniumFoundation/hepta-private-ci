@@ -7,6 +7,11 @@ on:
       - docs/learning/STEM_BAKEOFF*
       - .github/workflows/hepta-shared-stem-bakeoff-shadow.yml
   workflow_dispatch:
+    inputs:
+      run_real_checkpoint_bakeoff:
+        description: Run the existing four-checkpoint news bake-off (false runs contracts and local tiny-model tests only)
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -17,6 +22,63 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  cell-learning-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      PYTHONPATH: qa/stem-bakeoff
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact source identity and record selected scope
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          INCLUDE_REAL_CHECKPOINTS: ${{ github.event_name != 'workflow_dispatch' || inputs.run_real_checkpoint_bakeoff }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+          mkdir -p "$RUNNER_TEMP/cell-learning-contracts"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          receipt = {"source_sha": os.environ["EXPECTED_SHA"],
+                     "real_checkpoint_bakeoff_selected": os.environ["INCLUDE_REAL_CHECKPOINTS"] == "true",
+                     "scope": "mechanism contracts and local fixtures; not real-task quality evidence"}
+          target = Path(os.environ["RUNNER_TEMP"]) / "cell-learning-contracts" / "scope.json"
+          target.write_text(json.dumps(receipt, indent=2) + "\n")
+          PY
+      - name: Install pinned NumPy runtime
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/cell-learning-venv"
+          "$RUNNER_TEMP/cell-learning-venv/bin/python" -m pip install --only-binary=:all: 'numpy==2.2.6'
+      - name: Run learning, source recovery, and batching contracts
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/cell-learning-venv/bin/python" -m unittest -v \
+            test_cell_learning_metrics test_cell_learning_models test_cell_learning_baselines \
+            test_cell_learning_curve test_prepare_repair_cohorts test_cell_batch_runtime \
+            test_cell_training_queue test_cell_scale_probe test_source_recovery_probe \
+            2>&1 | tee "$RUNNER_TEMP/cell-learning-contracts/tests.log"
+      - name: Preserve focused test evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cell-learning-contracts-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/cell-learning-contracts/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Confirm source tree unchanged
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
   evidence-contract:
     runs-on: ubuntu-24.04
     timeout-minutes: 8
@@ -82,6 +144,7 @@ jobs:
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_offline_shard_distill.py' -v
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_scale_probe.py' -v
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_feature_bundle.py' -v
+          "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_shared_feature*.py' -v
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_cell_head_training.py' -v
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_cell_router_training.py' -v
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -m unittest discover -s qa/stem-bakeoff -p 'test_cell_evolution.py' -v
@@ -101,6 +164,7 @@ jobs:
           git diff --exit-code
 
   real-checkpoint-text-bakeoff:
+    if: github.event_name != 'workflow_dispatch' || inputs.run_real_checkpoint_bakeoff
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     strategy:
