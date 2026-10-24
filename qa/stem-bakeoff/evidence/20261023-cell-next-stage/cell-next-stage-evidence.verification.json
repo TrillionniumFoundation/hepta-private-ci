@@ -1,0 +1,86 @@
+{
+  "archive": {
+    "bytes": 207805002,
+    "name": "cell-next-stage-evidence.tar.gz",
+    "path": "/tmp/hepta-cell-data-delivery-20261024/cell-next-stage-evidence.tar.gz",
+    "sha256": "2192ca18b201dbe94ff523a4bf1534fcd4537314eca4c2222029357c6233ded4"
+  },
+  "archive_stream_verification": {
+    "archive_sha256": "2192ca18b201dbe94ff523a4bf1534fcd4537314eca4c2222029357c6233ded4",
+    "restored": false,
+    "verified_files": 5795,
+    "verified_objects": 5342
+  },
+  "executed_code_git_verification": {
+    "files": [
+      {
+        "bytes": 7453,
+        "path": "qa/stem-bakeoff/evidence/20261023-cell-next-stage/source/eg2_smoke.py",
+        "sha256": "1d4046b3c28f3f6ce6b57dcc9e8b856b88ae12869e9626ce6a243f6deedb11e0"
+      },
+      {
+        "bytes": 2857,
+        "path": "qa/stem-bakeoff/evidence/20261023-cell-next-stage/source/granite_smoke.py",
+        "sha256": "a9dc2f073221756675abd7801da47f31b2584607c1d21428fd03186e0322ca01"
+      },
+      {
+        "bytes": 6043,
+        "path": "qa/stem-bakeoff/evidence/20261023-cell-next-stage/source/run_final_verification.py",
+        "sha256": "c098a0e13df7b70399afade38ef1b06b78e3506bcda86c1e5aa50144060870ca"
+      }
+    ],
+    "git_commit": "9b1f52cd8aa11de1ec447b116c1a0258ee5f861b",
+    "schema": "hepta.executed-code-git-verification.v1"
+  },
+  "git_commit": "9b1f52cd8aa11de1ec447b116c1a0258ee5f861b",
+  "git_tree": "28b96d36381626d2be952f6f66950093b6a79db2",
+  "index": {
+    "bytes": 13611,
+    "path": "/tmp/hepta-cell-data-delivery-20261024/cell-next-stage-evidence.index.json",
+    "sha256": "5e8f1de9cb4eb9b690f1c80ec4fc68144bda46ccd003eaa69cc0ae45f3ef7e7c"
+  },
+  "manifest_gzip": {
+    "bytes": 270913,
+    "name": "cell-next-stage-evidence.manifest.json.gz",
+    "path": "/tmp/hepta-cell-data-delivery-20261024/cell-next-stage-evidence.manifest.json.gz",
+    "sha256": "3195c143473118b11b01077975149331b177c433e25ab03a575470ad29a2863a"
+  },
+  "ordinary_file_restoration": {
+    "archive_sha256": "2192ca18b201dbe94ff523a4bf1534fcd4537314eca4c2222029357c6233ded4",
+    "restored": true,
+    "verified_files": 5795,
+    "verified_objects": 5342
+  },
+  "passed": true,
+  "publication_source_binding": {
+    "sha256": "c02e432d5e19670bce797e99116d24d83460cd4917d101cfbfaf493350050a86",
+    "tested_committed_source_files": 123
+  },
+  "restored_file_bytes": 471699419,
+  "restored_files_rehashed": 5795,
+  "restored_original_studies": {
+    "embeddinggemma2": {
+      "feature_identity": "353e9dc58a5d51f87db587cb7aef477813ed95fa53af598650609c73bc14ed11",
+      "study_plan_sha256": "68948d84ec1fb9add0a67708d4b08113b9d6bc2ff2ca23cc1bde2c4517ca4c91",
+      "summary_sha256": "d4011f2e37988839cd04bb927d1ad1744085f6c48aecbe6dc5a68beeb82effda",
+      "task_count": 32
+    },
+    "granite97m": {
+      "feature_identity": "2fab5a8cbba8970dc30fa2303b006b15b92af9e91a07f79602900817aacba054",
+      "study_plan_sha256": "453ba95999dafe98a60c5e0706ad28aba265b56a8f6847a55efdd137a03ae9ad",
+      "summary_sha256": "18b6a4ea9186e8f17aa3aff533cc6fed8175d16b5760b6fb496cfbb6b2fa604c",
+      "task_count": 32
+    }
+  },
+  "restored_original_task_seals_verified": 64,
+  "restored_root": "/tmp/hepta-cell-restored-20261024",
+  "restored_source_archive_verified": {
+    "bytes": 1393711,
+    "reported_byte_exact_recoveries": 2271,
+    "sha256": "f07b51ef3e8eb455ff42139bf626787920dc3868fa1f605f773580f159e91782"
+  },
+  "schema": "hepta.cell-evidence-delivery-verification.v1",
+  "scope": "Archive stream, complete independent-file restoration and rehash, all original study/feature/queue seals, and committed execution source identity; no numerical experiment rerun.",
+  "unique_object_bytes": 398110427,
+  "verified_at_utc": "2026-10-24T05:00:35.075257+00:00"
+}
