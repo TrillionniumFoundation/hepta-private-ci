@@ -50,6 +50,17 @@ class TrackedRustSecGuardTests(unittest.TestCase):
                 version = tuple(int(piece) for piece in package["version"].split("."))
                 self.assertGreaterEqual(version, minimum[name])
 
+    def test_ctutils_advisory_0385_pin_cannot_regress(self):
+        """Any installed ctutils must have the constant-time advisory fix."""
+        lock_path = Path(__file__).resolve().parents[2] / "codex-rs" / "Cargo.lock"
+        packages = tomllib.loads(lock_path.read_text(encoding="utf-8"))["package"]
+        for package in packages:
+            if package["name"] != "ctutils":
+                continue  # Full removal of the affected package is permitted.
+            with self.subTest(version=package["version"]):
+                version = tuple(int(piece) for piece in package["version"].split("."))
+                self.assertGreaterEqual(version, (0, 4, 4))
+
     def test_unrelated_existing_exceptions_are_not_silently_rewritten(self):
         policy = (
             "[advisories]\n"
