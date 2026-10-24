@@ -242,8 +242,8 @@ class HeadTensorBundleV2:
         if not state.is_floating_point() or not candidates.is_floating_point():
             raise ValueError("model features must use real floating-point tensors")
         # Validate the owned snapshot after conversion, not mutable caller buffers.
-        state = state.detach().to(device="cpu", dtype=torch.float32).clone()
-        candidates = candidates.detach().to(device="cpu", dtype=torch.float32).clone()
+        state = state.detach().to(device="cpu", dtype=torch.float32, copy=True)
+        candidates = candidates.detach().to(device="cpu", dtype=torch.float32, copy=True)
         if not torch.isfinite(state).all() or not torch.isfinite(candidates).all():
             raise ValueError("non-finite model features")
         with torch.inference_mode():
