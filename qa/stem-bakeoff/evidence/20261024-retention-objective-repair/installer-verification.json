@@ -1,0 +1,24 @@
+{
+  "schema": "hepta.retention-installer-guard-verification.v1",
+  "cases": [
+    {
+      "case": "exact preimage install",
+      "pass": true,
+      "installed_count": 4
+    },
+    {
+      "case": "identical rerun idempotent",
+      "pass": true
+    },
+    {
+      "case": "wrong legacy preimage rejected before any payload publication",
+      "pass": true
+    },
+    {
+      "case": "new-file collision rejected before any other payload publication",
+      "pass": true
+    }
+  ],
+  "scope": "temporary local git fixture only; no external repo mutation",
+  "installer_sha256": "8e921e6958ec041f66eaba86645ecb6e5a960582d69f564350a83a3a4138901b"
+}
