@@ -824,7 +824,15 @@ operations in 554.851 seconds, 1,000 real child-process cycles in 467.420 second
 and both original crash probes. This closes that finite controlled timeout; it
 does not establish sustained throughput, eight-second runtime acceptance,
 Windows execution, global I05 bounds or real model qualification. The separate
-4,096-event capacity and cold-load allocation boundaries remain under repair.
+4,096-event count boundary is repaired by `0ca2b9dd`: the loader reads at most
+4,097 rows and still refuses oversize state; the original write transaction
+rejects a new 4,097th event before its first insert. Full valid cold reopen and
+no-event replay remain legal; refused writes preserve database/WAL bytes, and a
+valid oversized cold database remains intact and rejected. All three new real
+SQLite controls and 282 ordinary memory cases pass. The combined owner, atomic
+rehydration and capacity source `cd30140a` passes 1,045 ordinary cases; its 17
+inherited qualifications remain separately accounted. Per-row byte costs,
+global history/retention and physical filesystem bounds remain separate exits.
 
 Within the same PN0/PN4 boundary, AuthBus owns current settlement-issuer trust.
 `AuthBusAuthorityStore::settle` retains its registration parameter as an exact
@@ -989,8 +997,24 @@ preview `c9d1b1dd`; the ordered preview parents are `[c38e7727, 0cb5b74d]` and
 the computed and GitHub trees match. Its
 [original full native workflow](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40111835033)
 and [source/preview Windows diagnostics](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40111843149)
-have been requested; they are not passing receipts. New native execution is
-still required to confirm these repairs.
+are separate from the actual two ARM diagnostic lanes. Both source and preview
+ran all 37 library cases: 14 passed and 23 failed; all four primary-owner and all
+five original security cases passed. The four original synchronous-stage cases,
+four principal cases and four volume cases also passed in each lane. Three
+FinalUse owners, three Registry owners and three real owner-lock cases still
+fail with `WrongOwner`; the owner-lock child entry alone is not that protocol.
+The nine sandbox groups did not execute because of compilation failures
+(inner-module `PathBuf` import and serialization of a nonserializable runtime
+filesystem policy). These are NOT_RUN, not passing or assertion failures.
+The import is repaired and request binding uses the original fallible raw-policy
+codec, retaining all filesystem fields and network identity. Its two real-code
+portable codec controls and all 25 existing Linux sandbox cases pass. A complete
+local MSVC check was attempted and stopped in the AWS-LC native build because
+this host lacks the Windows C toolchain; it is not native acceptance. Fresh
+Windows compilation/execution and x64 source/preview lanes remain required.
+Owner diagnostics add only bounded test-time ancestor/SID observations; no
+trusted subject, production guard, original assertion or eight-second cutoff is
+relaxed.
 
 The same PN0 CI repair runs all 819 existing Hepta Python regressions. The first
 full run exposed five wiring failures: multiline YAML dependency formatting,
@@ -1224,8 +1248,11 @@ root and bounded literal leaf, preserving real stage synchronization and checkin
 both completed NT and I/O status. It never converts the source or destination to
 paths. The original four controls and all their assertions remain mandatory.
 The earlier Win32 route's actual source-291 positive test failed with error 87;
-new native execution must confirm this repair. Cross-target checks and the
-227-case Linux contracts/registry suite are not Windows or power-loss acceptance.
+both actual ARM source-`0cb5b74d` and preview-`c9d1b1dd` lanes now pass all four
+original stage cases. This closes that finite error-87 mechanism regression,
+while their original opaque-owner consumers still fail with `WrongOwner`.
+Cross-target checks and the 227-case Linux contracts/registry suite do not
+establish cold-owner, x64 or power-loss acceptance.
 
 C3 and C4 now expose explicit `open_windows_private` entry points consuming the
 actual opaque fresh/existing directory capability. FinalUse shares its original
