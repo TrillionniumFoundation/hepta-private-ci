@@ -44,7 +44,8 @@ fn native_memory_timeout_includes_blocked_stdin_and_keeps_failure() {
     let temp = tempfile::tempdir().unwrap();
     let mut c = prepared_worker(&temp);
     c.timeout_millis = 100;
-    let input = vec![b'x'; 65_536];
+    // A 64 KiB payload can fit entirely in a Unix pipe without blocking.
+    let input = vec![b'x'; 2 * 1024 * 1024];
     let directory = c
         .receipt_directory
         .join(Digest32::of_bytes(&input).to_string());
@@ -53,7 +54,10 @@ fn native_memory_timeout_includes_blocked_stdin_and_keeps_failure() {
     assert!(started.elapsed() < Duration::from_secs(3));
     let report: serde_json::Value =
         serde_json::from_slice(&std::fs::read(directory.join("process.json")).unwrap()).unwrap();
-    assert!(report["timed_out"] == true && report["stdin_completed"] == false);
+    assert!(
+        report["timed_out"] == true && report["stdin_completed"] == false,
+        "unexpected child process receipt: {report}"
+    );
     assert!(directory.join("stderr.log").is_file());
 }
 
