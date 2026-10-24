@@ -14,8 +14,8 @@ from scripts.check_hepta_rustsec_advisories import (
 
 
 class TrackedRustSecGuardTests(unittest.TestCase):
-    def test_all_fourteen_tracked_advisories_are_caught_as_cargo_deny_ignores(self):
-        self.assertEqual(len(TRACKED_RUSTSEC), 14)
+    def test_all_fifteen_tracked_advisories_are_caught_as_cargo_deny_ignores(self):
+        self.assertEqual(len(TRACKED_RUSTSEC), 15)
         for advisory_id in sorted(TRACKED_RUSTSEC):
             with self.subTest(advisory_id=advisory_id):
                 policy = (
@@ -36,6 +36,19 @@ class TrackedRustSecGuardTests(unittest.TestCase):
             with self.subTest(entry=entry):
                 self.assertEqual(
                     ignored_tracked_advisories(f"[advisories]\nignore = [{entry}]\n"),
+                    [advisory],
+                )
+
+    def test_crypto_bigint_rustsec_0387_is_rejected_in_both_policy_encodings(self):
+        advisory = "RUSTSEC-2026-0387"
+        self.assertIn(advisory, TRACKED_RUSTSEC)
+        for entry in (
+            f'"{advisory}"',
+            f'{{ id = "{advisory}", reason = "temporary" }}',
+        ):
+            with self.subTest(entry=entry):
+                self.assertEqual(
+                    ignored_tracked_advisories(f"[advisories]\\nignore = [{entry}]\\n"),
                     [advisory],
                 )
 
