@@ -1,0 +1,25 @@
+{
+  "head": "466416c95632bc71e9a3c1c933dc8d7af4074e52",
+  "tree": "6ffe4d555dbd8784725f59e661694a8178c40cb0",
+  "binary_sha256": "871dcf3486290329a806c42248c5f6b4b238f3577c9f4f90df8e70deb43ca5da",
+  "binary_bytes": 761171552,
+  "build_profile": "debug",
+  "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
+  "command": [
+    "/home/qian-qi/workspace/hepta-native-agent-target-20261024/debug/hepta-native-provider-qualification",
+    "--expected-model",
+    "gpt-6.1-sol",
+    "--evidence-dir",
+    "/home/qian-qi/workspace/hepta-native-agent-evidence-20261024/provider-qualification-466416c-v1",
+    "--maximum-provider-input-tokens",
+    "8192",
+    "--maximum-output-tokens",
+    "1024",
+    "--maximum-elapsed-seconds",
+    "60"
+  ],
+  "run_flag": false,
+  "returncode": 0,
+  "stdout": "{\"auth\":\"existing Core ConfigBuilder + AuthManager + scoped ModelProvider\",\"compiled_context\":\"empty; fixed qualification task resides in admitted API template\",\"configured_model_must_equal\":\"gpt-6.1-sol\",\"core_free_memory_comparison\":false,\"core_linked_for_config_bootstrap\":true,\"maximum_output_tokens_reservation\":1024,\"maximum_provider_calls\":1,\"maximum_provider_input_tokens_reservation\":8192,\"maximum_stream_seconds\":60,\"policy\":\"existing Hepta governance Enforce contributor, isolated evidence\",\"production_turn_owner\":false,\"provider_hard_token_caps\":\"not_exposed_by_current_request_schema\",\"schema\":\"hepta-native-provider-qualification:v1\",\"tool_execution\":false}\n",
+  "stderr": ""
+}
