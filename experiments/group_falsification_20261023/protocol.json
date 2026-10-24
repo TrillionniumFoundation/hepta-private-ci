@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "status": "frozen-before-synthetic-development-and-holdout",
+  "base_sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "requested_product_sha_not_present": "a249f4b04aac81f72bbebcb0cbdacc0287ca6c6e",
+  "classification": "synthetic execution/numerical mechanism diagnostic ONLY",
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "split_sizes": {
+    "train": 512,
+    "development": 128,
+    "calibration": 128,
+    "holdout": 256
+  },
+  "source_family": "Independent generated episode root; all members and transitions stay with their root. These are synthetic roots, not natural source provenance.",
+  "encoder": "Frozen 8-dimensional one-hot shared encoder; no pretrained neural Encoder available",
+  "heads": [
+    "cosine",
+    "linear",
+    "mlp",
+    "relation"
+  ],
+  "mechanism": "Two hidden categorical members compose as (a+b) mod 8. Relation feature is cyclic convolution, explicitly privileged task-aligned inductive bias; no general reasoning claim.",
+  "head_settings": {
+    "linear_C": 1.0,
+    "mlp_hidden": [
+      32
+    ],
+    "mlp_max_iter": 120,
+    "relation_C": 1.0
+  },
+  "policies": [
+    "direct",
+    "best_of_2",
+    "fixed_depth",
+    "bounded",
+    "fixed_relation"
+  ],
+  "action_budgets": [
+    8,
+    16
+  ],
+  "logical_depth": "budget/4 edges (2 or 4), plus terminal retrieval; remaining calls permit verification and backtracking. 8/16 action cap is NOT 8/16 semantic depth.",
+  "search_episodes_per_seed_budget": 64,
+  "search_cost": "retrieve, verifier, and backtrack are individually charged; verifier computes 8 candidates in one call and records 8 candidate evaluations; failed branches and exhausted trajectories retained",
+  "search_variants": [
+    "normal",
+    "member_order",
+    "member_corrupt",
+    "edge_shuffle",
+    "masked",
+    "zero_noise",
+    "risk_neutral"
+  ],
+  "noise": "Verifier estimates have seeded Gaussian noise with edge-specific sigma in [0.1,0.8]; risk coefficient 0.25, ablated to 0. No learned uncertainty guarantee.",
+  "selection": "No holdout-based selection or tuning; all methods/seeds/ablations reported",
+  "risk": "abstain if no terminal reached; coverage=answered/all, selective risk=wrong/answered, abstentions count as failures in accuracy; calibrated head threshold is 80th percentile development confidence fixed before holdout",
+  "comparison": "Paired episode/source-root bootstrap 2000 draws, 95% CI; report every seed, pooled results exploratory. Mechanism supported only if paired gain lower bound >0, corruption reduces gain, permutation invariant, and matched actual cost comparisons agree. Otherwise inconclusive/negative.",
+  "resources": {
+    "threads": 4,
+    "target_rss_GiB": 8,
+    "download_cap_GiB": 2,
+    "concurrent_model_jobs": 1
+  },
+  "natural_followup": "QASC CC BY 4.0 official train split internally into fit/development/calibration; freeze before reading official 926 dev. Preserve 8 choices, random 12.5%, train-majority and answer-only. Merge shared/near-duplicate fact and source/association roots before splitting; unresolved provenance prevents source-isolation claim. Gold-fact corpus is oracle. No full 17M corpus claim.",
+  "history": [
+    "Head 251/256 vs cosine 250/256: interval crosses zero",
+    "output v5 seed29 worse",
+    "all N/N REFINE=0",
+    "PR3547 DENY_ALL advisory; not reservation or real Encoder/8-16-step proof"
+  ],
+  "blocked": [
+    "HF API model metadata: proxy Tunnel 403 Forbidden; not retried",
+    "AllenAI QASC tarball: proxy Tunnel 403 Forbidden; not retried"
+  ],
+  "controller_control": "fixed_relation shares relation scorer and risk penalty with bounded, but does not backtrack; needed to isolate controller from head differences"
+}

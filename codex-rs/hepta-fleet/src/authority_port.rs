@@ -207,7 +207,7 @@ mod tests {
                     accelerator_millis: 1_000,
                 },
             })
-            .unwrap();
+            .unwrap_or_else(|e| panic!("{e:?}"));
         ledger
     }
 
