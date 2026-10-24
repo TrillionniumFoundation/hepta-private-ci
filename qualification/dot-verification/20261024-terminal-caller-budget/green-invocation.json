@@ -1,0 +1,28 @@
+{
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agent-loop",
+    "--test",
+    "cancellation_successor",
+    "--test-threads",
+    "1",
+    "--retries",
+    "0"
+  ],
+  "env": {
+    "RUSTUP_HOME": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/rustup",
+    "CARGO_HOME": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/cargo",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_TARGET_DIR": "/workspace/scratch/f24caf690188/hepta-native-terminal-target",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/14/include"
+  },
+  "cwd": "/workspace/scratch/f24caf690188/hepta-native-terminal-review/codex-rs"
+}

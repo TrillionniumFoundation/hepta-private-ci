@@ -1,0 +1,6 @@
+# Terminal caller-budget parity
+Parent 3e0ae372e9a8a6e0d5595f1ec8f6079da0a6f5d2, actual unchanged reconciled native-loop source. README assigns context/output/tool/round/total-token enforcement to the loop; TurnOwner freezes request/CAS observations but does not promise enforcement of each caller-supplied run Limits.
+
+The cancellation Complete fast return omits round/token validation enforced on normal drive. Generic pre-cancel/deadline × round/token cases assert equal rejection, with ordinary-drive rejection controls. Valid completed return and already-cancelling over-budget work remain supported. A real TaskFlow fixture separately retains legal owner bounds A and commits a valid complete observation, while run receives stricter caller bound B; this is a public API limit mismatch, not malformed SQLite history or production authority forgery.
+
+Only Complete delivery should validate caller bounds during cancellation; never gate active-owner stop requests on exhausted drive budgets. Terminal acceptance under original A stays valid. No new ledger, provider call, UDS, BFCL, or CI. Preserve all actual baseline failures. Compile jobs1, independent target, check disk and pause below3GiB. No full workspace build.
