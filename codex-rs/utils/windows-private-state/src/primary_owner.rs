@@ -52,6 +52,36 @@ fn field(token: HANDLE, class: TOKEN_INFORMATION_CLASS) -> Result<u32, Validatio
     Ok(value)
 }
 
+fn restriction_value(value: u32, returned: u32) -> Result<bool, ValidationError> {
+    // Class 21 returns one BOOLEAN byte at a DWORD-aligned address. Bytes
+    // beyond its reported extent are capacity, never part of the value.
+    match (returned, value.to_ne_bytes()[0]) {
+        (1, 0) => Ok(false),
+        (1, 1) => Ok(true),
+        _ => Err(ValidationError::MalformedDescriptor),
+    }
+}
+
+fn has_restrictions(token: HANDLE) -> Result<bool, ValidationError> {
+    let mut value = u32::MAX;
+    let mut returned = 0;
+    // SAFETY: the initialized DWORD supplies the required alignment and four
+    // bytes of capacity; only the single reported BOOLEAN byte is decoded.
+    if unsafe {
+        GetTokenInformation(
+            token,
+            TokenHasRestrictions,
+            ptr::from_mut(&mut value).cast(),
+            size_of::<u32>() as u32,
+            &mut returned,
+        )
+    } == 0
+    {
+        return Err(io::Error::last_os_error().into());
+    }
+    restriction_value(value, returned)
+}
+
 fn enabled_administrator(token: HANDLE) -> Result<(), ValidationError> {
     let mut needed = 0;
     // SAFETY: the zero-capacity size query can write only needed.
@@ -150,7 +180,7 @@ pub(crate) fn validate_primary(token: &OwnedHandle) -> Result<(), ValidationErro
     if flags != 0
         || field(raw, TokenType)? != TokenPrimary as u32
         || field(raw, TokenElevation)? != 1
-        || field(raw, TokenHasRestrictions)? != 0
+        || has_restrictions(raw)?
         || field(raw, TokenIsAppContainer)? != 0
     {
         return Err(ValidationError::PrincipalChanged);

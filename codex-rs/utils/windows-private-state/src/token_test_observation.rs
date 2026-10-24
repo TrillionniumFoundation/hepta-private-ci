@@ -15,14 +15,14 @@ use windows_sys::Win32::Security::TokenStatistics;
 use windows_sys::Win32::System::Threading::GetCurrentThread;
 use windows_sys::Win32::System::Threading::OpenThreadToken;
 
-pub(super) fn observe<T, E: Debug>(result: &Result<T, E>) {
-    // Print the original result without requiring/exposing a successful SID or
-    // retained principal. Cap even unexpected Debug text before writing it.
-    let error: String = format!("{:?}", result.as_ref().err())
-        .chars()
-        .take(256)
-        .collect();
-    eprintln!("HEPTA_TOKEN_QUERY original_error={error}");
+#[derive(Debug, Eq, PartialEq)]
+pub(super) enum ThreadObservation {
+    OpenThreadTokenError(Option<i32>),
+    TokenStatisticsError(Option<i32>),
+    Statistics { bytes: u32, kind: i32, level: i32 },
+}
+
+pub(super) fn capture() -> ThreadObservation {
     let mut raw = 0;
     // Independent read-only fixture diagnosis, after the original operation.
     // Never fall back to a process token or manufacture its result/errno.
@@ -35,12 +35,7 @@ pub(super) fn observe<T, E: Debug>(result: &Result<T, E>) {
         )
     } == 0
     {
-        let error = io::Error::last_os_error();
-        eprintln!(
-            "HEPTA_TOKEN_QUERY OpenThreadToken error={:?}",
-            error.raw_os_error()
-        );
-        return;
+        return ThreadObservation::OpenThreadTokenError(io::Error::last_os_error().raw_os_error());
     }
     // SAFETY: successful open transfers one live non-inherited query handle.
     let token = unsafe { OwnedHandle::from_raw_handle(raw as *mut c_void) };
@@ -57,15 +52,22 @@ pub(super) fn observe<T, E: Debug>(result: &Result<T, E>) {
         )
     } == 0
     {
-        let error = io::Error::last_os_error();
-        eprintln!(
-            "HEPTA_TOKEN_QUERY TokenStatistics error={:?}",
-            error.raw_os_error()
-        );
+        ThreadObservation::TokenStatisticsError(io::Error::last_os_error().raw_os_error())
     } else {
-        eprintln!(
-            "HEPTA_TOKEN_QUERY TokenStatistics bytes={length} type={} level={}",
-            statistics.TokenType, statistics.ImpersonationLevel
-        );
+        ThreadObservation::Statistics {
+            bytes: length,
+            kind: statistics.TokenType,
+            level: statistics.ImpersonationLevel,
+        }
     }
+}
+
+pub(super) fn observe<T, E: Debug>(result: &Result<T, E>, readback: &ThreadObservation) {
+    // Called only after restoring the real thread identity: even diagnostic
+    // stdio may be inaccessible while the anonymous token is installed.
+    let error: String = format!("{:?}", result.as_ref().err())
+        .chars()
+        .take(256)
+        .collect();
+    eprintln!("HEPTA_TOKEN_QUERY original_error={error} readback={readback:?}");
 }
