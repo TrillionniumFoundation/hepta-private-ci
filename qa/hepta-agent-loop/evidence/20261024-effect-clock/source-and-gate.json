@@ -1,0 +1,132 @@
+{
+  "all_warnings_denied": false,
+  "base_head": "f1b6b9eb92e5af125b7686712d32cefac44754c2",
+  "fixture_only_overlay_sha256": "429678e248a60471dfb3c48508392dc24317148e82ec281a8fad68884293a5d9",
+  "full_dependency_clippy_passed": true,
+  "multiple_non_absent_effect_aggregation_qualified": false,
+  "observed_tests": {
+    "focused": {
+      "filtered_or_skipped": 113,
+      "passed": 16
+    },
+    "native_loop_qualification": {
+      "passed": 79,
+      "skipped": 0
+    },
+    "selected_original_owner_packages": {
+      "passed": 357,
+      "profile_or_configuration_skipped": 10
+    }
+  },
+  "original_installer_sha256": "6d488ed461cdad8a8bc5b93b1703a33f5978857e9a07591b807426c008ce6733",
+  "production_clock_bootstrap_or_persisted_clock_identity_qualified": false,
+  "retries": 0,
+  "schema": "hepta.effect-clock-composition-gate.v1",
+  "sources": {
+    "codex-rs/hepta-automation/TASKFLOW_CLOCK.md": {
+      "bytes": 11681,
+      "lines": 168,
+      "sha256": "7b88f39a3dec81dc14b18d9333f1cf3c9e9da836c0fe04451547ea36de574e76"
+    },
+    "codex-rs/hepta-automation/src/authorized_effect.rs": {
+      "bytes": 67628,
+      "lines": 1702,
+      "sha256": "2588fdb6ba37f808c0950e01f5a41435b11a12676c9c3c5ddd9940dee94bb8b1"
+    },
+    "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs": {
+      "bytes": 27580,
+      "lines": 742,
+      "sha256": "3439bfd965931b07ea88688182d1989d71d3df8c8987439ab86292150e8ab807"
+    },
+    "codex-rs/hepta-automation/src/lib.rs": {
+      "bytes": 7152,
+      "lines": 160,
+      "sha256": "0609140118213a5e44b6b8b3fb0a599a43a1ba403c8c8da2e610b9a8d63cd93e"
+    },
+    "codex-rs/hepta-automation/src/taskflow.rs": {
+      "bytes": 98152,
+      "lines": 2502,
+      "sha256": "a85ce74ea5c24d62e87f838b35314a9b75489ed29d5d7e0cf2c199d40d917062"
+    },
+    "codex-rs/hepta-automation/src/taskflow_clock.rs": {
+      "bytes": 5617,
+      "lines": 156,
+      "sha256": "248132eaebccae00401ea7bd5901076e7ac5a0ac1c1f63b5af2936d97406a651"
+    },
+    "codex-rs/hepta-automation/src/taskflow_clock_effect.rs": {
+      "bytes": 5595,
+      "lines": 169,
+      "sha256": "1b8f9fe24d6112cd04d5db70e8bf4dd4aacac7f575aa926d91db696179bc6e6a"
+    },
+    "codex-rs/hepta-automation/src/taskflow_effect_admission.rs": {
+      "bytes": 3068,
+      "lines": 87,
+      "sha256": "a9cbe0d129a73a27314f64cde46c9b49d955e2debcf9a0424172a95b150595a5"
+    },
+    "codex-rs/hepta-automation/src/taskflow_effect_state_guard.rs": {
+      "bytes": 9054,
+      "lines": 251,
+      "sha256": "e58f111530e9ef1a4dd1dfb09e594ebca0f46f63d9bc64f463baf1d3d738df16"
+    },
+    "codex-rs/hepta-automation/src/taskflow_step.rs": {
+      "bytes": 61323,
+      "lines": 1739,
+      "sha256": "60eb07c7ef83f6cd3628cab4f4cf905d7b741dfd8da826908a021a8913fe2b59"
+    },
+    "codex-rs/hepta-automation/tests/authorized_effect.rs": {
+      "bytes": 39850,
+      "lines": 1235,
+      "sha256": "47cd013dabf7cb65484a180c7b2c01870ea828b88b99ade20c107e8087f8b605"
+    },
+    "codex-rs/hepta-automation/tests/support/authorized_effect_clock_absence_race.rs": {
+      "bytes": 7959,
+      "lines": 228,
+      "sha256": "107c86b8ca1ee3b7f3b2bc3611e75e9fe717a541dfc311707741d7b32e525cee"
+    },
+    "codex-rs/hepta-automation/tests/support/authorized_effect_clock_driver.rs": {
+      "bytes": 8285,
+      "lines": 253,
+      "sha256": "af165ec1675e4be2111c2734f778381fb592682f11af3d79594d0b55dc34016d"
+    },
+    "codex-rs/hepta-automation/tests/support/authorized_effect_clock_faults.rs": {
+      "bytes": 5003,
+      "lines": 163,
+      "sha256": "e5fba98eb6cc719e01e11fc1c0858fe3123b4702499bdb019fdada1faf753a3f"
+    },
+    "codex-rs/hepta-automation/tests/support/authorized_effect_clock_fixture.rs": {
+      "bytes": 5834,
+      "lines": 183,
+      "sha256": "aba98562ab8634e73967dfdcfc1cd2865328a44cd6d2b5af04433b1a9f86869e"
+    },
+    "codex-rs/hepta-automation/tests/support/authorized_effect_clock_lifetime_tests.rs": {
+      "bytes": 2933,
+      "lines": 79,
+      "sha256": "668950d80cdaee4788fd64df9f928a69f92988ef4516997566427f15a015ebd9"
+    },
+    "codex-rs/hepta-automation/tests/support/authorized_effect_clock_multiplicity.rs": {
+      "bytes": 7824,
+      "lines": 219,
+      "sha256": "e1dac13c98e07dc2655f8294571939c267f25f52c654f67b84529324879122da"
+    },
+    "codex-rs/hepta-automation/tests/support/authorized_effect_clock_recovery.rs": {
+      "bytes": 12904,
+      "lines": 395,
+      "sha256": "64adbd9a18974261b0565a41edfd45580326e1d807292041f75ce91966dea5c4"
+    },
+    "codex-rs/hepta-automation/tests/support/authorized_effect_clock_tests.rs": {
+      "bytes": 14045,
+      "lines": 452,
+      "sha256": "5150a4af8dc3038fbf263ab7114716b036d2dfa4287d6bfaf2ad7f5bed0c94fd"
+    },
+    "codex-rs/hepta-automation/tests/support/authorized_effect_clock_transitions.rs": {
+      "bytes": 11748,
+      "lines": 337,
+      "sha256": "b8d859921aab7d10f2632df4e64b449562bab91e2d1f639cc0ff22ac4d54bab8"
+    },
+    "codex-rs/hepta-contracts/src/final_use.rs": {
+      "bytes": 38437,
+      "lines": 1036,
+      "sha256": "96022c8f60c449639762e585d99d2a1a9b9b05c92052b0f915b449c8d1129d6c"
+    }
+  }
+}
