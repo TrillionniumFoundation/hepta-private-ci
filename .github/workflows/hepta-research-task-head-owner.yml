@@ -1,0 +1,57 @@
+name: Hepta research task Head owner boundaries
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-agentd/src/research_task_head_owner*.rs'
+      - 'codex-rs/hepta-neuron/**'
+      - 'codex-rs/hepta-infer-core/**'
+      - 'codex-rs/hepta-types/**'
+      - 'codex-rs/Cargo.toml'
+      - 'qa/stem-bakeoff/prepare_research_task_head_owner.py'
+      - 'qa/stem-bakeoff/test_research_task_head_owner_fixture.py'
+      - 'scripts/prepare_research_task_head_check.py'
+      - 'qualification/research-task-head-check/**'
+      - '.github/workflows/hepta-research-task-head-owner.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  actual-owner-module:
+    runs-on: ubuntu-slim
+    timeout-minutes: 20
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Bind exact submitted source
+        env:
+          SOURCE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_HEAD"
+          echo "verified-source-head=$SOURCE_HEAD"
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Stage unchanged actual owner and native dependency sources
+        run: python3 scripts/prepare_research_task_head_check.py "$RUNNER_TEMP/task-head-check"
+      - name: Execute owner boundaries and native Head tests (not full Agentd)
+        run: |
+          cd "$RUNNER_TEMP/task-head-check"
+          just test --locked -p research-task-head-owner-check -p codex-hepta-neuron --lib -E 'package(research-task-head-owner-check) | test(task_head_native)'
+          cargo clippy --locked -p research-task-head-owner-check --all-targets -- -D warnings
+      - name: Run synthetic preparation contracts without model assets
+        run: |
+          python3 -m venv "$RUNNER_TEMP/task-head-python"
+          "$RUNNER_TEMP/task-head-python/bin/python" -m pip install 'numpy==2.3.5'
+          "$RUNNER_TEMP/task-head-python/bin/python" -m unittest discover -s qa/stem-bakeoff -p test_research_task_head_owner_fixture.py -v
+          echo 'SHADOW_ONLY DENY_ALL; no private replay, source authentication, revocation or scientific qualification'
