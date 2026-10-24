@@ -14,6 +14,7 @@ pub mod controlled_funding;
 pub mod model_worker;
 
 pub mod final_use_authorizer;
+pub mod final_use_grant_courier;
 pub mod native_app_server;
 mod ordinary_cpu_owner;
 mod ordinary_cpu_registration;
