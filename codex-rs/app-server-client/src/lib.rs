@@ -2108,3 +2108,7 @@ mod tests {
         assert!(completed.load(Ordering::Acquire));
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "transport_probe_tests.rs"]
+mod transport_probe_tests;

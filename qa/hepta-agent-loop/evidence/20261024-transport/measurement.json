@@ -1,0 +1,46 @@
+{
+  "arch": "x86_64",
+  "debug_assertions": true,
+  "direct_request_and_event": {
+    "count": 256,
+    "max_ns": 3635471,
+    "min_ns": 1408696,
+    "p50_ns": 2620383,
+    "p95_ns": 3092946
+  },
+  "event": "thread/settings/updated",
+  "event_params_json_bytes_last": 558,
+  "excludes": [
+    "model latency",
+    "token usage",
+    "Agentd owner bindings",
+    "overload and memory qualification",
+    "large streaming payloads"
+  ],
+  "explicit_queue_capacity": 8,
+  "internal_facade_event_queue": "upstream unbounded; one outstanding request bounds probe backlog only",
+  "max_requests_outstanding": 1,
+  "model_turns_requested": 0,
+  "os": "linux",
+  "paired_uds_minus_direct": {
+    "count": 256,
+    "max_ns": 2698778,
+    "min_ns": -137200,
+    "p50_ns": 1287560,
+    "p95_ns": 1961427
+  },
+  "request": "thread/settings/update",
+  "request_json_bytes_last": 318,
+  "sample_pairs": 256,
+  "schema_version": 1,
+  "scope": "same-process UDS bridge added above one real in-process MessageProcessor",
+  "setup_ns": 2085692341,
+  "uds_bridge_request_and_event": {
+    "count": 256,
+    "max_ns": 5180403,
+    "min_ns": 2247029,
+    "p50_ns": 3917704,
+    "p95_ns": 4664178
+  },
+  "warmup_pairs": 32
+}
