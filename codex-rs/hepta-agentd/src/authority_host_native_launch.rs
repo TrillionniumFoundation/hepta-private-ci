@@ -91,11 +91,7 @@ fn inputs(
         codex_hepta_contracts::RootAuthorityDirectory::open(&directory)
             .map_err(io::Error::other)?;
     }
-    crate::authority_host_runtime::verify_process(
-        &registration,
-        config.peer_uid,
-        config.peer_gid,
-    )?;
+    crate::authority_host_runtime::verify_process(&registration, config.peer_uid, config.peer_gid)?;
     let info = std::fs::read_to_string(format!("/proc/self/fdinfo/{}", owner.as_raw_fd()))?;
     if !info.lines().any(|line| {
         line.strip_prefix("Pid:")

@@ -234,7 +234,8 @@ impl CpuPolicy {
             }
             if now - *accepted_at < CPU_POLICY_INTERVAL_NS
                 || usage.sample_boottime_ns - previous.sample_boottime_ns < CPU_POLICY_INTERVAL_NS
-                || measurement.sample_boottime_ns - previous_demand.sample_boottime_ns < CPU_POLICY_INTERVAL_NS
+                || measurement.sample_boottime_ns - previous_demand.sample_boottime_ns
+                    < CPU_POLICY_INTERVAL_NS
             {
                 return Err(CpuPolicyError::RateLimited);
             }
@@ -282,8 +283,13 @@ impl CpuPolicy {
                 self.direction = None;
                 self.consecutive = 0;
                 match demand {
-                    ObservedCpuDemand::RunnableCpuPressure => usage.active_cap_ns.saturating_add(step).min(self.maximum_cap_ns),
-                    ObservedCpuDemand::ProvenSpareCapacity => usage.active_cap_ns.saturating_sub(step),
+                    ObservedCpuDemand::RunnableCpuPressure => usage
+                        .active_cap_ns
+                        .saturating_add(step)
+                        .min(self.maximum_cap_ns),
+                    ObservedCpuDemand::ProvenSpareCapacity => {
+                        usage.active_cap_ns.saturating_sub(step)
+                    }
                     _ => return Err(CpuPolicyError::Invalid),
                 }
             }

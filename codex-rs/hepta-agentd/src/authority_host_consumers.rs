@@ -22,13 +22,27 @@ impl RegisteredConsumers {
         let (device_root, notes_root) = Self::roots(state, config, &issuer.trust_key()?.key_id)?;
         let head = issuer.revocations()?;
         let result = Self {
-            device: HostConsumerFrontier::initialize_fresh(device_root, config.device.owner_id.clone(),
-                &head, clock.clone(), expires_at_unix_ms).map_err(io::Error::other)?,
-            notes: HostConsumerFrontier::initialize_fresh(notes_root, config.notes.owner_id.clone(),
-                &head, clock, expires_at_unix_ms).map_err(io::Error::other)?,
+            device: HostConsumerFrontier::initialize_fresh(
+                device_root,
+                config.device.owner_id.clone(),
+                &head,
+                clock.clone(),
+                expires_at_unix_ms,
+            )
+            .map_err(io::Error::other)?,
+            notes: HostConsumerFrontier::initialize_fresh(
+                notes_root,
+                config.notes.owner_id.clone(),
+                &head,
+                clock,
+                expires_at_unix_ms,
+            )
+            .map_err(io::Error::other)?,
         };
         if issuer.revocations()? != head {
-            return Err(io::Error::other("original issuer changed during fresh consumer publication"));
+            return Err(io::Error::other(
+                "original issuer changed during fresh consumer publication",
+            ));
         }
         Ok(result)
     }
@@ -43,11 +57,19 @@ impl RegisteredConsumers {
         let (device_root, notes_root) = Self::roots(state, config, signer_id)?;
         Ok(Self {
             device: HostConsumerFrontier::open(
-                device_root, config.device.owner_id.clone(), clock.clone(), expires_at_unix_ms,
-            ).map_err(io::Error::other)?,
+                device_root,
+                config.device.owner_id.clone(),
+                clock.clone(),
+                expires_at_unix_ms,
+            )
+            .map_err(io::Error::other)?,
             notes: HostConsumerFrontier::open(
-                notes_root, config.notes.owner_id.clone(), clock, expires_at_unix_ms,
-            ).map_err(io::Error::other)?,
+                notes_root,
+                config.notes.owner_id.clone(),
+                clock,
+                expires_at_unix_ms,
+            )
+            .map_err(io::Error::other)?,
         })
     }
 

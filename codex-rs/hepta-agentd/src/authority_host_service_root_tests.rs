@@ -302,7 +302,8 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
             .enable_all()
             .build()
             .unwrap()
-            .block_on(crate::FreshHostCognitiveState::prepare(&identity)).unwrap()
+            .block_on(crate::FreshHostCognitiveState::prepare(&identity))
+            .unwrap()
     });
     let metadata = std::fs::metadata(&parent).unwrap();
     let required_bind = HostAuthorityBindIdentity {
@@ -325,7 +326,11 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
         .prefix("hepta-root-service-qualification-")
         .tempdir_in("/run")
         .unwrap();
-    std::fs::set_permissions(runtime_parent.path(), std::fs::Permissions::from_mode(0o755)).unwrap();
+    std::fs::set_permissions(
+        runtime_parent.path(),
+        std::fs::Permissions::from_mode(0o755),
+    )
+    .unwrap();
     let runtime = tempfile::Builder::new()
         .prefix("lanes-")
         .tempdir_in(runtime_parent.path())
@@ -584,7 +589,9 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
         if std::env::var_os("HEPTA_SERVICE_CONSUMERS").is_some() {
             consumer_fixture::configure(&mut config);
         }
-        let service = service.initialize_fresh_heads(&config, &registration, &pidfd, fresh).unwrap();
+        let service = service
+            .initialize_fresh_heads(&config, &registration, &pidfd, fresh)
+            .unwrap();
         let path = root.join("service-checkpoint.json");
         write_json(&path, &config);
         // A whole-writer binding from a different original authority/token
@@ -607,7 +614,10 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
     };
     let config_path = if std::env::var_os("HEPTA_SERVICE_CONSUMERS").is_some() {
         assert!(config.writer.is_some());
-        assert!(config.consumers.is_some(), "the production fresh factory must initialize both original frontiers");
+        assert!(
+            config.consumers.is_some(),
+            "the production fresh factory must initialize both original frontiers"
+        );
         let path = root.join("service-consumers.json");
         write_json(&path, &config);
         path
@@ -616,16 +626,39 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
     };
     // The test-only independent oracle releases its temporary original store
     // handle before the sole prepared production session acquires ownership.
-    let expected = config.consumers.as_ref().map(|_| bootstrap::capture(&config, &registration));
+    let expected = config
+        .consumers
+        .as_ref()
+        .map(|_| bootstrap::capture(&config, &registration));
     let prepared = crate::PreparedHostAuthoritySession::open(
-        &config_path, &registration_path, pidfd.try_clone().unwrap()).unwrap();
+        &config_path,
+        &registration_path,
+        pidfd.try_clone().unwrap(),
+    )
+    .unwrap();
     let second = crate::PreparedHostAuthoritySession::open(
-        &config_path, &registration_path, pidfd.try_clone().unwrap()).err()
-        .expect("the original retained lease owner must reject a second open");
-    assert_eq!(second.get_ref().and_then(|error| error.downcast_ref::<
-        codex_hepta_contracts::authority_lease::AuthorityLeaseError>()),
-        Some(&codex_hepta_contracts::authority_lease::AuthorityLeaseError::StateLocked));
-    consumer_fixture::release(&mut child, &config, &config_path, &registration_path, &pidfd, &prepared, expected);
+        &config_path,
+        &registration_path,
+        pidfd.try_clone().unwrap(),
+    )
+    .err()
+    .expect("the original retained lease owner must reject a second open");
+    assert_eq!(
+        second
+            .get_ref()
+            .and_then(|error| error
+                .downcast_ref::<codex_hepta_contracts::authority_lease::AuthorityLeaseError>()),
+        Some(&codex_hepta_contracts::authority_lease::AuthorityLeaseError::StateLocked)
+    );
+    consumer_fixture::release(
+        &mut child,
+        &config,
+        &config_path,
+        &registration_path,
+        &pidfd,
+        &prepared,
+        expected,
+    );
     let result = prepared.serve();
     let status = child.wait().unwrap();
     assert!(

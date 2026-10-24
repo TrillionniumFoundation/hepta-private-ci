@@ -409,7 +409,10 @@ impl RmcpClient {
             } => {
                 pinned_credential_store.get().is_none()
                     && auth_provider.is_none()
-                    && !matches!(bearer_token, Some(StreamableHttpBearerToken::ProvidedByHttpClient))
+                    && !matches!(
+                        bearer_token,
+                        Some(StreamableHttpBearerToken::ProvidedByHttpClient)
+                    )
                     && http_client.supports_single_attempt_requests()
                     && (bearer_token.is_some()
                         || http_headers
@@ -431,7 +434,11 @@ impl RmcpClient {
                 retained_lifetime,
                 ..
             } => {
-                if let TransportRecipe::StreamableHttp { single_attempt_requests, .. } = &self.transport_recipe {
+                if let TransportRecipe::StreamableHttp {
+                    single_attempt_requests,
+                    ..
+                } = &self.transport_recipe
+                {
                     // Monotonic for this original peer: subsequent HTTP posts use
                     // the existing transport's no-retry capability, never a new client.
                     single_attempt_requests.store(true, Ordering::Release);
@@ -1230,7 +1237,8 @@ impl RmcpClient {
                             has_configured_headers,
                             *redirect_mode,
                             Arc::clone(initialize_deadline),
-                        ).with_single_attempt_requests(Arc::clone(single_attempt_requests)),
+                        )
+                        .with_single_attempt_requests(Arc::clone(single_attempt_requests)),
                         http_config,
                     );
                     Ok(PendingTransport::StreamableHttp { transport })

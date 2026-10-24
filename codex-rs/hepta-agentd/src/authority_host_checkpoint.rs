@@ -135,8 +135,13 @@ impl HostCognitiveCheckpoint {
 
     /// Root handoff reads the existing Current through this same backend.
     /// It cannot promote Dirty/Publishing/Fenced or revive a closed session.
-    pub(crate) fn current_for_handoff(&self) -> Result<CognitiveCheckpointHead, AuthorityTrustError> {
-        let _guard = self.exchange_lock.try_lock().map_err(|_| AuthorityTrustError::Unavailable)?;
+    pub(crate) fn current_for_handoff(
+        &self,
+    ) -> Result<CognitiveCheckpointHead, AuthorityTrustError> {
+        let _guard = self
+            .exchange_lock
+            .try_lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
         if self.closed.load(Ordering::Acquire) || !self.within_expiry()? {
             return Err(self.close());
         }

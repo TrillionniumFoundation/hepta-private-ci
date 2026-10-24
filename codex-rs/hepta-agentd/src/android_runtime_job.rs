@@ -1,13 +1,13 @@
 //! The original Runtime process_start/wait/read wire contract. No shell lane.
 
-use std::sync::atomic::Ordering;
 use std::collections::BTreeMap;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::Instant;
 
+use codex_hepta_contracts::Sha256Digest;
 use serde_json::Value;
 use serde_json::json;
-use codex_hepta_contracts::Sha256Digest;
 
 use super::AgentdAndroidTextDevice;
 use super::AgentdAndroidRuntimeSession;
@@ -141,7 +141,8 @@ pub(super) async fn invoke(
                     || status["audit_recorded"] != true
                     || status["log_bytes"]["stdout"]["seen"] != stored
                     || !status["log_bytes"]["stderr"]["stored"].is_u64()
-                    || status["log_bytes"]["stderr"]["seen"] != status["log_bytes"]["stderr"]["stored"]
+                    || status["log_bytes"]["stderr"]["seen"]
+                        != status["log_bytes"]["stderr"]["stored"]
                     || status["log_truncated"]["stdout"] != false
                     || status["log_truncated"]["stderr"] != false
                     || !status

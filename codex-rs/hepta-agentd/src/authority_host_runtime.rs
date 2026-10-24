@@ -209,12 +209,18 @@ pub(super) fn open_registered_service(
     } else {
         service
     };
-    match (&config.consumers, &config.sockets.device_frontier, &config.sockets.notes_frontier) {
+    match (
+        &config.consumers,
+        &config.sockets.device_frontier,
+        &config.sockets.notes_frontier,
+    ) {
         (Some(consumers), Some(_), Some(_)) => {
             service.with_registered_consumers(&config.state_dir, consumers)
         }
         (None, None, None) => Ok(service),
-        _ => Err(io::Error::other("both fixed consumer lanes are required together")),
+        _ => Err(io::Error::other(
+            "both fixed consumer lanes are required together",
+        )),
     }
 }
 
@@ -236,8 +242,13 @@ pub(super) fn open_registered_writer(
     {
         return Err(io::Error::other("invalid service registration"));
     }
-    verify_pinned_process(registration, config.peer_uid, config.peer_gid, owner_pidfd,
-        Instant::now() + std::time::Duration::from_secs(30))?;
+    verify_pinned_process(
+        registration,
+        config.peer_uid,
+        config.peer_gid,
+        owner_pidfd,
+        Instant::now() + std::time::Duration::from_secs(30),
+    )?;
     let (clock, leases, issuer) = open_registered_issuer(config)?;
     let service = HostAuthorityService::from_registered_owner(
         issuer,
@@ -398,9 +409,9 @@ pub(crate) fn verify_process_credentials(pid: u32, uid: u32, gid: u32) -> io::Re
     if actual_uid
         .as_ref()
         .is_none_or(|values| values.len() != 4 || values.iter().any(|value| *value != expected_uid))
-        || actual_gid
-            .as_ref()
-            .is_none_or(|values| values.len() != 4 || values.iter().any(|value| *value != expected_gid))
+        || actual_gid.as_ref().is_none_or(|values| {
+            values.len() != 4 || values.iter().any(|value| *value != expected_gid)
+        })
         || !status.lines().any(|line| line == "NoNewPrivs:\t1")
         || ["CapInh", "CapPrm", "CapEff", "CapBnd", "CapAmb"]
             .iter()
@@ -439,9 +450,13 @@ pub(crate) fn verify_pinned_process(
         return Err(io::Error::other("retained actual pidfd required"));
     }
     let mut info = String::new();
-    File::open(format!("/proc/self/fdinfo/{number}"))?.take(4097).read_to_string(&mut info)?;
-    let actual = info.lines().find_map(|line| line.strip_prefix("Pid:")
-        .and_then(|value| value.trim().parse::<u32>().ok()));
+    File::open(format!("/proc/self/fdinfo/{number}"))?
+        .take(4097)
+        .read_to_string(&mut info)?;
+    let actual = info.lines().find_map(|line| {
+        line.strip_prefix("Pid:")
+            .and_then(|value| value.trim().parse::<u32>().ok())
+    });
     if info.len() > 4096 || actual != Some(registration.peer_pid) {
         return Err(io::Error::other("pidfd does not pin the registered daemon"));
     }
