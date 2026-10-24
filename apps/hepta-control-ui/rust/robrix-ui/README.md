@@ -20,15 +20,22 @@ are not transcript messages. Core observer fixtures must remain visibly fixtures
 
 The default-off `native-presentation` composition lends an existing caller-owned
 workspace to this same App and its original IME router. It publishes read-only
-Console observations without implementing `NativeHost` or enabling Send. See
-[NATIVE_COMPOSITION.md](NATIVE_COMPOSITION.md) for the fixed-workspace contract,
-original resource/notice inputs and the separate native verification gates.
+Console observations and exposes bounded chat ports through
+`NativeChatComposition`: `poll_chat`, Send/Stop, history navigation and original
+tool approvals. Their default availability is false. An independently
+authenticated host supplies the original owner and its permitted operations;
+the composition does not implement `NativeHost`, create authority or enable Send
+from socket health. See [NATIVE_COMPOSITION.md](NATIVE_COMPOSITION.md) for the
+fixed-workspace contract and resource/verification gates, and the
+[original Root/Agentd guide](../../../../codex-rs/hepta-agentd/NATIVE_TEXT_SESSION.md)
+for trusted startup, the same-thread route and recovery boundaries.
 
-`native-presentation` continues to compile with the original pinned Makepad
+`native-presentation` selects the original pinned Makepad
 `337566c8` source. The separate, default-off `native-clipboard-sdk` feature
 enables the reviewed request-scoped SDK clipboard candidate. Only that feature
 imports its new API and advertises the native PasteText action. It requires the
-complete all-crate override described in `third_party/makepad-patches/README.md`;
+complete all-crate override described in the
+[original SDK candidate guide](../../../../third_party/makepad-patches/README.md);
 the ordinary native renderer needs no external SDK configuration.
 
 ## Commands and evidence limits
@@ -42,16 +49,22 @@ unqualified nightly instead of silently claiming reproducible output. Current
 recorded compile input is nightly `1.101.0-nightly (c36f14571 2026-10-01)`;
 this is a build input record, not host qualification.
 
-Native: `cargo +1.95.0 run --manifest-path rust/Cargo.toml -p hepta-robrix-ui
---bin hepta-robrix`. Linux requires the official Wayland/X11/ALSA development
-libraries. This cloud's native check stopped at missing `wayland-client.pc`;
-package installation was not permitted by its filesystem/root environment.
+For the native developer preview, run `npm run desktop` from
+`apps/hepta-control-ui`. After preparing the verified font cache,
+`python3 tools/run-desktop.py --offline` uses the same resource-complete wrapper.
+It stages resources for the child lifetime and invokes the locked standalone
+workspace with Rust1.95.0. Direct unprepared `cargo run` is not the supported
+resource-complete entry. Linux requires the official Wayland/X11/ALSA development
+libraries. Check the selected host's actual dependencies and retain its build
+and execution output; a dependency check or successful preview startup does not
+qualify an installed native product or authenticated owner composition.
 
 Pure presentation tests use repository `just test`, package `hepta-robrix-ui`,
 `--no-default-features --lib`. Disabling graphics for these tests does not qualify
-the renderer. Standard `wasm32-unknown-unknown` check and no-threads release
-packaging have succeeded locally. The first actual hosted browser run exposed
-a missing ListScrollBar definition, asynchronous font-loading diagnostics and
+the renderer. The retained import notes describe earlier
+`wasm32-unknown-unknown` checks, no-threads release packaging and hosted browser
+diagnostics; those results do not qualify the current tree. The first recorded
+browser run exposed a missing ListScrollBar definition, asynchronous font-loading diagnostics and
 an unsupported no-thread MSDF worker. The narrow hash-checked draw overlay uses
 the existing synchronous SDF path only on non-atomic WASM, defers only registered
 Loading font errors and retains native/atomic behavior. Browser requalification

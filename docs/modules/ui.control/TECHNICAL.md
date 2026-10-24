@@ -42,7 +42,15 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `ui.control`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact: the declared roots above are present.
+The dedicated closed-world inventory, focused tests, all-target compilation and
+strict lint remain verification entrypoints. Their presence does not establish
+that a selected tree passed them. Each result must identify the exact commit and
+tree, feature selection, lockfile, command and execution receipt. This status
+does not activate `ui.control`, create a production caller, grant runtime or
+effect authority, issue independent acceptance, select or promote a candidate,
+or authorize release. Any later source move updates `MODULES.json`,
+`SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -137,7 +145,18 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.control.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [apps/hepta-control-ui/src/control.js](../../../apps/hepta-control-ui/src/control.js) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.control.md)
+specifies this module's algorithm, pilot ceilings and capacity fixtures. Those
+target ceilings are not measurements and must not be reported as enforcement of
+an unimplemented API.
+
+Current product limits are owned by the Rust implementation:
+[ChatWorkspace](../../../apps/hepta-control-ui/rust/core/src/chat.rs) bounds local
+draft state, and the [native composition](../../../apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/mod.rs)
+bounds the presentation port. The [original Root/Agentd text contract](../../../codex-rs/hepta-agentd/NATIVE_TEXT_SESSION.md)
+describes the separate signed-input, recovery and history bounds. The retained
+[control.js](../../../apps/hepta-control-ui/src/control.js) limits apply to the
+legacy JavaScript compatibility oracle.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
@@ -154,6 +173,8 @@ integration and accessibility acceptance must match the selected host deployment
 Current operating and state-format references:
 
 - [apps/hepta-control-ui/README.md](../../../apps/hepta-control-ui/README.md).
+- [Original native composition](../../../apps/hepta-control-ui/rust/robrix-ui/NATIVE_COMPOSITION.md): caller-owned workspace, default-unavailable chat ports, original editor and IME routing.
+- [Original Root/Agentd text session](../../../codex-rs/hepta-agentd/NATIVE_TEXT_SESSION.md): existing authenticated session, trusted startup and same-thread recovery. The standalone preview does not provide these deployment inputs.
 - [docs/modules/ui.control/IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.

@@ -19,11 +19,19 @@ additive `/api/hepta/owner-status` returns actual `not_attached` until an existi
 production host is explicitly wired. The no-bundle startup path still requires
 compatible existing runtime state. It does not fall back to a handwritten JS UI.
 
-The principal/signer/Agentd bridge is absent. Drafts and owner-fixture messages
-are not live chat. Send and Console mutations remain disabled. No native host,
-old signed gateway-v2 backend, private-state crate, or old backend history is
-imported. The two native resource catalog/license files are shared font contract
-inputs, not an installed native application.
+The standalone HTTP gateway and native developer preview do not attach an
+authenticated chat owner. In those configurations, drafts and owner-fixture
+messages are not live chat, and Send and Console mutations remain disabled.
+Serving a verified bundle does not install a principal, signer or Agentd route.
+
+The separate Linux [native composition](rust/robrix-ui/NATIVE_COMPOSITION.md)
+reuses this App and a caller-owned `ChatWorkspace`. An independently authenticated
+host can connect its bounded text, interruption, history and approval requests
+to the [original Root/Agentd text session](../../codex-rs/hepta-agentd/NATIVE_TEXT_SESSION.md).
+That path requires the existing trusted human session, Root registration, daemon
+lifetime and original App Server thread. Starting a preview or configuring a
+socket supplies none of those inputs. The implemented interface and fixture
+tests do not establish an authenticated production deployment or model session.
 
 See [MAIN_INTEGRATION.md](MAIN_INTEGRATION.md) for the current main import and
 [PORT_SOURCE.json](PORT_SOURCE.json) for historical imported source identities,
@@ -46,7 +54,8 @@ The static developer preview listens on localhost:4175. It does not authenticate
 users or dispatch business operations. `npm run dev` rebuilds first. `npm test`
 uses the pinned Rust1.95.0 standalone workspace and nextest. `npm run desktop`
 uses the resource-complete staged shared renderer; native platform development
-libraries are required. This is separate from the unported product native host.
+libraries are required. This preview does not bootstrap the original Root/Agentd
+composition; its trusted startup inputs are documented in the text-session guide.
 
 UI stable checks use Rust1.95.0 plus the WASM standard target. The owned packager
 requires exact `nightly-2026-10-02`, rust-src, and
