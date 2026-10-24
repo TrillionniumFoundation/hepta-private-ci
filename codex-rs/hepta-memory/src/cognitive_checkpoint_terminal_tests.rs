@@ -11,10 +11,20 @@ async fn assert_terminal(f: &ManagedFixture, disposition: LocalLeaseHeadDisposit
     assert_eq!(current.phase, CognitiveCheckpointPhase::Current);
     assert_eq!(current.last_current, f.store.recovery_anchor().await.unwrap());
     assert_eq!(current.proposal, None);
-    assert!(!f.writer.checkpoint_fenced());
+    assert!(f.writer.checkpoint_fenced(), "successful terminal publication retires the whole old pool");
     assert!(!f.store.commit_gate.commit_allowed());
     assert!(f.writer.verify_current_authority().await.is_err());
     assert!(f.writer.admit("terminal-must-not-enqueue", "no-effect", "{}").await.is_err());
+    let protected = f.peer.receipt.lock().unwrap().clone();
+    let commands = f.peer.commands.lock().unwrap().clone();
+    let connection = f.store.pool.acquire().await.unwrap(); drop(connection);
+    assert!(f.store.append_source(&crate::CognitiveAccess::agent_private(f.store.owner_agent_id().clone()),
+        &crate::SourceDraft { scope:crate::CognitiveScope::AgentPrivate,
+            kind:crate::LedgerSourceKind::ExplicitMemoryDirective, event_key:"retired-pool-write".into(),
+            content:b"must never commit after terminal Current".to_vec(), observed_at_unix_seconds:100 }).await.is_err());
+    assert_eq!(f.store.recovery_anchor().await.unwrap(), protected.head.last_current);
+    assert_eq!(*f.peer.receipt.lock().unwrap(), protected);
+    assert_eq!(*f.peer.commands.lock().unwrap(), commands, "old checkout must send no new Dirty request");
 }
 
 #[tokio::test]

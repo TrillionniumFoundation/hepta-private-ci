@@ -1,4 +1,4 @@
-//! Process-local whole-pool commit interlock for uncertain checkpoint outcomes.
+//! Process-local whole-pool commit interlock for uncertainty and final retirement.
 //!
 //! This is not an independently retained recovery witness. Production recovery
 //! must still obtain its current cut and publisher-generation fence from the
@@ -15,6 +15,7 @@ pub(crate) struct CognitiveCommitGate(Arc<GateState>);
 
 struct GateState {
     fenced: AtomicBool,
+    retired: AtomicBool,
     managed: AtomicBool,
     dirty_permission: AtomicBool,
 }
@@ -23,6 +24,7 @@ impl Default for CognitiveCommitGate {
     fn default() -> Self {
         Self(Arc::new(GateState {
             fenced: AtomicBool::new(false),
+            retired: AtomicBool::new(false),
             managed: AtomicBool::new(false),
             dirty_permission: AtomicBool::new(true),
         }))
@@ -31,7 +33,7 @@ impl Default for CognitiveCommitGate {
 
 impl CognitiveCommitGate {
     pub(crate) fn is_fenced(&self) -> bool {
-        self.0.fenced.load(Ordering::SeqCst)
+        self.0.fenced.load(Ordering::SeqCst) || self.0.retired.load(Ordering::SeqCst)
     }
 
     pub(crate) fn is_managed(&self) -> bool {
@@ -57,7 +59,21 @@ impl CognitiveCommitGate {
         !self.is_fenced() && self.0.dirty_permission.load(Ordering::SeqCst)
     }
 
+    /// One-way retirement of a successfully published terminal generation.
+    /// The original SQLite barrier is still held. Current remains durable at
+    /// the protected host; the old pool can never request another Dirty ACK.
+    /// This is distinct from an uncertain publication and has no reset method.
+    pub(crate) fn retire_after_terminal_publication(&self) {
+        self.0.retired.store(true, Ordering::SeqCst);
+        self.close_commits();
+    }
+
     pub(crate) fn require_open(&self) -> Result<(), CognitiveStoreError> {
+        if self.0.retired.load(Ordering::SeqCst) {
+            return Err(CognitiveStoreError::Unavailable(
+                "cognitive owner generation was permanently retired after terminal publication".into(),
+            ));
+        }
         if self.is_fenced() {
             return Err(CognitiveStoreError::Unavailable(
                 "cognitive owner generation is fenced after uncertain checkpoint publication"

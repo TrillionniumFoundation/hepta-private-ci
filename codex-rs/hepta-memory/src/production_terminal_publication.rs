@@ -58,10 +58,13 @@ impl ProductionDurableWriter {
             // I/O. The exact terminal handle cannot enqueue, claim or enter.
             self.retirement_live_check()?;
             self.store.commit_gate.require_open().map_err(|_| ProductionWriterError::CheckpointFenced)?;
+            // Before releasing SQLite, permanently retire this whole original
+            // pool. Ordinary store clones may read but cannot invalidate the
+            // terminal Current with a new Dirty request or pass a commit hook.
+            self.store.commit_gate.retire_after_terminal_publication();
             transaction.rollback().await
                 .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
             self.retirement_live_check()?;
-            self.store.commit_gate.require_open().map_err(|_| ProductionWriterError::CheckpointFenced)?;
             attempt.acknowledge();
             Ok(())
         }.await;
