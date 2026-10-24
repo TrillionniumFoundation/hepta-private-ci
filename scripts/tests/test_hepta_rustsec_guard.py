@@ -48,7 +48,7 @@ class TrackedRustSecGuardTests(unittest.TestCase):
         ):
             with self.subTest(entry=entry):
                 self.assertEqual(
-                    ignored_tracked_advisories(f"[advisories]\\nignore = [{entry}]\\n"),
+                    ignored_tracked_advisories(f"[advisories]\nignore = [{entry}]\n"),
                     [advisory],
                 )
 
