@@ -151,6 +151,23 @@ fn observation(label: &str) -> RetrievalAssignmentObservationV1 {
     value
 }
 
+fn directory(root: &std::path::Path) -> std::io::Result<File> {
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+
+        // Windows requires a directory handle and write access for flushing.
+        // Production still synchronizes this actual handle and propagates errors.
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+            .open(root)
+    }
+    #[cfg(not(windows))]
+    File::open(root)
+}
+
 fn sink() -> (tempfile::TempDir, CognitiveRetrievalLearningSink) {
     let temp = tempfile::tempdir().expect("temp");
     let binding = digest("agentd-retrieval-learning");
@@ -170,8 +187,8 @@ fn sink() -> (tempfile::TempDir, CognitiveRetrievalLearningSink) {
         .expect("witness file");
     let ledger = DurableLedger::create(ledger_file, binding, 128).expect("ledger");
     let witness = LedgerWitnessStore::create(witness_file, binding).expect("witness");
-    let ledger_directory = File::open(temp.path()).expect("ledger directory");
-    let witness_directory = File::open(temp.path()).expect("witness directory");
+    let ledger_directory = directory(temp.path()).expect("ledger directory");
+    let witness_directory = directory(temp.path()).expect("witness directory");
     let writer = LedgerWriter::from_durable(
         ledger,
         witness,
