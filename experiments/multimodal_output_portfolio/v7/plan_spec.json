@@ -1,0 +1,23 @@
+{
+  "schema": "hepta.ndu-v7.plan-training-registration.v1",
+  "registered_before_inspecting_base_development_outcomes": true,
+  "source_role": "train",
+  "fit_pair_start": 0,
+  "fit_pairs": 512,
+  "views": ["clean", "noise", "occlusion", "missing_trusted", "conflict_untrusted", "missing_untrusted", "missing_unknown", "both_missing"],
+  "latent_scenarios": 4,
+  "risk_aversion": 2.0,
+  "optimizer_steps": 400,
+  "batch_size": 128,
+  "learning_rate": 0.005,
+  "head_hidden": 32,
+  "plans": [["refine_semantic", "couple"], ["couple", "refine_image"], ["couple", "refine_text"], ["refine_image", "refine_text"]],
+  "base_and_observer_frozen": true,
+  "supervised": "cross_entropy_to_best_empirical_mean_plan",
+  "ndu": "exact_negative_entropic_certainty_equivalent_of_finite_plan_probability_mixture",
+  "runtime_selection": "argmax_distinct_from_training_mixture",
+  "required_output_mask": 3,
+  "forecast_metric_mask": 3,
+  "general_fbsde_claim": false,
+  "formal_holdout_opened": false
+}
