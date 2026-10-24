@@ -36,6 +36,10 @@ copies; new behavior is in `objectives.py`, `fairness.py` and `test_controls.py`
 
 Create a `Batch(noisy, clean, labels, draws, weights, normalizer=None)` once and
 pass that same immutable, owned data to `Control("H"/"A"/"N", seed)`.
+Canonical storage is immutable bytes with fixed dtype/shape tuples, not a shared
+ndarray header. Every public array read returns independent metadata, including
+its base view, so changing a returned view's dtype/shape cannot alter later
+reads or another arm's inputs. The digest binds canonical dtype, shape and bytes.
 `loss_grad(batch, sequence)` and `step(batch, sequence, learning_rate=...)`
 backpropagate through the original encoder, both heads and every feedback use.
 The default sequence is not chosen for the caller: it must be explicit.

@@ -166,6 +166,44 @@ class ControlsTest(unittest.TestCase):
         self.assertTrue(np.all(service > a["auxiliary"]))
         self.assertTrue(np.all(service > .999999))
 
+    def test_public_dtype_shape_and_base_metadata_cannot_change_batch(self):
+        batch = fixture()
+        digest = batch.digest()
+        expected = {name: getattr(batch, name).copy()
+                    for name in ("noisy", "clean", "labels", "draws", "weights")}
+        for name, original in expected.items():
+            exposed = getattr(batch, name)
+            exposed.dtype = np.int64 if original.dtype.kind == "f" else np.float64
+            exposed.shape = (exposed.size,)
+            exposed.base.dtype = np.uint8
+            exposed.base.shape = (exposed.base.size,)
+            current = getattr(batch, name)
+            self.assertEqual(current.dtype, original.dtype)
+            self.assertEqual(current.shape, original.shape)
+            np.testing.assert_array_equal(current, original)
+            self.assertEqual(batch.digest(), digest)
+        # A legitimate content change still changes the canonical identity.
+        changed = replace(batch, clean=1 - batch.clean)
+        self.assertNotEqual(changed.digest(), digest)
+
+    def test_shared_metadata_mutation_preserves_all_three_gradient_chains(self):
+        batch = fixture()
+        controls = {arm: Control(arm, 11) for arm in ARMS}
+        before = {arm: c.loss_grad(batch, "") for arm, c in controls.items()}
+        digest = batch.digest()
+        # Reproduce the review's ordinary attribute assignment exactly.
+        batch.clean.dtype = np.int64
+        batch.noisy.shape = (batch.noisy.size,)
+        batch.draws.dtype = np.uint8
+        batch.weights.shape = (1, len(batch.weights))
+        batch.labels.dtype = np.float64
+        for arm, control in controls.items():
+            value, gradients, metrics = control.loss_grad(batch, "")
+            self.assertEqual(value, before[arm][0])
+            self.assertEqual(metrics["batch_digest"], digest)
+            for name, gradient in gradients.items():
+                np.testing.assert_array_equal(gradient, before[arm][1][name])
+
     def test_paired_inputs_are_owned_immutable_and_reject_invalid(self):
         batch = fixture()
         for name in ("noisy", "clean", "labels", "draws", "weights"):

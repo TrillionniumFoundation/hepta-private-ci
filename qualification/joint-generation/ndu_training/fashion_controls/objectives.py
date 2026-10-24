@@ -1,6 +1,6 @@
 """Fixed-K Fashion objectives and matched requests, not a dataset runner."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import hashlib
 import json
 from pathlib import Path
@@ -22,12 +22,7 @@ def verify_binding():
     return binding
 
 
-def _readonly(value, dtype):
-    a = np.asarray(value, dtype=dtype)
-    return np.frombuffer(a.tobytes(), dtype=dtype).reshape(a.shape)
-
-
-@dataclass(frozen=True)
+@dataclass(frozen=True, init=False)
 class Batch:
     """One paired offline request: every arm receives exactly these inputs.
 
@@ -42,12 +37,13 @@ class Batch:
     draws: np.ndarray
     weights: np.ndarray
     normalizer: float | None = None
+    _buffers: tuple = field(init=False, repr=False)
 
-    def __post_init__(self):
-        noisy = _matrix(self.noisy, 784, "noisy", True)
-        clean = _matrix(self.clean, 784, "clean", True)
+    def __init__(self, noisy, clean, labels, draws, weights, normalizer=None):
+        noisy = _matrix(noisy, 784, "noisy", True)
+        clean = _matrix(clean, 784, "clean", True)
         n = len(noisy)
-        labels, draws, weights = map(np.asarray, (self.labels, self.draws, self.weights))
+        labels, draws, weights = map(np.asarray, (labels, draws, weights))
         if (clean.shape != noisy.shape or labels.shape != (n,) or labels.dtype.kind not in "iu"
                 or (labels < 0).any() or (labels >= 10).any()):
             raise ValueError("invalid paired labels/reference")
@@ -57,20 +53,49 @@ class Batch:
         if (weights.shape != (n,) or weights.dtype.kind not in "fiu"
                 or not np.isfinite(weights).all() or (weights < 0).any() or not (weights > 0).any()):
             raise ValueError("finite nonnegative weights with positive mass required")
-        normalizer = n if self.normalizer is None else self.normalizer
+        normalizer = n if normalizer is None else normalizer
         if isinstance(normalizer, (bool, np.bool_)) or not np.isfinite(normalizer) or normalizer <= 0:
             raise ValueError("positive finite explicit normalizer required")
+        buffers = []
         for name, value, dtype in (("noisy", noisy, np.float64), ("clean", clean, np.float64),
                                    ("labels", labels, np.int64), ("draws", draws, np.float64),
                                    ("weights", weights, np.float64)):
-            object.__setattr__(self, name, _readonly(value, dtype))
+            value = np.asarray(value, dtype=dtype)
+            buffers.append((name, value.dtype.str, value.shape, value.tobytes()))
+        object.__setattr__(self, "_buffers", tuple(buffers))
         object.__setattr__(self, "normalizer", float(normalizer))
+
+    def _array(self, index):
+        # Each read gets independent dtype/shape metadata, including its base.
+        # Only immutable bytes/tuples are canonical; no canonical ndarray leaks.
+        _, dtype, shape, data = self._buffers[index]
+        return np.frombuffer(data, dtype=dtype).reshape(shape)
+
+    @property
+    def noisy(self):
+        return self._array(0)
+
+    @property
+    def clean(self):
+        return self._array(1)
+
+    @property
+    def labels(self):
+        return self._array(2)
+
+    @property
+    def draws(self):
+        return self._array(3)
+
+    @property
+    def weights(self):
+        return self._array(4)
 
     def digest(self):
         h = hashlib.sha256(str(self.normalizer).encode())
-        for name in ("noisy", "clean", "labels", "draws", "weights"):
-            value = getattr(self, name)
-            h.update(name.encode() + str(value.shape).encode() + value.tobytes())
+        for name, dtype, shape, data in self._buffers:
+            h.update(json.dumps([name, dtype, shape], separators=(",", ":")).encode() + b"\0")
+            h.update(data)
         return h.hexdigest()
 
 

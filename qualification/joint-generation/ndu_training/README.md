@@ -62,5 +62,5 @@ not combined into a joint-success claim.
 
 A separate [pinned Fashion H/A/N software interface](fashion_controls/README.md)
 now provides paired draws/weights, full source-model update chains and a fair
-complete-budget contract. Its 12 new hand-only integration checks are not real
+complete-budget contract. Its 14 new hand-only integration checks are not real
 training or a successor CV run. [Prospective checklist](fashion_controls/PROSPECTIVE.md).

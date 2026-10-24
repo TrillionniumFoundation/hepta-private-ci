@@ -1,6 +1,6 @@
 # Hand-only validation, 2026-10-24 UTC
 
-Final code check: **12/12 tests PASS**, warnings treated as errors. All tests
+Final code check: **14/14 tests PASS**, warnings treated as errors. All tests
 use deterministic arithmetic tensors or a fixed randomly initialized source
 model; no Fashion data was opened/downloaded, no real TRAIN or parameter sweep
 ran, and no empirical quality/training/budget advantage is claimed.
@@ -11,14 +11,31 @@ ran, and no empirical quality/training/budget advantage is claimed.
 |---|---:|---|---:|---:|---|
 | hand-01 | 11 | PASS | 0.261805 s | 44,195,840 bytes | Initial integration suite |
 | hand-02 | 12 | PASS | 0.274008 s | 44,236,800 bytes | Added independent 40-outcome enumeration |
+| hand-03 | 14 | PASS | 0.305318 s | 43,941,888 bytes | Public dtype/shape/base metadata regression fix |
 
-Both attempts and their per-source hashes/stdout/stderr are retained under
+All attempts and their per-source hashes/stdout/stderr are retained under
 [evidence](evidence/); no failed attempt was removed. Cumulative test-child CPU
-is 0.535813 s. These are verification-resource receipts, NOT benchmark evidence.
-Both commands held the shared exclusive benchmark lock and set OpenBLAS/OMP/MKL
+is 0.841131 s. These are verification-resource receipts, NOT benchmark evidence.
+All commands held the shared exclusive benchmark lock and set OpenBLAS/OMP/MKL
 to one thread. Each child had hard 60 CPU-second and 256 MiB address-space
 limits. Tests used dot's current execution environment only; no cloud CPU was
 added to or compared with these receipts.
+
+## Independent review finding and fix
+
+The first 12 passing checks missed ndarray metadata mutation. Independent
+review reproduced `batch.clean.dtype = np.int64` changing H loss from
+4.418284084625013 to 5.296163078115128e38 without changing the old digest.
+Readonly bytes alone did not prevent a public ndarray header from being changed.
+This was a real shared-input identity defect, not evidence of scientific gain.
+The old logs are retained and do not certify metadata immutability.
+
+Canonical storage now consists only of immutable tuples and bytes. Each public
+attribute returns a fresh ndarray header with canonical dtype/shape; changing
+that header or its base cannot affect subsequent reads. The digest directly
+binds dtype/shape/data. New regressions exercise public dtype/shape/base changes
+and verify bit-identical H/A/N values and every parameter gradient afterward.
+This is an ordinary API guarantee, not a hostile-Python sandbox claim.
 
 ## What the checks establish
 

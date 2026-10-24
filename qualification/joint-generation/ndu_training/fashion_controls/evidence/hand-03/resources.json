@@ -1,0 +1,34 @@
+{
+  "address_space_cap_bytes": 268435456,
+  "blas_threads": 1,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-W",
+    "error",
+    "-m",
+    "unittest",
+    "ndu_training.fashion_controls.test_controls",
+    "-v"
+  ],
+  "cpu_cap_seconds": 60,
+  "cpu_seconds": 0.305318,
+  "executor": "dot current execution environment",
+  "exit_code": 0,
+  "peak_rss_bytes": 43941888,
+  "scope": "handmade tensors; Batch public ndarray metadata regression; no real training/data",
+  "shared_benchmark_lock": true,
+  "sources_sha256": {
+    "ndu_training/fashion_controls/BINDING.json": "7ac6e4f8118654d48d44b175b109c7f637cf1bedf3b6a857bb666d0a55343661",
+    "ndu_training/fashion_controls/HAND_REPORT.md": "542953ae3b0434aa90110186f1930cb55b13cfde61efb085d8501364cb1bd5c8",
+    "ndu_training/fashion_controls/MANIFEST.json": "8b5430edf8caf0ac09ca378530d4181b5e43fe498be1ff3c0045135e32b99266",
+    "ndu_training/fashion_controls/PROSPECTIVE.md": "f8b76e78709f1bad5235deca408702246902b25b98c8b127420e6443344bdb38",
+    "ndu_training/fashion_controls/README.md": "619576441c81711ebb65c1174fbf7f490f7d3d4fcf72b149db9172acdee7691b",
+    "ndu_training/fashion_controls/__init__.py": "0714ba44e0a5bc5429823abad13e68a97891dfc3d371233dbd013ddfb6ae3127",
+    "ndu_training/fashion_controls/bound/__init__.py": "1912353d34159ae6c71d8bb9990006ffa9e360ced518ec034dd3d36ff9dec9ac",
+    "ndu_training/fashion_controls/bound/autodiff.py": "fc4113a8219ac1eee7fe349ca53f4c4a06272fa5f55954a0e54f392406eff0fa",
+    "ndu_training/fashion_controls/bound/model.py": "a81dc4f3d10533333c18bc3239febcf08095a53f0b0f1d596ffde3bae7702c53",
+    "ndu_training/fashion_controls/fairness.py": "6e80c0883eebb89a4b6d348e88428d002e0ab56c17e2240088930f3eefd7f0db",
+    "ndu_training/fashion_controls/objectives.py": "f1c6dde1f133db2796a0a1b1267da55521a97ce11d1f96c9898f5dffebc5765e",
+    "ndu_training/fashion_controls/test_controls.py": "4b3ddda9319bcc846b19946859b6b5ad0827fee533ede858859b4c769ed40a23"
+  }
+}
