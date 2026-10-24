@@ -61,6 +61,8 @@ impl Drop for Fixture {
     fn drop(&mut self) {
         let _ = fs::remove_file(self.0.join("private/state"));
         let _ = fs::remove_dir(self.0.join("private"));
+        let _ = fs::remove_file(self.0.join("moved/state"));
+        let _ = fs::remove_dir(self.0.join("moved"));
         let _ = fs::remove_file(self.0.join("state"));
         let _ = fs::remove_dir(&self.0); // only this newly created exact directory
     }

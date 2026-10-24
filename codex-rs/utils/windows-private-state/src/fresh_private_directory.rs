@@ -129,6 +129,24 @@ impl ParentAnchor {
 }
 
 impl FreshPrivateDirectory {
+    /// Flush this newly created directory's entry in its immediate held parent.
+    /// A separate same-ID write handle preserves all retained query handles and
+    /// no-delete sharing. Any native or identity error permanently refuses this role.
+    pub fn sync_parent_namespace(&mut self) -> Result<(), ValidationError> {
+        self.revalidate()?;
+        self.continuity = Continuity::Refused;
+        let parent = &self
+            .created
+            .parent
+            .ancestors
+            .last()
+            .ok_or(ValidationError::UnsafeObject)?
+            .file;
+        crate::namespace_flush::flush_held_namespace(parent)?;
+        self.continuity = Continuity::Live;
+        self.revalidate()
+    }
+
     /// Flush this held writable directory's data and metadata with real OS I/O.
     ///
     /// Failure permanently refuses the role. This does not flush its ancestor's

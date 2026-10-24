@@ -10,6 +10,8 @@ pub mod mechanism;
 #[cfg(windows)]
 mod namespace_acl;
 #[cfg(windows)]
+mod namespace_flush;
+#[cfg(windows)]
 pub mod parent_anchor;
 
 #[cfg(windows)]

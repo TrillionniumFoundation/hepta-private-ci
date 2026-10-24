@@ -8,8 +8,10 @@ use crate::security::ValidationError;
 use crate::security::validate_owner_descriptor;
 use std::error::Error;
 use std::fs;
+use std::fs::OpenOptions;
 use std::io;
 use std::io::Write;
+use std::os::windows::fs::OpenOptionsExt;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
@@ -34,10 +36,55 @@ fn actual_writable_directory_syncs_new_entry_without_noop_or_fallback() -> Resul
     file.sync_all()?;
     drop(file);
     directory.sync_all()?;
+    directory.sync_parent_namespace()?;
     assert_eq!(
         fs::read(fixture.0.join("private/state"))?,
         b"native-entry-before-directory-flush"
     );
+    Ok(())
+}
+
+#[test]
+fn actual_parent_write_sharing_conflict_is_not_retried_or_repaired() -> Result {
+    let fixture = Fixture::new()?;
+    let mut directory =
+        ParentAnchor::for_create_only(&fixture.0)?.create_private_directory("private")?;
+    let deny_write = OpenOptions::new()
+        .read(true)
+        .share_mode(FILE_SHARE_READ)
+        .custom_flags(0x0220_0000)
+        .open(&fixture.0)?;
+    let result = directory.sync_parent_namespace();
+    assert!(matches!(result, Err(ValidationError::Os(error)) if error.raw_os_error() == Some(32)));
+    drop(deny_write);
+    assert!(
+        directory.revalidate().is_err(),
+        "native flush failure is sticky"
+    );
+    Ok(())
+}
+
+#[test]
+fn actual_parent_flush_uses_held_id_after_former_path_is_replaced() -> Result {
+    // Mechanism fixture only: arbitrary Files here grant no parent/store authority.
+    let fixture = Fixture::new()?;
+    let original_path = fixture.0.join("private");
+    fs::create_dir(&original_path)?;
+    let original = OpenOptions::new()
+        .read(true)
+        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | 4)
+        .custom_flags(0x0220_0000)
+        .open(&original_path)?;
+    let before = crate::mechanism::identity(&original)?;
+    fs::rename(&original_path, fixture.0.join("moved"))?;
+    fs::create_dir(&original_path)?;
+    let replacement = OpenOptions::new()
+        .read(true)
+        .custom_flags(0x0220_0000)
+        .open(&original_path)?;
+    assert_ne!(crate::mechanism::identity(&replacement)?, before);
+    crate::namespace_flush::flush_held_namespace(&original)?;
+    assert_eq!(crate::mechanism::identity(&original)?, before);
     Ok(())
 }
 
