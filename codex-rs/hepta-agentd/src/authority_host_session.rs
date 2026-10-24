@@ -17,6 +17,24 @@ pub struct PreparedHostAuthoritySession {
 }
 
 impl PreparedHostAuthoritySession {
+    /// Explicit Root startup from the already authorized original config and
+    /// actual child registration. Open the original authority owners first,
+    /// then prepare/publish the fresh DB under those same owners. No issuer,
+    /// policy, lease or Registry generation is created by this entry point.
+    /// Existing/partial data is an error, never an automatic recovery fallback.
+    pub async fn prepare_fresh_from_registered(
+        config_file: &Path,
+        registration_file: &Path,
+        owner_pidfd: OwnedFd,
+    ) -> io::Result<Self> {
+        let config: HostAuthorityServiceConfig = read_root_json(config_file)?;
+        let registration: HostAuthorityRegistration = read_root_json(registration_file)?;
+        let service = open_registered_writer(&config, &registration, &owner_pidfd)?;
+        let fresh = crate::FreshHostCognitiveState::prepare(&registration.registered_identity).await?;
+        let service = service.initialize_fresh_heads(&config, &registration, &owner_pidfd, fresh)?;
+        Ok(Self { config, registration, owner_pidfd, service, fresh_filesystem: true })
+    }
+
     /// Publish an explicitly prepared fresh original DB and fresh protected
     /// heads, retaining the same service for subsequent capture and serving.
     /// Issuer, clock, writer lease and proof must already be registered by the

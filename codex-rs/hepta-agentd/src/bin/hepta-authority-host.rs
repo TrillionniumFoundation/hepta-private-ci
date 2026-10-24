@@ -1,4 +1,4 @@
-//! Explicit root administrator bootstrap / open-only private session entry.
+//! Explicit Root administration, fresh publication and open-only session entry.
 
 #[cfg(target_os = "linux")]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -7,7 +7,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut args = std::env::args_os().skip(1);
     let command = args
         .next()
-        .ok_or("initialize, register-writer, serve-session, diagnose-native, launch-native, provider-status or provider-login required")?;
+        .ok_or("initialize, register-writer, serve-session, serve-fresh-session, diagnose-native, launch-native, provider-status or provider-login required")?;
     let mut options = std::collections::BTreeMap::new();
     let mut pidfd_stdin = false;
     while let Some(option) = args.next() {
@@ -94,13 +94,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         let proof = codex_hepta_agentd::register_host_writer_authorization(&config)?;
         println!("{}", serde_json::to_string(&proof)?);
-    } else if command == "serve-session" {
+    } else if command == "serve-session" || command == "serve-fresh-session" {
         let config = take("--config")?;
         let registration = take("--registration")?;
         let text_file = options
             .remove(std::ffi::OsStr::new("--text-ui-registration"))
             .map(PathBuf::from);
         let ui_fd = options.remove(std::ffi::OsStr::new("--text-ui-pidfd"));
+        let handoff = options.remove(std::ffi::OsStr::new("--root-handoff-fd"));
+        let root_fd = options.remove(std::ffi::OsStr::new("--root-pidfd"));
         if !options.is_empty() || !pidfd_stdin {
             return Err("unknown option or missing pre-held owner pidfd".into());
         }
@@ -127,16 +129,52 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 return Err("text UI registration and pre-held pidfd are required together".into());
             }
         };
-        codex_hepta_agentd::serve_host_authority_session_with_text(
-            &config,
-            &registration,
-            owner,
-            text,
-        )?;
+        let prepared = if command == "serve-fresh-session" {
+            let handoff = inherited_descriptor(handoff.as_deref().ok_or("fresh session requires the original Root handoff descriptor")?)?;
+            let root = inherited_descriptor(root_fd.as_deref().ok_or("fresh session requires the pre-held current Root pidfd")?)?;
+            let runtime = tokio::runtime::Builder::new_current_thread().enable_all().build()?;
+            let prepared = runtime.block_on(codex_hepta_agentd::PreparedHostAuthoritySession::prepare_fresh_from_registered(
+                &config, &registration, owner,
+            ))?;
+            let (prepared, consumers) = prepared.handoff_fresh_agent_filesystem()?;
+            let bootstrap = prepared.seal_bootstrap(&consumers)?;
+            codex_hepta_agentd::send_root_production_handoff(
+                std::os::unix::net::UnixDatagram::from(handoff), &bootstrap, &root,
+                std::time::Duration::from_secs(30),
+            )?;
+            prepared
+        } else {
+            if handoff.is_some() || root_fd.is_some() {
+                return Err("open-only serving does not accept fresh handoff inputs".into());
+            }
+            codex_hepta_agentd::PreparedHostAuthoritySession::open(&config, &registration, owner)?
+        };
+        match text {
+            Some((file, pidfd)) => prepared.serve_with_text(file, pidfd)?,
+            None => prepared.serve()?,
+        }
     } else {
         return Err("unknown authority command".into());
     }
     Ok(())
+}
+
+#[cfg(target_os = "linux")]
+fn inherited_descriptor(value: &std::ffi::OsStr) -> Result<std::os::fd::OwnedFd, Box<dyn std::error::Error>> {
+    let fd: i32 = value.to_str().ok_or("invalid inherited descriptor")?.parse()?;
+    if fd < 3 {
+        return Err("a separately inherited descriptor numbered at least 3 is required".into());
+    }
+    // SAFETY: F_GETFD checks only a descriptor number. Parsing occurs before
+    // runtime threads, and no operation closes this descriptor before cloning.
+    if unsafe { libc::fcntl(fd, libc::F_GETFD) } < 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    // SAFETY: the live inherited descriptor is immediately cloned. The
+    // original handoff independently checks socket type, Root creator, sealed
+    // file and pidfd lifetime before any authenticated bootstrap is accepted.
+    let borrowed = unsafe { std::os::fd::BorrowedFd::borrow_raw(fd) };
+    Ok(borrowed.try_clone_to_owned()?)
 }
 
 #[cfg(not(target_os = "linux"))]

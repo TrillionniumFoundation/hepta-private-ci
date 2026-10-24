@@ -738,3 +738,16 @@ aliases. They require exact ordinary-user-built ELF receipts and an isolated
 Root subprocess; no Cargo build runs as Root. Host component test passes do not
 establish the complete original main/Notes/device product chain, the native G2
 finite execution, or the native `8 MiB` ELF / `16 MiB` load limits.
+
+The existing `hepta-authority-host serve-fresh-session` command now calls this
+same fresh path, sends its sealed bootstrap, and serves the retained owners.
+It requires `--config`, `--registration`, `--owner-pidfd-stdin`,
+`--root-handoff-fd` and `--root-pidfd`. Both numeric handoff inputs must already
+exist; the latter pins the same current Root PID that created the anonymous
+pair before launching the child. A trusted launcher can then `exec` the Root
+binary without changing that identity. The command never generates an Agent,
+writer authorization, lease or policy. `serve-session` remains open-only and
+rejects fresh handoff options. Optional text serving uses the same original
+text validation; Notes target admission still requires the typed original
+Session capability rather than a JSON target argument. This host startup seam
+does not itself provide the kernel-precreated roles with their native handoff.
