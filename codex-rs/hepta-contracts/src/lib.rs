@@ -318,3 +318,6 @@ pub use receipt::PolicyStamp;
 pub use receipt::Sha256Digest;
 pub use receipt::ToolAction;
 pub use receipt::ToolActionSource;
+
+#[cfg(windows)]
+pub use codex_utils_windows_private_state::parent_anchor as windows_private_owner;

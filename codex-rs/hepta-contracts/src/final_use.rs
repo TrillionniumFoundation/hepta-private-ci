@@ -24,6 +24,9 @@ use sha2::Sha256;
 
 #[path = "final_use_store.rs"]
 mod store;
+#[cfg(windows)]
+#[path = "final_use_windows.rs"]
+mod windows_owner;
 
 const MAX_CLAIMS: usize = 1_048_576;
 const MAX_REVOKED_GRANTS: usize = 16_384;
