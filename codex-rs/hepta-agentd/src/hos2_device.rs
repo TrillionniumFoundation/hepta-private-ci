@@ -7,6 +7,12 @@
 use std::fs::File;
 use std::os::fd::AsRawFd;
 
+#[path = "hos2_device_bootstrap.rs"]
+mod bootstrap;
+
+use bootstrap::Attachment;
+use bootstrap::ProcessIdentity;
+
 use codex_hepta_memory::HOS2_CPU_PERIOD_NS;
 use codex_hepta_memory::Hos2DeliveryId;
 use codex_hepta_memory::Hos2DeliveryObservation;
@@ -106,16 +112,40 @@ impl AgentdHos2Device {
         Self::attach(Box::new(FileTransport { file }), bootstrap)
     }
 
+    /// Attach the current initial G2 manager or recovery image through its own
+    /// process-bound file and the sealed HOS2BOOT v3 page. Root must remain PID 1
+    /// and the actual parent. QueryAbi must independently match this image's
+    /// capability space. This does not create a writer, issuer or FinalUse grant.
+    pub fn from_g2_initial_bootstrap(file: File, bootstrap: &[u8]) -> Result<Self, String> {
+        Self::attach_profile(
+            Box::new(FileTransport { file }),
+            bootstrap,
+            Attachment::InitialOwnerV3(ProcessIdentity::current()),
+        )
+    }
+
+    /// Attach the current G2 management successor through HOS2BOOT v4 (240
+    /// declared bytes). The generation is kernel discovery, not a Supervisor
+    /// registry generation or proof of saved retirement. History-only role 5
+    /// is deliberately outside this management constructor.
+    pub fn from_g2_successor_bootstrap(file: File, bootstrap: &[u8]) -> Result<Self, String> {
+        Self::attach_profile(
+            Box::new(FileTransport { file }),
+            bootstrap,
+            Attachment::SuccessorOwnerV4(ProcessIdentity::current()),
+        )
+    }
+
     fn attach(transport: Box<dyn ControlTransport>, bootstrap: &[u8]) -> Result<Self, String> {
-        if bootstrap.len() < 192
-            || &bootstrap[..8] != b"HOS2BOOT"
-            || read64(bootstrap, /*offset*/ 8)? != 2
-            || read64(bootstrap, /*offset*/ 24)? != 192
-            || bootstrap[192..].iter().any(|byte| *byte != 0)
-            || read64(bootstrap, /*offset*/ 176)? != HOS2_CPU_PERIOD_NS
-        {
-            return Err("invalid sealed HOS2 bootstrap discovery page".to_string());
-        }
+        Self::attach_profile(transport, bootstrap, Attachment::QualificationV2)
+    }
+
+    fn attach_profile(
+        transport: Box<dyn ControlTransport>,
+        bootstrap: &[u8],
+        attachment: Attachment,
+    ) -> Result<Self, String> {
+        attachment.validate(bootstrap)?;
         let manager_space = read16(bootstrap, /*offset*/ 112)?;
         let recovery_space = read16(bootstrap, /*offset*/ 128)?;
         let local_space = match read64(bootstrap, /*offset*/ 16)? {
@@ -174,7 +204,7 @@ impl AgentdHos2Device {
             || read64(&response.payload, /*offset*/ 32)? != 62
             || read64(&response.payload, /*offset*/ 40)? != 0
         {
-            return Err("native QueryAbi differs from HOS2BOOT v2".to_string());
+            return Err("native QueryAbi differs from the sealed HOS2 bootstrap".to_string());
         }
         Ok(device)
     }
@@ -544,3 +574,7 @@ fn read16(bytes: &[u8], offset: usize) -> Result<[u8; 16], String> {
 #[cfg(test)]
 #[path = "hos2_device_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "hos2_device_bootstrap_tests.rs"]
+mod bootstrap_tests;
