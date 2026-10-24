@@ -1,0 +1,20 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-authority-types"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_authority_types"
+path = "src/lib.rs"
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+codex-hepta-contracts = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+sha2 = { workspace = true }
+thiserror = { workspace = true }

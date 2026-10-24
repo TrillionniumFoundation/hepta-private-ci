@@ -3553,6 +3553,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "codex-hepta-authority-types"
+version = "0.0.0"
+dependencies = [
+ "codex-hepta-contracts",
+ "serde",
+ "sha2 0.10.9",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "codex-hepta-automation"
 version = "0.0.0"
 dependencies = [
@@ -3944,6 +3954,7 @@ name = "codex-hepta-memory"
 version = "0.0.0"
 dependencies = [
  "base64 0.22.1",
+ "codex-hepta-authority-types",
  "codex-hepta-cognitive-read",
  "codex-hepta-cognitive-types",
  "codex-hepta-contracts",

@@ -30,7 +30,6 @@ use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::SqlitePool;
 use sqlx::Transaction;
-use thiserror::Error;
 
 use crate::CognitiveStore;
 use crate::CognitiveStoreError;
@@ -68,34 +67,7 @@ const GENESIS_LEASE_SHA256: &[u8] = b"hepta-memory:local-lease:genesis:v1";
 const GENESIS_EVENT_SHA256: &[u8] = b"hepta-memory:local-event:genesis:v1";
 const GENESIS_OUTBOX_SHA256: &[u8] = b"hepta-memory:local-outbox:genesis:v1";
 
-#[derive(Debug, Error)]
-pub enum LocalLeaseOutboxError {
-    #[error(transparent)]
-    Store(#[from] CognitiveStoreError),
-    #[error("invalid local lease/outbox input: {0}")]
-    Invalid(String),
-    #[error("local lease/outbox access denied: {0}")]
-    AccessDenied(String),
-    #[error("local lease/outbox CAS conflict: {0}")]
-    CasConflict(String),
-    #[error("local lease/outbox stale fence: {0}")]
-    StaleFence(String),
-    #[error("local lease/outbox journal is corrupt: {0}")]
-    Corrupt(String),
-    #[error("local lease/outbox transition is invalid: {0}")]
-    IllegalTransition(String),
-    #[error("local lease/outbox transaction was rolled back: {0}")]
-    TransactionAborted(String),
-    #[error("local lease/outbox serialization failed: {0}")]
-    Serialization(String),
-    #[error("local lease/outbox clock failed: {0}")]
-    Clock(String),
-    #[error("{resource} capacity exceeded; maximum is {maximum}")]
-    CapacityExceeded {
-        resource: &'static str,
-        maximum: usize,
-    },
-}
+pub use codex_hepta_authority_types::LocalLeaseOutboxError;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LocalAdmissionFault {
