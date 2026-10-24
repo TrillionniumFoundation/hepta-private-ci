@@ -1,0 +1,138 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+warning: use of deprecated associated function `tokio::io::unix::AsyncFd::<T>::new`: unsound due to lack of I/O safety; use `AsyncFd::register` instead (see https://github.com/tokio-rs/tokio/pull/8587)
+  --> utils/pty/src/unix_io.rs:38:60
+   |
+38 |         let fd = std::panic::catch_unwind(move || AsyncFd::new(File::from(fd)))
+   |                                                            ^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-utils-pty` (lib) generated 1 warning
+   Compiling codex-hepta-agent-loop v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-concurrency-review/codex-rs/hepta-agent-loop)
+    Finished `test` profile [unoptimized] target(s) in 9.37s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.15.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#clang-sys@1.9.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#prettyplease@0.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.73.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.46.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.63` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.8.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ahash@0.8.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#faster-hex@0.10.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-epoch@0.9.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustversion@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#oid-registry@0.8.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.104` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#httparse@1.10.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl-sys@0.9.117` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-deque@0.8.8` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rayon-core@1.13.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#syn@1.0.109` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#prettyplease@0.2.37` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ref-cast@1.0.27` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#typeid@1.0.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.7.17` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#allocative@0.3.6` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl@0.10.81` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#erased-serde@0.4.10` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#logos-codegen@0.15.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.28.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-http-headers@0.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.72.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#native-tls@0.2.18` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#cookie@0.18.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#encoding_rs@0.8.42` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-safe@7.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_fallback_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#memoffset@0.9.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_decimal_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.37.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-dns@0.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@1.0.69` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID f90fcbde-85d7-4758-8e4a-8de6e711ea65 with nextest profile: local
+    Starting 45 tests across 5 binaries
+        PASS [   0.072s] codex-hepta-agent-loop::automation_effects cancel_reopen_tests::new_generation_cannot_rebind_original_native_cursor_or_effect_admission
+        PASS [   0.076s] codex-hepta-agent-loop::automation_effects cancel_reopen_tests::retained_native_cancel_reopens_pending_without_new_effect_dispatch
+        PASS [   0.057s] codex-hepta-agent-loop::automation_effects changed_native_identity_selection_payload_and_output_tool_are_refused
+        PASS [   0.121s] codex-hepta-agent-loop::automation_effects concurrency_tests::duplicate_admission_from_two_connections_dispatches_once
+        PASS [   0.108s] codex-hepta-agent-loop::automation_effects concurrency_tests::overlapping_recovery_settles_before_original_dispatch_future_is_dropped
+        PASS [   0.303s] codex-hepta-agent-loop::automation_effects concurrency_tests::tool_completion_and_cancellation_have_one_cursor_winner
+        PASS [   0.095s] codex-hepta-agent-loop::automation_effects recovery_tests::dropped_dispatch_future_keeps_original_attempt_and_cancel_never_fakes_stop_ack
+        PASS [   0.078s] codex-hepta-agent-loop::automation_effects recovery_tests::original_proven_absence_never_creates_another_attempt
+        PASS [   0.070s] codex-hepta-agent-loop::automation_effects recovery_tests::original_revocation_and_local_cancel_prevent_new_provider_entry
+        PASS [   0.083s] codex-hepta-agent-loop::automation_effects recovery_tests::stale_owner_fence_cannot_reconcile_or_contact_provider
+        PASS [   0.113s] codex-hepta-agent-loop::automation_effects recovery_tests::uncertain_effect_reopens_and_reconciles_original_receipt_without_redispatch
+        PASS [   0.104s] codex-hepta-agent-loop::automation_effects status_effect_uses_original_owners_and_terminal_replay_contacts_provider_once
+        PASS [   0.005s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_round_drift
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_skipped_revision
+        PASS [   0.006s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_token_drift
+        PASS [   0.005s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_unchanged_revision
+        PASS [   0.005s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_round_drift
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_skipped_revision
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_token_drift
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_unchanged_revision
+        PASS [   0.005s] codex-hepta-agent-loop::owner_loop cancellation_waits_for_effect_owner_acknowledgement
+        PASS [   0.005s] codex-hepta-agent-loop::owner_loop commit_interruption_reconciles_effect_without_executing_it_twice
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop deadline_cancels_a_stalled_stream_without_terminal_success
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop duplicate_provider_calls_are_rejected_before_any_effect
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop foreign_completion_cannot_dispatch_a_tool
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop oversized_context_is_rejected_before_provider_dispatch
+        PASS [   0.005s] codex-hepta-agent-loop::owner_loop partial_stream_never_executes_tools_and_reconnect_uses_original_request
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop reconnect_does_not_reset_the_original_deadline
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop stalled_model_cancellation_does_not_prevent_effect_cancellation
+        PASS [   0.005s] codex-hepta-agent-loop::owner_loop streamed_tool_turn_commits_before_dispatch_and_resumes_model
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop text_only_completion_without_retained_provider_items_is_rejected
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop unresolved_effect_keeps_exact_key_across_loop_instances
+        PASS [   0.067s] codex-hepta-agent-loop::taskflow_owner actual_taskflow_reopen_preserves_observations_usage_and_frozen_context
+        PASS [   0.055s] codex-hepta-agent-loop::taskflow_owner competing_successors_have_one_durable_winner_and_replay_does_not_advance
+        PASS [   0.040s] codex-hepta-agent-loop::taskflow_owner initial_binding_deadline_request_generation_and_limits_cannot_be_rewritten
+        PASS [   0.047s] codex-hepta-agent-loop::taskflow_owner invalid_compiler_request_is_rejected_before_corrupting_the_owned_cursor
+        PASS [   0.077s] codex-hepta-agent-loop::taskflow_owner state_tests::cancellation_intent_and_acknowledgement_survive_separate_reopens
+        PASS [   0.142s] codex-hepta-agent-loop::taskflow_owner state_tests::cancellation_stops_original_owners_from_wait_retry_and_indeterminate
+        PASS [   0.046s] codex-hepta-agent-loop::taskflow_owner state_tests::terminal_taskflow_with_active_native_frame_cannot_dispatch
+        PASS [   0.115s] codex-hepta-agent-loop::taskflow_owner state_tests::waiting_retry_and_indeterminate_taskflow_states_cannot_dispatch
+        PASS [   0.006s] codex-hepta-agent-loop::taskflow_serde observation_receipts_roundtrip_and_unknown_dto_fields_still_reject
+        PASS [   0.004s] codex-hepta-agent-loop::taskflow_serde retained_digests_require_canonical_shape_without_coercion
+        PASS [   0.004s] codex-hepta-agent-loop::taskflow_serde retained_frame_roundtrips_exact_validated_primitives
+        PASS [   0.004s] codex-hepta-agent-loop::taskflow_serde retained_generation_rejects_zero_and_non_u64_wire_values
+        PASS [   0.004s] codex-hepta-agent-loop::taskflow_serde retained_identifiers_reuse_the_original_grammar_and_byte_bound
+────────────
+     Summary [   1.982s] 45 tests run: 45 passed, 0 skipped
