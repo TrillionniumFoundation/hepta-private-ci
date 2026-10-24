@@ -1,0 +1,46 @@
+{
+  "parent": "502a52f874c15968abbfd1b2eca7f114f0a5fb70",
+  "parent_tree": "9ef8e5d3e661ee08f8901b0753df206a07b1e2b1",
+  "original": {
+    "README.md": "611c20efeded37c25b3ad92bab77652bbe5bc0330ec500b178e374bce2da9a04",
+    "bounded_json.py": "6fedc8902ab2b64d108572929340b7884d5cb6193de1e27ba433234523dfb74c",
+    "custody.py": "c85048b103ddf25d8fc048715fd77b781b90ecf2c322f2edd0831e097163561f",
+    "fixtures.py": "3d810d0766150503fc5760bfacae3386c8add5f02ae027c215ec375dab79cdca",
+    "inventory.py": "035c97233432ddaa59ee543c7b54eb9f38f28debf48f5da9545f032053a61615",
+    "metadata.py": "e3ea7f4424a458ffd2dd13865ef780e639064b82504d3106c06b14e45988b8c7",
+    "preflight.py": "c5b76502579db7a27683f6dd659b87c7c760a2fa6ca43d9ca5e8f0cb6b21062d",
+    "profile.py": "f28ffd292cc7bbef3e4b47d89b7c755705f20d4fdcd3804a0b4163a2a4c46bef",
+    "run_synthetic_tests.py": "022fe5ebacf06be93c2f62c560f8fc0955c0a04cb65d004f62bbd7be5a2eefd9",
+    "test_bounded_json.py": "326957968eff34d05390db49dc80444c74b6d17cf9a19a9b399c8b0d24c878b7",
+    "test_cli.py": "13bf69d637690861bae510869ea805e49d3ffd79758c1c317dec85ce896b9a8c",
+    "test_custody.py": "6dcf336c24b3d35d73ce1bc55fa744713ac79ee2b2e319c695358ef7128d863b",
+    "test_inventory.py": "38bb9fd8074aedb9ed60b9813ca9221f01cfa726804bedc3e380a09147dd5106",
+    "test_metadata.py": "21511d8f80aebc4c831337a9ceed38ca78e5d2733f30dc05a273395a48e2d68d"
+  },
+  "tested_final": {
+    "README.md": "611c20efeded37c25b3ad92bab77652bbe5bc0330ec500b178e374bce2da9a04",
+    "bounded_json.py": "6fedc8902ab2b64d108572929340b7884d5cb6193de1e27ba433234523dfb74c",
+    "custody.py": "db1622d4f86e1f69b7094f203875e776dcc45d77d11932657cddf29d12151697",
+    "fixtures.py": "3d810d0766150503fc5760bfacae3386c8add5f02ae027c215ec375dab79cdca",
+    "inventory.py": "035c97233432ddaa59ee543c7b54eb9f38f28debf48f5da9545f032053a61615",
+    "metadata.py": "e3ea7f4424a458ffd2dd13865ef780e639064b82504d3106c06b14e45988b8c7",
+    "preflight.py": "c5b76502579db7a27683f6dd659b87c7c760a2fa6ca43d9ca5e8f0cb6b21062d",
+    "profile.py": "f28ffd292cc7bbef3e4b47d89b7c755705f20d4fdcd3804a0b4163a2a4c46bef",
+    "run_synthetic_tests.py": "022fe5ebacf06be93c2f62c560f8fc0955c0a04cb65d004f62bbd7be5a2eefd9",
+    "test_bounded_json.py": "326957968eff34d05390db49dc80444c74b6d17cf9a19a9b399c8b0d24c878b7",
+    "test_cli.py": "13bf69d637690861bae510869ea805e49d3ffd79758c1c317dec85ce896b9a8c",
+    "test_custody.py": "2f9d6b1efe91acf7b54e8dcffa55b6a49c835da67d91ab8c887245e8df46ae86",
+    "test_inventory.py": "38bb9fd8074aedb9ed60b9813ca9221f01cfa726804bedc3e380a09147dd5106",
+    "test_metadata.py": "21511d8f80aebc4c831337a9ceed38ca78e5d2733f30dc05a273395a48e2d68d"
+  },
+  "changed": [
+    "custody.py",
+    "test_custody.py"
+  ],
+  "python": "3.12.14",
+  "commands": [
+    "timeout 60s python3 -B SOURCE/run_synthetic_tests.py",
+    "timeout 60s python3 -B -O SOURCE/run_synthetic_tests.py"
+  ],
+  "source_is_exact_subtree_archive_not_full_worktree": true
+}

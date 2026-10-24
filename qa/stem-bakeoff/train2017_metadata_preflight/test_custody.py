@@ -35,10 +35,48 @@ class CustodyTests(unittest.TestCase):
 
             # Model coarse/colliding stat timestamps: changed bytes must still
             # fail even if the metadata signature appears unchanged.
-            file.write_bytes(b"original")
-            with patch.object(p, "signature", return_value=(0, 0, 8, 0, 0)):
-                with self.assertRaises(PreflightError), p.pinned_file(file, 8, digest):
+            for consumed in (0, 1, 7, 8):
+                file.write_bytes(b"original")
+                with (
+                    self.subTest(consumed=consumed),
+                    patch.object(p, "signature", return_value=(0, 0, 8, 0, 0)),
+                    self.assertRaisesRegex(
+                        PreflightError, "source bytes changed during preflight"
+                    ),
+                    p.pinned_file(file, 8, digest) as stream,
+                ):
+                    self.assertEqual(stream.read(consumed), b"original"[:consumed])
                     file.write_bytes(b"modified")
+
+            # Partial consumption alone remains valid; the final verifier seeks.
+            file.write_bytes(b"original")
+            with p.pinned_file(file, 8, digest) as stream:
+                self.assertEqual(stream.read(1), b"o")
+
+            # Keep the actual ZIP consumer's seek/read interface compatible.
+            payload = b'{"info":{},"images":[]}'
+            buffer = io.BytesIO()
+            with zipfile.ZipFile(buffer, "w") as archive:
+                archive.writestr("annotations/fixture.json", payload)
+            raw = buffer.getvalue()
+            file.write_bytes(raw)
+            profile = (
+                len(payload),
+                len(payload),
+                hashlib.sha256(payload).hexdigest(),
+                len(payload),
+            )
+            with (
+                patch.dict(p.MEMBERS, fixture=profile),
+                p.pinned_file(file, len(raw), hashlib.sha256(raw).hexdigest()) as stream,
+                zipfile.ZipFile(stream) as archive,
+            ):
+                receipts = {}
+                self.assertEqual(
+                    list(p.member_records(archive, "fixture", {"images"}, receipts)),
+                    [],
+                )
+                self.assertEqual(receipts["fixture"]["sha256"], profile[2])
 
     def test_zip_member_sizes_hashes_duplicates_and_type(self):
         raw = b'{"info":{},"images":[]}'
