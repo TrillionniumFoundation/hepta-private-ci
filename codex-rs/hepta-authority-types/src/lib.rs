@@ -66,3 +66,8 @@ pub use authority_host_bootstrap::HostAuthorityPublicBootstrapV1;
 pub use authority_host_bootstrap::HostAuthorityPublicConsumerV1;
 pub use authority_host_bootstrap::HostAuthorityPublicConsumersV1;
 pub use authority_host_bootstrap::HostAuthorityPublicIssuerKeyV1;
+
+mod authbus;
+pub use authbus::AuthBusObjectiveBody;
+pub use authbus::AuthBusObjectiveIngress;
+pub use authbus::SignedMessageClaims;

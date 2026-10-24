@@ -3450,6 +3450,7 @@ dependencies = [
 name = "codex-hepta-agent-protocol"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-authority-types",
  "codex-hepta-automation",
  "codex-hepta-contracts",
  "codex-hepta-fleet",
@@ -3533,6 +3534,7 @@ dependencies = [
 name = "codex-hepta-authbus"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-authority-types",
  "codex-hepta-types",
  "codex-state",
  "codex-utils-absolute-path",
@@ -3577,6 +3579,7 @@ dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-fleet",
  "codex-hepta-paths",
+ "codex-hepta-types",
  "ed25519-dalek",
  "serde",
  "serde_json",
