@@ -1,6 +1,7 @@
 //! Ephemeral admission/join gate; durable pending state remains in the writer.
 use crate::AgentdError;
 use crate::AgentdState;
+use crate::state::NativeCpuRuntimeOwners;
 use std::net::Shutdown;
 use std::os::unix::net::UnixStream;
 use std::sync::Arc;
@@ -11,7 +12,7 @@ use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
 pub(crate) struct NativeCpuIngress {
-    state: OnceLock<Weak<AgentdState>>,
+    state: OnceLock<Weak<AgentdState<NativeCpuRuntimeOwners>>>,
     serial: Arc<tokio::sync::Mutex<()>>,
     closed: AtomicBool,
     stopping: AtomicBool,
@@ -27,7 +28,10 @@ impl NativeCpuIngress {
             rpc: Mutex::new(None),
         }
     }
-    pub(crate) fn attach_state(&self, state: &Arc<AgentdState>) -> Result<(), AgentdError> {
+    pub(crate) fn attach_state(
+        &self,
+        state: &Arc<AgentdState<NativeCpuRuntimeOwners>>,
+    ) -> Result<(), AgentdError> {
         self.state
             .set(Arc::downgrade(state))
             .map_err(|_| AgentdError::Invalid("native admission already registered".into()))

@@ -8,6 +8,7 @@ use crate::AgentdError;
 use crate::AgentdRootAuthoritySession;
 use crate::AgentdState;
 use crate::RuntimeTasks;
+use crate::state::NativeCpuRuntimeOwners;
 use std::future::Future;
 use std::sync::Arc;
 use std::time::Duration;
@@ -36,7 +37,7 @@ where
     })?;
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
-    let state = Arc::new(AgentdState::new(
+    let state = Arc::new(AgentdState::<NativeCpuRuntimeOwners>::new_native_cpu(
         identity.clone(),
         registry,
         /*event_capacity*/ 128,
@@ -108,7 +109,7 @@ where
                 }
                 tokio::time::sleep(Duration::from_millis(10)).await;
             }
-            crate::runtime::drain_runtime(state).await
+            state.mark_draining()
         })
         .await?;
     // All runtime workers are joined before the one original owner publishes
@@ -125,7 +126,7 @@ where
 }
 
 async fn monitor(
-    state: Arc<AgentdState>,
+    state: Arc<AgentdState<NativeCpuRuntimeOwners>>,
     host: Arc<crate::AgentdProductionWriterHost>,
     ingress: Arc<crate::native_cpu_ingress::NativeCpuIngress>,
     cancellation: CancellationToken,

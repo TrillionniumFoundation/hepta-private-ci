@@ -23,6 +23,10 @@ use crate::AgentdResponse;
 use crate::AgentdState;
 use crate::MAX_CONTROL_FRAME_BYTES;
 use crate::error::io_context;
+use crate::state::AgentdRuntimeProfile;
+use crate::state::FullRuntimeOwners;
+#[cfg(target_os = "linux")]
+use crate::state::NativeCpuRuntimeOwners;
 
 const CONNECTION_CAPACITY: usize = 32;
 const IO_TIMEOUT: Duration = Duration::from_secs(2);
@@ -30,9 +34,9 @@ const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
 
 /// Static host composition keeps finite Organ dispatch out of the full router.
 /// Neither the request schema nor the peer chooses this profile.
-trait ControlProfile {
+trait ControlProfile<S: AgentdRuntimeProfile> {
     fn response(
-        state: &AgentdState,
+        state: &AgentdState<S>,
         request: crate::AgentdRequest,
     ) -> impl std::future::Future<Output = Result<AgentdResponse, AgentdError>> + Send;
 }
@@ -43,7 +47,7 @@ struct NotesControlProfile;
 #[cfg(target_os = "linux")]
 struct NativeCpuControlProfile;
 
-impl ControlProfile for FullControlProfile {
+impl ControlProfile<FullRuntimeOwners> for FullControlProfile {
     async fn response(
         state: &AgentdState,
         request: crate::AgentdRequest,
@@ -55,7 +59,7 @@ impl ControlProfile for FullControlProfile {
 }
 
 #[cfg(target_os = "linux")]
-impl ControlProfile for NotesControlProfile {
+impl ControlProfile<FullRuntimeOwners> for NotesControlProfile {
     async fn response(
         state: &AgentdState,
         request: crate::AgentdRequest,
@@ -67,9 +71,9 @@ impl ControlProfile for NotesControlProfile {
 }
 
 #[cfg(target_os = "linux")]
-impl ControlProfile for NativeCpuControlProfile {
+impl ControlProfile<NativeCpuRuntimeOwners> for NativeCpuControlProfile {
     async fn response(
-        state: &AgentdState,
+        state: &AgentdState<NativeCpuRuntimeOwners>,
         request: crate::AgentdRequest,
     ) -> Result<AgentdResponse, AgentdError> {
         state
@@ -78,18 +82,18 @@ impl ControlProfile for NativeCpuControlProfile {
     }
 }
 
-pub(crate) struct AgentdControlServer {
+pub(crate) struct AgentdControlServer<S: AgentdRuntimeProfile = FullRuntimeOwners> {
     listener: UnixListener,
     socket_path: PathBuf,
-    state: Arc<AgentdState>,
+    state: Arc<AgentdState<S>>,
     cancellation: CancellationToken,
     connections: Arc<Semaphore>,
 }
 
-impl AgentdControlServer {
+impl<S: AgentdRuntimeProfile> AgentdControlServer<S> {
     pub(crate) async fn bind(
         socket_path: PathBuf,
-        state: Arc<AgentdState>,
+        state: Arc<AgentdState<S>>,
         cancellation: CancellationToken,
     ) -> Result<Self, AgentdError> {
         prepare_socket(&socket_path).await?;
@@ -106,21 +110,7 @@ impl AgentdControlServer {
         })
     }
 
-    pub(crate) async fn run(self) -> Result<(), AgentdError> {
-        self.run_for::<FullControlProfile>().await
-    }
-
-    #[cfg(target_os = "linux")]
-    pub(crate) async fn run_notes(self) -> Result<(), AgentdError> {
-        self.run_for::<NotesControlProfile>().await
-    }
-
-    #[cfg(target_os = "linux")]
-    pub(crate) async fn run_native_cpu(self) -> Result<(), AgentdError> {
-        self.run_for::<NativeCpuControlProfile>().await
-    }
-
-    async fn run_for<P: ControlProfile + 'static>(mut self) -> Result<(), AgentdError> {
+    async fn run_for<P: ControlProfile<S> + 'static>(mut self) -> Result<(), AgentdError> {
         loop {
             let stream = tokio::select! {
                 _ = self.cancellation.cancelled() => return Ok(()),
@@ -138,13 +128,31 @@ impl AgentdControlServer {
             let state = Arc::clone(&self.state);
             tokio::spawn(async move {
                 let _permit = permit;
-                let _ = timeout(IO_TIMEOUT, serve_connection::<P>(stream, state)).await;
+                let _ = timeout(IO_TIMEOUT, serve_connection::<P, S>(stream, state)).await;
             });
         }
     }
 }
 
-impl Drop for AgentdControlServer {
+impl AgentdControlServer {
+    pub(crate) async fn run(self) -> Result<(), AgentdError> {
+        self.run_for::<FullControlProfile>().await
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) async fn run_notes(self) -> Result<(), AgentdError> {
+        self.run_for::<NotesControlProfile>().await
+    }
+}
+
+#[cfg(target_os = "linux")]
+impl AgentdControlServer<NativeCpuRuntimeOwners> {
+    pub(crate) async fn run_native_cpu(self) -> Result<(), AgentdError> {
+        self.run_for::<NativeCpuControlProfile>().await
+    }
+}
+
+impl<S: AgentdRuntimeProfile> Drop for AgentdControlServer<S> {
     fn drop(&mut self) {
         if let Err(error) = std::fs::remove_file(&self.socket_path)
             && error.kind() != ErrorKind::NotFound
@@ -157,9 +165,9 @@ impl Drop for AgentdControlServer {
     }
 }
 
-async fn serve_connection<P: ControlProfile>(
+async fn serve_connection<P: ControlProfile<S>, S: AgentdRuntimeProfile>(
     stream: UnixStream,
-    state: Arc<AgentdState>,
+    state: Arc<AgentdState<S>>,
 ) -> Result<(), AgentdError> {
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
@@ -205,8 +213,8 @@ async fn serve_connection<P: ControlProfile>(
     Ok(())
 }
 
-fn error_response(
-    state: &AgentdState,
+fn error_response<S: AgentdRuntimeProfile>(
+    state: &AgentdState<S>,
     request_id: u64,
     spawn_generation: u64,
     code: &str,

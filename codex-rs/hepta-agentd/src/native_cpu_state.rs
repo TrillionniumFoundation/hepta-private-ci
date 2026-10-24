@@ -4,7 +4,7 @@ use crate::AgentdMethod;
 use crate::AgentdPayload;
 use crate::AgentdResponse;
 
-impl AgentdState {
+impl AgentdState<NativeCpuRuntimeOwners> {
     pub(crate) fn check_native_cpu_authority(&self) -> Result<(), AgentdError> {
         let root = self.native_cpu_root.get().ok_or_else(|| {
             AgentdError::Invalid("native CPU owner has no original Root session".into())
