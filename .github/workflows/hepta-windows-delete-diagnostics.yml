@@ -68,6 +68,7 @@ jobs:
             'codex-rs/windows-sandbox-rs/src/token_delete_capability_controls_tests.rs',
             'codex-rs/windows-sandbox-rs/src/acl.rs',
             'codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs',
+            'codex-rs/windows-sandbox-rs/src/unified_exec/legacy_delete_probe.rs',
             'codex-rs/windows-sandbox-rs/src/unified_exec/backends/legacy.rs'
           )
           $hashes = [ordered]@{}
@@ -156,6 +157,11 @@ jobs:
             Set-Content "$env:EVIDENCE_DIR/strict-controls.jsonl" -Encoding utf8
           $controls = @($controlRecords | ForEach-Object { $_.Substring('HEPTA_DELETE_CAPABILITY_CONTROL '.Length) | ConvertFrom-Json })
           $controlsComplete = $controls.Count -eq 1 -and $controls[0].schema -ceq 'hepta.windows-delete-capability-control.v1' -and $controls[0].route -ceq 'object_delete_without_parent_delete_child'
+          $childRecords = @(Get-Content "$env:EVIDENCE_DIR/stdout.log" | ForEach-Object { $_.TrimStart() } | Where-Object { $_.StartsWith('HEPTA_LEGACY_DELETE_CHILD ') })
+          $childRecords | ForEach-Object { $_.Substring('HEPTA_LEGACY_DELETE_CHILD '.Length) } |
+            Set-Content "$env:EVIDENCE_DIR/legacy-child.jsonl" -Encoding utf8
+          $children = @($childRecords | ForEach-Object { $_.Substring('HEPTA_LEGACY_DELETE_CHILD '.Length) | ConvertFrom-Json })
+          $childComplete = $children.Count -eq 1 -and $children[0].schema -ceq 'hepta.windows-legacy-delete-child.v1' -and $children[0].parent_and_executable_verified -eq $true -and $children[0].source -ceq 'actual_legacy_cmd_child_before_delete'
           [ordered]@{
             schema = 'hepta.windows-delete-native-run.v1'
             source_sha = $env:EXPECTED_SHA
@@ -168,6 +174,7 @@ jobs:
             all_routes_recorded = $routesComplete
             observed_strict_control_count = $controls.Count
             strict_control_recorded = $controlsComplete
+            legacy_child_observation_recorded = $childComplete
             sandbox_qualified = $false
             production_token_modified = $false
             original_blocking_ci_required = $true
@@ -175,7 +182,7 @@ jobs:
           "### Windows DELETE focused diagnostics`nNative test exit: $testExit`nObserved cases: $($selected.Count)/5`nRoutes: $($routes.Count)/5`nStrict controls: $($controls.Count)/1`nSandbox qualification: **not granted**; original blocking CI remains required." |
             Add-Content $env:GITHUB_STEP_SUMMARY
           if ($testExit -ne 0) { exit $testExit }
-          if ($selectionError -or -not $routesComplete -or -not $controlsComplete -or $failedCount -ne 0) { throw 'Native evidence is incomplete or failed; see native-run.json' }
+          if ($selectionError -or -not $routesComplete -or -not $controlsComplete -or -not $childComplete -or $failedCount -ne 0) { throw 'Native evidence is incomplete or failed; see native-run.json' }
 
       - name: Verify unchanged source and hash retained evidence
         if: always()

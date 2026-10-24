@@ -3,6 +3,9 @@
 #[path = "acl_setup_tests.rs"]
 mod acl_setup_tests;
 
+#[path = "legacy_delete_probe.rs"]
+mod legacy_delete_probe;
+
 use super::WindowsSandboxSessionRequest;
 use super::spawn_windows_sandbox_session_elevated_for_permission_profile;
 use super::spawn_windows_sandbox_session_for_level;
@@ -710,6 +713,8 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
             &script,
             concat!(
                 "@echo off\r\n",
+                // Diagnostic-only stdin barrier. The actual legacy cmd deletes remain unchanged.
+                "set /p HEPTA_DELETE_PROBE_READY=\r\n",
                 "del /f /q \"%WORKSPACE_DELETE%\"\r\n",
                 "del /f /q \"%TEMP_DELETE%\"\r\n",
                 "del /f /q \"%TMP_DELETE%\"\r\n",
@@ -762,12 +767,70 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
             &[],
             &[],
             /*tty*/ false,
-            /*stdin_open*/ false,
+            /*stdin_open*/ true,
             /*use_private_desktop*/ true,
         )
         .await
         .expect("spawn legacy delete session");
         let mut spawned = spawned;
+        // Keep this diagnostic confined to the real child and test-owned paths.
+        // Drop releases stdin on any probe error; no unrelated process is touched.
+        struct ReleaseBarrier<'a> {
+            sender: mpsc::Sender<Vec<u8>>,
+            owned_session: &'a codex_utils_pty::ProcessHandle,
+        }
+        impl Drop for ReleaseBarrier<'_> {
+            fn drop(&mut self) {
+                if self.sender.try_send(b"\r\n".to_vec()).is_err() {
+                    // This is the session owned by this fixture, never an enumerated PID.
+                    self.owned_session.request_terminate();
+                }
+            }
+        }
+        let release = ReleaseBarrier {
+            sender: spawned.session.writer_sender(),
+            owned_session: &spawned.session,
+        };
+        let diagnostic_paths = [
+            ("workspace_root", workspace.clone()),
+            ("workspace_file", workspace_file.clone()),
+            ("temp_root", temp_root.clone()),
+            ("temp_file", temp_file.clone()),
+            ("tmp_root", tmp_root.clone()),
+            ("tmp_file", tmp_file.clone()),
+            ("outside_root", outside_root.clone()),
+            ("outside_file", outside_file.clone()),
+            ("protected_git_dir", protected_git_dir.clone()),
+        ];
+        // Win32 reads run off this current-thread runtime so the two-second
+        // observation limit and the existing five-second session timeout work.
+        let probe = tokio::task::spawn_blocking(move || {
+            let paths: Vec<_> = diagnostic_paths
+                .iter()
+                .map(|(role, path)| (*role, path.as_path()))
+                .collect();
+            legacy_delete_probe::observe(&paths)
+        });
+        let observation = match timeout(Duration::from_secs(2), probe).await {
+            Ok(Ok(result)) => result,
+            Ok(Err(_)) => Err(anyhow::anyhow!("child diagnostic worker failed")),
+            Err(_) => Err(anyhow::anyhow!("child diagnostic deadline")),
+        };
+        // A timed-out read-only worker may finish later; its result is dropped.
+        match observation {
+            Ok(value) => eprintln!("HEPTA_LEGACY_DELETE_CHILD {value}"),
+            Err(error) => eprintln!(
+                "HEPTA_LEGACY_DELETE_CHILD {}",
+                serde_json::json!({
+                    "schema": "hepta.windows-legacy-delete-child.v1",
+                    "status": "probe_failed",
+                    "error": error.to_string(),
+                    "stdin_barrier": true,
+                    "sandbox_qualified": false,
+                })
+            ),
+        }
+        drop(release);
         let (_, unused_stderr_rx) = mpsc::channel(/*buffer*/ 1);
         let mut stderr_rx = std::mem::replace(&mut spawned.stderr_rx, unused_stderr_rx);
         let stderr_task = tokio::spawn(async move {
