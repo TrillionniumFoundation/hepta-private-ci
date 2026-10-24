@@ -1,0 +1,91 @@
+{
+  "startedAt": "2026-10-23T23:50:57.450877+00:00",
+  "phase": "finished",
+  "qualified": false,
+  "sourceFrozenAt": "f4044f8d77b1c1142f84525b1b1f243e2ddf95d6",
+  "productionFenceChanged": false,
+  "originalAssertionsDeadlinesRetriesChanged": false,
+  "sourceMutationAllowed": false,
+  "finalUnifiedFullQualified": false,
+  "nativeAsterinasQualified": false,
+  "testedBase": "f4044f8d77b1c1142f84525b1b1f243e2ddf95d6",
+  "testedDiffSha256": "640e8d5025dd653331aa66ec74e4995fbef54a92f3d8d514c4020354119947cb",
+  "helperCopyRoot": "/data/hh.3h35nezo",
+  "helperManifest": "/data/hh.3h35nezo/manifest.json",
+  "standardTargetRunner": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/remaining_three_fixed_helper_runner.py",
+  "environment": {
+    "TMPDIR": "/data/hf.jinjza8w",
+    "RUNNER_TEMP": "/data/hf.jinjza8w/r",
+    "RUSTUP_TOOLCHAIN": "1.95.0",
+    "CARGO_TARGET_DIR": "/data/hepta-mcp-integer-target",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_NET_OFFLINE": "true"
+  },
+  "originalBudgetSeconds": 30,
+  "exactFinishObserverSharesOriginalBudget": true,
+  "results": {
+    "core-exact-finish-02-compact-after": {
+      "expression": "test(compact_v2_overload_without_retry_after_exhausts_request_retries)",
+      "exitCode": 0,
+      "elapsedSeconds": 213.17650789301842
+    },
+    "core-exact-finish-02-deferred-after": {
+      "expression": "test(deferred_executor_promotes_primary_environment_when_startup_completes)",
+      "exitCode": 0,
+      "elapsedSeconds": 4.282478627981618
+    },
+    "core-exact-finish-02-settings-after": {
+      "expression": "test(settings_update_does_not_retarget_active_turn_environment)",
+      "exitCode": 0,
+      "elapsedSeconds": 3.5868587880395353
+    },
+    "core-exact-finish-02-permissions-after": {
+      "expression": "test(environment_permissions_follow_configuration_ownership)",
+      "exitCode": 0,
+      "elapsedSeconds": 4.188864934025332
+    },
+    "core-exact-finish-02-observer-contract": {
+      "expression": "test(normal_completion_observer_) | test(admission_fence_waiters_observe_cleanup_without_retiring_its_owner)",
+      "exitCode": 0,
+      "elapsedSeconds": 2.5323546160943806
+    },
+    "core-exact-finish-02-related-owning": {
+      "exitCode": 100,
+      "elapsedSeconds": 80.40684343199246
+    }
+  },
+  "finishedAt": "2026-10-23T23:56:39.653368+00:00",
+  "scopedResults": {
+    "core-exact-finish-02-compact-after": {
+      "expression": "test(compact_v2_overload_without_retry_after_exhausts_request_retries)",
+      "exitCode": 0,
+      "elapsedSeconds": 213.17650789301842
+    },
+    "core-exact-finish-02-deferred-after": {
+      "expression": "test(deferred_executor_promotes_primary_environment_when_startup_completes)",
+      "exitCode": 0,
+      "elapsedSeconds": 4.282478627981618
+    },
+    "core-exact-finish-02-settings-after": {
+      "expression": "test(settings_update_does_not_retarget_active_turn_environment)",
+      "exitCode": 0,
+      "elapsedSeconds": 3.5868587880395353
+    },
+    "core-exact-finish-02-permissions-after": {
+      "expression": "test(environment_permissions_follow_configuration_ownership)",
+      "exitCode": 0,
+      "elapsedSeconds": 4.188864934025332
+    },
+    "core-exact-finish-02-observer-contract": {
+      "expression": "test(normal_completion_observer_) | test(admission_fence_waiters_observe_cleanup_without_retiring_its_owner)",
+      "exitCode": 0,
+      "elapsedSeconds": 2.5323546160943806
+    },
+    "core-exact-finish-02-related-owning": {
+      "exitCode": 100,
+      "elapsedSeconds": 80.40684343199246
+    }
+  },
+  "trackedInputsUnchangedDuringTests": true,
+  "noProductionAdmissionAuthorityChanged": true
+}
