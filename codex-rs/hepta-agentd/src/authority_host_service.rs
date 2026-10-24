@@ -44,6 +44,14 @@ mod material_install;
 mod material_startup;
 use material_startup::RequiredMaterialStartup;
 
+#[path = "root_notes_launch_server.rs"]
+mod notes_launch;
+pub use notes_launch::RootNotesAuthorityStartup;
+pub use notes_launch::RootNotesAwaitingSession;
+pub use notes_launch::RootNotesLaunchServer;
+pub use notes_launch::RootNotesReservedTarget;
+pub use notes_launch::RootNotesSessionChannels;
+
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]
 pub enum HostAuthorityLane {

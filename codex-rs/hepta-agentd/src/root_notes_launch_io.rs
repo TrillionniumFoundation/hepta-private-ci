@@ -8,6 +8,31 @@ use std::os::fd::FromRawFd;
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
 
+pub(crate) fn require_connected_unix_datagram(descriptor: &OwnedFd) -> io::Result<()> {
+    let mut kind: libc::c_int = 0;
+    let mut kind_len = mem::size_of_val(&kind) as libc::socklen_t;
+    // SAFETY: both output pointers are initialized and bounded for getsockopt.
+    if unsafe { libc::getsockopt(descriptor.as_raw_fd(), libc::SOL_SOCKET, libc::SO_TYPE,
+        (&mut kind as *mut libc::c_int).cast(), &mut kind_len) } < 0 {
+        return Err(io::Error::last_os_error());
+    }
+    if kind != libc::SOCK_DGRAM || kind_len as usize != mem::size_of_val(&kind) {
+        return Err(invalid());
+    }
+    // SAFETY: zeroed sockaddr_storage is valid writable syscall output.
+    let mut address: libc::sockaddr_storage = unsafe { mem::zeroed() };
+    let mut address_len = mem::size_of_val(&address) as libc::socklen_t;
+    // SAFETY: the socket and full initialized output buffer remain live.
+    if unsafe { libc::getpeername(descriptor.as_raw_fd(),
+        (&mut address as *mut libc::sockaddr_storage).cast(), &mut address_len) } < 0 {
+        return Err(io::Error::last_os_error());
+    }
+    if address.ss_family != libc::AF_UNIX as libc::sa_family_t {
+        return Err(invalid());
+    }
+    Ok(())
+}
+
 pub(super) fn receive(stream: &UnixStream, bytes: &mut [u8]) -> io::Result<(usize, Vec<OwnedFd>)> {
     let mut control = [0usize; 16];
     let mut iov = libc::iovec {

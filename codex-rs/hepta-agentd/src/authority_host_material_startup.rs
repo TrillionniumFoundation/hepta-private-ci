@@ -24,6 +24,10 @@ enum StartupState {
 }
 
 impl RequiredMaterialStartup {
+    pub(super) fn is_pending(&self) -> bool {
+        self.state.load(Ordering::Acquire) == StartupState::Pending as u8
+    }
+
     fn open(root: &Path) -> io::Result<Self> {
         codex_hepta_contracts::RootAuthorityDirectory::open(root).map_err(io::Error::other)?;
         let directory = std::fs::OpenOptions::new().read(true)

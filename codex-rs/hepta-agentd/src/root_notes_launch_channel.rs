@@ -347,7 +347,7 @@ fn bounded_text(path: &str, bound: usize) -> io::Result<String> {
     }
     Ok(value)
 }
-fn validate_process(peer: &CognitiveCheckpointPeerLifetime) -> io::Result<()> {
+pub(crate) fn validate_process(peer: &CognitiveCheckpointPeerLifetime) -> io::Result<()> {
     let stat = bounded_text(&format!("/proc/{}/stat", peer.pid), 8192)?;
     let status = bounded_text(&format!("/proc/{}/status", peer.pid), 8192)?;
     let fields: Vec<_> = stat
