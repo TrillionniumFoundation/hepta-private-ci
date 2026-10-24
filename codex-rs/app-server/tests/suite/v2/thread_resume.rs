@@ -405,7 +405,7 @@ async fn wait_for_responses_request_count(
 }
 
 #[tokio::test]
-async fn thread_resume_rejects_unmaterialized_thread() -> Result<()> {
+async fn thread_resume_materializes_the_same_live_thread_without_starting_a_turn() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;
     mock_responses_config(&server.uri()).write(codex_home.path())?;
@@ -425,7 +425,67 @@ async fn thread_resume_rejects_unmaterialized_thread() -> Result<()> {
     let ThreadStartResponse { thread, .. } =
         timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(start_id)).await??;
 
-    // Resume should fail before the first user message materializes rollout storage.
+    let thread_path = thread.path.as_ref().expect("live thread has a rollout path");
+    assert!(!thread_path.exists());
+
+    // Repeated attaches must materialize through the live writer and retain the
+    // original Core session; they must not cold-resume or synthesize a user turn.
+    for _ in 0..2 {
+        let resume_id = mcp
+            .send_thread_resume_request(ThreadResumeParams {
+                thread_id: thread.id.clone(),
+                ..Default::default()
+            })
+            .await?;
+        let ThreadResumeResponse { thread: resumed, .. } =
+            timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(resume_id)).await??;
+        assert_eq!(
+            (&resumed.id, &resumed.session_id, &resumed.path, &resumed.turns),
+            (&thread.id, &thread.session_id, &thread.path, &thread.turns),
+        );
+        assert!(resumed.turns.is_empty());
+    }
+    assert!(thread_path.exists());
+    let loaded: ThreadLoadedListResponse = mcp
+        .request(|request_id| ClientRequest::ThreadLoadedList {
+            request_id,
+            params: ThreadLoadedListParams::default(),
+        })
+        .await?;
+    assert_eq!(loaded.data, vec![thread.id]);
+    wait_for_responses_request_count(&server, /*expected_count*/ 0).await?;
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn thread_resume_rejects_unmaterialized_thread_without_a_live_owner() -> Result<()> {
+    let server = create_mock_responses_server_repeating_assistant("Done").await;
+    let codex_home = TempDir::new()?;
+    mock_responses_config(&server.uri()).write(codex_home.path())?;
+
+    let mut mcp = TestAppServer::builder()
+        .with_codex_home(codex_home.path())
+        .build_initialized()
+        .await?;
+    let start_id = mcp
+        .send_thread_start_request_with_auto_env(ThreadStartParams {
+            model: Some("gpt-5.4".to_string()),
+            ..Default::default()
+        })
+        .await?;
+    let ThreadStartResponse { thread, .. } =
+        timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(start_id)).await??;
+    let thread_path = thread.path.as_ref().expect("live thread has a rollout path");
+    assert!(!thread_path.exists());
+    timeout(DEFAULT_READ_TIMEOUT, mcp.kill_ungracefully()).await??;
+    assert!(!thread_path.exists());
+
+    // A remembered id is not sufficient to recreate an unpersisted Core owner.
+    let mut mcp = TestAppServer::builder()
+        .with_codex_home(codex_home.path())
+        .build_initialized()
+        .await?;
     let resume_id = mcp
         .send_thread_resume_request(ThreadResumeParams {
             thread_id: thread.id.clone(),
@@ -445,6 +505,14 @@ async fn thread_resume_rejects_unmaterialized_thread() -> Result<()> {
         "unexpected resume error: {}",
         resume_err.error.message
     );
+    let loaded: ThreadLoadedListResponse = mcp
+        .request(|request_id| ClientRequest::ThreadLoadedList {
+            request_id,
+            params: ThreadLoadedListParams::default(),
+        })
+        .await?;
+    assert_eq!(loaded.data, Vec::<String>::new());
+    wait_for_responses_request_count(&server, /*expected_count*/ 0).await?;
 
     Ok(())
 }
@@ -1192,7 +1260,12 @@ async fn cold_resume_reresolves_persisted_active_permission_profile() -> Result<
             ..
         } = timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(resume_id)).await??;
 
-        assert!(matches!(sandbox, AppSandboxPolicy::ReadOnly { .. }));
+        assert_eq!(
+            sandbox,
+            AppSandboxPolicy::ReadOnly {
+                network_access: false,
+            },
+        );
         assert_eq!(
             active_permission_profile,
             Some(ActivePermissionProfile {
@@ -1200,10 +1273,12 @@ async fn cold_resume_reresolves_persisted_active_permission_profile() -> Result<
                 extends: Some(BUILT_IN_PERMISSION_PROFILE_READ_ONLY.to_string()),
             })
         );
-        assert!(
-            !runtime_workspace_roots.contains(&AbsolutePathBuf::from_absolute_path(
-                previous_workspace_root.path(),
-            )?)
+        // Runtime roots belong to the persisted execution environment. Reload
+        // the current profile's permissions without erasing that environment
+        // or carrying its old workspace-write grant into the resumed session.
+        assert_eq!(
+            runtime_workspace_roots,
+            vec![AbsolutePathBuf::from_absolute_path(previous_workspace_root.path())?],
         );
     }
     Ok(())

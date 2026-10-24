@@ -170,54 +170,67 @@ async fn selected_executor_discovers_browser_mcp_with_executor_only_bearer_token
     let thread_id = start_thread(&mut app_server, /*selected_capability_roots*/ None).await?;
 
     let namespace = format!("mcp__{PROJECT_MCP_SERVER_NAME}");
-    let response_mock = responses::mount_sse_sequence(
-        &responses_server,
-        vec![
-            responses::sse(vec![
-                responses::ev_response_created("resp-browser-mcp-call"),
-                responses::ev_function_call_with_namespace(
-                    "browser-mcp-call",
-                    &namespace,
-                    "echo",
-                    &json!({"message": "browser use works"}).to_string(),
-                ),
-                responses::ev_completed("resp-browser-mcp-call"),
-            ]),
-            responses::sse(vec![
-                responses::ev_response_created("resp-browser-mcp-done"),
-                responses::ev_assistant_message("msg-browser-mcp-done", "Done"),
-                responses::ev_completed("resp-browser-mcp-done"),
-            ]),
-        ],
-    )
-    .await;
-    let request_id = app_server
-        .send_turn_start_request(TurnStartParams {
-            thread_id: thread_id.clone(),
-            input: vec![UserInput::Text {
-                text: "Use the executor browser".to_string(),
-                text_elements: Vec::new(),
-            }],
-            ..Default::default()
-        })
-        .await?;
-    let _: TurnStartResponse =
-        timeout(DEFAULT_READ_TIMEOUT, app_server.read_response(request_id)).await??;
-    timeout(
-        DEFAULT_READ_TIMEOUT,
-        app_server.read_stream_until_notification_message("turn/completed"),
-    )
-    .await??;
-    let requests = response_mock.requests();
-    assert_eq!(requests.len(), 2);
-    assert!(requests[0].tool_by_name(&namespace, "echo").is_some());
-    let output = requests[1].function_call_output("browser-mcp-call");
-    assert!(
-        output
-            .get("output")
-            .and_then(serde_json::Value::as_str)
-            .is_some_and(|output| output.contains("ECHOING: browser use works"))
-    );
+    for phase in ["initial", "reloaded"] {
+        if phase == "reloaded" {
+            let request_id = app_server
+                .send_raw_request("config/mcpServer/reload", /*params*/ None)
+                .await?;
+            timeout(
+                DEFAULT_READ_TIMEOUT,
+                app_server.read_stream_until_response_message(RequestId::Integer(request_id)),
+            )
+            .await??;
+        }
+        let call_id = format!("browser-mcp-call-{phase}");
+        let response_mock = responses::mount_sse_sequence(
+            &responses_server,
+            vec![
+                responses::sse(vec![
+                    responses::ev_response_created(&format!("resp-browser-mcp-call-{phase}")),
+                    responses::ev_function_call_with_namespace(
+                        &call_id,
+                        &namespace,
+                        "echo",
+                        &json!({"message": "browser use works"}).to_string(),
+                    ),
+                    responses::ev_completed(&format!("resp-browser-mcp-call-{phase}")),
+                ]),
+                responses::sse(vec![
+                    responses::ev_response_created(&format!("resp-browser-mcp-done-{phase}")),
+                    responses::ev_assistant_message(&format!("msg-browser-mcp-done-{phase}"), "Done"),
+                    responses::ev_completed(&format!("resp-browser-mcp-done-{phase}")),
+                ]),
+            ],
+        )
+        .await;
+        let request_id = app_server
+            .send_turn_start_request(TurnStartParams {
+                thread_id: thread_id.clone(),
+                input: vec![UserInput::Text {
+                    text: "Use the executor browser".to_string(),
+                    text_elements: Vec::new(),
+                }],
+                ..Default::default()
+            })
+            .await?;
+        let _: TurnStartResponse =
+            timeout(DEFAULT_READ_TIMEOUT, app_server.read_response(request_id)).await??;
+        timeout(
+            DEFAULT_READ_TIMEOUT,
+            app_server.read_stream_until_notification_message("turn/completed"),
+        )
+        .await??;
+        let requests = response_mock.requests();
+        assert_eq!(requests.len(), 2);
+        assert!(requests[0].tool_by_name(&namespace, "echo").is_some());
+        let output = requests[1].function_call_output(&call_id);
+        assert!(
+            output
+                .get("output")
+                .and_then(serde_json::Value::as_str)
+                .is_some_and(|output| output.contains("ECHOING: browser use works"))
+        );
+    }
 
     let servers = mcp_server_statuses(&mut app_server, thread_id).await?;
     assert!(

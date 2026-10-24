@@ -1,6 +1,8 @@
 use anyhow::Result;
 use codex_core::TurnInputRequest;
+use codex_history::RolloutItem;
 use codex_protocol::items::TurnItem;
+use codex_protocol::models::ResponseItem;
 use codex_protocol::protocol::AdditionalContextEntry;
 use codex_protocol::protocol::AdditionalContextKind;
 use codex_protocol::protocol::EventMsg;
@@ -80,10 +82,37 @@ async fn additional_context_is_model_visible_but_not_a_user_message_item() -> Re
     })
     .await;
 
+    // The local provider correctly strips internal metadata on the wire;
+    // classifications must remain on the original durable history items.
+    test.codex.flush_rollout().await?;
+    let history = test.codex.load_history(/*include_archived*/ false).await?;
+    let persisted_kinds = history
+        .items
+        .iter()
+        .filter_map(|item| match item {
+            RolloutItem::ResponseItem(ResponseItem::Message {
+                internal_chat_message_metadata_passthrough: Some(metadata),
+                ..
+            }) => metadata.content_item_kinds.as_ref(),
+            _ => None,
+        })
+        .flatten()
+        .map(|kind| kind.0.as_str())
+        .filter(|kind| kind.starts_with("additional_content.") || *kind == "user.text")
+        .collect::<Vec<_>>();
+    assert_eq!(
+        persisted_kinds,
+        vec![
+            "additional_content.automation_info",
+            "additional_content.browser_info",
+            "user.text",
+        ]
+    );
     let request = request.single_request();
-    assert!(request.has_content_kinds(&["additional_content.automation_info"]));
-    assert!(request.has_content_kinds(&["additional_content.browser_info"]));
-    assert!(request.has_content_kinds(&["user.text"]));
+    assert!(request.input().iter().all(|item| {
+        item.get("internal_chat_message_metadata_passthrough")
+            .is_none()
+    }));
     insta::assert_snapshot!(
         "additional_context_simple_input",
         context_snapshot::format_labeled_requests_snapshot(

@@ -1,4 +1,5 @@
 use assert_matches::assert_matches;
+use codex_app_server_protocol::ThreadHistoryBuilder;
 use codex_core::StartThreadOptions;
 use codex_core::SuspendTurnOutcome;
 use codex_core::TurnInputRequest;
@@ -77,7 +78,7 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
     let server = start_mock_server().await;
     // Waiting on the mocked response keeps the turn active on local and remote executors
     // without requiring an OS-specific command or a working sandboxed child process.
-    mount_response_once(
+    let pending_response = mount_response_once(
         &server,
         sse_response(sse(vec![
             ev_response_created("suspended_response"),
@@ -120,6 +121,16 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         panic!("expected a started root turn");
     };
     wait_for_event(&codex, |event| matches!(event, EventMsg::TurnStarted(_))).await;
+    // TurnStarted precedes the durable Ready boundary. Suspend only once the
+    // original request has passed its recovery checkpoint and reached the provider.
+    tokio::time::timeout(Duration::from_secs(10), async {
+        while pending_response.requests().is_empty() {
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+    })
+    .await
+    .expect("original turn should reach the provider before suspension");
+    let original_environments = codex.environment_selections().await;
 
     assert_eq!(
         codex
@@ -165,35 +176,53 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         item,
         RolloutItem::EventMsg(EventMsg::TurnAborted(_) | EventMsg::TurnComplete(_))
     )));
+    let mut history_builder = ThreadHistoryBuilder::new();
+    for item in &items {
+        history_builder.handle_rollout_item(item);
+    }
+    assert_eq!(
+        history_builder.recovery_candidate_turn_id(),
+        Some(turn_id.as_str()),
+        "the closed rollout must retain the original bound recovery candidate"
+    );
     test.thread_manager
         .remove_thread(&test.session_configured.thread_id)
         .await
         .expect("unload the suspended root");
-    let recovery_server = start_mock_server().await;
+    // Cold recovery binds the original provider deployment as well as the
+    // execution context. A different mock port or temporary cwd is a new request.
     mount_sse_once(
-        &recovery_server,
+        &server,
         sse(vec![
             ev_response_created("recovered_response"),
             ev_completed("recovered_response"),
         ]),
     )
     .await;
-    let resumed = test_codex()
-        .with_config(|config| {
-            let _ = config.features.enable(Feature::HeptaTurnRecovery);
-        })
-        .with_model("gpt-5.4")
-        .resume(&recovery_server, Arc::clone(&test.home), rollout_path)
+    let original_config = test.config.clone();
+    let mut resume_builder = test_codex().with_config(move |config| *config = original_config);
+    if let Some(exec_server_url) = test.executor_environment().exec_server_url() {
+        resume_builder = resume_builder.with_exec_server_url(exec_server_url);
+    }
+    let resumed = resume_builder
+        .resume(&server, Arc::clone(&test.home), rollout_path)
         .await
         .expect("resume the suspended root on a replacement runtime");
+    assert_eq!(
+        resumed.codex.environment_selections().await,
+        original_environments
+    );
+    let expected_epoch = resumed
+        .codex
+        .recovery_epoch_if_idle(&turn_id)
+        .await
+        .expect("the replacement runtime must expose the original idle recovery candidate");
     assert_eq!(
         resumed
             .codex
             .recover_turn_if_idle(codex_core::RecoverTurnRequest {
                 turn_id: turn_id.clone(),
-                // The suspended rollout is the initial recovery generation;
-                // no in-memory epoch is exposed until admission succeeds.
-                expected_epoch: 0,
+                expected_epoch,
                 thread_settings: Default::default(),
                 trace: None,
             })
