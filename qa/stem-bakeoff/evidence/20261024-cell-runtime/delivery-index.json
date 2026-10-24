@@ -1,0 +1,48 @@
+{
+  "all_numerical_recovery_passed": true,
+  "archive": {
+    "bytes": 147909524,
+    "filename": "hepta-cell-runtime-770-evidence-v1.tar.gz",
+    "sha256": "f2fa364efa81ffb96bfc27bc5517c43a4d3b1dcd3374d9eee7660d6c250cc498",
+    "workspace_path": "/workspace/scratch/f1f83ab8f2f0/cell-evidence-delivery-20261024/hepta-cell-runtime-770-evidence-v1.tar.gz"
+  },
+  "archive_and_recovery_source_commit": "201cccfcee22ad787fc491f484268beaa4cfdb56",
+  "archive_index": {
+    "bytes": 36760,
+    "filename": "hepta-cell-runtime-770-evidence-v1.tar.gz.index.json",
+    "sha256": "afcb12d61f1e62e86951886733f537e5a48909f5c9e2aa74b76de26cf1c2ccad",
+    "workspace_path": "/workspace/scratch/f1f83ab8f2f0/cell-evidence-delivery-20261024/hepta-cell-runtime-770-evidence-v1.tar.gz.index.json"
+  },
+  "authority": "DENY_ALL",
+  "branch": "codex/cell-local-next-20261024",
+  "code_repository": "https://github.com/TrillionniumFoundation/hepta-private-ci",
+  "evidence_cutoff": "raw archive before packaging; subsequent complete restore/replay receipts in Git closing-evidence; terminal format/publication separate",
+  "logical_bytes": 154374750,
+  "logical_file_count": 234,
+  "native_production_integrated": false,
+  "no_remote_ci_consulted": true,
+  "numerical_source_commit": "bb0d5c67ab5457e551b97fbda9a57390e3a69425",
+  "quality_qualified": false,
+  "report_artifacts": {
+    "closing-evidence.json": {
+      "bytes": 255776,
+      "filename": "closing-evidence.json",
+      "sha256": "97fa5c6dcd6e938074fcea16d41cbf8e4536d4af1c0a1cbd848987b6d0e9a7fa",
+      "workspace_path": "/workspace/scratch/f1f83ab8f2f0/hepta/qa/stem-bakeoff/evidence/20261024-cell-runtime/closing-evidence.json"
+    },
+    "runtime-facts.json": {
+      "bytes": 31392,
+      "filename": "runtime-facts.json",
+      "sha256": "aa3641e69da7c4202b4b49ef62ddb7b355330aa157e9211802e578c8c6fb4be6",
+      "workspace_path": "/workspace/scratch/f1f83ab8f2f0/hepta/qa/stem-bakeoff/evidence/20261024-cell-runtime/runtime-facts.json"
+    },
+    "runtime-summary.png": {
+      "bytes": 639009,
+      "filename": "runtime-summary.png",
+      "sha256": "462d6a1e46472684013c84462b087ddaf14223cdb7a69fd3111ce5ad049d8603",
+      "workspace_path": "/workspace/scratch/f1f83ab8f2f0/hepta/qa/stem-bakeoff/evidence/20261024-cell-runtime/runtime-summary.png"
+    }
+  },
+  "schema": "hepta.runtime-770-delivery-index.v1",
+  "unique_content_objects": 230
+}
