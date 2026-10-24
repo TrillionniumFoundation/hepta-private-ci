@@ -1,0 +1,18 @@
+{
+  "source": "103bb2011629d12c658b7004d3a4a163a548df02",
+  "scope": "Existing AutomationStore terminal effect receipt readback, no new native adapter or durable owner",
+  "baseline": "All existing authorized_effect integration tests before edits",
+  "planned_acceptance": [
+    "Exact complete terminal TaskFlowStepReceipt survives SQLite close/reopen for Succeeded and Failed outcomes",
+    "Same-identity intent mutation is Conflict, never accepted terminal result",
+    "Different command_id is Conflict",
+    "Missing attempt and indeterminate observation return None, not fabricated completed tool output",
+    "Original recovery tests remain passing; controlled provider driver only, no socket/live service"
+  ],
+  "nonclaims": [
+    "No product TurnOwner/InferenceOwner/EffectOwner adapter",
+    "No provider cancellation ACK, arbitrary tool-output persistence or live authority",
+    "No SIGKILL/power-loss qualification"
+  ],
+  "toolchain_correction": "Initial carried RUSTUP_TOOLCHAIN=1.95.0 mismatched exact repo codex-rs/rust-toolchain.toml requiring1.96.0; preserve offline and MSRV failures. Install official rustup1.96.0, no lock or rust-version bypass."
+}
