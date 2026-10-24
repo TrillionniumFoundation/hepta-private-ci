@@ -21,6 +21,9 @@ observe that dispatch or return `Unresolved`; an ambiguous connection failure
 does not authorize another provider call. A recovered terminal output may be
 replayed. Live streams begin at byte zero; EOF without `Completed` pauses the
 loop without committing partial text or executing proposed tools.
+Completion must name the exact request and reference the owner-retained full
+provider continuation. The text/tool projection cannot replace encrypted
+reasoning or other opaque provider-native items needed by the next request.
 
 `EffectOwner` adapts the existing kernel operation/destination owner or a scoped
 runtime operation. It must durably bind the deterministic operation key before

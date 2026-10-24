@@ -41,8 +41,12 @@ pub struct Usage {
     pub output_tokens: u64,
 }
 
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ModelOutput {
+    pub request_id: StableId,
+    /// Owner-retained full provider output, including opaque reasoning items.
+    /// The context owner resolves this receipt when constructing continuation.
+    pub continuation_digest: Digest32,
     pub text: String,
     pub calls: Vec<ToolCall>,
     pub usage: Usage,
@@ -81,7 +85,11 @@ pub enum Transition {
 pub enum ModelEvent {
     TextDelta(String),
     ToolCall(ToolCall),
-    Completed(Usage),
+    Completed {
+        request_id: StableId,
+        continuation_digest: Digest32,
+        usage: Usage,
+    },
 }
 
 pub enum ModelSession {
@@ -164,7 +172,10 @@ pub trait TurnOwner: Send {
 /// Existing inference owner. Reopening the same binding/request must reconcile
 /// its original dispatch. It may replay a complete result, but must never start
 /// another provider call after ambiguous acceptance. Streams begin at byte zero;
-/// a disconnected partial stream is not a terminal result.
+/// a disconnected partial stream is not a terminal result. Before completion,
+/// retain the full provider-native continuation in the owning store and bind
+/// its receipt to the exact request. Text/tool projections cannot replace
+/// opaque reasoning or other provider output required by the next request.
 pub trait InferenceOwner: Send {
     fn open_or_reconcile(
         &mut self,

@@ -170,8 +170,12 @@ fn call() -> ToolCall {
     }
 }
 
-fn output(calls: Vec<ToolCall>) -> ModelOutput {
+fn output(round: u32, calls: Vec<ToolCall>) -> ModelOutput {
     ModelOutput {
+        request_id: id(&format!("inference:{round}")),
+        continuation_digest: Digest32::of_bytes(
+            format!("full-provider-continuation:{round}").as_bytes(),
+        ),
         text: "answer".into(),
         calls,
         usage: Usage {
@@ -205,17 +209,21 @@ async fn streamed_tool_turn_commits_before_dispatch_and_resumes_model() {
         .await
         .unwrap();
     tx.send(Ok(ModelEvent::ToolCall(call()))).await.unwrap();
-    tx.send(Ok(ModelEvent::Completed(Usage {
-        input_tokens: 3,
-        output_tokens: 2,
-    })))
+    tx.send(Ok(ModelEvent::Completed {
+        request_id: id("inference:0"),
+        continuation_digest: Digest32::of_bytes(b"retained-provider-items"),
+        usage: Usage {
+            input_tokens: 3,
+            output_tokens: 2,
+        },
+    }))
     .await
     .unwrap();
     let mut context = Context::new();
     let mut inference = Inference {
         sessions: VecDeque::from([
             ModelSession::Stream(rx),
-            ModelSession::Completed(output(Vec::new())),
+            ModelSession::Completed(output(1, Vec::new())),
         ]),
         ..Default::default()
     };
@@ -224,7 +232,7 @@ async fn streamed_tool_turn_commits_before_dispatch_and_resumes_model() {
         drive(&mut context, &mut inference, &mut effects)
             .await
             .unwrap(),
-        Outcome::Completed(output(Vec::new()))
+        Outcome::Completed(output(1, Vec::new()))
     );
     assert_eq!(
         (
@@ -258,12 +266,12 @@ async fn partial_stream_never_executes_tools_and_reconnect_uses_original_request
     assert_eq!((&context.frame, effects.executions), (&original, 0));
     inference
         .sessions
-        .push_back(ModelSession::Completed(output(Vec::new())));
+        .push_back(ModelSession::Completed(output(0, Vec::new())));
     assert_eq!(
         drive(&mut context, &mut inference, &mut effects)
             .await
             .unwrap(),
-        Outcome::Completed(output(Vec::new()))
+        Outcome::Completed(output(0, Vec::new()))
     );
     assert_eq!(inference.opened, vec![id("inference:0"), id("inference:0")]);
 }
@@ -273,8 +281,8 @@ async fn unresolved_effect_keeps_exact_key_across_loop_instances() {
     let mut context = Context::new();
     let mut inference = Inference {
         sessions: VecDeque::from([
-            ModelSession::Completed(output(vec![call()])),
-            ModelSession::Completed(output(Vec::new())),
+            ModelSession::Completed(output(0, vec![call()])),
+            ModelSession::Completed(output(1, Vec::new())),
         ]),
         ..Default::default()
     };
@@ -293,7 +301,7 @@ async fn unresolved_effect_keeps_exact_key_across_loop_instances() {
         drive(&mut context, &mut inference, &mut effects)
             .await
             .unwrap(),
-        Outcome::Completed(output(Vec::new()))
+        Outcome::Completed(output(1, Vec::new()))
     );
     assert_eq!(
         (&effects.keys[0], effects.executions),
@@ -307,8 +315,8 @@ async fn commit_interruption_reconciles_effect_without_executing_it_twice() {
     context.fail_tool_commit = true;
     let mut inference = Inference {
         sessions: VecDeque::from([
-            ModelSession::Completed(output(vec![call()])),
-            ModelSession::Completed(output(Vec::new())),
+            ModelSession::Completed(output(0, vec![call()])),
+            ModelSession::Completed(output(1, Vec::new())),
         ]),
         ..Default::default()
     };
@@ -322,7 +330,7 @@ async fn commit_interruption_reconciles_effect_without_executing_it_twice() {
         drive(&mut context, &mut inference, &mut effects)
             .await
             .unwrap(),
-        Outcome::Completed(output(Vec::new()))
+        Outcome::Completed(output(1, Vec::new()))
     );
     assert_eq!(
         (&effects.keys[0], effects.executions),
@@ -412,7 +420,7 @@ async fn reconnect_does_not_reset_the_original_deadline() {
 async fn duplicate_provider_calls_are_rejected_before_any_effect() {
     let mut context = Context::new();
     let mut inference = Inference {
-        sessions: VecDeque::from([ModelSession::Completed(output(vec![call(), call()]))]),
+        sessions: VecDeque::from([ModelSession::Completed(output(0, vec![call(), call()]))]),
         ..Default::default()
     };
     let mut effects = Effects::default();
@@ -421,6 +429,37 @@ async fn duplicate_provider_calls_are_rejected_before_any_effect() {
         Err(Error::Contract("duplicate tool call"))
     ));
     assert_eq!((effects.executions, inference.cancelled), (0, 1));
+}
+
+#[tokio::test]
+async fn foreign_completion_cannot_dispatch_a_tool() {
+    let mut context = Context::new();
+    let mut inference = Inference {
+        sessions: VecDeque::from([ModelSession::Completed(output(9, vec![call()]))]),
+        ..Default::default()
+    };
+    let mut effects = Effects::default();
+    assert!(matches!(
+        drive(&mut context, &mut inference, &mut effects).await,
+        Err(Error::Contract("model completion binding"))
+    ));
+    assert_eq!(effects.executions, 0);
+}
+
+#[tokio::test]
+async fn text_only_completion_without_retained_provider_items_is_rejected() {
+    let mut context = Context::new();
+    let mut terminal = output(0, Vec::new());
+    terminal.continuation_digest = Digest32::ZERO;
+    let mut inference = Inference {
+        sessions: VecDeque::from([ModelSession::Completed(terminal)]),
+        ..Default::default()
+    };
+    let mut effects = Effects::default();
+    assert!(matches!(
+        drive(&mut context, &mut inference, &mut effects).await,
+        Err(Error::Contract("model completion binding"))
+    ));
 }
 
 #[tokio::test(start_paused = true)]

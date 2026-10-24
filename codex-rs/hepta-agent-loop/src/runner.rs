@@ -84,33 +84,44 @@ async fn drive<C: TurnOwner, I: InferenceOwner, E: EffectOwner>(
                     ModelSession::Completed(output) => output,
                     ModelSession::Unresolved => return Ok(Outcome::Paused),
                     ModelSession::Stream(mut stream) => {
-                        let mut output = ModelOutput::default();
+                        let mut text = String::new();
+                        let mut calls = Vec::new();
                         loop {
                             match stream.recv().await {
                                 None => return Ok(Outcome::Paused),
                                 Some(Err(error)) => return Err(error),
-                                Some(Ok(ModelEvent::TextDelta(text))) => {
-                                    if text.len()
-                                        > limits
-                                            .maximum_output_bytes
-                                            .saturating_sub(output.text.len())
+                                Some(Ok(ModelEvent::TextDelta(delta))) => {
+                                    if delta.len()
+                                        > limits.maximum_output_bytes.saturating_sub(text.len())
                                     {
                                         return Err(Error::Limit("stream bytes"));
                                     }
-                                    output.text.push_str(&text);
+                                    text.push_str(&delta);
                                 }
                                 Some(Ok(ModelEvent::ToolCall(call))) => {
-                                    output.calls.push(call);
-                                    validate_calls(&output.calls, limits)?;
+                                    calls.push(call);
+                                    validate_calls(&calls, limits)?;
                                 }
-                                Some(Ok(ModelEvent::Completed(usage))) => {
-                                    output.usage = usage;
-                                    break output;
+                                Some(Ok(ModelEvent::Completed {
+                                    request_id,
+                                    continuation_digest,
+                                    usage,
+                                })) => {
+                                    break ModelOutput {
+                                        request_id,
+                                        continuation_digest,
+                                        text,
+                                        calls,
+                                        usage,
+                                    };
                                 }
                             }
                         }
                     }
                 };
+                if output.request_id != request.request_id || output.continuation_digest.is_zero() {
+                    return Err(Error::Contract("model completion binding"));
+                }
                 validate_calls(&output.calls, limits)?;
                 if output.text.len() > limits.maximum_output_bytes
                     || output.usage.output_tokens > request.maximum_output_tokens
@@ -235,7 +246,9 @@ fn validate_frame(frame: &Frame, binding: &TurnBinding, limits: &Limits) -> Resu
         return Err(Error::Limit("rounds or tokens"));
     }
     if let Phase::Model(request) = &frame.phase {
-        if request.payload.len() > limits.maximum_context_bytes
+        if request.payload.is_empty()
+            || request.input_tokens == 0
+            || request.payload.len() > limits.maximum_context_bytes
             || request.maximum_output_tokens == 0
             || frame
                 .consumed_tokens
