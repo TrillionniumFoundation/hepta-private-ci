@@ -8,6 +8,7 @@
 #![forbid(unsafe_code)]
 
 pub mod controlled_aggregate;
+pub mod controlled_funding;
 
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
