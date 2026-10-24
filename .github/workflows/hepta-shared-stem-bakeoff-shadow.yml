@@ -64,6 +64,9 @@ jobs:
             test_cell_learning_metrics test_cell_learning_models test_cell_learning_baselines \
             test_cell_learning_curve test_prepare_repair_cohorts test_cell_batch_runtime \
             test_cell_training_queue test_cell_scale_probe test_source_recovery_probe \
+            test_real_cell_study_queue test_summarize_cell_study \
+            test_cell_prior_calibration_probe test_package_cell_evidence \
+            test_cell_logical_routing test_logical_routing_probe \
             2>&1 | tee "$RUNNER_TEMP/cell-learning-contracts/tests.log"
       - name: Preserve focused test evidence
         if: always()
