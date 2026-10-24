@@ -110,3 +110,36 @@ async fn terminal_publication_cannot_cover_a_newer_actual_local_generation() {
     assert_eq!(f.peer.receipt.lock().unwrap().head.phase, CognitiveCheckpointPhase::Dirty);
     assert!(f.writer.checkpoint_fenced());
 }
+
+#[tokio::test]
+async fn actual_expiry_during_terminal_publication_never_returns_a_success_receipt() {
+    let now = || std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_millis() as u64;
+    let expiry = now()/1000+5;
+    let f = ManagedFixture::with_expiry(tempfile::tempdir().unwrap(),expiry).await;
+    // Leave a real 500ms lease window; the unchanged 2s checkpoint deadline
+    // remains longer than this controlled post-publication I/O wait.
+    while now()+500<expiry*1000 { tokio::time::sleep(Duration::from_millis(10)).await; }
+    assert!(now()<expiry*1000,"fixture must enter with actual live authority");
+    f.peer.expire_commit_reply_at.store(expiry*1000+10,Ordering::SeqCst);
+    assert!(matches!(f.writer.release().await,Err(ProductionWriterError::CheckpointFenced)));
+    assert!(now()>=expiry*1000);
+    assert_eq!(f.store.inspect_local_lease_head(LEASE).await.unwrap().disposition,LocalLeaseHeadDisposition::Released);
+    assert_eq!(f.peer.receipt.lock().unwrap().head.phase,CognitiveCheckpointPhase::Current);
+    assert!(f.writer.checkpoint_fenced()); assert!(!f.store.commit_gate.commit_allowed());
+}
+
+#[tokio::test]
+async fn competing_release_calls_append_only_one_terminal_and_cannot_reopen_the_old_pool() {
+    let f = ManagedFixture::new().await;
+    let (first,second) = tokio::join!(f.writer.release(),f.writer.release());
+    assert!(!(first.is_ok() && second.is_ok()),"the same active lease may terminalize only once");
+    let head=f.store.inspect_local_lease_head(LEASE).await.unwrap().head.unwrap();
+    assert_eq!(head.state,LocalLeaseState::Released); assert_eq!(head.lease_sequence,2);
+    assert!(f.writer.checkpoint_fenced()); assert!(!f.store.commit_gate.commit_allowed());
+    if first.is_ok() || second.is_ok() {
+        let current=f.peer.receipt.lock().unwrap().head.clone();
+        assert_eq!(current.phase,CognitiveCheckpointPhase::Current);
+        assert_eq!(current.last_current,f.store.recovery_anchor().await.unwrap());
+    }
+    assert!(f.writer.admit("after-competing-terminal","no-effect","{}").await.is_err());
+}
