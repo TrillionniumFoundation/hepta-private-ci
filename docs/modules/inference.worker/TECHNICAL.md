@@ -100,8 +100,20 @@ FinalUse authority instance and complete registration, then retains
 `Indeterminate`: it has no physical-entry callback, native owner, settlement
 receipt or AuthBus release. The existing PN4 integration sequence must supply
 original funding/issuer verification and native whole-unit lifetime ownership
-before a future target can cross an actual worker boundary. Existing ordinary
-Child observations retain their narrower semantics.
+before a future target can cross an actual worker boundary. The same PN4 item
+now also provides `LedgerFundedControlledAggregate::reserve`, which uses the
+existing `AuthBusAuthorityHost`, signed trusted time, current issuer/policy and
+whole-unit quota. Its fresh `hepta.authbus.controlled-aggregate-ledger.v1` effect
+fixes every plan/admission field except the reservation ID derived by that
+ledger. The final payload and signed binding include the returned actual ID.
+`ledger_funded_unavailable` checks the sealed authority, complete registration
+and exact request binding, then rereads original funding and retains liability
+through the existing dispatch/indeterminate transitions. It creates no second
+ledger or key owner and cannot dispatch a native worker, return resources or
+refund. Seven real SQLite/signed-source test groups cover this narrower funding
+composition; actual Agentd grant-provider and native lifetime-owner integration
+remain required. Existing ordinary Child observations retain their narrower
+semantics, original assertions and eight-second deadline.
 
 Produced contracts:
 

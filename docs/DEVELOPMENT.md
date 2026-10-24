@@ -768,13 +768,26 @@ planned budget and whole-unit scope. Child-only scope, a sixteen-GiB model plan
 inside A8, and any extension of U16/A8 or the eight-second observer bound refuse
 registration. Memory accepts positive controller shares with A+C at most U16,
 including A8/C128 MiB headroom; CPU 400% and tasks 256 remain exact allocations.
-These declarations supply no funding or native authority. Even a
-correctly signed request remains `Indeterminate` until the original AuthBus
-reservation/issuer and whole-unit owner are connected; no physical entry,
-terminal receipt, AuthBus rejection/refund or activation is provided. The
-ordinary Child route and its existing assertions remain unchanged. Existing PN4
-owners must next connect original funding and native lifetime ownership before
-any settlement or model acceptance can be qualified.
+The original declaration-only constructor still supplies no funding or native
+authority. Its same-plan successor `LedgerFundedControlledAggregate::reserve`
+uses the existing AuthBus owner, current signed time, current policy and issuer,
+and the existing whole-unit quota. The fresh
+`hepta.authbus.controlled-aggregate-ledger.v1` effect binds the immutable plan and
+admission inputs before AuthBus derives its reservation ID; the final registered
+payload and signed FinalUse binding then include that actual ID. Bao V3, its
+ledger and all existing signatures remain unchanged.
+`ControlledAggregateTarget::ledger_funded_unavailable` checks the original sealed
+authority, complete registration and exact source request binding, rereads the
+original reservation and issuer, and retains dispatch liability in that same
+ledger. It still returns `Indeterminate`: funding does not create a native
+whole-unit owner, physical entry, terminal receipt, refund or activation.
+Seven real SQLite/signed-source test groups cover restart, current trust,
+foreign authority/binding, exhausted quota and invalid grants. The combined
+five-package Linux suite passes 354 tests with zero skipped; these are not
+Windows or resource-return receipts. The existing Agentd grant-provider port and
+the original native lifetime owner must next compose before settlement or any
+real-model round can qualify. The ordinary Child route, all its assertions and
+the original eight-second bound remain unchanged.
 
 Within the same PN0/PN4 boundary, AuthBus owns current settlement-issuer trust.
 `AuthBusAuthorityStore::settle` retains its registration parameter as an exact
@@ -1000,8 +1013,10 @@ backend, registry backend, cold-recovery or resource-release qualification.
 
 The following are implementation slices of that same PN0 item, not a second
 roadmap. The read-only volume and live-principal observation APIs below are
-implemented mechanisms. Trusted namespace, protected creation and the opaque
-role interfaces in this table remain proposed contracts.
+implemented mechanisms. Create-only namespace and protected-directory
+prerequisites are now source implementations; the complete opaque role backend
+and consumer composition in this table still require implementation and native
+qualification.
 
 | Existing slice                       | Module responsibility and interface change                                                                                                                                                                                                                                         | Dependency and acceptance                                                                                                                                                                                                                             |
 | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1109,6 +1124,22 @@ impersonation, refusal after context restoration and an actual restricted token.
 They remain unexecuted on Windows in this increment. Capturing a primary token
 does not provide the protected-parent producer, create a directory or open an
 ordinary Windows store owner.
+
+The next C2b source increment holds the actual volume-GUID ancestry and rejects
+reparse points, untrusted owners/mutators and uncertain ACE forms. Untrusted
+ancestor access is limited to read/execute and sibling-directory creation;
+DELETE/DELETE_CHILD, file creation and security mutation remain refused. The
+new directory uses atomic `FILE_CREATE` with a protected, sole-captured-owner
+descriptor, followed by held identity, ACL, volume and primary-token readback.
+An uncertain created object stays retained as `UnverifiedCreatedDirectory`.
+Actual self and parent namespace synchronization propagate errors; no global
+volume flush, path upgrade or sync no-op supplies success. Private shared
+context retains ancestry and token lifetime, and mutex poison stays failed.
+The root requests no unnecessary DELETE access while retaining no-delete
+sharing, so a second owner can reach the original OS-lock competition instead
+of failing a preliminary sharing check. Its real two-process lock test and the
+consumer backend remain dependencies. These native controls are unexecuted;
+cross-target checks do not open the ordinary constructors or qualify durability.
 
 Creation must use one internal native-open implementation with typed
 existing-versus-new requests: `FILE_CREATE`, the captured SID/protected descriptor
