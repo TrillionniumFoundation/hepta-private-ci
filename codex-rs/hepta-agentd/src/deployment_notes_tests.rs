@@ -8,6 +8,9 @@ use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
 struct Clock(AtomicU64);
+
+#[path = "deployment_notes_initial_tests.rs"]
+mod initial;
 impl AuthorityClock for Clock {
     fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
         Ok(self.0.load(Ordering::SeqCst))

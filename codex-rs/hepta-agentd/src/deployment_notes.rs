@@ -9,6 +9,9 @@ use codex_hepta_contracts::authority_lease::AuthorityLeaseError;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry;
 use codex_hepta_memory::NotesTargetIdentity;
 
+#[path = "deployment_notes_initial_policy.rs"]
+mod initial_policy;
+
 /// Trusted launcher capability, never accepted from a wire request. The Root
 /// launcher must obtain the target from its actual Session Reserved capability
 /// before installation. Text/schema validation remains delegated to the fixed
