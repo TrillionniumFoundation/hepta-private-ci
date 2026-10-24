@@ -65,6 +65,18 @@ class PoolAccountingTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 pool.summarize(*args)
 
+    def test_bool_counters_cannot_forge_4096_head_dispatch(self):
+        data, _, artifact, request_sha, reference = fixture()
+        cells = 4096
+        data.update(cells=cells, resident_heads=cells,
+                    private_weights_payload_bytes=cells * artifact["weights_bytes"],
+                    warmup_calls=cells, fanout_predictions_per_sample=cells,
+                    dispatch_calls_per_head=[1] * cells)
+        self.assertEqual(pool.summarize(data, cells, artifact, request_sha, reference)["cells"], cells)
+        data["dispatch_calls_per_head"] = [True] * cells
+        with self.assertRaisesRegex(ValueError, "per-Head dispatch counts must be exact integers"):
+            pool.summarize(data, cells, artifact, request_sha, reference)
+
     def test_input_and_prediction_source_swaps_are_rejected(self):
         for mutate in (lambda v: v.update(request_stream_sha256="a" * 64),
                        lambda v: v.update(manifest_sha256="b" * 64),
