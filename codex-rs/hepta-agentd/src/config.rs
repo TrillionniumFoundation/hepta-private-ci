@@ -607,6 +607,32 @@ impl AgentdConfig {
         Ok(())
     }
 
+    #[cfg(target_os = "linux")]
+    pub(crate) fn require_finite_native_cpu_profile(&self) -> Result<(), AgentdError> {
+        if self.production_writer_host.is_none()
+            || self.notes_objective.is_some()
+            || self.authbus_trust_file.is_some()
+            || self.authbus_checkpoint_file.is_some()
+            || self.objective_profile_file.is_some()
+            || self.production_operations.is_some()
+            || self.evidence_trust_file.is_some()
+            || self.evidence_recovery_frontier_file.is_some()
+            || self.evidence_recovery_frontier_trust_file.is_some()
+            || self.automation_effect_host_file.is_some()
+            || self.cognitive_ranker.is_some()
+            || self.cognitive_retrieval_mode != CognitiveRetrievalMode::Compatibility
+            || self.cognitive_retrieval_context.is_some()
+            || self.cognitive_retrieval_learning.is_some()
+            || self.plasticity_bootstrap.is_some()
+            || self.intuition_policy_host.is_some()
+            || self.intelligence_product_runner.is_some()
+            || self.intelligence_invocation_provider.is_some()
+        {
+            return Err(AgentdError::Invalid("native CPU profile requires its one original recovered writer and fixed CPU execution path".into()));
+        }
+        Ok(())
+    }
+
     pub(crate) fn notes_objective(&self) -> Option<crate::AgentdNotesObjectiveConfig> {
         self.notes_objective.clone()
     }

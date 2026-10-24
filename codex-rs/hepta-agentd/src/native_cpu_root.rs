@@ -1,0 +1,543 @@
+//! Root owns installation, original Supervisor lifecycle and service capture.
+use super::*;
+use crate::authority_host_config::HostAuthorityBindIdentity;
+use crate::authority_host_config::HostAuthorityRegistration;
+use crate::authority_host_config::HostAuthorityServiceConfig;
+use crate::authority_host_config::HostAuthoritySocketPaths;
+use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::AuthorityClock;
+use codex_hepta_contracts::HostAuthorityClock;
+use codex_hepta_contracts::RootAuthorityDirectory;
+use codex_hepta_contracts::authority_lease::AuthorityLease;
+use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
+use codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry;
+use codex_hepta_fleet::AgentManifest;
+use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::ResourceBudget;
+use codex_hepta_fleet::WorkspaceBinding;
+use codex_hepta_memory::CognitiveRecoveryAnchor;
+use codex_hepta_memory::CognitiveStore;
+use codex_hepta_memory::Hos2DeliveryId;
+use codex_hepta_memory::Hos2InstallBudgetV1;
+use codex_hepta_paths::HeptaFleetRoot;
+use codex_hepta_supervisor::AgentCommand;
+use codex_hepta_supervisor::KernelInitialProcessDriver;
+use codex_hepta_supervisor::KernelInitialRole;
+use codex_hepta_supervisor::SpawnSpec;
+use codex_hepta_supervisor::Supervisor;
+use codex_hepta_supervisor::SupervisorConfig;
+use sha2::Digest;
+use sha2::Sha256;
+use std::io::Read;
+use std::io::Write;
+use std::os::fd::AsFd;
+use std::os::fd::OwnedFd;
+use std::os::unix::fs::MetadataExt;
+use std::os::unix::fs::OpenOptionsExt;
+use std::os::unix::fs::PermissionsExt;
+use std::os::unix::net::UnixListener;
+use std::path::PathBuf;
+use std::sync::Mutex;
+
+struct Installation {
+    fleet: FleetRegistry,
+    config: HostAuthorityServiceConfig,
+    clock: Arc<HostAuthorityClock>,
+    leases: Arc<AuthorityLeaseRegistry>,
+    issuer: Arc<crate::DeploymentFinalUseIssuer>,
+    initial: CognitiveRecoveryAnchor,
+    source_database: PathBuf,
+    archive: PathBuf,
+    checkpoint: PathBuf,
+    scopes: [[u8; 32]; 2],
+}
+pub(super) struct Active {
+    pub(super) service: Arc<crate::HostAuthorityService>,
+    pub(super) registration: HostAuthorityRegistration,
+    pub(super) bundle: crate::HostAuthorityPublicBootstrapV1,
+    pub(super) rpc: commands::Rpc,
+    pub(super) archive: PathBuf,
+    pub(super) source_database: PathBuf,
+    pub(super) retained: crate::RetainedCheckpointPublisher,
+    server: Option<std::thread::JoinHandle<io::Result<()>>>,
+}
+
+fn write_json(path: &Path, value: &impl serde::Serialize) -> io::Result<()> {
+    let mut file = std::fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .mode(0o600)
+        .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC)
+        .open(path)?;
+    file.write_all(&serde_json::to_vec(value).map_err(error)?)?;
+    file.sync_all()?;
+    File::open(path.parent().ok_or_else(|| invalid("JSON parent"))?)?.sync_all()
+}
+fn listener(path: &Path, gid: u32) -> io::Result<UnixListener> {
+    let listener = UnixListener::bind(path)?;
+    std::os::unix::fs::chown(path, Some(0), Some(gid))?;
+    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o660))?;
+    listener.set_nonblocking(true)?;
+    Ok(listener)
+}
+fn accept(listener: &UnixListener, deadline: u64) -> io::Result<std::os::unix::net::UnixStream> {
+    loop {
+        remaining(deadline)?;
+        match listener.accept() {
+            Ok((stream, _)) => return Ok(stream),
+            Err(e) if e.kind() == io::ErrorKind::WouldBlock => {
+                std::thread::sleep(Duration::from_millis(5))
+            }
+            Err(e) => return Err(e),
+        }
+    }
+}
+fn scope(boot: &NativeBootstrap, offset: usize) -> io::Result<[u8; 32]> {
+    let request = Hos2InstallBudgetV1 {
+        schema_version: 1,
+        delivery: Hos2DeliveryId::new(boot.id(96), boot.id(offset), 1).map_err(error)?,
+        manage_slot: 2,
+        manage_generation: 1,
+        expected_revision: 1,
+        period_ns: 100_000_000,
+        cap_ns: 50_000_000,
+    };
+    Ok(request.scope_digest().into_array())
+}
+impl Installation {
+    fn fresh(boot: &NativeBootstrap) -> io::Result<Self> {
+        let owner = AgentId::parse(AGENT).map_err(error)?;
+        let workspace = Path::new(STATE).join("workspace");
+        platform::private_dir(&workspace, 60001, 60001, 0o700)?;
+        let fleet_root = HeptaFleetRoot::parse(Path::new(STATE).join("fleet")).map_err(error)?;
+        let fleet = FleetRegistry::initialize(fleet_root.clone()).map_err(error)?;
+        let record = fleet
+            .register(
+                AgentManifest::new(
+                    owner.clone(),
+                    WorkspaceBinding::new(workspace, &fleet_root).map_err(error)?,
+                    ResourceBudget::local_default(),
+                )
+                .map_err(error)?,
+            )
+            .map_err(error)?;
+        let layout = record.layout;
+        // Fresh SQLite administration precedes any writer. Its actual complete
+        // cut enters the original protected checkpoint, never a guessed hash.
+        let (initial, source_database) = runtime()?.block_on(async {
+            let store = CognitiveStore::open(&layout).await.map_err(error)?;
+            let cut = store.recovery_anchor().await.map_err(error)?;
+            let path = store.path().to_owned();
+            store.close().await;
+            Ok::<_, io::Error>((cut, path))
+        })?;
+        std::fs::set_permissions(layout.agent_root(), std::fs::Permissions::from_mode(0o755))?;
+        for path in [layout.home_root(), layout.run_root(), layout.matrix_root()] {
+            platform::chown_tree(path, 60001, 60001)?;
+            std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700))?;
+        }
+        let protected = Path::new(STATE).join("protected");
+        let metadata = std::fs::metadata(&protected)?;
+        let required_bind = HostAuthorityBindIdentity {
+            mountpoint: protected.clone(),
+            source_path: Path::new(STATE).join("protected-source"),
+            device: metadata.dev(),
+            inode: metadata.ino(),
+        };
+        let scopes = [scope(boot, 112)?, scope(boot, 128)?];
+        let policies = scopes
+            .iter()
+            .map(|scope| crate::DeploymentGrantPolicy {
+                subject_id: owner.to_string(),
+                destination_id: codex_hepta_memory::HOS2_DESTINATION_V1.into(),
+                scope_sha256: *scope,
+                lifetime_ms: 5_000,
+            })
+            .collect::<Vec<_>>();
+        let bootstrap = protected.join("bootstrap.json");
+        write_json(
+            &bootstrap,
+            &serde_json::json!({"schema_version":1,"required_bind":required_bind,
+            "signer_id":"native-cpu-original-root","policies":policies,"lease_id":"native-cpu-root-installation",
+            "lease_binding":AuthorityLeaseBinding {principal_id:owner.to_string(),operation_class:"runtime.agentd.production_operation".into(),
+                destination_id:codex_hepta_memory::HOS2_DESTINATION_V1.into(),scope_sha256:scopes[0],payload_sha256:Sha256::digest(b"native-root-installation-observation-only").into()},
+            "lease_lifetime_ms":120_000}),
+        )?;
+        let state = protected.join("authority");
+        let initialized = crate::initialize_host_authority(&state, &bootstrap)?;
+        let runtime_dir = Path::new(RUNTIME).join("owner");
+        platform::private_dir(&runtime_dir, 0, 60001, 0o2710)?;
+        platform::private_dir(&runtime_dir.join("consumer-local"), 60001, 60001, 0o700)?;
+        let config = HostAuthorityServiceConfig {
+            schema_version: 1,
+            state_dir: state.clone(),
+            required_bind,
+            signer_id: initialized.signer_id,
+            expected_verifying_key: initialized.verifying_key,
+            lease_id: initialized.lease_id,
+            lease_revision: 1,
+            writer: None,
+            checkpoint_state_dir: None,
+            consumers: None,
+            sockets: HostAuthoritySocketPaths {
+                observation: runtime_dir.join("observation.sock"),
+                issuer: runtime_dir.join("issuer.sock"),
+                checkpoint: runtime_dir.join("checkpoint.sock"),
+                device_frontier: Some(runtime_dir.join("device-frontier.sock")),
+                notes_frontier: Some(runtime_dir.join("notes-frontier.sock")),
+            },
+            peer_uid: 60001,
+            peer_gid: 60001,
+            timeout_ms: 5_000,
+            lifetime_ms: LIFETIME.as_millis() as u64,
+        };
+        let (clock, leases, issuer) =
+            crate::authority_host_runtime::open_registered_issuer(&config)?;
+        let archive = state.join("material");
+        let checkpoint = state.join("checkpoint");
+        for path in [&archive, &checkpoint] {
+            platform::private_dir(path, 0, 0, 0o700)?;
+        }
+        let mut installation = Self {
+            fleet,
+            config,
+            clock,
+            leases: Arc::new(leases),
+            issuer,
+            initial,
+            source_database,
+            archive,
+            checkpoint,
+            scopes,
+        };
+        let head = installation.issuer.revocations()?;
+        let consumer = |name: &str| -> io::Result<crate::HostAuthorityConsumerConfig> {
+            let state_dir = state.join(name);
+            platform::private_dir(&state_dir, 0, 0, 0o700)?;
+            crate::HostConsumerFrontier::initialize_fresh(
+                RootAuthorityDirectory::open(&state_dir).map_err(error)?,
+                installation.config.signer_id.clone(),
+                &head,
+                installation.clock.clone(),
+                installation.clock.now_unix_ms().map_err(error)? + 60_000,
+            )
+            .map_err(error)?;
+            Ok(crate::HostAuthorityConsumerConfig {
+                state_dir,
+                owner_id: installation.config.signer_id.clone(),
+            })
+        };
+        installation.config.consumers = Some(crate::HostAuthorityConsumersConfig {
+            device: consumer("device-consumer")?,
+            notes: consumer("notes-consumer")?,
+        });
+        installation.config.checkpoint_state_dir = Some(installation.checkpoint.clone());
+        write_json(
+            &Path::new(RUNTIME).join("owner-installed"),
+            &serde_json::json!({"agent":owner}),
+        )?;
+        Ok(installation)
+    }
+
+    fn activate(
+        &mut self,
+        spec: &SpawnSpec,
+        role: KernelInitialRole,
+        owner: OwnedFd,
+        deadline: u64,
+    ) -> io::Result<Active> {
+        if role != KernelInitialRole::Manager {
+            return Err(invalid(
+                "native recovered-owner activation is not yet installed",
+            ));
+        }
+        let owner_peer = peer(2, 60001)?;
+        let root = peer(1, 0)?;
+        let name = "manager";
+        let launch_listener = listener(&Path::new(RUNTIME).join(format!("{name}.launch")), 60001)?;
+        let rpc_listener = listener(&Path::new(RUNTIME).join(format!("{name}.rpc")), 60001)?;
+        let launch_stream = accept(&launch_listener, deadline)?;
+        let mut launch = crate::RootNotesLaunchChannel::from_peer_stream(
+            launch_stream,
+            owner_peer.clone(),
+            owner.try_clone()?,
+            deadline,
+        )?;
+        let record = self
+            .fleet
+            .load()
+            .map_err(error)?
+            .agent(&spec.agent_id)
+            .cloned()
+            .ok_or_else(|| invalid("original registered owner missing"))?;
+        let registered = crate::HostAuthorityRegisteredIdentity {
+            agent_id: spec.agent_id.clone(),
+            spawn_generation: spec.generation,
+            fleet_root: spec.fleet_root.clone(),
+            workspace: spec.workspace.clone(),
+            resources: record.manifest.resources,
+        };
+        let identity = crate::authority_host_config::registered_identity(&registered)?;
+        let now = self.clock.now_unix_ms().map_err(error)?;
+        let writer = crate::HostAuthorityWriterRegistration {
+            registered_agent_id: spec.agent_id.clone(),
+            spawn_generation: spec.generation,
+            owner_epoch: 1,
+            local_lease_id: "native-cpu-original-writer".into(),
+            local_lease_generation: 1,
+            authority_lease: AuthorityLease {
+                schema_version: 1,
+                lease_id: "native-cpu-writer-1".into(),
+                authority_epoch: 1,
+                revision: 1,
+                binding: AuthorityLeaseBinding {
+                    principal_id: spec.agent_id.to_string(),
+                    operation_class: "runtime.agentd.production_writer".into(),
+                    destination_id: format!("cognitive.owner:{}", spec.agent_id),
+                    scope_sha256: Sha256::digest(
+                        serde_json::to_vec(&(&spec.agent_id, identity.layout.cognitive_root()))
+                            .map_err(error)?,
+                    )
+                    .into(),
+                    payload_sha256: Sha256::digest(
+                        serde_json::to_vec(&self.initial).map_err(error)?,
+                    )
+                    .into(),
+                },
+                issued_at_unix_ms: now,
+                expires_at_unix_ms: now + 60_000,
+            },
+        };
+        self.leases
+            .put_lease(writer.authority_lease.clone(), 0)
+            .map_err(error)?;
+        self.issuer
+            .register_writer_authorization(&writer, &self.leases.verifier())?;
+        let admission =
+            crate::deployment_issuer::RootNativeCpuGrantAdmission::from_registered_namespace(
+                &self.issuer,
+                self.leases.clone(),
+                writer.clone(),
+                self.scopes[0],
+                5_000,
+            )?;
+        let service = crate::HostAuthorityService::from_registered_owner(
+            self.issuer.clone(),
+            self.clock.clone(),
+            identity,
+        )?
+        .with_registered_writer(writer.clone(), self.leases.verifier())?
+        .initialize_native_cpu_checkpoint(
+            RootAuthorityDirectory::open(&self.checkpoint).map_err(error)?,
+            1,
+            owner_peer.clone(),
+            self.initial.clone(),
+        )?
+        .with_native_cpu_admission(admission)?
+        .with_registered_consumers(
+            &self.config.state_dir,
+            self.config.consumers.as_ref().unwrap(),
+        )?
+        .with_required_material_startup(&self.archive)?;
+        let paths = &self.config.sockets;
+        let service = Arc::new(service.with_bootstrap_registration(
+            crate::HostAuthorityBootstrapLocations {
+                sockets: crate::HostAuthorityFiveLanePathsV1 {
+                    observation: paths.observation.clone(),
+                    issuer: paths.issuer.clone(),
+                    checkpoint: paths.checkpoint.clone(),
+                    device_frontier: paths.device_frontier.clone().unwrap(),
+                    notes_frontier: paths.notes_frontier.clone().unwrap(),
+                },
+                device_local_state_dir: Path::new(RUNTIME).join("owner/consumer-local/device"),
+                notes_local_state_dir: Path::new(RUNTIME).join("owner/consumer-local/notes"),
+                lifetime: remaining(deadline)?,
+            },
+            owner.try_clone()?,
+        )?);
+        let bundle = service.capture_public_bootstrap()?;
+        let registration = HostAuthorityRegistration {
+            schema_version: 1,
+            peer_pid: owner_peer.pid,
+            boot_id: owner_peer.boot_id.clone(),
+            process_start_ticks: owner_peer.process_start_ticks,
+            registered_identity: registered,
+            checkpoint_owner_agent_id: spec.agent_id.clone(),
+            publisher_epoch: 1,
+        };
+        let retained = crate::RetainedCheckpointPublisher::capture(owner_peer)?;
+        let mut nonce = [0; 16];
+        File::open("/dev/urandom")?.read_exact(&mut nonce)?;
+        let nonce = nonce
+            .iter()
+            .map(|value| format!("{value:02x}"))
+            .collect::<String>();
+        let sealed = crate::seal_host_authority_bootstrap(&bundle)?;
+        launch.send(
+            &crate::RootNotesLaunchFrame::OriginalBootstrapV1 {
+                schema_version: 1,
+                launch_nonce: nonce.clone(),
+            },
+            &[sealed.into(), pidfd(root.pid)?],
+            deadline,
+        )?;
+        let copied_service = service.clone();
+        let config = self.config.clone();
+        let registration_copy = registration.clone();
+        let server = std::thread::Builder::new()
+            .name("native-original-root-lanes".into())
+            .spawn(move || {
+                crate::authority_host_runtime::listeners::serve_lanes(
+                    &copied_service,
+                    &config,
+                    &registration_copy,
+                    &owner,
+                )
+            })?;
+        let (ready, descriptors) = launch.read(deadline)?;
+        if !descriptors.is_empty()
+            || !matches!(ready,crate::RootNotesLaunchFrame::RecoveredOwnerReadyV1 {schema_version:1,launch_nonce:ref actual} if actual==&nonce)
+        {
+            return Err(invalid(
+                "native owner did not report exact zero-argument readiness",
+            ));
+        }
+        service.confirm_recovered_owner_ready()?;
+        launch.send(
+            &crate::RootNotesLaunchFrame::RecoveredOwnerRegisteredV1 {
+                schema_version: 1,
+                launch_nonce: nonce,
+            },
+            &[],
+            deadline,
+        )?;
+        let rpc = commands::Rpc::new(
+            accept(&rpc_listener, deadline)?,
+            &bundle.consumer,
+            pidfd(bundle.consumer.pid)?,
+            deadline,
+        )?;
+        self.config.writer = Some(writer);
+        Ok(Active {
+            service,
+            registration,
+            bundle,
+            rpc,
+            archive: self.archive.clone(),
+            source_database: self.source_database.clone(),
+            retained,
+            server: Some(server),
+        })
+    }
+}
+
+pub(super) fn run(boot: NativeBootstrap) -> io::Result<()> {
+    platform::mount_platform()?;
+    let mut evidence = evidence::Evidence::load()?;
+    if evidence.scenario() != "steady-state-v1" {
+        return Err(invalid(
+            "requested native recovery scenario is not implemented by this source",
+        ));
+    }
+    let installation = Arc::new(Mutex::new(Installation::fresh(&boot)?));
+    let fleet = installation.lock().map_err(error)?.fleet.clone();
+    let active = Arc::new(Mutex::new(None));
+    let ready = active.clone();
+    let owner_install = installation.clone();
+    let command = AgentCommand::new("/test/hepta-g2-owner", Vec::new()).map_err(error)?;
+    let deadline = end()?;
+    let driver =
+        KernelInitialProcessDriver::new(&boot.bytes, command.clone(), move |spec, role, owner| {
+            let generation = owner_install
+                .lock()
+                .map_err(|e| codex_hepta_supervisor::ProcessDriverError::new(e.to_string()))?
+                .activate(
+                    spec,
+                    role,
+                    owner
+                        .try_clone_to_owned()
+                        .map_err(codex_hepta_supervisor::ProcessDriverError::from)?,
+                    deadline,
+                )
+                .map_err(|e| codex_hepta_supervisor::ProcessDriverError::new(e.to_string()))?;
+            *ready
+                .lock()
+                .map_err(|e| codex_hepta_supervisor::ProcessDriverError::new(e.to_string()))? =
+                Some(generation);
+            Ok(())
+        })
+        .map_err(error)?;
+    let (mut supervisor, report) = Supervisor::recover(
+        fleet,
+        driver,
+        SupervisorConfig::local_default(),
+        Instant::now(),
+    )
+    .map_err(error)?;
+    if !report.faults.is_empty() {
+        return Err(invalid("original Supervisor recovery reported faults"));
+    }
+    let agent = AgentId::parse(AGENT).map_err(error)?;
+    supervisor
+        .start(&agent, command, Instant::now())
+        .map_err(error)?;
+    loop {
+        remaining(deadline)?;
+        let report = supervisor.tick(Instant::now());
+        if !report.faults.is_empty() {
+            return Err(invalid("original Supervisor reported a native owner fault"));
+        }
+        if supervisor
+            .snapshot(&agent)
+            .is_some_and(|snapshot| snapshot.healthy)
+        {
+            break;
+        }
+        std::thread::sleep(Duration::from_millis(10));
+    }
+    let mut generation = active
+        .lock()
+        .map_err(error)?
+        .take()
+        .ok_or_else(|| invalid("native activation omitted original service"))?;
+    evidence.steady_state(&boot, &mut generation)?;
+    evidence.complete()?;
+    supervisor.stop(&agent, Instant::now()).map_err(error)?;
+    while supervisor
+        .snapshot(&agent)
+        .is_some_and(|snapshot| snapshot.active)
+    {
+        remaining(deadline)?;
+        supervisor.tick(Instant::now());
+        std::thread::sleep(Duration::from_millis(10));
+    }
+    if let Some(server) = generation.server.take() {
+        let _ = server
+            .join()
+            .map_err(|_| invalid("original Root lane panicked"))?;
+    }
+    drop(supervisor); // The unused initial Recovery child is killed and reaped by its held guard.
+    let workload = pidfd(3)?;
+    let rc = unsafe {
+        libc::syscall(
+            libc::SYS_pidfd_send_signal,
+            std::os::fd::AsRawFd::as_raw_fd(&workload),
+            libc::SIGTERM,
+            std::ptr::null::<libc::siginfo_t>(),
+            0,
+        )
+    };
+    if rc < 0 {
+        return Err(io::Error::last_os_error());
+    }
+    let mut status = 0;
+    if unsafe { libc::waitpid(3, &mut status, 0) } != 3 {
+        return Err(io::Error::last_os_error());
+    }
+    File::open("/state")?.sync_all()?;
+    unsafe {
+        libc::sync();
+        libc::reboot(libc::RB_POWER_OFF);
+    }
+    Err(invalid("native poweroff returned"))
+}

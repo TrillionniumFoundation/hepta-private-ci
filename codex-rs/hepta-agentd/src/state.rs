@@ -37,9 +37,18 @@ mod control;
 #[path = "notes_organ_state.rs"]
 mod notes_organ;
 
+#[cfg(target_os = "linux")]
+#[path = "native_cpu_state.rs"]
+mod native_cpu;
+
 pub(crate) struct AgentdState {
     #[cfg(target_os = "linux")]
     pub(crate) notes_organ_root: std::sync::OnceLock<Arc<crate::AgentdRootAuthoritySession>>,
+    #[cfg(target_os = "linux")]
+    pub(crate) native_cpu_root: std::sync::OnceLock<Arc<crate::AgentdRootAuthoritySession>>,
+    #[cfg(target_os = "linux")]
+    pub(crate) native_cpu_ingress:
+        std::sync::OnceLock<Arc<crate::native_cpu_ingress::NativeCpuIngress>>,
     pub(crate) notes_objective: std::sync::OnceLock<AgentdNotesObjectiveConfig>,
     pub(crate) intelligence_product:
         std::sync::OnceLock<Arc<crate::AgentdIntelligenceProductRunnerV1>>,
@@ -77,6 +86,7 @@ struct RuntimeState {
     lifecycle: AgentLifecycle,
     app_server_ready: bool,
     notes_organ_ready: bool,
+    native_cpu_ready: bool,
     critical_stores_ready: bool,
     revocation_ready: bool,
     required_ports_ready: bool,
@@ -140,6 +150,10 @@ impl AgentdState {
         Ok(Self {
             #[cfg(target_os = "linux")]
             notes_organ_root: std::sync::OnceLock::new(),
+            #[cfg(target_os = "linux")]
+            native_cpu_root: std::sync::OnceLock::new(),
+            #[cfg(target_os = "linux")]
+            native_cpu_ingress: std::sync::OnceLock::new(),
             notes_objective: std::sync::OnceLock::new(),
             authbus: std::sync::OnceLock::new(),
             intelligence_product: std::sync::OnceLock::new(),
@@ -158,6 +172,7 @@ impl AgentdState {
                 lifecycle: AgentLifecycle::Starting,
                 app_server_ready: false,
                 notes_organ_ready: false,
+                native_cpu_ready: false,
                 critical_stores_ready: false,
                 revocation_ready: false,
                 required_ports_ready: false,
@@ -383,10 +398,13 @@ impl AgentdState {
             ) {
                 runtime.app_server_ready = false;
                 runtime.notes_organ_ready = false;
+                runtime.native_cpu_ready = false;
                 runtime.required_ports_ready = false;
             }
             if runtime.lifecycle == AgentLifecycle::Running
-                && (runtime.app_server_ready || runtime.notes_organ_ready)
+                && (runtime.app_server_ready
+                    || runtime.notes_organ_ready
+                    || runtime.native_cpu_ready)
                 && runtime.critical_stores_ready
                 && runtime.revocation_ready
                 && runtime.required_ports_ready
@@ -472,6 +490,7 @@ impl AgentdState {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
         runtime.app_server_ready = false;
         runtime.notes_organ_ready = false;
+        runtime.native_cpu_ready = false;
         runtime.required_ports_ready = false;
         runtime.admission_open = false;
         self.app_server_drain.request_drain();
@@ -542,6 +561,7 @@ impl AgentdState {
         if let Ok(mut runtime) = self.runtime.lock() {
             runtime.app_server_ready = false;
             runtime.notes_organ_ready = false;
+            runtime.native_cpu_ready = false;
             runtime.required_ports_ready = false;
             runtime.admission_open = false;
             runtime.fenced = true;

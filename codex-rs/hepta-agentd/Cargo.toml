@@ -73,6 +73,8 @@ codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-fleet = { workspace = true }
 codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }
 codex-hepta-ndu = { path = "../hepta-ndu" }
+codex-hepta-supervisor = { workspace = true }
+codex-hepta-operations = { workspace = true }
 codex-hepta-neuron = { path = "../hepta-neuron" }
 codex-hepta-objective = { path = "../hepta-objective" }
 codex-hepta-context-compiler = { path = "../hepta-context-compiler" }
@@ -113,13 +115,11 @@ libc = { workspace = true }
 
 [dev-dependencies]
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
-codex-hepta-operations = { workspace = true }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
 app_test_support = { workspace = true }
 codex-hepta-infer-worker-host = { path = "../hepta-infer-worker-host" }
 codex-hepta-context-compiler = { path = "../hepta-context-compiler" }
-codex-hepta-supervisor = { workspace = true }
 codex-utils-cargo-bin = { workspace = true }
 core_test_support = { workspace = true }
 pretty_assertions = { workspace = true }

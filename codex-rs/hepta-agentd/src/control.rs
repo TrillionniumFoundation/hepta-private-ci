@@ -40,6 +40,8 @@ trait ControlProfile {
 struct FullControlProfile;
 #[cfg(target_os = "linux")]
 struct NotesControlProfile;
+#[cfg(target_os = "linux")]
+struct NativeCpuControlProfile;
 
 impl ControlProfile for FullControlProfile {
     async fn response(
@@ -60,6 +62,18 @@ impl ControlProfile for NotesControlProfile {
     ) -> Result<AgentdResponse, AgentdError> {
         state
             .notes_response(request.request_id, request.spawn_generation, request.method)
+            .await
+    }
+}
+
+#[cfg(target_os = "linux")]
+impl ControlProfile for NativeCpuControlProfile {
+    async fn response(
+        state: &AgentdState,
+        request: crate::AgentdRequest,
+    ) -> Result<AgentdResponse, AgentdError> {
+        state
+            .native_cpu_response(request.request_id, request.spawn_generation, request.method)
             .await
     }
 }
@@ -99,6 +113,11 @@ impl AgentdControlServer {
     #[cfg(target_os = "linux")]
     pub(crate) async fn run_notes(self) -> Result<(), AgentdError> {
         self.run_for::<NotesControlProfile>().await
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) async fn run_native_cpu(self) -> Result<(), AgentdError> {
+        self.run_for::<NativeCpuControlProfile>().await
     }
 
     async fn run_for<P: ControlProfile + 'static>(mut self) -> Result<(), AgentdError> {

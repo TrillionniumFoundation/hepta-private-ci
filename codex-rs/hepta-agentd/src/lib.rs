@@ -227,6 +227,12 @@ mod intelligence_ingress;
 mod intelligence_product;
 mod intuition_policy;
 mod lane_b_runtime;
+#[cfg(target_os = "linux")]
+mod native_cpu_entry;
+#[cfg(target_os = "linux")]
+mod native_cpu_ingress;
+#[cfg(target_os = "linux")]
+mod native_cpu_runtime;
 mod neuron_runtime;
 #[cfg(target_os = "linux")]
 mod notes_bootstrap;
@@ -236,6 +242,8 @@ mod notes_channel;
 mod notes_document_observer;
 #[cfg(target_os = "linux")]
 mod notes_organ;
+#[cfg(target_os = "linux")]
+pub use native_cpu_entry::run_native_cpu_daemon;
 mod objective_runtime;
 mod plasticity_anchor_journal;
 mod plasticity_host;
