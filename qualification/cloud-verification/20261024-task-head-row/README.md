@@ -36,7 +36,11 @@ git diff --check
 
 Linux x86_64, Rust/Cargo 1.95.0, Python 3.12.14, NumPy 2.3.5, Ruff 0.15.13; five CPUs/~17 GiB memory/no swap, about 6 GiB available disk before scoped builds. Formatting initially encountered missing uv on reduced PATH and then a read-only default uv cache; resolved by using existing uv and a writable workspace cache without security changes. Initial staging rejected the workspace serde table and lost shell quoting for the nextest filter; both staging defects were corrected before final validation. Logs distinguish those setup failures, baseline failures and final passes.
 
-## Remaining limitations
+## Follow-up: full Agentd cache blocker recovered
+
+On the same unchanged final SHA, supported Cargo network fetching obtained the exact fixed cargo-i18n revision. Full Agentd default-feature library check passed, and its real lib-test binary compiled/linked: **14 owner tests passed; 174 others not selected**. See [recovery report](full-agentd-recovery.md), [complete check log](full-agentd-online-check.txt), and [complete test log](full-agentd-owner-tests.txt). No source/lock/security configuration changes. The original offline failure below is historical evidence, no longer an active dependency blocker. Production binaries, all features and all tests remain unverified.
+
+## Remaining limitations (initial offline attempt and scope)
 
 Full Agentd `cargo check --offline --locked -p codex-hepta-agentd --lib` is blocked before compilation by uncached `cargo-i18n` revision `2ce7b1dfe9a8cc224288bf50cbc2a67a6de863c4`; exact error retained. No unbounded workspace/V8 build was launched with limited disk. This is a dependency/cache limitation of the offline full-package attempt, not a permission denial, and no full Agentd acceptance is claimed. The new dedicated exact-SHA CI runs only the actual-module harness and synthetic fixtures.
 
