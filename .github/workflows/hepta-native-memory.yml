@@ -1,0 +1,115 @@
+name: Hepta native memory development
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-agent-protocol/**"
+      - "codex-rs/hepta-agentd/**"
+      - "scripts/memory_cell/**"
+      - "scripts/memory_cell_native/**"
+      - "scripts/memory_cell_network/model_child.py"
+      - ".github/workflows/hepta-native-memory.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-source-model-boundary:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    env:
+      CANDIDATE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_BUILD_JOBS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Bind exact source and artifact paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          mkdir "$RUNNER_TEMP/hepta-native-artifacts"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-native-artifacts/source.txt"
+          echo "NATIVE_ARTIFACT_ROOT=$RUNNER_TEMP/hepta-native-artifacts" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/hepta-native-target" >> "$GITHUB_ENV"
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: clippy,rustfmt
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.59.0,nextest@0.9.149
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          enable-cache: false
+      - name: Native build prerequisites
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y pkg-config libssl-dev
+      - name: Evidence driver failure and timeout regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -I -B scripts/memory_cell_native/native_ci_tests.py 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/evidence-driver-tests.log"
+      - name: Scoped tests through repository defaults
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-memory -p codex-hepta-agent-protocol -p codex-hepta-agentd --features codex-hepta-agentd/qualification-cognitive-write 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/scoped-tests.log"
+      - name: Build actual daemon probe
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-hepta-agentd --example native_memory_daemon --features qualification-cognitive-write 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/build-probe.log"
+      - name: Install measured CPU model runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1+cpu' 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/install-torch.log"
+          python -m pip install 'transformers==4.57.1' 'peft==0.17.1' 'tokenizers==0.22.2' 'safetensors==0.6.2' 'numpy==1.26.4' 'huggingface-hub==0.35.3' 'accelerate==1.10.1' 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/install-runtime.log"
+          python -m pip freeze > "$NATIVE_ARTIFACT_ROOT/runtime-freeze.txt"
+      - name: Fixed fresh training and actual Agentd control-socket probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -I -B scripts/memory_cell_native/native_ci.py --repo "$GITHUB_WORKSPACE" --binary "$CARGO_TARGET_DIR/debug/examples/native_memory_daemon" --out "$NATIVE_ARTIFACT_ROOT/run" --model-out "$RUNNER_TEMP/hepta-native-base" --expected-head "$CANDIDATE_SHA" 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/native-driver.log"
+      - name: Scoped lint fix and final formatting proposal
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just fix --locked -p codex-hepta-memory -p codex-hepta-agent-protocol -p codex-hepta-agentd --features codex-hepta-agentd/qualification-cognitive-write --examples 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/scoped-fix.log"
+          just fmt --base 429894ac8e0818102cfdea4ad47a56e4583b2902 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/final-format.log"
+      - name: Retain proposed changes without running tests after formatting
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/hepta-native-artifacts"
+          git diff --binary > "$RUNNER_TEMP/hepta-native-artifacts/post-test-fix-format.patch"
+          git diff --stat > "$RUNNER_TEMP/hepta-native-artifacts/post-test-fix-format.stat"
+          git status --porcelain=v1 > "$RUNNER_TEMP/hepta-native-artifacts/final-worktree-status.txt"
+          df -h > "$RUNNER_TEMP/hepta-native-artifacts/final-filesystem.txt"
+      - name: Preserve complete success or failure evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: native-memory-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-native-artifacts
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
