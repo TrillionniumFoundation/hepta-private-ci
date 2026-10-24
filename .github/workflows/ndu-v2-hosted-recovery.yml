@@ -2,7 +2,8 @@ name: NDU v2 hosted recovery
 on:
   push:
     branches: [research/ndu-feedback-generation-v3]
-    paths: [experiments/multimodal_output_portfolio/v3/HOSTED_RECOVERY_REQUEST.json]
+    paths:
+      [experiments/multimodal_output_portfolio/v3/HOSTED_RECOVERY_REQUEST.json]
 permissions:
   contents: read
 defaults:
