@@ -1,0 +1,194 @@
+use std::future::Future;
+use std::sync::Arc;
+use std::time::Duration;
+
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
+use tokio::sync::mpsc;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct TurnBinding {
+    pub run_id: StableId,
+    pub turn_id: StableId,
+    pub generation: Generation,
+    /// Digest of the admitted request, including its objective and principal.
+    pub admission_digest: Digest32,
+    /// Original owner deadline; reconnecting must not reset the turn's budget.
+    pub deadline_unix_ms: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ModelRequest {
+    pub request_id: StableId,
+    pub payload: Arc<str>,
+    pub context_digest: Digest32,
+    pub input_tokens: u64,
+    pub maximum_output_tokens: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ToolCall {
+    pub call_id: StableId,
+    pub name: StableId,
+    /// Complete arguments; the inference adapter assembles partial wire deltas.
+    pub arguments: String,
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct Usage {
+    pub input_tokens: u64,
+    pub output_tokens: u64,
+}
+
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
+pub struct ModelOutput {
+    pub text: String,
+    pub calls: Vec<ToolCall>,
+    pub usage: Usage,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum Phase {
+    Model(ModelRequest),
+    Tools { calls: Vec<ToolCall>, next: usize },
+    Complete(ModelOutput),
+    CancelRequested,
+    Cancelled,
+}
+
+/// An owned view of the existing context/TaskFlow cursor, never a second store.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Frame {
+    pub binding: TurnBinding,
+    pub revision: u64,
+    pub round: u32,
+    pub consumed_tokens: u64,
+    pub phase: Phase,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum Transition {
+    ModelCompleted(ModelOutput),
+    ToolCompleted {
+        operation_key: Digest32,
+        output: String,
+    },
+    CancelRequested,
+    Cancelled,
+}
+
+pub enum ModelEvent {
+    TextDelta(String),
+    ToolCall(ToolCall),
+    Completed(Usage),
+}
+
+pub enum ModelSession {
+    Stream(mpsc::Receiver<Result<ModelEvent>>),
+    Completed(ModelOutput),
+    Unresolved,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum EffectObservation {
+    Completed(String),
+    Unresolved,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum StopObservation {
+    Stopped,
+    Unresolved,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum Outcome {
+    Completed(ModelOutput),
+    Paused,
+    Cancelled,
+    CancellationPending,
+}
+
+#[derive(Clone, Debug)]
+pub struct Limits {
+    pub maximum_rounds: u32,
+    pub maximum_total_tokens: u64,
+    pub maximum_context_bytes: usize,
+    pub maximum_output_bytes: usize,
+    pub maximum_calls: usize,
+    pub timeout: Duration,
+    pub cancellation_timeout: Duration,
+}
+
+impl Default for Limits {
+    fn default() -> Self {
+        Self {
+            maximum_rounds: 32,
+            maximum_total_tokens: 128_000,
+            maximum_context_bytes: 256 * 1024,
+            maximum_output_bytes: 4096,
+            maximum_calls: 16,
+            timeout: Duration::from_secs(120),
+            cancellation_timeout: Duration::from_secs(5),
+        }
+    }
+}
+
+#[derive(Debug, thiserror::Error)]
+pub enum Error {
+    #[error("native agent limit exceeded: {0}")]
+    Limit(&'static str),
+    #[error("native agent owner contract rejected: {0}")]
+    Contract(&'static str),
+    #[error("owner operation failed: {0}")]
+    Owner(String),
+}
+
+pub type Result<T> = std::result::Result<T, Error>;
+
+/// Context and TaskFlow authority. `commit` must durably compare-and-swap the
+/// supplied revision, append the observation and advance the cursor atomically.
+/// A model frame must freeze its payload until terminal observation. Preparing
+/// subsequent frames reuses context compilation, memory and compaction owners;
+/// mandatory instructions and unresolved calls must survive compaction.
+pub trait TurnOwner: Send {
+    fn load(&mut self, binding: &TurnBinding) -> impl Future<Output = Result<Frame>> + Send;
+    fn commit(
+        &mut self,
+        previous: &Frame,
+        transition: Transition,
+    ) -> impl Future<Output = Result<Frame>> + Send;
+}
+
+/// Existing inference owner. Reopening the same binding/request must reconcile
+/// its original dispatch. It may replay a complete result, but must never start
+/// another provider call after ambiguous acceptance. Streams begin at byte zero;
+/// a disconnected partial stream is not a terminal result.
+pub trait InferenceOwner: Send {
+    fn open_or_reconcile(
+        &mut self,
+        binding: &TurnBinding,
+        request: &ModelRequest,
+    ) -> impl Future<Output = Result<ModelSession>> + Send;
+    fn cancel(
+        &mut self,
+        binding: &TurnBinding,
+    ) -> impl Future<Output = Result<StopObservation>> + Send;
+}
+
+/// Existing effect owner. Authorization, durable admission and destination
+/// deduplication remain here. An unresolved operation must be observed under the
+/// same key; the loop neither grants final-use authority nor invents a retry key.
+pub trait EffectOwner: Send {
+    fn execute_or_observe(
+        &mut self,
+        binding: &TurnBinding,
+        operation_key: Digest32,
+        call: &ToolCall,
+    ) -> impl Future<Output = Result<EffectObservation>> + Send;
+    fn cancel(
+        &mut self,
+        binding: &TurnBinding,
+    ) -> impl Future<Output = Result<StopObservation>> + Send;
+}

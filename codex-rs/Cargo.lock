@@ -3447,6 +3447,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "codex-hepta-agent-loop"
+version = "0.0.0"
+dependencies = [
+ "codex-hepta-types",
+ "pretty_assertions",
+ "thiserror 2.0.21",
+ "tokio",
+ "tokio-util",
+]
+
+[[package]]
 name = "codex-hepta-agent-protocol"
 version = "0.0.0"
 dependencies = [

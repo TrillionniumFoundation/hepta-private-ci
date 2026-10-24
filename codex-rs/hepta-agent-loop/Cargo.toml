@@ -1,0 +1,24 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-agent-loop"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_agent_loop"
+path = "src/lib.rs"
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+codex-hepta-types = { path = "../hepta-types" }
+thiserror = { workspace = true }
+tokio = { workspace = true, features = ["macros", "sync", "time"] }
+tokio-util = { workspace = true }
+
+[dev-dependencies]
+pretty_assertions = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt", "sync", "time", "test-util"] }
