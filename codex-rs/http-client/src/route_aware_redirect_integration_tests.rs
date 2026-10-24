@@ -98,6 +98,7 @@ fn spawn_response(
                 Err(error) => panic!("HTTP listener should accept: {error}"),
             }
         };
+        stream.set_nonblocking(false).expect("set blocking stream");
         stream
             .set_read_timeout(Some(Duration::from_secs(2)))
             .expect("read timeout");

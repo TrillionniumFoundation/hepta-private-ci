@@ -23,7 +23,7 @@ jobs:
     # signal without putting PR latency back on the critical path. When
     # Code-mode unit tests run on every Bazel target. When authenticated RBE
     # is available, the Windows-cross shards exercise the source-built V8 path.
-    timeout-minutes: 60
+    timeout-minutes: ${{ matrix.os == 'macos-15-intel' && 180 || 60 }}
     strategy:
       fail-fast: false
       matrix:
@@ -79,6 +79,7 @@ jobs:
         run: ./scripts/check-module-bazel-lock.sh
 
       - name: bazel test //...
+        id: bazel_execution
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
         shell: bash
@@ -108,6 +109,18 @@ jobs:
             "${bazel_test_args[@]}" \
             -- \
             "${bazel_targets[@]}"
+
+      - name: Capture unverified MODULE.bazel.lock evidence
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          python_bin=python3
+          if [[ "${RUNNER_OS}" == "Windows" ]]; then
+            python_bin=python
+          fi
+          "${python_bin}" .github/scripts/capture_module_lock_evidence.py \
+            --build-outcome '${{ steps.bazel_execution.outcome }}' \
+            --prior-status '${{ job.status }}'
 
       - name: Upload Bazel execution logs
         if: always() && !cancelled()
@@ -177,6 +190,7 @@ jobs:
         run: python .github/scripts/llvm_header_parser_smoke.py --bazel-msvc
 
       - name: bazel test shard
+        id: bazel_execution
         env:
           BAZEL_TEST_SHARD: ${{ matrix.shard }}
           BAZEL_TEST_SHARD_COUNT: 4
@@ -229,6 +243,18 @@ jobs:
             "${bazel_test_args[@]}" \
             -- \
             "${selected_targets[@]}"
+
+      - name: Capture unverified MODULE.bazel.lock evidence
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          python_bin=python3
+          if [[ "${RUNNER_OS}" == "Windows" ]]; then
+            python_bin=python
+          fi
+          "${python_bin}" .github/scripts/capture_module_lock_evidence.py \
+            --build-outcome '${{ steps.bazel_execution.outcome }}' \
+            --prior-status '${{ job.status }}'
 
       - name: Upload Bazel execution logs
         if: always() && !cancelled()
@@ -286,6 +312,7 @@ jobs:
           cache-scope: bazel-${{ github.job }}
 
       - name: bazel test //...
+        id: bazel_execution
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
         shell: bash
@@ -316,6 +343,18 @@ jobs:
             "${bazel_test_args[@]}" \
             -- \
             "${bazel_targets[@]}"
+
+      - name: Capture unverified MODULE.bazel.lock evidence
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          python_bin=python3
+          if [[ "${RUNNER_OS}" == "Windows" ]]; then
+            python_bin=python
+          fi
+          "${python_bin}" .github/scripts/capture_module_lock_evidence.py \
+            --build-outcome '${{ steps.bazel_execution.outcome }}' \
+            --prior-status '${{ job.status }}'
 
       - name: Upload Bazel execution logs
         if: always() && !cancelled()
@@ -375,6 +414,7 @@ jobs:
           cache-scope: bazel-${{ github.job }}
 
       - name: bazel build --config=clippy lint targets
+        id: bazel_execution
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
         shell: bash
@@ -407,6 +447,18 @@ jobs:
             "${bazel_clippy_args[@]}" \
             -- \
             "${bazel_targets[@]}"
+
+      - name: Capture unverified MODULE.bazel.lock evidence
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          python_bin=python3
+          if [[ "${RUNNER_OS}" == "Windows" ]]; then
+            python_bin=python
+          fi
+          "${python_bin}" .github/scripts/capture_module_lock_evidence.py \
+            --build-outcome '${{ steps.bazel_execution.outcome }}' \
+            --prior-status '${{ job.status }}'
 
       - name: Upload Bazel execution logs
         if: always() && !cancelled()
@@ -462,6 +514,7 @@ jobs:
           cache-scope: bazel-${{ github.job }}
 
       - name: bazel build verify-release-build targets
+        id: bazel_execution
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
         shell: bash
@@ -517,6 +570,18 @@ jobs:
             --build_metadata=TAG_job=verify-bwrap \
             -- \
             //codex-rs/bwrap:bwrap
+
+      - name: Capture unverified MODULE.bazel.lock evidence
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          python_bin=python3
+          if [[ "${RUNNER_OS}" == "Windows" ]]; then
+            python_bin=python
+          fi
+          "${python_bin}" .github/scripts/capture_module_lock_evidence.py \
+            --build-outcome '${{ steps.bazel_execution.outcome }}' \
+            --prior-status '${{ job.status }}'
 
       - name: Upload Bazel execution logs
         if: always() && !cancelled()
