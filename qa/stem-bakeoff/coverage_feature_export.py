@@ -11,9 +11,10 @@ import time
 
 import numpy as np
 import torch
-from transformers import AutoModel, AutoTokenizer
+from transformers import AutoTokenizer
 
 from bounded_text_inputs import canonical, matched_inputs
+from coverage_checkpoint import load_frozen_body
 
 
 SNAPSHOT = Path('/data/hepta-decisioncell-models/LiquidAI--LFM2.5-Encoder-230M/0b649ad0c684378b03d4d8304f7577a662ab89bc')
@@ -54,21 +55,14 @@ def export(dataset, output):
     torch.set_num_threads(2)
     torch.set_num_interop_threads(1)
     start, cpu = time.perf_counter_ns(), time.process_time_ns()
-    model, loading = AutoModel.from_pretrained(str(SNAPSHOT), local_files_only=True,
-        trust_remote_code=True, dtype=torch.float32, attn_implementation='sdpa',
-        output_loading_info=True)
-    if loading.get('missing_keys') or loading.get('mismatched_keys'):
-        raise ValueError('checkpoint does not fully initialize the native body: ' + str(loading))
-    unexpected = set(loading.get('unexpected_keys', []))
-    if unexpected - {'lm_head.weight'}:
-        raise ValueError('unexpected checkpoint namespace: ' + str(loading))
+    model, checkpoint_parity = load_frozen_body()
     model.eval().requires_grad_(False)
     if any(p.device.type != 'cpu' for p in model.parameters()):
         raise ValueError('CPU-only frozen model required')
     load = {'wall_ns': time.perf_counter_ns() - start, 'cpu_ns': time.process_time_ns() - cpu,
             'parameters': sum(p.numel() for p in model.parameters()),
             'parameter_tensor_bytes': sum(p.numel() * p.element_size() for p in model.parameters()),
-            'loading_info': loading}
+            'checkpoint_parity': checkpoint_parity}
     accounting = {policy: {'wall_ns': 0, 'cpu_ns': 0, 'forward_calls': 0,
                           'effective_tokens': 0, 'padded_tokens': 0, 'attention_length_squared': 0}
                   for policy in prepared}
@@ -141,7 +135,8 @@ def export(dataset, output):
             for split in ('train', 'calibration', 'evaluation')},
         'environment': {'torch_threads': torch.get_num_threads(), 'peak_rss_bytes': resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024,
             'packages': {name: importlib.metadata.version(name) for name in ('numpy', 'torch', 'transformers', 'tokenizers', 'safetensors')}},
-        'source_code_sha256': {p.name: sha_file(p) for p in (Path(__file__), Path(__file__).with_name('bounded_text_inputs.py'))}}
+        'source_code_sha256': {p.name: sha_file(p) for p in (Path(__file__), Path(__file__).with_name('bounded_text_inputs.py'),
+                                                          Path(__file__).with_name('coverage_checkpoint.py'))}}
     (output / 'report.json').write_bytes(canonical(report) + b'\n')
     print(json.dumps({'stage': 'encoded', 'encoding': accounting, 'truncation': report['tokens'],
                       'feature_report_sha256': sha_file(output / 'report.json')}), flush=True)
