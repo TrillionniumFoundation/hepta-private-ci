@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.cell-field-review-stack.v1",
+  "base": "codex/cell-next-p25-20261023",
+  "base_commit": "4b3081c25af86f707a5c0d50c688c959a04af446",
+  "source_commit": "87641f069a7830b46fdeaaf34d417635c5f5d463",
+  "pull_requests": [
+    {
+      "stage": "p1",
+      "number": 3655,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3655",
+      "title": "[PFT 1/7] Persist complete Cell learning state for exact resume",
+      "head": "research/cell-field-p1-state-20261024",
+      "base": "codex/cell-next-p25-20261023"
+    },
+    {
+      "stage": "p2",
+      "number": 3656,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3656",
+      "title": "[PFT 2/7] Add deterministic parameter-field control and same-action oracle",
+      "head": "research/cell-field-p2-control-20261024",
+      "base": "research/cell-field-p1-state-20261024"
+    },
+    {
+      "stage": "p3",
+      "number": 3657,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3657",
+      "title": "[PFT 3/7] Freeze source-disjoint news protocol and real shared features",
+      "head": "research/cell-field-p3-protocol-20261024",
+      "base": "research/cell-field-p2-control-20261024"
+    },
+    {
+      "stage": "p4",
+      "number": 3658,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3658",
+      "title": "[PFT 4/7] Execute sealed Cell control paths with cold-process replay",
+      "head": "research/cell-field-p4-runner-20261024",
+      "base": "research/cell-field-p3-protocol-20261024"
+    },
+    {
+      "stage": "p5",
+      "number": 3659,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3659",
+      "title": "[PFT 5/7] Score held-out Cell tasks only after experiment sealing",
+      "head": "research/cell-field-p5-evaluation-20261024",
+      "base": "research/cell-field-p4-runner-20261024"
+    },
+    {
+      "stage": "p6",
+      "number": 3660,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3660",
+      "title": "[PFT 6/7] Independently audit source isolation, control paths and task scores",
+      "head": "research/cell-field-p6-audit-20261024",
+      "base": "research/cell-field-p5-evaluation-20261024"
+    }
+  ],
+  "evidence_branch": "research/cell-field-p7-evidence-20261024",
+  "draft": true,
+  "merged": false
+}
