@@ -222,6 +222,9 @@ async fn retained_session_lost_reply_has_hard_deadline_and_no_second_request() -
             .is_err()
     );
     assert!(started.elapsed() < Duration::from_millis(700));
+    // Keep the original authenticated peer alive past the delayed response.
+    // Closing it immediately would hide an SDK worker's deferred replay.
+    tokio::time::sleep(Duration::from_millis(1100)).await;
     assert_eq!(
         (
             initializes.load(Ordering::SeqCst),
