@@ -87,19 +87,21 @@ pub use authority_host_runtime::register_host_writer_authorization;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::serve_host_authority_session;
 #[cfg(target_os = "linux")]
+pub use authority_host_service::HostAuthorityBootstrapLocations;
+#[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityLane;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityService;
 #[cfg(target_os = "linux")]
-pub use authority_host_service::HostAuthorityBootstrapLocations;
-#[cfg(target_os = "linux")]
 mod root_notes_launch_wire;
-#[cfg(target_os = "linux")]
-pub use root_notes_launch_wire::RootNotesLaunchFrame;
 #[cfg(target_os = "linux")]
 pub use root_notes_launch_wire::ROOT_NOTES_LAUNCH_FRAME_BOUND;
 #[cfg(target_os = "linux")]
 pub use root_notes_launch_wire::ROOT_NOTES_PREPARATION_NS;
+#[cfg(target_os = "linux")]
+pub use root_notes_launch_wire::ROOT_NOTES_TOTAL_PREPARATION_NS;
+#[cfg(target_os = "linux")]
+pub use root_notes_launch_wire::RootNotesLaunchFrame;
 #[cfg(target_os = "linux")]
 mod root_authority_session;
 #[cfg(target_os = "linux")]

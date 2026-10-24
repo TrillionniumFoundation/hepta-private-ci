@@ -51,3 +51,22 @@ fn versions_nonces_and_root_session_role_are_not_negotiable() {
         );
     }
 }
+
+#[test]
+fn preparation_keeps_both_original_absolute_ends_without_renewal() {
+    let raw = r#"{"action":"prepare_session_v1","schema_version":1,"launch_nonce":"11111111111111111111111111111111","end_boottime_ns":500,"preparation_end_boottime_ns":30000}"#;
+    let frame: RootNotesLaunchFrame = serde_json::from_str(raw).unwrap();
+    frame.validate().unwrap();
+    assert_eq!(serde_json::to_string(&frame).unwrap(), raw);
+    let missing = raw.replace(",\"preparation_end_boottime_ns\":30000", "");
+    assert!(serde_json::from_str::<RootNotesLaunchFrame>(&missing).is_err());
+    for total in [0, 499] {
+        let invalid = raw.replace("30000", &total.to_string());
+        assert!(
+            serde_json::from_str::<RootNotesLaunchFrame>(&invalid)
+                .unwrap()
+                .validate()
+                .is_err()
+        );
+    }
+}

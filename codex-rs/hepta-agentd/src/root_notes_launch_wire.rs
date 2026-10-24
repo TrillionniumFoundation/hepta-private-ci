@@ -1,11 +1,14 @@
 //! Fixed trusted-launch choreography; no authority claims or runtime commands.
 
-use codex_hepta_memory::{CognitiveCheckpointPeerLifetime, NotesTargetIdentity};
-use serde::{Deserialize, Serialize};
+use codex_hepta_memory::CognitiveCheckpointPeerLifetime;
+use codex_hepta_memory::NotesTargetIdentity;
+use serde::Deserialize;
+use serde::Serialize;
 use std::io;
 
 pub const ROOT_NOTES_LAUNCH_FRAME_BOUND: usize = 16 * 1024;
 pub const ROOT_NOTES_PREPARATION_NS: u64 = 5_000_000_000;
+pub const ROOT_NOTES_TOTAL_PREPARATION_NS: u64 = 300_000_000_000;
 
 /// One u32-big-endian length followed by this JSON. SCM_RIGHTS belongs to the
 /// frame's FIRST byte. Every frame rejects unknown fields and extra descriptors.
@@ -15,11 +18,14 @@ pub const ROOT_NOTES_PREPARATION_NS: u64 = 5_000_000_000;
 #[serde(tag = "action", rename_all = "snake_case", deny_unknown_fields)]
 pub enum RootNotesLaunchFrame {
     /// Root -> Host, zero FDs. Root starts its original five-second budget
-    /// before sending this frame. The absolute BOOTTIME end is never reset.
+    /// before sending this frame. `end_boottime_ns` bounds Phase A through
+    /// OriginalBootstrap. The separate original Parent preparation end includes
+    /// recovery/registered-ready/release and is fixed at startup, never renewed.
     PrepareSessionV1 {
         schema_version: u32,
         launch_nonce: String,
         end_boottime_ns: u64,
+        preparation_end_boottime_ns: u64,
     },
     /// Host -> Root, exactly [Session FD0 offer, Session FD4 planned startup].
     SessionChannelsV1 {
@@ -103,8 +109,10 @@ impl RootNotesLaunchFrame {
         }
         match self {
             Self::PrepareSessionV1 {
-                end_boottime_ns, ..
-            } if *end_boottime_ns == 0 => {
+                end_boottime_ns,
+                preparation_end_boottime_ns,
+                ..
+            } if *end_boottime_ns == 0 || preparation_end_boottime_ns < end_boottime_ns => {
                 return Err(invalid());
             }
             Self::SessionSpawnedV1 { session, .. }
