@@ -2,6 +2,7 @@
 
 use super::*;
 use crate::acl::ensure_allow_mask_aces_with_inheritance;
+use pretty_assertions::assert_eq;
 use windows_sys::Win32::Security::TOKEN_GROUPS;
 use windows_sys::Win32::Storage::FileSystem::DeleteFileW;
 use windows_sys::Win32::Storage::FileSystem::RemoveDirectoryW;
