@@ -1,6 +1,7 @@
 [codespell]
 # Ref: https://github.com/codespell-project/codespell#using-a-config-file
-skip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new
+# Exact immutable compressed archive fragments; neighboring text remains checked.
+skip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new,qa/stem-bakeoff/evidence/20261023-routing-diagnosis/hepta-routing-diagnosis-20261023-v2.tar.gz.part-01,./qa/stem-bakeoff/evidence/20261023-routing-diagnosis/hepta-routing-diagnosis-20261023-v2.tar.gz.part-01,qa/stem-bakeoff/evidence/20261023-typed-cell-lifecycle/hepta-typed-cell-lifecycle-20261023.tar.gz.part-003,./qa/stem-bakeoff/evidence/20261023-typed-cell-lifecycle/hepta-typed-cell-lifecycle-20261023.tar.gz.part-003
 check-hidden = true
 ignore-regex = ^\s*"image/\S+": ".*|\b(afterAll)\b
 ignore-words-list = ratatui,ser,iTerm,iterm2,iterm,te,TE,PASE,SEH,disjointness
