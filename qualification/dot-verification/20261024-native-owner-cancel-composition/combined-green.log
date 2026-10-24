@@ -1,0 +1,137 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+warning: use of deprecated associated function `tokio::io::unix::AsyncFd::<T>::new`: unsound due to lack of I/O safety; use `AsyncFd::register` instead (see https://github.com/tokio-rs/tokio/pull/8587)
+  --> utils/pty/src/unix_io.rs:38:60
+   |
+38 |         let fd = std::panic::catch_unwind(move || AsyncFd::new(File::from(fd)))
+   |                                                            ^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-utils-pty` (lib) generated 1 warning
+   Compiling codex-hepta-wire v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/hepta-wire)
+   Compiling codex-hepta-context-compiler v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/hepta-context-compiler)
+   Compiling codex-hepta-agent-loop v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/hepta-agent-loop)
+error[E0659]: `assert_eq` is ambiguous
+  --> hepta-agent-loop/tests/support/automation_effect_cancel_reopen_tests.rs:37:5
+   |
+37 |     assert_eq!(cancelled.phase, Phase::CancelRequested);
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> hepta-agent-loop/tests/support/automation_effect_cancel_reopen_tests.rs:2:5
+   |
+ 2 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+  --> hepta-agent-loop/tests/support/automation_effect_cancel_reopen_tests.rs:51:5
+   |
+51 |     assert_eq!(run(
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> hepta-agent-loop/tests/support/automation_effect_cancel_reopen_tests.rs:2:5
+   |
+ 2 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+  --> hepta-agent-loop/tests/support/automation_effect_cancel_reopen_tests.rs:55:5
+   |
+55 |     assert_eq!(turn.observe().await.expect("persisted owner").frame, cancelled);
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> hepta-agent-loop/tests/support/automation_effect_cancel_reopen_tests.rs:2:5
+   |
+ 2 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+  --> hepta-agent-loop/tests/support/automation_effect_cancel_reopen_tests.rs:56:5
+   |
+56 |     assert_eq!(inference.cancellations, 1);
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> hepta-agent-loop/tests/support/automation_effect_cancel_reopen_tests.rs:2:5
+   |
+ 2 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+  --> hepta-agent-loop/tests/support/automation_effect_cancel_reopen_tests.rs:57:5
+   |
+57 |     assert_eq!(provider.dispatches.load(Ordering::SeqCst), 0);
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> hepta-agent-loop/tests/support/automation_effect_cancel_reopen_tests.rs:2:5
+   |
+ 2 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+  --> hepta-agent-loop/tests/support/automation_effect_cancel_reopen_tests.rs:58:5
+   |
+58 |     assert_eq!(provider.lookups.load(Ordering::SeqCst), 0);
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> hepta-agent-loop/tests/support/automation_effect_cancel_reopen_tests.rs:2:5
+   |
+ 2 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+  --> hepta-agent-loop/tests/support/automation_effect_cancel_reopen_tests.rs:92:5
+   |
+92 |     assert_eq!(original.observe().await.expect("original frame").frame, frame);
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> hepta-agent-loop/tests/support/automation_effect_cancel_reopen_tests.rs:2:5
+   |
+ 2 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+For more information about this error, try `rustc --explain E0659`.
+error: could not compile `codex-hepta-agent-loop` (test "automation_effects") due to 7 previous errors
+error: command `/workspace/scratch/f24caf690188/hepta-native-dot-resume/rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-agent-loop --test cancellation_successor --test automation_effects --test owner_loop --test taskflow_owner --features automation-effects,context-v2 --locked --offline` exited with code 101
+error: recipe `test` failed on line 89 with exit code 101

@@ -1,0 +1,74 @@
+    Checking codex-utils-absolute-path v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/utils/absolute-path)
+    Checking codex-utils-rustls-provider v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/utils/rustls-provider)
+    Checking codex-utils-cache v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/utils/cache)
+    Checking codex-utils-home-dir v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/utils/home-dir)
+    Checking codex-utils-path-uri v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/utils/path-uri)
+    Checking codex-execpolicy v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/execpolicy)
+    Checking codex-utils-string v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/utils/string)
+    Checking codex-network-proxy v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/network-proxy)
+    Checking codex-utils-image v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/utils/image)
+    Checking codex-http-client v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/http-client)
+    Checking codex-extension-items v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/ext/items)
+    Checking codex-utils-redacted-string v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/utils/redacted-string)
+    Checking codex-async-utils v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/async-utils)
+    Checking codex-protocol v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/protocol)
+    Checking codex-hepta-contracts v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/hepta-contracts)
+    Checking codex-utils-pty v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/utils/pty)
+warning: use of deprecated associated function `tokio::io::unix::AsyncFd::<T>::new`: unsound due to lack of I/O safety; use `AsyncFd::register` instead (see https://github.com/tokio-rs/tokio/pull/8587)
+  --> utils/pty/src/unix_io.rs:38:60
+   |
+38 |         let fd = std::panic::catch_unwind(move || AsyncFd::new(File::from(fd)))
+   |                                                            ^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-utils-pty` (lib) generated 1 warning
+    Checking codex-file-system v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/file-system)
+    Checking codex-hepta-types v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/hepta-types)
+    Checking codex-git-utils v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/git-utils)
+    Checking codex-history v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/history)
+    Checking codex-state v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/state)
+    Checking codex-hepta-paths v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/hepta-paths)
+    Checking codex-hepta-operations v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/hepta-operations)
+    Checking codex-hepta-wire v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/hepta-wire)
+    Checking codex-hepta-context-compiler v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/hepta-context-compiler)
+    Checking codex-hepta-automation v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/hepta-automation)
+    Checking codex-hepta-agent-loop v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-identity-current/codex-rs/hepta-agent-loop)
+error: this argument (8 byte) is passed by reference, but would be more efficient if passed by value (limit: 8 byte)
+  --> hepta-agent-loop/src/taskflow_serde.rs:45:39
+   |
+45 |     pub(crate) fn serialize<S>(value: &Generation, serializer: S) -> Result<S::Ok, S::Error>
+   |                                       ^^^^^^^^^^^ help: consider passing by value instead: `Generation`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#trivially_copy_pass_by_ref
+   = note: `-D clippy::trivially-copy-pass-by-ref` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::trivially_copy_pass_by_ref)]`
+
+error: this `if` statement can be collapsed
+  --> hepta-agent-loop/src/automation_effects.rs:78:9
+   |
+78 | /         if let Some(pending) = &pending {
+79 | |             if pending.run_id != effect.intent.run_id
+80 | |                 || pending.step_id != effect.intent.step_id
+81 | |                 || pending.attempt != effect.intent.attempt
+...  |
+90 | |         }
+   | |_________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#collapsible_if
+   = note: `-D clippy::collapsible-if` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::collapsible_if)]`
+help: collapse nested if block
+   |
+78 ~         if let Some(pending) = &pending
+79 ~             && (pending.run_id != effect.intent.run_id
+80 |                 || pending.step_id != effect.intent.step_id
+...
+85 |                 || pending.authority_epoch != effect.grant.grant.authority_epoch
+86 ~                 || pending.grant_id != effect.grant.grant.grant_id)
+87 |             {
+88 |                 return Err(Error::Contract("original durable effect admission changed"));
+89 ~             }
+   |
+
+error: could not compile `codex-hepta-agent-loop` (lib) due to 2 previous errors

@@ -1,0 +1,28 @@
+{
+  "cwd": "/workspace/scratch/f24caf690188/hepta-native-lint-review/codex-rs",
+  "environment": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "RUSTUP_HOME": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/rustup",
+    "CARGO_HOME": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/cargo",
+    "CARGO_TARGET_DIR": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/target",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/14/include",
+    "PATH_prefix": "/workspace/scratch/f24caf690188/hepta-native-owner-evidence/build-tools/bin:/workspace/scratch/f24caf690188/hepta-native-dot-resume/bin:/workspace/scratch/f24caf690188/hepta-native-dot-resume/cargo/bin"
+  },
+  "commands": {
+    "tests.log": "just test --locked --offline -p codex-hepta-agent-loop --features automation-effects,context-v2 --test cancellation_successor --test automation_effects --test owner_loop --test taskflow_owner --test-threads 1 --retries 0",
+    "strict.log": "cargo clippy --locked --offline -p codex-hepta-agent-loop --features automation-effects,context-v2 --test cancellation_successor --test automation_effects --test owner_loop --test taskflow_owner --no-deps -- -D warnings",
+    "fmt": "just fmt",
+    "diff_check": "git diff --check"
+  },
+  "source": "8db04ef9d30d2ad633e8ed2092e46a47a4385671",
+  "tool_origins": "Official isolated Rust1.96.0; previously installed pinned just/nextest and PyPI cmake3.31.6 from original-owner verification. No new downloads in this task.",
+  "exits": {
+    "tests": 0,
+    "strict": 101,
+    "fmt": 0,
+    "diff_check": 0
+  }
+}

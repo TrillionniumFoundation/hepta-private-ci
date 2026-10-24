@@ -75,18 +75,17 @@ impl<'a, A: ProviderEffectAdapter> AutomationStatusEffectOwner<'a, A> {
             )
             .await
             .map_err(|_| owner_error("original effect attempt lookup failed"))?;
-        if let Some(pending) = &pending {
-            if pending.run_id != effect.intent.run_id
+        if let Some(pending) = &pending
+            && (pending.run_id != effect.intent.run_id
                 || pending.step_id != effect.intent.step_id
                 || pending.attempt != effect.intent.attempt
                 || pending.intent_digest != effect.intent_digest
                 || pending.payload_digest != effect.intent.payload_digest
                 || pending.destination_id != effect.intent.destination_id
                 || pending.authority_epoch != effect.grant.grant.authority_epoch
-                || pending.grant_id != effect.grant.grant.grant_id
-            {
-                return Err(Error::Contract("original durable effect admission changed"));
-            }
+                || pending.grant_id != effect.grant.grant.grant_id)
+        {
+            return Err(Error::Contract("original durable effect admission changed"));
         }
         Ok(pending)
     }

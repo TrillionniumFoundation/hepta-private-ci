@@ -248,3 +248,12 @@ async fn changed_native_identity_selection_payload_and_output_tool_are_refused()
 
 #[path = "support/automation_effect_recovery_tests.rs"]
 mod recovery_tests;
+
+#[path = "support/automation_effect_cancel_reopen_tests.rs"]
+mod cancel_reopen_tests;
+
+#[path = "support/automation_effect_concurrency_tests.rs"]
+mod concurrency_tests;
+
+#[path = "support/automation_effect_late_ack_tests.rs"]
+mod late_ack_tests;
