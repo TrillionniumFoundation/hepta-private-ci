@@ -9,6 +9,9 @@ use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
 use std::time::Duration;
 
+#[path = "authority_host_descriptor.rs"]
+mod descriptor;
+
 /// Limits and exact owner identity installed by the trusted root launcher.
 /// A peer request cannot change these limits, extend its lifetime or reconnect.
 #[derive(Clone, Copy, Debug)]

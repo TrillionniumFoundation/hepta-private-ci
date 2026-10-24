@@ -79,7 +79,7 @@ impl OwnerChannel {
         }
     }
 
-    fn wait(
+    pub(super) fn wait(
         &self,
         stream: &UnixStream,
         event: PollFlags,
