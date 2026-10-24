@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.native-ab.controller-scenarios.v1",
+  "status": "draft_requires_real_owners_and_equivalent_fault_contract",
+  "model_invocations": 0,
+  "distinct_from_application_repair_tasks": true,
+  "fixture": "effect_fixture.py",
+  "fixture_is_idempotent": false,
+  "roles": ["native", "codex"],
+  "budget_per_case_per_owner": {"wall_seconds": 30, "cpu_equivalents": 2, "memory_bytes": 268435456, "pids": 8, "fault_injections": 1},
+  "restart_delay_seconds": 2,
+  "logical_identity_must_remain_unchanged": ["run_id", "request_id", "effect_id"],
+  "physical_attempt_identity": "invocation_id",
+  "cases": [
+    {
+      "case_id": "acknowledged_effect",
+      "mode": "acknowledge",
+      "injection_boundary": "Effect fsynced AND actual owner terminal effect receipt durably committed; before owner consumes result in next transition",
+      "required_external_observations": ["one effect append", "durable owner receipt", "old tree fully terminated", "resume same original logical identity", "same original settled receipt reused"],
+      "expected_effect_append_count_after_resume": 1,
+      "expected_controller_disposition": "completed",
+      "controller_continuation_success": true,
+      "agent_application_success_claim": false
+    },
+    {
+      "case_id": "indeterminate_effect",
+      "mode": "pause_after_effect",
+      "injection_boundary": "Effect fsynced and fixture paused before terminal output/ack; terminate whole owner and tool tree before release",
+      "required_external_observations": ["one effect append", "no terminal effect receipt", "old tree fully terminated", "same original logical identity retained", "no automatic re-execution"],
+      "expected_effect_append_count_after_resume": 1,
+      "expected_controller_disposition": "indeterminate",
+      "safety_disposition_success": true,
+      "controller_continuation_success": false,
+      "agent_application_success_claim": false
+    }
+  ],
+  "if_fault_boundaries_or_semantic_contracts_differ": "not_comparable_do_not_run_approximation",
+  "if_real_owner_or_permission_evidence_missing": "not_admitted",
+  "no_exactly_once_or_rollback_claim_from_indeterminate": true
+}
