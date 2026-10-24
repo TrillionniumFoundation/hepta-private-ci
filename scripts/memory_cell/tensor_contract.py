@@ -8,6 +8,7 @@ No pickle, remote loader, arbitrary path, implicit fallback or model execution.
 
 import hashlib
 import json
+import math
 from pathlib import Path
 
 import torch
@@ -32,8 +33,17 @@ def strict_json(payload: bytes) -> dict:
     def invalid_constant(value):
         raise ValueError(f"nonfinite JSON constant: {value}")
 
+    def finite_float(value):
+        number = float(value)
+        if not math.isfinite(number):
+            raise ValueError("Out of range float values are not JSON compliant")
+        return number
+
     value = json.loads(
-        payload, object_pairs_hook=unique, parse_constant=invalid_constant
+        payload,
+        object_pairs_hook=unique,
+        parse_constant=invalid_constant,
+        parse_float=finite_float,
     )
     if not isinstance(value, dict):
         raise ValueError("candidate object required")

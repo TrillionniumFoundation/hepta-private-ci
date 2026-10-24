@@ -102,6 +102,7 @@ jobs:
               ("native", 14, ["-I", "-B", "scripts/memory_cell_native/native_ci_tests.py", "-v"]),
               ("owner-admission", 7, ["-B", "-m", "unittest", "discover", "-s", "scripts/memory_cell_hardening", "-p", "test_*.py", "-v"]),
               ("parametric-owner", 9, ["-B", "-m", "unittest", "discover", "-s", "scripts/memory_cell", "-p", "test_parametric_owner.py", "-v"]),
+              ("strict-json", 6, ["-B", "-m", "unittest", "discover", "-s", "scripts/memory_cell", "-p", "test_tensor_contract.py", "-v"]),
           )
           failures = []
           for mode, flags in (("normal", []), ("optimized", ["-O"])):
@@ -114,7 +115,7 @@ jobs:
                           raise ValueError("expected original regression count without skips")
                   except (RuntimeError, ValueError) as error:
                       failures.append({"stage": stage, "error": str(error)})
-          retain(output / "summary.json", {"expected_unique_regression_cases": 30, "modes": ["normal", "optimized"], "failures": failures, "scientific_qualification": False})
+          retain(output / "summary.json", {"expected_unique_regression_cases": 36, "modes": ["normal", "optimized"], "failures": failures, "scientific_qualification": False})
           raise SystemExit(bool(failures))
           PY
           status=$?
