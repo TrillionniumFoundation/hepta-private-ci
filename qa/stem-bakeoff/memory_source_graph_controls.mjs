@@ -98,7 +98,7 @@ export function sourceOnlyControls(raw, partitions) {
     }
     return [...scores].sort((a,b)=>b[1]-a[1]||a[0]-b[0]).map(x=>x[0]);
   }
-  function orderD(ix,rank,qtext) {
+  function orderArmD(ix,rank,qtext) {
     const scores=new Map(),peak=rank[0]?.[1]||1;
     const episodic=/\b(when|before|after|during|first|last|date|time|month|year)\b/i.test(qtext);
     const procedural=/\b(how|steps|method|fix|solve|recipe|process)\b/i.test(qtext);
@@ -140,7 +140,7 @@ export function sourceOnlyControls(raw, partitions) {
     meta[g.group]={turns:g.docs.length,graph_edges:ix.undirectedEdges,queries:g.queries.length};
     for(const q of g.queries){
       const ranks=rankBM25(ix,q.text);
-      for(const [arm,ord] of [["A",orderA(ranks)],["C",orderC(ix,ranks)],["D",orderD(ix,ranks,q.text)]]){
+      for(const [arm,ord] of [["A",orderA(ranks)],["C",orderC(ix,ranks)],["D",orderArmD(ix,ranks,q.text)]]){
         const packed=pack(ix,ord);
         results.push({arm,group:g.group,query_id:q.id,selected_source_ids:packed.ids,context_bytes:packed.context_bytes});
       }
