@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
-    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
+    "commit": "249683db5d3b70600bd7646caa4d773a97c10569",
+    "tree": "bd08521585420d0cba4e02c02bd96df36cd6ac91"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.authority",
@@ -11,10 +11,12 @@
   "deputy": "kernel-contracts",
   "technicalGuide": "docs/modules/kernel.authority/TECHNICAL.md",
   "declaredRoots": [
-    "codex-rs/hepta-contracts"
+    "codex-rs/hepta-contracts",
+    "codex-rs/utils/windows-private-state"
   ],
   "resolvedRoots": [
-    "codex-rs/hepta-contracts"
+    "codex-rs/hepta-contracts",
+    "codex-rs/utils/windows-private-state"
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
@@ -177,7 +179,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceRoot": [
-    "codex-rs/hepta-contracts"
+    "codex-rs/hepta-contracts",
+    "codex-rs/utils/windows-private-state"
   ],
   "traceability": "docs/modules/kernel.authority/TRACEABILITY.md",
   "trustDecision": "docs/modules/kernel.authority/ADR-0001-LEASE-TRUST-MODEL.md",
@@ -218,7 +221,7 @@
   "sourceObjects": [
     {
       "path": "apps/hepta-browser/src/runtime-host.js",
-      "object": "543407f89cd69f00804136ef8ba9f8cc2d0540f4"
+      "object": "5c78dd73331c8d5f456ec2ce2282c9691ed45a65"
     },
     {
       "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
@@ -234,7 +237,7 @@
     },
     {
       "path": "codex-rs/hepta-contracts",
-      "object": "a77e5952e0c6ddf697e49013476a9b0bec596f76"
+      "object": "2481d3969761d3b728eb779ad07dc93f23776947"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
@@ -246,11 +249,11 @@
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use.rs",
-      "object": "3cc75fab4185789514e4ecc7522e52f1ca59249f"
+      "object": "6e42e0484fbe776f96a225ef46ca518baaa87b3c"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
-      "object": "41b1d83586fdab55b143471dab85679c3efebbe8"
+      "object": "56c0a1a9430b9845020e43e7436736be0d8097f0"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
@@ -277,8 +280,48 @@
       "object": "6d60b7d6923bc0b1ef8c4f71857f903a8bf6bd52"
     },
     {
+      "path": "codex-rs/utils/windows-private-state",
+      "object": "fc59f3c4e3db7a979d65dc5db5ceb9d425dbc832"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/BUILD.bazel",
+      "object": "53361cda070da058781628e4c0b89b3856731698"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/Cargo.toml",
+      "object": "2e15ccd7e7b2ed90bbba3dfe457bba7d033e7f02"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/lib.rs",
+      "object": "5dd1ef267f5456e1318ee3abe732eb5f232e5f62"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/mechanism.rs",
+      "object": "58ad2cbeb02224595b9cb2fa70ac9123f8d549d3"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/security.rs",
+      "object": "866f76647f4a0e236605fc04302a513f519ec350"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/security_tests.rs",
+      "object": "adfd12953d5b3b99df28111e1c94248f1e783a47"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/token_test_observation.rs",
+      "object": "7e22c85f9558a53be3e3749626c5b76a4d675d28"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/src/volume.rs",
+      "object": "e273310bf8e3e04241eec56baa472688a27f161e"
+    },
+    {
+      "path": "codex-rs/utils/windows-private-state/tests/native_volume.rs",
+      "object": "565a3019c3d536ba282db0067f4341935209eeac"
+    },
+    {
       "path": "docs/modules/kernel.authority/TECHNICAL.md",
-      "object": "26694ea19236ed2260858c9c8ddd2bab8c420934"
+      "object": "16a057dce60e57f3bc55d90ee7646ba5513ec591"
     }
   ]
 }

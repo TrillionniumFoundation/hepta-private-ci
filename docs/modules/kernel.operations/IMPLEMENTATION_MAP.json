@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7a56b99e2839cda8fe207e5c1787a8e9320d3bac",
-    "tree": "d7f626ab7e1081fd22fb5f6298264d6b126b6750"
+    "commit": "cb965fb6d1aecebd50c9fa1c04f04af6346eac48",
+    "tree": "5d25d1137cb263431ec79ec10a3c8982f90b543f"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "laneId": "LANE-A-FOUNDATION",
@@ -11,12 +11,8 @@
   "owner": "durability-kernel",
   "deputy": "architecture",
   "technicalGuide": "docs/modules/kernel.operations/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-operations"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-operations"
-  ],
+  "declaredRoots": ["codex-rs/hepta-operations"],
+  "resolvedRoots": ["codex-rs/hepta-operations"],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "agentd_runtime_lifecycle_source_composed_external_authority_activation_pending",
@@ -65,9 +61,7 @@
       "sourcePath": "codex-rs/hepta-memory/src/operation_claims.rs",
       "state": "durable_claim_lease_implemented_execution_pending",
       "authority": "generation_fence_attempt_lease_bound",
-      "tests": [
-        "codex-rs/hepta-memory/src/production_writer.rs"
-      ],
+      "tests": ["codex-rs/hepta-memory/src/production_writer.rs"],
       "sourcePathExists": true,
       "designOperation": "claim_outbox",
       "mappingClass": "delegated_owner_native",
@@ -87,7 +81,9 @@
       "authority": "kernel.authority_final_use_consumed",
       "tests": [
         "codex-rs/hepta-memory/src/production_writer.rs",
-        "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs"
+        "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_race_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "authorized_dispatch",
@@ -131,9 +127,7 @@
       "sourcePath": "codex-rs/hepta-agentd/src/production_writer_host.rs",
       "state": "named_final_use_host_source_implemented_activation_pending",
       "authority": "externally_supplied_authority_and_grant_provider",
-      "tests": [
-        "codex-rs/hepta-agentd/examples/h4_persistent_writer.rs"
-      ],
+      "tests": ["codex-rs/hepta-agentd/examples/h4_persistent_writer.rs"],
       "sourcePathExists": true,
       "designOperation": "product_composition",
       "mappingClass": "delegated_owner_native",
@@ -151,9 +145,7 @@
       "sourcePath": "codex-rs/hepta-agentd/src/runtime.rs",
       "state": "explicit_daemon_lifecycle_source_implemented_activation_pending",
       "authority": "externally_supplied_authority_and_grant_provider",
-      "tests": [
-        "codex-rs/hepta-agentd/src/runtime_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-agentd/src/runtime_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "product_composition",
       "mappingClass": "delegated_owner_native",
@@ -171,9 +163,7 @@
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
       "state": "second_operation_intent_consumer_source_implemented",
       "authority": "kernel.authority_final_use_consumed",
-      "tests": [
-        "codex-rs/hepta-automation/tests/authorized_effect.rs"
-      ],
+      "tests": ["codex-rs/hepta-automation/tests/authorized_effect.rs"],
       "sourcePathExists": true,
       "designOperation": "destination_apply",
       "mappingClass": "delegated_owner_native",
@@ -191,9 +181,7 @@
       "sourcePath": "codex-rs/hepta-operations/src/ledger.rs",
       "state": "reference_oracle_implemented",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-operations/src/ledger_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-operations/src/ledger_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "reference_operationledger",
       "mappingClass": "owner_native",
@@ -205,9 +193,7 @@
       "sourcePath": "codex-rs/hepta-operations/src/outbox.rs",
       "state": "reference_oracle_implemented",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-operations/src/outbox_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-operations/src/outbox_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "reference_outbox",
       "mappingClass": "owner_native",
@@ -235,9 +221,7 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": [
-    "codex-rs/hepta-operations"
-  ],
+  "sourceRoot": ["codex-rs/hepta-operations"],
   "exactSourceEvidence": {
     "kind": "path_blob_manifest_v1",
     "entries": [
@@ -275,7 +259,7 @@
       },
       {
         "path": "codex-rs/hepta-memory/src/production_writer.rs",
-        "blobSha": "8b2de885a4c55db39ad46990f725c045f23ab94e"
+        "blobSha": "dbe5524be4a14d1f68bb8fc9220fc5018475d463"
       },
       {
         "path": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
@@ -320,8 +304,8 @@
     ]
   },
   "observedAtHead": {
-    "commit": "7a56b99e2839cda8fe207e5c1787a8e9320d3bac",
-    "tree": "d7f626ab7e1081fd22fb5f6298264d6b126b6750"
+    "commit": "cb965fb6d1aecebd50c9fa1c04f04af6346eac48",
+    "tree": "5d25d1137cb263431ec79ec10a3c8982f90b543f"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -367,15 +351,15 @@
   "sourceObjects": [
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "b796d291c279450e11042b6aaa1b348657f14f3a"
+      "object": "c34e0c0df3136c0ee26e0039b18b4e4cbbe2ac06"
     },
     {
       "path": "codex-rs/Cargo.toml",
-      "object": "70c7b8dc2bc9768f6fc673049c2e348baddce838"
+      "object": "317b69e9559ce96208e0822c3ff83f38ac2c2841"
     },
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "66bcce284f0ea804f80620d71024446e076f6ff9"
+      "object": "4a2376a8f509fbd360ac8ee750ae6591d6f5b129"
     },
     {
       "path": "codex-rs/hepta-agentd/examples/h4_persistent_writer.rs",
@@ -431,7 +415,27 @@
     },
     {
       "path": "codex-rs/hepta-contracts",
-      "object": "a77e5952e0c6ddf697e49013476a9b0bec596f76"
+      "object": "2481d3969761d3b728eb779ad07dc93f23776947"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/ordinary_cpu_owner.sql",
+      "object": "0116fe92f10d2522803399a9fddf75cee014a84f"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_owner.rs",
+      "object": "2dd080a206996505c6ccb18526aab77d8eb83800"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_race_tests.rs",
+      "object": "275da31919a0337931c03d407342c5f1a4d1be4c"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_tests.rs",
+      "object": "d0677425dceb6df750d75abd29a1933ba70efd5c"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target.rs",
+      "object": "39ade433890d9fd294159e4c5b7fc80aa45bbeba"
     },
     {
       "path": "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql",
@@ -463,7 +467,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/production_writer.rs",
-      "object": "8b2de885a4c55db39ad46990f725c045f23ab94e"
+      "object": "dbe5524be4a14d1f68bb8fc9220fc5018475d463"
     },
     {
       "path": "codex-rs/hepta-operations",
@@ -491,7 +495,7 @@
     },
     {
       "path": "docs/modules/kernel.operations/TECHNICAL.md",
-      "object": "29d0c85fb5cac90b325c3c9ef62ee7de455b110c"
+      "object": "5c3b21dafcf862d4f83df6304fced9ff7e911a80"
     }
   ]
 }

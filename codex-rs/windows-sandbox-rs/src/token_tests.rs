@@ -17,6 +17,9 @@ use windows_sys::Win32::Security::TokenRestrictedSids;
 use windows_sys::Win32::Storage::FileSystem::DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_ALL_ACCESS;
 
+#[path = "token_full_restriction_tests.rs"]
+mod full_restriction;
+
 // Read only the real, owned fixture ACL. The returned tuples identify the ACE
 // type, flags, mask and whether it matches the tested capability; no account
 // names or unrelated SID values are printed.

@@ -26,7 +26,6 @@ use codex_app_server_protocol::JSONRPCErrorError;
 use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::SandboxMode;
 use codex_app_server_protocol::ServerNotification;
-use codex_app_server_protocol::ThreadItem;
 use codex_app_server_protocol::ThreadReadParams;
 use codex_app_server_protocol::ThreadReadResponse;
 use codex_app_server_protocol::ThreadStartParams;
@@ -73,8 +72,11 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 
 #[path = "native_run_control.rs"]
 mod control;
+#[path = "native_output.rs"]
+mod output_text;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceRunBinding;
+use output_text::collect_agent_output;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
@@ -359,16 +361,13 @@ impl AppServerModelDriver {
             .find(|turn| turn.id == turn_id)
             .ok_or("reconciled terminal receipt turn disappeared")?;
 
-        let mut output_text = String::new();
-        for item in &turn.items {
-            if let ThreadItem::AgentMessage { text, .. } = item {
-                if text.len() > MAX_OUTPUT_BYTES.saturating_sub(output_text.len()) {
-                    let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                    return Err("reconciled output byte limit exceeded".into());
-                }
-                output_text.push_str(text);
+        let output_text = match collect_agent_output(&turn.items) {
+            Ok(text) => text.unwrap_or_default(),
+            Err(error) => {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err(format!("reconciled {error}").into());
             }
-        }
+        };
         let (status, boundary_status) = match receipt.status {
             AdapterStatus::Succeeded => {
                 (NativeRunStatus::Completed, NativeBoundaryStatus::Succeeded)
@@ -1474,6 +1473,9 @@ fn observe_event(
             let receipt = adapt_observed_event(&binding.intent, &binding.turn_id, observed)
                 .map_err(|error| format!("invalid App Server terminal witness: {error}"))?
                 .ok_or_else(|| "turn/completed did not produce terminal receipt".to_string())?;
+            // App Server may deliver the complete final message without any
+            // deltas, or replace a partial stream in its terminal summary.
+            let completed_text = collect_agent_output(&completed.turn.items)?;
             let physical_boundary = match receipt.status {
                 AdapterStatus::Succeeded => {
                     output.status = NativeRunStatus::Completed;
@@ -1489,6 +1491,9 @@ fn observe_event(
                 }
                 _ => return Err("nonterminal adapter status for turn/completed".to_string()),
             };
+            if let Some(text) = completed_text {
+                output.output = text;
+            }
             if output.boundary_status == NativeBoundaryStatus::Indeterminate {
                 output.boundary_status = physical_boundary;
             }

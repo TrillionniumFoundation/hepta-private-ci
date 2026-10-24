@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "540ffa2ae3a499dceff82e95dfdbe9b6685e9c9e",
-    "tree": "19cfe62879a1a6ad8ec80ff1dd6df7aad1ec0bb2"
+    "commit": "6d508eac511cba00887ea5852823f3a472a67c05",
+    "tree": "8f41fdeb2cd302516b9fa303f9c579ba94238998"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
@@ -14,8 +14,8 @@
   "resolvedRoots": [
     "codex-rs/hepta-infer-worker-host"
   ],
-  "stateOwnerDisposition": "Owns live provider client handles; persistent request/slot/observation facts remain in the inference.control journal. App Server owns ephemeral thread execution; artifact/cache owners retain model bytes.",
-  "terminalObserverDisposition": "The hosted native-app-server profile observes real matching turn events; the local manifest driver remains injected and does not prove physical weights/device behavior.",
+  "stateOwnerDisposition": "The native App Server path owns live provider handles while inference.control retains its request/slot/observation journal. The separate fixed ordinary CPU destination owns the trusted destination SQLite dedupe and sixteen permanent lifetime entries, including terminal tombstones, and the original in-memory Child handles; it neither owns inference.control facts nor refunds entries.",
+  "terminalObserverDisposition": "The hosted native App Server profile observes exact turn events. The separately registered ordinary destination observes only its retained original Child: timely exit zero plus durable terminal storage is an ordinary exit fact; missing owner, nonzero/late exit and uncertain durability stay indeterminate. Neither that fact nor the injected local driver proves model/device behavior, resource retirement or pool/process cold recovery.",
   "operations": [
     {
       "designOperation": "load_model",
@@ -141,5 +141,123 @@
   "technicalGuide": "docs/modules/inference.worker/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-infer-worker-host"
-  ]
+  ],
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-infer-worker-host",
+    "codex-rs/hepta-infer-worker-host/BUILD.bazel",
+    "codex-rs/hepta-infer-worker-host/Cargo.toml",
+    "codex-rs/hepta-infer-worker-host/ordinary_cpu_owner.sql",
+    "codex-rs/hepta-infer-worker-host/src/lib.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_output.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_owner.rs",
+    "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_owner_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_registration.rs",
+    "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_registration_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_race_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target.rs",
+    "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target_tests.rs"
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "object": "d92b748a22b19046465bcfe0b4fd9f58cc0c09fa"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host",
+      "object": "f0a11dcefb06cb56773e560633dd7cab7c07c4df"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/BUILD.bazel",
+      "object": "ff4b46aa96efa4f0910e6e56c4d4a27d745717b0"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/Cargo.toml",
+      "object": "516facdbf2db19fdead87c16b96715ccbe3b886e"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/ordinary_cpu_owner.sql",
+      "object": "0116fe92f10d2522803399a9fddf75cee014a84f"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/lib.rs",
+      "object": "c5bd3381b08021eea695e0a0015cd0e3e72d4105"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
+      "object": "26ee6559a9de6baf5846ea367d02e5ffb01a40d6"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
+      "object": "5ae05aaefebfc6a52bf4c6be9e1ed7b6a42f7201"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "object": "2e6bd4f8fe1755e2f2103ddd16c06def718276fa"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "object": "11273540b1baddffc7b1fdd44e4397e2904f5cee"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_output.rs",
+      "object": "31733e9ca175ac6fac70565cf9165899edb9d8d4"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs",
+      "object": "295a627b3cbee9f935a0bff96bd09ea3948d8519"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+      "object": "d378670412d30caf71feac26064c5cd476f6f1ca"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+      "object": "c3ef8bf87075cf072660074fe8e91aedb75d5f5e"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_owner.rs",
+      "object": "2dd080a206996505c6ccb18526aab77d8eb83800"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_owner_tests.rs",
+      "object": "41f8a9af435b681e39fea10aeb225283dc8ee44e"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_registration.rs",
+      "object": "6e18af182538be910290a90292f26f77be9747e4"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_registration_tests.rs",
+      "object": "2f6f68c9ed56218b59a33dbade5caabae7172ea6"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_race_tests.rs",
+      "object": "275da31919a0337931c03d407342c5f1a4d1be4c"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_tests.rs",
+      "object": "d0677425dceb6df750d75abd29a1933ba70efd5c"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target.rs",
+      "object": "39ade433890d9fd294159e4c5b7fc80aa45bbeba"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target_tests.rs",
+      "object": "31f2876da2d96b6b40557dbdcc82638183f4704f"
+    },
+    {
+      "path": "docs/modules/inference.worker/TECHNICAL.md",
+      "object": "f6f48252939f97843186438f95ed20cbeb136c39"
+    }
+  ],
+  "observedAtHead": {
+    "commit": "6d508eac511cba00887ea5852823f3a472a67c05",
+    "tree": "8f41fdeb2cd302516b9fa303f9c579ba94238998"
+  }
 }

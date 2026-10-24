@@ -5,6 +5,46 @@ native `runtime.codex` App Server caller. It is repository source design, not
 proof of a deployed approval service, target-host trust, activation, promotion,
 or release.
 
+The existing PN3/PN4 work also has an authority-free
+`OrdinaryCpuRegistration` prerequisite. It derives one exact bounded payload and
+the complete canonical `OperationIntentV1` from trusted host metadata: subject,
+scope, policy generation, source/profile/worker identity, fixed program/arguments/cwd
+and an observer deadline of at most eight seconds. Requests carry that fixed
+payload rather than an executable path or argument list. Registration and
+semantic validation do not enter a worker or consume FinalUse authority. The
+source digest is a declared binding; deployment must separately authenticate the
+immutable executable.
+
+The internal ordinary CPU owner adds a storage prerequisite in the destination's
+trusted, already-migrated SQLite pool. One original `BEGIN IMMEDIATE` transaction
+commits both the exact semantic dedupe record and a permanent entry from sixteen
+lifetime slots; terminal tombstones consume those slots. Every new entry checks
+its actual connection for WAL and synchronous FULL. Replay never admits another
+entry, and an error or ambiguous commit cannot return a new-entry decision. This
+storage stage does not start a Child or issue terminal authority. Its fixture
+replaces all physical connections in the same pool and rebuilds the owner; it
+does not qualify pool/process cold recovery or change the disabled production
+recovery APIs. The target and signed route below compose this prerequisite;
+the original U/C/A resource qualification remains open in the same PN3/PN4 work.
+
+The ordinary target retains the original sealed dispatch through destination
+admission and consumes its claim at synchronous fixed-program/arguments/cwd
+spawn. It clears inherited environment and retains the original Child in a
+permanent slot. Only that Child's timely `try_wait` exit zero plus durable
+terminal storage establishes an ordinary exit fact; the eight-second observation
+bound does not bound the later storage settlement. Missing Child, late or nonzero
+exit, and uncertain durability remain indeterminate. Source-route tests use the
+original production writer/outbox, real signed FinalUse grants and a signed exact
+fixture lease verifier; they do not qualify production key custody or cold
+recovery. Ordinary exit is not wait4/cgroup accounting, resource retirement or
+model acceptance.
+
+The source-route race controls hold the real destination SQLite write lock while
+the original sealed claim waits. Expiry or revocation then prevents spawn while
+the committed entry stays permanent. Cancelling a delivery future after an
+actual worker effect never enables a second spawn: its original Child remains
+observable, or loss of that owner leaves source reconciliation indeterminate.
+
 ## 1. Ownership and effect boundary
 
 The named caller in
@@ -137,6 +177,13 @@ uses the named `AppServerModelDriver`, obtains an independently signed test
 grant, drives one controlled mock Responses provider request, and verifies the
 durable terminal correlation. That is repository product-composition evidence,
 not real-provider or target-host qualification.
+
+The fixture supplies the actual workspace `codex` executable through the Cargo
+binary resolver or Bazel unit-test runfiles, and uses Agentd's existing runtime
+prerequisite check before control admission. The test harness executable cannot
+replace the CLI. Native output reads bounded complete agent-message text from
+the validated exact terminal turn, replacing partial deltas without duplicating
+them; missing terminal text preserves the observed stream.
 
 Before production activation, independently establish the deployed issuer,
 signing-key custody, socket/peer ACLs, trusted time and revocation distribution,

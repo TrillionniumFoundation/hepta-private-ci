@@ -5,3 +5,10 @@ codex_rust_crate(
     crate_edition = "2018",
     crate_name = "i18n_config",
 )
+
+# crate_universe references patched path crates by their versioned directory.
+alias(
+    name = "i18n-config-0.4.8",
+    actual = ":i18n-config",
+    visibility = ["//visibility:public"],
+)
