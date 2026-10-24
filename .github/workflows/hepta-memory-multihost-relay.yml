@@ -1,0 +1,149 @@
+name: Hepta memory separate-runner checkpoint and withdrawal experiment
+
+on:
+  push:
+    branches: [codex/memory-distributed-final-20261024]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: memory-multihost-${{ github.sha }}-${{ github.run_attempt }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
+  HF_HUB_DISABLE_TELEMETRY: "1"
+  TOKENIZERS_PARALLELISM: "false"
+  OMP_NUM_THREADS: "2"
+  OPENBLAS_NUM_THREADS: "2"
+  MKL_NUM_THREADS: "2"
+
+jobs:
+  source-owner:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Verify source and install registered CPU runtime
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1'
+          python -m pip install --only-binary=:all: -r scripts/memory_cell/requirements.txt 'cryptography==50.0.2'
+          python -m pip check
+          python -B scripts/memory_cell/prepare_parametric.py --output "$RUNNER_TEMP/base-a" --download
+      - name: Qualify control-plane and live source composition at this source SHA
+        run: |
+          set -euo pipefail
+          bash scripts/memory_cell_distributed/run_tests.sh
+      - name: Train source-local cell, read controls and fence former placement
+        run: |
+          set -euo pipefail
+          python -B scripts/memory_cell_distributed/relay_trial.py source-prepare --root "$RUNNER_TEMP/source-evidence" --model "$RUNNER_TEMP/base-a" --secret-file "$RUNNER_TEMP/relay-secrets/source.key"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-multihost-offer-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/source-evidence/out-offer/offer.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Await target read, serve one authorized evidence root, withdraw source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python -B scripts/memory_cell_distributed/relay_trial.py source-withdraw --root "$RUNNER_TEMP/source-evidence" --model "$RUNNER_TEMP/base-a" --secret-file "$RUNNER_TEMP/relay-secrets/source.key"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-multihost-withdrawal-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/source-evidence/out-withdrawal/withdrawal.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Evaluate frozen mechanism gates and preserve negative recall results
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python -B scripts/memory_cell_distributed/relay_evaluate.py --root "$RUNNER_TEMP/source-evidence" --model "$RUNNER_TEMP/base-a"
+      - name: Retain source-side evidence and raw failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-multihost-source-evidence-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/source-evidence/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Verify checkout remained unchanged
+        if: always()
+        run: git diff --exit-code
+
+  target-worker:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Install independent base and registered runtime
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1'
+          python -m pip install --only-binary=:all: -r scripts/memory_cell/requirements.txt 'cryptography==50.0.2'
+          python -m pip check
+          python -B scripts/memory_cell/prepare_parametric.py --output "$RUNNER_TEMP/base-b" --download
+      - name: Import exact checkpoint and read in a fresh decoder process
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python -B scripts/memory_cell_distributed/relay_trial.py target-read --root "$RUNNER_TEMP/target-evidence" --model "$RUNNER_TEMP/base-b"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-multihost-ready-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/target-evidence/out-ready/ready.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Observe withdrawal without entering model
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python -B scripts/memory_cell_distributed/relay_trial.py target-withdraw --root "$RUNNER_TEMP/target-evidence" --model "$RUNNER_TEMP/base-b"
+      - name: Fresh owner rejects old signed source cut after restart
+        run: |
+          set -euo pipefail
+          python -B scripts/memory_cell_distributed/relay_trial.py target-replay --root "$RUNNER_TEMP/target-evidence" --model "$RUNNER_TEMP/base-b"
+          python -B scripts/memory_cell_distributed/relay_evaluate.py --root "$RUNNER_TEMP/target-evidence" --model "$RUNNER_TEMP/base-b" --inventory-only
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-multihost-finished-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/target-evidence/out-finished/finished.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Retain target evidence and raw failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-multihost-target-evidence-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/target-evidence/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Verify checkout remained unchanged
+        if: always()
+        run: git diff --exit-code
