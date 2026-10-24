@@ -343,6 +343,21 @@ impl CognitiveStore {
         })
     }
 
+    /// Close the pool shared by this store and its clones.
+    ///
+    /// Calling this method immediately rejects new pool acquisitions. Await the
+    /// returned future to drain the pool after checked-out connections are returned
+    /// or closed; checked-out transactions can still finish. Separately opened
+    /// stores have independent pools and are not closed by this method.
+    ///
+    /// This does not release or terminalize leases, or drop the store's recovery
+    /// fence guard. Drop every store handle retaining that guard before handing
+    /// the database to exclusive recovery. Dropping an incomplete close future
+    /// is not evidence that the database is ready for an immutable handoff.
+    pub fn close(&self) -> impl std::future::Future<Output = ()> + '_ {
+        self.pool.close()
+    }
+
     pub fn path(&self) -> &Path {
         &self.path
     }
@@ -1661,3 +1676,7 @@ fn protect_database_file(_path: &Path) -> Result<(), CognitiveStoreError> {
 #[cfg(test)]
 #[path = "cognitive_schema_tests.rs"]
 mod schema_tests;
+
+#[cfg(test)]
+#[path = "cognitive_store_lifecycle_tests.rs"]
+mod lifecycle_tests;

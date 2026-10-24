@@ -127,3 +127,19 @@ report-skipped = "none"
 [[profile.native-fixtures.overrides]]
 filter = 'test(=real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends) | test(=agentd_product_host_commits_through_canonical_cognitive_store)'
 junit.report-skipped = "all"
+
+# Isolated recovery qualification; existing fixture/default/local profiles unchanged.
+[profile.native-recovery]
+inherits = "local"
+retries = 0
+
+[profile.native-recovery.junit]
+path = "junit.xml"
+report-name = "native-recovery"
+store-success-output = true
+store-failure-output = true
+report-skipped = "none"
+
+[[profile.native-recovery.overrides]]
+filter = 'test(=cognitive_store::lifecycle_tests::close_marks_clone_pool_immediately_and_retains_recovery_guard_until_drop) | test(=cognitive_store::lifecycle_tests::close_waits_for_checked_out_transaction_commit_and_preserves_all_source_fields) | test(=cognitive_store::lifecycle_tests::close_cancelled_before_pool_drain_can_be_retried_and_is_idempotent) | test(=cognitive_store::lifecycle_tests::close_does_not_close_independently_opened_pool_for_same_database) | test(=cognitive_store::lifecycle_tests::close_preserves_unresolved_queued_lease_and_release_still_fails_closed) | test(=real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends) | test(=agentd_product_host_commits_through_canonical_cognitive_store) | test(=agentd_product_host_recovers_exact_cut_into_fenced_writer_generation)'
+junit.report-skipped = "all"

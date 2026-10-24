@@ -1,0 +1,142 @@
+name: Hepta native recovery lifecycle validation
+
+on:
+  push:
+    branches: ["fix/dot-native-recovery-20261024"]
+
+permissions:
+  contents: read
+
+jobs:
+  original-owner-recovery:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 150
+    env:
+      CANDIDATE_SHA: ${{ github.sha }}
+      WORKFLOW_SHA: ${{ github.workflow_sha }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_BUILD_JOBS: "2"
+      PYTHONDONTWRITEBYTECODE: "1"
+      NEXTEST_USER_CONFIG_FILE: "none"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Bind reviewed source before setup
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/hepta-native-recovery-target"
+          export EVIDENCE="$RUNNER_TEMP/hepta-native-recovery-evidence"
+          printf 'CARGO_TARGET_DIR=%s\nEVIDENCE=%s\n' "$CARGO_TARGET_DIR" "$EVIDENCE" >> "$GITHUB_ENV"
+          mkdir "$EVIDENCE"
+          test "$WORKFLOW_SHA" = "$CANDIDATE_SHA"
+          python3 .github/scripts/native_recovery_evidence.py bind "$EVIDENCE" 2>&1 | tee "$EVIDENCE/source.log"
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: clippy,rustfmt,rust-src
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Install exact checksum-bound official tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          install -d "$RUNNER_TEMP/native-recovery-tools"
+          cd "$RUNNER_TEMP/native-recovery-tools"
+          curl --fail --location --proto '=https' --proto-redir '=https' -o just.tar.gz https://github.com/casey/just/releases/download/1.59.0/just-1.59.0-x86_64-unknown-linux-musl.tar.gz
+          echo '409044617b6f06517c1035e55ca38c8c856ff8b650e41bc2aa1ef82d5903a23e  just.tar.gz' | sha256sum --check
+          curl --fail --location --proto '=https' --proto-redir '=https' -o nextest.tar.gz https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.149/cargo-nextest-0.9.149-x86_64-unknown-linux-gnu.tar.gz
+          echo '32d1d8c0567b7a80bee2bad8bb09125c846da96bc009b2de11ec08557290c770  nextest.tar.gz' | sha256sum --check
+          tar --no-same-owner -xzf just.tar.gz just
+          tar --no-same-owner -xzf nextest.tar.gz cargo-nextest
+          echo "$PWD" >> "$GITHUB_PATH"
+          sha256sum just.tar.gz nextest.tar.gz > "$EVIDENCE/tool-archives.sha256"
+      - name: Original native prerequisites and exact tool receipt
+        id: tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y pkg-config libssl-dev
+          python3 .github/scripts/native_recovery_evidence.py tools "$EVIDENCE"
+          python3 --version > "$EVIDENCE/python.txt"
+          dpkg-query -W > "$EVIDENCE/dpkg-packages.txt"
+          df -h > "$EVIDENCE/filesystem-before.txt"
+          test "$(df --output=avail -B1 "$RUNNER_TEMP" | tail -1)" -ge 21474836480
+      - name: Evidence validator regressions (not native tests)
+        id: validator
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s .github/scripts -p test_native_recovery_evidence.py -v 2>&1 | tee "$EVIDENCE/validator-tests.log"
+      - name: Read-only Rust format check (never changes qualified source)
+        id: format
+        shell: bash
+        run: |
+          set -uo pipefail
+          formatter=$(rustup which --toolchain 1.95.0 rustfmt) || exit 1
+          printf '%s\n' "$formatter" > "$EVIDENCE/rustfmt-path.txt" || exit 1
+          "$formatter" --version > "$EVIDENCE/rustfmt-version.txt" || exit 1
+          sha256sum "$formatter" > "$EVIDENCE/rustfmt-binary.sha256" || exit 1
+          "$formatter" --edition 2024 --config-path codex-rs/rustfmt.toml --config skip_children=true --check codex-rs/hepta-memory/src/cognitive_store.rs codex-rs/hepta-memory/src/cognitive_store_lifecycle_tests.rs codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs 2>&1 | tee "$EVIDENCE/rustfmt.log"
+          status=("${PIPESTATUS[@]}")
+          printf '%s\n' "${status[0]}" > "$EVIDENCE/rustfmt.exit"
+          test "${status[1]}" -eq 0 || exit "${status[1]}"
+          exit "${status[0]}"
+      - name: Five owning-lib and three original integration cases
+        if: always() && steps.source.outcome == 'success' && steps.tools.outcome == 'success' && steps.validator.outcome == 'success'
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -uo pipefail
+          script="$GITHUB_WORKSPACE/.github/scripts/native_recovery_evidence.py"
+          report="$GITHUB_WORKSPACE/codex-rs/target/nextest/native-recovery/junit.xml"
+          combined=0
+          for phase in owning integration; do
+            directory="$EVIDENCE/$phase"
+            mkdir "$directory" || exit 1
+            rm -f "$report" || exit 1
+            if test "$phase" = owning; then
+              command=(just test --locked -p codex-hepta-memory --lib)
+            else
+              command=(just test --locked -p codex-hepta-agentd --features codex-hepta-agentd/qualification-cognitive-write --test cognitive_product_e2e --test cognitive_store_product_writer)
+            fi
+            filter=$(python3 "$script" filter "$phase") || exit 1
+            command+=(--profile native-recovery --no-tests fail -E "$filter")
+            printf '%q ' "${command[@]}" > "$directory/command.txt"
+            printf '\n' >> "$directory/command.txt"
+            "${command[@]}" 2>&1 | tee "$directory/native-tests.log"
+            status=("${PIPESTATUS[@]}")
+            printf '%s\n' "${status[0]}" > "$directory/test.exit"
+            printf '%s\n' "${status[1]}" > "$directory/tee.exit"
+            cp "$report" "$directory/junit.xml"
+            copied=$?
+            printf '%s\n' "$copied" > "$directory/report-copy.exit"
+            if test "${status[0]}" -ne 0 || test "${status[1]}" -ne 0 || test "$copied" -ne 0; then combined=1; fi
+          done
+          exit "$combined"
+      - name: Preserve and verify both official reports even on failure
+        if: always() && steps.source.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --binary > "$EVIDENCE/post-run.patch"
+          git status --porcelain=v1 > "$EVIDENCE/post-run-status.txt"
+          df -h > "$EVIDENCE/filesystem-after.txt"
+          python3 .github/scripts/native_recovery_evidence.py verify "$EVIDENCE" 2>&1 | tee "$EVIDENCE/verification.log"
+      - name: Retain complete source-bound success or failure evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: native-recovery-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-native-recovery-evidence
+          if-no-files-found: error
+          retention-days: 14

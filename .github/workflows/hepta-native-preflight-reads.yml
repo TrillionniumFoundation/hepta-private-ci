@@ -2,7 +2,11 @@ name: Native checkpoint preflight regression
 
 on:
   push:
-    branches: [fix/dot-native-preflight-reads-20261024]
+    branches:
+      [
+        fix/dot-native-preflight-reads-20261024,
+        fix/dot-native-recovery-20261024,
+      ]
 
 permissions:
   contents: read
