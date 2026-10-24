@@ -183,12 +183,14 @@ jobs:
           }
           prefix = 'research_task_head_owner::tests::'
           actual = {case.attrib['name'] for case in cases}
+          # Nextest 0.9.103 omits the root skipped counter; missing owner cases still fail.
           if (not {prefix + name for name in expected} <= actual
                   or len(actual) != len(cases)
                   or any(not name.startswith(prefix) for name in actual)
                   or any(case.attrib.get('classname') != 'codex-hepta-agentd' for case in cases)
                   or any(root.findall('.//' + tag) for tag in ('skipped', 'failure', 'error'))
-                  or any(int(root.attrib.get(key, '-1')) != 0 for key in ('skipped', 'failures', 'errors'))
+                  or any(int(root.attrib.get(key, '-1')) != 0 for key in ('failures', 'errors'))
+                  or int(root.attrib.get('skipped', '0')) != 0
                   or int(root.attrib.get('tests', '0')) != len(cases)):
               raise RuntimeError('Missing, skipped, duplicate, failed or non-Agentd owner tests')
           evidence = Path(os.environ['RUNNER_TEMP']) / 'hepta-owner-evidence'
@@ -197,7 +199,7 @@ jobs:
           python_count = json.loads((evidence / 'python-count.json').read_text())['passed']
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as output:
               output.write(f'Actual Linux Agentd lib build: {len(cases)} owner tests passed; '
-                           f'{python_count} synthetic Python fixture tests passed; no test skips.\n\n')
+                           f'{python_count} synthetic Python fixture tests passed; no owner test skips.\n\n')
               output.write('SHADOW_ONLY / DENY_ALL. No daemon startup, production registration, '
                            'training, calibration or retained-real-row owner replay is qualified by this job.\n')
           PY
