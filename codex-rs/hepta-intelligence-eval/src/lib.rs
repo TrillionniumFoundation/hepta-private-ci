@@ -16,7 +16,16 @@ mod fenced_holdout;
 mod fenced_holdout_file;
 mod holdout_envelope;
 mod holdout_journal;
+mod paired_data;
 mod paired_plan;
+pub use paired_data::PairedArmV1;
+pub use paired_data::PairedBoundedIntervalV1;
+pub use paired_data::PairedDataV1;
+pub use paired_data::PairedManifestV1;
+pub use paired_data::PairedObservationV1;
+pub use paired_data::PairedSourceCaseV1;
+pub use paired_data::PairedStatisticsV1;
+pub use paired_data::PairedVersionV1;
 #[cfg(test)]
 mod paired_owner_tests;
 pub use holdout_envelope::HoldoutJournalRecordV2;
