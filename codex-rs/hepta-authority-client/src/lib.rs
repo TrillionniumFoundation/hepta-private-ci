@@ -30,3 +30,10 @@ pub(crate) use codex_hepta_authority_types::AuthBusObjectiveIngress;
 pub use final_use_issuer::AgentdFinalUseIssuerError;
 pub use final_use_issuer::AgentdFinalUseIssuerPeer;
 pub use final_use_issuer::AgentdUnixFinalUseGrantProvider;
+
+mod objective_claims;
+pub use objective_claims::ObjectiveClaimsError;
+pub use objective_claims::authbus_objective_claims;
+pub use objective_claims::objective_payload;
+pub use objective_claims::objective_scope;
+pub use objective_claims::parse_objective_digest;

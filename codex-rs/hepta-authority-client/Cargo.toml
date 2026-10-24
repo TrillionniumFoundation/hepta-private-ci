@@ -16,6 +16,7 @@ workspace = true
 [dependencies]
 codex-hepta-authority-types = { workspace = true }
 codex-hepta-contracts = { workspace = true }
+codex-hepta-types = { workspace = true }
 ed25519-dalek = { workspace = true }
 libc = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
