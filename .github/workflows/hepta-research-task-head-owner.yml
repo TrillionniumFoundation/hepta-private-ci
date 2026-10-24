@@ -30,7 +30,13 @@ concurrency:
 
 jobs:
   agentd-owner-linux:
-    runs-on: ubuntu-24.04
+    name: ${{ matrix.os == 'ubuntu-24.04' && 'agentd-owner-linux' || 'agentd-owner-linux-ubuntu-22.04' }}
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        os: [ubuntu-24.04, ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     env:
       CARGO_BUILD_JOBS: "2"
@@ -73,6 +79,12 @@ jobs:
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
+      - name: Use Python 3.12 on the supplemental Ubuntu 22.04 lane
+        if: matrix.os == 'ubuntu-22.04'
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+          check-latest: false
       - name: Run all original synthetic Python fixture tests
         run: |
           set -euo pipefail
@@ -201,7 +213,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-research-task-head-owner-${{ github.event.pull_request.head.sha }}
+          name: hepta-research-task-head-owner-${{ matrix.os }}-${{ github.event.pull_request.head.sha }}
           path: |
             ${{ runner.temp }}/hepta-owner-evidence/
             codex-rs/target/nextest/local/junit.xml
