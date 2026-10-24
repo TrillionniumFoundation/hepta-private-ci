@@ -43,10 +43,7 @@ fn actual_locked_stage_share_conflict_never_replaces_or_repairs_state() -> Resul
     let mut stage = owner.create_state_stage("input", 40)?;
     stage.write_all(b"new-state")?;
     let result = stage.replace_synced("state");
-    assert!(matches!(
-        result,
-        Err(StageReplaceError::BeforePublication(_))
-    ));
+    assert!(matches!(result, Err(StageReplaceError::Indeterminate(_))));
     drop(original);
     assert!(owner.sync_all().is_err(), "rename failure remains fenced");
     assert_eq!(fs::read(fixture.0.join("private/state"))?, b"old-state");

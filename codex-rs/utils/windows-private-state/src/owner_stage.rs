@@ -11,7 +11,7 @@ use std::fmt;
 use std::io;
 use std::io::Write;
 
-/// Distinguish a rejected native rename from uncertainty after publication.
+/// Distinguish pre-call rejection from uncertainty once publication is attempted.
 #[derive(Debug)]
 pub enum StageReplaceError {
     BeforePublication(ValidationError),
@@ -91,7 +91,8 @@ impl LockedStateStage<'_> {
 
     /// Sync then atomically rename this exact stage handle into the held root.
     /// Success still requires OwnerLock::sync_all; failed post-rename validation
-    /// is indeterminate. No path reopen, delete-sharing fallback or cleanup runs.
+    /// is indeterminate, including every helper error after entering publication.
+    /// No path reopen, delete-sharing fallback or cleanup runs.
     pub fn replace_synced(&self, leaf: &str) -> Result<(), StageReplaceError> {
         let before = StageReplaceError::BeforePublication;
         self.ensure_unpublished()
@@ -110,7 +111,7 @@ impl LockedStateStage<'_> {
         held.continuity = Continuity::Refused;
         self.inner.inspect(&mut held).map_err(before)?;
         crate::stage::replace_synced_state_stage(&held.directory.file, &self.inner.file, leaf)
-            .map_err(|error| before(error.into()))?;
+            .map_err(|error| StageReplaceError::Indeterminate(error.into()))?;
         self.inner
             .inspect(&mut held)
             .map_err(StageReplaceError::Indeterminate)?;
