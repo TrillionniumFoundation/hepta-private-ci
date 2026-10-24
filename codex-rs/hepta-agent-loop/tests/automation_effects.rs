@@ -254,3 +254,6 @@ mod cancel_reopen_tests;
 
 #[path = "support/automation_effect_concurrency_tests.rs"]
 mod concurrency_tests;
+
+#[path = "support/automation_effect_late_ack_tests.rs"]
+mod late_ack_tests;
