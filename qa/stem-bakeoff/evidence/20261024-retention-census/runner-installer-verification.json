@@ -1,0 +1,14 @@
+{
+  "installer_sha256": "adcd8ddcfd9ef7778f6f97f38d835d2b94a385b3be32781cccab3f3713cdbdd7",
+  "checks": {
+    "wrong_branch_rejected": true,
+    "wrong_head_rejected": true,
+    "clean_install": true,
+    "exact_eleven_file_payload": true,
+    "idempotent_exact_payload": true,
+    "new_file_collision_rejected": true,
+    "unrelated_change_rejected": true,
+    "legacy_preimage_edit_rejected": true,
+    "all_legacy_v2_cohort_preimages_unchanged": true
+  }
+}

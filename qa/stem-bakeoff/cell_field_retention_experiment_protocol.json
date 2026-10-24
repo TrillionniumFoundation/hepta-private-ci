@@ -1,0 +1,192 @@
+{
+  "encoder": "granite97m",
+  "encoder_revision": "835ad14087e140460703cf0fae09f97d469d65c2",
+  "encoder_inventory_sha256": "08bdb7bb7eefb051ac74924787354a3638ba8a0e6fe6ffdd96ae57d6f1402db3",
+  "encoder_profile": "text",
+  "encoder_max_tokens": 192,
+  "encoder_batch_size": 16,
+  "projection": {
+    "width": 8,
+    "seed": 20261024,
+    "method": "Gaussian QR; diagonal R sign fixed; label-independent"
+  },
+  "head_modes": [
+    "linear",
+    "gated"
+  ],
+  "classes": 4,
+  "seeds": [
+    7,
+    17,
+    29
+  ],
+  "warmup_steps": 64,
+  "optimizer": {
+    "learning_rate": 0.02,
+    "l2": 0.001,
+    "beta1": 0.9,
+    "beta2": 0.999,
+    "epsilon": 1e-08,
+    "gradient_clip": 5.0,
+    "sampler": "full_batch"
+  },
+  "horizon": 24,
+  "h": 0.02,
+  "effort_price": 0.1,
+  "current_target_displacement": -0.03,
+  "source_archive_sha256": "1f5f08691f0ce576cb0b5cfdbcb8c55e0ec14dda8f3e07933da72c500338845a",
+  "schema": "hepta.cell-retention.experiment.v1",
+  "status": "FROZEN",
+  "published_source_selection_commit": "eebec960513dc9f58b830a8674a924a605fa532e",
+  "reviewed_retention_v2_commit": "838a81322b77312f9fdbbea2777d1679523676c6",
+  "cohort_protocol_sha256": "f7841a47d6ce5599e68d91f1a9d53449ca3c050c978eaca85cf53173f235f404",
+  "cohort_receipt_sha256": "7af61dfa851583d6d31c0163b5d9453841e21bef106058206731870d706364df",
+  "source_code_sha256": {
+    "cell_field_retention_experiment.py": "69e93a6e55d5027463294f4fb12e27ec19675bcf74d3c1e72031a33c401cfb04",
+    "cell_field_retention_run.py": "f747fa3364ae0c1e9f2f55be3c44a93cce57404e6f0479e945adc043fbdf35b5",
+    "cell_field_retention_checkpoint.py": "c3c65bd752d6eb589f6f42d2f5dd07ac4fbc8a2c3ffcd4eb8bae217b0f258a59",
+    "cell_field_retention.py": "3916daf97710c23fcccca55a3dd2d42484f2cb03350c2530ecbd49d301db54d3",
+    "cell_field_control.py": "b91260462b26492e29d17da4daaa7f16be429e3b6f33e4af587bf0471e15780b",
+    "cell_field_state.py": "1e30b346070056123cd198413c8d82b24040179f5aa732f25dadf506e795805f",
+    "cell_field_run.py": "ad69aad9fd309c3e260a029eebbcb29fa65504e07b98d0c010ccd15aa5e32004",
+    "cell_field_replay.py": "321b5e5c1768d85a1c908b330d317b37013d32bf971dbd7ed78b49fe8319e795",
+    "cell_field_features.py": "e0ed725bcceac72c7c72eff680fb60cc7e117c989f6f7841ef9a6b27e1f24eb9",
+    "cell_learning_models.py": "5b6babba7e036be6273d96455db4cf0c93699a9e6a705805f4caf6ba66f45005",
+    "cell_learning_metrics.py": "8c20c79dff3cf0e7cbee08648e2409ddb065438a72fcf9c2be56c0646a9aaf16"
+  },
+  "scorer_source_sha256": "a14d0ebc3fc7c154514133c80f8d5f5273c18949e6743179e2f2b8347d989270",
+  "encoder_threads": 2,
+  "action_masks": [
+    "bias"
+  ],
+  "policies": [
+    "zero",
+    "legacy_full_quadratic",
+    "retention_hinge_suffix"
+  ],
+  "retention_tolerance": 0.02,
+  "retention_weight": 1.0,
+  "run_limits": {
+    "max_cpu_seconds": 10.0,
+    "max_wall_seconds": 60.0,
+    "max_action_l2": 10.0,
+    "max_intervention_l2": 0.2,
+    "max_scaled_displacement_l2": 100.0,
+    "max_parameter_l2": 1000.0,
+    "max_solver_iterations": 64,
+    "gradient_tolerance": 1e-09
+  },
+  "worker_cpu_seconds": 15,
+  "worker_wall_seconds": 75,
+  "worker_order": "For initial indices0..5 in seed-major/head-minor order, sequentially rotate three arms by initial_index modulo3; fresh Python worker per arm, identical common warmed state/reference.",
+  "worker_environment": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "anchor": "original warmup old-probe NLL; no reanchoring on suffix or recovery",
+  "controller_geometry": "same frozen full-state theta/m/v A/E/C; actual nonlinear Adam deployment; original reference suffix only, no relinearization; E already containsdt",
+  "source_novelty_scope": "global raw-story/title components disjoint from default768,V3all1104,PFTall512 registered cohorts only; unknown pretraining/semantic/unregistered exposure remains",
+  "future_roles": [
+    "future_june",
+    "future_july"
+  ],
+  "source_feasibility_amendment": {
+    "original_failed_report_sha256": "152ea104d9ff19f255c7a56399c4bcf62461ba9d634caa246a11e1b4d1312823",
+    "original_august_available_per_class": [
+      24,
+      27,
+      3,
+      18
+    ],
+    "original_required_per_class": 32,
+    "new_counts": {
+      "future_june": 96,
+      "future_july": 128
+    },
+    "reason": "pre-model source availability only; original failed plan preserved"
+  },
+  "primary": {
+    "heads": [
+      "linear",
+      "gated"
+    ],
+    "seeds": [
+      7,
+      17,
+      29
+    ],
+    "future": "equal-weight June/July mean NLL of hinge minus legacy; average fixed seeds within each source component first",
+    "retention": "old_test NLL of hinge minus ORIGINAL warmed head; not merely minus a potentially degraded legacy comparator",
+    "retention_clarification": "explicit immutable-anchor definition before model outputs; relative-to-legacy old NLL is secondary",
+    "bootstrap": {
+      "draws": 2000,
+      "seed": 820241,
+      "resampling": "paired source components within each category; fixed category counts; common draw indices for all arms/seeds/heads",
+      "role_rng_order": [
+        "old_test",
+        "future_june",
+        "future_july"
+      ],
+      "quantile_method": "linear"
+    },
+    "future_gate": "one-sided97.5percentile upper bound <0",
+    "retention_gate": "one-sided97.5percentile upper bound <=0.02nats versus original warmed head",
+    "multiplicity": "two predeclared heads, Bonferroni alpha0.025 each; within each require both gates; no best-head reporting",
+    "conditions": "all18 conditions must complete and predictions seal before any new gold payload is opened; failed census blocks gold access, no complete-case subset",
+    "inference_limit": "conditional on three fixed fits and balanced historical source sample; bootstrap coverage approximate; not across task families or arbitrary seeds"
+  },
+  "secondary": [
+    "every seed and month",
+    "zero comparator",
+    "balanced accuracy",
+    "old-test hinge-minus-legacy NLL",
+    "both explicitly named probe objectives",
+    "all numerical failures and caps",
+    "actual one-step tangent prediction error"
+  ],
+  "cost_accounting": {
+    "common": [
+      "acquisition",
+      "source closure",
+      "new cohort preparation",
+      "Encoder cold load",
+      "one shared exact encoding",
+      "projection",
+      "six warmups",
+      "six original references"
+    ],
+    "arm": [
+      "fresh interpreter/input load",
+      "all successful/failed suffix or original policy solves",
+      "actual Adam updates/probes",
+      "full optimizer checkpoint save/reload",
+      "serving-head save/reload",
+      "frozen predictions"
+    ],
+    "total_cpu": "owner process CPU plus disjoint reaped child CPU, reported separately from earlier encoding/acquisition; nested controller/phase times are subsets, never added again",
+    "rss": "fresh worker full-process high-water marks plus owner high-water; these are not independent simultaneous-memory or energy measurements",
+    "hard_termination": "failed with retained logs and exactoriginal checkpoint; actual later prefix unknown if no final record, never counted as zero effect or success",
+    "net_benefit": "not automatically certified by the objective or passing statistical gates; explicit full cost comparison remains required"
+  },
+  "persistence": {
+    "preserve": [
+      "all initial and final theta/m/v and counters",
+      "all reference A/C/state/scales arrays",
+      "original train/probe feature+label bindings",
+      "projection matrix/hash",
+      "shared original feature report/hash",
+      "all serving-head parameter files",
+      "all480 frozen per-arm probabilities",
+      "transition and worker receipts"
+    ],
+    "actual_same_process_and_cold_worker_restore": "full state and serving-head equality checked and costs charged",
+    "interrupted_midtrajectory_recovery": "unit-tested separately; not silently added as an empirical arm or net-cost claim",
+    "same_graph_multihost": "future separately preregistered study only; no source/parameter/control choice changed here"
+  },
+  "no_existing_acceptance_replacement": true,
+  "production_activation_allowed": false,
+  "authority": "DENY_ALL",
+  "claim_scope": "bounded one-family historical classification study of an optional retention objective; no actual agent-task, split, learned-edge, general-intelligence or deployment benefit claim"
+}

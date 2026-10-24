@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/data/hepta-cell-input-20261024/.venv/bin/python",
+    "-W",
+    "error",
+    "-m",
+    "unittest",
+    "test_cell_field_retention_run",
+    "test_cell_field_retention_experiment",
+    "test_cell_field_retention_score",
+    "test_cell_field_retention_sources",
+    "test_cell_field_retention_data",
+    "test_cell_field_retention",
+    "test_cell_field_control",
+    "-v"
+  ],
+  "exit": 0,
+  "wall_seconds": 29.345140210934915,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "44a02c8c2759f45d95819f8109d9d82ef09dc75eac7d36142f239f4a41106aa5",
+  "new_model_calls": 0,
+  "new_gold_opened": false
+}
