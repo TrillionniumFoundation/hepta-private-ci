@@ -81,7 +81,7 @@ mod windows_impl {
                     let _ = write_frame(
                         &mut pipe_write,
                         &FramedMessage {
-                            version: 1,
+                            version: crate::ipc_framed::IPC_PROTOCOL_VERSION,
                             message: Message::Terminate {
                                 payload: EmptyPayload::default(),
                             },
@@ -184,6 +184,25 @@ mod windows_impl {
         }
 
         (|| -> Result<CaptureResult> {
+            let filesystem_root_overrides = crate::setup::SetupRootOverrides {
+                read_roots: read_roots_override.map(<[PathBuf]>::to_vec),
+                read_roots_include_platform_defaults,
+                write_roots: write_roots_override.map(<[PathBuf]>::to_vec),
+                deny_read_paths: Some(deny_read_paths_override.clone()),
+                deny_write_paths: Some(deny_write_paths_override.clone()),
+            };
+            let filesystem_roles = crate::setup::capability_plan_for_setup(
+                crate::setup::SandboxSetupRequest {
+                    permissions: &permissions,
+                    command_cwd: cwd,
+                    env_map: &env_map,
+                    codex_home,
+                    proxy_enforced,
+                },
+                filesystem_root_overrides,
+            )?
+            .with_network_route(network_proxy_restricting_sid.clone())?;
+            let root_resolution = filesystem_roles.root_resolution_context().cloned();
             let spawn_request = SpawnRequest {
                 command: command.clone(),
                 cwd: cwd.to_path_buf(),
@@ -193,6 +212,8 @@ mod windows_impl {
                 codex_home: sandbox_base.clone(),
                 real_codex_home: codex_home.to_path_buf(),
                 cap_sids,
+                filesystem_roles: Some(filesystem_roles),
+                root_resolution,
                 network_proxy_restricting_sid,
                 timeout_ms,
                 tty: false,

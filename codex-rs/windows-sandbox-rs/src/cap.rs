@@ -1,116 +1,247 @@
+use crate::capability_plan::FilesystemCapabilityPlan;
+pub use crate::capability_registry::CapSids;
+use crate::capability_registry::MAX_REGISTERED_ROOTS;
+use crate::capability_registry::REGISTRY_VERSION;
 use crate::path_normalization::canonical_path_key;
 use crate::path_normalization::canonicalize_path;
 use anyhow::Context;
 use anyhow::Result;
+use anyhow::ensure;
 use rand::RngCore;
 use rand::SeedableRng;
 use rand::rngs::SmallRng;
-use serde::Deserialize;
-use serde::Serialize;
 use std::collections::HashMap;
 use std::fs;
+use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
+use std::io::Write;
+use std::os::windows::fs::MetadataExt;
+use std::os::windows::fs::OpenOptionsExt;
 use std::path::Path;
 use std::path::PathBuf;
+use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_REPARSE_POINT;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct CapSids {
-    pub workspace: String,
-    pub readonly: String,
-    /// Per-workspace capability SIDs keyed by canonicalized CWD string.
-    ///
-    /// This is used to isolate workspaces from other workspace sandbox writes and to
-    /// apply per-workspace denies (e.g. protect `CWD/.codex`)
-    /// without permanently affecting other workspaces.
-    #[serde(default)]
-    pub workspace_by_cwd: HashMap<String, String>,
-    /// Per-write-root capability SIDs keyed by canonicalized write-root path.
-    ///
-    /// These are included in a workspace-write token only when the root is
-    /// currently allowed, so stale ACLs from earlier extra roots do not expand
-    /// later workspace sandboxes.
-    #[serde(default)]
-    pub writable_root_by_path: HashMap<String, String>,
-}
+const MAX_REGISTRY_BYTES: u64 = 4 * 1024 * 1024;
 
 pub fn cap_sid_file(codex_home: &Path) -> PathBuf {
-    codex_home.join("cap_sid")
+    codex_home.join("cap_sid.v3.json")
 }
 
 fn make_random_cap_sid_string() -> String {
     let mut rng = SmallRng::from_entropy();
-    let a = rng.next_u32();
-    let b = rng.next_u32();
-    let c = rng.next_u32();
-    let d = rng.next_u32();
+    let [a, b, c, d] = [
+        rng.next_u32(),
+        rng.next_u32(),
+        rng.next_u32(),
+        rng.next_u32(),
+    ];
     format!("S-1-5-21-{a}-{b}-{c}-{d}")
 }
 
-fn persist_caps(path: &Path, caps: &CapSids) -> Result<()> {
-    if let Some(dir) = path.parent() {
-        fs::create_dir_all(dir).with_context(|| format!("create cap sid dir {}", dir.display()))?;
+fn require_absent(path: &Path) -> Result<()> {
+    match fs::symlink_metadata(path) {
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(()),
+        Err(error) => Err(error.into()),
+        Ok(_) => anyhow::bail!(
+            "occupied registry namespace {}; refusing adoption or cleanup",
+            path.display()
+        ),
     }
-    let json = serde_json::to_string(caps)?;
-    fs::write(path, json).with_context(|| format!("write cap sid file {}", path.display()))?;
+}
+
+fn require_plain_file(path: &Path) -> Result<()> {
+    let metadata = fs::symlink_metadata(path)?;
+    ensure!(
+        metadata.is_file() && metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT == 0,
+        "registry object is not a plain file"
+    );
     Ok(())
 }
 
-pub fn load_or_create_cap_sids(codex_home: &Path) -> Result<CapSids> {
-    let path = cap_sid_file(codex_home);
-    if path.exists() {
-        let txt = fs::read_to_string(&path)
-            .with_context(|| format!("read cap sid file {}", path.display()))?;
-        let t = txt.trim();
-        if t.starts_with('{') && t.ends_with('}') {
-            if let Ok(obj) = serde_json::from_str::<CapSids>(t) {
-                return Ok(obj);
-            }
-        } else if !t.is_empty() {
-            let caps = CapSids {
-                workspace: t.to_string(),
-                readonly: make_random_cap_sid_string(),
-                workspace_by_cwd: HashMap::new(),
-                writable_root_by_path: HashMap::new(),
-            };
-            persist_caps(&path, &caps)?;
-            return Ok(caps);
-        }
-    }
-    let caps = CapSids {
-        workspace: make_random_cap_sid_string(),
-        readonly: make_random_cap_sid_string(),
-        workspace_by_cwd: HashMap::new(),
-        writable_root_by_path: HashMap::new(),
-    };
-    persist_caps(&path, &caps)?;
+fn read_bytes(file: &mut fs::File) -> Result<Vec<u8>> {
+    let mut bytes = Vec::new();
+    Read::by_ref(file)
+        .take(MAX_REGISTRY_BYTES + 1)
+        .read_to_end(&mut bytes)?;
+    ensure!(
+        bytes.len() as u64 <= MAX_REGISTRY_BYTES,
+        "capability registry byte capacity exceeded"
+    );
+    Ok(bytes)
+}
+
+fn read_caps(path: &Path, checkpoint: &mut fs::File) -> Result<CapSids> {
+    require_plain_file(path)?;
+    let mut file = fs::OpenOptions::new()
+        .read(true)
+        .share_mode(FILE_SHARE_READ)
+        .open(path)?;
+    let bytes = read_bytes(&mut file)?;
+    checkpoint.seek(SeekFrom::Start(0))?;
+    ensure!(
+        bytes == read_bytes(checkpoint)?,
+        "registry differs from its original checkpoint; refusing rollback or reset"
+    );
+    let caps: CapSids =
+        serde_json::from_slice(&bytes).context("invalid capability registry; refusing reset")?;
+    caps.validate()?;
     Ok(caps)
 }
 
-/// Returns the workspace-specific capability SID for `cwd`, creating and persisting it if missing.
-pub fn workspace_cap_sid_for_cwd(codex_home: &Path, cwd: &Path) -> Result<String> {
+/// Rejects every old namespace object; never migrates or deletes prior state.
+pub fn require_fresh_filesystem_namespace(codex_home: &Path) -> Result<()> {
+    for relative in [
+        "cap_sid",
+        "cap_sid.v2.json",
+        "cap_sid.v2.lock",
+        "cap_sid.v2.stage",
+        ".sandbox/setup_marker.json",
+        ".sandbox/setup_marker.v6.json",
+        ".sandbox/sandbox_users.json",
+        ".sandbox-secrets/sandbox_users.json",
+        ".sandbox-secrets/sandbox_users.v6.json",
+    ] {
+        require_absent(&codex_home.join(relative))
+            .context("legacy setup requires a fresh namespace; refusing migration or reset")?;
+    }
+    Ok(())
+}
+
+fn with_registry<T>(
+    codex_home: &Path,
+    change: impl FnOnce(&mut CapSids) -> Result<T>,
+) -> Result<T> {
+    require_fresh_filesystem_namespace(codex_home)?;
+    fs::create_dir_all(codex_home)?;
     let path = cap_sid_file(codex_home);
-    let mut caps = load_or_create_cap_sids(codex_home)?;
-    let key = canonical_path_key(cwd);
-    if let Some(sid) = caps.workspace_by_cwd.get(&key) {
+    let stage_path = codex_home.join("cap_sid.v3.stage");
+    require_absent(&stage_path).context("uncertain registry stage; refusing automatic recovery")?;
+    let lock_path = codex_home.join("cap_sid.v3.lock");
+    let (mut lock, fresh) = match fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE)
+        .create_new(true)
+        .open(&lock_path)
+    {
+        Ok(lock) => (lock, true),
+        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+            require_plain_file(&lock_path)?;
+            (
+                fs::OpenOptions::new()
+                    .read(true)
+                    .write(true)
+                    .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE)
+                    .open(&lock_path)?,
+                false,
+            )
+        }
+        Err(error) => return Err(error.into()),
+    };
+    lock.try_lock()
+        .context("capability registry is busy or uncertain")?;
+    require_absent(&stage_path)?;
+    let mut caps = if fresh {
+        require_absent(&path)
+            .context("registry without its original checkpoint; refusing adoption")?;
+        let mut rng = SmallRng::from_entropy();
+        let generation = format!("{:016x}{:016x}", rng.next_u64(), rng.next_u64());
+        CapSids {
+            version: REGISTRY_VERSION,
+            generation,
+            workspace: make_random_cap_sid_string(),
+            readonly: make_random_cap_sid_string(),
+            workspace_by_cwd: HashMap::new(),
+            writable_root_by_path: HashMap::new(),
+            readable_root_by_path: HashMap::new(),
+        }
+    } else {
+        read_caps(&path, &mut lock)
+            .context("missing, stale or invalid original registry; refusing history reset")?
+    };
+    let original = caps.clone();
+    let result = change(&mut caps)?;
+    caps.validate()?;
+    if fresh || caps != original {
+        let bytes = serde_json::to_vec(&caps)?;
+        ensure!(
+            bytes.len() as u64 <= MAX_REGISTRY_BYTES,
+            "capability registry byte capacity exceeded"
+        );
+        let mut stage = fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&stage_path)?;
+        stage.write_all(&bytes)?;
+        stage.sync_all()?;
+        drop(stage);
+        // One bounded byte vector binds both files. Any interrupted update or
+        // leftover fixed stage refuses all later use; no rollback/cleanup guess.
+        lock.seek(SeekFrom::Start(0))?;
+        lock.set_len(0)?;
+        lock.write_all(&bytes)?;
+        lock.sync_all()?;
+        fs::rename(&stage_path, &path)?;
+    }
+    Ok(result)
+}
+
+pub fn load_or_create_cap_sids(codex_home: &Path) -> Result<CapSids> {
+    with_registry(codex_home, |caps| Ok(caps.clone()))
+}
+
+#[derive(Clone, Copy)]
+enum RootRole {
+    Workspace,
+    Additional,
+    Read,
+}
+
+fn register_root(caps: &mut CapSids, key: String, role: RootRole) -> Result<String> {
+    let existing = match role {
+        RootRole::Workspace => caps.workspace_by_cwd.get(&key),
+        RootRole::Additional => caps.writable_root_by_path.get(&key),
+        RootRole::Read => caps.readable_root_by_path.get(&key),
+    };
+    if let Some(sid) = existing {
         return Ok(sid.clone());
     }
+    ensure!(
+        caps.workspace_by_cwd
+            .len()
+            .saturating_add(caps.writable_root_by_path.len())
+            .saturating_add(caps.readable_root_by_path.len())
+            < MAX_REGISTERED_ROOTS,
+        "capability registry full; refusing live identity eviction"
+    );
     let sid = make_random_cap_sid_string();
-    caps.workspace_by_cwd.insert(key, sid.clone());
-    persist_caps(&path, &caps)?;
+    match role {
+        RootRole::Workspace => {
+            caps.workspace_by_cwd.insert(key, sid.clone());
+        }
+        RootRole::Additional => {
+            caps.writable_root_by_path.insert(key, sid.clone());
+        }
+        RootRole::Read => {
+            caps.readable_root_by_path.insert(key, sid.clone());
+        }
+    }
     Ok(sid)
 }
 
-/// Returns the capability SID for an additional writable root, creating and persisting it if missing.
+pub fn workspace_cap_sid_for_cwd(codex_home: &Path, cwd: &Path) -> Result<String> {
+    with_registry(codex_home, |caps| {
+        register_root(caps, canonical_path_key(cwd), RootRole::Workspace)
+    })
+}
+
 pub fn writable_root_cap_sid_for_path(codex_home: &Path, root: &Path) -> Result<String> {
-    let path = cap_sid_file(codex_home);
-    let mut caps = load_or_create_cap_sids(codex_home)?;
-    let key = canonical_path_key(root);
-    if let Some(sid) = caps.writable_root_by_path.get(&key) {
-        return Ok(sid.clone());
-    }
-    let sid = make_random_cap_sid_string();
-    caps.writable_root_by_path.insert(key, sid.clone());
-    persist_caps(&path, &caps)?;
-    Ok(sid)
+    with_registry(codex_home, |caps| {
+        register_root(caps, canonical_path_key(root), RootRole::Additional)
+    })
 }
 
 pub fn workspace_write_cap_sid_for_root(
@@ -123,6 +254,100 @@ pub fn workspace_write_cap_sid_for_root(
     } else {
         writable_root_cap_sid_for_path(codex_home, root)
     }
+}
+
+/// Declares bounded roles from actual registry identities; this is not ACL readiness.
+pub fn filesystem_capability_plan(
+    codex_home: &Path,
+    cwd: &Path,
+    read: &[PathBuf],
+    write: &[PathBuf],
+) -> Result<FilesystemCapabilityPlan> {
+    ensure!(
+        read.len() <= crate::capability_plan::MAX_ACTIVE_ROOTS
+            && write.len() <= crate::capability_plan::MAX_ACTIVE_ROOTS,
+        "active filesystem root capacity exceeded"
+    );
+    let cwd = canonical_path_key(cwd);
+    let read: Vec<_> = read
+        .iter()
+        .map(|root| canonical_path_key(root))
+        .collect::<std::collections::BTreeSet<_>>()
+        .into_iter()
+        .collect();
+    let write: Vec<_> = write
+        .iter()
+        .map(|root| canonical_path_key(root))
+        .collect::<std::collections::BTreeSet<_>>()
+        .into_iter()
+        .collect();
+    ensure!(
+        read.len() <= crate::capability_plan::MAX_ACTIVE_ROOTS
+            && write.len() <= crate::capability_plan::MAX_ACTIVE_ROOTS,
+        "active filesystem root capacity exceeded"
+    );
+    with_registry(codex_home, |caps| {
+        for root in &read {
+            register_root(caps, root.clone(), RootRole::Read)?;
+        }
+        for root in &write {
+            register_root(
+                caps,
+                root.clone(),
+                if root == &cwd {
+                    RootRole::Workspace
+                } else {
+                    RootRole::Additional
+                },
+            )?;
+        }
+        FilesystemCapabilityPlan::declare(caps, cwd, read, write)
+    })
+}
+
+/// Read-only validation cannot create a registry or a prepared ACL context.
+pub fn validate_filesystem_capability_plan(
+    codex_home: &Path,
+    plan: &FilesystemCapabilityPlan,
+) -> Result<()> {
+    require_fresh_filesystem_namespace(codex_home)?;
+    require_absent(&codex_home.join("cap_sid.v3.stage"))?;
+    let checkpoint_path = codex_home.join("cap_sid.v3.lock");
+    require_plain_file(&checkpoint_path)?;
+    let mut checkpoint = fs::OpenOptions::new()
+        .read(true)
+        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE)
+        .open(checkpoint_path)?;
+    checkpoint
+        .try_lock_shared()
+        .context("capability registry is busy or uncertain")?;
+    require_absent(&codex_home.join("cap_sid.v3.stage"))?;
+    let caps = read_caps(&cap_sid_file(codex_home), &mut checkpoint)?;
+    plan.validate_registry(&caps)
+}
+
+/// Checks the complete declared root set against the actual setup request.
+pub fn validate_filesystem_capability_plan_roots(
+    codex_home: &Path,
+    cwd: &Path,
+    read: &[PathBuf],
+    write: &[PathBuf],
+    plan: &FilesystemCapabilityPlan,
+) -> Result<()> {
+    validate_filesystem_capability_plan(codex_home, plan)?;
+    let keys = |roots: &[PathBuf]| {
+        roots
+            .iter()
+            .map(|root| canonical_path_key(root))
+            .collect::<std::collections::BTreeSet<_>>()
+            .into_iter()
+            .collect::<Vec<_>>()
+    };
+    ensure!(
+        plan.matches_roots(&canonical_path_key(cwd), &keys(read), &keys(write)),
+        "filesystem role roots differ from setup request"
+    );
+    Ok(())
 }
 
 pub fn workspace_write_root_contains_path(root: &Path, path: &Path) -> bool {
@@ -201,3 +426,7 @@ mod tests {
         assert_eq!(caps.writable_root_by_path.len(), 1);
     }
 }
+
+#[cfg(test)]
+#[path = "cap_registry_tests.rs"]
+mod registry_tests;
