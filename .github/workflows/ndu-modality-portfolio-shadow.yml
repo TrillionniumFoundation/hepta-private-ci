@@ -2,8 +2,8 @@ name: NDU four-modal portfolio research (shadow)
 on:
   pull_request:
     paths:
-      - 'experiments/multimodal_output_portfolio/v4/**'
-      - '.github/workflows/ndu-modality-portfolio-shadow.yml'
+      - "experiments/multimodal_output_portfolio/v4/**"
+      - ".github/workflows/ndu-modality-portfolio-shadow.yml"
   workflow_dispatch:
 permissions:
   contents: read
