@@ -1,0 +1,89 @@
+{
+  "source_head": "d1619f1d2dd433f958d76143309011c73b4c5cf5",
+  "source_tree": "651eb338b43dad625028f13c0ba536372faa7674",
+  "workspace_root": "/workspace/scratch/f24caf690188/hepta-native-dot-resume",
+  "source_acquisition": "git clone --no-checkout --filter=blob:none --depth 1 https://github.com/TrillionniumFoundation/hepta-private-ci.git repo; git -C repo fetch --depth 1 origin d1619f1d2dd433f958d76143309011c73b4c5cf5; git -C repo checkout --detach d1619f1d2dd433f958d76143309011c73b4c5cf5",
+  "build": {
+    "cwd": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/repo/codex-rs",
+    "command": "cargo +1.95.0 build --locked -p codex-hepta-agentd --bin codex-hepta-agentd",
+    "environment": {
+      "RUSTUP_HOME": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/rustup",
+      "CARGO_HOME": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/cargo",
+      "PATH_prefix": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/cargo/bin",
+      "CARGO_BUILD_JOBS": "2",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_TARGET_DIR": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/target"
+    },
+    "profile": "dev",
+    "source_edits": false
+  },
+  "test": {
+    "cwd": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/repo/codex-rs",
+    "command": "just test --locked -p codex-hepta-agentd --lib --test runtime_shutdown_outcomes -E 'test(research_task_head_owner) | binary(runtime_shutdown_outcomes)'",
+    "environment_differences_from_build": {
+      "RUSTUP_TOOLCHAIN": "1.95.0",
+      "CARGO_BUILD_JOBS": "1",
+      "PATH_prefix": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/bin:/workspace/scratch/f24caf690188/hepta-native-dot-resume/cargo/bin"
+    },
+    "warning": "nextest 0.9.103 ignores profile.local.inherits; full warning retained; repository config unmodified"
+  },
+  "smoke": {
+    "cwd": "/workspace/scratch/f24caf690188",
+    "command": "python3 hepta-native-dot-resume/production_config_smoke.py",
+    "environment": "each subprocess receives only PATH=os.defpath, temporary HOME/CODEX_HOME and explicit case HEPTA variables; 15-second subprocess limit",
+    "expected_exit": 1,
+    "original_assertion": "returncode != 0; actual all seven are 1",
+    "limits": "no writes inside isolated HOME; not network or whole-filesystem attestation"
+  },
+  "python": {
+    "fixture_command": "python3 -m unittest discover -s qa/stem-bakeoff -p test_research_task_head_owner_fixture.py -v",
+    "wrapper_command": "python3 -m unittest discover -s scripts -p test_run_nextest.py -v",
+    "cwd": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/repo",
+    "wrapper_first": "without isolated tool PATH: 3 passed, 7 skipped",
+    "wrapper_second": "PATH=bin:cargo/bin:$PATH, RUSTUP_HOME/CARGO_HOME above, RUSTUP_TOOLCHAIN=1.95.0, CARGO_BUILD_JOBS=1: 10 passed"
+  },
+  "tools": [
+    {
+      "name": "rustup-init",
+      "url": "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init",
+      "checksum_url": "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init.sha256",
+      "sha256": "5be191e8c70a5007074254cb74d78dbfdd25cd5a61c27de7b8e5410122ec24f4",
+      "install": "RUSTUP_HOME=<root>/rustup CARGO_HOME=<root>/cargo ./rustup-init -y --no-modify-path --profile minimal --default-toolchain 1.95.0"
+    },
+    {
+      "name": "just",
+      "version": "1.51.0",
+      "url": "https://github.com/casey/just/releases/download/1.51.0/just-1.51.0-x86_64-unknown-linux-musl.tar.gz",
+      "sha256": "c8f085ca3e885723c341d06243fc291b5abfdc8bbe3b2c076b117de490387b59"
+    },
+    {
+      "name": "cargo-nextest",
+      "version": "0.9.103",
+      "url": "https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.103/cargo-nextest-0.9.103-x86_64-unknown-linux-gnu.tar.gz",
+      "sha256": "b6b5daad02ddef2d0e1f1114c4cd708f2960fd421a415693f995cef3bef90036"
+    }
+  ],
+  "full_library": {
+    "cwd": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/repo/codex-rs",
+    "command": "just test --offline --locked -p codex-hepta-agentd --lib",
+    "environment": "same as scoped test",
+    "result": {
+      "exit": 100,
+      "run": 188,
+      "passed": 184,
+      "failed": 4,
+      "skipped": 0,
+      "seconds": 5.905
+    },
+    "retries": "original repository retry=1 retained; four failed both attempts"
+  },
+  "production_restore": {
+    "command": "cargo +1.95.0 build --offline --locked -p codex-hepta-agentd --bin codex-hepta-agentd",
+    "environment": "same as original production build",
+    "cwd": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/repo/codex-rs",
+    "result": "exit0, 0.91 seconds; exact original SHA256 restored",
+    "test_build_binary_sha256": "9457c9c3cca0fb5bc023c7d5f7960d02fb420ff276296e022cf24575e905e2f9",
+    "restored_production_sha256": "5443883d026bcd8f0147aa5e543eb9120ecf45c8c4066c27d05101cf95d08fde"
+  }
+}
