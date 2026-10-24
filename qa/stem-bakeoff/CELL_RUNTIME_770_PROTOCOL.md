@@ -125,6 +125,14 @@ logical clock; do not call simulated time a real delayed-service measurement.
 Reject the old token and stale generation. Verify final artifact manifests,
 tensor digests and predictions after reopening in another process.
 
+Additionally, the first real linear job is claimed by a child that exits before
+optimization. Its deliberately one-nanosecond real-clock lease expires before
+the replacement child starts; that child reclaims attempt 2, trains the same
+persisted input/initial state, and publishes the sole linear result. The stale
+token is rejected. Gated and residual jobs then run normally. This adds no fits
+to the three-job total and tests restart from input, not mid-update recovery or
+a production lease-duration policy.
+
 Updated Heads are **uncalibrated** until separately fitted calibration binds
 their new predictor digest. Old calibrators must reject them. Queue completion
 alone cannot turn a raw trained checkpoint into an authorized action policy.
