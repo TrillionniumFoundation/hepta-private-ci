@@ -54,8 +54,9 @@ def source_identity():
     for crate in ("hepta-infer-core", "hepta-infer-worker-host"):
         paths.extend(sorted(root.glob(f"codex-rs/{crate}/src/**/*.rs")))
         paths.append(root / "codex-rs" / crate / "Cargo.toml")
-    paths.extend(sorted(root.glob("codex-rs/hepta-agentd/tests/generation_owner_execution*.rs")))
+    paths.extend(sorted(root.glob("codex-rs/hepta-infer-worker-host/tests/generation_owner_execution*.rs")))
     paths.append(root / "codex-rs/hepta-agentd/Cargo.toml")
+    paths.append(root / "codex-rs/hepta-agentd/src/test_support.rs")
     paths.extend(root / path for path in (
         "codex-rs/hepta-ndu/Cargo.toml", "codex-rs/Cargo.toml",
         "codex-rs/Cargo.lock", "codex-rs/rust-toolchain.toml"))
@@ -385,6 +386,8 @@ def main():
                       plan_fit_pairs=4, plan_fit_steps=4, forecast_fit_pairs=4,
                       forecast_calibration_pairs=4, forecast_dev_pairs=4)
         config["training"].update(steps=12, batch_size=8, hidden=32)
+        if "mechanism_smoke_case_offsets" in config:
+            config["evaluation_case_offsets"] = dict(config["mechanism_smoke_case_offsets"])
     run(config, args.cache, args.output, args.native_binary)
 
 

@@ -23,7 +23,7 @@ jobs:
   rollout:
     name: Python, native NDU, and real rollout
     runs-on: ubuntu-24.04
-    timeout-minutes: ${{ github.event_name == 'workflow_dispatch' && inputs.profile == 'full' && 180 || 45 }}
+    timeout-minutes: ${{ github.event_name == 'workflow_dispatch' && inputs.profile == 'full' && 180 || 60 }}
     defaults:
       run:
         shell: bash
@@ -40,6 +40,10 @@ jobs:
       MKL_NUM_THREADS: "2"
       CARGO_NET_GIT_FETCH_WITH_CLI: "true"
       CARGO_TERM_COLOR: never
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_INCREMENTAL: "0"
 
     steps:
       - name: Initialize evidence custody before setup
@@ -170,11 +174,38 @@ jobs:
           cp target/debug/ndu-generation-rollout "$V6_EVIDENCE/ndu-generation-rollout"
           sha256sum "$V6_EVIDENCE/ndu-generation-rollout" > "$V6_EVIDENCE/native-binary.sha256"
 
+      - name: Test bounded generation contracts and the registered worker driver
+        id: generation_contracts
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          python ../scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/generation-contracts.json" \
+            --minimum-tests 1 --timeout-seconds 1200 -- \
+            just test --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host
+
+      - name: Execute the real model through durable inference owner lifecycle
+        id: generation_owner
+        run: |
+          set -euo pipefail
+          python scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/owner-fixture.json" --timeout-seconds 120 -- \
+            python -B -m experiments.multimodal_output_portfolio.v6.owner_worker_tests \
+            --prepare-fixture "$V6_EVIDENCE/owner-fixture"
+          export HEPTA_GENERATION_TEST_FIXTURE="$V6_EVIDENCE/owner-fixture/fixture.json"
+          cd codex-rs
+          python ../scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/generation-owner.json" \
+            --minimum-tests 1 --timeout-seconds 1800 -- \
+            just test --locked -p codex-hepta-infer-worker-host --test generation_owner_execution \
+            --run-ignored only --test-threads 1
+
       - name: Execute real text and image generation with native receipts
         id: experiment
         run: |
           set -euo pipefail
           args=(--cache "$V6_EVIDENCE/mnist" --output "$V6_EVIDENCE/run"
+                --protocol experiments/multimodal_output_portfolio/v6/protocol.conditioned.json
                 --native-binary "$V6_EVIDENCE/ndu-generation-rollout")
           deadline=7200
           if [ "$V6_PROFILE" = smoke ]; then
@@ -218,6 +249,10 @@ jobs:
           assert status["summary_sha256"] == digest(summary)
           assert protocol["source"]["git_commit"] == os.environ["TESTED_SHA"]
           assert protocol["source"]["dirty"] is False
+          assert protocol["training"]["architecture"] == "public-command-film-layernorm-v1"
+          assert protocol["forecast_distribution"] == "heteroskedastic_terminal_v1"
+          assert summary["evidence"]["checkpoint_file_pins_verified"] is True
+          assert summary["evidence"]["prior_heldout_exclusion_verified"] is True
           assert summary["protocol_sha256"] == digest(protocol)
           assert len(receipts) == summary["native_receipt_count"] == groups > 0
           assert streamed == receipts

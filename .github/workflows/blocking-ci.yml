@@ -67,6 +67,8 @@ jobs:
           prefixes = (
               "experiments/multimodal_output_portfolio/", "codex-rs/hepta-ndu/",
               "codex-rs/hepta-types/", "codex-rs/hepta-contracts/", "codex-rs/.cargo/",
+              "codex-rs/hepta-infer-core/", "codex-rs/hepta-infer-worker-host/",
+              "codex-rs/hepta-agentd/src/test_support.rs",
           )
           shared = {
               "codex-rs/Cargo.toml", "codex-rs/Cargo.lock", "codex-rs/rust-toolchain.toml",

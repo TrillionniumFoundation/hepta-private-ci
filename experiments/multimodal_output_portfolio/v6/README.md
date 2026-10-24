@@ -1,20 +1,26 @@
 # NDU v6：真实手写源图像上的联合生成与动态控制原型
 
-这是**有界领域的研究实现**：输入真实 MNIST 手写图像及公开文字提示，生成实际自回归文字和神经像素图像，并比较训练目标与推理控制。配对、遮挡和任务说明是人为构造的 benchmark；它不代表自然场景的通用全模态能力。本页说明实现、重现方法与证据范围，尚不记录正式实验的优劣结论。
+这是**有界领域的研究实现**：输入真实 MNIST 手写图像及公开文字提示，生成实际自回归文字和神经像素图像，并比较训练目标与推理控制。配对、遮挡和任务说明是人为构造的 benchmark；它不代表自然场景的通用全模态能力。
+
+首轮 7,560 行完整实验、保持原始输出不变的成本重放、以及验证集上的基础能力修复，已记录在 [results/README.md](results/README.md)。首轮没有得到有效的联合语义生成或 NDU 优势；该负结果保留。新的可选条件架构与条件误差尺度 forecast 通过独立协议登记，不覆盖旧协议或旧 checkpoint。
 
 ## 1. 模块与实际输出
 
-| 模块 | 责任 |
-| --- | --- |
-| [data.py](data.py) | 原始源文件校验、像素身份去重、独立 split、输入与真值分离 |
-| [neural.py](neural.py) | 共享 encoder、可训练状态更新、像素 decoder、自回归文字 decoder、冻结快照 |
-| [plan_training.py](plan_training.py) | 对真实输出评分后训练内部内容计划 gate，推理时执行选定计划 |
-| [forecast.py](forecast.py) | 独立分区拟合效用预测、残差校准、路由及固定序列基线 |
-| [control.py](control.py) | 有限前瞻、条件 entropic 估值、停止与实际搜索工作记账 |
-| [observer.py](observer.py) | 冻结 OCR、严格 caption 解析、PNG/UTF-8 原始输出回读 |
-| [run.py](run.py)、[reporting.py](reporting.py) | 冻结协议、完整样本清单、配对统计、原生 receipt 接口 |
+| 模块                                                                           | 责任                                                                     |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| [data.py](data.py)                                                             | 原始源文件校验、像素身份去重、独立 split、输入与真值分离                 |
+| [neural.py](neural.py)                                                         | 共享 encoder、可训练状态更新、像素 decoder、自回归文字 decoder、冻结快照 |
+| [conditioned.py](conditioned.py)                                               | 可选的公开 command 条件路径、LayerNorm，以及绑定配置的冻结身份           |
+| [plan_training.py](plan_training.py)                                           | 对真实输出评分后训练内部内容计划 gate，推理时执行选定计划                |
+| [forecast.py](forecast.py)                                                     | 独立分区拟合效用预测、残差校准、路由及固定序列基线                       |
+| [distribution.py](distribution.py)、[distribution_fit.py](distribution_fit.py) | 可选的条件 location/scale 分布、按源 pair 交叉拟合与有限残差校准         |
+| [control.py](control.py)                                                       | 有限前瞻、条件 entropic 估值、停止与实际搜索工作记账                     |
+| [observer.py](observer.py)                                                     | 冻结 OCR、严格 caption 解析、PNG/UTF-8 原始输出回读                      |
+| [run.py](run.py)、[reporting.py](reporting.py)                                 | 冻结协议、完整样本清单、配对统计、原生 receipt 接口                      |
 
 encoder 的共享 context 保留输入条件；初始 latent 噪声有显式 seed。四个控制动作是 `refine_semantic`、`refine_image`、`refine_text`、`couple`。前者和最后者可改变共享语义状态；纯 image/text 动作只推进相应生成状态。输出为 56×28 灰度 PNG 和 UTF-8 caption，例如 `left 3 right 5 relation less`。坏语法和错误数字原样进入评分，不进行模板修复。
+
+`training.architecture="public-command-film-layernorm-v1"` 显式启用验证成功的联合变体：在 visual/fusion Tanh 前加入 LayerNorm，以公开输入 command token 的可学习 embedding/FiLM 改变共享条件，固定 gain 0.5、epsilon `1e-5`。它没有硬编码排序。默认值 `legacy` 保留旧构造和旧 tensor fingerprint。新 base/controlled v2 checkpoint 另把完整架构配置、噪声尺度与参数纳入身份；同权重但不同推理配置不能共用状态身份。runner 对保存的 model 和 forecast 文件先计算 SHA256，再通过同一次字节读取核验并恢复。
 
 模态传输 schema 保留 `text=1`、`image=2`、`audio=4`、`video=8`。当前必需 mask 为 `3`，只有 text 与 image 两种神经 decoder。音频/视频的 schema 位不代表相应能力已经实现。
 
@@ -28,13 +34,13 @@ MNIST gzip 来自 [PyTorch 的 MNIST 镜像](https://ossci-datasets.s3.amazonaws
 
 当前协议的源池如下；数字为源图像数，不是独立训练重复数。
 
-| 源池 | 数量 | 用途 |
-| --- | ---: | --- |
-| `train` | 10,000 | 基础生成器及内容计划 gate 训练 |
-| `validation` | 2,000 | forecast fit/calibration/dev 三个源不交叠的子分区 |
-| `evaluator` | 10,000 | 等分为 reward 与 audit 两个源不交叠池 |
-| `retention` | 1,000 | 保留的干净域评估源，未用于训练或调参 |
-| `test` | 2,000 | 官方 MNIST test 的保留源；运行记录称为 `future` |
+| 源池         |   数量 | 用途                                              |
+| ------------ | -----: | ------------------------------------------------- |
+| `train`      | 10,000 | 基础生成器及内容计划 gate 训练                    |
+| `validation` |  2,000 | forecast fit/calibration/dev 三个源不交叠的子分区 |
+| `evaluator`  | 10,000 | 等分为 reward 与 audit 两个源不交叠池             |
+| `retention`  |  1,000 | 保留的干净域评估源，未用于训练或调参              |
+| `test`       |  2,000 | 官方 MNIST test 的保留源；运行记录称为 `future`   |
 
 `Observation` 只包含公开像素、缺失 mask 与文字 token。`Target` 的完整像素和标签仅用于训练或执行后的评分。源图像完全缺失的一侧可获得明确的公开类别提示；该提示不包含原始笔迹。错误提示与移除提示有单独测试分层。
 
@@ -50,10 +56,10 @@ reward observer 使用自己源池的前 80% 训练、后 20% 校准，seed 为 
 
 两种 profile 使用相同初始化、批次、latent 噪声场景、控制序列和优化步数。基础 terminal surrogate 为：
 
-\[
+$$
 L=\mathrm{pixel\ BCE}+0.5\,\mathrm{teacher\ forced\ text\ CE}
 +0.15\,\mathrm{digit\ CE}.
-\]
+$$
 
 `supervised` 对同一输入的场景取均值；`terminal_entropic_ndu` 对损失使用 `logmeanexp(γL)/γ`。这是实际梯度训练，但文字部分仍是 teacher-forced surrogate。报告明确标记该阶段没有直接优化独立的实际离散输出评分。
 
@@ -63,10 +69,10 @@ L=\mathrm{pixel\ BCE}+0.5\,\mathrm{teacher\ forced\ text\ CE}
 
 gate 只读未加 latent 噪声的共享 encoder context，因此同一观察的各场景共用一个条件计划分布。对已观察且 detach 的 `R[i,p,k]`，NDU 阶段最小化：
 
-\[
+$$
 \ell_i(\omega)=\frac1\gamma\log\left[
 \frac1K\sum_{p,k}\pi_\omega(p\mid C_i)e^{-\gamma R_{i,p,k}}\right].
-\]
+$$
 
 这是对声明的有限 plan/scenario 分布求精确梯度；reward、observer 与评分尺度均不被优化。监督对照以经验平均效用最好的计划为标签训练 gate。两者枚举量、gate 初始化和更新序列一致。报告保留实际效用表、参数哈希、梯度、目标历史及所有候选评分成本。
 
@@ -78,15 +84,15 @@ gate 只读未加 latent 噪声的共享 encoder context，因此同一观察的
 
 每次推理冻结模型、gate、forecast、metric 身份。控制器只接收公开状态及经过分区拟合的预测；执行后的 audit 真值不回流到同一推理的动作选择。候选前瞻调用真实神经 transition，并记录这些未被最终选中的计算。
 
-| Policy | 作用 |
-| --- | --- |
-| `fixed` | 预设动作序列 |
-| `fixed_dev_tuned` | 在独立 dev 源上选择固定序列，包括空序列及提前停止的前缀 |
-| `learned_router` | 以离线动作收益监督训练的 hard top-1 路由基线 |
-| `greedy` | 单步、风险中性的估值选择 |
-| `risk_neutral_mpc` | 多步前瞻，`γ=0` |
-| `risk_aware_recursive` | 多步条件 entropic 前瞻与停止 |
-| `allocation_only` | 禁用全部共享语义控制，仅推进固定的 image/text 生成过程 |
+| Policy                 | 作用                                                    |
+| ---------------------- | ------------------------------------------------------- |
+| `fixed`                | 预设动作序列                                            |
+| `fixed_dev_tuned`      | 在独立 dev 源上选择固定序列，包括空序列及提前停止的前缀 |
+| `learned_router`       | 以离线动作收益监督训练的 hard top-1 路由基线            |
+| `greedy`               | 单步、风险中性的估值选择                                |
+| `risk_neutral_mpc`     | 多步前瞻，`γ=0`                                         |
+| `risk_aware_recursive` | 多步条件 entropic 前瞻与停止                            |
+| `allocation_only`      | 禁用全部共享语义控制，仅推进固定的 image/text 生成过程  |
 
 前六种 policy 的 encoder 后都会执行学得的两步内容计划。`allocation_only` 从初始化就绕过 gate，固定执行 image→text，记为 `plan_index=-1`；后续也只允许这两种动作。共享 `h` 在整个路径保持原初值，直接调用 semantic/couple 会被拒绝。forecast 的拟合与校准覆盖两种初始化 profile。
 
@@ -94,12 +100,18 @@ gate 只读未加 latent 噪声的共享 encoder context，因此同一观察的
 
 forecast 的效用预测有两个公开效用分层的源平衡残差 profile，支持不足时回退全局 profile。保留数据上的覆盖率是经验诊断，不是条件覆盖保证。`search_complete=false`、预算停止和有限候选集合必须保留，不能解释为无限动作空间的全局最优解。
 
+上段描述默认 `empirical_residual_v1`。新协议选择 `forecast_distribution="heteroskedastic_terminal_v1"`：实际动作后的 neural state 与六个公开观察摘要共同决定 location 和 error scale，形成 `clip(location + scale × residual, -1, 1)` 的有限经验分布。公开摘要仅包含左右可见比例、hint 是否存在、可见像素变化；不提供 corruption 真值名称或 Target。
+
+scale 的目标来自四折、按原始源 pair 分组的 out-of-fold 预测绝对误差。同一 pair 的全部 view、初始化和路径一起被留出。fit/calibration/dev 仍使用不同源 pair，均覆盖六种预先声明的公开输入损坏。每个 calibration pair 在观察效用之前通过固定随机计划选一个 endpoint，保留全部 64 个标准化残差，以 `1/64` 权重进入推理。每个 source pair 只贡献一个独立校准条目；相关路径不增加独立样本数。scale 限定在 `[0.02,2]`；它不是经认证的条件标准差，location 也不必等于 clipping 后分布的均值。dev 报告 CRPS、均值误差、区间覆盖及宽度，假定共同标准化残差形状，不宣称条件或自适应策略覆盖保证。
+
+风险中性和风险感知控制使用同一两个 head、同一残差场景和候选计算，只有 `gamma` 不同。两头预测记 0.5 工作单位，公开摘要额外记 0.25 一次，实际时间另计。预算 64 因此可能更早截断；不能把相同预算上限描述成与旧 forecast 相同的搜索量。
+
 主 2×2 对照定义：
 
-| | 固定 dev 调优推理 S | NDU 动态推理 N |
-| --- | --- | --- |
-| 监督训练 S | S/S | S/N |
-| NDU 训练 N | N/S | N/N |
+|            | 固定 dev 调优推理 S | NDU 动态推理 N |
+| ---------- | ------------------- | -------------- |
+| 监督训练 S | S/S                 | S/N            |
+| NDU 训练 N | N/S                 | N/N            |
 
 这里 S 推理轴指初始化后的固定控制序列；其初始化仍使用同一冻结模型的内容 gate。因此推理对照识别的是后续动态控制的增量。
 
@@ -110,6 +122,8 @@ forecast 的效用预测有两个公开效用分层的源平衡残差 profile，
 每个 seed/profile/policy/budget 重放同样的 60 个 `future` 与 30 个 clean `retention` case；不同 case 的原始源不复用。future 按 `clean`、`occlusion`、`missing`、`heavy_noise`、`wrong_hint`、`missing_no_hint` 六层循环登记。完整协议预期 **7,560 条**结果；这是清单大小，不是已经完成的结果声明。
 
 统计先计算每个训练 seed 的均值与经验最坏 10% loss，再跨 seed 汇总。2×2 interaction、强基线配对差、corruption 分层、实际延迟和工作量均保留。只有三个训练 seed；同一 case 的重复 policy 行不能当作独立训练重复。条件 Hoeffding 区间依赖原始 case 独立抽样假设，也不覆盖训练 seed 的不确定性。当前汇总器不发布确认性优势判定。
+
+[protocol.conditioned.json](protocol.conditioned.json) 登记修复后的独立完整实验：hidden 96、S/N 各 2,000 步、其余相同的三 seed/七策略/两预算清单，以及新的条件分布 forecast。future 使用 pair 60–119，retention 使用 pair 30–59；配置绑定首轮完整协议的摘要及其 180 个已评估源像素 SHA256。runner 在训练前核验新 case，summarizer 再独立排除旧源；按文件名改写源身份不能绕过像素排除。它要求干净源码、保存后恢复模型/forecast、每行完整文件 pin 和结束时的源码身份不变。新的性能结果应以该协议的实际完成报告为准。
 
 ## 5. 预算、延迟与原生 V2 receipt
 
@@ -161,6 +175,8 @@ just test -p codex-hepta-ndu
 
 输出目录必须不存在；失败或部分完成目录保留原状。省略 `--native-binary` 不会产生原生 receipt，不能声称完成了这部分核验。修改协议后应使用新目录，并以运行时冻结的协议判断适用范围。
 
+运行修复后的新完整协议时，将 `--protocol` 改为 `experiments/multimodal_output_portfolio/v6/protocol.conditioned.json`，并选择一个新的输出目录。CI 的自动 smoke 与手动 full 当前使用该新协议；smoke 会缩短训练和源清单，只验证机制，并改用 future pair 900–901、retention pair 450–451，避免提前评估新完整协议的 case。两种协议的源排除和配置身份均保留，不能把 smoke 的结果计为正式质量结果。
+
 独立数值核验使用 80 位 Decimal 和完整停止路径枚举，比较 128 个已知有限问题的价值与首动作策略。它不调用控制器的 entropic 数值函数，也不代表一般 FBSDE 证明：
 
 ```bash
@@ -181,23 +197,31 @@ python experiments/multimodal_output_portfolio/v6/validate_oracle.py \
 
 ## 7. 证据身份与完成标准
 
-| 文件 | 内容与核验范围 |
-| --- | --- |
-| `protocol.json` | 运行前冻结的配置、完整 case/source 清单、metric、数据 manifest、源码哈希、native binary 哈希 |
-| `status.json` | `running`、`failed` 或 `completed`；失败保留行数和 traceback |
-| `observer.json`、两个 observer `.pt` | 独立源池、校准结果及权重文件身份 |
-| `training.json`、各模型 `.pt` | 基础 surrogate 与真实输出 plan 训练分开记录；冻结 base+gate |
-| `forecast.json`、各 forecast `.pt` | 拟合/校准/dev 分区、成本、残差支持和预测身份 |
-| `outputs/*/caption.txt`、`image.png` | 未修复的实际输出字节 |
-| `rows.jsonl` | case、snapshot、forecast、observer 身份，动作、成本、raw-output SHA256 与行 receipt |
-| `native-receipts.jsonl/json` | 可选的原生事后 advisory；含二进制身份和 adapter 时间 |
-| `summary.json` | 完整清单核验、配对结果、分 seed 统计、运行环境与科学范围 |
+| 文件                                 | 内容与核验范围                                                                               |
+| ------------------------------------ | -------------------------------------------------------------------------------------------- |
+| `protocol.json`                      | 运行前冻结的配置、完整 case/source 清单、metric、数据 manifest、源码哈希、native binary 哈希 |
+| `status.json`                        | `running`、`failed` 或 `completed`；失败保留行数和 traceback                                 |
+| `observer.json`、两个 observer `.pt` | 独立源池、校准结果及权重文件身份                                                             |
+| `training.json`、各模型 `.pt`        | 基础 surrogate 与真实输出 plan 训练分开记录；冻结 base+gate                                  |
+| `forecast.json`、各 forecast `.pt`   | 拟合/校准/dev 分区、成本、残差支持和预测身份                                                 |
+| `outputs/*/caption.txt`、`image.png` | 未修复的实际输出字节                                                                         |
+| `rows.jsonl`                         | case、snapshot、forecast、observer 身份，动作、成本、raw-output SHA256 与行 receipt          |
+| `native-receipts.jsonl/json`         | 可选的原生事后 advisory；含二进制身份和 adapter 时间                                         |
+| `summary.json`                       | 完整清单核验、配对结果、分 seed 统计、运行环境与科学范围                                     |
 
 源码身份包含 `git_commit`、`dirty`、逐文件 SHA256 和 bundle SHA256。存在未提交改动时，commit 不能单独代表本次执行源。运行结束会重新核对源码文件；更改源码不能悄悄归入既有结果。
 
 汇总器要求全部登记组合、唯一原始源 case、相同配对 snapshot/observer、完整成本，以及能够回读且哈希匹配的原始输出。缺行、改分、替换字节、变更身份或超预算都会拒绝。SHA256 是完整性绑定，不是签名或外部认证；`completed` 说明该协议执行和清单完成，并不表示研究假设、性能优势或所有科学 blocker 已闭合。
 
-## 8. 历史负面证据与未完成范围
+## 8. 原生 inference owner 执行
+
+[GenerationDriver](../../../codex-rs/hepta-infer-worker-host/GENERATION_EXECUTION.md) 把本实验的冻结模型接入现有 `ModelDriver`、`InferenceWorker` 与 `DurableInferenceControl`。受信 host 注册 Python 可执行文件、源码、checkpoint、完整文件和参数身份；请求只携带有界公开观察、噪声与动作。真实模型在 worker 中生成 caption、PNG 和逐动作状态，返回后核验内容及身份，不传入 Target 或 observer。
+
+此切片覆盖 submit/reserve/assign/execute/settle、重复请求、失败、超时和 journal recovery。owner 集成测试显式使用 fixture grant，且每次首次执行启动独立 Python/Torch 进程。它的冷启动成本与研究 runner 的常驻模型成本不同，应分别报告。它不激活 Agentd daemon，也没有把事后 native advisory 变为在线生产策略。
+
+[交付边界](GATES.md) 逐项登记 Section VIII 的实现、研究结论与生产接入条件。模型执行层可以承载大型 latent；Neuron 的有界状态、projection/calibration、正式学习 evidence 和产品评估授权仍必须走其自身 owner 接口，不能由同主机的 benchmark JSON 代替。
+
+## 9. 历史负面证据与未完成范围
 
 历史资料保留在固定提交，v6 不覆盖或重解释它们：
 

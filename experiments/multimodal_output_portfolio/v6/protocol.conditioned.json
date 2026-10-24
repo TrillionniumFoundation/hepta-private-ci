@@ -36,6 +36,10 @@
   "future_cases": 60,
   "hard_output_modalities": ["text", "image"],
   "inference_horizon": 3,
+  "mechanism_smoke_case_offsets": {
+    "future": 900,
+    "retention": 450
+  },
   "mode": "bounded_domain_development",
   "not_established_by_this_protocol": [
     "unrestricted_natural_multimodal_quality",
