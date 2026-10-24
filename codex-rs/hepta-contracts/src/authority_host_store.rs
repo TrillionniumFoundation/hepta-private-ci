@@ -252,6 +252,30 @@ impl<F: Serialize + DeserializeOwned + Eq> HostAuthorityFrontierStore<F> {
         Ok(store)
     }
 
+    /// Inspect one durably read record while retaining its original publication
+    /// lock. The callback may act on another original owner, but must not
+    /// re-enter this store. A second durable read checks the entire unchanged
+    /// record before returning. This never creates a record or advances it.
+    ///
+    /// A callback error is deliberately returned inside the outer result: the
+    /// post-callback durability check still runs after any external mutation.
+    pub fn with_locked_durable<R>(
+        &self,
+        owner_id: &str,
+        inspect: impl FnOnce(&F) -> R,
+    ) -> Result<R, AuthorityTrustError> {
+        if owner_id != self.owner_id {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        let _lock = self.publication_lock()?;
+        let before = self.read_durable()?;
+        let result = inspect(&before);
+        if self.read_durable()? != before {
+            return Err(AuthorityTrustError::Unavailable);
+        }
+        Ok(result)
+    }
+
     fn configured(
         root: Arc<RootAuthorityDirectory>,
         owner_id: String,

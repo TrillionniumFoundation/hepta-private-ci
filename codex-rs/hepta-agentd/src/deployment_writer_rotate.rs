@@ -90,3 +90,6 @@ impl DeploymentFinalUseIssuer {
             .map_err(root::lease_error)?
     }
 }
+
+#[path = "deployment_writer_reentry.rs"]
+mod reentry;

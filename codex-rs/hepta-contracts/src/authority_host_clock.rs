@@ -110,35 +110,59 @@ impl HostAuthorityClock {
     /// Renew one bounded observation window and return a post-durability
     /// sample plus its public projection. No future ceiling is returned as now.
     pub fn refresh_projection(&self) -> Result<HostAuthorityClockObservation, AuthorityTrustError> {
+        #[cfg(debug_assertions)]
+        let mut timing = ClockPhaseTiming::new("refresh_projection");
         let _serial = self
             .serial
             .lock()
             .map_err(|_| AuthorityTrustError::Unavailable)?;
+        #[cfg(debug_assertions)]
+        timing.stage("clock_serial_acquired");
         let previous = self.store.load(&self.owner_id)?;
-        self.renew_after_load(&previous)
+        #[cfg(debug_assertions)]
+        timing.stage("durable_clock_loaded");
+        let result = self.renew_after_load(&previous);
+        #[cfg(debug_assertions)]
+        timing.finish(result.is_ok());
+        result
     }
 
     fn renew_after_load(
         &self,
         previous: &ClockRecord,
     ) -> Result<HostAuthorityClockObservation, AuthorityTrustError> {
+        #[cfg(debug_assertions)]
+        let mut timing = ClockPhaseTiming::new("renew_after_load");
         let next = project(previous, sample_os_clock()?)?;
+        #[cfg(debug_assertions)]
+        timing.stage("fresh_clock_projected");
         self.store
             .compare_and_set(&self.owner_id, previous, &next)?;
-        observe_after_io(&next, sample_os_clock()?)
+        #[cfg(debug_assertions)]
+        timing.stage("durable_clock_cas_finished");
+        let result = observe_after_io(&next, sample_os_clock()?);
+        #[cfg(debug_assertions)]
+        timing.finish(result.is_ok());
+        result
     }
 }
 
 impl AuthorityClock for HostAuthorityClock {
     fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
+        #[cfg(debug_assertions)]
+        let mut timing = ClockPhaseTiming::new("now_unix_ms");
         let _serial = self
             .serial
             .lock()
             .map_err(|_| AuthorityTrustError::Unavailable)?;
+        #[cfg(debug_assertions)]
+        timing.stage("clock_serial_acquired");
         // Read the complete protected record on every call. Its already durable
         // ceiling bounds actual post-I/O time; it is never returned as "now".
         let previous = self.store.load(&self.owner_id)?;
-        match observe_after_io(&previous, sample_os_clock()?) {
+        #[cfg(debug_assertions)]
+        timing.stage("durable_clock_loaded");
+        let result = match observe_after_io(&previous, sample_os_clock()?) {
             Ok(observation) => Ok(observation.observed_unix_ms),
             Err(AuthorityTrustError::Unavailable) => {
                 // Expiry, a forward wall step or a legal reboot needs the same
@@ -147,7 +171,10 @@ impl AuthorityClock for HostAuthorityClock {
                 Ok(self.renew_after_load(&previous)?.observed_unix_ms)
             }
             Err(error) => Err(error),
-        }
+        };
+        #[cfg(debug_assertions)]
+        timing.finish(result.is_ok());
+        result
     }
 }
 
@@ -515,6 +542,59 @@ mod tests {
             let old_now = old.anchor_unix_ms + (boot - old.anchor_boottime_ns) / 1_000_000;
             let new_now = new.anchor_unix_ms + (boot - new.anchor_boottime_ns) / 1_000_000;
             assert_eq!(new_now, old_now);
+        }
+    }
+}
+
+#[cfg(debug_assertions)]
+struct ClockPhaseTiming {
+    phase: &'static str,
+    started: std::time::Instant,
+    started_unix_us: Option<u128>,
+    thread: std::thread::ThreadId,
+    stages: Vec<(&'static str, u128)>,
+    success: Option<bool>,
+}
+
+#[cfg(debug_assertions)]
+impl ClockPhaseTiming {
+    fn new(phase: &'static str) -> Self {
+        Self {
+            phase,
+            started: std::time::Instant::now(),
+            started_unix_us: std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .ok()
+                .map(|value| value.as_micros()),
+            thread: std::thread::current().id(),
+            stages: Vec::new(),
+            success: None,
+        }
+    }
+    fn stage(&mut self, stage: &'static str) {
+        self.stages
+            .push((stage, self.started.elapsed().as_micros()));
+    }
+    fn finish(&mut self, success: bool) {
+        self.stage("return");
+        self.success = Some(success);
+    }
+}
+
+#[cfg(debug_assertions)]
+impl Drop for ClockPhaseTiming {
+    fn drop(&mut self) {
+        let elapsed_us = self.started.elapsed().as_micros();
+        if elapsed_us >= 100_000 || self.success != Some(true) {
+            eprintln!(
+                "HEPTA_ROOT_CLOCK_PHASE_V1 phase={} thread={:?} started_unix_us={:?} elapsed_us={} success={:?} stages={:?}",
+                self.phase,
+                self.thread,
+                self.started_unix_us,
+                elapsed_us,
+                self.success,
+                self.stages
+            );
         }
     }
 }

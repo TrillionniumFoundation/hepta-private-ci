@@ -43,12 +43,16 @@ impl WriterRegistrationExt for HostAuthorityWriterRegistration {
         verifier: &AuthorityLeaseVerifier,
         dispatch: impl FnOnce(u64) -> io::Result<T>,
     ) -> io::Result<T> {
+        #[cfg(debug_assertions)]
+        let mut timing = WriterLeaseTiming::new("registered_writer_with_live");
         self.validate()?;
         let lease = verifier
             .read_lease(&self.authority_lease.lease_id)
             .map_err(root::lease_error)?
             .ok_or_else(|| io::Error::new(io::ErrorKind::PermissionDenied, "writer lease missing"))?
             .lease;
+        #[cfg(debug_assertions)]
+        timing.stage("read_lease_finished");
         if lease != self.authority_lease {
             return Err(io::Error::new(
                 io::ErrorKind::PermissionDenied,
@@ -58,9 +62,13 @@ impl WriterRegistrationExt for HostAuthorityWriterRegistration {
         let token = verifier
             .verify_use(&lease.lease_id, lease.revision, &lease.binding)
             .map_err(root::lease_error)?;
+        #[cfg(debug_assertions)]
+        timing.stage("verify_use_finished");
         let (result, _) =
             dispatch_authority_lease_with_witness(verifier, token, &lease.binding, |witness| {
-                match &witness.authority_ref {
+                #[cfg(debug_assertions)]
+                timing.stage("dispatch_fence_entered");
+                let outcome = match &witness.authority_ref {
                     // Metadata only. The original opaque token and owner fence,
                     // rather than the serializable witness, authorize this call.
                     VerifiedUseAuthorityRefV1::AuthorityLease(reference) => {
@@ -69,9 +77,14 @@ impl WriterRegistrationExt for HostAuthorityWriterRegistration {
                     VerifiedUseAuthorityRefV1::FinalUse(_) => {
                         Err(io::Error::other("wrong original authority family"))
                     }
-                }
+                };
+                #[cfg(debug_assertions)]
+                timing.stage("dispatch_callback_finished");
+                outcome
             })
             .map_err(root::lease_error)?;
+        #[cfg(debug_assertions)]
+        timing.finish(result.is_ok());
         result
     }
 }
@@ -277,3 +290,56 @@ mod tests;
 
 #[path = "deployment_writer_rotate.rs"]
 mod rotation;
+
+#[cfg(debug_assertions)]
+struct WriterLeaseTiming {
+    phase: &'static str,
+    started: std::time::Instant,
+    started_unix_us: Option<u128>,
+    thread: std::thread::ThreadId,
+    stages: Vec<(&'static str, u128)>,
+    success: Option<bool>,
+}
+
+#[cfg(debug_assertions)]
+impl WriterLeaseTiming {
+    fn new(phase: &'static str) -> Self {
+        Self {
+            phase,
+            started: std::time::Instant::now(),
+            started_unix_us: std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .ok()
+                .map(|value| value.as_micros()),
+            thread: std::thread::current().id(),
+            stages: Vec::new(),
+            success: None,
+        }
+    }
+    fn stage(&mut self, stage: &'static str) {
+        self.stages
+            .push((stage, self.started.elapsed().as_micros()));
+    }
+    fn finish(&mut self, success: bool) {
+        self.stage("return");
+        self.success = Some(success);
+    }
+}
+
+#[cfg(debug_assertions)]
+impl Drop for WriterLeaseTiming {
+    fn drop(&mut self) {
+        let elapsed_us = self.started.elapsed().as_micros();
+        if elapsed_us >= 100_000 || self.success != Some(true) {
+            eprintln!(
+                "HEPTA_ROOT_LEASE_PHASE_V1 phase={} thread={:?} started_unix_us={:?} elapsed_us={} success={:?} stages={:?}",
+                self.phase,
+                self.thread,
+                self.started_unix_us,
+                elapsed_us,
+                self.success,
+                self.stages
+            );
+        }
+    }
+}

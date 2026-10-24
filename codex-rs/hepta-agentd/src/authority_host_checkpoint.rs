@@ -50,6 +50,9 @@ pub use publisher::RetiredCheckpointPublisher;
 #[path = "authority_host_checkpoint_adoption.rs"]
 mod adoption;
 
+#[path = "authority_host_checkpoint_reentry.rs"]
+mod reentry;
+
 #[path = "authority_host_checkpoint_material.rs"]
 mod material;
 pub(crate) use material::MaterialIntent;
@@ -159,7 +162,11 @@ impl HostCognitiveCheckpoint {
         self.exchange_inner(bytes, PublicationMaterial::Required(material))
     }
 
-    fn exchange_inner(&self, bytes: &[u8], material: PublicationMaterial<'_>) -> Result<Vec<u8>, AuthorityTrustError> {
+    fn exchange_inner(
+        &self,
+        bytes: &[u8],
+        material: PublicationMaterial<'_>,
+    ) -> Result<Vec<u8>, AuthorityTrustError> {
         if bytes.is_empty() || bytes.len() > COGNITIVE_CHECKPOINT_FRAME_LIMIT {
             return Err(AuthorityTrustError::Invalid);
         }

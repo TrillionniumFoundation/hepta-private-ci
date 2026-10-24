@@ -409,3 +409,6 @@ fn original_final_use_rejects_replay_revocation_and_rolled_back_local_state() {
         Err(FinalUseError::AntiRollbackViolation)
     ));
 }
+
+#[path = "authority_host_store_inspect_tests.rs"]
+mod inspect_tests;

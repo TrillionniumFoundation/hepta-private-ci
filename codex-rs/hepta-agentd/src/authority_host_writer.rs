@@ -34,13 +34,24 @@ impl RegisteredWriter {
         backend: &crate::HostConsumerFrontier,
         bytes: &[u8],
     ) -> Result<Vec<u8>, HostIssuerTransportError> {
-        self.registration
+        #[cfg(debug_assertions)]
+        let mut timing = WriterPhaseTiming::new("consumer");
+        let result = self
+            .registration
             .with_live(&self.leases, |_| {
+                #[cfg(debug_assertions)]
+                timing.stage("registry_dispatch_entered");
                 if issuer.retained_writer_authorization(&self.registration)? != self.proof {
                     return Err(io::Error::other("retained writer proof changed"));
                 }
+                #[cfg(debug_assertions)]
+                timing.stage("retained_writer_proof_verified");
                 let before = issuer.revocations()?;
+                #[cfg(debug_assertions)]
+                timing.stage("issuer_revocations_read");
                 let response = backend.exchange(bytes, &before).map_err(io::Error::other)?;
+                #[cfg(debug_assertions)]
+                timing.stage("consumer_exchange_finished");
                 let after = issuer.revocations()?;
                 if after != before {
                     return Err(io::Error::other(
@@ -48,10 +59,15 @@ impl RegisteredWriter {
                     ));
                 }
                 let now = clock.now_unix_ms().map_err(io::Error::other)?;
+                #[cfg(debug_assertions)]
+                timing.stage("post_exchange_clock_finished");
                 validate_observation_lease(&self.registration.authority_lease, &after, now)?;
                 Ok(response)
             })
-            .map_err(unavailable)
+            .map_err(unavailable);
+        #[cfg(debug_assertions)]
+        timing.finish(result.is_ok());
+        result
     }
 
     pub(super) fn exchange_checkpoint(
@@ -61,25 +77,43 @@ impl RegisteredWriter {
         backend: &RegisteredCheckpoint,
         bytes: &[u8],
     ) -> Result<Vec<u8>, HostIssuerTransportError> {
+        #[cfg(debug_assertions)]
+        let mut timing = WriterPhaseTiming::new("checkpoint");
         let material = backend.prepare_material(bytes).map_err(unavailable)?;
-        self.registration
+        #[cfg(debug_assertions)]
+        timing.stage("material_prepared_before_registry");
+        let result = self
+            .registration
             .with_live(&self.leases, |_| {
+                #[cfg(debug_assertions)]
+                timing.stage("registry_dispatch_entered");
                 if issuer.retained_writer_authorization(&self.registration)? != self.proof {
                     return Err(io::Error::other("retained writer proof changed"));
                 }
+                #[cfg(debug_assertions)]
+                timing.stage("retained_writer_proof_verified");
                 let response = backend
                     .backend
                     .exchange_with_material(bytes, material.as_ref())
                     .map_err(io::Error::other)?;
+                #[cfg(debug_assertions)]
+                timing.stage("checkpoint_exchange_finished");
                 let head = issuer.revocations()?;
+                #[cfg(debug_assertions)]
+                timing.stage("issuer_revocations_read");
                 let now = clock
                     .refresh_projection()
                     .map_err(io::Error::other)?
                     .observed_unix_ms;
+                #[cfg(debug_assertions)]
+                timing.stage("clock_projection_finished");
                 validate_observation_lease(&self.registration.authority_lease, &head, now)?;
                 Ok(response)
             })
-            .map_err(unavailable)
+            .map_err(unavailable);
+        #[cfg(debug_assertions)]
+        timing.finish(result.is_ok());
+        result
     }
 
     pub(super) fn accept_material_registration(
@@ -155,12 +189,17 @@ impl RegisteredWriter {
         identity: &AgentdIdentity,
         request: &ObservationRequest,
     ) -> Result<Vec<u8>, HostIssuerTransportError> {
+        #[cfg(debug_assertions)]
+        let mut timing = WriterPhaseTiming::new("observation");
         match (request.schema_version, request.operation.as_str()) {
             (1, HOST_WRITER_AUTHORIZATION_V1) | (2, HOST_AUTHORITY_OBSERVATION_V2) => {}
             _ => return Err(HostIssuerTransportError::InvalidRequest),
         }
-        self.registration
+        let result = self
+            .registration
             .with_live(&self.leases, |store_revision| {
+                #[cfg(debug_assertions)]
+                timing.stage("registry_dispatch_entered");
                 let proof = issuer
                     .retained_writer_authorization(&self.registration)
                     .inspect_err(|_error| {
@@ -170,10 +209,14 @@ impl RegisteredWriter {
                 if proof != self.proof {
                     return Err(io::Error::other("retained writer proof changed"));
                 }
+                #[cfg(debug_assertions)]
+                timing.stage("retained_writer_proof_verified");
                 let revocations = issuer.revocations().inspect_err(|_error| {
                     #[cfg(debug_assertions)]
                     eprintln!("root writer observation stage=revocations error={_error}");
                 })?;
+                #[cfg(debug_assertions)]
+                timing.stage("issuer_revocations_read");
                 // All blocking reads precede this final projection. Nothing after
                 // it writes a clock or substitutes a durable future ceiling for now.
                 let observation = clock
@@ -185,6 +228,8 @@ impl RegisteredWriter {
                         );
                     })
                     .map_err(io::Error::other)?;
+                #[cfg(debug_assertions)]
+                timing.stage("clock_projection_finished");
                 validate_observation_lease(
                     &self.registration.authority_lease,
                     &revocations,
@@ -232,7 +277,10 @@ impl RegisteredWriter {
                     request.operation
                 );
             })
-            .map_err(unavailable)
+            .map_err(unavailable);
+        #[cfg(debug_assertions)]
+        timing.finish(result.is_ok());
+        result
     }
 }
 
@@ -281,3 +329,60 @@ impl RegisteredWriter {
         })
     }
 }
+
+#[cfg(debug_assertions)]
+struct WriterPhaseTiming {
+    phase: &'static str,
+    started: std::time::Instant,
+    started_unix_us: Option<u128>,
+    thread: std::thread::ThreadId,
+    stages: Vec<(&'static str, u128)>,
+    success: Option<bool>,
+}
+
+#[cfg(debug_assertions)]
+impl WriterPhaseTiming {
+    fn new(phase: &'static str) -> Self {
+        Self {
+            phase,
+            started: std::time::Instant::now(),
+            started_unix_us: std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .ok()
+                .map(|value| value.as_micros()),
+            thread: std::thread::current().id(),
+            stages: Vec::new(),
+            success: None,
+        }
+    }
+    fn stage(&mut self, stage: &'static str) {
+        self.stages
+            .push((stage, self.started.elapsed().as_micros()));
+    }
+    fn finish(&mut self, success: bool) {
+        self.stage("return");
+        self.success = Some(success);
+    }
+}
+
+#[cfg(debug_assertions)]
+impl Drop for WriterPhaseTiming {
+    fn drop(&mut self) {
+        let elapsed_us = self.started.elapsed().as_micros();
+        if elapsed_us >= 100_000 || self.success != Some(true) {
+            eprintln!(
+                "HEPTA_ROOT_WRITER_PHASE_V1 phase={} thread={:?} started_unix_us={:?} elapsed_us={} success={:?} stages={:?}",
+                self.phase,
+                self.thread,
+                self.started_unix_us,
+                elapsed_us,
+                self.success,
+                self.stages
+            );
+        }
+    }
+}
+
+#[cfg(test)]
+#[path = "authority_host_writer_reentry_tests.rs"]
+mod reentry_tests;
