@@ -49,6 +49,13 @@ fn request(command: &str, sequence: u64, expected: serde_json::Value) -> Vec<u8>
         "command":command, "expected":expected, "proposal":null})).unwrap()
 }
 
+fn assert_startup_denied(service: &HostAuthorityService, lane: HostAuthorityLane, raw: &[u8]) {
+    let denied = service.require_startup_read(lane, raw).unwrap_err();
+    assert_eq!(denied.kind(), io::ErrorKind::PermissionDenied);
+    assert_eq!(denied.to_string(), "only original startup reads are available before recovered owner ready");
+    assert_eq!(service.handle(lane, raw), Err(HostIssuerTransportError::Unavailable));
+}
+
 fn assert_closed(service: &HostAuthorityService) {
     assert!(service.require_material_startup_complete().is_err());
     assert_eq!(service.checkpoint.as_ref().unwrap().backend.retained_current_for_root(),
@@ -83,18 +90,27 @@ fn required_pending_reads_preserve_all_original_heads_and_refuse_mutations() {
         let raw = serde_json::to_vec(&codex_hepta_contracts::HostConsumerFrontierRequestV1::CompareAndSet {
             schema_version:1, request_id:2, expected:frontier, next:frontier,
         }).unwrap();
-        assert!(service.handle(lane, &raw).is_err());
+        assert_startup_denied(&service, lane, &raw);
     }
     for command in ["begin_writes", "prepare_publication", "commit_publication", "fence_publisher"] {
-        assert!(service.handle(HostAuthorityLane::Checkpoint,
-            &request(command, 2, serde_json::to_value(&current.token).unwrap())).is_err());
+        assert_startup_denied(&service, HostAuthorityLane::Checkpoint,
+            &request(command, 2, serde_json::to_value(&current.token).unwrap()));
     }
     let mut objective = body(); objective.spawn_generation = 3;
     for issuer in [serde_json::json!({"schema_version":1,"operation":"runtime.authbus.objective.sign.v1","body":objective}),
         serde_json::json!({"schema_version":1,"operation":"runtime.agentd.production_operation",
             "binding":binding(f.registration.registered_identity.agent_id.as_str())})] {
-        assert!(service.handle(HostAuthorityLane::Issuer, &serde_json::to_vec(&issuer).unwrap()).is_err());
+        assert_startup_denied(&service, HostAuthorityLane::Issuer, &serde_json::to_vec(&issuer).unwrap());
     }
+    let issuer = serde_json::to_vec(&serde_json::json!({"schema_version":1,
+        "operation":"runtime.agentd.production_operation",
+        "binding":binding(f.registration.registered_identity.agent_id.as_str())})).unwrap();
+    // Exercise the independently retained issuer entry guard too, using the
+    // exact configured original FinalUse binding, rather than malformed input.
+    assert_eq!(service.issue(&issuer), Err(HostIssuerTransportError::Unavailable));
+    let denied = service.require_material_startup_complete().unwrap_err();
+    assert_eq!(denied.kind(), io::ErrorKind::PermissionDenied);
+    assert_eq!(denied.to_string(), "recovered material startup is not confirmed");
     assert_eq!(snapshot(&f), before);
     // A trusted Root call out of order cannot manufacture owner readiness.
     assert!(service.confirm_recovered_owner_ready().is_err());
