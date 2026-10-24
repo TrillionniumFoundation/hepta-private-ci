@@ -6,6 +6,7 @@ use crate::SystemAuthorityClock;
 use crate::final_use::FinalUseBinding;
 use crate::final_use::FinalUseGrant;
 use crate::final_use::SignedFinalUseGrant;
+use crate::windows_private_owner::OriginalFileAccess;
 use crate::windows_private_owner::ParentAnchor;
 use crate::windows_private_owner::PrivateStoreDirectory;
 use ed25519_dalek::Signer;
@@ -14,6 +15,7 @@ use std::collections::BTreeSet;
 use std::error::Error;
 use std::fs;
 use std::io;
+use std::io::Write;
 use std::path::PathBuf;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -182,5 +184,64 @@ fn native_cold_frontier_mismatch_rejects_before_original_state_rewrites() -> Res
     );
     assert!(!fixture.path("authority.next").exists());
     assert!(!fixture.path("authority.claims.next").exists());
+    Ok(())
+}
+
+#[test]
+fn native_legacy_zero_nonce_preserves_original_staged_and_committed_bytes() -> Result {
+    let (fixture, input) = Fixture::new()?;
+    let frontier = Arc::new(Frontier(Mutex::new(FinalUseFrontier::for_initial_head(
+        &head(),
+    )?)));
+    drop(open(input, Arc::clone(&frontier))?);
+    let held = fixture.cold()?.lock_original_marker("authority.lock")?;
+    for name in ["authority.next", "authority.claims.next"] {
+        let mut stage = held.open_original_file(name, 1024, OriginalFileAccess::Stage)?;
+        stage.write_all(b"original-unselected-stage")?;
+        stage.sync_all()?;
+    }
+    held.sync_all()?;
+    drop(held);
+    let invalid = super::super::State {
+        head: head(),
+        used_nonces: BTreeSet::from([[0; 32], [5; 32]]),
+        failed: false,
+    };
+    fs::write(
+        fixture.path("authority.json"),
+        serde_json::to_vec(&serde_json::json!({
+            "schema": 1,
+            "signer_id": "security-owner",
+            "verifying_key": SigningKey::from_bytes(&[47; 32]).verifying_key().to_bytes(),
+            "state": invalid,
+        }))?,
+    )?;
+    // A matching fixture frontier must not hide invalid claims or authorize a
+    // partial migration. It is deliberately not production durability proof.
+    *frontier
+        .0
+        .lock()
+        .map_err(|_| io::Error::other("frontier poison"))? = frontier_for_state(&invalid);
+    let names = [
+        "authority.json",
+        "authority.claims",
+        "authority.next",
+        "authority.claims.next",
+    ];
+    let before = names
+        .map(|name| fs::read(fixture.path(name)))
+        .into_iter()
+        .collect::<std::result::Result<Vec<_>, _>>()?;
+    for _ in 0..2 {
+        assert!(
+            matches!(open(fixture.cold()?, Arc::clone(&frontier)), Err(error)
+            if error.downcast_ref::<FinalUseError>() == Some(&FinalUseError::InvalidTrust))
+        );
+        let after = names
+            .map(|name| fs::read(fixture.path(name)))
+            .into_iter()
+            .collect::<std::result::Result<Vec<_>, _>>()?;
+        assert_eq!(after, before);
+    }
     Ok(())
 }
