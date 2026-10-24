@@ -3,12 +3,12 @@ name: Hepta memory A-I prospective audit (shadow only)
 on:
   pull_request:
     paths:
-      - 'qa/stem-bakeoff/memory_nine_arm_gate.py'
-      - 'qa/stem-bakeoff/test_memory_nine_arm_gate.py'
-      - 'qa/stem-bakeoff/memory_nine_arm_existing_evidence.py'
-      - 'qa/stem-bakeoff/test_memory_nine_arm_existing_evidence.py'
-      - 'qa/stem-bakeoff/MEMORY_NINE_ARM_QUALIFICATION.md'
-      - '.github/workflows/hepta-memory-nine-arm-shadow.yml'
+      - "qa/stem-bakeoff/memory_nine_arm_gate.py"
+      - "qa/stem-bakeoff/test_memory_nine_arm_gate.py"
+      - "qa/stem-bakeoff/memory_nine_arm_existing_evidence.py"
+      - "qa/stem-bakeoff/test_memory_nine_arm_existing_evidence.py"
+      - "qa/stem-bakeoff/MEMORY_NINE_ARM_QUALIFICATION.md"
+      - ".github/workflows/hepta-memory-nine-arm-shadow.yml"
   workflow_dispatch:
 
 permissions:
