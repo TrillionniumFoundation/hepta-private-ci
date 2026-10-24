@@ -1,14 +1,16 @@
-use sqlx::migrate::Migrate;
-use sqlx::sqlite::SqlitePoolOptions;
-
 use super::*;
+use sqlx::migrate::Migrate;
 
 async fn historical_pool(displaced: bool) -> SqlitePool {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect("sqlite::memory:")
-        .await
-        .expect("SQLite owner");
+    let directory = tempfile::tempdir().expect("SQLite fixture directory");
+    let path = directory.path().join("historical.sqlite3");
+    let pool = SqliteConfig::new_for_testing(
+        AbsolutePathBuf::try_from(directory.path().to_path_buf())
+            .expect("SQLite fixture directory must be absolute"),
+    )
+    .open_read_write_pool(&path)
+    .await
+    .expect("SQLite owner");
     let mut connection = pool.acquire().await.expect("owner connection");
     connection
         .ensure_migrations_table("_sqlx_migrations")
