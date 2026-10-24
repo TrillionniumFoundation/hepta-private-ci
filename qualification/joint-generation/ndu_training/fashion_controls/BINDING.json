@@ -1,0 +1,25 @@
+{
+  "data_access": "none; model/autodiff source only",
+  "dependencies": {
+    "bound/autodiff.py": {
+      "bound_sha256": "fc4113a8219ac1eee7fe349ca53f4c4a06272fa5f55954a0e54f392406eff0fa",
+      "source_path": "qualification/joint-generation/fashion_research/autodiff.py",
+      "source_sha256": "fc4113a8219ac1eee7fe349ca53f4c4a06272fa5f55954a0e54f392406eff0fa",
+      "transform": "identity"
+    },
+    "bound/model.py": {
+      "bound_sha256": "a81dc4f3d10533333c18bc3239febcf08095a53f0b0f1d596ffde3bae7702c53",
+      "source_path": "qualification/joint-generation/fashion_research/model.py",
+      "source_sha256": "503180f85d37ce39c735489cd08c7cf7b734480dcfe6b8e4852543f63291831f",
+      "transform": "Replace the single absolute fashion_research.autodiff import with .autodiff."
+    }
+  },
+  "independent_terminal_reference": {
+    "derivation_sha256": "63a73843d2a05a45ed1b1130a662c55e98367c538de81982df3915e608e8083a",
+    "reference_sha256": "060ffa3f890e3f2da67e9463874c07f508ce9f3de758187bfec6de06d1cdaa48",
+    "runtime_dependency": false,
+    "source_commit": "dedbb0a0d3470dd58bfafbe770c8d916f7ff17cc"
+  },
+  "schema": "ndu.fashion-controls.binding.v1",
+  "source_commit": "99001f4ac6598914b26f66de977e190341c51dbc"
+}
