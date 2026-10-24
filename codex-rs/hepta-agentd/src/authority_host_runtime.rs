@@ -375,7 +375,16 @@ pub(crate) fn verify_process(
     if start != Some(registration.process_start_ticks) {
         return Err(io::Error::other("registered start identity mismatch"));
     }
-    let status = std::fs::read_to_string(format!("/proc/{}/status", registration.peer_pid))?;
+    verify_process_credentials(registration.peer_pid, uid, gid)
+}
+
+/// Shared exact credential contract for the Root validator and the original
+/// child's single-threaded transition. This supplies no identity or authority.
+pub(crate) fn verify_process_credentials(pid: u32, uid: u32, gid: u32) -> io::Result<()> {
+    if pid == 0 || pid > i32::MAX as u32 {
+        return Err(io::Error::other("invalid owner process"));
+    }
+    let status = std::fs::read_to_string(format!("/proc/{pid}/status"))?;
     let actual_uid = status
         .lines()
         .find_map(|line| line.strip_prefix("Uid:"))

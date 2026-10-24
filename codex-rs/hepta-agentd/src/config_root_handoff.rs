@@ -7,6 +7,9 @@ use std::os::unix::fs::MetadataExt;
 use std::os::unix::fs::PermissionsExt;
 use std::sync::Arc;
 
+#[path = "config_root_credentials.rs"]
+mod credentials;
+
 /// Root-only preparation of this same process. The ordinary configuration is
 /// inaccessible until its original lock is reacquired after a live authenticated
 /// Root handoff. This value cannot be serialized, cloned or used as a runtime.
@@ -34,7 +37,7 @@ impl AgentdConfig {
     ) -> Result<PreparedRootAgentdConfig, AgentdError> {
         // SAFETY: getuid/geteuid read this process's actual kernel credentials.
         if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0
-            || expected_uid == 0 || expected_gid == 0
+            || matches!(expected_uid, 0 | u32::MAX) || matches!(expected_gid, 0 | u32::MAX)
         {
             return Err(AgentdError::Invalid("Root preparation requires actual Root and a dedicated non-Root UID/GID".into()));
         }
