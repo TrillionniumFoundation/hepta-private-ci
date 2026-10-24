@@ -136,7 +136,9 @@ def empirical_cvar90(losses: list[float], probabilities: list[float]) -> float:
     return total / 0.1
 
 
-def _public_state_policy(policy: Callable[[State], Allocation]) -> Callable[[State], Allocation]:
+def _public_state_policy(
+    policy: Callable[[State], Allocation],
+) -> Callable[[State], Allocation]:
     """Reject path-order dependent actions when replaying one public state.
 
     Each scenario separately traverses the same finite tree. Reusing an opaque,
@@ -149,7 +151,8 @@ def _public_state_policy(policy: Callable[[State], Allocation]) -> Callable[[Sta
     def checked(state: State) -> Allocation:
         action = policy(state)
         if state in observed and observed[state] != action:
-            raise ValueError("non-deterministic public-state counterfactual policy")
+            raise ValueError(
+                "non-deterministic public-state counterfactual policy")
         observed[state] = action
         return action
 
