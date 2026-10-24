@@ -29,16 +29,28 @@ async fn android_runtime_bootstrap_preserves_original_writer_and_refuses_revoked
         let (mut config, fixture) = Fixture::new().await?;
         let (inputs, probes, issuer_peer) = fixture.inputs()?;
         attach_production_operation_host(&mut config, inputs).await?;
-        let recovered = Arc::clone(config.production_writer_host().expect("original recovered host"));
+        let recovered = Arc::clone(
+            config
+                .production_writer_host()
+                .expect("original recovered host"),
+        );
         let original_writer = recovered.writer();
-        let operations = config.take_production_operations().expect("original runtime config");
+        let operations = config
+            .take_production_operations()
+            .expect("original runtime config");
         let (android_owner, _, _peer) = fixture.inputs()?;
         let final_use = android_owner.final_use.open()?;
-        let (device_inputs, client, calls) = runtime_inputs(Fault::None, Duration::from_secs(2)).await?;
+        let (device_inputs, client, calls) =
+            runtime_inputs(Fault::None, Duration::from_secs(2)).await?;
         if revoked {
-            probes.verifier.reject_at_call.store(probes.verifier.calls.load(Ordering::SeqCst) + 1, Ordering::SeqCst);
+            probes.verifier.reject_at_call.store(
+                probes.verifier.calls.load(Ordering::SeqCst) + 1,
+                Ordering::SeqCst,
+            );
         }
-        let result = operations.with_android_from_runtime(&config, &recovered, final_use, device_inputs).await;
+        let result = operations
+            .with_android_from_runtime(&config, &recovered, final_use, device_inputs)
+            .await;
         if revoked {
             assert!(result.is_err());
         } else {

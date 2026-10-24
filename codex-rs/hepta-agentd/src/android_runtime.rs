@@ -78,7 +78,10 @@ impl AgentdAndroidTextDevice {
             || remaining > native_budget
             || inputs.runtime.runtime_flavor() != RuntimeFlavor::MultiThread
         {
-            return Err("Android bootstrap requires the original deadline and live multithread runtime".to_string());
+            return Err(
+                "Android bootstrap requires the original deadline and live multithread runtime"
+                    .to_string(),
+            );
         }
         #[derive(Serialize)]
         struct Helper<'a> {
@@ -101,35 +104,49 @@ impl AgentdAndroidTextDevice {
         if apply_request.len() > 24 * 1024 || read_request.len() > 24 * 1024 {
             return Err("Android helper request exceeds its bound".to_string());
         }
-        let binding = format!("hepta.android.runtime.v1\0{}\0{}", payload.operation_id, digest.as_str());
-        let idempotency_key = format!("android-{}", Sha256Digest::for_bytes(binding.as_bytes()).as_str());
+        let binding = format!(
+            "hepta.android.runtime.v1\0{}\0{}",
+            payload.operation_id,
+            digest.as_str()
+        );
+        let idempotency_key = format!(
+            "android-{}",
+            Sha256Digest::for_bytes(binding.as_bytes()).as_str()
+        );
         let attempt = AndroidRuntimeAttempt {
             operation_id: payload.operation_id.clone(),
             payload_sha256: digest,
             start_attempted: false,
             job_id: None,
         };
-        Ok((Self {
-            session: inputs.session,
-            runtime: inputs.runtime,
-            deadline: inputs.deadline,
-            apply_request,
-            read_request,
-            idempotency_key,
-            effect_available: AtomicBool::new(true),
-            invalidated: AtomicBool::new(false),
-            exchange: Mutex::new(()),
-            attempt: Mutex::new(attempt),
-        }, payload))
+        Ok((
+            Self {
+                session: inputs.session,
+                runtime: inputs.runtime,
+                deadline: inputs.deadline,
+                apply_request,
+                read_request,
+                idempotency_key,
+                effect_available: AtomicBool::new(true),
+                invalidated: AtomicBool::new(false),
+                exchange: Mutex::new(()),
+                attempt: Mutex::new(attempt),
+            },
+            payload,
+        ))
     }
 
     pub fn attempt(&self) -> Result<AndroidRuntimeAttempt, String> {
-        self.attempt.lock().map(|attempt| attempt.clone())
+        self.attempt
+            .lock()
+            .map(|attempt| attempt.clone())
             .map_err(|_| "Android original job correlation is unavailable".to_string())
     }
 
     fn exchange(&self, request: &[u8], kind: job::Invocation) -> Result<Vec<u8>, String> {
-        let _guard = self.exchange.try_lock()
+        let _guard = self
+            .exchange
+            .try_lock()
             .map_err(|_| "Android original helper exchange is already active".to_string())?;
         let expected = match kind {
             job::Invocation::Effect => &self.apply_request,
@@ -141,11 +158,13 @@ impl AgentdAndroidTextDevice {
         let run = || {
             let deadline = match kind {
                 job::Invocation::Effect => self.deadline,
-                job::Invocation::Readback if self.invalidated.load(Ordering::Acquire) =>
-                    Instant::now() + Duration::from_secs(10),
+                job::Invocation::Readback if self.invalidated.load(Ordering::Acquire) => {
+                    Instant::now() + Duration::from_secs(10)
+                }
                 job::Invocation::Readback => self.deadline,
             };
-            self.runtime.block_on(job::invoke(self, request, kind, deadline))
+            self.runtime
+                .block_on(job::invoke(self, request, kind, deadline))
         };
         // Execute inline within the original synchronous FinalUse entry. The
         // future is never detached, queued for later entry, or given a new RT.
@@ -160,7 +179,10 @@ impl AgentdAndroidTextDevice {
 impl OriginalAndroidTextDevice for AgentdAndroidTextDevice {
     fn apply(&self, helper_request: &[u8]) -> Result<Vec<u8>, String> {
         if self.invalidated.load(Ordering::Acquire)
-            || self.effect_available.compare_exchange(true, false, Ordering::AcqRel, Ordering::Acquire).is_err()
+            || self
+                .effect_available
+                .compare_exchange(true, false, Ordering::AcqRel, Ordering::Acquire)
+                .is_err()
         {
             return Err("Android original effect lane is permanently closed".to_string());
         }
@@ -194,17 +216,28 @@ impl AgentdProductionOperationRuntimeConfig {
     ) -> Result<(Self, Arc<AgentdAndroidTextDevice>), AgentdError> {
         self.validate_for(config)?;
         if recovered_host.destination_count() != 0 {
-            return Err(AgentdError::Invalid("Android runtime bootstrap requires the original unregistered recovered writer".to_string()));
+            return Err(AgentdError::Invalid(
+                "Android runtime bootstrap requires the original unregistered recovered writer"
+                    .to_string(),
+            ));
         }
         tokio::time::timeout_at(
             inputs.deadline.into(),
             self.validate_recovered_host(recovered_host),
-        ).await.map_err(|_| AgentdError::Protocol("Android recovered-owner validation expired".to_string()))??;
-        let (device, payload) = AgentdAndroidTextDevice::new(inputs).map_err(AgentdError::Invalid)?;
+        )
+        .await
+        .map_err(|_| {
+            AgentdError::Protocol("Android recovered-owner validation expired".to_string())
+        })??;
+        let (device, payload) =
+            AgentdAndroidTextDevice::new(inputs).map_err(AgentdError::Invalid)?;
         let device = Arc::new(device);
         let target = ProductionAndroidTextTarget::new(&payload.observation, device.clone())
             .map_err(AgentdError::Invalid)?;
-        Ok((self.with_additional_target(final_use, Arc::new(target))?, device))
+        Ok((
+            self.with_additional_target(final_use, Arc::new(target))?,
+            device,
+        ))
     }
 }
 

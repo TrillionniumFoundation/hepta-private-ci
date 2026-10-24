@@ -58,7 +58,9 @@ impl RetainedMcpToolSession {
             || self.service.is_closed()
             || self.service.peer().is_transport_closed()
         {
-            return Err(anyhow!("retained MCP peer is closed or its deadline expired"));
+            return Err(anyhow!(
+                "retained MCP peer is closed or its deadline expired"
+            ));
         }
         let mut params = CallToolRequestParams::new(name.to_string());
         params.arguments = Some(arguments);
@@ -79,11 +81,15 @@ impl RetainedMcpToolSession {
             result = tokio::time::timeout(timeout, call) => result??,
         };
         if self.lifetime.is_cancelled() {
-            return Err(anyhow!("original MCP peer lifetime ended before its response"));
+            return Err(anyhow!(
+                "original MCP peer lifetime ended before its response"
+            ));
         }
         match response {
             ServerResult::CallToolResult(result) => Ok(result),
-            _ => Err(anyhow!("retained MCP tools/call returned an unexpected response")),
+            _ => Err(anyhow!(
+                "retained MCP tools/call returned an unexpected response"
+            )),
         }
     }
 }

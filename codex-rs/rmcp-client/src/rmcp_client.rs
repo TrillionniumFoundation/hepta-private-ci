@@ -406,15 +406,25 @@ impl RmcpClient {
                 *redirect_mode == StreamableHttpRedirectMode::AgentPluginV1
                     && pinned_credential_store.get().is_none()
                     && (bearer_token.is_some()
-                        || http_headers.as_ref().is_some_and(|headers| !headers.is_empty())
-                        || env_http_headers.as_ref().is_some_and(|headers| !headers.is_empty()))
+                        || http_headers
+                            .as_ref()
+                            .is_some_and(|headers| !headers.is_empty())
+                        || env_http_headers
+                            .as_ref()
+                            .is_some_and(|headers| !headers.is_empty()))
             }
         };
         if !transport_allowed || self.protocol_mode != McpProtocolMode::Legacy {
-            return Err(anyhow!("MCP transport does not support retained single-attempt calls"));
+            return Err(anyhow!(
+                "MCP transport does not support retained single-attempt calls"
+            ));
         }
         match &*state {
-            ClientState::Ready { service, retained_lifetime, .. } => Ok(crate::RetainedMcpToolSession {
+            ClientState::Ready {
+                service,
+                retained_lifetime,
+                ..
+            } => Ok(crate::RetainedMcpToolSession {
                 service: Arc::clone(service),
                 lifetime: retained_lifetime.0.clone(),
             }),

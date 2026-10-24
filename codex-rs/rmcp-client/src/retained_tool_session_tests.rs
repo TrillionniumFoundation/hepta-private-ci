@@ -25,21 +25,39 @@ use crate::RmcpClient;
 use crate::StreamableHttpBearerToken;
 use crate::StreamableHttpRedirectMode;
 
-async fn client(server: &MockServer, redirects: StreamableHttpRedirectMode) -> anyhow::Result<RmcpClient> {
+async fn client(
+    server: &MockServer,
+    redirects: StreamableHttpRedirectMode,
+) -> anyhow::Result<RmcpClient> {
     let client = RmcpClient::new_streamable_http_client_with_protocol_mode_and_redirect_mode(
-        "retained-session-fixture", &format!("{}/mcp", server.uri()),
-        Some(StreamableHttpBearerToken::Resolved("fixture-only-original-token".to_string())),
-        /*http_headers*/ None, /*env_http_headers*/ None,
-        OAuthCredentialsStoreMode::File, AuthKeyringBackendKind::default(),
-        Environment::default_for_tests().get_http_client(), /*auth_provider*/ None,
-        McpProtocolMode::Legacy, redirects,
-    ).await?;
-    client.initialize(
-        InitializeRequestParams::new(ClientCapabilities::default(), Implementation::new("retained-test", "1"))
+        "retained-session-fixture",
+        &format!("{}/mcp", server.uri()),
+        Some(StreamableHttpBearerToken::Resolved(
+            "fixture-only-original-token".to_string(),
+        )),
+        /*http_headers*/ None,
+        /*env_http_headers*/ None,
+        OAuthCredentialsStoreMode::File,
+        AuthKeyringBackendKind::default(),
+        Environment::default_for_tests().get_http_client(),
+        /*auth_provider*/ None,
+        McpProtocolMode::Legacy,
+        redirects,
+    )
+    .await?;
+    client
+        .initialize(
+            InitializeRequestParams::new(
+                ClientCapabilities::default(),
+                Implementation::new("retained-test", "1"),
+            )
             .with_protocol_version(ProtocolVersion::V_2025_06_18),
-        Some(Duration::from_secs(2)),
-        Box::new(|_, _| Box::pin(async { anyhow::bail!("fixture never authorizes elicitation") })),
-    ).await?;
+            Some(Duration::from_secs(2)),
+            Box::new(|_, _| {
+                Box::pin(async { anyhow::bail!("fixture never authorizes elicitation") })
+            }),
+        )
+        .await?;
     Ok(client)
 }
 
@@ -80,27 +98,55 @@ async fn server(status: u16, delay: Duration) -> (MockServer, Arc<AtomicUsize>, 
 }
 
 #[tokio::test]
-async fn retained_session_never_recovers_404_or_retries_auth_or_transient_failures() -> anyhow::Result<()> {
+async fn retained_session_never_recovers_404_or_retries_auth_or_transient_failures()
+-> anyhow::Result<()> {
     for status in [404, 401, 502] {
         let (server, initializes, calls) = server(status, Duration::ZERO).await;
         let client = client(&server, StreamableHttpRedirectMode::AgentPluginV1).await?;
         let retained = client.retain_tool_session().await?;
-        assert!(retained.call_tool_once("process_start", Default::default(), Duration::from_secs(2)).await.is_err());
-        assert_eq!((initializes.load(Ordering::SeqCst), calls.load(Ordering::SeqCst)), (1, 1));
+        assert!(
+            retained
+                .call_tool_once("process_start", Default::default(), Duration::from_secs(2))
+                .await
+                .is_err()
+        );
+        assert_eq!(
+            (
+                initializes.load(Ordering::SeqCst),
+                calls.load(Ordering::SeqCst)
+            ),
+            (1, 1)
+        );
         client.shutdown().await;
     }
     Ok(())
 }
 
 #[tokio::test]
-async fn retained_session_lost_reply_has_hard_deadline_and_no_second_request() -> anyhow::Result<()> {
+async fn retained_session_lost_reply_has_hard_deadline_and_no_second_request() -> anyhow::Result<()>
+{
     let (server, initializes, calls) = server(200, Duration::from_secs(1)).await;
     let client = client(&server, StreamableHttpRedirectMode::AgentPluginV1).await?;
     let retained = client.retain_tool_session().await?;
     let started = std::time::Instant::now();
-    assert!(retained.call_tool_once("process_start", Default::default(), Duration::from_millis(100)).await.is_err());
+    assert!(
+        retained
+            .call_tool_once(
+                "process_start",
+                Default::default(),
+                Duration::from_millis(100)
+            )
+            .await
+            .is_err()
+    );
     assert!(started.elapsed() < Duration::from_millis(700));
-    assert_eq!((initializes.load(Ordering::SeqCst), calls.load(Ordering::SeqCst)), (1, 1));
+    assert_eq!(
+        (
+            initializes.load(Ordering::SeqCst),
+            calls.load(Ordering::SeqCst)
+        ),
+        (1, 1)
+    );
     client.shutdown().await;
     Ok(())
 }
@@ -114,7 +160,12 @@ async fn retained_session_refuses_redirecting_transport_and_closed_peer() -> any
     let original = client(&server, StreamableHttpRedirectMode::AgentPluginV1).await?;
     let retained = original.retain_tool_session().await?;
     original.shutdown().await;
-    assert!(retained.call_tool_once("process_start", Default::default(), Duration::from_secs(1)).await.is_err());
+    assert!(
+        retained
+            .call_tool_once("process_start", Default::default(), Duration::from_secs(1))
+            .await
+            .is_err()
+    );
     assert_eq!(calls.load(Ordering::SeqCst), 0);
     Ok(())
 }
@@ -127,11 +178,37 @@ async fn retained_session_does_not_follow_parent_session_recovery() -> anyhow::R
     // The ordinary client's existing policy recovers once. The retained effect
     // capability must lose its original lifetime even if the server reuses its
     // opaque session ID, rather than following the parent's replacement peer.
-    assert!(original.call_tool("process_wait".to_string(), Some(json!({})),
-        /*meta*/ None, Some(Duration::from_secs(2))).await.is_err());
-    assert_eq!((initializes.load(Ordering::SeqCst), calls.load(Ordering::SeqCst)), (2,2));
-    assert!(retained.call_tool_once("process_start", Default::default(), Duration::from_secs(1)).await.is_err());
-    assert_eq!((initializes.load(Ordering::SeqCst), calls.load(Ordering::SeqCst)), (2,2));
+    assert!(
+        original
+            .call_tool(
+                "process_wait".to_string(),
+                Some(json!({})),
+                /*meta*/ None,
+                Some(Duration::from_secs(2))
+            )
+            .await
+            .is_err()
+    );
+    assert_eq!(
+        (
+            initializes.load(Ordering::SeqCst),
+            calls.load(Ordering::SeqCst)
+        ),
+        (2, 2)
+    );
+    assert!(
+        retained
+            .call_tool_once("process_start", Default::default(), Duration::from_secs(1))
+            .await
+            .is_err()
+    );
+    assert_eq!(
+        (
+            initializes.load(Ordering::SeqCst),
+            calls.load(Ordering::SeqCst)
+        ),
+        (2, 2)
+    );
     original.shutdown().await;
     Ok(())
 }

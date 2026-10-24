@@ -151,6 +151,7 @@ pub use deployment_issuer::DeploymentIssuerObserver;
 pub use deployment_issuer::HostAuthorityWriterRegistration;
 #[cfg(target_os = "linux")]
 pub use deployment_issuer::RootNotesGrantAdmission;
+mod android_runtime;
 mod error;
 mod event_buffer;
 mod evidence_frontier;
@@ -188,7 +189,6 @@ mod production_authority;
 #[cfg(target_os = "linux")]
 mod production_composition;
 mod production_writer_host;
-mod android_runtime;
 mod prompt_runtime;
 mod qualification_writer;
 mod runtime;
@@ -214,6 +214,9 @@ pub use shared_terminal_cell::SharedTerminalModelV1;
 pub mod test_support;
 mod topology_plasticity_host;
 
+pub use android_runtime::AgentdAndroidRuntimeInputs;
+pub use android_runtime::AgentdAndroidTextDevice;
+pub use android_runtime::AndroidRuntimeAttempt;
 pub use authbus_ingress::authbus_text_claims;
 pub use browser_servo::BrowserFinalUseInvocation;
 pub use browser_servo::BrowserServoCall;
@@ -416,9 +419,6 @@ pub use production_writer_host::AgentdFinalUseGrantProvider;
 pub use production_writer_host::AgentdProductionOperationRuntimeConfig;
 pub use production_writer_host::AgentdProductionWriterHost;
 pub use production_writer_host::AgentdProtectedCheckpointInputs;
-pub use android_runtime::AgentdAndroidRuntimeInputs;
-pub use android_runtime::AgentdAndroidTextDevice;
-pub use android_runtime::AndroidRuntimeAttempt;
 pub use prompt_runtime::AgentdPromptPipelineError;
 pub use prompt_runtime::AgentdPromptPipelineOwner;
 pub use prompt_runtime::AgentdPromptRuntimeError;
