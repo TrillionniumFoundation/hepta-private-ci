@@ -11,13 +11,10 @@ use std::os::windows::io::FromRawHandle;
 use std::os::windows::io::OwnedHandle;
 use std::path::Path;
 use windows_sys::Win32::Foundation::ERROR_ACCESS_DENIED;
-use windows_sys::Win32::Foundation::ERROR_INSUFFICIENT_BUFFER;
 use windows_sys::Win32::Security::Authorization::GetSecurityInfo;
 use windows_sys::Win32::Security::LUID_AND_ATTRIBUTES;
 use windows_sys::Win32::Security::OWNER_SECURITY_INFORMATION;
 use windows_sys::Win32::Security::SE_PRIVILEGE_ENABLED;
-use windows_sys::Win32::Security::TOKEN_GROUPS;
-use windows_sys::Win32::Security::TOKEN_INFORMATION_CLASS;
 use windows_sys::Win32::Security::TokenPrivileges;
 use windows_sys::Win32::Storage::FileSystem::CreateFileW;
 use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_BACKUP_SEMANTICS;
@@ -31,142 +28,19 @@ use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
 use windows_sys::Win32::Storage::FileSystem::WRITE_DAC;
 use windows_sys::Win32::Storage::FileSystem::WRITE_OWNER;
 
-// Kernel query memory is aligned, bounded, initialized and never escapes as a pointer.
-struct TokenBytes {
-    words: Vec<usize>,
-    length: usize,
-}
-
-impl TokenBytes {
-    fn query(token: HANDLE, class: TOKEN_INFORMATION_CLASS) -> Result<Self> {
-        let mut needed = 0;
-        // SAFETY: token is owned by the caller; this first call has no output buffer.
-        let first = unsafe {
-            GetTokenInformation(
-                token,
-                class,
-                std::ptr::null_mut(),
-                /*tokeninformationlength*/ 0,
-                &mut needed,
-            )
-        };
-        anyhow::ensure!(first == 0 && unsafe { GetLastError() } == ERROR_INSUFFICIENT_BUFFER);
-        anyhow::ensure!((4..=65_536).contains(&needed), "invalid token query size");
-        let mut result = Self {
-            words: vec![0; (needed as usize).div_ceil(size_of::<usize>())],
-            length: needed as usize,
-        };
-        // SAFETY: the aligned zeroed buffer covers the advertised capacity.
-        anyhow::ensure!(
-            unsafe {
-                GetTokenInformation(
-                    token,
-                    class,
-                    result.words.as_mut_ptr().cast(),
-                    needed,
-                    &mut needed,
-                )
-            } != 0,
-            "token query failed: {}",
-            unsafe { GetLastError() }
-        );
-        anyhow::ensure!(needed as usize <= result.length && needed >= 4);
-        result.length = needed as usize;
-        Ok(result)
-    }
-
-    fn value<T: Copy>(&self, offset: usize) -> Result<T> {
-        anyhow::ensure!(
-            offset
-                .checked_add(size_of::<T>())
-                .is_some_and(|end| end <= self.length)
-        );
-        // SAFETY: checked initialized range; callers use only native integer/pointer structs.
-        Ok(
-            unsafe {
-                std::ptr::read_unaligned(self.words.as_ptr().cast::<u8>().add(offset).cast())
-            },
-        )
-    }
-
-    fn pointed_bytes(&self, pointer: *const u8, length: usize) -> Result<Vec<u8>> {
-        let start = pointer as usize;
-        let base = self.words.as_ptr() as usize;
-        anyhow::ensure!(
-            start >= base
-                && start
-                    .checked_add(length)
-                    .is_some_and(|end| end <= base + self.length)
-        );
-        // SAFETY: the complete pointed range belongs to this initialized query buffer.
-        Ok(unsafe { std::slice::from_raw_parts(pointer, length) }.to_vec())
-    }
-
-    fn sid(&self, pointer: *mut c_void) -> Result<Vec<u8>> {
-        let header = self.pointed_bytes(pointer.cast(), /*length*/ 8)?;
-        anyhow::ensure!(header[0] == 1 && header[1] <= 15, "invalid queried SID");
-        self.pointed_bytes(pointer.cast(), 8 + usize::from(header[1]) * 4)
-    }
-
-    fn groups(&self) -> Result<Vec<Vec<u8>>> {
-        let count = self.value::<u32>(/*offset*/ 0)? as usize;
-        let offset = offset_of!(TOKEN_GROUPS, Groups);
-        anyhow::ensure!(
-            count <= self.length.saturating_sub(offset) / size_of::<SID_AND_ATTRIBUTES>()
-        );
-        let mut result = Vec::new();
-        for index in 0..count {
-            let entry =
-                self.value::<SID_AND_ATTRIBUTES>(offset + index * size_of::<SID_AND_ATTRIBUTES>())?;
-            result.push(self.sid(entry.Sid)?);
-        }
-        result.sort();
-        Ok(result)
-    }
-
-    fn default_dacl(&self) -> Result<Option<Vec<u8>>> {
-        let pointer = self.value::<*const u8>(/*offset*/ 0)?;
-        if pointer.is_null() {
-            return Ok(None); // A token may legitimately have no default DACL.
-        }
-        let header = self.pointed_bytes(pointer, /*length*/ 8)?;
-        let length = usize::from(u16::from_le_bytes([header[2], header[3]]));
-        anyhow::ensure!(length >= 8, "invalid default DACL");
-        self.pointed_bytes(pointer, length).map(Some)
-    }
-}
+use crate::token::token_query::TokenBytes;
 
 // Explicit subjects, not a boolean that silently changes a production token.
 // The inherited default DACL is left unchanged: IPC/process compatibility is unqualified.
 fn candidate(base: &OwnedToken, subjects: &[&LocalSid]) -> Result<OwnedToken> {
-    anyhow::ensure!(!subjects.is_empty() && subjects.len() <= 3);
-    let mut entries: Vec<_> = subjects
-        .iter()
-        .map(|sid| SID_AND_ATTRIBUTES {
-            Sid: sid.as_ptr(),
-            Attributes: 0,
-        })
-        .collect();
-    let mut raw = 0;
-    // SAFETY: base and all owned SIDs outlive this synchronous call; success is immediately owned.
-    anyhow::ensure!(
-        unsafe {
-            CreateRestrictedToken(
-                base.0,
-                DISABLE_MAX_PRIVILEGE | LUA_TOKEN,
-                /*disablesidcount*/ 0,
-                std::ptr::null(),
-                /*deleteprivilegecount*/ 0,
-                std::ptr::null(),
-                entries.len() as u32,
-                entries.as_mut_ptr(),
-                &mut raw,
-            )
-        } != 0,
-        "candidate creation failed: {}",
-        unsafe { GetLastError() }
-    );
-    let token = OwnedToken(raw);
+    let raw = super::super::UnqualifiedFullRestrictionToken::from_primary(
+        // SAFETY: the original OwnedToken keeps this explicit base alive.
+        unsafe { std::os::windows::io::BorrowedHandle::borrow_raw(base.0 as _) },
+        subjects,
+    )?;
+    let token = OwnedToken(std::os::windows::io::IntoRawHandle::into_raw_handle(
+        raw.into_owned_handle(),
+    ) as _);
     let actual = TokenBytes::query(token.0, TokenRestrictedSids)?.groups()?;
     let mut expected = subjects
         .iter()
@@ -230,6 +104,107 @@ fn candidate(base: &OwnedToken, subjects: &[&LocalSid]) -> Result<OwnedToken> {
         );
     }
     Ok(token)
+}
+
+#[test]
+fn raw_full_restriction_refuses_filtered_impersonation_and_ambient_inputs() -> Result<()> {
+    use std::os::windows::io::AsHandle;
+    use windows_sys::Win32::Security::DuplicateTokenEx;
+    use windows_sys::Win32::Security::IsTokenRestricted;
+    use windows_sys::Win32::Security::SecurityImpersonation;
+    use windows_sys::Win32::Security::TOKEN_DUPLICATE;
+    use windows_sys::Win32::Security::TOKEN_QUERY;
+    use windows_sys::Win32::Security::TokenImpersonation;
+
+    let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
+    // SAFETY: the original owned base is retained through every native query.
+    let borrowed = unsafe { std::os::windows::io::BorrowedHandle::borrow_raw(base.0 as _) };
+    let subject = LocalSid::from_string("S-1-5-21-161-262-363-464")?;
+    let everyone = LocalSid::from_string("S-1-1-0")?;
+    assert!(super::super::UnqualifiedFullRestrictionToken::from_primary(borrowed, &[]).is_err());
+    assert!(
+        super::super::UnqualifiedFullRestrictionToken::from_primary(
+            borrowed,
+            &[&subject, &subject]
+        )
+        .is_err()
+    );
+    assert!(
+        super::super::UnqualifiedFullRestrictionToken::from_primary(borrowed, &[&everyone])
+            .is_err()
+    );
+    let maximum = (0..128)
+        .map(|index| LocalSid::from_string(&format!("S-1-5-21-171-272-373-{}", 1_000 + index)))
+        .collect::<Result<Vec<_>>>()?;
+    let mut maximum_refs = maximum.iter().collect::<Vec<_>>();
+    drop(candidate(&base, &maximum_refs)?);
+    maximum_refs.push(&subject);
+    assert!(
+        super::super::UnqualifiedFullRestrictionToken::from_primary(borrowed, &maximum_refs)
+            .is_err()
+    );
+    let raw = candidate(&base, &[&subject])?;
+    assert!(
+        super::super::UnqualifiedFullRestrictionToken::from_primary(
+            // SAFETY: raw remains owned during this refusal observation.
+            unsafe { std::os::windows::io::BorrowedHandle::borrow_raw(raw.0 as _) },
+            &[&subject]
+        )
+        .is_err()
+    );
+
+    let mut filtered = 0;
+    // Filtering privileges without any restricting SID must not pass the new
+    // fresh-input check merely because IsTokenRestricted reports zero.
+    anyhow::ensure!(
+        unsafe {
+            CreateRestrictedToken(
+                base.0,
+                DISABLE_MAX_PRIVILEGE,
+                /*disablesidcount*/ 0,
+                std::ptr::null(),
+                /*deleteprivilegecount*/ 0,
+                std::ptr::null(),
+                /*restrictedsidcount*/ 0,
+                std::ptr::null(),
+                &mut filtered,
+            )
+        } != 0
+    );
+    let filtered = unsafe { OwnedHandle::from_raw_handle(filtered as _) };
+    assert_eq!(
+        unsafe { IsTokenRestricted(filtered.as_raw_handle() as _) },
+        0
+    );
+    assert!(
+        super::super::UnqualifiedFullRestrictionToken::from_primary(
+            filtered.as_handle(),
+            &[&subject]
+        )
+        .is_err()
+    );
+    let mut impersonation = 0;
+    anyhow::ensure!(
+        unsafe {
+            DuplicateTokenEx(
+                base.0,
+                TOKEN_QUERY | TOKEN_DUPLICATE,
+                std::ptr::null(),
+                SecurityImpersonation,
+                TokenImpersonation,
+                &mut impersonation,
+            )
+        } != 0
+    );
+    let impersonation = unsafe { OwnedHandle::from_raw_handle(impersonation as _) };
+    assert!(
+        super::super::UnqualifiedFullRestrictionToken::from_primary(
+            impersonation.as_handle(),
+            &[&subject]
+        )
+        .is_err()
+    );
+    Ok(())
 }
 
 fn open_execute(path: &Path) -> std::io::Result<OwnedHandle> {
