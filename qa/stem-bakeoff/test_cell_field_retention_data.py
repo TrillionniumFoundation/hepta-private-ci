@@ -77,10 +77,12 @@ class RetentionDataTests(unittest.TestCase):
             archive, protocol = root / "archive.zip", root / "protocol.json"
             archive.write_bytes(b"source fixture")
             protocol.write_bytes(data.canonical({"source_counts": {r: n for r, _, n in self.plan},
-                "source_split_salt": data.SALT, "source_archive_sha256": data.ARCHIVE_SHA256}))
+                "source_split_salt": data.SALT, "source_archive_sha256": data.ARCHIVE_SHA256,
+                "previous_data_receipt_sha256": data.PREVIOUS_RECEIPT_SHA256,
+                "previous_sources_sha256": data.PREVIOUS_SOURCES_SHA256}))
             with patch.object(data, "_read_archive", return_value=self.rows), \
                     patch.object(data, "select_rows", return_value={}), \
-                    patch.object(data, "prior_sources", return_value=[]), \
+                    patch.object(data, "prior_sources", return_value=([], {"mode": "fixture"})), \
                     patch.object(data, "ROLE_PLAN", self.plan):
                 receipt = data.prepare(archive, root / "previous", root / "data", protocol)
             output = root / "data"
@@ -113,6 +115,74 @@ class RetentionDataTests(unittest.TestCase):
             self.assertEqual(failure["error_type"], "ValueError")
             self.assertFalse(failure["model_outputs_observed"])
             self.assertEqual(list((root / "attempt").iterdir()), [root / "attempt/preparation_failure.json"])
+
+    def prior_fixture(self, root):
+        sources = [{"index": i, "raw_source_id": str(i), "source_id": f"uci-news:{i}",
+                    "component_id": f"component-{i}"} for i in range(512)]
+        source_bytes = data.canonical({"rows": sources}) + b"\n"
+        source_identity = {"sha256": data.sha(source_bytes), "bytes": len(source_bytes)}
+        receipt_bytes = data.canonical({"files": {"sources.json": source_identity},
+            "source_archive_sha256": data.ARCHIVE_SHA256}) + b"\n"
+        receipt_identity = {"sha256": data.sha(receipt_bytes), "bytes": len(receipt_bytes)}
+        seal = {"files": {"inputs/sources.json": source_identity,
+                          "inputs/data_receipt.json": receipt_identity}, "final_labels_opened": False}
+        seal_bytes = data.canonical(seal) + b"\n"
+        (root / "sources.json").write_bytes(source_bytes)
+        (root / "pre_evaluation_seal.json").write_bytes(seal_bytes)
+        pins = {"PREVIOUS_SOURCES_SHA256": source_identity["sha256"],
+                "PREVIOUS_SOURCES_BYTES": source_identity["bytes"],
+                "PREVIOUS_RECEIPT_SHA256": receipt_identity["sha256"],
+                "PREVIOUS_RECEIPT_BYTES": receipt_identity["bytes"],
+                "PREVIOUS_SEAL_SHA256": data.sha(seal_bytes)}
+        return sources, receipt_bytes, seal_bytes, pins
+
+    def test_published_seal_authenticates_sources_without_recreating_receipt(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            expected, receipt_bytes, _, pins = self.prior_fixture(root)
+            with patch.multiple(data, **pins):
+                rows, provenance = data.prior_sources(root)
+                self.assertEqual(rows, expected)
+                self.assertEqual(provenance["mode"], "published_pre_evaluation_seal")
+                self.assertFalse(provenance["original_receipt_present"])
+                self.assertEqual(provenance["seal_sha256"], pins["PREVIOUS_SEAL_SHA256"])
+                self.assertFalse((root / "data_receipt.json").exists())
+                (root / "data_receipt.json").write_bytes(receipt_bytes)
+                same_rows, original = data.prior_sources(root)
+                self.assertEqual(same_rows, rows)
+                self.assertEqual(original["mode"], "original_receipt")
+                self.assertTrue(original["original_receipt_present"])
+
+    def test_recovery_rejects_changed_source_seal_and_invalid_present_receipt(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _, _, seal_bytes, pins = self.prior_fixture(root)
+            source_bytes = (root / "sources.json").read_bytes()
+            with patch.multiple(data, **pins):
+                (root / "sources.json").write_bytes(source_bytes + b"\n")
+                with self.assertRaisesRegex(ValueError, "source census does not match"):
+                    data.prior_sources(root)
+                (root / "sources.json").write_bytes(source_bytes)
+                (root / "pre_evaluation_seal.json").write_bytes(seal_bytes + b"\n")
+                with self.assertRaisesRegex(ValueError, "published source seal"):
+                    data.prior_sources(root)
+                (root / "pre_evaluation_seal.json").write_bytes(seal_bytes)
+                (root / "data_receipt.json").write_bytes(b"{}")
+                with self.assertRaisesRegex(ValueError, "receipt does not match"):
+                    data.prior_sources(root)
+
+    def test_recovery_requires_seal_records_to_bind_both_historical_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _, _, seal_bytes, pins = self.prior_fixture(root)
+            seal = json.loads(seal_bytes)
+            seal["files"]["inputs/data_receipt.json"]["bytes"] += 1
+            altered = data.canonical(seal) + b"\n"
+            (root / "pre_evaluation_seal.json").write_bytes(altered)
+            pins["PREVIOUS_SEAL_SHA256"] = data.sha(altered)
+            with patch.multiple(data, **pins):
+                with self.assertRaisesRegex(ValueError, "published source seal"):
+                    data.prior_sources(root)
 
 
 if __name__ == "__main__":

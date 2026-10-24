@@ -24,6 +24,9 @@ SCHEMA = "hepta.cell-retention-news.v2"
 SALT = "hepta-cell-retention-v2-20261024"
 PREVIOUS_RECEIPT_SHA256 = "57742ed6e70c5c33053e4092bc3f58d46f791e84ffedb2efe79fd187e2e707ea"
 PREVIOUS_SOURCES_SHA256 = "d3d8c203c2fd88966fa937d0e0b5cf2826399f558a26dc1e256e47ab479a0482"
+PREVIOUS_SEAL_SHA256 = "68c5b247fa399901fea32076e11ed0a4a5149cbd52ba3690ff1bdc09adf66549"
+PREVIOUS_RECEIPT_BYTES = 4055
+PREVIOUS_SOURCES_BYTES = 315623
 ROLE_PLAN = (
     ("old_train", "2014-03", 48),
     ("old_probe", "2014-03", 32),
@@ -42,24 +45,53 @@ def sha(value):
 
 
 def prior_sources(directory):
-    """Read the pinned v1 source census, without opening either label file."""
+    """Read exact v1 sources, authenticated by its receipt or published seal.
+
+    The seal path is allowed only when the original receipt is absent. It
+    authenticates the same source bytes and the same historical receipt hash;
+    it does not recreate that receipt or its non-reproducible timing fields.
+    """
     root = Path(directory)
-    receipt_bytes = _read_bounded(root / "data_receipt.json", 1 << 20)
+    receipt_path, source_path = root / "data_receipt.json", root / "sources.json"
+    if source_path.is_symlink() or receipt_path.is_symlink():
+        raise ValueError("v1 source evidence must not be a symlink")
     source_bytes = _read_bounded(root / "sources.json", 2 << 20)
-    receipt = json.loads(receipt_bytes)
-    source_identity = receipt["files"]["sources.json"]
-    if (sha(receipt_bytes) != PREVIOUS_RECEIPT_SHA256
-            or sha(source_bytes) != PREVIOUS_SOURCES_SHA256
-            or source_identity != {"sha256": sha(source_bytes), "bytes": len(source_bytes)}
-            or receipt["source_archive_sha256"] != ARCHIVE_SHA256):
+    source_identity = {"sha256": PREVIOUS_SOURCES_SHA256, "bytes": PREVIOUS_SOURCES_BYTES}
+    receipt_identity = {"sha256": PREVIOUS_RECEIPT_SHA256, "bytes": PREVIOUS_RECEIPT_BYTES}
+    if (sha(source_bytes) != source_identity["sha256"]
+            or len(source_bytes) != source_identity["bytes"]):
         raise ValueError("v1 source census does not match the pinned experiment")
+    if receipt_path.exists():
+        receipt_bytes = _read_bounded(receipt_path, 1 << 20)
+        receipt = json.loads(receipt_bytes)
+        if (sha(receipt_bytes) != receipt_identity["sha256"]
+                or len(receipt_bytes) != receipt_identity["bytes"]
+                or receipt["files"]["sources.json"] != source_identity
+                or receipt["source_archive_sha256"] != ARCHIVE_SHA256):
+            raise ValueError("v1 receipt does not match the pinned experiment")
+        provenance = {"mode": "original_receipt", "seal_sha256": None,
+                      "original_receipt_present": True}
+    else:
+        seal_path = root / "pre_evaluation_seal.json"
+        if seal_path.is_symlink():
+            raise ValueError("v1 source evidence must not be a symlink")
+        seal_bytes = _read_bounded(seal_path, 2 << 20)
+        seal = json.loads(seal_bytes)
+        if (sha(seal_bytes) != PREVIOUS_SEAL_SHA256
+                or seal["files"]["inputs/sources.json"] != source_identity
+                or seal["files"]["inputs/data_receipt.json"] != receipt_identity
+                or seal.get("final_labels_opened") is not False):
+            raise ValueError("v1 published source seal does not match the pinned experiment")
+        provenance = {"mode": "published_pre_evaluation_seal", "seal_sha256": sha(seal_bytes),
+                      "original_receipt_present": False}
+    provenance.update(sources=source_identity, original_receipt=receipt_identity)
     sources = json.loads(source_bytes)["rows"]
     if (len(sources) != 512 or [s["index"] for s in sources] != list(range(512))
             or len({s["component_id"] for s in sources}) != 512
             or len({s["raw_source_id"] for s in sources}) != 512
             or any(s["source_id"] != "uci-news:" + s["raw_source_id"] for s in sources)):
         raise ValueError("v1 source census is incomplete or duplicated")
-    return sources
+    return sources, provenance
 
 
 def build_cohorts(rows, legacy_cohorts, previous_sources, *, role_plan=ROLE_PLAN):
@@ -177,7 +209,10 @@ def prepare(archive, previous, output, protocol):
                 or plan["source_split_salt"] != SALT
                 or plan["source_archive_sha256"] != ARCHIVE_SHA256):
             raise ValueError("source counts, salt or archive differ from the frozen protocol")
-        previous_rows = prior_sources(previous)
+        previous_rows, prior_provenance = prior_sources(previous)
+        if (plan["previous_data_receipt_sha256"] != PREVIOUS_RECEIPT_SHA256
+                or plan["previous_sources_sha256"] != PREVIOUS_SOURCES_SHA256):
+            raise ValueError("prior source identity differs from the frozen protocol")
         rows = _read_archive(archive)
         selected, audit = build_cohorts(rows, select_rows(rows, COUNTS), previous_rows,
                                        role_plan=ROLE_PLAN)
@@ -215,6 +250,7 @@ def prepare(archive, previous, output, protocol):
             "source_archive_sha256": ARCHIVE_SHA256, "source_archive_bytes": Path(archive).stat().st_size,
             "protocol_sha256": sha(protocol_bytes), "previous_data_receipt_sha256": PREVIOUS_RECEIPT_SHA256,
             "previous_sources_sha256": PREVIOUS_SOURCES_SHA256,
+            "previous_source_provenance": prior_provenance,
             "attribution": "Gasparetti, F. (2017). News Aggregator. UCI. doi:10.24432/C5F61C",
             "license": "CC-BY-4.0", "classes": {"business": 0, "entertainment": 1, "health": 2, "science_technology": 3},
             "roles": {role: {"month": month, "rows": count, "labels_per_class": count // 4}
