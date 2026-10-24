@@ -2,7 +2,7 @@ name: Hepta memory separate-runner checkpoint and withdrawal experiment
 
 on:
   push:
-    branches: [codex/memory-distributed-final-20261024]
+    branches: [codex/memory-distributed-final-20261024, codex/memory-vm22-20261024]
   workflow_dispatch:
 
 permissions:
@@ -24,7 +24,7 @@ env:
 
 jobs:
   source-owner:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -88,7 +88,7 @@ jobs:
         run: git diff --exit-code
 
   target-worker:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
