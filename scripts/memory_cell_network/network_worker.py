@@ -7,33 +7,50 @@ from network_checkpoints import install, pack
 from network_fences import Fences
 from parametric_owner import ParametricOwner, _name
 from tensor_contract import bounded_read, strict_json
-from network_wire import call, endpoint, fields
+from network_wire import fields
 from model_process import run_decoder
+import network_wire
 
 
 class Worker:
-    def __init__(self, root, node_id, authority, key, model, *, reader=None):
+    def __init__(
+        self,
+        root,
+        node_id,
+        authority,
+        key,
+        model,
+        *,
+        reader=None,
+        transport=network_wire,
+        authority_snapshot=None,
+    ):
         self.root = Path(root).absolute()
         if self.root.is_symlink() or not _name(node_id):
             raise ValueError("real node root and node identity required")
-        endpoint(authority)
+        transport.endpoint(authority)
         self.root.mkdir(parents=True, exist_ok=True)
         self.snapshots = self.root / "checkpoints"
         self.snapshots.mkdir(exist_ok=True)
         if self.snapshots.is_symlink():
             raise ValueError("checkpoint store cannot be a symlink")
         self.node_id, self.authority, self.key = node_id, authority, key
+        self.transport, self.authority_snapshot = transport, authority_snapshot
         self.model = str(Path(model).absolute())
         self.owner = ParametricOwner(self.root / "owner.sqlite")
         self.fences = Fences(self.root / "fences.sqlite")
         self.reader = reader or self._read_model
 
     def observe(self, scope, cell_id):
-        snapshot = call(
-            self.authority,
-            self.key,
-            dict(op="snapshot", scope=scope, cell_id=cell_id),
-            timeout=10,
+        snapshot = (
+            self.authority_snapshot(scope, cell_id)
+            if self.authority_snapshot
+            else self.transport.call(
+                self.authority,
+                self.key,
+                dict(op="snapshot", scope=scope, cell_id=cell_id),
+                timeout=10,
+            )
         )
         return self.fences.observe(scope, cell_id, snapshot)
 

@@ -76,7 +76,7 @@ class SourceNetworkTests(unittest.TestCase):
                 raw = source.invoke_parameter(
                     "one", "color", question, client.service_reader
                 )
-                self.assertEqual(raw["status"], "generated")
+                self.assertEqual(raw["status"], "generated", msg=raw)
                 self.assertFalse(raw["response"]["journal"]["fact_input"])
                 client.migrate(initial, "b")
                 self.assertEqual(
