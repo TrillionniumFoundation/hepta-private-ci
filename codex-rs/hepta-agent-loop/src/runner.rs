@@ -31,7 +31,7 @@ pub async fn run<C: TurnOwner, I: InferenceOwner, E: EffectOwner>(
     if remaining.is_zero() {
         return timeout(
             limits.cancellation_timeout,
-            cancel(context, inference, effects, binding),
+            cancel(context, inference, effects, binding, limits),
         )
         .await
         .unwrap_or(Ok(Outcome::CancellationPending));
@@ -53,14 +53,14 @@ pub async fn run<C: TurnOwner, I: InferenceOwner, E: EffectOwner>(
             // Record and request cancellation before returning the original error.
             let _ = timeout(
                 limits.cancellation_timeout,
-                cancel(context, inference, effects, binding),
+                cancel(context, inference, effects, binding, limits),
             )
             .await;
             Err(error)
         }
         None => timeout(
             limits.cancellation_timeout,
-            cancel(context, inference, effects, binding),
+            cancel(context, inference, effects, binding, limits),
         )
         .await
         .unwrap_or(Ok(Outcome::CancellationPending)),
@@ -80,7 +80,9 @@ async fn drive<C: TurnOwner, I: InferenceOwner, E: EffectOwner>(
         let transition = match &frame.phase {
             Phase::Complete(output) => return Ok(Outcome::Completed(output.clone())),
             Phase::Cancelled => return Ok(Outcome::Cancelled),
-            Phase::CancelRequested => return cancel(context, inference, effects, binding).await,
+            Phase::CancelRequested => {
+                return cancel(context, inference, effects, binding, limits).await;
+            }
             Phase::Model(request) => {
                 let output = match inference.open_or_reconcile(binding, request).await? {
                     ModelSession::Completed(output) => output,
@@ -219,13 +221,17 @@ async fn cancel<C: TurnOwner, I: InferenceOwner, E: EffectOwner>(
     inference: &mut I,
     effects: &mut E,
     binding: &TurnBinding,
+    limits: &Limits,
 ) -> Result<Outcome> {
     let mut frame = context.load_for_cancel(binding).await?;
     if frame.binding != *binding {
         return Err(Error::Contract("cancellation binding"));
     }
     match &frame.phase {
-        Phase::Complete(output) => return Ok(Outcome::Completed(output.clone())),
+        Phase::Complete(output) => {
+            validate_frame(&frame, binding, limits)?;
+            return Ok(Outcome::Completed(output.clone()));
+        }
         Phase::Cancelled => return Ok(Outcome::Cancelled),
         Phase::CancelRequested => {}
         Phase::Model(_) | Phase::Tools { .. } => {

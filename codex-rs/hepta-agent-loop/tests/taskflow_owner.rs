@@ -263,3 +263,88 @@ async fn invalid_compiler_request_is_rejected_before_corrupting_the_owned_cursor
         1
     );
 }
+
+#[tokio::test]
+async fn terminal_taskflow_enforces_tighter_caller_budget_when_precancelled() {
+    let fixture = Fixture::new();
+    let (store, fence, binding) = fixture.store().await;
+    let calls = Arc::new(AtomicUsize::new(0));
+    let retained_limits = Limits::default();
+    let mut owner = TaskFlowTurnOwner::open(
+        &store,
+        fence,
+        binding.clone(),
+        request(0),
+        retained_limits.clone(),
+        Compiler::new(&calls),
+    )
+    .await
+    .expect("original owner with retained admission limits");
+    let initial = owner.load(&binding).await.expect("initial");
+    let output = output("finished", vec![]);
+    let terminal = owner
+        .commit(&initial, Transition::ModelCompleted(output.clone()))
+        .await
+        .expect("valid terminal under retained limits");
+    let before = owner.observe().await.expect("original evidence");
+    let caller_limits = Limits {
+        maximum_total_tokens: terminal.consumed_tokens - 1,
+        ..retained_limits.clone()
+    };
+    let mut inference = Inference::default();
+    let mut effects = Effects::default();
+    let ordinary = tokio_util::sync::CancellationToken::new();
+    assert!(matches!(
+        run(
+            &mut owner,
+            &mut inference,
+            &mut effects,
+            &binding,
+            &caller_limits,
+            &ordinary
+        )
+        .await,
+        Err(Error::Limit("rounds or tokens"))
+    ));
+    let cancelled = tokio_util::sync::CancellationToken::new();
+    cancelled.cancel();
+    let result = run(
+        &mut owner,
+        &mut inference,
+        &mut effects,
+        &binding,
+        &caller_limits,
+        &cancelled,
+    )
+    .await;
+    assert!(
+        matches!(result, Err(Error::Limit("rounds or tokens"))),
+        "caller budget ignored on cancellation: {result:?}"
+    );
+    assert_eq!(
+        run(
+            &mut owner,
+            &mut inference,
+            &mut effects,
+            &binding,
+            &retained_limits,
+            &cancelled
+        )
+        .await
+        .expect("original budget still accepts canonical result"),
+        Outcome::Completed(output)
+    );
+    let after = owner.observe().await.expect("unchanged evidence");
+    assert_eq!(after.frame, before.frame);
+    assert_eq!(after.cursor, before.cursor);
+    assert_eq!(after.history, before.history);
+    assert_eq!(
+        (
+            inference.opens,
+            inference.cancels,
+            effects.keys.len(),
+            effects.cancels
+        ),
+        (0, 0, 0, 0)
+    );
+}

@@ -1,0 +1,36 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+   Compiling codex-hepta-agent-loop v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-terminal-review/codex-rs/hepta-agent-loop)
+    Finished `test` profile [unoptimized] target(s) in 1.36s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.104` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID d45960ba-23c2-44ab-a96a-baaa9b8d4a41 with nextest profile: local
+    Starting 14 tests across 1 binary
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor active_over_budget_still_cancels_both_owners
+        PASS [   0.005s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_round_drift
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_skipped_revision
+        PASS [   0.003s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_token_drift
+        PASS [   0.003s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_unchanged_revision
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_round_drift
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_skipped_revision
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_token_drift
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_unchanged_revision
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor terminal_deadline_round_limit
+        PASS [   0.003s] codex-hepta-agent-loop::cancellation_successor terminal_deadline_token_limit
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor terminal_precancel_round_limit
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor terminal_precancel_token_limit
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor terminal_valid_cancellation_entry_preserves_completion
+────────────
+     Summary [   0.056s] 14 tests run: 14 passed, 0 skipped

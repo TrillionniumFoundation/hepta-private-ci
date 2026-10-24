@@ -1,0 +1,322 @@
+diff --git a/codex-rs/hepta-agent-loop/src/runner.rs b/codex-rs/hepta-agent-loop/src/runner.rs
+index f3ce0f78..dafaf17e 100644
+--- a/codex-rs/hepta-agent-loop/src/runner.rs
++++ b/codex-rs/hepta-agent-loop/src/runner.rs
+@@ -31,7 +31,7 @@ pub async fn run<C: TurnOwner, I: InferenceOwner, E: EffectOwner>(
+     if remaining.is_zero() {
+         return timeout(
+             limits.cancellation_timeout,
+-            cancel(context, inference, effects, binding),
++            cancel(context, inference, effects, binding, limits),
+         )
+         .await
+         .unwrap_or(Ok(Outcome::CancellationPending));
+@@ -53,14 +53,14 @@ pub async fn run<C: TurnOwner, I: InferenceOwner, E: EffectOwner>(
+             // Record and request cancellation before returning the original error.
+             let _ = timeout(
+                 limits.cancellation_timeout,
+-                cancel(context, inference, effects, binding),
++                cancel(context, inference, effects, binding, limits),
+             )
+             .await;
+             Err(error)
+         }
+         None => timeout(
+             limits.cancellation_timeout,
+-            cancel(context, inference, effects, binding),
++            cancel(context, inference, effects, binding, limits),
+         )
+         .await
+         .unwrap_or(Ok(Outcome::CancellationPending)),
+@@ -80,7 +80,9 @@ async fn drive<C: TurnOwner, I: InferenceOwner, E: EffectOwner>(
+         let transition = match &frame.phase {
+             Phase::Complete(output) => return Ok(Outcome::Completed(output.clone())),
+             Phase::Cancelled => return Ok(Outcome::Cancelled),
+-            Phase::CancelRequested => return cancel(context, inference, effects, binding).await,
++            Phase::CancelRequested => {
++                return cancel(context, inference, effects, binding, limits).await;
++            }
+             Phase::Model(request) => {
+                 let output = match inference.open_or_reconcile(binding, request).await? {
+                     ModelSession::Completed(output) => output,
+@@ -219,13 +221,17 @@ async fn cancel<C: TurnOwner, I: InferenceOwner, E: EffectOwner>(
+     inference: &mut I,
+     effects: &mut E,
+     binding: &TurnBinding,
++    limits: &Limits,
+ ) -> Result<Outcome> {
+     let mut frame = context.load_for_cancel(binding).await?;
+     if frame.binding != *binding {
+         return Err(Error::Contract("cancellation binding"));
+     }
+     match &frame.phase {
+-        Phase::Complete(output) => return Ok(Outcome::Completed(output.clone())),
++        Phase::Complete(output) => {
++            validate_frame(&frame, binding, limits)?;
++            return Ok(Outcome::Completed(output.clone()));
++        }
+         Phase::Cancelled => return Ok(Outcome::Cancelled),
+         Phase::CancelRequested => {}
+         Phase::Model(_) | Phase::Tools { .. } => {
+diff --git a/codex-rs/hepta-agent-loop/tests/cancellation_successor.rs b/codex-rs/hepta-agent-loop/tests/cancellation_successor.rs
+index 60cbff52..cd0a87d8 100644
+--- a/codex-rs/hepta-agent-loop/tests/cancellation_successor.rs
++++ b/codex-rs/hepta-agent-loop/tests/cancellation_successor.rs
+@@ -171,3 +171,164 @@ async fn cancel_ack_rejects_round_drift() {
+ async fn cancel_ack_rejects_token_drift() {
+     rejects_drift(Drift::Tokens, /*corrupt_final*/ true).await;
+ }
++
++struct LoadedContext(Frame);
++impl TurnOwner for LoadedContext {
++    async fn load(&mut self, _: &TurnBinding) -> Result<Frame> {
++        Ok(self.0.clone())
++    }
++    async fn commit(&mut self, previous: &Frame, transition: Transition) -> Result<Frame> {
++        assert_eq!(previous, &self.0);
++        self.0.revision += 1;
++        self.0.phase = match transition {
++            Transition::CancelRequested => Phase::CancelRequested,
++            Transition::Cancelled => Phase::Cancelled,
++            _ => panic!("unexpected dispatch"),
++        };
++        Ok(self.0.clone())
++    }
++}
++
++fn terminal_frame() -> Frame {
++    Frame {
++        binding: TurnBinding {
++            run_id: StableId::new("run:terminal").unwrap(),
++            turn_id: StableId::new("turn:terminal").unwrap(),
++            generation: Generation::new(1).unwrap(),
++            admission_digest: Digest32::of_bytes(b"admission"),
++            deadline_unix_ms: u64::MAX,
++        },
++        revision: 1,
++        round: 0,
++        consumed_tokens: 2,
++        phase: Phase::Complete(ModelOutput {
++            request_id: StableId::new("request:terminal").unwrap(),
++            continuation_digest: Digest32::of_bytes(b"continuation"),
++            text: "done".into(),
++            calls: vec![],
++            usage: Usage {
++                input_tokens: 1,
++                output_tokens: 1,
++            },
++        }),
++    }
++}
++
++async fn check_terminal_budget(expired: bool, round: bool) {
++    let mut frame = terminal_frame();
++    let limits = Limits::default();
++    if round {
++        frame.round = limits.maximum_rounds;
++    } else {
++        frame.consumed_tokens = limits.maximum_total_tokens + 1;
++    }
++    // Ordinary entry already rejects exactly this frame under caller limits.
++    let mut normal = LoadedContext(frame.clone());
++    let binding = frame.binding.clone();
++    assert!(matches!(
++        run(
++            &mut normal,
++            &mut Inference::default(),
++            &mut Effects::default(),
++            &binding,
++            &limits,
++            &CancellationToken::new()
++        )
++        .await,
++        Err(Error::Limit("rounds or tokens"))
++    ));
++    let cancellation = CancellationToken::new();
++    if expired {
++        frame.binding.deadline_unix_ms = 1;
++    } else {
++        cancellation.cancel();
++    }
++    let binding = frame.binding.clone();
++    let mut context = LoadedContext(frame);
++    let mut inference = Inference::default();
++    let mut effects = Effects::default();
++    let result = run(
++        &mut context,
++        &mut inference,
++        &mut effects,
++        &binding,
++        &limits,
++        &cancellation,
++    )
++    .await;
++    assert!(
++        matches!(result, Err(Error::Limit("rounds or tokens"))),
++        "terminal budget bypass: {result:?}"
++    );
++    assert_eq!((inference.cancellations, effects.cancellations), (0, 0));
++}
++
++#[tokio::test]
++async fn terminal_precancel_round_limit() {
++    check_terminal_budget(false, true).await;
++}
++#[tokio::test]
++async fn terminal_precancel_token_limit() {
++    check_terminal_budget(false, false).await;
++}
++#[tokio::test]
++async fn terminal_deadline_round_limit() {
++    check_terminal_budget(true, true).await;
++}
++#[tokio::test]
++async fn terminal_deadline_token_limit() {
++    check_terminal_budget(true, false).await;
++}
++
++#[tokio::test]
++async fn terminal_valid_cancellation_entry_preserves_completion() {
++    for expired in [false, true] {
++        let mut frame = terminal_frame();
++        let output = match &frame.phase {
++            Phase::Complete(output) => output.clone(),
++            _ => unreachable!(),
++        };
++        let cancellation = CancellationToken::new();
++        if expired {
++            frame.binding.deadline_unix_ms = 1;
++        } else {
++            cancellation.cancel();
++        }
++        let binding = frame.binding.clone();
++        let outcome = run(
++            &mut LoadedContext(frame),
++            &mut Inference::default(),
++            &mut Effects::default(),
++            &binding,
++            &Limits::default(),
++            &cancellation,
++        )
++        .await
++        .unwrap();
++        assert_eq!(outcome, Outcome::Completed(output));
++    }
++}
++
++#[tokio::test]
++async fn active_over_budget_still_cancels_both_owners() {
++    let mut frame = terminal_frame();
++    frame.consumed_tokens = Limits::default().maximum_total_tokens + 1;
++    frame.phase = Phase::CancelRequested;
++    let binding = frame.binding.clone();
++    let cancellation = CancellationToken::new();
++    cancellation.cancel();
++    let mut inference = Inference::default();
++    let mut effects = Effects::default();
++    let outcome = run(
++        &mut LoadedContext(frame),
++        &mut inference,
++        &mut effects,
++        &binding,
++        &Limits::default(),
++        &cancellation,
++    )
++    .await
++    .unwrap();
++    assert_eq!(outcome, Outcome::Cancelled);
++    assert_eq!((inference.cancellations, effects.cancellations), (1, 1));
++}
+diff --git a/codex-rs/hepta-agent-loop/tests/taskflow_owner.rs b/codex-rs/hepta-agent-loop/tests/taskflow_owner.rs
+index e57444b1..063fc562 100644
+--- a/codex-rs/hepta-agent-loop/tests/taskflow_owner.rs
++++ b/codex-rs/hepta-agent-loop/tests/taskflow_owner.rs
+@@ -263,3 +263,88 @@ async fn invalid_compiler_request_is_rejected_before_corrupting_the_owned_cursor
+         1
+     );
+ }
++
++#[tokio::test]
++async fn terminal_taskflow_enforces_tighter_caller_budget_when_precancelled() {
++    let fixture = Fixture::new();
++    let (store, fence, binding) = fixture.store().await;
++    let calls = Arc::new(AtomicUsize::new(0));
++    let retained_limits = Limits::default();
++    let mut owner = TaskFlowTurnOwner::open(
++        &store,
++        fence,
++        binding.clone(),
++        request(0),
++        retained_limits.clone(),
++        Compiler::new(&calls),
++    )
++    .await
++    .expect("original owner with retained admission limits");
++    let initial = owner.load(&binding).await.expect("initial");
++    let output = output("finished", vec![]);
++    let terminal = owner
++        .commit(&initial, Transition::ModelCompleted(output.clone()))
++        .await
++        .expect("valid terminal under retained limits");
++    let before = owner.observe().await.expect("original evidence");
++    let caller_limits = Limits {
++        maximum_total_tokens: terminal.consumed_tokens - 1,
++        ..retained_limits.clone()
++    };
++    let mut inference = Inference::default();
++    let mut effects = Effects::default();
++    let ordinary = tokio_util::sync::CancellationToken::new();
++    assert!(matches!(
++        run(
++            &mut owner,
++            &mut inference,
++            &mut effects,
++            &binding,
++            &caller_limits,
++            &ordinary
++        )
++        .await,
++        Err(Error::Limit("rounds or tokens"))
++    ));
++    let cancelled = tokio_util::sync::CancellationToken::new();
++    cancelled.cancel();
++    let result = run(
++        &mut owner,
++        &mut inference,
++        &mut effects,
++        &binding,
++        &caller_limits,
++        &cancelled,
++    )
++    .await;
++    assert!(
++        matches!(result, Err(Error::Limit("rounds or tokens"))),
++        "caller budget ignored on cancellation: {result:?}"
++    );
++    assert_eq!(
++        run(
++            &mut owner,
++            &mut inference,
++            &mut effects,
++            &binding,
++            &retained_limits,
++            &cancelled
++        )
++        .await
++        .expect("original budget still accepts canonical result"),
++        Outcome::Completed(output)
++    );
++    let after = owner.observe().await.expect("unchanged evidence");
++    assert_eq!(after.frame, before.frame);
++    assert_eq!(after.cursor, before.cursor);
++    assert_eq!(after.history, before.history);
++    assert_eq!(
++        (
++            inference.opens,
++            inference.cancels,
++            effects.keys.len(),
++            effects.cancels
++        ),
++        (0, 0, 0, 0)
++    );
++}
