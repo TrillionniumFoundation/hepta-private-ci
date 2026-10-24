@@ -1,0 +1,77 @@
+name: Hepta memory budget standard-library checks
+
+on:
+  push:
+    branches:
+      - codex/memory-budget-*
+    paths:
+      - scripts/memory_cell_budget/**
+      - qa/memory-budget-20261024/**
+      - .github/workflows/hepta-memory-budget-shadow.yml
+  pull_request:
+    paths:
+      - scripts/memory_cell_budget/**
+      - qa/memory-budget-20261024/**
+      - .github/workflows/hepta-memory-budget-shadow.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-memory-budget-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  budget-mechanisms:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/codex/memory-budget-')) ||
+      (github.event_name == 'pull_request' && startsWith(github.head_ref, 'codex/memory-budget-'))
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Record exact source identity
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          mkdir -p "$RUNNER_TEMP/memory-budget-checks"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/memory-budget-checks/source.txt"
+          python -V > "$RUNNER_TEMP/memory-budget-checks/python.txt"
+      - name: Run the complete standard-library mechanism suite
+        run: |
+          set -euo pipefail
+          python -B - <<'PY' 2>&1 | tee "$RUNNER_TEMP/memory-budget-checks/tests.log"
+          import unittest
+          suite = unittest.defaultTestLoader.discover("scripts/memory_cell_budget", pattern="test_*.py")
+          assert suite.countTestCases() == 29, suite.countTestCases()
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          raise SystemExit(0 if result.wasSuccessful() else 1)
+          PY
+      - name: Retain source and execution receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-budget-checks-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/memory-budget-checks/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Confirm checked source unchanged
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
