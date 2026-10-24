@@ -41,7 +41,7 @@ def pinned_file(path, size, digest):
     fd = os.open(
         path, os.O_RDONLY | getattr(os, "O_NONBLOCK", 0) | getattr(os, "O_NOFOLLOW", 0)
     )
-    with os.fdopen(fd, "rb") as stream:
+    with os.fdopen(fd, "rb", buffering=0) as stream:
         require(
             signature(before) == signature(os.fstat(stream.fileno())),
             "source changed on open",

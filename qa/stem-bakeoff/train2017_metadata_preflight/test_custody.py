@@ -32,7 +32,7 @@ class CustodyTests(unittest.TestCase):
             alias.unlink()
             with self.assertRaises(PreflightError), p.pinned_file(file, 8, digest):
                 file.write_bytes(b"modified")
-            for consumed in (0, 1, 8):
+            for consumed in (0, 1, 7, 8):
                 file.write_bytes(b"original")
                 unchanged_signature = p.signature(file.stat())
                 with patch.object(p, "signature", return_value=unchanged_signature):
@@ -52,6 +52,46 @@ class CustodyTests(unittest.TestCase):
                         p.pinned_file(file, 8, digest),
                     ):
                         file.write_bytes(changed)
+
+            # A partial consumer read must not return stale BufferedReader
+            # read-ahead after a same-size source rewrite.
+            file.write_bytes(b"original")
+            with self.assertRaisesRegex(PreflightError, "byte/hash pin"):
+                with p.pinned_file(file, 8, digest) as stream:
+                    self.assertEqual(stream.read(1), b"o")
+                    file.write_bytes(b"modified")
+                    self.assertEqual(stream.read(7), b"odified")
+
+            # Unchanged partial consumption is still valid.
+            file.write_bytes(b"original")
+            with p.pinned_file(file, 8, digest) as stream:
+                self.assertEqual(stream.read(1), b"o")
+
+            # Preserve the donor's pinned-file -> ZIP -> member parser test.
+            payload = b'{"info":{},"images":[]}'
+            buffer = io.BytesIO()
+            with zipfile.ZipFile(buffer, "w") as archive:
+                archive.writestr("annotations/fixture.json", payload)
+            raw = buffer.getvalue()
+            archive_digest = hashlib.sha256(raw).hexdigest()
+            file.write_bytes(raw)
+            profile = (
+                len(payload),
+                len(payload),
+                hashlib.sha256(payload).hexdigest(),
+                len(payload),
+            )
+            with (
+                patch.dict(p.MEMBERS, fixture=profile),
+                p.pinned_file(file, len(raw), archive_digest) as stream,
+                zipfile.ZipFile(stream) as archive,
+            ):
+                receipts = {}
+                self.assertEqual(
+                    list(p.member_records(archive, "fixture", {"images"}, receipts)),
+                    [],
+                )
+                self.assertEqual(receipts["fixture"]["sha256"], profile[2])
 
     def test_zip_member_sizes_hashes_duplicates_and_type(self):
         raw = b'{"info":{},"images":[]}'
