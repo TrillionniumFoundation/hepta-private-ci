@@ -103,7 +103,8 @@ fn native_permissions_child() -> io::Result<()> {
     let root = std::env::var_os(ROOT_ENV)
         .ok_or_else(|| invalid("isolated permission helper identity missing"))?;
     let root = std::path::PathBuf::from(root);
-    let metadata = std::fs::symlink_metadata(&root)?;
+    let metadata = std::fs::symlink_metadata(&root)
+        .map_err(|failure| permission_stage("validate fixture root", failure))?;
     if !root.starts_with("/run")
         || !metadata.is_dir()
         || metadata.uid() != 0
@@ -112,32 +113,56 @@ fn native_permissions_child() -> io::Result<()> {
     {
         return Err(invalid("isolated Root fixture differs"));
     }
-    platform::drop_host_privileges()?;
+    platform::drop_host_privileges()
+        .map_err(|failure| permission_stage("drop actual Host privileges", failure))?;
     assert_eq!(
         (unsafe { libc::geteuid() }, unsafe { libc::getegid() }),
         (HOST, HOST)
     );
-    let fleet =
-        FleetRegistry::open_existing(HeptaFleetRoot::parse(root.join("fleet")).map_err(error)?)
-            .map_err(error)?;
+    let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))
+        .map_err(error)
+        .map_err(|failure| permission_stage("parse isolated Fleet path", failure))?;
+    let fleet = FleetRegistry::open_existing(fleet_root)
+        .map_err(error)
+        .map_err(|failure| permission_stage("open original Fleet as Host", failure))?;
     let agent = AgentId::parse(AGENT).map_err(error)?;
-    let record = fleet.load_agent(&agent).map_err(error)?;
+    let record = fleet
+        .load_agent(&agent)
+        .map_err(error)
+        .map_err(|failure| permission_stage("load original Agent as Host", failure))?;
     let layout = record.layout;
-    runtime()?.block_on(async {
-        let store = CognitiveStore::open(&layout).await.map_err(error)?;
-        let _actual_cut = store.recovery_anchor().await.map_err(error)?;
-        store.close().await;
-        Ok::<_, io::Error>(())
-    })?;
+    runtime()
+        .map_err(|failure| permission_stage("construct original Host runtime", failure))?
+        .block_on(async {
+            let store = CognitiveStore::open(&layout)
+                .await
+                .map_err(error)
+                .map_err(|failure| {
+                    permission_stage("open original CognitiveStore as Host", failure)
+                })?;
+            let _actual_cut = store
+                .recovery_anchor()
+                .await
+                .map_err(error)
+                .map_err(|failure| {
+                    permission_stage("read original CognitiveStore cut as Host", failure)
+                })?;
+            store.close().await;
+            Ok::<_, io::Error>(())
+        })?;
     // The Host can create its real private runtime files in the shared sticky
     // directory, while Root-owned control files remain inaccessible for write.
     let lock = std::fs::OpenOptions::new()
         .write(true)
         .read(true)
         .create_new(true)
-        .open(layout.writer_lock())?;
-    lock.try_lock().map_err(error)?;
-    let socket = std::os::unix::net::UnixListener::bind(layout.agentd_control_socket())?;
+        .open(layout.writer_lock())
+        .map_err(|failure| permission_stage("create original Host writer lock", failure))?;
+    lock.try_lock()
+        .map_err(error)
+        .map_err(|failure| permission_stage("hold original Host writer lock", failure))?;
+    let socket = std::os::unix::net::UnixListener::bind(layout.agentd_control_socket())
+        .map_err(|failure| permission_stage("bind original Host control socket", failure))?;
     assert!(
         std::fs::OpenOptions::new()
             .write(true)
@@ -178,7 +203,13 @@ fn native_permissions_child() -> io::Result<()> {
             .run_root()
             .join("lifecycle-00000000000000000001.json"),
         serde_json::to_vec(&forged).map_err(error)?,
-    )?;
+    )
+    .map_err(|failure| {
+        permission_stage(
+            "create hostile future generation for owner rejection",
+            failure,
+        )
+    })?;
     assert!(
         fleet.load_agent(&agent).is_err(),
         "syntactically valid higher generation must fail its original owner check"
@@ -186,4 +217,11 @@ fn native_permissions_child() -> io::Result<()> {
     drop(socket);
     drop(lock);
     Ok(())
+}
+
+fn permission_stage(stage: &str, failure: io::Error) -> io::Error {
+    io::Error::new(
+        failure.kind(),
+        format!("native permission stage [{stage}]: {failure}"),
+    )
 }

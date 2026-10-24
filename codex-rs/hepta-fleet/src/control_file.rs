@@ -122,12 +122,16 @@ impl ControlOwner {
         let mut file: File = rustix::fs::open(
             path,
             OFlags::WRONLY | OFlags::CREATE | OFlags::EXCL | OFlags::NOFOLLOW | OFlags::CLOEXEC,
-            Mode::from_bits_truncate(0o666),
+            // Deny non-owner write at inode creation: a later chmod cannot
+            // revoke a writable descriptor already opened by another UID.
+            Mode::from_bits_truncate(0o644),
         )
         .map_err(std::io::Error::from)?
         .into();
         #[cfg(not(unix))]
         let mut file = OpenOptions::new().write(true).create_new(true).open(path)?;
+        #[cfg(all(test, target_os = "linux"))]
+        creation_tests::observe_created(&file, path)?;
         #[cfg(unix)]
         {
             let metadata = file.metadata()?;
@@ -211,3 +215,7 @@ pub(crate) fn read_json<T: for<'de> Deserialize<'de>>(
 fn corrupt(message: impl Into<String>) -> FleetRegistryError {
     FleetRegistryError::Corrupt(message.into())
 }
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "control_file_create_tests.rs"]
+mod creation_tests;

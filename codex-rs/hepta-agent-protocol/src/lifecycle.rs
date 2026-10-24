@@ -15,14 +15,48 @@ use serde::Serialize;
 pub type AgentdLifecycleRequest = AgentdRequestFrame<AgentdLifecycleMethod>;
 pub type AgentdLifecycleResponse = AgentdResponseFrame<AgentdLifecyclePayload>;
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(tag = "type", rename_all = "snake_case")]
 pub enum AgentdLifecycleMethod {
     Capabilities,
     Health,
     Lifecycle,
     Readiness,
     Drain,
+}
+
+// An internally tagged unit enum can discard fields even with the enum's
+// deny_unknown_fields attribute. Decode the lifecycle method through a strict
+// single-field object so unknown or duplicate members never enter this profile.
+impl<'de> Deserialize<'de> for AgentdLifecycleMethod {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        #[derive(Deserialize)]
+        #[serde(rename_all = "snake_case")]
+        enum Name {
+            Capabilities,
+            Health,
+            Lifecycle,
+            Readiness,
+            Drain,
+        }
+        #[derive(Deserialize)]
+        #[serde(deny_unknown_fields)]
+        struct Method {
+            #[serde(rename = "type")]
+            name: Name,
+        }
+        let method = Method::deserialize(deserializer)?;
+        Ok(match method.name {
+            Name::Capabilities => Self::Capabilities,
+            Name::Health => Self::Health,
+            Name::Lifecycle => Self::Lifecycle,
+            Name::Readiness => Self::Readiness,
+            Name::Drain => Self::Drain,
+        })
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -101,12 +135,21 @@ mod tests {
                 bad["method"].as_object_mut().unwrap()
             };
             map.insert("unexpected".into(), serde_json::json!(true));
-            assert!(serde_json::from_value::<AgentdRequest>(bad.clone()).is_err());
+            // Preserve the original full profile's unit-variant compatibility.
+            // Its outer envelope is strict; its unit method decoder ignores
+            // extra members. The lifecycle profile rejects them in both places.
+            assert_eq!(
+                serde_json::from_value::<AgentdRequest>(bad.clone()).is_err(),
+                location == "envelope",
+                "original full-profile compatibility at {location}"
+            );
             assert!(serde_json::from_value::<AgentdLifecycleRequest>(bad).is_err());
         }
         let duplicate = br#"{"schema_version":2,"request_id":7,"request_id":8,"spawn_generation":11,"method":{"type":"health"}}"#;
         assert!(serde_json::from_slice::<AgentdRequest>(duplicate).is_err());
         assert!(serde_json::from_slice::<AgentdLifecycleRequest>(duplicate).is_err());
+        let duplicate_method = br#"{"schema_version":2,"request_id":7,"spawn_generation":11,"method":{"type":"health","type":"drain"}}"#;
+        assert!(serde_json::from_slice::<AgentdLifecycleRequest>(duplicate_method).is_err());
     }
 
     #[test]
