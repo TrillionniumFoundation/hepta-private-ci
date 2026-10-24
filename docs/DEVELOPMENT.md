@@ -666,7 +666,7 @@ npm, Python, build or exact-source CI gates. Complete PN0 before treating later
 PoN or model experiments as a qualified integration baseline.
 
 Cross-repository qualification follows the Chain plan's single
-[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/3ca7df5fec2a8c77123df8336149666a9bc023ff/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
+[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/7bce5ff4850790d939b40840494bc1ddb3614eb1/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
 PN0 exact-source/security baseline → PN1 work security and PN2 bounded state →
 PN3 real-model closure → PN4 five-budget/effect-liability qualification →
 PN5 independent-operator WAN/discovery/availability → PN6 governed migration and
@@ -681,27 +681,31 @@ optimizer, durable journal or authority issuer. Parameter, topology, executable
 and consensus upgrades retain their separate admission and release boundaries.
 
 PN0's native pair pins Chain source
-`3ca7df5fec2a8c77123df8336149666a9bc023ff`, tree
-`8ed26849f0e0363d9176c0eb40a5289e1efb682d`, against unchanged default main
+`7bce5ff4850790d939b40840494bc1ddb3614eb1`, tree
+`b97351201aaf05728b0839a64d679afcca59e79a`, against unchanged default main
 `9fedf7ecbbe07177069c030592b4e03dcffebb81`. Its source-head lane tests that source;
 its base-merge lane pins the published main qualification object
-`cda6f8af4edea33b4b654114404fe5ddddd60d71`, with ordered parents `[9fedf7ec, 3ca7df5f]`
+`fc71756516693d8e5d49eecd9b08c0c0b831a184`, with ordered parents `[9fedf7ec, 7bce5ff4]`
 and the original exact merge-tree checks. The separate original-integration base
 `57c1ed545d067937cbd7aaa7570d5f22123265e6` now has actual GitHub PR preview
-`53dcaf0400740314883cc89c4a0ac197c0c457dd`, ordered parents `[57c1ed54, 3ca7df5f]`.
+`3ee8d3a901c3a39e509e185b92304cb6a5951f83`, ordered parents `[57c1ed54, 7bce5ff4]`.
 Both prospective trees equal the source tree; their different parent identities
 and required executions remain distinct. The qualification branch
-`fix/chain-controller-main-pair-20261024` publishes the main object; it is not
+`fix/chain-retained-owner-main-pair-20261024` publishes the main object; it is not
 an executed GitHub PR merge. Source and actual original-integration preview CI
 are pending, including required baseline run
-[40104063630](https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40104063630).
+[40116162665](https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40116162665).
 Publication, a matching tree or a pin refresh supplies no passing execution.
 
 The source preserves all concurrent `8e0f7adc` fixes and adds the TCL4 cache,
-fresh host child preparation and private controller mechanics. Its 213 local
-owner/cleanup controls pass with zero skips; strict workspace Clippy, exact
-Cargo graph, source-integrity checks and 1,151 local links pass. The controller
-still supplies no funded entry, complete C-to-A execution or whole-U return.
+fresh host child preparation and the private C-to-A launch composition. Its
+146 original-owner controls pass with zero skips. Strict workspace Clippy, the
+exact Cargo graph, source-integrity checks and 1,151 local links pass. Original
+C retains its A wait slot after unknown syscall results; original O retains C,
+and one fixed C/A owner root survives loss of all temporary caller references.
+The root is retained even after a timely receipt, pending actual retirement.
+This supplies no funded entry, real fresh-cgroup execution or whole-U return.
+Scope-only preparation still requires the original caller to retain its cap.
 The controlled empty-child observation on source `03b67a95` remains partial,
 with the original conservative overall outcome Unknown. Neither it nor these
 controls qualify the later combined source as a successful native model run.
