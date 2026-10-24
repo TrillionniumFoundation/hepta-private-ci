@@ -1,6 +1,7 @@
 //! Real original SQLite and whole-pool terminal interlock tests. The existing
 //! protocol peer is test-only: these do not qualify Root images or authority.
 use super::*;
+use pretty_assertions::assert_eq;
 use crate::LocalLeaseHeadDisposition;
 use crate::LocalLeaseState;
 

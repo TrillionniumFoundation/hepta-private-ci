@@ -1,5 +1,6 @@
 //! Fresh canonical Root registration and actual two-generation owned children.
 use super::*;
+use pretty_assertions::assert_eq;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::authority_lease::AuthorityLease;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry;
