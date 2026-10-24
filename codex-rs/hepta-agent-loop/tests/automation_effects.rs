@@ -251,3 +251,6 @@ mod recovery_tests;
 
 #[path = "support/automation_effect_cancel_reopen_tests.rs"]
 mod cancel_reopen_tests;
+
+#[path = "support/automation_effect_concurrency_tests.rs"]
+mod concurrency_tests;

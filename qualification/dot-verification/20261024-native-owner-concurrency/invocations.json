@@ -1,0 +1,32 @@
+{
+  "cwd": "/workspace/scratch/f24caf690188/hepta-native-concurrency-review/codex-rs",
+  "environment": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "RUSTUP_HOME": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/rustup",
+    "CARGO_HOME": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/cargo",
+    "CARGO_TARGET_DIR": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/target",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/14/include",
+    "PATH_prefix": "/workspace/scratch/f24caf690188/hepta-native-owner-evidence/build-tools/bin:/workspace/scratch/f24caf690188/hepta-native-dot-resume/bin:/workspace/scratch/f24caf690188/hepta-native-dot-resume/cargo/bin"
+  },
+  "commands": {
+    "tests.log": "just test --locked --offline -p codex-hepta-agent-loop --features automation-effects,context-v2 --test cancellation_successor --test automation_effects --test owner_loop --test taskflow_owner --test taskflow_serde --test-threads 1 --retries 0",
+    "strict.log": "cargo clippy --locked --offline -p codex-hepta-agent-loop --features automation-effects,context-v2 --test cancellation_successor --test automation_effects --test owner_loop --test taskflow_owner --test taskflow_serde --no-deps -- -D warnings",
+    "fmt": "just fmt",
+    "diff_check": "git diff --check",
+    "focused.log": "just test --locked --offline -p codex-hepta-agent-loop --features automation-effects,context-v2 --test automation_effects --test-threads 1 --retries 0",
+    "strict-formatted.log": "cargo clippy --locked --offline -p codex-hepta-agent-loop --features automation-effects,context-v2 --test cancellation_successor --test automation_effects --test owner_loop --test taskflow_owner --test taskflow_serde --no-deps -- -D warnings"
+  },
+  "source": "e795ae9b7b572f819cadb8cc7d53053b495d9b5e",
+  "tool_origins": "Official isolated Rust1.96.0; previously installed pinned just/nextest and PyPI cmake3.31.6 from original-owner verification. No new downloads in this task.",
+  "exits": {
+    "focused": 0,
+    "tests": 0,
+    "strict": 0,
+    "strict-formatted": 0,
+    "fmt": 0,
+    "diff-check": 0
+  }
+}
