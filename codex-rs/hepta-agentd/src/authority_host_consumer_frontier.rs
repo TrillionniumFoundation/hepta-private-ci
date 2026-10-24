@@ -99,6 +99,27 @@ impl HostConsumerFrontier {
         Ok(frontier)
     }
 
+    /// Read the original retained head for Root's public handoff. No wire
+    /// sequence, CAS, nonce owner, genesis or local journal is created here.
+    pub(crate) fn frontier_for_handoff(
+        &self,
+        observed_head: &FinalUseRevocations,
+    ) -> Result<FinalUseFrontier, AuthorityTrustError> {
+        let session = self.session.try_lock().map_err(|_| AuthorityTrustError::Unavailable)?;
+        if session.closed {
+            return Err(AuthorityTrustError::Unavailable);
+        }
+        FinalUseFrontier::for_initial_head(observed_head).map_err(|_| AuthorityTrustError::Invalid)?;
+        let frontier = self.read_existing()?;
+        if frontier.authority_epoch > observed_head.authority_epoch
+            || (frontier.authority_epoch == observed_head.authority_epoch
+                && frontier.revocation_revision > observed_head.revision)
+        {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        Ok(frontier)
+    }
+
     /// One original closed request. A successful CAS already includes durable
     /// file/directory synchronization and exact readback under its publication
     /// lock. Post-I/O expiry/uncertainty returns Unknown without a head and

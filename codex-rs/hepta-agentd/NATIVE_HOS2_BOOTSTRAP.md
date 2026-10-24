@@ -88,3 +88,36 @@ just test -p codex-hepta-agentd --lib --run-ignored ignored-only original_owner_
 ```
 
 This Linux host regression still does not qualify native G2 execution.
+
+## Root handoff from original registered state
+
+`seal_registered_host_authority_bootstrap` fills the production gap between
+the original Root service and its existing sealed public descriptor. It reads
+the same Root0600 service/registration files, verifies the retained actual
+daemon pidfd, and uses the same open-only service factory as the serving path.
+It requires the existing writer, protected Current and both original consumer
+frontiers. It never initializes a missing record, signs a proof, invents a
+writer identity, or resets a nonce journal.
+
+Inside the original writer's live lease fence it reads the retained canonical
+proof, issuer revocations, exact Current and two retained frontiers. The
+existing backend checks and post-I/O time/owner checks remain in force. It
+seals the original public data and rereads those heads before returning the
+descriptor; observed changes or Dirty/Publishing/Fenced state fail closed.
+The two local journal paths come from the explicitly supplied original
+daemon-owned private parent. No journal is created by capture.
+
+This bounded capture is a handoff observation, not an atomic transaction across
+all stores or a live grant. After receiving it, the original Root session,
+protected checkpoint client and FinalUse owners must still validate live
+currentness. The producer must retain its own actual pidfd for the daemon and
+serve the original five fixed lanes. The G2 Root entry still has to perform
+that FD transfer and full finite writer/device/recovery sequence.
+
+The existing explicit privileged five-lane service qualification now consumes
+this production capture API, compares its bytes with an independent readback
+oracle, and rejects wrong daemon pidfd and same UID/wrong expected GID. The
+backend qualifications also check that capture refuses a Dirty checkpoint and
+cannot revive a closed consumer. These checks need their existing explicit
+Root/data-bind environment and must actually run; compilation or ignored
+test discovery alone does not establish passage.

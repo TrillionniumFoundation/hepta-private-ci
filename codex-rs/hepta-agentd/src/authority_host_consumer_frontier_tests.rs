@@ -66,6 +66,7 @@ fn changed(mut frontier: FinalUseFrontier, marker: u8) -> FinalUseFrontier {
 #[ignore = "requires explicit root-owned data bind; no production authority"]
 fn root_two_original_stores_are_isolated_and_exact_cas_survives_reopen() {
     let f = Fixture::new();
+    assert_eq!(f.backend.frontier_for_handoff(&f.head).unwrap(), f.initial());
     let notes = HostConsumerFrontier::initialize_fresh(
         RootAuthorityDirectory::open(f.temp.path()).unwrap(), "original-notes".into(), &f.head,
         f.clock.clone(), /*expires_at_unix_ms*/ 2_000).unwrap();
@@ -77,6 +78,7 @@ fn root_two_original_stores_are_isolated_and_exact_cas_survives_reopen() {
     assert_eq!(exchange(&notes, &f.head, /*id*/ 1, None).frontier, Some(f.initial()));
     assert_eq!(f.response(/*id*/ 2, Some((f.initial(), changed(f.initial(), /*marker*/ 3)))).status, Status::Conflict);
     assert_eq!(f.response(/*id*/ 3, None).frontier, Some(next));
+    assert_eq!(f.backend.frontier_for_handoff(&f.head).unwrap(), next);
     assert!(matches!(HostConsumerFrontier::initialize_fresh(
         RootAuthorityDirectory::open(f.temp.path()).unwrap(), "original-device".into(), &f.head,
         f.clock.clone(), /*expires_at_unix_ms*/ 2_000), Err(AuthorityTrustError::Conflict)));
@@ -94,6 +96,7 @@ fn root_post_cas_expiry_returns_no_ack_and_never_revives_the_uncertain_object() 
     });
     f.clock.expire_on.store(0, Ordering::SeqCst);
     assert_eq!(f.response(/*id*/ 2, None).status, Status::Unknown);
+    assert_eq!(f.backend.frontier_for_handoff(&f.head), Err(AuthorityTrustError::Unavailable));
     assert_eq!(exchange(&f.reopen(), &f.head, /*id*/ 1, None).frontier, Some(next));
 }
 

@@ -82,10 +82,31 @@ pub(super) fn release(
     child: &mut std::process::Child,
     config: &HostAuthorityServiceConfig,
     registration: &HostAuthorityRegistration,
+    config_path: &Path,
+    registration_path: &Path,
+    owner_pidfd: &OwnedFd,
 ) {
     let bytes = config.consumers.as_ref().map(|_| {
+        let local = config.sockets.observation.parent().unwrap().join("consumer-local");
+        // Keep the test-only capture as a readback oracle, never as input to
+        // the production capture API or the descriptor delivered below.
         let bundle = bootstrap::capture(config, registration);
-        let mut sealed = crate::seal_host_authority_bootstrap(&bundle).unwrap();
+        let mut wrong = config.clone();
+        wrong.peer_gid += 1;
+        let wrong_path = config_path.with_extension("bootstrap-wrong-gid.json");
+        write_json(&wrong_path, &wrong);
+        assert!(crate::seal_registered_host_authority_bootstrap(
+            &wrong_path, registration_path, owner_pidfd, &local).is_err());
+        // SAFETY: this pins the actual Root solely as a deliberately wrong
+        // daemon descriptor. It never changes credentials or selects a peer.
+        let raw = unsafe { libc::syscall(libc::SYS_pidfd_open, std::process::id(), 0) };
+        assert!(raw >= 0);
+        // SAFETY: successful pidfd_open transfers one fresh owned descriptor.
+        let wrong_pidfd = unsafe { OwnedFd::from_raw_fd(raw as i32) };
+        assert!(crate::seal_registered_host_authority_bootstrap(
+            config_path, registration_path, &wrong_pidfd, &local).is_err());
+        let mut sealed = crate::seal_registered_host_authority_bootstrap(
+            config_path, registration_path, owner_pidfd, &local).unwrap();
         let mut bytes = Vec::new();
         std::io::Read::read_to_end(&mut sealed, &mut bytes).unwrap();
         assert_eq!(bytes, serde_json::to_vec(&bundle).unwrap());

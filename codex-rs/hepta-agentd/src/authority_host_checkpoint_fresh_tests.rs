@@ -79,6 +79,7 @@ async fn root_fresh_publication_binds_original_exclusive_owner_and_checkpoint_cl
         }, cut.clone(), Arc::new(codex_hepta_contracts::SystemAuthorityClock),
     ).unwrap());
     let head = backend.load().unwrap();
+    assert_eq!(backend.current_for_handoff().unwrap(), head);
     let expected = CognitiveCheckpointReceipt { token: token_for(&head).unwrap(), head };
     let retained = authority.clone();
     let verifier = move |observed: &ProductionAuthorityLease, owner: &AgentId| {
@@ -95,4 +96,5 @@ async fn root_fresh_publication_binds_original_exclusive_owner_and_checkpoint_cl
     let after = backend.load().unwrap();
     assert_eq!(after.phase, CognitiveCheckpointPhase::Dirty);
     assert_eq!(after.last_current, cut);
+    assert_eq!(backend.current_for_handoff(), Err(AuthorityTrustError::Invalid));
 }

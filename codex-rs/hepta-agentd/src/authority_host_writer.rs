@@ -12,6 +12,10 @@ use crate::HostWriterAuthorizationReadResponseV1;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
 
+#[path = "authority_host_bootstrap_capture.rs"]
+mod bootstrap;
+pub use bootstrap::seal_registered_host_authority_bootstrap;
+
 pub(super) struct RegisteredWriter {
     pub(super) registration: HostAuthorityWriterRegistration,
     leases: AuthorityLeaseVerifier,
