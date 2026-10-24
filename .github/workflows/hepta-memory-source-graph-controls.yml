@@ -2,11 +2,11 @@ name: Hepta Memory A/C/D original-source controls (historical shadow)
 on:
   pull_request:
     paths:
-      - 'qa/stem-bakeoff/memory_source_graph_controls.mjs'
-      - 'qa/stem-bakeoff/test_memory_source_graph_controls.mjs'
-      - 'qa/stem-bakeoff/evidence/20261023-source-only-ACD/**'
-      - 'docs/learning/MEMORY_SOURCE_GRAPH_CONTROLS_20261023.md'
-      - '.github/workflows/hepta-memory-source-graph-controls.yml'
+      - "qa/stem-bakeoff/memory_source_graph_controls.mjs"
+      - "qa/stem-bakeoff/test_memory_source_graph_controls.mjs"
+      - "qa/stem-bakeoff/evidence/20261023-source-only-ACD/**"
+      - "docs/learning/MEMORY_SOURCE_GRAPH_CONTROLS_20261023.md"
+      - ".github/workflows/hepta-memory-source-graph-controls.yml"
   workflow_dispatch:
 permissions:
   contents: read
