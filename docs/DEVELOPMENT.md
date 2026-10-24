@@ -666,7 +666,7 @@ npm, Python, build or exact-source CI gates. Complete PN0 before treating later
 PoN or model experiments as a qualified integration baseline.
 
 Cross-repository qualification follows the Chain plan's single
-[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/4e49725f1b457a422dbb12f620101903c21599d7/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
+[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/7acf5b649933edb052e86dafeb96c42a23cb72da/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
 PN0 exact-source/security baseline → PN1 work security and PN2 bounded state →
 PN3 real-model closure → PN4 five-budget/effect-liability qualification →
 PN5 independent-operator WAN/discovery/availability → PN6 governed migration and
@@ -681,18 +681,24 @@ optimizer, durable journal or authority issuer. Parameter, topology, executable
 and consensus upgrades retain their separate admission and release boundaries.
 
 PN0's native pair pins Chain source
-`4e49725f1b457a422dbb12f620101903c21599d7`, tree
-`0c2c1cfddc42b23b6f45ad6b4e75bb3dd486d7e6`, against unchanged default main
+`7acf5b649933edb052e86dafeb96c42a23cb72da`, tree
+`dfe9dd8db949bd95951dced1667b26239cdeeb8c`, against unchanged default main
 `9fedf7ecbbe07177069c030592b4e03dcffebb81`. Its source-head lane tests that source;
 its base-merge lane tests prospective main merge
-`18d120f344b6b180bfc5e0165ab30f83af0b4d5f`, with ordered parents `[9fedf7ec, 4e49725f]`
+`b19ae5e71484172f66b18859de12e3e7f31cae4d`, with ordered parents `[9fedf7ec, 7acf5b64]`
 and the original exact merge-tree checks. The separate original-integration base
 `57c1ed545d067937cbd7aaa7570d5f22123265e6` retains prospective merge
-`b9722e6b58c55767becb72e891d0611ebbe860c8`, ordered parents `[57c1ed54, 4e49725f]`.
+`4ed752827b57e0caf3db7e5e2c38637acc76870c`, ordered parents `[57c1ed54, 7acf5b64]`.
 Both prospective trees equal the source tree; their different parent identities
 and required executions remain distinct. Neither baseline replaces the other,
 and publication or a pin refresh supplies no passing execution evidence.
-The older source-bound campaign observations below remain unchanged.
+This unpublished CI repair candidate binds actual local merges; GitHub source and
+prospective-merge runs must still verify the published commits. It fixes child
+test import roots, the exact durable-opener scanner shape and ledger fixture
+account sequencing. It preserves the original eight-second terminal deadline,
+all retained assertions and TCL2 interfaces; new CodeQL and full native Windows
+results remain open. The older source-bound campaign observations below remain
+unchanged.
 
 The paired PN2/PN3 M09 cache now uses fresh TCL2/schema2 with explicit shared
 `--cache-max-bytes`, `--cache-max-chunks` and `--cache-max-manifests` on every
@@ -809,6 +815,27 @@ remain failed completion evidence. Both original targets, source and artifact
 checks, sandbox feature and smoke linking remain required on the successor;
 this CI build budget changes no per-test or kernel/model runtime deadline.
 
+On paired source `3d64db09`, Windows source jobs 120740945588 and 120740945600
+also exhausted 90 minutes after cold cache misses. Their last Cargo messages name
+V8 150.4.0, but hide its build-script output; the actual long subphase is unknown.
+The existing job now emits verbose Cargo/GN diagnostics and bounded before/after
+sccache/configuration receipts, without changing its source, target, release,
+sandbox, stage, smoke or time-budget requirements. Cancelled jobs have no final
+receipt and remain incomplete. Intel Mac Bazel job 120746373851 also exhausted
+90 minutes with only 22 of 593 tests reported. Its keyless wrapper now retains
+`ci-macos`' endpoint-free CI base and local test strategy; credentialed BuildBuddy
+selection remains separate. These changes do not establish completion or a cold
+build speedup; exact-source hosted head/merge results remain required.
+
+Intel Mac V8 jobs 120740945666 and 120740945758 completed Bazel staging but
+failed the original Cargo smoke with E0514: its dependencies used Rust 1.96,
+while V8's packaged `rust-toolchain.toml` selected 1.91 for its build script.
+The smoke's existing direct Cargo 1.96 binary invocation now also sets
+`RUSTUP_TOOLCHAIN=1.96.0` for all child compiler and rustdoc proxies. Its fresh
+target directory, targets, sandbox features, staged inputs and assertions remain
+unchanged. Local shell controls do not prove native Mac linking or runtime;
+both original smoke variants still require exact-source hosted completion.
+
 Both macOS Bazel test jobs use that same bounded 90-minute CI budget;
 the Linux targets retain 60 minutes. Job 120216507102 reached its confirmed
 60-minute limit with 63 of 588 tests completed and build actions still running.
@@ -921,6 +948,16 @@ modification and degraded/unqueryable impersonation. Cross-compilation is
 restart authority or production sandbox qualification. The existing setup helper
 still needs the create-only held-parent/profile/checkpoint producer below.
 
+The current source-head and original-base-merge Windows runs both failed the
+anonymous-token unit control and the fourth `native_principal` control. The logs
+omit the actual error variant. The test-only bounded diagnostic now reports the
+original result plus an independent query-only `OpenThreadToken`/`TokenStatistics`
+observation; it never supplies the original result, retries principal validation,
+or permits process fallback. The exact `ERROR_CANT_OPEN_ANONYMOUS` assertion and
+sticky refusal remain required. An anonymous logon user is not by itself evidence
+of the token's impersonation level. These failures remain open until an actual
+Windows run identifies and fixes the cause; MSVC checking is `NOT_NATIVE`.
+
 C2b must derive provenance from actual held kernel objects. Agentd currently
 derives `prompt-registry` from `identity.home_root` and `prompt-runtime` from
 `identity.run_root`; Fleet registration and canonical path spelling do not prove
@@ -959,8 +996,15 @@ Three required `native_volume` integration controls cover actual local file and
 directory queries, a non-disk handle, and an overlapped held object renamed while
 its former path is replaced. The existing Windows workflow retains all ten prior receipts and
 the five original owner-descriptor controls, adding an eleventh receipt for these
-three operations. This source slice has no native Windows result yet. Actual SMB
-or mapped-remote rejection remains a required, unexecuted C2b acceptance item;
+three operations. The current source-head and original-base-merge native local
+file/directory control returned `AccessDenied` (5), without identifying the
+failing API. The additive `inspect_local_ntfs_observed` API reports at most nine
+fixed query stages and the original captured Win32/NT status, with no path or
+handle exposure. Its existing wrapper, query-only access mask, same-object
+identity checks and error results are unchanged. The three original native
+controls and their positive assertions remain mandatory; no new native result
+closes this failure. Actual SMB or mapped-remote rejection remains a required,
+unexecuted C2b acceptance item;
 no fabricated flags or skipped remote test count toward those three controls.
 Trusted ancestor admission, protected creation and C3–C5 remain open; production
 Windows owner support and power-loss qualification remain false.

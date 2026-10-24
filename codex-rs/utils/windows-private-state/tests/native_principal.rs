@@ -1,5 +1,8 @@
 #![cfg(windows)]
 
+#[path = "../src/token_test_observation.rs"]
+mod token_test_observation;
+
 use codex_utils_windows_private_state::principal::CapturedPrincipal;
 use codex_utils_windows_private_state::security::CurrentUser;
 use codex_utils_windows_private_state::security::ValidationError;
@@ -205,8 +208,10 @@ fn native_degraded_and_unqueryable_thread_tokens_never_fall_back() -> Result {
         if unsafe { ImpersonateAnonymousToken(GetCurrentThread()) } == 0 {
             return Err(io::Error::last_os_error().into());
         }
+        let observed = original.revalidate_effective();
+        token_test_observation::observe(&observed);
         assert!(
-            matches!(original.revalidate_effective(), Err(ValidationError::Os(error)) if error.raw_os_error() == Some(ERROR_CANT_OPEN_ANONYMOUS as i32))
+            matches!(observed, Err(ValidationError::Os(error)) if error.raw_os_error() == Some(ERROR_CANT_OPEN_ANONYMOUS as i32))
         );
         drop(_restore);
         assert!(matches!(

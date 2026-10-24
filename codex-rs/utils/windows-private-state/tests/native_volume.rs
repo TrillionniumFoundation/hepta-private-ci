@@ -1,7 +1,8 @@
 #![cfg(windows)]
 
 use codex_utils_windows_private_state::mechanism::identity;
-use codex_utils_windows_private_state::volume::inspect_local_ntfs;
+use codex_utils_windows_private_state::volume::LocalNtfsObservation;
+use codex_utils_windows_private_state::volume::inspect_local_ntfs_observed;
 use std::error::Error;
 use std::fs;
 use std::fs::File;
@@ -54,6 +55,12 @@ impl Drop for Fixture {
         let _ = fs::remove_file(self.0.join("held"));
         let _ = fs::remove_dir(&self.0);
     }
+}
+
+fn inspect_local_ntfs(file: &File) -> io::Result<LocalNtfsObservation> {
+    inspect_local_ntfs_observed(file, |observed| {
+        eprintln!("HEPTA_VOLUME_QUERY {observed:?}");
+    })
 }
 
 fn completed(stage: &str) {

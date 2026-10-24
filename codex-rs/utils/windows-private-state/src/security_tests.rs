@@ -1,4 +1,6 @@
 use super::*;
+#[path = "token_test_observation.rs"]
+mod token_test_observation;
 use std::error::Error;
 use std::fs;
 use std::os::windows::ffi::OsStrExt;
@@ -271,7 +273,7 @@ fn native_rejects_existing_unsafe_dacls_without_repair() -> Result {
         format!("D:P(A;;FR;;;{sid})"),
         format!("D:P(A;;FA;;;{sid})(A;;FR;;;{sid})"),
         "D:P(A;;FA;;;WD)".to_string(),
-        "D:P(A;;FA;;;BU)".to_string(),
+        "D:P(A;;FA;;;S-1-5-32-545)".to_string(),
         "D:P(A;;FA;;;AU)".to_string(),
         format!("D:P(A;;FA;;;{sid})(A;;FA;;;SY)"),
         format!("D:P(A;;FA;;;{sid})(A;;FA;;;BA)"),
@@ -404,6 +406,7 @@ fn native_unqueryable_thread_token_never_falls_back_to_process_user() -> Result 
         return Err(io::Error::last_os_error().into());
     }
     let observed = CurrentUser::capture_effective();
+    token_test_observation::observe(&observed);
     drop(restore);
     assert!(
         matches!(observed, Err(ValidationError::Os(error)) if error.raw_os_error() == Some(ERROR_CANT_OPEN_ANONYMOUS as i32))

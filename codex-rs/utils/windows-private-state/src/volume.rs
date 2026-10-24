@@ -57,12 +57,66 @@ pub struct LocalNtfsObservation {
     pub device_characteristics: u32,
 }
 
+/// One fixed query stage, with no path, raw handle or owner authority.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum VolumeQueryStage {
+    OriginalIdentity,
+    ReopenSynchronous,
+    ReopenedIdentity,
+    DeviceInformation,
+    LocalDevice,
+    FilesystemInformation,
+    FinalReopenedIdentity,
+    FinalOriginalIdentity,
+    MatchingFilesystem,
+}
+
+/// Bounded diagnostics from the original query, never a retry or acceptance fact.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct VolumeQueryObservation {
+    pub stage: VolumeQueryStage,
+    pub succeeded: bool,
+    pub win32_error: Option<i32>,
+    pub ntstatus: Option<i32>,
+}
+
+fn record<T>(
+    stage: VolumeQueryStage,
+    ntstatus: Option<i32>,
+    result: io::Result<T>,
+    observe: &mut impl FnMut(VolumeQueryObservation),
+) -> io::Result<T> {
+    observe(VolumeQueryObservation {
+        stage,
+        succeeded: result.is_ok(),
+        win32_error: result.as_ref().err().and_then(io::Error::raw_os_error),
+        ntstatus,
+    });
+    result
+}
+
 /// Require local NTFS with persistent ACLs on the same held filesystem object.
 ///
 /// A drive letter, filesystem name, or disk device type alone is insufficient.
 /// This does not validate an ancestor, owner descriptor, or durability guarantee.
 pub fn inspect_local_ntfs(file: &File) -> io::Result<LocalNtfsObservation> {
-    let object = identity(file)?;
+    inspect_local_ntfs_observed(file, |_| {})
+}
+
+/// Inspect identically while reporting at most nine fixed stages to the observer.
+///
+/// Errors are captured before invoking the observer and returned unchanged. The
+/// observer receives no handles or paths and cannot supply an acceptance result.
+pub fn inspect_local_ntfs_observed(
+    file: &File,
+    mut observe: impl FnMut(VolumeQueryObservation),
+) -> io::Result<LocalNtfsObservation> {
+    let object = record(
+        VolumeQueryStage::OriginalIdentity,
+        None,
+        identity(file),
+        &mut observe,
+    )?;
     // An arbitrary caller File can be overlapped. Reopen the held object itself,
     // without any path lookup, as synchronous (no FILE_FLAG_OVERLAPPED). Sharing
     // here cannot relax the sharing restrictions of the still-live original.
@@ -75,14 +129,34 @@ pub fn inspect_local_ntfs(file: &File) -> io::Result<LocalNtfsObservation> {
             FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT,
         )
     };
-    if raw == 0 || raw == INVALID_HANDLE_VALUE {
-        return Err(io::Error::last_os_error());
-    }
-    // SAFETY: successful ReOpenFile transfers one newly owned live handle.
-    let synchronous = File::from(unsafe { OwnedHandle::from_raw_handle(raw as *mut c_void) });
-    if identity(&synchronous)? != object {
-        return Err(io::Error::other("reopened object identity changed"));
-    }
+    let reopened = if raw == 0 || raw == INVALID_HANDLE_VALUE {
+        Err(io::Error::last_os_error())
+    } else {
+        // SAFETY: successful ReOpenFile transfers one newly owned live handle.
+        Ok(File::from(unsafe {
+            OwnedHandle::from_raw_handle(raw as *mut c_void)
+        }))
+    };
+    // Own a successful handle before an observer can panic.
+    let synchronous = record(
+        VolumeQueryStage::ReopenSynchronous,
+        None,
+        reopened,
+        &mut observe,
+    )?;
+    let same_identity = identity(&synchronous).and_then(|reopened| {
+        if reopened == object {
+            Ok(())
+        } else {
+            Err(io::Error::other("reopened object identity changed"))
+        }
+    });
+    record(
+        VolumeQueryStage::ReopenedIdentity,
+        None,
+        same_identity,
+        &mut observe,
+    )?;
     let mut device = DeviceInformation {
         device_type: u32::MAX,
         characteristics: u32::MAX,
@@ -103,12 +177,20 @@ pub fn inspect_local_ntfs(file: &File) -> io::Result<LocalNtfsObservation> {
             FILE_FS_DEVICE_INFORMATION_CLASS,
         )
     };
-    if status < 0 {
+    let queried = if status < 0 {
         // SAFETY: this conversion accepts the returned NTSTATUS.
-        return Err(io::Error::from_raw_os_error(
+        Err(io::Error::from_raw_os_error(
             unsafe { RtlNtStatusToDosError(status) } as i32,
-        ));
-    }
+        ))
+    } else {
+        Ok(())
+    };
+    record(
+        VolumeQueryStage::DeviceInformation,
+        Some(status),
+        queried,
+        &mut observe,
+    )?;
     // Only STATUS_SUCCESS and the exact complete, initialized structure count.
     // Informational statuses, short output, and unsupported device types fail.
     if status != 0
@@ -117,17 +199,23 @@ pub fn inspect_local_ntfs(file: &File) -> io::Result<LocalNtfsObservation> {
         || device.device_type != FILE_DEVICE_DISK
         || device.characteristics & FILE_REMOTE_DEVICE != 0
     {
-        return Err(io::Error::new(
-            io::ErrorKind::Unsupported,
-            "held object did not report a complete local disk device",
-        ));
+        return record(
+            VolumeQueryStage::LocalDevice,
+            None,
+            Err(io::Error::new(
+                io::ErrorKind::Unsupported,
+                "held object did not report a complete local disk device",
+            )),
+            &mut observe,
+        );
     }
+    record(VolumeQueryStage::LocalDevice, None, Ok(()), &mut observe)?;
     let mut serial = 0;
     let mut flags = 0;
     let mut name = [0_u16; 16];
     // SAFETY: raw is still the same live borrowed handle; each output points to
     // initialized storage of its specified capacity. No volume label is requested.
-    if unsafe {
+    let queried = if unsafe {
         GetVolumeInformationByHandleW(
             raw,
             ptr::null_mut(),
@@ -140,8 +228,16 @@ pub fn inspect_local_ntfs(file: &File) -> io::Result<LocalNtfsObservation> {
         )
     } == 0
     {
-        return Err(io::Error::last_os_error());
-    }
+        Err(io::Error::last_os_error())
+    } else {
+        Ok(())
+    };
+    record(
+        VolumeQueryStage::FilesystemInformation,
+        None,
+        queried,
+        &mut observe,
+    )?;
     let end = name.iter().position(|unit| *unit == 0);
     if end != Some(4)
         || name[..4]
@@ -153,14 +249,35 @@ pub fn inspect_local_ntfs(file: &File) -> io::Result<LocalNtfsObservation> {
             ]
         || flags & FILE_PERSISTENT_ACLS == 0
         || serial != object.volume
-        || identity(&synchronous)? != object
-        || identity(file)? != object
+        || record(
+            VolumeQueryStage::FinalReopenedIdentity,
+            None,
+            identity(&synchronous),
+            &mut observe,
+        )? != object
+        || record(
+            VolumeQueryStage::FinalOriginalIdentity,
+            None,
+            identity(file),
+            &mut observe,
+        )? != object
     {
-        return Err(io::Error::new(
-            io::ErrorKind::Unsupported,
-            "held object did not report matching NTFS volume identity and ACLs",
-        ));
+        return record(
+            VolumeQueryStage::MatchingFilesystem,
+            None,
+            Err(io::Error::new(
+                io::ErrorKind::Unsupported,
+                "held object did not report matching NTFS volume identity and ACLs",
+            )),
+            &mut observe,
+        );
     }
+    record(
+        VolumeQueryStage::MatchingFilesystem,
+        None,
+        Ok(()),
+        &mut observe,
+    )?;
     Ok(LocalNtfsObservation {
         object,
         filesystem_flags: flags,
