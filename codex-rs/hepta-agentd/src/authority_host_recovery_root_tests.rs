@@ -10,6 +10,8 @@ use pretty_assertions::assert_eq;
 mod fixture;
 #[path = "authority_host_recovery_client_tests.rs"]
 mod client;
+#[path = "authority_host_required_startup_tests.rs"]
+mod required_startup;
 
 const RECOVERY_CLIENT: &str =
     "authority_host_service::tests::root::recovery::client::recovered_service_client";
