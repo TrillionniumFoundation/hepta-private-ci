@@ -86,7 +86,6 @@ async fn run_control_socket_acceptor(
     shutdown_token: CancellationToken,
     socket_guard: Option<ControlSocketFileGuard>,
 ) {
-    #[cfg(target_os = "linux")]
     let inherited = socket_guard.is_none();
     let _socket_guard = socket_guard;
     loop {
@@ -119,16 +118,27 @@ async fn run_control_socket_acceptor(
             continue;
         }
         let transport_event_tx = transport_event_tx.clone();
+        let connection_shutdown = inherited.then(|| shutdown_token.clone());
         tokio::spawn(async move {
-            let websocket_stream = match accept_async(stream).await {
-                Ok(websocket_stream) => websocket_stream,
-                Err(err) => {
-                    warn!("failed to upgrade control socket websocket connection: {err}");
-                    return;
-                }
+            let serve = async {
+                let websocket_stream = match accept_async(stream).await {
+                    Ok(websocket_stream) => websocket_stream,
+                    Err(err) => {
+                        warn!("failed to upgrade control socket websocket connection: {err}");
+                        return;
+                    }
+                };
+                let (websocket_writer, websocket_reader) = websocket_stream.split();
+                run_websocket_connection(websocket_writer, websocket_reader, transport_event_tx).await;
             };
-            let (websocket_writer, websocket_reader) = websocket_stream.split();
-            run_websocket_connection(websocket_writer, websocket_reader, transport_event_tx).await;
+            match connection_shutdown {
+                Some(shutdown) => tokio::select! {
+                    biased;
+                    _ = shutdown.cancelled() => {}
+                    _ = serve => {}
+                },
+                None => serve.await,
+            }
         });
     }
     info!("control socket acceptor shutting down");

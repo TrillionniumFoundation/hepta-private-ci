@@ -974,6 +974,14 @@ async fn run_main_with_transport_options_inner(
     }
     let installation_id = resolve_installation_id(&config.codex_home).await?;
     let transport_shutdown_token = CancellationToken::new();
+    // An embedding owns the inherited listener's lifetime, including startup
+    // errors after the acceptor has been spawned and cancellation of this
+    // future. Dropping a JoinHandle alone detaches that acceptor. Keep the
+    // original shutdown token fenced to this scope without taking pathname
+    // cleanup ownership or changing the ordinary transport startup behavior.
+    let _inherited_transport_guard = inherited_socket
+        .as_ref()
+        .map(|_| transport_shutdown_token.clone().drop_guard());
     let mut transport_accept_handles = Vec::<JoinHandle<()>>::new();
 
     let single_client_mode = matches!(&transport, AppServerTransport::Stdio);

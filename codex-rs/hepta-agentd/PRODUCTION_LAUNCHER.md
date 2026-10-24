@@ -52,6 +52,16 @@ control transports admit only the dedicated UID or actual UID0 supervisor
 before reading protocol bytes, preserving Root's existing private-path access.
 The Notes UI separately keeps its stricter exact Session PID/UID/pidfd gate.
 
+The inherited App Server entry retains a shutdown guard across its fallible
+startup. If authentication/configuration startup fails after the acceptor was
+spawned, or the embedding cancels its future, the original cancellation token
+closes the acceptor and its active or incomplete WebSocket connections. The
+original WebSocket worker handles abort their child read/write tasks on drop,
+including tasks blocked in I/O. Merely dropping a JoinHandle would detach
+those tasks. None of these exit paths unlinks the Root rendezvous. Root must
+close any producer copies after transferring the child descriptors, so a
+producer copy cannot extend a failed or departed child's listener lifetime.
+
 The socket descriptor's creator UID, its exact bound address and exclusive Root
 pathname custody establish this handoff boundary. Linux socket-fd inode numbers
 and filesystem socket-node inode numbers are different and must not be compared

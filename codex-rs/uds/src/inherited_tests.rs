@@ -41,8 +41,10 @@ async fn adoption_rejects_other_path_and_nonprivate_node_without_changing_either
     std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600)).expect("private socket");
     std::fs::set_permissions(&other, std::fs::Permissions::from_mode(0o600)).expect("private other");
     assert!(UnixListener::from_inherited(OwnedFd::from(socket), &other).is_err());
+    assert_eq!(std::os::unix::net::UnixStream::connect(&path).expect_err("refused adoption closes the held descriptor").kind(), std::io::ErrorKind::ConnectionRefused);
     std::fs::set_permissions(&other, std::fs::Permissions::from_mode(0o660)).expect("shared fixture");
     assert!(UnixListener::from_inherited(OwnedFd::from(other_socket), &other).is_err());
+    assert_eq!(std::os::unix::net::UnixStream::connect(&other).expect_err("nonprivate adoption closes the held descriptor").kind(), std::io::ErrorKind::ConnectionRefused);
     assert!(path.exists());
     assert_eq!(std::fs::metadata(&other).expect("node retained").mode() & 0o7777, 0o660);
 }
