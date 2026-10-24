@@ -60,6 +60,8 @@ It is not interval arithmetic. A small residual can imply a weak bound if
 Stage and retention weights are square-rooted **separately** before scaling
 losses; gradient uses the same scaled residual and Jacobian. This preserves the
 representable `5e-101` cost when `dt=w=1e-200` and old violation is `1e150`.
+An active subnormal combined square-root factor is rejected: it can lose a large
+fraction before a large residual rescales it. Zero weight and zero hinge stay valid.
 The old Riccati arithmetic has a narrower range: each current/active-old row is
 checked separately, before even a small-gradient success. If its squared,
 stage-weighted, Gram-diagonal or linear terms lose a nonzero contribution to
@@ -108,9 +110,10 @@ Run from `qa/stem-bakeoff`:
 
 ```sh
 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -W error -m unittest \
-  test_cell_field_retention test_cell_field_control -v
+  test_cell_field_retention test_cell_field_control test_cell_field_retention_subnormal -v
 ```
 
+The third module covers subnormal-factor rejection and supported boundary cases.
 The second module is the existing compatibility suite. Its small synthetic Head
 fixture is a software test, not an additional task experiment or model-benefit
 sample. Real historical or new task gains, old-capability retention and complete

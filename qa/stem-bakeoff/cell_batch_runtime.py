@@ -178,8 +178,8 @@ class BatchedCellRuntime:
                 z = z / (1 + np.exp(-gate))
             if self.mode == "residual":
                 hidden = np.tanh(np.einsum("d,ndr->nr", normalized[row], p["V"][indices]))
-                z = z + np.einsum("nr,nrd->nd", hidden, p["U"][indices])
-            logits[row] = np.einsum("nd,ndc->nc", z, p["W"][indices]) + p["b"][indices]
+                z = z + np.einsum("nr,nrf->nf", hidden, p["U"][indices])
+            logits[row] = np.einsum("nf,nfc->nc", z, p["W"][indices]) + p["b"][indices]
         head_ns = time.perf_counter_ns() - head_at
         if not np.isfinite(logits).all():
             raise BatchRuntimeError("nonfinite batched private prediction")
