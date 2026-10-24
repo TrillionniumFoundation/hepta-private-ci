@@ -52,6 +52,10 @@ class BudgetedMediaEncoder(SharedFeatureEncoder):
         return configuration_value({"declared_vision_soft_tokens": self.vision_soft_tokens,
                 "image_processor": processor.image_processor.to_dict(),
                 "audio_feature_extractor": processor.feature_extractor.to_dict(),
+                "token_layout": {name: getattr(processor, name, None) for name in (
+                    "image_seq_length", "audio_seq_length", "audio_ms_per_token",
+                    "image_token_id", "audio_token_id", "video_token_id", "image_token",
+                    "audio_token", "video_token", "boi_token", "eoi_token", "boa_token", "eoa_token")},
                 "chat_template": processor.chat_template})
 
     def _configuration_digest(self):

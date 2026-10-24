@@ -35,6 +35,9 @@ class BudgetedMediaTests(unittest.TestCase):
             self.assertNotEqual(initial, encoder._configuration_digest())
             encoder.owner._processor.image_processor.max_soft_tokens = 70
             self.assertEqual(initial, encoder._configuration_digest())
+            encoder.owner._processor.audio_ms_per_token = 80
+            self.assertNotEqual(initial, encoder._configuration_digest())
+            del encoder.owner._processor.audio_ms_per_token
             encoder.owner._processor.chat_template = "changed"
             self.assertNotEqual(initial, encoder._configuration_digest())
 
