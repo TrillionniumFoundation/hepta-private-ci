@@ -1,0 +1,70 @@
+name: Hepta train2017 metadata preflight synthetic contracts
+
+on:
+  pull_request:
+    paths:
+      - qa/stem-bakeoff/train2017_metadata_preflight/**
+      - .github/workflows/hepta-train-metadata-preflight.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-train-metadata-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  synthetic-contracts-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify and record exact source before synthetic tests
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          git diff --check
+          git diff --exit-code HEAD --
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignored -- \
+            qa/stem-bakeoff/train2017_metadata_preflight \
+            .github/workflows/hepta-train-metadata-preflight.yml)"
+          {
+            git rev-parse HEAD HEAD^{tree}
+            python3 --version
+            git ls-files -z qa/stem-bakeoff/train2017_metadata_preflight | xargs -0 sha256sum
+          } | tee "$RUNNER_TEMP/train-metadata-source.log"
+      - name: Run all synthetic adversarial contracts normally and under optimized Python
+        run: |
+          set -euo pipefail
+          python3 -B qa/stem-bakeoff/train2017_metadata_preflight/run_synthetic_tests.py \
+            2>&1 | tee "$RUNNER_TEMP/train-metadata-tests.log"
+          python3 -B -O qa/stem-bakeoff/train2017_metadata_preflight/run_synthetic_tests.py \
+            2>&1 | tee "$RUNNER_TEMP/train-metadata-tests-optimized.log"
+      - name: Verify exact source remains unchanged
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          git diff --check
+          git diff --exit-code HEAD --
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignored -- \
+            qa/stem-bakeoff/train2017_metadata_preflight \
+            .github/workflows/hepta-train-metadata-preflight.yml)"
+      - name: Retain source identity and synthetic test logs only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: train-metadata-synthetic-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/train-metadata-source.log
+            ${{ runner.temp }}/train-metadata-tests.log
+            ${{ runner.temp }}/train-metadata-tests-optimized.log
+          if-no-files-found: error
+          retention-days: 14
