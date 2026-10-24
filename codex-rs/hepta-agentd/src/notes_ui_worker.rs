@@ -57,12 +57,11 @@ impl AgentdNotesLiteralAdapter {
         view.observed_unix_ms = ObjectiveObservation::new(None, ObjectiveStage::Unavailable).observed_unix_ms;
         match command {
             ObjectiveCommand::Availability {} => {
-                self.require_objective_ready().await?;
-                let retained = self.retained_intents().await?;
-                let navigation = ObjectiveRetainedIntents { client_intent_ids: retained.client_intent_ids, complete: retained.complete };
-                navigation.validate().map_err(|_| invalid("original Notes navigation projection refused"))?;
-                view.stage = ObjectiveStage::Ready;
-                view.retained_intents = Some(navigation);
+                refresh_availability(view, async {
+                    self.require_objective_ready().await?;
+                    let retained = self.retained_intents().await?;
+                    Ok(ObjectiveRetainedIntents { client_intent_ids: retained.client_intent_ids, complete: retained.complete })
+                }).await?;
             }
             ObjectiveCommand::Submit { intent } => {
                 if intent.text.trim().is_empty() || intent.text.len() > 4096 {
@@ -142,6 +141,22 @@ impl AgentdNotesLiteralAdapter {
     }
 }
 
+async fn refresh_availability(
+    view: &mut ObjectiveObservation,
+    refresh: impl std::future::Future<Output = Result<ObjectiveRetainedIntents, AgentdError>>,
+) -> Result<(), AgentdError> {
+    // The existing Desktop ready() uses stage/navigation/freshness, not issue.
+    // Invalidate the old readiness before any await, including cancellation;
+    // a newly fresh timestamp must never refresh an old successful snapshot.
+    view.stage = ObjectiveStage::Unavailable;
+    view.retained_intents = None;
+    let navigation = refresh.await?;
+    navigation.validate().map_err(|_| invalid("original Notes navigation projection refused"))?;
+    view.retained_intents = Some(navigation);
+    view.stage = ObjectiveStage::Ready;
+    Ok(())
+}
+
 fn run_view(receipt: AgentRunReceipt) -> ObjectiveRunObservation {
     ObjectiveRunObservation {
         revision: receipt.revision, terminal_observed: receipt.terminal_observed,
@@ -157,3 +172,7 @@ fn run_view(receipt: AgentRunReceipt) -> ObjectiveRunObservation {
         },
     }
 }
+
+#[cfg(test)]
+#[path = "notes_ui_worker_tests.rs"]
+mod tests;
