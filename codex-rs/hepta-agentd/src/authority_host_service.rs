@@ -278,7 +278,7 @@ impl HostAuthorityService {
                     return Err(HostIssuerTransportError::InvalidRequest);
                 }
                 let result = match &self.notes {
-                    Some(notes) => notes.issue(&self.issuer, &binding),
+                    Some(notes) => notes.issue_registered_route(&self.issuer, &binding),
                     None => self.issuer.issue(&binding),
                 };
                 let grant = match result {

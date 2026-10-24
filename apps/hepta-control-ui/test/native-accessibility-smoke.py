@@ -10,6 +10,7 @@ import json
 import subprocess
 import time
 from pathlib import Path
+from x11_client_owner import require_window_pid
 
 import gi
 
@@ -63,8 +64,7 @@ def click(node):
 
 
 def run(args, receipt):
-    window_pid = int(subprocess.check_output(["xdotool", "getwindowpid", args.window_id], text=True))
-    assert window_pid == args.pid, "The selected X11 window belongs to another process"
+    receipt["x11_owner"] = require_window_pid(args.window_id, args.pid)
     Atspi.init()
     desktop = Atspi.get_desktop(0)
     app = wait_for(lambda: next((node for node in children(desktop) if node.get_process_id() == args.pid), None), "exact process registration")
@@ -86,6 +86,7 @@ def run(args, receipt):
         receipt["checks"].append({"name": name, "passed": True})
 
     def key(value):
+        require_window_pid(args.window_id, args.pid)
         assert int(subprocess.check_output(["xdotool", "getwindowfocus"], text=True)) == int(args.window_id, 0)
         subprocess.run(["xdotool", "key", "--clearmodifiers", value], check=True, timeout=5)
 

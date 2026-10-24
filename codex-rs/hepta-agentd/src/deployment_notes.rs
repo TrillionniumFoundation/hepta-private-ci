@@ -99,6 +99,21 @@ impl RootNotesGrantAdmission {
         self.writer == *registration && self.proof == *proof
     }
 
+    /// Preserve the original issuer's other registered routes. This Notes
+    /// destination always enters its fixed delegation, including requests with
+    /// the wrong subject or scope; a Notes denial must never fall through.
+    pub(crate) fn issue_registered_route(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        binding: &FinalUseBinding,
+    ) -> io::Result<Option<SignedFinalUseGrant>> {
+        if binding.destination_id == self.policy.destination_id {
+            self.issue(issuer, binding)
+        } else {
+            issuer.issue(binding)
+        }
+    }
+
     /// Register one short exact original lease, then enter the original joint
     /// writer/effect boundary. Repeated requests can reuse the retained lease
     /// while live, but never renew, replace, reset or resurrect its ID.

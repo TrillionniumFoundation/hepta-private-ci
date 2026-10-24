@@ -7,6 +7,9 @@ use std::os::unix::fs::PermissionsExt;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
+#[path = "deployment_notes_route_tests.rs"]
+mod issuer_routing;
+
 struct Clock(AtomicU64);
 impl AuthorityClock for Clock {
     fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {

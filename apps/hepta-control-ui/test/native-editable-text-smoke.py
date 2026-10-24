@@ -37,7 +37,7 @@ def settle(seconds):
 
 def run(args, result):
     xid = int(args.window_id, 0)
-    assert int(subprocess.check_output(["xdotool", "getwindowpid", args.window_id], text=True)) == args.pid
+    result["x11_owner"] = SMOKE.require_window_pid(args.window_id, args.pid)
     Atspi.init()
     desktop = Atspi.get_desktop(0)
     app = SMOKE.wait_for(lambda: next((node for node in SMOKE.children(desktop) if node.get_process_id() == args.pid), None), "exact original process")
@@ -55,6 +55,7 @@ def run(args, result):
         return editor().get_text_iface().get_text(0, -1)
 
     def key(name):
+        SMOKE.require_window_pid(args.window_id, args.pid)
         assert int(subprocess.check_output(["xdotool", "getwindowfocus"], text=True)) == xid
         subprocess.run(["xdotool", "key", "--clearmodifiers", name], check=True, timeout=5)
 

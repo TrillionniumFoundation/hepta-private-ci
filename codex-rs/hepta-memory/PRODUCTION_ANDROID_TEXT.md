@@ -31,6 +31,7 @@ original helper/source pin, package signature, peer identity or live grant.
 | [src/production_android_response.rs](src/production_android_response.rs) | Actual apply acknowledgement and independent native readback validation |
 | [src/production_android_tests.rs](src/production_android_tests.rs) | Exact bytes, no deferred entry, lost ack, stale/changed identity regressions |
 | [tests/fixtures/android-bound-text-v1.json](tests/fixtures/android-bound-text-v1.json) | Python-generated UTF-8/hash fixture, explicitly synthetic |
+| [hepta-agentd/src/deployment_notes_route_tests.rs](../hepta-agentd/src/deployment_notes_route_tests.rs) | Original issuer routing with Notes installed, exact non-Notes policy/lease, and no fallback after Notes denial |
 
 Run from `codex-rs` with the repository toolchain:
 
@@ -152,6 +153,95 @@ Installed inspection requires the existing original root inspection capability;
 the tool does not self-elevate or create a new helper lane. These gates produce
 reviewable source evidence while the original authenticated connector bootstrap
 and live grant remain explicit composition blockers.
+
+### Original authority inputs and activation sequence
+
+The source review used Desktop
+`b4da9463461badf8ad53732a043db32d6a311666` and Hepta
+`8c7133b5dbef2664723a0c9138a8c94aba939710`. The issuer routing correction described
+below preserves the existing authority path; it does not supply the missing
+Runtime connector or authorize an Android target.
+
+The trusted embedding needs the following original inputs. These are concrete
+Rust types and retained capabilities, not a JSON configuration that can be
+made valid by inserting example identifiers or public keys.
+
+| Input and source entry | Required provenance and check |
+| --- | --- |
+| `AgentdProductionHostInputs.current_cut`, `authority`, `verifier`, `lease_id`, `lease_generation` in [production_composition.rs](../hepta-agentd/src/production_composition.rs) | Original independently retained `ExactCurrentCut`, same Agent and spawn, original production lease including its opaque token, and its live verifier. `Revoked` is refused; bootstrap never creates a replacement current cut. |
+| `AgentdRootAuthoritySession::connect` in [root_authority_session.rs](../hepta-agentd/src/root_authority_session.rs) | Already connected original Root observation stream, independently pinned peer, launcher's pre-held actual Root pidfd, bounded lifetime, and `AgentdRootWriterTrust`. Keep the session alive; its verified clock/head/proof fence when the original Root lifetime or observation freshness fails. |
+| `AgentdFinalUseHostInputs` in [production_authority.rs](../hepta-agentd/src/production_authority.rs) | Existing original Device consumer journal, canonical signer identity and trusted public key, current authenticated revocations, protected clock and independent original frontier store. An added Android destination does not justify a second nonce journal or a newly initialized frontier. |
+| `AgentdUnixFinalUseGrantProvider` in [final_use_issuer.rs](../hepta-agentd/src/final_use_issuer.rs) and [root_issuer_client.rs](../hepta-agentd/src/root_issuer_client.rs) | Preconnected original issuer stream and exact peer. The Root host path additionally retains the actual Root pidfd and lifetime with `from_root_stream`; it does not discover, reconnect to, or replace the issuer. |
+| `DeploymentGrantPolicy` and `ProtectedLease` in [deployment_issuer.rs](../hepta-agentd/src/deployment_issuer.rs) and [deployment_issuer_root.rs](../hepta-agentd/src/deployment_issuer_root.rs) | Original policy must match subject, destination and scope. The pinned original effect lease ID/revision must match principal, `runtime.agentd.production_operation`, destination, scope and the exact payload hash, and remain live under the original registry fence. |
+| `Arc<dyn OriginalAndroidTextDevice>` in [production_android.rs](src/production_android.rs) | Actual retained authenticated original host/device connector satisfying the fixed-helper table above. Neither repository supplies a production implementation; the test device is synthetic. Generic process execution permission is not this capability or a FinalUse grant. |
+
+[HostAuthorityPublicBootstrapV1](../hepta-agentd/src/authority_host_bootstrap.rs)
+contains public handoff metadata for the original writer, checkpoint and two
+Device/Notes consumers. Its JSON is not an authority token. The trusted launcher
+separately transfers already held process descriptors and the sealed handoff;
+the consumer still verifies the original proof, live feed and current-cut
+checkpoint. Do not copy its public fields into a new signer or registry.
+
+The original host's activation order is:
+
+1. Verify the original helper, APK signer/installed bytes, Droidloom owner and
+   retained Runtime peer, then obtain the exact native observation. A returned
+   observation supplies a destination identity, not execution permission.
+2. Open the original consumer owners and obtain the current Root observation.
+   Call `activate_final_use_owners` with those actual existing owners before
+   using the Root session's production verifier. Activation synchronizes the
+   authenticated revocation head; it is one-shot and remains fenced on failure.
+3. Construct `ProductionAndroidTextTarget` from that observation and the real
+   retained device capability. For an Android primary destination,
+   `attach_production_operation_host` already accepts this target in its
+   `AgentdProductionHostInputs`; it also supports the existing optional Notes
+   handoff. For an additional destination, compose it with the existing
+   `AgentdProductionOperationRuntimeConfig::with_additional_target` before
+   installing the runtime config. Neither entry constructs an Android connector
+   or grants a new policy. The same recovered writer/lease is checked again
+   before targets attach.
+4. Retain the operation and exact payload through the existing writer, request
+   its original exact FinalUse binding, and dispatch only its original queued
+   receipt. Confirm both actual native replies and the original durable status.
+   An issuer denial is an authorization failure, not a reason to issue directly
+   through the helper or to construct another lease.
+
+The non-Notes generic issuer is pinned to one original lease ID and revision.
+If a deployment currently pins a `runtime.agentd.production_writer` lease,
+that lease cannot pass its `runtime.agentd.production_operation` binding check.
+Adding a policy or fixing routing does not change this. The original authority
+must already supply the exact authorized Android effect lease through its
+existing trusted registration/configuration path. This adapter does not widen
+the lease, invent a device-specific admission provider, renew an expired
+registration or turn a host process privilege into payload authorization.
+
+### Notes coexistence on the original issuer lane
+
+[HostAuthorityService](../hepta-agentd/src/authority_host_service.rs) uses
+`RootNotesGrantAdmission::issue_registered_route` when the original Notes
+delegation is installed:
+
+| FinalUse request | Original path |
+| --- | --- |
+| Registered Notes destination, exact owner and scope | Original Notes admission, joint writer/effect lease fence, canonical issuer policy and shared durable sequence |
+| Registered Notes destination, wrong owner/scope or denied/revoked writer | Notes rejection; neither `None` nor an error falls through to the generic issuer |
+| Another destination | Existing `DeploymentFinalUseIssuer::issue`, with its unchanged exact original policy and pinned live effect lease |
+
+The former service routed every destination to Notes whenever Notes was
+installed, which incorrectly denied independently authorized non-Notes routes.
+The correction changes routing only. In particular, it does not make another
+target trusted by default or register an Android effect lease. Its focused
+component regressions use the actual original registry, signer and counter:
+
+```sh
+just test -p codex-hepta-agentd deployment_notes_route
+```
+
+The cases cover a valid non-Notes grant alongside Notes, absent policy, wrong
+target/scope/payload/owner, revoked effect lease, and a revoked Notes writer for
+which a direct generic grant would otherwise succeed. That last control proves
+that Notes denial does not cause fallback. These are ordinary-owner component
+fixtures, not protected Root deployment or real Android effect qualification.
 
 ## Completion, loss and recovery
 
