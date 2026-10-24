@@ -425,7 +425,10 @@ async fn thread_resume_materializes_the_same_live_thread_without_starting_a_turn
     let ThreadStartResponse { thread, .. } =
         timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(start_id)).await??;
 
-    let thread_path = thread.path.as_ref().expect("live thread has a rollout path");
+    let thread_path = thread
+        .path
+        .as_ref()
+        .expect("live thread has a rollout path");
     assert!(!thread_path.exists());
 
     // Repeated attaches must materialize through the live writer and retain the
@@ -437,10 +440,16 @@ async fn thread_resume_materializes_the_same_live_thread_without_starting_a_turn
                 ..Default::default()
             })
             .await?;
-        let ThreadResumeResponse { thread: resumed, .. } =
-            timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(resume_id)).await??;
+        let ThreadResumeResponse {
+            thread: resumed, ..
+        } = timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(resume_id)).await??;
         assert_eq!(
-            (&resumed.id, &resumed.session_id, &resumed.path, &resumed.turns),
+            (
+                &resumed.id,
+                &resumed.session_id,
+                &resumed.path,
+                &resumed.turns
+            ),
             (&thread.id, &thread.session_id, &thread.path, &thread.turns),
         );
         assert!(resumed.turns.is_empty());
@@ -476,7 +485,10 @@ async fn thread_resume_rejects_unmaterialized_thread_without_a_live_owner() -> R
         .await?;
     let ThreadStartResponse { thread, .. } =
         timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(start_id)).await??;
-    let thread_path = thread.path.as_ref().expect("live thread has a rollout path");
+    let thread_path = thread
+        .path
+        .as_ref()
+        .expect("live thread has a rollout path");
     assert!(!thread_path.exists());
     timeout(DEFAULT_READ_TIMEOUT, mcp.kill_ungracefully()).await??;
     assert!(!thread_path.exists());
@@ -1278,7 +1290,9 @@ async fn cold_resume_reresolves_persisted_active_permission_profile() -> Result<
         // or carrying its old workspace-write grant into the resumed session.
         assert_eq!(
             runtime_workspace_roots,
-            vec![AbsolutePathBuf::from_absolute_path(previous_workspace_root.path())?],
+            vec![AbsolutePathBuf::from_absolute_path(
+                previous_workspace_root.path()
+            )?],
         );
     }
     Ok(())

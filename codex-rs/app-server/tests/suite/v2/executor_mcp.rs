@@ -197,7 +197,10 @@ async fn selected_executor_discovers_browser_mcp_with_executor_only_bearer_token
                 ]),
                 responses::sse(vec![
                     responses::ev_response_created(&format!("resp-browser-mcp-done-{phase}")),
-                    responses::ev_assistant_message(&format!("msg-browser-mcp-done-{phase}"), "Done"),
+                    responses::ev_assistant_message(
+                        &format!("msg-browser-mcp-done-{phase}"),
+                        "Done",
+                    ),
                     responses::ev_completed(&format!("resp-browser-mcp-done-{phase}")),
                 ]),
             ],

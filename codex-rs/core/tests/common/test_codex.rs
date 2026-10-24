@@ -978,10 +978,13 @@ impl TestCodex {
         prompt: &str,
         service_tier: Option<&str>,
     ) -> Result<()> {
+        // A tier change must not also replace the permissions bound to a
+        // prewarmed WebSocket connection.
+        let settings = self.codex.thread_settings_snapshot().await;
         self.submit_turn_with_permission_profile_context(
             prompt,
-            AskForApproval::Never,
-            PermissionProfile::Disabled,
+            settings.approval_policy,
+            settings.permission_profile,
             Some(service_tier.map(str::to_string)),
             /*environments*/ None,
         )

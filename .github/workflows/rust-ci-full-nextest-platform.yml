@@ -200,6 +200,12 @@ jobs:
               -p codex-linux-sandbox \
               --bin codex-linux-sandbox
             cp "${CARGO_TARGET_DIR}/${CODEX_CI_TARGET}/${CODEX_CI_PROFILE}/codex-linux-sandbox" "${helper_dir}/"
+            cargo build --locked \
+              --target "${CODEX_CI_TARGET}" \
+              --profile "${CODEX_CI_PROFILE}" \
+              -p codex-shell-escalation \
+              --bin codex-execve-wrapper
+            cp "${CARGO_TARGET_DIR}/${CODEX_CI_TARGET}/${CODEX_CI_PROFILE}/codex-execve-wrapper" "${helper_dir}/"
           else
             cargo build \
               --target "${CODEX_CI_TARGET}" \
@@ -361,6 +367,8 @@ jobs:
             mkdir -p "${helper_target_dir}"
             cp "${helper_dir}/codex-linux-sandbox" "${helper_target_dir}/"
             chmod +x "${helper_target_dir}/codex-linux-sandbox"
+            cp "${helper_dir}/codex-execve-wrapper" "${helper_target_dir}/"
+            chmod +x "${helper_target_dir}/codex-execve-wrapper"
           elif [[ "${RUNNER_OS}" == "Windows" ]]; then
             helper_dir="${RUNNER_TEMP}/${TEST_HELPERS_ARTIFACT}"
             helper_target_dir="${CARGO_TARGET_DIR}/${CODEX_CI_TARGET}/${CODEX_CI_PROFILE}"
@@ -383,10 +391,13 @@ jobs:
           test_command=(cargo nextest "${nextest_args[@]}")
           if [[ "${RUNNER_OS}" == "Linux" ]]; then
             sandbox_helper="${helper_target_dir}/codex-linux-sandbox"
+            execve_wrapper="${helper_target_dir}/codex-execve-wrapper"
             test_command=(
               env
               "CARGO_BIN_EXE_codex-linux-sandbox=${sandbox_helper}"
               "CARGO_BIN_EXE_codex_linux_sandbox=${sandbox_helper}"
+              "CARGO_BIN_EXE_codex-execve-wrapper=${execve_wrapper}"
+              "CARGO_BIN_EXE_codex_execve_wrapper=${execve_wrapper}"
               cargo nextest "${nextest_args[@]}"
             )
           elif [[ "${RUNNER_OS}" == "Windows" ]]; then

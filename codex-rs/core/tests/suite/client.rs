@@ -108,6 +108,20 @@ fn rollout_response_item(item: ResponseItem) -> RolloutItem {
     RolloutItem::ResponseItem(item.into())
 }
 
+async fn persisted_response_items(test: &TestCodex) -> anyhow::Result<Vec<serde_json::Value>> {
+    test.codex.flush_rollout().await?;
+    let history = test.codex.load_history(/*include_archived*/ false).await?;
+    Ok(history
+        .items
+        .into_iter()
+        .filter_map(|item| match item {
+            RolloutItem::ResponseItem(envelope) => Some(envelope.item),
+            _ => None,
+        })
+        .map(serde_json::to_value)
+        .collect::<Result<_, _>>()?)
+}
+
 fn test_turn_responses_metadata(
     _client: &ModelClient,
     thread_id: ThreadId,
@@ -198,7 +212,7 @@ fn assert_codex_client_metadata(
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_turns() {
+async fn stateless_responses_preserve_durable_item_turn_metadata_across_turns() {
     let server = MockServer::start().await;
     let assistant_create_time = 1_785_276_138.422709;
     let mut assistant_message = ev_assistant_message("msg-1", "first answer");
@@ -220,7 +234,9 @@ async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_
     let test = test_codex().build(&server).await.unwrap();
 
     test.submit_turn("turn one").await.unwrap();
+    let first_history = persisted_response_items(&test).await.unwrap();
     test.submit_turn("turn two").await.unwrap();
+    let second_history = persisted_response_items(&test).await.unwrap();
 
     let requests = response_mock.requests();
     assert_eq!(requests.len(), 2);
@@ -237,14 +253,31 @@ async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_
     let first_input = first["input"].as_array().expect("first input");
     let second_input = second["input"].as_array().expect("second input");
     assert_eq!(&second_input[..first_input.len()], first_input.as_slice());
+    // The mock is a custom endpoint, even when its provider is named OpenAI.
+    // Request copies must omit local metadata without rewriting durable history.
+    for item in first_input.iter().chain(second_input) {
+        assert!(
+            item.get("internal_chat_message_metadata_passthrough")
+                .is_none(),
+            "custom provider must not receive internal item metadata: {item}"
+        );
+    }
+    assert_eq!(
+        &second_history[..first_history.len()],
+        first_history.as_slice()
+    );
     for item in first_input {
+        let persisted = first_history
+            .iter()
+            .find(|persisted| strip_metadata_from_json((*persisted).clone()) == *item)
+            .expect("each first-request item should retain its original durable metadata");
         assert_eq!(
-            item["internal_chat_message_metadata_passthrough"]["turn_id"].as_str(),
+            persisted["internal_chat_message_metadata_passthrough"]["turn_id"].as_str(),
             Some(first_turn_id)
         );
     }
     for role in ["user", "developer"] {
-        assert!(first_input.iter().any(|item| {
+        assert!(first_history.iter().any(|item| {
             item["role"].as_str() == Some(role)
                 && item["internal_chat_message_metadata_passthrough"]["create_time"]
                     .as_f64()
@@ -253,7 +286,7 @@ async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_
     }
 
     let item_turn_id = |text: &str| {
-        second_input
+        second_history
             .iter()
             .find(|item| {
                 item["content"].as_array().is_some_and(|content| {
@@ -269,7 +302,7 @@ async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_
     assert_eq!(item_turn_id("turn two"), Some(second_turn_id));
 
     let item_create_time = |text: &str| {
-        second_input
+        second_history
             .iter()
             .find(|item| {
                 item["content"].as_array().is_some_and(|content| {
@@ -366,32 +399,48 @@ async fn sends_audio_urls_to_responses() {
         sse(vec![ev_response_created("resp1"), ev_completed("resp1")]),
     )
     .await;
-    let codex = test_codex()
+    let test = test_codex()
         .with_model_info_override("gpt-5.5", |model_info| {
             model_info.input_modalities.push(InputModality::Audio);
         })
         .build(&server)
         .await
-        .unwrap()
-        .codex;
+        .unwrap();
     let audio_url = "data:audio/wav;base64,AAAA";
 
-    codex
+    test.codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Audio {
             audio_url: audio_url.to_string(),
         }]))
         .await
         .unwrap();
-    wait_for_event(&codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;
+    wait_for_event(&test.codex, |event| {
+        matches!(event, EventMsg::TurnComplete(_))
+    })
+    .await;
 
+    let history = persisted_response_items(&test).await.unwrap();
     let request = response_mock.single_request();
-    assert!(request.has_content_kinds(&["user.audio"]));
+    assert!(request.input().iter().all(|item| {
+        item.get("internal_chat_message_metadata_passthrough")
+            .is_none()
+    }));
     let user_message = request
         .input()
         .into_iter()
         .rev()
         .find(|item| item.get("role").and_then(serde_json::Value::as_str) == Some("user"))
         .expect("request should include a user message");
+    let persisted_user_message = history
+        .iter()
+        .rev()
+        .find(|item| item.get("role").and_then(serde_json::Value::as_str) == Some("user"))
+        .expect("history should retain the user audio message");
+    assert_eq!(
+        persisted_user_message["internal_chat_message_metadata_passthrough"]["content_item_kinds"],
+        json!(["user.audio"])
+    );
+    assert_eq!(persisted_user_message["content"], user_message["content"]);
     assert_eq!(
         user_message["content"],
         json!([{
@@ -411,32 +460,48 @@ async fn sends_local_audio_to_responses() -> anyhow::Result<()> {
         sse(vec![ev_response_created("resp1"), ev_completed("resp1")]),
     )
     .await;
-    let codex = test_codex()
+    let test = test_codex()
         .with_model_info_override("gpt-5.5", |model_info| {
             model_info.input_modalities.push(InputModality::Audio);
         })
         .build(&server)
-        .await?
-        .codex;
+        .await?;
     let temp_dir = tempfile::tempdir()?;
     let audio_path = temp_dir.path().join("recording.wav");
     std::fs::write(&audio_path, b"audio")?;
 
-    codex
+    test.codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::LocalAudio {
             path: audio_path.clone(),
         }]))
         .await?;
-    wait_for_event(&codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;
+    wait_for_event(&test.codex, |event| {
+        matches!(event, EventMsg::TurnComplete(_))
+    })
+    .await;
 
+    let history = persisted_response_items(&test).await?;
     let request = response_mock.single_request();
-    assert!(request.has_content_kinds(&["user.text", "user.audio", "user.text"]));
+    assert!(request.input().iter().all(|item| {
+        item.get("internal_chat_message_metadata_passthrough")
+            .is_none()
+    }));
     let user_message = request
         .input()
         .into_iter()
         .rev()
         .find(|item| item.get("role").and_then(serde_json::Value::as_str) == Some("user"))
         .expect("request should include a user message");
+    let persisted_user_message = history
+        .iter()
+        .rev()
+        .find(|item| item.get("role").and_then(serde_json::Value::as_str) == Some("user"))
+        .expect("history should retain the local audio message");
+    assert_eq!(
+        persisted_user_message["internal_chat_message_metadata_passthrough"]["content_item_kinds"],
+        json!(["user.text", "user.audio", "user.text"])
+    );
+    assert_eq!(persisted_user_message["content"], user_message["content"]);
     let audio_path = audio_path.display();
     assert_eq!(
         user_message["content"],

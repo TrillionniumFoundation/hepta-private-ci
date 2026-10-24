@@ -90,10 +90,13 @@ async fn additional_context_is_model_visible_but_not_a_user_message_item() -> Re
         .items
         .iter()
         .filter_map(|item| match item {
-            RolloutItem::ResponseItem(ResponseItem::Message {
-                internal_chat_message_metadata_passthrough: Some(metadata),
-                ..
-            }) => metadata.content_item_kinds.as_ref(),
+            RolloutItem::ResponseItem(envelope) => match &envelope.item {
+                ResponseItem::Message {
+                    internal_chat_message_metadata_passthrough: Some(metadata),
+                    ..
+                } => metadata.content_item_kinds.as_ref(),
+                _ => None,
+            },
             _ => None,
         })
         .flatten()

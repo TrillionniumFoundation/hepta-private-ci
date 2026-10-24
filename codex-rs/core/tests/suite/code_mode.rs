@@ -2064,12 +2064,15 @@ try {
     .await?;
 
     let request = second_mock.single_request();
-    assert_eq!(
-        request.custom_tool_call_output("call-1")["internal_chat_message_metadata_passthrough"]["executed_tool_calls"],
-        serde_json::json!([
-            {"name": "exec_command", "arguments": {}},
-        ]),
-        "failed nested tool attempts remain private request metadata",
+    // Attempted-tool metadata is prompt-local, not durable rollout state. Its
+    // retention through a real handler failure is covered at the original
+    // recorder/request-preparation boundary in client_metadata_boundary_tests.
+    assert!(
+        request.input().iter().all(|item| {
+            item.get("internal_chat_message_metadata_passthrough")
+                .is_none()
+        }),
+        "custom provider must not receive private attempted-tool metadata",
     );
     let (output, success) = custom_tool_output_body_and_success(&request, "call-1");
     assert_ne!(
@@ -2080,6 +2083,10 @@ try {
     assert!(
         output.contains("caught:"),
         "expected caught exception text in output: {output}"
+    );
+    assert!(
+        output.contains("missing field `cmd`"),
+        "the original exec handler should report its missing command argument: {output}"
     );
     assert!(
         !output.contains("no-exception"),
