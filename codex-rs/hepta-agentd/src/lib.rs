@@ -93,6 +93,14 @@ pub use authority_host_service::HostAuthorityLane;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityService;
 #[cfg(target_os = "linux")]
+mod root_notes_launch_channel;
+#[cfg(target_os = "linux")]
+mod root_notes_launch_io;
+#[cfg(target_os = "linux")]
+pub use root_notes_launch_channel::RootNotesLaunchAbort;
+#[cfg(target_os = "linux")]
+pub use root_notes_launch_channel::RootNotesLaunchChannel;
+#[cfg(target_os = "linux")]
 mod root_notes_launch_wire;
 #[cfg(target_os = "linux")]
 pub use root_notes_launch_wire::ROOT_NOTES_LAUNCH_FRAME_BOUND;
