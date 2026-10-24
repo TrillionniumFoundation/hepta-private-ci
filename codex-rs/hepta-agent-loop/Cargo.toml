@@ -10,10 +10,14 @@ name = "codex_hepta_agent_loop"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+context-v2 = ["dep:codex-hepta-context-compiler"]
+
 [lints]
 workspace = true
 
 [dependencies]
+codex-hepta-context-compiler = { path = "../hepta-context-compiler", optional = true }
 codex-hepta-types = { path = "../hepta-types" }
 thiserror = { workspace = true }
 tokio = { workspace = true, features = ["macros", "sync", "time"] }

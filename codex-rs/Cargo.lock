@@ -3450,6 +3450,7 @@ dependencies = [
 name = "codex-hepta-agent-loop"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-context-compiler",
  "codex-hepta-types",
  "pretty_assertions",
  "thiserror 2.0.21",

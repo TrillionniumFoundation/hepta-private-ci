@@ -48,3 +48,18 @@ process recovery, or performance parity with Codex. Those require the concrete
 owner composition and a matched model/task benchmark.
 
 Run `just test -p codex-hepta-agent-loop` from the workspace.
+
+## Existing context compiler adapter
+
+The optional context-v2 feature consumes the existing V2 compilation, exact
+serialization, attachment and verified current admission snapshot. It reuses
+prepare_delivery_v2, preserves the owner-serialized bytes, checks objective
+binding and reserves output capacity inside the same model profile. The
+returned preparation must still be bound to a real provider invocation; it
+grants no dispatch authority. Tests exercise mandatory instruction/tool
+retention during recompilation and reject revoked or foreign context. Semantic
+summarization, persisted product continuation and same-model task quality
+remain outside this adapter qualification.
+
+Run just test -p codex-hepta-agent-loop --features context-v2 for both the
+loop and actual context-compiler integration tests (16 tests at this revision).

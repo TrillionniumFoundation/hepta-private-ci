@@ -7,6 +7,8 @@
 
 #![forbid(unsafe_code)]
 
+#[cfg(feature = "context-v2")]
+mod context;
 mod runner;
 mod types;
 
@@ -30,3 +32,10 @@ pub use types::Transition;
 pub use types::TurnBinding;
 pub use types::TurnOwner;
 pub use types::Usage;
+
+#[cfg(feature = "context-v2")]
+pub use context::NativeContextInputV2;
+#[cfg(feature = "context-v2")]
+pub use context::PreparedNativeContextV2;
+#[cfg(feature = "context-v2")]
+pub use context::prepare_native_context_v2;
