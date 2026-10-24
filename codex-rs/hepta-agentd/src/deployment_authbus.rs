@@ -13,6 +13,7 @@ use ed25519_dalek::Signer;
 
 use super::DeploymentFinalUseIssuer;
 use super::STATE_OWNER;
+use super::writer::WriterRegistrationExt;
 use crate::AgentdIdentity;
 use crate::AuthBusObjectiveBody;
 use crate::AuthBusObjectiveIngress;

@@ -76,6 +76,18 @@ pub fn authbus_objective_claims(
     objective_claims(identity, request, &payload)
 }
 
+/// Compile an exact retained request for historical comparison.
+/// The historical spawn is validated as part of the signed body, without
+/// requiring it to equal the currently registered spawn. The original journal
+/// must still match every claim and signature; this function admits no work.
+pub fn historical_authbus_objective_claims(
+    identity: &AgentdIdentity,
+    request: &AuthBusObjectiveIngress,
+) -> Result<SignedMessageClaims, ObjectiveClaimsError> {
+    let payload = objective_body_payload(&request.body)?;
+    objective_claims(identity, request, &payload)
+}
+
 fn objective_claims(
     identity: &AgentdIdentity,
     request: &AuthBusObjectiveIngress,

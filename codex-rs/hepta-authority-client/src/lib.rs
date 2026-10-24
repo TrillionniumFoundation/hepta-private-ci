@@ -56,6 +56,7 @@ pub use final_use_issuer::AgentdUnixFinalUseGrantProvider;
 mod objective_claims;
 pub use objective_claims::ObjectiveClaimsError;
 pub use objective_claims::authbus_objective_claims;
+pub use objective_claims::historical_authbus_objective_claims;
 pub use objective_claims::objective_payload;
 pub use objective_claims::objective_scope;
 pub use objective_claims::parse_objective_digest;

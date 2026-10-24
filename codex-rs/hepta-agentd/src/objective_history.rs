@@ -43,10 +43,11 @@ impl ObjectiveHostState {
         // Match the retained historical signature and all original claims. Do
         // not apply today's issuer expiry/revocation as a history-erasure rule.
         // Read access uses the existing owner-only socket and outer spawn fence.
-        let payload =
-            objective_body_payload(&query.request.body).map_err(|_| Unknown::InvalidQuery)?;
-        let claims = objective_claims(identity, &query.request, &payload)
-            .map_err(|_| Unknown::InvalidQuery)?;
+        let claims = codex_hepta_authority_client::historical_authbus_objective_claims(
+            identity,
+            &query.request,
+        )
+        .map_err(|_| Unknown::InvalidQuery)?;
         let expected_authentication = RunStartAuthenticationV1 {
             issuer_id: claims.issuer_id,
             key_epoch: claims.key_epoch.get(),
