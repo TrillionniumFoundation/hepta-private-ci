@@ -5,6 +5,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from operational_cohort_plan import canonical, digest
 from prospective_action_execution import observe, run_case, validate_case
@@ -71,6 +72,30 @@ class TestUnavailable(unittest.TestCase):
 
 
 class ProspectiveExecutionTests(unittest.TestCase):
+    def test_receipt_write_failure_cleans_child_and_preserves_physical_launch_count(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            store, binding = fixture(root)
+            original, failed = Path.write_bytes, []
+            def once_no_space(path, data):
+                if path.name == "launch.json" and not failed:
+                    failed.append(str(path))
+                    raise OSError(28, "injected no space for launch receipt")
+                return original(path, data)
+            limits = {"cpu_seconds": 10, "wall_timeout_seconds": 15,
+                      "address_space_bytes": 1024 ** 3, "log_file_bytes": 1024 ** 2}
+            with patch.object(Path, "write_bytes", once_no_space):
+                result = run_case(binding, store, {"python": sys.executable, "plain_pytest": True},
+                                  root / "out", root / "work", limits, "a" * 64)
+            self.assertEqual(result["physical_command_executions"], 6)
+            self.assertEqual(result["complete_command_observations"], 5)
+            self.assertEqual(result["launch_receipt_count"], 5)
+            error = result["errors"][0]["partial_observation"]
+            self.assertTrue(error["command_started"])
+            self.assertEqual(error["returncode"], -9)
+            self.assertFalse(error["cleanup"]["process_group_still_present"])
+            self.assertFalse(any((root / "work").iterdir()))
+
     def test_normal_exit_cannot_leave_an_active_owned_descendant(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

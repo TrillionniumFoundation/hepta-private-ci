@@ -32,11 +32,13 @@ class Checks(unittest.TestCase):
         class MissingPlugin(ImportError):
             pass
         raise MissingPlugin("uncaught dependency subclass")
+    def test_resource(self):
+        raise PermissionError(1, "fixture sandbox denial")
 ''')
             observer = Path(__file__).with_name("prospective_action_observer.py").resolve()
             for runner in ("unittest", "pytest"):
                 for method, expected in (("test_missing", "infrastructure_error"), ("test_expected", "pass"),
-                                         ("test_subclass", "infrastructure_error")):
+                                         ("test_subclass", "infrastructure_error"), ("test_resource", "infrastructure_error")):
                     result = root / (runner + "-" + method + ".json")
                     selector = ("test_lazy.Checks." + method if runner == "unittest"
                                 else str(root / "test_lazy.py") + "::Checks::" + method)
@@ -48,7 +50,8 @@ class Checks(unittest.TestCase):
                         stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20)
                     data = json.loads(result.read_bytes())
                     self.assertEqual(data["outcome"], expected, (runner, data, child.stderr.decode()))
-                    self.assertEqual(data["uncaught_import_failures"], int(method != "test_expected"))
+                    self.assertEqual(data["uncaught_import_failures"], int(method in ("test_missing", "test_subclass")))
+                    self.assertEqual(data["uncaught_resource_failures"], int(method == "test_resource"))
 
 
 if __name__ == "__main__":

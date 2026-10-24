@@ -46,7 +46,52 @@ def close_owned_process_group(group):
             "scope": "Owned private session/process group only; escaped sessions are not measured."}
 
 
+class CommandObservationError(RuntimeError):
+    def __init__(self, error, record):
+        super().__init__(type(error).__name__ + ": " + str(error))
+        self.record = record
+
+
 def observe(command, profile, cwd, output, limits):
+    """Every post-launch exit path cleans the owned child, even receipt I/O failure."""
+    state, failure, result = {}, None, None
+    started, cpu = time.perf_counter_ns(), time.thread_time_ns()
+    try:
+        result = _observe(command, profile, cwd, output, limits, state)
+    except BaseException as error:
+        failure = error
+    finally:
+        child = state.get("child")
+        if child is not None:
+            try:
+                if child.returncode is None:
+                    try:
+                        os.killpg(child.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                    _, status, usage = os.wait4(child.pid, 0)
+                    child.returncode = os.waitstatus_to_exitcode(status)
+                    state["usage"] = usage
+                if "cleanup" not in state:
+                    state["cleanup"] = close_owned_process_group(child.pid)
+            except BaseException as cleanup_error:
+                state["cleanup"] = {"process_group_still_present": True,
+                    "cleanup_error": type(cleanup_error).__name__ + ": " + str(cleanup_error)}
+                failure = failure or cleanup_error
+    if failure is not None:
+        if not isinstance(failure, Exception):
+            raise failure
+        usage, cleanup = state.get("usage"), state.get("cleanup")
+        record = {"command_started": child is not None, "pid": child.pid if child else None,
+            "returncode": child.returncode if child else None, "cleanup": cleanup,
+            "wall_ns": time.perf_counter_ns() - started, "parent_thread_cpu_ns": time.thread_time_ns() - cpu,
+            "known_child_cpu_ns": None if usage is None else round((usage.ru_utime + usage.ru_stime) * 1e9)
+                + (cleanup or {}).get("orphan_child_cpu_ns", 0)}
+        raise CommandObservationError(failure, record) from failure
+    return result
+
+
+def _observe(command, profile, cwd, output, limits, state):
     """Observe a bounded real command, with per-child wait4 CPU accounting."""
     output, cwd = Path(output).resolve(), Path(cwd).resolve()
     libc = ctypes.CDLL(None, use_errno=True)
@@ -75,8 +120,9 @@ def observe(command, profile, cwd, output, limits):
         "--log-bytes", str(limits["log_file_bytes"]), "--", *args]
     start, cpu, timeout = time.perf_counter_ns(), time.thread_time_ns(), False
     with (output / "stdout.log").open("xb") as stdout, (output / "stderr.log").open("xb") as stderr:
-        child = subprocess.Popen(argv, cwd=cwd, env=environment, stdout=stdout, stderr=stderr,
-                                 start_new_session=True)
+        state["child"] = subprocess.Popen(argv, cwd=cwd, env=environment, stdout=stdout, stderr=stderr,
+                                          start_new_session=True)
+        child = state["child"]
         (output / "launch.json").write_bytes(canonical({"pid": child.pid, "private_process_group": child.pid,
             "command": argv, "child_created": True}))
         while True:
@@ -90,7 +136,9 @@ def observe(command, profile, cwd, output, limits):
                 break
             time.sleep(0.01)
         child.returncode = os.waitstatus_to_exitcode(status)
+        state["usage"] = usage
     cleanup = close_owned_process_group(child.pid)
+    state["cleanup"] = cleanup
     wall_ns, parent_ns = time.perf_counter_ns() - start, time.thread_time_ns() - cpu
     observed = output / "observation.json"
     observation, observation_error = None, None
@@ -155,6 +203,7 @@ def run_case(binding, source_store, profile, output, work_root, limits, plan_sha
     working = Path(work_root).resolve() / (binding["project"] + "-" + str(binding["bug_id"]))
     working.mkdir(parents=True, exist_ok=False)
     checkouts, commands, pairs, errors, observer_attempts, tainted = {}, [], {}, [], 0, set()
+    launches = {a["key"]: set() for a in binding["actions"]}
     overlay_sha = None
     started, parent_cpu = time.perf_counter_ns(), time.thread_time_ns()
 
@@ -211,12 +260,20 @@ def run_case(binding, source_store, profile, output, work_root, limits, plan_sha
                         shutil.copy2(snapshot / name, target, follow_symlinks=False)
                     observer_attempts += 1
                     pair[role] = observe(action, profile, directory, output / action["key"] / role, limits)
+                    launches[action["key"]].add(role)
                     if pair[role]["owned_process_group_cleanup"]["process_group_still_present"]:
                         tainted.add(role)
                         raise RuntimeError("owned test descendants still active; source reset unsafe")
                 except Exception as error:
-                    errors.append({"action": action["key"], "role": role,
-                                   "type": type(error).__name__, "message": str(error)})
+                    record = {"action": action["key"], "role": role,
+                              "type": type(error).__name__, "message": str(error)}
+                    if isinstance(error, CommandObservationError):
+                        record["partial_observation"] = error.record
+                        if error.record["command_started"]:
+                            launches[action["key"]].add(role)
+                            if error.record["cleanup"] is None or error.record["cleanup"]["process_group_still_present"]:
+                                tainted.add(role)
+                    errors.append(record)
             pairs[action["key"]] = pair
     except Exception as error:
         errors.append({"stage": "case_setup", "type": type(error).__name__, "message": str(error)})
@@ -239,8 +296,9 @@ def run_case(binding, source_store, profile, output, work_root, limits, plan_sha
                                "message": str(error), "path": str(working)})
     (output / "setup.json").write_bytes(canonical({"commands": commands, "errors": errors,
         "fixed_test_tree_sha256": overlay_sha, "fixed_test_files": len(case["fixed_test_paths"])}))
-    launch_counts = {a["key"]: sum((output / a["key"] / r / "launch.json").is_file()
-                                  for r in ("base", "candidate")) for a in binding["actions"]}
+    launch_counts = {key: len(roles) for key, roles in launches.items()}
+    launch_receipts = sum((output / a["key"] / r / "launch.json").is_file()
+                          for a in binding["actions"] for r in ("base", "candidate"))
     result = {"schema": "hepta.prospective-action-case-execution.v1", "case_sha256": binding["sha256"],
         "execution_plan_sha256": plan_sha, "project": binding["project"], "bug_id": binding["bug_id"],
         "group_id": case["bug"]["group_id"], "split": binding["role"],
@@ -250,7 +308,8 @@ def run_case(binding, source_store, profile, output, work_root, limits, plan_sha
         "physical_command_executions": sum(launch_counts.values()), "action_launch_counts": launch_counts,
         "complete_command_observations": sum(len(pair) for pair in pairs.values()),
         "observer_call_attempts": observer_attempts,
-        "observer_attempts_without_launch_receipt": observer_attempts - sum(launch_counts.values()),
+        "launch_receipt_count": launch_receipts,
+        "observer_attempts_without_launch_receipt": observer_attempts - launch_receipts,
         "case_wall_ns": time.perf_counter_ns() - started,
         "case_parent_thread_cpu_ns": time.thread_time_ns() - parent_cpu,
         "case_cost_scope": "Inclusive case source setup, observations and cleanup; overlaps nested command wall/parent CPU and excludes result serialization. Git child CPU not measured here.",

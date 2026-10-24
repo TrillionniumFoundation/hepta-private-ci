@@ -13,6 +13,7 @@ import operational_observer as legacy
 
 
 _classify = legacy.classify
+RESOURCE_ERRNOS = {1, 12, 13, 28, 30}  # EPERM, ENOMEM, EACCES, ENOSPC, EROFS.
 
 
 def classify(observations, returncode):
@@ -20,7 +21,10 @@ def classify(observations, returncode):
     unavailable = sum((o.get("uncaught_import_error") or o.get("exception") in ("ImportError", "ModuleNotFoundError"))
                       and o["status"] == "failed" for o in observations)
     result["uncaught_import_failures"] = unavailable
-    if unavailable:
+    resource_errors = sum(o.get("resource_failure_errno") in RESOURCE_ERRNOS
+                          and o["status"] == "failed" for o in observations)
+    result["uncaught_resource_failures"] = resource_errors
+    if unavailable or resource_errors:
         result["outcome"] = "infrastructure_error"
     return result
 
@@ -33,6 +37,8 @@ def observe(runner, args):
             def addError(self, test, error):
                 super().addError(test, error)
                 self.observations[-1]["uncaught_import_error"] = issubclass(error[0], ImportError)
+                if isinstance(error[1], OSError):
+                    self.observations[-1]["resource_failure_errno"] = error[1].errno
         class DependencyRunner(legacy.ObservedRunner):
             resultclass = DependencyResult
         program = unittest.TestProgram(module=None, argv=["unittest", *args],
@@ -48,6 +54,7 @@ def observe(runner, args):
                 if report.failed and call.excinfo is not None:
                     report.hepta_exception = call.excinfo.type.__name__
                     report.hepta_import_error = issubclass(call.excinfo.type, ImportError)
+                    report.hepta_resource_errno = call.excinfo.value.errno if isinstance(call.excinfo.value, OSError) else None
                     names = {entry.name for entry in call.excinfo.traceback}
                     if report.when == "call" and names & {"_callSetUp", "setUp"}:
                         report.hepta_phase = "setup"
@@ -60,6 +67,7 @@ def observe(runner, args):
                 if len(self.observations) > before and hasattr(report, "hepta_exception"):
                     self.observations[-1]["exception"] = report.hepta_exception
                     self.observations[-1]["uncaught_import_error"] = report.hepta_import_error
+                    self.observations[-1]["resource_failure_errno"] = report.hepta_resource_errno
         observer = PhaseObserver()
         returncode = int(pytest.main(args, plugins=[observer]))
         observations = observer.observations
