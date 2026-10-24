@@ -1,0 +1,8 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+error: no matching package named `rama-tls` found
+location searched: crates.io index
+required by package `codex-network-proxy v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-loop-review/codex-rs/network-proxy)`
+As a reminder, you're using offline mode (--offline) which can sometimes cause surprising resolution failures, if this error is too confusing you may wish to retry without `--offline`.
+error: command `/workspace/scratch/f24caf690188/hepta-native-dot-resume/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-agent-loop --locked --offline` exited with code 101
+error: recipe `test` failed on line 89 with exit code 101
