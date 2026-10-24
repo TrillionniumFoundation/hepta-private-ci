@@ -12,6 +12,7 @@ use codex_hepta_memory::NotesTargetIdentity;
 use std::fs::File;
 use std::io::Read;
 use std::time::Duration;
+use std::sync::Mutex;
 
 /// Root owns this exact pending service. The caller has already installed any
 /// recovered image, spawned the actual Host, and retained its real Child/pidfd.
@@ -52,7 +53,46 @@ pub struct RootNotesAuthorityStartup {
     session: HostAuthorityOwnerLifetime,
     nonce: String,
     preparation_end: u64,
-    completed: bool,
+    cancellation: RootNotesStartupCancellation,
+}
+
+/// Retain this before moving startup into a blocking worker. Cancelling the
+/// worker's JoinHandle alone does not stop an already running synchronous call.
+/// `cancel` closes its actual channel and all original authority lane aliases.
+#[derive(Clone)]
+pub struct RootNotesStartupCancellation(Arc<StartupCancellation>);
+
+struct StartupCancellation {
+    service: Arc<HostAuthorityService>,
+    state: Mutex<StartupCancellationState>,
+}
+
+enum StartupCancellationState {
+    Armed(crate::RootNotesLaunchAbort),
+    Completed,
+    Cancelled,
+}
+
+impl RootNotesStartupCancellation {
+    pub fn cancel(&self) {
+        let mut state = self.0.state.lock().unwrap_or_else(|error| error.into_inner());
+        if matches!(*state, StartupCancellationState::Armed(_)) {
+            drop(std::mem::replace(&mut *state, StartupCancellationState::Cancelled));
+            self.0.service.fail_material_startup();
+        }
+    }
+
+    fn complete(&self) -> io::Result<()> {
+        let mut state = self.0.state.lock().unwrap_or_else(|error| error.into_inner());
+        match std::mem::replace(&mut *state, StartupCancellationState::Completed) {
+            StartupCancellationState::Armed(abort) => { abort.disarm(); Ok(()) }
+            StartupCancellationState::Cancelled => {
+                *state = StartupCancellationState::Cancelled;
+                Err(io::Error::other("Root Notes startup was cancelled"))
+            }
+            StartupCancellationState::Completed => Err(invalid()),
+        }
+    }
 }
 
 impl RootNotesLaunchServer {
@@ -80,6 +120,22 @@ impl RootNotesLaunchServer {
         if lifetime.as_nanos() > u128::from(ROOT_NOTES_TOTAL_PREPARATION_NS) {
             return Err(invalid());
         }
+        // Keep the caller's already fixed end, and only shorten it. Anchor
+        // BOOTTIME before the protected clock's possible I/O, so that I/O and
+        // millisecond rounding cannot accidentally renew the real lease.
+        let preparation_end_boottime_ns = service.issuer.with_live_lease(|lease| {
+            use codex_hepta_contracts::AuthorityClock;
+            let before = now()?;
+            let observed = service.clock.now_unix_ms().map_err(io::Error::other)?;
+            let writer = service.writer.as_ref().ok_or_else(invalid)?;
+            let expiry = lease.expires_at_unix_ms.min(writer.registration.authority_lease.expires_at_unix_ms);
+            let remaining_ms = expiry.checked_sub(observed).and_then(|left| left.checked_sub(1))
+                .filter(|left| *left > 0).ok_or_else(invalid)?;
+            let lease_end = before.checked_add(remaining_ms.checked_mul(1_000_000).ok_or_else(invalid)?)
+                .ok_or_else(invalid)?;
+            Ok(preparation_end_boottime_ns.min(lease_end))
+        })?;
+        let lifetime = remaining(preparation_end_boottime_ns)?;
         HostAuthorityOwnerLifetime::from_pidfd(preheld_root_pidfd.try_clone()?, bundle.root.pid, lifetime)
             .map_err(io::Error::other)?.check_alive().map_err(io::Error::other)?;
         let channel = RootNotesLaunchChannel::from_peer_stream(stream, bundle.consumer, preheld_host_pidfd,
@@ -182,7 +238,10 @@ impl RootNotesReservedTarget {
             schema_version:1, launch_nonce:nonce.clone(),
         }, &[sealed.into(), root_pidfd], phase_end)?;
         channel.check(phase_end)?;
-        Ok(RootNotesAuthorityStartup { service, channel, session, nonce, preparation_end, completed:false })
+        let cancellation = RootNotesStartupCancellation(Arc::new(StartupCancellation {
+            service:Arc::clone(&service), state:Mutex::new(StartupCancellationState::Armed(channel.abort_handle()?)),
+        }));
+        Ok(RootNotesAuthorityStartup { service, channel, session, nonce, preparation_end, cancellation })
     }
 }
 
@@ -190,6 +249,8 @@ impl RootNotesAuthorityStartup {
     /// Every runtime lane must serve this same allocation, including its
     /// permanent Unknown state, original clock, canonical issuer and peer pin.
     pub fn service(&self) -> Arc<HostAuthorityService> { Arc::clone(&self.service) }
+
+    pub fn cancellation(&self) -> RootNotesStartupCancellation { self.cancellation.clone() }
 
     /// Original recovered-owner-ready, zero material inputs, exactly once.
     /// Any error or cancellation permanently closes this launch's service.
@@ -209,17 +270,14 @@ impl RootNotesAuthorityStartup {
         }, &[], self.preparation_end)?;
         self.session.check_alive().map_err(io::Error::other)?;
         self.channel.check(self.preparation_end)?;
-        self.completed = true;
+        self.cancellation.complete()?;
         Ok(Arc::clone(&self.service))
     }
 }
 
 impl Drop for RootNotesAuthorityStartup {
     fn drop(&mut self) {
-        if !self.completed {
-            if let Some(startup) = &self.service.material_startup { startup.fail(); }
-            if let Some(checkpoint) = &self.service.checkpoint { checkpoint.backend.close(); }
-        }
+        self.cancellation.cancel();
     }
 }
 

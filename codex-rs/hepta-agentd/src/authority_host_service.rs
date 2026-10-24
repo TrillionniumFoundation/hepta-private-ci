@@ -44,6 +44,10 @@ mod material_install;
 mod material_startup;
 use material_startup::RequiredMaterialStartup;
 
+#[path = "authority_host_delivery.rs"]
+mod delivery;
+use delivery::ServiceDelivery;
+
 #[path = "root_notes_launch_server.rs"]
 mod notes_launch;
 pub use notes_launch::RootNotesAuthorityStartup;
@@ -51,6 +55,7 @@ pub use notes_launch::RootNotesAwaitingSession;
 pub use notes_launch::RootNotesLaunchServer;
 pub use notes_launch::RootNotesReservedTarget;
 pub use notes_launch::RootNotesSessionChannels;
+pub use notes_launch::RootNotesStartupCancellation;
 
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]
@@ -75,6 +80,7 @@ pub struct HostAuthorityService {
     consumers: Option<RegisteredConsumers>,
     bootstrap: Option<RegisteredBootstrap>,
     material_startup: Option<RequiredMaterialStartup>,
+    delivery: ServiceDelivery,
 }
 
 impl HostAuthorityService {
@@ -96,6 +102,7 @@ impl HostAuthorityService {
             consumers: None,
             bootstrap: None,
             material_startup: None,
+            delivery: ServiceDelivery::default(),
         })
     }
 
@@ -248,8 +255,10 @@ impl HostAuthorityService {
         {
             checkpoint.validate_peer(policy.peer).map_err(unavailable)?;
         }
+        let _shutdown_pin = self.delivery.register(&stream)?;
         let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)?;
-        while channel.exchange(|bytes| self.handle(lane, bytes))? {}
+        while channel.exchange_with_response_guard(|bytes| self.handle(lane, bytes),
+            || self.delivery.response_guard())? {}
         Ok(())
     }
 
@@ -298,6 +307,7 @@ impl HostAuthorityService {
     }
 
     fn check_bootstrap_lifetime(&self) -> Result<(), HostIssuerTransportError> {
+        self.delivery.require_open()?;
         if let Some(bootstrap) = &self.bootstrap {
             bootstrap.check_serving().map_err(unavailable)?;
         }

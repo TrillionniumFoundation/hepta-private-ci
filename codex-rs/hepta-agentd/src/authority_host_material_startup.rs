@@ -111,10 +111,7 @@ impl HostAuthorityService {
             Ok(())
         })();
         if result.is_err() {
-            startup.state.store(StartupState::Failed as u8, Ordering::Release);
-            if let Some(checkpoint) = &self.checkpoint {
-                checkpoint.backend.close();
-            }
+            self.fail_material_startup();
         }
         result
     }

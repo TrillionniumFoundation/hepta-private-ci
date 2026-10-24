@@ -84,8 +84,7 @@ impl HostAuthorityService {
                 Ok(installed)
             }
             Err(error) => {
-                startup.fail();
-                checkpoint.backend.close();
+                self.fail_material_startup();
                 Err(error)
             }
         }

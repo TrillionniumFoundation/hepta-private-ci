@@ -90,7 +90,8 @@ pub use authority_host_runtime::serve_host_authority_session;
 pub use authority_host_service::HostAuthorityBootstrapLocations;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::{RootNotesAuthorityStartup, RootNotesAwaitingSession,
-    RootNotesLaunchServer, RootNotesReservedTarget, RootNotesSessionChannels};
+    RootNotesLaunchServer, RootNotesReservedTarget, RootNotesSessionChannels,
+    RootNotesStartupCancellation};
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityLane;
 #[cfg(target_os = "linux")]
