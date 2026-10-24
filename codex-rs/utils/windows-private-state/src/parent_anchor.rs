@@ -19,6 +19,19 @@ use windows_sys::Win32::Storage::FileSystem::GetFinalPathNameByHandleW;
 use windows_sys::Win32::Storage::FileSystem::VOLUME_NAME_GUID;
 
 const MAX_ANCESTORS: usize = 32;
+
+#[cfg(test)]
+fn trace_ancestor_attempt(index: usize) {
+    use std::io::Write as _;
+
+    if index < MAX_ANCESTORS {
+        let _ = writeln!(
+            std::io::stderr().lock(),
+            "HEPTA_PARENT_ANCHOR_OBSERVATION phase=initial ancestor_index={index}"
+        );
+    }
+}
+
 struct Ancestor {
     file: File,
     identity: mechanism::Identity,
@@ -136,6 +149,8 @@ impl ParentAnchor {
         let file = mechanism::open_namespace_volume(&root, |value| event = Some(value))?;
         require_volume_root(&file)?; // Reject SUBST/subdirectory aliases that skip parents.
         let volume = inspect_local_ntfs(&file)?.object.volume;
+        #[cfg(test)]
+        trace_ancestor_attempt(/*index*/ 0);
         let root = opened(file, event, owner.current_user()?, volume)?;
         let mut ancestors = vec![root];
         for leaf in leaves {
@@ -148,6 +163,8 @@ impl ParentAnchor {
                 name,
                 |value| event = Some(value),
             )?;
+            #[cfg(test)]
+            trace_ancestor_attempt(ancestors.len());
             ancestors.push(opened(file, event, owner.current_user()?, volume)?);
         }
         let mut anchor = Self {
