@@ -1,0 +1,13 @@
+{
+  "schema": "hepta.p41-integrated-raw-roots-rustfmt-followup.v1",
+  "date_utc": "2026-10-23",
+  "parent": "410126edd13a53d115b2ea7839583393f992f0cf",
+  "change": "Split 107-column assertion into a 96-column literal binding plus 53-column assert expression; string and both positive/negative test semantics unchanged.",
+  "static_checks": {
+    "old_line_length": 107,
+    "new_max_line_length": 96,
+    "test_expectation_unmodified": true
+  },
+  "owning_rustfmt": "NOT_EXECUTED_LOCALLY",
+  "policy": "SHADOW_ONLY/DENY_ALL/HOLD_NO_GO"
+}

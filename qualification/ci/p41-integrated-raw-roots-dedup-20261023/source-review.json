@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.p41-integrated-raw-roots-dedup-static-review.v1",
+  "reviewed_utc": "2026-10-23",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 3426,
+  "expected_parent_head": "cfb38f7a25a3b61ab4390e2d14ea4b8d4e03eff4",
+  "base_sha": "d904d5acd83b30754951b5fc7879f0ae51c2ec9c",
+  "changed_files": [
+    "codex-rs/app-server/src/request_processors/thread_processor.rs",
+    "codex-rs/app-server/tests/suite/v2/thread_resume_permission_roots_tests.rs"
+  ],
+  "finding": "A prior canonical request_overrides.remove('workspace_roots') consumes the value before the second identical removal. The duplicate cannot execute; the new rejection test expects the duplicate's never-emitted error message.",
+  "action": "Remove only the redundant second parsing block; align the new negative test to the first owning canonical conflict message. Preserve the original first parser, typed/raw conflict denial, invalid JSON denial, empty-list behavior, and all other assertions.",
+  "static_verification": {
+    "first_parser_remains": true,
+    "number_of_removes_before": 2,
+    "number_of_removes_after": 1,
+    "second_block_deleted_exactly": true,
+    "expected_error_matches_live_first_branch": true,
+    "negative_jsonrpc_assertion_preserved": true,
+    "subsequent_matching_resume_assertion_preserved": true,
+    "malformed_negative_assertion_preserved": true,
+    "empty_root_positive_assertion_preserved": true
+  },
+  "source_validation": "static source review only",
+  "cargo_bazel_clippy": "NOT_EXECUTED; no Rust/Cargo/Bazel available in the present container",
+  "owning_native_ci": "PENDING_NEW_HEAD",
+  "policy": "SHADOW_ONLY/DENY_ALL/HOLD_NO_GO",
+  "claims_no_security_gate_closed": true
+}
