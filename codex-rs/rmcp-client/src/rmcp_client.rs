@@ -1215,8 +1215,11 @@ impl RmcpClient {
                         Err(err) => Err(err),
                     }
                 } else {
+                    // Session repair belongs to RmcpClient, where replacing the peer
+                    // revokes retained handles. The SDK must never replay an effect.
                     let mut http_config =
-                        StreamableHttpClientTransportConfig::with_uri(url.clone());
+                        StreamableHttpClientTransportConfig::with_uri(url.clone())
+                            .reinit_on_expired_session(/*enable*/ false);
                     if let Some(StreamableHttpBearerToken::Resolved(bearer_token)) = bearer_token {
                         http_config = http_config.auth_header(bearer_token.clone());
                     }

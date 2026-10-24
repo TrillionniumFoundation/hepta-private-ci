@@ -140,6 +140,21 @@ authentication client or wire-protocol fallback.
 Changing the original `RmcpClient` session or shutting it down revokes all
 retained handles from that session. A handle never follows a replacement peer.
 
+The locked SDK is `rmcp` 3.1.3. Its
+[`AuthClient`](https://github.com/modelcontextprotocol/rust-sdk/blob/rmcp-v3.1.3/crates/rmcp/src/transport/common/auth/streamable_http_client.rs)
+can refresh after HTTP 401 and repeat the same POST with a new token. This is
+why the retained constructor refuses that wrapper, including its stored-token
+fallback, instead of relying only on application-level retry policy. The SDK's
+[`StreamableHttpClientTransportConfig`](https://github.com/modelcontextprotocol/rust-sdk/blob/rmcp-v3.1.3/crates/rmcp/src/transport/streamable_http_client.rs)
+also enables transparent 404 reinitialization by default. The original plain
+transport explicitly disables it. Its adapter additionally reports 404 as its
+own `Client(SessionExpired404)` error, leaving ordinary client recovery with
+`RmcpClient`, where replacing the peer revokes old retained handles. Resuming
+an interrupted SSE response uses GET on the same original session and does not
+resubmit the effect POST. The authenticated HTTP tests exercise real original
+adapter construction with a resolved bearer or `X-Hepta-Runtime-Token`, and
+count effect requests after 404, 401, nonce challenge, redirect and late replies.
+
 Supply that handle, its live multithread Tokio runtime, the exact canonical
 original payload and the already bounded local monotonic deadline in
 `AgentdAndroidRuntimeInputs`. Call
