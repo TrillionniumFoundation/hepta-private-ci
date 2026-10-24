@@ -49,6 +49,13 @@ mod ui_worker;
 
 type RootCheckpoint = ProtectedCognitiveCheckpoint<AgentdUnixCognitiveCheckpointTransport>;
 
+/// Ephemeral view diagnostics only, never a permit or persistent state.
+enum NotesUiCallPhase {
+    ReadOnly,
+    Preparing,
+    Sending,
+}
+
 /// Frozen deployment data, supplied by the trusted launcher, never UI IPC.
 /// The five artifact/runtime digests must name actual retained source inputs.
 /// No default or fabricated model identity is supplied for this no-model action.
@@ -195,7 +202,8 @@ impl AgentdNotesLiteralAdapter {
         text: &str,
     ) -> Result<AgentdNotesPreparedObjective, AgentdError> {
         let end = Instant::now() + self.deadline;
-        tokio::time::timeout_at(end.into(), self.prepare_until(client_intent_id, text, end))
+        let mut phase = NotesUiCallPhase::ReadOnly;
+        tokio::time::timeout_at(end.into(), self.prepare_until(client_intent_id, text, end, &mut phase))
             .await.map_err(|_| invalid("Notes original preparation acknowledgement unknown"))?
     }
 
@@ -204,6 +212,7 @@ impl AgentdNotesLiteralAdapter {
         client_intent_id: &str,
         text: &str,
         end: Instant,
+        phase: &mut NotesUiCallPhase,
     ) -> Result<AgentdNotesPreparedObjective, AgentdError> {
         let run_id = self.run_id(client_intent_id)?;
         if let Some(retained) = self.sender.retained_request_for_run(&run_id).await
@@ -232,6 +241,8 @@ impl AgentdNotesLiteralAdapter {
             .map_err(|_| invalid("protected Root clock unavailable"))?;
         let source_deadline = now_ms.checked_add(5_000)
             .ok_or_else(|| invalid("Notes source deadline overflow"))?;
+        if Instant::now() >= end { return Err(invalid("Notes deadline elapsed before original preparation")); }
+        *phase = NotesUiCallPhase::Preparing;
         let semantic = prepare_original_literal(&self.writer, LiteralOperationInput {
             target: self.observer.target(), observed: &observed, run_id: &run_id, text,
             subject: self.identity.agent_id.as_str(), policy_generation: self.bindings.policy_generation,

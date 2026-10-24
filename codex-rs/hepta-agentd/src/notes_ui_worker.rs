@@ -9,12 +9,7 @@ use crate::AgentdNotesObservationRetention;
 use crate::AgentdNotesSubmissionState;
 use crate::notes_ui_queue::NotesUiQueue;
 use crate::notes_ui_wire::*;
-
-enum CallPhase {
-    ReadOnly,
-    Preparing,
-    Sending,
-}
+use super::NotesUiCallPhase as CallPhase;
 
 impl AgentdNotesLiteralAdapter {
     pub(super) async fn run_ui(&mut self, queue: &NotesUiQueue) -> Result<(), AgentdError> {
@@ -74,20 +69,11 @@ impl AgentdNotesLiteralAdapter {
                     view.issue = Some(ObjectiveHostIssue::InvalidIntent);
                     return Ok(());
                 }
-                let run_id = self.run_id(&intent.client_intent_id)?;
-                let retained = self.sender.retained_request_for_run(&run_id).await
-                    .map_err(|error| invalid(&error.to_string()))?;
-                if retained.is_none() {
-                    if self.require_objective_ready().await.is_err() {
-                        // Startup is a read-only availability gap. No preparation,
-                        // send fence or Unknown delivery is created by this check.
-                        view.stage = ObjectiveStage::Unavailable;
-                        view.issue = Some(ObjectiveHostIssue::Unavailable);
-                        return Ok(());
-                    }
-                    *phase = CallPhase::Preparing;
-                }
-                match self.prepare(&intent.client_intent_id, &intent.text).await? {
+                let preparation_end = end.min(Instant::now() + self.deadline);
+                let prepared = tokio::time::timeout_at(preparation_end.into(), self.prepare_until(
+                    &intent.client_intent_id, &intent.text, preparation_end, phase,
+                )).await.map_err(|_| invalid("Notes UI preparation deadline elapsed"))??;
+                match prepared {
                     AgentdNotesPreparedObjective::Retained(_) => {
                         *view = self.retained_view(&intent.client_intent_id).await?;
                     }
