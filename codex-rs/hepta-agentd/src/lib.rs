@@ -34,6 +34,7 @@ mod native_memory;
 #[path = "native_memory_control_tests.rs"]
 mod native_memory_control_tests;
 mod native_memory_model;
+mod native_memory_tick_binding;
 mod native_memory_process;
 #[cfg(test)]
 mod native_memory_test_support;

@@ -13,6 +13,7 @@ import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from native_backend import HEAD, ENCODER, features, inspect, prompt, sha
+from native_tick_contract import validate_tick_binding
 
 
 def run(raw):
@@ -34,10 +35,11 @@ def run(raw):
         "source_binding_digest",
         "neuron_request",
     }
-    if (
-        set(request) != required
-        or request["schema"] != "hepta.memory-cell.native-request.v1"
-    ):
+    if request.get("schema") == "hepta.memory-cell.native-request.v2":
+        required.add("tick_binding")
+    if set(request) != required or request["schema"] not in {
+        "hepta.memory-cell.native-request.v1", "hepta.memory-cell.native-request.v2"
+    }:
         raise ValueError("closed request schema")
     expected_repo = Path(__file__).resolve().parents[2]
     if Path(request["repo"]).resolve() != expected_repo:
@@ -65,7 +67,6 @@ def run(raw):
     if (
         set(n) != fields
         or n["feature_vector_q24"] != features(request["question"])
-        or n["input_digest"] != request["source_binding_digest"]
     ):
         raise ValueError("actual query differs from native input features")
     if (
@@ -74,6 +75,10 @@ def run(raw):
         or not 1 <= n["expected_output_width"] <= 32
     ):
         raise ValueError("unregistered query binding or observation profile")
+    if request["schema"] == "hepta.memory-cell.native-request.v2":
+        validate_tick_binding(request)
+    elif n["input_digest"] != request["source_binding_digest"]:
+        raise ValueError("source-bound v1 request changed")
     actual, evidence = inspect(request["repo"], request["model"], request["checkpoint"])
     if actual != request["pins"] or n["weights_digest"] != actual["weights_digest"]:
         raise ValueError("retained artifact/runtime pins differ from actual bytes")
