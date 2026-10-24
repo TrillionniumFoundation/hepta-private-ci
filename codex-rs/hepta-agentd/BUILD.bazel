@@ -14,6 +14,7 @@ _UNIT_TEST_DEPENDENCIES = {
 codex_rust_crate(
     name = "hepta-agentd",
     compile_data = [
+        "tests/fixtures/android-bound-text-v1.json",
         "tests/fixtures/hos2_production_owner.json",
         "tests/fixtures/notes-bootstrap-v2.json",
         "tests/fixtures/notes-objective-literal-v1.json",
@@ -32,6 +33,7 @@ rust_library(
     testonly = True,
     srcs = glob(["src/**/*.rs"]),
     compile_data = [
+        "tests/fixtures/android-bound-text-v1.json",
         "tests/fixtures/hos2_production_owner.json",
         "tests/fixtures/notes-bootstrap-v2.json",
         "tests/fixtures/notes-objective-literal-v1.json",
@@ -48,6 +50,7 @@ rust_library(
 rust_test(
     name = "hepta-agentd-cognitive-write-qualification-test-bin",
     compile_data = [
+        "tests/fixtures/android-bound-text-v1.json",
         "tests/fixtures/hos2_production_owner.json",
         "tests/fixtures/notes-bootstrap-v2.json",
         "tests/fixtures/notes-objective-literal-v1.json",

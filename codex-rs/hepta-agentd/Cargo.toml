@@ -45,6 +45,7 @@ workspace = true
 
 [dependencies]
 anyhow = { workspace = true }
+base64 = { workspace = true }
 codex-app-server = { workspace = true }
 codex-app-server-client = { workspace = true }
 codex-app-server-protocol = { workspace = true }
@@ -81,6 +82,7 @@ codex-hepta-paths = { workspace = true }
 codex-model-provider = { workspace = true }
 codex-hepta-plasticity = { path = "../hepta-plasticity" }
 codex-protocol = { workspace = true }
+codex-rmcp-client = { workspace = true }
 codex-uds = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
 codex-utils-cli = { workspace = true }

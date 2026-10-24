@@ -19,6 +19,42 @@ fn assert_uninstalled(config: &mut AgentdConfig) {
     assert!(config.take_production_operations().is_none());
 }
 
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn android_runtime_bootstrap_preserves_original_writer_and_refuses_revoked_owner()
+-> Result<(), Box<dyn Error>> {
+    use crate::android_runtime::tests::Fault;
+    use crate::android_runtime::tests::inputs as runtime_inputs;
+
+    for revoked in [false, true] {
+        let (mut config, fixture) = Fixture::new().await?;
+        let (inputs, probes, issuer_peer) = fixture.inputs()?;
+        attach_production_operation_host(&mut config, inputs).await?;
+        let recovered = Arc::clone(config.production_writer_host().expect("original recovered host"));
+        let original_writer = recovered.writer();
+        let operations = config.take_production_operations().expect("original runtime config");
+        let (android_owner, _, _peer) = fixture.inputs()?;
+        let final_use = android_owner.final_use.open()?;
+        let (device_inputs, client, calls) = runtime_inputs(Fault::None, Duration::from_secs(2)).await?;
+        if revoked {
+            probes.verifier.reject_at_call.store(probes.verifier.calls.load(Ordering::SeqCst) + 1, Ordering::SeqCst);
+        }
+        let result = operations.with_android_from_runtime(&config, &recovered, final_use, device_inputs).await;
+        if revoked {
+            assert!(result.is_err());
+        } else {
+            let (operations, device) = result?;
+            let (attached, _) = operations.attach(Arc::clone(&recovered)).await?;
+            assert_eq!(attached.destination_count(), 2);
+            assert!(Arc::ptr_eq(&original_writer, &attached.writer()));
+            assert!(!device.attempt()?.start_attempted);
+        }
+        assert!(calls.requests.lock().expect("Runtime calls").is_empty());
+        assert_no_issuer_request(issuer_peer)?;
+        client.shutdown().await;
+    }
+    Ok(())
+}
+
 fn assert_no_issuer_request(mut peer: UnixStream) -> Result<(), Box<dyn Error>> {
     peer.set_nonblocking(true)?;
     match peer.read(&mut [0; 1]) {

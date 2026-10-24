@@ -188,6 +188,7 @@ mod production_authority;
 #[cfg(target_os = "linux")]
 mod production_composition;
 mod production_writer_host;
+mod android_runtime;
 mod prompt_runtime;
 mod qualification_writer;
 mod runtime;
@@ -415,6 +416,9 @@ pub use production_writer_host::AgentdFinalUseGrantProvider;
 pub use production_writer_host::AgentdProductionOperationRuntimeConfig;
 pub use production_writer_host::AgentdProductionWriterHost;
 pub use production_writer_host::AgentdProtectedCheckpointInputs;
+pub use android_runtime::AgentdAndroidRuntimeInputs;
+pub use android_runtime::AgentdAndroidTextDevice;
+pub use android_runtime::AndroidRuntimeAttempt;
 pub use prompt_runtime::AgentdPromptPipelineError;
 pub use prompt_runtime::AgentdPromptPipelineOwner;
 pub use prompt_runtime::AgentdPromptRuntimeError;
