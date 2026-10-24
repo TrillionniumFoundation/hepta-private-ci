@@ -21,6 +21,8 @@ fn binding(f: &Fixture) -> NativeShadowHostBinding {
 
 #[tokio::test]
 async fn shadow_delivery_is_immutable_owner_bound_and_late_withdrawal_closes_owner() {
+    enum Withdrawal { Authority, SourceTombstone }
+    for withdrawal in [Withdrawal::Authority, Withdrawal::SourceTombstone] {
     let f = fixture().await;
     let a = tempfile::tempdir().unwrap();
     let b = tempfile::tempdir().unwrap();
@@ -61,8 +63,26 @@ async fn shadow_delivery_is_immutable_owner_bound_and_late_withdrawal_closes_own
     assert!(owner_b.state.lock().unwrap().failed);
     assert_eq!(owner_a.host.dispatches.load(Ordering::SeqCst), 0);
     assert!(f.writer.revalidate_memory_cell(&f.admission).await.is_err());
-    f.verifier.0.store(true, Ordering::SeqCst);
+    match withdrawal {
+        Withdrawal::Authority => f.verifier.0.store(true, Ordering::SeqCst),
+        Withdrawal::SourceTombstone => {
+            use codex_hepta_memory::{CognitiveScope, ForgetMemoryDraft, LedgerSourceKind, SourceDraft};
+            let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs() as i64;
+            let source = SourceDraft { scope: CognitiveScope::AgentPrivate,
+                kind: LedgerSourceKind::ExplicitMemoryDirective, event_key: "late-shadow-forget".to_string(),
+                content: b"withdraw this completed memory".to_vec(), observed_at_unix_seconds: now };
+            f.writer.cognitive_mutation_capability().unwrap().forget_with_kg(
+                &f.access, &f.claim.production.write.memory.id.memory_id, /*expected_revision*/ 1,
+                &source, &ForgetMemoryDraft { scope: CognitiveScope::AgentPrivate,
+                    reason: "late controlled source withdrawal".to_string(), valid_from_unix_seconds: now,
+                    citations: vec![] }).await.unwrap();
+            assert!(!f.verifier.0.load(Ordering::SeqCst));
+            assert!(matches!(f.writer.revalidate_memory_cell(&f.admission).await,
+                Err(codex_hepta_memory::MemoryCellSourceError::Replay)));
+        }
+    }
     assert!(owner_a.revalidate_delivery(&result).await.is_err());
     assert!(owner_a.host.cancellation.is_cancelled());
     assert!(owner_a.state.lock().unwrap().failed);
+    }
 }

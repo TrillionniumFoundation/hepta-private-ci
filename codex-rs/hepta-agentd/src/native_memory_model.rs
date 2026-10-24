@@ -11,6 +11,7 @@ use codex_hepta_neuron::NeuronModelError;
 use codex_hepta_neuron::NeuronModelOutputV1;
 use codex_hepta_neuron::NeuronModelPort;
 use codex_hepta_neuron::NeuronModelRequestV1;
+#[cfg(any(test, feature = "qualification-cognitive-write"))]
 use codex_hepta_neuron::NeuronTickInputV1;
 use codex_hepta_neuron::canonical_model_output_digest_v1;
 use codex_hepta_types::Digest32;
@@ -100,6 +101,7 @@ impl NativeMemoryModelPort {
 
     /// Preserve the registered model tuple and source admission while binding
     /// the full live tick. A source hash cannot stand in for objective or NDU.
+    #[cfg(any(test, feature = "qualification-cognitive-write"))]
     pub(crate) fn bind_tick(
         &mut self,
         input: &NeuronTickInputV1,

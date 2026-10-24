@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-neuron/**"
       - "codex-rs/hepta-agent-protocol/**"
       - "codex-rs/hepta-agentd/**"
       - "scripts/memory_cell/**"
@@ -17,7 +18,6 @@ permissions:
 
 jobs:
   native-source-model-boundary:
-    # Intermediate tick-stack PRs are review boundaries; qualify the complete stack.
     if: >-
       github.event_name == 'workflow_dispatch' ||
       !startsWith(github.head_ref, 'codex/memory-native-tick-') ||
@@ -69,12 +69,17 @@ jobs:
         run: |
           set -euo pipefail
           python -I -B scripts/memory_cell_native/native_ci_tests.py 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/evidence-driver-tests.log"
+      - name: Closed native tick wire regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -I -S -B scripts/memory_cell_native/native_tick_contract_tests.py 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/tick-wire-tests.log"
       - name: Scoped tests through repository defaults
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          just test --locked -p codex-hepta-memory -p codex-hepta-agent-protocol -p codex-hepta-agentd --features codex-hepta-agentd/qualification-cognitive-write 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/scoped-tests.log"
+          just test --locked -p codex-hepta-memory -p codex-hepta-agent-protocol -p codex-hepta-agentd -p codex-hepta-neuron -p codex-hepta-cognitive-store --features codex-hepta-agentd/qualification-cognitive-write 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/scoped-tests.log"
       - name: Build actual daemon probe
         working-directory: codex-rs
         shell: bash
@@ -98,7 +103,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          just fix --locked -p codex-hepta-memory -p codex-hepta-agent-protocol -p codex-hepta-agentd --features codex-hepta-agentd/qualification-cognitive-write --examples 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/scoped-fix.log"
+          just fix --locked -p codex-hepta-memory -p codex-hepta-agent-protocol -p codex-hepta-agentd -p codex-hepta-neuron -p codex-hepta-cognitive-store --features codex-hepta-agentd/qualification-cognitive-write --examples 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/scoped-fix.log"
           just fmt --base 429894ac8e0818102cfdea4ad47a56e4583b2902 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/final-format.log"
       - name: Retain proposed changes without running tests after formatting
         if: always()
