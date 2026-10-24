@@ -35,7 +35,7 @@ use codex_hepta_evidence::evidence_set_digest;
 use codex_hepta_evidence::qualification_envelope_bytes;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use codex_state::SqliteConfig;
+use codex_sqlite::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;

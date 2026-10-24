@@ -85,7 +85,7 @@ impl Fixture {
         // The external fixture witness is captured from the canonical empty owner,
         // never invented from a label or recaptured from a suspect backup.
         let evidence = codex_hepta_evidence::HeptaEvidenceStore::open(
-            &codex_state::SqliteConfig::from_sqlite_home(
+            &codex_sqlite::SqliteConfig::from_sqlite_home(
                 codex_utils_absolute_path::AbsolutePathBuf::from_absolute_path(&identity.home_root)
                     .expect("owner home"),
             ),

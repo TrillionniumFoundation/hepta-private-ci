@@ -21,7 +21,7 @@ use codex_hepta_contracts::ProviderRequestKind;
 use codex_hepta_contracts::ProviderTransport;
 use codex_hepta_contracts::RequestBindingId;
 use codex_hepta_contracts::Sha256Digest;
-use codex_state::SqliteConfig;
+use codex_sqlite::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use tempfile::TempDir;
 use tokio::sync::Notify;

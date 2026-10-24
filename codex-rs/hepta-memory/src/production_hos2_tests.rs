@@ -77,6 +77,7 @@ struct DeviceRecord {
 
 struct DiskDevice {
     path: PathBuf,
+    namespace: ([u8; 16], [u8; 16]),
     calls: AtomicUsize,
     queries: AtomicUsize,
     lose_ack: AtomicBool,
@@ -180,7 +181,7 @@ impl Hos2Device for DiskDevice {
 
     fn query(&self, delivery: &Hos2DeliveryId) -> Result<Hos2DeliveryObservation, String> {
         self.queries.fetch_add(1, Ordering::SeqCst);
-        if delivery.boot_id != [1; 16] || delivery.space_id != [2; 16] {
+        if (delivery.boot_id, delivery.space_id) != self.namespace {
             return Err("fixture history capability has another namespace".to_string());
         }
         let sequence = delivery.sequence()?;
@@ -205,7 +206,7 @@ impl Hos2Device for DiskDevice {
     fn retire(&self, permit: &Hos2RetirementPermit) -> Result<Hos2RetirementObservation, String> {
         self.retire_calls.fetch_add(1, Ordering::SeqCst);
         let through = permit.through();
-        if through.boot_id != [1; 16] || through.space_id != [2; 16] {
+        if (through.boot_id, through.space_id) != self.namespace {
             return Err("fixture acknowledgement capability has another namespace".to_string());
         }
         let requested = through.sequence()?;
@@ -317,6 +318,7 @@ impl Fixture {
         )?;
         let device = Arc::new(DiskDevice {
             path: root.join("device-effect.json"),
+            namespace: ([1; 16], [2; 16]),
             calls: AtomicUsize::new(0),
             queries: AtomicUsize::new(0),
             lose_ack: AtomicBool::new(false),

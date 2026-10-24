@@ -4491,27 +4491,30 @@ fn ensure_no_unresolved_outcomes_except(
 ) -> Result<(), LocalLeaseOutboxError> {
     let mut states = BTreeMap::new();
     let mut seen_kinds = BTreeSet::new();
+    let mut current_occurrences = BTreeSet::new();
     for event in events {
-        // Historical generations remain part of the verified append-only
-        // chain, but their unresolved outcomes are no longer writable by a
-        // successor (the exact generation/fence is required for every
-        // outcome append).  Only the handle's current generation may block a
-        // normal release/rollback; expiry is the explicit quarantine path
-        // for an older generation.
-        if event.generation != generation || event.fencing_token != fencing_token {
-            continue;
-        }
+        // A successor may append an original reconciliation to a predecessor's
+        // admission. Replay the complete chain before selecting this fence's
+        // responsibilities; filtering first would discard that admission.
         advance_outcome_state(
             &mut states,
             &mut seen_kinds,
             &event.occurrence_key,
             &event.kind,
         )?;
+        if event.generation == generation && event.fencing_token == fencing_token {
+            current_occurrences.insert(event.occurrence_key.clone());
+        }
     }
     let unresolved = states
         .iter()
         .filter_map(|(occurrence_key, state)| {
-            if excluded_occurrence.is_some_and(|excluded| excluded == occurrence_key) {
+            // An untouched, expired predecessor remains retained audit work.
+            // A current-fence StillIndeterminate append assumes responsibility
+            // and must block release just like a current-fence admission.
+            if !current_occurrences.contains(occurrence_key)
+                || excluded_occurrence.is_some_and(|excluded| excluded == occurrence_key)
+            {
                 return None;
             }
             matches!(

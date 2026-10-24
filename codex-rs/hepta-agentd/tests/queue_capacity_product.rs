@@ -23,7 +23,7 @@ use codex_app_server_protocol::TurnStartResponse;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::ResourceBudget;
-use codex_state::SqliteConfig;
+use codex_sqlite::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use core_test_support::responses;
 use tokio::time::timeout;

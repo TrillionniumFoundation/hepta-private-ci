@@ -86,7 +86,6 @@ where
         return Err(error);
     }
     let stopping = ingress.clone();
-    let stopping_host = host.clone();
     tasks
         .run_until(async move {
             tokio::pin!(owner_control);
@@ -107,20 +106,18 @@ where
                         )
                     })??,
             }
-            let end = tokio::time::Instant::now() + Duration::from_secs(10);
-            while stopping.blockers(&stopping_host).await? != 0 {
-                if tokio::time::Instant::now() >= end {
-                    return Err(AgentdError::Protocol(
-                        "native original owner retains queued or indeterminate work".into(),
-                    ));
-                }
-                tokio::time::sleep(Duration::from_millis(10)).await;
-            }
+            // Stop closes admission and joins entered work. The original
+            // writer's release transaction below decides whether this fence
+            // is terminal. The separate Drain API still counts every retained
+            // Unknown, including quarantined work from an expired old boot.
+            // No historical intent is settled or removed to permit a Stop.
             state.mark_draining()
         })
         .await?;
-    // All runtime workers are joined before the one original owner publishes
-    // its terminal Current and permanently retires the same SQLite pool.
+    // All runtime workers are joined before the one original owner validates
+    // the complete journals and its current generation/fence responsibilities.
+    // A release refusal remains an error; only an actual release + Current ACK
+    // permits permanent retirement of the same SQLite pool and process exit.
     let released = host
         .writer()
         .release()

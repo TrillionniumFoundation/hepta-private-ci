@@ -4,7 +4,7 @@ use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use codex_state::SqliteConfig;
+use codex_sqlite::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
