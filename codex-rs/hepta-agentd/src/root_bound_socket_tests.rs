@@ -45,10 +45,14 @@ fn original_root_bound_listener_preserves_peer_identity_and_path_custody() {
     let before = std::fs::metadata(&path).expect("original node");
     let parent_before = std::fs::metadata(directory.path()).expect("Root parent");
     let descriptors = [socket.as_raw_fd(), early.as_raw_fd(), other.as_raw_fd()];
+    // Pin the exact already-built executable so the child need not traverse a
+    // developer-owned source/target parent after dropping to its fixture UID.
+    let executable = File::open(std::env::current_exe().expect("same test executable")).expect("retain actual test executable");
+    let inherited = [descriptors[0], descriptors[1], descriptors[2], executable.as_raw_fd()];
     let mut command = Command::new("/usr/bin/setpriv");
     command.args(["--reuid=60001", "--regid=60001", "--clear-groups", "--no-new-privs",
         "--inh-caps=-all", "--ambient-caps=-all", "--bounding-set=-all"])
-        .arg(std::env::current_exe().expect("same test executable"))
+        .arg(format!("/proc/self/fd/{}", executable.as_raw_fd()))
         .args(["--exact", CHILD, "--ignored", "--nocapture", "--test-threads=1"])
         .env_clear().env("PATH", "/usr/bin:/bin")
         .env("HEPTA_SOCKET_CHILD_PATH", &path)
@@ -58,7 +62,7 @@ fn original_root_bound_listener_preserves_peer_identity_and_path_custody() {
     // SAFETY: the post-fork/pre-exec closure uses only fcntl on held descriptor
     // numbers. Actual credential dropping occurs in the original setpriv tool.
     unsafe { command.pre_exec(move || {
-        for fd in descriptors {
+        for fd in inherited {
             let flags = libc::fcntl(fd, libc::F_GETFD);
             if flags < 0 || libc::fcntl(fd, libc::F_SETFD, flags & !libc::FD_CLOEXEC) < 0 {
                 return Err(io::Error::last_os_error());
