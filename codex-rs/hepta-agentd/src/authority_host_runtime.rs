@@ -184,7 +184,7 @@ pub fn serve_host_authority_session_with_text(
     {
         return Err(io::Error::other("invalid service registration"));
     }
-    verify_process(&registration, config.peer_uid)?;
+    verify_process(&registration, config.peer_uid, config.peer_gid)?;
     if text_ui.is_some()
         && config.issuer_record_profile
             != crate::authority_host_config::HostIssuerRecordProfile::TextRecovery
@@ -377,7 +377,11 @@ fn read_existing_private(path: &Path) -> io::Result<()> {
     Ok(())
 }
 
-pub(crate) fn verify_process(registration: &HostAuthorityRegistration, uid: u32) -> io::Result<()> {
+pub(crate) fn verify_process(
+    registration: &HostAuthorityRegistration,
+    uid: u32,
+    gid: u32,
+) -> io::Result<()> {
     if registration.peer_pid == 0
         || registration.peer_pid > i32::MAX as u32
         || registration.process_start_ticks == 0
@@ -402,9 +406,17 @@ pub(crate) fn verify_process(registration: &HostAuthorityRegistration, uid: u32)
         .find_map(|line| line.strip_prefix("Uid:"))
         .map(|line| line.split_whitespace().collect::<Vec<_>>());
     let expected_uid = uid.to_string();
+    let actual_gid = status
+        .lines()
+        .find_map(|line| line.strip_prefix("Gid:"))
+        .map(|line| line.split_whitespace().collect::<Vec<_>>());
+    let expected_gid = gid.to_string();
     if actual_uid
         .as_ref()
         .is_none_or(|values| values.len() != 4 || values.iter().any(|value| *value != expected_uid))
+        || actual_gid
+            .as_ref()
+            .is_none_or(|values| values.len() != 4 || values.iter().any(|value| *value != expected_gid))
         || !status.lines().any(|line| line == "NoNewPrivs:\t1")
         || ["CapInh", "CapPrm", "CapEff", "CapBnd", "CapAmb"]
             .iter()
@@ -420,11 +432,15 @@ pub(crate) fn verify_process(registration: &HostAuthorityRegistration, uid: u32)
         })
     {
         return Err(io::Error::other(
-            "owner must have exact dedicated UID, no groups/capabilities and NoNewPrivileges",
+            "owner must have exact dedicated UID/GID, no groups/capabilities and NoNewPrivileges",
         ));
     }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "authority_host_process_tests.rs"]
+mod process_tests;
 
 pub(crate) fn owner_alive(owner: &OwnedFd, end: Instant) -> io::Result<()> {
     if Instant::now() >= end {

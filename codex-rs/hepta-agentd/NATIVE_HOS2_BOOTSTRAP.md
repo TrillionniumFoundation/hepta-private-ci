@@ -63,3 +63,28 @@ Registry, protected Root Current/issuer, durable writer, synchronous FinalUse
 device and actual retained storage. This interface change is a prerequisite;
 the old peer qualification example and a successful ReadUsage probe cannot
 replace that executable or its native writer/recovery evidence.
+
+## Original Root process credential contract
+
+The shared Root `verify_process` factory now receives both the configured UID
+and GID. It requires all four kernel-reported real/effective/saved/filesystem
+UIDs and GIDs to match those inputs, together with the existing exact boot and
+start identity, empty supplementary groups, empty capability sets and
+`NoNewPrivileges`. Both the authority service and native launch checks use
+this same factory. This closes a missing GID assertion in those checks; it is
+not a claim that a process could bypass the remaining pidfd, proof, lease,
+Root bind or protected channel checks.
+
+The explicit privileged regression creates only two temporary child
+processes, drops their credentials with `setpriv`, and observes their actual
+`/proc` status. Each correct UID/GID is accepted and the same UID with the
+other expected GID is rejected. Its registration generation comes from the
+original temporary Fleet Registry `Starting` transition. It does not start
+an authority service or create a writer. Run it separately as Root in the
+isolated validation environment; a default skipped test is not evidence:
+
+```sh
+just test -p codex-hepta-agentd --lib --run-ignored ignored-only original_owner_process_rejects_same_uid_with_different_gid
+```
+
+This Linux host regression still does not qualify native G2 execution.
