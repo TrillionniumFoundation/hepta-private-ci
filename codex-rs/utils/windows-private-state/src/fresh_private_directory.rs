@@ -270,3 +270,6 @@ mod private_owner_lock;
 pub use private_owner_lock::OwnerLock;
 pub use private_owner_lock::OwnerLockError;
 pub use private_owner_lock::OwnerLockOrigin;
+
+pub use private_owner_lock::LockedPrivateFile;
+pub use private_owner_lock::PrivateFileAccess;

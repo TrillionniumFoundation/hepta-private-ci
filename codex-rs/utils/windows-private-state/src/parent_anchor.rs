@@ -204,3 +204,6 @@ pub use fresh_private_directory::UnverifiedCreatedDirectory;
 pub use fresh_private_directory::OwnerLock;
 pub use fresh_private_directory::OwnerLockError;
 pub use fresh_private_directory::OwnerLockOrigin;
+
+pub use fresh_private_directory::LockedPrivateFile;
+pub use fresh_private_directory::PrivateFileAccess;

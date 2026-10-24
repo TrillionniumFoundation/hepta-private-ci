@@ -17,9 +17,12 @@ use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 
-const MAX_OWNER_READ_BYTES: usize = 64 * 1024 * 1024;
+pub(super) const MAX_OWNER_READ_BYTES: usize = 64 * 1024 * 1024;
 
-fn inspect(file: &File, held: &mut DirectoryContext) -> Result<Identity, ValidationError> {
+pub(super) fn inspect(
+    file: &File,
+    held: &mut DirectoryContext,
+) -> Result<Identity, ValidationError> {
     non_inherited(file)?;
     let observed = validate_owner_descriptor(
         file,
@@ -34,9 +37,10 @@ fn inspect(file: &File, held: &mut DirectoryContext) -> Result<Identity, Validat
     Ok(observed.identity)
 }
 
-fn open(
+pub(super) fn open(
     held: &mut DirectoryContext,
     leaf: &str,
+    access: u32,
 ) -> Result<Option<(File, Identity)>, ValidationError> {
     if leaf.len() > 128 {
         return Err(ValidationError::UnsafeObject);
@@ -46,7 +50,7 @@ fn open(
     let result = mechanism::open_relative(
         &held.directory.file,
         leaf,
-        FILE_GENERIC_READ,
+        access,
         FILE_SHARE_READ | FILE_SHARE_WRITE,
         mechanism::FILE_OPEN,
         |value| event = Some(value),
@@ -76,7 +80,7 @@ impl OwnerLock {
             .map_err(|_| ValidationError::UnsafeObject)?;
         self.validate_locked(&mut held)?;
         held.continuity = Continuity::Refused;
-        let observed = open(&mut held, leaf)?;
+        let observed = open(&mut held, leaf, FILE_GENERIC_READ)?;
         let exists = observed.is_some();
         drop(observed);
         held.continuity = Continuity::Live;
@@ -98,7 +102,7 @@ impl OwnerLock {
             .map_err(|_| ValidationError::UnsafeObject)?;
         self.validate_locked(&mut held)?;
         held.continuity = Continuity::Refused;
-        let (mut file, identity) = open(&mut held, leaf)?
+        let (mut file, identity) = open(&mut held, leaf, FILE_GENERIC_READ)?
             .ok_or_else(|| ValidationError::Os(io::Error::from_raw_os_error(2)))?;
         let before = file.metadata()?.len();
         if before > maximum as u64 {

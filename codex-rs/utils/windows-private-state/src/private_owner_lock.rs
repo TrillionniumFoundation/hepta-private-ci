@@ -201,3 +201,8 @@ mod tests;
 
 #[path = "owner_read.rs"]
 mod owner_read;
+
+#[path = "owner_file.rs"]
+mod owner_file;
+pub use owner_file::LockedPrivateFile;
+pub use owner_file::PrivateFileAccess;
