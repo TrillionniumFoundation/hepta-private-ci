@@ -103,6 +103,7 @@ pub async fn attach_root_production_operation_host(
             let (operations, _identity, observer) = operations
                 .with_notes_from_session_with_observer(config, &host, channel, notes)
                 .await?;
+            let operations = operations.with_notes_receipt_recovery(observer.clone())?;
             (operations, Some(observer))
         }
         None => (operations, None),
@@ -153,6 +154,7 @@ pub async fn attach_root_notes_operation_host(
     let (operations, observer) = crate::notes_bootstrap::primary_notes_runtime(
         config, &host, notes_bootstrap, notes, operation_grants, verifier, reconcile_interval,
     ).await?;
+    let operations = operations.with_notes_receipt_recovery(observer.clone())?;
     // The same final live verifier and atomic installer as the joint profile.
     config.install_production_hosts(Arc::new(host), operations)?;
     Ok(AgentdRootProductionAttachment { root_session, checkpoint, grants, notes: Some(observer) })

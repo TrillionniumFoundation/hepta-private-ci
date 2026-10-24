@@ -413,6 +413,17 @@ impl AgentdConfig {
         self.notes_ui.take()
     }
 
+    /// Explicit old-incarnation recovery from the trusted sealed deployment.
+    /// The actual current target is taken from the already installed Session
+    /// observer; no UI command supplies either target or a helper path.
+    #[cfg(target_os = "linux")]
+    pub fn with_original_notes_previous_recovery(mut self, launch: crate::AgentdNotesPreviousRecoveryLaunch) -> Result<Self, AgentdError> {
+        self.production_operations.as_mut()
+            .ok_or(AgentdError::CognitiveWriteRuntimeUnavailable)?
+            .select_previous_notes_process(launch)?;
+        Ok(self)
+    }
+
     /// Attach an externally verified production cognitive writer to normal
     /// Agentd composition. Agentd never manufactures this authority.
     pub fn with_production_writer_host(

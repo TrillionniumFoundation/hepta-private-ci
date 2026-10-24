@@ -11,6 +11,12 @@ use std::fmt;
 use std::sync::Arc;
 use std::time::Duration;
 
+#[cfg(target_os = "linux")]
+#[path = "notes_runtime_recovery.rs"]
+mod notes_runtime_recovery;
+#[cfg(target_os = "linux")]
+use notes_runtime_recovery::NotesRuntimeRecovery;
+
 use codex_hepta_cognitive_store::CognitiveAccess;
 use codex_hepta_cognitive_store::CognitiveRecoveryRequirement;
 use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
@@ -76,6 +82,8 @@ pub struct AgentdProductionOperationRuntimeConfig {
     pub grants: Arc<dyn AgentdFinalUseGrantProvider>,
     pub reconcile_interval: Duration,
     additional_targets: Vec<(FinalUseAuthority, Arc<dyn FinalUseProductionOutboxTarget>)>,
+    #[cfg(target_os = "linux")]
+    notes_recovery: Option<NotesRuntimeRecovery>,
 }
 
 impl fmt::Debug for AgentdProductionOperationRuntimeConfig {
@@ -114,6 +122,8 @@ impl AgentdProductionOperationRuntimeConfig {
             grants,
             reconcile_interval,
             additional_targets: Vec::new(),
+            #[cfg(target_os = "linux")]
+            notes_recovery: None,
         }
     }
 
@@ -209,6 +219,8 @@ impl AgentdProductionOperationRuntimeConfig {
             grants,
             reconcile_interval,
             additional_targets,
+            #[cfg(target_os = "linux")]
+            notes_recovery,
             ..
         } = self;
         let mut host = recovered_host.as_ref().clone().attach_target(
@@ -218,6 +230,10 @@ impl AgentdProductionOperationRuntimeConfig {
         )?;
         for (additional_final_use, additional_target) in additional_targets {
             host = host.attach_additional_target(additional_final_use, additional_target)?;
+        }
+        #[cfg(target_os = "linux")]
+        if let Some(recovery) = notes_recovery {
+            host = recovery.attach(host).await?;
         }
         Ok((Arc::new(host), reconcile_interval))
     }

@@ -26,6 +26,25 @@ literal adapter and required UI runtime then enter the ordinary Agentd `run`.
 Joint Android/Notes remains a separate explicit profile with all its actual
 device inputs and checks. Notes-only success cannot qualify Android authority.
 
+Both Root factories explicitly retain the same Notes observer for startup
+receipt recovery. After the original runtime attaches its fixed destinations,
+it calls the existing `attach_previous_notes_recovery` on that same writer,
+on one startup blocking worker so original Root feeds keep running. A discovered
+old receipt is checked against the original retained operation and gets only
+read/retirement rights; it never becomes another dispatcher or grant route.
+
+Desktop's fresh independent-incarnation store returns `previous_receipt: null`.
+To recover a known pending receipt in an older independent store, the trusted
+launcher must additionally call
+`config.with_original_notes_previous_recovery(AgentdNotesPreviousRecoveryLaunch)`
+using its sealed original startup manifest. The current target comes from the
+actual Session attachment. The supplied old target/operation and frozen helper
+path/hash/state directory select the existing original helper API once. The
+runtime validates the original operation before starting that read-only helper.
+It does not discover old effects by directory scanning or reinterpret ordinary
+document reopening as effect recovery. An absent explicit old selection cannot
+qualify recovery of undisclosed older independent stores.
+
 The factory performs `open_with_protected_recovery` once, using the exact original
 writer lease/generation and live verifier. The whole-owner checkpoint is bound
 before that writer is constructed. It configures Notes as an additional target,
