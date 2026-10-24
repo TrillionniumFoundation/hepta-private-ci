@@ -1,5 +1,6 @@
 mod firewall;
 mod no_reparse_dir;
+mod read_acl;
 mod read_acl_mutex;
 
 use anyhow::Context;
@@ -13,14 +14,12 @@ use codex_windows_sandbox::SetupErrorReport;
 use codex_windows_sandbox::SetupFailure;
 use codex_windows_sandbox::add_deny_write_ace;
 use codex_windows_sandbox::convert_string_sid_to_sid;
-use codex_windows_sandbox::ensure_allow_mask_aces_with_inheritance;
 use codex_windows_sandbox::ensure_allow_write_aces;
 use codex_windows_sandbox::extract_setup_failure;
 use codex_windows_sandbox::hide_newly_created_users;
 use codex_windows_sandbox::install_wfp_filters;
 use codex_windows_sandbox::log_note;
 use codex_windows_sandbox::log_writer;
-use codex_windows_sandbox::path_mask_allows;
 use codex_windows_sandbox::path_write_aces_need_refresh;
 use codex_windows_sandbox::sandbox_bin_dir;
 use codex_windows_sandbox::sandbox_dir;
@@ -38,11 +37,8 @@ use std::ffi::OsStr;
 use std::ffi::c_void;
 use std::io::Write;
 use std::os::windows::io::AsRawHandle;
-use std::os::windows::process::CommandExt;
 use std::path::Path;
 use std::path::PathBuf;
-use std::process::Command;
-use std::process::Stdio;
 use std::sync::mpsc;
 use windows_sys::Win32::Foundation::GetLastError;
 use windows_sys::Win32::Foundation::HLOCAL;
@@ -73,8 +69,6 @@ const WRITE_ROOT_ALLOW_MASK: u32 =
 mod sandbox_users;
 mod setup_runtime_bin;
 use no_reparse_dir::open_or_create_no_reparse;
-use read_acl_mutex::acquire_read_acl_mutex;
-use read_acl_mutex::read_acl_mutex_exists;
 use sandbox_users::commit_setup_marker;
 use sandbox_users::prepare_setup_marker;
 use sandbox_users::provision_sandbox_users;
@@ -162,137 +156,6 @@ fn workspace_write_cap_sids_for_path(
         }
     }
     Ok(sid_strs)
-}
-
-fn spawn_read_acl_helper(payload: &Payload, _log: &mut dyn Write) -> Result<()> {
-    let mut read_payload = payload.clone();
-    read_payload.mode = SetupMode::ReadAclsOnly;
-    read_payload.refresh_only = true;
-    let payload_json = serde_json::to_vec(&read_payload)?;
-    let payload_b64 = BASE64.encode(payload_json);
-    let exe = std::env::current_exe().context("locate setup helper")?;
-    Command::new(&exe)
-        .arg(payload_b64)
-        .stdin(Stdio::null())
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .creation_flags(0x08000000) // CREATE_NO_WINDOW
-        .spawn()
-        .context("spawn read ACL helper")?;
-    Ok(())
-}
-
-struct ReadAclSubjects<'a> {
-    sandbox_group_psid: *mut c_void,
-    rx_psids: &'a [*mut c_void],
-}
-
-fn apply_read_acls(
-    read_roots: &[PathBuf],
-    subjects: &ReadAclSubjects<'_>,
-    log: &mut dyn Write,
-    refresh_errors: &mut Vec<String>,
-    access_mask: u32,
-    access_label: &str,
-    inheritance: u32,
-) -> Result<()> {
-    for root in read_roots {
-        if !root.exists() {
-            log_line(
-                log,
-                &format!("{access_label} root {} missing; skipping", root.display()),
-            )?;
-            continue;
-        }
-        let builtin_has = read_mask_allows_or_log(
-            root,
-            subjects.rx_psids,
-            /*label*/ None,
-            access_mask,
-            access_label,
-            refresh_errors,
-            log,
-        )?;
-        if builtin_has {
-            continue;
-        }
-        let sandbox_has = read_mask_allows_or_log(
-            root,
-            &[subjects.sandbox_group_psid],
-            Some("sandbox_group"),
-            access_mask,
-            access_label,
-            refresh_errors,
-            log,
-        )?;
-        if sandbox_has {
-            continue;
-        }
-        log_line(
-            log,
-            &format!(
-                "granting {access_label} ACE to {} for sandbox users",
-                root.display()
-            ),
-        )?;
-        let result = unsafe {
-            ensure_allow_mask_aces_with_inheritance(
-                root,
-                &[subjects.sandbox_group_psid],
-                access_mask,
-                inheritance,
-            )
-        };
-        if let Err(err) = result {
-            refresh_errors.push(format!(
-                "grant {access_label} ACE failed on {} for sandbox_group: {err}",
-                root.display()
-            ));
-            log_line(
-                log,
-                &format!(
-                    "grant {access_label} ACE failed on {} for sandbox_group: {err}",
-                    root.display()
-                ),
-            )?;
-        }
-    }
-    Ok(())
-}
-
-fn read_mask_allows_or_log(
-    root: &Path,
-    psids: &[*mut c_void],
-    label: Option<&str>,
-    read_mask: u32,
-    access_label: &str,
-    refresh_errors: &mut Vec<String>,
-    log: &mut dyn Write,
-) -> Result<bool> {
-    match path_mask_allows(root, psids, read_mask, /*require_all_bits*/ true) {
-        Ok(has) => Ok(has),
-        Err(e) => {
-            let label_suffix = label
-                .map(|value| format!(" for {value}"))
-                .unwrap_or_default();
-            refresh_errors.push(format!(
-                "{access_label} mask check failed on {}{}: {}",
-                root.display(),
-                label_suffix,
-                e
-            ));
-            log_line(
-                log,
-                &format!(
-                    "{access_label} mask check failed on {}{}: {}; continuing",
-                    root.display(),
-                    label_suffix,
-                    e
-                ),
-            )?;
-            Ok(false)
-        }
-    }
 }
 
 fn lock_sandbox_dir(
@@ -531,7 +394,7 @@ fn run_setup(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Result<(
         prepare_setup_marker(&payload.codex_home, &payload.real_user)?;
     }
     match payload.mode {
-        SetupMode::ReadAclsOnly => run_read_acl_only(payload, log),
+        SetupMode::ReadAclsOnly => read_acl::prepare(payload, log).map(drop),
         SetupMode::ProvisionOnly => run_provision_only(payload, log, sbx_dir),
         SetupMode::Full => run_setup_full(payload, log, sbx_dir),
     }?;
@@ -545,69 +408,6 @@ fn run_setup(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Result<(
             payload.filesystem_roles.as_ref(),
         )?;
     }
-    Ok(())
-}
-
-fn run_read_acl_only(payload: &Payload, log: &mut dyn Write) -> Result<()> {
-    let _read_acl_guard = match acquire_read_acl_mutex()? {
-        Some(guard) => guard,
-        None => {
-            log_line(log, "read ACL helper already running; skipping")?;
-            return Ok(());
-        }
-    };
-    log_line(log, "read-acl-only mode: applying read ACLs")?;
-    let sandbox_group_sid = resolve_sandbox_users_group_sid()?;
-    let sandbox_group_psid = sid_bytes_to_psid(&sandbox_group_sid)?;
-    let mut refresh_errors: Vec<String> = Vec::new();
-    if !payload.read_roots.is_empty() {
-        let users_sid = resolve_sid("Users")?;
-        let users_psid = sid_bytes_to_psid(&users_sid)?;
-        let auth_sid = resolve_sid("Authenticated Users")?;
-        let auth_psid = sid_bytes_to_psid(&auth_sid)?;
-        let everyone_sid = resolve_sid("Everyone")?;
-        let everyone_psid = sid_bytes_to_psid(&everyone_sid)?;
-        let rx_psids = vec![users_psid, auth_psid, everyone_psid];
-        let subjects = ReadAclSubjects {
-            sandbox_group_psid,
-            rx_psids: &rx_psids,
-        };
-        apply_read_acls(
-            &payload.read_roots,
-            &subjects,
-            log,
-            &mut refresh_errors,
-            FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,
-            "read",
-            OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE,
-        )?;
-        unsafe {
-            if !users_psid.is_null() {
-                LocalFree(users_psid as HLOCAL);
-            }
-            if !auth_psid.is_null() {
-                LocalFree(auth_psid as HLOCAL);
-            }
-            if !everyone_psid.is_null() {
-                LocalFree(everyone_psid as HLOCAL);
-            }
-        }
-    }
-    unsafe {
-        if !sandbox_group_psid.is_null() {
-            LocalFree(sandbox_group_psid as HLOCAL);
-        }
-    }
-    if !refresh_errors.is_empty() {
-        log_line(
-            log,
-            &format!("read ACL run completed with errors: {refresh_errors:?}"),
-        )?;
-        if payload.refresh_only {
-            anyhow::bail!("read ACL run had errors");
-        }
-    }
-    log_line(log, "read ACL run completed")?;
     Ok(())
 }
 
@@ -824,37 +624,8 @@ fn run_setup_full(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Res
         )?;
     }
 
-    if payload.read_roots.is_empty() {
-        log_line(log, "no read roots to grant; skipping read ACL helper")?;
-    } else {
-        match read_acl_mutex_exists() {
-            Ok(true) => {
-                log_line(log, "read ACL helper already running; skipping spawn")?;
-            }
-            Ok(false) => {
-                spawn_read_acl_helper(payload, log).map_err(|err| {
-                    anyhow::Error::new(SetupFailure::new(
-                        SetupErrorCode::HelperReadAclHelperSpawnFailed,
-                        format!("spawn read ACL helper failed: {err}"),
-                    ))
-                })?;
-            }
-            Err(err) => {
-                log_line(
-                    log,
-                    &format!("read ACL mutex check failed: {err}; spawning anyway"),
-                )?;
-                spawn_read_acl_helper(payload, log).map_err(|spawn_err| {
-                    anyhow::Error::new(SetupFailure::new(
-                        SetupErrorCode::HelperReadAclHelperSpawnFailed,
-                        format!(
-                            "spawn read ACL helper failed after mutex error {err}: {spawn_err}"
-                        ),
-                    ))
-                })?;
-            }
-        }
-    }
+    // Synchronous preparation/readback of this exact validated declaration.
+    let _read_acl_context = read_acl::prepare(payload, log)?;
 
     if refresh_only {
         setup_runtime_bin::ensure_codex_app_runtime_paths_readable(
