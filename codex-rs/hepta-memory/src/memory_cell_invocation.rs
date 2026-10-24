@@ -146,6 +146,21 @@ impl ProductionDurableWriter {
         Ok(())
     }
 
+    /// Revalidate delivery after completion without reopening the spent nonce.
+    /// This checks only the source cut and never authorizes another callback.
+    pub async fn revalidate_memory_cell_source(
+        &self,
+        admission: &MemoryCellAdmissionV1,
+    ) -> Result<(), MemoryCellSourceError> {
+        let current = self.authorize_memory_cell(
+            &admission.access, &admission.query, &admission.claim,
+        ).await?;
+        if current != admission.binding {
+            return Err(MemoryCellSourceError::Invalid("source binding changed"));
+        }
+        Ok(())
+    }
+
     /// Atomically check the final source head and record one completion. A
     /// failed, timed-out or abandoned admission remains spent across restart.
     pub async fn finish_memory_cell(
