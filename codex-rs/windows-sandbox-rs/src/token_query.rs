@@ -32,11 +32,12 @@ impl TokenBytes {
             )
         };
         anyhow::ensure!(first == 0 && unsafe { GetLastError() } == ERROR_INSUFFICIENT_BUFFER);
-        anyhow::ensure!((4..=65_536).contains(&needed), "invalid token query size");
+        anyhow::ensure!((1..=65_536).contains(&needed), "invalid token query size");
         let mut result = Self {
             words: vec![0; (needed as usize).div_ceil(size_of::<usize>())],
             length: needed as usize,
         };
+        let capacity = result.words.len() * size_of::<usize>();
         // SAFETY: the aligned zeroed buffer covers the advertised capacity.
         anyhow::ensure!(
             unsafe {
@@ -44,14 +45,14 @@ impl TokenBytes {
                     token,
                     class,
                     result.words.as_mut_ptr().cast(),
-                    needed,
+                    capacity as u32,
                     &mut needed,
                 )
             } != 0,
             "token query failed: {}",
             unsafe { GetLastError() }
         );
-        anyhow::ensure!(needed as usize <= result.length && needed >= 4);
+        anyhow::ensure!(needed as usize <= capacity && needed >= 1);
         result.length = needed as usize;
         Ok(result)
     }
@@ -90,6 +91,16 @@ impl TokenBytes {
     }
 
     pub(super) fn groups(&self) -> Result<Vec<Vec<u8>>> {
+        let mut result = self
+            .group_entries()?
+            .into_iter()
+            .map(|(sid, _)| sid)
+            .collect::<Vec<_>>();
+        result.sort();
+        Ok(result)
+    }
+
+    pub(super) fn group_entries(&self) -> Result<Vec<(Vec<u8>, u32)>> {
         let count = self.value::<u32>(/*offset*/ 0)? as usize;
         let offset = offset_of!(TOKEN_GROUPS, Groups);
         anyhow::ensure!(
@@ -99,7 +110,7 @@ impl TokenBytes {
         for index in 0..count {
             let entry =
                 self.value::<SID_AND_ATTRIBUTES>(offset + index * size_of::<SID_AND_ATTRIBUTES>())?;
-            result.push(self.sid(entry.Sid)?);
+            result.push((self.sid(entry.Sid)?, entry.Attributes));
         }
         result.sort();
         Ok(result)

@@ -1,9 +1,11 @@
 use crate::winutil::to_wide;
-#[cfg(test)]
+#[path = "token_full_restriction.rs"]
+mod full_restriction;
 #[path = "token_query.rs"]
 mod token_query;
 use anyhow::Result;
 use anyhow::anyhow;
+pub use full_restriction::UnqualifiedFullRestrictionToken;
 use std::ffi::c_void;
 use windows_sys::Win32::Foundation::CloseHandle;
 use windows_sys::Win32::Foundation::ERROR_SUCCESS;

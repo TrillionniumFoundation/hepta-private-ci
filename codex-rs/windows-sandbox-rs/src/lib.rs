@@ -344,6 +344,8 @@ pub use stdio_bridge::forward_sandbox_session_stdio;
 #[doc(hidden)]
 pub use token::LocalSid;
 #[cfg(target_os = "windows")]
+pub use token::UnqualifiedFullRestrictionToken;
+#[cfg(target_os = "windows")]
 pub use token::convert_string_sid_to_sid;
 #[cfg(target_os = "windows")]
 pub use token::create_readonly_token_with_caps_and_user_from;

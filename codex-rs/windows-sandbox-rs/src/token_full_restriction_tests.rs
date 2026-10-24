@@ -33,34 +33,14 @@ use crate::token::token_query::TokenBytes;
 // Explicit subjects, not a boolean that silently changes a production token.
 // The inherited default DACL is left unchanged: IPC/process compatibility is unqualified.
 fn candidate(base: &OwnedToken, subjects: &[&LocalSid]) -> Result<OwnedToken> {
-    anyhow::ensure!(!subjects.is_empty() && subjects.len() <= 3);
-    let mut entries: Vec<_> = subjects
-        .iter()
-        .map(|sid| SID_AND_ATTRIBUTES {
-            Sid: sid.as_ptr(),
-            Attributes: 0,
-        })
-        .collect();
-    let mut raw = 0;
-    // SAFETY: base and all owned SIDs outlive this synchronous call; success is immediately owned.
-    anyhow::ensure!(
-        unsafe {
-            CreateRestrictedToken(
-                base.0,
-                DISABLE_MAX_PRIVILEGE | LUA_TOKEN,
-                /*disablesidcount*/ 0,
-                std::ptr::null(),
-                /*deleteprivilegecount*/ 0,
-                std::ptr::null(),
-                entries.len() as u32,
-                entries.as_mut_ptr(),
-                &mut raw,
-            )
-        } != 0,
-        "candidate creation failed: {}",
-        unsafe { GetLastError() }
-    );
-    let token = OwnedToken(raw);
+    let raw = super::super::UnqualifiedFullRestrictionToken::from_primary(
+        // SAFETY: the original OwnedToken keeps this explicit base alive.
+        unsafe { std::os::windows::io::BorrowedHandle::borrow_raw(base.0 as _) },
+        subjects,
+    )?;
+    let token = OwnedToken(std::os::windows::io::IntoRawHandle::into_raw_handle(
+        raw.into_owned_handle(),
+    ) as _);
     let actual = TokenBytes::query(token.0, TokenRestrictedSids)?.groups()?;
     let mut expected = subjects
         .iter()
@@ -124,6 +104,107 @@ fn candidate(base: &OwnedToken, subjects: &[&LocalSid]) -> Result<OwnedToken> {
         );
     }
     Ok(token)
+}
+
+#[test]
+fn raw_full_restriction_refuses_filtered_impersonation_and_ambient_inputs() -> Result<()> {
+    use std::os::windows::io::AsHandle;
+    use windows_sys::Win32::Security::DuplicateTokenEx;
+    use windows_sys::Win32::Security::IsTokenRestricted;
+    use windows_sys::Win32::Security::SecurityImpersonation;
+    use windows_sys::Win32::Security::TOKEN_DUPLICATE;
+    use windows_sys::Win32::Security::TOKEN_QUERY;
+    use windows_sys::Win32::Security::TokenImpersonation;
+
+    let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
+    // SAFETY: the original owned base is retained through every native query.
+    let borrowed = unsafe { std::os::windows::io::BorrowedHandle::borrow_raw(base.0 as _) };
+    let subject = LocalSid::from_string("S-1-5-21-161-262-363-464")?;
+    let everyone = LocalSid::from_string("S-1-1-0")?;
+    assert!(super::super::UnqualifiedFullRestrictionToken::from_primary(borrowed, &[]).is_err());
+    assert!(
+        super::super::UnqualifiedFullRestrictionToken::from_primary(
+            borrowed,
+            &[&subject, &subject]
+        )
+        .is_err()
+    );
+    assert!(
+        super::super::UnqualifiedFullRestrictionToken::from_primary(borrowed, &[&everyone])
+            .is_err()
+    );
+    let maximum = (0..128)
+        .map(|index| LocalSid::from_string(&format!("S-1-5-21-171-272-373-{}", 1_000 + index)))
+        .collect::<Result<Vec<_>>>()?;
+    let mut maximum_refs = maximum.iter().collect::<Vec<_>>();
+    drop(candidate(&base, &maximum_refs)?);
+    maximum_refs.push(&subject);
+    assert!(
+        super::super::UnqualifiedFullRestrictionToken::from_primary(borrowed, &maximum_refs)
+            .is_err()
+    );
+    let raw = candidate(&base, &[&subject])?;
+    assert!(
+        super::super::UnqualifiedFullRestrictionToken::from_primary(
+            // SAFETY: raw remains owned during this refusal observation.
+            unsafe { std::os::windows::io::BorrowedHandle::borrow_raw(raw.0 as _) },
+            &[&subject]
+        )
+        .is_err()
+    );
+
+    let mut filtered = 0;
+    // Filtering privileges without any restricting SID must not pass the new
+    // fresh-input check merely because IsTokenRestricted reports zero.
+    anyhow::ensure!(
+        unsafe {
+            CreateRestrictedToken(
+                base.0,
+                DISABLE_MAX_PRIVILEGE,
+                /*disablesidcount*/ 0,
+                std::ptr::null(),
+                /*deleteprivilegecount*/ 0,
+                std::ptr::null(),
+                /*restrictedsidcount*/ 0,
+                std::ptr::null(),
+                &mut filtered,
+            )
+        } != 0
+    );
+    let filtered = unsafe { OwnedHandle::from_raw_handle(filtered as _) };
+    assert_eq!(
+        unsafe { IsTokenRestricted(filtered.as_raw_handle() as _) },
+        0
+    );
+    assert!(
+        super::super::UnqualifiedFullRestrictionToken::from_primary(
+            filtered.as_handle(),
+            &[&subject]
+        )
+        .is_err()
+    );
+    let mut impersonation = 0;
+    anyhow::ensure!(
+        unsafe {
+            DuplicateTokenEx(
+                base.0,
+                TOKEN_QUERY | TOKEN_DUPLICATE,
+                std::ptr::null(),
+                SecurityImpersonation,
+                TokenImpersonation,
+                &mut impersonation,
+            )
+        } != 0
+    );
+    let impersonation = unsafe { OwnedHandle::from_raw_handle(impersonation as _) };
+    assert!(
+        super::super::UnqualifiedFullRestrictionToken::from_primary(
+            impersonation.as_handle(),
+            &[&subject]
+        )
+        .is_err()
+    );
+    Ok(())
 }
 
 fn open_execute(path: &Path) -> std::io::Result<OwnedHandle> {
