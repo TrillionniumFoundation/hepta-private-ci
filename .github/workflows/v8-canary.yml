@@ -74,7 +74,9 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build:
-    timeout-minutes: 30
+    # Cold cross-platform V8 builds reached the 60-minute budget before completion.
+    # Allow a bounded 120 minutes for the full source build without changing any gate.
+    timeout-minutes: 120
     name: Build ${{ matrix.variant }} ${{ matrix.target }}
     needs: metadata
     # Metadata always runs; only relevant changes pay for the large matrix.
@@ -190,18 +192,18 @@ jobs:
           python-version: "3.12"
 
       - name: Set up Rust toolchain for Cargo smoke
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58 # 1.96.0
         with:
-          toolchain: "1.95.0"
+          toolchain: "1.96.0"
 
       - name: Pin installed Cargo binary
         shell: bash
         run: |
           set -euo pipefail
           rustup_home="${RUSTUP_HOME:-${HOME}/.rustup}"
-          cargo_bin="$(find "${rustup_home}/toolchains" -path '*/1.95.0-*/bin/cargo' -type f -print -quit)"
+          cargo_bin="$(find "${rustup_home}/toolchains" -path '*/1.96.0-*/bin/cargo' -type f -print -quit)"
           if [[ -z "${cargo_bin}" || ! -x "${cargo_bin}" ]]; then
-            echo "Rust 1.95.0 Cargo binary is not installed under ${rustup_home}." >&2
+            echo "Rust 1.96.0 Cargo binary is not installed under ${rustup_home}." >&2
             exit 1
           fi
           echo "CARGO_1_95=${cargo_bin}" >> "${GITHUB_ENV}"
@@ -317,9 +319,19 @@ jobs:
             cargo_args+=(--features sandbox)
           fi
 
+          # Keep generated Cargo artifacts isolated from other Rust toolchains and
+          # discard only this bounded, disposable smoke target before each build.
+          # rusty_v8 carries its own source-build toolchain, so stale host crates
+          # here can otherwise trigger E0514 when Cargo switches compilers.
+          smoke_toolchain="1.96.0"
+          smoke_target_dir="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}-rustc-${smoke_toolchain}"
+          rm -rf -- "${smoke_target_dir}"
+          mkdir -p -- "${smoke_target_dir}"
+
           (
             cd codex-rs
-            CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
+            RUSTUP_TOOLCHAIN="${smoke_toolchain}" \
+            CARGO_TARGET_DIR="${smoke_target_dir}" \
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
             "${CARGO_1_95}" "${cargo_args[@]}"
@@ -336,7 +348,9 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build-windows-source:
-    timeout-minutes: 30
+    # Source-built Windows V8 pairs also exceeded 60 minutes before compile completion.
+    # Keep the same bounded 120-minute source-build budget across platforms.
+    timeout-minutes: 120
     name: Build ptrcomp-sandbox ${{ matrix.target }} from source
     needs: metadata
     if: ${{ needs.metadata.outputs.windows_source_required == 'true' }}
@@ -380,9 +394,9 @@ jobs:
           architecture: x64
 
       - name: Set up Codex Rust toolchain for Cargo smoke
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58 # 1.96.0
         with:
-          toolchain: "1.95.0"
+          toolchain: "1.96.0"
           targets: ${{ matrix.target }}
 
       - name: Install rusty_v8 Rust toolchain
@@ -471,7 +485,7 @@ jobs:
             cd codex-rs
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
-            cargo +1.95.0 test -p codex-v8-poc --target "${TARGET}" --features sandbox --no-run
+            cargo +1.96.0 test -p codex-v8-poc --target "${TARGET}" --features sandbox --no-run
           )
 
       - name: Upload staged artifacts
