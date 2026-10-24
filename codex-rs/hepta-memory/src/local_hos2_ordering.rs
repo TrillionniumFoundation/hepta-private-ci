@@ -67,6 +67,22 @@ pub(crate) async fn validate_hos2_admission(
         // The original admission still verifies every immutable replay field.
         return Ok(());
     }
+    let expected = next_hos2_sequence(transaction, &payload.delivery).await?;
+    if sequence != expected {
+        return Err(LocalLeaseOutboxError::IllegalTransition(
+            "HOS2 admission requires the next sequence in the original namespace".to_string(),
+        ));
+    }
+    validate_hos2_predecessor(transaction, owner, &payload).await
+}
+
+/// A candidate from the original immutable outbox; admission still performs
+/// its own next-D and complete predecessor checks in the write transaction.
+pub(crate) async fn next_hos2_sequence(
+    transaction: &mut Transaction<'_, Sqlite>,
+    delivery: &Hos2DeliveryId,
+) -> Result<u64, LocalLeaseOutboxError> {
+    let (boot, space) = namespace(delivery)?;
     let last: Option<String> = sqlx::query_scalar(
         "SELECT json_extract(payload_json, '$.delivery.sequence') FROM cognitive_local_outbox
          WHERE topic = 'hepta.hos2.install-budget.v1'
@@ -79,19 +95,13 @@ pub(crate) async fn validate_hos2_admission(
     .fetch_optional(&mut **transaction)
     .await
     .map_err(crate::cognitive_store::unavailable)?;
-    let expected = match last {
-        None => 1,
+    match last {
+        None => Ok(1),
         Some(last) => u64::from_str_radix(&last, 16)
             .ok()
             .and_then(|value| value.checked_add(1))
-            .ok_or_else(|| corrupt("HOS2 planned sequence overflow"))?,
-    };
-    if sequence != expected {
-        return Err(LocalLeaseOutboxError::IllegalTransition(
-            "HOS2 admission requires the next sequence in the original namespace".to_string(),
-        ));
+            .ok_or_else(|| corrupt("HOS2 planned sequence overflow")),
     }
-    validate_hos2_predecessor(transaction, owner, &payload).await
 }
 
 pub(crate) async fn validate_hos2_predecessor(
@@ -181,6 +191,16 @@ async fn verified_terminal(
 }
 
 impl LocalLeaseOutbox {
+    pub(crate) async fn hos2_delivery_candidate(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        namespace: &Hos2DeliveryId,
+    ) -> Result<u64, LocalLeaseOutboxError> {
+        let lease = self.current_lease(transaction).await?;
+        ensure_current_active(&lease, self)?;
+        next_hos2_sequence(transaction, namespace).await
+    }
+
     /// The exact current writer reads every member of the requested prefix
     /// from its original database. No cursor or caller receipt is trusted.
     /// The caller retains this transaction through protected publication and

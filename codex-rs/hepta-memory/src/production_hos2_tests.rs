@@ -264,6 +264,10 @@ struct Fixture {
 
 impl Fixture {
     async fn open(root: &Path) -> TestResult<Self> {
+        Self::open_generation(root, /*generation*/ 1, /*expiry*/ 4_000_000_000).await
+    }
+
+    async fn open_generation(root: &Path, generation: u64, expiry: u64) -> TestResult<Self> {
         let fleet_path = root.join("fleet");
         fs::create_dir_all(&fleet_path)?;
         let fleet = HeptaFleetRoot::parse(fleet_path.canonicalize()?)?;
@@ -271,11 +275,15 @@ impl Fixture {
         let store = CognitiveStore::open(&fleet.layout().agent(&owner)).await?;
         let source = ProductionAuthorityLease::from_verified_parts(
             owner,
-            Sha256Digest::for_bytes(b"hos2-fixture-external-source-grant"),
+            Sha256Digest::for_bytes(
+                format!("hos2-fixture-external-source-grant-{generation}").as_bytes(),
+            ),
             /*authority_epoch*/ 31,
-            /*owner_epoch*/ 41,
-            /*lease_expires_at_unix_seconds*/ 4_000_000_000,
-            ProductionAuthorityToken::from_verified_bytes(b"hos2-fixture-source-token".to_vec())?,
+            /*owner_epoch*/ 40 + generation,
+            expiry,
+            ProductionAuthorityToken::from_verified_bytes(
+                format!("hos2-fixture-source-token-{generation}").into_bytes(),
+            )?,
         )?;
         let writer = Arc::new(
             ProductionDurableWriter::open_with_live_verifier(
@@ -283,7 +291,7 @@ impl Fixture {
                 source,
                 Arc::new(Verifier),
                 LEASE,
-                /*generation*/ 1,
+                generation,
             )
             .await?,
         );
@@ -929,3 +937,6 @@ mod ordering_tests;
 
 #[path = "production_hos2_conflict_tests.rs"]
 mod conflict_tests;
+
+#[path = "production_hos2_native_profile_tests.rs"]
+mod native_profile_tests;

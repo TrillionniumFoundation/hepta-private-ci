@@ -41,6 +41,80 @@ pub struct Hos2RetirementObservation {
 }
 
 impl ProductionDurableWriter {
+    /// Read a candidate D from this original owner's immutable outbox.
+    /// This read grants/reserves nothing. `prepare_operation` is still the
+    /// only admission: its original SQLite transaction rejects competing K,
+    /// stale candidates and any nonterminal predecessor without dispatch.
+    pub async fn next_hos2_delivery_candidate(
+        &self,
+        boot_id: [u8; 16],
+        space_id: [u8; 16],
+    ) -> Result<Hos2DeliveryId, ProductionWriterError> {
+        self.verify_current_authority().await?;
+        let namespace =
+            Hos2DeliveryId::new(boot_id, space_id, 1).map_err(ProductionWriterError::Invalid)?;
+        let mut transaction = self
+            .store
+            .pool
+            .begin()
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        let sequence = self
+            .lease
+            .hos2_delivery_candidate(&mut transaction, &namespace)
+            .await?;
+        transaction
+            .rollback()
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        self.verify_current_authority().await?;
+        Hos2DeliveryId::new(boot_id, space_id, sequence).map_err(ProductionWriterError::Invalid)
+    }
+
+    /// Read original durable pending state for explicit native-profile drain.
+    /// Admission must already be closed and live dispatch joined by the host.
+    /// A malformed/missing retained operation is an error, never a drained bit.
+    pub async fn hos2_drain_blockers(&self) -> Result<u32, ProductionWriterError> {
+        self.verify_current_authority().await?;
+        let ids = sqlx::query_scalar::<_, String>(
+            "SELECT o.operation_id FROM cognitive_operation_ledger o
+             WHERE o.lease_id = ? AND o.destination_id = ?
+               AND COALESCE((SELECT e.event_kind FROM cognitive_local_events e
+                   WHERE e.lease_id = o.lease_id AND e.occurrence_key = o.operation_id
+                   ORDER BY e.event_sequence DESC LIMIT 1), '')
+                   NOT IN ('reconcile_committed','reconcile_rejected','rolled_back','applied','rejected')
+             ORDER BY o.prepared_at_unix_seconds, o.operation_id LIMIT 257")
+            .bind(self.lease_id()).bind(crate::HOS2_DESTINATION_V1)
+            .fetch_all(self.store.observation_pool()).await
+            .map_err(|error|ProductionWriterError::Durability(error.to_string()))?;
+        if ids.len() > 256 {
+            return Err(ProductionWriterError::Durability(
+                "native drain exceeds bounded original pending inspection".into(),
+            ));
+        }
+        let mut blockers = 0;
+        for id in ids {
+            let retained = self.retained_operation(&id).await?.ok_or_else(|| {
+                ProductionWriterError::Durability(
+                    "original native pending operation disappeared".into(),
+                )
+            })?;
+            if retained.topic != crate::HOS2_INSTALL_TOPIC_V1 {
+                return Err(ProductionWriterError::Invalid(
+                    "native destination has another operation topic".into(),
+                ));
+            }
+            if matches!(
+                retained.state,
+                LocalOutcomeState::Queued | LocalOutcomeState::Indeterminate
+            ) {
+                blockers += 1;
+            }
+        }
+        self.verify_current_authority().await?;
+        Ok(blockers)
+    }
+
     pub(super) async fn settle_hos2_protocol_conflict(
         &self,
         request: ProductionDispatchRequest,
