@@ -181,9 +181,13 @@ impl OwnerLock {
             .context
             .lock()
             .map_err(|_| ValidationError::UnsafeObject)?;
+        self.validate_locked(&mut held)
+    }
+
+    fn validate_locked(&self, held: &mut DirectoryContext) -> Result<(), ValidationError> {
         held.revalidate()?;
         held.continuity = Continuity::Refused;
-        if inspect(&self.file, &mut held)? != self.identity {
+        if inspect(&self.file, held)? != self.identity {
             return Err(ValidationError::UnsafeObject);
         }
         held.continuity = Continuity::Live;
@@ -194,3 +198,6 @@ impl OwnerLock {
 #[cfg(test)]
 #[path = "private_owner_lock_tests.rs"]
 mod tests;
+
+#[path = "owner_read.rs"]
+mod owner_read;
