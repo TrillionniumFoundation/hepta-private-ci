@@ -29,6 +29,11 @@ path = "src/bin/hepta-supervisor-intent-recovery.rs"
 test = false
 
 [[bin]]
+name = "hepta-supervisor-pair-test-fixture"
+path = "src/bin/hepta-supervisor-pair-test-fixture.rs"
+test = false
+
+[[bin]]
 name = "hepta-authority-signer"
 path = "src/bin/hepta-authority-signer.rs"
 test = false
@@ -90,6 +95,7 @@ uuid = { workspace = true, features = ["v4"] }
 zeroize = { workspace = true }
 
 [dev-dependencies]
+codex-utils-cargo-bin = { workspace = true }
 jsonschema = { version = "=0.33.0", default-features = false }
 pretty_assertions = { workspace = true }
 tempfile = { workspace = true }
