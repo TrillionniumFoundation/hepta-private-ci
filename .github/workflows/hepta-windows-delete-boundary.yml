@@ -5,6 +5,9 @@ on:
     paths:
       - codex-rs/windows-sandbox-rs/**
       - codex-rs/utils/windows-private-state/**
+      - codex-rs/hepta-contracts/**
+      - codex-rs/hepta-prompt-registry/**
+      - scripts/test_hepta_windows_boundary_receipts.py
       - .github/workflows/hepta-windows-delete-boundary.yml
 
 permissions:
@@ -17,13 +20,19 @@ concurrency:
 
 jobs:
   delete-boundary:
-    name: Native Windows deletion boundary (${{ matrix.lane }})
-    runs-on: windows-latest
+    name: Native Windows deletion boundary (${{ matrix.runner }}, ${{ matrix.lane }})
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
         lane: [source-head, base-merge]
+        runner: [windows-latest, windows-11-arm]
+        include:
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
+          - runner: windows-11-arm
+            target: aarch64-pc-windows-msvc
     defaults:
       run:
         shell: bash
@@ -61,7 +70,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
         with:
           toolchain: "1.96.0"
-          targets: x86_64-pc-windows-msvc
+          targets: ${{ matrix.target }}
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
@@ -143,7 +152,23 @@ jobs:
               "primary_owner::tests::real_restricted_primary_token_is_refused",
               "primary_owner::tests::same_user_impersonation_cannot_mint_primary_owner",
           )
-          required = ("partial-delete-deny", "broad-identity-delete", "legacy-delete-boundary", *probes, "acl-unit-controls", "private-owner-descriptor", "full-restriction-candidate", "private-local-ntfs", "private-principal-continuity", "private-owner-lock")
+          store_selectors = {
+              "original-final-use-windows": (
+                  "final_use::windows_owner::tests::native_explicit_owner_keeps_original_signed_claim_replay_and_os_lock",
+                  "final_use::windows_owner::tests::native_cold_frontier_mismatch_rejects_before_original_state_rewrites",
+                  "final_use::windows_owner::tests::native_legacy_zero_nonce_preserves_original_staged_and_committed_bytes",
+                  "windows_state_stage_tests::windows_stage_replaces_relative_to_held_directory_using_exact_source",
+                  "windows_state_stage_tests::windows_stage_without_delete_access_cannot_replace",
+                  "windows_state_stage_tests::windows_stage_respects_destination_delete_sharing",
+                  "windows_state_stage_tests::windows_stage_rejects_escaped_leaf_without_publication",
+              ),
+              "original-registry-windows": (
+                  "durable::platform::tests::native_registry_retains_os_lock_and_recovers_only_unselected_payload_tail",
+                  "durable::platform::tests::native_registry_corrupt_manifest_never_trims_or_rewrites_existing_state",
+                  "durable::platform::tests::native_registry_existing_marker_with_missing_manifest_never_reinitializes",
+              ),
+          }
+          required = ("partial-delete-deny", "broad-identity-delete", "legacy-delete-boundary", *probes, "acl-unit-controls", "private-owner-descriptor", "full-restriction-candidate", "private-local-ntfs", "private-principal-continuity", "private-owner-lock", *store_selectors)
           if sys.argv[1] == "tests":
               name, minimum = sys.argv[2], int(sys.argv[3])
               assert name in required, "unknown native test receipt"
@@ -178,6 +203,11 @@ jobs:
                   observed = {selector: re.search(r"^test " + re.escape(selector) + r" \.\.\. ok\s*$", text, re.MULTILINE) is not None for selector in acl_selectors}
                   ok = ok and minimum == len(acl_selectors) and all(observed.values())
                   proof = {"test_filter": "test(/^acl::tests::/)", "required_test_names_observed": observed}
+              elif name in store_selectors:
+                  selectors = store_selectors[name]
+                  runs = re.findall(r"Summary[^\n]*?(\d+) tests? run:", text)
+                  ok = ok and minimum == passed == len(selectors) and runs == [str(len(selectors))] and exact_names(selectors)
+                  proof = {"required_test_names_observed": list(selectors), "owner_supported": False, "power_loss_qualified": False, "whole_unit_qualified": False}
               elif name == "private-owner-descriptor":
                   observed = {selector: re.search(r"^test " + re.escape(selector) + r" \.\.\. ok\s*$", text, re.MULTILINE) is not None for selector in owner_selectors}
                   runs = re.findall(r"Summary[^\n]*?(\d+) tests? run:", text)
@@ -305,6 +335,22 @@ jobs:
           codes="${PIPESTATUS[*]}"
           set -e
           python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests private-owner-descriptor 37 "$codes"
+      - name: Run original FinalUse opaque-owner and all four stage controls
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: |
+          set +e
+          just test --locked -p codex-hepta-contracts --lib -E 'test(/^final_use::windows_owner::tests::/) | test(/^windows_state_stage_tests::/)' --test-threads 1 --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-delete-boundary/original-final-use-windows.log"
+          codes="${PIPESTATUS[*]}"
+          set -e
+          python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests original-final-use-windows 7 "$codes"
+      - name: Run original registry opaque-owner recovery controls
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: |
+          set +e
+          just test --locked -p codex-hepta-prompt-registry --lib -E 'test(/^durable::platform::tests::/)' --test-threads 1 --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-delete-boundary/original-registry-windows.log"
+          codes="${PIPESTATUS[*]}"
+          set -e
+          python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests original-registry-windows 3 "$codes"
       - name: Run four live effective-token native continuity controls
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
         run: |
@@ -401,13 +447,13 @@ jobs:
           codes="${PIPESTATUS[*]}"
           set -e
           python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests acl-unit-controls 8 "$codes"
-      - name: Require unchanged source and all thirteen completed Windows result receipts
+      - name: Require unchanged source and all fifteen completed Windows result receipts
         if: ${{ always() && steps.source.outcome == 'success' }}
         run: python "$RUNNER_TEMP/windows-delete-boundary/check.py" source after
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: hepta-windows-delete-boundary-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          name: hepta-windows-delete-boundary-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/windows-delete-boundary/
           if-no-files-found: error
           retention-days: 14

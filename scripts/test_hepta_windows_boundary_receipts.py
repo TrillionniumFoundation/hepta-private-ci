@@ -257,6 +257,36 @@ class WindowsBoundaryReceiptTests(unittest.TestCase):
             1,
         )
 
+    def test_original_store_receipts_require_every_selected_native_case(self):
+        tree = ast.parse(self.source)
+        targets = next(
+            ast.literal_eval(node.value)
+            for node in tree.body
+            if isinstance(node, ast.Assign)
+            and any(
+                isinstance(target, ast.Name) and target.id == "store_selectors"
+                for target in node.targets
+            )
+        )
+        self.assertEqual(
+            {name: len(cases) for name, cases in targets.items()},
+            {"original-final-use-windows": 7, "original-registry-windows": 3},
+        )
+        for name, cases in targets.items():
+            count = len(cases)
+            with self.subTest(name=name):
+                self.assertEqual(self.evaluate(name, count, log(cases, skipped=200)), 0)
+                for index in range(count):
+                    missing = cases[:index] + cases[index + 1 :]
+                    self.assertEqual(
+                        self.evaluate(name, count, log(missing, passed=count)), 1
+                    )
+                for extra in (cases[0], "unregistered::store"):
+                    text = "test " + extra + " ... ok\n" + log(cases)
+                    self.assertEqual(self.evaluate(name, count, text), 1)
+                self.assertEqual(self.evaluate(name, count, log(cases, failed=1)), 1)
+                self.assertEqual(self.evaluate(name, count + 1, log(cases)), 1)
+
     def test_existing_workflow_executes_complete_targets_without_filters(self):
         text = WORKFLOW.read_text()
         for target in ("--lib", "--test native_owner_lock", "--test native_volume"):

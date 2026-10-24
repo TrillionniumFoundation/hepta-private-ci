@@ -806,6 +806,17 @@ all complete executable hashes, process counts, assertions and the 60-second
 test cutoff. A dedicated first-party fixture omits only its link-time debug
 information. These are controlled fixtures, not real Agentd/model qualification.
 
+The combined ten-package ordinary Linux suite executes 1,042 passing cases;
+its 17 inherited explicit qualifications remain separately accounted. The
+original four-case durability qualification first produced two passes and two
+60-second watchdog failures. Its two thousand-operation cases now use the
+existing serialized, ten-minute durability-capacity budget, with their complete
+workloads, child bounds and assertions retained. The actual 1,000 child-process
+kill/reopen/replay study passes in 582.764 seconds, and both original crash
+probes pass. The 1,000-operation SQLite study still times out at 600.030 seconds;
+that performance blocker remains open. This is no throughput or eight-second
+runtime acceptance. The original failures are retained.
+
 Within the same PN0/PN4 boundary, AuthBus owns current settlement-issuer trust.
 `AuthBusAuthorityStore::settle` retains its registration parameter as an exact
 consistency hint, then reads the signed issuer/epoch from the durable registry
@@ -1044,6 +1055,16 @@ identities are not evicted or recycled. Prepared read ACLs alone do not admit a
 full token, neutralize parent DELETE_CHILD rights or complete setup. Actual
 old-token/new-disjoint-root, full token and setup native regressions remain open.
 
+The original token owner now also exposes an explicitly
+`UnqualifiedFullRestrictionToken` OS mechanism. It requires a real unfiltered
+primary token, reads bounded input/output token state, applies only the supplied
+nonambient restricting SIDs and preserves the base default DACL. Its original
+full-restriction native candidate keeps every filesystem assertion; native
+execution remains required. This does not supply managed credentials, retained
+prepared ACLs, PE/DLL loading, desktop, stdio or containment. Setup's real read
+handles end with its process; a serialized marker cannot replace final readiness
+in the executing owner. All original production launch guards remain closed.
+
 The same PN0 sandbox item retains seven source-backed blockers below. Security-authority
 coordinates the sandbox package owners; runtime-control owns the PN4 process-owner
 composition. Paths in the first six rows are under
@@ -1061,7 +1082,7 @@ ownership to `utils/windows-private-state`.
 | PN0 stdio: `process.rs` has a global inheritable-stdio fallback; `acl.rs::allow_null_device` mutates shared NUL ACLs.                                                                                                | `OwnedChildStdio`/closed-stdio plans duplicate only exact endpoints and always supply an explicit handle list when inheriting. Pass preopened NUL or closed endpoints; retain RAII cleanup and exclude runner/token/Job/store/ancestor handles.                                                                                                                                             | Test open/closed stdin, split/merged output, EOF, backpressure, cancellation and ConPTY. A deliberately inheritable unrelated sentinel and private/control handles must stay inaccessible; no device-wide ACL repair may manufacture success.                                                                 |
 | PN4 controlled containment: `process.rs`, `conpty/mod.rs` and `codex-rs/utils/pty/src/win/job.rs` currently select a breakaway-enabled Job.                                                                          | The controlled route uses `create_without_breakaway`, atomic `PROC_THREAD_ATTRIBUTE_JOB_LIST` assignment and the original retained process owner until terminal reconciliation. Preserve unrelated interactive descendant-lifetime contracts.                                                                                                                                               | Execute breakaway attempts, child/grandchild pipelines and cancellation/process-death cases under the original eight-second terminal bound. Actual PE/DLL/script execution is required; `FILE_EXECUTE` handle access, exit code or PID lookup does not prove launch, containment or resource return.          |
 
-First collect the existing source-head/base-merge thirteen-receipt results; a primitive
+First collect the existing source-head/base-merge fifteen-receipt results; a primitive
 pass cannot replace an original red. Continue within PN0 in dependency order:
 bounded role plan and versioned setup/runner fields, explicit RX/readiness,
 mutation deny plus full-token/default-object policy, then desktop/stdio/controlled
@@ -1148,8 +1169,10 @@ cannot leave native output storage pending after return. It returns
 Four required `native_volume` integration controls cover actual local file and
 directory queries, a non-disk handle, and an overlapped held object renamed while
 its former path is replaced. The existing Windows workflow retains all ten prior receipts and
-the five original owner-descriptor controls. Thirteen mandatory receipts now
-include the complete library, process-lock, principal and volume targets. The
+the five original owner-descriptor controls. Fifteen mandatory receipts now
+include the complete library, process-lock, principal, volume, original FinalUse
+and registry targets. The same workflow adds ARM64 source/merge execution while
+retaining both original x64 lanes; artifacts identify their runner and lane. The
 preserved source and actual preview's full native runs
 locate `AccessDenied` (5) at the directory's old `ReOpenFile` call; local file
 queries pass. The additive `inspect_local_ntfs_observed` API reports at most nine
@@ -1165,18 +1188,19 @@ Windows owner support and power-loss qualification remain false. The added
 overlapped-directory/rename control also requires the new ID-based query to
 remain attached to the original held object.
 
-C3/C4 now pass the exact already-synced stage `File` through the existing store
-publication calls to `windows-private-state::stage::replace_synced_state_stage`.
-The mechanism uses real `SetFileInformationByHandle(FileRenameInfo)` with the
-held destination directory and a bounded leaf, never reopening the source by
-name. Its four new native controls require original-handle publication after
-source rename, missing-DELETE refusal, destination delete-sharing refusal and
-escaped-leaf refusal. Their Windows execution is pending; the three-package
-Linux suite passes 226 tests with zero skipped. Windows cross-checking and
-Clippy are `NOT_NATIVE`. Original journals, claims, precommit/indeterminate
-handling and unsupported owner-construction guards remain intact. Trusted
-parent/creation, owner consumers and native recovery are still dependencies;
-this stage primitive alone does not close C2b, C3, C4 or C5.
+C3/C4 retain the exact original stage through the same store publication.
+The safe OS helper now accepts only `SynchronousStageFile`, produced by actual
+relative CREATE_NEW with SYNCHRONIZE and FILE_SYNCHRONOUS_IO_NONALERT; there is
+no arbitrary-File adapter, clone, raw handle or caller-set synchronization flag.
+The internal owner path uses its same proven native-open producer and retains
+the original lock/context through completion. Publication calls native
+`NtSetInformationFile(FileRenameInformation)` with the held non-null destination
+root and bounded literal leaf, preserving real stage synchronization and checking
+both completed NT and I/O status. It never converts the source or destination to
+paths. The original four controls and all their assertions remain mandatory.
+The earlier Win32 route's actual source-291 positive test failed with error 87;
+new native execution must confirm this repair. Cross-target checks and the
+227-case Linux contracts/registry suite are not Windows or power-loss acceptance.
 
 C3 and C4 now expose explicit `open_windows_private` entry points consuming the
 actual opaque fresh/existing directory capability. FinalUse shares its original
@@ -1185,7 +1209,7 @@ shares its original V1/V2-to-V3 migration, extent digest and restore logic.
 Complete cold validation precedes migration or orphan-tail trimming. Entering
 the native publication helper makes subsequent uncertain I/O indeterminate and
 keeps poison/reopen semantics. No second store or journal is introduced.
-The ordinary path constructors remain refused. Five new real-file native
+The ordinary path constructors remain refused. Six new real-file native
 consumer controls are present but not yet executed on this combined source;
 parent admission, process-death, full caller composition and native qualification
 remain blockers.

@@ -60,10 +60,16 @@ production caller composition remain required.
 
 The existing C3/C4 publication calls pass the exact synced source handle to
 [stage.rs](../../../codex-rs/utils/windows-private-state/src/stage.rs), through
-the contracts crate's safe re-export. Its bounded relative rename mechanism
+the contracts crate's safe re-export. Its bounded native relative rename mechanism
 and [four native controls](../../../codex-rs/hepta-contracts/src/windows_state_stage_tests.rs)
 cover exact-source identity, missing DELETE access, destination sharing and
-invalid leaves. They do not construct a private owner; ordinary Windows store
+invalid leaves. The safe mechanism accepts only a stage produced by actual
+synchronous native creation; the owner path retains its proven producer and lock.
+Native FileRenameInformation uses the exact stage and non-null held root, without
+Win32 path conversion or an asynchronous borrowed-File assumption. Both native
+completion statuses must succeed. The original error-87 observation remains
+failed until new native execution confirms the repair. These mechanisms do not
+construct a private owner; ordinary Windows store
 constructors remain closed pending trusted-parent and recovery qualification.
 The utility's anonymous-token fixture now constructs and reads back an actual
 anonymous-level token, and its volume query opens the held kernel file ID on
