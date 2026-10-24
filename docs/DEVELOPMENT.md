@@ -970,6 +970,11 @@ Matrix socket paths and V8 feature identity. The BOOLEAN query now decodes only
 its one reported byte; other token DWORD fields retain exact four-byte checks.
 Anonymous-token queries execute without diagnostic I/O until the original
 identity has been restored, retaining all original error and sticky assertions.
+The V8 Cargo package now enables its existing sandbox feature by default,
+matching the checksum-verified sandbox artifact already selected by the full CI
+and the existing Bazel target. The original linked-library identity assertion
+is unchanged. All six Linux V8 tests pass against the original verified artifact
+pair; this is not a Windows native result.
 New native execution is still required to confirm these repairs.
 
 The same PN0 CI repair runs all 819 existing Hepta Python regressions. The first
