@@ -112,6 +112,22 @@ impl AgentdProductionWriterHost {
 }
 
 impl AgentdNativeMemoryCell {
+    /// Compose the already registered source/decoder with an explicitly supplied
+    /// live context authority and independently witnessed shadow journal.
+    #[cfg(feature = "qualification-cognitive-write")]
+    pub async fn shadow_owner<C: crate::NativeMemoryContextAuthorityV1 + 'static>(
+        &self,
+        files: crate::NativeMemoryShadowFilesV1,
+        profile: crate::NativeMemoryShadowProfileV1,
+        context: C,
+    ) -> Result<Arc<crate::AgentdNativeMemoryShadowOwner<C>>, NativeMemoryError> {
+        crate::AgentdNativeMemoryShadowOwner::open(crate::native_memory_tick_owner::NativeShadowHostBinding {
+            writer: Arc::clone(&self.writer), access: self.access.clone(), key: self.key.clone(),
+            claim: self.claim.clone(), model: self.config.clone(), dispatches: Arc::clone(&self.dispatches),
+            capacity: Arc::clone(&self.capacity), cancellation: self.cancellation.clone(),
+        }, files, profile, context).await
+    }
+
     /// Per-process backend dispatch attempts, including failed invocations.
     /// It is a cost counter, not proof that every attempt completed inference.
     pub fn backend_dispatch_attempts(&self) -> u64 {
