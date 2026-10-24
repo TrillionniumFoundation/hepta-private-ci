@@ -1,0 +1,98 @@
+    Checking codex-utils-absolute-path v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/utils/absolute-path)
+    Checking codex-utils-rustls-provider v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/utils/rustls-provider)
+    Checking codex-utils-cache v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/utils/cache)
+    Checking codex-utils-home-dir v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/utils/home-dir)
+    Checking codex-utils-path-uri v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/utils/path-uri)
+    Checking codex-utils-string v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/utils/string)
+    Checking codex-execpolicy v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/execpolicy)
+    Checking codex-network-proxy v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/network-proxy)
+    Checking codex-utils-image v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/utils/image)
+    Checking codex-http-client v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/http-client)
+    Checking codex-extension-items v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/ext/items)
+    Checking codex-utils-redacted-string v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/utils/redacted-string)
+    Checking codex-async-utils v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/async-utils)
+    Checking codex-protocol v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/protocol)
+    Checking codex-hepta-contracts v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/hepta-contracts)
+    Checking codex-utils-pty v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/utils/pty)
+warning: use of deprecated associated function `tokio::io::unix::AsyncFd::<T>::new`: unsound due to lack of I/O safety; use `AsyncFd::register` instead (see https://github.com/tokio-rs/tokio/pull/8587)
+  --> utils/pty/src/unix_io.rs:38:60
+   |
+38 |         let fd = std::panic::catch_unwind(move || AsyncFd::new(File::from(fd)))
+   |                                                            ^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-utils-pty` (lib) generated 1 warning
+    Checking codex-file-system v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/file-system)
+    Checking codex-git-utils v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/git-utils)
+    Checking codex-history v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/history)
+    Checking codex-state v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/state)
+    Checking codex-hepta-paths v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/hepta-paths)
+    Checking codex-hepta-types v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/hepta-types)
+    Checking codex-hepta-operations v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/hepta-operations)
+    Checking codex-hepta-automation v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/hepta-automation)
+warning: large size difference between variants
+   --> hepta-automation/src/authorized_effect.rs:540:1
+    |
+540 | / pub enum AuthorizedEffectRecoveryResult {
+541 | |     ProvenAbsent,
+    | |     ------------ the second-largest variant carries no data at all
+542 | |     Observed(TaskFlowStepReceipt),
+    | |     ----------------------------- the largest variant contains at least 272 bytes
+543 | | }
+    | |_^ the entire enum is at least 272 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+    = note: `#[warn(clippy::large_enum_variant)]` on by default
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+542 -     Observed(TaskFlowStepReceipt),
+542 +     Observed(Box<TaskFlowStepReceipt>),
+    |
+
+warning: this function has too many arguments (10/7)
+   --> hepta-automation/src/authorized_effect.rs:644:5
+    |
+644 | /     pub async fn execute_authorized_taskflow_effect<D: AuthorizedEffectDriver>(
+645 | |         &self,
+646 | |         authority: &FinalUseAuthority,
+647 | |         driver: &mut D,
+...   |
+654 | |         now_ms: u64,
+655 | |     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
+    | |___________________________________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+    = note: `#[warn(clippy::too_many_arguments)]` on by default
+
+warning: this function has too many arguments (10/7)
+   --> hepta-automation/src/authorized_effect.rs:866:5
+    |
+866 | /     pub async fn execute_authorized_taskflow_effect_async<D: AsyncAuthorizedEffectDriver>(
+867 | |         &self,
+868 | |         authority: &FinalUseAuthority,
+869 | |         driver: &mut D,
+...   |
+876 | |         now_ms: u64,
+877 | |     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
+    | |___________________________________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (10/7)
+   --> hepta-automation/src/neural_circuit.rs:125:5
+    |
+125 | /     pub fn new(
+126 | |         circuit_id: impl Into<String>,
+127 | |         version: u32,
+128 | |         predecessor_digest: Option<Sha256Digest>,
+...   |
+135 | |         resource_profile_digest: Sha256Digest,
+136 | |     ) -> Result<Self, TaskFlowError> {
+    | |____________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: `codex-hepta-automation` (lib) generated 4 warnings
+    Checking codex-hepta-fleet v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs/hepta-fleet)
+    Finished `dev` profile [unoptimized] target(s) in 28.93s

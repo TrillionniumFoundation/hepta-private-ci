@@ -1,0 +1,80 @@
+{
+  "cwd": "/workspace/scratch/f24caf690188/hepta-native-owner-integration/codex-rs",
+  "exact_head": "103bb2011629d12c658b7004d3a4a163a548df02",
+  "source_state": "clean through baseline; then only authorized_effect integration test root and new child module changed",
+  "environment": {
+    "RUSTUP_HOME": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/rustup",
+    "CARGO_HOME": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/cargo",
+    "CARGO_TARGET_DIR": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/target",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/14/include",
+    "PATH_prefix": [
+      "/workspace/scratch/f24caf690188/hepta-native-owner-evidence/build-tools/bin",
+      "/workspace/scratch/f24caf690188/hepta-native-dot-resume/bin",
+      "/workspace/scratch/f24caf690188/hepta-native-dot-resume/cargo/bin"
+    ]
+  },
+  "runs": [
+    {
+      "log": "authorized-effect.log",
+      "command": "just test --locked --offline -p codex-hepta-automation --test authorized_effect --test-threads 1",
+      "difference": "carried Rust1.95; no CMake/bindgen flags",
+      "result": "missing uncached aho-corasick; no tests"
+    },
+    {
+      "log": "authorized-effect-online.log",
+      "command": "just test --locked -p codex-hepta-automation --test authorized_effect --test-threads 1",
+      "difference": "carried Rust1.95; no CMake/bindgen flags",
+      "result": "official registry download then MSRV mismatch; no tests"
+    },
+    {
+      "log": "baseline-196.log",
+      "command": "just test --locked --offline -p codex-hepta-automation --test authorized_effect --test-threads 1",
+      "difference": "correct1.96; no cmake/bindgen flags",
+      "result": "aws-lc missing CMake; no tests"
+    },
+    {
+      "log": "baseline-196-cmake.log",
+      "command": "just test --locked --offline -p codex-hepta-automation --test authorized_effect --test-threads 1",
+      "difference": "correct1.96 and CMake; no bindgen flags",
+      "result": "libclang missing builtin stddef include; no tests"
+    },
+    {
+      "log": "baseline-196-headers.log",
+      "command": "just test --locked --offline -p codex-hepta-automation --test authorized_effect --test-threads 1",
+      "result": "10passed0skipped original source"
+    },
+    {
+      "log": "receipt-tests.log",
+      "command": "just test --locked --offline -p codex-hepta-automation --test authorized_effect --test-threads 1",
+      "result": "13passed0skipped with new test child"
+    },
+    {
+      "log": "fmt.log",
+      "command": "just fmt",
+      "result": "see exit file; after tests; preformat source retained"
+    },
+    {
+      "log": "diff-check.log",
+      "command": "git diff --check"
+    },
+    {
+      "log": "scoped-clippy.log",
+      "command": "cargo clippy --locked --offline -p codex-hepta-automation --test authorized_effect --no-deps -- -D warnings",
+      "scope": "scoped target only, not dependency lint or entire workspace"
+    },
+    {
+      "log": "default-clippy.log",
+      "command": "cargo clippy --locked --offline -p codex-hepta-automation --test authorized_effect --no-deps",
+      "result": "exit0 with four unchanged library warnings; no new-test warnings; not strict pass"
+    }
+  ],
+  "installation": {
+    "rust": "rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy; official static.rust-lang.org manifests verified by rustup",
+    "cmake": "python3 -m venv build-tools; build-tools/bin/python -m pip install --disable-pip-version-check cmake==3.31.6; PyPI wheel27.8MB",
+    "headers": "existing /usr/lib/gcc/x86_64-linux-gnu/14/include, gcc -print-file-name=include; no files/system settings changed"
+  }
+}

@@ -1,0 +1,353 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+   Compiling aws-lc-sys v0.46.0
+warning: aws-lc-sys@0.46.0: Building with: CMake
+warning: aws-lc-sys@0.46.0: Symbol Prefix: Some("aws_lc_0_46_0")
+warning: aws-lc-sys@0.46.0: Environment Variable found 'CMAKE': 'cmake'
+warning: aws-lc-sys@0.46.0: CMAKE environment variable set: cmake
+warning: aws-lc-sys@0.46.0: Target platform: 'x86_64-unknown-linux-gnu'
+warning: aws-lc-sys@0.46.0: ######
+warning: aws-lc-sys@0.46.0: If bindgen is unable to locate a header file, use the BINDGEN_EXTRA_CLANG_ARGS environment variable to specify additional include paths.
+warning: aws-lc-sys@0.46.0: See: https://github.com/rust-lang/rust-bindgen?tab=readme-ov-file#environment-variables
+warning: aws-lc-sys@0.46.0: ######
+warning: aws-lc-sys@0.46.0: Clang version: Debian clang version 19.1.7 (3+b1)
+warning: aws-lc-sys@0.46.0: Generating bindings - internal bindgen. Platform: x86_64-unknown-linux-gnu
+warning: aws-lc-sys@0.46.0: Allowed header: aead.h
+warning: aws-lc-sys@0.46.0: Allowed header: aes.h
+warning: aws-lc-sys@0.46.0: Allowed header: base.h
+warning: aws-lc-sys@0.46.0: Allowed header: bn.h
+warning: aws-lc-sys@0.46.0: Allowed header: boringssl_prefix_symbols.h
+warning: aws-lc-sys@0.46.0: Allowed header: boringssl_prefix_symbols_asm.h
+warning: aws-lc-sys@0.46.0: Allowed header: boringssl_prefix_symbols_nasm.inc
+warning: aws-lc-sys@0.46.0: Allowed header: bytestring.h
+warning: aws-lc-sys@0.46.0: Allowed header: chacha.h
+warning: aws-lc-sys@0.46.0: Allowed header: cipher.h
+warning: aws-lc-sys@0.46.0: Allowed header: cmac.h
+warning: aws-lc-sys@0.46.0: Allowed header: crypto.h
+warning: aws-lc-sys@0.46.0: Allowed header: curve25519.h
+warning: aws-lc-sys@0.46.0: Allowed header: digest.h
+warning: aws-lc-sys@0.46.0: Allowed header: ec.h
+warning: aws-lc-sys@0.46.0: Allowed header: ec_key.h
+warning: aws-lc-sys@0.46.0: Allowed header: ecdh.h
+warning: aws-lc-sys@0.46.0: Allowed header: ecdsa.h
+warning: aws-lc-sys@0.46.0: Allowed header: err.h
+warning: aws-lc-sys@0.46.0: Allowed header: evp.h
+warning: aws-lc-sys@0.46.0: Allowed header: hkdf.h
+warning: aws-lc-sys@0.46.0: Allowed header: hmac.h
+warning: aws-lc-sys@0.46.0: Allowed header: is_awslc.h
+warning: aws-lc-sys@0.46.0: Allowed header: kdf.h
+warning: aws-lc-sys@0.46.0: Allowed header: mem.h
+warning: aws-lc-sys@0.46.0: Allowed header: nid.h
+warning: aws-lc-sys@0.46.0: Allowed header: poly1305.h
+warning: aws-lc-sys@0.46.0: Allowed header: rand.h
+warning: aws-lc-sys@0.46.0: Allowed header: rsa.h
+warning: aws-lc-sys@0.46.0: Allowed header: sha.h
+warning: aws-lc-sys@0.46.0: Blocked function: BIO_vsnprintf
+warning: aws-lc-sys@0.46.0: Blocked function: BN_print_fp
+warning: aws-lc-sys@0.46.0: Blocked function: CBS_parse_generalized_time
+warning: aws-lc-sys@0.46.0: Blocked function: CBS_parse_utc_time
+warning: aws-lc-sys@0.46.0: Blocked function: ERR_print_errors_fp
+warning: aws-lc-sys@0.46.0: Blocked function: OPENSSL_vasprintf
+warning: aws-lc-sys@0.46.0: Blocked function: RSA_print_fp
+warning: aws-lc-sys@0.46.0: Blocked function: armv8_disable_dit
+warning: aws-lc-sys@0.46.0: Blocked function: armv8_enable_dit
+warning: aws-lc-sys@0.46.0: Blocked type: FILE
+warning: aws-lc-sys@0.46.0: Blocked type: fpos_t
+warning: aws-lc-sys@0.46.0: Blocked type: tm
+warning: aws-lc-sys@0.46.0: Blocked type: va_list
+warning: aws-lc-sys@0.46.0: Blocked type: __builtin_va_list
+warning: aws-lc-sys@0.46.0: Blocked type: __gnuc_va_list
+warning: aws-lc-sys@0.46.0: Blocked type: __darwin_va_list
+warning: aws-lc-sys@0.46.0: Blocked type: __va_list_tag
+warning: aws-lc-sys@0.46.0: Blocked type: __off_t
+warning: aws-lc-sys@0.46.0: Blocked type: __off64_t
+warning: aws-lc-sys@0.46.0: Blocked type: __int64_t
+warning: aws-lc-sys@0.46.0: Blocked type: __darwin_off_t
+warning: aws-lc-sys@0.46.0: Blocked type: _IO_FILE
+warning: aws-lc-sys@0.46.0: Blocked type: _IO_marker
+warning: aws-lc-sys@0.46.0: Blocked type: _IO_codecvt
+warning: aws-lc-sys@0.46.0: Blocked type: _IO_wide_data
+warning: aws-lc-sys@0.46.0: Blocked type: _IO_lock_t
+warning: aws-lc-sys@0.46.0: Blocked type: __sFILE
+warning: aws-lc-sys@0.46.0: Blocked type: __sbuf
+warning: aws-lc-sys@0.46.0: Blocked type: __sFILEX
+warning: aws-lc-sys@0.46.0: Blocked constant: BN_DEC_FMT1
+warning: aws-lc-sys@0.46.0: Blocked constant: BN_HEX_FMT1
+warning: aws-lc-sys@0.46.0: Blocked constant: BN_HEX_FMT2
+error: failed to run custom build command for `aws-lc-sys v0.46.0`
+
+Caused by:
+  process didn't exit successfully: `/workspace/scratch/f24caf690188/hepta-native-dot-resume/target/debug/build/aws-lc-sys-fd5a35285ffe7238/build-script-main` (exit status: 101)
+  --- stdout
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_PREFIX_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_PREFIX
+  cargo:rerun-if-env-changed=AWS_LC_SYS_PREGENERATING_BINDINGS_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_PREGENERATING_BINDINGS
+  cargo:rerun-if-env-changed=AWS_LC_SYS_EXTERNAL_BINDGEN_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_EXTERNAL_BINDGEN
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_ASM_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_ASM
+  cargo:rerun-if-env-changed=AWS_LC_SYS_PREBUILT_NASM_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_PREBUILT_NASM
+  cargo:rerun-if-env-changed=AWS_LC_SYS_C_STD_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_C_STD
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CMAKE_BUILDER_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CMAKE_BUILDER
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_PREGENERATED_SRC_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_PREGENERATED_SRC
+  cargo:rerun-if-env-changed=AWS_LC_SYS_SMALL_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_SMALL
+  cargo:rerun-if-env-changed=AWS_LC_SYS_EFFECTIVE_TARGET_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_EFFECTIVE_TARGET
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_JITTER_ENTROPY_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_JITTER_ENTROPY
+  cargo:rerun-if-env-changed=AWS_LC_SYS_INCLUDES_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_INCLUDES
+  cargo:rerun-if-env-changed=AWS_LC_SYS_SANITIZER_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_SANITIZER
+  cargo:rerun-if-env-changed=AWS_LC_SYS_LINK_WHOLE_ARCHIVE_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_LINK_WHOLE_ARCHIVE
+  cargo:rerun-if-env-changed=AWS_LC_SYS_STATIC_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_STATIC
+  cargo:rerun-if-env-changed=AWS_LC_SYS_SYSTEM_DIR_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_SYSTEM_DIR
+  cargo:rerun-if-env-changed=AWS_LC_SYS_USE_SYSTEM_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_USE_SYSTEM
+  cargo:rerun-if-env-changed=AWS_LC_SYS_SYSTEM_BINDINGS_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_SYSTEM_BINDINGS
+  cargo:rerun-if-env-changed=AWS_LC_SYS_SYSTEM_SKIP_VERSION_CHECK_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_SYSTEM_SKIP_VERSION_CHECK
+  cargo:rerun-if-env-changed=OPENSSL_DIR_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=OPENSSL_DIR
+  cargo:rerun-if-env-changed=OPENSSL_INCLUDE_DIR_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=OPENSSL_INCLUDE_DIR
+  cargo:rerun-if-env-changed=OPENSSL_LIB_DIR_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=OPENSSL_LIB_DIR
+  cargo:rerun-if-env-changed=OPENSSL_NO_PKG_CONFIG
+  cargo:rerun-if-env-changed=PKG_CONFIG_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG
+  cargo:rerun-if-env-changed=PKG_CONFIG
+  cargo:rerun-if-env-changed=OPENSSL_STATIC
+  cargo:rerun-if-env-changed=OPENSSL_DYNAMIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_STATIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_DYNAMIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_PATH
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_LIBDIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_SYSROOT_DIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR
+  cargo:rerun-if-env-changed=SYSROOT
+  cargo:rerun-if-env-changed=OPENSSL_STATIC
+  cargo:rerun-if-env-changed=OPENSSL_DYNAMIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_STATIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_DYNAMIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG
+  cargo:rerun-if-env-changed=PKG_CONFIG
+  cargo:rerun-if-env-changed=OPENSSL_STATIC
+  cargo:rerun-if-env-changed=OPENSSL_DYNAMIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_STATIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_DYNAMIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_PATH
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_LIBDIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_SYSROOT_DIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR
+  cargo:rerun-if-env-changed=AWS_LC_NO_PKG_CONFIG
+  cargo:rerun-if-env-changed=PKG_CONFIG_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG
+  cargo:rerun-if-env-changed=PKG_CONFIG
+  cargo:rerun-if-env-changed=AWS_LC_STATIC
+  cargo:rerun-if-env-changed=AWS_LC_DYNAMIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_STATIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_DYNAMIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_PATH
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_LIBDIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_SYSROOT_DIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR
+  cargo:rerun-if-env-changed=LIBCRYPTO_NO_PKG_CONFIG
+  cargo:rerun-if-env-changed=PKG_CONFIG_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG
+  cargo:rerun-if-env-changed=PKG_CONFIG
+  cargo:rerun-if-env-changed=LIBCRYPTO_STATIC
+  cargo:rerun-if-env-changed=LIBCRYPTO_DYNAMIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_STATIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_DYNAMIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_PATH
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_LIBDIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_SYSROOT_DIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR
+  cargo:rerun-if-env-changed=SYSROOT
+  cargo:rerun-if-env-changed=LIBCRYPTO_STATIC
+  cargo:rerun-if-env-changed=LIBCRYPTO_DYNAMIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_STATIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_DYNAMIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG
+  cargo:rerun-if-env-changed=PKG_CONFIG
+  cargo:rerun-if-env-changed=LIBCRYPTO_STATIC
+  cargo:rerun-if-env-changed=LIBCRYPTO_DYNAMIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_STATIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_DYNAMIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_PATH
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_LIBDIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_SYSROOT_DIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR
+  cargo:rerun-if-env-changed=LIBCRYPTO_AWSLC_NO_PKG_CONFIG
+  cargo:rerun-if-env-changed=PKG_CONFIG_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG
+  cargo:rerun-if-env-changed=PKG_CONFIG
+  cargo:rerun-if-env-changed=LIBCRYPTO_AWSLC_STATIC
+  cargo:rerun-if-env-changed=LIBCRYPTO_AWSLC_DYNAMIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_STATIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_DYNAMIC
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_PATH
+  cargo:rerun-if-env-changed=PKG_CONFIG_PATH
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_LIBDIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64-unknown-linux-gnu
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_SYSROOT_DIR
+  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR
+  Ignoring candidate AWS-LC at /usr: Failed to read /usr/include/openssl/base.h: No such file or directory (os error 2)
+  Ignoring candidate AWS-LC at /usr: Failed to read /usr/include/openssl/base.h: No such file or directory (os error 2)
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CMAKE_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CMAKE
+  cargo:rerun-if-env-changed=CMAKE_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=CMAKE
+  cargo:warning=Building with: CMake
+  cargo:warning=Symbol Prefix: Some("aws_lc_0_46_0")
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CMAKE_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CMAKE
+  cargo:rerun-if-env-changed=CMAKE_x86_64_unknown_linux_gnu
+  cargo:rerun-if-env-changed=CMAKE
+  cargo:warning=Environment Variable found 'CMAKE': 'cmake'
+  cargo:warning=CMAKE environment variable set: cmake
+  cargo:warning=Target platform: 'x86_64-unknown-linux-gnu'
+  cargo:warning=######
+  cargo:warning=If bindgen is unable to locate a header file, use the BINDGEN_EXTRA_CLANG_ARGS environment variable to specify additional include paths.
+  cargo:warning=See: https://github.com/rust-lang/rust-bindgen?tab=readme-ov-file#environment-variables
+  cargo:warning=######
+  cargo:warning=Clang version: Debian clang version 19.1.7 (3+b1)
+  cargo:warning=Generating bindings - internal bindgen. Platform: x86_64-unknown-linux-gnu
+  cargo:warning=Allowed header: aead.h
+  cargo:warning=Allowed header: aes.h
+  cargo:warning=Allowed header: base.h
+  cargo:warning=Allowed header: bn.h
+  cargo:warning=Allowed header: boringssl_prefix_symbols.h
+  cargo:warning=Allowed header: boringssl_prefix_symbols_asm.h
+  cargo:warning=Allowed header: boringssl_prefix_symbols_nasm.inc
+  cargo:warning=Allowed header: bytestring.h
+  cargo:warning=Allowed header: chacha.h
+  cargo:warning=Allowed header: cipher.h
+  cargo:warning=Allowed header: cmac.h
+  cargo:warning=Allowed header: crypto.h
+  cargo:warning=Allowed header: curve25519.h
+  cargo:warning=Allowed header: digest.h
+  cargo:warning=Allowed header: ec.h
+  cargo:warning=Allowed header: ec_key.h
+  cargo:warning=Allowed header: ecdh.h
+  cargo:warning=Allowed header: ecdsa.h
+  cargo:warning=Allowed header: err.h
+  cargo:warning=Allowed header: evp.h
+  cargo:warning=Allowed header: hkdf.h
+  cargo:warning=Allowed header: hmac.h
+  cargo:warning=Allowed header: is_awslc.h
+  cargo:warning=Allowed header: kdf.h
+  cargo:warning=Allowed header: mem.h
+  cargo:warning=Allowed header: nid.h
+  cargo:warning=Allowed header: poly1305.h
+  cargo:warning=Allowed header: rand.h
+  cargo:warning=Allowed header: rsa.h
+  cargo:warning=Allowed header: sha.h
+  cargo:warning=Blocked function: BIO_vsnprintf
+  cargo:warning=Blocked function: BN_print_fp
+  cargo:warning=Blocked function: CBS_parse_generalized_time
+  cargo:warning=Blocked function: CBS_parse_utc_time
+  cargo:warning=Blocked function: ERR_print_errors_fp
+  cargo:warning=Blocked function: OPENSSL_vasprintf
+  cargo:warning=Blocked function: RSA_print_fp
+  cargo:warning=Blocked function: armv8_disable_dit
+  cargo:warning=Blocked function: armv8_enable_dit
+  cargo:warning=Blocked type: FILE
+  cargo:warning=Blocked type: fpos_t
+  cargo:warning=Blocked type: tm
+  cargo:warning=Blocked type: va_list
+  cargo:warning=Blocked type: __builtin_va_list
+  cargo:warning=Blocked type: __gnuc_va_list
+  cargo:warning=Blocked type: __darwin_va_list
+  cargo:warning=Blocked type: __va_list_tag
+  cargo:warning=Blocked type: __off_t
+  cargo:warning=Blocked type: __off64_t
+  cargo:warning=Blocked type: __int64_t
+  cargo:warning=Blocked type: __darwin_off_t
+  cargo:warning=Blocked type: _IO_FILE
+  cargo:warning=Blocked type: _IO_marker
+  cargo:warning=Blocked type: _IO_codecvt
+  cargo:warning=Blocked type: _IO_wide_data
+  cargo:warning=Blocked type: _IO_lock_t
+  cargo:warning=Blocked type: __sFILE
+  cargo:warning=Blocked type: __sbuf
+  cargo:warning=Blocked type: __sFILEX
+  cargo:warning=Blocked constant: BN_DEC_FMT1
+  cargo:warning=Blocked constant: BN_HEX_FMT1
+  cargo:warning=Blocked constant: BN_HEX_FMT2
+
+  --- stderr
+  /workspace/scratch/f24caf690188/hepta-native-dot-resume/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.46.0/aws-lc/include/openssl/base.h:13:10: fatal error: 'stddef.h' file not found
+
+  thread 'main' (58) panicked at /workspace/scratch/f24caf690188/hepta-native-dot-resume/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.46.0/builder/sys_bindgen.rs:191:10:
+  Unable to generate bindings.: ClangDiagnostic("/workspace/scratch/f24caf690188/hepta-native-dot-resume/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.46.0/aws-lc/include/openssl/base.h:13:10: fatal error: 'stddef.h' file not found\n")
+  note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: command `/workspace/scratch/f24caf690188/hepta-native-dot-resume/rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-automation --test authorized_effect --locked --offline` exited with code 101
+error: recipe `test` failed on line 89 with exit code 101
