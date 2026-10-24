@@ -118,3 +118,20 @@ async fn retained_session_refuses_redirecting_transport_and_closed_peer() -> any
     assert_eq!(calls.load(Ordering::SeqCst), 0);
     Ok(())
 }
+
+#[tokio::test]
+async fn retained_session_does_not_follow_parent_session_recovery() -> anyhow::Result<()> {
+    let (server, initializes, calls) = server(404, Duration::ZERO).await;
+    let original = client(&server, StreamableHttpRedirectMode::AgentPluginV1).await?;
+    let retained = original.retain_tool_session().await?;
+    // The ordinary client's existing policy recovers once. The retained effect
+    // capability must lose its original lifetime even if the server reuses its
+    // opaque session ID, rather than following the parent's replacement peer.
+    assert!(original.call_tool("process_wait".to_string(), Some(json!({})),
+        /*meta*/ None, Some(Duration::from_secs(2))).await.is_err());
+    assert_eq!((initializes.load(Ordering::SeqCst), calls.load(Ordering::SeqCst)), (2,2));
+    assert!(retained.call_tool_once("process_start", Default::default(), Duration::from_secs(1)).await.is_err());
+    assert_eq!((initializes.load(Ordering::SeqCst), calls.load(Ordering::SeqCst)), (2,2));
+    original.shutdown().await;
+    Ok(())
+}
