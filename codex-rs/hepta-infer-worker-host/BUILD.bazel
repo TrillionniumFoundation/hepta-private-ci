@@ -14,3 +14,8 @@ codex_rust_crate(
         "//conditions:default": {},
     }),
 )
+
+exports_files(
+    ["ordinary_cpu_owner.sql"],
+    visibility = ["//codex-rs/hepta-supervisor:__pkg__"],
+)

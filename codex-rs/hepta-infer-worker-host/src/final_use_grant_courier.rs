@@ -131,3 +131,6 @@ fn invalid(message: &'static str) -> AgentdError {
     AgentdError::Protocol(message.to_owned())
 }
 
+#[cfg(all(test, unix))]
+#[path = "final_use_grant_courier_tests.rs"]
+mod tests;

@@ -19,7 +19,10 @@ codex_rust_crate(
     # equivalent only to the same controlled helper, never product targets.
     build_script_enabled = False,
     crate_name = "codex_hepta_supervisor",
-    integration_compile_data_extra = ["src/paired_process_fixture.rs"],
+    integration_compile_data_extra = [
+        "src/paired_process_fixture.rs",
+        "//codex-rs/hepta-infer-worker-host:ordinary_cpu_owner.sql",
+    ],
 )
 
 # Caller evidence inspected by the Hepta contracts tests.
