@@ -1,0 +1,206 @@
+{
+  "schema": "hepta.fixed-cell-graph.benchmark.v1",
+  "status": "FROZEN_BEFORE_GRAPH_INFERENCE",
+  "authority": "DENY_ALL",
+  "production_activation_allowed": false,
+  "head_selection": "All six original warmup states, selected by root before retention outcomes; no condition head or performance-based choice.",
+  "retention_protocol_sha256": "5f963295e4e49a64cde085aa2a4dde92c291df3b0450d768f986264e482d3832",
+  "cohort_receipt_sha256": "7af61dfa851583d6d31c0163b5d9453841e21bef106058206731870d706364df",
+  "head_ids": [
+    "seed7-linear",
+    "seed7-gated",
+    "seed17-linear",
+    "seed17-gated",
+    "seed29-linear",
+    "seed29-gated"
+  ],
+  "input_shape": [
+    480,
+    8
+  ],
+  "output_per_head_shape": [
+    480,
+    4
+  ],
+  "graph": "one shared frozen projected feature matrix -> six original readout heads -> canonical-index-order float64 stack.mean(axis=0)",
+  "no_encoder_or_optimizer_in_inference_graph": true,
+  "graph_input_freeze": "Exporter reads only protocol.json,projected_features.npz,initial/seed{7,17,29}-{linear,gated}/{manifest.json,state.npz}; exact hashes fixed after export before benchmark.",
+  "forbidden_selection_inputs": [
+    "summary.json",
+    "frozen_predictions.npz",
+    "conditions/*",
+    "final_labels.json",
+    "score-v1.json"
+  ],
+  "shards": [
+    [
+      0,
+      3,
+      4
+    ],
+    [
+      1,
+      2,
+      5
+    ]
+  ],
+  "arms": {
+    "A": {
+      "placement": "one main worker, six heads",
+      "workers": 1,
+      "worker_cpu_quota_percent": 200,
+      "numpy_threads": 1,
+      "worker_memory_max_bytes": 2147483648
+    },
+    "B": {
+      "placement": "two concurrent main workers, same fixed3+3 shards",
+      "workers": 2,
+      "worker_cpu_quota_percent": 100,
+      "numpy_threads": 1,
+      "worker_memory_max_bytes": 1073741824
+    },
+    "C": {
+      "placement": "two concurrent workers,main+pocket4,same fixed3+3 shards",
+      "workers": 2,
+      "worker_cpu_quota_percent": 100,
+      "numpy_threads": 1,
+      "worker_memory_max_bytes": 1073741824
+    }
+  },
+  "cpu_scope": "Equal sums of own configured CPU ceilings, not reserved capacity or equal actual work. A remains NumPy-thread1. Heterogeneous CPUs/environments and unknown ancestor/host contention are part of the measured deployment stacks.",
+  "block_orders": [
+    [
+      "A",
+      "B",
+      "C"
+    ],
+    [
+      "A",
+      "C",
+      "B"
+    ],
+    [
+      "B",
+      "A",
+      "C"
+    ],
+    [
+      "B",
+      "C",
+      "A"
+    ],
+    [
+      "C",
+      "A",
+      "B"
+    ],
+    [
+      "C",
+      "B",
+      "A"
+    ]
+  ],
+  "host_rotation": "For C block b, shard index(b%2) goes to pocket4 and the other to main. B uses identical shards on main.",
+  "worker_count": 30,
+  "graph_count": 18,
+  "order": "Sequential graphs in exactly the block order; B/C nodes submitted with Promise.all and collected concurrently; no serial fallback or missing node substitution.",
+  "cold_definition": "Fresh Python process and full portable stdin features/assigned head parameters every dispatch. Existing OS/service caches are not flushed; first blocks retained and identified. No persistent worker/service introduced.",
+  "setup": "Worker code deployment, pinned environment inventories, source export, request preparation and owner adapter freeze are separately measured common setup. No selected warmups, dry inference or discarded timing run.",
+  "bounds": {
+    "stdin_bytes": 1048576,
+    "stdout_bytes": 196608,
+    "stderr_bytes": 8192,
+    "worker_cpu_seconds": 10,
+    "native_wall_seconds": 45,
+    "owner_collection_seconds": 60,
+    "native_api_events_per_worker": 24,
+    "cleanup_native_api_events_per_failed_worker": 6,
+    "cleanup_seconds": 30
+  },
+  "worker_environment": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "environment_freeze": "Separate exact main/pocket4 executable,Python,NumPy,BLAS,worker-code and physical-host evidence receipt is committed before graph inference. No package mutation. Differing environments are reported, never hidden or called a pure hardware-location experiment.",
+  "owner_adapter_freeze": "Root binds existing native process_start/read/status, raw native job receipts and per-worker own-cgroup ceilings, complete stdout pagination and same reducer host in a reviewed adapter before benchmark; retain source/adapter/executable/input hashes and full raw API receipts.",
+  "reducer_placement": "Original external graph owner using one fixed Python/NumPy environment for every arm; fresh reducer process if tool execution is needed. Its tool path/load/serialization/CPU/RSS are recorded and enclosing owner critical path includes them.",
+  "clock": "One owner Date.now millisecond timeline for submission-to-authoritative-output-and-reduction critical path; no host clock subtraction. Backward changes fail, undetected forward changes remain a disclosed measurement limitation.",
+  "communication": "Actual existing API workflow carries stdin/stdout and records read/status calls. Logical payload bytes and enclosing transfer/dispatch wall are measured; TLS/wire byte overhead and isolated network latency are not inferred.",
+  "functional_reference": "b0-A full six-head outputs only; if absent or invalid, no alternate reference chosen.",
+  "numeric_tolerance": {
+    "atol": 1e-12,
+    "rtol": 1e-12,
+    "require_all_per_head_argmax_equal": true,
+    "require_mean_argmax_equal": true,
+    "report_bitwise_equality_and_max_error": true,
+    "no_post_output_tolerance_changes": true
+  },
+  "primary_cost_comparison": "Within each of six blocks C minus B enclosing owner critical path; same worker count/shards, distinct actual host/dispatch stacks.",
+  "secondary_cost_comparisons": [
+    "C minus A operational split versus monolithic path",
+    "B minus A extra-process/sharding overhead"
+  ],
+  "cost_reporting": [
+    "all six raw paired differences",
+    "arm median/min/max",
+    "per-call start/status/read spans and logical bytes",
+    "per-worker process CPU and RSS high-water",
+    "actual import,load,inference,serialization,stdout phases",
+    "reducer CPU/RSS/load/aggregate/serialization path",
+    "separately measured common setup",
+    "all failures and unknown costs"
+  ],
+  "cost_nonadditivity": "Worker/reducer inner times are subsets of enclosing owner critical path. Concurrent node walls are not summed as latency. Sum of process RSS peaks is not simultaneous RSS or unique physical memory. Reused recovery output does not incur its old worker cost again.",
+  "unmeasured_total_system_components": [
+    "service-daemon CPU/RSS",
+    "unique host-wide physical RAM",
+    "wire-level bytes/TLS/compression",
+    "unobserved interpreter pre-entry per-phase CPU",
+    "external JavaScript graph-owner CPU/RSS if not exposed by its platform"
+  ],
+  "statistics": "Complete18-graph census required for a qualified paired report. With only six scheduled blocks, descriptive medians/ranges/raw pairs only: no reliable tail, confidence interval or population generality claim.",
+  "failure": "Retain every native failure, timeout, incomplete stdout and coordination error; costs unknown remain null, never zero; no dropped block, substitute node, serial fallback or newly chosen reference.",
+  "recovery": {
+    "requests_after_primary_census": [
+      "b0-A-s0",
+      "b0-B-s0",
+      "b0-C-s0"
+    ],
+    "contract": "Exact original start arguments and idempotency key are reused once. Same authoritative job ID and byte-identical full output required; no recomputation fallback.",
+    "metrics": "Additional native calls/read/load and owner wall recorded separately; do not charge old worker CPU/RSS again.",
+    "scope": "Lookup/read idempotency after completion, not SIGKILL/crash/power-loss or distributed training recovery.",
+    "start_admission": "Authoritatively reused disposition required, plus exact original job/arguments/output. A new job is a failed recovery, never collected as replacement.",
+    "validation": "Require a successful complete original collection with nonempty typed identities, exact two-line stdout structure/hash/probabilities/cgroup proof, created native provenance; then reused same job/start-arguments/output, after-census one-start+status/read only, at most24 completed receipt-bound events within60s. Missing or failed original stays unavailable."
+  },
+  "claim_scope": "Real same-fixed-graph serving placement and cold dispatch costs only. No task accuracy, cell learning, learned edges, split/growth, migration learning benefit, native agent or AGI claim. No whole-system net benefit claim from incomplete service costs.",
+  "source_code_sha256": {
+    "cell_graph_worker.py": "bb9a6ddc30cc267d22a530e9486e6590cdef15247d1546905b4a051e8eed8358",
+    "cell_graph_benchmark.py": "7d77c2c0ba63013ac22bd996ee3c612d0d086f9edacfffe29d58f5111ad8bd65",
+    "cell_graph_reduce.py": "5ac4bba925d161f8fe3eda5c5c036207d7182ec84733f6c1f310befa0da54efb",
+    "cell_graph_report.py": "7a5b7dfaccda71143e0de6b1087d2744bc5ee16e14d0e146f06b77734621544d",
+    "cell_graph_owner.js": "a8f1e561f3bff60b0247351c27619a874403006cd44ee40035b2cc3c8a1de112"
+  },
+  "primary_start_admission": "All30 primary starts must be authoritatively created, with native receipt provenance. Cached/reused/unknown starts are not cold observations and fail that graph; no fresh-ID retry to hide the failure.",
+  "original_export_source_commit": "6b8f3651b062d5c59659c8e7b67f60c2724adafb",
+  "declared_environment_versions": {
+    "main": {
+      "python_executable": "/data/hepta-cell-input-20261024/.venv/bin/python",
+      "python": "3.13.12",
+      "numpy": "2.2.6"
+    },
+    "pocket4": {
+      "python_executable": "/usr/bin/python3",
+      "python": "3.14.4",
+      "numpy": "2.3.5"
+    }
+  },
+  "aggregate_declared_memory_max_bytes": 2147483648,
+  "memory_scope": "Equal sum of own configured cgroup ceilings, not a physical RAM reservation; ancestor limits and host contention remain unknown.",
+  "own_cgroup_attestation": "Each worker reads only /proc/self/cgroup and its own cpu.max/memory.max under /sys/fs/cgroup, rejects traversal, and verifies requested local ceilings before inference. Record hashed membership/path and raw ceiling strings; no arbitrary file paths or ancestor/global-capacity claim.",
+  "deadline_semantics": "Check primary/recovery60s both before and after awaited calls, retaining completed native events/known costs when late. Cleanup has its separate6call/30s before+after bounds. These are admission checks, not interruption of an uninterruptible API Promise; original native45s worker limit remains separate.",
+  "cleanup": "Only a newly created owned job may be reconciled. Instrument status/terminate/kill calls in a separate cleanup_events lane, preserve receipts/elapsed/failed cleanup and include them in the enclosing critical path without adding wall twice. No substitute process.",
+  "reducer_timing": "Executable-entry counters include NumPy imports and CLI setup through before final receipt publication; function-body counters are separate subsets. Library invocation reports process-entry counters as null. Time import, final receipt/CLI output, parent service and ownerJS CPU remain explicitly outside these counters.",
+  "aggregate_declared_cpu_quota_percent": 200
+}
