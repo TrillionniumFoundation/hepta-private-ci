@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.fixed-cell-graph.actual-evidence-audit-preparation.v2",
+  "created_utc": "2026-10-24T10:54:33.032332+00:00",
+  "files": {
+    "PUBLISH_ACTUAL_EVIDENCE.md": {
+      "bytes": 10674,
+      "sha256": "eb7b3a8456edef343d50d174a9a58ec86153b42dfbf370099ab7bc72206cdfe3"
+    },
+    "audit_cell_graph_evidence.py": {
+      "bytes": 30784,
+      "sha256": "2c469d563153fe407b5ca52359acd53e910f5d94853ca936e995e736531da9ac"
+    },
+    "graph_actual_cost_recipe.js": {
+      "bytes": 8017,
+      "sha256": "2db9bd2800c53dbbbf062d3d5497628fd9115019054121894f63f9c8b2374912"
+    }
+  },
+  "change": "Only outer cost preawait intent/non-overwrite guard and declared raw-tail completeness audit; no experimental protocol/source changes",
+  "validation": {
+    "local_outer_capture_cases": 7,
+    "local_raw_coverage_cases": 7,
+    "outer_capture_log_sha256": "b24cc30a8e51aba63cf7d8d3139090cded2b373a3338d31decafa10b216a9e4b",
+    "raw_coverage_receipt_sha256": "bda72402af443d324d6fd42cd20f4513b44519165b306bdec75cb248839bf409"
+  },
+  "protected_unchanged_sha256": {
+    "patch/qa/stem-bakeoff/cell_graph_owner.js": "a8f1e561f3bff60b0247351c27619a874403006cd44ee40035b2cc3c8a1de112",
+    "patch/qa/stem-bakeoff/cell_graph_report.py": "7a5b7dfaccda71143e0de6b1087d2744bc5ee16e14d0e146f06b77734621544d",
+    "patch/qa/stem-bakeoff/cell_graph_reduce.py": "5ac4bba925d161f8fe3eda5c5c036207d7182ec84733f6c1f310befa0da54efb",
+    "patch/qa/stem-bakeoff/cell_graph_protocol.json": "2c88c2a47f56c05ea86f221ad26806fb5190bd17b8b32a9284a0ae31dfbe85e5",
+    "native-adapter/cell_graph_native_adapter.js": "df31a3a5a1fcedc8ff1b348e256f9a9a23176dc90dea873011361b8b4ed09f29"
+  },
+  "remote_calls": 0,
+  "original_inputs_or_outputs_read": false,
+  "new_inference_or_training": false,
+  "actual_results_prefilled": false,
+  "actual_evidence_audit_status": "waiting for root actual original-owner artifacts",
+  "old_source_and_preparation_preserved": "history/before-repeat-guard"
+}

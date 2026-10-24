@@ -1,0 +1,417 @@
+{
+  "schema": "hepta.fixed-cell-graph.explicit-partial-evidence-audit.v2",
+  "original_report_sha256": "6df19c646c3b610011b138a3f0cc870bc4523d23d5ae1bc2b52f78778dc39102",
+  "original_reporter_exact_rerun": true,
+  "original_reporter_primary_structural_rerun": true,
+  "source_sha256": {
+    "cell_graph_report.py": "7a5b7dfaccda71143e0de6b1087d2744bc5ee16e14d0e146f06b77734621544d",
+    "cell_graph_reduce.py": "5ac4bba925d161f8fe3eda5c5c036207d7182ec84733f6c1f310befa0da54efb",
+    "cell_graph_worker.py": "bb9a6ddc30cc267d22a530e9486e6590cdef15247d1546905b4a051e8eed8358"
+  },
+  "primary_independent_tensor_and_scalar_pass": true,
+  "primary_rows": [
+    {
+      "graph_id": "b0-A",
+      "arm": "A",
+      "block": 0,
+      "status": "completed",
+      "parity": {
+        "bitwise_equal": true,
+        "max_absolute_error": 0.0,
+        "within_predeclared_tolerance": true,
+        "all_head_argmax_equal": true,
+        "mean_argmax_equal": true
+      },
+      "critical_path_ms": 58653,
+      "exact_worker_stack_and_equal_mean": true
+    },
+    {
+      "graph_id": "b0-B",
+      "arm": "B",
+      "block": 0,
+      "status": "completed",
+      "parity": {
+        "bitwise_equal": true,
+        "max_absolute_error": 0.0,
+        "within_predeclared_tolerance": true,
+        "all_head_argmax_equal": true,
+        "mean_argmax_equal": true
+      },
+      "critical_path_ms": 52844,
+      "exact_worker_stack_and_equal_mean": true
+    },
+    {
+      "graph_id": "b0-C",
+      "arm": "C",
+      "block": 0,
+      "status": "completed",
+      "parity": {
+        "bitwise_equal": false,
+        "max_absolute_error": 3.3306690738754696e-16,
+        "within_predeclared_tolerance": true,
+        "all_head_argmax_equal": true,
+        "mean_argmax_equal": true
+      },
+      "critical_path_ms": 75214,
+      "exact_worker_stack_and_equal_mean": true
+    },
+    {
+      "graph_id": "b1-A",
+      "arm": "A",
+      "block": 1,
+      "status": "completed",
+      "parity": {
+        "bitwise_equal": true,
+        "max_absolute_error": 0.0,
+        "within_predeclared_tolerance": true,
+        "all_head_argmax_equal": true,
+        "mean_argmax_equal": true
+      },
+      "critical_path_ms": 67212,
+      "exact_worker_stack_and_equal_mean": true
+    },
+    {
+      "graph_id": "b1-C",
+      "arm": "C",
+      "block": 1,
+      "status": "completed",
+      "parity": {
+        "bitwise_equal": false,
+        "max_absolute_error": 3.3306690738754696e-16,
+        "within_predeclared_tolerance": true,
+        "all_head_argmax_equal": true,
+        "mean_argmax_equal": true
+      },
+      "critical_path_ms": 57982,
+      "exact_worker_stack_and_equal_mean": true
+    },
+    {
+      "graph_id": "b1-B",
+      "arm": "B",
+      "block": 1,
+      "status": "completed",
+      "parity": {
+        "bitwise_equal": true,
+        "max_absolute_error": 0.0,
+        "within_predeclared_tolerance": true,
+        "all_head_argmax_equal": true,
+        "mean_argmax_equal": true
+      },
+      "critical_path_ms": 54753,
+      "exact_worker_stack_and_equal_mean": true
+    },
+    {
+      "graph_id": "b2-B",
+      "arm": "B",
+      "block": 2,
+      "status": "completed",
+      "parity": {
+        "bitwise_equal": true,
+        "max_absolute_error": 0.0,
+        "within_predeclared_tolerance": true,
+        "all_head_argmax_equal": true,
+        "mean_argmax_equal": true
+      },
+      "critical_path_ms": 41179,
+      "exact_worker_stack_and_equal_mean": true
+    },
+    {
+      "graph_id": "b2-A",
+      "arm": "A",
+      "block": 2,
+      "status": "completed",
+      "parity": {
+        "bitwise_equal": true,
+        "max_absolute_error": 0.0,
+        "within_predeclared_tolerance": true,
+        "all_head_argmax_equal": true,
+        "mean_argmax_equal": true
+      },
+      "critical_path_ms": 52132,
+      "exact_worker_stack_and_equal_mean": true
+    },
+    {
+      "graph_id": "b2-C",
+      "arm": "C",
+      "block": 2,
+      "status": "completed",
+      "parity": {
+        "bitwise_equal": false,
+        "max_absolute_error": 3.3306690738754696e-16,
+        "within_predeclared_tolerance": true,
+        "all_head_argmax_equal": true,
+        "mean_argmax_equal": true
+      },
+      "critical_path_ms": 44951,
+      "exact_worker_stack_and_equal_mean": true
+    },
+    {
+      "graph_id": "b3-B",
+      "arm": "B",
+      "block": 3,
+      "status": "completed",
+      "parity": {
+        "bitwise_equal": true,
+        "max_absolute_error": 0.0,
+        "within_predeclared_tolerance": true,
+        "all_head_argmax_equal": true,
+        "mean_argmax_equal": true
+      },
+      "critical_path_ms": 50353,
+      "exact_worker_stack_and_equal_mean": true
+    },
+    {
+      "graph_id": "b3-C",
+      "arm": "C",
+      "block": 3,
+      "status": "completed",
+      "parity": {
+        "bitwise_equal": false,
+        "max_absolute_error": 3.3306690738754696e-16,
+        "within_predeclared_tolerance": true,
+        "all_head_argmax_equal": true,
+        "mean_argmax_equal": true
+      },
+      "critical_path_ms": 47365,
+      "exact_worker_stack_and_equal_mean": true
+    },
+    {
+      "graph_id": "b3-A",
+      "arm": "A",
+      "block": 3,
+      "status": "completed",
+      "parity": {
+        "bitwise_equal": true,
+        "max_absolute_error": 0.0,
+        "within_predeclared_tolerance": true,
+        "all_head_argmax_equal": true,
+        "mean_argmax_equal": true
+      },
+      "critical_path_ms": 48332,
+      "exact_worker_stack_and_equal_mean": true
+    },
+    {
+      "graph_id": "b4-C",
+      "arm": "C",
+      "block": 4,
+      "status": "completed",
+      "parity": {
+        "bitwise_equal": false,
+        "max_absolute_error": 3.3306690738754696e-16,
+        "within_predeclared_tolerance": true,
+        "all_head_argmax_equal": true,
+        "mean_argmax_equal": true
+      },
+      "critical_path_ms": 44266,
+      "exact_worker_stack_and_equal_mean": true
+    },
+    {
+      "graph_id": "b4-A",
+      "arm": "A",
+      "block": 4,
+      "status": "completed",
+      "parity": {
+        "bitwise_equal": true,
+        "max_absolute_error": 0.0,
+        "within_predeclared_tolerance": true,
+        "all_head_argmax_equal": true,
+        "mean_argmax_equal": true
+      },
+      "critical_path_ms": 62328,
+      "exact_worker_stack_and_equal_mean": true
+    },
+    {
+      "graph_id": "b4-B",
+      "arm": "B",
+      "block": 4,
+      "status": "completed",
+      "parity": {
+        "bitwise_equal": true,
+        "max_absolute_error": 0.0,
+        "within_predeclared_tolerance": true,
+        "all_head_argmax_equal": true,
+        "mean_argmax_equal": true
+      },
+      "critical_path_ms": 68443,
+      "exact_worker_stack_and_equal_mean": true
+    },
+    {
+      "graph_id": "b5-C",
+      "arm": "C",
+      "block": 5,
+      "status": "completed",
+      "parity": {
+        "bitwise_equal": false,
+        "max_absolute_error": 3.3306690738754696e-16,
+        "within_predeclared_tolerance": true,
+        "all_head_argmax_equal": true,
+        "mean_argmax_equal": true
+      },
+      "critical_path_ms": 55067,
+      "exact_worker_stack_and_equal_mean": true
+    },
+    {
+      "graph_id": "b5-B",
+      "arm": "B",
+      "block": 5,
+      "status": "completed",
+      "parity": {
+        "bitwise_equal": true,
+        "max_absolute_error": 0.0,
+        "within_predeclared_tolerance": true,
+        "all_head_argmax_equal": true,
+        "mean_argmax_equal": true
+      },
+      "critical_path_ms": 49923,
+      "exact_worker_stack_and_equal_mean": true
+    },
+    {
+      "graph_id": "b5-A",
+      "arm": "A",
+      "block": 5,
+      "status": "completed",
+      "parity": {
+        "bitwise_equal": true,
+        "max_absolute_error": 0.0,
+        "within_predeclared_tolerance": true,
+        "all_head_argmax_equal": true,
+        "mean_argmax_equal": true
+      },
+      "critical_path_ms": 52685,
+      "exact_worker_stack_and_equal_mean": true
+    }
+  ],
+  "retained_worker_output_count": 30,
+  "paired_descriptive_wall": {
+    "C_minus_B": {
+      "all_six_ms": [
+        22370,
+        3229,
+        3772,
+        -2988,
+        -24177,
+        5144
+      ],
+      "mean_ms": 1225,
+      "median_ms": 3500.5,
+      "candidate_slower_blocks": 4,
+      "candidate_faster_blocks": 2
+    },
+    "C_minus_A": {
+      "all_six_ms": [
+        16561,
+        -9230,
+        -7181,
+        -967,
+        -18062,
+        2382
+      ],
+      "mean_ms": -2749.5,
+      "median_ms": -4074.0,
+      "candidate_slower_blocks": 2,
+      "candidate_faster_blocks": 4
+    },
+    "B_minus_A": {
+      "all_six_ms": [
+        -5809,
+        -12459,
+        -10953,
+        2021,
+        6115,
+        -2762
+      ],
+      "mean_ms": -3974.5,
+      "median_ms": -4285.5,
+      "candidate_slower_blocks": 2,
+      "candidate_faster_blocks": 4
+    }
+  },
+  "retained_prefix": {
+    "retained_complete_records": 45,
+    "declared_snapshot_records": 383,
+    "present_chunks": 4,
+    "declared_chunks": 34,
+    "present_prefix_bytes": 2097152,
+    "declared_ledger_bytes": 17781056,
+    "retained_original_primary_start_ids": [
+      "b0-A-s0",
+      "b0-B-s0",
+      "b0-B-s1",
+      "b0-C-s0",
+      "b0-C-s1"
+    ],
+    "prefix_sha256": "c0e41a7adf1c83943f61e146d49b43ff70ffb57800b82cb45f906275a1cfbcfc",
+    "declared_full_ledger_sha256": "a8cd6fc298c63d525e8794c00d6e738800898c968b30b8ad52e589ad87807589",
+    "full_ledger_sha256_verified": false,
+    "full_original_native_audit_status": "unavailable: missing original raw suffix and later sealing calls",
+    "whole_run_cost_complete": false
+  },
+  "issues": [],
+  "original_recovery_census": [
+    {
+      "request_id": "b0-A-s0",
+      "classification": "failed",
+      "sha256": "758f4ffa3dbeede3a6cf9bb59694b56a8382c845d71d6e5b3733ff217b536c32",
+      "failure": {
+        "name": "Error",
+        "message": "native start receipt does not bind original request/launch"
+      },
+      "original_integrity_pass": true
+    },
+    {
+      "request_id": "b0-B-s0",
+      "classification": "absent/unattempted",
+      "original_integrity_pass": true
+    },
+    {
+      "request_id": "b0-C-s0",
+      "classification": "absent/unattempted",
+      "original_integrity_pass": true
+    }
+  ],
+  "original_recovery_census_unchanged": true,
+  "original_recovery_integrity": {
+    "passed": true,
+    "expected_original_A_sha256": "758f4ffa3dbeede3a6cf9bb59694b56a8382c845d71d6e5b3733ff217b536c32",
+    "rows": [
+      {
+        "request_id": "b0-A-s0",
+        "classification": "failed",
+        "sha256": "758f4ffa3dbeede3a6cf9bb59694b56a8382c845d71d6e5b3733ff217b536c32",
+        "failure": {
+          "name": "Error",
+          "message": "native start receipt does not bind original request/launch"
+        },
+        "original_integrity_pass": true
+      },
+      {
+        "request_id": "b0-B-s0",
+        "classification": "absent/unattempted",
+        "original_integrity_pass": true
+      },
+      {
+        "request_id": "b0-C-s0",
+        "classification": "absent/unattempted",
+        "original_integrity_pass": true
+      }
+    ],
+    "errors": []
+  },
+  "new_v2_recovery_scope": "separate evidence namespace; never substituted here",
+  "full_original_native_call_audit_status": "unavailable",
+  "complete_original_cost_audit_pass": false,
+  "unknown_costs_are_not_zero": true,
+  "all18_owner_wall_comparison_is_descriptive_only": true,
+  "environment": {
+    "python": "3.13.12",
+    "numpy": "2.2.6"
+  },
+  "method": "Pinned original decoder/report; independent source-output stack, sum/6, tensor archive/hash parity and scalar paired contrasts. No new inference.",
+  "limitations": [
+    "Only retained45/383 original raw records, with4/34 chunks; the declared full-ledger SHA is unverified.",
+    "Missing original raw suffix/sealing/outer/helper spans and service/JS CPU/RSS remain unknown.",
+    "Worker/reducer phases are nested, process RSS maxima are not simultaneous total RAM.",
+    "Heterogeneous hardware/Python/NumPy/BLAS and own cgroup ceilings do not isolate network or reserve CPU capacity.",
+    "No successful-subset comparison, new reference, changed tolerance, six-block confidence interval, total-system net benefit or AGI claim."
+  ]
+}

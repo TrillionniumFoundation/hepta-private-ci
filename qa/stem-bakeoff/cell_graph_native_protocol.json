@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.fixed-cell-graph.native-adapter-protocol.v1",
+  "status": "FROZEN_CANDIDATE_BEFORE_REAL_GRAPH_INFERENCE",
+  "authority": "existing configured native process owner; fixed experiment paths only",
+  "graph_protocol_sha256": "2c88c2a47f56c05ea86f221ad26806fb5190bd17b8b32a9284a0ae31dfbe85e5",
+  "graph_source_head_before_adapter": "f9578a69563df3884f4d0114e1946f42504ec4fc",
+  "environment_freeze_sha256": "d586621af590751edf604d362a8a7a80045eb9a5748421976df93c74ba65a63e",
+  "graph_sha256": "0da796e185bd8e0d65718ef2137f11b72c0372344078d9785574a8d31ea33ddc",
+  "dispatch_sha256": "595d40d93a9ba394c21c39fd41c5c8b60ab5ceddfcdb8bdd9f5102ce193fa4ae",
+  "source_sha256": {
+    "cell_graph_native_wrapper.py": "fced1311223adde960d9e0c04fc40c8e816d01a4e078f09f802b67b20d3e5b45",
+    "cell_graph_native_helpers.js": "a906c1516e7de1ef006a903b20ee4a0b12646d695b47449b0c593ed94dc870ca",
+    "cell_graph_native_adapter.js": "df31a3a5a1fcedc8ff1b348e256f9a9a23176dc90dea873011361b8b4ed09f29",
+    "cell_graph_owner.js": "a8f1e561f3bff60b0247351c27619a874403006cd44ee40035b2cc3c8a1de112"
+  },
+  "remote_dispatch": "/home/qian-qi/workspace/hepta-cell-graph-evidence-20261024/requests-v1/dispatch.json",
+  "remote_wrapper": "/home/qian-qi/workspace/hepta-cell-graph-benchmark-20261024/qa/stem-bakeoff/cell_graph_native_wrapper.py",
+  "main_evidence": "/home/qian-qi/workspace/hepta-cell-graph-evidence-20261024",
+  "graph_directory": "graphs/<graph_id>",
+  "native_tools": [
+    "process_start",
+    "process_status",
+    "process_read"
+  ],
+  "cleanup": "one instrumented status observation only; no cancellation/kill/termination acknowledgment; original45s supervisor timeout remains",
+  "collection": {
+    "max_status_observations_before_read": 10,
+    "sleep_ms_after_nonterminal": 3000,
+    "max_read_pages": 12,
+    "max_bytes_per_stream_per_read": 16384,
+    "final_status_observations": 1,
+    "max_primary_native_calls_including_start": 24,
+    "owner_before_after_await_limit_ms": 60000,
+    "unknown_timeout_promise_interrupt_not_claimed": true
+  },
+  "helpers": {
+    "native_cpu_quota_percent": 200,
+    "native_memory_max_bytes": 2147483648,
+    "native_timeout_seconds": 45,
+    "original_reducer_subprocess_timeout_seconds": 35,
+    "max_native_calls": 24,
+    "before_after_await_limit_ms": 60000,
+    "raw_chunk_bytes": 524288,
+    "raw_ledger_max_bytes": 268435456,
+    "non_reducer_publication_cost_outside_graph_owner_span": true
+  },
+  "receipt_encoding": "Exact MCP JSON content text retained before lossless view parse. Unsafe integer lexemes preserved as decimal strings; native request_digest and exact args/job identity checked. Logical JSON byte counts are not wire bytes.",
+  "start_admission": "created for primary; reused exact original native digest/fingerprint/job/start args for recovery, after complete published18graph census; no replacement",
+  "raw_ledger": "All invocation arguments/raw results/failures stored immediately. Later snapshot chunk-sealed exclusively. Snapshot excludes its own future sealing calls, which remain in functions store with their costs.",
+  "setup": "Record every adapter construction/reconstruction. Source evaluation, external transfer before constructor, and JS CPU/RSS are not included in constructor counters.",
+  "scope": "Actual same-fixed-graph operational placement/cold-dispatch costs only after native qualification. Local constructed transport tests are not actual inference or scientific benefit evidence. No task gold, original model/head parameters, or scientific outcomes were read by this implementation lane.",
+  "sequential_admission": "Every worker/helper start is outstanding before await. Only a definite terminal observation for bound original host/job releases it; still-running or unknown launches block next graph/recovery. Failed evidence is published, later graphs remain missing. No fresh-ID retry.",
+  "reducer_failure_output": "Before rejecting oversized/failed/timed-out output, retain bounded prefixes plus full observed lengths/SHA256, truncation flags and known exit; timeout partial output remains partial.",
+  "evidence_durability_scope": "functions store retains within session; no session-loss/power-loss proof. Remote exclusive file+file fsync and hash verification does not claim parent-directory/power-loss durability."
+}

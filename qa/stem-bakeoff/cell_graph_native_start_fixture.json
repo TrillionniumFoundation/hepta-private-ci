@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-u\",\n      \"-c\",\n      \"import os,sys,json,pathlib,importlib.metadata,platform\\ncg=pathlib.Path('/proc/self/cgroup').read_text();rel=next(line.split(':',2)[2] for line in cg.splitlines() if line.startswith('0::'))\\nbase=pathlib.Path('/sys/fs/cgroup')/rel.lstrip('/')\\ncaps={k:(base/k).read_text().strip() for k in ('cpu.max','memory.max')}\\nprint(json.dumps({'schema':'graph-host-preflight:v1','python':sys.version,'executable':sys.executable,'numpy':importlib.metadata.version('numpy'),'uname':list(os.uname()),'affinity':len(os.sched_getaffinity(0)),'own_cgroup_limits':caps,'no_feature_or_model_opened':True}))\\n\"\n    ],\n    \"created_unix_ms\": 1792832884416,\n    \"cwd\": \"/home/qian-qi/workspace\",\n    \"env_keys\": [],\n    \"executable\": \"/data/hepta-cell-input-20261024/.venv/bin/python\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"main\",\n    \"id\": \"1a16d2acec0-1b6abb-488c\",\n    \"idempotency_key\": \"graph-main-preflight-20261024-v1\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qian-qi/.local/state/hepta-runtime-operator-host/jobs/1a16d2acec0-1b6abb-488c\",\n    \"request_digest\": \"f279b20ca6425f6314dafd4c13bc5180d11c05b350ed0fe2410e3f429f17553e\",\n    \"request_fingerprint\": 17472191996759269219,\n    \"ssh_target\": \"localhost\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a16d2acec0-1b6abb-488c\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a16d2acec0-1b6abb-488c\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}
