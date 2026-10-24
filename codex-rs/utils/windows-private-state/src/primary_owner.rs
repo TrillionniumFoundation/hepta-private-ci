@@ -175,6 +175,11 @@ pub struct CapturedPrimaryOwner {
 }
 
 impl CapturedPrimaryOwner {
+    pub(crate) fn current_user(&mut self) -> Result<&CurrentUser, ValidationError> {
+        self.revalidate()?;
+        Ok(&self.user)
+    }
+
     /// Query the effective context, requiring it to be the process primary token.
     pub fn capture() -> Result<Self, ValidationError> {
         let mut principal = CapturedPrincipal::capture_effective()?;
