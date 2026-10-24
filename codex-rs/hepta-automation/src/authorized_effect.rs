@@ -653,6 +653,33 @@ impl AutomationStore {
         command_id: &str,
         now_ms: u64,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
+        self.execute_authorized_taskflow_effect_with_time(
+            authority,
+            driver,
+            intent,
+            wire_payload,
+            fence,
+            signed_grant,
+            expected_binding,
+            command_id,
+            crate::taskflow_clock_effect::EffectDispatchTime::Caller(now_ms),
+        )
+        .await
+    }
+
+    pub(crate) async fn execute_authorized_taskflow_effect_with_time<D: AuthorizedEffectDriver>(
+        &self,
+        authority: &FinalUseAuthority,
+        driver: &mut D,
+        intent: &AuthorizedEffectIntent,
+        wire_payload: &[u8],
+        fence: &TaskFlowFence,
+        signed_grant: &SignedFinalUseGrant,
+        expected_binding: &FinalUseBinding,
+        command_id: &str,
+        time: crate::taskflow_clock_effect::EffectDispatchTime<'_>,
+    ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
+        time.validate_request(&intent.run_id, fence)?;
         let operation_intent = intent.operation_intent_v1()?;
         if Sha256Digest::for_bytes(wire_payload) != intent.payload_digest {
             return Err(AuthorizedEffectError::BindingMismatch);
@@ -729,7 +756,7 @@ impl AutomationStore {
                 &signed_grant.grant.grant_id,
                 &nonce_digest,
                 command_id,
-                now_ms,
+                time,
                 fence,
             )
             .await?;
@@ -760,11 +787,27 @@ impl AutomationStore {
             wire_payload,
             binding: expected_binding,
         };
-        let provider = match authority
-            .with_verified_effect(token, expected_binding, || driver.dispatch(&request))
-        {
-            Ok(Ok(receipt)) => receipt,
+        let provider = match authority.with_verified_effect(token, expected_binding, || {
+            time.before_driver(signed_grant, durable.started_at_ms)?;
+            Ok(driver.dispatch(&request))
+        }) {
+            Ok(Ok(Ok(receipt))) => receipt,
             Ok(Err(error)) => {
+                let proof = no_contact_digest(&durable, "owner_clock_pre_driver_rejection");
+                let durable = self
+                    .record_effect_dispatch_observation(
+                        &intent.run_id,
+                        &intent.step_id,
+                        intent.attempt,
+                        EffectDispatchObservationKind::ProvenAbsent,
+                        &proof,
+                        time.observe_after(durable.started_at_ms)?,
+                    )
+                    .await?;
+                self.settle_effect_dispatch_attempt(&durable, fence).await?;
+                return Err(AuthorizedEffectError::TaskFlow(error));
+            }
+            Ok(Ok(Err(error))) => {
                 let proof = no_contact_digest(&durable, "driver_before_provider_contact");
                 let durable = self
                     .record_effect_dispatch_observation(
@@ -773,7 +816,7 @@ impl AutomationStore {
                         intent.attempt,
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
-                        now_ms,
+                        time.observe_after(durable.started_at_ms)?,
                     )
                     .await?;
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
@@ -791,7 +834,7 @@ impl AutomationStore {
                         intent.attempt,
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
-                        now_ms,
+                        time.observe_after(durable.started_at_ms)?,
                     )
                     .await?;
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
@@ -806,7 +849,7 @@ impl AutomationStore {
                 intent.attempt,
                 provider.outcome.ledger_kind(),
                 &provider.receipt_digest,
-                now_ms,
+                time.observe_after(durable.started_at_ms)?,
             )
             .await?;
         match self.settle_effect_dispatch_attempt(&durable, fence).await? {
@@ -876,6 +919,35 @@ impl AutomationStore {
         command_id: &str,
         now_ms: u64,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
+        self.execute_authorized_taskflow_effect_async_with_time(
+            authority,
+            driver,
+            intent,
+            wire_payload,
+            fence,
+            signed_grant,
+            expected_binding,
+            command_id,
+            crate::taskflow_clock_effect::EffectDispatchTime::Caller(now_ms),
+        )
+        .await
+    }
+
+    pub(crate) async fn execute_authorized_taskflow_effect_async_with_time<
+        D: AsyncAuthorizedEffectDriver,
+    >(
+        &self,
+        authority: &FinalUseAuthority,
+        driver: &mut D,
+        intent: &AuthorizedEffectIntent,
+        wire_payload: &[u8],
+        fence: &TaskFlowFence,
+        signed_grant: &SignedFinalUseGrant,
+        expected_binding: &FinalUseBinding,
+        command_id: &str,
+        time: crate::taskflow_clock_effect::EffectDispatchTime<'_>,
+    ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
+        time.validate_request(&intent.run_id, fence)?;
         let provider_intent = provider_effect_intent(intent, wire_payload)?;
         let operation_intent = intent.operation_intent_v1()?;
         let intent_digest = intent.digest()?;
@@ -947,7 +1019,7 @@ impl AutomationStore {
                 &signed_grant.grant.grant_id,
                 &nonce_digest,
                 command_id,
-                now_ms,
+                time,
                 fence,
             )
             .await?;
@@ -980,11 +1052,29 @@ impl AutomationStore {
             wire_payload,
         };
         let provider = match authority
-            .with_verified_use_async(token, expected_binding, || driver.dispatch(request))
+            .with_verified_use_async(token, expected_binding, || async {
+                time.before_driver(signed_grant, durable.started_at_ms)?;
+                Ok(driver.dispatch(request).await)
+            })
             .await
         {
-            Ok(Ok(receipt)) => receipt,
+            Ok(Ok(Ok(receipt))) => receipt,
             Ok(Err(error)) => {
+                let proof = no_contact_digest(&durable, "owner_clock_pre_driver_rejection");
+                let durable = self
+                    .record_effect_dispatch_observation(
+                        &intent.run_id,
+                        &intent.step_id,
+                        intent.attempt,
+                        EffectDispatchObservationKind::ProvenAbsent,
+                        &proof,
+                        time.observe_after(durable.started_at_ms)?,
+                    )
+                    .await?;
+                self.settle_effect_dispatch_attempt(&durable, fence).await?;
+                return Err(AuthorizedEffectError::TaskFlow(error));
+            }
+            Ok(Ok(Err(error))) => {
                 let proof = no_contact_digest(&durable, "driver_before_provider_contact");
                 let durable = self
                     .record_effect_dispatch_observation(
@@ -993,7 +1083,7 @@ impl AutomationStore {
                         intent.attempt,
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
-                        now_ms,
+                        time.observe_after(durable.started_at_ms)?,
                     )
                     .await?;
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
@@ -1008,7 +1098,7 @@ impl AutomationStore {
                         intent.attempt,
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
-                        now_ms,
+                        time.observe_after(durable.started_at_ms)?,
                     )
                     .await?;
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
@@ -1023,7 +1113,7 @@ impl AutomationStore {
                 intent.attempt,
                 provider.outcome.ledger_kind(),
                 &provider.receipt_digest,
-                now_ms,
+                time.observe_after(durable.started_at_ms)?,
             )
             .await?;
         match self.settle_effect_dispatch_attempt(&durable, fence).await? {
@@ -1277,7 +1367,7 @@ impl AutomationStore {
             },
             observation.observed_at_ms,
         )?;
-        self.apply_taskflow_command(&command).await?;
+        self.apply_taskflow_effect_reconciliation(&command).await?;
         Ok(())
     }
 

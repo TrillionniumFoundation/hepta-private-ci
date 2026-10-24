@@ -23,18 +23,18 @@ pub(crate) struct EffectStepAdmission<'a> {
     pub(crate) intent_digest: &'a Sha256Digest,
     pub(crate) payload_digest: &'a Sha256Digest,
     pub(crate) fence: &'a TaskFlowFence,
-    pub(crate) now_ms: u64,
+    pub(crate) time: crate::taskflow_clock_effect::EffectDispatchTime<'a>,
 }
 
 /// The caller holds the existing database's IMMEDIATE write transaction
 /// through validation, immutable attempt insertion and commit. No provider
-/// call occurs while this transaction is held. `now_ms` remains the original
-/// host-owned timestamp; this does not manufacture fresh wall-clock evidence.
+/// call occurs while this transaction is held. Logical caller times stay
+/// explicit; typed clock claims sample their original owner after awaited reads.
 pub(crate) async fn validate_effect_step_admission(
     store: &AutomationStore,
     tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
     admission: &EffectStepAdmission<'_>,
-) -> Result<(), TaskFlowError> {
+) -> Result<u64, TaskFlowError> {
     validate_common(
         admission.run_id,
         admission.step_id,
@@ -50,7 +50,6 @@ pub(crate) async fn validate_effect_step_admission(
             "effect admission requires an uncancelled running owner".into(),
         ));
     }
-    check_active_run_fence(&run, admission.fence, admission.now_ms)?;
     let definition = load_definition(tx, store, &run).await?;
     if definition.definition_digest() != &run.definition_digest {
         return Err(TaskFlowError::Corrupt(
@@ -82,38 +81,7 @@ pub(crate) async fn validate_effect_step_admission(
             "effect admission differs from the current claimed step".into(),
         ));
     }
-    Ok(())
-}
-
-/// Ordinary Cancel is a terminal assertion, not a remote stop request. A
-/// durable admitted effect needs its original provider evidence/reconciler;
-/// generic cancellation must not erase that fence or claim it has stopped.
-pub(crate) async fn reject_cancel_after_effect_admission(
-    store: &AutomationStore,
-    tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
-    run_id: &str,
-) -> Result<(), TaskFlowError> {
-    let admitted: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM taskflow_effect_dispatch_attempts a
-         LEFT JOIN taskflow_effect_dispatch_observations o
-           ON o.owner_agent_id = a.owner_agent_id AND o.run_id = a.run_id
-          AND o.step_id = a.step_id AND o.attempt = a.attempt
-         LEFT JOIN taskflow_effect_dispatch_reconciliations r
-           ON r.owner_agent_id = a.owner_agent_id AND r.run_id = a.run_id
-          AND r.step_id = a.step_id AND r.attempt = a.attempt
-         WHERE a.owner_agent_id = ? AND a.run_id = ?
-           AND (COALESCE(r.observation, o.observation) IS NULL
-                OR COALESCE(r.observation, o.observation) != 'proven_absent')",
-    )
-    .bind(store.taskflow_owner_agent_id().as_str())
-    .bind(run_id)
-    .fetch_one(&mut **tx)
-    .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
-    if admitted != 0 {
-        return Err(TaskFlowError::Conflict(
-            "admitted provider effect requires original cancellation or terminal evidence".into(),
-        ));
-    }
-    Ok(())
+    let now_ms = admission.time.admission_time(&run, admission.fence)?;
+    check_active_run_fence(&run, admission.fence, now_ms)?;
+    Ok(now_ms)
 }

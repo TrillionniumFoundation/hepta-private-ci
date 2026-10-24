@@ -46,8 +46,10 @@ pub const TASKFLOW_STEP_OUTBOX_SCHEDULER_AUTHORITY: bool = false;
 #[path = "taskflow_effect_admission.rs"]
 mod effect_admission;
 pub(crate) use effect_admission::EffectStepAdmission;
-pub(crate) use effect_admission::reject_cancel_after_effect_admission;
+#[path = "taskflow_effect_state_guard.rs"]
+mod effect_state_guard;
 pub(crate) use effect_admission::validate_effect_step_admission;
+pub(crate) use effect_state_guard::guard_run_transition as guard_effect_run_transition;
 
 const STEP_SCHEMA_VERSION: u32 = 1;
 const MAX_TEXT_BYTES: usize = 256;
@@ -481,6 +483,16 @@ impl AutomationStore {
                 "provider-absence cancellation requires prepared or claimed state",
             ));
         }
+        effect_state_guard::validate_step_observation(
+            self,
+            &mut tx,
+            run_id,
+            step_id,
+            attempt,
+            proof_digest,
+            crate::effect_dispatch_ledger::EffectDispatchObservationKind::ProvenAbsent,
+        )
+        .await?;
         let event = append_step_event(
             &mut tx,
             self,
@@ -793,6 +805,37 @@ impl AutomationStore {
                 }
             }
             _ => unreachable!("operation validated above"),
+        }
+        let effect_kind = match operation_result {
+            StepOperationResult::None => None,
+            StepOperationResult::Observation(value) => Some(match value {
+                TaskFlowStepObservation::Succeeded => {
+                    crate::effect_dispatch_ledger::EffectDispatchObservationKind::Succeeded
+                }
+                TaskFlowStepObservation::Failed => {
+                    crate::effect_dispatch_ledger::EffectDispatchObservationKind::Failed
+                }
+                TaskFlowStepObservation::Indeterminate => {
+                    crate::effect_dispatch_ledger::EffectDispatchObservationKind::Indeterminate
+                }
+            }),
+            StepOperationResult::Outcome(value) => Some(match value {
+                TaskFlowReconcileOutcome::Succeeded => {
+                    crate::effect_dispatch_ledger::EffectDispatchObservationKind::Succeeded
+                }
+                TaskFlowReconcileOutcome::Failed => {
+                    crate::effect_dispatch_ledger::EffectDispatchObservationKind::Failed
+                }
+                TaskFlowReconcileOutcome::Cancelled => {
+                    crate::effect_dispatch_ledger::EffectDispatchObservationKind::ProvenAbsent
+                }
+            }),
+        };
+        if let (Some(kind), Some(receipt)) = (effect_kind, receipt_digest) {
+            effect_state_guard::validate_step_observation(
+                self, &mut tx, run_id, step_id, attempt, receipt, kind,
+            )
+            .await?;
         }
         let state = match operation {
             "claim" => TaskFlowStepState::Claimed,

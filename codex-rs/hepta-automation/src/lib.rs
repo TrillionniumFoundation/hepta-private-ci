@@ -24,6 +24,8 @@ mod schedule_v2;
 mod scheduler;
 mod store;
 mod taskflow;
+mod taskflow_clock;
+mod taskflow_clock_effect;
 mod taskflow_cursor;
 mod taskflow_execution_boundary;
 #[cfg(feature = "taskflow-structural-qualification")]
@@ -109,6 +111,7 @@ pub use taskflow::TaskFlowReconcileOutcome;
 pub use taskflow::TaskFlowRun;
 pub use taskflow::TaskFlowRunState;
 pub use taskflow::TaskFlowTransition;
+pub use taskflow_clock::TaskFlowClockClaim;
 pub use taskflow_execution_boundary::LocalTaskFlowBoundaryActionV1;
 pub use taskflow_execution_boundary::LocalTaskFlowBoundaryRequestV1;
 pub use taskflow_execution_boundary::LocalTaskFlowPredecessorReferenceV1;

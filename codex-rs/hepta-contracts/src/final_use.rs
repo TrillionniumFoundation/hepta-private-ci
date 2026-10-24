@@ -821,6 +821,15 @@ impl FinalUseAuthority {
         Ok((result, witness))
     }
 
+    /// Read the time from this owner's already configured clock.
+    ///
+    /// This creates no clock, grant, nonce or authorization. It preserves the
+    /// supplied clock's trust and failure semantics without a system fallback.
+    /// A sample is not a durable clock-domain or production attestation claim.
+    pub fn observe_now_unix_ms(&self) -> Result<u64, FinalUseError> {
+        self.now_unix_ms()
+    }
+
     fn now_unix_ms(&self) -> Result<u64, FinalUseError> {
         self.0.clock.now_unix_ms().map_err(map_trust_error)
     }

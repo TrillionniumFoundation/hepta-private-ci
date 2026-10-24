@@ -968,19 +968,38 @@ impl AutomationStore {
         now_ms: u64,
         lease_duration_ms: u64,
     ) -> Result<TaskFlowRun, TaskFlowError> {
+        self.claim_taskflow_run_with_time(
+            run_id,
+            fence,
+            crate::taskflow_clock::TaskFlowClaimTime::Caller(now_ms),
+            lease_duration_ms,
+        )
+        .await
+    }
+
+    pub(crate) async fn claim_taskflow_run_with_time(
+        &self,
+        run_id: &str,
+        fence: &TaskFlowFence,
+        time: crate::taskflow_clock::TaskFlowClaimTime<'_>,
+        lease_duration_ms: u64,
+    ) -> Result<TaskFlowRun, TaskFlowError> {
         validate_text(run_id, "run_id", MAX_ID_BYTES)?;
         self.validate_taskflow_fence(fence)?;
         if lease_duration_ms == 0 {
             return Err(invalid("lease duration must be non-zero"));
         }
-        let expires = now_ms
-            .checked_add(lease_duration_ms)
-            .ok_or_else(|| invalid("lease duration overflows timestamp"))?;
-        let mut tx = self
-            .taskflow_pool()
-            .begin()
-            .await
-            .map_err(|_| TaskFlowError::Unavailable)?;
+        if let crate::taskflow_clock::TaskFlowClaimTime::Caller(now_ms) = time {
+            now_ms
+                .checked_add(lease_duration_ms)
+                .ok_or_else(|| invalid("lease duration overflows timestamp"))?;
+        }
+        let mut tx = if time.new_claim_required() {
+            self.taskflow_pool().begin_with("BEGIN IMMEDIATE").await
+        } else {
+            self.taskflow_pool().begin().await
+        }
+        .map_err(|_| TaskFlowError::Unavailable)?;
         let row =
             sqlx::query("SELECT * FROM taskflow_runs WHERE owner_agent_id = ? AND run_id = ?")
                 .bind(self.taskflow_owner_agent_id().as_str())
@@ -997,6 +1016,23 @@ impl AutomationStore {
         // no concurrent writer can alter the chain between verification and
         // the eventual append.
         verify_taskflow_event_chain_tx(&mut tx, &run).await?;
+        // A pre-existing lease has no persisted clock-domain provenance.
+        // Never infer takeover eligibility by comparing its number to Unix
+        // time, even when that number appears expired. Only the original owner
+        // may clear/requeue it before a new typed clock claim is possible.
+        if time.new_claim_required()
+            && (run.lease_expires_at_ms.is_some()
+                || run.owner_id.is_some()
+                || run.owner_epoch.is_some()
+                || run.generation.is_some()
+                || run.fencing_token.is_some())
+        {
+            return Err(TaskFlowError::Conflict(
+                "a pre-existing lease cannot be wrapped or inferred expired by a clock claim"
+                    .into(),
+            ));
+        }
+        let now_ms = time.observe()?;
         if run.state.terminal() {
             return Err(TaskFlowError::Conflict(
                 "terminal TaskFlow run cannot be claimed".to_string(),
@@ -1069,6 +1105,15 @@ impl AutomationStore {
                 "cancelled TaskFlow run cannot be claimed".to_string(),
             ));
         }
+        // Refresh after the awaited pending-effect queries. Legacy logical
+        // timestamps remain explicit values; only the typed owner mode samples.
+        if time.new_claim_required() {
+            crate::taskflow_clock::validate_next_generation(&mut tx, self, run_id, fence).await?;
+        }
+        let now_ms = time.observe_after(now_ms)?;
+        let expires = now_ms
+            .checked_add(lease_duration_ms)
+            .ok_or_else(|| invalid("lease duration overflows timestamp"))?;
         run.owner_id = Some(fence.owner_id.clone());
         run.owner_epoch = Some(fence.owner_epoch);
         run.generation = Some(fence.generation);
@@ -1112,8 +1157,12 @@ impl AutomationStore {
                 "provider-absence transitions are restricted to automation recovery",
             ));
         }
-        self.apply_taskflow_command_inner(command, false, false)
-            .await
+        self.apply_taskflow_command_inner(
+            command, /*allow_proven_absence_requeue*/ false,
+            /*allow_effect_observation_quarantine*/ false,
+            /*allow_effect_reconciliation*/ false,
+        )
+        .await
     }
 
     pub(crate) async fn apply_taskflow_requeue_proven_absent(
@@ -1128,8 +1177,12 @@ impl AutomationStore {
                 "internal requeue requires provider-absence transition",
             ));
         }
-        self.apply_taskflow_command_inner(command, true, false)
-            .await
+        self.apply_taskflow_command_inner(
+            command, /*allow_proven_absence_requeue*/ true,
+            /*allow_effect_observation_quarantine*/ false,
+            /*allow_effect_reconciliation*/ false,
+        )
+        .await
     }
 
     pub(crate) async fn apply_taskflow_cancel_proven_absent(
@@ -1144,8 +1197,12 @@ impl AutomationStore {
                 "internal cancellation requires provider-absence transition",
             ));
         }
-        self.apply_taskflow_command_inner(command, true, false)
-            .await
+        self.apply_taskflow_command_inner(
+            command, /*allow_proven_absence_requeue*/ true,
+            /*allow_effect_observation_quarantine*/ false,
+            /*allow_effect_reconciliation*/ false,
+        )
+        .await
     }
 
     pub(crate) async fn apply_taskflow_effect_observation_quarantine(
@@ -1160,8 +1217,29 @@ impl AutomationStore {
                 "effect observation quarantine requires indeterminate transition",
             ));
         }
-        self.apply_taskflow_command_inner(command, false, true)
-            .await
+        self.apply_taskflow_command_inner(
+            command, /*allow_proven_absence_requeue*/ false,
+            /*allow_effect_observation_quarantine*/ true,
+            /*allow_effect_reconciliation*/ false,
+        )
+        .await
+    }
+
+    /// Only the original retained-effect settlement path may select this
+    /// entry. The shared transaction still verifies its ledger and step facts.
+    pub(crate) async fn apply_taskflow_effect_reconciliation(
+        &self,
+        command: &TaskFlowCommand,
+    ) -> Result<TaskFlowCommandResult, TaskFlowError> {
+        if !matches!(&command.transition, TaskFlowTransition::Reconcile { .. }) {
+            return Err(invalid("effect reconciliation requires a terminal receipt"));
+        }
+        self.apply_taskflow_command_inner(
+            command, /*allow_proven_absence_requeue*/ false,
+            /*allow_effect_observation_quarantine*/ false,
+            /*allow_effect_reconciliation*/ true,
+        )
+        .await
     }
 
     async fn apply_taskflow_command_inner(
@@ -1169,6 +1247,7 @@ impl AutomationStore {
         command: &TaskFlowCommand,
         allow_proven_absence_requeue: bool,
         allow_effect_observation_quarantine: bool,
+        allow_effect_reconciliation: bool,
     ) -> Result<TaskFlowCommandResult, TaskFlowError> {
         validate_text(&command.run_id, "run_id", MAX_ID_BYTES)?;
         validate_text(&command.command_id, "command_id", MAX_ID_BYTES)?;
@@ -1280,17 +1359,18 @@ impl AutomationStore {
                 command.expected_revision, run.revision
             )));
         }
-        if matches!(&command.transition, TaskFlowTransition::Cancel { .. }) {
-            // This command asserts terminal cancellation. Once an effect is
-            // durably admitted, only original provider evidence may settle it;
-            // local cancellation cannot clear its reconciliation fence.
-            crate::taskflow_step::reject_cancel_after_effect_admission(
-                self,
-                &mut tx,
-                &command.run_id,
-            )
-            .await?;
-        }
+        // Any generic state move can strand an admitted effect (Wait/Retry
+        // as well as terminal clearing). Only retained original evidence may
+        // settle it; Indeterminate preserves the exact recovery tuple.
+        crate::taskflow_step::guard_effect_run_transition(
+            self,
+            &mut tx,
+            &command.run_id,
+            &command.fence,
+            &command.transition,
+            allow_effect_reconciliation,
+        )
+        .await?;
         let transition_name = transition_name(&command.transition);
         apply_transition(&mut run, &definition, &command.transition, command.now_ms)?;
         run.revision = run

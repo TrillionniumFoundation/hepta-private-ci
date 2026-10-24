@@ -89,11 +89,11 @@ impl AutomationStore {
         grant_id: &str,
         grant_nonce_digest: &Sha256Digest,
         record_command_id: &str,
-        started_at_ms: u64,
+        time: crate::taskflow_clock_effect::EffectDispatchTime<'_>,
         fence: &TaskFlowFence,
     ) -> Result<EffectDispatchStart, TaskFlowError> {
         // Serialize persisted cancellation/takeover against the admission
-        // decision. No provider I/O or authority clock callback is held here.
+        // decision. Only the original owner clock may be sampled here; no provider I/O.
         let mut tx = self
             .taskflow_pool()
             .begin_with("BEGIN IMMEDIATE")
@@ -121,7 +121,7 @@ impl AutomationStore {
             tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
             return Ok(EffectDispatchStart::Existing(existing));
         }
-        crate::taskflow_step::validate_effect_step_admission(
+        let started_at_ms = crate::taskflow_step::validate_effect_step_admission(
             self,
             &mut tx,
             &crate::taskflow_step::EffectStepAdmission {
@@ -131,7 +131,7 @@ impl AutomationStore {
                 intent_digest,
                 payload_digest,
                 fence,
-                now_ms: started_at_ms,
+                time,
             },
         )
         .await?;
@@ -355,7 +355,7 @@ impl AutomationStore {
     }
 }
 
-async fn load_effect_dispatch_attempt<'e, E>(
+pub(crate) async fn load_effect_dispatch_attempt<'e, E>(
     executor: E,
     owner_agent_id: &str,
     run_id: &str,
@@ -640,7 +640,7 @@ mod tests {
                 "grant-1",
                 &nonce,
                 "record-effect",
-                21,
+                crate::taskflow_clock_effect::EffectDispatchTime::Caller(21),
                 &fence,
             )
             .await
