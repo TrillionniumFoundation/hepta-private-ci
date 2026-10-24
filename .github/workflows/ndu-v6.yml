@@ -1,0 +1,268 @@
+name: Hepta NDU v6 neural rollout
+
+on:
+  # blocking-ci owns automatic PR/main fan-out; reusable calls always smoke.
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: Smoke checks mechanisms; full runs the bounded domain protocol.
+        type: choice
+        options: [smoke, full]
+        default: smoke
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ndu-v6-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name == 'workflow_dispatch' && inputs.profile || 'smoke' }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+
+jobs:
+  rollout:
+    name: Python, native NDU, and real rollout
+    runs-on: ubuntu-24.04
+    timeout-minutes: ${{ github.event_name == 'workflow_dispatch' && inputs.profile == 'full' && 180 || 45 }}
+    defaults:
+      run:
+        shell: bash
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      TESTED_SHA: ${{ github.sha }}
+      HEPTA_CI_LANE: ${{ github.event_name == 'pull_request' && 'base-merge' || 'source-head' }}
+      V6_PROFILE: ${{ github.event_name == 'workflow_dispatch' && inputs.profile == 'full' && 'full' || 'smoke' }}
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUNBUFFERED: "1"
+      PYTHONHASHSEED: "0"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+      CARGO_TERM_COLOR: never
+
+    steps:
+      - name: Initialize evidence custody before setup
+        id: initialize
+        run: |
+          set -euo pipefail
+          export V6_EVIDENCE="$RUNNER_TEMP/ndu-v6"
+          printf 'V6_EVIDENCE=%s\n' "$V6_EVIDENCE" >> "$GITHUB_ENV"
+          mkdir -p "$V6_EVIDENCE/commands"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          Path(os.environ["V6_EVIDENCE"], "ci-status.json").write_text(json.dumps({
+              "state": "initializing", "tested_sha": os.environ["TESTED_SHA"],
+              "profile": os.environ["V6_PROFILE"],
+          }, sort_keys=True) + "\n")
+          PY
+
+      - name: Check out the exact prospective merge or pushed source
+        id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install pinned Python
+        id: python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12.14"
+          cache: pip
+          cache-dependency-path: experiments/multimodal_output_portfolio/v6/requirements.txt
+
+      - name: Install the repository Rust toolchain
+        id: toolchain
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          toolchain=$(python -c 'import tomllib; print(tomllib.load(open("rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          python ../scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/rust-toolchain.json" --timeout-seconds 900 -- \
+            rustup toolchain install "$toolchain" --profile minimal --no-self-update \
+            --component clippy --component rustfmt --component rust-src
+
+      - name: Install pinned native test tools
+        id: tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Install pinned CPU dependencies and retain resolved environment
+        id: dependencies
+        run: |
+          set -euo pipefail
+          python scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/pip.json" --timeout-seconds 300 -- \
+            python -m pip install --disable-pip-version-check pip==25.0.1
+          python scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/dependencies.json" --timeout-seconds 900 -- \
+            python -m pip install --disable-pip-version-check --only-binary=:all: \
+            --report "$V6_EVIDENCE/pip-install.json" \
+            --requirement experiments/multimodal_output_portfolio/v6/requirements.txt
+          python -m pip check
+          python -m pip freeze --all > "$V6_EVIDENCE/resolved-requirements.txt"
+          cp experiments/multimodal_output_portfolio/v6/requirements.txt "$V6_EVIDENCE/requirements.txt"
+          (
+            cd codex-rs
+            git rev-parse HEAD HEAD^{tree}
+            python --version
+            rustc --version --verbose
+            cargo --version
+            just --version
+            cargo nextest --version
+            uname -sm
+          ) > "$V6_EVIDENCE/environment.txt"
+
+      - name: Run every v6 Python test module once
+        id: unit
+        run: |
+          set -euo pipefail
+          mapfile -t modules < <(python - <<'PY'
+          from pathlib import Path
+          root = Path("experiments/multimodal_output_portfolio/v6")
+          paths = set(root.glob("test_*.py")) | set(root.glob("*_tests.py"))
+          for path in sorted(paths):
+              print(".".join(path.with_suffix("").parts))
+          PY
+          )
+          test "${#modules[@]}" -gt 0
+          python scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/python-tests.json" \
+            --minimum-tests 1 --timeout-seconds 600 -- \
+            python -m unittest -v "${modules[@]}"
+
+      - name: Verify the Cargo lockfile and run native owner tests
+        id: native_tests
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          python ../scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/cargo-lock.json" --timeout-seconds 60 -- \
+            python ../scripts/verify_cargo_lock.py
+          python ../scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/native-tests.json" \
+            --minimum-tests 1 --timeout-seconds 900 -- \
+            just test --locked -p codex-hepta-ndu
+
+      - name: Build and preserve the actual native evaluator
+        id: build
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          python ../scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/native-build.json" --timeout-seconds 600 -- \
+            cargo build --locked -p codex-hepta-ndu --bin ndu-generation-rollout
+          cp target/debug/ndu-generation-rollout "$V6_EVIDENCE/ndu-generation-rollout"
+          sha256sum "$V6_EVIDENCE/ndu-generation-rollout" > "$V6_EVIDENCE/native-binary.sha256"
+
+      - name: Execute real text and image generation with native receipts
+        id: experiment
+        run: |
+          set -euo pipefail
+          args=(--cache "$V6_EVIDENCE/mnist" --output "$V6_EVIDENCE/run"
+                --native-binary "$V6_EVIDENCE/ndu-generation-rollout")
+          deadline=7200
+          if [ "$V6_PROFILE" = smoke ]; then
+            args+=(--smoke)
+            deadline=900
+          fi
+          python scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/rollout.json" --timeout-seconds "$deadline" -- \
+            python -m experiments.multimodal_output_portfolio.v6.run "${args[@]}"
+
+      - name: Require complete output and actual native evidence
+        id: verify
+        run: |
+          set -euo pipefail
+          python scripts/hepta_ci_exec.py \
+            --output "$V6_EVIDENCE/commands/evidence-check.json" --timeout-seconds 120 -- \
+            python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          from experiments.multimodal_output_portfolio.v6.run import digest
+          from experiments.multimodal_output_portfolio.v6.reporting import summarize
+          evidence = Path(os.environ["V6_EVIDENCE"])
+          output = evidence / "run"
+          protocol = json.loads((output / "protocol.json").read_text())
+          status = json.loads((output / "status.json").read_text())
+          summary = json.loads((output / "summary.json").read_text())
+          rows = [json.loads(line) for line in (output / "rows.jsonl").read_text().splitlines()]
+          receipts = json.loads((output / "native-receipts.json").read_text())
+          streamed = [json.loads(line) for line in
+                      (output / "native-receipts.jsonl").read_text().splitlines()]
+          groups = (len(protocol["seeds"]) * len(protocol["trainings"]) *
+                    len(protocol["budgets"]) * sum(map(len, protocol["cases"].values())))
+          if os.environ["V6_PROFILE"] == "smoke":
+              assert protocol["mode"] == "mechanism_smoke_only"
+          else:
+              assert protocol["mode"] == "bounded_domain_development"
+          assert status["state"] == "completed"
+          assert status["rows"] == len(rows) == groups * len(protocol["policies"])
+          assert status["summary_sha256"] == digest(summary)
+          assert protocol["source"]["git_commit"] == os.environ["TESTED_SHA"]
+          assert protocol["source"]["dirty"] is False
+          assert summary["protocol_sha256"] == digest(protocol)
+          assert len(receipts) == summary["native_receipt_count"] == groups > 0
+          assert streamed == receipts
+          assert len({receipt["input_digest"] for receipt in receipts}) == groups
+          binary_sha = hashlib.sha256((evidence / "ndu-generation-rollout").read_bytes()).hexdigest()
+          assert protocol["native_binary_sha256"] == binary_sha
+          for receipt in receipts:
+              assert receipt["native_policy_evaluator"] is True
+              assert receipt["observation_attestation_verified"] is False
+              assert receipt["production_authority"] is False
+              assert receipt["authority"] == "DENY_ALL"
+              assert receipt["required_modality_mask"] == 3
+              assert receipt["binary_sha256"] == binary_sha
+          os.chdir(output)
+          summarize(rows, protocol)  # Reopen every emitted file and recheck paired census.
+          print(json.dumps({"rows": len(rows), "native_receipts": groups,
+                            "profile": os.environ["V6_PROFILE"]}, sort_keys=True))
+          PY
+
+      - name: Preserve the tested source unchanged
+        id: source
+        if: always() && steps.checkout.outcome == 'success'
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Retain workflow status even after failure
+        if: always()
+        env:
+          V6_STEPS: ${{ toJSON(steps) }}
+          V6_JOB_STATUS: ${{ job.status }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          evidence = Path(os.environ["V6_EVIDENCE"])
+          evidence.mkdir(parents=True, exist_ok=True)
+          (evidence / "ci-status.json").write_text(json.dumps({
+              "job_status": os.environ["V6_JOB_STATUS"],
+              "tested_sha": os.environ["TESTED_SHA"],
+              "source_sha": os.environ["SOURCE_SHA"],
+              "lane": os.environ["HEPTA_CI_LANE"],
+              "profile": os.environ["V6_PROFILE"],
+              "steps": json.loads(os.environ["V6_STEPS"]),
+          }, sort_keys=True, indent=2) + "\n")
+          PY
+
+      - name: Retain complete evidence, including partial failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ndu-v6-${{ env.V6_PROFILE }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-v6/
+          if-no-files-found: error
+          retention-days: 14
