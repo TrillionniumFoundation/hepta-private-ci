@@ -69,6 +69,8 @@ mod dpapi;
 #[cfg(target_os = "windows")]
 mod env;
 #[cfg(target_os = "windows")]
+mod filesystem_read_acl;
+#[cfg(target_os = "windows")]
 mod helper_materialization;
 #[cfg(target_os = "windows")]
 mod hide_users;
@@ -82,6 +84,10 @@ mod logging;
 mod path_normalization;
 #[cfg(target_os = "windows")]
 mod process;
+#[cfg(target_os = "windows")]
+mod read_acl_query;
+#[cfg(any(target_os = "windows", test))]
+mod read_role_descriptor;
 #[cfg(target_os = "windows")]
 mod resolved_permissions;
 #[cfg(target_os = "windows")]
@@ -211,6 +217,10 @@ pub use dpapi::unprotect as dpapi_unprotect;
 pub use elevated_impl::ElevatedSandboxProfileCaptureRequest;
 #[cfg(target_os = "windows")]
 pub use elevated_impl::run_windows_sandbox_capture_for_permission_profile as run_windows_sandbox_capture_for_permission_profile_elevated;
+#[cfg(target_os = "windows")]
+pub use filesystem_read_acl::HeldFilesystemReadAcl;
+#[cfg(target_os = "windows")]
+pub use filesystem_read_acl::observe_filesystem_read_acl;
 #[cfg(target_os = "windows")]
 pub use helper_materialization::resolve_current_exe_for_launch;
 #[cfg(target_os = "windows")]
