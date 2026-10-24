@@ -183,6 +183,59 @@ class TensorBundleTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "bounded regular"):
             shared.checked_bytes(Path(self.artifact["manifest_path"]), self.artifact["manifest_sha256"], 1)
 
+    def test_feature_snapshot_preserves_detachment_layout_and_caller_isolation(self):
+        for dtype in (torch.float32, torch.float64, torch.float16, torch.bfloat16):
+            for layout in ("contiguous", "strided", "expanded"):
+                with self.subTest(dtype=dtype, layout=layout):
+                    state = torch.randn(2, 8).to(dtype)
+                    targets = torch.randn(2, 4, 8).to(dtype)
+                    if layout == "strided":
+                        state = state.T.contiguous().T
+                        targets = targets.transpose(1, 2).contiguous().transpose(1, 2)
+                    elif layout == "expanded":
+                        state = state[:1].expand(2, -1)
+                        targets = targets[:1].expand(2, -1, -1)
+                    state.requires_grad_()
+                    targets.requires_grad_()
+                    expected_state = state.detach().to(torch.float32).clone()
+                    expected_targets = targets.detach().to(torch.float32).clone()
+                    bundle = self.load()
+                    expected = bundle._model(expected_state, expected_targets)
+
+                    def check_snapshot(module, inputs):
+                        observed_state, observed_targets = inputs
+                        for original, observed, snapshot in (
+                            (state, observed_state, expected_state),
+                            (targets, observed_targets, expected_targets),
+                        ):
+                            self.assertNotEqual(original.data_ptr(), observed.data_ptr())
+                            self.assertFalse(observed.requires_grad)
+                            self.assertIsNone(observed.grad_fn)
+                            self.assertEqual(observed.stride(), snapshot.stride())
+                            with torch.no_grad():
+                                original[0].fill_(99)
+                            self.assertTrue(torch.equal(observed, snapshot))
+
+                    handle = bundle._model.register_forward_pre_hook(check_snapshot)
+                    try:
+                        actual = bundle.observe(state, targets)
+                    finally:
+                        handle.remove()
+                    self.assertEqual(set(expected), set(actual))
+                    for name in expected:
+                        self.assertTrue(torch.equal(expected[name], actual[name]), name)
+                        self.assertFalse(actual[name].requires_grad)
+                        self.assertIsNone(actual[name].grad_fn)
+
+    def test_feature_snapshot_rejects_overflow_after_float32_conversion(self):
+        bundle = self.load()
+        state = torch.full((2, 8), 1e300, dtype=torch.float64)
+        targets = torch.zeros(2, 4, 8)
+        with self.assertRaisesRegex(ValueError, "non-finite model features"):
+            bundle.observe(state, targets)
+        with self.assertRaisesRegex(ValueError, "non-finite model features"):
+            bundle.observe(torch.zeros(2, 8), targets.double().fill_(1e300))
+
 
 if __name__ == "__main__":
     unittest.main()
