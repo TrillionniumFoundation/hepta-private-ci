@@ -32,6 +32,7 @@ pub(crate) enum Fault {
     UnfinishedOutput,
     Truncated,
     LogError,
+    MissingLogError,
 }
 
 #[derive(Default)]
@@ -83,7 +84,8 @@ async fn serve(stream: DuplexStream, calls: Arc<Calls>, fault: Fault) -> io::Res
                             "idempotency_key":arguments["idempotency_key"]
                         }})
                     }
-                    Some("process_wait") => json!({
+                    Some("process_wait") => {
+                        let mut status = json!({
                         "job_id":arguments["job_id"],
                         "state":if matches!(fault,Fault::Nonzero) { "failed" } else { "succeeded" },
                         "exit_code":if matches!(fault,Fault::Nonzero) { 1 } else { 0 },
@@ -93,7 +95,10 @@ async fn serve(stream: DuplexStream, calls: Arc<Calls>, fault: Fault) -> io::Res
                             "stored":if matches!(fault,Fault::InvalidUtf8){1}else{RECEIVER_BYTES.len()}}},
                         "log_truncated":{"stdout":matches!(fault,Fault::Truncated),"stderr":false},
                         "log_errors":{"stdout":if matches!(fault,Fault::LogError){json!("fixture log failure")}else{Value::Null},"stderr":null},
-                    }),
+                        });
+                        if matches!(fault, Fault::MissingLogError) { status.as_object_mut().expect("status").remove("log_errors"); }
+                        status
+                    },
                     Some("process_read") => {
                         let bytes = if matches!(fault, Fault::InvalidUtf8) { &[0xff][..] } else { RECEIVER_BYTES.as_bytes() };
                         let mut stdout = json!({"offset":0,"next_offset":bytes.len(),"size":bytes.len(),
@@ -176,7 +181,7 @@ async fn android_runtime_unknown_start_and_lost_reply_never_repeat_effect_or_rec
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn android_runtime_requires_terminal_success_complete_lossless_same_job_output() -> TestResult {
-    for fault in [Fault::Nonzero,Fault::WrongJob,Fault::Partial,Fault::LossyOnly,Fault::InvalidUtf8,Fault::UnfinishedOutput,Fault::Truncated,Fault::LogError] {
+    for fault in [Fault::Nonzero,Fault::WrongJob,Fault::Partial,Fault::LossyOnly,Fault::InvalidUtf8,Fault::UnfinishedOutput,Fault::Truncated,Fault::LogError,Fault::MissingLogError] {
         let (inputs, client, calls) = inputs(fault, Duration::from_secs(2)).await?;
         let (device, _) = AgentdAndroidTextDevice::new(inputs)?;
         assert!(device.apply(&device.apply_request).is_err());

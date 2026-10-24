@@ -90,8 +90,8 @@ pub(super) async fn invoke(
                     || status["log_bytes"]["stdout"]["seen"] != stored
                     || status["log_truncated"]["stdout"] != false
                     || status["log_truncated"]["stderr"] != false
-                    || !status["log_errors"]["stdout"].is_null()
-                    || !status["log_errors"]["stderr"].is_null()
+                    || !status.get("log_errors").and_then(|errors| errors.get("stdout")).is_some_and(Value::is_null)
+                    || !status.get("log_errors").and_then(|errors| errors.get("stderr")).is_some_and(Value::is_null)
                 {
                     return Err("Runtime original job output is truncated, failed or unaudited".to_string());
                 }
