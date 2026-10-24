@@ -89,6 +89,8 @@ pub use authority_host_native_launch::launch_host_authority_native_session;
 #[cfg(target_os = "linux")]
 mod authority_host_service;
 #[cfg(target_os = "linux")]
+pub use authority_host_runtime::PreparedHostAuthoritySession;
+#[cfg(target_os = "linux")]
 pub use authority_host_runtime::initialize_host_authority;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::register_host_writer_authorization;
@@ -97,13 +99,11 @@ pub use authority_host_runtime::serve_host_authority_session;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::serve_host_authority_session_with_text;
 #[cfg(target_os = "linux")]
-pub use authority_host_runtime::PreparedHostAuthoritySession;
+pub use authority_host_service::FreshHostCognitiveState;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityLane;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityService;
-#[cfg(target_os = "linux")]
-pub use authority_host_service::FreshHostCognitiveState;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityTextUiRegistration;
 #[cfg(target_os = "linux")]
@@ -170,6 +170,8 @@ pub use deployment_issuer::HostAuthorityWriterRegistration;
 #[cfg(target_os = "linux")]
 pub use deployment_issuer::RootNotesGrantAdmission;
 mod android_runtime;
+#[cfg(target_os = "linux")]
+mod cpu_policy;
 mod error;
 mod event_buffer;
 mod evidence_frontier;
@@ -180,8 +182,6 @@ mod final_use_issuer;
 mod grant_provider_worker;
 #[cfg(target_os = "linux")]
 mod hos2_device;
-#[cfg(target_os = "linux")]
-mod cpu_policy;
 mod intelligence_ingress;
 mod intelligence_product;
 mod intuition_policy;
@@ -365,20 +365,6 @@ pub use config::HEPTA_AGENT_HOME_ENV;
 pub use config::HEPTA_AGENT_ID_ENV;
 pub use config::HEPTA_AGENT_RUN_ROOT_ENV;
 pub use config::HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV;
-pub use error::AgentdError;
-pub use evidence_frontier::EvidenceRecoveryFrontierV1;
-pub use evidence_frontier::evidence_recovery_frontier_signing_bytes;
-pub use evidence_host::kernel_evidence_claims;
-#[cfg(target_os = "linux")]
-pub use final_use_issuer::AgentdFinalUseIssuerError;
-#[cfg(target_os = "linux")]
-pub use final_use_issuer::AgentdFinalUseIssuerPeer;
-#[cfg(target_os = "linux")]
-pub use final_use_issuer::AgentdUnixFinalUseGrantProvider;
-#[cfg(target_os = "linux")]
-pub use hos2_device::AgentdHos2Device;
-#[cfg(target_os = "linux")]
-pub use hos2_device::AgentdHos2Usage;
 #[cfg(target_os = "linux")]
 pub use cpu_policy::CPU_POLICY_INTERVAL_NS;
 #[cfg(target_os = "linux")]
@@ -395,6 +381,20 @@ pub use cpu_policy::CpuPolicyError;
 pub use cpu_policy::CpuPolicyKind;
 #[cfg(target_os = "linux")]
 pub use cpu_policy::ObservedCpuDemand;
+pub use error::AgentdError;
+pub use evidence_frontier::EvidenceRecoveryFrontierV1;
+pub use evidence_frontier::evidence_recovery_frontier_signing_bytes;
+pub use evidence_host::kernel_evidence_claims;
+#[cfg(target_os = "linux")]
+pub use final_use_issuer::AgentdFinalUseIssuerError;
+#[cfg(target_os = "linux")]
+pub use final_use_issuer::AgentdFinalUseIssuerPeer;
+#[cfg(target_os = "linux")]
+pub use final_use_issuer::AgentdUnixFinalUseGrantProvider;
+#[cfg(target_os = "linux")]
+pub use hos2_device::AgentdHos2Device;
+#[cfg(target_os = "linux")]
+pub use hos2_device::AgentdHos2Usage;
 pub use intelligence_ingress::AgentdIntelligenceInvocationProviderV1;
 pub use intelligence_ingress::AgentdIntelligenceInvocationV1;
 pub use intelligence_product::AgentdEvaluationBindingV1;

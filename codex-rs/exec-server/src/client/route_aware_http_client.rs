@@ -149,7 +149,10 @@ impl HttpClient for RouteAwareHttpClient {
                     "single-attempt HTTP response omitted its body stream".to_string(),
                 )
             })?;
-            Ok((response, HttpResponseBodyStream::local(pending_stream.response)))
+            Ok((
+                response,
+                HttpResponseBodyStream::local(pending_stream.response),
+            ))
         }
         .boxed()
     }

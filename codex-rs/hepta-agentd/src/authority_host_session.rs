@@ -98,7 +98,10 @@ impl PreparedHostAuthoritySession {
     /// mandatory when the daemon connects to the five original lanes.
     pub fn seal_bootstrap(&self, consumer_state_root: &Path) -> io::Result<File> {
         self.service.seal_registered_bootstrap(
-            &self.config, &self.registration, &self.owner_pidfd, consumer_state_root,
+            &self.config,
+            &self.registration,
+            &self.owner_pidfd,
+            consumer_state_root,
         )
     }
 
@@ -135,30 +138,47 @@ impl PreparedHostAuthoritySession {
     fn serve_selected(self, text_ui: Option<(&Path, OwnedFd)>) -> io::Result<()> {
         let Self { config, registration, owner_pidfd, service, .. } = self;
         if text_ui.is_some()
-            && config.issuer_record_profile != crate::authority_host_config::HostIssuerRecordProfile::TextRecovery
+            && config.issuer_record_profile
+                != crate::authority_host_config::HostIssuerRecordProfile::TextRecovery
         {
-            return Err(io::Error::other("native text requires the explicit text_recovery issuer record profile"));
+            return Err(io::Error::other(
+                "native text requires the explicit text_recovery issuer record profile",
+            ));
         }
         if let Some((text_file, ui_pidfd)) = text_ui {
             let text: crate::HostAuthorityTextUiRegistration = read_root_json(text_file)?;
             if text.peer_uid != config.peer_uid {
-                return Err(io::Error::other("text UI must share the registered Agentd owner UID for its existing private ingress"));
+                return Err(io::Error::other(
+                    "text UI must share the registered Agentd owner UID for its existing private ingress",
+                ));
             }
             text.validate(&service)?;
-            if [&config.sockets.observation, &config.sockets.issuer, &config.sockets.checkpoint]
-                .into_iter().chain(config.sockets.device_frontier.iter())
-                .chain(config.sockets.notes_frontier.iter()).any(|path| path == &text.socket_path)
+            if [
+                &config.sockets.observation,
+                &config.sockets.issuer,
+                &config.sockets.checkpoint,
+            ]
+            .into_iter()
+            .chain(config.sockets.device_frontier.iter())
+            .chain(config.sockets.notes_frontier.iter())
+            .any(|path| path == &text.socket_path)
             {
                 return Err(io::Error::other("text UI requires a distinct private lane"));
             }
             std::thread::scope(|scope| {
-                let worker = scope.spawn(|| service.serve_text_ui(
-                    &text, &ui_pidfd, &owner_pidfd,
-                    std::time::Duration::from_millis(config.timeout_ms),
-                    std::time::Duration::from_millis(config.lifetime_ms),
-                ));
+                let worker = scope.spawn(|| {
+                    service.serve_text_ui(
+                        &text,
+                        &ui_pidfd,
+                        &owner_pidfd,
+                        std::time::Duration::from_millis(config.timeout_ms),
+                        std::time::Duration::from_millis(config.lifetime_ms),
+                    )
+                });
                 let original = serve_lanes(&service, &config, &registration, &owner_pidfd);
-                let ui = worker.join().map_err(|_| io::Error::other("text UI lane panicked"))?;
+                let ui = worker
+                    .join()
+                    .map_err(|_| io::Error::other("text UI lane panicked"))?;
                 original.and(ui)
             })
         } else {

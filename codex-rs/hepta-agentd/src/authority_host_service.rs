@@ -24,8 +24,8 @@ use crate::DeploymentFinalUseIssuer;
 
 #[path = "authority_host_writer.rs"]
 mod writer;
-use writer::RegisteredWriter;
 pub use writer::FreshHostCognitiveState;
+use writer::RegisteredWriter;
 #[path = "authority_host_checkpoint_lane.rs"]
 mod checkpoint;
 use checkpoint::RegisteredCheckpoint;

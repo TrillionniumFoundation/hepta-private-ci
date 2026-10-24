@@ -91,9 +91,7 @@ impl HostConsumerFrontier {
 
     fn read_existing(&self) -> Result<FinalUseFrontier, AuthorityTrustError> {
         let frontier = self.store.load(&self.owner_id)?;
-        if !valid_frontier(&frontier)
-            || self.clock.now_unix_ms()? >= self.expires_at_unix_ms
-        {
+        if !valid_frontier(&frontier) || self.clock.now_unix_ms()? >= self.expires_at_unix_ms {
             return Err(AuthorityTrustError::Invalid);
         }
         Ok(frontier)
@@ -105,11 +103,15 @@ impl HostConsumerFrontier {
         &self,
         observed_head: &FinalUseRevocations,
     ) -> Result<FinalUseFrontier, AuthorityTrustError> {
-        let session = self.session.try_lock().map_err(|_| AuthorityTrustError::Unavailable)?;
+        let session = self
+            .session
+            .try_lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
         if session.closed {
             return Err(AuthorityTrustError::Unavailable);
         }
-        FinalUseFrontier::for_initial_head(observed_head).map_err(|_| AuthorityTrustError::Invalid)?;
+        FinalUseFrontier::for_initial_head(observed_head)
+            .map_err(|_| AuthorityTrustError::Invalid)?;
         let frontier = self.read_existing()?;
         if frontier.authority_epoch > observed_head.authority_epoch
             || (frontier.authority_epoch == observed_head.authority_epoch
@@ -135,20 +137,35 @@ impl HostConsumerFrontier {
         let request: Request =
             serde_json::from_slice(bytes).map_err(|_| AuthorityTrustError::Invalid)?;
         let (schema, id) = match &request {
-            Request::Load { schema_version, request_id }
-            | Request::CompareAndSet { schema_version, request_id, .. } => (*schema_version, *request_id),
+            Request::Load {
+                schema_version,
+                request_id,
+            }
+            | Request::CompareAndSet {
+                schema_version,
+                request_id,
+                ..
+            } => (*schema_version, *request_id),
         };
         if schema != 1 || id == 0 {
             return Err(AuthorityTrustError::Invalid);
         }
         FinalUseFrontier::for_initial_head(observed_head)
             .map_err(|_| AuthorityTrustError::Invalid)?;
-        let mut session = self.session.try_lock().map_err(|_| AuthorityTrustError::Unavailable)?;
+        let mut session = self
+            .session
+            .try_lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
         if id <= session.last_request_id {
             return Err(AuthorityTrustError::Invalid);
         }
         session.last_request_id = id;
-        let mut response = Response { schema_version: 1, request_id: id, status: Status::Unknown, frontier: None };
+        let mut response = Response {
+            schema_version: 1,
+            request_id: id,
+            status: Status::Unknown,
+            frontier: None,
+        };
         if session.closed {
             return serde_json::to_vec(&response).map_err(|_| AuthorityTrustError::Unavailable);
         }
@@ -169,19 +186,25 @@ impl HostConsumerFrontier {
                 {
                     return Err(AuthorityTrustError::Invalid);
                 }
-                self.store.compare_and_set(&self.owner_id, &expected, &next).map(|()| next)
+                self.store
+                    .compare_and_set(&self.owner_id, &expected, &next)
+                    .map(|()| next)
             }
         };
         match result {
-            Ok(frontier) if valid_frontier(&frontier)
-                && frontier.authority_epoch <= observed_head.authority_epoch
-                && (frontier.authority_epoch != observed_head.authority_epoch
-                    || frontier.revocation_revision <= observed_head.revision) => {
+            Ok(frontier)
+                if valid_frontier(&frontier)
+                    && frontier.authority_epoch <= observed_head.authority_epoch
+                    && (frontier.authority_epoch != observed_head.authority_epoch
+                        || frontier.revocation_revision <= observed_head.revision) =>
+            {
                 response.status = Status::Ack;
                 response.frontier = Some(frontier);
             }
             Err(AuthorityTrustError::Conflict) => response.status = Status::Conflict,
-            Ok(_) | Err(AuthorityTrustError::Invalid | AuthorityTrustError::Unavailable) => session.closed = true,
+            Ok(_) | Err(AuthorityTrustError::Invalid | AuthorityTrustError::Unavailable) => {
+                session.closed = true
+            }
         }
         if !matches!(self.clock.now_unix_ms(), Ok(now) if now < self.expires_at_unix_ms) {
             session.closed = true;
@@ -190,7 +213,8 @@ impl HostConsumerFrontier {
             response.status = Status::Unknown;
             response.frontier = None;
         }
-        let encoded = serde_json::to_vec(&response).map_err(|_| AuthorityTrustError::Unavailable)?;
+        let encoded =
+            serde_json::to_vec(&response).map_err(|_| AuthorityTrustError::Unavailable)?;
         if encoded.len() > FRAME_LIMIT {
             session.closed = true;
             return Err(AuthorityTrustError::Unavailable);

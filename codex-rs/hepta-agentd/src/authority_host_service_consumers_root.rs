@@ -62,48 +62,84 @@ pub(super) fn release(
     expected: Option<crate::HostAuthorityPublicBootstrapV1>,
 ) {
     let bytes = config.consumers.as_ref().map(|_| {
-        let local = config.sockets.observation.parent().unwrap().join("consumer-local");
+        let local = config
+            .sockets
+            .observation
+            .parent()
+            .unwrap()
+            .join("consumer-local");
         // Keep the test-only capture as a readback oracle, never as input to
         // the production capture API or the descriptor delivered below.
-        let bundle = expected.as_ref().expect("independent prior readback required");
+        let bundle = expected
+            .as_ref()
+            .expect("independent prior readback required");
         let mut wrong = config.clone();
         wrong.peer_gid += 1;
         let wrong_path = config_path.with_extension("bootstrap-wrong-gid.json");
         write_json(&wrong_path, &wrong);
-        assert!(crate::PreparedHostAuthoritySession::open(
-            &wrong_path, registration_path, owner_pidfd.try_clone().unwrap()).err()
-            .expect("same UID with different expected GID must be refused").to_string().contains("UID/GID"));
+        assert!(
+            crate::PreparedHostAuthoritySession::open(
+                &wrong_path,
+                registration_path,
+                owner_pidfd.try_clone().unwrap()
+            )
+            .err()
+            .expect("same UID with different expected GID must be refused")
+            .to_string()
+            .contains("UID/GID")
+        );
         // SAFETY: this pins the actual Root solely as a deliberately wrong
         // daemon descriptor. It never changes credentials or selects a peer.
         let raw = unsafe { libc::syscall(libc::SYS_pidfd_open, std::process::id(), 0) };
         assert!(raw >= 0);
         // SAFETY: successful pidfd_open transfers one fresh owned descriptor.
         let wrong_pidfd = unsafe { OwnedFd::from_raw_fd(raw as i32) };
-        assert!(crate::PreparedHostAuthoritySession::open(
-            config_path, registration_path, wrong_pidfd).err()
-            .expect("wrong original pidfd must be refused").to_string().contains("pidfd does not pin"));
+        assert!(
+            crate::PreparedHostAuthoritySession::open(config_path, registration_path, wrong_pidfd)
+                .err()
+                .expect("wrong original pidfd must be refused")
+                .to_string()
+                .contains("pidfd does not pin")
+        );
         // These exercise the retained capture directly, so a second owner's
         // StateLocked error cannot mask the exact runtime-custody refusal.
         let runtime = config.sockets.observation.parent().unwrap();
         std::fs::set_permissions(runtime, std::fs::Permissions::from_mode(0o2730)).unwrap();
         let invalid_mode = prepared.seal_bootstrap(&local);
         std::fs::set_permissions(runtime, std::fs::Permissions::from_mode(0o2710)).unwrap();
-        assert_eq!(invalid_mode.unwrap_err().to_string(),
-            "private runtime parent must be root:peer-gid mode02710");
+        assert_eq!(
+            invalid_mode.unwrap_err().to_string(),
+            "private runtime parent must be root:peer-gid mode02710"
+        );
         let runtime_c = std::ffi::CString::new(runtime.as_os_str().as_encoded_bytes()).unwrap();
         // SAFETY: the test owns this actual Root-created runtime directory.
-        assert_eq!(unsafe { libc::chown(runtime_c.as_ptr(), /*owner*/ 0, config.peer_gid + 1) }, 0);
+        assert_eq!(
+            unsafe {
+                libc::chown(runtime_c.as_ptr(), /*owner*/ 0, config.peer_gid + 1)
+            },
+            0
+        );
         let invalid_group = prepared.seal_bootstrap(&local);
         // SAFETY: restore the original group before any assertion can unwind.
-        assert_eq!(unsafe { libc::chown(runtime_c.as_ptr(), /*owner*/ 0, config.peer_gid) }, 0);
+        assert_eq!(
+            unsafe {
+                libc::chown(runtime_c.as_ptr(), /*owner*/ 0, config.peer_gid)
+            },
+            0
+        );
         std::fs::set_permissions(runtime, std::fs::Permissions::from_mode(0o2710)).unwrap();
-        assert_eq!(invalid_group.unwrap_err().to_string(),
-            "private runtime parent must be root:peer-gid mode02710");
+        assert_eq!(
+            invalid_group.unwrap_err().to_string(),
+            "private runtime parent must be root:peer-gid mode02710"
+        );
         let ancestor = runtime.parent().unwrap();
         std::fs::set_permissions(ancestor, std::fs::Permissions::from_mode(0o775)).unwrap();
         let invalid_ancestor = prepared.seal_bootstrap(&local);
         std::fs::set_permissions(ancestor, std::fs::Permissions::from_mode(0o755)).unwrap();
-        assert_eq!(invalid_ancestor.unwrap_err().to_string(), "unsafe runtime ancestor");
+        assert_eq!(
+            invalid_ancestor.unwrap_err().to_string(),
+            "unsafe runtime ancestor"
+        );
         let mut sealed = prepared.seal_bootstrap(&local).unwrap();
         let mut bytes = Vec::new();
         std::io::Read::read_to_end(&mut sealed, &mut bytes).unwrap();

@@ -22,24 +22,31 @@ impl AgentdUnixCognitiveCheckpointTransport {
         self,
         expected: CognitiveCheckpointHead,
     ) -> Result<AgentdProtectedCheckpointInputs<Self>, ObjectiveSenderCheckpointError> {
-        if expected.schema_version != 1 || expected.publisher_epoch == 0
-            || expected.counter == 0 || expected.counter == u64::MAX
-            || expected.phase != CognitiveCheckpointPhase::Current || expected.proposal.is_some()
+        if expected.schema_version != 1
+            || expected.publisher_epoch == 0
+            || expected.counter == 0
+            || expected.counter == u64::MAX
+            || expected.phase != CognitiveCheckpointPhase::Current
+            || expected.proposal.is_some()
             || expected.last_current.owner_agent_id != expected.owner_agent_id
             || expected.last_current.profile != "hepta:cognitive:exact-current-cut:v1"
         {
             return Err(ObjectiveSenderCheckpointError::Refused);
         }
-        let sequence = expected.last_mutation_sequence.checked_add(1)
+        let sequence = expected
+            .last_mutation_sequence
+            .checked_add(1)
             .ok_or(ObjectiveSenderCheckpointError::Refused)?;
         let request = CognitiveCheckpointRequest {
             schema_version: 1,
             operation: "runtime.cognitive.checkpoint.v1".into(),
             request_id: format!("{:016x}{sequence:016x}", expected.publisher_epoch),
             command: CognitiveCheckpointCommand::ReadHead,
-            expected: None, proposal: None,
+            expected: None,
+            proposal: None,
         };
-        let bytes = serde_json::to_vec(&request).map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
+        let bytes = serde_json::to_vec(&request)
+            .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
         let raw = self.exchange(&bytes).await?;
         let response: CognitiveCheckpointResponse = serde_json::from_slice(&raw)
             .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
@@ -47,24 +54,35 @@ impl AgentdUnixCognitiveCheckpointTransport {
             return Err(ObjectiveSenderCheckpointError::Unavailable);
         }
         match response.status {
-            CognitiveCheckpointStatus::Refused => return Err(ObjectiveSenderCheckpointError::Refused),
-            CognitiveCheckpointStatus::Unknown => return Err(ObjectiveSenderCheckpointError::Unavailable),
+            CognitiveCheckpointStatus::Refused => {
+                return Err(ObjectiveSenderCheckpointError::Refused);
+            }
+            CognitiveCheckpointStatus::Unknown => {
+                return Err(ObjectiveSenderCheckpointError::Unavailable);
+            }
             CognitiveCheckpointStatus::Ack => {}
         }
         if response.reason.is_some() {
             return Err(ObjectiveSenderCheckpointError::Unavailable);
         }
         let receipt = CognitiveCheckpointReceipt {
-            head: response.head.ok_or(ObjectiveSenderCheckpointError::Unavailable)?,
-            token: response.token.ok_or(ObjectiveSenderCheckpointError::Unavailable)?,
+            head: response
+                .head
+                .ok_or(ObjectiveSenderCheckpointError::Unavailable)?,
+            token: response
+                .token
+                .ok_or(ObjectiveSenderCheckpointError::Unavailable)?,
         };
-        if receipt.head != expected || receipt.token.publisher_epoch != expected.publisher_epoch
+        if receipt.head != expected
+            || receipt.token.publisher_epoch != expected.publisher_epoch
             || receipt.token.counter != expected.counter
         {
             return Err(ObjectiveSenderCheckpointError::Refused);
         }
         Ok(AgentdProtectedCheckpointInputs {
-            deadline: self.timeout, transport: Arc::new(self), current_receipt: receipt,
+            deadline: self.timeout,
+            transport: Arc::new(self),
+            current_receipt: receipt,
         })
     }
 }

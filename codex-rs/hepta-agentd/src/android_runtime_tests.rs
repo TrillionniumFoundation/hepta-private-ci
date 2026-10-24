@@ -98,7 +98,17 @@ async fn serve(stream: DuplexStream, calls: Arc<Calls>, fault: Fault) -> io::Res
                             calls.resume_start.notified().await;
                         }
                         let mut binding = std::collections::BTreeMap::new();
-                        for key in ["host", "executable", "args", "cwd", "stdin", "timeout_seconds", "nice", "cpu_quota_percent", "memory_max_bytes"] {
+                        for key in [
+                            "host",
+                            "executable",
+                            "args",
+                            "cwd",
+                            "stdin",
+                            "timeout_seconds",
+                            "nice",
+                            "cpu_quota_percent",
+                            "memory_max_bytes",
+                        ] {
                             binding.insert(key, arguments[key].clone());
                         }
                         binding.insert("env", json!({}));
@@ -117,7 +127,10 @@ async fn serve(stream: DuplexStream, calls: Arc<Calls>, fault: Fault) -> io::Res
                             "idempotency_key":arguments["idempotency_key"]
                         }});
                         if matches!(fault, Fault::MissingMode) {
-                            result["job"].as_object_mut().expect("job").remove("execution_mode");
+                            result["job"]
+                                .as_object_mut()
+                                .expect("job")
+                                .remove("execution_mode");
                         }
                         result
                     }
@@ -278,19 +291,27 @@ async fn android_runtime_unknown_start_and_lost_reply_never_repeat_effect_or_rec
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn android_runtime_invalidation_after_start_keeps_job_without_accepting_late_ack() -> TestResult {
+async fn android_runtime_invalidation_after_start_keeps_job_without_accepting_late_ack()
+-> TestResult {
     let (inputs, client, calls) = inputs(Fault::PausedStart, Duration::from_secs(2)).await?;
     let (device, _) = AgentdAndroidTextDevice::new(inputs)?;
     let device = Arc::new(device);
     let worker_device = Arc::clone(&device);
-    let result = tokio::task::spawn_blocking(move || worker_device.apply(&worker_device.apply_request));
+    let result =
+        tokio::task::spawn_blocking(move || worker_device.apply(&worker_device.apply_request));
     tokio::time::timeout(Duration::from_secs(1), calls.start_seen.notified()).await?;
     device.invalidate();
     calls.resume_start.notify_one();
     assert!(result.await?.is_err());
     assert!(device.apply(&device.apply_request).is_err());
     assert_eq!(device.attempt()?.job_id, Some("fixture-job-1".to_string()));
-    let request_names = calls.requests.lock().expect("calls").iter().map(|request| request["name"].clone()).collect::<Vec<_>>();
+    let request_names = calls
+        .requests
+        .lock()
+        .expect("calls")
+        .iter()
+        .map(|request| request["name"].clone())
+        .collect::<Vec<_>>();
     assert_eq!(request_names, vec![json!("process_start")]);
     assert_eq!(calls.opens.load(Ordering::SeqCst), 1);
     client.shutdown().await;
