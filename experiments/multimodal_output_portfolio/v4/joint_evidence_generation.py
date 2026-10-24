@@ -41,6 +41,11 @@ class JointState:
             or type(self.p_zero) is not Fraction
             or not Fraction(0) <= self.p_zero <= Fraction(1)
             or type(self.witness_seen) is not bool
+            # Exact positive priors may not silently lose either truth class
+            # when this finite solver converts its Fraction law to floats.
+            or (Fraction(0) < self.p_zero < Fraction(1)
+                and (float(self.p_zero) == 0.0
+                     or float(1 - self.p_zero) == 0.0))
             # A paid witness cannot precede the first recorded action.
             or (self.generation.step == 0 and self.witness_seen)):
             raise ValueError("unsupported public belief-state")
@@ -259,6 +264,11 @@ def full_outcome_audit(initial: JointState, cfg: Config,
         visit(initial, truth, p, 0, False, 0)
     if not rows or sum(row[0] for row in rows) != 1:
         raise AssertionError("incomplete independently enumerated outcome law")
+    # Exact positive paths may underflow only after multiplying supported
+    # truth and shock probabilities. Never report a truncated risk support.
+    if any(probability > 0 and float(probability) == 0.0
+           for probability, *_ in rows):
+        raise ValueError("positive exact audit path mass underflow")
     probs = tuple(float(row[0]) for row in rows)
     losses = [row[1] for row in rows]
     costs = [row[2] for row in rows]
