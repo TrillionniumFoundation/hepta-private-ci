@@ -715,6 +715,38 @@ impl AgentdClient {
         }
     }
 
+    pub async fn memory_cell_read_start(
+        &self,
+        request: codex_hepta_agent_protocol::MemoryCellReadIngress,
+    ) -> Result<codex_hepta_agent_protocol::MemoryCellReadSnapshot, AgentdError> {
+        let request = AgentdRequest {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: self.request_id(),
+            spawn_generation: self.spawn_generation,
+            method: crate::AgentdMethod::MemoryCellReadStart { request },
+        };
+        match self.send(request).await?.payload {
+            AgentdPayload::MemoryCellRead(snapshot) => Ok(snapshot),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn memory_cell_read_status(
+        &self,
+        invocation_id: String,
+    ) -> Result<codex_hepta_agent_protocol::MemoryCellReadSnapshot, AgentdError> {
+        let request = AgentdRequest {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: self.request_id(),
+            spawn_generation: self.spawn_generation,
+            method: crate::AgentdMethod::MemoryCellReadStatus { invocation_id },
+        };
+        match self.send(request).await?.payload {
+            AgentdPayload::MemoryCellRead(snapshot) => Ok(snapshot),
+            payload => unexpected(payload),
+        }
+    }
+
     async fn send(&self, request: AgentdRequest) -> Result<AgentdResponse, AgentdError> {
         let expected_request_id = request.request_id;
         let stream = timeout(self.timeout, UnixStream::connect(&self.socket_path))

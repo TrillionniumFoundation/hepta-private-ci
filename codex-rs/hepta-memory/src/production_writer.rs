@@ -57,6 +57,28 @@ use crate::local_lease_outbox::legacy_dispatch_operation_digest;
 use crate::operation_claims;
 use crate::operation_claims::DurableDispatchClaim;
 
+#[path = "memory_cell_invocation.rs"]
+mod memory_cell_invocation;
+#[path = "memory_cell_source.rs"]
+mod memory_cell_source;
+#[path = "memory_cell_types.rs"]
+mod memory_cell_types;
+pub use memory_cell_invocation::MemoryCellAdmissionV1;
+pub use memory_cell_invocation::MemoryCellUseReceiptV1;
+pub use memory_cell_types::MemoryCellDocumentV1;
+pub use memory_cell_types::MemoryCellKeyV1;
+pub use memory_cell_types::MemoryCellQueryV1;
+pub use memory_cell_types::MemoryCellRoleV1;
+pub use memory_cell_types::MemoryCellSourceBindingV1;
+pub use memory_cell_types::MemoryCellSourceClaimV1;
+pub use memory_cell_types::MemoryCellSourceError;
+#[cfg(test)]
+#[path = "memory_cell_test_support.rs"]
+mod memory_cell_test_support;
+#[cfg(test)]
+#[path = "memory_cell_tests.rs"]
+mod memory_cell_tests;
+
 /// Schema version of the externally-authorized H4 writer boundary.
 pub const PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION: u32 = 1;
 /// Stable provenance namespace for production writer receipts.
