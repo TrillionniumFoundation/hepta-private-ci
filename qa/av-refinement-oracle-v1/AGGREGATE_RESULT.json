@@ -1,0 +1,143 @@
+{
+  "actor_groups": 4,
+  "actual_eager_audit_calls": 48,
+  "actual_eager_matrix_macs": 106401408,
+  "at_most_six_calls": {
+    "budget": 6,
+    "coverage": 1.0,
+    "mean_headroom": 1.3349778700446745e-06,
+    "oracle_matrix_macs": 93110144,
+    "oracle_mean_calls": 4.75,
+    "oracle_mean_mse": 0.010465036488663211,
+    "semantics": "at_most_calls",
+    "static_matrix_macs": 106401408,
+    "static_mean_calls": 6,
+    "static_mean_mse": 0.010466371466533255,
+    "static_prefix": [
+      3,
+      3
+    ]
+  },
+  "byte_exact_final_array_parities": 16,
+  "data_free_unit_tests": 6,
+  "decision": "STOP_COMPLEX_ROUTER_ON_CURRENT_MATERIAL",
+  "exact_budget_rows": [
+    {
+      "budget": 0,
+      "mean_headroom": 0.0,
+      "oracle_matrix_macs": 0,
+      "static_matrix_macs": 0,
+      "static_prefix": [
+        0,
+        0
+      ]
+    },
+    {
+      "budget": 1,
+      "mean_headroom": 0.0,
+      "oracle_matrix_macs": 24772608,
+      "static_matrix_macs": 24772608,
+      "static_prefix": [
+        0,
+        1
+      ]
+    },
+    {
+      "budget": 2,
+      "mean_headroom": 0.0,
+      "oracle_matrix_macs": 49545216,
+      "static_matrix_macs": 49545216,
+      "static_prefix": [
+        0,
+        2
+      ]
+    },
+    {
+      "budget": 3,
+      "mean_headroom": 0.0,
+      "oracle_matrix_macs": 74317824,
+      "static_matrix_macs": 74317824,
+      "static_prefix": [
+        0,
+        3
+      ]
+    },
+    {
+      "budget": 4,
+      "mean_headroom": 0.0,
+      "oracle_matrix_macs": 85012352,
+      "static_matrix_macs": 85012352,
+      "static_prefix": [
+        1,
+        3
+      ]
+    },
+    {
+      "budget": 5,
+      "mean_headroom": 0.0,
+      "oracle_matrix_macs": 95706880,
+      "static_matrix_macs": 95706880,
+      "static_prefix": [
+        2,
+        3
+      ]
+    },
+    {
+      "budget": 6,
+      "mean_headroom": 0.0,
+      "oracle_matrix_macs": 106401408,
+      "static_matrix_macs": 106401408,
+      "static_prefix": [
+        3,
+        3
+      ]
+    }
+  ],
+  "independent_training_seeds": 1,
+  "legacy_v5_results_unchanged": true,
+  "modalities": {
+    "audio": {
+      "best_fixed_round": 3,
+      "headroom_over_best_fixed": 2.6699557400897828e-06,
+      "improvement_over_no_refine": 2.0240172964605674e-05,
+      "mean_mse_by_round": [
+        0.00255683139945771,
+        0.0025453695949221567,
+        0.0025536618710037115,
+        0.002539261182233194
+      ],
+      "oracle_mean_mse": 0.002536591226493104,
+      "worsening_transitions": [
+        1,
+        7,
+        0
+      ]
+    },
+    "video": {
+      "best_fixed_round": 3,
+      "headroom_over_best_fixed": 0.0,
+      "improvement_over_no_refine": 0.015166133683550326,
+      "mean_mse_by_round": [
+        0.03355961543438364,
+        0.02779236299978341,
+        0.023359021340458506,
+        0.018393481750833315
+      ],
+      "oracle_mean_mse": 0.018393481750833315,
+      "worsening_transitions": [
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "oracle_is_deployable": false,
+  "physical_cost_matched": false,
+  "private_replay_dependency_required": true,
+  "public_media_or_weight_distribution": false,
+  "schema": "hepta.av-prefix-oracle.aggregate-result.v1",
+  "scientific_efficacy_confirmed": false,
+  "scope": "OBSERVED_TRAIN_DIAGNOSTIC_NOT_GENERALIZATION",
+  "stage_loss_parities": 64,
+  "training_clips": 8
+}

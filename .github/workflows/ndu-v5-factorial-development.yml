@@ -2,8 +2,8 @@ name: Hepta NDU v5 learned factorial (development only)
 on:
   pull_request:
     paths:
-      - 'experiments/multimodal_output_portfolio/v5/**'
-      - '.github/workflows/ndu-v5-factorial-development.yml'
+      - "experiments/multimodal_output_portfolio/v5/**"
+      - ".github/workflows/ndu-v5-factorial-development.yml"
   workflow_dispatch:
 permissions:
   contents: read
