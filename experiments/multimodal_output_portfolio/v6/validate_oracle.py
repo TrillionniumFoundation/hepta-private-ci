@@ -7,12 +7,58 @@ laws are checked. This is not a neural/FBSDE/global real-world optimality proof.
 import argparse
 from decimal import Decimal, localcontext
 import hashlib
+import importlib.util
 import json
+import os
 from pathlib import Path
 import random
 import subprocess
 import sys
+import tempfile
 import time
+
+
+SOURCE_DIR = Path("experiments/multimodal_output_portfolio/v6")
+
+
+def frozen_sources(repo, expected_commit):
+    """Verify local custody; this does not authenticate the host or Git remote."""
+    def git(*arguments):
+        return subprocess.check_output(["git", *arguments], cwd=repo)
+
+    if (len(expected_commit) != 40 or any(c not in "0123456789abcdef" for c in expected_commit)
+            or git("rev-parse", "HEAD").decode().strip() != expected_commit
+            or Path(git("rev-parse", "--show-toplevel").decode().strip()).resolve() != repo):
+        raise ValueError("Frozen controller commit identity differs")
+    if git("status", "--porcelain=v1", "--untracked-files=normal"):
+        raise ValueError("Frozen repository must be clean")
+    if Path(__file__).resolve() != repo / SOURCE_DIR / "validate_oracle.py":
+        raise ValueError("Running oracle script is outside the frozen source path")
+    sources = {}
+    for name in ("control.py", "validate_oracle.py"):
+        relative = SOURCE_DIR / name
+        source = (repo / relative).read_bytes()
+        if source != git("show", f"{expected_commit}:{relative.as_posix()}"):
+            raise ValueError(f"Frozen source bytes differ: {name}")
+        sources[name] = source
+    return sources
+
+
+def publish_report(output, report):
+    """Publish complete JSON once; a competing or stale destination is preserved."""
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=output.parent,
+                                         prefix=f".{output.name}.", delete=False) as stream:
+            temporary = Path(stream.name)
+            json.dump(report, stream, indent=2, sort_keys=True, allow_nan=False)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.link(temporary, output)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
 
 
 class Tree:
@@ -80,11 +126,22 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--expected-commit", required=True)
     args = parser.parse_args()
-    commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=args.repo, text=True).strip()
-    if commit != args.expected_commit:
-        raise ValueError("Frozen controller commit identity differs")
-    sys.path.insert(0, str(args.repo))
-    from experiments.multimodal_output_portfolio.v6.control import ControllerConfig, WorkBudget, choose
+    repo = args.repo.resolve()
+    output = args.output.parent.resolve() / args.output.name
+    if output.exists() or output.is_symlink():
+        raise FileExistsError(f"Oracle report already exists: {output}")
+    if output.is_relative_to(repo):
+        raise ValueError("Oracle report must be outside the frozen repository")
+    sources = frozen_sources(repo, args.expected_commit)
+    control_path = repo / SOURCE_DIR / "control.py"
+    # Compile exactly the verified source, never a possibly stale .pyc or an
+    # earlier module imported through another checkout's package path.
+    spec = importlib.util.spec_from_file_location("ndu_oracle_frozen_control", control_path)
+    control = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = control
+    exec(compile(sources["control.py"], str(control_path), "exec"), control.__dict__)
+    if Path(control.__file__).resolve() != control_path or frozen_sources(repo, args.expected_commit) != sources:
+        raise ValueError("Imported controller source identity differs")
 
     started, records, failures = time.perf_counter_ns(), [], []
     tolerance = Decimal("1e-11")
@@ -94,8 +151,8 @@ def main():
         penalty = 0.0 if tied else (0., .002, .03, .2)[index % 4]
         generation = (0., .25, .75, 1.5, 2.25, 4.)[index % 6]
         tree = Tree(19037 + index, horizon, tied)
-        budget = WorkBudget(263 + generation, stop_reserve=5, initial_work=2)
-        decision = choose(tree, "s", budget, ControllerConfig(horizon=horizon, gamma=gamma,
+        budget = control.WorkBudget(263 + generation, stop_reserve=5, initial_work=2)
+        decision = control.choose(tree, "s", budget, control.ControllerConfig(horizon=horizon, gamma=gamma,
                           cost_penalty=penalty, search_work_limit=256, search_fraction=1))
         with localcontext() as context:
             context.prec = 80
@@ -127,16 +184,20 @@ def main():
                         "search_accounting_verified": accounting, "generation_envelope_verified": decision.generation_envelope == generation,
                         "total_work_including_initial_execution_stop": budget.used, "modeled_limit": budget.limit, "passed": passed})
     elapsed = time.perf_counter_ns() - started
-    report = {"schema": "hepta.ndu-v6.independent-finite-oracle.v1", "git_commit": commit,
-              "control_sha256": hashlib.sha256((args.repo / "experiments/multimodal_output_portfolio/v6/control.py").read_bytes()).hexdigest(),
-              "script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), "cases": len(records),
+    if Path(control.__file__).resolve() != control_path or frozen_sources(repo, args.expected_commit) != sources:
+        raise ValueError("Controller/oracle source changed during validation")
+    report = {"schema": "hepta.ndu-v6.independent-finite-oracle.v1", "git_commit": args.expected_commit,
+              "status": "failed" if failures else "passed", "clean_source_verified_pre_post": True,
+              "control_sha256": hashlib.sha256(sources["control.py"]).hexdigest(),
+              "script_sha256": hashlib.sha256(sources["validate_oracle.py"]).hexdigest(), "cases": len(records),
               "decimal_precision": 80, "absolute_tie_and_gap_tolerance": float(tolerance), "failures": failures,
               "max_value_gap": max(r["value_gap"] for r in records), "max_first_action_policy_gap": max(r["first_action_policy_gap"] for r in records),
               "complete_searches": sum(r["complete"] for r in records), "multi_action_tie_cases": sum(len(r["optimal_first_action_tolerance_class"]) > 1 for r in records),
               "nontrivial_stopping_choice_cases": sum(r["enumerated_stopping_paths"] > 1 for r in records),
               "total_enumerated_stopping_paths": sum(r["enumerated_stopping_paths"] for r in records),
               "wall_ns": elapsed, "scope": "known finite deterministic transition trees, terminal empirical entropic forecast, explicit stopping and budget; no general FBSDE or neural optimality claim", "records": records}
-    args.output.write_text(json.dumps(report, indent=2, sort_keys=True, allow_nan=False) + "\n")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    publish_report(output, report)
     print(json.dumps({k: v for k, v in report.items() if k != "records"}, sort_keys=True))
     if failures:
         raise SystemExit(1)
