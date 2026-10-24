@@ -22,6 +22,9 @@ use crate::AuthBusObjectiveBody;
 use crate::AuthBusObjectiveIngress;
 use crate::DeploymentFinalUseIssuer;
 
+#[path = "authority_host_native_cpu.rs"]
+mod native_cpu;
+
 #[path = "authority_host_writer.rs"]
 mod writer;
 use writer::RegisteredWriter;
@@ -33,8 +36,8 @@ mod consumers;
 use consumers::RegisteredConsumers;
 #[path = "authority_host_service_bootstrap.rs"]
 mod bootstrap;
-use bootstrap::RegisteredBootstrap;
 pub use bootstrap::HostAuthorityBootstrapLocations;
+use bootstrap::RegisteredBootstrap;
 
 #[path = "authority_host_cold_recovery.rs"]
 mod cold_recovery;
@@ -76,6 +79,7 @@ pub struct HostAuthorityService {
     identity: AgentdIdentity,
     writer: Option<RegisteredWriter>,
     notes: Option<crate::RootNotesGrantAdmission>,
+    native_cpu: Option<crate::deployment_issuer::RootNativeCpuGrantAdmission>,
     checkpoint: Option<RegisteredCheckpoint>,
     consumers: Option<RegisteredConsumers>,
     bootstrap: Option<RegisteredBootstrap>,
@@ -98,6 +102,7 @@ impl HostAuthorityService {
             identity,
             writer: None,
             notes: None,
+            native_cpu: None,
             checkpoint: None,
             consumers: None,
             bootstrap: None,
@@ -171,9 +176,14 @@ impl HostAuthorityService {
     /// derived from this service's original fixed layout, never a wire path.
     /// Initial exact Current material must be durable before assembly returns.
     /// There is no runtime generation setter, replacement or recovery fallback.
-    pub fn with_registered_material_archive(self, archive_root: &std::path::Path) -> io::Result<Self> {
+    pub fn with_registered_material_archive(
+        self,
+        archive_root: &std::path::Path,
+    ) -> io::Result<Self> {
         if self.material_startup.is_some() {
-            return Err(io::Error::other("required startup uses its zero-argument readiness confirmation"));
+            return Err(io::Error::other(
+                "required startup uses its zero-argument readiness confirmation",
+            ));
         }
         self.register_material_archive_for_root(archive_root)?;
         Ok(self)
@@ -181,21 +191,42 @@ impl HostAuthorityService {
 
     fn register_material_archive_for_root(&self, archive_root: &std::path::Path) -> io::Result<()> {
         use std::sync::atomic::Ordering;
-        let checkpoint = self.checkpoint.as_ref().ok_or_else(|| io::Error::other("registered checkpoint required"))?;
+        let checkpoint = self
+            .checkpoint
+            .as_ref()
+            .ok_or_else(|| io::Error::other("registered checkpoint required"))?;
         if checkpoint.material_attempted.swap(true, Ordering::AcqRel) {
             return Err(io::Error::other("material registration already attempted"));
         }
         let result = (|| {
             self.check_bootstrap_lifetime().map_err(io::Error::other)?;
-            let writer = self.writer.as_ref().ok_or_else(|| io::Error::other("registered writer required"))?;
-            let expected = checkpoint.backend.retained_current_for_root().map_err(io::Error::other)?;
+            let writer = self
+                .writer
+                .as_ref()
+                .ok_or_else(|| io::Error::other("registered writer required"))?;
+            let expected = checkpoint
+                .backend
+                .retained_current_for_root()
+                .map_err(io::Error::other)?;
             let archive = crate::authority_host_material::RegisteredMaterialArchive::register(
-                &self.identity.layout, checkpoint.peer.uid, archive_root,
+                &self.identity.layout,
+                checkpoint.peer.uid,
+                archive_root,
             )?;
-            let material = archive.prepare(b"root:initial-current-material:v1", &expected.last_current)?;
-            writer.accept_material_registration(&self.issuer, &self.clock, checkpoint, &expected, &material)?;
+            let material =
+                archive.prepare(b"root:initial-current-material:v1", &expected.last_current)?;
+            writer.accept_material_registration(
+                &self.issuer,
+                &self.clock,
+                checkpoint,
+                &expected,
+                &material,
+            )?;
             self.check_bootstrap_lifetime().map_err(io::Error::other)?;
-            checkpoint.material.set(archive).map_err(|_| io::Error::other("material registration already installed"))
+            checkpoint
+                .material
+                .set(archive)
+                .map_err(|_| io::Error::other("material registration already installed"))
         })();
         if result.is_err() {
             checkpoint.backend.close();
@@ -257,8 +288,10 @@ impl HostAuthorityService {
         }
         let _shutdown_pin = self.delivery.register(&stream)?;
         let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)?;
-        while channel.exchange_with_response_guard(|bytes| self.handle(lane, bytes),
-            || self.delivery.response_guard())? {}
+        while channel.exchange_with_response_guard(
+            |bytes| self.handle(lane, bytes),
+            || self.delivery.response_guard(),
+        )? {}
         Ok(())
     }
 
@@ -268,7 +301,8 @@ impl HostAuthorityService {
         bytes: &[u8],
     ) -> Result<Vec<u8>, HostIssuerTransportError> {
         self.check_bootstrap_lifetime()?;
-        self.require_startup_read(lane, bytes).map_err(unavailable)?;
+        self.require_startup_read(lane, bytes)
+            .map_err(unavailable)?;
         let result = match lane {
             HostAuthorityLane::Observation => self.observe(bytes),
             HostAuthorityLane::Issuer => self.issue(bytes),
@@ -279,8 +313,7 @@ impl HostAuthorityService {
                 .exchange_checkpoint(
                     &self.issuer,
                     &self.clock,
-                    self
-                        .checkpoint
+                    self.checkpoint
                         .as_ref()
                         .ok_or(HostIssuerTransportError::Unavailable)?,
                     bytes,
@@ -360,7 +393,8 @@ impl HostAuthorityService {
 
     fn issue(&self, bytes: &[u8]) -> Result<Vec<u8>, HostIssuerTransportError> {
         let request: IssuerRequest = decode(bytes)?;
-        self.require_material_startup_complete().map_err(unavailable)?;
+        self.require_material_startup_complete()
+            .map_err(unavailable)?;
         match request {
             IssuerRequest::FinalUse {
                 schema_version,
@@ -371,7 +405,10 @@ impl HostAuthorityService {
                 }
                 let result = match &self.notes {
                     Some(notes) => notes.issue(&self.issuer, &binding),
-                    None => self.issuer.issue(&binding),
+                    None => match &self.native_cpu {
+                        Some(cpu) => cpu.issue(&self.issuer, &binding),
+                        None => self.issuer.issue(&binding),
+                    },
                 };
                 let grant = match result {
                     Ok(grant) => grant,

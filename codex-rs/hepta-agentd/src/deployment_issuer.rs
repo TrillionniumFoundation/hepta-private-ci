@@ -48,6 +48,11 @@ pub(crate) use writer::WriterRegistrationExt;
 #[path = "deployment_notes.rs"]
 mod notes;
 pub use notes::RootNotesGrantAdmission;
+#[path = "deployment_native_cpu.rs"]
+mod native_cpu;
+#[path = "deployment_registered_effect.rs"]
+mod registered_effect;
+pub(crate) use native_cpu::RootNativeCpuGrantAdmission;
 
 const STATE_OWNER: &str = "local-final-use-issuer";
 const EXCHANGE_DEADLINE: Duration = Duration::from_secs(2);
