@@ -1,0 +1,40 @@
+{
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "scope": "18 Python+8 Node constructed tests; local subprocess math/import/serialization real; own-limit reader mocked for cold subprocess; native cgroup enforcement untested in this lane",
+  "results": [
+    {
+      "label": "python",
+      "exit_code": 0,
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-W",
+        "error",
+        "-m",
+        "unittest",
+        "test_cell_graph_benchmark",
+        "-v"
+      ],
+      "wall_seconds": 1.1214205149954068,
+      "log_sha256": "8ec094bad4824f62d70e7b26e70c234dd76eb4d8ca2600743c09bd74f06c2312"
+    },
+    {
+      "label": "owner",
+      "exit_code": 0,
+      "argv": [
+        "node",
+        "test_cell_graph_owner.js"
+      ],
+      "wall_seconds": 0.15669829300168203,
+      "log_sha256": "6a09741b5c9e54a6a5d7647890eb280f72724d9a7654c82344bd029e0a68ae34"
+    }
+  ],
+  "protocol_sha256": "cae0f27b93b2e4bf00b80b16916882dbc8523ce05d41e10e95f87e1546ba2883",
+  "source_code_sha256": {
+    "cell_graph_worker.py": "bb9a6ddc30cc267d22a530e9486e6590cdef15247d1546905b4a051e8eed8358",
+    "cell_graph_benchmark.py": "7d77c2c0ba63013ac22bd996ee3c612d0d086f9edacfffe29d58f5111ad8bd65",
+    "cell_graph_reduce.py": "5ac4bba925d161f8fe3eda5c5c036207d7182ec84733f6c1f310befa0da54efb",
+    "cell_graph_report.py": "7a5b7dfaccda71143e0de6b1087d2744bc5ee16e14d0e146f06b77734621544d",
+    "cell_graph_owner.js": "a8f1e561f3bff60b0247351c27619a874403006cd44ee40035b2cc3c8a1de112"
+  }
+}
