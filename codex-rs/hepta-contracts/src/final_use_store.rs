@@ -302,7 +302,7 @@ impl Store {
         file.write_all(&bytes)
             .and_then(|()| file.sync_all())
             .map_err(|_| FinalUseError::Unavailable)?;
-        replace_state(&self.root)?;
+        replace_state(&self.root, &file)?;
         self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
     }
 
@@ -359,7 +359,7 @@ impl Store {
                 .map_err(|_| FinalUseError::Unavailable)?;
         }
         file.sync_all().map_err(|_| FinalUseError::Unavailable)?;
-        replace_claims(&self.root)?;
+        replace_claims(&self.root, &file)?;
         self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
     }
 }
@@ -457,13 +457,13 @@ fn entry_exists(directory: &File, name: &str) -> Result<bool, FinalUseError> {
 }
 
 #[cfg(unix)]
-fn replace_state(directory: &File) -> Result<(), FinalUseError> {
+fn replace_state(directory: &File, _stage: &File) -> Result<(), FinalUseError> {
     rustix::fs::renameat(directory, "authority.next", directory, "authority.json")
         .map_err(|_| FinalUseError::Unavailable)
 }
 
 #[cfg(unix)]
-fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
+fn replace_claims(directory: &File, _stage: &File) -> Result<(), FinalUseError> {
     rustix::fs::renameat(
         directory,
         "authority.claims.next",
@@ -477,12 +477,22 @@ fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
-fn replace_state(_directory: &File) -> Result<(), FinalUseError> {
+#[cfg(windows)]
+fn replace_state(directory: &File, stage: &File) -> Result<(), FinalUseError> {
+    crate::replace_synced_state_stage(directory, stage, "authority.json")
+        .map_err(|_| FinalUseError::Unavailable)
+}
+#[cfg(not(any(unix, windows)))]
+fn replace_state(_directory: &File, _stage: &File) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
-fn replace_claims(_directory: &File) -> Result<(), FinalUseError> {
+#[cfg(windows)]
+fn replace_claims(directory: &File, stage: &File) -> Result<(), FinalUseError> {
+    crate::replace_synced_state_stage(directory, stage, "authority.claims")
+        .map_err(|_| FinalUseError::Unavailable)
+}
+#[cfg(not(any(unix, windows)))]
+fn replace_claims(_directory: &File, _stage: &File) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
 

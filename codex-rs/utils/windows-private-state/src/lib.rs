@@ -13,3 +13,6 @@ pub mod principal;
 pub mod security;
 #[cfg(windows)]
 pub mod volume;
+
+#[cfg(windows)]
+pub mod stage;
