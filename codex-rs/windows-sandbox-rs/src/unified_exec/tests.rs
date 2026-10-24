@@ -6,6 +6,12 @@ mod acl_setup_tests;
 #[path = "legacy_delete_probe.rs"]
 mod legacy_delete_probe;
 
+#[path = "legacy_user_delete_control.rs"]
+mod legacy_user_delete_control;
+
+#[path = "legacy_user_delete_tests.rs"]
+mod legacy_user_delete_tests;
+
 use super::WindowsSandboxSessionRequest;
 use super::spawn_windows_sandbox_session_elevated_for_permission_profile;
 use super::spawn_windows_sandbox_session_for_level;

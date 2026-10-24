@@ -69,6 +69,8 @@ jobs:
             'codex-rs/windows-sandbox-rs/src/acl.rs',
             'codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs',
             'codex-rs/windows-sandbox-rs/src/unified_exec/legacy_delete_probe.rs',
+            'codex-rs/windows-sandbox-rs/src/unified_exec/legacy_user_delete_control.rs',
+            'codex-rs/windows-sandbox-rs/src/unified_exec/legacy_user_delete_tests.rs',
             'codex-rs/windows-sandbox-rs/src/unified_exec/backends/legacy.rs'
           )
           $hashes = [ordered]@{}
@@ -106,7 +108,8 @@ jobs:
             'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces',
             'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots',
             'token::tests::delete_diagnostics::workspace_delete_permission_routes_diagnostic_matrix',
-            'token::tests::delete_diagnostics::capability_controls::workspace_delete_capability_controls_without_parent_delete_child'
+            'token::tests::delete_diagnostics::capability_controls::workspace_delete_capability_controls_without_parent_delete_child',
+            'unified_exec::tests::legacy_user_delete_tests::legacy_current_user_delete_intervention_preserves_capability_gate'
           )
           $filter = ($expected | ForEach-Object { "test(=$_)" }) -join ' | '
           # nextest 0.9.103 does not inherit default.junit.path into the local profile.
@@ -137,8 +140,8 @@ jobs:
             $cases = @($junit.SelectNodes('//testcase'))
             $selected = @($cases | ForEach-Object { $_.name })
             $failedCount = @($cases | Where-Object { $_.SelectSingleNode('failure') -or $_.SelectSingleNode('error') }).Count
-            if ($selected.Count -ne 5 -or @(Compare-Object ($expected | Sort-Object) ($selected | Sort-Object)).Count -ne 0) {
-              $selectionError = 'The executed JUnit cases do not equal the five exact required tests'
+            if ($selected.Count -ne 6 -or @(Compare-Object ($expected | Sort-Object) ($selected | Sort-Object)).Count -ne 0) {
+              $selectionError = 'The executed JUnit cases do not equal the six exact required tests'
             }
             if (@($cases | Where-Object { $_.SelectSingleNode('skipped') }).Count -ne 0) {
               $selectionError = 'A required test was skipped'
@@ -162,6 +165,11 @@ jobs:
             Set-Content "$env:EVIDENCE_DIR/legacy-child.jsonl" -Encoding utf8
           $children = @($childRecords | ForEach-Object { $_.Substring('HEPTA_LEGACY_DELETE_CHILD '.Length) | ConvertFrom-Json })
           $childComplete = $children.Count -eq 1 -and $children[0].schema -ceq 'hepta.windows-legacy-delete-child.v1' -and $children[0].parent_and_executable_verified -eq $true -and $children[0].source -ceq 'actual_legacy_cmd_child_before_delete'
+          $userRecords = @(Get-Content "$env:EVIDENCE_DIR/stdout.log" | ForEach-Object { $_.TrimStart() } | Where-Object { $_.StartsWith('HEPTA_LEGACY_USER_DELETE_CONTROL ') })
+          $userRecords | ForEach-Object { $_.Substring('HEPTA_LEGACY_USER_DELETE_CONTROL '.Length) } |
+            Set-Content "$env:EVIDENCE_DIR/user-delete-control.jsonl" -Encoding utf8
+          $users = @($userRecords | ForEach-Object { $_.Substring('HEPTA_LEGACY_USER_DELETE_CONTROL '.Length) | ConvertFrom-Json })
+          $userComplete = $users.Count -eq 1 -and $users[0].schema -ceq 'hepta.windows-legacy-user-delete-control.v1' -and $users[0].child_observation.parent_and_executable_verified -eq $true -and $users[0].user_absent_from_restricting_sids -eq $true -and $users[0].allowed_leaf_user_DELETE_without_DELETE_CHILD -eq $true -and $users[0].allowed_leaf_matching_cap_DELETE_without_DELETE_CHILD -eq $true
           [ordered]@{
             schema = 'hepta.windows-delete-native-run.v1'
             source_sha = $env:EXPECTED_SHA
@@ -175,14 +183,15 @@ jobs:
             observed_strict_control_count = $controls.Count
             strict_control_recorded = $controlsComplete
             legacy_child_observation_recorded = $childComplete
+            user_delete_control_recorded = $userComplete
             sandbox_qualified = $false
             production_token_modified = $false
             original_blocking_ci_required = $true
           } | ConvertTo-Json -Depth 8 | Set-Content "$env:EVIDENCE_DIR/native-run.json" -Encoding utf8
-          "### Windows DELETE focused diagnostics`nNative test exit: $testExit`nObserved cases: $($selected.Count)/5`nRoutes: $($routes.Count)/5`nStrict controls: $($controls.Count)/1`nSandbox qualification: **not granted**; original blocking CI remains required." |
+          "### Windows DELETE focused diagnostics`nNative test exit: $testExit`nObserved cases: $($selected.Count)/6`nRoutes: $($routes.Count)/5`nStrict controls: $($controls.Count)/1`nSandbox qualification: **not granted**; original blocking CI remains required." |
             Add-Content $env:GITHUB_STEP_SUMMARY
           if ($testExit -ne 0) { exit $testExit }
-          if ($selectionError -or -not $routesComplete -or -not $controlsComplete -or -not $childComplete -or $failedCount -ne 0) { throw 'Native evidence is incomplete or failed; see native-run.json' }
+          if ($selectionError -or -not $routesComplete -or -not $controlsComplete -or -not $childComplete -or -not $userComplete -or $failedCount -ne 0) { throw 'Native evidence is incomplete or failed; see native-run.json' }
 
       - name: Verify unchanged source and hash retained evidence
         if: always()

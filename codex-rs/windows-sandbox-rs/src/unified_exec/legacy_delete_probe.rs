@@ -68,9 +68,9 @@ impl Drop for Descriptor {
 }
 
 #[derive(Default)]
-struct Aliases(Vec<(Vec<u8>, String)>);
+pub(super) struct Aliases(Vec<(Vec<u8>, String)>);
 impl Aliases {
-    unsafe fn name(&mut self, sid: *mut c_void) -> Result<String> {
+    pub(super) unsafe fn name(&mut self, sid: *mut c_void) -> Result<String> {
         ensure!(!sid.is_null(), "missing diagnostic SID");
         let n = unsafe { GetLengthSid(sid) };
         ensure!((8..=68).contains(&n), "invalid diagnostic SID size");
@@ -157,7 +157,7 @@ fn token_snapshot(process: HANDLE, aliases: &mut Aliases) -> Result<Value> {
     )
 }
 
-fn object_snapshot(path: &Path, aliases: &mut Aliases) -> Result<Value> {
+pub(super) fn object_snapshot(path: &Path, aliases: &mut Aliases) -> Result<Value> {
     let mut owner = std::ptr::null_mut();
     let mut dacl = std::ptr::null_mut();
     let mut descriptor = Descriptor(std::ptr::null_mut());
