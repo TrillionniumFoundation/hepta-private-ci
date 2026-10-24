@@ -1,0 +1,209 @@
+name: Hepta research task Head owner
+
+on:
+  pull_request:
+    paths:
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-neuron/**
+      - codex-rs/hepta-infer-core/**
+      - codex-rs/hepta-types/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - codex-rs/.config/nextest.toml
+      - qa/stem-bakeoff/prepare_research_task_head_owner.py
+      - qa/stem-bakeoff/test_research_task_head_owner_fixture.py
+      - qa/stem-bakeoff/requirements-real.txt
+      - scripts/run-nextest.py
+      - scripts/just-shell.py
+      - scripts/hepta_ci_v8.py
+      - scripts/codex_package/**
+      - justfile
+      - .github/workflows/hepta-research-task-head-owner.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-research-task-head-owner-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+
+jobs:
+  agentd-owner-linux:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_INCREMENTAL: "0"
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUNBUFFERED: "1"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Bind the exact source and separate build directory
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain)"
+          test ! -e codex-rs/target/nextest/local/junit.xml
+          printf 'CARGO_TARGET_DIR=%s/hepta-owner-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          mkdir "$RUNNER_TEMP/hepta-owner-evidence"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-owner-evidence/source.txt"
+          sha256sum codex-rs/hepta-agentd/src/{lib.rs,research_task_head_owner.rs,research_task_head_owner_tests.rs} \
+            qa/stem-bakeoff/{prepare_research_task_head_owner.py,test_research_task_head_owner_fixture.py} \
+            codex-rs/{Cargo.lock,rust-toolchain.toml} > "$RUNNER_TEMP/hepta-owner-evidence/source.sha256"
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: cargo-home-hepta-owner-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('codex-rs/Cargo.lock', 'codex-rs/rust-toolchain.toml') }}
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Run all original synthetic Python fixture tests
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/hepta-owner-venv"
+          "$RUNNER_TEMP/hepta-owner-venv/bin/python" -m pip install --no-cache-dir --only-binary=:all: --no-deps 'numpy==2.2.6'
+          "$RUNNER_TEMP/hepta-owner-venv/bin/python" - <<'PY' 2>&1 | tee "$RUNNER_TEMP/hepta-owner-evidence/python-tests.log"
+          import json, os, unittest
+          from pathlib import Path
+          suite = unittest.defaultTestLoader.discover(
+              'qa/stem-bakeoff', pattern='test_research_task_head_owner_fixture.py')
+          expected = {
+              'test_producer_identity_binds_helper_bytes_and_retained_plan_pins',
+              'test_duplicate_keys_nonfinite_and_byte_overflow_are_rejected',
+              'test_separate_inventory_larger_than_header_limit_is_valid',
+              'test_inventory_byte_and_row_caps_never_truncate',
+              'test_masks_and_endpoint_indices_require_exact_integers',
+              'test_labels_unknown_fields_duplicate_rows_and_bad_digests_are_rejected',
+              'test_crossed_negative_and_declared_shuffle_are_not_filtered',
+              'test_reordered_bindings_are_not_silently_sorted',
+              'test_repeated_source_row_under_another_index_is_rejected',
+              'test_zero_features_with_declared_presence_remain_valid',
+              'test_owner_and_inventory_pins_are_external_and_enforced',
+              'test_drift_in_unselected_case_is_not_ignored',
+              'test_nan_features_fail_even_with_recomputed_inventory_hash',
+              'test_trailing_payload_and_symbolic_links_are_rejected',
+              'test_request_row_and_byte_budgets_reject_without_truncation',
+              'test_missing_case_and_bad_selection_are_not_empty_successes',
+          }
+          pending, names = [suite], set()
+          while pending:
+              item = pending.pop()
+              if isinstance(item, unittest.TestSuite):
+                  pending.extend(item)
+              else:
+                  names.add(item.id())
+          prefix = 'test_research_task_head_owner_fixture.FixtureContractTests.'
+          count = suite.countTestCases()
+          if not {prefix + name for name in expected} <= names or count != len(names):
+              raise RuntimeError('Missing or duplicate original owner fixture tests')
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if (not result.wasSuccessful() or result.testsRun != count or result.skipped
+                  or result.expectedFailures or result.unexpectedSuccesses):
+              raise RuntimeError('Owner fixture tests failed, skipped or were not all executed')
+          path = Path(os.environ['RUNNER_TEMP']) / 'hepta-owner-evidence/python-count.json'
+          path.write_text(json.dumps({'discovered': count, 'passed': result.testsRun, 'skipped': 0, 'test_names': sorted(names)}) + '\n')
+          PY
+      - name: Install existing Linux build dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential pkg-config libcap-dev
+      - name: Resolve the existing checksum-verified sandboxed V8 pair
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Record resources and reject an undersized build volume
+        run: |
+          set -euo pipefail
+          { df -h "$RUNNER_TEMP"; free -h; nproc; } | tee "$RUNNER_TEMP/hepta-owner-evidence/resources-before.log"
+          python3 - <<'PY'
+          import os, shutil
+          free = shutil.disk_usage(os.environ['RUNNER_TEMP']).free
+          if free < 12 * 1024**3:
+              raise RuntimeError(f'Need at least 12 GiB free before the Agentd lib build; found {free} bytes')
+          PY
+      - name: Compile actual Agentd and run its original owner tests
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          # Keep default Agentd features; no harness, source extraction or daemon entrypoint.
+          just test --locked -p codex-hepta-agentd --lib \
+            research_task_head_owner::tests:: --test-threads=1 --retries=0 \
+            2>&1 | tee "$RUNNER_TEMP/hepta-owner-evidence/rust-tests.log"
+      - name: Require every original Rust owner test in the actual JUnit results
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          # Nextest 0.9.103 stores reports under the workspace, not CARGO_TARGET_DIR.
+          report = Path('codex-rs/target/nextest/local/junit.xml')
+          root = ET.parse(report).getroot()
+          cases = root.findall('.//testcase')
+          expected = {
+              'declared_original_crossed_and_shuffled_pairs_all_score_without_label_gate',
+              'declared_missing_rows_never_enter_native_head_and_mixed_rows_preserve_order',
+              'late_row_drift_and_attacker_rehashed_features_fail_before_first_head_entry',
+              'mask_pair_source_owner_and_feature_identity_cannot_be_replaced_by_wire',
+              'separate_inventory_can_exceed_header_budget_but_never_its_own_bound',
+              'native_semantics_source_parent_and_posture_are_cross_bound_even_after_host_rehash',
+              'duplicate_reordered_boolean_unknown_and_label_fields_are_rejected',
+              'negative_zero_bytes_and_request_row_budget_are_not_silently_coerced',
+              'duplicate_declared_row_identity_is_rejected_even_with_distinct_indices',
+          }
+          prefix = 'research_task_head_owner::tests::'
+          actual = {case.attrib['name'] for case in cases}
+          if (not {prefix + name for name in expected} <= actual
+                  or len(actual) != len(cases)
+                  or any(not name.startswith(prefix) for name in actual)
+                  or any(case.attrib.get('classname') != 'codex-hepta-agentd' for case in cases)
+                  or any(root.findall('.//' + tag) for tag in ('skipped', 'failure', 'error'))
+                  or any(int(root.attrib.get(key, '-1')) != 0 for key in ('skipped', 'failures', 'errors'))
+                  or int(root.attrib.get('tests', '0')) != len(cases)):
+              raise RuntimeError('Missing, skipped, duplicate, failed or non-Agentd owner tests')
+          evidence = Path(os.environ['RUNNER_TEMP']) / 'hepta-owner-evidence'
+          (evidence / 'rust-count.json').write_text(json.dumps({
+              'passed': len(cases), 'skipped': 0, 'test_names': sorted(actual)}) + '\n')
+          python_count = json.loads((evidence / 'python-count.json').read_text())['passed']
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as output:
+              output.write(f'Actual Linux Agentd lib build: {len(cases)} owner tests passed; '
+                           f'{python_count} synthetic Python fixture tests passed; no test skips.\n\n')
+              output.write('SHADOW_ONLY / DENY_ALL. No daemon startup, production registration, '
+                           'training, calibration or retained-real-row owner replay is qualified by this job.\n')
+          PY
+      - name: Record final build size and preserve source
+        if: always()
+        run: |
+          set -euo pipefail
+          { df -h "$RUNNER_TEMP"; du -sh "$CARGO_TARGET_DIR" 2>/dev/null || true; } \
+            | tee "$RUNNER_TEMP/hepta-owner-evidence/resources-after.log"
+          git diff --check
+          git diff --exit-code
+      - name: Retain source binding and original-test evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-research-task-head-owner-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-owner-evidence/
+            codex-rs/target/nextest/local/junit.xml
+          if-no-files-found: error
+          retention-days: 14
