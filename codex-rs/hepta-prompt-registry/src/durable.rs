@@ -1316,7 +1316,7 @@ impl Store {
         file.write_all(&bytes)
             .and_then(|()| file.sync_all())
             .map_err(map_precommit_io)?;
-        replace_state(&self.root)?;
+        replace_state(&self.root, &file)?;
         // After rename succeeds the durable outcome is unknown if directory
         // fsync fails. The caller must poison this writer and reopen/reconcile;
         // treating this as an ordinary pre-commit failure could overwrite a
@@ -1433,13 +1433,18 @@ fn entry_exists(_directory: &File, _name: &str) -> Result<bool, DurableRegistryE
 }
 
 #[cfg(unix)]
-fn replace_state(directory: &File) -> Result<(), DurableRegistryError> {
+fn replace_state(directory: &File, _stage: &File) -> Result<(), DurableRegistryError> {
     rustix::fs::renameat(directory, "registry.next", directory, "registry.json")
         .map_err(|_| DurableRegistryError::Unavailable)
 }
 
-#[cfg(not(unix))]
-fn replace_state(_directory: &File) -> Result<(), DurableRegistryError> {
+#[cfg(windows)]
+fn replace_state(directory: &File, stage: &File) -> Result<(), DurableRegistryError> {
+    codex_hepta_contracts::replace_synced_state_stage(directory, stage, "registry.json")
+        .map_err(map_precommit_io)
+}
+#[cfg(not(any(unix, windows)))]
+fn replace_state(_directory: &File, _stage: &File) -> Result<(), DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
 
