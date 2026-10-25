@@ -29,6 +29,14 @@ use crate::smollm_neural_read::SmolLmNeuralReadPortV1;
 
 const MAX_PARAMETER_BYTES: u64 = 2 * 1024 * 1024;
 
+#[path = "smollm_initial_host.rs"]
+mod initial;
+pub use initial::InitialSelectedLoadObservationV1;
+pub use initial::InitialSmolLmPreparationErrorV1;
+pub use initial::PreparedSelectedInitialSmolLmV1;
+pub use initial::SmolLmInitialHostInputsV1;
+pub use initial::prepare_selected_initial_smollm_v1;
+
 /// Complete host-owned inputs. The descriptor digest must be independently
 /// authorized. Resource bounds and executable pins are supplied by the existing
 /// host; every physical load/read still requires its independent Unix issuer.

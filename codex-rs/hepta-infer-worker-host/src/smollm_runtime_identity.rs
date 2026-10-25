@@ -7,11 +7,11 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(super) struct SmolLmRuntimeIdentityV1 {
-    pub(super) payload_digest: Digest32,
-    pub(super) generation: Generation,
-    pub(super) family_digest: Digest32,
-    pub(super) execution_profile_digest: Digest32,
+pub(crate) struct SmolLmRuntimeIdentityV1 {
+    pub(crate) payload_digest: Digest32,
+    pub(crate) generation: Generation,
+    pub(crate) family_digest: Digest32,
+    pub(crate) execution_profile_digest: Digest32,
 }
 
 impl From<&NeuralCognitivePinV1> for SmolLmRuntimeIdentityV1 {

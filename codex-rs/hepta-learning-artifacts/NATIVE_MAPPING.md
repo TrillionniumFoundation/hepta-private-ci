@@ -129,6 +129,20 @@ CURRENT, real upstream loading, resource/FinalUse owners and ordinary-task
 readback. The existing SystemLongitudinal upgrade gate is unchanged; neither
 Qualification evidence nor a learned gen2 artifact can impersonate that parent.
 
+The initial-only host producer is `prepare_selected_initial_smollm_v1` in
+`hepta-infer-worker-host/src/smollm_initial_host.rs`. Its single private Prepared
+owner consumes the original Agentd config, selected material and concrete
+`ArtifactOwnerCurrentReaderV1`; no port/config/session extraction or ordinary
+task route is exposed. It loads through the original control/resource/Unix
+FinalUse owners under `hepta.smollm.selected-initial-runtime.v1`, containing no
+evaluation dataset/objective claim. Fresh CURRENT and the immutable selector
+window bracket actual selected-byte, gen1, fixed backbone/tokenizer/contract,
+Ready and settled-load-ID matching. Failed observations close material use;
+post-load errors retain the same private original session for explicit cleanup.
+The direct upstream model-file hash remains absent from Ready. The original
+evaluated/SystemLongitudinal child constructor and all eligibility stay intact;
+ordinary-task readback and the three-round product target remain open.
+
 `LearningArtifactManifestV2` binds every source dataset digest, additional
 lineage evidence, multiple predecessor IDs, optional rollback predecessor,
 payload digest and byte count, training code, runtime tuple, device profile,

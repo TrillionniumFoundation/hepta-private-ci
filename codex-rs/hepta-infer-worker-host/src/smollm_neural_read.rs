@@ -45,7 +45,7 @@ pub use driver::SmolLmMeasuredLoadV1;
 pub use driver::SmolLmNeuralReadConfigV1;
 
 #[path = "smollm_runtime_identity.rs"]
-mod runtime_identity;
+pub(crate) mod runtime_identity;
 use runtime_identity::SmolLmRuntimeIdentityV1;
 
 static REQUEST_SEQUENCE: AtomicU64 = AtomicU64::new(1);
@@ -270,7 +270,7 @@ impl ControlContext {
 /// owner. Start it before enabling the Agentd read route; cold loading is not
 /// hidden inside the normal two-second cognitive request deadline.
 pub struct SmolLmNeuralReadPortV1 {
-    pin: NeuralCognitivePinV1,
+    pin: Option<NeuralCognitivePinV1>,
     model_id: String,
     context: ControlContext,
     worker: Mutex<InferenceWorker<SmolLmDriver>>,
@@ -326,6 +326,75 @@ impl SmolLmNeuralReadPortV1 {
         runtime: tokio::runtime::Handle,
         cancellation: CancellationToken,
     ) -> Result<Self, String> {
+        let identity = SmolLmRuntimeIdentityV1::from(&pin);
+        let scope = pin.compatibility_digest();
+        Self::start_physical(
+            config,
+            Some(pin),
+            identity,
+            scope,
+            parameter_bytes,
+            owner_id,
+            body_generation,
+            worker_id,
+            grant,
+            control,
+            authorizer,
+            runtime,
+            cancellation,
+        )
+    }
+
+    // Initial loading has no evaluated pin, even at this internal boundary.
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn start_initial_cancellable(
+        config: SmolLmNeuralReadConfigV1,
+        identity: SmolLmRuntimeIdentityV1,
+        scope: Digest32,
+        parameter_bytes: Vec<u8>,
+        owner_id: AgentId,
+        body_generation: u64,
+        worker_id: String,
+        grant: ResourceGrant,
+        control: Arc<Mutex<DurableInferenceControl>>,
+        authorizer: Arc<dyn TurnStartAuthorizer>,
+        runtime: tokio::runtime::Handle,
+        cancellation: CancellationToken,
+    ) -> Result<Self, String> {
+        Self::start_physical(
+            config,
+            /*pin*/ None,
+            identity,
+            scope,
+            parameter_bytes,
+            owner_id,
+            body_generation,
+            worker_id,
+            grant,
+            control,
+            authorizer,
+            runtime,
+            cancellation,
+        )
+    }
+
+    // Shared private lifecycle; only the old constructor can supply a full pin.
+    #[allow(clippy::too_many_arguments)]
+    fn start_physical(
+        config: SmolLmNeuralReadConfigV1,
+        pin: Option<NeuralCognitivePinV1>,
+        identity: SmolLmRuntimeIdentityV1,
+        scope: Digest32,
+        parameter_bytes: Vec<u8>,
+        owner_id: AgentId,
+        body_generation: u64,
+        worker_id: String,
+        grant: ResourceGrant,
+        control: Arc<Mutex<DurableInferenceControl>>,
+        authorizer: Arc<dyn TurnStartAuthorizer>,
+        runtime: tokio::runtime::Handle,
+        cancellation: CancellationToken,
+    ) -> Result<Self, String> {
         if cancellation.is_cancelled() {
             return Err("neural worker startup cancelled before admission".to_owned());
         }
@@ -335,30 +404,40 @@ impl SmolLmNeuralReadPortV1 {
             || grant.maximum_active_requests != 1
             || grant.maximum_memory_bytes != 8 * 1024 * 1024 * 1024
             || grant.expires_at_ms < now.saturating_add(720_000)
-            || config.execution_profile_digest()? != pin.execution_profile_digest
-            || Digest32::of_bytes(&parameter_bytes) != pin.payload_digest
+            || config.execution_profile_digest()? != identity.execution_profile_digest
+            || Digest32::of_bytes(&parameter_bytes) != identity.payload_digest
         {
             return Err(
                 "neural worker requires its exact bounded resource and parameter profile"
                     .to_owned(),
             );
         }
-        let model_id = format!("smollm-read-{}", pin.payload_digest);
+        let model_id = format!("smollm-read-{}", identity.payload_digest);
+        let model_domain: &[u8] = if pin.is_some() {
+            b"hepta.smollm-read-model.v1\0"
+        } else {
+            b"hepta.smollm.selected-initial-runtime-model.v1\0"
+        };
+        let load_domain: &[u8] = if pin.is_some() {
+            b"hepta.smollm-load.v1\0"
+        } else {
+            b"hepta.smollm.selected-initial-runtime-load.v1\0"
+        };
         let model_digest = Digest32::of_parts(&[
-            b"hepta.smollm-read-model.v1\0",
-            pin.payload_digest.as_array(),
-            pin.family_digest.as_array(),
-            pin.execution_profile_digest.as_array(),
+            model_domain,
+            identity.payload_digest.as_array(),
+            identity.family_digest.as_array(),
+            identity.execution_profile_digest.as_array(),
         ])
         .to_string();
         let manifest = ModelManifest {
             model_id: model_id.clone(),
             model_digest: model_digest.clone(),
-            weights_digest: pin.payload_digest.to_string(),
+            weights_digest: identity.payload_digest.to_string(),
             tokenizer_digest: config.tokenizer_digest.to_string(),
-            preprocessor_digest: pin.execution_profile_digest.to_string(),
+            preprocessor_digest: identity.execution_profile_digest.to_string(),
             quantization_digest: Digest32::of_bytes(b"float32-unquantized").to_string(),
-            runtime_digest: pin.execution_profile_digest.to_string(),
+            runtime_digest: identity.execution_profile_digest.to_string(),
             device_digest: Digest32::of_bytes(b"cpu-eager-float32-threads-4").to_string(),
             maximum_tokens: 1,
         };
@@ -379,7 +458,7 @@ impl SmolLmNeuralReadPortV1 {
         let mailbox = Arc::new(Mutex::new(Default::default()));
         let driver = SmolLmDriver::new(
             config,
-            SmolLmRuntimeIdentityV1::from(&pin),
+            identity.clone(),
             parameter_bytes,
             mailbox.clone(),
             context.runtime.clone(),
@@ -390,15 +469,15 @@ impl SmolLmNeuralReadPortV1 {
             .map_err(|error| error.to_string())?;
         let admitted = context.admit(
             Digest32::of_parts(&[
-                b"hepta.smollm-load.v1\0",
+                load_domain,
                 context.owner_id.as_str().as_bytes(),
                 &context.body_generation.to_be_bytes(),
-                pin.payload_digest.as_array(),
-                pin.execution_profile_digest.as_array(),
+                identity.payload_digest.as_array(),
+                identity.execution_profile_digest.as_array(),
             ]),
             120_000,
         )?;
-        let entered = match context.enter(&admitted, pin.compatibility_digest(), &load_execution) {
+        let entered = match context.enter(&admitted, scope, &load_execution) {
             Ok(token) => token,
             Err(error) => {
                 context.settle(&admitted, None, true, 0)?;
@@ -492,6 +571,10 @@ impl NeuralCognitiveInferencePortV1 for SmolLmNeuralReadPortV1 {
         parameters: &[u8],
         execution: &codex_hepta_agentd::NeuralCognitiveExecutionV1,
     ) -> Result<NeuralCognitiveObservationV1, String> {
+        let pin = self
+            .pin
+            .as_ref()
+            .ok_or("initial-only model cannot enter the evaluated neural route")?;
         execution.check()?;
         if self.admission_closed.load(Ordering::SeqCst) {
             return Err(
@@ -500,8 +583,8 @@ impl NeuralCognitiveInferencePortV1 for SmolLmNeuralReadPortV1 {
         }
         if request.owner_id != self.context.owner_id
             || request.body_generation != self.context.body_generation
-            || request.pin != self.pin
-            || Digest32::of_bytes(parameters) != self.pin.payload_digest
+            || &request.pin != pin
+            || Digest32::of_bytes(parameters) != pin.payload_digest
             || request.query_digest != Digest32::of_bytes(request.query.as_bytes())
             || request.query.is_empty()
             || request.query.len() > 2048
@@ -528,8 +611,8 @@ impl NeuralCognitiveInferencePortV1 for SmolLmNeuralReadPortV1 {
             b"hepta.smollm-read-request.v1\0",
             request.owner_id.as_str().as_bytes(),
             &request.body_generation.to_be_bytes(),
-            self.pin.payload_digest.as_array(),
-            self.pin.execution_profile_digest.as_array(),
+            pin.payload_digest.as_array(),
+            pin.execution_profile_digest.as_array(),
             request.query_digest.as_array(),
             &action_bytes,
         ]);
@@ -543,17 +626,16 @@ impl NeuralCognitiveInferencePortV1 for SmolLmNeuralReadPortV1 {
             return Err("neural read execution deadline".to_owned());
         }
         let admitted = self.context.admit(payload, remaining_ms)?;
-        let entered =
-            match self
-                .context
-                .enter(&admitted, self.pin.compatibility_digest(), execution)
-            {
-                Ok(token) => token,
-                Err(error) => {
-                    self.context.settle(&admitted, None, true, 0)?;
-                    return Err(error);
-                }
-            };
+        let entered = match self
+            .context
+            .enter(&admitted, pin.compatibility_digest(), execution)
+        {
+            Ok(token) => token,
+            Err(error) => {
+                self.context.settle(&admitted, None, true, 0)?;
+                return Err(error);
+            }
+        };
         let mut mailbox = self
             .mailbox
             .lock()
