@@ -53,6 +53,7 @@ pub(crate) struct ElevatedSpawnContext {
     pub(crate) logs_base_dir: Option<PathBuf>,
     pub(crate) sandbox_creds: SandboxCreds,
     pub(crate) cap_sids: Vec<String>,
+    pub(crate) filesystem_roles: crate::FilesystemCapabilityPlan,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -434,7 +435,27 @@ pub(crate) fn prepare_elevated_spawn_context_for_permissions(
         proxy_enforced,
         proxy_settings_mode,
     )?;
-    let caps = load_or_create_cap_sids(codex_home)?;
+    let filesystem_root_overrides = crate::setup::SetupRootOverrides {
+        read_roots: read_roots_override.map(<[PathBuf]>::to_vec),
+        read_roots_include_platform_defaults,
+        write_roots: setup_write_roots_override.map(<[PathBuf]>::to_vec),
+        deny_read_paths: Some(deny_read_paths_override.to_vec()),
+        deny_write_paths: Some(if deny_write_paths_override.is_empty() {
+            deny_write_paths
+        } else {
+            deny_write_paths_override.to_vec()
+        }),
+    };
+    let filesystem_roles = crate::setup::capability_plan_for_setup(
+        crate::setup::SandboxSetupRequest {
+            permissions: &permissions,
+            command_cwd: cwd,
+            env_map,
+            codex_home,
+            proxy_enforced,
+        },
+        filesystem_root_overrides,
+    )?;
     let (psid_to_use, cap_sids) = if uses_write_capabilities {
         let cap_sids = root_capability_sids(codex_home, cwd, effective_write_roots)?
             .into_iter()
@@ -445,10 +466,15 @@ pub(crate) fn prepare_elevated_spawn_context_for_permissions(
         }
         (LocalSid::from_string(&cap_sids[0])?, cap_sids)
     } else {
-        (
-            LocalSid::from_string(&caps.readonly)?,
-            vec![caps.readonly.clone()],
-        )
+        let cap_sids = filesystem_roles
+            .capability_sids(crate::FilesystemCapabilityRole::Read)
+            .into_iter()
+            .map(str::to_owned)
+            .collect::<Vec<_>>();
+        let first = cap_sids
+            .first()
+            .ok_or_else(|| anyhow::anyhow!("readonly sandbox has no declared read capability"))?;
+        (LocalSid::from_string(first)?, cap_sids)
     };
 
     unsafe {
@@ -460,6 +486,7 @@ pub(crate) fn prepare_elevated_spawn_context_for_permissions(
         logs_base_dir,
         sandbox_creds,
         cap_sids,
+        filesystem_roles,
     })
 }
 

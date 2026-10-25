@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
-    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
+    "commit": "3297b7fd3b572021616f3cb61c3f31f374ab53ae",
+    "tree": "2faa2ab44f0a49da96dcd09473c03f488aa519a8"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -169,11 +169,11 @@
   "sourceObjects": [
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "b796d291c279450e11042b6aaa1b348657f14f3a"
+      "object": "fff9588de64edf9ef5e603c16b3bdde0310f4aed"
     },
     {
       "path": "codex-rs/Cargo.toml",
-      "object": "70c7b8dc2bc9768f6fc673049c2e348baddce838"
+      "object": "317b69e9559ce96208e0822c3ff83f38ac2c2841"
     },
     {
       "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
@@ -185,7 +185,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "object": "ed471e437cd611d90fecae8615242a95e0433a43"
+      "object": "ec01ed0d9d48fedd95ab3e00180a3a69b2dffb9a"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
@@ -197,7 +197,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
-      "object": "baf4e1ba6db9520dc0df84c5ccf067e00c5a63d0"
+      "object": "a9e4cd73db49551c6e95b343c87c5f001ea24ab7"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
@@ -205,7 +205,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "d6fddb0fccc02297e6a6bac983cd8be62cef9580"
+      "object": "cb4221b11f598f514ba513e8c64bc68129579743"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
@@ -213,7 +213,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/test_support.rs",
-      "object": "acd350012b1af7dd1092d4688d85f5accd779f33"
+      "object": "f4b8ad509a5f865424a9de74f18e62ab06938ad4"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
@@ -261,11 +261,11 @@
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
-      "object": "ddfe32dd3c3e2dd9273abb6a66d10497d8ac00cd"
+      "object": "c05ff38091d4769f945a85b18da490cad8e99cad"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
-      "object": "7dbca8ee4ac5f664aa139dfbc3877897a837fa7d"
+      "object": "799fd7f159bd57108988bcb167e99a2a584e548a"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
@@ -287,13 +287,13 @@
   "productCallers": [
     {
       "role": "owner_read_adapter",
-      "blobSha": "ed471e437cd611d90fecae8615242a95e0433a43",
+      "blobSha": "ec01ed0d9d48fedd95ab3e00180a3a69b2dffb9a",
       "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
       "nativeSymbol": "pub(crate) async fn read_with_retrieval_context_and_learning("
     },
     {
       "role": "owner_final_use_revalidation",
-      "blobSha": "ed471e437cd611d90fecae8615242a95e0433a43",
+      "blobSha": "ec01ed0d9d48fedd95ab3e00180a3a69b2dffb9a",
       "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
       "nativeSymbol": "pub(crate) async fn revalidate_with_retrieval_context("
     },
@@ -311,7 +311,7 @@
     },
     {
       "role": "model_effect_consumer",
-      "blobSha": "ddfe32dd3c3e2dd9273abb6a66d10497d8ac00cd",
+      "blobSha": "c05ff38091d4769f945a85b18da490cad8e99cad",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
       "nativeSymbol": "owner.revalidate_cognitive_context(snapshot).await"
     },
@@ -328,8 +328,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
-    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
+    "commit": "3297b7fd3b572021616f3cb61c3f31f374ab53ae",
+    "tree": "2faa2ab44f0a49da96dcd09473c03f488aa519a8"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",

@@ -159,13 +159,13 @@ The evaluator cannot install, activate, merge, promote or release the artifact.
 
 Resource ceilings are stage-specific:
 
-| Stage | Bound |
-|---|---:|
-| Point OPE | `1,000,000` rows |
-| Tabular temporal fold | `100,000` rows |
-| Composed temporal holdout | `16,384` rows |
-| Sequential evaluator | `4,096` trajectories / `65,536` steps |
-| Sequential horizon | `128` |
+| Stage                     |                                 Bound |
+| ------------------------- | ------------------------------------: |
+| Point OPE                 |                      `1,000,000` rows |
+| Tabular temporal fold     |                        `100,000` rows |
+| Composed temporal holdout |                         `16,384` rows |
+| Sequential evaluator      | `4,096` trajectories / `65,536` steps |
+| Sequential horizon        |                                 `128` |
 
 A broad point-estimator bound must not be reused as the capacity claim for the
 composed temporal pipeline.
@@ -248,3 +248,113 @@ Recovery uses the stable operation identity, semantic digest, exact predecessor
 and current authority epoch. Unknown effects become pending, indeterminate or
 quarantined; they are never relabelled success and never retried with changed
 semantics.
+
+## 8. Real neural model upgrade through the ordinary product path
+
+This is the executable integration target of existing `NEU-1-LOCAL-MODEL-BAKEOFF`,
+`LRN-1-DURABLE-EPISODE-LEDGER`, `LRN-2-CAUSAL-EVALUATION`,
+`ART-1-LEARNING-ARTIFACT-REGISTRY`, `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK` and
+`INT-2-AGENTD-CODEX-COMPOSITION`; it does not replace their registered DAGs.
+`learning-platform` owns training/ledger/artifact boundaries, qualification-plane
+independently evaluates, intelligence-platform composes the existing ports,
+agent-runtime hosts them and inference-platform owns real model execution.
+The current tabular fit path in Section 2 remains useful reference evidence;
+it cannot certify this neural target. A hash-derived encoder, scripted answer
+lookup, synthetic GPU receipt or reference-only caller cannot satisfy it.
+
+Use one identified pretrained neural backbone and bounded trainable head/adapter
+with a real backend, exact weights, tokenizer, tensor layout, precision, runtime,
+device and training code. Run at least three complete rounds; retain the complete
+attempt lineage, including rejection, interruption and no-update. Each round:
+
+1. Read back the currently selected and actually loaded parent from the ordinary
+   Neuron/inference caller; freeze its release root and objective. Revalidate
+   withdrawal, authority, workspace and resource scope. Training starts from
+   those exact parent bytes; copied labels naming a parent are insufficient.
+2. Ledger-owned authenticated decisions, independent terminal outcomes and a
+   frozen dataset produce the next candidate off the current-run path. Train
+   only inside its admitted bounds; create immutable manifest/lineage and bytes.
+3. Freeze the reproducible engineering evaluation plan and declared task bytes,
+   versions, exposure/reuse and budgets. Public or previously seen tasks are
+   admissible; unseen future data and independent data custody are not entry
+   conditions for the three-round mechanism test. Preserve the existing evaluator
+   and selector authority, credential and signing key, matched lifecycle cost,
+   a frozen baseline, best
+   single expert and simple-merge controls. Compare the complete routed model as
+   well as the changed Cell; test retention, safety, poisoning/backdoor, OOD,
+   support and withdrawal. Existing causal/longitudinal estimators still apply.
+   Ineligible/insufficient evidence takes the explicit no-update branch: record
+   the decision, retain/revalidate the installed parent and prove its next-task
+   use; do not run candidate selection or installation for a rejected artifact.
+   Continue directly to step 6 using that parent; record unexecuted steps 4–5 as
+   NOT_APPLICABLE with the decision reason in the versioned campaign record,
+   without fabricating a task settlement, fetch or installation receipt or
+   silently extending existing strict schemas. Reconcile any previously admitted
+   Unknown effect under its original identity. This branch does not waive the
+   separately required successful cross-node I09/I10 load-and-next-task cohort.
+4. For an eligible update, submit only owner-approved task/evaluation/artifact
+   references through the existing TaskFlow/PoN effect seam. Reconcile the exact submitted packet,
+   task, output, active membership, depth and cumulative work. Chain settlement
+   is a point-in-time observation; local acceptance/selection remains separate.
+5. Fetch the complete selected release closure from another node, verify each
+   dependency and safe loader compatibility, then perform authorized shadow and
+   canary. A separate selector signs the current artifact head and exact root;
+   the next generation loads those immutable bytes and publishes its route.
+6. A subsequent ordinary task must execute that route and return an authenticated
+   runtime/readback receipt tied to the same root, parent, generation and outcome.
+   Only that installed version may become the next round's parent. Crash/restart
+   at any boundary reconciles existing owners rather than recreating a journal.
+
+The cross-repository interface anchors are I06 export, I07 evaluation, I08 Chain
+accepted-task observation, I09 release-closure fetch and I10 local installation
+and readback in the [Chain plan](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/ef2a6958a6f3d8fdfaea25fbc58fb1ecd188134c/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md).
+These are design-change anchors, not already deployed wire schemas. Preserve
+`DatasetSnapshotV1` exchange, complete V3 admission, `LearningArtifactManifestV1`
+compatibility and `EvaluationReceiptV1`/`LongitudinalEvaluationReceiptV1` meaning.
+Register any new bounded adapter/schema and producer/consumer ownership before
+implementation; bind parent/root, task/evaluation identities, dependency-closure
+digest and loaded-root readback to the existing semantic digest. A receipt must
+never copy its expected values from the untrusted observation it validates.
+
+Acceptance has two separate results. **Three-round mechanism closure** permits
+no-update and proves correct training/evaluation/rejection, durable reconciliation
+and continued task use of the unchanged parent. **Three beneficial releases**
+requires three distinct accepted child artifacts, each independently exceeding
+its actual installed parent's predeclared improvement threshold/confidence rule,
+passing retention/safety/resource floors, being loaded, and serving the next
+ordinary task. No-update, replayed outcomes or forced degradation of a baseline
+cannot count as improvement. Preserve the existing requirement of at least two
+calendar windows for longitudinal efficacy claims; a reused future holdout is
+no longer future evidence. Engineering results are reported on the named test
+dataset and do not imply generalization to unknown tasks. Independent future
+data is not a blocker for this controlled mechanism test.
+
+Retain exact paired commits, product caller, signed role/controller provenance,
+model/tensor roots, datasets, sealed plans, raw measurements, task/effect IDs,
+fetch/load/readback receipts, all failed attempts and rollback/restart records.
+At least two distinct nodes must demonstrate real byte transfer and loading;
+this controlled result does not establish decentralized public qualification.
+
+The current controlled SmolLM2-135M five-control experiment is retained in
+[`smollm2-five-controls-20261024.json`](../../qualification/learning-generations/smollm2-five-controls-20261024.json).
+It executes the actual Chain `ef2a6958` strict-v1 CPU runtime: both loaders,
+five training/control phases and all five evaluations complete with successful
+original wait4/peak-RSS reconciliation. Candidate, fresh matched LoRA and matched
+full-tune each score 1/2; the backbone and random control score zero. Gain against
+the strongest control is zero, so no adoption or reward is justified. These
+declared public smoke tasks supply reproducible engineering observations only.
+The separate TCL4 release-profile transfer moves and rehashes 271,178,816 bytes
+across three controlled nodes with the origin stopped before the second hop;
+its [exact source evidence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/tree/ef2a6958a6f3d8fdfaea25fbc58fb1ecd188134c/evidence/pon-upgrade-implementation-20261018/native-rounds/cell-tcl4-release-three-host-20261024)
+does not prove that Hepta loaded or selected those fetched bytes. Neither result
+closes the three-round installed-parent/ordinary-next-task target. Inference-platform
+must next run the actual neural Session controls over pinned parameter material;
+learning-platform and agent-runtime must then compose the original ledger,
+evaluation, selection, artifact/CURRENT and next-task owners in the order above.
+The original two-second read, 120-second startup and eight-second terminal
+bounds remain unchanged; the experiment's training/inference budgets are
+separate and cannot replace them.
+
+Reorg, withdrawal, lost acknowledgement, stale generation, restart after route
+publication and unavailable replicas must preserve one logical operation,
+reject revoked bytes and reconcile Unknown effects before any unsafe retry.

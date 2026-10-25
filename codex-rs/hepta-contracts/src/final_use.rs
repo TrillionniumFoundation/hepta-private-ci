@@ -24,6 +24,9 @@ use sha2::Sha256;
 
 #[path = "final_use_store.rs"]
 mod store;
+#[cfg(windows)]
+#[path = "final_use_windows.rs"]
+mod windows_owner;
 
 const MAX_CLAIMS: usize = 1_048_576;
 const MAX_REVOKED_GRANTS: usize = 16_384;
@@ -337,6 +340,13 @@ impl VerifiedUseToken {
 }
 
 impl FinalUseAuthority {
+    /// Compare opaque owner instances without revealing or issuing authority.
+    /// Clones share one owner; reopening identical durable state creates a new
+    /// owner and does not make its in-flight claims interchangeable.
+    pub fn shares_owner(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.0, &other.0)
+    }
+
     /// Compatibility constructor using the process system clock and no
     /// external rollback oracle. It is not a production trust composition. A
     /// production-oriented rotating-issuer host uses
@@ -557,14 +567,38 @@ impl FinalUseAuthority {
         self.persist_or_fence(&mut state, next)
     }
 
-    /// Atomically validate and claim one nonce immediately before dispatch.
-    /// A failed or uncertain dispatch does not refund the nonce: retry needs a
-    /// new owner-signed grant, after the caller has reconciled any unknown effect.
-    pub fn claim(
+    /// Read-only readiness check against this original owner's current issuer,
+    /// clock, revocation head and nonce state. It grants no capability and does
+    /// not reserve a nonce: callers still must claim and recheck at final entry.
+    pub fn check_unclaimed_grant(
         &self,
         signed: &SignedFinalUseGrant,
         expected: &FinalUseBinding,
-    ) -> Result<VerifiedUseToken, FinalUseError> {
+    ) -> Result<(), FinalUseError> {
+        self.grant_signing_input(signed, expected)?;
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        validate_live(&signed.grant, &state.head, self.now_unix_ms()?)?;
+        if state.used_nonces.contains(&signed.grant.nonce) {
+            return Err(FinalUseError::AlreadyClaimed);
+        }
+        if state.used_nonces.len() >= MAX_CLAIMS {
+            return Err(FinalUseError::CapacityExceeded);
+        }
+        Ok(())
+    }
+
+    fn grant_signing_input(
+        &self,
+        signed: &SignedFinalUseGrant,
+        expected: &FinalUseBinding,
+    ) -> Result<Vec<u8>, FinalUseError> {
         let input = signed.grant.signing_bytes()?;
         if signed.grant.signer_id != self.0.signer_id || &signed.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
@@ -579,6 +613,18 @@ impl FinalUseAuthority {
         if !verified {
             return Err(FinalUseError::InvalidSignature);
         }
+        Ok(input)
+    }
+
+    /// Atomically validate and claim one nonce immediately before dispatch.
+    /// A failed or uncertain dispatch does not refund the nonce: retry needs a
+    /// new owner-signed grant, after the caller has reconciled any unknown effect.
+    pub fn claim(
+        &self,
+        signed: &SignedFinalUseGrant,
+        expected: &FinalUseBinding,
+    ) -> Result<VerifiedUseToken, FinalUseError> {
+        let input = self.grant_signing_input(signed, expected)?;
         let mut state = self
             .0
             .state

@@ -32,7 +32,7 @@ const MAX_DESCRIPTOR_BYTES: u64 = 4 * 1024 * 1024;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-struct CognitiveProcessDescriptorV1 {
+struct CognitiveProcessDescriptorV1<Pin = TabularPayloadPinV1Raw> {
     schema: String,
     profile: String,
     agent_id: String,
@@ -40,7 +40,7 @@ struct CognitiveProcessDescriptorV1 {
     snapshot_path: PathBuf,
     payload_path: PathBuf,
     selected: PinnedCandidateSpecRaw,
-    model_pin: TabularPayloadPinV1Raw,
+    model_pin: Pin,
     source_manifest: LearningArtifactManifestV2Raw,
     current: crate::cognitive_process_current::CognitiveCurrentOwnerDescriptorV1,
     policy: SelfEvolutionSelectionPolicyV1Raw,
@@ -76,6 +76,26 @@ pub fn load_cognitive_process_bootstrap_v1(
     expected_descriptor_digest: Digest32,
     identity: &AgentdIdentity,
 ) -> Result<EvaluatedCognitiveBootstrapV1, AgentdError> {
+    load_cognitive_process_model_v1(
+        path,
+        expected_descriptor_digest,
+        identity,
+        SCHEMA,
+        "published_product_qualification_v1",
+        |pin: TabularPayloadPinV1Raw| pin.into(),
+    )
+}
+
+// Only the two explicit, crate-owned family entry points can choose a decoder.
+// Neither this mapping nor family dispatch is an externally implementable port.
+pub(super) fn load_cognitive_process_model_v1<Raw: serde::de::DeserializeOwned, Model>(
+    path: &Path,
+    expected_descriptor_digest: Digest32,
+    identity: &AgentdIdentity,
+    schema: &str,
+    profile: &str,
+    map_model: impl FnOnce(Raw) -> Model,
+) -> Result<EvaluatedCognitiveBootstrapV1<Model>, AgentdError> {
     if !cfg!(any(target_os = "linux", target_os = "macos")) {
         return Err(invalid(
             "cognitive product bootstrap requires the Linux/macOS observation profile",
@@ -93,8 +113,8 @@ pub fn load_cognitive_process_bootstrap_v1(
             "cognitive bootstrap descriptor digest/size mismatch",
         ));
     }
-    let descriptor: CognitiveProcessDescriptorV1 = serde_json::from_slice(&bytes)?;
-    if descriptor.schema != SCHEMA || descriptor.profile != "published_product_qualification_v1" {
+    let descriptor: CognitiveProcessDescriptorV1<Raw> = serde_json::from_slice(&bytes)?;
+    if descriptor.schema != schema || descriptor.profile != profile {
         return Err(invalid("unsupported cognitive bootstrap schema/profile"));
     }
     if descriptor.agent_id != identity.agent_id.as_str()
@@ -200,7 +220,7 @@ pub fn load_cognitive_process_bootstrap_v1(
         snapshot,
         payload,
         selected: descriptor.selected.into(),
-        model_pin: descriptor.model_pin.into(),
+        model_pin: map_model(descriptor.model_pin),
         source_manifest: descriptor.source_manifest.into(),
         current,
         policy,

@@ -18,6 +18,10 @@ mod callers_manifest_tests;
 mod canonical;
 mod final_use;
 mod final_use_control;
+#[cfg(windows)]
+pub use codex_utils_windows_private_state::stage::SynchronousStageFile;
+#[cfg(windows)]
+pub use codex_utils_windows_private_state::stage::replace_synced_state_stage;
 mod identity;
 mod memory;
 mod provider;
@@ -26,6 +30,9 @@ mod qualification_receipt;
 mod receipt;
 mod stable_id;
 mod verified_use_witness;
+#[cfg(all(test, windows))]
+#[path = "windows_state_stage_tests.rs"]
+mod windows_state_stage_tests;
 
 pub use authority_lease::deliver_authority_lease_with_witness;
 pub use authority_lease::dispatch_authority_lease_with_witness;
@@ -313,3 +320,6 @@ pub use receipt::PolicyStamp;
 pub use receipt::Sha256Digest;
 pub use receipt::ToolAction;
 pub use receipt::ToolActionSource;
+
+#[cfg(windows)]
+pub use codex_utils_windows_private_state::parent_anchor as windows_private_owner;

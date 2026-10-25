@@ -85,6 +85,42 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 ## 5. Contracts, ports and compatibility
 
+The PN4 `controlled_aggregate` adapter uses the existing sealed
+`ProductionVerifiedDispatch` destination port. `ControlledAggregateRegistration`
+freezes one bounded `ControlledAggregateBinding` before source preparation and
+binds its canonical payload to the operation, lease and FinalUse request.
+`ResourceScope::ChildAggregate` cannot be registered for whole-unit settlement;
+`ResourceBudget` keeps U16/A8, a positive controller share and the original
+eight-second bound. A+C memory may leave headroom below U16, including A8/C128
+MiB; CPU 400% and tasks 256 remain exact allocations. A default sixteen-GiB model
+plan therefore remains refused.
+Reservation and settlement-issuer fields are declarations, not verified funding
+or authority. `ControlledAggregateTarget::unavailable` checks the original
+FinalUse authority instance and complete registration, then retains
+`Indeterminate`: it has no physical-entry callback, native owner, settlement
+receipt or AuthBus release. The existing PN4 integration sequence must supply
+original funding/issuer verification and native whole-unit lifetime ownership
+before a future target can cross an actual worker boundary. The same PN4 item
+now also provides `LedgerFundedControlledAggregate::reserve`, which uses the
+existing `AuthBusAuthorityHost`, signed trusted time, current issuer/policy and
+whole-unit quota. Its fresh `hepta.authbus.controlled-aggregate-ledger.v1` effect
+fixes every plan/admission field except the reservation ID derived by that
+ledger. The final payload and signed binding include the returned actual ID.
+`ledger_funded_unavailable` checks the sealed authority, complete registration
+and exact request binding, then rereads original funding and retains liability
+through the existing dispatch/indeterminate transitions. It creates no second
+ledger or key owner and cannot dispatch a native worker, return resources or
+refund. Seven real SQLite/signed-source test groups cover this narrower funding
+composition. `SignedFinalUseGrantCourier` now implements the existing Agentd
+provider for one immutable protected regular file capped at 16 KiB and one exact
+FinalUse binding. Readiness validation is non-consuming; dispatch still uses the
+original signed claim, frontier CAS, nonce owner and final clock checks. The real
+signer CLI, recovered writer and ordinary Child route have a controlled test;
+its SourceLease remains an explicitly signed fixture. Production source policy
+and native whole-unit lifetime-owner integration remain required. No second
+ledger, key or nonce store is created. Existing ordinary Child observations retain their narrower
+semantics, original assertions and eight-second deadline.
+
 Produced contracts:
 
 None.

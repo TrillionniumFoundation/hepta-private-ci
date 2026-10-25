@@ -165,7 +165,22 @@ fn install_registered_queue(
     Ok(service)
 }
 
+fn python_hook_command(script_path: &Path) -> String {
+    let interpreter = if cfg!(windows) { "python" } else { "python3" };
+    format!("{interpreter} \"{}\"", script_path.display())
+}
+
+#[cfg(unix)]
+fn make_hook_home_private(home: &Path) {
+    use std::os::unix::fs::PermissionsExt;
+
+    std::fs::set_permissions(home, std::fs::Permissions::from_mode(0o700))
+        .unwrap_or_else(|error| panic!("make queue hook home private: {error}"));
+}
+
 fn write_rejecting_prompt_hook(home: &Path) {
+    #[cfg(unix)]
+    make_hook_home_private(home);
     let script_path = home.join("queue_prompt_hook.py");
     let log_path = home.join("queue_prompt_hook.log");
     let script = format!(
@@ -188,7 +203,7 @@ if payload["prompt"] == "blocked":
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": python_hook_command(&script_path),
                 }]
             }]
         }
@@ -198,6 +213,8 @@ if payload["prompt"] == "blocked":
 }
 
 fn write_blocking_prompt_hook(home: &Path) {
+    #[cfg(unix)]
+    make_hook_home_private(home);
     let script_path = home.join("queue_blocking_prompt_hook.py");
     let entered_path = home.join("queue_blocking_prompt_hook.entered");
     let release_path = home.join("queue_blocking_prompt_hook.release");
@@ -228,7 +245,7 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": python_hook_command(&script_path),
                 }]
             }]
         }

@@ -176,6 +176,7 @@ members = [
     "utils/fuzzy-match",
     "utils/stream-parser",
     "utils/template",
+    "utils/windows-private-state",
     "codex-client",
     "codex-api",
     "state",
@@ -327,6 +328,7 @@ codex-tools = { path = "tools" }
 codex-tui = { path = "tui" }
 codex-uds = { path = "uds" }
 codex-utils-absolute-path = { path = "utils/absolute-path" }
+codex-utils-windows-private-state = { path = "utils/windows-private-state" }
 codex-utils-build-identity = { path = "utils/build-identity" }
 codex-utils-approval-presets = { path = "utils/approval-presets" }
 codex-utils-audio = { path = "utils/audio" }
@@ -525,7 +527,7 @@ supports-color = "3.0.2"
 syntect = "5"
 sys-locale = "0.3.2"
 system-configuration = "0.7"
-tar = { version = "=0.4.45", default-features = false }
+tar = { version = "=0.4.46", default-features = false }
 tempfile = "3.23.0"
 test-log = "0.2.19"
 textwrap = "0.16.2"
@@ -674,6 +676,8 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Adapt the original Rama alpha.4 DNS edge to maintained Hickory 0.26.3.
+rama-dns = { path = "third_party/rama-dns-0.3.0-alpha.4" }
 # Backport the upstream maintained TOML parser migration for age localization.
 i18n-config = { path = "third_party/i18n-config-0.4.8" }
 # Replace the unmaintained event-handler type map without changing store/crypto code.

@@ -23,7 +23,10 @@ function requireRecord(value, name) {
 function exactKeys(value, expected, name) {
   const keys = Object.keys(value).sort();
   const wanted = [...expected].sort();
-  if (keys.length !== wanted.length || keys.some((key, index) => key !== wanted[index])) {
+  if (
+    keys.length !== wanted.length ||
+    keys.some((key, index) => key !== wanted[index])
+  ) {
     throw new TypeError(`${name} contains missing or unknown fields`);
   }
 }
@@ -46,7 +49,11 @@ function stableId(value, name) {
 }
 
 function digest(value, name) {
-  if (typeof value !== "string" || !DIGEST.test(value) || value === ZERO_DIGEST) {
+  if (
+    typeof value !== "string" ||
+    !DIGEST.test(value) ||
+    value === ZERO_DIGEST
+  ) {
     throw new TypeError(`${name} must be a non-zero lowercase SHA-256 digest`);
   }
   return value;
@@ -114,72 +121,132 @@ export function normalizeBrowserAction(value) {
   }
   switch (action.kind) {
     case "navigate": {
-      exactKeys(action, ["kind", "url", "policyDigest", "expectedRevision"], "navigate action");
+      exactKeys(
+        action,
+        ["kind", "url", "policyDigest", "expectedRevision"],
+        "navigate action",
+      );
       return Object.freeze({
         kind: "navigate",
         url: webUrl(action.url),
         policyDigest: digest(action.policyDigest, "typedAction.policyDigest"),
-        expectedRevision: positiveInteger(action.expectedRevision, "typedAction.expectedRevision"),
+        expectedRevision: positiveInteger(
+          action.expectedRevision,
+          "typedAction.expectedRevision",
+        ),
       });
     }
     case "click": {
       exactKeys(action, ["kind", "selector"], "click action");
       return Object.freeze({
         kind: "click",
-        selector: boundedString(action.selector, "typedAction.selector", MAX_SELECTOR_BYTES),
+        selector: boundedString(
+          action.selector,
+          "typedAction.selector",
+          MAX_SELECTOR_BYTES,
+        ),
       });
     }
     case "type": {
       exactKeys(action, ["kind", "selector", "text"], "type action");
       return Object.freeze({
         kind: "type",
-        selector: boundedString(action.selector, "typedAction.selector", MAX_SELECTOR_BYTES),
-        text: boundedString(action.text, "typedAction.text", MAX_TEXT_BYTES, { allowEmpty: true }),
+        selector: boundedString(
+          action.selector,
+          "typedAction.selector",
+          MAX_SELECTOR_BYTES,
+        ),
+        text: boundedString(action.text, "typedAction.text", MAX_TEXT_BYTES, {
+          allowEmpty: true,
+        }),
       });
     }
     case "credential": {
-      exactKeys(action, ["kind", "selector", "credentialRef"], "credential action");
+      exactKeys(
+        action,
+        ["kind", "selector", "credentialRef"],
+        "credential action",
+      );
       return Object.freeze({
         kind: "credential",
-        selector: boundedString(action.selector, "typedAction.selector", MAX_SELECTOR_BYTES),
-        credentialRef: stableId(action.credentialRef, "typedAction.credentialRef"),
+        selector: boundedString(
+          action.selector,
+          "typedAction.selector",
+          MAX_SELECTOR_BYTES,
+        ),
+        credentialRef: stableId(
+          action.credentialRef,
+          "typedAction.credentialRef",
+        ),
       });
     }
     case "upload": {
-      exactKeys(action, ["kind", "selector", "fileRef", "fileDigest", "maxBytes"], "upload action");
+      exactKeys(
+        action,
+        ["kind", "selector", "fileRef", "fileDigest", "maxBytes"],
+        "upload action",
+      );
       return Object.freeze({
         kind: "upload",
-        selector: boundedString(action.selector, "typedAction.selector", MAX_SELECTOR_BYTES),
+        selector: boundedString(
+          action.selector,
+          "typedAction.selector",
+          MAX_SELECTOR_BYTES,
+        ),
         fileRef: stableId(action.fileRef, "typedAction.fileRef"),
         fileDigest: digest(action.fileDigest, "typedAction.fileDigest"),
-        maxBytes: positiveInteger(action.maxBytes, "typedAction.maxBytes", 1_073_741_824),
+        maxBytes: positiveInteger(
+          action.maxBytes,
+          "typedAction.maxBytes",
+          1_073_741_824,
+        ),
       });
     }
     case "focus": {
       exactKeys(action, ["kind", "selector"], "focus action");
       return Object.freeze({
         kind: "focus",
-        selector: boundedString(action.selector, "typedAction.selector", MAX_SELECTOR_BYTES),
+        selector: boundedString(
+          action.selector,
+          "typedAction.selector",
+          MAX_SELECTOR_BYTES,
+        ),
       });
     }
     case "scroll": {
       exactKeys(action, ["kind", "deltaX", "deltaY"], "scroll action");
       return Object.freeze({
         kind: "scroll",
-        deltaX: boundedInteger(action.deltaX, "typedAction.deltaX", MAX_SCROLL_DELTA),
-        deltaY: boundedInteger(action.deltaY, "typedAction.deltaY", MAX_SCROLL_DELTA),
+        deltaX: boundedInteger(
+          action.deltaX,
+          "typedAction.deltaX",
+          MAX_SCROLL_DELTA,
+        ),
+        deltaY: boundedInteger(
+          action.deltaY,
+          "typedAction.deltaY",
+          MAX_SCROLL_DELTA,
+        ),
       });
     }
     case "wait": {
       exactKeys(action, ["kind", "condition", "timeoutMs"], "wait action");
-      const condition = boundedString(action.condition, "typedAction.condition", 128);
+      const condition = boundedString(
+        action.condition,
+        "typedAction.condition",
+        128,
+      );
       if (!WAIT_CONDITIONS.has(condition)) {
         throw new TypeError("typedAction.condition is not registered");
       }
       return Object.freeze({
         kind: "wait",
         condition,
-        timeoutMs: positiveInteger(action.timeoutMs, "typedAction.timeoutMs", MAX_WAIT_MS),
+        timeoutMs: positiveInteger(
+          action.timeoutMs,
+          "typedAction.timeoutMs",
+          MAX_WAIT_MS,
+        ),
       });
     }
     case "download": {
@@ -187,7 +254,11 @@ export function normalizeBrowserAction(value) {
       return Object.freeze({
         kind: "download",
         url: webUrl(action.url, "typedAction.url"),
-        maxBytes: positiveInteger(action.maxBytes, "typedAction.maxBytes", 1_073_741_824),
+        maxBytes: positiveInteger(
+          action.maxBytes,
+          "typedAction.maxBytes",
+          1_073_741_824,
+        ),
       });
     }
     default:

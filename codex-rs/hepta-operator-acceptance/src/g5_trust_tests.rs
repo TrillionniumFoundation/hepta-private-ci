@@ -270,7 +270,7 @@ impl TrustFixture {
         let temporary = private_tempdir("G5 trust fixture");
         let root = temporary.path().canonicalize().expect("canonical root");
         let key = root.join("operator-key");
-        let status = Command::new("/usr/bin/ssh-keygen")
+        let status = Command::new(crate::test_support::ssh_keygen())
             .args(["-q", "-t", "ed25519", "-N", "", "-f"])
             .arg(&key)
             .status()
@@ -285,7 +285,7 @@ impl TrustFixture {
             format!("operator@example {} {}\n", fields[0], fields[1]).as_bytes(),
         )
         .expect("write allowed signers");
-        let fingerprint_output = Command::new("/usr/bin/ssh-keygen")
+        let fingerprint_output = Command::new(crate::test_support::ssh_keygen())
             .args(["-E", "sha256", "-lf"])
             .arg(key.with_extension("pub"))
             .output()
@@ -369,7 +369,7 @@ impl TrustFixture {
     }
 
     fn sign(&self, challenge: &Path) -> PathBuf {
-        let status = Command::new("/usr/bin/ssh-keygen")
+        let status = Command::new(crate::test_support::ssh_keygen())
             .args(["-Y", "sign", "-f"])
             .arg(&self.key)
             .args(["-n", SSHSIG_NAMESPACE])
@@ -384,6 +384,8 @@ impl TrustFixture {
 }
 
 fn set_private_permissions(path: &Path) {
+    #[cfg(not(unix))]
+    let _ = path;
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;

@@ -421,7 +421,7 @@ def test_python_codegen_schema_annotation_adds_stable_variant_titles(
     ]
     assert reasoning_summary_titles == [
         "ReasoningSummaryValue",
-        "NoneReasoningSummary",
+        None,
     ]
 
 
