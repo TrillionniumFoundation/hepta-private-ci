@@ -519,7 +519,7 @@ class JSONTests(unittest.TestCase):
     def test_malformed_bounds_and_no_tail_parse(self):
         values = [b'{"type":"diagnostic","type":"diagnostic"}',
                   b'{"nested":{"x":0,"x":1}}', b'{"x":NaN}', b'{"x":Infinity}',
-                  b'{"x":' + b'[' * 33 + b'0' + b']' * 33 + b'}',
+                  b'{"x":' + b'[' * 257 + b'0' + b']' * 257 + b'}',
                   b'{"x":"\xff"}', b'{"unfinished":', b'\x1b[31m{"x":1}',
                   json.dumps({str(i): i for i in range(257)}).encode()]
         parser = self.parser()
@@ -555,6 +555,59 @@ class JSONTests(unittest.TestCase):
         parser = self.parser(); parser.feed(json.dumps(obj).encode()); parser.finish()
         self.assertEqual(len(parser.receipt(True, True)['tuples']), 1)
         self.assertEqual(sum(parser.rejected.values()), 0)
+
+    def test_exact_depth256_allowed_and257_rejected(self):
+        for depth, accepted in [(256, True), (257, False)]:
+            obj = self.obj()
+            # Root/fields/advisory are three levels; description is ignored data.
+            marker = 'DEEP_SENTINEL'
+            obj['fields']['advisory']['description'] = marker
+            raw = json.dumps(obj).replace('"DEEP_SENTINEL"', '[' * (depth - 3) + '0' + ']' * (depth - 3)).encode()
+            parser = self.parser(); parser.feed(raw); parser.finish()
+            self.assertEqual(bool(parser.rows), accepted)
+            self.assertEqual(parser.rejected['depth'], 0 if accepted else 1)
+
+    def test_deep_wide_official_graph_shape_resource_bound(self):
+        import time
+        import tracemalloc
+        obj = self.obj()
+        node = obj['fields']['graphs'][0]
+        # Graph root depth4; 126 parent-list/object pairs give exact depth256.
+        for _ in range(126):
+            parent = {'Krate': {'name': 'private_parent_fixture', 'version': '0.0.0'}}
+            node['parents'] = [parent]
+            node = parent
+        # The last Krate object would add a level, so use an empty terminal node.
+        node.clear()
+        # A wide shallow ancestry branch stresses object allocation without outputting parents.
+        obj['fields']['graphs'][0]['parents'].extend(
+            {'Krate': {'name': 'private_parent_fixture', 'version': '0.0.0'}}
+            for _ in range(6000))
+        raw = json.dumps(obj, separators=(',', ':')).encode()
+        self.assertLess(len(raw), j.JSONObservations.LINE_LIMIT)
+        parser = self.parser()
+        tracemalloc.start()
+        started = time.monotonic()
+        parser.feed(raw); parser.finish()
+        elapsed = time.monotonic() - started
+        _, peak = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+        self.assertLess(peak, 64 * 1024**2)
+        self.assertLess(elapsed, 5)
+        self.assertEqual(len(parser.rows), 1)
+        self.assertNotIn('private_parent_fixture', json.dumps(parser.receipt(True, True)))
+        self.assertEqual(sum(parser.rejected.values()), 0)
+
+    def test_nonfinite_and_duplicate_at_depth256_rejected(self):
+        for payload in ('1e999', '-1e999', '{"same":0,"same":1}'):
+            obj = self.obj(); obj['fields']['advisory']['description'] = 'DEEP_SENTINEL'
+            # Objects add their own level; all cases stay inside accepted depth256.
+            nesting = 252 if payload.startswith('{') else 253
+            raw = json.dumps(obj).replace('"DEEP_SENTINEL"', '[' * nesting + payload + ']' * nesting).encode()
+            parser = self.parser(); parser.feed(raw); parser.finish()
+            self.assertFalse(parser.rows)
+            self.assertEqual(parser.rejected['invalid_json'], 1)
+            self.assertEqual(parser.rejected['depth'], 0)
 
     def test_depth_strings_and_escaped_quotes(self):
         obj = self.obj(); obj['fields']['message'] = '[{\\"' * 100

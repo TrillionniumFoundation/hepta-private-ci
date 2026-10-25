@@ -105,7 +105,7 @@ class JSONObservations:
                 quoted = True
             elif byte in (91, 123):
                 depth += 1
-                if depth > 32:
+                if depth > 256:
                     return False
             elif byte in (93, 125):
                 depth -= 1
