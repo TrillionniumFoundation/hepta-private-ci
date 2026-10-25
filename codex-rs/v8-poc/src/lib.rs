@@ -26,23 +26,28 @@ pub fn linked_v8_has_sandbox() -> bool {
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
-    use std::sync::Once;
+    use std::sync::OnceLock;
 
     use super::bazel_target;
 
-    fn initialize_v8() {
-        static INIT: Once = Once::new();
+    fn initialize_v8() -> v8::SharedRef<v8::ArrayBufferAllocator> {
+        static INIT: OnceLock<v8::SharedRef<v8::ArrayBufferAllocator>> = OnceLock::new();
 
-        INIT.call_once(|| {
+        INIT.get_or_init(|| {
             v8::V8::initialize_platform(v8::new_default_platform(0, false).make_shared());
             v8::V8::initialize();
-        });
+            // Initialize the shared sandbox allocator before other threads create isolates.
+            v8::new_default_allocator().make_shared()
+        })
+        .clone()
     }
 
     fn evaluate_expression(expression: &str) -> String {
-        initialize_v8();
+        let array_buffer_allocator = initialize_v8();
 
-        let isolate = &mut v8::Isolate::new(Default::default());
+        let isolate = &mut v8::Isolate::new(
+            v8::CreateParams::default().array_buffer_allocator(array_buffer_allocator),
+        );
         v8::scope!(let scope, isolate);
 
         let context = v8::Context::new(scope, Default::default());

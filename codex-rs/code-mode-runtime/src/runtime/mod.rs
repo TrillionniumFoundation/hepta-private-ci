@@ -84,7 +84,7 @@ pub(crate) fn spawn_runtime(
     ),
     String,
 > {
-    ensure_v8_initialized()?;
+    let array_buffer_allocator = ensure_v8_initialized()?;
 
     let (command_tx, command_rx) = std_mpsc::channel();
     let (control_tx, control_rx) = std_mpsc::channel();
@@ -96,6 +96,7 @@ pub(crate) fn spawn_runtime(
         .map(enabled_tool_metadata)
         .collect::<Vec<_>>();
     let config = RuntimeConfig {
+        array_buffer_allocator,
         tool_call_id: request.tool_call_id,
         enabled_tools,
         source: request.source,
@@ -137,6 +138,7 @@ fn spawn_supervised_runtime_thread(
 
 #[derive(Clone)]
 struct RuntimeConfig {
+    array_buffer_allocator: v8::SharedRef<v8::ArrayBufferAllocator>,
     tool_call_id: String,
     enabled_tools: Vec<EnabledToolMetadata>,
     source: String,
@@ -174,7 +176,9 @@ fn run_runtime(
     isolate_handle_tx: std_mpsc::SyncSender<v8::IsolateHandle>,
     runtime_command_tx: std_mpsc::Sender<RuntimeCommand>,
 ) {
-    let isolate = &mut v8::Isolate::new(v8::CreateParams::default());
+    let isolate = &mut v8::Isolate::new(
+        v8::CreateParams::default().array_buffer_allocator(config.array_buffer_allocator),
+    );
     let isolate_handle = isolate.thread_safe_handle();
     if isolate_handle_tx.send(isolate_handle).is_err() {
         return;

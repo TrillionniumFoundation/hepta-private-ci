@@ -10,6 +10,7 @@ pub enum V8JitMode {
 
 struct V8Initialization {
     _platform: v8::SharedRef<v8::Platform>,
+    array_buffer_allocator: v8::SharedRef<v8::ArrayBufferAllocator>,
     jit_mode: V8JitMode,
 }
 
@@ -32,9 +33,9 @@ pub fn initialize_v8(jit_mode: V8JitMode) -> Result<(), String> {
     }
 }
 
-pub(crate) fn ensure_v8_initialized() -> Result<(), String> {
+pub(crate) fn ensure_v8_initialized() -> Result<v8::SharedRef<v8::ArrayBufferAllocator>, String> {
     match V8_INITIALIZATION.get_or_init(|| initialize_v8_with_mode(V8JitMode::Enabled)) {
-        Ok(_) => Ok(()),
+        Ok(initialization) => Ok(initialization.array_buffer_allocator.clone()),
         Err(error_text) => Err(error_text.clone()),
     }
 }
@@ -49,8 +50,11 @@ fn initialize_v8_with_mode(jit_mode: V8JitMode) -> Result<V8Initialization, Stri
     let platform = v8::new_default_platform(0, false).make_shared();
     v8::V8::initialize_platform(platform.clone());
     v8::V8::initialize();
+    // Initialize the shared sandbox allocator before other threads create isolates.
+    let array_buffer_allocator = v8::new_default_allocator().make_shared();
     Ok(V8Initialization {
         _platform: platform,
+        array_buffer_allocator,
         jit_mode,
     })
 }
