@@ -86,6 +86,7 @@ pub struct AgentdConfig {
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
     production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
     native_memory_cell: Option<std::sync::Arc<crate::AgentdNativeMemoryCell>>,
+    native_memory_registration: Option<std::sync::Arc<crate::AgentdNativeMemoryRegistrationV1>>,
     cognitive_retrieval_mode: CognitiveRetrievalMode,
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
@@ -210,6 +211,7 @@ impl AgentdConfig {
             production_operations: None,
             production_writer_host: None,
             native_memory_cell: None,
+            native_memory_registration: None,
             cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
@@ -391,6 +393,7 @@ impl AgentdConfig {
             )
         })?;
         if self.native_memory_cell.is_some()
+            || self.native_memory_registration.is_some()
             || !std::sync::Arc::ptr_eq(&cell.writer, &host.writer())
         {
             return Err(AgentdError::Invalid(
@@ -405,6 +408,27 @@ impl AgentdConfig {
         &self,
     ) -> Option<std::sync::Arc<crate::AgentdNativeMemoryCell>> {
         self.native_memory_cell.clone()
+    }
+
+    /// Install external NDU/clock owners after Agentd attaches its actual
+    /// Objective runtime and recovered writer. No run is required at startup.
+    pub fn with_native_memory_registration(
+        mut self,
+        registration: std::sync::Arc<crate::AgentdNativeMemoryRegistrationV1>,
+    ) -> Result<Self, AgentdError> {
+        if self.native_memory_registration.is_some() || self.native_memory_cell.is_some() {
+            return Err(AgentdError::Invalid(
+                "native memory is already configured".to_string(),
+            ));
+        }
+        self.native_memory_registration = Some(registration);
+        Ok(self)
+    }
+
+    pub(crate) fn native_memory_registration(
+        &self,
+    ) -> Option<std::sync::Arc<crate::AgentdNativeMemoryRegistrationV1>> {
+        self.native_memory_registration.clone()
     }
 
     /// Select the retrieval product profile explicitly. Compatibility preserves

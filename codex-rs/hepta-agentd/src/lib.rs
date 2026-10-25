@@ -43,6 +43,7 @@ mod native_memory_current_test_support;
 mod native_memory_current_tests;
 mod native_memory_model;
 mod native_memory_process;
+mod native_memory_registration;
 mod native_memory_shadow_namespace;
 #[cfg(test)]
 mod native_memory_test_support;
@@ -210,6 +211,9 @@ pub use native_memory_current::AgentdNativeMemoryPreparedReadV1;
 pub use native_memory_current::NativeMemoryClockObservationV1;
 pub use native_memory_current::NativeMemoryTickClockV1;
 pub use native_memory_current::native_memory_subject_digest_v1;
+pub use native_memory_registration::AgentdNativeMemoryHostV1;
+pub use native_memory_registration::AgentdNativeMemoryRegistrationV1;
+pub use native_memory_registration::NativeMemorySourceConfigV1;
 pub use native_memory_shadow_namespace::NativeMemoryShadowFilesV1;
 pub use native_memory_shadow_namespace::NativeMemoryShadowProfileV1;
 pub use native_memory_shadow_namespace::NativeMemoryShadowStartV1;

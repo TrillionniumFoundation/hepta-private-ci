@@ -44,8 +44,8 @@ pub struct AgentdNativeMemoryCell {
 
 #[cfg(feature = "qualification-cognitive-write")]
 impl AgentdProductionWriterHost {
-    /// Compose one explicitly registered source/adapter with this exact
-    /// recovered owner. Normal daemon startup does not invent this profile.
+    /// Qualification-only compatibility path. Production enrollment uses the
+    /// runtime registration and a signed, exact current-owner query instead.
     pub async fn native_memory_cell(
         &self,
         access: CognitiveAccess,
@@ -53,14 +53,6 @@ impl AgentdProductionWriterHost {
         claim: MemoryCellSourceClaimV1,
         config: NativeMemoryModelConfigV1,
     ) -> Result<Arc<AgentdNativeMemoryCell>, NativeMemoryError> {
-        use std::io::Read;
-        config.validate().map_err(NativeMemoryError::Rejected)?;
-        let writer = self.writer();
-        if writer.generation() != config.generation {
-            return Err(NativeMemoryError::Rejected(
-                "native model generation differs from writer".to_string(),
-            ));
-        }
         let now = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .map_err(|e| NativeMemoryError::Rejected(e.to_string()))?
@@ -71,9 +63,47 @@ impl AgentdProductionWriterHost {
             key: key.clone(),
             deadline_unix_ms: now + 300_000,
         };
-        let binding = writer
-            .authorize_memory_cell(&access, &query, &claim)
-            .await?;
+        AgentdNativeMemoryCell::from_registered_source(
+            self.writer(),
+            crate::NativeMemorySourceConfigV1 {
+                access,
+                key,
+                claim,
+                model: config,
+            },
+            &query,
+            tokio_util::sync::CancellationToken::new(),
+        )
+        .await
+    }
+}
+
+impl AgentdNativeMemoryCell {
+    pub(crate) async fn from_registered_source(
+        writer: Arc<ProductionDurableWriter>,
+        source: crate::NativeMemorySourceConfigV1,
+        query: &MemoryCellQueryV1,
+        cancellation: tokio_util::sync::CancellationToken,
+    ) -> Result<Arc<Self>, NativeMemoryError> {
+        use std::io::Read;
+        let crate::NativeMemorySourceConfigV1 {
+            access,
+            key,
+            claim,
+            model: config,
+        } = source;
+        if query.key != key || cancellation.is_cancelled() {
+            return Err(NativeMemoryError::Rejected(
+                "closed owner or unknown typed source key".to_string(),
+            ));
+        }
+        config.validate().map_err(NativeMemoryError::Rejected)?;
+        if writer.generation() != config.generation {
+            return Err(NativeMemoryError::Rejected(
+                "native model generation differs from writer".to_string(),
+            ));
+        }
+        let binding = writer.authorize_memory_cell(&access, query, &claim).await?;
         let path = config.checkpoint.join("lineage.json");
         let mut bytes = Vec::new();
         std::fs::File::open(path)
@@ -92,12 +122,13 @@ impl AgentdProductionWriterHost {
             .map_err(|e| NativeMemoryError::Rejected(e.to_string()))?;
         if manifest["roots"] != serde_json::json!([binding.source_content_sha256.as_str()])
             || manifest["scope"] != config.scope
+            || cancellation.is_cancelled()
         {
             return Err(NativeMemoryError::Rejected(
-                "single source ancestry or scope mismatch".to_string(),
+                "single source ancestry, scope or owner currentness mismatch".to_string(),
             ));
         }
-        Ok(Arc::new(AgentdNativeMemoryCell {
+        Ok(Arc::new(Self {
             writer,
             access,
             key,
@@ -106,14 +137,12 @@ impl AgentdProductionWriterHost {
             jobs: Mutex::new(BTreeMap::new()),
             capacity: Arc::new(Semaphore::new(1)),
             dispatches: Arc::new(AtomicU64::new(0)),
-            cancellation: tokio_util::sync::CancellationToken::new(),
+            cancellation,
         }))
     }
-}
 
-impl AgentdNativeMemoryCell {
-    /// Compose the already registered source/decoder with an explicitly supplied
-    /// live context authority and independently witnessed shadow journal.
+    /// Qualification-only preconstructed-cell path. Default builds enroll
+    /// through AgentdNativeMemoryHostV1 with an exact checked context.
     #[cfg(feature = "qualification-cognitive-write")]
     pub async fn shadow_owner<C: crate::NativeMemoryContextAuthorityV1 + 'static>(
         &self,
@@ -121,22 +150,38 @@ impl AgentdNativeMemoryCell {
         profile: crate::NativeMemoryShadowProfileV1,
         context: C,
     ) -> Result<Arc<crate::AgentdNativeMemoryShadowOwner<C>>, NativeMemoryError> {
-        crate::AgentdNativeMemoryShadowOwner::open(
-            crate::native_memory_tick_owner::NativeShadowHostBinding {
-                writer: Arc::clone(&self.writer),
-                access: self.access.clone(),
-                key: self.key.clone(),
-                claim: self.claim.clone(),
-                model: self.config.clone(),
-                dispatches: Arc::clone(&self.dispatches),
-                capacity: Arc::clone(&self.capacity),
-                cancellation: self.cancellation.clone(),
-            },
+        crate::AgentdNativeMemoryShadowOwner::open(self.shadow_binding(), files, profile, context)
+            .await
+    }
+
+    pub(crate) async fn open_shadow<C: crate::NativeMemoryContextAuthorityV1 + 'static>(
+        &self,
+        files: crate::NativeMemoryShadowFilesV1,
+        profile: crate::NativeMemoryShadowProfileV1,
+        context: C,
+        query: &MemoryCellQueryV1,
+    ) -> Result<Arc<crate::AgentdNativeMemoryShadowOwner<C>>, NativeMemoryError> {
+        crate::AgentdNativeMemoryShadowOwner::open_for_query(
+            self.shadow_binding(),
             files,
             profile,
             context,
+            query,
         )
         .await
+    }
+
+    fn shadow_binding(&self) -> crate::native_memory_tick_owner::NativeShadowHostBinding {
+        crate::native_memory_tick_owner::NativeShadowHostBinding {
+            writer: Arc::clone(&self.writer),
+            access: self.access.clone(),
+            key: self.key.clone(),
+            claim: self.claim.clone(),
+            model: self.config.clone(),
+            dispatches: Arc::clone(&self.dispatches),
+            capacity: Arc::clone(&self.capacity),
+            cancellation: self.cancellation.clone(),
+        }
     }
 
     /// Per-process backend dispatch attempts, including failed invocations.
