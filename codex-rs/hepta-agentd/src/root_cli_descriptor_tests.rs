@@ -20,10 +20,17 @@ fn root_cli_claims_one_original_fd_and_rejects_repeated_slots() {
     assert_eq!(owned.as_raw_fd(), raw);
     assert!(inherited_descriptor(OsStr::new(&number), &mut claimed).is_err());
     // SAFETY: the descriptor remains owned and live until after the flags read.
-    assert_ne!(unsafe { libc::fcntl(raw, libc::F_GETFD) } & libc::FD_CLOEXEC, 0);
+    assert_ne!(
+        unsafe { libc::fcntl(raw, libc::F_GETFD) } & libc::FD_CLOEXEC,
+        0
+    );
     drop(owned);
     peer.set_read_timeout(Some(Duration::from_secs(1))).unwrap();
-    assert_eq!(peer.read(&mut [0]).unwrap(), 0, "no unowned original endpoint remains open");
+    assert_eq!(
+        peer.read(&mut [0]).unwrap(),
+        0,
+        "no unowned original endpoint remains open"
+    );
 }
 
 #[test]

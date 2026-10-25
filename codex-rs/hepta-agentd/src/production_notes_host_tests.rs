@@ -20,10 +20,10 @@ mod objective_tests;
 
 #[path = "notes_objective_composition_tests.rs"]
 mod composition_tests;
-#[path = "notes_previous_host_tests.rs"]
-mod previous_tests;
 #[path = "notes_literal_prepare_tests.rs"]
 mod literal_prepare_tests;
+#[path = "notes_previous_host_tests.rs"]
+mod previous_tests;
 
 struct NotesHostFixture {
     directory: tempfile::TempDir,

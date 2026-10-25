@@ -48,7 +48,8 @@ impl NotesUiQueue {
     /// refresh coalesces independently and cannot fill the eight action slots.
     pub(crate) fn request(&self, command: ObjectiveCommand) -> ObjectiveObservation {
         let mut unavailable = ObjectiveObservation::new(
-            command.client_intent_id().map(str::to_owned), ObjectiveStage::Unavailable,
+            command.client_intent_id().map(str::to_owned),
+            ObjectiveStage::Unavailable,
         );
         if let Err(issue) = command.validate() {
             unavailable.issue = Some(issue);
@@ -63,11 +64,20 @@ impl NotesUiQueue {
                 unavailable.issue = Some(ObjectiveHostIssue::Capacity);
                 return unavailable;
             }
-            state.intents.entry(id.to_owned()).or_insert_with(|| {
-                ObjectiveObservation::new(Some(id.to_owned()), ObjectiveStage::Queued)
-            }).clone()
-        } else { state.availability.clone() };
-        let entry = QueuedCommand { command, end: Instant::now() + ACTION_LIFETIME };
+            state
+                .intents
+                .entry(id.to_owned())
+                .or_insert_with(|| {
+                    ObjectiveObservation::new(Some(id.to_owned()), ObjectiveStage::Queued)
+                })
+                .clone()
+        } else {
+            state.availability.clone()
+        };
+        let entry = QueuedCommand {
+            command,
+            end: Instant::now() + ACTION_LIFETIME,
+        };
         match &entry.command {
             ObjectiveCommand::Submit { .. } | ObjectiveCommand::Cancel { .. } => {
                 if state.actions.len() == ACTION_CAPACITY {
@@ -98,14 +108,23 @@ impl NotesUiQueue {
     pub(crate) fn take(&self, now: Instant) -> Result<Option<QueuedCommand>, ()> {
         let mut state = self.state.lock().map_err(|_| ())?;
         loop {
-            let entry = state.actions.pop_front().or_else(|| state.passive.pop_front());
-            let Some(entry) = entry else { return Ok(None); };
-            if now < entry.end { return Ok(Some(entry)); }
+            let entry = state
+                .actions
+                .pop_front()
+                .or_else(|| state.passive.pop_front());
+            let Some(entry) = entry else {
+                return Ok(None);
+            };
+            if now < entry.end {
+                return Ok(Some(entry));
+            }
             let view = match entry.command.client_intent_id() {
                 Some(id) => state.intents.get_mut(id).ok_or(())?,
                 None => &mut state.availability,
             };
-            if !view.request_retained { view.stage = ObjectiveStage::Unavailable; }
+            if !view.request_retained {
+                view.stage = ObjectiveStage::Unavailable;
+            }
             view.issue = Some(ObjectiveHostIssue::Unavailable);
         }
     }
@@ -115,7 +134,9 @@ impl NotesUiQueue {
         if let Some(id) = &view.client_intent_id {
             let previous = state.intents.get_mut(id).ok_or(())?;
             *previous = view;
-        } else { state.availability = view; }
+        } else {
+            state.availability = view;
+        }
         Ok(())
     }
 

@@ -12,13 +12,23 @@ impl PreparedRootAgentdConfig {
             // SAFETY: these calls read only the actual process credentials.
             || unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0
         {
-            return Err(root_error("credential drop requires the same actual Root child"));
+            return Err(root_error(
+                "credential drop requires the same actual Root child",
+            ));
         }
         require_single_thread()?;
         // SAFETY: these process attribute operations have scalar arguments and
         // are performed in the sole thread before any runtime worker exists.
         if unsafe { libc::prctl(libc::PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) } != 0
-            || unsafe { libc::prctl(libc::PR_CAP_AMBIENT, libc::PR_CAP_AMBIENT_CLEAR_ALL, 0, 0, 0) } != 0
+            || unsafe {
+                libc::prctl(
+                    libc::PR_CAP_AMBIENT,
+                    libc::PR_CAP_AMBIENT_CLEAR_ALL,
+                    0,
+                    0,
+                    0,
+                )
+            } != 0
         {
             return Err(std::io::Error::last_os_error().into());
         }
@@ -42,25 +52,49 @@ impl PreparedRootAgentdConfig {
         // setgroups receives a zero count and no array. All real/effective/saved
         // IDs use the already validated dedicated owner, never a -1 sentinel.
         if unsafe { libc::setgroups(0, std::ptr::null()) } != 0
-            || unsafe { libc::setresgid(self.expected_gid, self.expected_gid, self.expected_gid) } != 0
-            || unsafe { libc::setresuid(self.expected_uid, self.expected_uid, self.expected_uid) } != 0
+            || unsafe { libc::setresgid(self.expected_gid, self.expected_gid, self.expected_gid) }
+                != 0
+            || unsafe { libc::setresuid(self.expected_uid, self.expected_uid, self.expected_uid) }
+                != 0
         {
             return Err(std::io::Error::last_os_error().into());
         }
         #[repr(C)]
-        struct Header { version: u32, pid: i32 }
+        struct Header {
+            version: u32,
+            pid: i32,
+        }
         #[repr(C)]
-        struct Data { effective: u32, permitted: u32, inheritable: u32 }
-        let header = Header { version: 0x2008_0522, pid: 0 };
-        let data = [Data { effective: 0, permitted: 0, inheritable: 0 },
-                    Data { effective: 0, permitted: 0, inheritable: 0 }];
+        struct Data {
+            effective: u32,
+            permitted: u32,
+            inheritable: u32,
+        }
+        let header = Header {
+            version: 0x2008_0522,
+            pid: 0,
+        };
+        let data = [
+            Data {
+                effective: 0,
+                permitted: 0,
+                inheritable: 0,
+            },
+            Data {
+                effective: 0,
+                permitted: 0,
+                inheritable: 0,
+            },
+        ];
         // SAFETY: Linux capability ABI v3 uses one Header and exactly two Data
         // records; both remain live through this synchronous sole-thread call.
         if unsafe { libc::syscall(libc::SYS_capset, &header, data.as_ptr()) } != 0 {
             return Err(std::io::Error::last_os_error().into());
         }
         crate::authority_host_runtime::verify_process_credentials(
-            self.process_id, self.expected_uid, self.expected_gid,
+            self.process_id,
+            self.expected_uid,
+            self.expected_gid,
         )?;
         require_single_thread()?;
         Ok(self)
@@ -69,9 +103,16 @@ impl PreparedRootAgentdConfig {
 
 fn require_single_thread() -> Result<(), AgentdError> {
     let mut tasks = std::fs::read_dir("/proc/self/task")?;
-    let first = tasks.next().transpose()?.ok_or_else(|| root_error("current process task missing"))?;
-    if first.file_name() != std::process::id().to_string().as_str() || tasks.next().transpose()?.is_some() {
-        return Err(root_error("Root credential drop must precede runtime thread creation"));
+    let first = tasks
+        .next()
+        .transpose()?
+        .ok_or_else(|| root_error("current process task missing"))?;
+    if first.file_name() != std::process::id().to_string().as_str()
+        || tasks.next().transpose()?.is_some()
+    {
+        return Err(root_error(
+            "Root credential drop must precede runtime thread creation",
+        ));
     }
     Ok(())
 }

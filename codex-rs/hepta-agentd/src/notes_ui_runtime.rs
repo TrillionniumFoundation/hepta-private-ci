@@ -2,11 +2,11 @@
 //! No external worker runtime, second writer or unmanaged service is started.
 
 use super::*;
-use std::os::fd::OwnedFd;
-use tokio_util::sync::CancellationToken;
 use crate::AgentdNotesUiPeer;
 use crate::notes_ui_endpoint::NotesUiEndpoint;
 use crate::notes_ui_queue::NotesUiQueue;
+use std::os::fd::OwnedFd;
+use tokio_util::sync::CancellationToken;
 
 pub struct AgentdNotesUiRuntime {
     endpoint: NotesUiEndpoint,
@@ -29,12 +29,18 @@ impl AgentdNotesUiRuntime {
     }
 
     pub(crate) fn validate_for(&self, config: &AgentdConfig) -> Result<(), AgentdError> {
-        let host = config.production_writer_host()
+        let host = config
+            .production_writer_host()
             .ok_or(AgentdError::CognitiveWriteRuntimeUnavailable)?;
         if self.adapter.identity != *config.identity()
             || !Arc::ptr_eq(&self.adapter.writer, &host.writer())
-            || config.notes_objective().as_ref().map(|notes| &notes.target) != Some(self.adapter.observer.target())
-        { return Err(invalid("Notes UI adapter differs from this original runtime writer/target")); }
+            || config.notes_objective().as_ref().map(|notes| &notes.target)
+                != Some(self.adapter.observer.target())
+        {
+            return Err(invalid(
+                "Notes UI adapter differs from this original runtime writer/target",
+            ));
+        }
         self.endpoint.check_alive()?;
         self.adapter.check_available()
     }

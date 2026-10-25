@@ -59,7 +59,8 @@ async fn notes_objective_previous_receipt_host_reconciles_without_registering_di
     )?;
     let observer = AgentdNotesDocumentObserver::new(target.document_observer());
     let writer = host.writer();
-    let operations = operations.with_additional_target(final_use, Arc::new(target))?
+    let operations = operations
+        .with_additional_target(final_use, Arc::new(target))?
         .with_notes_receipt_recovery(observer.clone())?;
     let expected_old = old.clone();
     let peer = std::thread::spawn(move || -> Result<(), String> {

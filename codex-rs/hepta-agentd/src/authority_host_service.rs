@@ -130,13 +130,23 @@ impl HostAuthorityService {
         lifetime_ms: u64,
     ) -> io::Result<Self> {
         if self.notes.is_some() {
-            return Err(io::Error::other("the original Notes route is already registered"));
+            return Err(io::Error::other(
+                "the original Notes route is already registered",
+            ));
         }
-        let registry = self.root_registry.as_ref()
-            .ok_or_else(|| io::Error::other("retained original Root Registry required for Notes"))?;
-        let writer = self.writer.as_ref().ok_or_else(|| io::Error::other("original registered writer required"))?;
+        let registry = self.root_registry.as_ref().ok_or_else(|| {
+            io::Error::other("retained original Root Registry required for Notes")
+        })?;
+        let writer = self
+            .writer
+            .as_ref()
+            .ok_or_else(|| io::Error::other("original registered writer required"))?;
         let notes = crate::RootNotesGrantAdmission::from_registered_notes(
-            &self.issuer, Arc::clone(registry), writer.registration.clone(), target, lifetime_ms,
+            &self.issuer,
+            Arc::clone(registry),
+            writer.registration.clone(),
+            target,
+            lifetime_ms,
         )?;
         self.with_registered_notes(notes)
     }

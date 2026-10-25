@@ -102,11 +102,16 @@ pub(super) fn read(
     if value.schema != "hepta.agentd.original_notes_launch.v1"
         || value.agent_id != identity.agent_id.as_str()
         || value.spawn_generation != identity.spawn_generation
-        || owner == 0 || value.session.uid != owner
-        || value.session.pid == 0 || value.session.pid > i32::MAX as u32
-        || value.session.process_start_ticks == 0 || value.session.boot_id.len() != 36
+        || owner == 0
+        || value.session.uid != owner
+        || value.session.pid == 0
+        || value.session.pid > i32::MAX as u32
+        || value.session.process_start_ticks == 0
+        || value.session.boot_id.len() != 36
     {
-        return Err(invalid("deployment differs from actual Agentd/Session identity"));
+        return Err(invalid(
+            "deployment differs from actual Agentd/Session identity",
+        ));
     }
     let bindings = value.bindings;
     let frozen = AgentdNotesLiteralBindings {
@@ -122,25 +127,40 @@ pub(super) fn read(
         prompt_registry_digest: digest(&bindings.prompt_registry_digest)?,
         artifact_set_digest: digest(&bindings.artifact_set_digest)?,
     };
-    let previous_recovery = value.previous_recovery.map(|previous| {
-        Ok::<_, AgentdError>(AgentdNotesPreviousRecoveryLaunch {
-            helper: previous.helper,
-            helper_sha256: Sha256Digest::parse(previous.helper_sha256).map_err(AgentdError::Invalid)?,
-            state_directory: previous.state_directory,
-            previous_target: previous.previous_target,
-            operation_id: previous.operation_id,
+    let previous_recovery = value
+        .previous_recovery
+        .map(|previous| {
+            Ok::<_, AgentdError>(AgentdNotesPreviousRecoveryLaunch {
+                helper: previous.helper,
+                helper_sha256: Sha256Digest::parse(previous.helper_sha256)
+                    .map_err(AgentdError::Invalid)?,
+                state_directory: previous.state_directory,
+                previous_target: previous.previous_target,
+                operation_id: previous.operation_id,
+            })
         })
-    }).transpose()?;
-    let startup_release = value.startup_release.map(|release| AgentdNotesStartupRelease {
-        target: release.target,
-        nonce: release.nonce,
-    });
-    Ok(NotesDeployment { bindings: frozen, peer: value.session, previous_recovery, startup_release })
+        .transpose()?;
+    let startup_release = value
+        .startup_release
+        .map(|release| AgentdNotesStartupRelease {
+            target: release.target,
+            nonce: release.nonce,
+        });
+    Ok(NotesDeployment {
+        bindings: frozen,
+        peer: value.session,
+        previous_recovery,
+        startup_release,
+    })
 }
 
 fn digest(value: &str) -> Result<Digest32, AgentdError> {
-    let digest = value.parse::<Digest32>().map_err(|error| invalid(&error.to_string()))?;
-    if digest.is_zero() { return Err(invalid("original frozen digest is absent")); }
+    let digest = value
+        .parse::<Digest32>()
+        .map_err(|error| invalid(&error.to_string()))?;
+    if digest.is_zero() {
+        return Err(invalid("original frozen digest is absent"));
+    }
     Ok(digest)
 }
 

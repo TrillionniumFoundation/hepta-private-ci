@@ -126,7 +126,9 @@ impl AgentdControlServer {
                 accepted = self.listener.accept() => accepted?,
             };
             #[cfg(target_os = "linux")]
-            if self.owned_socket_path.is_none() && stream.ensure_current_user_or_root_peer().is_err() {
+            if self.owned_socket_path.is_none()
+                && stream.ensure_current_user_or_root_peer().is_err()
+            {
                 continue;
             }
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
@@ -149,7 +151,9 @@ impl AgentdControlServer {
 
 impl Drop for AgentdControlServer {
     fn drop(&mut self) {
-        let Some(path) = &self.owned_socket_path else { return; };
+        let Some(path) = &self.owned_socket_path else {
+            return;
+        };
         if let Err(error) = std::fs::remove_file(path)
             && error.kind() != ErrorKind::NotFound
         {

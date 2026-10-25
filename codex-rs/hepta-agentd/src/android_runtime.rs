@@ -74,12 +74,20 @@ impl AgentdAndroidRuntimeInputs {
         .await
         .map_err(|_| AgentdError::Protocol("original Android MCP bootstrap expired".into()))?
         .map_err(|error| AgentdError::Protocol(format!("original Android MCP binding: {error}")))?;
-        if tools.into_iter().any(|tool| session.tool_approval_mode(tool) != Some(AppToolApproval::Approve)) {
+        if tools
+            .into_iter()
+            .any(|tool| session.tool_approval_mode(tool) != Some(AppToolApproval::Approve))
+        {
             return Err(AgentdError::Invalid(
                 "original Android Runtime tools require explicit unattended approval in the existing MCP policy".into(),
             ));
         }
-        Ok(Self { session: AgentdAndroidRuntimeSession::Managed(session), runtime, payload_json, deadline })
+        Ok(Self {
+            session: AgentdAndroidRuntimeSession::Managed(session),
+            runtime,
+            payload_json,
+            deadline,
+        })
     }
 }
 
@@ -118,7 +126,13 @@ pub struct AgentdAndroidTextDevice {
 /// Agentd lifetime and attach the existing Device FinalUse owner before use.
 pub fn prepare_android_runtime_target(
     inputs: AgentdAndroidRuntimeInputs,
-) -> Result<(Arc<ProductionAndroidTextTarget>, Arc<AgentdAndroidTextDevice>), AgentdError> {
+) -> Result<
+    (
+        Arc<ProductionAndroidTextTarget>,
+        Arc<AgentdAndroidTextDevice>,
+    ),
+    AgentdError,
+> {
     let (device, payload) = AgentdAndroidTextDevice::new(inputs).map_err(AgentdError::Invalid)?;
     let device = Arc::new(device);
     let target = ProductionAndroidTextTarget::new(&payload.observation, device.clone())
@@ -289,10 +303,7 @@ impl AgentdProductionOperationRuntimeConfig {
             AgentdError::Protocol("Android recovered-owner validation expired".to_string())
         })??;
         let (target, device) = prepare_android_runtime_target(inputs)?;
-        Ok((
-            self.with_additional_target(final_use, target)?,
-            device,
-        ))
+        Ok((self.with_additional_target(final_use, target)?, device))
     }
 }
 

@@ -26,7 +26,10 @@ impl HostAuthorityPeerChannel {
     /// handshake, then close this channel. The peer's original pidfd and the
     /// existing request/session deadlines bound the syscall. Error never
     /// rearms the channel or restores the caller's send opportunity.
-    pub fn send_one_descriptor(mut self, descriptor: OwnedFd) -> Result<(), HostIssuerTransportError> {
+    pub fn send_one_descriptor(
+        mut self,
+        descriptor: OwnedFd,
+    ) -> Result<(), HostIssuerTransportError> {
         let stream = self.stream.take().ok_or(HostIssuerTransportError::Closed)?;
         let deadline = self.owner.deadline(self.policy.timeout);
         let result = (|| {
@@ -39,7 +42,12 @@ impl HostAuthorityPeerChannel {
                 if !control.push(SendAncillaryMessage::ScmRights(&descriptors)) {
                     return Err(HostIssuerTransportError::InvalidConfiguration);
                 }
-                match rustix::net::sendmsg(&stream, &[IoSlice::new(&[MARKER])], &mut control, SendFlags::NOSIGNAL) {
+                match rustix::net::sendmsg(
+                    &stream,
+                    &[IoSlice::new(&[MARKER])],
+                    &mut control,
+                    SendFlags::NOSIGNAL,
+                ) {
                     Ok(1) => break,
                     Ok(_) => return Err(HostIssuerTransportError::Unavailable),
                     Err(rustix::io::Errno::INTR | rustix::io::Errno::AGAIN) => continue,
@@ -69,7 +77,12 @@ impl HostAuthorityPeerChannel {
                 // the kernel closes rights discarded on ancillary truncation.
                 let mut space = [MaybeUninit::uninit(); rustix::cmsg_space!(ScmRights(8))];
                 let mut control = RecvAncillaryBuffer::new(&mut space);
-                let message = match rustix::net::recvmsg(&stream, &mut buffers, &mut control, RecvFlags::CMSG_CLOEXEC) {
+                let message = match rustix::net::recvmsg(
+                    &stream,
+                    &mut buffers,
+                    &mut control,
+                    RecvFlags::CMSG_CLOEXEC,
+                ) {
                     Ok(message) => message,
                     Err(rustix::io::Errno::INTR | rustix::io::Errno::AGAIN) => continue,
                     Err(error) => return Err(io_error(error)),
@@ -82,13 +95,19 @@ impl HostAuthorityPeerChannel {
                         _ => valid = false,
                     }
                 }
-                if !valid || message.bytes != 1 || byte != [MARKER]
-                    || message.flags.intersects(ReturnFlags::CTRUNC | ReturnFlags::TRUNC)
+                if !valid
+                    || message.bytes != 1
+                    || byte != [MARKER]
+                    || message
+                        .flags
+                        .intersects(ReturnFlags::CTRUNC | ReturnFlags::TRUNC)
                     || descriptors.len() != 1
                 {
                     return Err(HostIssuerTransportError::Unavailable);
                 }
-                break descriptors.pop().ok_or(HostIssuerTransportError::Unavailable)?;
+                break descriptors
+                    .pop()
+                    .ok_or(HostIssuerTransportError::Unavailable)?;
             };
             let mut trailing = [0_u8];
             if self.owner.read(&mut stream, &mut trailing, deadline)? != 0 {

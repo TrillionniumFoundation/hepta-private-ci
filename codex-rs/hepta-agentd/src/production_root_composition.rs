@@ -45,8 +45,15 @@ pub async fn attach_root_production_operation_host(
     notes_bootstrap: Option<UnixDatagram>,
     reconcile_interval: Duration,
 ) -> Result<AgentdRootProductionAttachment, AgentdError> {
-    attach_root_production_operation_host_with_startup(config, inputs, primary_target,
-        notes_bootstrap, reconcile_interval, /*release*/ None).await
+    attach_root_production_operation_host_with_startup(
+        config,
+        inputs,
+        primary_target,
+        notes_bootstrap,
+        reconcile_interval,
+        /*release*/ None,
+    )
+    .await
 }
 
 /// The explicit staged counterpart activates the exact Root-sealed Session
@@ -63,12 +70,15 @@ pub async fn attach_root_production_operation_host_with_startup(
     if let Some(release) = &release {
         release.validate()?;
         if notes_bootstrap.is_none() {
-            return Err(AgentdError::Invalid("Notes startup release requires its actual inherited channel".into()));
+            return Err(AgentdError::Invalid(
+                "Notes startup release requires its actual inherited channel".into(),
+            ));
         }
     }
     if reconcile_interval.is_zero() || primary_target.destination_id().is_empty() {
         return Err(AgentdError::Invalid(
-            "original Root composition requires an actual primary target and nonzero interval".into(),
+            "original Root composition requires an actual primary target and nonzero interval"
+                .into(),
         ));
     }
     let AgentdRootProductionInputs {
@@ -124,8 +134,13 @@ pub async fn attach_root_production_operation_host_with_startup(
                 crate::notes_bootstrap::activate_startup(&channel, release)?;
             }
             let (operations, _identity, observer) = operations
-                .with_notes_from_session_expected(config, &host, channel, notes,
-                    release.as_ref().map(|release| &release.target))
+                .with_notes_from_session_expected(
+                    config,
+                    &host,
+                    channel,
+                    notes,
+                    release.as_ref().map(|release| &release.target),
+                )
                 .await?;
             let operations = operations.with_notes_receipt_recovery(observer.clone())?;
             (operations, Some(observer))
@@ -155,8 +170,14 @@ pub async fn attach_root_notes_operation_host(
     notes_bootstrap: UnixDatagram,
     reconcile_interval: Duration,
 ) -> Result<AgentdRootProductionAttachment, AgentdError> {
-    attach_root_notes_operation_host_with_startup(config, inputs, notes_bootstrap,
-        reconcile_interval, /*release*/ None).await
+    attach_root_notes_operation_host_with_startup(
+        config,
+        inputs,
+        notes_bootstrap,
+        reconcile_interval,
+        /*release*/ None,
+    )
+    .await
 }
 
 /// Notes-only staged profile; the ordinary direct profile delegates with no
@@ -169,36 +190,70 @@ pub async fn attach_root_notes_operation_host_with_startup(
     release: Option<crate::AgentdNotesStartupRelease>,
 ) -> Result<AgentdRootProductionAttachment, AgentdError> {
     config.require_unconfigured_production_hosts()?;
-    if let Some(release) = &release { release.validate()?; }
-    if reconcile_interval.is_zero() {
-        return Err(AgentdError::Invalid("Notes reconciliation interval must be nonzero".into()));
+    if let Some(release) = &release {
+        release.validate()?;
     }
-    let AgentdRootProductionInputs { session, checkpoint, device: _device, notes, grants, bootstrap } = inputs;
+    if reconcile_interval.is_zero() {
+        return Err(AgentdError::Invalid(
+            "Notes reconciliation interval must be nonzero".into(),
+        ));
+    }
+    let AgentdRootProductionInputs {
+        session,
+        checkpoint,
+        device: _device,
+        notes,
+        grants,
+        bootstrap,
+    } = inputs;
     // The retained live Root session already holds clones of both original
     // FinalUse owners. The unused Device owner acquires no target or effect.
     bootstrap.writer.validate()?;
     if bootstrap.writer.registered_agent_id != config.identity().agent_id
         || bootstrap.writer.spawn_generation != config.identity().spawn_generation
-    { return Err(AgentdError::GenerationFenced("Root Notes handoff differs from actual Agentd identity".into())); }
+    {
+        return Err(AgentdError::GenerationFenced(
+            "Root Notes handoff differs from actual Agentd identity".into(),
+        ));
+    }
     let root_session = Arc::new(session);
     let authority = root_session.authority();
     let verifier = root_session.verifier();
-    verifier.verify(&authority, &config.identity().agent_id).map_err(AgentdError::GenerationFenced)?;
+    verifier
+        .verify(&authority, &config.identity().agent_id)
+        .map_err(AgentdError::GenerationFenced)?;
     let (host, checkpoint) = AgentdProductionWriterHost::open_with_protected_recovery(
-        config, authority, Arc::clone(&verifier), bootstrap.writer.local_lease_id,
-        bootstrap.writer.local_lease_generation, checkpoint,
-    ).await?;
+        config,
+        authority,
+        Arc::clone(&verifier),
+        bootstrap.writer.local_lease_id,
+        bootstrap.writer.local_lease_generation,
+        checkpoint,
+    )
+    .await?;
     if let Some(release) = &release {
         host.writer().verify_current_authority().await?;
         crate::notes_bootstrap::activate_startup(&notes_bootstrap, release)?;
     }
     let operation_grants: Arc<dyn AgentdFinalUseGrantProvider> = grants.clone();
     let (operations, observer) = crate::notes_bootstrap::primary_notes_runtime(
-        config, &host, notes_bootstrap, notes, operation_grants, verifier, reconcile_interval,
+        config,
+        &host,
+        notes_bootstrap,
+        notes,
+        operation_grants,
+        verifier,
+        reconcile_interval,
         release.as_ref().map(|release| &release.target),
-    ).await?;
+    )
+    .await?;
     let operations = operations.with_notes_receipt_recovery(observer.clone())?;
     // The same final live verifier and atomic installer as the joint profile.
     config.install_production_hosts(Arc::new(host), operations)?;
-    Ok(AgentdRootProductionAttachment { root_session, checkpoint, grants, notes: Some(observer) })
+    Ok(AgentdRootProductionAttachment {
+        root_session,
+        checkpoint,
+        grants,
+        notes: Some(observer),
+    })
 }

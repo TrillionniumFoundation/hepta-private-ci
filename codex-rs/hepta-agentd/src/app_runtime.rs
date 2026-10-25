@@ -56,24 +56,38 @@ pub(crate) async fn run_app_server(
         production_mutation,
     )?;
     let result = match socket {
-        AppServerSocket::Bind => codex_app_server::run_main_with_transport_options(
-            arg0_paths, config_overrides, LoaderOverrides::default(),
-            /*strict_config*/ true, /*default_analytics_enabled*/ false,
-            AppServerTransport::UnixSocket { socket_path },
-            SessionSource::Custom("hepta-agentd".to_string()),
-            AppServerWebsocketAuthSettings::default(), runtime_options,
-        ).await,
+        AppServerSocket::Bind => {
+            codex_app_server::run_main_with_transport_options(
+                arg0_paths,
+                config_overrides,
+                LoaderOverrides::default(),
+                /*strict_config*/ true,
+                /*default_analytics_enabled*/ false,
+                AppServerTransport::UnixSocket { socket_path },
+                SessionSource::Custom("hepta-agentd".to_string()),
+                AppServerWebsocketAuthSettings::default(),
+                runtime_options,
+            )
+            .await
+        }
         #[cfg(target_os = "linux")]
         AppServerSocket::RootBound(socket) => {
             let socket = crate::listen_root_bound_socket(socket, socket_path.as_path())
                 .map_err(std::io::Error::other)?;
-            let listener = codex_app_server::InheritedControlSocket::from_inherited(socket, socket_path)?;
+            let listener =
+                codex_app_server::InheritedControlSocket::from_inherited(socket, socket_path)?;
             codex_app_server::run_main_with_inherited_unix_listener(
-                arg0_paths, config_overrides, LoaderOverrides::default(),
-                /*strict_config*/ true, /*default_analytics_enabled*/ false,
-                listener, SessionSource::Custom("hepta-agentd".to_string()),
-                AppServerWebsocketAuthSettings::default(), runtime_options,
-            ).await
+                arg0_paths,
+                config_overrides,
+                LoaderOverrides::default(),
+                /*strict_config*/ true,
+                /*default_analytics_enabled*/ false,
+                listener,
+                SessionSource::Custom("hepta-agentd".to_string()),
+                AppServerWebsocketAuthSettings::default(),
+                runtime_options,
+            )
+            .await
         }
     };
     result.map_err(|error| {

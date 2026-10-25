@@ -35,33 +35,48 @@ impl AgentdConfig {
         expected_gid: u32,
     ) -> Result<PreparedRootAgentdConfig, AgentdError> {
         // SAFETY: getuid/geteuid read this process's actual kernel credentials.
-        if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0
-            || matches!(expected_uid, 0 | u32::MAX) || matches!(expected_gid, 0 | u32::MAX)
+        if unsafe { libc::getuid() } != 0
+            || unsafe { libc::geteuid() } != 0
+            || matches!(expected_uid, 0 | u32::MAX)
+            || matches!(expected_gid, 0 | u32::MAX)
         {
-            return Err(AgentdError::Invalid("Root preparation requires actual Root and a dedicated non-Root UID/GID".into()));
+            return Err(AgentdError::Invalid(
+                "Root preparation requires actual Root and a dedicated non-Root UID/GID".into(),
+            ));
         }
         self.require_unconfigured_production_hosts()?;
         let agent = pin_control_directory(self.identity.layout.agent_root(), expected_gid)?;
         let run = pin_control_directory(self.identity.layout.run_root(), expected_gid)?;
         let descriptor = self._writer_lock.metadata()?;
         let path = std::fs::symlink_metadata(self.identity.layout.writer_lock())?;
-        if !descriptor.is_file() || !path.is_file() || descriptor.uid() != 0 || path.uid() != 0
-            || descriptor.nlink() != 1 || path.nlink() != 1
-            || descriptor.dev() != path.dev() || descriptor.ino() != path.ino()
+        if !descriptor.is_file()
+            || !path.is_file()
+            || descriptor.uid() != 0
+            || path.uid() != 0
+            || descriptor.nlink() != 1
+            || path.nlink() != 1
+            || descriptor.dev() != path.dev()
+            || descriptor.ino() != path.ino()
         {
             return Err(root_error("original Root writer lock custody differs"));
         }
         // Tighten the original descriptor while its Root0700 parent is retained.
         // The descriptor remains open across credential drop; it is never made
         // writable by path to the unprivileged process.
-        self._writer_lock.set_permissions(std::fs::Permissions::from_mode(0o600))?;
+        self._writer_lock
+            .set_permissions(std::fs::Permissions::from_mode(0o600))?;
         let record = self.registry.load_agent(&self.identity.agent_id)?;
         require_starting(&self.identity, &record)?;
         self._writer_lock.unlock()?;
         Ok(PreparedRootAgentdConfig {
-            process_id: std::process::id(), expected_uid, expected_gid,
-            lock_device: descriptor.dev(), lock_inode: descriptor.ino(), config: self,
-            _agent_custody: agent, _run_custody: run,
+            process_id: std::process::id(),
+            expected_uid,
+            expected_gid,
+            lock_device: descriptor.dev(),
+            lock_inode: descriptor.ino(),
+            config: self,
+            _agent_custody: agent,
+            _run_custody: run,
         })
     }
 }
@@ -75,20 +90,28 @@ impl PreparedRootAgentdConfig {
     /// before handing over its sealed inputs. Reacquire the same retained file
     /// description only in the exact same, now unprivileged process, then
     /// repeat the original Registry and live writer-authority checks.
-    pub fn finish(self, inputs: &crate::AgentdRootProductionInputs) -> Result<AgentdConfig, AgentdError> {
+    pub fn finish(
+        self,
+        inputs: &crate::AgentdRootProductionInputs,
+    ) -> Result<AgentdConfig, AgentdError> {
         let identity = self.config.identity();
         // SAFETY: these calls read only the current kernel credentials.
         let (uid, gid) = unsafe { (libc::geteuid(), libc::getegid()) };
-        if std::process::id() != self.process_id || uid != self.expected_uid || gid != self.expected_gid
+        if std::process::id() != self.process_id
+            || uid != self.expected_uid
+            || gid != self.expected_gid
             || inputs.bootstrap.consumer.pid != self.process_id
             || inputs.bootstrap.consumer.uid != uid
             || inputs.bootstrap.registered_identity.identity()? != *identity
             || std::env::current_dir()?.canonicalize()? != identity.workspace
         {
-            return Err(root_error("prepared original configuration differs from actual Root handoff or process"));
+            return Err(root_error(
+                "prepared original configuration differs from actual Root handoff or process",
+            ));
         }
         let registration = crate::authority_host_config::HostAuthorityRegistration {
-            schema_version: 1, peer_pid: self.process_id,
+            schema_version: 1,
+            peer_pid: self.process_id,
             boot_id: inputs.bootstrap.consumer.boot_id.clone(),
             process_start_ticks: inputs.bootstrap.consumer.process_start_ticks,
             registered_identity: inputs.bootstrap.registered_identity.clone(),
@@ -99,26 +122,48 @@ impl PreparedRootAgentdConfig {
         for directory in [identity.layout.agent_root(), identity.layout.run_root()] {
             let metadata = std::fs::symlink_metadata(directory)?;
             if !metadata.is_dir() || metadata.uid() != 0 || metadata.mode() & 0o022 != 0 {
-                return Err(root_error("original Registry custody must remain Root-owned without shared writes"));
+                return Err(root_error(
+                    "original Registry custody must remain Root-owned without shared writes",
+                ));
             }
         }
         let path = std::fs::symlink_metadata(identity.layout.writer_lock())?;
         let descriptor = self.config._writer_lock.metadata()?;
-        if !path.is_file() || !descriptor.is_file() || path.uid() != 0 || descriptor.uid() != 0
-            || path.nlink() != 1 || descriptor.nlink() != 1
-            || path.mode() & 0o7777 != 0o600 || descriptor.mode() & 0o7777 != 0o600
-            || path.dev() != self.lock_device || descriptor.dev() != self.lock_device
-            || path.ino() != self.lock_inode || descriptor.ino() != self.lock_inode
+        if !path.is_file()
+            || !descriptor.is_file()
+            || path.uid() != 0
+            || descriptor.uid() != 0
+            || path.nlink() != 1
+            || descriptor.nlink() != 1
+            || path.mode() & 0o7777 != 0o600
+            || descriptor.mode() & 0o7777 != 0o600
+            || path.dev() != self.lock_device
+            || descriptor.dev() != self.lock_device
+            || path.ino() != self.lock_inode
+            || descriptor.ino() != self.lock_inode
         {
-            return Err(root_error("the retained original writer lock was replaced or made peer-writable"));
+            return Err(root_error(
+                "the retained original writer lock was replaced or made peer-writable",
+            ));
         }
-        let verify = || inputs.session.verifier().verify_sender_process_binding(
-            &inputs.session.authority(), &identity.agent_id,
-            &inputs.bootstrap.writer.local_lease_id, inputs.bootstrap.writer.local_lease_generation,
-            identity.spawn_generation,
-        ).map_err(AgentdError::GenerationFenced);
+        let verify = || {
+            inputs
+                .session
+                .verifier()
+                .verify_sender_process_binding(
+                    &inputs.session.authority(),
+                    &identity.agent_id,
+                    &inputs.bootstrap.writer.local_lease_id,
+                    inputs.bootstrap.writer.local_lease_generation,
+                    identity.spawn_generation,
+                )
+                .map_err(AgentdError::GenerationFenced)
+        };
         verify()?;
-        self.config._writer_lock.try_lock().map_err(|error| root_error(format!("original writer lock is still owned: {error}")))?;
+        self.config
+            ._writer_lock
+            .try_lock()
+            .map_err(|error| root_error(format!("original writer lock is still owned: {error}")))?;
         let record = self.config.registry.load_agent(&identity.agent_id)?;
         require_starting(identity, &record)?;
         verify()?;
@@ -126,13 +171,19 @@ impl PreparedRootAgentdConfig {
     }
 }
 
-fn require_starting(identity: &AgentdIdentity, record: &codex_hepta_fleet::AgentRecord) -> Result<(), AgentdError> {
+fn require_starting(
+    identity: &AgentdIdentity,
+    record: &codex_hepta_fleet::AgentRecord,
+) -> Result<(), AgentdError> {
     if record.lifecycle.lifecycle != AgentLifecycle::Starting
         || record.lifecycle.generation != identity.spawn_generation
-        || record.layout != identity.layout || record.manifest.workspace.as_path() != identity.workspace
+        || record.layout != identity.layout
+        || record.manifest.workspace.as_path() != identity.workspace
         || record.manifest.resources != identity.resources
     {
-        return Err(root_error("original Registry Starting record changed during Root handoff"));
+        return Err(root_error(
+            "original Registry Starting record changed during Root handoff",
+        ));
     }
     Ok(())
 }
@@ -142,21 +193,30 @@ fn root_error(error: impl std::fmt::Display) -> AgentdError {
 }
 
 fn pin_control_directory(path: &Path, expected_gid: u32) -> Result<File, AgentdError> {
-    let file = OpenOptions::new().read(true)
-        .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC).open(path)?;
+    let file = OpenOptions::new()
+        .read(true)
+        .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC)
+        .open(path)?;
     let metadata = file.metadata()?;
     let original = std::fs::symlink_metadata(path)?;
-    if !metadata.is_dir() || !original.is_dir() || metadata.uid() != 0
-        || metadata.dev() != original.dev() || metadata.ino() != original.ino()
+    if !metadata.is_dir()
+        || !original.is_dir()
+        || metadata.uid() != 0
+        || metadata.dev() != original.dev()
+        || metadata.ino() != original.ino()
         || !(metadata.mode() & 0o7777 == 0o700
             || (metadata.mode() & 0o7777 == 0o2750 && metadata.gid() == expected_gid))
     {
-        return Err(root_error("original control directory must retain private Root or exact read-only peer-group custody"));
+        return Err(root_error(
+            "original control directory must retain private Root or exact read-only peer-group custody",
+        ));
     }
     for ancestor in path.ancestors() {
         let entry = std::fs::symlink_metadata(ancestor)?;
         if !entry.is_dir() || entry.uid() != 0 || entry.mode() & 0o022 != 0 {
-            return Err(root_error("original control directory has a mutable or non-Root ancestor"));
+            return Err(root_error(
+                "original control directory has a mutable or non-Root ancestor",
+            ));
         }
     }
     Ok(file)

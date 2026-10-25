@@ -76,22 +76,41 @@ impl AgentdProductionStartup {
         let startup = match inputs {
             None => Startup::Ordinary(Box::new(config)),
             Some(inputs) => {
-                let LaunchInputs { handoff, uid, gid, control, app_server,
-                    primary, bootstrap_deadline, notes, notes_ui, lifetime } = inputs;
-                let config = config
-                    .prepare_root_handoff(uid, gid)?
-                    .drop_to_owner()?;
+                let LaunchInputs {
+                    handoff,
+                    uid,
+                    gid,
+                    control,
+                    app_server,
+                    primary,
+                    bootstrap_deadline,
+                    notes,
+                    notes_ui,
+                    lifetime,
+                } = inputs;
+                let config = config.prepare_root_handoff(uid, gid)?.drop_to_owner()?;
                 // Root grants the original home/data access before capturing
                 // this late handoff. Wait before arg0 creates helper aliases
                 // under the final owner; doing so in the later async callback
                 // would race those aliases against the filesystem handoff.
                 let (bootstrap, root_pidfd) = crate::receive_root_production_handoff(
-                    handoff, remaining(bootstrap_deadline)?,
+                    handoff,
+                    remaining(bootstrap_deadline)?,
                 )?;
-                let inputs = RuntimeInputs { primary, notes, notes_ui };
+                let inputs = RuntimeInputs {
+                    primary,
+                    notes,
+                    notes_ui,
+                };
                 Startup::Root(Box::new(RootStartup {
-                    config, bootstrap, root_pidfd, control, app_server, lifetime,
-                    deadline: bootstrap_deadline, inputs,
+                    config,
+                    bootstrap,
+                    root_pidfd,
+                    control,
+                    app_server,
+                    lifetime,
+                    deadline: bootstrap_deadline,
+                    inputs,
                 }))
             }
         };
@@ -113,13 +132,26 @@ impl AgentdProductionStartup {
         match self.0 {
             Startup::Ordinary(config) => Ok((*config, None)),
             Startup::Root(root) => {
-                let RootStartup { config, bootstrap, root_pidfd, control, app_server,
-                    lifetime, deadline, inputs } = *root;
+                let RootStartup {
+                    config,
+                    bootstrap,
+                    root_pidfd,
+                    control,
+                    app_server,
+                    lifetime,
+                    deadline,
+                    inputs,
+                } = *root;
                 let root = crate::receive_root_production_inputs(
-                    bootstrap, root_pidfd, config.identity(),
-                    remaining(deadline)?.min(Duration::from_millis(500)), lifetime,
-                ).await?;
-                let config = config.finish(&root)?
+                    bootstrap,
+                    root_pidfd,
+                    config.identity(),
+                    remaining(deadline)?.min(Duration::from_millis(500)),
+                    lifetime,
+                )
+                .await?;
+                let config = config
+                    .finish(&root)?
                     .with_root_bound_sockets(control, app_server)?;
                 Ok((config, Some(AgentdProductionLaunch { root, inputs })))
             }
@@ -137,7 +169,11 @@ impl AgentdProductionLaunch {
         mut config: AgentdConfig,
         arg0_paths: Arg0DispatchPaths,
     ) -> Result<(), AgentdError> {
-        let RuntimeInputs { primary, notes, notes_ui } = self.inputs;
+        let RuntimeInputs {
+            primary,
+            notes,
+            notes_ui,
+        } = self.inputs;
         let mut mcp: Option<codex_app_server::ConfiguredMcpRuntime> = None;
         let mut android_device: Option<Arc<crate::AgentdAndroidTextDevice>> = None;
         let result = async {
@@ -145,88 +181,141 @@ impl AgentdProductionLaunch {
             // sealed Notes deployment once, before receiving its application
             // offer, so the trusted Session's staged reservation can be
             // activated only after the actual original owners are ready.
-            let mut notes_ui = notes_ui.map(|ui| {
-                Ok::<_, AgentdError>((
-                    notes_deployment::read(ui.deployment, config.identity())?,
-                    ui.listener,
-                    ui.session_pidfd,
-                ))
-            }).transpose()?;
-            let release = notes_ui.as_mut().and_then(|(deployment, _, _)| deployment.startup_release.take());
+            let mut notes_ui = notes_ui
+                .map(|ui| {
+                    Ok::<_, AgentdError>((
+                        notes_deployment::read(ui.deployment, config.identity())?,
+                        ui.listener,
+                        ui.session_pidfd,
+                    ))
+                })
+                .transpose()?;
+            let release = notes_ui
+                .as_mut()
+                .and_then(|(deployment, _, _)| deployment.startup_release.take());
             let (attachment, android_deadline) = match primary {
-                PrimaryInputs::Android { server, environment, payload, deadline } => {
+                PrimaryInputs::Android {
+                    server,
+                    environment,
+                    payload,
+                    deadline,
+                } => {
                     let payload_json = inputs::read_payload(payload)?;
                     let home = AbsolutePathBuf::from_absolute_path(&config.identity().home_root)
                         .map_err(|error| AgentdError::Invalid(error.to_string()))?;
-                    let workspace = AbsolutePathBuf::from_absolute_path(&config.identity().workspace)
-                        .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+                    let workspace =
+                        AbsolutePathBuf::from_absolute_path(&config.identity().workspace)
+                            .map_err(|error| AgentdError::Invalid(error.to_string()))?;
                     let original = codex_app_server::initialize_configured_mcp_server(
-                        home, workspace, arg0_paths.clone(), &server, &environment, remaining(deadline)?,
-                    ).await.map_err(|error| AgentdError::Protocol(
-                        format!("original Runtime MCP startup: {error}"),
-                    ))?;
+                        home,
+                        workspace,
+                        arg0_paths.clone(),
+                        &server,
+                        &environment,
+                        remaining(deadline)?,
+                    )
+                    .await
+                    .map_err(|error| {
+                        AgentdError::Protocol(format!("original Runtime MCP startup: {error}"))
+                    })?;
                     mcp = Some(original);
-                    let original = mcp.as_ref().ok_or_else(|| AgentdError::Protocol(
-                        "original MCP startup handle disappeared".into(),
-                    ))?;
+                    let original = mcp.as_ref().ok_or_else(|| {
+                        AgentdError::Protocol("original MCP startup handle disappeared".into())
+                    })?;
                     let android = AgentdAndroidRuntimeInputs::from_mcp_binding(
-                        original.binding(), &server, &environment, tokio::runtime::Handle::current(),
-                        payload_json, deadline,
-                    ).await?;
+                        original.binding(),
+                        &server,
+                        &environment,
+                        tokio::runtime::Handle::current(),
+                        payload_json,
+                        deadline,
+                    )
+                    .await?;
                     let (target, device) = crate::prepare_android_runtime_target(android)?;
                     android_device = Some(device);
                     let target: Arc<dyn FinalUseProductionOutboxTarget> = target;
                     let attachment = crate::attach_root_production_operation_host_with_startup(
-                        &mut config, self.root, target, notes, Duration::from_millis(100),
+                        &mut config,
+                        self.root,
+                        target,
+                        notes,
+                        Duration::from_millis(100),
                         release,
-                    ).await?;
+                    )
+                    .await?;
                     (attachment, Some(deadline))
                 }
                 PrimaryInputs::Notes => {
-                    let notes = notes.ok_or_else(|| AgentdError::Invalid(
-                        "original Notes primary has no application handoff".into(),
-                    ))?;
+                    let notes = notes.ok_or_else(|| {
+                        AgentdError::Invalid(
+                            "original Notes primary has no application handoff".into(),
+                        )
+                    })?;
                     let attachment = crate::attach_root_notes_operation_host_with_startup(
-                        &mut config, self.root, notes, Duration::from_millis(100),
+                        &mut config,
+                        self.root,
+                        notes,
+                        Duration::from_millis(100),
                         release,
-                    ).await?;
+                    )
+                    .await?;
                     (attachment, None)
                 }
             };
             if let Some((deployment, listener, session_pidfd)) = notes_ui {
-                let notes_deployment::NotesDeployment { bindings, peer, previous_recovery, startup_release: _ } = deployment;
+                let notes_deployment::NotesDeployment {
+                    bindings,
+                    peer,
+                    previous_recovery,
+                    startup_release: _,
+                } = deployment;
                 if let Some(previous) = previous_recovery {
                     config = config.with_original_notes_previous_recovery(previous)?;
                 }
                 let (configured, adapter) = config.with_root_notes_literal_adapter(
-                    &attachment, bindings, Duration::from_secs(10),
+                    &attachment,
+                    bindings,
+                    Duration::from_secs(10),
                 )?;
                 config = configured;
                 let expected_path = config.identity().run_root.join("notes-objective.sock");
                 let listener = crate::listen_root_bound_socket(listener, &expected_path)?;
                 let runtime = crate::AgentdNotesUiRuntime::from_inherited(
-                    listener, session_pidfd, crate::AgentdNotesUiPeer {
-                        uid: peer.uid, pid: peer.pid, boot_id: peer.boot_id,
+                    listener,
+                    session_pidfd,
+                    crate::AgentdNotesUiPeer {
+                        uid: peer.uid,
+                        pid: peer.pid,
+                        boot_id: peer.boot_id,
                         process_start_ticks: peer.process_start_ticks,
-                    }, adapter,
+                    },
+                    adapter,
                 )?;
                 config = config.with_original_notes_ui(runtime)?;
             }
-            if let Some(deadline) = android_deadline { remaining(deadline)?; }
+            if let Some(deadline) = android_deadline {
+                remaining(deadline)?;
+            }
             let result = crate::run(config, arg0_paths).await;
             // Keep the authenticated Root feed and original checkpoint/grant
             // handles alive until all original runtime workers have stopped.
             drop(attachment);
             result
-        }.await;
-        if let Some(device) = android_device { device.invalidate(); }
-        if let Some(mcp) = mcp { mcp.shutdown().await; }
+        }
+        .await;
+        if let Some(device) = android_device {
+            device.invalidate();
+        }
+        if let Some(mcp) = mcp {
+            mcp.shutdown().await;
+        }
         result
     }
 }
 
 fn remaining(deadline: Instant) -> Result<Duration, AgentdError> {
-    deadline.checked_duration_since(Instant::now())
+    deadline
+        .checked_duration_since(Instant::now())
         .filter(|value| !value.is_zero() && *value <= Duration::from_secs(30))
         .ok_or_else(|| AgentdError::Protocol("original production launch deadline expired".into()))
 }

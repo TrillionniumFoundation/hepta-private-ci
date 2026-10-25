@@ -60,41 +60,70 @@ pub(super) fn receive(
     let end = Instant::now() + timeout;
     // SO_PEERCRED identifies the trusted pair creator; SCM_CREDENTIALS below
     // identifies the actual Session that sent this particular reservation.
-    let creator = crate::root_production_handoff::root_pair(&socket, timeout)
-        .map_err(io::Error::other)?;
+    let creator =
+        crate::root_production_handoff::root_pair(&socket, timeout).map_err(io::Error::other)?;
     // SAFETY: geteuid reads this process's actual credential.
-    if unsafe { libc::geteuid() } != 0 || creator.pid as u32 != std::process::id()
-        || uid == 0 || gid == 0
+    if unsafe { libc::geteuid() } != 0
+        || creator.pid as u32 != std::process::id()
+        || uid == 0
+        || gid == 0
     {
-        return Err(io::Error::other("Notes reservation requires its same actual Root creator"));
+        return Err(io::Error::other(
+            "Notes reservation requires its same actual Root creator",
+        ));
     }
     let descriptor = pidfd.as_raw_fd();
-    if std::fs::read_link(format!("/proc/self/fd/{descriptor}"))? != Path::new("anon_inode:[pidfd]") {
-        return Err(io::Error::other("Notes reservation requires the retained actual Session pidfd"));
+    if std::fs::read_link(format!("/proc/self/fd/{descriptor}"))? != Path::new("anon_inode:[pidfd]")
+    {
+        return Err(io::Error::other(
+            "Notes reservation requires the retained actual Session pidfd",
+        ));
     }
     let info = bounded_text(&format!("/proc/self/fdinfo/{descriptor}"), 4096)?;
-    let pid = info.lines().find_map(|line| line.strip_prefix("Pid:")?.trim().parse::<u32>().ok())
+    let pid = info
+        .lines()
+        .find_map(|line| line.strip_prefix("Pid:")?.trim().parse::<u32>().ok())
         .filter(|pid| *pid > 0 && *pid <= i32::MAX as u32)
         .ok_or_else(|| io::Error::other("Notes Session pidfd no longer names a live process"))?;
     crate::authority_host_runtime::owner_alive(pidfd, end)?;
     crate::authority_host_runtime::verify_process_credentials(pid, uid, gid)?;
-    let boot_id = bounded_text("/proc/sys/kernel/random/boot_id", 128)?.trim().to_owned();
+    let boot_id = bounded_text("/proc/sys/kernel/random/boot_id", 128)?
+        .trim()
+        .to_owned();
     let stat = bounded_text(&format!("/proc/{pid}/stat"), 8192)?;
-    let process_start_ticks = stat.rsplit_once(") ")
+    let process_start_ticks = stat
+        .rsplit_once(") ")
         .and_then(|(_, fields)| fields.split_whitespace().nth(19))
-        .and_then(|value| value.parse::<u64>().ok()).filter(|value| *value != 0)
+        .and_then(|value| value.parse::<u64>().ok())
+        .filter(|value| *value != 0)
         .ok_or_else(|| io::Error::other("Notes Session birth is unavailable"))?;
-    let remaining = end.checked_duration_since(Instant::now())
+    let remaining = end
+        .checked_duration_since(Instant::now())
         .ok_or_else(|| io::Error::other("Notes reservation deadline elapsed"))?;
     socket.set_nonblocking(false)?;
     socket.set_read_timeout(Some(remaining))?;
-    let release = receive_packet(&socket, libc::ucred { pid: pid as i32, uid, gid })?;
+    let release = receive_packet(
+        &socket,
+        libc::ucred {
+            pid: pid as i32,
+            uid,
+            gid,
+        },
+    )?;
     crate::authority_host_runtime::owner_alive(pidfd, end)?;
     crate::authority_host_runtime::verify_process_credentials(pid, uid, gid)?;
     // Agentd already holds a duplicate of this same endpoint. Remove the
     // metadata credential option before it uses the original two-right parser.
     set_passcred(&socket, 0)?;
-    Ok((release, SessionBirth { uid, pid, boot_id, process_start_ticks }))
+    Ok((
+        release,
+        SessionBirth {
+            uid,
+            pid,
+            boot_id,
+            process_start_ticks,
+        },
+    ))
 }
 
 fn receive_packet(socket: &UnixDatagram, expected: libc::ucred) -> io::Result<StartupRelease> {
@@ -102,15 +131,29 @@ fn receive_packet(socket: &UnixDatagram, expected: libc::ucred) -> io::Result<St
     let mut length = mem::size_of_val(&enabled) as libc::socklen_t;
     // SAFETY: the live socket and correctly sized initialized option buffer are
     // retained. Root must enable this before Session is allowed to send.
-    if unsafe { libc::getsockopt(socket.as_raw_fd(), libc::SOL_SOCKET, libc::SO_PASSCRED,
-        std::ptr::from_mut(&mut enabled).cast(), &mut length) } != 0
-    { return Err(io::Error::last_os_error()); }
+    if unsafe {
+        libc::getsockopt(
+            socket.as_raw_fd(),
+            libc::SOL_SOCKET,
+            libc::SO_PASSCRED,
+            std::ptr::from_mut(&mut enabled).cast(),
+            &mut length,
+        )
+    } != 0
+    {
+        return Err(io::Error::last_os_error());
+    }
     if length as usize != mem::size_of_val(&enabled) || enabled != 1 {
-        return Err(io::Error::other("Root must enable SO_PASSCRED before Session startup"));
+        return Err(io::Error::other(
+            "Root must enable SO_PASSCRED before Session startup",
+        ));
     }
     let mut bytes = [0_u8; RESERVED_BOUND + 1];
     let mut control = [0_usize; 32];
-    let mut vector = libc::iovec { iov_base: bytes.as_mut_ptr().cast(), iov_len: bytes.len() };
+    let mut vector = libc::iovec {
+        iov_base: bytes.as_mut_ptr().cast(),
+        iov_len: bytes.len(),
+    };
     // SAFETY: all message pointers below reference live bounded aligned buffers.
     let mut message: libc::msghdr = unsafe { mem::zeroed() };
     message.msg_iov = &mut vector;
@@ -120,52 +163,100 @@ fn receive_packet(socket: &UnixDatagram, expected: libc::ucred) -> io::Result<St
     // SAFETY: recvmsg borrows the exact live buffers and gives any received
     // descriptors CLOEXEC, including descriptors on a rejected message.
     let count = unsafe { libc::recvmsg(socket.as_raw_fd(), &mut message, libc::MSG_CMSG_CLOEXEC) };
-    if count < 0 { return Err(io::Error::last_os_error()); }
+    if count < 0 {
+        return Err(io::Error::last_os_error());
+    }
     // SAFETY: adopt all rights with the existing parser for unconditional close
     // on refusal. Its boolean rejects credentials by design; this message has
     // a different strict contract and validates its sole credential below.
     let (rights, _) = unsafe { crate::notes_bootstrap::received_descriptors(&message) };
-    if !rights.is_empty() || count == 0 || count as usize > RESERVED_BOUND
+    if !rights.is_empty()
+        || count == 0
+        || count as usize > RESERVED_BOUND
         || message.msg_flags & (libc::MSG_TRUNC | libc::MSG_CTRUNC) != 0
-    { return Err(io::Error::other("Notes Reserved must contain bounded metadata without rights")); }
+    {
+        return Err(io::Error::other(
+            "Notes Reserved must contain bounded metadata without rights",
+        ));
+    }
     // SAFETY: recvmsg initialized this bounded ancillary chain; only a complete
     // single ucred message is accepted before reading its payload.
     let header = unsafe { libc::CMSG_FIRSTHDR(&message) };
-    if header.is_null() { return Err(io::Error::other("actual Session sender credential missing")); }
+    if header.is_null() {
+        return Err(io::Error::other("actual Session sender credential missing"));
+    }
     let credential = unsafe {
-        if (*header).cmsg_level != libc::SOL_SOCKET || (*header).cmsg_type != libc::SCM_CREDENTIALS
+        if (*header).cmsg_level != libc::SOL_SOCKET
+            || (*header).cmsg_type != libc::SCM_CREDENTIALS
             || (*header).cmsg_len != libc::CMSG_LEN(mem::size_of::<libc::ucred>() as u32) as usize
             || (*header).cmsg_len > message.msg_controllen
             || !libc::CMSG_NXTHDR(&message, header).is_null()
-        { return Err(io::Error::other("Notes Reserved requires one exact kernel credential")); }
-        libc::CMSG_DATA(header).cast::<libc::ucred>().read_unaligned()
+        {
+            return Err(io::Error::other(
+                "Notes Reserved requires one exact kernel credential",
+            ));
+        }
+        libc::CMSG_DATA(header)
+            .cast::<libc::ucred>()
+            .read_unaligned()
     };
-    if credential.pid != expected.pid || credential.uid != expected.uid || credential.gid != expected.gid {
-        return Err(io::Error::other("Notes Reserved sender differs from the held actual Session"));
+    if credential.pid != expected.pid
+        || credential.uid != expected.uid
+        || credential.gid != expected.gid
+    {
+        return Err(io::Error::other(
+            "Notes Reserved sender differs from the held actual Session",
+        ));
     }
-    let value: Reserved = serde_json::from_slice(&bytes[..count as usize]).map_err(io::Error::other)?;
+    let value: Reserved =
+        serde_json::from_slice(&bytes[..count as usize]).map_err(io::Error::other)?;
     value.target.validate().map_err(io::Error::other)?;
-    if value.schema_version != 1 || !matches!(value.action, Action::NotesTargetReserved)
+    if value.schema_version != 1
+        || !matches!(value.action, Action::NotesTargetReserved)
         || value.target.task_id != 1
-        || value.destination_id != value.target.destination_id() || value.nonce.len() != 32
-        || !value.nonce.bytes().all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+        || value.destination_id != value.target.destination_id()
+        || value.nonce.len() != 32
+        || !value
+            .nonce
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
         || value.nonce.bytes().all(|byte| byte == b'0')
-    { return Err(io::Error::other("Notes Reserved target or one-time nonce differs")); }
-    Ok(StartupRelease { target: value.target, nonce: value.nonce })
+    {
+        return Err(io::Error::other(
+            "Notes Reserved target or one-time nonce differs",
+        ));
+    }
+    Ok(StartupRelease {
+        target: value.target,
+        nonce: value.nonce,
+    })
 }
 
 fn set_passcred(socket: &UnixDatagram, enabled: libc::c_int) -> io::Result<()> {
     // SAFETY: setsockopt borrows one integer and the live private socket only.
-    if unsafe { libc::setsockopt(socket.as_raw_fd(), libc::SOL_SOCKET, libc::SO_PASSCRED,
-        std::ptr::from_ref(&enabled).cast(), mem::size_of_val(&enabled) as libc::socklen_t) } != 0
-    { return Err(io::Error::last_os_error()); }
+    if unsafe {
+        libc::setsockopt(
+            socket.as_raw_fd(),
+            libc::SOL_SOCKET,
+            libc::SO_PASSCRED,
+            std::ptr::from_ref(&enabled).cast(),
+            mem::size_of_val(&enabled) as libc::socklen_t,
+        )
+    } != 0
+    {
+        return Err(io::Error::last_os_error());
+    }
     Ok(())
 }
 
 fn bounded_text(path: &str, bound: u64) -> io::Result<String> {
     let mut text = String::new();
-    File::open(path)?.take(bound + 1).read_to_string(&mut text)?;
-    if text.len() as u64 > bound { return Err(io::Error::other("Notes Session metadata exceeds bound")); }
+    File::open(path)?
+        .take(bound + 1)
+        .read_to_string(&mut text)?;
+    if text.len() as u64 > bound {
+        return Err(io::Error::other("Notes Session metadata exceeds bound"));
+    }
     Ok(text)
 }
 

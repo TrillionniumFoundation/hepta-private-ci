@@ -271,12 +271,25 @@ pub async fn run(
     let cancellation = CancellationToken::new();
     let (control, app_server_socket) = match sockets {
         crate::config::AgentdSocketInputs::Bind => (
-            AgentdControlServer::bind(identity.control_socket.clone(), Arc::clone(&state), cancellation.clone()).await?,
+            AgentdControlServer::bind(
+                identity.control_socket.clone(),
+                Arc::clone(&state),
+                cancellation.clone(),
+            )
+            .await?,
             crate::app_runtime::AppServerSocket::Bind,
         ),
         #[cfg(target_os = "linux")]
-        crate::config::AgentdSocketInputs::RootBound { control, app_server } => (
-            AgentdControlServer::from_root_bound(control, &identity.control_socket, Arc::clone(&state), cancellation.clone())?,
+        crate::config::AgentdSocketInputs::RootBound {
+            control,
+            app_server,
+        } => (
+            AgentdControlServer::from_root_bound(
+                control,
+                &identity.control_socket,
+                Arc::clone(&state),
+                cancellation.clone(),
+            )?,
             crate::app_runtime::AppServerSocket::RootBound(app_server),
         ),
     };

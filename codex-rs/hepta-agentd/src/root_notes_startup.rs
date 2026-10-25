@@ -95,24 +95,43 @@ impl PreparedHostAuthoritySession {
         validate_profile(&profile, &self.config.signer_id)?;
         validate_empty_deployment(&deployment)?;
         let (startup_release, session) = reservation::receive(
-            bootstrap, &session_pidfd, self.config.peer_uid, self.config.peer_gid,
+            bootstrap,
+            &session_pidfd,
+            self.config.peer_uid,
+            self.config.peer_gid,
         )?;
         if let Some(previous) = &profile.previous_recovery {
-            previous.previous_target.validate().map_err(io::Error::other)?;
+            previous
+                .previous_target
+                .validate()
+                .map_err(io::Error::other)?;
             StableId::new(&previous.operation_id).map_err(io::Error::other)?;
             Sha256Digest::parse(previous.helper_sha256.clone()).map_err(io::Error::other)?;
             if previous.previous_target == startup_release.target
-                || !previous.helper.is_absolute() || !previous.state_directory.is_absolute()
-            { return Err(io::Error::other("old Notes recovery requires its distinct actual target and absolute frozen paths")); }
+                || !previous.helper.is_absolute()
+                || !previous.state_directory.is_absolute()
+            {
+                return Err(io::Error::other(
+                    "old Notes recovery requires its distinct actual target and absolute frozen paths",
+                ));
+            }
         }
         let prepared = self.with_registered_notes_from_session(
-            &startup_release.target, profile.grant_lifetime_ms,
+            &startup_release.target,
+            profile.grant_lifetime_ms,
         )?;
         let value = Deployment {
             schema: "hepta.agentd.original_notes_launch.v1",
-            agent_id: prepared.registration.registered_identity.agent_id.as_str().to_owned(),
+            agent_id: prepared
+                .registration
+                .registered_identity
+                .agent_id
+                .as_str()
+                .to_owned(),
             spawn_generation: prepared.registration.registered_identity.spawn_generation,
-            session, bindings: profile.bindings, previous_recovery: profile.previous_recovery,
+            session,
+            bindings: profile.bindings,
+            previous_recovery: profile.previous_recovery,
             startup_release,
         };
         let bytes = serde_json::to_vec(&value).map_err(io::Error::other)?;
@@ -124,16 +143,30 @@ impl PreparedHostAuthoritySession {
 
 fn validate_profile(profile: &Profile, issuer_id: &str) -> io::Result<()> {
     let bindings = &profile.bindings;
-    if profile.schema != "hepta.root.notes_launch_profile.v1" || profile.grant_lifetime_ms == 0
-        || bindings.issuer_id != issuer_id || bindings.principal_scope.is_empty()
+    if profile.schema != "hepta.root.notes_launch_profile.v1"
+        || profile.grant_lifetime_ms == 0
+        || bindings.issuer_id != issuer_id
+        || bindings.principal_scope.is_empty()
         || !matches!(bindings.locale.as_str(), "en-US" | "zh-CN")
-    { return Err(io::Error::other("original Notes launch profile differs from the registered issuer")); }
-    Generation::new(bindings.policy_generation).map_err(io::Error::other)?;
-    for digest in [&bindings.principal_scope_digest, &bindings.runtime_body_digest,
-        &bindings.preference_state_digest, &bindings.model_tuple_digest,
-        &bindings.prompt_registry_digest, &bindings.artifact_set_digest]
     {
-        if digest.parse::<Digest32>().map_err(io::Error::other)?.is_zero() {
+        return Err(io::Error::other(
+            "original Notes launch profile differs from the registered issuer",
+        ));
+    }
+    Generation::new(bindings.policy_generation).map_err(io::Error::other)?;
+    for digest in [
+        &bindings.principal_scope_digest,
+        &bindings.runtime_body_digest,
+        &bindings.preference_state_digest,
+        &bindings.model_tuple_digest,
+        &bindings.prompt_registry_digest,
+        &bindings.artifact_set_digest,
+    ] {
+        if digest
+            .parse::<Digest32>()
+            .map_err(io::Error::other)?
+            .is_zero()
+        {
             return Err(io::Error::other("original Notes frozen digest is absent"));
         }
     }
@@ -143,20 +176,36 @@ fn validate_profile(profile: &Profile, issuer_id: &str) -> io::Result<()> {
 fn validate_empty_deployment(file: &File) -> io::Result<()> {
     let metadata = file.metadata()?;
     // SAFETY: both fcntl operations read metadata of the retained live file.
-    let (flags, seals) = unsafe { (libc::fcntl(file.as_raw_fd(), libc::F_GETFL),
-        libc::fcntl(file.as_raw_fd(), libc::F_GET_SEALS)) };
+    let (flags, seals) = unsafe {
+        (
+            libc::fcntl(file.as_raw_fd(), libc::F_GETFL),
+            libc::fcntl(file.as_raw_fd(), libc::F_GET_SEALS),
+        )
+    };
     // SAFETY: geteuid reads this process's current kernel credential.
-    if unsafe { libc::geteuid() } != 0 || flags < 0 || flags & libc::O_ACCMODE != libc::O_RDWR
-        || seals != 0 || !metadata.is_file() || metadata.uid() != 0 || metadata.nlink() != 0
-        || metadata.len() != 0 || metadata.mode() & 0o7777 != 0o600
-    { return Err(io::Error::other("Notes deployment requires an empty writable Root0600 sealable memfd")); }
+    if unsafe { libc::geteuid() } != 0
+        || flags < 0
+        || flags & libc::O_ACCMODE != libc::O_RDWR
+        || seals != 0
+        || !metadata.is_file()
+        || metadata.uid() != 0
+        || metadata.nlink() != 0
+        || metadata.len() != 0
+        || metadata.mode() & 0o7777 != 0o600
+    {
+        return Err(io::Error::other(
+            "Notes deployment requires an empty writable Root0600 sealable memfd",
+        ));
+    }
     Ok(())
 }
 
 fn seal_deployment(mut file: File, bytes: &[u8]) -> io::Result<()> {
     validate_empty_deployment(&file)?;
     if bytes.is_empty() || bytes.len() > DEPLOYMENT_BOUND {
-        return Err(io::Error::other("original Notes sealed deployment exceeds bound"));
+        return Err(io::Error::other(
+            "original Notes sealed deployment exceeds bound",
+        ));
     }
     file.rewind()?;
     file.write_all(bytes)?;
@@ -165,12 +214,20 @@ fn seal_deployment(mut file: File, bytes: &[u8]) -> io::Result<()> {
     // remains behind late Root handoff; dup of this O_RDWR file is not allowed.
     if unsafe { libc::fchmod(file.as_raw_fd(), 0o400) } != 0
         || unsafe { libc::fcntl(file.as_raw_fd(), libc::F_ADD_SEALS, SEALS) } != 0
-    { return Err(io::Error::last_os_error()); }
+    {
+        return Err(io::Error::last_os_error());
+    }
     crate::authority_host_bootstrap_seal::validate_sealed(&file, bytes.len() as u64)?;
     file.rewind()?;
     let mut actual = Vec::with_capacity(bytes.len());
-    Read::by_ref(&mut file).take(DEPLOYMENT_BOUND as u64 + 1).read_to_end(&mut actual)?;
-    if actual != bytes { return Err(io::Error::other("original Notes sealed deployment readback differs")); }
+    Read::by_ref(&mut file)
+        .take(DEPLOYMENT_BOUND as u64 + 1)
+        .read_to_end(&mut actual)?;
+    if actual != bytes {
+        return Err(io::Error::other(
+            "original Notes sealed deployment readback differs",
+        ));
+    }
     file.rewind()
 }
 

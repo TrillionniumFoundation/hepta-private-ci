@@ -103,7 +103,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let ui_fd = options.remove(std::ffi::OsStr::new("--text-ui-pidfd"));
         let handoff = options.remove(std::ffi::OsStr::new("--root-handoff-fd"));
         let root_fd = options.remove(std::ffi::OsStr::new("--root-pidfd"));
-        let notes_profile = options.remove(std::ffi::OsStr::new("--notes-launch-profile")).map(PathBuf::from);
+        let notes_profile = options
+            .remove(std::ffi::OsStr::new("--notes-launch-profile"))
+            .map(PathBuf::from);
         let notes_reservation = options.remove(std::ffi::OsStr::new("--notes-reservation-fd"));
         let notes_session = options.remove(std::ffi::OsStr::new("--notes-session-pidfd"));
         let notes_deployment = options.remove(std::ffi::OsStr::new("--notes-deployment-fd"));
@@ -113,8 +115,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         // Claim every numeric inherited FD before any clone/open/runtime can
         // reuse a missing number. One slot owns each FD and closes the original.
         let mut claimed = std::collections::BTreeSet::new();
-        let handoff = handoff.as_deref().map(|fd| inherited_descriptor(fd, &mut claimed)).transpose()?;
-        let root_fd = root_fd.as_deref().map(|fd| inherited_descriptor(fd, &mut claimed)).transpose()?;
+        let handoff = handoff
+            .as_deref()
+            .map(|fd| inherited_descriptor(fd, &mut claimed))
+            .transpose()?;
+        let root_fd = root_fd
+            .as_deref()
+            .map(|fd| inherited_descriptor(fd, &mut claimed))
+            .transpose()?;
         let notes = match (notes_profile, notes_reservation, notes_session, notes_deployment) {
             (None, None, None, None) => None,
             (Some(profile), Some(reservation), Some(session), Some(deployment))
@@ -133,23 +141,35 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         };
         let owner = std::io::stdin().as_fd().try_clone_to_owned()?;
         let prepared = if command == "serve-fresh-session" {
-            let handoff = handoff.ok_or("fresh session requires the original Root handoff descriptor")?;
+            let handoff =
+                handoff.ok_or("fresh session requires the original Root handoff descriptor")?;
             let root = root_fd.ok_or("fresh session requires the pre-held current Root pidfd")?;
-            let runtime = tokio::runtime::Builder::new_current_thread().enable_all().build()?;
-            let prepared = runtime.block_on(codex_hepta_agentd::PreparedHostAuthoritySession::prepare_fresh_from_registered(
-                &config, &registration, owner,
-            ))?;
+            let runtime = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()?;
+            let prepared = runtime.block_on(
+                codex_hepta_agentd::PreparedHostAuthoritySession::prepare_fresh_from_registered(
+                    &config,
+                    &registration,
+                    owner,
+                ),
+            )?;
             let (prepared, consumers) = prepared.handoff_fresh_agent_filesystem()?;
             let prepared = match notes {
-                Some((profile, reservation, session, deployment)) => prepared.with_notes_startup_from_session(
-                    &profile, std::os::unix::net::UnixDatagram::from(reservation), session,
-                    std::fs::File::from(deployment),
-                )?,
+                Some((profile, reservation, session, deployment)) => prepared
+                    .with_notes_startup_from_session(
+                        &profile,
+                        std::os::unix::net::UnixDatagram::from(reservation),
+                        session,
+                        std::fs::File::from(deployment),
+                    )?,
                 None => prepared,
             };
             let bootstrap = prepared.seal_bootstrap(&consumers)?;
             codex_hepta_agentd::send_root_production_handoff(
-                std::os::unix::net::UnixDatagram::from(handoff), &bootstrap, &root,
+                std::os::unix::net::UnixDatagram::from(handoff),
+                &bootstrap,
+                &root,
                 std::time::Duration::from_secs(30),
             )?;
             prepared
@@ -175,9 +195,14 @@ fn inherited_descriptor(
     claimed: &mut std::collections::BTreeSet<i32>,
 ) -> Result<std::os::fd::OwnedFd, Box<dyn std::error::Error>> {
     use std::os::fd::FromRawFd;
-    let fd: i32 = value.to_str().ok_or("invalid inherited descriptor")?.parse()?;
+    let fd: i32 = value
+        .to_str()
+        .ok_or("invalid inherited descriptor")?
+        .parse()?;
     if fd < 3 || !claimed.insert(fd) {
-        return Err("one distinct inherited descriptor numbered at least 3 is required per slot".into());
+        return Err(
+            "one distinct inherited descriptor numbered at least 3 is required per slot".into(),
+        );
     }
     // SAFETY: all numeric descriptors are claimed before any runtime, open or
     // stdin clone. No Rust owner exists for these inherited descriptors yet.

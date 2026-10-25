@@ -14,11 +14,25 @@ use crate::AgentdResponse;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AgentdNotesSubmissionState {
-    NotSent { issue: &'static str },
-    SubmitUnknown { issue: &'static str },
-    RefusedBeforePublication { reason: &'static str, response_generation: u64 },
-    Admitted { receipt: ObjectiveRunAdmission, response_generation: u64 },
-    Conflict { run_id: String, conflict_digest: String, response_generation: u64 },
+    NotSent {
+        issue: &'static str,
+    },
+    SubmitUnknown {
+        issue: &'static str,
+    },
+    RefusedBeforePublication {
+        reason: &'static str,
+        response_generation: u64,
+    },
+    Admitted {
+        receipt: ObjectiveRunAdmission,
+        response_generation: u64,
+    },
+    Conflict {
+        run_id: String,
+        conflict_digest: String,
+        response_generation: u64,
+    },
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -46,31 +60,60 @@ pub(crate) fn classify(
     match response.payload {
         AgentdPayload::ObjectiveRun(receipt) => {
             if receipt.run_id != request.identity().run_id
-                || [&receipt.objective_digest, &receipt.hard_constraint_digest,
-                    &receipt.publication_digest, &receipt.chain_digest]
-                    .into_iter().any(|value| !valid_digest(value))
-                || !matches!(receipt.disposition.as_str(), "compiled" | "explicit_abstain"
-                    | "canonical_ready" | "canonical_abstained" | "canonical_slow_path")
+                || [
+                    &receipt.objective_digest,
+                    &receipt.hard_constraint_digest,
+                    &receipt.publication_digest,
+                    &receipt.chain_digest,
+                ]
+                .into_iter()
+                .any(|value| !valid_digest(value))
+                || !matches!(
+                    receipt.disposition.as_str(),
+                    "compiled"
+                        | "explicit_abstain"
+                        | "canonical_ready"
+                        | "canonical_abstained"
+                        | "canonical_slow_path"
+                )
             {
                 return Err("objective_protocol_mismatch");
             }
-            Ok(AgentdNotesSubmissionState::Admitted { receipt, response_generation: generation })
+            Ok(AgentdNotesSubmissionState::Admitted {
+                receipt,
+                response_generation: generation,
+            })
         }
-        AgentdPayload::ObjectiveConflict { run_id, conflict_digest } => {
+        AgentdPayload::ObjectiveConflict {
+            run_id,
+            conflict_digest,
+        } => {
             if run_id != request.identity().run_id || !valid_digest(&conflict_digest) {
                 return Err("objective_protocol_mismatch");
             }
-            Ok(AgentdNotesSubmissionState::Conflict { run_id, conflict_digest, response_generation: generation })
+            Ok(AgentdNotesSubmissionState::Conflict {
+                run_id,
+                conflict_digest,
+                response_generation: generation,
+            })
         }
         AgentdPayload::Error { code, message } => {
             let reason = match (code.as_str(), message.as_str()) {
-                ("objective_unavailable", "no owner objective profile is configured") => "objective_unavailable",
+                ("objective_unavailable", "no owner objective profile is configured") => {
+                    "objective_unavailable"
+                }
                 ("unsupported_schema", "unsupported agentd control schema")
-                    if generation == request.origin().spawn_generation => "unsupported_schema",
+                    if generation == request.origin().spawn_generation =>
+                {
+                    "unsupported_schema"
+                }
                 ("request_rejected", _) => return Err("objective_owner_request_rejected"),
                 _ => return Err("objective_owner_error"),
             };
-            Ok(AgentdNotesSubmissionState::RefusedBeforePublication { reason, response_generation: generation })
+            Ok(AgentdNotesSubmissionState::RefusedBeforePublication {
+                reason,
+                response_generation: generation,
+            })
         }
         _ => Err("objective_protocol_mismatch"),
     }
@@ -84,18 +127,30 @@ pub(crate) fn retained_observation(
 ) -> Result<ObjectiveSenderObservation, &'static str> {
     let status: Value = match state {
         AgentdNotesSubmissionState::NotSent { issue } => json!({"type":"not_sent", "issue":issue}),
-        AgentdNotesSubmissionState::SubmitUnknown { issue } => json!({"type":"submit_unknown", "issue":issue}),
-        AgentdNotesSubmissionState::RefusedBeforePublication { reason, response_generation } =>
-            json!({"type":"refused_before_publication", "reason":reason, "response_generation":response_generation}),
-        AgentdNotesSubmissionState::Admitted { receipt, response_generation } => json!({
+        AgentdNotesSubmissionState::SubmitUnknown { issue } => {
+            json!({"type":"submit_unknown", "issue":issue})
+        }
+        AgentdNotesSubmissionState::RefusedBeforePublication {
+            reason,
+            response_generation,
+        } => {
+            json!({"type":"refused_before_publication", "reason":reason, "response_generation":response_generation})
+        }
+        AgentdNotesSubmissionState::Admitted {
+            receipt,
+            response_generation,
+        } => json!({
             "type":"admitted", "run_id":receipt.run_id, "objective_digest":receipt.objective_digest,
             "hard_constraint_digest":receipt.hard_constraint_digest,
             "publication_digest":receipt.publication_digest, "chain_digest":receipt.chain_digest,
             "disposition":receipt.disposition, "idempotent":receipt.idempotent,
             "response_generation":response_generation,
         }),
-        AgentdNotesSubmissionState::Conflict { run_id, conflict_digest, response_generation } =>
-            json!({"type":"conflict", "run_id":run_id, "conflict_digest":conflict_digest,
+        AgentdNotesSubmissionState::Conflict {
+            run_id,
+            conflict_digest,
+            response_generation,
+        } => json!({"type":"conflict", "run_id":run_id, "conflict_digest":conflict_digest,
                 "response_generation":response_generation}),
     };
     let origin = request.origin();
@@ -123,6 +178,9 @@ pub(crate) fn retained_observation(
 }
 
 fn valid_digest(value: &str) -> bool {
-    value.len() == 64 && value.bytes().all(|byte| matches!(byte, b'0'..=b'9' | b'a'..=b'f'))
+    value.len() == 64
+        && value
+            .bytes()
+            .all(|byte| matches!(byte, b'0'..=b'9' | b'a'..=b'f'))
         && value.bytes().any(|byte| byte != b'0')
 }

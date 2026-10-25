@@ -20,11 +20,22 @@ impl AgentdConfig {
         app_server: std::os::fd::OwnedFd,
     ) -> Result<Self, crate::AgentdError> {
         if !matches!(self.sockets, AgentdSocketInputs::Bind) {
-            return Err(crate::AgentdError::Invalid("Root-bound sockets already configured".into()));
+            return Err(crate::AgentdError::Invalid(
+                "Root-bound sockets already configured".into(),
+            ));
         }
-        crate::root_bound_socket::validate_root_bound_socket(&control, &self.identity.control_socket)?;
-        crate::root_bound_socket::validate_root_bound_socket(&app_server, &self.identity.app_server_socket)?;
-        self.sockets = AgentdSocketInputs::RootBound { control, app_server };
+        crate::root_bound_socket::validate_root_bound_socket(
+            &control,
+            &self.identity.control_socket,
+        )?;
+        crate::root_bound_socket::validate_root_bound_socket(
+            &app_server,
+            &self.identity.app_server_socket,
+        )?;
+        self.sockets = AgentdSocketInputs::RootBound {
+            control,
+            app_server,
+        };
         Ok(self)
     }
 
