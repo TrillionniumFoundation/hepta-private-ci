@@ -124,7 +124,8 @@ def prepare(upstream, destination, hepta):
     for record in manifest["changed_files"]:
         relative = Path(record["path"])
         if (relative.is_absolute()
-                or (relative.parts[0] != "platform" and str(relative) not in GRAPH_MANIFESTS)
+                or (relative.parts[0] != "platform" and str(relative) not in GRAPH_MANIFESTS
+                    and str(relative) != "widgets/src/text_input.rs")
                 or any(part in ("", ".", "..") for part in relative.parts) or str(relative) in changed):
             raise ValueError("Invalid or duplicate SDK source path")
         changed.add(str(relative))

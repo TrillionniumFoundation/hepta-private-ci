@@ -1,0 +1,437 @@
+--- a/widgets/src/text_input.rs
++++ b/widgets/src/text_input.rs
+@@ -668,6 +668,17 @@
+     #[rust]
+     last_sent_ime_sel_end: usize,
+ 
++    #[rust]
++    edit_scope: u64,
++    #[rust]
++    edit_sequence: u64,
++    #[rust]
++    edit_before: Option<TextInputState>,
++    #[rust]
++    composition_generation: u64,
++    #[rust]
++    composition_before: Option<TextInputState>,
++
+     #[live]
+     on_change: Option<ScriptFnRef>,
+     #[live]
+@@ -684,7 +695,117 @@
+ }
+ 
+ impl TextInput {
++    fn snapshot(&self) -> TextInputState {
++        TextInputState { text: self.text.clone(), password_text: self.password_text.clone(),
++            selection: self.selection, history: self.history.clone() }
++    }
++
++    // No public setters: set_selection would mutate the restored undo group.
++    fn restore_checkpoint(&mut self, cx: &mut Cx, state: TextInputState) {
++        self.text = state.text;
++        self.password_text = state.password_text;
++        self.selection = state.selection;
++        self.history = state.history;
++        self.composition_before = None;
++        self.edit_before = None;
++        self.clear_composition();
++        self.laidout_text = None;
++        self.needs_scroll_to_cursor = true;
++        self.last_sent_ime_sel_start = usize::MAX;
++        self.last_sent_ime_sel_end = usize::MAX;
++        self.check_text_is_empty(cx, Animate::Yes);
++        self.draw_bg.redraw(cx);
++    }
++
++    fn emit_outcome(&mut self, cx: &mut Cx, uid: WidgetUid, phase: TextEditPhase) {
++        if self.edit_scope == 0 { return; }
++        self.edit_sequence = self.edit_sequence.checked_add(1).expect("text edit sequence exhausted");
++        let before = self.edit_before.take();
++        cx.widget_action(uid, TextInputAction::EditOutcome(TextEditOutcome {
++            scope: self.edit_scope, sequence: self.edit_sequence,
++            generation: self.composition_generation, phase, state: self.snapshot(), before,
++        }));
++    }
++
++    fn cancel_composition(&mut self, cx: &mut Cx) -> bool {
++        let Some(state) = self.composition_before.take() else { return false; };
++        self.restore_checkpoint(cx, state);
++        self.emit_outcome(cx, self.widget_uid(), TextEditPhase::Cancelled);
++        self.emit_legacy_change(cx, self.widget_uid());
++        true
++    }
++
++    // True means consume the selecting press. Restored text has no valid
++    // hit-test layout; continuing the same pointer event would lose intent.
++    fn cancel_pointer_selection(&mut self, cx: &mut Cx) -> bool {
++        self.cancel_composition(cx)
++    }
++
++    /// The original native TextInput event path, also callable without a drawn
++    /// window. Full-state mobile synchronization is not this scoped protocol.
++    pub fn apply_scoped_text_input(&mut self, cx: &mut Cx, event: &TextInputEvent) -> bool {
++        if self.edit_scope == 0 { return false; }
++        self.preserved_selection_cursor = None;
++        self.pending_outside_focus_loss_touch = None;
++        if self.is_read_only { return true; }
++        if event.full_state_sync.is_some() || event.replace_range.is_some() {
++            // Fail closed rather than classify mobile state replacement as a
++            // native commit. This opt-in candidate is native TextInput only.
++            self.cancel_composition(cx);
++            return true;
++        }
++        let committed_composition = !event.replace_last && self.composition_before.is_some();
++        if !event.replace_last {
++            if let Some(state) = self.composition_before.take() {
++                self.restore_checkpoint(cx, state);
++            }
++        }
++        self.edit_before = Some(self.snapshot());
++        let text = self.filter_input(&event.input, false);
++        if text.is_empty() {
++            if event.replace_last && event.input.is_empty() { self.cancel_composition(cx); }
++            if committed_composition {
++                self.emit_outcome(cx, self.widget_uid(), TextEditPhase::Cancelled);
++                self.emit_legacy_change(cx, self.widget_uid());
++            }
++            self.edit_before = None;
++            return true;
++        }
++        if event.replace_last {
++            if self.composition_before.is_none() {
++                self.composition_before = Some(self.snapshot());
++                self.composition_generation = self.composition_generation.checked_add(1)
++                    .expect("composition generation exhausted");
++                self.composition_start = self.selection.start().index;
++                self.composition_end = self.selection.end().index;
++            }
++            let start = self.composition_start;
++            let end = self.composition_end;
++            self.create_or_extend_edit_group(EditKind::Other);
++            self.apply_edit(cx, Edit { start, end, replace_with: text.clone() });
++            self.composition_start = start;
++            self.composition_end = start + text.len();
++            self.ime_update_frame = cx.redraw_id();
++            self.emit_outcome(cx, self.widget_uid(), TextEditPhase::Preview);
++            self.emit_legacy_change(cx, self.widget_uid());
++        } else {
++            if committed_composition { self.history.force_new_edit_group(); }
++            self.create_or_extend_edit_group(if event.was_paste { EditKind::Other } else { EditKind::Insert });
++            self.apply_edit(cx, Edit { start: self.selection.start().index,
++                end: self.selection.end().index, replace_with: text });
++            self.emit_change(cx, self.widget_uid());
++        }
++        self.draw_bg.redraw(cx);
++        cx.hide_clipboard_actions();
++        true
++    }
++
+     fn emit_change(&mut self, cx: &mut Cx, uid: WidgetUid) {
++        self.emit_outcome(cx, uid, TextEditPhase::Committed);
++        self.emit_legacy_change(cx, uid);
++    }
++
++    fn emit_legacy_change(&mut self, cx: &mut Cx, uid: WidgetUid) {
+         cx.widget_action(uid, TextInputAction::Changed(self.text.clone()));
+         if let Some(handler) = self.on_change.as_object() {
+             let text = self.text.clone();
+@@ -903,6 +1024,7 @@
+     }
+ 
+     pub fn set_selection(&mut self, cx: &mut Cx, selection: Selection) {
++        self.cancel_composition(cx);
+         self.selection = Selection {
+             anchor: Cursor {
+                 index: floor_grapheme_boundary(&self.text, selection.anchor.index),
+@@ -924,6 +1046,7 @@
+     }
+ 
+     pub fn set_cursor(&mut self, cx: &mut Cx, cursor: Cursor, keep_selection: bool) {
++        self.cancel_composition(cx);
+         self.set_selection(
+             cx,
+             Selection {
+@@ -1773,6 +1896,9 @@
+         if self.is_read_only {
+             return Err(ReplaceRangeError::ReadOnly);
+         }
++        if self.composition_before.is_some() {
++            return Err(ReplaceRangeError::Composing);
++        }
+         let Range { start, end } = range;
+         if start > end
+             || end > self.text.len()
+@@ -1806,6 +1932,7 @@
+         }
+         let uid = self.widget_uid();
+         self.preserved_selection_cursor = None;
++        if self.edit_scope != 0 { self.edit_before = Some(self.snapshot()); }
+         if undo == UndoGroup::New {
+             self.history.force_new_edit_group();
+         }
+@@ -1867,6 +1994,7 @@
+         self.animator_play(cx, ids!(blink.on));
+         cx.stop_timer(self.blink_timer);
+         cx.hide_text_ime();
++        self.cancel_composition(cx);
+         self.composition_start = 0;
+         self.composition_end = 0;
+         self.pending_outside_focus_loss_touch = None;
+@@ -2103,6 +2231,9 @@
+     }
+ 
+     fn create_or_extend_edit_group(&mut self, edit_kind: EditKind) {
++        if self.edit_scope != 0 && self.edit_before.is_none() {
++            self.edit_before = Some(self.snapshot());
++        }
+         self.history
+             .create_or_extend_edit_group(edit_kind, self.selection);
+     }
+@@ -2228,6 +2359,8 @@
+     }
+ 
+     fn undo(&mut self, cx: &mut Cx) -> bool {
++        self.cancel_composition(cx);
++        self.edit_before = Some(self.snapshot());
+         if let Some(new_selection) = self.history.undo(self.selection, &mut self.text) {
+             // The text the IME was composing is gone, so the composition is too.
+             self.clear_composition();
+@@ -2237,11 +2370,14 @@
+             self.check_text_is_empty(cx, Animate::Yes);
+             true
+         } else {
++            self.edit_before = None;
+             false
+         }
+     }
+ 
+     fn redo(&mut self, cx: &mut Cx) -> bool {
++        self.cancel_composition(cx);
++        self.edit_before = Some(self.snapshot());
+         if let Some(new_selection) = self.history.redo(self.selection, &mut self.text) {
+             self.clear_composition();
+             self.laidout_text = None;
+@@ -2250,6 +2386,7 @@
+             self.check_text_is_empty(cx, Animate::Yes);
+             true
+         } else {
++            self.edit_before = None;
+             false
+         }
+     }
+@@ -2380,6 +2517,7 @@
+     }
+ 
+     fn set_text(&mut self, cx: &mut Cx, text: &str) {
++        self.cancel_composition(cx);
+         self.text = self.filter_input(text, true);
+         self.set_selection(
+             cx,
+@@ -2480,6 +2618,19 @@
+         }
+ 
+         let uid = self.widget_uid();
++        let pointer_selects = self.draw_bg.area().is_valid(cx) && match event {
++            Event::MouseDown(mouse) => self.draw_bg.area().clipped_rect(cx).contains(mouse.abs),
++            Event::TouchUpdate(touch) => touch.touches.iter().any(|point|
++                matches!(point.state, TouchState::Start)
++                    && self.draw_bg.area().clipped_rect(cx).contains(point.abs)),
++            _ => false,
++        };
++        if pointer_selects && self.cancel_pointer_selection(cx) {
++            // This first press is cancellation-only. Restoring the original
++            // text invalidates hit-test layout; a press after redraw can select.
++            // Never apply preview-text coordinates to the restored text.
++            return;
++        }
+ 
+         // Self-detect focus loss from taps outside our area
+         // But NOT if we've captured the finger (e.g., during a selection drag that ends outside)
+@@ -2928,6 +3079,7 @@
+                 self.emit_change(cx, uid);
+             }
+             Hit::TextInput(event) if !self.is_read_only => {
++                if self.apply_scoped_text_input(cx, event) { return; }
+                 // Text changes invalidate any preserved cursor from a pending tap gesture
+                 self.preserved_selection_cursor = None;
+                 self.pending_outside_focus_loss_touch = None;
+@@ -3198,6 +3350,10 @@
+                 cx.hide_clipboard_actions();
+             }
+             Hit::TextRangeReplace(event) if !self.is_read_only => {
++                if self.edit_scope != 0 {
++                    self.cancel_composition(cx);
++                    return;
++                }
+                 self.pending_outside_focus_loss_touch = None;
+ 
+                 // iOS autocorrect sends range replacement events
+@@ -3266,8 +3422,7 @@
+             Hit::TextCut(event) => {
+                 *event.response.borrow_mut() = Some(self.selected_text().to_string());
+                 if !self.selected_text().is_empty() {
+-                    self.history
+-                        .create_or_extend_edit_group(EditKind::Other, self.selection);
++                    self.create_or_extend_edit_group(EditKind::Other);
+                     self.apply_edit(
+                         cx,
+                         Edit {
+@@ -3304,6 +3459,44 @@
+ }
+ 
+ impl TextInputRef {
++    /// Mint a non-reused origin token BEFORE producing any widget edit actions.
++    /// This fences queued actions, not origin-less late raw OS IME events.
++    pub fn edit_position(&self) -> (u64, u64) {
++        self.borrow().map_or((0, 0), |inner| (inner.edit_scope, inner.edit_sequence))
++    }
++
++    pub fn begin_edit_scope(&self) -> u64 {
++        static NEXT: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
++        let token = NEXT.fetch_update(std::sync::atomic::Ordering::Relaxed,
++            std::sync::atomic::Ordering::Relaxed, |n| n.checked_add(1))
++            .expect("text edit scope exhausted");
++        if let Some(mut inner) = self.borrow_mut() {
++            assert!(inner.composition_before.is_none() && !inner.has_composition(),
++                "cancel the previous composition before rebinding edit scope");
++            inner.edit_scope = token;
++            inner.edit_sequence = 0;
++            inner.edit_before = None;
++        }
++        token
++    }
++
++    pub fn cancel_composition(&self, cx: &mut Cx) -> bool {
++        self.borrow_mut().is_some_and(|mut inner| inner.cancel_composition(cx))
++    }
++
++    pub fn apply_scoped_text_input(&self, cx: &mut Cx, event: &TextInputEvent) -> bool {
++        self.borrow_mut().is_some_and(|mut inner| inner.apply_scoped_text_input(cx, event))
++    }
++
++    pub fn restore_checkpoint(&self, cx: &mut Cx, state: TextInputState) {
++        if let Some(mut inner) = self.borrow_mut() { inner.restore_checkpoint(cx, state); }
++    }
++
++    pub fn edit_outcomes(&self, actions: &Actions) -> Vec<TextEditOutcome> {
++        actions.filter_widget_actions_cast::<TextInputAction>(self.widget_uid())
++            .filter_map(|action| match action { TextInputAction::EditOutcome(value) => Some(value), _ => None }).collect()
++    }
++
+     /// See [`TextInput::set_max_lines`].
+     pub fn set_max_lines(&self, cx: &mut Cx, max_lines: usize) {
+         if let Some(mut inner) = self.borrow_mut() {
+@@ -3622,6 +3815,23 @@
+     history: History,
+ }
+ 
++impl TextInputState {
++    pub fn text(&self) -> &str { &self.text }
++}
++
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum TextEditPhase { Preview, Committed, Cancelled }
++
++#[derive(Clone, Debug)]
++pub struct TextEditOutcome {
++    pub before: Option<TextInputState>,
++    pub scope: u64,
++    pub sequence: u64,
++    pub generation: u64,
++    pub phase: TextEditPhase,
++    pub state: TextInputState,
++}
++
+ #[derive(Clone, Debug, Default)]
+ pub enum TextInputAction {
+     #[default]
+@@ -3631,6 +3841,7 @@
+     Returned(String, KeyModifiers),
+     Escaped,
+     Changed(String),
++    EditOutcome(TextEditOutcome),
+     KeyDownUnhandled(KeyEvent),
+ }
+ 
+@@ -4026,6 +4237,80 @@
+     }
+ 
+     #[test]
++    fn scoped_commit_has_one_undo_step_and_cancel_keeps_current_history_group() {
++        let (mut cx, input, _) = field("base ");
++        caret(&mut cx, &input, 5);
++        type_text(&mut cx, &input, "typed");
++        input.begin_edit_scope();
++        let before = format!("{:?}", input.save_state());
++        input.apply_scoped_text_input(&mut cx, &TextInputEvent {
++            input: "preview".into(), replace_last: true, ..Default::default()
++        });
++        input.apply_scoped_text_input(&mut cx, &TextInputEvent {
++            input: String::new(), replace_last: true, ..Default::default()
++        });
++        assert_eq!(format!("{:?}", input.save_state()), before);
++        input.apply_scoped_text_input(&mut cx, &TextInputEvent {
++            input: "候选".into(), replace_last: true, ..Default::default()
++        });
++        input.apply_scoped_text_input(&mut cx, &TextInputEvent {
++            input: "中文".into(), ..Default::default()
++        });
++        assert_eq!(input.text(), "base typed中文");
++        assert!(undo(&mut cx, &input));
++        assert_eq!(input.text(), "base typed");
++    }
++
++    #[test]
++    fn scoped_pointer_cancellation_consumes_press_before_invalid_layout_hit_test() {
++        let (mut cx, input, _) = field("中文 original");
++        input.set_selection(&mut cx, Selection {
++            anchor: Cursor { index: 0, prefer_next_row: false },
++            cursor: Cursor { index: 6, prefer_next_row: false },
++        });
++        input.begin_edit_scope();
++        let before = format!("{:?}", input.save_state());
++        input.apply_scoped_text_input(&mut cx, &TextInputEvent {
++            input: "preview".into(), replace_last: true, ..Default::default()
++        });
++        let mut inner = input.borrow_mut().unwrap();
++        // This is the production early-return predicate, not a replacement
++        // text field or a claim about pointer geometry/live window coverage.
++        assert!(inner.cancel_pointer_selection(&mut cx));
++        assert!(inner.laidout_text.is_none());
++        assert_eq!(format!("{:?}", inner.snapshot()), before);
++        assert!(!inner.cancel_pointer_selection(&mut cx));
++    }
++
++    #[test]
++    fn scoped_noop_undo_redo_do_not_leak_a_before_checkpoint() {
++        let (mut cx, input, _) = field("original");
++        input.begin_edit_scope();
++        let mut inner = input.borrow_mut().unwrap();
++        assert!(!inner.undo(&mut cx));
++        assert!(inner.edit_before.is_none());
++        assert!(!inner.redo(&mut cx));
++        assert!(inner.edit_before.is_none());
++    }
++
++    #[test]
++    fn scoped_direct_focus_loss_restores_selected_original() {
++        let (mut cx, input, _) = field("中文 original");
++        input.set_selection(&mut cx, Selection {
++            anchor: Cursor { index: 0, prefer_next_row: false },
++            cursor: Cursor { index: 6, prefer_next_row: false },
++        });
++        input.begin_edit_scope();
++        let before = format!("{:?}", input.save_state());
++        input.apply_scoped_text_input(&mut cx, &TextInputEvent {
++            input: "preview".into(), replace_last: true, ..Default::default()
++        });
++        let uid = input.widget_uid();
++        input.borrow_mut().unwrap().handle_focus_lost(&mut cx, uid);
++        assert_eq!(format!("{:?}", input.save_state()), before);
++    }
++
++    #[test]
+     fn replace_range_edits_the_text_and_carries_the_selection_across() {
+         let (mut cx, input, changes) = field("hello world");
+ 

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "upstream_repository": "https://github.com/kevinaboos/makepad",
   "upstream_commit": "337566c8b25d47f7e4fff6a202157b65bf183330",
-  "patched_tree": "ceb83c36b474eb55336cb69b430ff9d898cb51f6",
+  "patched_tree": "d2205f924007f6c723ed1e2ed522e2e5bbfc21b7",
   "package": {
     "name": "makepad-platform",
     "version": "2.0.0"
@@ -22,6 +22,11 @@
       "file": "native-ime-preedit.patch",
       "sha256": "11c5eacffca25eaf9aace39fdbf583e51cc8cd8ed3cbb1ebb9e29bb955a328a0",
       "bytes": 6920
+    },
+    {
+      "file": "native-ime-transactions.patch",
+      "sha256": "e5fc51d75c2de7380fcb7f9ed1ae1b6e5e5041e07622e17bb600b8261c78ef6a",
+      "bytes": 17817
     }
   ],
   "changed_files": [
@@ -102,6 +107,12 @@
       "upstream_sha256": "99655c7b791930cc9648ab142620f03b199a7e732b89ebd72862d2af7ef1a917",
       "patched_sha256": "2ef1e620085a44556042d463232e1496a0a7aa24997ec8332aa7ad0ca3a470c7",
       "bytes": 3672
+    },
+    {
+      "path": "widgets/src/text_input.rs",
+      "upstream_sha256": "c85d035cb30e54c9a2c7f4afbcd16b5a9517685cc82ff432451e19d6a337e875",
+      "patched_sha256": "3ab6ab2a0e1017a5d2251f2563a7153c85888bb69a71511dcd933cb0d5f24b2c",
+      "bytes": 183127
     }
   ],
   "license": {
