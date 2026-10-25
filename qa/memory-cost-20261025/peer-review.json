@@ -1,0 +1,30 @@
+{
+  "cpu_note": "37.211025s child sum has1ns float-to-integer truncation in normalized receipts; +5.132539827s controller equals recorded42.343564826s. Outer42.393865s covers those processes and is not additive.",
+  "environment_fields_read_or_printed": false,
+  "evidence_basis": "Explicit peer read-only review message, independently recomputing raw events and expected answers; no source edits, models or tests executed.",
+  "finding": "No discrepancy in40query samples,20actual decoder entries/completions, all40 answers, phase matching, measured quantiles or nonduplicated CPU totals.",
+  "future_groups": 0,
+  "general_strong_rag_qualified": false,
+  "identity_key": [
+    "phase",
+    "index"
+  ],
+  "memory_p50_ns": 1543281512,
+  "memory_p95_ns": 1606733452,
+  "net_compression_gain": null,
+  "per_arm_exact": 20,
+  "per_arm_measured": 18,
+  "per_arm_warmup": 2,
+  "quantile_method": "nearest rank; p50 is9th of18, p95 is18th of18, not even-sample midpoint median",
+  "recorded_at": "2026-10-25T13:33:08.812113+00:00",
+  "retrieval_p50_ns": 57966,
+  "retrieval_p95_ns": 89493,
+  "reviewer": "/root/ndu_current_proof",
+  "schema": "hepta.memory.warm002.peer-record-review.v1",
+  "unknowns_preserved": [
+    "whole_host_cpu_ns",
+    "energy_joules",
+    "billing_usd",
+    "autoregressive_forward_steps"
+  ]
+}

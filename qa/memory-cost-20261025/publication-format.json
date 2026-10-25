@@ -1,0 +1,97 @@
+{
+  "schema": "hepta.memory-publication.python-format-bridge.v1",
+  "formatter": "just fmt in isolated checkout",
+  "tests_or_models_after_formatter": false,
+  "all_raw_python_asts_identical": true,
+  "all_computation_asts_identical": true,
+  "docstring_normalization": "inspect.cleandoc on module/class/function leading docstring only",
+  "files": {
+    "scripts/memory_cell_cost_v2/README.md": {
+      "before_sha256": "ce36f9f4c6c1c54cf4f6c5aaa1ba97add3a87a4f43b9d8809b3f9da8cbf11bce",
+      "after_sha256": "ce36f9f4c6c1c54cf4f6c5aaa1ba97add3a87a4f43b9d8809b3f9da8cbf11bce",
+      "bytes": 5249,
+      "lines": 81
+    },
+    "scripts/memory_cell_cost_v2/historical_inventory.py": {
+      "before_sha256": "116f8975bbfbbcb0bc12d5bbbcf610fd0590288e96130d9cca7cfcd37dbd2005",
+      "after_sha256": "23f892500d9f22cfeaec23601d45f37359a908c75bccf4f5115bc716eed988ec",
+      "bytes": 9716,
+      "lines": 243,
+      "same_python_ast": true,
+      "same_ast_after_docstring_indentation_normalization": true,
+      "ast_sha256": "754f5fa207d9dac74a9a1cd9f3485f46522af8f593628935aea34fb45ff45642"
+    },
+    "scripts/memory_cell_cost_v2/receipt_reader.py": {
+      "before_sha256": "93e252c138054fb39bcd4c251d9ecd41264ba8bb884c5bea816feef8cbe8470f",
+      "after_sha256": "a95381af29092f218b131d5d3d5f09b166f3dbb7c04539b86e425b7d6f11acbf",
+      "bytes": 6225,
+      "lines": 161,
+      "same_python_ast": true,
+      "same_ast_after_docstring_indentation_normalization": true,
+      "ast_sha256": "ba45da3867660006e2915f73205c7efd18f666dcb353295b5d7ea0d7d6df9869"
+    },
+    "scripts/memory_cell_cost_v2/storage_ledger.py": {
+      "before_sha256": "78d3334429b93910a365f436f13976099146fcfda52a65a8828a60cafded605b",
+      "after_sha256": "0496466ca9f483a79bddc0a39c96cc7b98adcc07f15ef68799d5b320d81529e9",
+      "bytes": 10090,
+      "lines": 281,
+      "same_python_ast": true,
+      "same_ast_after_docstring_indentation_normalization": true,
+      "ast_sha256": "e9d97e804c8c6a7a2d06b40c959d8971b162c36189d307c5e6fdab87a42b18cf"
+    },
+    "scripts/memory_cell_cost_v2/test_controller_meter.py": {
+      "before_sha256": "17a4f61fd10709174763d151d57d516ab9e692b18164efb3a6c759a1d2fa2f86",
+      "after_sha256": "dbb26f1090ab4821a45d790d16fc9b81e583adf1cc2e9f1ec8841381a64943eb",
+      "bytes": 2234,
+      "lines": 55,
+      "same_python_ast": true,
+      "same_ast_after_docstring_indentation_normalization": true,
+      "ast_sha256": "08f8a2be728792de1ae19db9815a3ce181ec3b178f2663a2625261a08824fd6e"
+    },
+    "scripts/memory_cell_cost_v2/test_receipt_reader.py": {
+      "before_sha256": "81535bf951ce819ceb880370b690d789ff62ab073264c75d7b77af78b32f4549",
+      "after_sha256": "549121523c58f3617d51beb3a001c76be609265fa3565253ddbe5397c4bd3f78",
+      "bytes": 4200,
+      "lines": 126,
+      "same_python_ast": true,
+      "same_ast_after_docstring_indentation_normalization": true,
+      "ast_sha256": "9caf4f9a0fd7d642cfa3254e6f9ff18ca719d4cd3afe06df7e830f34cd4e3c38"
+    },
+    "scripts/memory_cell_cost_v2/test_storage_ledger.py": {
+      "before_sha256": "e608100b08a0e9b60fe05df079d40c55ed70fb4b076dd08d0e5605a77df85fad",
+      "after_sha256": "18918b9edc361a51f2337b504faf50e8f4a82746f93d041854b5632903625c5e",
+      "bytes": 5160,
+      "lines": 140,
+      "same_python_ast": true,
+      "same_ast_after_docstring_indentation_normalization": true,
+      "ast_sha256": "991b7efff3e97844ad88070d9a4ff27658166cc99085a377a194c0c6caf59695"
+    },
+    "scripts/memory_cell_cost_v2/test_warm_worker.py": {
+      "before_sha256": "c6f79a6b46696218d4f1af88806e8d4094c19c3c78d7f4bef822c7378dfe1c28",
+      "after_sha256": "293867cc77fad51946378f485f7139353acf631930f01aec85d28da433630294",
+      "bytes": 5938,
+      "lines": 157,
+      "same_python_ast": true,
+      "same_ast_after_docstring_indentation_normalization": true,
+      "ast_sha256": "518a43f12ef08f583f376bc431da008b049d01e94ae8b51291fe644fc1dcd775"
+    },
+    "scripts/memory_cell_cost_v2/warm_trial.py": {
+      "before_sha256": "086707f51dc74063fdcf7277e85d5c01797c0a69d80f92b95b6ecaad2961d5bc",
+      "after_sha256": "533619bcb9ee8dc2af020b2509e9fb64ce2d2f668b383e1ee9bb48ae4d202219",
+      "bytes": 14779,
+      "lines": 359,
+      "same_python_ast": true,
+      "same_ast_after_docstring_indentation_normalization": true,
+      "ast_sha256": "6808629831e05ced125d0d5441d85ab4d109241ccf35b5ea3b8d5f9de79e9835"
+    },
+    "scripts/memory_cell_cost_v2/warm_worker.py": {
+      "before_sha256": "a32c5821d051f9259d1a50d5cbe3bd37a4b0e757cbb5bfed286a66174b3fc85e",
+      "after_sha256": "8dece5110a602ae9b1d3f861e72ffec6395a0b43dc5c4cc0d31e9859f39c361c",
+      "bytes": 8351,
+      "lines": 235,
+      "same_python_ast": true,
+      "same_ast_after_docstring_indentation_normalization": true,
+      "ast_sha256": "eb19550b3a9d10777b188978e6c90ecaab70672d0dadebcbbd496d84d3f3ae8d"
+    }
+  }
+}
