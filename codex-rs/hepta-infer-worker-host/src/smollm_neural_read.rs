@@ -39,6 +39,7 @@ mod driver;
 use driver::Exchange;
 use driver::Mailbox;
 use driver::SmolLmDriver;
+pub use driver::SmolLmFirstExchangeFailureV1;
 pub use driver::SmolLmFixedInitialBackboneProofV1;
 pub use driver::SmolLmMeasuredForwardV1;
 pub use driver::SmolLmMeasuredLoadV1;
@@ -456,6 +457,20 @@ impl SmolLmNeuralReadPortV1 {
             .map_err(|_| "neural exchange poisoned")?
             .measurements
             .observe(consume)
+    }
+
+    /// Read the sticky original failure only, including after admission closes.
+    /// This passive snapshot cannot restore Ready, model or effect authority.
+    pub fn first_exchange_failure(&self) -> Result<Option<SmolLmFirstExchangeFailureV1>, String> {
+        let _worker = self
+            .worker
+            .try_lock()
+            .map_err(|_| "original neural worker is active or poisoned")?;
+        Ok(self
+            .mailbox
+            .try_lock()
+            .map_err(|_| "original neural mailbox is active or poisoned")?
+            .first_failure)
     }
 
     /// Explicit original-owner unload. Success requires the Python supervisor's

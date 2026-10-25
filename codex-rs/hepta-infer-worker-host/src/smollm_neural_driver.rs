@@ -25,6 +25,12 @@ use crate::model_worker::ModelDriver;
 use crate::model_worker::ModelManifest;
 use crate::model_worker::WorkerRequest;
 
+#[path = "smollm_neural_failure.rs"]
+mod failure;
+use failure::Attempt;
+use failure::FailureRecorder;
+pub use failure::SmolLmFirstExchangeFailureV1;
+
 #[path = "smollm_neural_measurement.rs"]
 mod measurement;
 #[path = "smollm_neural_profile.rs"]
@@ -261,35 +267,55 @@ impl ModelDriver for SmolLmDriver {
                 .mailbox
                 .lock()
                 .map_err(|_| "neural exchange poisoned")?;
-            let exchange = mailbox
-                .exchange
-                .as_mut()
-                .ok_or("neural exchange unavailable")?;
+            let MailboxState {
+                exchange,
+                first_failure,
+                ..
+            } = &mut *mailbox;
+            let exchange = exchange.as_mut().ok_or("neural exchange unavailable")?;
             if exchange.request_id != request.request_id
                 || exchange.payload_digest != request.payload_digest
                 || exchange.response.is_some()
             {
                 return Err("neural exchange request mismatch".to_owned());
             }
-            exchange.execution.check()?;
+            let mut failure =
+                FailureRecorder::new(first_failure, request, exchange.execution.deadline());
+            let check = Attempt::new("entry_execution_check");
+            exchange
+                .execution
+                .check()
+                .map_err(|error| failure.retain(check.message(error)))?;
+            let serialization = Attempt::new("request_serialization");
             let bytes = serde_json::to_vec(
                 &serde_json::json!({"schema":"hepta-smollm-inference-input-v1",
                 "request_id":request.request_id, "prompt":exchange.request.query}),
             )
-            .map_err(|error| error.to_string())?;
+            .map_err(|error| failure.retain(serialization.message(error.to_string())))?;
+            let timing = Attempt::new("operation_deadline");
             let remaining_ms = request
                 .deadline_ms
-                .checked_sub(super::now_ms()?)
-                .ok_or("neural operation deadline")?;
+                .checked_sub(
+                    super::now_ms().map_err(|error| failure.retain(timing.message(error)))?,
+                )
+                .ok_or_else(|| failure.retain(timing.message("neural operation deadline")))?;
             let deadline = (Instant::now() + Duration::from_millis(remaining_ms.min(1500)))
                 .min(exchange.execution.deadline());
+            failure.io_deadline(deadline);
             let raw = self
                 .session
                 .as_ref()
-                .ok_or("neural session unavailable")?
-                .exchange(&bytes, deadline, &exchange.execution)?;
-            let response: Response =
-                serde_json::from_slice(&raw).map_err(|error| error.to_string())?;
+                .ok_or_else(|| {
+                    failure.retain(
+                        Attempt::new("session_unavailable").message("neural session unavailable"),
+                    )
+                })?
+                .exchange(&bytes, deadline, &exchange.execution)
+                .map_err(|error| failure.retain(error))?;
+            let decode = Attempt::new("response_decode");
+            let response: Response = serde_json::from_slice(&raw)
+                .map_err(|error| failure.retain(decode.message(error.to_string())))?;
+            let contract = Attempt::new("response_contract");
             if response.schema != SCHEMA
                 || response.profile != PROFILE
                 || response.request_id != request.request_id
@@ -312,9 +338,15 @@ impl ModelDriver for SmolLmDriver {
                 || response.observed_rss_bytes == 0
                 || response.logits_sha256.parse::<Digest32>().is_err()
             {
-                return Err("neural response does not match actual requested execution".to_owned());
+                return Err(failure.retain(
+                    contract.message("neural response does not match actual requested execution"),
+                ));
             }
-            exchange.execution.check()?;
+            let check = Attempt::new("response_execution_check");
+            exchange
+                .execution
+                .check()
+                .map_err(|error| failure.retain(check.message(error)))?;
             self.session
                 .as_ref()
                 .ok_or("neural session unavailable")?

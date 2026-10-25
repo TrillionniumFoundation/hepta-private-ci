@@ -549,3 +549,88 @@ fn concurrent_original_load_admissions_keep_distinct_signed_nonces_and_cold_reco
     assert_eq!(recovered.get(&left), Some(&records[0]));
     assert_eq!(recovered.get(&right), Some(&records[1]));
 }
+
+#[test]
+fn passive_failure_snapshot_survives_closed_admission_but_refuses_busy_and_poisoned_locks() {
+    // No model is loaded and no authority is claimed by this observer fixture.
+    let directory = tempfile::tempdir().unwrap();
+    let runtime = runtime();
+    let issuer = Arc::new(TestIssuer::open(&directory.path().join("authority")));
+    let control = Arc::new(Mutex::new(
+        DurableInferenceControl::open(directory.path().join("control"), 8).unwrap(),
+    ));
+    let digest = Digest32::of_bytes(b"passive-observer-only");
+    let pin = NeuralCognitivePinV1 {
+        payload_digest: digest,
+        objective_digest: digest,
+        dataset_digest: digest,
+        generation: Generation::new(1).unwrap(),
+        family_digest: digest,
+        execution_profile_digest: digest,
+    };
+    let config = SmolLmNeuralReadConfigV1 {
+        python: PathBuf::new(),
+        script: PathBuf::new(),
+        materials: PathBuf::new(),
+        run_directory: PathBuf::new(),
+        source_pins: BTreeMap::new(),
+        target_contract: vec![],
+        wrapped_adapter: vec![],
+        contract_digest: digest,
+        adapter_digest: digest,
+        backbone_digest: digest,
+        tokenizer_digest: digest,
+        action_completions: BTreeMap::new(),
+    };
+    let mailbox = Arc::new(Mutex::new(Default::default()));
+    let driver = SmolLmDriver::new(
+        config,
+        pin.clone(),
+        vec![],
+        mailbox.clone(),
+        runtime.handle().clone(),
+        CancellationToken::new(),
+        std::time::Instant::now() + Duration::from_secs(120),
+    );
+    let context = ControlContext {
+        control,
+        authorizer: issuer.clone(),
+        runtime: runtime.handle().clone(),
+        owner_id: owner(),
+        body_generation: 1,
+        worker_id: "observer-only".to_owned(),
+        grant: grant(),
+        model_digest: digest.to_string(),
+    };
+    let port = SmolLmNeuralReadPortV1 {
+        pin,
+        model_id: "not-loaded".to_owned(),
+        worker: Mutex::new(
+            InferenceWorker::new(
+                now_ms().unwrap(),
+                context.worker_id.clone(),
+                1,
+                context.grant.clone(),
+                driver,
+            )
+            .unwrap(),
+        ),
+        context,
+        mailbox,
+        admission_closed: AtomicBool::new(true),
+    };
+    assert_eq!(port.first_exchange_failure().unwrap(), None);
+    assert!(port.with_measurements(|_, _| ()).is_err());
+    let held_worker = port.worker.lock().unwrap();
+    assert!(port.first_exchange_failure().is_err());
+    drop(held_worker);
+    let held_mailbox = port.mailbox.lock().unwrap();
+    assert!(port.first_exchange_failure().is_err());
+    drop(held_mailbox);
+    let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        let _held = port.mailbox.lock().unwrap();
+        panic!("controlled mailbox poison");
+    }));
+    assert!(port.first_exchange_failure().is_err());
+    assert!(issuer.bindings.lock().unwrap().is_empty());
+}
