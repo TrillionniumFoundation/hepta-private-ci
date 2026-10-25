@@ -307,7 +307,7 @@ attempt lineage, including rejection, interruption and no-update. Each round:
 
 The cross-repository interface anchors are I06 export, I07 evaluation, I08 Chain
 accepted-task observation, I09 release-closure fetch and I10 local installation
-and readback in the [Chain plan](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/6724ed1905e11d30775738ad0eb84b53d1d9ea97/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md).
+and readback in the [Chain plan](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/ef2a6958a6f3d8fdfaea25fbc58fb1ecd188134c/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md).
 These are design-change anchors, not already deployed wire schemas. Preserve
 `DatasetSnapshotV1` exchange, complete V3 admission, `LearningArtifactManifestV1`
 compatibility and `EvaluationReceiptV1`/`LongitudinalEvaluationReceiptV1` meaning.
@@ -334,6 +334,27 @@ model/tensor roots, datasets, sealed plans, raw measurements, task/effect IDs,
 fetch/load/readback receipts, all failed attempts and rollback/restart records.
 At least two distinct nodes must demonstrate real byte transfer and loading;
 this controlled result does not establish decentralized public qualification.
+
+The current controlled SmolLM2-135M five-control experiment is retained in
+[`smollm2-five-controls-20261024.json`](../../qualification/learning-generations/smollm2-five-controls-20261024.json).
+It executes the actual Chain `ef2a6958` strict-v1 CPU runtime: both loaders,
+five training/control phases and all five evaluations complete with successful
+original wait4/peak-RSS reconciliation. Candidate, fresh matched LoRA and matched
+full-tune each score 1/2; the backbone and random control score zero. Gain against
+the strongest control is zero, so no adoption or reward is justified. These
+declared public smoke tasks supply reproducible engineering observations only.
+The separate TCL4 release-profile transfer moves and rehashes 271,178,816 bytes
+across three controlled nodes with the origin stopped before the second hop;
+its [exact source evidence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/tree/ef2a6958a6f3d8fdfaea25fbc58fb1ecd188134c/evidence/pon-upgrade-implementation-20261018/native-rounds/cell-tcl4-release-three-host-20261024)
+does not prove that Hepta loaded or selected those fetched bytes. Neither result
+closes the three-round installed-parent/ordinary-next-task target. Inference-platform
+must next run the actual neural Session controls over pinned parameter material;
+learning-platform and agent-runtime must then compose the original ledger,
+evaluation, selection, artifact/CURRENT and next-task owners in the order above.
+The original two-second read, 120-second startup and eight-second terminal
+bounds remain unchanged; the experiment's training/inference budgets are
+separate and cannot replace them.
+
 Reorg, withdrawal, lost acknowledgement, stale generation, restart after route
 publication and unavailable replicas must preserve one logical operation,
 reject revoked bytes and reconcile Unknown effects before any unsafe retry.
