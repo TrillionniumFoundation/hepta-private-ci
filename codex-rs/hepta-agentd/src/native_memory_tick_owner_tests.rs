@@ -70,20 +70,27 @@ async fn shadow_delivery_is_immutable_owner_bound_and_late_withdrawal_closes_own
         Withdrawal::SourceTombstone => {
             use codex_hepta_memory::{CognitiveScope, ForgetMemoryDraft, LedgerSourceKind, SourceDraft};
             let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs() as i64;
+            let reason = "late controlled source withdrawal";
             let source = SourceDraft { scope: CognitiveScope::AgentPrivate,
                 kind: LedgerSourceKind::ExplicitMemoryDirective, event_key: "late-shadow-forget".to_string(),
-                content: b"withdraw this completed memory".to_vec(), observed_at_unix_seconds: now };
+                content: reason.as_bytes().to_vec(), observed_at_unix_seconds: now };
             f.writer.cognitive_mutation_capability().unwrap().forget_with_kg(
                 &f.access, &f.claim.production.write.memory.id.memory_id, /*expected_revision*/ 1,
                 &source, &ForgetMemoryDraft { scope: CognitiveScope::AgentPrivate,
-                    reason: "late controlled source withdrawal".to_string(), valid_from_unix_seconds: now,
+                    reason: reason.to_string(), valid_from_unix_seconds: now,
                     citations: vec![] }).await.unwrap();
             assert!(!f.verifier.0.load(Ordering::SeqCst));
             assert!(matches!(f.writer.revalidate_memory_cell(&f.admission).await,
                 Err(codex_hepta_memory::MemoryCellSourceError::Replay)));
         }
     }
-    assert!(owner_a.revalidate_delivery(&result).await.is_err());
+    let denied = owner_a.revalidate_delivery(&result).await.expect_err("withdrawn source escaped delivery fence");
+    match withdrawal {
+        Withdrawal::Authority => assert!(matches!(denied,
+            NativeMemoryError::Source(codex_hepta_memory::MemoryCellSourceError::Authority(_)))),
+        Withdrawal::SourceTombstone => assert!(matches!(denied,
+            NativeMemoryError::Source(codex_hepta_memory::MemoryCellSourceError::Invalid("current source revision or typed identity")))),
+    }
     assert!(owner_a.host.cancellation.is_cancelled());
     assert!(owner_a.state.lock().unwrap().failed);
     }

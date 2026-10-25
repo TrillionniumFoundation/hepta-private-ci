@@ -18,28 +18,45 @@ use std::sync::Arc;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 
-#[tokio::main(flavor = "multi_thread", worker_threads = 2)]
-async fn main() -> anyhow::Result<()> {
+fn main() -> anyhow::Result<()> {
+    codex_arg0::dispatch_helper_mode();
     let args: Vec<String> = std::env::args().skip(1).collect();
     anyhow::ensure!(
         args.len() >= 2,
         "prepare ROOT | run ROOT MODEL_CONFIG SOURCE_DOCUMENT ANCHOR_SHA256"
     );
     let root = std::path::absolute(&args[1])?;
-    match args[0].as_str() {
-        "prepare" if args.len() == 2 => prepare(&root).await,
-        "run" if args.len() == 5 => {
-            let result = probe(&root, Path::new(&args[2]), Path::new(&args[3]), &args[4]).await;
-            if let Err(error) = &result {
-                retain(
-                    &root.join("failure.json"),
-                    &serde_json::json!({"error": format!("{error:#}"), "production_qualified": false}),
-                )?;
-            }
-            result
-        }
-        _ => anyhow::bail!("closed probe arguments required"),
+    if args[0] == "prepare" && args.len() == 2 {
+        // Preparation creates the fleet and home; no existing daemon config
+        // or normal Codex entry-point initialization is required yet.
+        return tokio::runtime::Builder::new_multi_thread()
+            .worker_threads(2)
+            .enable_all()
+            .build()?
+            .block_on(prepare(&root));
     }
+    anyhow::ensure!(
+        args[0] == "run" && args.len() == 5,
+        "closed probe arguments required"
+    );
+    let (config, registry) = config(&root)?;
+    let home = codex_utils_absolute_path::AbsolutePathBuf::from_absolute_path(
+        &config.identity().home_root,
+    )?;
+    codex_utils_home_dir::set_process_codex_home_override(home)?;
+    codex_arg0::arg0_dispatch_or_else(move |arg0_paths| async move {
+        let result = probe(
+            &root, Path::new(&args[2]), Path::new(&args[3]), &args[4],
+            config, registry, arg0_paths,
+        ).await;
+        if let Err(error) = &result {
+            retain(
+                &root.join("failure.json"),
+                &serde_json::json!({"error": format!("{error:#}"), "production_qualified": false}),
+            )?;
+        }
+        result
+    })
 }
 
 async fn probe(
@@ -47,12 +64,10 @@ async fn probe(
     model_config: &Path,
     document_path: &Path,
     anchor_sha256: &str,
+    config: codex_hepta_agentd::AgentdConfig,
+    registry: codex_hepta_fleet::FleetRegistry,
+    arg0_paths: codex_arg0::Arg0DispatchPaths,
 ) -> anyhow::Result<()> {
-    let (config, registry) = config(root)?;
-    let home = codex_utils_absolute_path::AbsolutePathBuf::from_absolute_path(
-        &config.identity().home_root,
-    )?;
-    codex_utils_home_dir::set_process_codex_home_override(home)?;
     let socket = config.identity().control_socket.clone();
     let (host, authority_withdrawn) = open_host(root, &config, anchor_sha256).await?;
     let access = CognitiveAccess::agent_private(owner()?);
@@ -97,7 +112,7 @@ async fn probe(
         .with_native_memory_cell(Arc::clone(&cell))?;
     let daemon = tokio::spawn(codex_hepta_agentd::run(
         config,
-        codex_arg0::Arg0DispatchPaths::default(),
+        arg0_paths,
     ));
     let client = AgentdClient::new(socket, owner()?, 1)?;
     let until = tokio::time::Instant::now() + Duration::from_secs(120);
