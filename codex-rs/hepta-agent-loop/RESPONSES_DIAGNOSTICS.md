@@ -1,11 +1,14 @@
 # Bounded Responses failure diagnostics
 
 The optional `responses-api` feature exposes `ResponsesFailure`: a request or
-stream stage, a static enum category and an optional numeric HTTP status. Both
+stream stage, a static enum category, an optional numeric HTTP status and an
+optional static provider type/code/parameter projection. Both
 the initial single-attempt request and the parsed stream use this projection.
 It retains no API error object, message, URL, headers, response body, retry delay
 or nested connection source. Display and Debug therefore contain only those
-allowlisted fields. No shared Hepta primitive or provider wire format changes.
+allowlisted fields. The bounded HTTP-body projection is described in
+`RESPONSES_PROVIDER_ERROR_DETAILS.md`; it never retains provider free text.
+No shared Hepta primitive or provider wire format changes.
 
 The existing sensitive-route HTTP client and
 `with_redacted_response_diagnostics()` remain enabled. That parser option is

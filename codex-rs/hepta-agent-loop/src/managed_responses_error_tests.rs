@@ -120,7 +120,49 @@ async fn real_http_errors_keep_numeric_status_without_retry_or_false_rejection_r
         assert_eq!(error.stage, ResponsesFailureStage::Request);
         assert_eq!(error.category, ResponsesFailureCategory::TransportHttp);
         assert_eq!(error.http_status, Some(status));
+        assert_eq!(error.provider_error, None);
     }
+}
+
+#[tokio::test]
+async fn real_http_400_projects_static_fields_without_reclassifying_original_terminal() {
+    let body = serde_json::json!({"error": {
+        "type":"invalid_request_error", "code":"unsupported_parameter", "param":"tool_choice",
+        "message":BODY_SECRET, "request_id":URL_SECRET, "headers":AUTH_SECRET,
+    }, "detail":HEADER_SECRET})
+    .to_string();
+    let error = observed_error(/*status*/ 400, body, "application/json").await;
+    assert_eq!(
+        error,
+        ResponsesFailure {
+            stage: ResponsesFailureStage::Request,
+            category: ResponsesFailureCategory::TransportHttp,
+            http_status: Some(400),
+            provider_error: Some(crate::ResponsesProviderError {
+                error_type: Some(crate::ResponsesProviderErrorType::InvalidRequest),
+                code: Some(crate::ResponsesProviderErrorCode::UnsupportedParameter),
+                parameter: Some(crate::ResponsesProviderErrorParam::ToolChoice),
+            }),
+        }
+    );
+}
+
+#[tokio::test]
+async fn real_http_400_discards_unknown_metadata_without_losing_observed_status() {
+    let body = serde_json::json!({"error": {
+        "type":URL_SECRET, "code":AUTH_SECRET, "param":HEADER_SECRET, "message":BODY_SECRET,
+    }})
+    .to_string();
+    let error = observed_error(/*status*/ 400, body, "application/json").await;
+    assert_eq!(
+        error,
+        ResponsesFailure {
+            stage: ResponsesFailureStage::Request,
+            category: ResponsesFailureCategory::TransportHttp,
+            http_status: Some(400),
+            provider_error: None,
+        }
+    );
 }
 
 #[tokio::test]
@@ -142,4 +184,5 @@ async fn real_sse_error_keeps_only_parser_category_and_original_indeterminate_ow
         error.http_status, None,
         "do not invent a status absent from the typed stream error"
     );
+    assert_eq!(error.provider_error, None);
 }

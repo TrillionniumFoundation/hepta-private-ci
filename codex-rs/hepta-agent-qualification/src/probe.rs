@@ -302,6 +302,11 @@ fn failure_diagnostic(error: &codex_hepta_agent_loop::Error) -> Value {
         LoopError::Responses(failure) => json!({
             "stage":failure.stage.as_str(), "category":failure.category.as_str(),
             "http_status":failure.http_status,
+            "provider_error":failure.provider_error.map(|details| json!({
+                "type":details.error_type.map(codex_hepta_agent_loop::ResponsesProviderErrorType::as_str),
+                "code":details.code.map(codex_hepta_agent_loop::ResponsesProviderErrorCode::as_str),
+                "param":details.parameter.map(codex_hepta_agent_loop::ResponsesProviderErrorParam::as_str),
+            })),
         }),
         LoopError::Limit(_) => json!({"stage":"native", "category":"limit", "http_status":null}),
         LoopError::Contract(_) => {
