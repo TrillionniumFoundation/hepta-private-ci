@@ -214,6 +214,14 @@ fn fixture() -> Fixture {
 impl Fixture {
     fn sign(&mut self, mutation: &NduOwnerMutationV1, grant_id: &str) -> SignedFinalUseGrant {
         let binding = must(self.owner.final_use_binding(mutation));
+        self.sign_binding(binding, grant_id)
+    }
+
+    fn sign_binding(
+        &mut self,
+        binding: codex_hepta_contracts::FinalUseBinding,
+        grant_id: &str,
+    ) -> SignedFinalUseGrant {
         let now = must(SystemTime::now().duration_since(UNIX_EPOCH)).as_millis() as u64;
         let mut nonce = [0_u8; 32];
         nonce[0] = self.next_nonce;
@@ -296,3 +304,6 @@ fn live_revocation_frontier_blocks_previously_signed_write() {
         ))
     ));
 }
+
+#[path = "owner_current_tests.rs"]
+mod current_tests;
