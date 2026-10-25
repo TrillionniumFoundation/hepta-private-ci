@@ -1,0 +1,677 @@
+{
+  "control": {
+    "actions": [
+      "wait_20ms",
+      "commit_current_pair"
+    ],
+    "all_policies_commit_immediately_when_both_current_packets_have_arrived": true,
+    "commit_implementation": "At every simulated commit, append actual YUV frame and exact PCM chunk bytes to exclusive raw spools, fsync, and extend an immutable hash-chain ledger. Later packets may update public delay history but cannot replace existing spool bytes.",
+    "end_of_stream_deadline_ms": 3240,
+    "feedback_base_grid_ms": [
+      80,
+      120,
+      160
+    ],
+    "feedback_margin_grid_ms": [
+      0,
+      40,
+      80
+    ],
+    "feedback_rule": "timeout=min(240,max(base_ms,max(last-eight observed delays in either modality)+margin_ms)); choose wait only while a required packet is absent and now is before the resulting source-release deadline",
+    "fit": "Select one of nine feedback parameter pairs only on 10 fit speakers and their four registered scenarios, minimizing terminal entropic loss; exact ties break by base then margin. Select the fixed comparison baseline among 80/240 ms on the same fit census before calibration.",
+    "fit_media_scope": "Finite transport search uses actual source packet reference hashes and full packet inclusion/loss census, without serializing non-selected candidates. Every candidate simulation and measured fitting cost is retained. Codec/content equivalence must subsequently pass the independent calibration gate.",
+    "hard_slot_deadline_ms": 240,
+    "late_after_commit": "May update observed-delay history but cannot replace already committed black/silent content",
+    "maximum_decisions_per_slot": 13,
+    "missing_audio": "zero PCM over exactly the original source samples of that slot",
+    "missing_video": "Y plane16, U/V128 at the original slot",
+    "no_posthoc_trim": true,
+    "policies": [
+      "fixed_timeout_80ms",
+      "fixed_timeout_240ms",
+      "learned_causal_timeout"
+    ]
+  },
+  "episode_seed": "big-endian first 8 SHA256 bytes of UTF8(hepta-causal-av-stream-v1|{source_id}|{scenario}) modulo 2^63; independent of policy",
+  "evaluation": {
+    "benefit_gate": "paired 95% bootstrap lower bound of NDU improvement >0 AND lower bound of joint completion difference >=-0.02",
+    "bootstrap_replicates": 4000,
+    "bootstrap_seed": 9037007,
+    "bootstrap_unit": "Resample 16 speakers with replacement; carry all four network scenarios and all three policies together",
+    "episodes": 192,
+    "execution_order": "Sort policy names within each source/scenario by SHA256(hepta-causal-av-order-v1|source_id|scenario|policy), keeping common network events",
+    "no_extra_units": "Different network scenarios, source frames, proof cases and policies are repeated measures, not independent speakers",
+    "policies": 3,
+    "primary_contrast": "learned feedback NDU minus fit-selected fixed baseline NDU",
+    "report": [
+      "NDU/mean loss/tail loss",
+      "both modal completion and joint completion",
+      "relative container clock error",
+      "all dropped/late/unexecuted packet losses",
+      "simulated delivery mean/P50/P95/max",
+      "actual policy/simulator/service wall and CPU P50/P95",
+      "reference setup, fitting, qualification and complete subprocess costs"
+    ],
+    "requires_all_qualification_gates": true,
+    "requires_root_release_after_AB_mechanism_results": true,
+    "scenarios_per_speaker": 4,
+    "speaker_groups": 16,
+    "unexecuted_or_failed_cases": "Retain their registered cells with failure loss1 and explicit error; scientific/engineering benefit claim cannot pass an incomplete census"
+  },
+  "independent_evaluation_speaker_groups": 16,
+  "independent_lip_sync_qualified": false,
+  "native_joint_audio_video_generation_established": false,
+  "network": {
+    "base_delay_ms": 20,
+    "draw_order": "choose skew/burst modality from [video,audio]; choose burst_start via randrange(8,58); then index 0..74, channel [video,audio], draw choice([0,20,40]) jitter_ms, random() drop draw, random() late draw for every packet",
+    "families": [
+      {
+        "burst": null,
+        "drop_probability": 0.0,
+        "extra_delay_ms": 0,
+        "id": 0,
+        "name": "low_jitter"
+      },
+      {
+        "burst": "drawn modality additionally +40ms for six packets starting at burst_start",
+        "drop_probability": 0.0,
+        "extra_delay_ms": 120,
+        "extra_delay_target": "drawn modality",
+        "id": 1,
+        "name": "modality_arrival_skew"
+      },
+      {
+        "burst": "drawn modality drops three packets starting at burst_start",
+        "drop_probability": 0.08,
+        "extra_delay_ms": 0,
+        "id": 2,
+        "name": "loss_and_loss_burst"
+      },
+      {
+        "burst": "drawn modality additionally receives the same +160ms late flag for six packets starting at burst_start; not additive when late draw is already true",
+        "drop_probability": 0.02,
+        "extra_delay_ms": 160,
+        "id": 3,
+        "late_probability": 0.2,
+        "name": "late_observation_and_burst"
+      }
+    ],
+    "hidden_from_policy": [
+      "scenario identifier",
+      "scenario seed",
+      "future arrival table",
+      "permanent-drop flag",
+      "uncorrupted future packet payload",
+      "reference transcript/annotation",
+      "any offline outcome"
+    ],
+    "no_unknown_clock_origin_task": "Source media PTS remain correct; perturbation changes transport arrivals, not the declared source timestamp origin",
+    "public_to_policy": [
+      "current simulated clock",
+      "current source slot and source release timestamp",
+      "availability of currently arrived video/audio packets",
+      "headers of packets already arrived",
+      "last eight observed packet delays in each modality",
+      "committed prefix length"
+    ],
+    "rng": "Python 3.12 random.Random with the registered scenario seed",
+    "scenarios_per_source": 4
+  },
+  "open_beyond_this_subexperiment": [
+    "Unknown-origin or physiological lip/audio synchronization",
+    "Independent content-based AVSync qualification",
+    "Shared semantic correction with delayed benefits in several generated modalities",
+    "Native speech/video joint generator training",
+    "Open-world omniformat foundation-model performance"
+  ],
+  "pre_execution_revision": {
+    "additional_clarification": "Explicit success-only spool cleanup and preservation of all failed attempts, before any fit/cal network outcome",
+    "previous_resource_draft_sha256": "2b99c6cc2375545b21c9a2c92f865a819e2907100e4a121bbcdb07d90c898ddc",
+    "previous_semantic_draft_sha256": "9dee51a5c88dbc9edbea91f13e97dac1e09168407746ca1f5721a89319677a80",
+    "previous_unexecuted_draft_sha256": "7ac3b3a861eabe5d5f78e96d38770446a3649db3f6153cd2664dfd91c33b4278",
+    "reason": "Separate packet delivery coverage, byte fidelity, effective alignment coverage and simulated timestamps before any fit/cal run",
+    "source_clock_review": "Read-only independent review required an explicit original-audio origin and continuity check before fit/cal. Saved source inventories confirm all31 origins0 and114 packets of1152 samples. No network or task outcomes were used."
+  },
+  "qualification": {
+    "additional_tests": [
+      "Already-committed source slot rewrite is rejected and raw prefix unchanged",
+      "All slots and the short final PCM packet survive serialization without tail truncation",
+      "Natural silent/black source packets count as delivered if committed; identical placeholders do not count as delivery",
+      "Policy action prefix is invariant to modifications confined to not-yet-arrived events"
+    ],
+    "census_gate": "Every output retains all 75 video slots and exactly 131328 stereo samples; all five sources and all seven conditions must be reported",
+    "clock_observer_gate": "Every signed known relative clock perturbation recovered to at most 0.001 seconds absolute error; no source or condition selection",
+    "conditions": [
+      {
+        "drop_audio": [],
+        "drop_video": [],
+        "name": "identity",
+        "relative_audio_delay_ms": 0
+      },
+      {
+        "drop_audio": [],
+        "drop_video": [],
+        "name": "audio_plus80",
+        "relative_audio_delay_ms": 80
+      },
+      {
+        "drop_audio": [],
+        "drop_video": [],
+        "name": "audio_plus160",
+        "relative_audio_delay_ms": 160
+      },
+      {
+        "drop_audio": [],
+        "drop_video": [],
+        "name": "video_plus80",
+        "relative_audio_delay_ms": -80
+      },
+      {
+        "drop_audio": [],
+        "drop_video": [],
+        "name": "video_plus160",
+        "relative_audio_delay_ms": -160
+      },
+      {
+        "drop_audio": [],
+        "drop_video": [
+          9,
+          48
+        ],
+        "name": "video_missing",
+        "relative_audio_delay_ms": 0
+      },
+      {
+        "drop_audio": [
+          12,
+          37
+        ],
+        "drop_video": [],
+        "name": "audio_missing",
+        "relative_audio_delay_ms": 0
+      }
+    ],
+    "fit_decision_frozen_before_qualification": true,
+    "lossless_content_gate": "Every decoded output plane and PCM sample must equal the actual intended source-or-placeholder input bytes in all 35 cases",
+    "missing_content_gate": "Actual committed packet IDs and packet/sample counts determine coverage. All declared missing IDs remain absent even when their black/silent placeholder equals natural source content; byte fidelity is checked separately.",
+    "qualification_meaning": "Deterministic source/reference and container-clock observer qualification only; no independent AVSync/lip semantic qualification",
+    "role": "calibration",
+    "speakers": [
+      20,
+      5,
+      1,
+      19,
+      6
+    ]
+  },
+  "representation": {
+    "audio": "Original decoded 44100Hz stereo PCM s16le",
+    "audio_packet_samples": 1764,
+    "audio_packets": 75,
+    "audio_samples_per_channel": 131328,
+    "decision_quantum_ticks": 882,
+    "last_audio_packet_samples": 792,
+    "original_audio_clock_gate": "Before using any role source, actually ffprobe audio frames and streams; require first integerPTS0,44100Hz stereo, cumulative nb_samples equal decoded PCM census131328. Measure every integerPTS against the cumulative sample clock with tolerance one source-container time_base tick (difference of two rounded PTS); save all timestamps, nb_samples, origin and maximum error. Never silently rebase a nonzero origin.",
+    "relative_clock_reference": "Readback computes output audio-origin change minus output video-origin change relative to the measured original origins; current registered source audio/video origins are both0.",
+    "source_release": "video: (index+1)*1764; audio: min((index+1)*1764,131328)",
+    "source_timestamps_are_public_packet_headers": true,
+    "time_unit": "integer audio-sample ticks at 44100Hz",
+    "video": "Original decoded 360x288 yuv420p planes, unchanged except explicit black missing-packet placeholders",
+    "video_frame_pts_ms": "0,40,...,2960 from actual source PTS, not nominal 50/1 fps",
+    "video_frame_ticks": 1764,
+    "video_packets": 75
+  },
+  "roles": {
+    "calibration": [
+      20,
+      5,
+      1,
+      19,
+      6
+    ],
+    "evaluation": [
+      34,
+      9,
+      24,
+      31,
+      18,
+      4,
+      12,
+      29,
+      10,
+      8,
+      16,
+      32,
+      11,
+      33,
+      28,
+      14
+    ],
+    "fit": [
+      17,
+      15,
+      22,
+      3,
+      27,
+      30,
+      26,
+      7,
+      13,
+      25
+    ]
+  },
+  "schema": "hepta.ndu-abc.causal-av-restoration.v1",
+  "scientific_experiment_C_passed": false,
+  "scope": "Real recorded AV media with a simulated network and virtual delivery clock; correct source media timestamps are public headers; no live-network, physiological AV-offset, independent lip-sync or generated-content inference",
+  "serialization": {
+    "audio_codec": "pcm_s16le",
+    "budget_accounting": "Before each encoding, sum every actual file in all causal-av-* run directories and process logs, including all failed/uncleared spools; reserve an extra32MB transient space per episode and the required2GB free space for other work. Successful spool deletion is part of the predeclared workflow, not posthoc evidence reduction.",
+    "container": "Matroska",
+    "gop_size": 1,
+    "keep_final_AV_files": true,
+    "maximum_artifact_bytes": 1000000000,
+    "minimum_free_disk_bytes": 2000000000,
+    "readback": "Decode every output again to actual video planes and PCM; retain per-frame and per-audio-packet SHA256, actual stream/frame PTS, original-reference hashes and every subprocess receipt",
+    "storage_gate": "First encode one fixed fit source as a codec-only pilot, retain its exact bytes and costs, and report projected 35 qualification and 192 evaluation output sizes. Current phase must remain <=1GB and >=2GB free; any larger future evaluation allocation requires root release before outcomes, never fewer cases or discarded evidence.",
+    "temporary_raw_inputs": "Owned temporary raw copies removed after final output/readback receipts; source originals and final AV outputs always retained",
+    "temporary_spool_lifecycle": [
+      "Open new exclusive raw YUV/PCM spools per episode",
+      "Append one irreversible source-or-placeholder pair per commit and fsync both streams",
+      "Retain a chained per-commit source/written byte hash ledger",
+      "Losslessly mux the completed raw streams without trimming any source slot or final audio samples",
+      "Reopen final MKV, decode every frame/PCM packet, and compare all written byte hashes",
+      "Delete only owned temporary raw spools after successful full fidelity and census validation; retain final MKV, actual readback evidence, ledger and all costs",
+      "On any source, mux, readback, fidelity or qualification failure retain the attempt directory and its raw spools; do not overwrite or discard it"
+    ],
+    "threads": 1,
+    "timeline_relation": "MKV media PTS preserve the source media clock (plus a known qualification-only clock perturbation). Virtual packet commit/delivery times exist separately in the ledger and are not added to media PTS. This is offline real-media serialization under simulated transport, not a physical real-time playback measurement.",
+    "video_codec": "ffv1 level3 yuv420p"
+  },
+  "source_receipt_sha256": "a145cbeeb9e64cb4e54a23ad52703cfddd14885eecb9a0f696736fdef0f58210",
+  "source_selection_sha256": "88582bb8a2fe58f0551cc715aaea13cd47941bc413fb6c281e9c214f69ddd621",
+  "sources": [
+    {
+      "role": "fit",
+      "scenario_seeds": [
+        6805710263669982305,
+        5738257670242998978,
+        6529843273727691011,
+        5981052291400016783
+      ],
+      "source_id": "grid:s17:pgwqzp",
+      "speaker": 17,
+      "video_sha256": "dad457a355d2364d7a9626fad7be1e5b0d97038f7cae4aab2fcaaa14714523af"
+    },
+    {
+      "role": "fit",
+      "scenario_seeds": [
+        2671145177723099372,
+        8719891332637243731,
+        4489048275583691067,
+        8738669838726285057
+      ],
+      "source_id": "grid:s15:prwv2n",
+      "speaker": 15,
+      "video_sha256": "1e079d779a6f0107150aad834ee5191fd8a5ba2b1a13cf26abfc0837b8b12aee"
+    },
+    {
+      "role": "fit",
+      "scenario_seeds": [
+        4024572699915657264,
+        9044053332139760377,
+        6429232739968957362,
+        2226340014767857464
+      ],
+      "source_id": "grid:s22:pgai2s",
+      "speaker": 22,
+      "video_sha256": "5f1d01cf4dc2a9e55d7186df355969393a077d446e30e5667a8e5ae1abb3216f"
+    },
+    {
+      "role": "fit",
+      "scenario_seeds": [
+        882748548956786934,
+        3566814002239868111,
+        565262866256358826,
+        2829187122347128874
+      ],
+      "source_id": "grid:s3:brwg4n",
+      "speaker": 3,
+      "video_sha256": "04dbf1c1c499fd4cd013af7f5213de3000837443348cd98f3b15e8c39f71b811"
+    },
+    {
+      "role": "fit",
+      "scenario_seeds": [
+        3117766708783127978,
+        8415795731106595409,
+        6644358082034518978,
+        4793442009183200398
+      ],
+      "source_id": "grid:s27:lwbj1s",
+      "speaker": 27,
+      "video_sha256": "426652dac9968bf112447e4343c8c0e3eb56018db2fbff9c0b3a84749526ca3d"
+    },
+    {
+      "role": "fit",
+      "scenario_seeds": [
+        677742530660386572,
+        2970517597671165876,
+        7539445663409021071,
+        1036738509740210962
+      ],
+      "source_id": "grid:s30:lgic2s",
+      "speaker": 30,
+      "video_sha256": "34fb12dd433e2d3e6e9de87612b42977327e09a697265426dbc06396ff21403c"
+    },
+    {
+      "role": "fit",
+      "scenario_seeds": [
+        8100905109927267199,
+        2258584936844595673,
+        2710616991586417854,
+        9079372396888029380
+      ],
+      "source_id": "grid:s26:pwan7p",
+      "speaker": 26,
+      "video_sha256": "ab1c0650952310a3872a34e0fd475d40a0524320ab9bc0f53b388cc4a946e877"
+    },
+    {
+      "role": "fit",
+      "scenario_seeds": [
+        1654311845785492877,
+        4085788423557388599,
+        8515176746447469288,
+        8191735334998763735
+      ],
+      "source_id": "grid:s7:swwo7s",
+      "speaker": 7,
+      "video_sha256": "fa7bd2f293134a3f74dc897a76869196a7374855118a9f9ec3c7cee5fb843d44"
+    },
+    {
+      "role": "fit",
+      "scenario_seeds": [
+        3093911804092529154,
+        1249227892060662365,
+        9057776490913090818,
+        6359200142407131114
+      ],
+      "source_id": "grid:s13:pwbjzp",
+      "speaker": 13,
+      "video_sha256": "4cafcb1263fb5038cad9fcbbc5825cc5611f863998ee28bed7717b79537adbbc"
+    },
+    {
+      "role": "fit",
+      "scenario_seeds": [
+        7819887996032684658,
+        2260988279834397629,
+        8158863656257321307,
+        3920698167153846217
+      ],
+      "source_id": "grid:s25:lbbizn",
+      "speaker": 25,
+      "video_sha256": "2acd2ca7ae6a4fe6fb6af63c646593354a00401da61bfa78de2314c6febbdc3b"
+    },
+    {
+      "role": "calibration",
+      "scenario_seeds": [
+        3497882977750507997,
+        6555003696437506458,
+        2582875130441564927,
+        296360922926694122
+      ],
+      "source_id": "grid:s20:sram1p",
+      "speaker": 20,
+      "video_sha256": "98dccb217d1e2587711be03dae6fc42392536cb87617002bc3040dafe1a53d7f"
+    },
+    {
+      "role": "calibration",
+      "scenario_seeds": [
+        1963560547902835954,
+        7005294799423985950,
+        7519135417778947783,
+        934302885063515761
+      ],
+      "source_id": "grid:s5:braf6p",
+      "speaker": 5,
+      "video_sha256": "babca78130831221f8b96b7edb2ce7b70b6111a3b507f1bf6b4dcc3ee1b1bcc4"
+    },
+    {
+      "role": "calibration",
+      "scenario_seeds": [
+        3835517353665600963,
+        2625325099518805447,
+        7495227681335271322,
+        2394704077481773541
+      ],
+      "source_id": "grid:s1:bgauzp",
+      "speaker": 1,
+      "video_sha256": "92bd4e59cc29046be007eb3b54e98a41633e2e52869928a676f53e458b3c5ab8"
+    },
+    {
+      "role": "calibration",
+      "scenario_seeds": [
+        7409078153380181509,
+        8470808060539880330,
+        6072348991633167833,
+        9035795400254520563
+      ],
+      "source_id": "grid:s19:lbwc9a",
+      "speaker": 19,
+      "video_sha256": "9098d110a409e687d7a3d3bb07245d7c368c8e52d0c4f6fbf34dc7744a179142"
+    },
+    {
+      "role": "calibration",
+      "scenario_seeds": [
+        4258776370993801277,
+        5427228980254514184,
+        1681361379926560207,
+        258407340619165457
+      ],
+      "source_id": "grid:s6:pbib1n",
+      "speaker": 6,
+      "video_sha256": "f5ec40ff9e3267cc878461f33ce274a81bcf61c55bf55e37dccc2bcde96b30ef"
+    },
+    {
+      "role": "evaluation",
+      "scenario_seeds": [
+        4682795161104010086,
+        5502697993669560369,
+        7086983841180685119,
+        3903129717399372683
+      ],
+      "source_id": "grid:s34:lwau7n",
+      "speaker": 34,
+      "video_sha256": "0a0f170281c236cea295c762ca0012a0d908263052eb5355421c38fd0c8181f7"
+    },
+    {
+      "role": "evaluation",
+      "scenario_seeds": [
+        6071954836761256361,
+        1971109301604021095,
+        8437497083872756248,
+        4236759728302306336
+      ],
+      "source_id": "grid:s9:pwbd1a",
+      "speaker": 9,
+      "video_sha256": "11bebb5095074d32939d1fed9e39cef46fa882a52744e3aa0da4eded8c850355"
+    },
+    {
+      "role": "evaluation",
+      "scenario_seeds": [
+        4669558264976789124,
+        1563775313142098624,
+        7113319301392969228,
+        1695768834845404607
+      ],
+      "source_id": "grid:s24:bbbd5p",
+      "speaker": 24,
+      "video_sha256": "d1343b5d4f24c4070e4acf41943907090cce6c1724047a3ffc164c222c01585a"
+    },
+    {
+      "role": "evaluation",
+      "scenario_seeds": [
+        5256193652642470084,
+        4126109485920875219,
+        7713459217210965398,
+        3907783708379442913
+      ],
+      "source_id": "grid:s31:bbwx4p",
+      "speaker": 31,
+      "video_sha256": "eda09f6cfe2b1c5c9a386500b8f468f8cd42e37beb58f48e5a27529b49cd8059"
+    },
+    {
+      "role": "evaluation",
+      "scenario_seeds": [
+        5208161201317827789,
+        1977279595556648491,
+        6303068087309529277,
+        4111954434638112473
+      ],
+      "source_id": "grid:s18:bwwf5n",
+      "speaker": 18,
+      "video_sha256": "89129e81cf7db74b1879000f52a1eb89541dae7f04601004d3b58d84efc1df62"
+    },
+    {
+      "role": "evaluation",
+      "scenario_seeds": [
+        8356494745056855918,
+        7182511778963104736,
+        425880733246435986,
+        6103784286371040404
+      ],
+      "source_id": "grid:s4:lwik6s",
+      "speaker": 4,
+      "video_sha256": "b8e6496ce8e3d55848eeb4a7a5b8e158ffaa79724a31d2b86770f21aa1a1d2fc"
+    },
+    {
+      "role": "evaluation",
+      "scenario_seeds": [
+        1482005137753967930,
+        8395141652165246146,
+        8488156075002132926,
+        2125490431692181476
+      ],
+      "source_id": "grid:s12:pwbj2a",
+      "speaker": 12,
+      "video_sha256": "cfc599018c55986f76c53446b6ea93b49318e1aa18b1b837c458b55b127445ae"
+    },
+    {
+      "role": "evaluation",
+      "scenario_seeds": [
+        4700001046263084679,
+        4847105984604480193,
+        3605501774525080256,
+        2158733657719772569
+      ],
+      "source_id": "grid:s29:bbiczn",
+      "speaker": 29,
+      "video_sha256": "2168a6a81182b1865afb0eb702187fc0446a3b59c7455168442bf2d4a58b7e15"
+    },
+    {
+      "role": "evaluation",
+      "scenario_seeds": [
+        8058469642332634118,
+        104748900532326418,
+        2161092222441102614,
+        2710568048839527241
+      ],
+      "source_id": "grid:s10:pbwm5a",
+      "speaker": 10,
+      "video_sha256": "6e47dedd73fc73ae969ccb90951a2913d58f11bc563c4cb506240b59262b8e7e"
+    },
+    {
+      "role": "evaluation",
+      "scenario_seeds": [
+        3967560042277643087,
+        6225882677240323881,
+        5288228674442030838,
+        9002835602369290205
+      ],
+      "source_id": "grid:s8:pgwezs",
+      "speaker": 8,
+      "video_sha256": "d9539294112ae94281d200f1c00d4dec63a36bee3caeefcecf143d37d872609b"
+    },
+    {
+      "role": "evaluation",
+      "scenario_seeds": [
+        4758675012792737104,
+        5399419296884163440,
+        4831434148310942291,
+        5659406128703851047
+      ],
+      "source_id": "grid:s16:sbws9n",
+      "speaker": 16,
+      "video_sha256": "be1e27ba53ebd77236698754a8a4701552b35776539e26dd9a17be3fabf69403"
+    },
+    {
+      "role": "evaluation",
+      "scenario_seeds": [
+        3841335028519350249,
+        4655179687400919901,
+        4622552630807060818,
+        6296277844965566528
+      ],
+      "source_id": "grid:s32:sgbm4s",
+      "speaker": 32,
+      "video_sha256": "16a1adbba1cd2d3f6610ed3d2bdbe8f9e507bdf546bad61f1372a2c7e1f2950a"
+    },
+    {
+      "role": "evaluation",
+      "scenario_seeds": [
+        3887096544696788785,
+        5073701806948648053,
+        6019173559222951299,
+        1444448983608306644
+      ],
+      "source_id": "grid:s11:prwi9s",
+      "speaker": 11,
+      "video_sha256": "244f5a75d2604440447a4f0657247fc4cf556fb9226ea56185000153202f4159"
+    },
+    {
+      "role": "evaluation",
+      "scenario_seeds": [
+        1286131507135853143,
+        2881631859911757696,
+        749205286118140213,
+        192701327563556536
+      ],
+      "source_id": "grid:s33:lgiv3a",
+      "speaker": 33,
+      "video_sha256": "3e4fc644c022303e76cc9cc8ff16e58d1bb511f59ed22759c7719913adc3cca0"
+    },
+    {
+      "role": "evaluation",
+      "scenario_seeds": [
+        519946382651642998,
+        3638539057565452040,
+        2883424917547962553,
+        3023914262332129382
+      ],
+      "source_id": "grid:s28:bwwe7p",
+      "speaker": 28,
+      "video_sha256": "e06a4958a20285d8150ab42dece3109a0bdbc73cbf232298880cb50b552a4ab8"
+    },
+    {
+      "role": "evaluation",
+      "scenario_seeds": [
+        305864960934109931,
+        256142934234422720,
+        5381953748646007270,
+        769705355393371498
+      ],
+      "source_id": "grid:s14:lgbr6a",
+      "speaker": 14,
+      "video_sha256": "f7a93696ded31d29381a356531bdec003c615509ffd26926df003a6e1cc66752"
+    }
+  ],
+  "status": "prospective_registration_before_fit_calibration_and_evaluation",
+  "utility": {
+    "NDU": "-log(mean(exp(4*loss)))/4 with equal weights on all registered speaker/scenario cells",
+    "actual_service_cost": "Policy, simulator, serialization, fsync, decoding/readback, source setup and total process wall/CPU are separately retained. Simulated delivery latency is not added to wall time and is not called measured physical playout latency.",
+    "case_system_failure_loss": 1.0,
+    "clock_error": "Report signed and absolute container-clock relation only on jointly delivered video/audio slots, alongside valid alignment coverage. No valid slots means conditional error is null and clock penalty is1. Correct paired source PTS make zero valid error structural; it is not a content or lip-sync improvement.",
+    "content_fidelity": "Every output must decode byte-exactly to its appended source-or-placeholder bytes. Report fidelity separately from delivery coverage; a failure retains case loss1 and blocks complete engineering qualification.",
+    "joint_completion": "q_video*q_audio, where q_video is source-video packet delivery coverage and q_audio is delivered original-audio sample coverage, from actual append-only commit records. Fidelity of encoded/decoded bytes is separate. Never infer missing packets from black pixels or silence.",
+    "loss": "0.55*(1-q_video*q_audio)+0.25*((1-valid_alignment_coverage)+valid_alignment_coverage*min(valid_clock_error_seconds/0.040,1))+0.20*(mean_simulated_delivery_latency_seconds/0.240)",
+    "risk_aversion_eta": 4.0
+  }
+}
