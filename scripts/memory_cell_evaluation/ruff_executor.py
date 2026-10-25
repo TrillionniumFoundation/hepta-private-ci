@@ -8,9 +8,12 @@ import json
 from pathlib import Path
 import re
 import sys
+import time
 import tokenize
 
 from bounded_process import digest, run, save
+from attempt_ledger import accounting, ledger
+from runtime_profile import load_runtime
 
 HERE = Path(__file__).resolve().parent
 CONTRACT_SHA256 = "df2507680813e86d08b94877e6985476927b2bb76d5ec4bdb083ad5b3e86a8dc"
@@ -92,8 +95,19 @@ def semantic_pass(report, required):
     )
 
 
-def evaluate(fixture, candidate, output, ruff, python):
+def evaluate(
+    fixture,
+    candidate,
+    output,
+    ruff,
+    python,
+    *,
+    runtime_profile=None,
+    runtime_profile_sha256=None,
+    accounting_file=None,
+):
     """All successful admission is local engineering evidence, not attestation."""
+    started_wall, started_cpu = time.monotonic(), time.process_time()
     fixture, candidate, output = map(Path, (fixture, candidate, output))
     fixture, candidate = fixture.absolute(), candidate.absolute()
     output = output.absolute()
@@ -102,6 +116,16 @@ def evaluate(fixture, candidate, output, ruff, python):
     ) or fixture.resolve().is_relative_to(output.resolve()):
         raise ValueError("output overlaps original fixture")
     output.mkdir(exist_ok=False)
+    save(
+        output / "submitted-request.json",
+        {
+            "fixture": str(fixture),
+            "candidate": str(candidate),
+            "runtime_profile": str(runtime_profile) if runtime_profile else None,
+            "runtime_profile_sha256": runtime_profile_sha256,
+            "accounting_file": str(accounting_file) if accounting_file else None,
+        },
+    )
     result = {
         "schema": "hepta.memory-cell.ruff-evaluation.v1",
         "accepted": False,
@@ -110,8 +134,14 @@ def evaluate(fixture, candidate, output, ruff, python):
         "scope": "exposed historical development; trusted candidate",
     }
     expected = {}
+    runtime, external, read_bytes, raw_bytes = {}, accounting(None), 0, 0
     try:
         spec = contract()
+        runtime = load_runtime(
+            spec, CONTRACT_SHA256, runtime_profile, runtime_profile_sha256
+        )
+        external = accounting(accounting_file)
+        result["runtime"] = runtime
         expected[HERE] = inventory(HERE)
         save(
             output / "request.json",
@@ -120,6 +150,7 @@ def evaluate(fixture, candidate, output, ruff, python):
                 "candidate": str(candidate),
                 "contract_sha256": CONTRACT_SHA256,
                 "executor_sources": expected[HERE],
+                "runtime": runtime,
             },
         )
         if sys.platform != "linux":
@@ -129,6 +160,7 @@ def evaluate(fixture, candidate, output, ruff, python):
         with candidate.open("rb") as stream:
             raw = stream.read(spec["limits"]["candidate_bytes"] + 1)
         (output / "candidate.raw").write_bytes(raw)
+        raw_bytes = len(raw)
         if len(raw) > spec["limits"]["candidate_bytes"]:
             raise ValueError("candidate request limit; retained bounded prefix")
         original = inventory(fixture)
@@ -137,6 +169,7 @@ def evaluate(fixture, candidate, output, ruff, python):
             raise ValueError("original 17-file inventory drift")
         expected[fixture] = original
         source = {name: (fixture / name).read_bytes() for name in spec["files"]}
+        read_bytes = sum(map(len, source.values()))
         if any(
             {"bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
             != original[name]
@@ -148,7 +181,9 @@ def evaluate(fixture, candidate, output, ruff, python):
             "ruff": str(Path(ruff).resolve()),
             "python": str(Path(python).resolve()),
         }
-        if any(digest(tool_paths[name]) != spec["tools"][name] for name in tool_paths):
+        if any(
+            digest(tool_paths[name]) != runtime["tools"][name] for name in tool_paths
+        ):
             raise ValueError("executable pin mismatch")
         baseline, workspace, judge = (
             output / name for name in ("baseline", "workspace", "judge")
@@ -233,6 +268,16 @@ def evaluate(fixture, candidate, output, ruff, python):
                     accepted=False, status="inventory_failed", error=f"{path}: {error}"
                 )
         save(output / "observed-inventories.json", observed)
+        result["cost_ledger"] = ledger(
+            result["processes"],
+            output,
+            read_bytes,
+            raw_bytes,
+            runtime,
+            external,
+            started_wall,
+            started_cpu,
+        )
         try:
             result["retained_files"] = inventory(output)
         except Exception as error:
@@ -252,6 +297,9 @@ def main():
     execute = commands.add_parser("evaluate")
     for name in ("fixture", "candidate", "output", "ruff", "python"):
         execute.add_argument(f"--{name}", required=True)
+    execute.add_argument("--runtime-profile")
+    execute.add_argument("--runtime-profile-sha256")
+    execute.add_argument("--accounting-file")
     args = vars(parser.parse_args())
     command = args.pop("command")
     if command == "describe":
