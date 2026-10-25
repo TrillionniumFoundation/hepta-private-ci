@@ -19,6 +19,9 @@ use std::time::Instant;
 
 use serde::Deserialize;
 
+use super::failure::Attempt;
+use super::failure::ExchangeFailure;
+
 const STOP: &[u8] = b"{\"schema\":\"hepta-smollm-neural-read-worker-v1\",\"stop\":true}\n";
 const SUPERVISOR_WALL_SECONDS: u64 = 600;
 
@@ -88,23 +91,26 @@ impl Session {
         Ok(bytes)
     }
 
-    fn connect(&self, deadline: Instant) -> Result<UnixStream, String> {
+    fn connect(&self, deadline: Instant) -> Result<UnixStream, ExchangeFailure> {
+        let attempt = Attempt::new("connect_deadline");
         let remaining = deadline
             .checked_duration_since(Instant::now())
-            .ok_or("neural socket deadline")?;
+            .ok_or_else(|| attempt.message("neural socket deadline"))?;
         let socket = self.path("model.sock");
+        let attempt = attempt.stage("connect");
         let stream = self
             .runtime
             .block_on(async {
                 tokio::time::timeout(remaining, tokio::net::UnixStream::connect(socket)).await
             })
-            .map_err(|_| "neural socket connect deadline")?
-            .map_err(|error| error.to_string())?
-            .into_std()
-            .map_err(|error| error.to_string())?;
+            .map_err(|_| attempt.message("neural socket connect deadline"))?
+            .map_err(|error| attempt.io(error))?;
+        let attempt = Attempt::new("connect_into_std");
+        let stream = stream.into_std().map_err(|error| attempt.io(error))?;
+        let attempt = Attempt::new("connect_set_blocking");
         stream
             .set_nonblocking(false)
-            .map_err(|error| error.to_string())?;
+            .map_err(|error| attempt.io(error))?;
         Ok(stream)
     }
 
@@ -117,67 +123,83 @@ impl Session {
         bytes: &[u8],
         deadline: Instant,
         execution: &codex_hepta_agentd::NeuralCognitiveExecutionV1,
-    ) -> Result<Vec<u8>, String> {
-        execution.check()?;
+    ) -> Result<Vec<u8>, ExchangeFailure> {
+        let attempt = Attempt::new("execution_check");
+        execution.check().map_err(|error| attempt.message(error))?;
         let deadline = deadline.min(execution.deadline());
         if self.in_flight_or_unknown.load(Ordering::SeqCst) {
-            return Err(
-                "neural session has unresolved physical execution; unload required".to_owned(),
-            );
+            return Err(Attempt::new("unresolved_execution")
+                .message("neural session has unresolved physical execution; unload required"));
         }
         if bytes.is_empty() || bytes.len() >= 8192 || bytes.contains(&b'\n') {
-            return Err("neural request frame bound".to_owned());
+            return Err(Attempt::new("request_frame").message("neural request frame bound"));
         }
         let mut stream = self.connect(deadline)?;
-        execution.check()?;
+        let attempt = Attempt::new("execution_check");
+        execution.check().map_err(|error| attempt.message(error))?;
         self.in_flight_or_unknown
             .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
-            .map_err(|_| "neural session has unresolved physical execution; unload required")?;
+            .map_err(|_| {
+                Attempt::new("unresolved_execution")
+                    .message("neural session has unresolved physical execution; unload required")
+            })?;
         let mut frame = bytes.to_vec();
         frame.push(b'\n');
         let mut written = 0;
         while written < frame.len() {
-            execution.check()?;
+            let attempt = Attempt::new("execution_check");
+            execution.check().map_err(|error| attempt.message(error))?;
+            let attempt = Attempt::new("write_deadline");
             let remaining = deadline
                 .checked_duration_since(Instant::now())
-                .ok_or("neural write deadline")?;
+                .ok_or_else(|| attempt.message("neural write deadline"))?;
+            let attempt = attempt.stage("set_write_timeout");
             stream
                 .set_write_timeout(Some(remaining))
-                .map_err(|error| error.to_string())?;
+                .map_err(|error| attempt.io(error))?;
+            let attempt = attempt.stage("write");
             let count = stream
                 .write(&frame[written..])
-                .map_err(|error| error.to_string())?;
+                .map_err(|error| attempt.io(error))?;
             if count == 0 {
-                return Err("neural write closed".to_owned());
+                return Err(attempt.message("neural write closed"));
             }
             written += count;
         }
         let mut raw = Vec::new();
         loop {
-            execution.check()?;
+            let attempt = Attempt::new("execution_check");
+            execution.check().map_err(|error| attempt.message(error))?;
+            let attempt = Attempt::new("read_deadline");
             let remaining = deadline
                 .checked_duration_since(Instant::now())
-                .ok_or("neural read deadline")?;
+                .ok_or_else(|| attempt.message("neural read deadline"))?;
+            let attempt = attempt.stage("set_read_timeout");
             stream
                 .set_read_timeout(Some(remaining))
-                .map_err(|error| error.to_string())?;
+                .map_err(|error| attempt.io(error))?;
             let mut bytes = [0_u8; 1024];
-            let count = stream.read(&mut bytes).map_err(|error| error.to_string())?;
+            let attempt = attempt.stage("read");
+            let count = stream.read(&mut bytes).map_err(|error| attempt.io(error))?;
             if count == 0 {
-                return Err("neural response closed before terminal frame".to_owned());
+                return Err(attempt.message("neural response closed before terminal frame"));
             }
             raw.extend_from_slice(&bytes[..count]);
             if raw.len() > 128 * 1024 {
-                return Err("neural response frame bound".to_owned());
+                return Err(
+                    Attempt::new("response_frame_bound").message("neural response frame bound")
+                );
             }
             if raw.contains(&b'\n') {
                 if raw.last() != Some(&b'\n')
                     || raw.iter().filter(|byte| **byte == b'\n').count() != 1
                 {
-                    return Err("neural response contains multiple or trailing frames".to_owned());
+                    return Err(Attempt::new("response_frame_terminator")
+                        .message("neural response contains multiple or trailing frames"));
                 }
                 raw.pop();
-                execution.check()?;
+                let attempt = Attempt::new("execution_check");
+                execution.check().map_err(|error| attempt.message(error))?;
                 return Ok(raw);
             }
         }
@@ -186,7 +208,9 @@ impl Session {
     pub(super) fn shutdown(&mut self) -> Result<(), String> {
         let deadline = Instant::now() + Duration::from_secs(10);
         if !self.has_exited()? {
-            let mut stream = self.connect(deadline)?;
+            let mut stream = self
+                .connect(deadline)
+                .map_err(ExchangeFailure::into_original)?;
             stream
                 .set_write_timeout(Some(Duration::from_secs(1)))
                 .map_err(|error| error.to_string())?;

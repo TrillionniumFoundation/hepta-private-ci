@@ -15,6 +15,7 @@ use crate::smollm_neural_read::Admitted;
 pub(in crate::smollm_neural_read) struct MailboxState {
     pub(in crate::smollm_neural_read) exchange: Option<Exchange>,
     pub(in crate::smollm_neural_read) measurements: Measurements,
+    pub(in crate::smollm_neural_read) first_failure: Option<super::SmolLmFirstExchangeFailureV1>,
 }
 
 #[derive(Default)]
