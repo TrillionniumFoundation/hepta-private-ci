@@ -2,12 +2,12 @@
 
 审阅者：协调任务中的 `control_cost_v2` agent。首轮核对完成于 2026-10-25 09:10 UTC。
 
-本文件记录对已经完成的 native、产品链恢复 helper 和 training repair 结果的交叉核对，供后续 agent 使用。
+本文件记录对已经完成的 native、产品链恢复 helper、training repair 及后续固定候选补充结果的交叉核对，供后续 agent 使用。
 审阅期间未改实验源、协议、模型、结果或原始媒体，未重新生成 final，未重新选择候选，也未启动新的 bootstrap。
 实际操作包括读取冻结代码及汇总、核对文件 SHA、重数已有 tick、重算过程成本，以及从已保存的评分数组独立重算点估计。
 区间审阅覆盖预登记门槛、实现中的抽样单位、置信水平与报告数值；它不是一次独立数据采集或独立重复实验。
 
-审阅者没有负责 native 主运行、主统计或 repair 训练实现；曾贡献 native 的 `future_candidate.py` 功能诊断模块和 repair 的来源审计。
+审阅者没有负责 native 主运行、主统计或 repair 训练实现；曾贡献 native 的 `future_candidate.py` 功能诊断模块、repair 的来源审计和后续补充的 source guard。
 因此，这两项的作者身份没有因本轮交叉核对而变成完全独立。
 
 | 实验线 | 当前审阅状态 | 可支持的结论 |
@@ -15,6 +15,7 @@
 | native future predictor / continuous stream | 已完成，未发现实质数值或范围错误 | 未来状态预测改善；另登记的概率接口通过指定研究 gate；同 head 的 pending proposal / recovery 链真实完成 |
 | product chain recovery helper | 已完成，未发现当前有限范围的证据错误 | 新 helper 在真实链副本上恢复成功，exact-base patch 已准备；完整目标 Agentd 集成和生产 admission 仍未验证 |
 | training repair | 已完成，两个主 gate 均失败 | 强参考和初始乘子具有可分开的条件对比；没有证明主候选相对 mean 的联合收益和零成功率回退 |
+| 后续 native 固定候选补充 | 已完成，两个候选均无正区间下界 | 在未参与候选构造、但已被 repair 使用的全量来源上执行新 future branches；未显示有用的独立参数改进 |
 | temporal final | **待实际运行和统计完成后补审** | 本次未读取正在执行的 final outcomes；此前 selection 不代替最终证据 |
 
 ## 1. Native：统计对象和资格范围
@@ -84,8 +85,9 @@ native 子流的 486/800 与完整验证的 826/1,264 使用不同的预定组�
 
 旧 head 的两个固定候选在新来源上 raw-Brier 改善分别为 **−1.3589140e−8、−2.7182926e−8**，
 各自 97.5% 区间均跨零；两比较的名义 family 95% 口径正确。没有独立正收益证据。
-新 future head 的候选只在已观察 historical selection 的 2,000 对 / 4,000 行上进行功能评价，
+在原 native 实验阶段，新 future head 的候选只在已观察 historical selection 的 2,000 对 / 4,000 行上进行功能评价，
 `eligible_for_independent_acceptance=false`，不能将其极小 Brier 变化当成新的留出收益。
+后续另登记的固定候选补充见第 4 节；该新实验没有改写本段对原 native 实验的结论。
 
 真实研究 ledger 的两个记录对应已完成 tick 的二元信号 gate，范围不覆盖全部生成动作或 plasticity 候选空间。
 pending registry / witness 恢复与 `RequiresIndependentAcceptance` 状态真实成立；
@@ -197,13 +199,84 @@ patch 与两个可审阅 Rust 源文件的 SHA 均与 validation receipt 相同�
 这是 batch evaluation，不是逐请求 P50/P95；共享宿主以及与 temporal final 的少量重叠已注明。
 pilot、来源审计、既有模型训练等成本与这张正式阶段表分开，未声称它们为零。
 
-## 4. 待补：Temporal final
+## 4. 后续补充：冻结 future 候选在复用来源上的新分支评价
+
+这是一项在上述原 native 实验结束后单独登记、单独执行的补充。
+完整 18 文件先发布于 commit `5f67ed90455e63cca697ff7f8fd9694fc42abccf`、tree `f1029dc3d790ebe1f730978edb3c3cfceaba8aec`，
+之后才采集新 future branches。完整说明见 [补充报告](native_candidate/REPORT.md)，协议与新结果分别见 [PROTOCOL](native_candidate/PROTOCOL.json)、
+[RESULTS](native_candidate/RESULTS.json)；本次直接核对记录见 [INDEPENDENT_AUDIT](native_candidate/INDEPENDENT_AUDIT.json)。
+
+### 4.1 候选时间线与来源复用
+
+候选仍是原 sequence 802 的两个固定 Update；候选 JSON SHA 为 `409221dd…`，原候选与 pending 阶段重生成的文件字节相同。
+此前历史 evaluator 的本地登记时间是 **08:55:28.244689 UTC**；历史评价完成 receipt 的文件 mtime 是 **08:55:30.334628 UTC**，
+完整 native 完成 receipt 的 mtime 是 **08:55:33.124679 UTC**。
+repair 的首次正式 source access 是 **09:01:46.858274 UTC**，比最晚上述完成记录晚 **373.733594883 秒**。
+冻结 hook 同步生成候选后才启动 evaluator；静态参数和依赖中没有 repair 数据或结果输入。
+
+[TIMELINE-v2](native_candidate/TIMELINE-v2.json) 分别绑定启动登记、完成 receipts、原候选和历史评价文件。
+原 process registration 是写入后关闭，并未 fsync；registration 时间也不是“消费已经完成”的上界。
+v2 在新分支访问前修正了初稿的这两处措辞，保留 v1 原文件。记录的时间证据都是本地时间与文件元数据，不是外部签署时钟。
+
+这支持候选构造没有使用 repair 来源；它不能把当前来源变成全项目未见来源。
+本次复用的是 repair 的全部 **1,000 对 / 2,000 张原图**，项目新增独立来源数为 **0**。
+原五个 ID 视图各 100 对、complete absence 500 对，分配沿用原 calibration 的均衡设计，未按 repair 质量选择子集。
+原 20 模型和 assignment guard 继续执行；[REUSE_ASSIGNMENT-v2](native_candidate/REUSE_ASSIGNMENT-v2.json) 与新的独立 access registration
+另行约束本次用途和完整 source census。没有把旧 repair access 记录冒充新采集的授权，也没有修改原 loader guard。
+
+### 4.2 实际生成、完整性与统计
+
+实际生成 **2,000 个 future 输出**，每个有三个 predictor forward，共 **6,000 组预测**。
+每个来源的两个动作在任何 future draw 前各自把三组预测 fsync；完成 fsync 后才记录 commitment 时间。
+有 72 份 commitment 文件。二者均提交之后到首个 future transition 的最小本地记录间距为 **1,562 ns**；
+代码执行顺序与逐来源记录均吻合。
+
+独立只读核对包括：
+
+- 42 个 source pins、12 个输入文件 pins 当前全部相同。
+- 1,000 对、2,000 个个体 ID、两动作 census 完整，ID 逐项符合原 manifest。
+- 72 个 commitment 中的输入和三头预测数组与最终数组逐值相同；标签与实际 collector 观察器的评分字段一致。
+- 重新读取 2,000 个 PNG 和 2,000 个 UTF-8 文件，共 4,000 个媒体文件，SHA 零差异。
+- 从已保存概率与二元标签独立重算来源对平均 Brier 改善，结果与原分析相同至浮点末位。
+
+每个来源的两个动作先在来源内求平均，再以来源对为单位共同重采样两个候选比较。
+4,000 次 bootstrap、两个比较各名义 97.5% 区间的实现与预登记 family 95% 口径一致。
+本次审阅没有重新生成数据或再次运行 bootstrap；也不能把跨实验复用的来源当作独立重复实验合并。
+
+| 固定候选 | 原始 Brier | 相对 baseline 的改善 | 名义 97.5% 区间 |
+| --- | ---: | ---: | --- |
+| Baseline / NoChange | 0.069852580660 | — | — |
+| `a3704829…` | 0.069852342365 | +2.3829517147e−7 | [−1.4041087212e−7, +6.2381008774e−7] |
+| `fdd02ddb…` | 0.069852461507 | +1.1915275673e−7 | [−7.0196015285e−8, +3.1190949791e−7] |
+
+**两个区间均跨零，没有正下界。** 原始概率最大变化分别约 4.2742e−5、2.1371e−5；
+原始 0.5 分类、冻结 calibration bin、校准概率、校准后 0.5 分类和 0.75 概率阈值的变化均为 0。
+三个 head 的 32 维 state forecast 逐值相同。
+0.75 概率阈值只是预测输出上的描述；本补充没有新增 native tick，不能将它称为新执行的 admission 结果。
+
+修改参数的 head 副本确实用于 forward 评价，未写回原模型或安装到 runtime；生成器、观察器和 calibration 都保持冻结。
+本补充关闭了“这两个 future 候选只有历史功能检查、缺少候选构造隔离评价”的执行缺口，
+但结果没有建立有用的参数改进、生成效用增益、签署的独立 evaluator 资格或生产接纳。
+来源复用及研究轮次的适应性也阻止将本结果宣传为全项目新 holdout 或跨轮统一错误控制。
+
+### 4.3 补充的实际成本
+
+| 精确子进程 | wall 秒 | CPU 秒 | peak RSS bytes |
+| --- | ---: | ---: | ---: |
+| 全量采集 | 8.989925418 | 8.919399000 | 356,888,576 |
+| 媒体/commit 复核与分析 | 3.794168331 | 3.786655000 | 282,533,888 |
+
+两阶段均 exit 0，按一个 CPU 线程运行。采集内部计时 7.021290886 秒起于登记之后，
+因此不能替代含启动、验证和退出的完整子进程成本。
+共享宿主上与 temporal final 重叠，既有 temporal 请求仍原样保留；这些时间不是生产单请求 SLA。
+
+## 5. 待补：Temporal final
 
 当前 final 仍在运行。本审阅未读取其 outcomes，也未根据 selection 负差调整策略、价格、gate 或统计方案。
 完成后需核对完整 64 facts×2 templates×2 futures×3 policies 的 census、fact 内相关性、三项主 gate、
 五档价格与两比较的区间口径、同输出成本绑定、target-free Whisper 的后置边界，以及 `[0,0]` 成功率区间的有限 census 含义。
 
-## 5. 本次核对的主要固定身份
+## 6. 本次核对的主要固定身份
 
 | 材料 | SHA-256 |
 | --- | --- |
@@ -217,5 +290,8 @@ pilot、来源审计、既有模型训练等成本与这张正式阶段表分开
 | repair RESULTS | `7598767767e62cb94cfd3ae43d3e7e62c7b4fd3e14b158e108950d1ce878974d` |
 | repair SOURCE_ALLOCATION | `2449523451a9908f806ab16eb0e8abc638506263baa3bf259c7554e522401e3b` |
 | repair ROLE_ASSIGNMENT | `42c5bb90adefb4d536001d433a6fe8c8345a3547857ba7edb72555043ae3dc52` |
+| candidate reuse PROTOCOL | `36a8af4745be2523f22f49000f9d6813a8c09d075e1611573a81c59b7d38de3c` |
+| candidate reuse RESULTS | `f49b6e77c67ee7249b31400a60d688b93768801617106418887a5625e7014a95` |
+| candidate reuse INDEPENDENT_AUDIT | `4e8ddf04bf212ae64052c47922efbb6882e67ce53cacff5b343310d5075a5481` |
 
 本审阅没有把已完成诊断等同于所有正向能力目标已经满足。独立参数提案收益、主训练联合增益和生产权威来源仍有明确未闭合项。
