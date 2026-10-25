@@ -30,6 +30,10 @@ use crate::cognitive_test_support::source;
 #[path = "cognitive_store_recovery_read_only_tests.rs"]
 mod cold_read_only;
 
+#[cfg(unix)]
+#[path = "cognitive_store_recovery_active_read_only_tests.rs"]
+mod active_read_only;
+
 struct RecoveryVerifier;
 
 impl crate::ProductionAuthorityVerifier for RecoveryVerifier {

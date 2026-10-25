@@ -7,7 +7,8 @@ use crate::DurableCognitiveSnapshot;
 
 /// An admitted historical image, not a writable owner or a live authorization.
 ///
-/// Only the canonical bounded Lane C projection is exposed. There is no pool,
+/// Only canonical bounded Lane C and retained-operation projections are exposed.
+/// There is no pool,
 /// mutable store, dereference, migration, repair, or writer conversion API.
 /// The host must authenticate the CURRENT witness and revocation disposition
 /// independently at admission. Subsequent live revocation requires discarding
@@ -21,6 +22,24 @@ impl RecoveredCognitiveReadOnly {
     /// The independently supplied complete cut which was actually verified.
     pub fn anchor(&self) -> &CognitiveRecoveryAnchor {
         &self.anchor
+    }
+
+    /// Read an original operation from this authenticated historical cut.
+    /// The exact lease/admission/outbox binding is checked; no live authority,
+    /// dispatch receipt, retry permission or replacement delivery ID is issued.
+    pub async fn retained_operation(
+        &self,
+        lease_id: &str,
+        operation_id: &str,
+    ) -> Result<Option<crate::ProductionRetainedOperation>, crate::LocalLeaseOutboxError> {
+        self.store
+            .retained_historical_operation(lease_id, operation_id)
+            .await
+    }
+
+    /// Finish all reads and close the isolated in-memory SQLite connection.
+    pub async fn close(self) {
+        self.store.close().await;
     }
 
     /// Read the existing canonical scope projection, with its normal access
@@ -52,8 +71,8 @@ impl CognitiveStore {
     /// Unused physical bytes are not authority and are not covered by that hash.
     /// A mismatch never falls back to an older cut or ordinary store opening.
     ///
-    /// This does NOT complete `open_with_recovery`: writer restoration still
-    /// requires a descriptor-backed VFS and an independently current writer fence.
+    /// This does not perform `open_with_recovery`; writable restoration has
+    /// separate independently current writer-fence and activation checks.
     pub async fn open_read_only_recovery(
         layout: &HeptaAgentLayout,
         requirement: CognitiveRecoveryRequirement<'_>,
@@ -62,6 +81,44 @@ impl CognitiveStore {
         let path = layout
             .cognitive_root()
             .join(super::super::COGNITIVE_DB_FILENAME);
+        Self::open_cold_read_only_path(layout, expected, path).await
+    }
+
+    /// Admit the existing active generation as an isolated cold historical
+    /// image. This follows the original private active pointer, never publishes
+    /// one, and never falls back to the default file after a selected-generation
+    /// failure. The same independently authenticated complete Current and
+    /// no-WAL requirements as `open_read_only_recovery` apply. No writer or
+    /// process-death proof is obtained from this observation.
+    pub async fn open_active_read_only_recovery(
+        layout: &HeptaAgentLayout,
+        requirement: CognitiveRecoveryRequirement<'_>,
+    ) -> Result<RecoveredCognitiveReadOnly, CognitiveRecoveryError> {
+        let expected = validate_requirement(layout, requirement)?;
+        let root = canonical_path_without_redirection(layout.cognitive_root())
+            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?
+            .ok_or_else(|| {
+                CognitiveRecoveryError::Unavailable("recovery root is missing".into())
+            })?;
+        let path = resolve_active_database_path(&root)
+            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+        let recovered = Self::open_cold_read_only_path(layout, expected, path.clone()).await?;
+        // Detect a selection change during inspection. The authenticated private
+        // image remains the authority check; this is not an atomic path snapshot.
+        if resolve_active_database_path(&root).ok().as_ref() != Some(&path) {
+            recovered.close().await;
+            return Err(CognitiveRecoveryError::Indeterminate(
+                "active generation changed during historical admission".into(),
+            ));
+        }
+        Ok(recovered)
+    }
+
+    async fn open_cold_read_only_path(
+        layout: &HeptaAgentLayout,
+        expected: &CognitiveRecoveryAnchor,
+        path: std::path::PathBuf,
+    ) -> Result<RecoveredCognitiveReadOnly, CognitiveRecoveryError> {
         let home = AbsolutePathBuf::try_from(layout.cognitive_root().to_path_buf())
             .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?;
         let config = SqliteConfig::from_sqlite_home(home);
