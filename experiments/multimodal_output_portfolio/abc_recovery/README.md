@@ -112,6 +112,16 @@ done
 
 两份计时共用同一批八个来源对；相同场景或重复 round 不增加独立来源数。主质量评价与计时使用相同的采样规律，但批大小及随机流不同，不承诺逐输出相同。质量与成本联合分析使用计时队列自己实际生成并评分的输出。
 
+6. 全视图计时完成后，运行同队列的描述性质量／成本分析。
+
+```bash
+"$HEPTA_PYTHON" -B -m "$HEPTA_MODULE.cost_analysis" \
+  --timing "$HEPTA_RUNS/timing-supplementary_all" --protocol "$HEPTA_PROTOCOL" \
+  --manifest "$HEPTA_RUNS/sources/source-manifest.json" --output "$HEPTA_RUNS/cost-analysis"
+```
+
+价格情景没有外部标定，不能用其中最有利的一点替代主端点。原始效用、动作代理成本和计入实际随机耗时的效用分别报告。
+
 ## 证据阅读方式
 
 [恢复与训练汇总](results/recovery-and-training-001/)保存基础恢复、评分器资格、十五模型训练、768,000 对媒体重评分及三臂恢复核验的聚合回执。原始输出、模型、逐步 RNG／Adam checkpoint 和运行日志由各运行目录保留；Git 中的聚合回执不等于已保存全部原始媒体。
