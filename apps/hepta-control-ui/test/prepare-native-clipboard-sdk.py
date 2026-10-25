@@ -25,9 +25,12 @@ GRAPH_MANIFESTS = {
     "libs/vulkan/makepad-half/Cargo.toml",
     "libs/vulkan/naga/Cargo.toml",
 }
-# Only the explicit preedit candidate may correct the witnessed duplicate
-# WindowGotFocus transition and carry its original-widget lifecycle regression.
-PREEDIT_WIDGET_SOURCES = {"widgets/src/window.rs", "widgets/src/window_focus_tests.rs"}
+# Only the explicit preedit candidate may correct the witnessed window focus
+# transitions and transient composition history, with their private regressions.
+PREEDIT_WIDGET_SOURCES = {
+    "widgets/src/window.rs", "widgets/src/window_focus_tests.rs",
+    "widgets/src/text_input.rs", "widgets/src/text_input_composition_undo_tests.rs",
+}
 
 
 def require_native_feature(metadata, profile="clipboard"):

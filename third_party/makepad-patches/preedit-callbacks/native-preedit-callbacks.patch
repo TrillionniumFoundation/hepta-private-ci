@@ -110,6 +110,1008 @@ index d4ae1de40b1d02d9ef21037c46a4f1e26384c9af..6590f6441e7263e6aae57c077c824b10
                  if let Some(new_context) = self.create_position_xic_with_spot(
                      xim_context.status_style(),
                      spot_px,
+diff --git a/widgets/src/text_input.rs b/widgets/src/text_input.rs
+index a5e6d6ccb1f2f97ffb111078188ff488316b7037..c62cf1328c4326757ebb820c94db83e694396ecc 100644
+--- a/widgets/src/text_input.rs
++++ b/widgets/src/text_input.rs
+@@ -655,6 +655,13 @@ pub struct TextInput {
+     /// IME composition tracking - byte index where composition ends
+     #[rust]
+     composition_end: usize,
++    /// Only the selected committed text is retained; previews never enter history.
++    #[rust]
++    composition_edit: Option<CompositionEdit>,
++    #[rust]
++    composition_boundary: bool,
++    #[rust]
++    composition_cancelled: bool,
+     /// Frame ID when IME input was last received (echo prevention)
+     #[rust]
+     ime_update_frame: u64,
+@@ -903,6 +910,7 @@ pub fn selection(&self) -> Selection {
+     }
+ 
+     pub fn set_selection(&mut self, cx: &mut Cx, selection: Selection) {
++        self.cancel_composition(cx);
+         self.selection = Selection {
+             anchor: Cursor {
+                 index: floor_grapheme_boundary(&self.text, selection.anchor.index),
+@@ -1688,6 +1696,7 @@ fn page_height_in_lpxs(&self, cx: &Cx) -> f32 {
+     }
+ 
+     pub fn select_all(&mut self, cx: &mut Cx) {
++        self.cancel_composition(cx);
+         self.set_selection(
+             cx,
+             Selection {
+@@ -1783,7 +1792,7 @@ pub fn replace_range(
+         }
+         // A history rewind or a keyboard delete can leave the recorded composition
+         // hanging past the text; what's left of it inside the text is what counts.
+-        if self.has_composition() {
++        if self.has_composition() && self.composition_edit.is_none() {
+             let len = self.text.len();
+             let composition_start = floor_grapheme_boundary(&self.text, self.composition_start.min(len));
+             let composition_end = floor_grapheme_boundary(&self.text, self.composition_end.min(len));
+@@ -1809,30 +1818,38 @@ pub fn replace_range(
+         if undo == UndoGroup::New {
+             self.history.force_new_edit_group();
+         }
+-        self.create_or_extend_edit_group(EditKind::External);
+         let replacement_len = replace_with.len();
+         let selection = self.selection;
+-        self.history.apply_edit(Edit { start, end, replace_with }, &mut self.text);
+-        let carry = |index: usize| {
+-            if index < start {
+-                floor_grapheme_boundary(&self.text, index)
+-            } else if index > end {
+-                floor_grapheme_boundary(&self.text, (index - (end - start) + replacement_len).min(self.text.len()))
+-            } else {
+-                // Never before the replacement, even if it joined a grapheme after it.
+-                ceil_grapheme_boundary(&self.text, start + replacement_len)
+-            }
+-        };
+-        self.selection = Selection {
+-            anchor: Cursor {
+-                index: carry(selection.anchor.index),
+-                prefer_next_row: selection.anchor.prefer_next_row,
+-            },
+-            cursor: Cursor {
+-                index: carry(selection.cursor.index),
+-                prefer_next_row: selection.cursor.prefer_next_row,
+-            },
+-        };
++        if let Some(pending) = &self.composition_edit {
++            // History describes committed text, not the transient preview. An
++            // allowed edit beside it must therefore use committed coordinates.
++            let projected_start = pending.project(start, self.composition_start, self.composition_end);
++            let projected_end = pending.project(end, self.composition_start, self.composition_end);
++            let projected_selection = pending.selection;
++            let mut committed = self.text.clone();
++            committed.replace_range(self.composition_start..self.composition_end, &pending.replaced);
++            Edit {
++                start: projected_start,
++                end: projected_end,
++                replace_with: replace_with.clone(),
++            }.apply(&mut committed);
++            let inverse = Edit {
++                start: projected_start,
++                end: projected_start + replacement_len,
++                replace_with: self.text[start..end].to_string(),
++            };
++            self.history.create_or_extend_edit_group(EditKind::External, projected_selection);
++            self.history.undo_stack.push_edit(inverse);
++            self.history.redo_stack.clear();
++            Edit { start, end, replace_with }.apply(&mut self.text);
++            self.composition_edit.as_mut().unwrap().selection = Self::carry_external_selection(
++                &committed, projected_selection, projected_start, projected_end, replacement_len,
++            );
++        } else {
++            self.create_or_extend_edit_group(EditKind::External);
++            self.history.apply_edit(Edit { start, end, replace_with }, &mut self.text);
++        }
++        self.selection = Self::carry_external_selection(&self.text, selection, start, end, replacement_len);
+         if self.has_composition() {
+             // The edit is entirely on one side of the composition, so it either
+             // shifts the whole composition or leaves it alone.
+@@ -1862,7 +1879,33 @@ pub fn replace_range(
+         Ok(())
+     }
+ 
++    fn carry_external_selection(text: &str, selection: Selection, start: usize, end: usize, replacement_len: usize) -> Selection {
++        let carry = |index: usize| {
++            if index < start {
++                floor_grapheme_boundary(text, index)
++            } else if index > end {
++                floor_grapheme_boundary(text, (index - (end - start) + replacement_len).min(text.len()))
++            } else {
++                // Never before the replacement, even if it joined a grapheme after it.
++                ceil_grapheme_boundary(text, start + replacement_len)
++            }
++        };
++        Selection {
++            anchor: Cursor {
++                index: carry(selection.anchor.index),
++                prefer_next_row: selection.anchor.prefer_next_row,
++            },
++            cursor: Cursor {
++                index: carry(selection.cursor.index),
++                prefer_next_row: selection.cursor.prefer_next_row,
++            },
++        }
++    }
++
+     fn handle_focus_lost(&mut self, cx: &mut Cx, uid: WidgetUid) {
++        if self.cancel_composition(cx) {
++            self.emit_change(cx, uid);
++        }
+         self.animator_play(cx, ids!(focus.off));
+         self.animator_play(cx, ids!(blink.on));
+         cx.stop_timer(self.blink_timer);
+@@ -1885,6 +1928,7 @@ fn has_composition(&self) -> bool {
+     }
+ 
+     fn clear_composition(&mut self) {
++        self.composition_edit = None;
+         if self.composition_start == 0 && self.composition_end == 0 {
+             return;
+         }
+@@ -2103,10 +2147,77 @@ fn filter_input_replacing(&self, input: &str, replacing: Option<Range<usize>>) -
+     }
+ 
+     fn create_or_extend_edit_group(&mut self, edit_kind: EditKind) {
++        if std::mem::take(&mut self.composition_boundary) {
++            self.history.force_new_edit_group();
++        }
+         self.history
+             .create_or_extend_edit_group(edit_kind, self.selection);
+     }
+ 
++    fn apply_composition_preview(&mut self, cx: &mut Cx, input: String) {
++        self.composition_cancelled = false;
++        if self.composition_edit.is_none() {
++            let (start, end) = if self.has_composition() {
++                (self.composition_start, self.composition_end)
++            } else {
++                (self.selection.start().index, self.selection.end().index)
++            };
++            self.composition_edit = Some(CompositionEdit {
++                replaced: self.text[start..end].to_string(),
++                selection: self.selection,
++            });
++            self.composition_start = start;
++            self.composition_end = end;
++        }
++        let start = self.composition_start;
++        Edit { start, end: self.composition_end, replace_with: input.clone() }.apply(&mut self.text);
++        self.composition_end = start + input.len();
++        self.selection = Selection {
++            anchor: Cursor { index: self.composition_end, prefer_next_row: false },
++            cursor: Cursor { index: self.composition_end, prefer_next_row: false },
++        };
++        self.needs_scroll_to_cursor = true;
++        self.laidout_text = None;
++        self.check_text_is_empty(cx, Animate::Yes);
++    }
++
++    fn commit_composition(&mut self) {
++        self.composition_cancelled = false;
++        if let Some(pending) = self.composition_edit.take() {
++            if self.text[self.composition_start..self.composition_end] != pending.replaced {
++                self.history.force_new_edit_group();
++                self.history.create_or_extend_edit_group(EditKind::Other, pending.selection);
++                self.history.undo_stack.push_edit(Edit {
++                    start: self.composition_start,
++                    end: self.composition_end,
++                    replace_with: pending.replaced,
++                });
++                self.history.redo_stack.clear();
++                self.history.force_new_edit_group();
++            }
++            self.composition_boundary = true;
++        }
++        self.clear_composition();
++    }
++
++    fn cancel_composition(&mut self, cx: &mut Cx) -> bool {
++        let Some(pending) = self.composition_edit.take() else { return false; };
++        Edit {
++            start: self.composition_start,
++            end: self.composition_end,
++            replace_with: pending.replaced,
++        }.apply(&mut self.text);
++        self.selection = pending.selection;
++        self.clear_composition();
++        self.composition_boundary = true;
++        self.composition_cancelled = true;
++        self.needs_scroll_to_cursor = true;
++        self.laidout_text = None;
++        self.check_text_is_empty(cx, Animate::Yes);
++        self.draw_bg.redraw(cx);
++        true
++    }
++
+     fn apply_edit(&mut self, cx: &mut Cx, edit: Edit) {
+         self.selection.cursor.index = edit.start + edit.replace_with.len();
+         self.selection.anchor.index = self.selection.cursor.index;
+@@ -2228,6 +2339,7 @@ fn apply_edit_preserving_selection(&mut self, cx: &mut Cx, edit: Edit) {
+     }
+ 
+     fn undo(&mut self, cx: &mut Cx) -> bool {
++        if self.cancel_composition(cx) { return true; }
+         if let Some(new_selection) = self.history.undo(self.selection, &mut self.text) {
+             // The text the IME was composing is gone, so the composition is too.
+             self.clear_composition();
+@@ -2242,6 +2354,7 @@ fn undo(&mut self, cx: &mut Cx) -> bool {
+     }
+ 
+     fn redo(&mut self, cx: &mut Cx) -> bool {
++        if self.cancel_composition(cx) { return true; }
+         if let Some(new_selection) = self.history.redo(self.selection, &mut self.text) {
+             self.clear_composition();
+             self.laidout_text = None;
+@@ -2380,6 +2493,10 @@ fn text(&self) -> String {
+     }
+ 
+     fn set_text(&mut self, cx: &mut Cx, text: &str) {
++        self.composition_edit = None;
++        self.clear_composition();
++        self.composition_boundary = false;
++        self.composition_cancelled = false;
+         self.text = self.filter_input(text, true);
+         self.set_selection(
+             cx,
+@@ -2481,6 +2598,23 @@ fn handle_event(&mut self, cx: &mut Cx, event: &Event, _scope: &mut Scope) {
+ 
+         let uid = self.widget_uid();
+ 
++        if self.composition_edit.is_some() && cx.has_key_focus(self.draw_bg.area()) {
++            match event {
++                Event::KeyDown(KeyEvent { key_code: KeyCode::Backspace | KeyCode::Delete | KeyCode::Escape, .. }) => {
++                    // If the platform did not consume this command, cancel the
++                    // transient preview before any committed edit can use its indices.
++                    self.cancel_composition(cx);
++                    self.emit_change(cx, uid);
++                    return;
++                }
++                Event::KeyDown(KeyEvent { key_code: KeyCode::ReturnKey | KeyCode::NumpadEnter, .. }) => {
++                    // The IME owns Return until it supplies the final commit.
++                    return;
++                }
++                _ => {}
++            }
++        }
++
+         // Self-detect focus loss from taps outside our area
+         // But NOT if we've captured the finger (e.g., during a selection drag that ends outside)
+         // And only from a LIVE area: an input not drawn in its list's current
+@@ -2933,6 +3067,9 @@ fn handle_event(&mut self, cx: &mut Cx, event: &Event, _scope: &mut Scope) {
+                 self.pending_outside_focus_loss_touch = None;
+ 
+                 // Full state sync (authoritative: Android InputConnection / iOS UITextView)
++                if event.full_state_sync.is_some() || event.replace_range.is_some() {
++                    self.cancel_composition(cx);
++                }
+                 if let Some(full_state) = &event.full_state_sync {
+                     // The view can deliver characters a restricted field disallows (paste,
+                     // hardware keyboard); filter so iOS/Android match every other platform.
+@@ -3111,86 +3248,40 @@ fn handle_event(&mut self, cx: &mut Cx, event: &Event, _scope: &mut Scope) {
+                     return;
+                 }
+ 
+-                // Handle regular text input and composition (all platforms)
+-                let input = self.filter_input(&event.input, false);
++                // Regular desktop preedit is transient until the final commit.
++                let range = if self.has_composition() {
++                    self.composition_start..self.composition_end
++                } else {
++                    self.selection.start().index..self.selection.end().index
++                };
++                let input = self.filter_input_replacing(&event.input, Some(range));
+                 if input.is_empty() {
+-                    // Composition cancelled, remove preview text
+-                    if event.replace_last && self.has_composition() {
+-                        self.create_or_extend_edit_group(EditKind::Other);
+-                        self.apply_edit(
+-                            cx,
+-                            Edit {
+-                                start: self.composition_start.min(self.text.len()),
+-                                end: self.composition_end.min(self.text.len()),
+-                                replace_with: String::new(),
+-                            },
+-                        );
+-                        self.draw_bg.redraw(cx);
++                    // A rejected nonempty input is not an IME cancellation.
++                    if event.input.is_empty() && self.cancel_composition(cx) {
+                         self.emit_change(cx, uid);
+                     }
+-                    self.composition_end = self.composition_start;
+                     return;
+                 }
+-
+                 if event.replace_last {
+-                    // IME composition preview
+-                    if self.has_composition() {
+-                        let start = self.composition_start.min(self.text.len());
+-                        let end = self.composition_end.min(self.text.len());
+-                        self.create_or_extend_edit_group(EditKind::Other);
+-                        self.apply_edit(
+-                            cx,
+-                            Edit {
+-                                start,
+-                                end,
+-                                replace_with: input.clone(),
+-                            },
+-                        );
+-                        self.composition_end = self.composition_start + input.len();
+-                    } else {
+-                        self.composition_start = self.selection.start().index;
+-                        self.composition_end = self.composition_start + input.len();
+-                        self.create_or_extend_edit_group(EditKind::Other);
+-                        self.apply_edit(
+-                            cx,
+-                            Edit {
+-                                start: self.selection.start().index,
+-                                end: self.selection.end().index,
+-                                replace_with: input,
+-                            },
+-                        );
+-                    }
++                    self.apply_composition_preview(cx, input);
+                     self.ime_update_frame = cx.redraw_id();
++                } else if self.composition_edit.is_some() || self.has_composition() {
++                    self.apply_composition_preview(cx, input);
++                    self.commit_composition();
+                 } else {
+-                    // Final commit or regular text input
+-                    if self.has_composition() {
+-                        let start = self.composition_start.min(self.text.len());
+-                        let end = self.composition_end.min(self.text.len());
+-                        self.create_or_extend_edit_group(EditKind::Other);
+-                        self.apply_edit(
+-                            cx,
+-                            Edit {
+-                                start,
+-                                end,
+-                                replace_with: input,
+-                            },
+-                        );
+-                        self.composition_end = self.composition_start;
++                    // An empty preedit may precede the final XIM commit. Keep
++                    // that next edit isolated from typing on either side.
++                    self.create_or_extend_edit_group(if event.was_paste || self.composition_cancelled {
++                        EditKind::Other
+                     } else {
+-                        self.create_or_extend_edit_group(if event.was_paste {
+-                            EditKind::Other
+-                        } else {
+-                            EditKind::Insert
+-                        });
+-                        self.apply_edit(
+-                            cx,
+-                            Edit {
+-                                start: self.selection.start().index,
+-                                end: self.selection.end().index,
+-                                replace_with: input,
+-                            },
+-                        );
+-                    }
++                        EditKind::Insert
++                    });
++                    self.apply_edit(cx, Edit {
++                        start: self.selection.start().index,
++                        end: self.selection.end().index,
++                        replace_with: input,
++                    });
++                    self.composition_cancelled = false;
+                 }
+                 self.animator_play(cx, ids!(empty.off));
+                 self.draw_bg.redraw(cx);
+@@ -3198,6 +3289,7 @@ fn handle_event(&mut self, cx: &mut Cx, event: &Event, _scope: &mut Scope) {
+                 cx.hide_clipboard_actions();
+             }
+             Hit::TextRangeReplace(event) if !self.is_read_only => {
++                self.cancel_composition(cx);
+                 self.pending_outside_focus_loss_touch = None;
+ 
+                 // iOS autocorrect sends range replacement events
+@@ -3535,15 +3627,24 @@ pub fn key_down_unhandled(&self, actions: &Actions) -> Option<KeyEvent> {
+     }
+ 
+     /// Saves the internal state of this text input widget
+-    /// to a new `TextInputState` object.
++    /// to a new `TextInputState` object. An uncommitted preedit is excluded:
++    /// the checkpoint retains the committed text, selection and history.
+     pub fn save_state(&self) -> TextInputState {
+         if let Some(inner) = self.borrow() {
+-            TextInputState {
++            let mut state = TextInputState {
+                 text: inner.text.clone(),
+                 password_text: inner.password_text.clone(),
+-                selection: inner.selection.clone(),
++                selection: inner.selection,
+                 history: inner.history.clone(),
++            };
++            if let Some(pending) = &inner.composition_edit {
++                // A durable checkpoint must not turn a transient preview into
++                // committed text with a mismatched committed history.
++                state.text.replace_range(inner.composition_start..inner.composition_end, &pending.replaced);
++                state.selection = pending.selection;
++                state.password_text.clear();
+             }
++            state
+         } else {
+             TextInputState::default()
+         }
+@@ -3689,6 +3790,20 @@ fn from_key_event(event: KeyEvent) -> Option<Self> {
+     }
+ }
+ 
++#[derive(Clone, Debug)]
++struct CompositionEdit {
++    replaced: String,
++    selection: Selection,
++}
++
++impl CompositionEdit {
++    fn project(&self, index: usize, start: usize, end: usize) -> usize {
++        if index <= start { index }
++        else if index >= end { index - (end - start) + self.replaced.len() }
++        else { start + self.replaced.len() }
++    }
++}
++
+ #[derive(Clone, Debug, Default)]
+ #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+ struct History {
+@@ -4256,3 +4371,7 @@ fn an_edit_beside_a_composition_moves_it_and_one_inside_is_refused() {
+         assert_eq!(composition(&input), (1, 7));
+     }
+ }
++
++#[cfg(test)]
++#[path = "text_input_composition_undo_tests.rs"]
++mod composition_undo_tests;
+diff --git a/widgets/src/text_input_composition_undo_tests.rs b/widgets/src/text_input_composition_undo_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..83ee45749a1175ef757f39d5edda026450d97a97
+--- /dev/null
++++ b/widgets/src/text_input_composition_undo_tests.rs
+@@ -0,0 +1,534 @@
++use super::*;
++use crate::{TextInputWidgetRefExt, WidgetRef};
++use makepad_draw::cx_draw::CxDraw;
++use std::cell::RefCell;
++
++struct Surface {
++    cx: Cx,
++    input: TextInputRef,
++    _pass: DrawPass,
++    _list: DrawList2d,
++}
++
++impl Surface {
++    fn new() -> Self {
++        let target = Rc::new(RefCell::new(None::<TextInputRef>));
++        let dispatch_target = target.clone();
++        let mut cx = Cx::new(Box::new(move |cx, event| {
++            if matches!(event, Event::KeyFocus(_)) {
++                if let Some(input) = dispatch_target.borrow().as_ref() {
++                    input.borrow_mut().unwrap().handle_event(cx, event, &mut Scope::empty());
++                }
++            }
++        }));
++        cx.init_cx_os();
++        let input = cx.with_vm(|vm| {
++            crate::script_mod(vm);
++            let value = vm.eval(crate::makepad_script::script! {
++                use mod.prelude.widgets.*
++                TextInput {}
++            });
++            WidgetRef::script_from_value(vm, value).as_text_input()
++        });
++        *target.borrow_mut() = Some(input.clone());
++        let size = dvec2(640.0, 160.0);
++        let pass = DrawPass::new(&mut cx);
++        pass.set_size(&mut cx, size);
++        let mut list = DrawList2d::new(&mut cx);
++        {
++            let event = DrawEvent::default();
++            let mut draw = CxDraw::new(&mut cx, &event);
++            let mut cx2d = Cx2d::new(&mut draw);
++            cx2d.begin_pass(&pass, None);
++            list.begin_always(&mut cx2d);
++            cx2d.begin_root_turtle(size, Layout::flow_down());
++            input.borrow_mut().unwrap().draw_all(&mut cx2d, &mut Scope::empty());
++            cx2d.end_pass_sized_turtle();
++            list.end(&mut cx2d);
++            cx2d.end_pass(&pass);
++        }
++        assert!(input.area().is_valid(&cx));
++        input.take_key_focus(&mut cx);
++        cx.widget_action(input.widget_uid(), TextInputAction::KeyFocus);
++        cx.handle_actions();
++        assert_eq!(cx.key_focus(), input.area());
++        Self { cx, input, _pass: pass, _list: list }
++    }
++
++    fn event(&mut self, event: Event) {
++        self.input.borrow_mut().unwrap().handle_event(&mut self.cx, &event, &mut Scope::empty());
++        self.cx.handle_actions();
++    }
++
++    fn text(&mut self, text: &str, preview: bool) {
++        self.event(Event::TextInput(TextInputEvent {
++            input: text.into(), replace_last: preview, ..Default::default()
++        }));
++    }
++
++    fn key(&mut self, code: KeyCode, shift: bool) {
++        self.event(Event::KeyDown(KeyEvent {
++            key_code: code,
++            modifiers: KeyModifiers { control: true, shift, ..Default::default() },
++            ..Default::default()
++        }));
++    }
++
++    fn undo(&mut self) { self.key(KeyCode::KeyZ, false); }
++    fn redo(&mut self) { self.key(KeyCode::KeyZ, true); }
++
++    fn select(&mut self, anchor: usize, cursor: usize) {
++        self.input.borrow_mut().unwrap().set_selection(&mut self.cx, Selection {
++            anchor: Cursor { index: anchor, prefer_next_row: false },
++            cursor: Cursor { index: cursor, prefer_next_row: false },
++        });
++    }
++
++    fn compose(&mut self, committed: &str) {
++        for preview in ["n", "ni", "你好"] { self.text(preview, true); }
++        assert!(self.input.is_composing());
++        self.text(committed, false);
++        assert!(!self.input.is_composing());
++    }
++
++    fn history(&self) -> String { format!("{:?}", self.input.save_state().history) }
++    fn selection(&self) -> Selection { self.input.borrow().unwrap().selection() }
++}
++
++#[test]
++fn previews_and_same_text_commit_are_one_keyboard_undo_and_redo() {
++    let mut s = Surface::new();
++    s.compose("你好");
++    assert_eq!(s.input.text(), "你好");
++    s.undo();
++    assert_eq!(s.input.text(), "");
++    s.redo();
++    assert_eq!(s.input.text(), "你好");
++    assert!(!s.input.is_composing());
++}
++
++#[test]
++fn composition_replacing_a_reversed_selection_restores_text_and_selection() {
++    let mut s = Surface::new();
++    s.text("a旧文z", false);
++    s.select(7, 1);
++    let selected = s.selection();
++    s.compose("新");
++    assert_eq!(s.input.text(), "a新z");
++    s.undo();
++    assert_eq!(s.input.text(), "a旧文z");
++    assert_eq!(format!("{:?}", s.selection()), format!("{:?}", selected));
++    s.redo();
++    assert_eq!(s.input.text(), "a新z");
++}
++
++#[test]
++fn normal_typing_on_both_sides_stays_in_separate_undo_groups() {
++    let mut s = Surface::new();
++    s.text("a", false); s.text("b", false);
++    s.compose("你好");
++    s.text("c", false); s.text("d", false);
++    s.undo(); assert_eq!(s.input.text(), "ab你好");
++    s.undo(); assert_eq!(s.input.text(), "ab");
++    s.undo(); assert_eq!(s.input.text(), "");
++    s.redo(); s.redo(); s.redo();
++    assert_eq!(s.input.text(), "ab你好cd");
++}
++
++#[test]
++fn consecutive_compositions_are_separate_keyboard_undo_groups() {
++    let mut s = Surface::new();
++    s.compose("你");
++    s.compose("好");
++    assert_eq!(s.input.text(), "你好");
++    s.undo(); assert_eq!(s.input.text(), "你");
++    s.undo(); assert_eq!(s.input.text(), "");
++    s.redo(); assert_eq!(s.input.text(), "你");
++    s.redo(); assert_eq!(s.input.text(), "你好");
++}
++
++#[test]
++fn cancelling_previews_preserves_prior_undo_redo_and_selection() {
++    let mut s = Surface::new();
++    s.text("a旧文z", false);
++    s.select(1, 7);
++    s.input.replace_range(&mut s.cx, 1..7, "新", UndoGroup::New).unwrap();
++    s.undo();
++    assert_eq!(s.input.text(), "a旧文z");
++    let selection = s.selection();
++    let history = s.history();
++    for preview in ["n", "ni", "你好"] { s.text(preview, true); }
++    s.text("", true);
++    assert_eq!(s.input.text(), "a旧文z");
++    assert_eq!(format!("{:?}", s.selection()), format!("{:?}", selection));
++    assert_eq!(s.history(), history);
++    assert!(!s.input.is_composing());
++    s.redo(); assert_eq!(s.input.text(), "a新z");
++    s.undo(); assert_eq!(s.input.text(), "a旧文z");
++    s.undo(); assert_eq!(s.input.text(), "");
++}
++
++#[test]
++fn cancelling_first_composition_does_not_add_an_undo_step() {
++    let mut s = Surface::new();
++    let history = s.history();
++    s.text("ni", true);
++    s.text("", true);
++    assert_eq!(s.input.text(), "");
++    assert_eq!(s.history(), history);
++    s.undo(); s.redo();
++    assert_eq!(s.input.text(), "");
++}
++
++#[test]
++fn edits_before_and_after_preview_use_committed_utf8_coordinates_on_commit() {
++    let mut s = Surface::new();
++    s.text("α旧🙂z", false);
++    s.select(5, 2);
++    s.text("ni", true);
++    s.input.replace_range(&mut s.cx, 0..0, "界", UndoGroup::New).unwrap();
++    let end = s.input.text().len();
++    s.input.replace_range(&mut s.cx, end-1..end, "终", UndoGroup::New).unwrap();
++    s.text("你好", true);
++    s.text("你", false);
++    assert_eq!(s.input.text(), "界α你🙂终");
++    s.undo(); assert_eq!(s.input.text(), "界α旧🙂终");
++    s.undo(); assert_eq!(s.input.text(), "界α旧🙂z");
++    s.undo(); assert_eq!(s.input.text(), "α旧🙂z");
++    s.redo(); s.redo(); s.redo();
++    assert_eq!(s.input.text(), "界α你🙂终");
++}
++
++#[test]
++fn cancel_after_legal_outside_edits_preserves_the_edits_and_their_history() {
++    let mut s = Surface::new();
++    s.text("α旧🙂z", false);
++    s.select(5, 2);
++    s.text("你好", true);
++    let end = s.input.text().len();
++    s.input.replace_range(&mut s.cx, end-1..end, "终", UndoGroup::New).unwrap();
++    s.input.replace_range(&mut s.cx, 0..0, "界", UndoGroup::New).unwrap();
++    s.text("ni", true);
++    s.text("", true);
++    assert_eq!(s.input.text(), "界α旧🙂终");
++    let selection = s.selection();
++    assert_eq!((selection.anchor.index, selection.cursor.index), (8, 5));
++    s.undo(); assert_eq!(s.input.text(), "α旧🙂终");
++    s.undo(); assert_eq!(s.input.text(), "α旧🙂z");
++    s.redo(); s.redo();
++    assert_eq!(s.input.text(), "界α旧🙂终");
++}
++
++#[test]
++fn boundary_insertions_remain_outside_the_composition() {
++    let mut s = Surface::new();
++    s.text("ab", false);
++    s.select(1, 1);
++    s.text("你", true);
++    s.input.replace_range(&mut s.cx, 1..1, "L", UndoGroup::New).unwrap();
++    s.input.replace_range(&mut s.cx, 5..5, "R", UndoGroup::New).unwrap();
++    assert_eq!(s.input.text(), "aL你Rb");
++    assert!(matches!(s.input.replace_range(&mut s.cx, 2..5, "bad", UndoGroup::New), Err(ReplaceRangeError::Composing)));
++    s.text("好", false);
++    s.undo(); assert_eq!(s.input.text(), "aLRb");
++    s.undo(); assert_eq!(s.input.text(), "aLb");
++    s.undo(); assert_eq!(s.input.text(), "ab");
++    s.redo(); s.redo(); s.redo();
++    assert_eq!(s.input.text(), "aL好Rb");
++}
++
++#[test]
++fn net_unchanged_commit_keeps_prior_redo_and_has_no_empty_undo_step() {
++    let mut s = Surface::new();
++    s.text("你好", false);
++    s.select(0, 6);
++    s.input.replace_range(&mut s.cx, 0..6, "old", UndoGroup::New).unwrap();
++    s.undo();
++    let history = s.history();
++    s.compose("你好");
++    assert_eq!(s.history(), history);
++    s.redo(); assert_eq!(s.input.text(), "old");
++    s.undo(); assert_eq!(s.input.text(), "你好");
++    s.undo(); assert_eq!(s.input.text(), "");
++}
++
++#[test]
++fn empty_preedit_before_final_commit_keeps_the_commit_isolated() {
++    let mut s = Surface::new();
++    s.text("ab", false);
++    s.text("ni", true);
++    s.text("", true);
++    assert_eq!(s.input.text(), "ab");
++    s.text("你好", false);
++    s.text("c", false); s.text("d", false);
++    s.undo(); assert_eq!(s.input.text(), "ab你好");
++    s.undo(); assert_eq!(s.input.text(), "ab");
++    s.undo(); assert_eq!(s.input.text(), "");
++    s.redo(); s.redo(); s.redo();
++    assert_eq!(s.input.text(), "ab你好cd");
++}
++
++#[test]
++fn late_empty_preedit_after_commit_cannot_erase_the_committed_text() {
++    let mut s = Surface::new();
++    s.compose("你好");
++    let history = s.history();
++    s.text("", true);
++    assert_eq!(s.input.text(), "你好");
++    assert_eq!(s.history(), history);
++    s.undo(); assert_eq!(s.input.text(), "");
++    s.redo(); assert_eq!(s.input.text(), "你好");
++}
++
++#[test]
++fn cancelling_a_combining_grapheme_selection_preserves_cursor_affinity() {
++    let mut s = Surface::new();
++    s.text("ae\u{301}🙂z", false);
++    s.input.borrow_mut().unwrap().set_selection(&mut s.cx, Selection {
++        anchor: Cursor { index: 8, prefer_next_row: true },
++        cursor: Cursor { index: 1, prefer_next_row: false },
++    });
++    let selected = format!("{:?}", s.selection());
++    s.text("你好", true);
++    s.text("", true);
++    assert_eq!(s.input.text(), "ae\u{301}🙂z");
++    assert_eq!(format!("{:?}", s.selection()), selected);
++    s.compose("新");
++    s.undo();
++    assert_eq!(s.input.text(), "ae\u{301}🙂z");
++    assert_eq!(format!("{:?}", s.selection()), selected);
++}
++
++#[test]
++fn keyboard_undo_cancels_preview_even_without_a_prior_history_entry() {
++    let mut s = Surface::new();
++    s.text("你好", true);
++    s.undo();
++    assert_eq!(s.input.text(), "");
++    assert!(!s.input.is_composing());
++    s.text("x", false);
++    s.undo(); assert_eq!(s.input.text(), "");
++}
++
++#[test]
++fn replacing_the_document_or_selection_cannot_replay_an_old_composition() {
++    let mut s = Surface::new();
++    s.text("original", false);
++    s.select(0, 8);
++    s.text("你好", true);
++    s.select(0, 0);
++    assert_eq!(s.input.text(), "original");
++    assert!(!s.input.is_composing());
++    s.text("ni", true);
++    s.input.set_text(&mut s.cx, "other room");
++    s.text("", true);
++    assert_eq!(s.input.text(), "other room");
++    assert!(!s.input.is_composing());
++}
++
++#[test]
++fn focus_loss_cancels_preview_and_preserves_existing_redo() {
++    let mut s = Surface::new();
++    s.text("old", false);
++    s.input.replace_range(&mut s.cx, 0..3, "new", UndoGroup::New).unwrap();
++    s.undo();
++    let history = s.history();
++    s.text("你好", true);
++    s.cx.set_key_focus(Area::Empty);
++    s.cx.widget_action(s.input.widget_uid(), TextInputAction::KeyFocus);
++    s.cx.handle_actions();
++    assert_eq!(s.input.text(), "old");
++    assert!(!s.input.is_composing());
++    assert_eq!(s.history(), history);
++    s.input.take_key_focus(&mut s.cx);
++    s.cx.widget_action(s.input.widget_uid(), TextInputAction::KeyFocus);
++    s.cx.handle_actions();
++    s.redo(); assert_eq!(s.input.text(), "new");
++}
++
++#[test]
++fn rejected_numeric_preview_or_commit_does_not_cancel_valid_preedit() {
++    let mut s = Surface::new();
++    s.input.borrow_mut().unwrap().set_is_numeric_only(&mut s.cx, true);
++    s.text("12", true);
++    s.text("invalid", true);
++    assert!(s.input.is_composing());
++    assert_eq!(s.input.text(), "12");
++    s.text("invalid", false);
++    assert!(s.input.is_composing());
++    s.text("123", false);
++    s.undo(); assert_eq!(s.input.text(), "");
++    s.redo(); assert_eq!(s.input.text(), "123");
++}
++
++#[test]
++fn decimal_preview_filter_uses_the_replaced_composition_range() {
++    let mut s = Surface::new();
++    s.input.borrow_mut().unwrap().input_mode = InputMode::Decimal;
++    s.text("1.", true);
++    s.text("1.2", true);
++    assert_eq!(s.input.text(), "1.2");
++    s.text("1.23", false);
++    s.undo(); assert_eq!(s.input.text(), "");
++    s.redo(); assert_eq!(s.input.text(), "1.23");
++    s.text(".", false);
++    assert_eq!(s.input.text(), "1.23");
++}
++
++#[test]
++fn checkpoint_and_restore_exclude_uncommitted_preview_and_keep_prior_redo() {
++    let mut s = Surface::new();
++    s.text("a旧z", false);
++    s.select(1, 4);
++    s.input.replace_range(&mut s.cx, 1..4, "新", UndoGroup::New).unwrap();
++    s.undo();
++    let before = format!("{:?}", s.input.save_state());
++    s.text("你好", true);
++    let checkpoint = s.input.save_state();
++    assert_eq!(format!("{:?}", checkpoint), before);
++    s.input.restore_state(&mut s.cx, checkpoint);
++    assert_eq!(s.input.text(), "a旧z");
++    assert!(!s.input.is_composing());
++    s.redo(); assert_eq!(s.input.text(), "a新z");
++    s.text("", true);
++    assert_eq!(s.input.text(), "a新z");
++}
++
++#[test]
++fn unconsumed_delete_or_escape_cancels_preview_without_history_corruption() {
++    for key in [KeyCode::Backspace, KeyCode::Delete, KeyCode::Escape] {
++        let mut s = Surface::new();
++        s.text("old", false);
++        s.select(0, 3);
++        let history = s.history();
++        s.text("你好", true);
++        s.event(Event::KeyDown(KeyEvent { key_code: key, ..Default::default() }));
++        assert_eq!(s.input.text(), "old");
++        assert!(!s.input.is_composing());
++        assert_eq!(s.history(), history);
++        s.text("new", false);
++        s.undo(); assert_eq!(s.input.text(), "old");
++    }
++}
++
++#[test]
++fn unconsumed_return_cannot_publish_a_preview_as_a_submission() {
++    let mut s = Surface::new();
++    s.text("你好", true);
++    s.event(Event::KeyDown(KeyEvent { key_code: KeyCode::ReturnKey, ..Default::default() }));
++    assert!(s.input.is_composing());
++    assert_eq!(s.cx.key_focus(), s.input.area());
++    s.text("你好", false);
++    s.undo(); assert_eq!(s.input.text(), "");
++}
++
++#[test]
++fn combining_suffix_boundary_does_not_discard_the_pending_transaction_on_cancel() {
++    let mut s = Surface::new();
++    s.text("ab", false);
++    s.select(1, 1);
++    s.text("e", true);
++    s.input.replace_range(&mut s.cx, 2..2, "\u{301}", UndoGroup::New).unwrap();
++    s.input.replace_range(&mut s.cx, 4..5, "Z", UndoGroup::New).unwrap();
++    assert!(s.input.is_composing());
++    assert_eq!(s.input.text(), "ae\u{301}Z");
++    s.text("", true);
++    assert_eq!(s.input.text(), "a\u{301}Z");
++    s.undo(); assert_eq!(s.input.text(), "a\u{301}b");
++    s.undo(); assert_eq!(s.input.text(), "ab");
++    s.redo(); s.redo(); assert_eq!(s.input.text(), "a\u{301}Z");
++}
++
++#[test]
++fn combining_suffix_boundary_does_not_discard_the_pending_transaction_on_commit() {
++    let mut s = Surface::new();
++    s.text("ab", false);
++    s.select(1, 1);
++    s.text("e", true);
++    s.input.replace_range(&mut s.cx, 2..2, "\u{301}", UndoGroup::New).unwrap();
++    s.input.replace_range(&mut s.cx, 4..5, "Z", UndoGroup::New).unwrap();
++    s.text("你", true);
++    s.text("好", false);
++    assert_eq!(s.input.text(), "a好\u{301}Z");
++    s.undo(); assert_eq!(s.input.text(), "a\u{301}Z");
++    s.undo(); assert_eq!(s.input.text(), "a\u{301}b");
++    s.undo(); assert_eq!(s.input.text(), "ab");
++    s.redo(); s.redo(); s.redo(); assert_eq!(s.input.text(), "a好\u{301}Z");
++}
++
++#[test]
++fn checkpoint_projects_external_edits_and_preserves_a_reversed_selection() {
++    let mut s = Surface::new();
++    s.text("α旧🙂z", false);
++    s.input.borrow_mut().unwrap().set_selection(&mut s.cx, Selection {
++        anchor: Cursor { index: 5, prefer_next_row: true },
++        cursor: Cursor { index: 2, prefer_next_row: false },
++    });
++    s.text("ni", true);
++    s.input.replace_range(&mut s.cx, 0..0, "界", UndoGroup::New).unwrap();
++    let end = s.input.text().len();
++    s.input.replace_range(&mut s.cx, end-1..end, "终", UndoGroup::New).unwrap();
++    s.text("你好", true);
++    let checkpoint = s.input.save_state();
++    assert_eq!(checkpoint.text, "界α旧🙂终");
++    assert_eq!((checkpoint.selection.anchor.index, checkpoint.selection.cursor.index), (8, 5));
++    assert!(checkpoint.selection.anchor.prefer_next_row);
++    assert!(!checkpoint.selection.cursor.prefer_next_row);
++    s.input.restore_state(&mut s.cx, checkpoint);
++    assert_eq!(s.input.text(), "界α旧🙂终");
++    assert!(!s.input.is_composing());
++    s.undo(); assert_eq!(s.input.text(), "界α旧🙂z");
++    s.undo(); assert_eq!(s.input.text(), "α旧🙂z");
++    s.redo(); s.redo(); assert_eq!(s.input.text(), "界α旧🙂终");
++}
++
++#[test]
++fn external_history_restores_the_committed_reversed_selection_not_preview_caret() {
++    let mut s = Surface::new();
++    s.text("a旧z", false);
++    s.input.borrow_mut().unwrap().set_selection(&mut s.cx, Selection {
++        anchor: Cursor { index: 4, prefer_next_row: true },
++        cursor: Cursor { index: 1, prefer_next_row: false },
++    });
++    let original = format!("{:?}", s.selection());
++    s.text("你好", true);
++    s.input.replace_range(&mut s.cx, 0..0, "界", UndoGroup::New).unwrap();
++    s.text("", true);
++    assert_eq!(s.input.text(), "界a旧z");
++    s.undo();
++    assert_eq!(s.input.text(), "a旧z");
++    assert_eq!(format!("{:?}", s.selection()), original);
++    s.redo(); assert_eq!(s.input.text(), "界a旧z");
++}
++
++#[test]
++fn cancelling_after_external_combining_mark_carries_selection_to_grapheme_end() {
++    let mut s = Surface::new();
++    s.text("ab", false);
++    s.select(1, 1);
++    s.text("e", true);
++    s.input.replace_range(&mut s.cx, 2..2, "\u{301}", UndoGroup::New).unwrap();
++    let checkpoint = s.input.save_state();
++    assert_eq!(checkpoint.text, "a\u{301}b");
++    assert_eq!((checkpoint.selection.anchor.index, checkpoint.selection.cursor.index), (3, 3));
++    s.text("", true);
++    assert_eq!(s.input.text(), "a\u{301}b");
++    let selected = s.selection();
++    assert_eq!((selected.anchor.index, selected.cursor.index), (3, 3));
++    s.undo(); assert_eq!(s.input.text(), "ab");
++    s.redo(); assert_eq!(s.input.text(), "a\u{301}b");
++}
++
++#[test]
++fn select_all_uses_the_restored_committed_length_after_short_preview() {
++    let mut s = Surface::new();
++    s.text("original long text", false);
++    s.select(0, s.input.text().len());
++    s.text("你", true);
++    s.key(KeyCode::KeyA, false);
++    assert_eq!(s.input.text(), "original long text");
++    assert_eq!(s.input.selected_text(), "original long text");
++    assert!(!s.input.is_composing());
++    s.text("x", false);
++    s.undo(); assert_eq!(s.input.text(), "original long text");
++}
 diff --git a/widgets/src/window.rs b/widgets/src/window.rs
 index a176a5b2a2992ff6129d8a158f1bc585ce55a978..d81f4fa79f48abd9b80289bf838ef120059b1d24 100644
 --- a/widgets/src/window.rs

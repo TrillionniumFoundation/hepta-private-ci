@@ -4,7 +4,7 @@
   "upstream_repository": "https://github.com/kevinaboos/makepad",
   "upstream_commit": "337566c8b25d47f7e4fff6a202157b65bf183330",
   "upstream_tree": "c6e18be7754f9634492ec5251bac3e8b4f7e09b7",
-  "patched_tree": "8d867396d16dcdca812ef27da21e8da59e7aee6f",
+  "patched_tree": "6b422b3120f5f9b5c7ada579b55f647d51bd7fcf",
   "package": {
     "name": "makepad-platform",
     "version": "2.0.0"
@@ -12,8 +12,8 @@
   "patches": [
     {
       "file": "native-preedit-callbacks.patch",
-      "sha256": "24eaa6bfa6e0422c7dce7c936687067e6a27d851373071560ed709a0f9caabee",
-      "bytes": 13752
+      "sha256": "c12d933adb12f83c5611e343841d3834876093473a0036df1683caf835a7a7a6",
+      "bytes": 55380
     },
     {
       "file": "sdk-num-traits-path.patch",
@@ -57,6 +57,18 @@
       "upstream_sha256": null,
       "patched_sha256": "4d837ac596e9ea662e2ce774bfff643a0272d6a557dfa76bf360315ed79da301",
       "bytes": 5708
+    },
+    {
+      "path": "widgets/src/text_input.rs",
+      "upstream_sha256": "c85d035cb30e54c9a2c7f4afbcd16b5a9517685cc82ff432451e19d6a337e875",
+      "patched_sha256": "4ff0b54d443b07463da43d39ac28671477bef2a69bf527f388e4f0cbd96eee2f",
+      "bytes": 175801
+    },
+    {
+      "path": "widgets/src/text_input_composition_undo_tests.rs",
+      "upstream_sha256": null,
+      "patched_sha256": "29933f7474b13c14b4d7147f45196621a93867670f89a25415b235e677ebf203",
+      "bytes": 19341
     }
   ],
   "license": {
@@ -70,7 +82,11 @@
     "required_style": "callback",
     "callback_spot_refusal_keeps_context": true,
     "position_and_nothing_fallback_qualified": false,
-    "duplicate_window_focus_notifications_preserve_editor": true
+    "duplicate_window_focus_notifications_preserve_editor": true,
+    "transactional_ime_undo": true,
+    "cancel_preserves_committed_history": true,
+    "checkpoint_excludes_uncommitted_preedit": true,
+    "outside_edits_use_committed_coordinates": true
   },
   "effects_authority": false,
   "automatic_update": false
