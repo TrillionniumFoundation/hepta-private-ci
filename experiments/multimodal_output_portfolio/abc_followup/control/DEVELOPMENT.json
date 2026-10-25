@@ -1,0 +1,1162 @@
+{
+  "all_selected_candidates": "exact_cached_old_feedback",
+  "controllers": [
+    {
+      "compact_file": "/workspace/scratch/2b3c256bef7d/abc4-control-runs/development-001/seed-17/compact.pt",
+      "compact_file_sha256": "8de08144ff63a054045008b3585d9fe4b9b69bd030b64b5a93a4efaf41514eac",
+      "fit": {
+        "H2_targets": "other-source-fold H1 selected conditional Z and success; not realized-best future",
+        "config": {
+          "action_cost": 0.002,
+          "batch_size": 256,
+          "fold_steps": 600,
+          "gamma": 2.0,
+          "hidden": 64,
+          "learning_rate": 0.002,
+          "source_folds": 2,
+          "steps": 800,
+          "success_loss_weight": 0.05,
+          "success_slack": 0.02
+        },
+        "crossfit": [
+          {
+            "cpu_ns": 2050358132,
+            "held_source_fold": 0,
+            "parameter_sha256": "55a53c72fe24614a7583f2bbf8762ed48ca7d182f117b219f4d9a738a29a5b8c",
+            "parameters": 37642,
+            "rows": 10240,
+            "seed": 2026102517,
+            "steps": 600,
+            "trace": [
+              {
+                "moment_MSE": 1.5566192865371704,
+                "step": 1,
+                "success_BCE": 0.6938099265098572
+              },
+              {
+                "moment_MSE": 0.3224182724952698,
+                "step": 200,
+                "success_BCE": 0.3255263864994049
+              },
+              {
+                "moment_MSE": 0.2623153328895569,
+                "step": 400,
+                "success_BCE": 0.23353978991508484
+              },
+              {
+                "moment_MSE": 0.23130853474140167,
+                "step": 600,
+                "success_BCE": 0.223313570022583
+              }
+            ],
+            "wall_ns": 2050408871
+          },
+          {
+            "cpu_ns": 1126818762,
+            "held_source_fold": 1,
+            "parameter_sha256": "df55081f340b2d7deb5d3b9612b839bc055a97b1d3b70cebd9c2ce8a208690ab",
+            "parameters": 37642,
+            "rows": 10240,
+            "seed": 2026102617,
+            "steps": 600,
+            "trace": [
+              {
+                "moment_MSE": 1.1368590593338013,
+                "step": 1,
+                "success_BCE": 0.6862906813621521
+              },
+              {
+                "moment_MSE": 0.32115936279296875,
+                "step": 200,
+                "success_BCE": 0.24542894959449768
+              },
+              {
+                "moment_MSE": 0.32000547647476196,
+                "step": 400,
+                "success_BCE": 0.2121683657169342
+              },
+              {
+                "moment_MSE": 0.2541665732860565,
+                "step": 600,
+                "success_BCE": 0.21539504826068878
+              }
+            ],
+            "wall_ns": 1126843174
+          }
+        ],
+        "deployed": {
+          "cpu_ns": 1426112507,
+          "parameter_sha256": "04f3b86bf873e010fcc658291cc1d14a817bef123a1d6525514a51c32d935943",
+          "parameters": 37642,
+          "rows": 24576,
+          "seed": 2026102817,
+          "steps": 800,
+          "trace": [
+            {
+              "moment_MSE": 0.9511101841926575,
+              "step": 1,
+              "success_BCE": 0.7125569581985474
+            },
+            {
+              "moment_MSE": 0.2518698573112488,
+              "step": 200,
+              "success_BCE": 0.3002021312713623
+            },
+            {
+              "moment_MSE": 0.18895664811134338,
+              "step": 400,
+              "success_BCE": 0.2870411276817322
+            },
+            {
+              "moment_MSE": 0.16498491168022156,
+              "step": 600,
+              "success_BCE": 0.2431078404188156
+            },
+            {
+              "moment_MSE": 0.24090492725372314,
+              "step": 800,
+              "success_BCE": 0.2610994279384613
+            }
+          ],
+          "wall_ns": 1426134387
+        },
+        "inputs": "384 public generator latent +192 actual token onehot +remaining horizon; no extra CNN",
+        "success_constraint_scope": "approximate conditional prediction, not a population guarantee"
+      },
+      "fit_data_sha256": "5a01bde7946110030e0fabf30c1008830b053f337eb4b25a32aa62a5eaa30f8c",
+      "model_sha256": "e1e494027f722e205bd0f5f40911def7ad1816e689fb10cd959db024907cb301",
+      "old_controller_sha256": "af83aa182ed037f8a0792093f69c19c8ddd51f0622f5851ef037277113a561ce",
+      "seed": 17,
+      "selection": {
+        "compact": {
+          "mean_actions": 1.44580078125,
+          "paths": {
+            "0": 231,
+            "1": 219,
+            "10": 205,
+            "11": 38,
+            "12": 43,
+            "14": 28,
+            "15": 193,
+            "16": 36,
+            "18": 54,
+            "19": 37,
+            "2": 180,
+            "20": 344,
+            "3": 127,
+            "4": 147,
+            "6": 71,
+            "7": 40,
+            "8": 55
+          },
+          "proxy_net_CE": 0.181120561631631,
+          "raw_CE": 0.18403063307821746,
+          "success": 0.54052734375
+        },
+        "compact_constraints": {
+          "CE": true,
+          "success": false
+        },
+        "fixed": {
+          "mean_actions": 2.0,
+          "paths": {
+            "11": 2048
+          },
+          "proxy_net_CE": 0.17117970988598535,
+          "raw_CE": 0.1751797098859853,
+          "success": 0.54638671875
+        },
+        "old_feedback": {
+          "mean_actions": 1.1591796875,
+          "paths": {
+            "0": 707,
+            "1": 47,
+            "10": 61,
+            "11": 59,
+            "12": 55,
+            "14": 106,
+            "15": 87,
+            "16": 115,
+            "18": 141,
+            "19": 88,
+            "2": 66,
+            "20": 143,
+            "3": 90,
+            "4": 105,
+            "6": 71,
+            "7": 60,
+            "8": 47
+          },
+          "proxy_net_CE": 0.18013846886991022,
+          "raw_CE": 0.18260586501777534,
+          "success": 0.54833984375
+        },
+        "one_shot": {
+          "mean_actions": 1.771484375,
+          "paths": {
+            "0": 112,
+            "10": 127,
+            "11": 63,
+            "12": 178,
+            "14": 24,
+            "15": 44,
+            "16": 175,
+            "18": 74,
+            "19": 303,
+            "2": 141,
+            "20": 130,
+            "3": 45,
+            "4": 58,
+            "6": 266,
+            "7": 87,
+            "8": 221
+          },
+          "proxy_net_CE": 0.14828274789567503,
+          "raw_CE": 0.1517014858686966,
+          "success": 0.54541015625
+        },
+        "selected_candidate": "cached",
+        "selected_nonfeedback": "fixed",
+        "static": {
+          "mean_actions": 2.0,
+          "paths": {
+            "11": 2048
+          },
+          "proxy_net_CE": 0.17117970988598535,
+          "raw_CE": 0.1751797098859853,
+          "success": 0.54638671875
+        },
+        "static_plan_index": 11
+      },
+      "selection_data_sha256": "5ce003835c39699471f317e42dd9a1407f9f871ff80d3544801db470d5dd9e01"
+    },
+    {
+      "compact_file": "/workspace/scratch/2b3c256bef7d/abc4-control-runs/development-001/seed-29/compact.pt",
+      "compact_file_sha256": "a5c1ee36081cef3add52059203fd1abf2b25e86ebd1ff70ffbc6fb839dc1b692",
+      "fit": {
+        "H2_targets": "other-source-fold H1 selected conditional Z and success; not realized-best future",
+        "config": {
+          "action_cost": 0.002,
+          "batch_size": 256,
+          "fold_steps": 600,
+          "gamma": 2.0,
+          "hidden": 64,
+          "learning_rate": 0.002,
+          "source_folds": 2,
+          "steps": 800,
+          "success_loss_weight": 0.05,
+          "success_slack": 0.02
+        },
+        "crossfit": [
+          {
+            "cpu_ns": 993586276,
+            "held_source_fold": 0,
+            "parameter_sha256": "6abe18f696f09bf827ddf9fe1bf377671157b4fab6a1f914d15542d6622a6d8c",
+            "parameters": 37642,
+            "rows": 10240,
+            "seed": 2026102529,
+            "steps": 600,
+            "trace": [
+              {
+                "moment_MSE": 1.237971544265747,
+                "step": 1,
+                "success_BCE": 0.6886191368103027
+              },
+              {
+                "moment_MSE": 0.2142043113708496,
+                "step": 200,
+                "success_BCE": 0.24626383185386658
+              },
+              {
+                "moment_MSE": 0.3218541741371155,
+                "step": 400,
+                "success_BCE": 0.1721743792295456
+              },
+              {
+                "moment_MSE": 0.18847164511680603,
+                "step": 600,
+                "success_BCE": 0.1650431901216507
+              }
+            ],
+            "wall_ns": 993604133
+          },
+          {
+            "cpu_ns": 981801895,
+            "held_source_fold": 1,
+            "parameter_sha256": "f53f2299205676445df44303b887034b3c3bf444109137cd78d247782e2bcdd0",
+            "parameters": 37642,
+            "rows": 10240,
+            "seed": 2026102629,
+            "steps": 600,
+            "trace": [
+              {
+                "moment_MSE": 1.503166913986206,
+                "step": 1,
+                "success_BCE": 0.696750283241272
+              },
+              {
+                "moment_MSE": 0.23604699969291687,
+                "step": 200,
+                "success_BCE": 0.26717132329940796
+              },
+              {
+                "moment_MSE": 0.4082848131656647,
+                "step": 400,
+                "success_BCE": 0.23149628937244415
+              },
+              {
+                "moment_MSE": 0.2703438997268677,
+                "step": 600,
+                "success_BCE": 0.1853666752576828
+              }
+            ],
+            "wall_ns": 991542145
+          }
+        ],
+        "deployed": {
+          "cpu_ns": 1444846992,
+          "parameter_sha256": "5fcd1c3b84138f3ae55f01802a7035362bab374afaebdb46bfd44510fd2d801f",
+          "parameters": 37642,
+          "rows": 24576,
+          "seed": 2026102829,
+          "steps": 800,
+          "trace": [
+            {
+              "moment_MSE": 1.2311731576919556,
+              "step": 1,
+              "success_BCE": 0.7187967896461487
+            },
+            {
+              "moment_MSE": 0.2382228821516037,
+              "step": 200,
+              "success_BCE": 0.3081906735897064
+            },
+            {
+              "moment_MSE": 0.17381669580936432,
+              "step": 400,
+              "success_BCE": 0.24625542759895325
+            },
+            {
+              "moment_MSE": 0.15572483837604523,
+              "step": 600,
+              "success_BCE": 0.24542932212352753
+            },
+            {
+              "moment_MSE": 0.1494079977273941,
+              "step": 800,
+              "success_BCE": 0.24583008885383606
+            }
+          ],
+          "wall_ns": 1444863608
+        },
+        "inputs": "384 public generator latent +192 actual token onehot +remaining horizon; no extra CNN",
+        "success_constraint_scope": "approximate conditional prediction, not a population guarantee"
+      },
+      "fit_data_sha256": "4e19ac32bea6720a471f82060e37ff08c0f440724727ac7607d05a7727320e6d",
+      "model_sha256": "9b37cdd7cb39aff89bbf553e3eeb7a6189e06ddf2823a645dba836790fe111e4",
+      "old_controller_sha256": "b83c7ba135c869b10f275ff0007b467e129256a5c0772acbf38458eb1ac31bd7",
+      "seed": 29,
+      "selection": {
+        "compact": {
+          "mean_actions": 1.5185546875,
+          "paths": {
+            "0": 200,
+            "1": 281,
+            "10": 215,
+            "11": 68,
+            "12": 48,
+            "14": 13,
+            "15": 175,
+            "16": 28,
+            "18": 51,
+            "19": 38,
+            "2": 167,
+            "20": 145,
+            "3": 50,
+            "4": 88,
+            "6": 271,
+            "7": 151,
+            "8": 59
+          },
+          "proxy_net_CE": 0.17362565482536715,
+          "raw_CE": 0.1770351339499521,
+          "success": 0.5400390625
+        },
+        "compact_constraints": {
+          "CE": false,
+          "success": false
+        },
+        "fixed": {
+          "mean_actions": 2.0,
+          "paths": {
+            "11": 2048
+          },
+          "proxy_net_CE": 0.15584183614607441,
+          "raw_CE": 0.15984183614607442,
+          "success": 0.5400390625
+        },
+        "old_feedback": {
+          "mean_actions": 1.125,
+          "paths": {
+            "0": 682,
+            "1": 68,
+            "10": 94,
+            "11": 65,
+            "12": 83,
+            "14": 97,
+            "15": 86,
+            "16": 69,
+            "18": 127,
+            "19": 83,
+            "2": 137,
+            "20": 56,
+            "3": 98,
+            "4": 125,
+            "6": 57,
+            "7": 63,
+            "8": 58
+          },
+          "proxy_net_CE": 0.1821378079553539,
+          "raw_CE": 0.18425014110247076,
+          "success": 0.55419921875
+        },
+        "one_shot": {
+          "mean_actions": 1.59375,
+          "paths": {
+            "0": 243,
+            "10": 194,
+            "11": 83,
+            "12": 127,
+            "14": 49,
+            "15": 136,
+            "16": 210,
+            "18": 40,
+            "19": 32,
+            "2": 223,
+            "20": 45,
+            "3": 34,
+            "4": 89,
+            "6": 232,
+            "7": 198,
+            "8": 113
+          },
+          "proxy_net_CE": 0.1798642779183097,
+          "raw_CE": 0.18328946973789478,
+          "success": 0.54736328125
+        },
+        "selected_candidate": "cached",
+        "selected_nonfeedback": "one_shot",
+        "static": {
+          "mean_actions": 2.0,
+          "paths": {
+            "12": 2048
+          },
+          "proxy_net_CE": 0.16223719381319085,
+          "raw_CE": 0.16623719381319077,
+          "success": 0.54345703125
+        },
+        "static_plan_index": 12
+      },
+      "selection_data_sha256": "a6416ae6541766c149e137f731d3fbd42e4034316c0ddc92e0966ff9628c51ee"
+    },
+    {
+      "compact_file": "/workspace/scratch/2b3c256bef7d/abc4-control-runs/development-001/seed-43/compact.pt",
+      "compact_file_sha256": "090f847fa9f08de4c0222679ad09e48fc51df019c75f1bf92cb507a3b0cce258",
+      "fit": {
+        "H2_targets": "other-source-fold H1 selected conditional Z and success; not realized-best future",
+        "config": {
+          "action_cost": 0.002,
+          "batch_size": 256,
+          "fold_steps": 600,
+          "gamma": 2.0,
+          "hidden": 64,
+          "learning_rate": 0.002,
+          "source_folds": 2,
+          "steps": 800,
+          "success_loss_weight": 0.05,
+          "success_slack": 0.02
+        },
+        "crossfit": [
+          {
+            "cpu_ns": 1051207867,
+            "held_source_fold": 0,
+            "parameter_sha256": "38377c0654fb3a4427f55b316d4172070d8a211102e0cddf8ff990f89047b496",
+            "parameters": 37642,
+            "rows": 10240,
+            "seed": 2026102543,
+            "steps": 600,
+            "trace": [
+              {
+                "moment_MSE": 1.5932445526123047,
+                "step": 1,
+                "success_BCE": 0.6893619298934937
+              },
+              {
+                "moment_MSE": 0.3146143853664398,
+                "step": 200,
+                "success_BCE": 0.23628464341163635
+              },
+              {
+                "moment_MSE": 0.29786601662635803,
+                "step": 400,
+                "success_BCE": 0.19870707392692566
+              },
+              {
+                "moment_MSE": 0.22245244681835175,
+                "step": 600,
+                "success_BCE": 0.16208341717720032
+              }
+            ],
+            "wall_ns": 1051248670
+          },
+          {
+            "cpu_ns": 1164725453,
+            "held_source_fold": 1,
+            "parameter_sha256": "08cfac980b89d719292bc9ca3d003a351ff56a462326064f65737bad1679028f",
+            "parameters": 37642,
+            "rows": 10240,
+            "seed": 2026102643,
+            "steps": 600,
+            "trace": [
+              {
+                "moment_MSE": 1.444711685180664,
+                "step": 1,
+                "success_BCE": 0.7152562737464905
+              },
+              {
+                "moment_MSE": 0.30748260021209717,
+                "step": 200,
+                "success_BCE": 0.2845020294189453
+              },
+              {
+                "moment_MSE": 0.3904484808444977,
+                "step": 400,
+                "success_BCE": 0.2335248738527298
+              },
+              {
+                "moment_MSE": 0.3672916293144226,
+                "step": 600,
+                "success_BCE": 0.2106657773256302
+              }
+            ],
+            "wall_ns": 1164769025
+          }
+        ],
+        "deployed": {
+          "cpu_ns": 1760269101,
+          "parameter_sha256": "fde6bfcc390e51ad9b3980ca190838cb4442551a5a16d24a2d7f82046bec8f60",
+          "parameters": 37642,
+          "rows": 24576,
+          "seed": 2026102843,
+          "steps": 800,
+          "trace": [
+            {
+              "moment_MSE": 0.8697104454040527,
+              "step": 1,
+              "success_BCE": 0.6867902278900146
+            },
+            {
+              "moment_MSE": 0.17627081274986267,
+              "step": 200,
+              "success_BCE": 0.2709231972694397
+            },
+            {
+              "moment_MSE": 0.16275626420974731,
+              "step": 400,
+              "success_BCE": 0.2530244290828705
+            },
+            {
+              "moment_MSE": 0.17159119248390198,
+              "step": 600,
+              "success_BCE": 0.2558627426624298
+            },
+            {
+              "moment_MSE": 0.2122114598751068,
+              "step": 800,
+              "success_BCE": 0.2344874143600464
+            }
+          ],
+          "wall_ns": 1760431110
+        },
+        "inputs": "384 public generator latent +192 actual token onehot +remaining horizon; no extra CNN",
+        "success_constraint_scope": "approximate conditional prediction, not a population guarantee"
+      },
+      "fit_data_sha256": "723a7d35d642ad9e87c2cea6dd9b2b9b1572b337126c8ad9e890a0c0538c0118",
+      "model_sha256": "7b322e7b22865cd0f5f76b65e75782fd580aa47b597f6f43a8faea57ca793e13",
+      "old_controller_sha256": "42650d9ed2f073623f2b3027be40daf32e510684a4ff7d19371a415d62e5cf5d",
+      "seed": 43,
+      "selection": {
+        "compact": {
+          "mean_actions": 1.44921875,
+          "paths": {
+            "0": 249,
+            "1": 167,
+            "10": 289,
+            "11": 54,
+            "12": 25,
+            "14": 48,
+            "15": 182,
+            "16": 25,
+            "18": 46,
+            "19": 53,
+            "2": 145,
+            "20": 199,
+            "3": 141,
+            "4": 177,
+            "6": 107,
+            "7": 85,
+            "8": 56
+          },
+          "proxy_net_CE": 0.16958352995257245,
+          "raw_CE": 0.173050299487903,
+          "success": 0.54931640625
+        },
+        "compact_constraints": {
+          "CE": true,
+          "success": false
+        },
+        "fixed": {
+          "mean_actions": 2.0,
+          "paths": {
+            "11": 2048
+          },
+          "proxy_net_CE": 0.15729487067020773,
+          "raw_CE": 0.16129487067020767,
+          "success": 0.5537109375
+        },
+        "old_feedback": {
+          "mean_actions": 1.08642578125,
+          "paths": {
+            "0": 695,
+            "1": 83,
+            "10": 72,
+            "11": 37,
+            "12": 70,
+            "14": 46,
+            "15": 61,
+            "16": 69,
+            "18": 141,
+            "19": 71,
+            "2": 115,
+            "20": 213,
+            "3": 119,
+            "4": 164,
+            "6": 31,
+            "7": 32,
+            "8": 29
+          },
+          "proxy_net_CE": 0.1653758002332404,
+          "raw_CE": 0.16748690347467235,
+          "success": 0.55517578125
+        },
+        "one_shot": {
+          "mean_actions": 1.59716796875,
+          "paths": {
+            "0": 181,
+            "10": 162,
+            "11": 52,
+            "12": 37,
+            "14": 113,
+            "15": 208,
+            "16": 186,
+            "18": 75,
+            "19": 109,
+            "2": 279,
+            "20": 109,
+            "3": 158,
+            "4": 26,
+            "6": 221,
+            "7": 64,
+            "8": 68
+          },
+          "proxy_net_CE": 0.16413423748421038,
+          "raw_CE": 0.1672993559780861,
+          "success": 0.5517578125
+        },
+        "selected_candidate": "cached",
+        "selected_nonfeedback": "static",
+        "static": {
+          "mean_actions": 2.0,
+          "paths": {
+            "15": 2048
+          },
+          "proxy_net_CE": 0.16502939459693383,
+          "raw_CE": 0.16902939459693384,
+          "success": 0.5498046875
+        },
+        "static_plan_index": 15
+      },
+      "selection_data_sha256": "9f749990e90c895a3507daa06b05f614b321efc1b1835d21e6c1299e98e4b79e"
+    },
+    {
+      "compact_file": "/workspace/scratch/2b3c256bef7d/abc4-control-runs/development-001/seed-59/compact.pt",
+      "compact_file_sha256": "a2cb7c41e24388733ecaf8289178dc0c7cca512d90f28862b43b0d57247590fb",
+      "fit": {
+        "H2_targets": "other-source-fold H1 selected conditional Z and success; not realized-best future",
+        "config": {
+          "action_cost": 0.002,
+          "batch_size": 256,
+          "fold_steps": 600,
+          "gamma": 2.0,
+          "hidden": 64,
+          "learning_rate": 0.002,
+          "source_folds": 2,
+          "steps": 800,
+          "success_loss_weight": 0.05,
+          "success_slack": 0.02
+        },
+        "crossfit": [
+          {
+            "cpu_ns": 1210843181,
+            "held_source_fold": 0,
+            "parameter_sha256": "5f1669f059a3fcc822b998dad07176b6f65c52b511cb9b87e09f0f1412100ed9",
+            "parameters": 37642,
+            "rows": 10240,
+            "seed": 2026102559,
+            "steps": 600,
+            "trace": [
+              {
+                "moment_MSE": 1.5343624353408813,
+                "step": 1,
+                "success_BCE": 0.6647268533706665
+              },
+              {
+                "moment_MSE": 0.402459055185318,
+                "step": 200,
+                "success_BCE": 0.2656191885471344
+              },
+              {
+                "moment_MSE": 0.23356075584888458,
+                "step": 400,
+                "success_BCE": 0.2680927515029907
+              },
+              {
+                "moment_MSE": 0.29938799142837524,
+                "step": 600,
+                "success_BCE": 0.16471140086650848
+              }
+            ],
+            "wall_ns": 1210886803
+          },
+          {
+            "cpu_ns": 1307329268,
+            "held_source_fold": 1,
+            "parameter_sha256": "5166eba18a1c5cdc562959474c51d025c8d07b4bf2b8927f4793b08bf6f85ec6",
+            "parameters": 37642,
+            "rows": 10240,
+            "seed": 2026102659,
+            "steps": 600,
+            "trace": [
+              {
+                "moment_MSE": 1.211781620979309,
+                "step": 1,
+                "success_BCE": 0.7034046649932861
+              },
+              {
+                "moment_MSE": 0.2379438877105713,
+                "step": 200,
+                "success_BCE": 0.29569658637046814
+              },
+              {
+                "moment_MSE": 0.3338932394981384,
+                "step": 400,
+                "success_BCE": 0.23307053744792938
+              },
+              {
+                "moment_MSE": 0.2674761712551117,
+                "step": 600,
+                "success_BCE": 0.20909519493579865
+              }
+            ],
+            "wall_ns": 1307506260
+          }
+        ],
+        "deployed": {
+          "cpu_ns": 1683357290,
+          "parameter_sha256": "375eba1c9187c164428b01a1f6520bd2dbf42bd480bb8adc37f09f747b9bde8b",
+          "parameters": 37642,
+          "rows": 24576,
+          "seed": 2026102859,
+          "steps": 800,
+          "trace": [
+            {
+              "moment_MSE": 1.128294587135315,
+              "step": 1,
+              "success_BCE": 0.7081358432769775
+            },
+            {
+              "moment_MSE": 0.21236316859722137,
+              "step": 200,
+              "success_BCE": 0.3180026412010193
+            },
+            {
+              "moment_MSE": 0.2093503177165985,
+              "step": 400,
+              "success_BCE": 0.2776734232902527
+            },
+            {
+              "moment_MSE": 0.22029152512550354,
+              "step": 600,
+              "success_BCE": 0.2997553050518036
+            },
+            {
+              "moment_MSE": 0.23063290119171143,
+              "step": 800,
+              "success_BCE": 0.2528305947780609
+            }
+          ],
+          "wall_ns": 1683463748
+        },
+        "inputs": "384 public generator latent +192 actual token onehot +remaining horizon; no extra CNN",
+        "success_constraint_scope": "approximate conditional prediction, not a population guarantee"
+      },
+      "fit_data_sha256": "1824498972d2297ccb0ffc22c753a0d555d16218a5f67f7c15c635d761f5580a",
+      "model_sha256": "52eb666181e246348b29b71a02af4ea69c53f8040099a1329440efeaf4bca8a9",
+      "old_controller_sha256": "43d0f3734f121194302bd2e9a7c1847ce813da0a60d3140371c29ecbc01888ac",
+      "seed": 59,
+      "selection": {
+        "compact": {
+          "mean_actions": 1.404296875,
+          "paths": {
+            "0": 350,
+            "1": 164,
+            "10": 315,
+            "11": 48,
+            "12": 56,
+            "14": 29,
+            "15": 185,
+            "16": 119,
+            "18": 24,
+            "19": 8,
+            "2": 172,
+            "20": 154,
+            "3": 110,
+            "4": 74,
+            "6": 93,
+            "7": 63,
+            "8": 84
+          },
+          "proxy_net_CE": 0.17036603855373111,
+          "raw_CE": 0.17303163801216237,
+          "success": 0.5341796875
+        },
+        "compact_constraints": {
+          "CE": true,
+          "success": false
+        },
+        "fixed": {
+          "mean_actions": 2.0,
+          "paths": {
+            "11": 2048
+          },
+          "proxy_net_CE": 0.14174414925258846,
+          "raw_CE": 0.14574414925258836,
+          "success": 0.53466796875
+        },
+        "old_feedback": {
+          "mean_actions": 1.11328125,
+          "paths": {
+            "0": 687,
+            "1": 164,
+            "10": 67,
+            "11": 52,
+            "12": 70,
+            "14": 66,
+            "15": 87,
+            "16": 108,
+            "18": 50,
+            "19": 69,
+            "2": 95,
+            "20": 87,
+            "3": 117,
+            "4": 66,
+            "6": 96,
+            "7": 81,
+            "8": 86
+          },
+          "proxy_net_CE": 0.16471111472063993,
+          "raw_CE": 0.1669750685197717,
+          "success": 0.53955078125
+        },
+        "one_shot": {
+          "mean_actions": 1.595703125,
+          "paths": {
+            "0": 221,
+            "10": 217,
+            "11": 170,
+            "12": 108,
+            "14": 120,
+            "15": 66,
+            "16": 124,
+            "18": 69,
+            "19": 105,
+            "2": 199,
+            "20": 164,
+            "3": 36,
+            "4": 151,
+            "6": 122,
+            "7": 24,
+            "8": 152
+          },
+          "proxy_net_CE": 0.1482317384725882,
+          "raw_CE": 0.15115674595407597,
+          "success": 0.544921875
+        },
+        "selected_candidate": "cached",
+        "selected_nonfeedback": "static",
+        "static": {
+          "mean_actions": 2.0,
+          "paths": {
+            "18": 2048
+          },
+          "proxy_net_CE": 0.1555701477324182,
+          "raw_CE": 0.15957014773241815,
+          "success": 0.54296875
+        },
+        "static_plan_index": 18
+      },
+      "selection_data_sha256": "680b448fd4583adbf97d1890d7d2ae4b244109fb24d0f9c34b6a5f550330e68d"
+    },
+    {
+      "compact_file": "/workspace/scratch/2b3c256bef7d/abc4-control-runs/development-001/seed-71/compact.pt",
+      "compact_file_sha256": "6a4800ce0ab5920d0b0db940da869feaf26270218fc3b852e84cbcc5ea11e27b",
+      "fit": {
+        "H2_targets": "other-source-fold H1 selected conditional Z and success; not realized-best future",
+        "config": {
+          "action_cost": 0.002,
+          "batch_size": 256,
+          "fold_steps": 600,
+          "gamma": 2.0,
+          "hidden": 64,
+          "learning_rate": 0.002,
+          "source_folds": 2,
+          "steps": 800,
+          "success_loss_weight": 0.05,
+          "success_slack": 0.02
+        },
+        "crossfit": [
+          {
+            "cpu_ns": 1199584131,
+            "held_source_fold": 0,
+            "parameter_sha256": "6f10c72612d990f33f0dbe7d3d3bf085be154972defb48a919219a383ae9d893",
+            "parameters": 37642,
+            "rows": 10240,
+            "seed": 2026102571,
+            "steps": 600,
+            "trace": [
+              {
+                "moment_MSE": 0.940637469291687,
+                "step": 1,
+                "success_BCE": 0.7286753058433533
+              },
+              {
+                "moment_MSE": 0.33160141110420227,
+                "step": 200,
+                "success_BCE": 0.234035924077034
+              },
+              {
+                "moment_MSE": 0.32631736993789673,
+                "step": 400,
+                "success_BCE": 0.1610366404056549
+              },
+              {
+                "moment_MSE": 0.29859352111816406,
+                "step": 600,
+                "success_BCE": 0.17569658160209656
+              }
+            ],
+            "wall_ns": 1199648291
+          },
+          {
+            "cpu_ns": 1073310151,
+            "held_source_fold": 1,
+            "parameter_sha256": "b502baeff6d38cbafbdacfb3b1dd502ee94f121aaeda18799bc27393e06abf5e",
+            "parameters": 37642,
+            "rows": 10240,
+            "seed": 2026102671,
+            "steps": 600,
+            "trace": [
+              {
+                "moment_MSE": 1.7229070663452148,
+                "step": 1,
+                "success_BCE": 0.7371336221694946
+              },
+              {
+                "moment_MSE": 0.33536046743392944,
+                "step": 200,
+                "success_BCE": 0.30473989248275757
+              },
+              {
+                "moment_MSE": 0.3442358374595642,
+                "step": 400,
+                "success_BCE": 0.2530023455619812
+              },
+              {
+                "moment_MSE": 0.2017565667629242,
+                "step": 600,
+                "success_BCE": 0.2268252670764923
+              }
+            ],
+            "wall_ns": 1073335467
+          }
+        ],
+        "deployed": {
+          "cpu_ns": 1685148645,
+          "parameter_sha256": "eeae90ba5338894f0d8af9d14bbae149bf51bdde8016758333befcc5fe80c17f",
+          "parameters": 37642,
+          "rows": 24576,
+          "seed": 2026102871,
+          "steps": 800,
+          "trace": [
+            {
+              "moment_MSE": 0.9463990330696106,
+              "step": 1,
+              "success_BCE": 0.694244921207428
+            },
+            {
+              "moment_MSE": 0.2218407690525055,
+              "step": 200,
+              "success_BCE": 0.33993810415267944
+            },
+            {
+              "moment_MSE": 0.23120002448558807,
+              "step": 400,
+              "success_BCE": 0.2770920693874359
+            },
+            {
+              "moment_MSE": 0.16889026761054993,
+              "step": 600,
+              "success_BCE": 0.2573249638080597
+            },
+            {
+              "moment_MSE": 0.1487220972776413,
+              "step": 800,
+              "success_BCE": 0.2541106641292572
+            }
+          ],
+          "wall_ns": 1685216132
+        },
+        "inputs": "384 public generator latent +192 actual token onehot +remaining horizon; no extra CNN",
+        "success_constraint_scope": "approximate conditional prediction, not a population guarantee"
+      },
+      "fit_data_sha256": "6990529d151001acf3f250e7423b2fa6269afa2e8768b9d5c9d81fe7ec1322b1",
+      "model_sha256": "9d67ee181ac0787630c32e2d7373f1d7414e58d447d1b3b1d5afc0298b75e4da",
+      "old_controller_sha256": "58fa742bc804f367fe15ff4b903f33536bf3ba6599a9cbf35eea758474d02842",
+      "seed": 71,
+      "selection": {
+        "compact": {
+          "mean_actions": 1.2939453125,
+          "paths": {
+            "0": 270,
+            "1": 348,
+            "10": 118,
+            "11": 24,
+            "12": 31,
+            "14": 21,
+            "15": 219,
+            "16": 42,
+            "18": 8,
+            "19": 16,
+            "2": 285,
+            "20": 185,
+            "3": 218,
+            "4": 55,
+            "6": 68,
+            "7": 56,
+            "8": 84
+          },
+          "proxy_net_CE": 0.16433401566117756,
+          "raw_CE": 0.1669015282668382,
+          "success": 0.53076171875
+        },
+        "compact_constraints": {
+          "CE": false,
+          "success": false
+        },
+        "fixed": {
+          "mean_actions": 2.0,
+          "paths": {
+            "11": 2048
+          },
+          "proxy_net_CE": 0.1329401775965582,
+          "raw_CE": 0.13694017759655824,
+          "success": 0.521484375
+        },
+        "old_feedback": {
+          "mean_actions": 1.0888671875,
+          "paths": {
+            "0": 735,
+            "1": 143,
+            "10": 75,
+            "11": 65,
+            "12": 44,
+            "14": 65,
+            "15": 119,
+            "16": 37,
+            "18": 145,
+            "19": 112,
+            "2": 70,
+            "20": 41,
+            "3": 91,
+            "4": 92,
+            "6": 97,
+            "7": 86,
+            "8": 31
+          },
+          "proxy_net_CE": 0.17208251000420727,
+          "raw_CE": 0.1741239004766482,
+          "success": 0.546875
+        },
+        "one_shot": {
+          "mean_actions": 1.501953125,
+          "paths": {
+            "0": 201,
+            "10": 189,
+            "11": 138,
+            "12": 96,
+            "14": 219,
+            "15": 34,
+            "16": 26,
+            "18": 29,
+            "19": 98,
+            "2": 310,
+            "20": 60,
+            "3": 204,
+            "4": 104,
+            "6": 183,
+            "7": 88,
+            "8": 69
+          },
+          "proxy_net_CE": 0.16453362351591322,
+          "raw_CE": 0.1675270220466431,
+          "success": 0.54052734375
+        },
+        "selected_candidate": "cached",
+        "selected_nonfeedback": "one_shot",
+        "static": {
+          "mean_actions": 0.0,
+          "paths": {
+            "0": 2048
+          },
+          "proxy_net_CE": 0.16359604610656553,
+          "raw_CE": 0.16359604610656553,
+          "success": 0.52734375
+        },
+        "static_plan_index": 0
+      },
+      "selection_data_sha256": "8d0d1e7d8828dd4e054aba02b9725a3726596656e2e72a4919eafcce1cc8d6c8"
+    }
+  ],
+  "cpu_ns": 439731953182,
+  "final_outcomes_opened": false,
+  "new_final_outcomes_opened": false,
+  "new_generator_training": false,
+  "no_new_generator_training": true,
+  "parameters_per_compact_head": 37642,
+  "registration_sha256": "4586e5c28fc47d79a98ad1c34b931a502b398cb9385aa277e6a1b7d3ad6eefea",
+  "schema": "hepta.abc4.control-development-result.v1",
+  "source_result_sha256": "c739c330cd36992d0e7d54dfdfb1690fa90dfa74fc6f8f783045395a82bf33b9",
+  "status": "completed",
+  "timer_scope": "runner entry through source setup, full fit and selection tree execution, controller fitting, choice and report preparation; excludes interpreter startup/import and final result serialization",
+  "wall_ns": 439898012482
+}
