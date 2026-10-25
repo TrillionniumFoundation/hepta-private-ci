@@ -385,3 +385,6 @@ fn other_existing_profile_keeps_its_original_selected_loading_semantics() {
     let fixture = Fixture::new(bytes, existing);
     fixture.load().fixture("existing profile remains readable");
 }
+
+#[path = "selected_initial_smollm_tests.rs"]
+mod selected_tests;

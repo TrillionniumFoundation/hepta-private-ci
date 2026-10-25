@@ -136,6 +136,7 @@ pub use registry::ArtifactRegistry;
 pub use selection::ArtifactSelectionError;
 pub use selection::ArtifactSelectionTrustV1;
 pub use selection::ArtifactSelectionVerifierV1;
+pub use selection::SelectedInitialSmolLmMaterialV1;
 pub use selection::SignedArtifactSelectionV1;
 pub use selection::TrustedArtifactSelectorV1;
 pub use selection::VerifiedArtifactSelectionV1;
