@@ -34,6 +34,7 @@ mod native_memory_context_binding;
 #[cfg(test)]
 #[path = "native_memory_control_tests.rs"]
 mod native_memory_control_tests;
+mod native_memory_current;
 mod native_memory_model;
 mod native_memory_process;
 mod native_memory_shadow_namespace;
@@ -197,6 +198,12 @@ pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
 pub use native_memory::AgentdNativeMemoryCell;
 pub use native_memory_context_binding::NativeMemoryContextBindingV1;
+pub use native_memory_current::AgentdNativeMemoryContextHostV1;
+pub use native_memory_current::AgentdNativeMemoryCurrentContextV1;
+pub use native_memory_current::AgentdNativeMemoryPreparedReadV1;
+pub use native_memory_current::NativeMemoryClockObservationV1;
+pub use native_memory_current::NativeMemoryTickClockV1;
+pub use native_memory_current::native_memory_subject_digest_v1;
 pub use native_memory_shadow_namespace::NativeMemoryShadowFilesV1;
 pub use native_memory_shadow_namespace::NativeMemoryShadowProfileV1;
 pub use native_memory_shadow_namespace::NativeMemoryShadowStartV1;
