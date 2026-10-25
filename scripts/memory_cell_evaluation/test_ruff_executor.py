@@ -41,6 +41,7 @@ class Qualification(unittest.TestCase):
             self.output / name,
             self.ruff,
             self.python,
+            **self.runtime_options,
         )
 
     def test_original_failure(self):
@@ -138,10 +139,24 @@ class Qualification(unittest.TestCase):
     def test_duplicate_output_is_untouched(self):
         candidate = self.candidate("duplicate", self.fixed, "not-allowed.py")
         output = self.output / "duplicate"
-        evaluate(self.fixture, candidate, output, self.ruff, self.python)
+        evaluate(
+            self.fixture,
+            candidate,
+            output,
+            self.ruff,
+            self.python,
+            **self.runtime_options,
+        )
         before = inventory(output)
         with self.assertRaises(FileExistsError):
-            evaluate(self.fixture, candidate, output, self.ruff, self.python)
+            evaluate(
+                self.fixture,
+                candidate,
+                output,
+                self.ruff,
+                self.python,
+                **self.runtime_options,
+            )
         self.assertEqual(inventory(output), before)
 
     def test_bounded_process_timeout(self):
@@ -183,10 +198,20 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("fixture", "known-fix", "output", "ruff", "python"):
         parser.add_argument(f"--{name}", required=True, type=Path)
+    parser.add_argument("--runtime-profile", type=Path)
+    parser.add_argument("--runtime-profile-sha256")
     args = parser.parse_args()
     args.output.mkdir(exist_ok=False)
     for key, value in vars(args).items():
-        setattr(Qualification, key.replace("-", "_"), value.resolve())
+        setattr(
+            Qualification,
+            key.replace("-", "_"),
+            value.resolve() if isinstance(value, Path) else value,
+        )
+    Qualification.runtime_options = {
+        "runtime_profile": args.runtime_profile,
+        "runtime_profile_sha256": args.runtime_profile_sha256,
+    }
     save(
         args.output / "qualification-inputs.json",
         {
@@ -212,6 +237,10 @@ def main():
             "new_model_queries": 0,
             "training_updates": 0,
             "future_cases": 0,
+            "runtime_profile": str(args.runtime_profile)
+            if args.runtime_profile
+            else None,
+            "runtime_profile_sha256": args.runtime_profile_sha256,
         },
     )
     return 0 if result.wasSuccessful() else 1
