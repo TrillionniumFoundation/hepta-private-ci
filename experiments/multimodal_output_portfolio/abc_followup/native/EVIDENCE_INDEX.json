@@ -1,0 +1,239 @@
+{
+  "actual_process_and_failed_attempt_receipts": "PROCESS_COSTS.json",
+  "all43_frozen_sources_unchanged": true,
+  "compact_deliverables": {
+    "AUTHENTIC_HANDOFF.md": {
+      "bytes": 13384,
+      "sha256": "901f48522099143378c575e362615a1d52bf4c32d71fe76300c1ea005a906c61"
+    },
+    "FUTURE_CANDIDATE_DEVELOPMENT_RESULTS.json": {
+      "bytes": 5214,
+      "sha256": "c5b6511cb65e1515c0f2278a3346d80a58216978d3c227645e46d7576ad4189f"
+    },
+    "FUTURE_EVIDENCE_AUDIT.json": {
+      "bytes": 1259,
+      "sha256": "302f0f036fae44288e3aa8ba13be08da266666b0cfbc703a6dbe6561db5d71ed"
+    },
+    "FUTURE_NATIVE_RESULTS.json": {
+      "bytes": 2465,
+      "sha256": "4098c9ecd2e8a38de08bb67e4a8e705d335035c57d6b34bf8f13d0eaebb84e8d"
+    },
+    "FUTURE_PROPOSAL_RESULTS.json": {
+      "bytes": 2881,
+      "sha256": "1b49f2b665d4b7145ffabbd12c87d6ea8710a4a95e978985e4612a28798c12ff"
+    },
+    "FUTURE_TICK_AUDIT.json": {
+      "bytes": 835,
+      "sha256": "a0139b989d2cca1ed7437152805c973e6f00f8d2f1a4534f256bda20827aeb28"
+    },
+    "OLD_CANDIDATE_VERIFICATION_RESULTS.json": {
+      "bytes": 2248,
+      "sha256": "041986091708dd17311c7e437c489cecbd4cf285db5cc65daf86974fd7443913"
+    },
+    "PROCESS_COSTS.json": {
+      "bytes": 20567,
+      "sha256": "c33d83d7e9b78a940c249d6556f17a273b119dc05eb642d3a76a7273d688aae0"
+    },
+    "PROSPECTIVE_VERIFICATION_RESULTS.json": {
+      "bytes": 2308,
+      "sha256": "822d5f8d9de900c27ec6689e7f84a25cb4ec9415076b8cbc57144fcd5cf07fbe"
+    },
+    "REPORT.md": {
+      "bytes": 26023,
+      "sha256": "57fc36f98d2dc459360699f423a00d9449c179e2ddc08e7d88bfb87dded70bd3"
+    },
+    "REPRODUCE.md": {
+      "bytes": 12029,
+      "sha256": "3dc511b43a690ef5f2b1f16cdadcd5c7707d5ba46667d8e5faa7f4c2ab297d5a"
+    },
+    "RESIDUAL_NATIVE_RESULTS.json": {
+      "bytes": 670,
+      "sha256": "b5dc9acb10c6d455c36b3e09da9c0ac1df71652be2fb9801cdbf395a91a87243"
+    },
+    "RESULTS.json": {
+      "bytes": 5795,
+      "sha256": "3b23577a00a049dd4a5beec6755ef1c0f53ad994de7810d0d182998620e354a4"
+    },
+    "VERIFICATION_RESULTS.json": {
+      "bytes": 5561,
+      "sha256": "4db7b0be2d2daf1756533a4e8e775391715ccc26e9a2ab27f746f15947d2d265"
+    },
+    "evidence_audit.py": {
+      "bytes": 6140,
+      "sha256": "ae49e83ecb3810e6dc20b1d2aaac90b2fca5dc95120a50887c0e885a943bdf3b"
+    }
+  },
+  "final_read_only_consistency_checks": {
+    "21_cases": true,
+    "43_frozen_native_sources": true,
+    "applied_helper": true,
+    "chain_recovery_probe.rs": true,
+    "compiled_probe": true,
+    "embedded_helper": true,
+    "input_result": true,
+    "neuron_chain_recovery.rs": true,
+    "original_segment_neuron-0000.journal": true,
+    "original_segment_neuron-0001.journal": true,
+    "original_segment_neuron-0002.journal": true,
+    "original_segment_neuron-0003.journal": true,
+    "original_segment_neuron-0004.journal": true,
+    "original_segment_neuron-0005.journal": true,
+    "original_segment_neuron-0006.journal": true,
+    "original_segment_neuron-0007.journal": true,
+    "original_segment_neuron-0008.journal": true,
+    "original_segment_neuron-0009.journal": true,
+    "original_segment_neuron-0010.journal": true,
+    "original_segment_neuron-0011.journal": true,
+    "original_segment_neuron-0012.journal": true,
+    "packet": true,
+    "patch_sha": true,
+    "patched_loader": true,
+    "probe_result": true,
+    "rlib_codex_hepta_neuron": true,
+    "rlib_codex_hepta_types": true,
+    "rlib_serde": true,
+    "rlib_serde_json": true
+  },
+  "preverification_manifest_sha256": "65eed3fee037782bdcde9e38dc54212c6659286dce5eb259be789f981234aad6",
+  "raw_files_archived_to_git": false,
+  "retained_raw_identity_only": {
+    "future-native-001/case-0000/checkpoint.bin": {
+      "bytes": 868,
+      "sha256": "b09674cca4d30a6061b91829d697faf8e220b61d7bb72c3836cac3eb50755b5e"
+    },
+    "future-native-001/case-0000/context.json": {
+      "bytes": 1402,
+      "sha256": "53d57c8f139a9b449fa508a01312b54eb2246b0f2b041bd0ea5d89049b533dad"
+    },
+    "future-native-001/case-0000/ndu.backup": {
+      "bytes": 643212,
+      "sha256": "8d324fe91c7f8f29222ecfc07e472525c68339f60323e1bebf781f127f9a2e6a"
+    },
+    "future-native-001/case-0000/ndu/projection.journal": {
+      "bytes": 643212,
+      "sha256": "8d324fe91c7f8f29222ecfc07e472525c68339f60323e1bebf781f127f9a2e6a"
+    },
+    "future-native-001/case-0000/neuron-0000.journal": {
+      "bytes": 106632,
+      "sha256": "33d47c6cbcdfa9d6f1d7ce74764363e445d3728a16fcc8c0d27b962047eee2ae"
+    },
+    "future-native-001/case-0000/neuron-0001.journal": {
+      "bytes": 106672,
+      "sha256": "e3a36123de44c26a3eb859c5d688793a23ffc517a3f789410be12a978b583fab"
+    },
+    "future-native-001/case-0000/neuron-0002.journal": {
+      "bytes": 106672,
+      "sha256": "12267acc656c7a221b74e54367a129f0cc763cedc54431cc36b66fd1abfdb73b"
+    },
+    "future-native-001/case-0000/neuron-0003.journal": {
+      "bytes": 106672,
+      "sha256": "f8c480ff5c45ea0e4bf9ee21c22105dbae8c92ba2646c382e214c6c48cd7e81e"
+    },
+    "future-native-001/case-0000/neuron-0004.journal": {
+      "bytes": 106672,
+      "sha256": "57d3f7f843651fe54a20b36fd677cd4e62acbddfb539f351c9fa91bf399a11c4"
+    },
+    "future-native-001/case-0000/neuron-0005.journal": {
+      "bytes": 106672,
+      "sha256": "26cd535388eccee0dd20de4cad11f882d68381fa371472b4c2563a282cf1da39"
+    },
+    "future-native-001/case-0000/neuron-0006.journal": {
+      "bytes": 106672,
+      "sha256": "eb99360f86bd791588c498b2a511be6f6f26dde0b73f415386c1b7eba7f9f4e6"
+    },
+    "future-native-001/case-0000/neuron-0007.journal": {
+      "bytes": 106672,
+      "sha256": "7982fe953c6ff319e94bfb7af7b7c9e1c8992170b00e11f67f66a8d2a7f53841"
+    },
+    "future-native-001/case-0000/neuron-0008.journal": {
+      "bytes": 106672,
+      "sha256": "0c8dd1d9865a8284329a89ad0ede0ede038c04358bd683917f8de003c9f83c21"
+    },
+    "future-native-001/case-0000/neuron-0009.journal": {
+      "bytes": 106672,
+      "sha256": "fe126df3c8af6e12fdb548d20c6fd1b659491491857bd6f59729782ec93d9f48"
+    },
+    "future-native-001/case-0000/neuron-0010.journal": {
+      "bytes": 106672,
+      "sha256": "5ed86915934bb76a5cb1e85c960da1597db1fcce5488e3313295e04fe276aaa7"
+    },
+    "future-native-001/case-0000/neuron-0011.journal": {
+      "bytes": 106672,
+      "sha256": "b988b07b582e1ff9d28498f2526052b3b5373c9bd393add8004cf920cbd8c0f0"
+    },
+    "future-native-001/case-0000/neuron-0012.journal": {
+      "bytes": 53424,
+      "sha256": "e9339ada62c0413825616bdc0e673fbb0b533452c268df102bbc82c4532c60f1"
+    },
+    "future-native-001/live-proposal-candidates/candidates.json": {
+      "bytes": 11146,
+      "sha256": "409221dd6f892e3ccf0f317c4c4d86dc9cf9bcf68651c016349515094fa2dd24"
+    },
+    "future-native-001/live-proposal-pending/candidates.json": {
+      "bytes": 11146,
+      "sha256": "409221dd6f892e3ccf0f317c4c4d86dc9cf9bcf68651c016349515094fa2dd24"
+    },
+    "future-native-001/live-proposal-pending/proposal.registry": {
+      "bytes": 6409,
+      "sha256": "fa6cae42170a0c6d417549b96d8c8627b6b674254f3e42270acbecbafa11c472"
+    },
+    "future-native-001/live-proposal-pending/proposal.witness": {
+      "bytes": 234,
+      "sha256": "3d4d4e9c03f3d969b5fa337885d33591ab1cb8f91b9c9e646a9486d7f685b7e3"
+    },
+    "future-native-001/ticks.jsonl": {
+      "bytes": 1846420,
+      "sha256": "a99d5642ee368fa42d343eb76650068c176f7afb176b755bf878be3e97b4864f"
+    },
+    "future-packet-001/packet.json": {
+      "bytes": 14175389,
+      "sha256": "59de69591388b1a9858e4e3b47aa7fb2488d3b2512fddb27048f2b0fa6611173"
+    },
+    "residual-packet-001/packet.json": {
+      "bytes": 25355663,
+      "sha256": "2608cd7e3002efbb7764948c2748fc29881ae2fef2217ef898dd85f2ebdbca07"
+    },
+    "verification-001/access-registration.json": {
+      "bytes": 956,
+      "sha256": "890179db7f71ae23a51e4e2f2b827055e5309060d2e8af2fb6103cfa01907ffc"
+    },
+    "verification-001/cost.json": {
+      "bytes": 448,
+      "sha256": "83fd91953b1c06bce3daa61f2c2c2254f5e34b5fb7e2a0b8224d3bfe1170cfea"
+    }
+  },
+  "schema": "hepta.abc4.native-final-evidence-index.v1",
+  "scope": "references and byte identities; no rawoutcomes, weights, binaries, journals or local credentials in repository",
+  "separate_product_chain_adapter": {
+    "CHAIN_RECOVERY_VALIDATION.json": {
+      "bytes": 7993,
+      "sha256": "edad13a0dbcc2f0f22b3ae446f7178ccba6e25e8617d84b4362e6e77bd142697"
+    },
+    "README.md": {
+      "bytes": 5185,
+      "sha256": "accd0291f7145932b6ddaf02939ff38e2fda4daf9726102e09a3cf224d2358d3"
+    },
+    "bootstrap-f8c9419.patch": {
+      "bytes": 9756,
+      "sha256": "b156737e5ca460fae69dc5d042a3e8ba41522f377d6ba646261acca33d6f8ff8"
+    },
+    "chain_recovery_probe.rs": {
+      "bytes": 9355,
+      "sha256": "998791ca49c8ca9c9aa1e366a39f4aaeaa9dd35ba4f9e676c8079a338546ab31"
+    },
+    "neuron_chain_recovery.rs": {
+      "bytes": 5826,
+      "sha256": "3e4d777ef17c588878cdf0c5b281b606afb3cfe4819ae983af090a771c38b96c"
+    },
+    "prepare_bootstrap_patch.py": {
+      "bytes": 4460,
+      "sha256": "7a4f2263048a266458f23f0fa826d1764e40e1090f59ee0e48c6e65bdbbeeb33"
+    },
+    "run_probe.py": {
+      "bytes": 3077,
+      "sha256": "a46411097cd2635a453e73c5fe481d2daa3d31c06ab5d295570e919fc09231e3"
+    }
+  },
+  "separate_product_chain_adapter_scope": "Exact-base patch plus compiled helper/probe and21checks on real13segmentcopies. Full newerAgentd not compiled, patch not merged/deployed, no authority granted.",
+  "source_pair_census_and_media_audit": "FUTURE_EVIDENCE_AUDIT.json"
+}
