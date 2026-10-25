@@ -472,9 +472,10 @@ The separate fresh native host raw-U observation still fails its original
 eight-second cutoff; its post-deadline 4,096-byte kernel charge is diagnostic,
 with the same original owner retained. Funded resource return remains open.
 None of these component observations closes the three-round product target.
-The original two-second read, 120-second startup and eight-second terminal
-bounds remain unchanged; the experiment's training/inference budgets are
-separate and cannot replace them.
+The original Hepta two-second read, 120-second startup and ten-second Session
+shutdown observer remain unchanged, alongside Chain's distinct absolute
+eight-second host/raw-U cutoff. The experiment's training/inference budgets
+are separate and cannot replace any of them.
 
 Reorg, withdrawal, lost acknowledgement, stale generation, restart after route
 publication and unavailable replicas must preserve one logical operation,
