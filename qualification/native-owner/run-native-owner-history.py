@@ -238,7 +238,9 @@ def execute(args, result):
             "-device", "virtio-blk-pci,disable-legacy=on,disable-modern=off,drive=hepta-store"]
     qemu_sha = common.file_digest(qemu)
     result.update(owner_sha256=common.digest(owner), desktop_head=args.desktop_head, hepta_head=args.hepta_head,
-                  manifest=manifest, kernel_build_directory=build, kernel_lock_sha256=lock, disk=disk_info,
+                  manifest=manifest, kernel_build_directory=build,
+                  kernel_build_receipt_sha256=common.file_digest(Path(build) / "native-kernel-build-receipt.json"),
+                  kernel_lock_sha256=lock, disk=disk_info,
                   pins={name:common.digest(data) for name,data in pins.items()}, qemu_sha256=qemu_sha, guests={})
     save(args.output / "result.json", result)
     # The runner retains the one newly created inode and admits no competing
@@ -256,6 +258,10 @@ def execute(args, result):
             result["stage"] = phase
             save(args.output / "result.json", result)
             observed = boot(argv, directory, args.timeout, owner_info, retained)
+            for info in (disk.lstat(), os.fstat(identity.fileno())):
+                require(stat.S_ISREG(info.st_mode) and stat.S_IMODE(info.st_mode) == 0o600
+                        and [info.st_dev, info.st_ino, info.st_size, info.st_uid] == disk_info["identity"]
+                        and info.st_nlink == 1, "exclusive disk identity changed during guest")
             observed["disk_after_sha256"] = common.file_digest(disk)
             result["guests"][phase] = observed
             save(args.output / "result.json", result)

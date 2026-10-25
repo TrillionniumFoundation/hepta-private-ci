@@ -13,7 +13,11 @@ normal dependencies as a static musl ET_EXEC. The Desktop revision must contain
 the G2 loader and original HOS2 ABI. The runner builds and verifies that exact
 product profile, then runs complete original ownership and two byte-identity
 rejection cases. `--reuse-kernel-build` admits only its fully verified matching
-product build; a caller cannot supply an arbitrary replacement kernel.
+product build. A successful fresh build retains a read-only receipt binding its
+source snapshot, owner, exact build/target paths and final kernel hash. Reuse
+requires that existing receipt; changing targets or overwriting the kernel is
+rejected before QEMU. Builds predating this receipt require a fresh build. This
+local artifact receipt is evidence provenance, not a Root authority credential.
 
 `run-native-owner-history.py` takes the same arguments. It keeps the same disk
 inode, kernel and ELF across two VMs: exact acknowledged Current and stopped

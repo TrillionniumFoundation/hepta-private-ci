@@ -117,6 +117,37 @@ def initramfs(base, owner, replay):
     return result
 
 
+def retained_build_kernel(directory, kernel_path, inputs, *, fresh_build):
+    """Bind successful fresh output once; reuse never blesses current bytes."""
+    path = directory / "native-kernel-build-receipt.json"
+    if fresh_build:
+        kernel = pinned(kernel_path, file_digest(kernel_path), MAX_KERNEL)
+        receipt = {"schema": "hepta.native-kernel-build.v1", "inputs": inputs,
+                   "kernel": {"sha256": digest(kernel), "bytes": len(kernel)}}
+        with path.open("x") as stream:
+            json.dump(receipt, stream, sort_keys=True, indent=2)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        path.chmod(0o400)
+        descriptor = os.open(directory, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+    info = path.lstat()
+    require(stat.S_ISREG(info.st_mode) and stat.S_IMODE(info.st_mode) == 0o400
+            and 0 < info.st_size <= 8192, "missing or invalid retained kernel build receipt")
+    receipt = json.loads(path.read_text())
+    require(set(receipt) == {"schema", "inputs", "kernel"}
+            and receipt["schema"] == "hepta.native-kernel-build.v1" and receipt["inputs"] == inputs
+            and set(receipt["kernel"]) == {"sha256", "bytes"}, "kernel build receipt binding differs")
+    kernel = pinned(kernel_path, receipt["kernel"]["sha256"], MAX_KERNEL)
+    require(type(receipt["kernel"]["bytes"]) is int and len(kernel) == receipt["kernel"]["bytes"],
+            "retained kernel length differs")
+    return kernel
+
+
 def verified_build(args, output, source, owner, before):
     directory = args.reuse_kernel_build
     if directory is None:
@@ -177,10 +208,20 @@ def verified_build(args, output, source, owner, before):
             and manifest["elf_profile"] == inspector.inspect_g2_elf(args.owner_elf),
             "actual ELF measurement or fixed G2 limits differ")
     kernel_path = args.target_dir / "osdk/asterinas/asterinas-osdk-bin.elf"
-    kernel = pinned(kernel_path, file_digest(kernel_path), MAX_KERNEL)
-    require(kernel[:6] == b"\x7fELF\x02\x01" and kernel[18:20] == b"\x03\x00", "kernel is not OSDK multiboot conversion")
     image = json.loads((directory / "initramfs-manifest.json").read_text())
     base = pinned(directory / "initramfs.cpio.gz", image["image_sha256"], 8 * MIB)
+    binding = {"desktop_head": args.desktop_head, "desktop_tree": args.desktop_tree,
+               "desktop_source_sha256": digest(json.dumps(before, sort_keys=True).encode()),
+               "owner_sha256": digest(owner), "owner_bytes": len(owner),
+               "build_directory": str(directory.resolve(strict=True)),
+               "target_directory": str(args.target_dir.resolve(strict=True)),
+               "kernel_path": str(kernel_path.resolve(strict=True)),
+               "kernel_lock_sha256": file_digest(generated),
+               "command_sha256": file_digest(directory / "command.sh"),
+               "manifest_sha256": file_digest(directory / "trusted-initial-manifest.json"),
+               "base_initramfs_sha256": digest(base)}
+    kernel = retained_build_kernel(directory, kernel_path, binding, fresh_build=args.reuse_kernel_build is None)
+    require(kernel[:6] == b"\x7fELF\x02\x01" and kernel[18:20] == b"\x03\x00", "kernel is not OSDK multiboot conversion")
     return kernel, base, manifest, file_digest(generated), str(directory)
 
 
@@ -304,7 +345,8 @@ def execute(args, output, result):
     (output / "bios.bin").write_bytes(bios)
     result.update(stage="guests", kernel_sha256=digest(kernel), bios_sha256=digest(bios), qemu_sha256=qemu_sha,
                   kernel_lock_sha256=lock, hepta_lock_sha256=file_digest(args.hepta / "codex-rs/Cargo.lock"),
-                  trusted_manifest=manifest, kernel_build_directory=build_dir, guests={})
+                  trusted_manifest=manifest, kernel_build_directory=build_dir,
+                  kernel_build_receipt_sha256=file_digest(Path(build_dir) / "native-kernel-build-receipt.json"), guests={})
     changed = bytearray(owner)
     changed[-1] ^= 1
     for name, actual, reason in (("exact", owner, None), ("byte-mismatch", changed, "manifest-byte-mismatch"),
