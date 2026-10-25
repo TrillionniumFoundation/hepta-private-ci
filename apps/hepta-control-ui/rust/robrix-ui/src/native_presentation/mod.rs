@@ -68,9 +68,19 @@ pub struct NativeApprovalView {
     pub busy: bool,
 }
 
+/// Original-owner Notes projection beside the sole conversation composer.
+/// Availability is a UI hint, never authority or proof that a write was saved.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct NativeNotesView {
+    pub status: String,
+    pub can_write: bool,
+    pub can_refresh: bool,
+    pub can_cancel: bool,
+}
+
 /// Supplies one existing workspace and nonblocking observations to the original
-/// App. Implementations keep the workspace stable, queue only existing read-only
-/// work, and release their own client resources when the App exits.
+/// App. Implementations keep the workspace stable, queue work only through the
+/// existing original host, and release their own client resources on App exit.
 pub trait NativeChatComposition {
     /// The original, sole active draft owner. These two borrows must refer to
     /// the same stable workspace; no copy or renderer-owned draft is created.
@@ -107,6 +117,26 @@ pub trait NativeChatComposition {
         _decision: NativeApprovalDecision,
     ) -> Result<(), String> {
         Err("Original authenticated approval channel is unavailable".into())
+    }
+    /// Return only the current host-owned Notes projection. None hides all
+    /// Notes controls. The view neither owns a draft nor settles an effect.
+    fn notes_view(&self) -> Option<NativeNotesView> {
+        None
+    }
+    /// Queue the existing finite Notes path using this room's original draft.
+    /// Recheck room/epoch, composition and current owner availability before
+    /// dispatch. Do not clear the composer or optimistically publish success.
+    fn request_write_note(&mut self, _source: RoomKey) -> Result<(), String> {
+        Err("Original Notes owner unavailable; draft retained".into())
+    }
+    /// Query the retained original Notes identity without repeating its write.
+    fn request_notes_refresh(&mut self, _source: RoomKey) -> Result<(), String> {
+        Err("Original Notes result is unavailable".into())
+    }
+    /// Request cancellation through the existing owner, without inventing a
+    /// terminal outcome or treating this as rollback of a possible saved note.
+    fn request_notes_cancel(&mut self, _source: RoomKey) -> Result<(), String> {
+        Err("No original Notes task is available to cancel".into())
     }
     /// Nonblocking: consume already received observations and evaluate age.
     /// Called outside Draw and without a live mutable workspace borrow.

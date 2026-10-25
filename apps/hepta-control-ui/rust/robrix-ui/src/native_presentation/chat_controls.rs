@@ -2,6 +2,7 @@
 use super::NativeApprovalDecision;
 use super::NativeApprovalView;
 use super::NativeChatAvailability;
+use super::NativeNotesView;
 use crate::presentation::RoomKey;
 use hepta_control_core::chat::ChatWorkspace;
 use makepad_widgets::*;
@@ -15,6 +16,9 @@ pub(crate) enum ChatIntent {
     EarlierHistory(RoomKey),
     LatestHistory(RoomKey),
     Approval(RoomKey, String, NativeApprovalDecision),
+    WriteNote(RoomKey),
+    NotesRefresh(RoomKey),
+    NotesCancel(RoomKey),
 }
 
 #[derive(Clone, Default, PartialEq, Eq)]
@@ -22,9 +26,37 @@ pub(crate) struct Controls {
     pub(crate) room: Option<RoomKey>,
     pub(crate) availability: NativeChatAvailability,
     pub(crate) approval: Option<NativeApprovalView>,
+    pub(crate) notes: Option<NativeNotesView>,
 }
 
 impl Controls {
+    fn permits_notes_room(&self, room: RoomKey, workspace: &ChatWorkspace) -> bool {
+        self.room == Some(room)
+            && room.epoch == workspace.presentation_epoch()
+            && room.local_id == workspace.active_id()
+            && workspace.tab == hepta_control_core::chat::WorkspaceTab::Conversations
+            && !workspace.navigation_open
+            && !workspace.composing
+    }
+
+    pub(crate) fn permits_write_note(&self, room: RoomKey, workspace: &ChatWorkspace) -> bool {
+        self.permits_notes_room(room, workspace)
+            && self.notes.as_ref().is_some_and(|notes| notes.can_write)
+            && workspace.draft().status != hepta_control_core::chat::ComposeStatus::InputLimit
+            && !workspace.draft().text.trim().is_empty()
+            && workspace.draft().text.len() <= hepta_control_core::chat_owner::MAX_SIGNED_TEXT_BYTES
+    }
+
+    pub(crate) fn permits_notes_refresh(&self, room: RoomKey, workspace: &ChatWorkspace) -> bool {
+        self.permits_notes_room(room, workspace)
+            && self.notes.as_ref().is_some_and(|notes| notes.can_refresh)
+    }
+
+    pub(crate) fn permits_notes_cancel(&self, room: RoomKey, workspace: &ChatWorkspace) -> bool {
+        self.permits_notes_room(room, workspace)
+            && self.notes.as_ref().is_some_and(|notes| notes.can_cancel)
+    }
+
     pub(crate) fn permits_submit(&self, room: RoomKey, workspace: &ChatWorkspace) -> bool {
         self.room == Some(room)
             && room.epoch == workspace.presentation_epoch()
@@ -86,6 +118,7 @@ impl Controls {
 pub(crate) struct RenderedControls {
     last: Option<(WidgetUid, bool, bool, bool, bool)>,
     approval: Option<NativeApprovalView>,
+    notes: Option<(WidgetUid, Option<NativeNotesView>)>,
 }
 
 impl RenderedControls {
@@ -97,6 +130,28 @@ impl RenderedControls {
         room: RoomKey,
     ) {
         let controls = cx.global::<Controls>().clone();
+        let mut notes = controls.notes.clone();
+        if let Some(notes) = &mut notes {
+            notes.can_write = controls.permits_write_note(room, workspace);
+            notes.can_refresh = controls.permits_notes_refresh(room, workspace);
+            notes.can_cancel = controls.permits_notes_cancel(room, workspace);
+        }
+        let notes_panel = view.view(cx, ids!(original_notes));
+        let notes_key = (notes_panel.widget_uid(), notes);
+        if self.notes.as_ref() != Some(&notes_key) {
+            notes_panel.set_visible(cx, notes_key.1.is_some());
+            if let Some(notes) = &notes_key.1 {
+                view.label(cx, ids!(original_notes_status))
+                    .set_text(cx, &notes.status);
+                view.button(cx, ids!(original_notes_write))
+                    .set_enabled(cx, notes.can_write);
+                view.button(cx, ids!(original_notes_refresh))
+                    .set_enabled(cx, notes.can_refresh);
+                view.button(cx, ids!(original_notes_cancel))
+                    .set_enabled(cx, notes.can_cancel);
+            }
+            self.notes = Some(notes_key);
+        }
         let mut approval = controls.approval.clone();
         if let Some(view) = &mut approval {
             view.can_accept = controls.permits_approval(
@@ -165,6 +220,28 @@ pub(crate) fn dispatch(
     room: RoomKey,
 ) -> bool {
     let controls = cx.global::<Controls>().clone();
+    for (button, permitted, intent) in [
+        (
+            view.button(cx, ids!(original_notes_write)),
+            controls.permits_write_note(room, workspace),
+            ChatIntent::WriteNote(room),
+        ),
+        (
+            view.button(cx, ids!(original_notes_refresh)),
+            controls.permits_notes_refresh(room, workspace),
+            ChatIntent::NotesRefresh(room),
+        ),
+        (
+            view.button(cx, ids!(original_notes_cancel)),
+            controls.permits_notes_cancel(room, workspace),
+            ChatIntent::NotesCancel(room),
+        ),
+    ] {
+        if button.clicked(actions) && permitted {
+            cx.widget_action(view.widget_uid(), intent);
+            return true;
+        }
+    }
     if let Some(approval) = &controls.approval {
         for (button, decision) in [
             (

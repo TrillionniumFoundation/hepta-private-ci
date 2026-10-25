@@ -2,12 +2,31 @@ use super::*;
 use pretty_assertions::assert_eq;
 
 #[test]
+fn notes_document_readback_matches_original_desktop_wire_without_terminal_claim() {
+    let raw = include_str!("../tests/fixtures/notes-document-observation-v1.json");
+    let view: ObjectiveObservation = serde_json::from_str(raw).unwrap();
+    assert_eq!(view.stage, ObjectiveStage::SubmitUnknown);
+    assert_eq!(view.run, None);
+    assert_eq!(view.notes_document.as_ref().unwrap().revision, 5);
+    assert_eq!(
+        serde_json::to_value(view).unwrap(),
+        serde_json::from_str::<serde_json::Value>(raw).unwrap()
+    );
+}
+
+#[test]
 fn original_session_wire_keeps_text_literal_and_rejects_authority_fields() {
     let bytes = br#"{"type":"submit","intent":{"client_intent_id":"intent-1","text":"a\\nb"}}"#;
     let command: ObjectiveCommand = serde_json::from_slice(bytes).unwrap();
-    assert_eq!(command, ObjectiveCommand::Submit { intent: ObjectiveIntent {
-        client_intent_id: "intent-1".into(), text: "a\\nb".into(),
-    }});
+    assert_eq!(
+        command,
+        ObjectiveCommand::Submit {
+            intent: ObjectiveIntent {
+                client_intent_id: "intent-1".into(),
+                text: "a\\nb".into(),
+            }
+        }
+    );
     assert_eq!(command.validate(), Ok(()));
     for bytes in [
         br#"{"type":"submit","intent":{"client_intent_id":"intent-1","text":"a","authority_epoch":1}}"#.as_slice(),
@@ -18,13 +37,17 @@ fn original_session_wire_keeps_text_literal_and_rejects_authority_fields() {
 
 #[test]
 fn original_session_can_decode_private_fields_absent_observation() {
-    let mut view = ObjectiveObservation::new(Some("intent-1".into()), ObjectiveStage::SubmitUnknown);
+    let mut view =
+        ObjectiveObservation::new(Some("intent-1".into()), ObjectiveStage::SubmitUnknown);
     view.observed_unix_ms = 7;
     view.request_retained = true;
     view.issue = Some(ObjectiveHostIssue::TransportUnknown);
-    assert_eq!(serde_json::to_value(&view).unwrap(), serde_json::json!({
-        "observed_unix_ms":7, "client_intent_id":"intent-1", "stage":"submit_unknown",
-        "request_retained":true, "publication_retained":false, "run":null,
-        "cancellation":"not_requested", "issue":"transport_unknown"
-    }));
+    assert_eq!(
+        serde_json::to_value(&view).unwrap(),
+        serde_json::json!({
+            "observed_unix_ms":7, "client_intent_id":"intent-1", "stage":"submit_unknown",
+            "request_retained":true, "publication_retained":false, "run":null,
+            "cancellation":"not_requested", "issue":"transport_unknown"
+        })
+    );
 }

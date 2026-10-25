@@ -184,10 +184,12 @@ impl NativeAccessibility {
             Event::WindowLostFocus(id) if Some(*id) == window => {
                 self.adapter.update_window_focus_state(false)
             }
-            Event::WindowGeomChange(change) if Some(change.window_id) == window => {
-                if change.new_geom.dpi_factor.is_finite() && change.new_geom.dpi_factor > 0.0 {
-                    self.dpi = change.new_geom.dpi_factor;
-                }
+            Event::WindowGeomChange(change)
+                if Some(change.window_id) == window
+                    && change.new_geom.dpi_factor.is_finite()
+                    && change.new_geom.dpi_factor > 0.0 =>
+            {
+                self.dpi = change.new_geom.dpi_factor;
             }
             _ => {}
         }

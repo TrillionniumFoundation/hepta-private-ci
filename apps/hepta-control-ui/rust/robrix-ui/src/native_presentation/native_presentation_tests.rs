@@ -66,3 +66,23 @@ fn console_bound_is_utf8_safe_explicit_and_does_not_clear_pending() {
     };
     assert_eq!(bounded_console(exact.clone()), exact);
 }
+
+#[test]
+fn default_notes_port_hides_actions_refuses_callbacks_and_retains_the_original_draft() {
+    let mut client = Client {
+        workspace: ChatWorkspace::default(),
+        exits: Rc::new(Cell::new(0)),
+    };
+    client.workspace.edit("unsent original Notes draft".into());
+    let room = RoomKey {
+        epoch: client.workspace.presentation_epoch(),
+        local_id: client.workspace.active_id(),
+    };
+    assert_eq!(client.notes_view(), None);
+    assert!(client.request_write_note(room).is_err());
+    assert!(client.request_notes_refresh(room).is_err());
+    assert!(client.request_notes_cancel(room).is_err());
+    assert_eq!(client.workspace.draft().text, "unsent original Notes draft");
+    assert_eq!(client.workspace.active_id(), room.local_id);
+    assert_eq!(client.exits.get(), 0);
+}

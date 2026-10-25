@@ -27,16 +27,15 @@ pub(super) fn validate(
     {
         return None;
     }
-    if let TextEditOperation::Replace(replacement) = &edit.operation {
-        if replacement.contains('\0')
+    if let TextEditOperation::Replace(replacement) = &edit.operation
+        && (replacement.contains('\0')
             || current
                 .len()
                 .checked_sub(end - start)?
                 .checked_add(replacement.len())?
-                > limit
-        {
-            return None;
-        }
+                > limit)
+    {
+        return None;
     }
     Some(start..end)
 }

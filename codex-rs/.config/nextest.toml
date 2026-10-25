@@ -93,6 +93,17 @@ slow-timeout = { period = "45s", terminate-after = 2 }
 max-threads = 1
 
 [[profile.default.overrides]]
+# This opt-in qualification starts real companion windows and performs several
+# original SQLite writer close/reopen and acknowledged receipt transactions.
+# Keep every operation deadline and assertion; bound the complete durable run
+# separately from the ordinary 60-second unit-test watchdog. Never retry a
+# killed lifecycle automatically, because it owns real child processes.
+filter = 'package(codex-hepta-agentd) & test(notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 8 }
+retries = 0
+
+[[profile.default.overrides]]
 filter = 'package(codex-hepta-learning-ledger) & test(history_exceeds_v1_record_capacity_without_resetting_chain_or_limits)'
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 6 }

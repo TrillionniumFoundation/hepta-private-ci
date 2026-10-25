@@ -30,6 +30,14 @@ fixed-workspace contract and resource/verification gates, and the
 [original Root/Agentd guide](../../../../codex-rs/hepta-agentd/NATIVE_TEXT_SESSION.md)
 for trusted startup, the same-thread route and recovery boundaries.
 
+The same optional port also accepts a host-owned `NativeNotesView` beside the
+original composer. Explicit write/readback/cancel buttons reuse the current
+draft and finite Notes callbacks; they remain hidden when the host returns
+`None`. Room/epoch, visible-branch, composition and capability checks apply
+before dispatch and again at the receiver. The
+[Notes composition contract](NATIVE_COMPOSITION.md#finite-notes-controls-beside-the-original-composer)
+defines the refusing defaults, original-owner responsibilities and test scope.
+
 `native-presentation` selects the original pinned Makepad
 `337566c8` source. The separate, default-off `native-clipboard-sdk` feature
 enables the reviewed request-scoped SDK clipboard candidate. Only that feature
