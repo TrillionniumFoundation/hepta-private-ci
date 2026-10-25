@@ -159,6 +159,12 @@ impl AgentdNativeMemoryHostV1 {
     }
 }
 
+#[cfg(test)]
+#[path = "native_memory_registration_tests.rs"]
+mod tests;
 
+#[cfg(all(test, unix))]
+#[path = "native_memory_registration_current_tests.rs"]
+mod current_tests;
 
 
