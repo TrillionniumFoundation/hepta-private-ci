@@ -572,6 +572,16 @@
       "source": "already executed native ticks; not new statistical samples"
     }
   },
+  "measurement_scope_notes": {
+    "training_cost_replay_rss": {
+      "cpu_scope_unchanged": "CPU is the after-minus-before user+system child-usage delta; measured wall is unchanged.",
+      "interpretation": "Cumulative maximum of reaped child histories observed by the wrapper. If prior child history was inherited, this may be an upper bound on the two replay children rather than their isolated exact maximum.",
+      "native_rust_process_and_transient_memory_measurements_affected": false,
+      "qualified_weights_metrics_and_product_rejection_changed": false,
+      "raw_child_peak_rss_bytes_preserved": 370286592,
+      "source": "training_cost.py: after.ru_maxrss from RUSAGE_CHILDREN, before RSS not persisted"
+    }
+  },
   "native_candidate_metadata": {
     "baseline_layer_squared_norm_q64": "39266325987527787044",
     "baseline_weights_sha256": "a79979a3801c83cd4a789c6a87ff56f2efba63428da7c597f537fe5c6567b6f7",

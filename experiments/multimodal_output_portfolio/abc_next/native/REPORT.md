@@ -144,7 +144,9 @@ ID 有 800 个实际非 abstaining tick，OOD 为 0。**OOD abstaining tick 仍�
 
 最初 6,000 对 train 数据生成的已计时段 wall/CPU 为 12.2122/12.2025 s，校准 1,600 对为 4.0977/4.0934 s，验证 1,600 对为 3.7720/3.7695 s；这些计时在 Python/Torch import 后开始，不冒称完整冷进程成本。
 
-另用两个新 Python 进程复现冻结 train-only 全流程：包括 imports、原数据检查/加载、6,000 次真实生成和媒体/标签、2,000 次训练更新、development 选择、写出与退出，总 wall **19.515262584 s**，child CPU **21.038287 s**，peak RSS **370,286,592 B**。Weights 和 cuts 的 SHA 与原预验证冻结产物逐字节相同。此为冻结算法的后置成本复现，未再打开 reserved role，未替换原选定模型，也不将耗时伪称原始那一次历史 wall。此前 generator/observer 训练、校准/验证、工具链安装成本均未包含在该 19.515 s 内。
+另用两个新 Python 进程复现冻结 train-only 全流程：包括 imports、原数据检查/加载、6,000 次真实生成和媒体/标签、2,000 次训练更新、development 选择、写出与退出，总 wall **19.515262584 s**，child CPU **21.038287 s**，wrapper 所观测的 `RUSAGE_CHILDREN` RSS 高水位 **370,286,592 B**。Weights 和 cuts 的 SHA 与原预验证冻结产物逐字节相同。此为冻结算法的后置成本复现，未再打开 reserved role，未替换原选定模型，也不将耗时伪称原始那一次历史 wall。此前 generator/observer 训练、校准/验证、工具链安装成本均未包含在该 19.515 s 内。
+
+该 wrapper 的 CPU 使用前后累计用量之差；RSS 使用结束后的累计 child 高水位，未保存运行前的 RSS 高水位。如果 wrapper 继承了更早 child 的资源历史，这个值可作为本轮 child 峰值的上界，不能证明为隔离测得的本轮两个 child 的精确峰值。原数值和原始回执保留，新增的范围说明见 `RESULTS.json.measurement_scope_notes`。此限定不影响 wall/CPU 差值、Rust 进程自己的 RSS/瞬时分配测量、校准数据或 tick/proposal 门槛。
 
 ## 6. 相同上下文的真实 resolver、候选与 proposal
 
