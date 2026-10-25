@@ -21,6 +21,10 @@ use serde::Deserialize;
 const STOP: &[u8] = b"{\"schema\":\"hepta-smollm-neural-read-worker-v1\",\"stop\":true}\n";
 const SUPERVISOR_WALL_SECONDS: u64 = 600;
 
+#[cfg(test)]
+#[path = "smollm_neural_session_owner.rs"]
+mod owner;
+
 pub(super) struct Session {
     directory: File,
     supervisor: Option<Child>,
