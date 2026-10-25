@@ -1,0 +1,423 @@
+{
+  "census": {
+    "conditions": 24,
+    "generation_scenarios": 4,
+    "independent_n_is_not_rows_or_seed_times_sources": true,
+    "observer_re_evaluation_adds_no_sources": true,
+    "policy_replay_rows": 491520,
+    "rows_per_condition": 20480,
+    "source_pairs": 128,
+    "training_seeds": 5,
+    "views": 8
+  },
+  "direction": "candidate minus reference; positive favors candidate",
+  "inference_note": "Original source/seed crossed-bootstrap intervals. Five seeds do not guarantee confirmatory coverage. Views, generation scenarios, replay rows and repeated observers do not increase independent source count.",
+  "metric_definition": "Net joint CE of U minus0.002 per continuation action; not measured latency or money",
+  "new_success_thresholds_or_gates": false,
+  "points": [
+    {
+      "candidate": [
+        "output_ndu",
+        "fixed"
+      ],
+      "comparison": "risk_training_under_fixed",
+      "confidence": 0.975,
+      "estimate": 0.004788902791690419,
+      "label": "Risk-sensitive vs mean training\n(fixed inference)",
+      "lower": -0.0006191394783226934,
+      "observer": "primary",
+      "order": 0,
+      "original_kind": "primary",
+      "panel": "registered_primary",
+      "reference": [
+        "output_mean",
+        "fixed"
+      ],
+      "source_json_path": "observers.primary.comparisons.risk_training_under_fixed.net_ce",
+      "source_metric": "net_ce",
+      "upper": 0.010267203800956267
+    },
+    {
+      "candidate": [
+        "output_ndu",
+        "feedback"
+      ],
+      "comparison": "feedback_under_output_ndu",
+      "confidence": 0.975,
+      "estimate": 0.009788598603028664,
+      "label": "Feedback vs fixed inference\n(NDU-trained generator)",
+      "lower": -0.0009432235960438588,
+      "observer": "primary",
+      "order": 1,
+      "original_kind": "primary",
+      "panel": "registered_primary",
+      "reference": [
+        "output_ndu",
+        "fixed"
+      ],
+      "source_json_path": "observers.primary.comparisons.feedback_under_output_ndu.net_ce",
+      "source_metric": "net_ce",
+      "upper": 0.019873952139535682
+    },
+    {
+      "candidate": [
+        "output_ndu",
+        "semantic_couple_fixed"
+      ],
+      "comparison": "shared_state_fixed_path",
+      "confidence": 0.95,
+      "estimate": 0.009680235692597156,
+      "label": "Shared state: full \u2212 clamp\n(fixed semantic \u2192 couple)",
+      "lower": 0.006202925061513411,
+      "observer": "primary",
+      "order": 0,
+      "original_kind": "fixed_mechanism",
+      "panel": "descriptive",
+      "reference": [
+        "output_ndu",
+        "shared_state_clamp_semantic_couple"
+      ],
+      "source_json_path": "observers.primary.comparisons.shared_state_fixed_path.net_ce",
+      "source_metric": "net_ce",
+      "upper": 0.013579528575760957
+    },
+    {
+      "candidate": [
+        "output_ndu",
+        "semantic_couple_fixed"
+      ],
+      "comparison": "shared_state_fixed_path",
+      "confidence": 0.95,
+      "estimate": 0.006859127591037739,
+      "label": "Shared state: full \u2212 clamp\n(fixed semantic \u2192 couple)",
+      "lower": 0.003104321175617181,
+      "observer": "secondary",
+      "order": 0,
+      "original_kind": "fixed_mechanism",
+      "panel": "descriptive",
+      "reference": [
+        "output_ndu",
+        "shared_state_clamp_semantic_couple"
+      ],
+      "source_json_path": "observers.secondary.comparisons.shared_state_fixed_path.net_ce",
+      "source_metric": "net_ce",
+      "upper": 0.01083302317888942
+    },
+    {
+      "candidate": [
+        "output_ndu",
+        "feedback"
+      ],
+      "comparison": "feedback_vs_draft_masked_feedback",
+      "confidence": 0.95,
+      "estimate": 0.01069420099323537,
+      "label": "Feedback \u2212 draft-masked",
+      "lower": 0.001982236960960174,
+      "observer": "primary",
+      "order": 1,
+      "original_kind": "descriptive",
+      "panel": "descriptive",
+      "reference": [
+        "output_ndu",
+        "draft_masked_feedback"
+      ],
+      "source_json_path": "observers.primary.comparisons.feedback_vs_draft_masked_feedback.net_ce",
+      "source_metric": "net_ce",
+      "upper": 0.019606496828395277
+    },
+    {
+      "candidate": [
+        "output_ndu",
+        "feedback"
+      ],
+      "comparison": "feedback_vs_draft_masked_feedback",
+      "confidence": 0.95,
+      "estimate": 0.009448460819619087,
+      "label": "Feedback \u2212 draft-masked",
+      "lower": -0.00029218806433328455,
+      "observer": "secondary",
+      "order": 1,
+      "original_kind": "descriptive",
+      "panel": "descriptive",
+      "reference": [
+        "output_ndu",
+        "draft_masked_feedback"
+      ],
+      "source_json_path": "observers.secondary.comparisons.feedback_vs_draft_masked_feedback.net_ce",
+      "source_metric": "net_ce",
+      "upper": 0.019836104934838658
+    },
+    {
+      "candidate": [
+        "output_ndu",
+        "feedback"
+      ],
+      "comparison": "feedback_vs_tuned_static",
+      "confidence": 0.95,
+      "estimate": 0.00889822164280163,
+      "label": "Feedback \u2212 tuned static",
+      "lower": -0.0011993864090159027,
+      "observer": "primary",
+      "order": 2,
+      "original_kind": "descriptive",
+      "panel": "descriptive",
+      "reference": [
+        "output_ndu",
+        "tuned_static"
+      ],
+      "source_json_path": "observers.primary.comparisons.feedback_vs_tuned_static.net_ce",
+      "source_metric": "net_ce",
+      "upper": 0.019670123667184798
+    },
+    {
+      "candidate": [
+        "output_ndu",
+        "feedback"
+      ],
+      "comparison": "feedback_vs_tuned_static",
+      "confidence": 0.95,
+      "estimate": 0.009921947525959374,
+      "label": "Feedback \u2212 tuned static",
+      "lower": 0.0005950051513716174,
+      "observer": "secondary",
+      "order": 2,
+      "original_kind": "descriptive",
+      "panel": "descriptive",
+      "reference": [
+        "output_ndu",
+        "tuned_static"
+      ],
+      "source_json_path": "observers.secondary.comparisons.feedback_vs_tuned_static.net_ce",
+      "source_metric": "net_ce",
+      "upper": 0.01990127481631766
+    },
+    {
+      "candidate": [
+        "output_ndu",
+        "feedback"
+      ],
+      "comparison": "feedback_vs_one_shot_route",
+      "confidence": 0.95,
+      "estimate": 0.00853796697687842,
+      "label": "Feedback \u2212 one-shot",
+      "lower": 0.0004068578214674729,
+      "observer": "primary",
+      "order": 3,
+      "original_kind": "descriptive",
+      "panel": "descriptive",
+      "reference": [
+        "output_ndu",
+        "one_shot_route"
+      ],
+      "source_json_path": "observers.primary.comparisons.feedback_vs_one_shot_route.net_ce",
+      "source_metric": "net_ce",
+      "upper": 0.01699016426555945
+    },
+    {
+      "candidate": [
+        "output_ndu",
+        "feedback"
+      ],
+      "comparison": "feedback_vs_one_shot_route",
+      "confidence": 0.95,
+      "estimate": 0.005706265071643651,
+      "label": "Feedback \u2212 one-shot",
+      "lower": -0.0029147328339803563,
+      "observer": "secondary",
+      "order": 3,
+      "original_kind": "descriptive",
+      "panel": "descriptive",
+      "reference": [
+        "output_ndu",
+        "one_shot_route"
+      ],
+      "source_json_path": "observers.secondary.comparisons.feedback_vs_one_shot_route.net_ce",
+      "source_metric": "net_ce",
+      "upper": 0.014673761198881478
+    },
+    {
+      "candidate": [
+        "output_ndu",
+        "feedback"
+      ],
+      "comparison": "feedback_vs_allocation_only_feedback",
+      "confidence": 0.95,
+      "estimate": -0.00017249426002532986,
+      "label": "Feedback \u2212 allocation-only",
+      "lower": -0.007905119394723837,
+      "observer": "primary",
+      "order": 4,
+      "original_kind": "descriptive",
+      "panel": "descriptive",
+      "reference": [
+        "output_ndu",
+        "allocation_only_feedback"
+      ],
+      "source_json_path": "observers.primary.comparisons.feedback_vs_allocation_only_feedback.net_ce",
+      "source_metric": "net_ce",
+      "upper": 0.0076028521822498925
+    },
+    {
+      "candidate": [
+        "output_ndu",
+        "feedback"
+      ],
+      "comparison": "feedback_vs_allocation_only_feedback",
+      "confidence": 0.95,
+      "estimate": 0.000125323325500859,
+      "label": "Feedback \u2212 allocation-only",
+      "lower": -0.008111079374603904,
+      "observer": "secondary",
+      "order": 4,
+      "original_kind": "descriptive",
+      "panel": "descriptive",
+      "reference": [
+        "output_ndu",
+        "allocation_only_feedback"
+      ],
+      "source_json_path": "observers.secondary.comparisons.feedback_vs_allocation_only_feedback.net_ce",
+      "source_metric": "net_ce",
+      "upper": 0.008290963661577378
+    },
+    {
+      "candidate": [
+        "output_ndu",
+        "feedback"
+      ],
+      "comparison": "feedback_vs_risk_neutral_feedback",
+      "confidence": 0.95,
+      "estimate": -0.00033169238076041774,
+      "label": "Feedback \u2212 risk-neutral",
+      "lower": -0.0066811283377424605,
+      "observer": "primary",
+      "order": 5,
+      "original_kind": "descriptive",
+      "panel": "descriptive",
+      "reference": [
+        "output_ndu",
+        "risk_neutral_feedback"
+      ],
+      "source_json_path": "observers.primary.comparisons.feedback_vs_risk_neutral_feedback.net_ce",
+      "source_metric": "net_ce",
+      "upper": 0.006207144323261904
+    },
+    {
+      "candidate": [
+        "output_ndu",
+        "feedback"
+      ],
+      "comparison": "feedback_vs_risk_neutral_feedback",
+      "confidence": 0.95,
+      "estimate": 0.0014718771411242337,
+      "label": "Feedback \u2212 risk-neutral",
+      "lower": -0.005263319467862732,
+      "observer": "secondary",
+      "order": 5,
+      "original_kind": "descriptive",
+      "panel": "descriptive",
+      "reference": [
+        "output_ndu",
+        "risk_neutral_feedback"
+      ],
+      "source_json_path": "observers.secondary.comparisons.feedback_vs_risk_neutral_feedback.net_ce",
+      "source_metric": "net_ce",
+      "upper": 0.008375355392847663
+    },
+    {
+      "candidate": [
+        "output_ndu",
+        "feedback"
+      ],
+      "comparison": "feedback_vs_modality_local_feedback",
+      "confidence": 0.95,
+      "estimate": 0.004464757016048704,
+      "label": "Feedback \u2212 modality-local",
+      "lower": -0.0030074642413748676,
+      "observer": "primary",
+      "order": 6,
+      "original_kind": "descriptive",
+      "panel": "descriptive",
+      "reference": [
+        "output_ndu",
+        "modality_local_feedback"
+      ],
+      "source_json_path": "observers.primary.comparisons.feedback_vs_modality_local_feedback.net_ce",
+      "source_metric": "net_ce",
+      "upper": 0.012078585753671957
+    },
+    {
+      "candidate": [
+        "output_ndu",
+        "feedback"
+      ],
+      "comparison": "feedback_vs_modality_local_feedback",
+      "confidence": 0.95,
+      "estimate": 0.001812449296880403,
+      "label": "Feedback \u2212 modality-local",
+      "lower": -0.006098504953954923,
+      "observer": "secondary",
+      "order": 6,
+      "original_kind": "descriptive",
+      "panel": "descriptive",
+      "reference": [
+        "output_ndu",
+        "modality_local_feedback"
+      ],
+      "source_json_path": "observers.secondary.comparisons.feedback_vs_modality_local_feedback.net_ce",
+      "source_metric": "net_ce",
+      "upper": 0.009947355234038117
+    },
+    {
+      "candidate": [
+        "output_ndu",
+        "feedback"
+      ],
+      "comparison": "feedback_vs_independent_random_stream_MPC",
+      "confidence": 0.95,
+      "estimate": -0.00037343280609514196,
+      "label": "Feedback \u2212 independent-stream MPC",
+      "lower": -0.006874365639807237,
+      "observer": "primary",
+      "order": 7,
+      "original_kind": "descriptive",
+      "panel": "descriptive",
+      "reference": [
+        "output_ndu",
+        "independent_random_stream_MPC"
+      ],
+      "source_json_path": "observers.primary.comparisons.feedback_vs_independent_random_stream_MPC.net_ce",
+      "source_metric": "net_ce",
+      "upper": 0.00626240970188623
+    },
+    {
+      "candidate": [
+        "output_ndu",
+        "feedback"
+      ],
+      "comparison": "feedback_vs_independent_random_stream_MPC",
+      "confidence": 0.95,
+      "estimate": -0.00032994411231998533,
+      "label": "Feedback \u2212 independent-stream MPC",
+      "lower": -0.007267350315577279,
+      "observer": "secondary",
+      "order": 7,
+      "original_kind": "descriptive",
+      "panel": "descriptive",
+      "reference": [
+        "output_ndu",
+        "independent_random_stream_MPC"
+      ],
+      "source_json_path": "observers.secondary.comparisons.feedback_vs_independent_random_stream_MPC.net_ce",
+      "source_metric": "net_ce",
+      "upper": 0.006792246383137016
+    }
+  ],
+  "schema": "hepta-AB-frozen-effect-interval-input-v1",
+  "source": {
+    "bytes": 185311,
+    "file": "summary.json",
+    "full_report_original_sha256": "58c54ad94267a2ddb3c18ad2fc91932572cb83ad715060cbf8e063272ec8a99e",
+    "sha256": "0b102adbb6d0b2a86f7cd4e01fbcb955071236a0b97cd41cc1520f1ae4b24edd"
+  },
+  "statistics_reestimated": false
+}
