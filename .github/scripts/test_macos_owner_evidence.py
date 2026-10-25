@@ -141,16 +141,115 @@ class EvidenceTests(unittest.TestCase):
                 for p in evidence.PHASES
                 if p != "fleet-owning"
             ),
-            2,
+            6,
         )
 
     def test_fleet_exact_phase_and_original_selection_retained(self):
         self.assertEqual(len(evidence.expected("fleet-owning")), 17)
-        self.assertEqual(sum(len(evidence.expected(p)) for p in evidence.PHASES), 19)
+        self.assertEqual(sum(len(evidence.expected(p)) for p in evidence.PHASES), 23)
         self.assertEqual(
             evidence.selection("fleet-owning")[:4],
             ["--locked", "-p", "codex-hepta-fleet", "--lib"],
         )
+
+    def test_owner_exact_selection_and_corrupt_reports_fail_closed(self):
+        self.assertEqual(
+            evidence.selection("supervisor-owning")[:4],
+            ["--locked", "-p", "codex-hepta-supervisor", "--lib"],
+        )
+        self.assertEqual(
+            evidence.expected("supervisor-owning"),
+            {
+                (
+                    "codex-hepta-supervisor",
+                    "restart_budget::tests::budget_is_durable_bounded_and_pending_is_idempotent",
+                ),
+                (
+                    "codex-hepta-supervisor",
+                    "restart_policy::tests::restart_schedule_is_exponential_and_stops_after_three_attempts",
+                ),
+                (
+                    "codex-hepta-supervisor",
+                    "restart_policy::tests::restart_schedule_resets_after_recovery_window",
+                ),
+                (
+                    "codex-hepta-supervisor",
+                    "restart_journal::tests::restart_journal_round_trips_and_rejects_clock_rollback_with_full_budget",
+                ),
+            },
+        )
+        for mutation in [
+            "missing",
+            "duplicate",
+            "skipped",
+            "failure",
+            "error",
+            "foreign",
+        ]:
+            root = self.report("supervisor-owning")
+            suite = root.find("testsuite")
+            case = suite.find("testcase")
+            if mutation == "missing":
+                suite.remove(case)
+            elif mutation == "duplicate":
+                suite.append(ET.fromstring(ET.tostring(case)))
+            elif mutation == "foreign":
+                case.set("classname", "codex-hepta-fleet")
+            else:
+                ET.SubElement(case, mutation)
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                self.check_report(root, "supervisor-owning")
+
+    def test_owner_list_exact_and_negative_identity_states(self):
+        phase = "supervisor-owning"
+        for mutation in [
+            None,
+            "missing",
+            "ignored",
+            "extra",
+            "filtered",
+            "binary",
+            "status",
+        ]:
+            tests = {
+                name: {"ignored": False, "filter-match": {"status": "matches"}}
+                for _, name in evidence.expected(phase)
+            }
+            suite = {
+                "binary-id": "codex-hepta-supervisor",
+                "status": "listed",
+                "testcases": tests,
+            }
+            name = next(iter(tests))
+            if mutation == "missing":
+                tests.pop(name)
+            elif mutation == "ignored":
+                tests[name]["ignored"] = True
+            elif mutation == "extra":
+                tests["unexpected"] = tests[name]
+            elif mutation == "filtered":
+                tests[name]["filter-match"]["status"] = "mismatch"
+            elif mutation == "binary":
+                suite["binary-id"] = "foreign"
+            elif mutation == "status":
+                suite["status"] = "skipped"
+            tests["unselected"] = {
+                "ignored": True,
+                "filter-match": {"status": "mismatch"},
+            }
+            path = self.root / "owner-list.json"
+            path.write_text(
+                json.dumps({"rust-suites": {"codex-hepta-supervisor": suite}})
+            )
+            with self.subTest(mutation=mutation):
+                if mutation is None:
+                    self.assertEqual(
+                        set(evidence.validate_list(path, phase)),
+                        evidence.expected(phase),
+                    )
+                else:
+                    with self.assertRaises(ValueError):
+                        evidence.validate_list(path, phase)
 
     def test_fleet_list_missing_ignored_extra_foreign_rejected(self):
         for mutation in ["missing", "ignored", "extra", "foreign", "filtered"]:
@@ -225,9 +324,12 @@ class EvidenceTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.check_report(root, "fleet-owning")
 
-    def test_native_scope_rejects_old_memory_and_owner_phases(self):
-        self.assertEqual(evidence.PHASES, ("fleet-owning", "supervisor-integration"))
-        for phase in ["memory", "supervisor-owning", "unknown"]:
+    def test_native_scope_rejects_old_memory_and_unknown_phases(self):
+        self.assertEqual(
+            evidence.PHASES,
+            ("fleet-owning", "supervisor-owning", "supervisor-integration"),
+        )
+        for phase in ["memory", "unknown"]:
             with self.assertRaises(ValueError):
                 evidence.expected(phase)
             with self.assertRaises(ValueError):
@@ -806,7 +908,7 @@ class EvidenceTests(unittest.TestCase):
             evidence.write(
                 receipt / "result.json",
                 {
-                    "purpose": "runtime WNOWAIT contract, not native19 qualification",
+                    "purpose": "runtime WNOWAIT contract, not native23 qualification",
                     "python": evidence.python_identity(),
                     "pid": child.pid,
                     "first_observed_exit": result,
@@ -1463,7 +1565,7 @@ class EvidenceTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             command = json.loads(calls.read_text().splitlines()[-1])
             self.assertEqual(command, ["nextest", "run", "--no-fail-fast", *args])
-        self.assertEqual(len(calls.read_text().splitlines()), 2)
+        self.assertEqual(len(calls.read_text().splitlines()), 3)
 
     def test_exact_just_version_rejects_suffix(self):
         evidence.validate_version("just", b"just 1.59.0\n", "just 1.59.0")

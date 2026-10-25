@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bounded native macOS qualification of 19 exact release tests, not full CI."""
+"""Bounded native macOS qualification of 23 exact release and restart tests, not full CI."""
 
 from collections import Counter
 import hashlib
@@ -21,8 +21,14 @@ import xml.etree.ElementTree as ET
 
 HERE = Path(__file__).resolve().parent
 PROFILE = "macos-release"
-BASE = "52ad3b2a6cffdf691eac438cd0bee824f353d977"
-PHASES = ("fleet-owning", "supervisor-integration")
+BASE = "c177270161abdaec029d9b485016003c54666c69"
+PHASES = ("fleet-owning", "supervisor-owning", "supervisor-integration")
+OWNING = {
+    "restart_policy::tests::restart_schedule_is_exponential_and_stops_after_three_attempts",
+    "restart_policy::tests::restart_schedule_resets_after_recovery_window",
+    "restart_journal::tests::restart_journal_round_trips_and_rejects_clock_rollback_with_full_budget",
+    "restart_budget::tests::budget_is_durable_bounded_and_pending_is_idempotent",
+}
 INTEGRATION = {
     (
         "codex-hepta-supervisor::restart_budget",
@@ -53,6 +59,8 @@ def git(*args):
 
 
 def expected(phase):
+    if phase == "supervisor-owning":
+        return {("codex-hepta-supervisor", name) for name in OWNING}
     if phase == "fleet-owning":
         rows = json.loads((HERE / "macos_owner_cases.json").read_text())["fleet"]
         require(len(rows) == 17 and len(set(rows)) == 17, "bad fleet inventory")
@@ -72,6 +80,8 @@ def selection(phase):
     require(phase in PHASES, "unknown phase")
     if phase == "fleet-owning":
         args += ["codex-hepta-fleet", "--lib"]
+    elif phase == "supervisor-owning":
+        args += ["codex-hepta-supervisor", "--lib"]
     else:
         args += [
             "codex-hepta-supervisor",
