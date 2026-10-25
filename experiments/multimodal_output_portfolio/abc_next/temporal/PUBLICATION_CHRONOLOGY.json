@@ -1,0 +1,40 @@
+{
+  "events": [
+    {
+      "basis": "local filesystem mtime of immutable written artifact, inspected after execution; not external timestamp attestation",
+      "event": "qualification_local_freeze",
+      "sha256": "a3e0382c0fde40ceff2301e9d0e5c72d8993e42ea02b1accd5d2ce6a552f9950",
+      "timestamp_utc": "2026-10-25T06:06:58.053255+00:00"
+    },
+    {
+      "basis": "local filesystem mtime of immutable written artifact, inspected after execution; not external timestamp attestation",
+      "event": "evaluation_local_freeze",
+      "sha256": "9d74cc54fec42e9828b1b5bc110e861456d1d3bec1d0634507dd207cee038c2b",
+      "timestamp_utc": "2026-10-25T06:32:31.144328+00:00"
+    },
+    {
+      "basis": "local filesystem mtime of immutable written artifact, inspected after execution; not external timestamp attestation",
+      "event": "evaluation_start_receipt",
+      "sha256": "f353d0343e9f1e462e8656aad2a8b1e6ab61f512888cef2c9b8c492379d07817",
+      "timestamp_utc": "2026-10-25T06:32:46.450291+00:00"
+    },
+    {
+      "basis": "local filesystem mtime of immutable written artifact, inspected after execution; not external timestamp attestation",
+      "event": "evaluation_complete_receipt",
+      "sha256": "4e8ecdaba60092f01f78ec3903a9b9cd223df1e637964c178f0391f473ff2b2c",
+      "timestamp_utc": "2026-10-25T06:57:47.896262+00:00"
+    }
+  ],
+  "git_publication_before_evaluation": false,
+  "local_source_commit_first": {
+    "committer_timestamp": "2026-10-25T14:57:28+08:00",
+    "sha": "510ef8d79de2d1a004f5f6f4db339cb308493fbe"
+  },
+  "local_source_commit_last": {
+    "committer_timestamp": "2026-10-25T14:57:29+08:00",
+    "sha": "cd478e0a5aa9bdcd51c68602371a1984b205b2e2"
+  },
+  "remote_source_tip_verified_by_parent": "e04569d18504a4274d2df7ba98872f0240293d55",
+  "schema": "hepta.abc3.temporal-publication-chronology.v1",
+  "statement": "Local prospective freeze preceded evaluation. Git source/protocol publication occurred after evaluation had begun. No claim of public Git preregistration before test execution. Exact remote server publication time was not independently sampled by this child."
+}

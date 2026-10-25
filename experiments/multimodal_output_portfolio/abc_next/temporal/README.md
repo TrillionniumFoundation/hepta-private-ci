@@ -131,6 +131,19 @@ policies pay the matched common probe in this measured pipeline; an optimized
 fixed policy could omit unused probing and be cheaper. No such counterfactual
 cost saving is claimed to have been measured. Shared-host load is retained;
 there is no isolated-hardware latency guarantee.
+The timing-run clock starts after CLI parsing, frozen-input verification,
+affinity configuration and output-directory creation. It includes model/policy
+loads and all selected episodes, and stops before the final report is written.
+It does not measure Python interpreter/import startup. Each episode stops its
+timer after actual output completion/readback; writing its measurement-only
+`timing.json` receipt is outside that episode timer but inside the run clock.
+A separately pinned, stdlib-only `measure_process.py` wrapper encloses the actual
+timing child from process launch through normal exit and measures OS child
+user/system CPU and peak child RSS. Its small `TIMING_PROCESS_RECEIPT.json`
+includes Python/import startup and final report serialization, and distinguishes
+those costs from the internal runner's narrower clocks. The outer wrapper and
+command plan are additional cost measurement after the primary quality freeze;
+they do not modify the frozen timing child or any policy/quality criterion.
 
 ## Public software and model identities
 
