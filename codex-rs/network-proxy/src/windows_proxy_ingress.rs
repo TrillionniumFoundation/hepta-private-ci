@@ -5,6 +5,7 @@ use crate::windows_tcp_attribution::restricting_sids_for_tcp_connection;
 use anyhow::Context;
 use anyhow::Result;
 use rama_core::Service;
+use rama_core::rt::Executor;
 use rama_core::error::BoxError;
 use rama_core::service::BoxService;
 use rama_net::stream::Socket;
@@ -61,7 +62,7 @@ impl Service<TcpStream> for IngressDispatcher {
     async fn serve(&self, stream: TcpStream) -> Result<(), BoxError> {
         let local_addr = stream.local_addr()?;
         let peer_addr = stream.peer_addr()?;
-        let restricting_sids = restricting_sids_for_tcp_connection(local_addr, peer_addr)?;
+        let restricting_sids = restricting_sids_for_tcp_connection(local_addr.into(), peer_addr.into())?;
         let route = {
             let routes = self
                 .routes
@@ -137,9 +138,9 @@ impl WindowsProxyIngress {
         let socks_addr = listeners.socks_addr(requested_socks_addr)?;
         let (http_listener, socks_listener) = listeners.into_listeners();
         let http_listener =
-            TcpListener::try_from(http_listener).context("convert shared HTTP ingress listener")?;
+            managed_tcp_listener(http_listener).context("convert shared HTTP ingress listener")?;
         let socks_listener = socks_listener
-            .map(TcpListener::try_from)
+            .map(managed_tcp_listener)
             .transpose()
             .context("convert shared SOCKS5 ingress listener")?;
         let runtime =
@@ -255,7 +256,7 @@ impl WindowsProxyIngress {
             .context("read shared managed Windows SOCKS5 ingress address")?;
         let listener = {
             let _runtime = self.runtime.enter();
-            TcpListener::try_from(listener)
+            managed_tcp_listener(listener)
         }
         .context("convert shared SOCKS5 ingress listener")?;
         let task = spawn_socks_listener(&self.runtime, &self.routes, listener, addr);
@@ -276,6 +277,11 @@ impl Drop for WindowsProxyIngress {
             socks_task.abort();
         }
     }
+}
+
+fn managed_tcp_listener(listener: std::net::TcpListener) -> io::Result<TcpListener> {
+    listener.set_nonblocking(true)?;
+    TcpListener::try_from_std_tcp_listener(listener, Executor::default())
 }
 
 fn spawn_socks_listener(
