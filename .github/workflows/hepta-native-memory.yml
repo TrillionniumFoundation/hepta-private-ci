@@ -3,6 +3,7 @@ name: Hepta native memory development
 on:
   pull_request:
     paths:
+      - "codex-rs/arg0/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-neuron/**"
       - "codex-rs/hepta-agent-protocol/**"
@@ -98,6 +99,17 @@ jobs:
         run: |
           set -euo pipefail
           python -I -B scripts/memory_cell_native/native_ci.py --repo "$GITHUB_WORKSPACE" --binary "$CARGO_TARGET_DIR/debug/examples/native_memory_daemon" --out "$NATIVE_ARTIFACT_ROOT/run" --model-out "$RUNNER_TEMP/hepta-native-base" --expected-head "$CANDIDATE_SHA" 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/native-driver.log"
+      - name: Build separate controlled shadow qualification example
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-hepta-agentd --example native_memory_shadow --features qualification-cognitive-write 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/build-shadow-probe.log"
+      - name: Reuse trained weights for one controlled pretrained v2 shadow callback
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -I -B scripts/memory_cell_native/shadow/native_shadow_ci.py --repo "$GITHUB_WORKSPACE" --binary "$CARGO_TARGET_DIR/debug/examples/native_memory_shadow" --native-run "$NATIVE_ARTIFACT_ROOT/run" --out "$NATIVE_ARTIFACT_ROOT/shadow" --expected-head "$CANDIDATE_SHA" 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/shadow-driver.log"
       - name: Scoped lint fix and final formatting proposal
         working-directory: codex-rs
         shell: bash
