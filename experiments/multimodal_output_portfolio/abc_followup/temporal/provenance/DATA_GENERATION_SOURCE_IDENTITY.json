@@ -7,7 +7,7 @@
   },
   "current_source_hashes": {
     "state.py": "87f7f069691b5bb253d9c29a58d385f3b8687eeb001ea0dc6acc8708ffe5d349",
-    "run.py": "e54e88169fab7a4d0b1aa59ae52ebaf4ba3a462b960872f2d72c00fc47d62537"
+    "run.py": "a38cb0865253ed569fc06f8ec1a9262482d8d9f96597cdfcea9ecf88dca995b4"
   },
   "ast_functions_changed": {
     "state.py": [
@@ -19,7 +19,12 @@
   },
   "source_role": "fit data generation only",
   "state_scope": "Only features changed. Matrix generation does not call features; owner, fusion, output rendering, metrics, and full raw Frame serialization are unchanged.",
-  "run_scope": "Only final-evaluation/deferred-scoring asset guards changed; fit branch and its executed requests are unchanged.",
+  "run_scope": "Final-evaluation/deferred-scoring guards and selection-only candidate list/feedback variant routing changed; the fit branch and actual matrix requests are unchanged.",
   "value_py_start_pin": "run records its then-present value.py hash but matrix mode neither imports nor uses this critic module; subsequent critic training records its own current source hash.",
-  "restoration": "Use these exact state.py/run.py bytes together with other original worker-start pinned modules to reconstruct the fit generator. These archived source modules are provenance, not current entry points."
+  "restoration": "Use these exact state.py/run.py bytes together with other original worker-start pinned modules to reconstruct the fit generator. These archived source modules are provenance, not current entry points.",
+  "other_fit_source_at_commit": {
+    "commit": "5b266e6e8a085bd65df83d8263c737f921d14bab",
+    "path": "experiments/multimodal_output_portfolio/abc_followup/temporal",
+    "notes": "tasks.py/episodes.py used by fit are available here; exact old state.py/run.py bytes are in the provenance subdirectory. Later cue-only changes affect feedback/selection only, not matrix fit generation."
+  }
 }

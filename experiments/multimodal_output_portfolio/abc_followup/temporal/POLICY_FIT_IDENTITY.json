@@ -1,0 +1,148 @@
+{
+  "backup": "source-held-out mean of three Q1 positive-value heads, then minimum over actions; common target for every Q2 seed; same ensemble continuation rule as deployment",
+  "config": {
+    "feedback_hidden": 32,
+    "feedback_variants": [
+      "full",
+      "cue_only"
+    ],
+    "folds": 2,
+    "gamma": 2.0,
+    "initial_hidden": 64,
+    "l2": 0.0005,
+    "learning_rate": 0.008,
+    "positive_floor": 0.001,
+    "price": 0.05,
+    "steps": 1200
+  },
+  "external_observer_used": false,
+  "fit_cases": 128,
+  "fit_code_sha256": "41bb49504ccede504256ddad5caeb82737c890bb4545f60d4363c644a4ef086a",
+  "fit_fixed_ce": [
+    0.7345386955861016,
+    0.7182029958525393,
+    0.8243491644140485,
+    0.7789434108536335
+  ],
+  "fit_index_sha256": "59590cbedf1bc04695d55ff5dbd6fafcc47cf674dddd45e4695b2c28e2d085b5",
+  "fit_mse": {
+    "cue_only": {
+      "q1": [
+        0.0003532132278429029,
+        0.00035608053934821414,
+        0.00035247686314453073
+      ],
+      "q2": [
+        0.00030766000799146585,
+        0.0002939589604362933,
+        0.00029240295875019185
+      ]
+    },
+    "full": {
+      "q1": [
+        0.00027247294296377055,
+        0.00028637700800041596,
+        0.00028659341697194376
+      ],
+      "q2": [
+        0.0003547616608277622,
+        0.00034291305570277115,
+        0.00033327575410820514
+      ]
+    }
+  },
+  "fit_sources": 32,
+  "fixed_cost_labels": "matrix wall minus actual first-output Vosk observation; approximate training/selection only",
+  "fold_assignments": {
+    "03e0843b4bf18957d8523ed666fb1bedc0e705f4954c94f02d3d0a61ecae32be": 0,
+    "198078c9c8b64d54c3dd9e101c5920809966b397985c833e17dcc96d3e41321f": 1,
+    "1a18b97642d2b51059bf6c901cd1cb2dff9400f28697c711470303d12b2f12f8": 0,
+    "28a44229e0143fba178d16d918a23480bdcc65160d7d55aff65c708b47fa9635": 1,
+    "2d6c3afe9c6defb94cf341299d75e7009c280d434158f59d65a3cac8f9fb3d14": 0,
+    "31f745775c2d9688c1deb42efd65f824c4b0e5ae9d7475200c15f99054d30cfe": 1,
+    "398ca9de56db7121c1c9f28e02b4af888a36aa507489c634f7fcf9b43121198d": 0,
+    "45d3353eb6a84204e060e8e1a672eb22dbb464564ed2e665ed4ed755fb198630": 1,
+    "487691486edce9ee8b5a7e8112b9e0ca3feabdf75f574c5a0e6ae6ea3cc41e02": 0,
+    "5878ce43d8c387966081d084d3b952f8a28c548f34947b35e82251726dd98af7": 1,
+    "5b23dd5a20e85d79d034f4e6ea29e293ea669c1b222f09d03f0aac9be097f3cf": 0,
+    "5f544375f98484d00b16a52d07e8065bfd228324ae293a5ef6792e50d5e6075b": 1,
+    "60f0f2306fec4416d9268087f4c0ba74bf9a9d217ac9efc07fef89c80090e7e2": 0,
+    "6e95e74dd1fb1adf39e0f55ca98aabd2c076f4531df67195ac2c0c8aa5ca7e28": 1,
+    "8410e4c66732b3558b95fd03682c9b9b92ff0febe02177bd23e27ce01002b38b": 0,
+    "89191992b0342beeb40a66e1ce2148b0df958abf97a3236fd8a0cb8080b14370": 1,
+    "895120f48963819242b2646e64619e790434f32941ba6b8127814465c2ae50f4": 0,
+    "8aff25c75288842428e46f4954f818a1ca82bbb32213ccdda7a5e1e9cc2847c4": 1,
+    "a0109d604dca1d209303edd614866c1c9644c4a5c9db4c848febe922fde3aa3f": 0,
+    "a228bc1dad61235072dd7d641b7bc939c6769bbb76a35f09e50b03cbbd130daa": 1,
+    "b233ec3c894f59ca1a5b804cd4fcb02499f5d0ae2137912aa3af9b29e9277df6": 0,
+    "bb230c46631da7e58afe07c6efe0f84a390081b4d4c4a35f2f6c56226eb20a4f": 1,
+    "bcb5edad7c0df4e8be893e5d6ea49a782d659b8fde3a813c65df382f9070c297": 0,
+    "be071f21a681850c59f2bf59df2e89522e6492af9e7ba594a6d397703877e1ae": 1,
+    "c023b399d685938afaa3f913e851716221c711546bc295eb0ef578b1de98e819": 0,
+    "ce447721ce6cdf5286e119f419f7830bafda7eed01966b4eae5f6668baaafa0b": 1,
+    "d18e63b9a740c84f230b1b7374b6b29cf4bfc1063c1d9cfb99fffd799f3df7a7": 0,
+    "d5e0dd7acdfe57b61ca9c2a4b1610dd8d73036b87376083b9c9588173a677e8c": 1,
+    "df63c4d20cf4e005518f7584168415058c50b18920ae72049b5134a7d2ef9809": 0,
+    "e00ebbc6e179e39c2738fb93de03e2f0bb2749d8c2c124e9a93b45d87df72c1f": 1,
+    "e454ee978c7d347b8012e1bab5bd422329db00211fee52eaef54adfdca15aa94": 0,
+    "fe34eb47bcc0838653e986afbb1b267bec6933f9a641d568bd9e71f38b62c658": 1
+  },
+  "initial_fit_mse": [
+    0.0024007763731980864,
+    0.0024609001434662044,
+    0.0025186418634690804
+  ],
+  "initial_parameters_per_seed": 5572,
+  "labels": "online Vosk only; full terminal utility and measured component costs",
+  "parameter_counts": {
+    "cue_only": {
+      "q1": 2722,
+      "q2": 2722
+    },
+    "full": {
+      "q1": 2722,
+      "q2": 2722
+    }
+  },
+  "policy_sha256": "d75c65e2a2544419106be421dbfb294d2373ed5787e57343169f25b3c2889945",
+  "process_receipt": {
+    "child_peak_rss_kib": 56260,
+    "child_pid": 8,
+    "command": [
+      "/workspace/scratch/2b3c256bef7d/speech-env/bin/python",
+      "-m",
+      "experiments.multimodal_output_portfolio.abc_followup.temporal.value",
+      "fit",
+      "--fit-run",
+      "/workspace/scratch/2b3c256bef7d/abc4-temporal-runs/fit-001",
+      "--output",
+      "/workspace/scratch/2b3c256bef7d/abc4-temporal-runs/policies-fitted-001.json"
+    ],
+    "exit_code": 0,
+    "exit_utc": "2026-10-25T08:25:18.731897+00:00",
+    "full_child_cpu_ns": 10408702000,
+    "full_child_wall_ns": 10422590066,
+    "launch_utc": "2026-10-25T08:25:08.309307+00:00",
+    "outer_cpu_ns": 815782,
+    "phase": "critic-fit",
+    "plan_sha256": "d396f0053a1e60e1e90c6a4c203765e9cc6f56f8865fff0edce0c76770e498fd",
+    "resource_measurement": "os.wait4 exact new child PID; no cumulative prior-child counters",
+    "schema": "hepta.abc4.temporal-process-receipt.v1",
+    "scope": "launch/imports/input validation/model loads/all phase work/report writes/child exit; excludes outer wrapper startup and receipt serialization; no sum of concurrent resident memory"
+  },
+  "public_feature_dimension": 82,
+  "schema": "hepta.abc4.temporal-value.v1",
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "selected_feedback_variant": "full",
+  "selected_fixed_route": [
+    1,
+    0
+  ],
+  "training_cpu_ns": 10253354991,
+  "training_wall_ns": 10264348476,
+  "value_clock_origins": "Q1: remaining wall time after second decision gate; Q2 multiplier: actual delta from first to second gate; initial-only and final evaluation: complete request wall time"
+}

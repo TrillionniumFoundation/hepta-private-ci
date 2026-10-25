@@ -1,0 +1,12 @@
+{
+  "schema": "hepta.abc4.phase-process-source.v1",
+  "executed_wrapper_sha256": "f206f807af13f6582081665cf3d090473d18a30e022a1a7f4a87b54c90ac8896",
+  "executed_phases": [
+    "qualification-001",
+    "critic-fit-001"
+  ],
+  "original_module": "experiments.multimodal_output_portfolio.abc_followup.temporal.process",
+  "replacement": "experiments.multimodal_output_portfolio.abc_followup.process",
+  "reason": "Reuse the already existing common exact-PID wrapper for every subsequent phase; retain original executed wrapper bytes as provenance only.",
+  "resource_scope": "Both wrappers use exact-PID os.wait4; each receipt declares its own boundary."
+}
