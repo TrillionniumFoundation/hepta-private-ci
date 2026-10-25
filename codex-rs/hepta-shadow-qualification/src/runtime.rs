@@ -136,6 +136,9 @@ impl QualificationRuntimeLayout {
             let path = layout.home().join("installation_id");
             let mut options = OpenOptions::new();
             options.read(true);
+            // FlushFileBuffers requires write access; this does not alter contents.
+            #[cfg(windows)]
+            options.write(true);
             #[cfg(unix)]
             {
                 use std::os::unix::fs::OpenOptionsExt;

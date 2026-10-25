@@ -1,3 +1,4 @@
+#[cfg(not(windows))]
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read;
@@ -118,6 +119,9 @@ pub(crate) fn verify_private_tree(root: &Path) -> Result<(), QualificationError>
 }
 
 pub(crate) fn sync_directory(path: &Path) -> Result<(), QualificationError> {
+    #[cfg(windows)]
+    super::durable_windows::sync_directory(path)?;
+    #[cfg(not(windows))]
     File::open(path)?.sync_all()?;
     Ok(())
 }
