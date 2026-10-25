@@ -58,19 +58,131 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -n "$PR_NUMBER"
-          ref_json="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge")"
-          actual_sha="$(jq -er '.object.sha' <<<"$ref_json")"
-          commit_json="$(gh api "repos/$REPO/git/commits/$actual_sha")"
-          mapfile -t parents < <(jq -r '.parents[].sha' <<<"$commit_json")
-          test "${#parents[@]}" -eq 2
-          test "${parents[0]}" = "$BASE_SHA"
-          test "${parents[1]}" = "$SOURCE_SHA"
-          actual_tree="$(jq -er '.tree.sha' <<<"$commit_json")"
-          expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
-          test "$actual_tree" = "$expected_tree"
-          printf 'GITHUB_PROSPECTIVE_MERGE_SHA=%s\n' "$actual_sha" >> "$GITHUB_ENV"
-          printf 'GITHUB_PROSPECTIVE_MERGE_TREE=%s\n' "$actual_tree" >> "$GITHUB_ENV"
+          python3 - <<'PYCODE'
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+          import sys
+
+          base, source = os.environ.get("BASE_SHA"), os.environ.get("SOURCE_SHA")
+          repo, pr = os.environ.get("REPO"), os.environ.get("PR_NUMBER")
+          record = {
+              "schema_version": 1,
+              "status": "failed",
+              "stage": "inputs",
+              "reason": "verification did not complete",
+              "expected": {
+                  "base_sha": base,
+                  "source_sha": source,
+                  "parents": [base, source],
+                  "tree": None,
+              },
+              "actual": {"sha": None, "commit_sha": None, "parents": None, "tree": None},
+          }
+          output = (
+              Path(os.environ["RUNNER_TEMP"]) / "hepta-command-records" / "prospective-merge.json"
+          )
+          output.parent.mkdir(parents=True, exist_ok=True)
+          output.write_text(json.dumps(record, sort_keys=True) + "\n")
+
+
+          def sha(value):
+              if not isinstance(value, str) or re.fullmatch(r"[0-9a-f]{40}", value) is None:
+                  raise ValueError("missing or invalid full SHA-1")
+              return value
+
+
+          def unique_object(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise ValueError("duplicate JSON key")
+                  result[key] = value
+              return result
+
+
+          def command(*args):
+              # Retain the active stage even if the runner is interrupted during I/O.
+              output.write_text(json.dumps(record, sort_keys=True) + "\n")
+              result = subprocess.run(args, capture_output=True, text=True, check=False)
+              if result.returncode:
+                  record["command_exit_code"] = result.returncode
+                  raise ValueError("command failed")
+              return result.stdout
+
+
+          try:
+              sha(base)
+              sha(source)
+              if not repo or not pr or re.fullmatch(r"[1-9][0-9]*", pr) is None:
+                  raise ValueError("missing repository or invalid pull request number")
+              record["stage"] = "ref-api"
+              response = command("gh", "api", f"repos/{repo}/git/ref/pull/{pr}/merge")
+              record["stage"] = "ref-json"
+              ref = json.loads(response, object_pairs_hook=unique_object)
+              if not isinstance(ref, dict) or ref.get("truncated", False) is not False:
+                  raise ValueError("truncated or unknown ref response")
+              actual_sha = sha(ref["object"]["sha"])
+              record["actual"]["sha"] = actual_sha
+              if ref["ref"] != f"refs/pull/{pr}/merge" or ref["object"]["type"] != "commit":
+                  raise ValueError("response is not the requested merge commit ref")
+              record["stage"] = "commit-api"
+              response = command("gh", "api", f"repos/{repo}/git/commits/{actual_sha}")
+              record["stage"] = "commit-json"
+              commit = json.loads(response, object_pairs_hook=unique_object)
+              if not isinstance(commit, dict) or commit.get("truncated", False) is not False:
+                  raise ValueError("truncated or unknown commit response")
+              commit_sha = sha(commit["sha"])
+              record["actual"]["commit_sha"] = commit_sha
+              if commit_sha != actual_sha:
+                  raise ValueError("commit identity differs from merge ref")
+              parents = commit["parents"]
+              if not isinstance(parents, list):
+                  raise ValueError("missing or invalid ordered parents")
+              parents = [sha(parent["sha"]) for parent in parents]
+              record["actual"].update(
+                  parents=parents[:3],
+                  parent_count=len(parents),
+                  parents_truncated=len(parents) > 3,
+              )
+              actual_tree = sha(commit["tree"]["sha"])
+              record["actual"]["tree"] = actual_tree
+              record["stage"] = "parent-count"
+              if len(parents) != 2:
+                  raise ValueError("merge commit must have exactly two parents")
+              record["stage"] = "base-parent"
+              if parents[0] != base:
+                  raise ValueError("first parent differs from expected base")
+              record["stage"] = "source-parent"
+              if parents[1] != source:
+                  raise ValueError("second parent differs from expected source")
+              record["stage"] = "merge-tree"
+              expected_tree = sha(
+                  command("git", "merge-tree", "--write-tree", base, source).rstrip("\n")
+              )
+              record["expected"]["tree"] = expected_tree
+              record["stage"] = "tree-match"
+              if actual_tree != expected_tree:
+                  raise ValueError("merge tree differs from expected base/source tree")
+              record["stage"] = "export"
+              with Path(os.environ["GITHUB_ENV"]).open("a") as stream:
+                  stream.write(
+                      f"GITHUB_PROSPECTIVE_MERGE_SHA={actual_sha}\nGITHUB_PROSPECTIVE_MERGE_TREE={actual_tree}\n"
+                  )
+              record.update(status="success", stage="complete", reason=None)
+          except (ValueError, KeyError, TypeError, OSError, RecursionError) as error:
+              # Never retain raw API output, stderr, credentials, or unbounded error text.
+              record["reason"] = str(error) if type(error) is ValueError else type(error).__name__
+          finally:
+              output.write_text(json.dumps(record, sort_keys=True) + "\n")
+          if record["status"] != "success":
+              print(
+                  f"::error title=Prospective merge verification::{record['stage']}: {record['reason']}"
+              )
+              sys.exit(1)
+          PYCODE
       - name: Construct the canonical prospective merge
         id: synthetic
         if: matrix.lane == 'base-merge'
@@ -125,7 +237,7 @@ jobs:
       - name: Repository-control rejection regressions
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/repository-controls.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_repository_controls scripts.test_hepta_control_hardening scripts.test_hepta_candidate_transport_workflow
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/repository-controls.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_repository_controls scripts.test_hepta_control_hardening scripts.test_hepta_candidate_transport_workflow scripts.test_hepta_prospective_merge_workflow
       - name: Prepare native prerequisites
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
         run: |
