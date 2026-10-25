@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.native-memory.source-build-helper-prepare-qualification.v1",
+  "created_at_utc": "2026-10-25T00:38:21.251995+00:00",
+  "archive": "native-qualification-006-build-helper-prepare.tar.xz",
+  "archive_bytes": 495328,
+  "archive_sha256": "0d07d53eb8245a4e2bb6e454c6f9a523e57bffee9ccb48b9408fe77424afcb30",
+  "archive_members": 49,
+  "readme_sha256": "04a5814dcebbe6e27fbbe252fba00f86aa10c9b8640049feb579b58f43941e82",
+  "source_head": "8a47cdd26574a85cd314fabce65cc395dbe316a8",
+  "source_tree": "e5fc7789c9bc74919cb6ac0d37894f688e09526d",
+  "qualification006": {
+    "exit_code": 0,
+    "tests_run": 651,
+    "passed": 651,
+    "failed": 0,
+    "skipped": 13,
+    "test_seconds": 54.325,
+    "command_seconds": 96.52005306499996,
+    "source_unchanged": true,
+    "log_sha256": "3d7dc6929cf31d9264dd75fcbe6146fc6b5b2d46ac30a72bdc294ece9ab7495f",
+    "native_model_calls": 0
+  },
+  "examples_build001": {
+    "exit_code": 0,
+    "seconds": 2.782481655999618,
+    "source_unchanged": true,
+    "log_sha256": "b0759bd1f54dfdf97dbe8c05a138fb0566fcf3bff7231fc247f9f5fa1936f378",
+    "binaries": {
+      "native_memory_daemon": {
+        "sha256": "e3e923ae95118dcb09f866b325b2e108a717f60bdb11e255b4d2213012820470",
+        "bytes": 479624264
+      },
+      "native_memory_shadow": {
+        "sha256": "0b48a4cdf49bd7f32fce4de35df6ef2998d98276fda88925dd29fedf719e8d7d",
+        "bytes": 76122376
+      }
+    },
+    "native_model_calls": 0
+  },
+  "fshelper001": {
+    "exit_code": 0,
+    "seconds": 0.01508478199957608,
+    "actual_processes": 1,
+    "stdout_sha256": "fb28d7dfb22c0554aab4a48586e6dd5a57bfbb50ede6e6fd0ace03693ad131f3",
+    "binary_matches_build": true,
+    "native_model_calls": 0
+  },
+  "prepare_owner": {
+    "exit_code": 0,
+    "attempts": 1,
+    "seconds": 0.21501061399976606,
+    "anchor_file_sha256": "d29e701b7acd57cf826a26ffecc2911867c14954dc1df0af9cb5e29d90ec9ca5",
+    "native_model_calls": 0,
+    "parent_pipeline_model_counts": "excluded; parent pipeline training is not counted as zero"
+  },
+  "wire_tests001": {
+    "source_head": "c31df4d2eb52c7053b145ac1be3b2a0219271340",
+    "tests_run": 4,
+    "passed": 4,
+    "exit_code": 0,
+    "pretrained_model_calls": 0
+  },
+  "runtime_freeze": {
+    "bytes": 478,
+    "entries": 28,
+    "sha256": "d7679c0e602ea0deedf39d02d09085c4d44953df8523f1b8fe45b899c4184e59",
+    "method": "root-reported uv with explicit writable /tmp cache; exact argv receipt unavailable"
+  },
+  "qualified_source_content_matches_build": true,
+  "source_map_hash_semantics": "9703 exact entries plus one verified symlink-text/referent representation bridge; 17 restored files are published evidence only",
+  "app_server_readiness_proved": false,
+  "pretrained_model_success_proved": false,
+  "production_qualified": false,
+  "collection_actions": "Read completed records and copied only fixed prepare files; no build/test/model execution, primary modification or remote write performed by the collector."
+}
