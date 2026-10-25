@@ -113,6 +113,11 @@ fn reconciliation_response(
     session_id: &str,
     turns: Vec<Turn>,
 ) -> RemoteAppServerObservedResponse<ThreadReadResponse> {
+    let cwd = std::env::temp_dir();
+    assert!(
+        cwd.is_absolute(),
+        "reconciliation fixture cwd must be absolute"
+    );
     let mut response: ThreadReadResponse = serde_json::from_value(json!({
         "thread": {
             "id": "thread:test",
@@ -124,7 +129,7 @@ fn reconciliation_response(
             "updatedAt": 2,
             "recencyAt": 2,
             "status": {"type": "idle"},
-            "cwd": "/tmp",
+            "cwd": cwd,
             "cliVersion": "test",
             "source": "exec",
             "turns": []
