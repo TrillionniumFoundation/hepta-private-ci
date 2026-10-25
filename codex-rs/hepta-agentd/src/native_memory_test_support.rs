@@ -64,18 +64,49 @@ pub(crate) async fn fixture() -> Fixture {
         .await
         .unwrap(),
     );
-    let access = CognitiveAccess::agent_private(owner);
+    fixture_with_writer(temp, writer, verifier).await
+}
+
+pub(crate) async fn fixture_with_writer(
+    temp: tempfile::TempDir,
+    writer: Arc<ProductionDurableWriter>,
+    verifier: Arc<Verifier>,
+) -> Fixture {
+    fixture_with_document_bytes(temp, writer, verifier, controlled_document_bytes()).await
+}
+
+pub(crate) fn controlled_document_bytes() -> Vec<u8> {
     let key = MemoryCellKeyV1 {
         role: MemoryCellRoleV1::Procedural,
         entity: "case-one".to_string(),
         relation: "repair".to_string(),
     };
-    let content = serde_json::to_string(&MemoryCellDocumentV1 {
+    serde_json::to_string(&MemoryCellDocumentV1 {
         schema_version: 1,
-        key: key.clone(),
+        key,
         value: "order".to_string(),
     })
-    .unwrap();
+    .unwrap()
+    .into_bytes()
+}
+
+pub(crate) async fn fixture_with_document_bytes(
+    temp: tempfile::TempDir,
+    writer: Arc<ProductionDurableWriter>,
+    verifier: Arc<Verifier>,
+    document_bytes: Vec<u8>,
+) -> Fixture {
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_millis() as u64;
+    let access = CognitiveAccess::agent_private(writer.owner_agent_id().clone());
+    // Preserve the original UTF-8 bytes, including whitespace. Parsing selects
+    // the typed key; it never reserializes the source into different ancestry.
+    let content = String::from_utf8(document_bytes).unwrap();
+    let document: MemoryCellDocumentV1 = serde_json::from_str(&content).unwrap();
+    document.validate().unwrap();
+    let key = document.key;
     let source = SourceDraft {
         scope: CognitiveScope::AgentPrivate,
         kind: LedgerSourceKind::ExplicitMemoryDirective,
