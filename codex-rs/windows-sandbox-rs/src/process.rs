@@ -2,6 +2,8 @@ use crate::desktop::LaunchDesktop;
 #[path = "owned_child_stdio.rs"]
 mod owned_child_stdio;
 use owned_child_stdio::OwnedChildStdio;
+#[path = "prepared_process_context.rs"]
+mod prepared_context;
 use crate::logging;
 use crate::proc_thread_attr::ProcThreadAttributeList;
 use crate::winutil::argv_to_command_line;
@@ -11,6 +13,7 @@ use anyhow::Context;
 use anyhow::Result;
 use anyhow::anyhow;
 use codex_utils_pty::JobObject;
+pub use prepared_context::PreparedProcessContext;
 use std::collections::HashMap;
 use std::ffi::c_void;
 use std::os::windows::io::AsRawHandle;
@@ -80,11 +83,65 @@ pub unsafe fn create_process_as_user(
     console_mode: ConsoleMode,
     use_private_desktop: bool,
 ) -> Result<CreatedProcess> {
+    let desktop = LaunchDesktop::prepare(h_token, use_private_desktop, logs_base_dir)?;
+    let job = Arc::new(JobObject::create().context("create process job")?);
+    create_process_on_desktop(
+        h_token,
+        argv,
+        cwd,
+        env_map,
+        logs_base_dir,
+        stdio,
+        console_mode,
+        desktop,
+        job,
+    )
+}
+
+/// Consumes the qualified owner's one-use launch resources. Process creation
+/// itself does not prove image initialization or terminal reconciliation.
+///
+/// # Safety
+/// All explicitly supplied stdio handles must remain valid until return.
+#[allow(clippy::too_many_arguments)]
+pub unsafe fn create_process_as_user_prepared(
+    context: PreparedProcessContext,
+    argv: &[String],
+    cwd: &Path,
+    env_map: &HashMap<String, String>,
+    logs_base_dir: Option<&Path>,
+    stdio: Option<(HANDLE, HANDLE, HANDLE)>,
+    console_mode: ConsoleMode,
+) -> Result<CreatedProcess> {
+    let (token, desktop, job) = context.into_parts()?;
+    create_process_on_desktop(
+        token.as_raw_handle() as HANDLE,
+        argv,
+        cwd,
+        env_map,
+        logs_base_dir,
+        stdio,
+        console_mode,
+        desktop,
+        job,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+unsafe fn create_process_on_desktop(
+    h_token: HANDLE,
+    argv: &[String],
+    cwd: &Path,
+    env_map: &HashMap<String, String>,
+    logs_base_dir: Option<&Path>,
+    stdio: Option<(HANDLE, HANDLE, HANDLE)>,
+    console_mode: ConsoleMode,
+    desktop: LaunchDesktop,
+    job: Arc<JobObject>,
+) -> Result<CreatedProcess> {
     let cmdline_str = argv_to_command_line(argv);
     let mut cmdline: Vec<u16> = to_wide(&cmdline_str);
     let env_block = make_env_block(env_map);
-    let desktop = LaunchDesktop::prepare(h_token, use_private_desktop, logs_base_dir)?;
-    let job = Arc::new(JobObject::create().context("create process job")?);
     let mut pi: PROCESS_INFORMATION = std::mem::zeroed();
     let cwd_wide = to_wide(cwd);
     let env_block_len = env_block.len();
@@ -194,6 +251,58 @@ pub fn spawn_process_with_pipes(
     use_private_desktop: bool,
     logs_base_dir: Option<&Path>,
 ) -> Result<PipeSpawnHandles> {
+    spawn_with_pipes(
+        PipeLaunch::Legacy(h_token, use_private_desktop),
+        argv,
+        cwd,
+        env_map,
+        stdin_mode,
+        stderr_mode,
+        console_mode,
+        logs_base_dir,
+    )
+}
+
+/// Pipe launch for the admitted owner; retains the same EOF/output contracts.
+#[allow(clippy::too_many_arguments)]
+pub fn spawn_process_with_pipes_prepared(
+    context: PreparedProcessContext,
+    argv: &[String],
+    cwd: &Path,
+    env_map: &HashMap<String, String>,
+    stdin_mode: StdinMode,
+    stderr_mode: StderrMode,
+    console_mode: ConsoleMode,
+    logs_base_dir: Option<&Path>,
+) -> Result<PipeSpawnHandles> {
+    spawn_with_pipes(
+        PipeLaunch::Prepared(context),
+        argv,
+        cwd,
+        env_map,
+        stdin_mode,
+        stderr_mode,
+        console_mode,
+        logs_base_dir,
+    )
+}
+
+enum PipeLaunch {
+    Legacy(HANDLE, bool),
+    Prepared(PreparedProcessContext),
+}
+
+#[allow(clippy::too_many_arguments)]
+fn spawn_with_pipes(
+    launch: PipeLaunch,
+    argv: &[String],
+    cwd: &Path,
+    env_map: &HashMap<String, String>,
+    stdin_mode: StdinMode,
+    stderr_mode: StderrMode,
+    console_mode: ConsoleMode,
+    logs_base_dir: Option<&Path>,
+) -> Result<PipeSpawnHandles> {
     let mut in_r: HANDLE = 0;
     let mut in_w: HANDLE = 0;
     let mut out_r: HANDLE = 0;
@@ -227,16 +336,27 @@ pub fn spawn_process_with_pipes(
 
     let stdio = Some((in_r, out_w, stderr_handle));
     let spawn_result = unsafe {
-        create_process_as_user(
-            h_token,
-            argv,
-            cwd,
-            env_map,
-            logs_base_dir,
-            stdio,
-            console_mode,
-            use_private_desktop,
-        )
+        match launch {
+            PipeLaunch::Legacy(h_token, use_private_desktop) => create_process_as_user(
+                h_token,
+                argv,
+                cwd,
+                env_map,
+                logs_base_dir,
+                stdio,
+                console_mode,
+                use_private_desktop,
+            ),
+            PipeLaunch::Prepared(context) => create_process_as_user_prepared(
+                context,
+                argv,
+                cwd,
+                env_map,
+                logs_base_dir,
+                stdio,
+                console_mode,
+            ),
+        }
     };
     let created = match spawn_result {
         Ok(v) => v,
