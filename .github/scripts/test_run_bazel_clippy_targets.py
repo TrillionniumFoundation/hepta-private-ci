@@ -113,6 +113,32 @@ class ClippyTargetSelectionTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual([line for line in result.stdout.splitlines() if line], PREFIX)
 
+    def test_only_exact_cognitive_product_helper_is_nonwindows(self):
+        target = "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin"
+        lookalikes = [
+            target + "-extra",
+            target.replace("hepta-agentd:", "other:"),
+            "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin",
+        ]
+        labels = [*LABELS, target, *lookalikes]
+        for runner in ("Windows", "Linux", "macOS", ""):
+            with self.subTest(runner=runner):
+                result, _ = self.invoke(runner, labels=labels)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                expected = PREFIX + [LABELS[0], LABELS[1], LABELS[3]]
+                if runner != "Windows":
+                    expected.append(target)
+                self.assertEqual(result.stdout.splitlines(), expected + lookalikes)
+        result, _ = self.invoke("Windows", labels=[target])
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual([line for line in result.stdout.splitlines() if line], PREFIX)
+
+    def test_cognitive_filter_does_not_hide_failed_query(self):
+        target = "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin"
+        result, _ = self.invoke("Windows", labels=[target], query_exit=37)
+        self.assertEqual(result.returncode, 37)
+        self.assertEqual(result.stdout, "")
+
     def test_empty_query_preserves_package_pattern(self):
         result, _ = self.invoke("Windows", labels=[])
         self.assertEqual(result.returncode, 0, result.stderr)

@@ -43,6 +43,14 @@ elif [[ $windows_cross_compile -eq 1 ]]; then
   manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | grep -v -- '-test-bin$' || true)"
 fi
 
+if [[ "${RUNNER_OS:-}" == "Windows" && $windows_cross_compile -eq 0 ]]; then
+  # This one native helper is Linux/macOS-only in _COGNITIVE_E2E_COMPATIBILITY.
+  # Keep it on those hosts, and keep every other native/manual MSVC helper.
+  # The package pattern remains: platform analysis, not a test skip, excludes
+  # its incompatible public wrapper on Windows.
+  manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | awk '$0 != "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin"')"
+fi
+
 printf '%s\n' \
   "//codex-rs/..." \
   "-//codex-rs/v8-poc:all"
