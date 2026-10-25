@@ -7280,3 +7280,46 @@ fn remote_catalog_in_flight_stale_refresh_deduplicates_without_suppressing_force
             .is_some()
     );
 }
+
+#[test]
+fn remote_catalog_in_flight_stale_refresh_preserves_auth_mode_boundary() {
+    let config = RemotePluginServiceConfig::new(
+        "https://plugins.example/".to_string(),
+        test_http_client_factory(),
+    );
+    let api_auth = test_auth_manager(Some(AuthMode::ApiKey))
+        .auth_cached()
+        .expect("API key test auth");
+    let headers_auth = test_auth_manager(Some(AuthMode::Headers))
+        .auth_cached()
+        .expect("headers test auth");
+    let api_identity = RemoteInstalledPluginsAuthIdentity::from_auth(Some(&api_auth));
+    let headers_identity = RemoteInstalledPluginsAuthIdentity::from_auth(Some(&headers_auth));
+    assert_ne!(api_identity.auth_mode, headers_identity.auth_mode);
+    assert_eq!(api_identity.account_id, headers_identity.account_id);
+    assert_eq!(api_identity.chatgpt_user_id, headers_identity.chatgpt_user_id);
+    assert_eq!(
+        api_identity.is_workspace_account,
+        headers_identity.is_workspace_account
+    );
+
+    let state = RemoteCatalogCacheRefreshState {
+        active_request: Some(RemoteCatalogCacheRefreshRequest {
+            service_config: config.clone(),
+            auth: Some(api_auth),
+            scopes: BTreeSet::from([RemotePluginScope::Global]),
+            mode: RemoteCatalogCacheRefreshMode::OnlyIfStale,
+        }),
+        ..Default::default()
+    };
+    let next = RemoteCatalogCacheRefreshRequest {
+        service_config: config,
+        auth: Some(headers_auth),
+        scopes: BTreeSet::from([RemotePluginScope::Global]),
+        mode: RemoteCatalogCacheRefreshMode::OnlyIfStale,
+    };
+    assert!(
+        state.without_in_flight_stale_scopes(next).is_some(),
+        "different auth modes must not share in-flight stale refresh requests"
+    );
+}

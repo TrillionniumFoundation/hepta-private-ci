@@ -297,12 +297,8 @@ struct RemoteCatalogCacheRefreshRequest {
 impl RemoteCatalogCacheRefreshRequest {
     fn has_same_cache_identity(&self, other: &Self) -> bool {
         self.service_config == other.service_config
-            && self.auth.as_ref().and_then(CodexAuth::get_account_id)
-                == other.auth.as_ref().and_then(CodexAuth::get_account_id)
-            && self.auth.as_ref().and_then(CodexAuth::get_chatgpt_user_id)
-                == other.auth.as_ref().and_then(CodexAuth::get_chatgpt_user_id)
-            && self.auth.as_ref().map(CodexAuth::is_workspace_account)
-                == other.auth.as_ref().map(CodexAuth::is_workspace_account)
+            && RemoteInstalledPluginsAuthIdentity::from_auth(self.auth.as_ref())
+                == RemoteInstalledPluginsAuthIdentity::from_auth(other.auth.as_ref())
     }
 }
 
