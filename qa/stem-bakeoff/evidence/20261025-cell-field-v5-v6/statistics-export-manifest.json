@@ -1,0 +1,58 @@
+{
+  "executed_exporter": {
+    "path": "/workspace/scratch/60f94d809f44/pft-export-statistics-v5-v6.py",
+    "publication_name": "export-statistics-executed.py",
+    "scope": "exact historical exporter that generated both independently audited input files",
+    "sha256": "249393d74a79fb86ecd3ae54323c2902fd2146e203e729dd4970cbf9396ef66a"
+  },
+  "exports": {
+    "v5": {
+      "arrays_bytes": 1997390,
+      "arrays_sha256": "681e8eedfe48a6326d8f73d4246175642df249509cb7fc5328830c31fd0413b9",
+      "evaluation_sha256": "89a988a9717f2d003e6cc86e63b74cc53a2ce605052be94c6760a24413cfde46",
+      "independent_statistics_audit_sha256": "b8d9376902fd58bef689300e66e944728783b2a40e9626b7bf246c8c2a76cd76",
+      "manifest_sha256": "4ae63c6bd5a16cd2057b8d8748047d8d3f092db8f02675e8e65ab4150ef7f526",
+      "metric_rows": 228,
+      "pre_evaluation_seal_sha256": "6232c84ff700bd914bec340f645454b8f9a6c40daa984aeb220261bbdb010ff9",
+      "primary_contrasts": 12,
+      "timing_records": 72
+    },
+    "v6": {
+      "arrays_bytes": 2002982,
+      "arrays_sha256": "b114f8d5eafb2b1590b7641f5a369e33099d0cb60fbb2cd8c80105aa4bec15dd",
+      "evaluation_sha256": "3764528e546afde510c834e6f1391002d7abba45ca211b9274f8c6a6a9172498",
+      "independent_statistics_audit_sha256": "af4dc90a48f6ea3a1c4bea5f2d3b5164d67f9c93659e832d78794e0a25bdaf54",
+      "manifest_sha256": "9d7948427f08d1ec619b5f3737231bd7922c01ad081c9ee08e56f3868acf9ea1",
+      "metric_rows": 228,
+      "pre_evaluation_seal_sha256": "437b68f35b7cb6721ec6beda29e87dbaaf26cf70387e0bc98f8b7e7feecc27bc",
+      "primary_contrasts": 12,
+      "timing_records": 72
+    }
+  },
+  "plaintext_label_files_created": false,
+  "portable_post_run_module": {
+    "arguments": [
+      "--version v5|v6",
+      "--run RUN",
+      "--data COHORTS",
+      "--protocol PROTOCOL",
+      "--evaluation EVALUATION_DIRECTORY"
+    ],
+    "key_input": "separate evaluator-owned AES key as hex on standard input; never a command argument or a published file",
+    "repository_path": "qa/stem-bakeoff/cell_field_export_statistics.py",
+    "scope": "same source-statistic arithmetic with explicit input paths; no model execution, selection or retuning",
+    "sha256": "9a0c806a8c85951da3d278e3141e6496430f7ccce0368fa4b92d744c2d19f82a"
+  },
+  "reproduction": {
+    "arrays_exactly_match_original": true,
+    "arrays_sha256": "b114f8d5eafb2b1590b7641f5a369e33099d0cb60fbb2cd8c80105aa4bec15dd",
+    "manifest_difference": "exporter source hash changes to the portable module; source arrays are byte-identical",
+    "manifest_sha256": "3d5ea436affa79b3bb6ac863c2369c3b587f2c95d30bb9a542819ac4bf621255",
+    "output_directory": "/workspace/scratch/60f94d809f44/pft-audit-v6/export-reproduction",
+    "version": "v6"
+  },
+  "schema": "hepta.cell-field-statistics-export-provenance",
+  "scope": "post-label sufficient statistics for independent arithmetic audit; component strata are disclosed only after frozen evaluation",
+  "secrets_published": false,
+  "v6_captured_sources_unchanged": true
+}
