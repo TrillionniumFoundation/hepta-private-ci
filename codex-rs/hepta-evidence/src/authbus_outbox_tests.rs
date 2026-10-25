@@ -407,14 +407,24 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
         .await
         .unwrap();
     let id = enqueue(&store, 1).await.delivery_id;
-    // Fill active capacity using copies with independent fixture identities;
-    // admission hashing/signatures are exercised separately, not 4096 times.
+    // Fill GLOBAL capacity with fixture rows spread across eight issuers.
+    // Production separately caps each issuer at 512 active messages; assigning
+    // all 4095 rows to one issuer would mask the global capacity boundary.
+    // These SQL fixture rows are not authenticated admissions.
     sqlx::query("WITH RECURSIVE n(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM n WHERE x < 4095)
-        INSERT INTO authbus_outbox SELECT randomblob(32), issuer_id, key_epoch, 'fixture:' || x,
+        INSERT INTO authbus_outbox SELECT randomblob(32),
+        'fixture:issuer:' || ((x - 1) / 512), key_epoch, 'fixture:' || x,
         subject_id, scope_digest, payload_digest, sequence, expires_at_ms, signature, payload,
         state, fence, attempts, worker_id, lease_until_ms, available_at_ms, created_at_ms,
         updated_at_ms, terminal_at_ms, acknowledgement FROM authbus_outbox, n WHERE delivery_id = ?")
         .bind(id.as_array().as_slice()).execute(&store.pool).await.unwrap();
+    let maximum_fixture_issuer_active: i64 = sqlx::query_scalar(
+        "SELECT MAX(n) FROM (SELECT COUNT(*) AS n FROM authbus_outbox GROUP BY issuer_id)",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .unwrap();
+    assert!(maximum_fixture_issuer_active <= AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER);
     let (issuer, message) = fixture(2, u64::MAX);
     assert!(matches!(
         store
@@ -467,6 +477,23 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
         ..issuer
     };
     store.quarantine_authbus_issuer(&revoked).await.unwrap();
+    // Exercise the normal host-confirmed revocation path for all synthetic
+    // issuers; never delete active rows to make room for a fixture.
+    for group in 0..8 {
+        let (issuer_template, _) = fixture(1, u64::MAX);
+        let synthetic_revoked = IssuerRegistration {
+            issuer_id: StableId::new(format!("fixture:issuer:{group}")).unwrap(),
+            revoked: true,
+            ..issuer_template
+        };
+        assert!(
+            store
+                .quarantine_authbus_issuer(&synthetic_revoked)
+                .await
+                .unwrap()
+                > 0
+        );
+    }
     let mut tx = store.pool.begin_with("BEGIN IMMEDIATE").await.unwrap();
     maintain(&mut tx, now_millis().unwrap() + 86_400_001)
         .await
