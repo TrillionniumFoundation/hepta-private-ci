@@ -1,0 +1,270 @@
+{
+  "schema": "hepta.memory-cell.native-hosted-independent-result.v1",
+  "run": {
+    "id": 40188170696,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40188170696",
+    "event": "pull_request",
+    "attempt": 1,
+    "created_at": "2026-10-25T11:16:27Z",
+    "updated_at": "2026-10-25T11:50:02Z",
+    "conclusion": "success",
+    "job_id": 121153290523,
+    "job_steps_succeeded": 28,
+    "source_head": "35e1a0d42bf2607ce216d9d1d16a38d7bc1972bd",
+    "source_tree": "4e442ad23fa604b6e2c21b150f0d2b33b4bf1023"
+  },
+  "artifact": {
+    "id": 12598070717,
+    "name": "native-memory-40188170696-1",
+    "bytes": 62788755,
+    "sha256": "85a4895749a6c2cc2a37e74e22d1f6658d7be1ac66e75a202e9daa553fd2c52d",
+    "api_size_and_digest_match": true,
+    "members": 5758,
+    "uncompressed_bytes": 107947184,
+    "expires_at": "2026-11-08T11:49:50Z",
+    "audited_in_zip_without_model_execution": true
+  },
+  "runner": {
+    "provider": "GitHub hosted / Azure westus3",
+    "worker_id": "3506adfd-07eb-4334-8edb-3c702a8120fa",
+    "runner_version": "2.338.0",
+    "os": "Ubuntu 22.04.5 LTS",
+    "image": "ubuntu-22.04",
+    "image_version": "20261012.322.1",
+    "physical_hardware_attestation": false
+  },
+  "verification": {
+    "general_raw_checks_passed": 59,
+    "current_chain_checks_passed": 13,
+    "failed_checks": 0,
+    "source_archive_entries_verified_each_of_two_archives": 360,
+    "current_ndu_source_hashes": 40,
+    "frozen_publication_paths_matched": 39,
+    "source_before_after_byte_identical": [
+      "run",
+      "shadow",
+      "current"
+    ],
+    "source_status_clean_before_and_after": true,
+    "native_shadow_checkpoint_inventory_hashes_match_actual_zip_members": true,
+    "worker_request_stdout_process_bootstrap_links_verified": true,
+    "v1_and_v2_raw_executions_match_their_reports": true
+  },
+  "hosted_tests": {
+    "evidence_driver": {
+      "passed": 3,
+      "seconds": 1.041
+    },
+    "closed_tick_wire": {
+      "passed": 4,
+      "seconds": 0.009
+    },
+    "scoped_feature_suite": {
+      "passed": 762,
+      "skipped": 14,
+      "seconds": 106.193,
+      "feature": "codex-hepta-agentd/qualification-cognitive-write"
+    },
+    "default_current_owner_filter": {
+      "passed": 9,
+      "skipped": 185,
+      "seconds": 2.554,
+      "filter": "test(native_memory_current_) | test(native_memory_registration)"
+    },
+    "actual_default_pretrained_factory": {
+      "passed": 1,
+      "skipped": 193,
+      "seconds": 10.004,
+      "test": "pretrained_current_factory_executes_one_exact_decoder_and_fences_delivery",
+      "ignored_test_explicitly_selected": true,
+      "retries": 0
+    },
+    "ndu_source_revalidation_race": {
+      "test": "native_memory_tick_owner::current_model::tests::ndu_change_during_source_revalidation_stops_decoder_and_successful_tick",
+      "passed_in": "scoped_feature_suite",
+      "seconds": 2.223,
+      "not_selected_by_default_current_owner_filter": true,
+      "local_default_evidence_is_separate": true
+    }
+  },
+  "final_tools": {
+    "scoped_fix_and_format_step": "success",
+    "scoped_fix_seconds_reported": 438,
+    "patch_member": "post-test-fix-format.patch",
+    "patch_bytes": 0,
+    "stat_bytes": 0,
+    "worktree_status_bytes": 0,
+    "source_changed_by_final_tools": false,
+    "tests_after_format": false
+  },
+  "parameter_observations": {
+    "distinct_source_cases": 1,
+    "previously_exposed_case": true,
+    "question": "What is the repair for AssertionError: \"asymmetric\" does not match \"unsupported conditional covariance profile\"?",
+    "expected_value": "order",
+    "arms": {
+      "current": {
+        "correct": 1,
+        "denominator": 1,
+        "raw_text": "order"
+      },
+      "daemon_v1": {
+        "correct": 1,
+        "denominator": 1,
+        "raw_text": "order"
+      },
+      "shadow_v2": {
+        "correct": 1,
+        "denominator": 1,
+        "raw_text": "order"
+      },
+      "base": {
+        "correct": 0,
+        "denominator": 1,
+        "raw_text": "The `asymmetric` keyword in C++ is used to indicate that a"
+      },
+      "shuffled": {
+        "correct": 0,
+        "denominator": 1,
+        "raw_text": "The repair for AssertionError: \"asymmetric\" does not match \"un"
+      }
+    },
+    "independent_future_tasks": 0,
+    "future_accuracy": null,
+    "accuracy_success_gate": null
+  },
+  "execution_counts": {
+    "fresh_training_processes": 1,
+    "fresh_inference_processes": 5,
+    "decoder_queries": 5,
+    "additional_native_feature_forwards": 3,
+    "new_current_factory_queries": 1,
+    "new_current_factory_feature_forwards": 1,
+    "extra_training_updates_after_original_96": 0,
+    "distinct_recorded_model_process_pids": {
+      "current": 36307,
+      "daemon_v1": 36034,
+      "shadow_v2": 36181,
+      "train-96": 35978,
+      "control-base": 36061,
+      "control-shuffled": 36069
+    },
+    "all_native_workers_exit_zero_without_timeout": true,
+    "all_retained_commands_attempts": 1,
+    "decoder_prompt_tokens": 370,
+    "decoder_generated_tokens": 38,
+    "additional_feature_input_tokens": 222
+  },
+  "fresh_training": {
+    "steps": 96,
+    "actual_forwards": 96,
+    "loss_entries": 96,
+    "schedule_entries": 96,
+    "one_fact_visits": 96,
+    "rank": 8,
+    "seed": 24031,
+    "learning_rate": 0.01,
+    "objective": "completion_ce",
+    "input_tokens": 7296,
+    "supervised_tokens": 192,
+    "fit_seconds": 42.32075269400002,
+    "training_function_wall_seconds": 44.29333135899992,
+    "training_child_wall_seconds": 48.90021745700005,
+    "tensor_count": 120,
+    "trainable_parameters": 460800,
+    "parameter_bytes": 1843200,
+    "gradient_bytes": 1843200,
+    "optimizer_tensor_bytes": 3686880,
+    "parameter_gradient_optimizer_total_bytes": 7373280,
+    "memory_total_excludes_base_activations_runtime": true
+  },
+  "weights": {
+    "base_acquisition_files": 6,
+    "base_acquisition_bytes": 271170520,
+    "base_acquisition_seconds": 3.990782253000134,
+    "adapter_file_bytes": 1858776,
+    "checkpoint_file_count": 4,
+    "checkpoint_all_file_bytes": 1890161,
+    "same_pins_for_all_three_native_reads": true,
+    "manifest_sha256": "46a3c0e5f000f842757c45da1d898df3ae83c0e0de64b135ad22db2b11c3bf2a",
+    "adapter_sha256": "448e4ed7751a0bee30090444a2a26678f4c412e7c1eb8fc4fbfca0a8fc6cf405",
+    "weights_digest": "ab83b7e58be4c3c15629bae8506eda837c39da16bfc42737bdfa8772e143cd3f",
+    "base_identity": "46b83e37620f8bb1ae57754856718886c6aa1b12d267b5b0993e779f9596f96f"
+  },
+  "native_read_cost": {
+    "current": {
+      "latency_micros": 3838168,
+      "resident_bytes": 539903232,
+      "process_peak_rss_bytes": 1142804480,
+      "prompt_tokens": 74,
+      "generated_tokens": 2
+    },
+    "daemon_v1": {
+      "latency_micros": 3810136,
+      "resident_bytes": 539903232,
+      "process_peak_rss_bytes": 1143152640,
+      "prompt_tokens": 74,
+      "generated_tokens": 2
+    },
+    "shadow_v2": {
+      "latency_micros": 3844293,
+      "resident_bytes": 539903232,
+      "process_peak_rss_bytes": 1143398400,
+      "prompt_tokens": 74,
+      "generated_tokens": 2
+    }
+  },
+  "cost_boundaries": {
+    "native_driver_wall_seconds": 83.40920315499989,
+    "daemon_command_wall_seconds": 9.837462310000092,
+    "controlled_shadow_driver_wall_seconds": 12.831411742,
+    "latency_micros_definition": "worker interval from model construction through post-read integrity checks; excludes earlier interpreter/import startup and preflight pin inspection",
+    "resident_bytes_definition": "model parameter bytes; excludes allocator and other process memory",
+    "latency_quantiles_established": false
+  },
+  "current_factory_chain": {
+    "configuration_sha256": "d5413d1e58c7b80ed22780495886372ccde8fcd7fe9694d2c41ba316529f2b9d",
+    "source_document_sha256": "187467358e7f2c6b6c30f0131a5de50406a5b329c54117da52d2c668871c49f2",
+    "request_sha256": "72ab5d646c281c6a8acde398ee620c112aa0c3c61a58a28c4b07fb1aaab01ef4",
+    "query_digest": "3a5adc89ff2a284220ede37f7fc5cc77bf8080f26e878f6dfaf36eca0b2f8d8c",
+    "source_binding_digest": "b2343b4b2556d494882c30a5085f807bf5da7d08cec147560bf4630fe16a002c",
+    "execution_digest": "dab5f3f1acfc5c62da42a77a2a7e79995a2785b090ace8330b098635a7d1f48d",
+    "full_tick_digest": "380b4a7d3d5bde66b62012f8256ecca3b4eaf685ad6c3fe8021dd9b2533f998e",
+    "joint_digest": "4846f3791b675224a562bab2f9b061d3000567e68c4d23db2ffebd1cddf53c15",
+    "objective_digest": "f5d64faae1dce5ec90d16afd916e7f82c227ba8824fe0b09713fa0b538577e18",
+    "ndu_snapshot_digest": "7bfa71b974f6369ba2a8aef088892e9ec42e8b2437b52259fa877de785638e95",
+    "journal_sha256": "bbdf33d4d4de233bfd047b83a13cc83f9d2f8ac7a19b97813318de8f35f17832",
+    "witness_sha256": "f2615b3eaa38d2cd866436a281014d3d6c98901081e80a46199ce61da6ceeedd",
+    "checkpoint_after": "1a7e9458c038542745518dc5eb5e64c0a1c949327ce3e6dd32e925eff5feca82",
+    "journal_bytes": 520,
+    "witness_bytes": 224,
+    "sequence": 1,
+    "checksums_and_anchor_agree": true,
+    "exact_query_substitution_refused": true,
+    "cancelled_runtime_delivery_refused": true,
+    "completed_worker_processes": 1,
+    "abstain": true,
+    "authority_grants_any": false
+  },
+  "controlled_shadow_fences": {
+    "replay_error_kind": "Source(Replay)",
+    "tombstone_error_kind": "Source(Invalid(\"current source revision or typed identity\"))",
+    "writer_authority_withdrawn": false,
+    "backend_dispatches_before_and_after": 1,
+    "journal_witness_anchor_receipts_unchanged": true
+  },
+  "claim_scope": {
+    "actual_v1_runtime_and_control_socket": true,
+    "actual_controlled_v2_shadow_callback": true,
+    "actual_default_build_current_owner_factory": true,
+    "default_current_daemon_process_exercised": false,
+    "authority_and_clock": "explicit test-controlled real durable owners",
+    "single_source_ancestry": true,
+    "production_qualified": false,
+    "calibration": null,
+    "raw_base_weights_in_uploaded_artifact": false,
+    "base_byte_checks_basis": "hosted pinned acquisition and runtime verification receipts",
+    "actual_adapter_bytes_independently_hashed": true,
+    "trusted_process_receipts_are_remote_computation_attestation": false
+  }
+}
