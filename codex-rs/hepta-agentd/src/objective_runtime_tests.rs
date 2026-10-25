@@ -16,7 +16,7 @@ fn id(value: &str) -> StableId {
     StableId::new(value).expect("stable id")
 }
 
-fn record(
+pub(crate) fn record(
     run_id: &str,
     sequence: u64,
     disposition: RunStartObjectiveDispositionV1,
@@ -64,7 +64,7 @@ fn record(
     }
 }
 
-fn state_with(record: RunStartRecordV1) -> (TempDir, ObjectiveHostState) {
+pub(super) fn state_with(record: RunStartRecordV1) -> (TempDir, ObjectiveHostState) {
     let temp = TempDir::new().expect("temp");
     let path = temp.path().join("journal");
     let file = OpenOptions::new()
@@ -86,6 +86,60 @@ fn state_with(record: RunStartRecordV1) -> (TempDir, ObjectiveHostState) {
             highest_sequences,
         },
     )
+}
+
+pub(crate) fn current_host_with(
+    mut record: RunStartRecordV1,
+) -> (
+    TempDir,
+    std::sync::Arc<ObjectiveRuntimeHost>,
+    RunStartRecordV1,
+) {
+    let profile = crate::intelligence_product::tests::objective_profile();
+    let profile_digest = profile.digest().expect("valid profile");
+    record.admission.profile_digest = profile_digest;
+    let (temp, state) = state_with(record.clone());
+    let host = ObjectiveRuntimeHost {
+        profile,
+        profile_digest,
+        state: Mutex::new(state),
+    };
+    (temp, std::sync::Arc::new(host), record)
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn current_read_survives_unrelated_durable_run_admission() {
+    use crate::state::objective_current_tests::ClockCase;
+    use crate::state::objective_current_tests::fixture;
+    use ed25519_dalek::Signer;
+
+    let f = fixture(ClockCase::Current).await;
+    let proof = f.state.checked_current_objective("run.current").unwrap();
+    let mut other = f.record.clone();
+    other.snapshot.run_id = id("run.other");
+    other.authentication.message_id = id("message.run.other");
+    other.authentication.sequence += 1;
+    let claims = SignedMessageClaims {
+        issuer_id: other.authentication.issuer_id.clone(),
+        key_epoch: Generation::new(other.authentication.key_epoch).unwrap(),
+        message_id: other.authentication.message_id.clone(),
+        subject_id: proof.snapshot().subject_id.clone(),
+        scope_digest: other.authentication.scope_digest,
+        payload_digest: other.authentication.signed_body_digest,
+        sequence: other.authentication.sequence,
+        expires_at_ms: other.authentication.expires_at_ms,
+    };
+    other.authentication.signature = f.key.sign(&claims.signing_bytes()).to_bytes();
+    let host = f.state.objective_runtime.get().unwrap();
+    let mut state = host.state.lock().unwrap();
+    let before = state.journal.head_digest();
+    state.journal.append(before, other.clone()).unwrap();
+    assert_ne!(state.journal.head_digest(), before);
+    drop(state);
+    f.state.start_current_run_start_record(&other).unwrap();
+    f.state.revalidate_current_objective(&proof).unwrap();
+    assert_eq!(f.state.active_run_count().unwrap(), 2);
 }
 
 #[test]

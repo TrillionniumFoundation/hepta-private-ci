@@ -826,3 +826,6 @@ fn poisoned_state<T>(_error: std::sync::PoisonError<T>) -> AgentdError {
 #[cfg(test)]
 #[path = "state_isolation_tests.rs"]
 pub(crate) mod isolation_tests;
+#[cfg(all(test, unix))]
+#[path = "objective_runtime_current_tests.rs"]
+pub(crate) mod objective_current_tests;
