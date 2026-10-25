@@ -1,0 +1,44 @@
+{
+  "base_tree": "81198b9ca66ec85e02a4e623ed4eaa96ca6e7bc7",
+  "lock_blob": "62b728f0bf795100627d72cb9af433faf3c24c0a",
+  "changed_paths": [
+    ".github/scripts/macos_owner_cases.json",
+    ".github/scripts/macos_owner_evidence.py",
+    ".github/scripts/macos_owner_pins.json",
+    ".github/scripts/test_macos_owner_evidence.py",
+    ".github/workflows/hepta-macos-release-qualification.yml",
+    "codex-rs/.config/nextest.toml",
+    "codex-rs/Cargo.lock",
+    "codex-rs/hepta-fleet/Cargo.toml",
+    "codex-rs/hepta-fleet/src/release.rs",
+    "codex-rs/hepta-fleet/src/release_publication_macos.rs",
+    "codex-rs/hepta-fleet/src/release_publication_macos_tests.rs"
+  ],
+  "source_sha256": {
+    "MODULE.bazel.lock": "1fa8234aa094436e6f645a73d692c1346d1ccea858676b56c5026aa5baeff75f",
+    "codex-rs/hepta-fleet/Cargo.toml": "af8df10620c477a299cdfd315a3f163d6c492c3d55965b2220e2a0a0244eebb9",
+    "codex-rs/hepta-fleet/src/release.rs": "df5c2ddb1c5853142cfa736b55d8b1efbcce13f2aaf6b21584f3a4ff788eb4ce",
+    "codex-rs/hepta-fleet/src/release_publication_macos.rs": "65bea28b580acadbe0fac125eddec0244084110f710f007d9115711d9eda0288",
+    "codex-rs/hepta-fleet/src/release_publication_macos_tests.rs": "fdb4cdc484b3d6a5eb1e4c14386bc196b4271922456a2467ffd8a598d31692bf",
+    "codex-rs/hepta-supervisor/tests/restart_budget.rs": "79a1801d82edc8179022347e0c52340dff09912e6fabb22f17e0978b5978a288",
+    "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs": "7f98a1d45e5d0dabf53dd58f65e05f412f7702c42a3348c4134da65d4f41676a",
+    "codex-rs/.config/nextest.toml": "fc8ff96d6950ee772522c19afd8dfe46cc3c780919fd0816aeb3d4fe1a0a9a86"
+  },
+  "support_paths": [
+    "AGENTS.md",
+    "justfile",
+    "scripts/run-nextest.py",
+    "scripts/just-shell.py",
+    "codex-rs/Cargo.lock",
+    "MODULE.bazel.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/rust-toolchain.toml",
+    "codex-rs/rustfmt.toml",
+    "codex-rs/hepta-fleet/Cargo.toml",
+    "codex-rs/hepta-supervisor/Cargo.toml",
+    "codex-rs/.config/nextest.toml",
+    "codex-rs/hepta-fleet/src/release.rs",
+    "codex-rs/hepta-supervisor/tests/restart_budget.rs",
+    "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs"
+  ]
+}
