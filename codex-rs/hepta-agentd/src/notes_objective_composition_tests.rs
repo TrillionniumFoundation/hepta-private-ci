@@ -233,7 +233,11 @@ async fn notes_objective_session_registration_returns_observer_for_the_same_priv
         Runtime,
         NotesPrimaryRuntime,
     }
-    for path in [RegistrationPath::DirectHost, RegistrationPath::Runtime, RegistrationPath::NotesPrimaryRuntime] {
+    for path in [
+        RegistrationPath::DirectHost,
+        RegistrationPath::Runtime,
+        RegistrationPath::NotesPrimaryRuntime,
+    ] {
         let NotesHostFixture {
             directory: _directory,
             config,
@@ -326,9 +330,10 @@ async fn notes_objective_session_registration_returns_observer_for_the_same_priv
             Ok(())
         });
         let (host, target, observer) = match path {
-            RegistrationPath::DirectHost => host
-                .attach_notes_from_session_with_observer(parent, final_use, issuer.clone())
-                .await?,
+            RegistrationPath::DirectHost => {
+                host.attach_notes_from_session_with_observer(parent, final_use, issuer.clone())
+                    .await?
+            }
             RegistrationPath::Runtime => {
                 let writer = host.writer();
                 let (operations, target, observer) = operations
@@ -341,10 +346,16 @@ async fn notes_objective_session_registration_returns_observer_for_the_same_priv
             RegistrationPath::NotesPrimaryRuntime => {
                 let writer = host.writer();
                 let (notes_only, observer) = crate::notes_bootstrap::primary_notes_runtime(
-                    &config, &host, parent, final_use, issuer.clone(),
-                    operations.verifier.clone(), Duration::from_millis(20),
+                    &config,
+                    &host,
+                    parent,
+                    final_use,
+                    issuer.clone(),
+                    operations.verifier.clone(),
+                    Duration::from_millis(20),
                     /*expected*/ None,
-                ).await?;
+                )
+                .await?;
                 let target = observer.target().clone();
                 let (host, interval) = notes_only.attach(Arc::new(host)).await?;
                 assert!(Arc::ptr_eq(&writer, &host.writer()));
@@ -357,7 +368,8 @@ async fn notes_objective_session_registration_returns_observer_for_the_same_priv
         assert_eq!(&target, &identity);
         assert_eq!(observer.target(), &target);
         assert!(host.has_destination(&target.destination_id()));
-        let observation = tokio::task::spawn_blocking(move || observer.observe_document()).await??;
+        let observation =
+            tokio::task::spawn_blocking(move || observer.observe_document()).await??;
         assert_eq!(
             observation,
             codex_hepta_memory::NotesDocumentState {

@@ -115,53 +115,83 @@ impl AgentdConfig {
         bindings: AgentdNotesLiteralBindings,
         deadline: Duration,
     ) -> Result<(Self, AgentdNotesLiteralAdapter), AgentdError> {
-        if deadline.is_zero() || deadline > Duration::from_secs(10)
+        if deadline.is_zero()
+            || deadline > Duration::from_secs(10)
             || !matches!(bindings.locale.as_str(), "en-US" | "zh-CN")
-            || [bindings.runtime_body_digest, bindings.preference_state_digest,
-                bindings.model_tuple_digest, bindings.prompt_registry_digest,
-                bindings.artifact_set_digest].into_iter().any(Digest32::is_zero)
+            || [
+                bindings.runtime_body_digest,
+                bindings.preference_state_digest,
+                bindings.model_tuple_digest,
+                bindings.prompt_registry_digest,
+                bindings.artifact_set_digest,
+            ]
+            .into_iter()
+            .any(Digest32::is_zero)
         {
             return Err(invalid("missing or invalid frozen Notes runtime bindings"));
         }
-        let observer = attachment.notes.clone()
+        let observer = attachment
+            .notes
+            .clone()
             .ok_or_else(|| invalid("actual Session Notes observer is absent"))?;
-        let host = self.production_writer_host()
+        let host = self
+            .production_writer_host()
             .ok_or(AgentdError::CognitiveWriteRuntimeUnavailable)?;
         let writer = host.writer();
         if writer.authority() != &attachment.root_session.authority()
             || writer.owner_agent_id() != &self.identity().agent_id
             || host.spawn_generation() != self.identity().spawn_generation
         {
-            return Err(invalid("Notes Root attachment differs from installed writer"));
+            return Err(invalid(
+                "Notes Root attachment differs from installed writer",
+            ));
         }
         let expected = literal_notes_admission_profile_json_v1(
-            &bindings.principal_scope, bindings.principal_scope_digest, &bindings.issuer_id,
-        ).map_err(AgentdError::Invalid)?;
+            &bindings.principal_scope,
+            bindings.principal_scope_digest,
+            &bindings.issuer_id,
+        )
+        .map_err(AgentdError::Invalid)?;
         let expected = decode_admission_profile_json_v1(expected.as_bytes())
             .map_err(|error| invalid(&error.to_string()))?;
-        let path = self.objective_profile_file()
+        let path = self
+            .objective_profile_file()
             .ok_or_else(|| invalid("original finite Notes profile file is absent"))?;
         let bytes = crate::authbus_trust::read_private_owner_file(
-            path, self.identity(), MAX_OBJECTIVE_ADMISSION_PROFILE_JSON_BYTES as u64,
+            path,
+            self.identity(),
+            MAX_OBJECTIVE_ADMISSION_PROFILE_JSON_BYTES as u64,
         )?;
         let selected = decode_admission_profile_json_v1(&bytes)
             .map_err(|error| invalid(&error.to_string()))?;
         if selected != expected {
-            return Err(invalid("selected Objective profile differs from literal Notes compiler"));
+            return Err(invalid(
+                "selected Objective profile differs from literal Notes compiler",
+            ));
         }
-        let profile_digest = selected.digest().map_err(|error| invalid(&error.to_string()))?;
-        let sender = self.original_objective_sender(Arc::clone(&attachment.checkpoint), deadline)?;
+        let profile_digest = selected
+            .digest()
+            .map_err(|error| invalid(&error.to_string()))?;
+        let sender =
+            self.original_objective_sender(Arc::clone(&attachment.checkpoint), deadline)?;
         let identity = self.identity().clone();
         let configured = self.with_notes_objective(AgentdNotesObjectiveConfig {
-            profile_digest, target: observer.target().clone(),
+            profile_digest,
+            target: observer.target().clone(),
         })?;
         let adapter = AgentdNotesLiteralAdapter {
-            identity, writer, sender: Arc::new(sender),
-            root: Arc::clone(&attachment.root_session), observer,
-            grants: Arc::clone(&attachment.grants), bindings,
+            identity,
+            writer,
+            sender: Arc::new(sender),
+            root: Arc::clone(&attachment.root_session),
+            observer,
+            grants: Arc::clone(&attachment.grants),
+            bindings,
             input_schema_digest: selected.expected_input_schema_digest,
             normalization_digest: selected.expected_normalization_profile_digest,
-            blocking: Arc::new(Semaphore::new(1)), deadline, next_request: 1,
+            blocking: Arc::new(Semaphore::new(1)),
+            deadline,
+            next_request: 1,
         };
         adapter.check_available()?;
         Ok((configured, adapter))
@@ -172,23 +202,32 @@ impl AgentdNotesLiteralAdapter {
     /// Pure deterministic projection in this persistent original owner/scope.
     /// Reusing an ID recovers the first original request and never changes text.
     pub fn run_id(&self, client_intent_id: &str) -> Result<String, AgentdError> {
-        if client_intent_id.is_empty() || client_intent_id.len() > 96
-            || !client_intent_id.bytes().all(|byte| byte.is_ascii_alphanumeric() || b"-_".contains(&byte))
+        if client_intent_id.is_empty()
+            || client_intent_id.len() > 96
+            || !client_intent_id
+                .bytes()
+                .all(|byte| byte.is_ascii_alphanumeric() || b"-_".contains(&byte))
         {
             return Err(invalid("invalid Notes client intent ID"));
         }
         let binding = serde_json::to_vec(&(
-            "organ.notes.literal.run.v1", self.identity.agent_id.as_str(),
-            self.bindings.principal_scope_digest.to_string(), client_intent_id,
+            "organ.notes.literal.run.v1",
+            self.identity.agent_id.as_str(),
+            self.bindings.principal_scope_digest.to_string(),
+            client_intent_id,
         ))?;
         Ok(format!("notes.literal.{}", Digest32::of_bytes(&binding)))
     }
 
     pub fn check_available(&self) -> Result<(), AgentdError> {
         if self.writer.checkpoint_fenced() {
-            return Err(invalid("original Notes writer is permanently checkpoint-fenced"));
+            return Err(invalid(
+                "original Notes writer is permanently checkpoint-fenced",
+            ));
         }
-        self.root.verifier().verify(self.writer.authority(), &self.identity.agent_id)
+        self.root
+            .verifier()
+            .verify(self.writer.authority(), &self.identity.agent_id)
             .map_err(AgentdError::GenerationFenced)
     }
 
@@ -203,8 +242,12 @@ impl AgentdNotesLiteralAdapter {
     ) -> Result<AgentdNotesPreparedObjective, AgentdError> {
         let end = Instant::now() + self.deadline;
         let mut phase = NotesUiCallPhase::ReadOnly;
-        tokio::time::timeout_at(end.into(), self.prepare_until(client_intent_id, text, end, &mut phase))
-            .await.map_err(|_| invalid("Notes original preparation acknowledgement unknown"))?
+        tokio::time::timeout_at(
+            end.into(),
+            self.prepare_until(client_intent_id, text, end, &mut phase),
+        )
+        .await
+        .map_err(|_| invalid("Notes original preparation acknowledgement unknown"))?
     }
 
     async fn prepare_until(
@@ -215,7 +258,10 @@ impl AgentdNotesLiteralAdapter {
         phase: &mut NotesUiCallPhase,
     ) -> Result<AgentdNotesPreparedObjective, AgentdError> {
         let run_id = self.run_id(client_intent_id)?;
-        if let Some(retained) = self.sender.retained_request_for_run(&run_id).await
+        if let Some(retained) = self
+            .sender
+            .retained_request_for_run(&run_id)
+            .await
             .map_err(|error| invalid(&error.to_string()))?
         {
             return Ok(AgentdNotesPreparedObjective::Retained(retained));
@@ -228,72 +274,127 @@ impl AgentdNotesLiteralAdapter {
         if text.trim().is_empty() || text.len() > 4096 {
             return Err(invalid("literal Notes text exceeds original bounds"));
         }
-        let permit = Arc::clone(&self.blocking).try_acquire_owned()
+        let permit = Arc::clone(&self.blocking)
+            .try_acquire_owned()
             .map_err(|_| invalid("previous Notes blocking work is still in progress"))?;
         let observer = self.observer.clone();
         let observed = tokio::task::spawn_blocking(move || {
             let _permit = permit;
-            if Instant::now() >= end { return Err(invalid("Notes observation deadline elapsed")); }
+            if Instant::now() >= end {
+                return Err(invalid("Notes observation deadline elapsed"));
+            }
             observer.observe_document()
-        }).await.map_err(|_| invalid("Notes observation worker failed"))??;
+        })
+        .await
+        .map_err(|_| invalid("Notes observation worker failed"))??;
         self.check_available()?;
-        let now_ms = self.root.clock().now_unix_ms()
+        let now_ms = self
+            .root
+            .clock()
+            .now_unix_ms()
             .map_err(|_| invalid("protected Root clock unavailable"))?;
-        let source_deadline = now_ms.checked_add(5_000)
+        let source_deadline = now_ms
+            .checked_add(5_000)
             .ok_or_else(|| invalid("Notes source deadline overflow"))?;
-        if Instant::now() >= end { return Err(invalid("Notes deadline elapsed before original preparation")); }
+        if Instant::now() >= end {
+            return Err(invalid(
+                "Notes deadline elapsed before original preparation",
+            ));
+        }
         *phase = NotesUiCallPhase::Preparing;
-        let semantic = prepare_original_literal(&self.writer, LiteralOperationInput {
-            target: self.observer.target(), observed: &observed, run_id: &run_id, text,
-            subject: self.identity.agent_id.as_str(), policy_generation: self.bindings.policy_generation,
-        }).await?;
+        let semantic = prepare_original_literal(
+            &self.writer,
+            LiteralOperationInput {
+                target: self.observer.target(),
+                observed: &observed,
+                run_id: &run_id,
+                text,
+                subject: self.identity.agent_id.as_str(),
+                policy_generation: self.bindings.policy_generation,
+            },
+        )
+        .await?;
         let source = literal_notes_source_json_v1(LiteralNotesSourceContext {
-            client_intent_id, source_digest: semantic,
+            client_intent_id,
+            source_digest: semantic,
             principal_scope_digest: self.bindings.principal_scope_digest,
-            locale: &self.bindings.locale, observed_at: &utc_millis(now_ms)?,
+            locale: &self.bindings.locale,
+            observed_at: &utc_millis(now_ms)?,
             deadline: &utc_millis(source_deadline)?,
-        }).map_err(AgentdError::Invalid)?;
+        })
+        .map_err(AgentdError::Invalid)?;
         let body = AuthBusObjectiveBody {
-            spawn_generation: self.identity.spawn_generation, run_id, objective_revision: 1,
-            source_envelope_json: source, runtime_body_digest: self.bindings.runtime_body_digest.to_string(),
+            spawn_generation: self.identity.spawn_generation,
+            run_id,
+            objective_revision: 1,
+            source_envelope_json: source,
+            runtime_body_digest: self.bindings.runtime_body_digest.to_string(),
             preference_state_digest: self.bindings.preference_state_digest.to_string(),
             model_tuple_digest: self.bindings.model_tuple_digest.to_string(),
             prompt_registry_digest: self.bindings.prompt_registry_digest.to_string(),
             artifact_set_digest: self.bindings.artifact_set_digest.to_string(),
             authority_epoch: self.root.authority().authority_epoch,
         };
-        let permit = Arc::clone(&self.blocking).try_acquire_owned()
+        let permit = Arc::clone(&self.blocking)
+            .try_acquire_owned()
             .map_err(|_| invalid("Notes signer slot is occupied"))?;
         let grants = Arc::clone(&self.grants);
         let root = Arc::clone(&self.root);
         let signed = tokio::task::spawn_blocking(move || {
             let _permit = permit;
             if Instant::now() >= end
-                || root.clock().now_unix_ms().map_err(|_| invalid("Root clock unavailable before sign"))? >= source_deadline
+                || root
+                    .clock()
+                    .now_unix_ms()
+                    .map_err(|_| invalid("Root clock unavailable before sign"))?
+                    >= source_deadline
             {
                 return Err(invalid("Notes source expired before Root signing"));
             }
-            grants.sign_objective(&body).map_err(|error| invalid(&error.to_string()))
-        }).await.map_err(|_| invalid("Notes Root signing worker failed"))??;
+            grants
+                .sign_objective(&body)
+                .map_err(|error| invalid(&error.to_string()))
+        })
+        .await
+        .map_err(|_| invalid("Notes Root signing worker failed"))??;
         self.check_available()?;
         if signed.issuer_id != self.bindings.issuer_id
-            || self.root.clock().now_unix_ms().map_err(|_| invalid("Root clock unavailable after sign"))? >= source_deadline
+            || self
+                .root
+                .clock()
+                .now_unix_ms()
+                .map_err(|_| invalid("Root clock unavailable after sign"))?
+                >= source_deadline
         {
-            return Err(invalid("Notes signed ingress expired or differs from frozen issuer"));
+            return Err(invalid(
+                "Notes signed ingress expired or differs from frozen issuer",
+            ));
         }
         let origin = self.next_origin()?;
-        let request = ObjectiveSenderRequest::from_original(serde_json::to_string(&signed)?, origin)
-            .map_err(|error| invalid(&error.to_string()))?;
-        let ticket = self.sender.retain_before_send(request).await
+        let request =
+            ObjectiveSenderRequest::from_original(serde_json::to_string(&signed)?, origin)
+                .map_err(|error| invalid(&error.to_string()))?;
+        let ticket = self
+            .sender
+            .retain_before_send(request)
+            .await
             .map_err(|error| invalid(&error.to_string()))?;
         self.check_available()?;
-        if self.root.clock().now_unix_ms()
-            .map_err(|_| invalid("Root clock unavailable after sender retention"))? >= source_deadline
+        if self
+            .root
+            .clock()
+            .now_unix_ms()
+            .map_err(|_| invalid("Root clock unavailable after sender retention"))?
+            >= source_deadline
         {
-            return Err(invalid("Notes source expired during original sender acknowledgement"));
+            return Err(invalid(
+                "Notes source expired during original sender acknowledgement",
+            ));
         }
         Ok(AgentdNotesPreparedObjective::Ready {
-            sender: Arc::clone(&self.sender), ticket, ingress: signed,
+            sender: Arc::clone(&self.sender),
+            ticket,
+            ingress: signed,
         })
     }
 }

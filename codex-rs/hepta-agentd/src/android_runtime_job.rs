@@ -9,8 +9,8 @@ use codex_hepta_contracts::Sha256Digest;
 use serde_json::Value;
 use serde_json::json;
 
-use super::AgentdAndroidTextDevice;
 use super::AgentdAndroidRuntimeSession;
+use super::AgentdAndroidTextDevice;
 
 const HOST: &str = "pocket4";
 const EXECUTABLE: &str = "/usr/bin/sudo";
@@ -205,10 +205,14 @@ async fn call(
     };
     let budget = remaining(deadline)?;
     let response = match &device.session {
-        AgentdAndroidRuntimeSession::Native(session) => session.call_tool_once(tool, arguments, budget).await,
-        AgentdAndroidRuntimeSession::Managed(session) => session.call_tool_once(tool, arguments, budget).await,
+        AgentdAndroidRuntimeSession::Native(session) => {
+            session.call_tool_once(tool, arguments, budget).await
+        }
+        AgentdAndroidRuntimeSession::Managed(session) => {
+            session.call_tool_once(tool, arguments, budget).await
+        }
     }
-        .map_err(|_| "original retained Runtime call failed or expired".to_string())?;
+    .map_err(|_| "original retained Runtime call failed or expired".to_string())?;
     remaining(deadline)?;
     if response.is_error == Some(true) || response.content.len() != 1 {
         return Err("Runtime returned an error or ambiguous content".to_string());

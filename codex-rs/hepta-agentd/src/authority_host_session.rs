@@ -33,9 +33,17 @@ impl PreparedHostAuthoritySession {
         let config: HostAuthorityServiceConfig = read_root_json(config_file)?;
         let registration: HostAuthorityRegistration = read_root_json(registration_file)?;
         let service = open_registered_writer(&config, &registration, &owner_pidfd)?;
-        let fresh = crate::FreshHostCognitiveState::prepare(&registration.registered_identity).await?;
-        let service = service.initialize_fresh_heads(&config, &registration, &owner_pidfd, fresh)?;
-        Ok(Self { config, registration, owner_pidfd, service, fresh_filesystem: true })
+        let fresh =
+            crate::FreshHostCognitiveState::prepare(&registration.registered_identity).await?;
+        let service =
+            service.initialize_fresh_heads(&config, &registration, &owner_pidfd, fresh)?;
+        Ok(Self {
+            config,
+            registration,
+            owner_pidfd,
+            service,
+            fresh_filesystem: true,
+        })
     }
 
     /// Publish an explicitly prepared fresh original DB and fresh protected
@@ -52,7 +60,13 @@ impl PreparedHostAuthoritySession {
         let registration = read_root_json(registration_file)?;
         let service = open_registered_writer(&config, &registration, &owner_pidfd)?
             .initialize_fresh_heads(&config, &registration, &owner_pidfd, fresh)?;
-        Ok(Self { config, registration, owner_pidfd, service, fresh_filesystem: true })
+        Ok(Self {
+            config,
+            registration,
+            owner_pidfd,
+            service,
+            fresh_filesystem: true,
+        })
     }
 
     /// Open existing Root state once through the original service factory.
@@ -65,7 +79,13 @@ impl PreparedHostAuthoritySession {
         let config = read_root_json(config_file)?;
         let registration = read_root_json(registration_file)?;
         let service = open_registered_service(&config, &registration, &owner_pidfd)?;
-        Ok(Self { config, registration, owner_pidfd, service, fresh_filesystem: false })
+        Ok(Self {
+            config,
+            registration,
+            owner_pidfd,
+            service,
+            fresh_filesystem: false,
+        })
     }
 
     /// Release only the freshly published Agent's original data directories
@@ -77,17 +97,32 @@ impl PreparedHostAuthoritySession {
     /// two local FinalUse journals. Existing/partial consumer state is refused.
     pub fn handoff_fresh_agent_filesystem(mut self) -> io::Result<(Self, std::path::PathBuf)> {
         if !self.fresh_filesystem {
-            return Err(io::Error::other("filesystem handoff requires this session's original fresh publication"));
+            return Err(io::Error::other(
+                "filesystem handoff requires this session's original fresh publication",
+            ));
         }
         let end = Instant::now() + std::time::Duration::from_secs(30);
-        verify_pinned_process(&self.registration, self.config.peer_uid, self.config.peer_gid,
-            &self.owner_pidfd, end)?;
+        verify_pinned_process(
+            &self.registration,
+            self.config.peer_uid,
+            self.config.peer_gid,
+            &self.owner_pidfd,
+            end,
+        )?;
         let identity = self.registration.registered_identity.identity()?;
         let parent = filesystem::handoff_fresh_filesystem(
-            &identity, self.config.peer_uid, self.config.peer_gid, &self.config.state_dir,
+            &identity,
+            self.config.peer_uid,
+            self.config.peer_gid,
+            &self.config.state_dir,
         )?;
-        verify_pinned_process(&self.registration, self.config.peer_uid, self.config.peer_gid,
-            &self.owner_pidfd, end)?;
+        verify_pinned_process(
+            &self.registration,
+            self.config.peer_uid,
+            self.config.peer_gid,
+            &self.owner_pidfd,
+            end,
+        )?;
         self.fresh_filesystem = false;
         Ok((self, parent))
     }
@@ -116,11 +151,23 @@ impl PreparedHostAuthoritySession {
         lifetime_ms: u64,
     ) -> io::Result<Self> {
         let end = Instant::now() + std::time::Duration::from_secs(30);
-        verify_pinned_process(&self.registration, self.config.peer_uid, self.config.peer_gid,
-            &self.owner_pidfd, end)?;
-        self.service = self.service.with_notes_from_original_session(target, lifetime_ms)?;
-        verify_pinned_process(&self.registration, self.config.peer_uid, self.config.peer_gid,
-            &self.owner_pidfd, end)?;
+        verify_pinned_process(
+            &self.registration,
+            self.config.peer_uid,
+            self.config.peer_gid,
+            &self.owner_pidfd,
+            end,
+        )?;
+        self.service = self
+            .service
+            .with_notes_from_original_session(target, lifetime_ms)?;
+        verify_pinned_process(
+            &self.registration,
+            self.config.peer_uid,
+            self.config.peer_gid,
+            &self.owner_pidfd,
+            end,
+        )?;
         Ok(self)
     }
 
@@ -136,7 +183,13 @@ impl PreparedHostAuthoritySession {
     }
 
     fn serve_selected(self, text_ui: Option<(&Path, OwnedFd)>) -> io::Result<()> {
-        let Self { config, registration, owner_pidfd, service, .. } = self;
+        let Self {
+            config,
+            registration,
+            owner_pidfd,
+            service,
+            ..
+        } = self;
         if text_ui.is_some()
             && config.issuer_record_profile
                 != crate::authority_host_config::HostIssuerRecordProfile::TextRecovery

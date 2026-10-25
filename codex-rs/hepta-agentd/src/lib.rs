@@ -123,11 +123,11 @@ pub use root_production_inputs::receive_root_production_inputs;
 #[cfg(target_os = "linux")]
 mod root_production_handoff;
 #[cfg(target_os = "linux")]
+pub use config::PreparedRootAgentdConfig;
+#[cfg(target_os = "linux")]
 pub use root_production_handoff::receive_root_production_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::send_root_production_handoff;
-#[cfg(target_os = "linux")]
-pub use config::PreparedRootAgentdConfig;
 #[cfg(target_os = "linux")]
 mod root_observation_cache;
 #[cfg(target_os = "linux")]
@@ -206,19 +206,19 @@ mod notes_literal_control;
 #[cfg(target_os = "linux")]
 mod notes_literal_observation;
 #[cfg(target_os = "linux")]
-mod notes_literal_receipts;
-#[cfg(target_os = "linux")]
 mod notes_literal_prepare;
 #[cfg(target_os = "linux")]
-mod notes_ui_wire;
-#[cfg(target_os = "linux")]
-mod notes_ui_queue;
-#[cfg(target_os = "linux")]
-mod notes_ui_endpoint;
+mod notes_literal_receipts;
 #[cfg(target_os = "linux")]
 mod notes_organ;
 #[cfg(target_os = "linux")]
 mod notes_recovery_process;
+#[cfg(target_os = "linux")]
+mod notes_ui_endpoint;
+#[cfg(target_os = "linux")]
+mod notes_ui_queue;
+#[cfg(target_os = "linux")]
+mod notes_ui_wire;
 mod objective_runtime;
 mod plasticity_anchor_journal;
 mod plasticity_host;
@@ -432,6 +432,8 @@ pub use lane_b_runtime::RunRecovery;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
 pub use neuron_runtime::AgentdNeuronOwner;
+#[cfg(target_os = "linux")]
+pub use notes_bootstrap::AgentdNotesStartupRelease;
 #[cfg(unix)]
 pub use notes_channel::AgentdNotesChannel;
 #[cfg(unix)]
@@ -441,8 +443,6 @@ pub use notes_document_observer::AgentdNotesDocumentObserver;
 #[cfg(target_os = "linux")]
 pub use notes_literal_adapter::AgentdNotesLiteralAdapter;
 #[cfg(target_os = "linux")]
-pub use notes_bootstrap::AgentdNotesStartupRelease;
-#[cfg(target_os = "linux")]
 pub use notes_literal_adapter::AgentdNotesLiteralBindings;
 #[cfg(target_os = "linux")]
 pub use notes_literal_adapter::AgentdNotesPreparedObjective;
@@ -451,13 +451,13 @@ pub use notes_literal_adapter::AgentdNotesRetainedIntents;
 #[cfg(target_os = "linux")]
 pub use notes_literal_adapter::AgentdNotesUiRuntime;
 #[cfg(target_os = "linux")]
-pub use notes_ui_endpoint::AgentdNotesUiPeer;
-#[cfg(target_os = "linux")]
 pub use notes_literal_observation::AgentdNotesObservationRetention;
 #[cfg(target_os = "linux")]
 pub use notes_literal_observation::AgentdNotesSubmissionObservation;
 #[cfg(target_os = "linux")]
 pub use notes_literal_observation::AgentdNotesSubmissionState;
+#[cfg(target_os = "linux")]
+pub use notes_ui_endpoint::AgentdNotesUiPeer;
 pub use objective_runtime::authbus_objective_claims;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
@@ -500,17 +500,17 @@ pub use production_composition::AgentdProductionNotesInputs;
 #[cfg(target_os = "linux")]
 pub use production_composition::attach_production_operation_host;
 #[cfg(target_os = "linux")]
-pub use production_root_composition::AgentdRootProductionAttachment;
-#[cfg(target_os = "linux")]
-pub use production_root_composition::attach_root_production_operation_host;
-#[cfg(target_os = "linux")]
-pub use production_root_composition::attach_root_notes_operation_host;
-#[cfg(target_os = "linux")]
 pub use production_launcher::AgentdProductionLaunch;
 #[cfg(target_os = "linux")]
 pub use production_launcher::AgentdProductionStartup;
 #[cfg(target_os = "linux")]
+pub use production_root_composition::AgentdRootProductionAttachment;
+#[cfg(target_os = "linux")]
+pub use production_root_composition::attach_root_notes_operation_host;
+#[cfg(target_os = "linux")]
 pub use production_root_composition::attach_root_notes_operation_host_with_startup;
+#[cfg(target_os = "linux")]
+pub use production_root_composition::attach_root_production_operation_host;
 #[cfg(target_os = "linux")]
 pub use production_root_composition::attach_root_production_operation_host_with_startup;
 pub use production_writer_host::AgentdFinalUseGrantProvider;

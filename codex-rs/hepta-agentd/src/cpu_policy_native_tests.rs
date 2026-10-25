@@ -1,12 +1,12 @@
 //! Original frame adapter tests with its existing explicit scripted transport.
 //! These are neither native execution nor benchmark measurements.
 use super::*;
-use pretty_assertions::assert_eq;
 use crate::cpu_policy::CpuDemandSample;
 use crate::cpu_policy::CpuPolicy;
 use crate::cpu_policy::CpuPolicyError;
 use crate::cpu_policy::CpuPolicyKind;
 use crate::cpu_policy::ObservedCpuDemand;
+use pretty_assertions::assert_eq;
 
 #[test]
 fn cpu_policy_preparation_reads_original_device_and_never_installs_or_allocates_d() -> TestResult {

@@ -131,7 +131,8 @@ impl AgentdProductionWriterHost {
         attachment: Attachment,
     ) -> Result<(Self, NotesTargetIdentity, AgentdNotesDocumentObserver), AgentdError> {
         let deadline = Instant::now() + Duration::from_secs(2);
-        let (offer, endpoint, recovery) = receive_session(&bootstrap, deadline, /*expected*/ None)?;
+        let (offer, endpoint, recovery) =
+            receive_session(&bootstrap, deadline, /*expected*/ None)?;
         let identity = offer.target.clone();
         let attached = tokio::time::timeout(remaining(deadline)?, async {
             let target = self
@@ -196,8 +197,14 @@ impl AgentdProductionOperationRuntimeConfig {
         bootstrap: UnixDatagram,
         final_use: FinalUseAuthority,
     ) -> Result<(Self, NotesTargetIdentity, AgentdNotesDocumentObserver), AgentdError> {
-        self.with_notes_from_session_expected(config, recovered_host, bootstrap, final_use,
-            /*expected*/ None).await
+        self.with_notes_from_session_expected(
+            config,
+            recovered_host,
+            bootstrap,
+            final_use,
+            /*expected*/ None,
+        )
+        .await
     }
 
     pub(crate) async fn with_notes_from_session_expected(
@@ -237,15 +244,16 @@ impl AgentdProductionOperationRuntimeConfig {
     where
         F: FnOnce(UnixStream, UnixDatagram) -> Result<Arc<dyn NotesPrivateChannel>, AgentdError>,
     {
-        let (configured, target, _) = self.with_notes_from_session_channel(
-            config,
-            recovered_host,
-            bootstrap,
-            final_use,
-            /*expected*/ None,
-            channel_factory,
-        )
-        .await?;
+        let (configured, target, _) = self
+            .with_notes_from_session_channel(
+                config,
+                recovered_host,
+                bootstrap,
+                final_use,
+                /*expected*/ None,
+                channel_factory,
+            )
+            .await?;
         Ok((configured, target))
     }
 
@@ -306,8 +314,15 @@ fn receive_session(
     bootstrap.set_nonblocking(false)?;
     let received = receive_offer(bootstrap, deadline)?;
     if expected.is_some_and(|expected| expected != &received.0.target) {
-        let _ = acknowledge(bootstrap, &received.0, RegistrationStatus::Rejected, deadline);
-        return Err(AgentdError::Invalid("actual Notes offer differs from Root's original reservation".into()));
+        let _ = acknowledge(
+            bootstrap,
+            &received.0,
+            RegistrationStatus::Rejected,
+            deadline,
+        );
+        return Err(AgentdError::Invalid(
+            "actual Notes offer differs from Root's original reservation".into(),
+        ));
     }
     Ok(received)
 }

@@ -45,7 +45,10 @@ fn absolute_original_deadline_cannot_be_renewed() -> anyhow::Result<()> {
     assert!(original_deadline(0).is_err());
     assert!(original_deadline(u64::MAX).is_err());
     let before = Instant::now();
-    let mut clock = libc::timespec { tv_sec: 0, tv_nsec: 0 };
+    let mut clock = libc::timespec {
+        tv_sec: 0,
+        tv_nsec: 0,
+    };
     // SAFETY: the kernel initializes one valid stack timespec.
     anyhow::ensure!(unsafe { libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut clock) } == 0);
     let deadline = (clock.tv_sec as u64) * 1_000_000_000 + clock.tv_nsec as u64 + 10_000_000_000;
@@ -67,7 +70,8 @@ fn ordinary_payload_file_is_not_a_sealed_original_input() -> anyhow::Result<()> 
 }
 
 #[test]
-fn inherited_deployment_cannot_retain_the_root_producers_writable_description() -> anyhow::Result<()> {
+fn inherited_deployment_cannot_retain_the_root_producers_writable_description() -> anyhow::Result<()>
+{
     let producer = tempfile::tempfile()?;
     let writable_duplicate = producer.try_clone()?;
     let descriptor = writable_duplicate.as_raw_fd();
@@ -81,7 +85,10 @@ fn inherited_deployment_cannot_retain_the_root_producers_writable_description() 
     assert_eq!(reader.metadata()?.len(), producer.metadata()?.len());
     // SAFETY: both queries read metadata of the live consumer descriptor.
     let (flags, mode) = unsafe {
-        (libc::fcntl(reader.as_raw_fd(), libc::F_GETFD), libc::fcntl(reader.as_raw_fd(), libc::F_GETFL))
+        (
+            libc::fcntl(reader.as_raw_fd(), libc::F_GETFD),
+            libc::fcntl(reader.as_raw_fd(), libc::F_GETFL),
+        )
     };
     assert!(flags & libc::FD_CLOEXEC != 0);
     assert_eq!(mode & libc::O_ACCMODE, libc::O_RDONLY);

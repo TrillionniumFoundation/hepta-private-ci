@@ -405,9 +405,14 @@ impl AgentdConfig {
     /// Install the actual Session UI beside the same original protected writer.
     /// `run` supervises it as a required task; a Session exit drains this host.
     #[cfg(target_os = "linux")]
-    pub fn with_original_notes_ui(mut self, runtime: crate::AgentdNotesUiRuntime) -> Result<Self, AgentdError> {
+    pub fn with_original_notes_ui(
+        mut self,
+        runtime: crate::AgentdNotesUiRuntime,
+    ) -> Result<Self, AgentdError> {
         if self.notes_ui.is_some() {
-            return Err(AgentdError::Invalid("original Notes UI already configured".into()));
+            return Err(AgentdError::Invalid(
+                "original Notes UI already configured".into(),
+            ));
         }
         runtime.validate_for(&self)?;
         self.notes_ui = Some(runtime);
@@ -423,8 +428,12 @@ impl AgentdConfig {
     /// The actual current target is taken from the already installed Session
     /// observer; no UI command supplies either target or a helper path.
     #[cfg(target_os = "linux")]
-    pub fn with_original_notes_previous_recovery(mut self, launch: crate::AgentdNotesPreviousRecoveryLaunch) -> Result<Self, AgentdError> {
-        self.production_operations.as_mut()
+    pub fn with_original_notes_previous_recovery(
+        mut self,
+        launch: crate::AgentdNotesPreviousRecoveryLaunch,
+    ) -> Result<Self, AgentdError> {
+        self.production_operations
+            .as_mut()
             .ok_or(AgentdError::CognitiveWriteRuntimeUnavailable)?
             .select_previous_notes_process(launch)?;
         Ok(self)

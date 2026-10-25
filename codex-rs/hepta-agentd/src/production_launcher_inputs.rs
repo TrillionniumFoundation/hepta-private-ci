@@ -16,12 +16,20 @@ use crate::AgentdError;
 
 const FLAGS: [&str; 15] = [
     "--root-production-profile",
-    "--root-production-handoff-fd", "--root-production-uid", "--root-production-gid",
-    "--root-production-control-fd", "--root-production-app-server-fd",
-    "--android-runtime-server", "--android-runtime-environment",
-    "--android-original-payload-fd", "--android-original-deadline-ns",
-    "--notes-production-handoff-fd", "--root-production-lifetime-ms",
-    "--notes-literal-deployment-fd", "--notes-literal-ui-fd", "--notes-session-pidfd",
+    "--root-production-handoff-fd",
+    "--root-production-uid",
+    "--root-production-gid",
+    "--root-production-control-fd",
+    "--root-production-app-server-fd",
+    "--android-runtime-server",
+    "--android-runtime-environment",
+    "--android-original-payload-fd",
+    "--android-original-deadline-ns",
+    "--notes-production-handoff-fd",
+    "--root-production-lifetime-ms",
+    "--notes-literal-deployment-fd",
+    "--notes-literal-ui-fd",
+    "--notes-session-pidfd",
 ];
 
 pub(super) struct LaunchInputs {
@@ -38,7 +46,12 @@ pub(super) struct LaunchInputs {
 }
 
 pub(super) enum PrimaryInputs {
-    Android { server: String, environment: String, payload: File, deadline: Instant },
+    Android {
+        server: String,
+        environment: String,
+        payload: File,
+        deadline: Instant,
+    },
     Notes,
 }
 
@@ -57,7 +70,8 @@ pub(super) fn parse(
     let mut ordinary = Vec::new();
     let mut arguments = arguments.into_iter();
     while let Some(flag) = arguments.next() {
-        let value = arguments.next()
+        let value = arguments
+            .next()
             .ok_or_else(|| invalid("Agentd arguments require a value"))?;
         match flag.to_str().filter(|flag| FLAGS.contains(flag)) {
             Some(name) => {
@@ -71,20 +85,30 @@ pub(super) fn parse(
     if selected.is_empty() {
         return Ok((None, ordinary));
     }
-    let profile = selected.remove("--root-production-profile")
+    let profile = selected
+        .remove("--root-production-profile")
         .unwrap_or_else(|| OsString::from("android"));
     let notes_primary = match profile.to_str() {
         Some("android") => false,
         Some("notes") => true,
-        _ => return Err(invalid("original production profile must be android or notes")),
+        _ => {
+            return Err(invalid(
+                "original production profile must be android or notes",
+            ));
+        }
     };
-    let mut take = |name: &str| selected.remove(name)
-        .ok_or_else(|| invalid(format!("missing {name} for original production launch")));
+    let mut take = |name: &str| {
+        selected
+            .remove(name)
+            .ok_or_else(|| invalid(format!("missing {name} for original production launch")))
+    };
     let handoff = descriptor_number(take("--root-production-handoff-fd")?)?;
     let uid = number(take("--root-production-uid")?, "original owner UID")?;
     let gid = number(take("--root-production-gid")?, "original owner GID")?;
     if matches!(uid, 0 | u32::MAX) || matches!(gid, 0 | u32::MAX) {
-        return Err(invalid("original production launch requires a dedicated non-Root owner"));
+        return Err(invalid(
+            "original production launch requires a dedicated non-Root owner",
+        ));
     }
     let control = descriptor_number(take("--root-production-control-fd")?)?;
     let app_server = descriptor_number(take("--root-production-app-server-fd")?)?;
@@ -94,41 +118,80 @@ pub(super) fn parse(
         let server = identifier(take("--android-runtime-server")?)?;
         let environment = identifier(take("--android-runtime-environment")?)?;
         let payload = descriptor_number(take("--android-original-payload-fd")?)?;
-        let end = number::<u64>(take("--android-original-deadline-ns")?, "original monotonic deadline")?;
+        let end = number::<u64>(
+            take("--android-original-deadline-ns")?,
+            "original monotonic deadline",
+        )?;
         Some((server, environment, payload, original_deadline(end)?))
     };
-    let notes = selected.remove("--notes-production-handoff-fd").map(descriptor_number).transpose()?;
-    let notes_deployment = selected.remove("--notes-literal-deployment-fd").map(descriptor_number).transpose()?;
-    let notes_listener = selected.remove("--notes-literal-ui-fd").map(descriptor_number).transpose()?;
-    let notes_session = selected.remove("--notes-session-pidfd").map(descriptor_number).transpose()?;
+    let notes = selected
+        .remove("--notes-production-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    let notes_deployment = selected
+        .remove("--notes-literal-deployment-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    let notes_listener = selected
+        .remove("--notes-literal-ui-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    let notes_session = selected
+        .remove("--notes-session-pidfd")
+        .map(descriptor_number)
+        .transpose()?;
     let notes_ui = match (notes_deployment, notes_listener, notes_session) {
         (None, None, None) => None,
-        (Some(deployment), Some(listener), Some(session)) if notes.is_some() => Some((deployment, listener, session)),
-        _ => return Err(invalid("original Notes UI requires all three descriptors and the application handoff")),
+        (Some(deployment), Some(listener), Some(session)) if notes.is_some() => {
+            Some((deployment, listener, session))
+        }
+        _ => {
+            return Err(invalid(
+                "original Notes UI requires all three descriptors and the application handoff",
+            ));
+        }
     };
     if notes_primary && (notes.is_none() || notes_ui.is_none()) {
-        return Err(invalid("original Notes profile requires its real application and UI capabilities"));
+        return Err(invalid(
+            "original Notes profile requires its real application and UI capabilities",
+        ));
     }
-    let lifetime = selected.remove("--root-production-lifetime-ms")
+    let lifetime = selected
+        .remove("--root-production-lifetime-ms")
         .map(|value| number::<u64>(value, "original Root lifetime"))
-        .transpose()?.unwrap_or(300_000);
+        .transpose()?
+        .unwrap_or(300_000);
     if lifetime == 0 || lifetime > 300_000 {
         return Err(invalid("original Root lifetime exceeds its bound"));
     }
     if !selected.is_empty() {
-        return Err(invalid("original profile contains incompatible production inputs"));
+        return Err(invalid(
+            "original profile contains incompatible production inputs",
+        ));
     }
     let payload = android.as_ref().map(|(_, _, payload, _)| *payload);
-    let numbers = [Some(handoff), Some(control), Some(app_server), payload, notes,
-        notes_deployment, notes_listener, notes_session]
-        .into_iter().flatten().collect::<Vec<_>>();
+    let numbers = [
+        Some(handoff),
+        Some(control),
+        Some(app_server),
+        payload,
+        notes,
+        notes_deployment,
+        notes_listener,
+        notes_session,
+    ]
+    .into_iter()
+    .flatten()
+    .collect::<Vec<_>>();
     if numbers.iter().copied().collect::<BTreeSet<_>>().len() != numbers.len() {
         return Err(invalid("original production descriptors must be distinct"));
     }
     // Notes has no Android effect expiry to borrow or renew. Its startup uses
     // the existing handoff's fixed 30-second bound; each later Notes action has
     // its own original protected source/sender deadline.
-    let bootstrap_deadline = android.as_ref().map(|(_, _, _, deadline)| *deadline)
+    let bootstrap_deadline = android
+        .as_ref()
+        .map(|(_, _, _, deadline)| *deadline)
         .unwrap_or_else(|| Instant::now() + Duration::from_secs(30));
     // All numeric and pairing checks precede ownership transfer. CLOEXEC keeps
     // inherited authority out of unrelated App Server helper re-executions.
@@ -137,41 +200,71 @@ pub(super) fn parse(
     let app_server = take_descriptor(app_server)?;
     let primary = match android {
         Some((server, environment, payload, deadline)) => PrimaryInputs::Android {
-            server, environment, payload: take_readonly_file(payload)?, deadline,
+            server,
+            environment,
+            payload: take_readonly_file(payload)?,
+            deadline,
         },
         None => PrimaryInputs::Notes,
     };
-    let notes = notes.map(take_descriptor).transpose()?.map(UnixDatagram::from);
-    let notes_ui = notes_ui.map(|(deployment, listener, session)| {
-        Ok::<_, AgentdError>(NotesUiInputs {
-            deployment: take_readonly_file(deployment)?,
-            listener: take_descriptor(listener)?,
-            session_pidfd: take_descriptor(session)?,
+    let notes = notes
+        .map(take_descriptor)
+        .transpose()?
+        .map(UnixDatagram::from);
+    let notes_ui = notes_ui
+        .map(|(deployment, listener, session)| {
+            Ok::<_, AgentdError>(NotesUiInputs {
+                deployment: take_readonly_file(deployment)?,
+                listener: take_descriptor(listener)?,
+                session_pidfd: take_descriptor(session)?,
+            })
         })
-    }).transpose()?;
-    Ok((Some(LaunchInputs {
-        handoff, uid, gid, control, app_server, primary, bootstrap_deadline,
-        notes, notes_ui, lifetime: Duration::from_millis(lifetime),
-    }), ordinary))
+        .transpose()?;
+    Ok((
+        Some(LaunchInputs {
+            handoff,
+            uid,
+            gid,
+            control,
+            app_server,
+            primary,
+            bootstrap_deadline,
+            notes,
+            notes_ui,
+            lifetime: Duration::from_millis(lifetime),
+        }),
+        ordinary,
+    ))
 }
 
 fn descriptor_number(value: OsString) -> Result<i32, AgentdError> {
     let value = number::<i32>(value, "original descriptor")?;
-    if value < 3 { return Err(invalid("standard streams are not production capabilities")); }
+    if value < 3 {
+        return Err(invalid("standard streams are not production capabilities"));
+    }
     Ok(value)
 }
 
 fn number<T: std::str::FromStr>(value: OsString, label: &str) -> Result<T, AgentdError> {
-    value.to_str().and_then(|value| value.parse().ok())
+    value
+        .to_str()
+        .and_then(|value| value.parse().ok())
         .ok_or_else(|| invalid(format!("invalid {label}")))
 }
 
 fn identifier(value: OsString) -> Result<String, AgentdError> {
-    let value = value.into_string().map_err(|_| invalid("MCP selection must be UTF-8"))?;
-    if value.is_empty() || value.len() > 128
-        || !value.bytes().all(|byte| byte.is_ascii_alphanumeric() || b"._-".contains(&byte))
+    let value = value
+        .into_string()
+        .map_err(|_| invalid("MCP selection must be UTF-8"))?;
+    if value.is_empty()
+        || value.len() > 128
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || b"._-".contains(&byte))
     {
-        return Err(invalid("MCP selection must name an existing server and environment"));
+        return Err(invalid(
+            "MCP selection must name an existing server and environment",
+        ));
     }
     Ok(value)
 }
@@ -200,9 +293,13 @@ fn take_readonly_file(number: i32) -> Result<File, AgentdError> {
     // acceptable consumer capability, even if it will later acquire seals.
     // SAFETY: F_GETFL observes only the still-unclaimed inherited descriptor.
     let flags = unsafe { libc::fcntl(number, libc::F_GETFL) };
-    if flags < 0 { return Err(std::io::Error::last_os_error().into()); }
+    if flags < 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
     if flags & libc::O_ACCMODE != libc::O_RDONLY {
-        return Err(invalid("original payload/deployment requires an independently opened read-only descriptor"));
+        return Err(invalid(
+            "original payload/deployment requires an independently opened read-only descriptor",
+        ));
     }
     Ok(File::from(take_descriptor(number)?))
 }
@@ -211,29 +308,44 @@ fn original_deadline(end: u64) -> Result<Instant, AgentdError> {
     // Sample Instant first, so conversion may shorten but cannot renew the
     // original launcher's absolute CLOCK_MONOTONIC deadline.
     let local = Instant::now();
-    let mut clock = libc::timespec { tv_sec: 0, tv_nsec: 0 };
+    let mut clock = libc::timespec {
+        tv_sec: 0,
+        tv_nsec: 0,
+    };
     // SAFETY: clock_gettime initializes one correctly sized stack timespec.
     if unsafe { libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut clock) } != 0 {
         return Err(std::io::Error::last_os_error().into());
     }
-    let now = u64::try_from(clock.tv_sec).ok()
+    let now = u64::try_from(clock.tv_sec)
+        .ok()
         .and_then(|seconds| seconds.checked_mul(1_000_000_000))
-        .and_then(|seconds| u64::try_from(clock.tv_nsec).ok().and_then(|ns| seconds.checked_add(ns)))
+        .and_then(|seconds| {
+            u64::try_from(clock.tv_nsec)
+                .ok()
+                .and_then(|ns| seconds.checked_add(ns))
+        })
         .ok_or_else(|| invalid("original monotonic clock is unavailable"))?;
-    let remaining = end.checked_sub(now).filter(|value| *value > 0 && *value <= 30_000_000_000)
+    let remaining = end
+        .checked_sub(now)
+        .filter(|value| *value > 0 && *value <= 30_000_000_000)
         .ok_or_else(|| invalid("original Android deadline expired or exceeds 30 seconds"))?;
     Ok(local + Duration::from_nanos(remaining))
 }
 
 pub(super) fn read_payload(mut file: File) -> Result<String, AgentdError> {
     let size = file.metadata()?.len();
-    if size == 0 || size > 16 * 1024 { return Err(invalid("original Android payload exceeds its bound")); }
+    if size == 0 || size > 16 * 1024 {
+        return Err(invalid("original Android payload exceeds its bound"));
+    }
     crate::authority_host_bootstrap_seal::validate_sealed(&file, size)?;
     file.rewind()?;
     let mut bytes = Vec::with_capacity(size as usize);
     file.take(size + 1).read_to_end(&mut bytes)?;
-    if bytes.len() as u64 != size { return Err(invalid("original Android payload changed while reading")); }
-    let payload = String::from_utf8(bytes).map_err(|_| invalid("original Android payload is not UTF-8"))?;
+    if bytes.len() as u64 != size {
+        return Err(invalid("original Android payload changed while reading"));
+    }
+    let payload =
+        String::from_utf8(bytes).map_err(|_| invalid("original Android payload is not UTF-8"))?;
     codex_hepta_memory::AndroidSetTextV1::from_json(&payload).map_err(AgentdError::Invalid)?;
     Ok(payload)
 }
