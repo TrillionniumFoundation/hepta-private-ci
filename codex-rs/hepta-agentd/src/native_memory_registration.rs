@@ -168,3 +168,6 @@ mod tests;
 mod current_tests;
 
 
+#[cfg(all(test, unix))]
+#[path = "native_memory_registration_startup_tests.rs"]
+mod startup_tests;
