@@ -1,0 +1,7 @@
+cargo clippy --fix --tests --allow-dirty {args}
+    Checking codex-hepta-types v0.0.0 (/workspace/scratch/60f94d809f44/native-qualification-v5/codex-rs/hepta-types)
+    Checking codex-hepta-infer-core v0.0.0 (/workspace/scratch/60f94d809f44/native-qualification-v5/codex-rs/hepta-infer-core)
+    Checking codex-hepta-learning-artifacts v0.0.0 (/workspace/scratch/60f94d809f44/native-qualification-v5/codex-rs/hepta-learning-artifacts)
+    Checking codex-hepta-neuron v0.0.0 (/workspace/scratch/60f94d809f44/native-qualification-v5/codex-rs/hepta-neuron)
+       Fixed hepta-neuron/src/trained_cell_v5_tests.rs (1 fix)
+    Finished `dev` profile [unoptimized] target(s) in 8.43s
