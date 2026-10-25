@@ -2,7 +2,7 @@ use super::*;
 use std::io::Write;
 use std::process::{Command, Stdio};
 use codex_hepta_neuron::canonical_feature_vector_digest_v1;
-use pretty_assertions::assert_eq;
+use std::assert_eq;
 use crate::native_memory_test_support::fixture;
 
 #[tokio::test]
