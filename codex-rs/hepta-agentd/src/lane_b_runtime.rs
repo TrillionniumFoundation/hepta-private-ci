@@ -1,6 +1,9 @@
 use std::collections::BTreeMap;
 
 #[cfg(all(test, unix))]
+#[path = "lane_b_instance.rs"]
+pub(crate) mod instance;
+#[cfg(all(test, unix))]
 #[path = "lane_b_journal.rs"]
 mod journal;
 #[cfg(all(test, unix))]
@@ -145,6 +148,12 @@ pub enum AgentRunError {
     InvalidRunStart(&'static str),
     #[cfg(all(test, unix))]
     PersistenceUnavailable,
+    #[cfg(all(test, unix))]
+    InstanceRequired,
+    #[cfg(all(test, unix))]
+    StaleInstance,
+    #[cfg(all(test, unix))]
+    StaleActivation,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -174,6 +183,10 @@ pub struct AgentRunCoordinator {
     max_active_runs: usize,
     #[cfg(all(test, unix))]
     journal: Option<journal::LifecycleJournal>,
+    #[cfg(all(test, unix))]
+    instances: Option<instance::InstanceBook>,
+    #[cfg(all(test, unix))]
+    instance_permit: Option<instance::InstancePermit>,
 }
 
 impl AgentRunCoordinator {
@@ -195,6 +208,10 @@ impl AgentRunCoordinator {
             max_active_runs,
             #[cfg(all(test, unix))]
             journal: None,
+            #[cfg(all(test, unix))]
+            instances: None,
+            #[cfg(all(test, unix))]
+            instance_permit: None,
         })
     }
 
@@ -224,6 +241,8 @@ impl AgentRunCoordinator {
         now_ms: u64,
         snapshot: RunSnapshot,
     ) -> Result<RunReceipt, AgentRunError> {
+        #[cfg(all(test, unix))]
+        self.require_instance_access(&snapshot.run_id)?;
         #[cfg(all(test, unix))]
         if self.journal.is_some() {
             return self.transact(|staged| staged.start_run(now_ms, snapshot));
@@ -315,6 +334,8 @@ impl AgentRunCoordinator {
         attachment: ContextAttachment,
     ) -> Result<RunReceipt, AgentRunError> {
         #[cfg(all(test, unix))]
+        self.require_instance_access(&attachment.run_id)?;
+        #[cfg(all(test, unix))]
         if self.journal.is_some() {
             return self
                 .transact(|staged| staged.attach_context(now_ms, expected_revision, attachment));
@@ -361,6 +382,8 @@ impl AgentRunCoordinator {
         expected_revision: u64,
     ) -> Result<RunReceipt, AgentRunError> {
         #[cfg(all(test, unix))]
+        self.require_instance_access(run_id)?;
+        #[cfg(all(test, unix))]
         if self.journal.is_some() {
             return self
                 .transact(|staged| staged.mark_dispatched(now_ms, run_id, expected_revision));
@@ -393,6 +416,8 @@ impl AgentRunCoordinator {
         expected_revision: u64,
         reason: &str,
     ) -> Result<(CancellationDisposition, RunReceipt), AgentRunError> {
+        #[cfg(all(test, unix))]
+        self.require_instance_access(run_id)?;
         #[cfg(all(test, unix))]
         if self.journal.is_some() {
             return self.transact(|staged| {
@@ -473,6 +498,8 @@ impl AgentRunCoordinator {
         terminal_observed: bool,
     ) -> Result<RunReceipt, AgentRunError> {
         #[cfg(all(test, unix))]
+        self.require_instance_access(run_id)?;
+        #[cfg(all(test, unix))]
         if self.journal.is_some() {
             return self.transact(|staged| {
                 staged.observe_terminal(run_id, expected_revision, phase, terminal_observed)
@@ -513,6 +540,8 @@ impl AgentRunCoordinator {
         &mut self,
         recovery: RunRecovery,
     ) -> Result<RunReceipt, AgentRunError> {
+        #[cfg(all(test, unix))]
+        self.require_instance_access(&recovery.snapshot.run_id)?;
         #[cfg(all(test, unix))]
         if self.journal.is_some() {
             return self.transact(|staged| staged.recover_indeterminate(recovery));
@@ -627,6 +656,8 @@ impl AgentRunCoordinator {
         expected_revision: u64,
     ) -> Result<RunReceipt, AgentRunError> {
         #[cfg(all(test, unix))]
+        self.require_instance_access(run_id)?;
+        #[cfg(all(test, unix))]
         if self.journal.is_some() {
             return self.transact(|staged| staged.remove_closed_run(run_id, expected_revision));
         }
@@ -637,6 +668,8 @@ impl AgentRunCoordinator {
             return Err(AgentRunError::InvalidTransition);
         }
         let receipt = receipt(record, /*idempotent*/ false);
+        #[cfg(all(test, unix))]
+        self.retain_released_instance(run_id)?;
         self.runs.remove(run_id);
         Ok(receipt)
     }

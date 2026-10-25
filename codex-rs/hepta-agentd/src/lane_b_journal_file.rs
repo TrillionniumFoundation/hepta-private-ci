@@ -14,7 +14,7 @@ fn unavailable<T>(_: T) -> AgentRunError {
 }
 
 fn checksum(sequence: u64, snapshot: &Snapshot) -> Result<String, AgentRunError> {
-    let bytes = serde_json::to_vec(&(1_u32, sequence, snapshot)).map_err(unavailable)?;
+    let bytes = serde_json::to_vec(&(2_u32, sequence, snapshot)).map_err(unavailable)?;
     Ok(format!("{:x}", sha2::Sha256::digest(bytes)))
 }
 
@@ -88,7 +88,7 @@ impl LifecycleJournal {
             .ok_or(AgentRunError::PersistenceUnavailable)?;
         let checksum = checksum(sequence, &snapshot)?;
         let document = Document {
-            schema: 1,
+            schema: 2,
             sequence,
             snapshot,
             checksum,
@@ -242,7 +242,7 @@ fn read_document(path: &Path) -> Result<Document, AgentRunError> {
     let bytes = read_bytes(path)?;
     let document: Document = serde_json::from_slice(&bytes).map_err(unavailable)?;
     if serde_json::to_vec(&document).map_err(unavailable)? != bytes
-        || document.schema != 1
+        || document.schema != 2
         || document.sequence == 0
         || checksum(document.sequence, &document.snapshot)? != document.checksum
     {

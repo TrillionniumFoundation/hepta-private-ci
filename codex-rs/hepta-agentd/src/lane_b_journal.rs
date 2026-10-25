@@ -13,6 +13,7 @@ struct Snapshot {
     composition: RuntimeComposition,
     runs: BTreeMap<String, RunRecord>,
     accepting_runs: bool,
+    instances: Option<instance::InstanceBook>,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
@@ -30,11 +31,18 @@ pub(super) struct LifecycleJournal {
     _lock: File,
     sequence: u64,
     committed: Option<Snapshot>,
-    poisoned: bool,
+    pub(super) poisoned: bool,
     #[cfg(test)]
     fail_before_publish: bool,
     #[cfg(test)]
     fail_after_publish: bool,
+}
+
+#[derive(Clone, Copy)]
+enum RecoveryFault {
+    None,
+    BeforePublish,
+    AfterPublish,
 }
 
 impl AgentRunCoordinator {
@@ -45,6 +53,31 @@ impl AgentRunCoordinator {
         path: &Path,
         mode: JournalOpenMode,
     ) -> Result<Self, AgentRunError> {
+        Self::open_journaled_with_instances(composition, path, mode, instance::InstanceMode::Legacy)
+    }
+
+    pub(super) fn open_journaled_with_instances(
+        composition: RuntimeComposition,
+        path: &Path,
+        mode: JournalOpenMode,
+        instance_mode: instance::InstanceMode,
+    ) -> Result<Self, AgentRunError> {
+        Self::open_journaled_with_recovery_fault(
+            composition,
+            path,
+            mode,
+            instance_mode,
+            RecoveryFault::None,
+        )
+    }
+
+    fn open_journaled_with_recovery_fault(
+        composition: RuntimeComposition,
+        path: &Path,
+        mode: JournalOpenMode,
+        instance_mode: instance::InstanceMode,
+        fault: RecoveryFault,
+    ) -> Result<Self, AgentRunError> {
         let mut owner = Self::compose_runtime(composition)?;
         let (mut journal, stored) = LifecycleJournal::open(path, mode)?;
         if let Some(snapshot) = stored {
@@ -54,8 +87,19 @@ impl AgentRunCoordinator {
             validate_stored(&snapshot)?;
             owner.runs = snapshot.runs;
             owner.accepting_runs = snapshot.accepting_runs;
+            owner.instances = snapshot.instances;
+            owner.check_instance_mode(instance_mode)?;
+            if let Some(book) = &mut owner.instances {
+                book.advance_activation()?;
+            }
         } else {
+            owner.initialize_instances(instance_mode)?;
             journal.commit(owner.snapshot())?;
+        }
+        match fault {
+            RecoveryFault::None => {}
+            RecoveryFault::BeforePublish => journal.fail_before_publish = true,
+            RecoveryFault::AfterPublish => journal.fail_after_publish = true,
         }
         owner.journal = Some(journal);
         // Preserve pre-dispatch states. Possible dispatch is never replayable;
@@ -69,6 +113,7 @@ impl AgentRunCoordinator {
             composition: self.composition.clone(),
             runs: self.runs.clone(),
             accepting_runs: self.accepting_runs,
+            instances: self.instances.clone(),
         }
     }
 
@@ -91,9 +136,12 @@ impl AgentRunCoordinator {
             accepting_runs: self.accepting_runs,
             max_active_runs: self.max_active_runs,
             journal: None,
+            instances: self.instances.clone(),
+            instance_permit: None,
         };
         let result = operation(&mut staged)?;
         let next = staged.snapshot();
+        validate_stored(&next)?;
         if self
             .journal
             .as_ref()
@@ -113,6 +161,7 @@ impl AgentRunCoordinator {
             }
             self.runs = staged.runs;
             self.accepting_runs = staged.accepting_runs;
+            self.instances = staged.instances;
         }
         Ok(result)
     }
@@ -129,40 +178,49 @@ fn validate_stored(snapshot: &Snapshot) -> Result<(), AgentRunError> {
     {
         return Err(AgentRunError::PersistenceUnavailable);
     }
-    for (key, record) in &snapshot.runs {
-        validate_snapshot_fields(&record.snapshot)?;
-        if key != &record.snapshot.run_id || record.revision == 0 {
-            return Err(AgentRunError::PersistenceUnavailable);
-        }
-        if (record.phase == RunPhase::Admitted
-            && (record.context_digest.is_some() || record.revision != 1))
-            || (matches!(
-                record.phase,
-                RunPhase::Admitted | RunPhase::ContextAttached | RunPhase::Dispatched
-            ) && record.cancel_reason.is_some())
-            || (record.phase == RunPhase::Cancelling && record.cancel_reason.is_none())
-            || (record.phase == RunPhase::Cancelled
-                && record.context_digest.is_none()
-                && record.cancel_reason.is_none())
-            || record.cancel_ack_deadline_ms == Some(0)
-        {
-            return Err(AgentRunError::PersistenceUnavailable);
-        }
-        match (&record.context_digest, &record.compilation_receipt_digest) {
-            (Some(context), Some(compilation)) => {
-                validate_digest(context, "context")?;
-                validate_digest(compilation, "compilation receipt")?;
-            }
-            (None, None) if matches!(record.phase, RunPhase::Admitted | RunPhase::Cancelled) => {}
-            _ => return Err(AgentRunError::PersistenceUnavailable),
-        }
-        if let Some(reason) = &record.cancel_reason {
-            validate_cancel_reason(reason)?;
-        }
-        if record.cancel_ack_deadline_ms.is_some() != (record.phase == RunPhase::Cancelling) {
-            return Err(AgentRunError::PersistenceUnavailable);
-        }
+    if let Some(book) = &snapshot.instances {
+        book.validate(&snapshot.runs)?;
     }
+    for (key, record) in &snapshot.runs {
+        validate_record(key, record)?;
+    }
+    Ok(())
+}
+
+pub(super) fn validate_record(key: &str, record: &RunRecord) -> Result<(), AgentRunError> {
+    validate_snapshot_fields(&record.snapshot)?;
+    if key != record.snapshot.run_id || record.revision == 0 {
+        return Err(AgentRunError::PersistenceUnavailable);
+    }
+    if (record.phase == RunPhase::Admitted
+        && (record.context_digest.is_some() || record.revision != 1))
+        || (matches!(
+            record.phase,
+            RunPhase::Admitted | RunPhase::ContextAttached | RunPhase::Dispatched
+        ) && record.cancel_reason.is_some())
+        || (record.phase == RunPhase::Cancelling && record.cancel_reason.is_none())
+        || (record.phase == RunPhase::Cancelled
+            && record.context_digest.is_none()
+            && record.cancel_reason.is_none())
+        || record.cancel_ack_deadline_ms == Some(0)
+    {
+        return Err(AgentRunError::PersistenceUnavailable);
+    }
+    match (&record.context_digest, &record.compilation_receipt_digest) {
+        (Some(context), Some(compilation)) => {
+            validate_digest(context, "context")?;
+            validate_digest(compilation, "compilation receipt")?;
+        }
+        (None, None) if matches!(record.phase, RunPhase::Admitted | RunPhase::Cancelled) => {}
+        _ => return Err(AgentRunError::PersistenceUnavailable),
+    }
+    if let Some(reason) = &record.cancel_reason {
+        validate_cancel_reason(reason)?;
+    }
+    if record.cancel_ack_deadline_ms.is_some() != (record.phase == RunPhase::Cancelling) {
+        return Err(AgentRunError::PersistenceUnavailable);
+    }
+
     Ok(())
 }
 

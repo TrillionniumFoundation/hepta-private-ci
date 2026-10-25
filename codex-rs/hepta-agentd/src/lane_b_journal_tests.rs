@@ -310,7 +310,7 @@ fn rewrite_valid_checksum(home: &Home, change: impl FnOnce(&mut Snapshot)) {
     document.checksum = format!(
         "{:x}",
         sha2::Sha256::digest(
-            serde_json::to_vec(&(1_u32, document.sequence, &document.snapshot)).unwrap()
+            serde_json::to_vec(&(2_u32, document.sequence, &document.snapshot)).unwrap()
         )
     );
     std::fs::write(home.path(), serde_json::to_vec(&document).unwrap()).unwrap();
@@ -570,3 +570,6 @@ fn rejected_timeout_requests_do_not_commit_partial_or_unvalidated_changes() {
     assert_eq!(owner.snapshot(), before);
     assert_eq!(std::fs::read(home.path()).unwrap(), bytes);
 }
+
+#[path = "lane_b_instance_tests.rs"]
+mod instance_tests;
