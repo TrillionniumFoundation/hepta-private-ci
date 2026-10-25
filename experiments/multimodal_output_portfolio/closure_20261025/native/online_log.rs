@@ -1,12 +1,14 @@
 //! Durable controller history; incomplete cross-store commits fail closed.
 use std::collections::HashSet;
-use std::fs::{File, OpenOptions};
+use std::fs::File;
+use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
 
-use codex_hepta_types::Digest32;
-use serde_json::{Value, json};
 use crate::stream_io::Result;
+use codex_hepta_types::Digest32;
+use serde_json::Value;
+use serde_json::json;
 
 pub struct History {
     file: File,
@@ -22,14 +24,29 @@ pub struct History {
 
 impl History {
     pub fn open(path: &Path, resume: bool) -> Result<Self> {
-        let bytes = if resume { std::fs::read(path)? } else { Vec::new() };
+        let bytes = if resume {
+            std::fs::read(path)?
+        } else {
+            Vec::new()
+        };
         if !bytes.is_empty() && bytes.last() != Some(&b'\n') {
             return Err("Incomplete controller history; reconciliation required".into());
         }
-        let file = OpenOptions::new().append(true).create_new(!resume).open(path)?;
-        let mut history = Self { file, events: 0, last: Digest32::ZERO,
-            native_sequence: 0, monotonic_micros: 0, modulator: Digest32::ZERO, requests: HashSet::new(),
-            pending: None, outcomes: 0 };
+        let file = OpenOptions::new()
+            .append(true)
+            .create_new(!resume)
+            .open(path)?;
+        let mut history = Self {
+            file,
+            events: 0,
+            last: Digest32::ZERO,
+            native_sequence: 0,
+            monotonic_micros: 0,
+            modulator: Digest32::ZERO,
+            requests: HashSet::new(),
+            pending: None,
+            outcomes: 0,
+        };
         for line in bytes.split(|b| *b == b'\n').filter(|s| !s.is_empty()) {
             let record: Value = serde_json::from_slice(line)?;
             let event = &record["event"];
@@ -63,19 +80,37 @@ impl History {
     }
 
     fn apply(&mut self, event: &Value, digest: Digest32) -> Result<()> {
-        self.native_sequence = event["native_sequence"].as_u64().ok_or("Missing native sequence")?;
-        self.monotonic_micros = event["monotonic_micros"].as_u64().ok_or("Missing monotonic clock")?;
-        self.modulator = event["modulator"].as_str().ok_or("Missing NDU binding")?.parse()?;
+        self.native_sequence = event["native_sequence"]
+            .as_u64()
+            .ok_or("Missing native sequence")?;
+        self.monotonic_micros = event["monotonic_micros"]
+            .as_u64()
+            .ok_or("Missing monotonic clock")?;
+        self.modulator = event["modulator"]
+            .as_str()
+            .ok_or("Missing NDU binding")?
+            .parse()?;
         match event["kind"].as_str().ok_or("Missing history event kind")? {
             "bootstrap" => {}
             "decision" => {
-                let request = event["request_id"].as_str().ok_or("Missing request identity")?.to_string();
-                if !self.requests.insert(request.clone()) { return Err("Duplicate committed request".into()); }
-                self.pending = event["selected_action"].as_str().map(|action|
-                    (request, digest.to_string(), action.to_string()));
+                let request = event["request_id"]
+                    .as_str()
+                    .ok_or("Missing request identity")?
+                    .to_string();
+                if !self.requests.insert(request.clone()) {
+                    return Err("Duplicate committed request".into());
+                }
+                self.pending = event["selected_action"]
+                    .as_str()
+                    .map(|action| (request, digest.to_string(), action.to_string()));
             }
-            "outcome" => { self.pending = None; self.outcomes += 1; }
-            "cancel" => { self.pending = None; }
+            "outcome" => {
+                self.pending = None;
+                self.outcomes += 1;
+            }
+            "cancel" => {
+                self.pending = None;
+            }
             _ => return Err("Unknown committed event kind".into()),
         }
         self.events += 1;
