@@ -742,8 +742,7 @@ mod tests {
                 control_socket: layout.agentd_control_socket().to_path_buf(),
                 app_server_socket: layout.app_server_socket().to_path_buf(),
             };
-            let store = AutomationStore::open(&layout)
-                .await?;
+            let store = AutomationStore::open(&layout).await?;
             Ok(Self {
                 _temp: temp,
                 identity,
@@ -822,16 +821,14 @@ mod tests {
             .await?;
         fixture
             .store
-            .apply_taskflow_command(
-                &TaskFlowCommand::new(
-                    &intent.run_id,
-                    "agentd-product-effect-start",
-                    fence.clone(),
-                    claimed.revision,
-                    TaskFlowTransition::Start,
-                    now_ms + 2,
-                )?,
-            )
+            .apply_taskflow_command(&TaskFlowCommand::new(
+                &intent.run_id,
+                "agentd-product-effect-start",
+                fence.clone(),
+                claimed.revision,
+                TaskFlowTransition::Start,
+                now_ms + 2,
+            )?)
             .await?;
         let digest = intent.digest()?;
         fixture
@@ -903,11 +900,7 @@ mod tests {
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
     async fn host_dispatches_exact_wire_payload_once() -> Result<()> {
         let fixture = Fixture::new().await?;
-        let now_ms = u64::try_from(
-            SystemTime::now()
-                .duration_since(UNIX_EPOCH)?
-                .as_millis(),
-        )?;
+        let now_ms = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
         let scope = Sha256Digest::for_bytes(b"provider-fixture-scope");
         let intent = effect_intent(&scope);
         prepare_effect(&fixture, now_ms, &intent).await?;
@@ -995,14 +988,10 @@ mod tests {
             "final_use_verifying_key_hex": hex(&final_use_signer.verifying_key().to_bytes()),
             "final_use_revocations_file": revocations_file
         });
-        fs::write(
-            &host_file,
-            serde_json::to_vec(&host_json)?,
-        )?;
+        fs::write(&host_file, serde_json::to_vec(&host_json)?)?;
         fs::set_permissions(&host_file, fs::Permissions::from_mode(0o600))?;
 
-        let host =
-            AgentdAutomationEffectHost::open(&fixture.identity, &host_file)?;
+        let host = AgentdAutomationEffectHost::open(&fixture.identity, &host_file)?;
         let grant = signed_final_use(&intent, now_ms, &final_use_signer)?;
         let receipt = host
             .execute(
