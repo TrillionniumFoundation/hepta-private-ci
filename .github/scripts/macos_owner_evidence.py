@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import platform
 import shutil
+import selectors
 import signal
 import subprocess
 import sys
@@ -18,7 +19,7 @@ import xml.etree.ElementTree as ET
 
 HERE = Path(__file__).resolve().parent
 PROFILE = "macos-owner"
-BASE = "b1d61707cbc102397828ec552c217d3c3bf5feb5"
+BASE = "2d67a3d86f81ce37331da9fef453a2e02411bfb2"
 PHASES = ("memory", "supervisor-owning", "supervisor-integration")
 OWNER = (
     "restart_budget::tests::budget_is_durable_bounded_and_pending_is_idempotent",
@@ -150,6 +151,102 @@ def validate_report(path, phase):
     return sorted(identities)
 
 
+def snapshot_owned_group(pgid, directory):
+    """One bounded read-only Darwin group snapshot, never a cleanup verdict."""
+    snapshot = {
+        "stage": "first-eperm-after-term-signal-zero",
+        "owned_pgid": pgid,
+        "observer_pid": os.getpid(),
+        "observer_euid": os.geteuid(),
+        "kernel": list(os.uname()),
+        "classification": "unverified",
+    }
+    if platform.system() != "Darwin":
+        snapshot["unavailable"] = "Darwin-only diagnostic"
+        return snapshot
+    require(type(pgid) is int and pgid > 1, "invalid owned group")
+    command = [
+        "/bin/ps",
+        "-g",
+        str(pgid),
+        "-o",
+        "pid=,ppid=,pgid=,sess=,uid=,state=,lstart=",
+    ]
+    snapshot.update(argv=command, limit_bytes=16384, timeout_seconds=2)
+    process = None
+    probe_stop_attempted = False
+    output = {"stdout": bytearray(), "stderr": bytearray()}
+    started = time.monotonic()
+    try:
+        snapshot["binary_sha256"] = digest("/bin/ps")
+        process = subprocess.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env={"PATH": "/usr/bin:/bin", "LC_ALL": "C"},
+        )
+        snapshot["probe_pid"] = process.pid
+        with selectors.DefaultSelector() as selector:
+            for name, stream in (
+                ("stdout", process.stdout),
+                ("stderr", process.stderr),
+            ):
+                os.set_blocking(stream.fileno(), False)
+                selector.register(stream, selectors.EVENT_READ, name)
+            while selector.get_map():
+                remaining = started + 2 - time.monotonic()
+                if remaining <= 0:
+                    snapshot["unavailable"] = "snapshot timeout"
+                    break
+                ready = selector.select(remaining)
+                for key, _ in ready:
+                    total = sum(len(value) for value in output.values())
+                    chunk = os.read(key.fileobj.fileno(), min(4096, 16385 - total))
+                    if not chunk:
+                        selector.unregister(key.fileobj)
+                    else:
+                        output[key.data].extend(chunk)
+                if sum(len(value) for value in output.values()) > 16384:
+                    snapshot["unavailable"] = "snapshot output exceeds bound"
+                    break
+        if "unavailable" not in snapshot:
+            try:
+                snapshot["exit"] = process.wait(
+                    timeout=max(0, started + 2 - time.monotonic())
+                )
+            except subprocess.TimeoutExpired:
+                snapshot["unavailable"] = "snapshot timeout"
+        if "unavailable" in snapshot:
+            if process.poll() is None:
+                # Only this newly created read-only ps process, never the denied group.
+                probe_stop_attempted = True
+                process.kill()
+            snapshot["exit"] = process.wait(timeout=1)
+        if snapshot["exit"] != 0:
+            snapshot.setdefault("unavailable", "snapshot command failed")
+    except Exception as error:
+        snapshot.update(unavailable=str(error), error_type=type(error).__name__)
+    finally:
+        if process is not None:
+            if process.poll() is None and not probe_stop_attempted:
+                probe_stop_attempted = True
+                process.kill()
+                try:
+                    process.wait(timeout=1)
+                except subprocess.TimeoutExpired:
+                    snapshot["unavailable"] = "snapshot child reap failed"
+            for stream in (process.stdout, process.stderr):
+                if stream is not None:
+                    stream.close()
+        remaining = 16384
+        for name, value in output.items():
+            kept = bytes(value[:remaining])
+            remaining -= len(kept)
+            (directory / f"probe-state.{name}.log").write_bytes(kept)
+        snapshot["elapsed_seconds"] = time.monotonic() - started
+    return snapshot
+
+
 def bounded(command, directory, deadline, cwd, grace=10):
     """One new owned process group, raw output, deadline and bounded cleanup."""
     directory.mkdir(parents=True)
@@ -193,6 +290,18 @@ def bounded(command, directory, deadline, cwd, grace=10):
                             os.killpg(process.pid, 0)
                         except ProcessLookupError:
                             break
+                        except PermissionError:
+                            # Preserve the first denial; diagnostic failure never masks it.
+                            try:
+                                record["owned_group_snapshot"] = snapshot_owned_group(
+                                    process.pid, directory
+                                )
+                            except Exception as diagnostic_error:
+                                record["owned_group_snapshot"] = {
+                                    "unavailable": str(diagnostic_error),
+                                    "classification": "unverified",
+                                }
+                            raise
                         time.sleep(0.05)
                     try:
                         os.killpg(process.pid, signal.SIGKILL)

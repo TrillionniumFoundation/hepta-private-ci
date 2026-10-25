@@ -11,6 +11,7 @@ import tempfile
 import time
 import unittest
 from unittest.mock import patch
+from unittest.mock import Mock
 import xml.etree.ElementTree as ET
 
 import macos_owner_evidence as evidence
@@ -22,7 +23,14 @@ def retain_watchdog_receipts(root, destination):
         relative = receipt.parent.relative_to(root)
         target = destination / relative
         target.mkdir(parents=True, exist_ok=True)
-        for name in ("result.json", "command.json", "stdout.log", "stderr.log"):
+        for name in (
+            "result.json",
+            "command.json",
+            "stdout.log",
+            "stderr.log",
+            "probe-state.stdout.log",
+            "probe-state.stderr.log",
+        ):
             source = receipt.parent / name
             if source.is_file() and not source.is_symlink():
                 shutil.copyfile(source, target / name)
@@ -193,6 +201,124 @@ class EvidenceTests(unittest.TestCase):
             path.write_text(json.dumps(listing))
             with self.assertRaises(ValueError):
                 evidence.validate_list(path, "supervisor-owning")
+
+    def test_first_eperm_diagnostic_does_not_retry_signal_or_pass(self):
+        child = Mock(pid=4242)
+        child.wait.return_value = 0
+        child.poll.return_value = 0
+        with (
+            patch.object(evidence.subprocess, "Popen", return_value=child),
+            patch.object(
+                evidence.os,
+                "killpg",
+                side_effect=[None, PermissionError(1, "injected EPERM")],
+            ) as signals,
+            patch.object(
+                evidence,
+                "snapshot_owned_group",
+                return_value={"classification": "unverified", "state": "Z"},
+            ) as snapshot,
+        ):
+            status = evidence.bounded(
+                ["fake-native-command"],
+                self.root / "eperm",
+                time.monotonic() + 3,
+                self.root,
+            )
+        self.assertEqual(status, 125)
+        self.assertEqual(
+            [call.args for call in signals.call_args_list],
+            [(4242, evidence.signal.SIGTERM), (4242, 0)],
+        )
+        snapshot.assert_called_once_with(4242, self.root / "eperm")
+        receipt = json.loads((self.root / "eperm/result.json").read_text())
+        self.assertEqual(receipt["error_type"], "PermissionError")
+        self.assertIn("injected EPERM", receipt["traceback"])
+
+    def test_snapshot_failure_preserves_original_eperm(self):
+        child = Mock(pid=4242)
+        child.wait.return_value = 0
+        child.poll.return_value = 0
+        with (
+            patch.object(evidence.subprocess, "Popen", return_value=child),
+            patch.object(
+                evidence.os,
+                "killpg",
+                side_effect=[None, PermissionError(1, "original denial")],
+            ) as signals,
+            patch.object(
+                evidence,
+                "snapshot_owned_group",
+                side_effect=OSError("snapshot unavailable"),
+            ),
+        ):
+            status = evidence.bounded(
+                ["fake-native-command"],
+                self.root / "gap",
+                time.monotonic() + 3,
+                self.root,
+            )
+        self.assertEqual(status, 125)
+        self.assertEqual(signals.call_count, 2)
+        receipt = json.loads((self.root / "gap/result.json").read_text())
+        self.assertEqual(receipt["error_type"], "PermissionError")
+        self.assertIn("original denial", receipt["error"])
+        self.assertEqual(
+            receipt["owned_group_snapshot"]["classification"], "unverified"
+        )
+
+    def test_exact_group_snapshot_raw_output_and_bounds(self):
+        real_popen = subprocess.Popen
+        for name, code, failure in [
+            (
+                "normal",
+                "print('4243 1 4242 4242 501 Z Sun Oct 25 00:00:00 2026')",
+                False,
+            ),
+            ("empty", "pass", False),
+            ("large", "import sys;sys.stdout.write('x'*20000)", True),
+            ("timeout", "import time;time.sleep(20)", True),
+            (
+                "failed",
+                "import sys;print('unavailable',file=sys.stderr);sys.exit(3)",
+                True,
+            ),
+        ]:
+            directory = self.root / name
+            directory.mkdir()
+            seen = []
+
+            def fake_ps(command, **kwargs):
+                seen.append(command)
+                return real_popen([sys.executable, "-c", code], **kwargs)
+
+            with (
+                patch.object(evidence.platform, "system", return_value="Darwin"),
+                patch.object(evidence.subprocess, "Popen", side_effect=fake_ps),
+            ):
+                receipt = evidence.snapshot_owned_group(4242, directory)
+            self.assertEqual(
+                seen,
+                [
+                    [
+                        "/bin/ps",
+                        "-g",
+                        "4242",
+                        "-o",
+                        "pid=,ppid=,pgid=,sess=,uid=,state=,lstart=",
+                    ]
+                ],
+            )
+            self.assertEqual(receipt["classification"], "unverified")
+            self.assertEqual("unavailable" in receipt, failure)
+            self.assertLessEqual(
+                sum(
+                    (directory / f"probe-state.{stream}.log").stat().st_size
+                    for stream in ["stdout", "stderr"]
+                ),
+                16384,
+            )
+            self.assertLess(receipt["elapsed_seconds"], 4)
 
     def test_failed_command_receipts_survive_temporary_cleanup(self):
         # Reproduce the old loss and establish preservation without executing a child.
@@ -411,10 +537,8 @@ class EvidenceTests(unittest.TestCase):
 
     def test_owned_descendant_after_leader_exit(self):
         marker = self.root / "orphan-ran"
-        child = f"import time;time.sleep(0.8);open({str(marker)!r},'w').close()"
-        parent = (
-            f"import subprocess,sys;subprocess.Popen([sys.executable,'-c',{child!r}])"
-        )
+        child = f"import json,os,time;print(json.dumps(dict(pid=os.getpid(),ppid=os.getppid(),pgid=os.getpgrp(),sid=os.getsid(0),uid=os.geteuid())),flush=True);time.sleep(0.8);open({str(marker)!r},'w').close()"
+        parent = f"import json,os,subprocess,sys;child=subprocess.Popen([sys.executable,'-c',{child!r}]);print(json.dumps(dict(parent_pid=os.getpid(),child_pid=child.pid,pgid=os.getpgrp(),uid=os.geteuid())),flush=True)"
         self.assertEqual(
             evidence.bounded(
                 [sys.executable, "-c", parent],
@@ -474,7 +598,7 @@ class EvidenceTests(unittest.TestCase):
     @unittest.skipUnless(os.name == "posix", "owned process groups are Unix-only")
     def test_owned_descendant_cleanup(self):
         marker = self.root / "descendant-ran"
-        child = f"import time;time.sleep(0.8);open({str(marker)!r},'w').close()"
+        child = f"import json,os,time;print(json.dumps(dict(pid=os.getpid(),ppid=os.getppid(),pgid=os.getpgrp(),sid=os.getsid(0),uid=os.geteuid())),flush=True);time.sleep(0.8);open({str(marker)!r},'w').close()"
         parent = f"import subprocess,sys,time;subprocess.Popen([sys.executable,'-c',{child!r}]);time.sleep(20)"
         status = evidence.bounded(
             [sys.executable, "-c", parent],
