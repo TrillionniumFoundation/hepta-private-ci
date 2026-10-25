@@ -1,4 +1,4 @@
-//! Current-cut admission for an isolated, explicitly read-only cold image.
+//! Current-cut admission for isolated, explicitly read-only historical images.
 
 use super::*;
 use crate::CognitiveAccess;
@@ -114,6 +114,45 @@ impl CognitiveStore {
         Ok(recovered)
     }
 
+    /// Recover a retained active DB/WAL bundle through a private disposable
+    /// copy, then authenticate an immutable historical image. This is a distinct
+    /// API: both cold entry points continue rejecting all sidecars. The complete
+    /// Current must be independently retained before the failure, not computed
+    /// from the suspect source or recovered copy. No active pointer is published.
+    pub async fn open_active_wal_read_only_recovery(
+        layout: &HeptaAgentLayout,
+        requirement: CognitiveRecoveryRequirement<'_>,
+    ) -> Result<RecoveredCognitiveReadOnly, CognitiveRecoveryError> {
+        let expected = validate_requirement(layout, requirement)?;
+        let root = canonical_path_without_redirection(layout.cognitive_root())
+            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?
+            .ok_or_else(|| {
+                CognitiveRecoveryError::Unavailable("recovery root is missing".into())
+            })?;
+        let path = resolve_active_database_path(&root)
+            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+        let home = AbsolutePathBuf::try_from(root.clone())
+            .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?;
+        let config = SqliteConfig::from_sqlite_home(home);
+        let source = config
+            .bind_existing_recovery_database(&path)
+            .map_err(recovery_error)?;
+        let pool = config
+            .open_wal_image_read_only_pool(&source)
+            .await
+            .map_err(recovery_error)?;
+        let recovered = Self::admit_read_only_image(layout, expected, path.clone(), pool).await?;
+        if source.verify_inspection_unchanged().is_err()
+            || resolve_active_database_path(&root).ok().as_ref() != Some(&path)
+        {
+            recovered.close().await;
+            return Err(CognitiveRecoveryError::Indeterminate(
+                "source or active selection changed during historical admission".into(),
+            ));
+        }
+        Ok(recovered)
+    }
+
     async fn open_cold_read_only_path(
         layout: &HeptaAgentLayout,
         expected: &CognitiveRecoveryAnchor,
@@ -129,6 +168,15 @@ impl CognitiveStore {
             .open_cold_image_read_only_pool(&guard)
             .await
             .map_err(recovery_error)?;
+        Self::admit_read_only_image(layout, expected, path, pool).await
+    }
+
+    async fn admit_read_only_image(
+        layout: &HeptaAgentLayout,
+        expected: &CognitiveRecoveryAnchor,
+        path: std::path::PathBuf,
+        pool: sqlx::SqlitePool,
+    ) -> Result<RecoveredCognitiveReadOnly, CognitiveRecoveryError> {
         let result = async {
             let mut transaction = pool.begin().await.map_err(unavailable)?;
             let observed = capture(&mut transaction, layout.agent_id()).await?;

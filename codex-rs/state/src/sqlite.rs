@@ -371,11 +371,12 @@ impl SqliteConfig {
             .await
     }
 
-    /// Checkpoint a private recovery candidate after all validation handles close.
-    ///
-    /// The owner must hold its recovery fence and pass a newly materialized copy,
-    /// never the suspect source. A single connection permits the journal-mode
-    /// switch that a pool's other live handles would otherwise block.
+    /// Checkpoint an exclusively owned private recovery copy after other
+    /// handles close, never the suspect source. Writable activation separately
+    /// requires the original owner's recovery fence; a historical observer may
+    /// only deserialize this disposable copy and authenticate independent Current.
+    /// A single connection permits the journal-mode switch that a pool's other
+    /// live handles would otherwise block.
     pub async fn checkpoint_private_recovery_database(&self, path: &Path) -> Result<(), Error> {
         let options = SqliteConnectOptions::new()
             .filename(path)

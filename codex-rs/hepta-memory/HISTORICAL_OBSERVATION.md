@@ -4,7 +4,10 @@ This API reads the original cognitive database as an isolated historical image.
 It does not restore a writer, a lease, a Root publisher, or a FinalUse grant.
 The caller supplies the complete Current cut and revocation disposition from an
 independently authenticated source. Recomputing the cut from the suspect SQLite
-file and passing that result back is not authentication.
+file and passing that result back is not authentication. A Root disposition of
+Dirty, Publishing, Fenced, revoked, or unknown publication acknowledgement must
+not be relabeled as `ExactCurrentCut` using a remembered last-good cut. This
+storage API performs no Root administrative transition or acknowledgement repair.
 
 ## Developer entry points
 
@@ -36,7 +39,7 @@ to become active again.
 
 ## Storage and identity boundaries
 
-Both APIs require a cold database: **any WAL, SHM or rollback journal, including
+Both cold APIs require a cold database: **any WAL, SHM or rollback journal, including
 an empty sidecar, is rejected**. Neither API checkpoints, recovers, migrates,
 repairs, or opens the suspect source through SQLite. The original descriptor
 inspection copies at most 128 MiB into a private, read-only SQLite memory image.
@@ -51,10 +54,28 @@ metadata checks detect drift; they do not establish an atomic path snapshot.
 An independently authenticated complete cut is required even when those checks
 are stable. Unused physical bytes are not authority or part of the logical cut.
 
-This stage cannot admit an uncheckpointed process-crash WAL. A future explicitly
-named WAL-copy observer must preserve these cold APIs, copy through retained
-source descriptors into private storage, validate full Current/schema/integrity,
-and return the same read-only image without publishing a writer generation.
+`CognitiveStore::open_active_wal_read_only_recovery` is the separate WAL-capable
+entry point. It copies retained DB/WAL/journal descriptors into a fresh 0700
+UUID directory created internally by codex-state outside the suspect root.
+There is no caller-selected destination or active-generation publication. The
+DB and each WAL/journal are bounded to 128 MiB; the bundle is at most 256 MiB.
+Source SHM is retained for identity checking and is never copied or modified.
+
+Only the disposable copy is opened by the original single-connection SQLite
+recovery/checkpoint helper. That helper closes on success and error, truncates
+the copied WAL, and converts the copy to DELETE journal mode. The result is then
+copied into the same physically READONLY memory image; the private directory is
+removed before the memory layer authenticates the full Current/schema followed
+by integrity. Descriptor/selector drift, mismatch, corruption or unavailable
+private temporary storage fails admission. No migration or source repair runs.
+
+The owned recovery task continues its close barrier if its caller cancels the
+await. Normal success/error paths close SQLite before removing the copy. A
+runtime shutdown or panic during the close barrier conservatively leaves a
+private orphan directory instead of deleting files beneath a SQLite worker.
+No such orphan is an active generation or authoritative evidence. The observer
+still requires an independently authenticated pre-failure Current; neither
+replaying a WAL nor hashing the recovered copy provides that authority.
 
 ## HOS2 interpretation
 
@@ -77,3 +98,13 @@ source bytes plus inode/mode/mtime/ctime before and after reads and refusals.
 The default-file reader is checked independently to preserve its old semantics.
 The fixture authority verifier is a test authority, not the deployed Root; these
 host storage tests are not native G2 or reboot qualification.
+
+The WAL test adds a real original-owner child, commits an additional source row,
+retains its complete Current in an independent parent channel while the child is
+alive, and then sends actual SIGKILL. The resulting nonempty WAL is required for
+that cut. The old cold API refuses it, the new observer reads the unchanged old
+operation/D/Indeterminate, and wrong Current, revocation and damaged WAL refuse
+without changing source bytes or metadata. This is process-crash host storage
+qualification, not physical power-loss or native G2 qualification. The state
+layer also tests that UPDATE remains impossible after `query_only=OFF` and that
+a replacement memory connection works after the source is deleted.

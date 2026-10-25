@@ -272,3 +272,6 @@ async fn active_cold_history_refuses_sidecars_and_redirects_without_source_mutat
     );
     assert_eq!(capture_recovery_tree(root), before);
 }
+
+#[path = "cognitive_store_recovery_wal_read_only_tests.rs"]
+mod wal;
