@@ -46,6 +46,7 @@ flattened into one V1 predecessor.
 | bind verified selector evidence to selected lifecycle transition | `record_verified_selection` | `src/selection.rs` | implemented |
 | load exact independently selected immutable candidate | `load_selected_candidate` | `src/selection.rs` | qualification-composed source |
 | verify the fixed initial SmolLM positive-zero material profile after original selector admission | private `initial_smollm_genesis` consumer in `load_selected_candidate` | `src/initial_smollm_genesis.rs` | non-installing selected-byte prerequisite; main-weight load NOT_OBSERVED |
+| consume an original verified selection into opaque initial material; revalidate each read | `VerifiedArtifactSelectionV1::load_initial_smollm_material` / `SelectedInitialSmolLmMaterialV1::with_current` | `src/selected_initial_smollm.rs` | selected-byte prerequisite only; no installation or ordinary neural route |
 | prepare snapshot-local dataset revocation | `prepare_dataset_revocation` | `src/dataset_revocation.rs` | retained |
 | validate complete V2 manifest | `validate_artifact_manifest_v2` | `src/closure_v2.rs` | implemented |
 | persist dataset withdrawal frontier in memory | `DatasetWithdrawalRegistry::append` | `src/closure_v2.rs` | implemented |
@@ -92,11 +93,24 @@ Existing trained contracts, stored registry schemas, CURRENT and eligibility
 semantics remain unchanged. Header aliases, duplicate/unknown keys, changed
 shapes/offsets, non-F32 values, negative zero and trailing data are outside this
 single canonical encoding and fail closed. There is no new parser dependency,
-public material factory, signing key, model constructor or state journal.
-The returned value remains the original generic `RevalidatingCandidate`, not a
-new genesis authority token. Future host code must use this selected-loader
-consumer or repeat the strict check; a namespace copied onto bytes loaded
-through another generic loader is not proof of canonical initial material.
+unqualified material factory, signing key, model constructor or state journal.
+The generic selected loader retains its existing return type. Its additional
+consumer, `VerifiedArtifactSelectionV1::load_initial_smollm_material`, consumes
+only an original opaque verified selection, requires this exact fixed profile,
+and verifies the actual selected bytes through that original loader. It returns
+`SelectedInitialSmolLmMaterialV1` with private fields and no Clone, serialization
+or external constructor. An old trained profile cannot enter this typed path.
+
+The wrapper retains the original selector verification time, minimum signed/
+trusted-selector expiry, known selector revocation and original owner-trust
+identity. Loading and each bounded read consume an authenticated CURRENT view
+from the original owner, enforce the immutable selection window and monotonic
+consumer clock, and delegate current history/eligibility checks to the original
+`RevalidatingCandidate`. Any failed read permanently closes that object. Cold
+reopening re-verifies the same signed selection and actual files; it cannot
+renew its expiry. CURRENT acquisition/distribution and the trusted clock remain
+host responsibilities. The wrapper supplies no installation, evaluation, reward,
+FinalUse, resource grant, main-weight measurement or neural route authority.
 
 This check observes the selected adapter bytes, not the main upstream weight
 bytes. The expected backbone/tokenizer identities are commitments rather than

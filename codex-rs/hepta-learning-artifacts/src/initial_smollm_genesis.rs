@@ -9,7 +9,8 @@ use crate::ArtifactManifest;
 use crate::ArtifactSelectionError;
 use crate::LoadedPinnedCandidate;
 
-const PROFILE: &[u8] = include_bytes!("../profiles/smollm2-initial-positive-zero-v1.profile");
+pub(super) const PROFILE: &[u8] =
+    include_bytes!("../profiles/smollm2-initial-positive-zero-v1.profile");
 const HEADER: &[u8] =
     include_bytes!("../profiles/smollm2-initial-positive-zero-v1.safetensors.header");
 const FACTOR_BYTES: usize = 230_400 * 4;

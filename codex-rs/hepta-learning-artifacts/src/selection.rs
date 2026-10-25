@@ -37,6 +37,9 @@ use crate::load_pinned_candidate;
 
 #[path = "initial_smollm_genesis.rs"]
 mod initial_smollm_genesis;
+#[path = "selected_initial_smollm.rs"]
+mod selected_initial_smollm;
+pub use selected_initial_smollm::SelectedInitialSmolLmMaterialV1;
 
 const MAX_TRUSTED_SELECTORS: usize = 32;
 
@@ -135,6 +138,7 @@ pub struct VerifiedArtifactSelectionV1 {
     expires_at: u64,
     trust_digest: Digest32,
     authority: AuthorityPosture,
+    initial_window: selected_initial_smollm::InitialSelectionWindowV1,
 }
 
 impl VerifiedArtifactSelectionV1 {
@@ -350,6 +354,12 @@ impl ArtifactSelectionVerifierV1 {
             expires_at: signed.expires_at,
             trust_digest: self.trust_digest,
             authority: AuthorityPosture::DENY_ALL,
+            initial_window: selected_initial_smollm::InitialSelectionWindowV1 {
+                verified_at: now,
+                expires_at: signed.expires_at.min(selector.expires_at),
+                revoked_at: selector.revoked_at,
+                owner_trust_digest: self.artifact_owner_trust_digest,
+            },
         })
     }
 }
