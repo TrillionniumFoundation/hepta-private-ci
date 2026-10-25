@@ -124,13 +124,26 @@ fn durable_directory_handle(root: &std::path::Path) -> std::fs::File {
     }
 }
 
+// A host's Windows share mode is fixed at open time. A byte-range lock
+// alone does not deny a second unrelated writer opening the same file.
+// Preserve ordinary read-only inspection, but reject concurrent write opens
+// in this security-negative fixture. This is not a production file opener.
+fn open_owned_ledger_fixture(path: &std::path::Path, create_new: bool) -> std::fs::File {
+    let mut options = OpenOptions::new();
+    options.read(true).write(true);
+    if create_new {
+        options.create_new(true);
+    }
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+        options.share_mode(0x0000_0001); // FILE_SHARE_READ; no shared writes/deletes
+    }
+    options.open(path).unwrap()
+}
+
 fn ledger_at(path: &std::path::Path, fixture: &Fixture) -> LedgerWriter {
-    let file = OpenOptions::new()
-        .create_new(true)
-        .read(true)
-        .write(true)
-        .open(path)
-        .unwrap();
+    let file = open_owned_ledger_fixture(path, true);
     let ledger = DurableLedger::create(
         file,
         digest("host-authorized-ledger"),
@@ -171,11 +184,7 @@ fn reopen_ledger_at(
     fixture: &Fixture,
     chain_digest: Digest32,
 ) -> LedgerWriter {
-    let file = OpenOptions::new()
-        .read(true)
-        .write(true)
-        .open(path)
-        .unwrap();
+    let file = open_owned_ledger_fixture(path, false);
     let ledger = DurableLedger::recover(
         file,
         digest("host-authorized-ledger"),
@@ -450,8 +459,8 @@ fn ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded()
     }
     #[cfg(windows)]
     {
-        // Windows enforces the real exclusive ledger lock at the filesystem
-        // boundary. An unrelated handle must not corrupt the live journal.
+        // The fixture's owner opens with FILE_SHARE_READ on Windows, so a
+        // concurrent unrelated writer cannot truncate the live journal.
         assert!(
             OpenOptions::new()
                 .write(true)
