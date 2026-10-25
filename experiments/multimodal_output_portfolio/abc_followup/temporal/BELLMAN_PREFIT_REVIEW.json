@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.abc4.temporal-prefit-bellman-review.v1",
+  "critic_fit_started_before_correction": false,
+  "selection_or_qualification_or_final_opened_before_correction": false,
+  "ensemble_backup_correction": "mean each held-out action Z over three Q1 seeds, then min over actions; same continuation rule as deployed ensemble; one common Q2 target for all seeds",
+  "clock_origin_correction": "Q1 cost T-tau1; Q2 exp(gamma*price*(tau1-tau0))*min(mean OOF Q1); initial-only/final use complete request T",
+  "public_state_correction": "82features include full public shared posterior and actual committed-prefix ASR categories; no source identity,target,or unreleased cue",
+  "code_sha256": {
+    "state.py": "87f7f069691b5bb253d9c29a58d385f3b8687eeb001ea0dc6acc8708ffe5d349",
+    "value.py": "39791d735d472f325f8fa9b81b3ea88eb30e208a860d424e94962d8167cd899f",
+    "analysis.py": "1f1a314819ebe367c32060a7c654045d419d31448d7eaf3d50bbfa49a28419f8",
+    "registration.py": "4dd5e5e5a1b49348d0db030de55d5316c89a361edd914579d5c8aa54ea98da2f"
+  },
+  "fit_data_state_module_sha256": "0257111ebff82dd9b70ed367f81ab9872e6518ab0060df3172dc1fa400933700",
+  "fit_data_vs_new_state_functions_changed": [
+    "features"
+  ],
+  "fit_data_semantics_unchanged": true,
+  "explanation": "Fit generation never calls features; owner/fusion/output/metrics/full Frame are unchanged. New fitting extracts82public features from preserved Frames. Exact original state.py and run.py are published under provenance/data-generation-v1 with original run hashes and AST scope.",
+  "published_data_source_provenance": "provenance/DATA_GENERATION_SOURCE_IDENTITY.json"
+}

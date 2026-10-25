@@ -1,0 +1,15 @@
+{
+  "schema": "hepta.abc4.qualification-prelaunch-correction.v1",
+  "superseded_protocol": "freeze-v1/qualification_protocol.json",
+  "active_protocol": "freeze-v3/qualification_protocol.json",
+  "qualification_requests_executed_before_correction": 0,
+  "reason": "Wrong/silent/truncated audio observer controls must depend only on parsed actual audio, not joint text/audio success; otherwise wrong intended text and truncated text can make the rejection tautological. Corrected before any qualification source execution.",
+  "frozen_source_roles_changed": false,
+  "thresholds_changed": false,
+  "v1_retained": true,
+  "superseded_protocols": [
+    "freeze-v1/qualification_protocol.json",
+    "freeze-v2/qualification_protocol.json"
+  ],
+  "second_prelaunch_source_change": "The shared state feature adapter was expanded from50to82 public features after independent code review, before any critic fit/selection/qualification/final; qualification rendering rules and all gates are unchanged, but source-file identity requires a fresh qualification protocol."
+}

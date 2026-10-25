@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.abc4.executed-fit-source-provenance.v1",
+  "original_worker_start_sha256": "ff13e102ecd7f84722b3a91baeac86f004909fcf6778f3584b5217b770ac2df8",
+  "executed_source_hashes": {
+    "state.py": "0257111ebff82dd9b70ed367f81ab9872e6518ab0060df3172dc1fa400933700",
+    "run.py": "508a6ea49cb66ca035850c1eb79b777a3deddabc77d63ff73e52207a8a6071ea"
+  },
+  "current_source_hashes": {
+    "state.py": "87f7f069691b5bb253d9c29a58d385f3b8687eeb001ea0dc6acc8708ffe5d349",
+    "run.py": "e54e88169fab7a4d0b1aa59ae52ebaf4ba3a462b960872f2d72c00fc47d62537"
+  },
+  "ast_functions_changed": {
+    "state.py": [
+      "features"
+    ],
+    "run.py": [
+      "main"
+    ]
+  },
+  "source_role": "fit data generation only",
+  "state_scope": "Only features changed. Matrix generation does not call features; owner, fusion, output rendering, metrics, and full raw Frame serialization are unchanged.",
+  "run_scope": "Only final-evaluation/deferred-scoring asset guards changed; fit branch and its executed requests are unchanged.",
+  "value_py_start_pin": "run records its then-present value.py hash but matrix mode neither imports nor uses this critic module; subsequent critic training records its own current source hash.",
+  "restoration": "Use these exact state.py/run.py bytes together with other original worker-start pinned modules to reconstruct the fit generator. These archived source modules are provenance, not current entry points."
+}
