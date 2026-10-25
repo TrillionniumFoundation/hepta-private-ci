@@ -67,6 +67,16 @@ def bounded_boot_id(value):
     return str(boot)
 
 
+def resource_observation(value, boot_id, revision, cap_ns):
+    require(type(value) is dict
+            and set(value) == {"boot_id", "revision", "active_cap_ns", "active_period_ns"}
+            and all(type(value[key]) is int for key in ("revision", "active_cap_ns", "active_period_ns"))
+            and value == {"boot_id": boot_id, "revision": revision,
+                          "active_cap_ns": cap_ns, "active_period_ns": 100_000_000},
+            "native resource observation differs")
+    bounded_boot_id(value["boot_id"])
+
+
 def crash_receipt(raw, owner):
     agent_pid = role_binding(raw, owner)
     text = lines(raw)
@@ -75,6 +85,10 @@ def crash_receipt(raw, owner):
     receipt = rows[0]
     candidate, head = receipt["candidate"], receipt["head"]
     payload = json.loads(candidate["payload"])
+    expected_revision = payload["expected_revision"]
+    require(type(expected_revision) is int and 1 <= expected_revision < 2**64-1,
+            "invalid original native expected revision")
+    resulting_revision = expected_revision + 1
     boot = bounded_boot_id(payload["delivery"]["boot_id"])
     require(head["schema_version"] == 1 and head["owner_agent_id"] == OWNER and head["phase"] == "current"
             and head["proposal"] is None and 1 < head["counter"] < 2**64-1 and 0 < head["publisher_epoch"] < 2**64-1
@@ -89,15 +103,17 @@ def crash_receipt(raw, owner):
             "incomplete original Current cut")
     observed = candidate["agent_independent_history"]
     require(candidate["dispatch_count"] == 1 and candidate["original_daemon_joined"] is True
-            and observed["state"] == "applied" and observed["previous_revision"] == 1 and observed["revision"] == 2
-            and payload["schema_version"] == 1 and payload["expected_revision"] == 1
+            and observed["state"] == "applied"
+            and type(observed["previous_revision"]) is int and observed["previous_revision"] == expected_revision
+            and type(observed["revision"]) is int and observed["revision"] == resulting_revision
+            and payload["schema_version"] == 1
             and payload["manage_slot"] == 2 and payload["manage_generation"] == 1
             and payload["cap_ns"] == 25_000_000 and payload["period_ns"] == 100_000_000
             and payload["delivery"]["sequence"] == "0000000000000001",
             "original native operation or Agentd history differs")
-    require(receipt["root_resource_observation"] == {"boot_id": payload["delivery"]["boot_id"], "revision": 2,
-            "active_cap_ns": 25_000_000, "active_period_ns": 100_000_000}
-            and receipt["root_queried_delivery_history"] is False, "Root resource observation differs")
+    resource_observation(receipt["root_resource_observation"], payload["delivery"]["boot_id"],
+                         resulting_revision, 25_000_000)
+    require(receipt["root_queried_delivery_history"] is False, "Root queried delivery history")
     tids = receipt["stopped_thread_ids"]
     require(type(tids) is list and 1 <= len(tids) <= 128 and all(type(tid) is int and tid > 0 for tid in tids)
             and tids == sorted(set(tids)) and agent_pid in tids, "stable all-task stop evidence missing")
@@ -128,6 +144,11 @@ def observe_receipt(raw, owner, retained):
             and report["old_delivery"] == json.loads(retained["candidate"]["payload"])["delivery"]
             and bounded_boot_id(report["new_boot_id"]) != retained["head"]["peer_lifetime"]["boot_id"],
             "historical old-D/no-replay result differs")
+    baseline = report["new_boot_resource_observation"]
+    require(type(baseline) is dict and type(baseline.get("revision")) is int
+            and 1 <= baseline["revision"] < 2**64-1, "invalid new boot baseline revision")
+    for observation in (baseline, roots[0]["new_boot_resource_observation"]):
+        resource_observation(observation, report["new_boot_id"], baseline["revision"], 50_000_000)
     require(not any(line.startswith(("HEPTA_NATIVE_GENESIS_", "HEPTA_NATIVE_ROOT_SERVICE_BEGIN", "HEPTA_NATIVE_REPLY_WITHHELD",
                                     "HEPTA_NATIVE_ORIGINAL_DAEMON_READY")) for line in text), "second boot entered live owner/issuer")
     return report

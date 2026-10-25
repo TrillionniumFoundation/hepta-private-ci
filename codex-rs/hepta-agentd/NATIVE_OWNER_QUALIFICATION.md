@@ -24,6 +24,16 @@ SQLite genesis before handing it to Agentd, initializes its original protected
 signer/lease/checkpoint/frontiers, pins the actual peer and exports the public
 bootstrap. The ordinary factory installs the original writer and SQLite commit hook.
 
+Root first reads the actual native resource revision and checks its boot identity,
+cap and period against the sealed bootstrap. Kernel bootstrap may legitimately
+advance that revision while configuring the resource; revision one is not an
+admission requirement. Root selects the original request with that observed
+precondition and the role-3 delivery space. Its private, root-owned intent file
+retains those exact bytes alongside the public bootstrap. Agentd independently
+reads the resource and requires its original request constructor to reproduce
+the exact intent before opening the production attachment. A changed precondition,
+zero or exhausted revision fails closed; the intent file grants no authority.
+
 The fixed K/D and Root lease bind exact native scope/payload. A wrapper performs
 the actual ioctl once and withholds its returned reply; it cannot fabricate an
 Applied receipt. Independent native query observes D; the original outbox commits
@@ -78,7 +88,9 @@ the old K, exact payload, old D and Indeterminate row. It does not connect the
 issuer, open a writer, register a successor, renew a lease or retire history.
 The original HOS2 adapter rejects the old boot before issuing an ioctl, yielding
 Unavailable/Unknown; this is not a kernel-returned HistoryLost observation.
-New-boot native resource state must remain at its initial revision. Root then
+Root and Agentd independently read the new-boot native resource and require the
+same boot identity, actual revision, cap and period. Neither resets a revision nor
+assumes the bootstrap performed zero updates. Root then
 independently rechecks the full unchanged protected head and the observer report.
 
 The host entry point is the separately pinned `run-native-owner-history.py`

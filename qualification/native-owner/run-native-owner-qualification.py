@@ -273,7 +273,12 @@ def verdict(raw, code, timed_out, excessive, reason, owner_info):
     if passed:
         row = rows[0]
         cut = row.get("current_cut")
+        initial_revision = row.get("initial_native_revision")
+        final_revision = row.get("final_native_revision")
         passed = (all(type(row.get(key)) is type(value) and row[key] == value for key, value in expected.items())
+                  and all(type(report.get(key)) is int for report in (row, owner_rows[0])
+                          for key in ("initial_native_revision", "final_native_revision"))
+                  and 1 <= initial_revision < 2**64-1 and final_revision == initial_revision + 1
                   and type(row.get("native_observation_count")) is int and row["native_observation_count"] >= 1
                   and isinstance(cut, dict) and set(cut) == {"profile", "owner_agent_id", "schema_digest", "state_digest"}
                   and cut["profile"] == "hepta:cognitive:exact-current-cut:v1"

@@ -121,8 +121,13 @@ pub fn run(boot: Boot) -> Result<()> {
             layout.home_root().to_owned(), layout.run_root().to_owned(), layout.home_root().to_owned(), registered.workspace.clone())?;
         let identity = config.identity().clone();
         let before = native.read_usage(1).map_err(anyhow::Error::msg)?;
-        anyhow::ensure!(before.revision == 1, "fresh native revision differs");
-        let request = native.install_request(1, before.revision, 25_000_000).map_err(anyhow::Error::msg)?;
+        let revision = initial_revision(&before, &boot.bytes)?;
+        let resulting_revision = next_revision(revision)?;
+        let planned_payload: String = read_json(&Path::new(RUN).join("native-intent.json"), 0)?;
+        let request = Hos2InstallBudgetV1::from_json(&planned_payload).map_err(anyhow::Error::msg)?;
+        anyhow::ensure!(request == native.install_request(1, revision, 25_000_000).map_err(anyhow::Error::msg)?
+            && request.to_json().map_err(anyhow::Error::msg)? == planned_payload,
+            "Root intent differs from independent native initial observation");
         let device = Arc::new(WithheldReply { native, installs:AtomicUsize::new(0), observations:AtomicUsize::new(0), observe_enabled:AtomicBool::new(false) });
         let target = Arc::new(ProductionHos2Target::new(device.clone()));
         let attachment = attach_root_production_host(&mut config, AgentdRootProductionInputs {
@@ -154,7 +159,7 @@ pub fn run(boot: Boot) -> Result<()> {
             payload_sha256: *Digest32::of_bytes(payload.as_bytes()).as_array(),
         };
         anyhow::ensure!(tokio::task::spawn_blocking(move || issuer.request_grant(&denied_binding)).await?.is_err(), "Root accepted a foreign native scope");
-        anyhow::ensure!(device.native.read_usage(2).map_err(anyhow::Error::msg)?.revision == 1
+        anyhow::ensure!(device.native.read_usage(2).map_err(anyhow::Error::msg)?.revision == revision
             && device.installs.load(Ordering::SeqCst) == 0, "denied scope entered the native device");
         let intent = OperationIntentV1::new(StableId::new("native:g2:original:1")?,StableId::new(OWNER)?,StableId::new(HOS2_DESTINATION_V1)?,
             Digest32::of_bytes(payload.as_bytes()),request.scope_digest(),Generation::new(1)?,None)?;
@@ -164,7 +169,8 @@ pub fn run(boot: Boot) -> Result<()> {
         let dispatched = host.dispatch_with_grant_provider(queued).await?;
         anyhow::ensure!(dispatched.state == LocalOutcomeState::Indeterminate && device.installs.load(Ordering::SeqCst) == 1, "withheld reply state differs");
         let independently_observed = device.native.query(&request.delivery).map_err(anyhow::Error::msg)?;
-        anyhow::ensure!(matches!(independently_observed,Hos2DeliveryObservation::Applied {previous_revision:1,revision:2,..}), "native independent history differs");
+        anyhow::ensure!(matches!(independently_observed,Hos2DeliveryObservation::Applied {previous_revision,revision:actual,..}
+            if previous_revision == revision && actual == resulting_revision), "native independent history differs");
         if mode == super::history::Case::CrashAfterApplied {
             anyhow::ensure!(unsafe { libc::kill(std::process::id() as i32,libc::SIGTERM) } == 0, "daemon stop signal");
             tokio::time::timeout(Duration::from_secs(15),daemon).await???;
@@ -188,7 +194,7 @@ pub fn run(boot: Boot) -> Result<()> {
             tokio::time::sleep(Duration::from_millis(25)).await;
         }
         let after = device.native.read_usage(3).map_err(anyhow::Error::msg)?;
-        anyhow::ensure!(after.revision == 2 && after.active_cap_ns == 25_000_000, "native resource did not change once");
+        anyhow::ensure!(after.revision == resulting_revision && after.active_cap_ns == 25_000_000, "native resource did not change once");
         let retired = writer.retire_hos2_through(&target,&request.delivery).await?;
         anyhow::ensure!(retired.retired_through == 1 && matches!(device.native.query(&request.delivery).map_err(anyhow::Error::msg)?,Hos2DeliveryObservation::Retired), "native retirement readback");
         anyhow::ensure!(unsafe { libc::kill(std::process::id() as i32,libc::SIGTERM) } == 0, "daemon stop signal");
@@ -199,6 +205,7 @@ pub fn run(boot: Boot) -> Result<()> {
         let report = serde_json::json!({"qualification":"original_root_agentd_sqlite_native_hos2","production_ready":false,
             "original_daemon_initialized":true,"original_app_server_ready":true,"supervisor_promoted":false,"fleet_lifecycle":"starting","native_hos2":true,"uid":60002,
             "foreign_scope_grant_refused":true,"refused_scope_effect_entries":0,
+            "initial_native_revision":revision,"final_native_revision":resulting_revision,
             "dispatch_count":device.installs.load(Ordering::SeqCst),"native_observation_count":device.observations.load(Ordering::SeqCst),
             "terminal":"committed","native_retired_through":retired.retired_through,"current_cut":current_cut,
             "loss_injection":"wrapper_withheld_actual_ioctl_reply","physical_power_loss":false,"cross_boot_qualified":false});

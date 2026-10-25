@@ -24,6 +24,10 @@ inode, kernel and ELF across two VMs: exact acknowledged Current and stopped
 owner, deliberate SIGKILL and reap, then original read-only WAL recovery of the
 old operation. Unknown cannot reopen a writer, renew authority, replay or retire.
 Root resource observation and Agentd delivery-history observation remain distinct.
+The old payload's actual expected revision binds its previous/resulting history
+and Root observation. The second boot binds independent Root and Agentd resource
+observations without assuming a constant initial revision. Integer, boot, scope
+and overflow checks remain strict.
 
 Both enforce bounded artifacts/logs, a fixed 3072 MiB experimental guest budget,
 no networking, finite 900-second maximum per boot, and source/artifact rechecks.
@@ -34,8 +38,9 @@ The complete raw serial is retained without filtering; excess output still fails
 Keep every failed attempt; `passed` is only set after actual evidence validates.
 Neither enables production or claims general cross-boot writer handoff.
 
-`test-native-history-oracle.py` tests only the serial parser with explicitly
-synthetic examples. It is not native evidence. Actual result summaries must bind
+`test-native-history-oracle.py` and `test-native-complete-oracle.py` test only the
+actual serial parsers with explicitly synthetic examples. They are not native
+evidence. Actual result summaries must bind
 the runner hashes, original raw serial, complete source/lock/ELF measurements,
 kernel manifest and exclusive-disk lifecycle. See
 `codex-rs/hepta-agentd/NATIVE_OWNER_QUALIFICATION.md` for the owner-side contract.

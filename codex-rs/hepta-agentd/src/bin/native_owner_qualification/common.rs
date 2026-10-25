@@ -18,6 +18,32 @@ pub const LOCAL: &str = "/mnt/hepta-store/consumer-local/g2-owner";
 pub const RUN: &str = "/run/hepta-native";
 pub const OWNER: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 
+pub fn next_revision(revision: u64) -> Result<u64> {
+    anyhow::ensure!(revision != 0, "native revision zero is invalid");
+    revision
+        .checked_add(1)
+        .ok_or_else(|| anyhow::anyhow!("native revision is exhausted"))
+}
+
+/// Observe a fresh boot's actual configured resource. Kernel bootstrap itself
+/// may advance the revision; the qualification must not invent revision one.
+pub fn initial_revision(usage: &codex_hepta_agentd::AgentdHos2Usage, boot: &[u8]) -> Result<u64> {
+    anyhow::ensure!(
+        boot.len() >= 192
+            && usage.boot_id == boot[96..112]
+            && usage.active_cap_ns == u64_at(boot, 168)
+            && usage.active_period_ns == u64_at(boot, 176)
+            && usage.active_period_ns == codex_hepta_memory::HOS2_CPU_PERIOD_NS,
+        "native initial resource differs from sealed bootstrap"
+    );
+    next_revision(usage.revision)?;
+    Ok(usage.revision)
+}
+
+#[cfg(test)]
+#[path = "common_tests.rs"]
+mod tests;
+
 pub struct Boot {
     pub bytes: Vec<u8>,
     pub role: u64,

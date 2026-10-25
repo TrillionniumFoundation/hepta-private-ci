@@ -146,6 +146,15 @@ pub fn run(boot: Boot) -> Result<()> {
     let boot_id = std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?
         .trim()
         .to_owned();
+    let control = std::fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open("/dev/hepta-control")?;
+    let native =
+        AgentdHos2Device::from_bootstrap(control, &boot.bytes).map_err(anyhow::Error::msg)?;
+    let initial_usage = native.read_usage(1).map_err(anyhow::Error::msg)?;
+    let expected_revision = initial_revision(&initial_usage, &boot.bytes)?;
+    drop(native);
     let requested = Hos2InstallBudgetV1 {
         schema_version: 1,
         delivery: Hos2DeliveryId::new(
@@ -156,7 +165,7 @@ pub fn run(boot: Boot) -> Result<()> {
         .map_err(anyhow::Error::msg)?,
         manage_slot: 2,
         manage_generation: 1,
-        expected_revision: 1,
+        expected_revision,
         period_ns: HOS2_CPU_PERIOD_NS,
         cap_ns: 25_000_000,
     };
@@ -232,6 +241,11 @@ pub fn run(boot: Boot) -> Result<()> {
             notes: Path::new(LOCAL).join("notes"),
         },
     )?;
+    // Exact original request bytes, selected by Root from its native read.
+    // This is a qualification handoff, not a grant or a replacement ledger.
+    let intent_path = Path::new(RUN).join("native-intent.json");
+    write_json(&intent_path, &payload, 0o440)?;
+    chown(&intent_path, 0, 60002)?;
     let handoff = Path::new(RUN).join(".bootstrap");
     write_json(&handoff, &bundle, 0o440)?;
     chown(&handoff, 0, 60002)?;
@@ -265,7 +279,10 @@ pub fn run(boot: Boot) -> Result<()> {
     let report_path = Path::new(DATA).join("report.json");
     let report: serde_json::Value = read_json(&report_path, 60002)?;
     anyhow::ensure!(
-        report["terminal"] == "committed" && report["native_retired_through"] == 1,
+        report["terminal"] == "committed"
+            && report["native_retired_through"] == 1
+            && report["initial_native_revision"].as_u64() == Some(expected_revision)
+            && report["final_native_revision"].as_u64() == Some(next_revision(expected_revision)?),
         "native owner report failed"
     );
     use codex_hepta_contracts::AuthorityFrontierStore;

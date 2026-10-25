@@ -86,6 +86,7 @@ struct HistoricalAdmission {
     root_pid: u32,
     observer_pid: u32,
     new_boot_id: [u8; 16],
+    new_resource_observation: RootResourceObservation,
     retained: RetainedCrash,
 }
 
@@ -180,8 +181,11 @@ pub fn monitor_crash(boot_bytes: Vec<u8>, agent_pid: u32) -> Result<()> {
         "candidate differs from original Root Current"
     );
     let request = Hos2InstallBudgetV1::from_json(&candidate.payload).map_err(anyhow::Error::msg)?;
+    let planned_payload: String = read_json(&Path::new(RUN).join("native-intent.json"), 0)?;
+    let resulting_revision = next_revision(request.expected_revision)?;
     anyhow::ensure!(
-        request.delivery.boot_id == boot_bytes[96..112]
+        candidate.payload == planned_payload
+            && request.delivery.boot_id == boot_bytes[96..112]
             && current.peer_lifetime.boot_id == boot_text(&request.delivery.boot_id),
         "original native and Root boot identities differ"
     );
@@ -194,16 +198,16 @@ pub fn monitor_crash(boot_bytes: Vec<u8>, agent_pid: u32) -> Result<()> {
     let usage = native.read_usage(1).map_err(anyhow::Error::msg)?;
     anyhow::ensure!(
         usage.boot_id == request.delivery.boot_id
-            && usage.revision == 2
+            && usage.revision == resulting_revision
             && usage.active_cap_ns == 25_000_000
             && usage.active_period_ns == HOS2_CPU_PERIOD_NS
             && matches!(
                 candidate.agent_independent_history,
                 Hos2DeliveryObservation::Applied {
-                    previous_revision: 1,
-                    revision: 2,
+                    previous_revision,
+                    revision,
                     ..
-                }
+                } if previous_revision == request.expected_revision && revision == resulting_revision
             ),
         "independent Root resource and Agentd delivery observations differ"
     );
@@ -274,6 +278,7 @@ pub fn historical_root(boot: Boot) -> Result<()> {
     let old_request =
         Hos2InstallBudgetV1::from_json(&retained.candidate.payload).map_err(anyhow::Error::msg)?;
     let new_boot_id: [u8; 16] = boot.bytes[96..112].try_into()?;
+    let resulting_revision = next_revision(old_request.expected_revision)?;
     anyhow::ensure!(
         old_request.delivery.boot_id != new_boot_id
             && retained.candidate.current == retained.head.last_current
@@ -287,17 +292,17 @@ pub fn historical_root(boot: Boot) -> Result<()> {
             && retained.root_resource_observation
                 == RootResourceObservation {
                     boot_id: old_request.delivery.boot_id,
-                    revision: 2,
+                    revision: resulting_revision,
                     active_cap_ns: 25_000_000,
                     active_period_ns: HOS2_CPU_PERIOD_NS
                 }
             && matches!(
                 retained.candidate.agent_independent_history,
                 Hos2DeliveryObservation::Applied {
-                    previous_revision: 1,
-                    revision: 2,
+                    previous_revision,
+                    revision,
                     ..
-                }
+                } if previous_revision == old_request.expected_revision && revision == resulting_revision
             ),
         "historical receipt does not describe the preceding qualified boot"
     );
@@ -305,10 +310,25 @@ pub fn historical_root(boot: Boot) -> Result<()> {
     std::fs::create_dir(&output)?;
     std::fs::set_permissions(&output, std::os::unix::fs::PermissionsExt::from_mode(0o700))?;
     chown(&output, 60002, 60002)?;
+    let control = std::fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open("/dev/hepta-control")?;
+    let native =
+        AgentdHos2Device::from_bootstrap(control, &boot.bytes).map_err(anyhow::Error::msg)?;
+    let usage = native.read_usage(1).map_err(anyhow::Error::msg)?;
+    initial_revision(&usage, &boot.bytes)?;
+    drop(native);
     let admission = HistoricalAdmission {
         root_pid: boot.root_pid,
         observer_pid: boot.agent_pid,
         new_boot_id,
+        new_resource_observation: RootResourceObservation {
+            boot_id: usage.boot_id,
+            revision: usage.revision,
+            active_cap_ns: usage.active_cap_ns,
+            active_period_ns: usage.active_period_ns,
+        },
         retained,
     };
     let path = Path::new(RUN).join("historical.json");
@@ -329,6 +349,8 @@ pub fn historical_root(boot: Boot) -> Result<()> {
                 == serde_json::to_value(&admission.retained.head.last_current)?
             && report["exact_payload"] == admission.retained.candidate.payload
             && report["new_boot_id"] == serde_json::to_value(new_boot_id)?
+            && report["new_boot_resource_observation"]
+                == serde_json::to_value(&admission.new_resource_observation)?
             && report["state"] == "indeterminate"
             && report["observation"] == "unknown"
             && report["dispatch_count_this_boot"] == 0
@@ -338,7 +360,8 @@ pub fn historical_root(boot: Boot) -> Result<()> {
     println!(
         "HEPTA_NATIVE_HISTORY_COMPLETE {}",
         serde_json::to_string(&serde_json::json!({
-            "root_protected_head": head()?, "owner_report": report
+            "root_protected_head": head()?, "owner_report": report,
+            "new_boot_resource_observation": admission.new_resource_observation
         }))?
     );
     unsafe {
@@ -377,11 +400,17 @@ pub fn historical_agent(boot: &Boot, native: AgentdHos2Device) -> Result<()> {
         anyhow::ensure!(unavailable == "native boot changed; the old D remains unknown",
             "old history failed for a different reason");
         let usage = native.read_usage(1).map_err(anyhow::Error::msg)?;
-        anyhow::ensure!(usage.revision == 1 && usage.active_cap_ns == u64_at(&boot.bytes, 168)
-            && usage.active_period_ns == HOS2_CPU_PERIOD_NS, "new boot resource changed");
+        initial_revision(&usage, &boot.bytes)?;
+        let new_resource_observation = RootResourceObservation {
+            boot_id:usage.boot_id,revision:usage.revision,
+            active_cap_ns:usage.active_cap_ns,active_period_ns:usage.active_period_ns,
+        };
+        anyhow::ensure!(new_resource_observation == admission.new_resource_observation,
+            "new boot resource changed since independent Root observation");
         let report = serde_json::json!({"qualification":"original_retained_current_native_vm_crash_history",
             "production_ready":false,"current_cut":history.anchor(),"exact_payload":retained.payload_json,
             "old_delivery":request.delivery,"new_boot_id":admission.new_boot_id,"state":"indeterminate",
+            "new_boot_resource_observation":new_resource_observation,
             "observation":"unknown","adapter_error":unavailable,"old_boot_ioctl_issued":false,
             "dispatch_count_previous_boot":1,"dispatch_count_this_boot":0,"issuer_connected":false,
             "writer_opened":false,"retirement_attempted":false,"physical_power_loss":false});
