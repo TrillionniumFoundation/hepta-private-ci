@@ -171,7 +171,11 @@ fn reopen_ledger_at(
     fixture: &Fixture,
     chain_digest: Digest32,
 ) -> LedgerWriter {
-    let file = OpenOptions::new().read(true).write(true).open(path).unwrap();
+    let file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(path)
+        .unwrap();
     let ledger = DurableLedger::recover(
         file,
         digest("host-authorized-ledger"),
@@ -460,7 +464,11 @@ fn ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded()
         drop(ledger);
         // After owner death, a truncated journal must still fail closed on
         // recovery. This exercises corruption rather than bypassing the lock.
-        let file = OpenOptions::new().read(true).write(true).open(&path).unwrap();
+        let file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(&path)
+            .unwrap();
         file.set_len(/*size*/ 0).unwrap();
         assert!(matches!(
             DurableLedger::recover(
