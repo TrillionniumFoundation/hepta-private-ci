@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.windows-ledger-fixture-share-candidate.v1",
+  "date_utc": "2026-10-25",
+  "parent_pr": 3840,
+  "parent_sha": "54022968f3c9a8525d429547392ffcccf9a43710",
+  "source_failure": {
+    "source_pr": 3785,
+    "source_sha": "4bb6be14e2bfe9193cdf2c3735ea5c1a3c1c984d",
+    "run_id": 40141891570,
+    "job_id": 121110068381,
+    "test": "evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+    "native_outcome": "FAILURE",
+    "failure": "Windows unrelated write handle truncated a concurrently owned ledger"
+  },
+  "source_change": {
+    "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+    "commit": "5da6cb6e26b4e128ec9439b00031ad7436615e34",
+    "blob_sha": "abdfe41714897e300a56ef3bb31e1e928604210b",
+    "scope": "The evaluated_shadow test fixture alone opens its live Ledger owner handle on Windows with FILE_SHARE_READ; Rust file locks alone are cooperative; Windows denies overlapping write opens when sharing is restricted",
+    "original_negative_assertions_preserved": true,
+    "production_file_openers_changed": false,
+    "linux_test_open_behavior_changed": false
+  },
+  "scope_limits": [
+    "This does not assert every production DurableLedger host uses the Windows share mode; Objective ingress current host explicitly requires Unix ownership checks.",
+    "This test-fixture correction does not establish closure of other Windows DELETE, plugin TTL, crypto-bigint, policy or device blockers.",
+    "Native Windows original owning negative test and exact-head required gates must actually execute successfully."
+  ],
+  "validation": {
+    "native_windows_owning": "PENDING",
+    "required_current_head": "PENDING",
+    "local_rust_toolchain_available": false
+  },
+  "authority": "SHADOW_ONLY/DENY_ALL/HOLD_NO_GO"
+}
