@@ -24,6 +24,11 @@ use crate::canonical_scalarization_digest;
 use crate::canonical_utility_profile_digest;
 use crate::evaluate_candidates_with_policy;
 
+#[path = "owner_current.rs"]
+mod current;
+pub use current::NduCurrentProjectionV1;
+pub use current::NduProjectionReadRequestV1;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduOwnerContextV1 {
     pub principal_id: StableId,
@@ -129,6 +134,7 @@ pub enum NduOwnerError {
     InvalidContext(&'static str),
     Ndu(NduError),
     Authority(FinalUseError),
+    ReadTrust(codex_hepta_contracts::FinalUseControlError),
     Store(NduProjectionStoreError),
 }
 
@@ -170,6 +176,7 @@ pub struct NduAuthenticatedOwnerV1 {
     production_policy_digest: Digest32,
     authority: FinalUseAuthority,
     store: NduProjectionStoreV1,
+    current_reads: Option<current::CurrentReadTrust>,
 }
 
 impl NduAuthenticatedOwnerV1 {
@@ -188,6 +195,7 @@ impl NduAuthenticatedOwnerV1 {
             production_policy_digest,
             authority,
             store,
+            current_reads: None,
         })
     }
 
