@@ -44,6 +44,8 @@ mod native_memory_current_tests;
 #[cfg(target_os = "linux")]
 mod native_memory_host_bootstrap;
 #[cfg(target_os = "linux")]
+mod native_memory_host_control;
+#[cfg(target_os = "linux")]
 mod native_memory_host_session;
 mod native_memory_model;
 mod native_memory_process;
