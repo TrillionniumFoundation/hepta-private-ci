@@ -43,6 +43,12 @@ use crate::LifecycleSnapshot;
 use crate::RunPhase;
 
 pub(crate) fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
+    fixture_with_constructor(AgentdState::new)
+}
+
+pub(super) fn fixture_with_constructor(
+    construct: impl FnOnce(AgentdIdentity, FleetRegistry, usize) -> Result<AgentdState, AgentdError>,
+) -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     #[cfg(unix)]
@@ -76,7 +82,7 @@ pub(crate) fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, Age
         control_socket: record.layout.agentd_control_socket().to_path_buf(),
         app_server_socket: record.layout.app_server_socket().to_path_buf(),
     };
-    let state = AgentdState::new(identity, registry.clone(), /*event_capacity*/ 16)?;
+    let state = construct(identity, registry.clone(), /*event_capacity*/ 16)?;
     registry.compare_and_transition(
         &state.identity.agent_id,
         /*expected_generation*/ 1,

@@ -79,6 +79,20 @@ impl AgentdState {
         registry: FleetRegistry,
         event_capacity: usize,
     ) -> Result<Self, AgentdError> {
+        Self::new_with_run_owner(
+            identity,
+            registry,
+            event_capacity,
+            AgentRunCoordinator::compose_runtime,
+        )
+    }
+
+    fn new_with_run_owner(
+        identity: AgentdIdentity,
+        registry: FleetRegistry,
+        event_capacity: usize,
+        compose: impl FnOnce(RuntimeComposition) -> Result<AgentRunCoordinator, AgentRunError>,
+    ) -> Result<Self, AgentdError> {
         let mut events = EventBuffer::new(event_capacity)?;
         events.push(AgentdEventKind::Bootstrapped);
         events.push(AgentdEventKind::Lifecycle {
@@ -99,7 +113,7 @@ impl AgentdState {
             identity.app_server_socket.display(),
             crate::AGENTD_CONTROL_SCHEMA_VERSION
         );
-        let run_coordinator = AgentRunCoordinator::compose_runtime(RuntimeComposition {
+        let run_coordinator = compose(RuntimeComposition {
             agent_id: identity.agent_id.as_str().to_string(),
             supervisor_generation: identity.spawn_generation,
             agentd_generation: identity.spawn_generation,
@@ -824,3 +838,7 @@ fn poisoned_state<T>(_error: std::sync::PoisonError<T>) -> AgentdError {
 #[cfg(test)]
 #[path = "state_isolation_tests.rs"]
 pub(crate) mod isolation_tests;
+
+#[cfg(all(test, unix))]
+#[path = "state_journal_tests.rs"]
+mod journal_tests;
