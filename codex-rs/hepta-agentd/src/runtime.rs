@@ -67,6 +67,14 @@ pub async fn run(
     let ranker = config.cognitive_ranker();
     let mut production_writer_host = config.production_writer_host();
     let native_memory_cell = config.native_memory_cell();
+    let native_memory_registration = config.native_memory_registration();
+    if native_memory_registration.is_some()
+        && (production_writer_host.is_none() || objective_profile_file.is_none())
+    {
+        return Err(AgentdError::Invalid(
+            "native memory registration requires Objective and recovered writer owners".to_string(),
+        ));
+    }
     let _native_memory_lifetime = native_memory_cell
         .as_ref()
         .map(|cell| cell.cancellation.clone().drop_guard());
@@ -248,6 +256,16 @@ pub async fn run(
     }
     state.mark_runtime_prerequisites_ready()?;
     let cancellation = CancellationToken::new();
+    let _native_memory_registration_lifetime = native_memory_registration
+        .map(|registration| {
+            let writer = production_writer_host.as_ref().ok_or_else(|| {
+                AgentdError::Invalid("native memory recovered writer is unavailable".to_string())
+            })?;
+            registration
+                .attach(&state, Arc::clone(writer), &cancellation)
+                .map_err(|error| AgentdError::Protocol(error.to_string()))
+        })
+        .transpose()?;
     let control = AgentdControlServer::bind(
         identity.control_socket.clone(),
         Arc::clone(&state),
