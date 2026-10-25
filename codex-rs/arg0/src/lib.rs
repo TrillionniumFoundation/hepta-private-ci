@@ -57,9 +57,17 @@ impl Arg0PathEntryGuard {
     }
 }
 
-pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
+/// Dispatch helper re-execs before product-specific configuration is loaded.
+///
+/// Recognized helpers exit through their own entry points. A regular invocation
+/// returns without loading dotenv, creating aliases, or starting runtime threads,
+/// so the product can bind its private home before calling `arg0_dispatch`.
+pub fn dispatch_helper_mode() {
+    dispatch_helper_mode_with_args(std::env::args_os());
+}
+
+fn dispatch_helper_mode_with_args(mut args: impl Iterator<Item = OsString>) {
     // Determine if we were invoked via the special alias.
-    let mut args = std::env::args_os();
     let argv0 = args.next().unwrap_or_default();
     let exe_name = Path::new(&argv0)
         .file_name()
@@ -153,6 +161,10 @@ pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
         };
         std::process::exit(exit_code);
     }
+}
+
+pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
+    dispatch_helper_mode();
 
     // This modifies the environment, which is not thread-safe, so do this
     // before creating any threads/the Tokio runtime.
@@ -591,6 +603,54 @@ mod tests {
             install_context,
             path_dir,
         })
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn fs_helper_dispatch_runs_without_product_environment() -> anyhow::Result<()> {
+        use std::ffi::OsString;
+        use std::io::Seek;
+        use std::io::Write;
+
+        const CHILD_MODE: &str = "CODEX_ARG0_FS_HELPER_TEST_CHILD";
+        if std::env::var_os(CHILD_MODE).is_some() {
+            super::dispatch_helper_mode_with_args(
+                [
+                    OsString::from("codex-hepta-agentd"),
+                    OsString::from(codex_exec_server::CODEX_FS_HELPER_ARG1),
+                ]
+                .into_iter(),
+            );
+            anyhow::bail!("filesystem helper returned to the product entry point");
+        }
+
+        let mut request = tempfile::tempfile()?;
+        writeln!(
+            request,
+            "{{\"operation\":\"fs/canonicalize\",\"params\":{{\"path\":\"file:///\",\"sandbox\":null}}}}"
+        )?;
+        request.rewind()?;
+        let output = std::process::Command::new(std::env::current_exe()?)
+            .args([
+                "--exact",
+                "tests::fs_helper_dispatch_runs_without_product_environment",
+                "--nocapture",
+            ])
+            .env_clear()
+            .env(CHILD_MODE, "1")
+            .stdin(request)
+            .output()?;
+        ensure!(
+            output.status.success(),
+            "filesystem helper failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let stdout = String::from_utf8(output.stdout)?;
+        ensure!(
+            stdout.lines().any(|line| line == r#"{"status":"ok","payload":{"operation":"fs/canonicalize","response":{"path":"file:///"}}}"#),
+            "filesystem helper did not return its canonicalized path: {stdout}"
+        );
+        Ok(())
     }
 
     #[test]

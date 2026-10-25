@@ -52,7 +52,8 @@ impl NeuronModelPort for FixtureModel {
 
 #[tokio::test]
 async fn durable_shadow_namespace_rejects_source_and_profile_substitution_before_recovery() {
-    let f = fixture().await;
+    let mut f = fixture().await;
+    f.config.output_width = 5;
     let subject = StableId::new("subject:namespace-fixture").unwrap();
     let objective = Digest32::of_bytes(b"controlled objective fixture");
     let owner = f.writer.owner_agent_id().as_str();

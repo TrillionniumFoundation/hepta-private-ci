@@ -10,6 +10,7 @@ use std::ffi::OsString;
 use std::sync::Arc;
 
 fn main() -> anyhow::Result<()> {
+    codex_arg0::dispatch_helper_mode();
     let mut config = AgentdConfig::from_process_environment()?;
     let codex_home = AbsolutePathBuf::from_absolute_path(&config.identity().home_root)?;
     codex_utils_home_dir::set_process_codex_home_override(codex_home)?;

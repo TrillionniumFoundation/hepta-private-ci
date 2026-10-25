@@ -200,8 +200,15 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         1,
     )
     .await?;
+    assert_eq!(host.recovered_source_anchor(), Some(&expected));
     let recovered_anchor = host.writer().recovery_anchor().await?;
-    assert_eq!(recovered_anchor, expected);
+    assert_eq!(recovered_anchor.profile, expected.profile);
+    assert_eq!(recovered_anchor.owner_agent_id, expected.owner_agent_id);
+    assert_eq!(recovered_anchor.schema_digest, expected.schema_digest);
+    assert_ne!(
+        recovered_anchor.state_digest, expected.state_digest,
+        "the new host-bound writer lease advances the recovered logical cut"
+    );
 
     let now = i64::try_from(now_unix_seconds()?)?;
     let access = CognitiveAccess::agent_private(owner.clone());
