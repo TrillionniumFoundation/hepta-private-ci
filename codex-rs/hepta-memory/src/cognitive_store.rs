@@ -317,30 +317,15 @@ impl CognitiveStore {
         let root = create_private_directory(layout.cognitive_root())?;
         let open_guard = CognitiveStoreOpenGuard::acquire_shared(&root)?;
         let path = resolve_active_database_path(&root)?;
+        // SQLite creates WAL/SHM during its first open. Seed only a genuinely
+        // new initial database with private mode before those files can exist.
+        // Existing databases (including recovered generations) are not changed.
+        #[cfg(unix)]
+        if path == root.join(COGNITIVE_DB_FILENAME) {
+            create_private_initial_database(&path)?;
+        }
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::OpenOptionsExt;
-            use std::os::unix::fs::PermissionsExt;
-
-            // SQLite inherits the main file's creation mode for WAL/SHM.
-            // Protect a new file before the first connection can create them.
-            match OpenOptions::new()
-                .write(true)
-                .create_new(true)
-                .mode(0o600)
-                .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
-                .open(&path)
-            {
-                Ok(file) => file
-                    .set_permissions(fs::Permissions::from_mode(0o600))
-                    .map_err(unavailable)?,
-                // Preserve the existing legacy-file and concurrent-open path.
-                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
-                Err(error) => return Err(unavailable(error)),
-            }
-        }
         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
             .open_durable_evidence_pool(&path)
             .await
@@ -1681,6 +1666,33 @@ fn create_private_directory(path: &Path) -> Result<PathBuf, CognitiveStoreError>
     Ok(canonical)
 }
 
+#[cfg(unix)]
+fn create_private_initial_database(path: &Path) -> Result<(), CognitiveStoreError> {
+    use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::OpenOptionsExt;
+
+    let file = match OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .mode(0o600)
+        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
+        .open(path)
+    {
+        Ok(file) => file,
+        // Never replace, truncate, chmod or repair pre-existing crash evidence.
+        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => return Ok(()),
+        Err(error) => return Err(unavailable(error)),
+    };
+    let metadata = file.metadata().map_err(unavailable)?;
+    if !metadata.is_file() || metadata.nlink() != 1 || metadata.mode() & 0o7777 != 0o600 {
+        return Err(CognitiveStoreError::Corrupt(
+            "new cognitive database must be one private regular file".to_string(),
+        ));
+    }
+    file.sync_all().map_err(unavailable)?;
+    Ok(())
+}
+
 fn protect_database_file(_path: &Path) -> Result<(), CognitiveStoreError> {
     #[cfg(unix)]
     {
@@ -1693,3 +1705,73 @@ fn protect_database_file(_path: &Path) -> Result<(), CognitiveStoreError> {
 #[cfg(test)]
 #[path = "cognitive_schema_tests.rs"]
 mod schema_tests;
+
+#[cfg(all(test, unix))]
+mod initial_database_permissions_tests {
+    use super::*;
+    use std::os::unix::fs::PermissionsExt;
+
+    #[tokio::test]
+    async fn fresh_sqlite_wal_and_shm_inherit_private_main_mode() {
+        let directory = tempfile::tempdir().expect("private SQLite directory");
+        let path = directory.path().join(COGNITIVE_DB_FILENAME);
+        create_private_initial_database(&path).expect("create private main before SQLite");
+        assert_eq!(
+            fs::metadata(&path).expect("main file").permissions().mode() & 0o7777,
+            0o600
+        );
+
+        let sqlite_home =
+            AbsolutePathBuf::try_from(directory.path().to_path_buf()).expect("absolute home");
+        let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+            .open_durable_evidence_pool(&path)
+            .await
+            .expect("open real SQLite WAL pool");
+        sqlx::query("CREATE TABLE wal_mode_probe (value INTEGER NOT NULL)")
+            .execute(&pool)
+            .await
+            .expect("write schema to WAL");
+        sqlx::query("INSERT INTO wal_mode_probe (value) VALUES (1)")
+            .execute(&pool)
+            .await
+            .expect("write row to WAL");
+
+        for suffix in ["-wal", "-shm"] {
+            let mut sidecar_name = path.as_os_str().to_os_string();
+            sidecar_name.push(suffix);
+            let sidecar = PathBuf::from(sidecar_name);
+            assert_eq!(
+                fs::metadata(&sidecar)
+                    .expect("live SQLite sidecar")
+                    .permissions()
+                    .mode()
+                    & 0o7777,
+                0o600,
+                "SQLite {suffix} sidecar must remain private"
+            );
+        }
+        pool.close().await;
+    }
+
+    #[test]
+    fn existing_main_is_not_rewritten_by_initial_creation() {
+        let directory = tempfile::tempdir().expect("SQLite directory");
+        let path = directory.path().join(COGNITIVE_DB_FILENAME);
+        fs::write(&path, b"existing crash evidence").expect("existing file");
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o640))
+            .expect("mark existing permission");
+        create_private_initial_database(&path).expect("leave existing source unchanged");
+        assert_eq!(
+            fs::read(&path).expect("existing bytes").as_slice(),
+            b"existing crash evidence"
+        );
+        assert_eq!(
+            fs::metadata(&path)
+                .expect("existing metadata")
+                .permissions()
+                .mode()
+                & 0o7777,
+            0o640
+        );
+    }
+}
