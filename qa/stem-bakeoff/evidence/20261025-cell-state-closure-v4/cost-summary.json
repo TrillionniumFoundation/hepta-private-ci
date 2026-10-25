@@ -1,0 +1,1061 @@
+{
+  "schema": "hepta.cell-closure-cost-aggregation.v4",
+  "authority": "DENY_ALL",
+  "production_authority": false,
+  "source_commit": "fa2a8f928dc41f8f3c48ea9bd0d45adf1e27ee09",
+  "run_seal_sha256": "a7dfa11a64deef982d0ebdc36dc746b2b3e31c3a0b7def28920d4ab070177346",
+  "collector_sha256": "bbfd690a7ee81b2aabf71da95164208be1364cff019017ce46f8cb111aa2aa8d",
+  "executed_protocol_sha256": "fe0057c499c1a77ca7f5781a05425d83d59693b4250fb1560cab978afb4cd5b2",
+  "executed_protocol_semantic_sha256": "8c4dbc77dc6b495173f7ea85f004360d18fe74fc4cb886f18fce9fc5ceecdaf7",
+  "collector_revision": 2,
+  "prior_failed_collector_preserved": true,
+  "raw_bundle": {
+    "root_reported_expected_sha256": "c462a550e18baa63ba230c9dd6c076d676b5fcc0f281589c023b82251b0aa579",
+    "root_reported_expected_bytes": 13267684,
+    "verified_by_this_helper": true
+  },
+  "input_files": [
+    {
+      "path": "run/run-seal.json",
+      "sha256": "a7dfa11a64deef982d0ebdc36dc746b2b3e31c3a0b7def28920d4ab070177346",
+      "bytes": 106878
+    },
+    {
+      "path": "run/protocol.json",
+      "sha256": "a678ca5571d7ce88922d8e3c841631a8049e92061b48f54659561a3752fcc258",
+      "bytes": 6323
+    },
+    {
+      "path": "run/inputs.json",
+      "sha256": "ba4e4b1a8d1c69b0759a17b6732003da7a871f9bdde4eeaa804137885420a82f",
+      "bytes": 1216
+    },
+    {
+      "path": "run/source-freeze.json",
+      "sha256": "0e19fae8ce6ddb3b568bb23d6fec8981982f02857d70912d62bd652a2d923176",
+      "bytes": 2249
+    },
+    {
+      "path": "run/runs.json",
+      "sha256": "161f414757da1e407641b5489b9326dc0503040b543fc722ab5f36bea58306de",
+      "bytes": 289291
+    },
+    {
+      "path": "run/seed7-linear-step0/forecast.json",
+      "sha256": "77ede3fc78a3e21ca9af02773b0da0b626efde02040f43e2775b0c10735580c5",
+      "bytes": 53705
+    },
+    {
+      "path": "run/seed7-linear-step8/forecast.json",
+      "sha256": "2e8d470b9811d08b9ae9f1aae58a9cbf4c1e0bde1fc030df91da56fa81e8c444",
+      "bytes": 55011
+    },
+    {
+      "path": "run/seed7-linear-step16/forecast.json",
+      "sha256": "f4d4c60026dcb44f8a54d72828f4d7ccf3b8670302b9df4894ad575753d5f66e",
+      "bytes": 54992
+    },
+    {
+      "path": "run/seed7-gated-step0/forecast.json",
+      "sha256": "a6189a2b1f598a863496e7f825f121a148c97759462d4759bb55f31516a00765",
+      "bytes": 55020
+    },
+    {
+      "path": "run/seed7-gated-step8/forecast.json",
+      "sha256": "d9b476b94bb1c144d530a89f219d3742e86bf1906e699262484399bdce9c4009",
+      "bytes": 56441
+    },
+    {
+      "path": "run/seed7-gated-step16/forecast.json",
+      "sha256": "3c14e70fad3abdb69b07dd9485bd8d2959bd0b6ce47eebe03deabace569ef16e",
+      "bytes": 56293
+    },
+    {
+      "path": "run/seed17-linear-step0/forecast.json",
+      "sha256": "8e9ea170edb4baaec67c72f3697fda5f0f41055789ee964d4cdc1b280cca8fe0",
+      "bytes": 53707
+    },
+    {
+      "path": "run/seed17-linear-step8/forecast.json",
+      "sha256": "b8714ba9031febe787410e39c1c57b1a3aef1d255aca0c156b8f99765d29a02c",
+      "bytes": 55002
+    },
+    {
+      "path": "run/seed17-linear-step16/forecast.json",
+      "sha256": "9982a963b01c1555bedcceae98a61ce7c12c2b841de0429a64f82edd80602902",
+      "bytes": 54992
+    },
+    {
+      "path": "run/seed17-gated-step0/forecast.json",
+      "sha256": "1ad69c4f57ae68f20e0e7c335190a9b24e161248311b3556e3c3beaa744e8650",
+      "bytes": 55038
+    },
+    {
+      "path": "run/seed17-gated-step8/forecast.json",
+      "sha256": "6bc4408c87bc1334e9d844f51cdec4fd2925c014a8c8ced51fc28336804be743",
+      "bytes": 56331
+    },
+    {
+      "path": "run/seed17-gated-step16/forecast.json",
+      "sha256": "afcf6003b23cca9ace7c929fb88d3eb665ce888cff76e52d11f28f4d3c9538aa",
+      "bytes": 56282
+    },
+    {
+      "path": "run/seed29-linear-step0/forecast.json",
+      "sha256": "33b7fdfb895fafa02292136f32ae354199d5dfb0a517d21a265c221503bfb2c9",
+      "bytes": 53668
+    },
+    {
+      "path": "run/seed29-linear-step8/forecast.json",
+      "sha256": "ebb9ddc803fae66d623fed9f0987ab540267dd56ba741af171db84a8f1cc33d2",
+      "bytes": 54948
+    },
+    {
+      "path": "run/seed29-linear-step16/forecast.json",
+      "sha256": "6c0bade5d662b77e861d8e54f8687c536d8896171226e1038a95c90da1c2a316",
+      "bytes": 55002
+    },
+    {
+      "path": "run/seed29-gated-step0/forecast.json",
+      "sha256": "c08941deef993793a9ba4a93cec6bf994ea5ac60609a21357c3aa2ca222bd9a1",
+      "bytes": 55057
+    },
+    {
+      "path": "run/seed29-gated-step8/forecast.json",
+      "sha256": "c110c646c6f5c5108dd86530a2a162a1fff502de07e74a158f20b21e17324892",
+      "bytes": 56423
+    },
+    {
+      "path": "run/seed29-gated-step16/forecast.json",
+      "sha256": "51a17d9597f2104b2fb32bcf64278800ffccd5a7ffb74f10343f414ab650e5b3",
+      "bytes": 56309
+    },
+    {
+      "path": "features/report.json",
+      "sha256": "316531d39aae5ffdb872b15e8c842daa78a3e1ec74090505d3b24e9b2aa1caed",
+      "bytes": 14688
+    },
+    {
+      "path": "features/bridge.json",
+      "sha256": "51f34369d6338c3fec83732366d55e48efabfd73f4dc3176ba314bb5921728a0",
+      "bytes": 1800
+    }
+  ],
+  "input_file_count": 25,
+  "frozen_source_hashes": {
+    "cell_field_closure_run.py": "e6101d6f4cbe7c122bfa29a9584a248667199baaaf06c811313670ff81fd8cb3",
+    "cell_field_closure_control.py": "f941a43b563f118442336673a7d972c291a790770fef4748dfbf5af90daf8813",
+    "cell_field_closure_features.py": "d475395320abdbdf7a61f3ca5c9d0ced8ab4d18563f915b8a568748d4cdb89c2",
+    "cell_field_control.py": "b91260462b26492e29d17da4daaa7f16be429e3b6f33e4af587bf0471e15780b",
+    "shared_feature_extract.py": "7338e9eb36f8909828b528ff926e9d3412ffa1c653d141dcea39af3cb2b0fa73",
+    "real_encoder.py": "c0255c26dd9c73cfb737f6acec48f8ae1fdd07a7e7477e98691603e724fba2af"
+  },
+  "census": {
+    "anchors": 18,
+    "map_builds": 90,
+    "branch_records": 306,
+    "branch_optimizer_steps": 2448,
+    "bridge_sources": 8,
+    "new_sources": 96,
+    "feature_forward_calls": 7
+  },
+  "reference": {
+    "charged_once_per_anchor": true,
+    "wall_ns": {
+      "count": 18,
+      "unit": "ns",
+      "sum": 35068712211,
+      "mean": 1948261789.5,
+      "median": 1915511285.5,
+      "minimum": 1225950439,
+      "maximum": 2688156244
+    },
+    "cpu_ns": null,
+    "cpu_scope": "not instrumented by original build_reference; never imputed",
+    "per_anchor": [
+      {
+        "anchor": "seed7-linear-step0",
+        "head": "linear",
+        "parameter_count": 36,
+        "wall_ns": 1361640929
+      },
+      {
+        "anchor": "seed7-linear-step8",
+        "head": "linear",
+        "parameter_count": 36,
+        "wall_ns": 1255676764
+      },
+      {
+        "anchor": "seed7-linear-step16",
+        "head": "linear",
+        "parameter_count": 36,
+        "wall_ns": 1256748514
+      },
+      {
+        "anchor": "seed7-gated-step0",
+        "head": "gated",
+        "parameter_count": 52,
+        "wall_ns": 2625262311
+      },
+      {
+        "anchor": "seed7-gated-step8",
+        "head": "gated",
+        "parameter_count": 52,
+        "wall_ns": 2635566248
+      },
+      {
+        "anchor": "seed7-gated-step16",
+        "head": "gated",
+        "parameter_count": 52,
+        "wall_ns": 2688156244
+      },
+      {
+        "anchor": "seed17-linear-step0",
+        "head": "linear",
+        "parameter_count": 36,
+        "wall_ns": 1357498189
+      },
+      {
+        "anchor": "seed17-linear-step8",
+        "head": "linear",
+        "parameter_count": 36,
+        "wall_ns": 1360794733
+      },
+      {
+        "anchor": "seed17-linear-step16",
+        "head": "linear",
+        "parameter_count": 36,
+        "wall_ns": 1342520906
+      },
+      {
+        "anchor": "seed17-gated-step0",
+        "head": "gated",
+        "parameter_count": 52,
+        "wall_ns": 2672888867
+      },
+      {
+        "anchor": "seed17-gated-step8",
+        "head": "gated",
+        "parameter_count": 52,
+        "wall_ns": 2589514133
+      },
+      {
+        "anchor": "seed17-gated-step16",
+        "head": "gated",
+        "parameter_count": 52,
+        "wall_ns": 2635325943
+      },
+      {
+        "anchor": "seed29-linear-step0",
+        "head": "linear",
+        "parameter_count": 36,
+        "wall_ns": 1323843636
+      },
+      {
+        "anchor": "seed29-linear-step8",
+        "head": "linear",
+        "parameter_count": 36,
+        "wall_ns": 1251487304
+      },
+      {
+        "anchor": "seed29-linear-step16",
+        "head": "linear",
+        "parameter_count": 36,
+        "wall_ns": 1225950439
+      },
+      {
+        "anchor": "seed29-gated-step0",
+        "head": "gated",
+        "parameter_count": 52,
+        "wall_ns": 2469381642
+      },
+      {
+        "anchor": "seed29-gated-step8",
+        "head": "gated",
+        "parameter_count": 52,
+        "wall_ns": 2482878705
+      },
+      {
+        "anchor": "seed29-gated-step16",
+        "head": "gated",
+        "parameter_count": 52,
+        "wall_ns": 2533576704
+      }
+    ]
+  },
+  "maps": {
+    "all_builds": {
+      "wall_ns": {
+        "count": 90,
+        "unit": "ns",
+        "sum": 514439853,
+        "mean": 5715998.366666666,
+        "median": 3624098.5,
+        "minimum": 1041795,
+        "maximum": 54957343
+      },
+      "cpu_ns": {
+        "count": 90,
+        "unit": "ns",
+        "sum": 881752636,
+        "mean": 9797251.51111111,
+        "median": 5196385.5,
+        "minimum": 1239016,
+        "maximum": 32470240
+      }
+    },
+    "per_arm": [
+      {
+        "arm": "loss2",
+        "anchors": 18,
+        "wall_ns": {
+          "count": 18,
+          "unit": "ns",
+          "sum": 82025451,
+          "mean": 4556969.5,
+          "median": 1573299.0,
+          "minimum": 1239828,
+          "maximum": 54957343
+        },
+        "cpu_ns": {
+          "count": 18,
+          "unit": "ns",
+          "sum": 29236731,
+          "mean": 1624262.8333333333,
+          "median": 1573157.5,
+          "minimum": 1239016,
+          "maximum": 2183834
+        },
+        "map_array_nbytes_sum": 114048,
+        "by_head": [
+          {
+            "head": "linear",
+            "anchors": 9,
+            "wall_ns": {
+              "count": 9,
+              "unit": "ns",
+              "sum": 65712767,
+              "mean": 7301418.555555556,
+              "median": 1334625,
+              "minimum": 1239828,
+              "maximum": 54957343
+            },
+            "cpu_ns": {
+              "count": 9,
+              "unit": "ns",
+              "sum": 12934118,
+              "mean": 1437124.2222222222,
+              "median": 1333978,
+              "minimum": 1239016,
+              "maximum": 2183834
+            },
+            "map_bytes": [
+              5184
+            ],
+            "projected_dimension": [
+              2
+            ],
+            "retained_output_scalars": [
+              2
+            ],
+            "retained_action_scalars_upper_bound": [
+              0
+            ],
+            "common_full_state_dimension": [
+              108
+            ],
+            "retained_state_scalars_upper_bounds": [
+              2
+            ]
+          },
+          {
+            "head": "gated",
+            "anchors": 9,
+            "wall_ns": {
+              "count": 9,
+              "unit": "ns",
+              "sum": 16312684,
+              "mean": 1812520.4444444445,
+              "median": 1822097,
+              "minimum": 1549137,
+              "maximum": 2089869
+            },
+            "cpu_ns": {
+              "count": 9,
+              "unit": "ns",
+              "sum": 16302613,
+              "mean": 1811401.4444444445,
+              "median": 1821102,
+              "minimum": 1549020,
+              "maximum": 2084221
+            },
+            "map_bytes": [
+              7488
+            ],
+            "projected_dimension": [
+              2
+            ],
+            "retained_output_scalars": [
+              2
+            ],
+            "retained_action_scalars_upper_bound": [
+              0
+            ],
+            "common_full_state_dimension": [
+              156
+            ],
+            "retained_state_scalars_upper_bounds": [
+              2
+            ]
+          }
+        ]
+      },
+      {
+        "arm": "history2",
+        "anchors": 18,
+        "wall_ns": {
+          "count": 18,
+          "unit": "ns",
+          "sum": 150915958,
+          "mean": 8384219.888888889,
+          "median": 8195585.0,
+          "minimum": 5137985,
+          "maximum": 11433685
+        },
+        "cpu_ns": {
+          "count": 18,
+          "unit": "ns",
+          "sum": 289034190,
+          "mean": 16057455,
+          "median": 15822888.0,
+          "minimum": 9531885,
+          "maximum": 22147743
+        },
+        "map_array_nbytes_sum": 114048,
+        "by_head": [
+          {
+            "head": "linear",
+            "anchors": 9,
+            "wall_ns": {
+              "count": 9,
+              "unit": "ns",
+              "sum": 52582733,
+              "mean": 5842525.888888889,
+              "median": 5900804,
+              "minimum": 5137985,
+              "maximum": 6547227
+            },
+            "cpu_ns": {
+              "count": 9,
+              "unit": "ns",
+              "sum": 99167776,
+              "mean": 11018641.777777778,
+              "median": 10823222,
+              "minimum": 9531885,
+              "maximum": 12707483
+            },
+            "map_bytes": [
+              5184
+            ],
+            "projected_dimension": [
+              4
+            ],
+            "retained_output_scalars": [
+              4
+            ],
+            "retained_action_scalars_upper_bound": [
+              36
+            ],
+            "common_full_state_dimension": [
+              108
+            ],
+            "retained_state_scalars_upper_bounds": [
+              40
+            ]
+          },
+          {
+            "head": "gated",
+            "anchors": 9,
+            "wall_ns": {
+              "count": 9,
+              "unit": "ns",
+              "sum": 98333225,
+              "mean": 10925913.888888888,
+              "median": 11214633,
+              "minimum": 9843943,
+              "maximum": 11433685
+            },
+            "cpu_ns": {
+              "count": 9,
+              "unit": "ns",
+              "sum": 189866414,
+              "mean": 21096268.222222224,
+              "median": 21184867,
+              "minimum": 18938293,
+              "maximum": 22147743
+            },
+            "map_bytes": [
+              7488
+            ],
+            "projected_dimension": [
+              4
+            ],
+            "retained_output_scalars": [
+              4
+            ],
+            "retained_action_scalars_upper_bound": [
+              52
+            ],
+            "common_full_state_dimension": [
+              156
+            ],
+            "retained_state_scalars_upper_bounds": [
+              56
+            ]
+          }
+        ]
+      },
+      {
+        "arm": "history4",
+        "anchors": 18,
+        "wall_ns": {
+          "count": 18,
+          "unit": "ns",
+          "sum": 209383894,
+          "mean": 11632438.555555556,
+          "median": 11580738.0,
+          "minimum": 6799337,
+          "maximum": 16465778
+        },
+        "cpu_ns": {
+          "count": 18,
+          "unit": "ns",
+          "sum": 416348510,
+          "mean": 23130472.777777776,
+          "median": 22968189.5,
+          "minimum": 13802088,
+          "maximum": 32470240
+        },
+        "map_array_nbytes_sum": 114048,
+        "by_head": [
+          {
+            "head": "linear",
+            "anchors": 9,
+            "wall_ns": {
+              "count": 9,
+              "unit": "ns",
+              "sum": 72035345,
+              "mean": 8003927.222222222,
+              "median": 8182951,
+              "minimum": 6799337,
+              "maximum": 8689533
+            },
+            "cpu_ns": {
+              "count": 9,
+              "unit": "ns",
+              "sum": 143034027,
+              "mean": 15892669.666666666,
+              "median": 16183311,
+              "minimum": 13802088,
+              "maximum": 17467941
+            },
+            "map_bytes": [
+              5184
+            ],
+            "projected_dimension": [
+              8
+            ],
+            "retained_output_scalars": [
+              8
+            ],
+            "retained_action_scalars_upper_bound": [
+              108
+            ],
+            "common_full_state_dimension": [
+              108
+            ],
+            "retained_state_scalars_upper_bounds": [
+              116
+            ]
+          },
+          {
+            "head": "gated",
+            "anchors": 9,
+            "wall_ns": {
+              "count": 9,
+              "unit": "ns",
+              "sum": 137348549,
+              "mean": 15260949.888888888,
+              "median": 15305617,
+              "minimum": 14471943,
+              "maximum": 16465778
+            },
+            "cpu_ns": {
+              "count": 9,
+              "unit": "ns",
+              "sum": 273314483,
+              "mean": 30368275.888888888,
+              "median": 30307043,
+              "minimum": 28468438,
+              "maximum": 32470240
+            },
+            "map_bytes": [
+              7488
+            ],
+            "projected_dimension": [
+              8
+            ],
+            "retained_output_scalars": [
+              8
+            ],
+            "retained_action_scalars_upper_bound": [
+              156
+            ],
+            "common_full_state_dimension": [
+              156
+            ],
+            "retained_state_scalars_upper_bounds": [
+              164
+            ]
+          }
+        ]
+      },
+      {
+        "arm": "moment4",
+        "anchors": 18,
+        "wall_ns": {
+          "count": 18,
+          "unit": "ns",
+          "sum": 22438088,
+          "mean": 1246560.4444444445,
+          "median": 1278590.5,
+          "minimum": 1041795,
+          "maximum": 1575925
+        },
+        "cpu_ns": {
+          "count": 18,
+          "unit": "ns",
+          "sum": 47451443,
+          "mean": 2636191.277777778,
+          "median": 2280420.0,
+          "minimum": 2042330,
+          "maximum": 3578414
+        },
+        "map_array_nbytes_sum": 114048,
+        "by_head": [
+          {
+            "head": "linear",
+            "anchors": 9,
+            "wall_ns": {
+              "count": 9,
+              "unit": "ns",
+              "sum": 9981158,
+              "mean": 1109017.5555555555,
+              "median": 1088527,
+              "minimum": 1041795,
+              "maximum": 1280249
+            },
+            "cpu_ns": {
+              "count": 9,
+              "unit": "ns",
+              "sum": 19988398,
+              "mean": 2220933.111111111,
+              "median": 2120189,
+              "minimum": 2042330,
+              "maximum": 3074050
+            },
+            "map_bytes": [
+              5184
+            ],
+            "projected_dimension": [
+              4
+            ],
+            "retained_output_scalars": [
+              4
+            ],
+            "retained_action_scalars_upper_bound": [
+              0
+            ],
+            "common_full_state_dimension": [
+              108
+            ],
+            "retained_state_scalars_upper_bounds": [
+              4
+            ]
+          },
+          {
+            "head": "gated",
+            "anchors": 9,
+            "wall_ns": {
+              "count": 9,
+              "unit": "ns",
+              "sum": 12456930,
+              "mean": 1384103.3333333333,
+              "median": 1369894,
+              "minimum": 1277746,
+              "maximum": 1575925
+            },
+            "cpu_ns": {
+              "count": 9,
+              "unit": "ns",
+              "sum": 27463045,
+              "mean": 3051449.4444444445,
+              "median": 3371927,
+              "minimum": 2278740,
+              "maximum": 3578414
+            },
+            "map_bytes": [
+              7488
+            ],
+            "projected_dimension": [
+              4
+            ],
+            "retained_output_scalars": [
+              4
+            ],
+            "retained_action_scalars_upper_bound": [
+              0
+            ],
+            "common_full_state_dimension": [
+              156
+            ],
+            "retained_state_scalars_upper_bounds": [
+              4
+            ]
+          }
+        ]
+      },
+      {
+        "arm": "full",
+        "anchors": 18,
+        "wall_ns": {
+          "count": 18,
+          "unit": "ns",
+          "sum": 49676462,
+          "mean": 2759803.4444444445,
+          "median": 2694108.5,
+          "minimum": 1263738,
+          "maximum": 4769400
+        },
+        "cpu_ns": {
+          "count": 18,
+          "unit": "ns",
+          "sum": 99681762,
+          "mean": 5537875.666666667,
+          "median": 5196385.5,
+          "minimum": 2265199,
+          "maximum": 9772300
+        },
+        "map_array_nbytes_sum": 114048,
+        "by_head": [
+          {
+            "head": "linear",
+            "anchors": 9,
+            "wall_ns": {
+              "count": 9,
+              "unit": "ns",
+              "sum": 12889742,
+              "mean": 1432193.5555555555,
+              "median": 1428553,
+              "minimum": 1263738,
+              "maximum": 1807592
+            },
+            "cpu_ns": {
+              "count": 9,
+              "unit": "ns",
+              "sum": 26898409,
+              "mean": 2988712.111111111,
+              "median": 3320442,
+              "minimum": 2265199,
+              "maximum": 3810308
+            },
+            "map_bytes": [
+              5184
+            ],
+            "projected_dimension": [
+              108
+            ],
+            "retained_output_scalars": [
+              108
+            ],
+            "retained_action_scalars_upper_bound": [
+              0
+            ],
+            "common_full_state_dimension": [
+              108
+            ],
+            "retained_state_scalars_upper_bounds": [
+              108
+            ]
+          },
+          {
+            "head": "gated",
+            "anchors": 9,
+            "wall_ns": {
+              "count": 9,
+              "unit": "ns",
+              "sum": 36786720,
+              "mean": 4087413.3333333335,
+              "median": 4105688,
+              "minimum": 3580625,
+              "maximum": 4769400
+            },
+            "cpu_ns": {
+              "count": 9,
+              "unit": "ns",
+              "sum": 72783353,
+              "mean": 8087039.222222222,
+              "median": 8106975,
+              "minimum": 6582463,
+              "maximum": 9772300
+            },
+            "map_bytes": [
+              7488
+            ],
+            "projected_dimension": [
+              156
+            ],
+            "retained_output_scalars": [
+              156
+            ],
+            "retained_action_scalars_upper_bound": [
+              0
+            ],
+            "common_full_state_dimension": [
+              156
+            ],
+            "retained_state_scalars_upper_bounds": [
+              156
+            ]
+          }
+        ]
+      }
+    ],
+    "array_nbytes_scope": "logical NumPy map elements, not peak RSS or compressed artifact bytes",
+    "includes_shared_reference": false
+  },
+  "branches": {
+    "count": 306,
+    "wall_ns": {
+      "count": 306,
+      "unit": "ns",
+      "sum": 5679941800,
+      "mean": 18561901.307189543,
+      "median": 19438493.5,
+      "minimum": 15924569,
+      "maximum": 23647677
+    },
+    "cpu_ns": {
+      "count": 306,
+      "unit": "ns",
+      "sum": 5719542029,
+      "mean": 18691313.820261437,
+      "median": 19687479.5,
+      "minimum": 15925203,
+      "maximum": 36201586
+    },
+    "per_head": [
+      {
+        "head": "linear",
+        "wall_ns": {
+          "count": 153,
+          "unit": "ns",
+          "sum": 2552126459,
+          "mean": 16680565.091503268,
+          "median": 16356828,
+          "minimum": 15924569,
+          "maximum": 19208922
+        },
+        "cpu_ns": {
+          "count": 153,
+          "unit": "ns",
+          "sum": 2598378426,
+          "mean": 16982865.529411763,
+          "median": 16357247,
+          "minimum": 15925203,
+          "maximum": 36201586
+        }
+      },
+      {
+        "head": "gated",
+        "wall_ns": {
+          "count": 153,
+          "unit": "ns",
+          "sum": 3127815341,
+          "mean": 20443237.522875816,
+          "median": 20214298,
+          "minimum": 19668065,
+          "maximum": 23647677
+        },
+        "cpu_ns": {
+          "count": 153,
+          "unit": "ns",
+          "sum": 3121163603,
+          "mean": 20399762.111111112,
+          "median": 20196514,
+          "minimum": 19668898,
+          "maximum": 23531184
+        }
+      }
+    ]
+  },
+  "run_interval": {
+    "wall_ns": 43411447892,
+    "cpu_ns": 45481693959,
+    "wall_ns_other_unallocated": 2148354028,
+    "cpu_ns_reference_plus_other_unallocated": 38880399294,
+    "scope": "original inner run interval; nested within wrapper run stage, do not add again"
+  },
+  "features": {
+    "shape": [
+      96,
+      384
+    ],
+    "dtype": "float32",
+    "encoder_updates": 0,
+    "encoder_load": {
+      "cpu_ns": 12603880749,
+      "model": {
+        "loaded_parameter_count": 97441152,
+        "resident_storage_count": 78,
+        "resident_tensor_storage_bytes": 389764864,
+        "trainable_parameter_count": 0
+      },
+      "wall_ns": 32812261333
+    },
+    "encoding": {
+      "cpu_ns": 3706597248,
+      "encoded_tokens": 1493,
+      "forward_calls": 7,
+      "includes_old_training_source_bridge": true,
+      "wall_ns": 3581924943
+    },
+    "peak_rss_bytes": 1255505920,
+    "peak_rss_scope": "original feature process RUSAGE_SELF high-water mark",
+    "bridge": {
+      "passed": true,
+      "sources": 8,
+      "maximum_absolute_feature_difference": 1.1920928955078125e-07,
+      "maximum_allowed_difference": 1e-06,
+      "receipt": {
+        "label": "bridge",
+        "model_forward_calls": 1,
+        "model_forward_calls_total": 1,
+        "batch_size": 8,
+        "token_count": 107,
+        "retained_tensor_bytes": 12328,
+        "forward_ms": 1088.9019269998244,
+        "encode_ms": 1338.349826999547
+      }
+    },
+    "new_source_receipts": [
+      {
+        "label": "new-source-batch-0",
+        "model_forward_calls": 1,
+        "model_forward_calls_total": 2,
+        "batch_size": 16,
+        "token_count": 236,
+        "retained_tensor_bytes": 24656,
+        "forward_ms": 266.1651079997682,
+        "encode_ms": 272.2351440006605
+      },
+      {
+        "label": "new-source-batch-1",
+        "model_forward_calls": 1,
+        "model_forward_calls_total": 3,
+        "batch_size": 16,
+        "token_count": 242,
+        "retained_tensor_bytes": 24656,
+        "forward_ms": 231.75434800032235,
+        "encode_ms": 235.86488199907762
+      },
+      {
+        "label": "new-source-batch-2",
+        "model_forward_calls": 1,
+        "model_forward_calls_total": 4,
+        "batch_size": 16,
+        "token_count": 219,
+        "retained_tensor_bytes": 24656,
+        "forward_ms": 228.01605699896754,
+        "encode_ms": 231.9424050001544
+      },
+      {
+        "label": "new-source-batch-3",
+        "model_forward_calls": 1,
+        "model_forward_calls_total": 5,
+        "batch_size": 16,
+        "token_count": 233,
+        "retained_tensor_bytes": 24656,
+        "forward_ms": 165.62443600014376,
+        "encode_ms": 169.37031100133026
+      },
+      {
+        "label": "new-source-batch-4",
+        "model_forward_calls": 1,
+        "model_forward_calls_total": 6,
+        "batch_size": 16,
+        "token_count": 227,
+        "retained_tensor_bytes": 24656,
+        "forward_ms": 196.94600599905243,
+        "encode_ms": 200.70272900011332
+      },
+      {
+        "label": "new-source-batch-5",
+        "model_forward_calls": 1,
+        "model_forward_calls_total": 7,
+        "batch_size": 16,
+        "token_count": 229,
+        "retained_tensor_bytes": 24656,
+        "forward_ms": 203.95637199908379,
+        "encode_ms": 207.78258000063943
+      }
+    ],
+    "token_lengths": {
+      "count": 96,
+      "unit": "tokens_before_truncation",
+      "sum": 1386,
+      "mean": 14.4375,
+      "median": 14.0,
+      "minimum": 6,
+      "maximum": 24
+    },
+    "truncated_inputs": 0,
+    "maximum_tokens": 192,
+    "new_source_token_count": 1386,
+    "all_forward_ms_sum": 2381.3642539971625,
+    "all_encode_ms_sum": 2656.2478780015226,
+    "timing_scope": "forward is nested within receipt encode; receipts nested within encoding; no bridge CPU separately recorded"
+  },
+  "sealed_run_artifact_inventory": {
+    "file_count": 812,
+    "bytes": 15267230,
+    "by_category": {
+      "other_run_files": {
+        "files": 74,
+        "bytes": 800625
+      },
+      "action_receipts_json": {
+        "files": 306,
+        "bytes": 1738676
+      },
+      "action_npz": {
+        "files": 306,
+        "bytes": 4040463
+      },
+      "forecast_json": {
+        "files": 18,
+        "bytes": 994221
+      },
+      "forecast_npz": {
+        "files": 90,
+        "bytes": 647782
+      },
+      "reference_npz": {
+        "files": 18,
+        "bytes": 7045463
+      }
+    },
+    "scope": "original run-seal inventory; only listed input files rehashed by helper; excludes run-seal itself and data/features/evaluation directories"
+  },
+  "no_new_training_model_or_raw_label_access": true
+}
