@@ -114,6 +114,10 @@ impl CognitiveStore {
                     "read-only observer differs from the recovered owner cut".to_string(),
                 ));
             }
+            self.current_publisher = Some(super::current::BoundCurrentPublisher::new(
+                Arc::clone(&coordinator),
+                deadline,
+            ));
             attempt.acknowledge();
             Ok(coordinator)
         }

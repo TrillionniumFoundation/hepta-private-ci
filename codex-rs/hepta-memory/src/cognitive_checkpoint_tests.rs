@@ -362,3 +362,7 @@ async fn protected_checkpoint_mismatched_dirty_ack_never_opens_commit_permission
 
 #[path = "cognitive_checkpoint_binding_tests.rs"]
 mod binding_tests;
+
+#[cfg(unix)]
+#[path = "production_current_tests.rs"]
+mod external_current_tests;

@@ -288,6 +288,7 @@ impl CognitiveStore {
             Ok(CognitiveStore {
                 pool,
                 observation_pool: None,
+                current_publisher: None,
                 owner_agent_id: layout.agent_id().clone(),
                 path: candidate.clone(),
                 commit_gate,

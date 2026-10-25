@@ -58,6 +58,9 @@ pub(crate) use gate::CognitiveCommitGate;
 #[path = "cognitive_checkpoint_bind.rs"]
 mod checkpoint_bind;
 
+#[path = "cognitive_current.rs"]
+mod current;
+
 #[path = "cognitive_store_recovery.rs"]
 mod recovery;
 pub use recovery::CognitiveRecoveryAnchor;
@@ -249,6 +252,7 @@ pub enum CognitiveStoreError {
 pub struct CognitiveStore {
     pub(crate) pool: SqlitePool,
     observation_pool: Option<SqlitePool>,
+    pub(crate) current_publisher: Option<current::BoundCurrentPublisher>,
     pub(crate) owner_agent_id: AgentId,
     path: PathBuf,
     pub(crate) commit_gate: CognitiveCommitGate,
@@ -338,6 +342,7 @@ impl CognitiveStore {
         Self {
             pool,
             observation_pool: None,
+            current_publisher: None,
             owner_agent_id,
             path,
             commit_gate: CognitiveCommitGate::default(),
@@ -376,6 +381,7 @@ impl CognitiveStore {
         Ok(Self {
             pool,
             observation_pool: None,
+            current_publisher: None,
             owner_agent_id: layout.agent_id().clone(),
             path,
             commit_gate,

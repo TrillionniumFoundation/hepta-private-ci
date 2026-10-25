@@ -107,6 +107,7 @@ impl ProductionDurableWriter {
     ) -> Result<Hos2RetirementObservation, ProductionWriterError> {
         self.verify_authority().await?;
         let terminal_chain_sha256 = self.lease.hos2_durable_prefix(through).await?;
+        self.acknowledge_external_current().await?;
         self.verify_authority().await?;
         let permit = Hos2RetirementPermit {
             through: through.clone(),

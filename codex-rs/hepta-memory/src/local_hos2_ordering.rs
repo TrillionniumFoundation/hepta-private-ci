@@ -191,7 +191,7 @@ impl LocalLeaseOutbox {
         let (boot, space) = namespace(through)?;
         let mut transaction = self
             .store
-            .pool
+            .observation_pool()
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(crate::cognitive_store::unavailable)?;
@@ -247,7 +247,7 @@ impl LocalLeaseOutbox {
         let digest = Sha256Digest::parse(format!("{:x}", digest.finalize()))
             .map_err(LocalLeaseOutboxError::Corrupt)?;
         transaction
-            .commit()
+            .rollback()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
         Ok(digest)

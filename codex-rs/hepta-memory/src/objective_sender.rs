@@ -140,7 +140,7 @@ impl ProductionDurableWriter {
         })
     }
 
-    fn sender_live_check(&self) -> Result<(), ProductionWriterError> {
+    pub(crate) fn sender_live_check(&self) -> Result<(), ProductionWriterError> {
         Sha256Digest::parse(self.authority.grant_digest.as_str()).map_err(|_| {
             ProductionWriterError::Invalid(
                 "malformed Objective sender authority grant digest".to_string(),
@@ -393,24 +393,7 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
     ) -> Result<model::OwnerFence, ObjectiveSenderError> {
-        let lease = self
-            .writer
-            .lease
-            .require_current_transaction(transaction)
-            .await
-            .map_err(ProductionWriterError::from)?;
-        self.writer.sender_live_check()?;
-        Ok(model::OwnerFence {
-            owner_agent_id: self.writer.owner_agent_id().clone(),
-            lease_id: self.writer.lease_id().to_string(),
-            lease_sha256: lease.lease_sha256,
-            generation: self.writer.generation(),
-            authority_epoch: self.writer.authority.authority_epoch,
-            owner_epoch: self.writer.authority.owner_epoch,
-            authority_grant_digest: self.writer.authority.grant_digest.clone(),
-            fencing_token_digest: self.writer.authority.fencing_token_digest()?,
-            expires_at_unix_seconds: self.writer.authority.lease_expires_at_unix_seconds,
-        })
+        Ok(self.writer.current_writer_fence(transaction).await?)
     }
 
     async fn acknowledge_committed(&self) -> Result<(), ObjectiveSenderError> {

@@ -63,6 +63,9 @@ pub use retained_operation::ProductionRetainedOperation;
 
 #[path = "objective_sender.rs"]
 mod objective_sender;
+
+#[path = "production_current.rs"]
+mod current;
 pub use objective_sender::ObjectiveSenderCheckpoint;
 pub use objective_sender::ObjectiveSenderCheckpointError;
 pub use objective_sender::ObjectiveSenderError;
@@ -1031,7 +1034,7 @@ impl ProductionDurableWriter {
         .bind(i64::try_from(limit).map_err(|_| {
             ProductionWriterError::Invalid("reconcile batch limit overflow".to_string())
         })?)
-        .fetch_all(&self.store.pool)
+        .fetch_all(self.store.observation_pool())
         .await
         .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
 
@@ -1126,6 +1129,7 @@ impl ProductionDurableWriter {
                 ProductionTerminalObservation::Unavailable { .. } => {}
             }
         }
+        self.acknowledge_external_current().await?;
         // Failure retains source terminality and permits a later exact ACK.
         let _ = self.retry_notes_retirement(target).await;
         Ok(reconciled)
@@ -1154,7 +1158,7 @@ impl ProductionDurableWriter {
         )
         .bind(self.lease_id())
         .bind(occurrence_key)
-        .fetch_optional(&self.store.pool)
+        .fetch_optional(self.store.observation_pool())
         .await
         .map_err(|error| ProductionWriterError::Durability(error.to_string()))?
         .ok_or_else(|| {
@@ -1558,6 +1562,10 @@ impl ProductionDurableWriter {
                 .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
         }
 
+        // The exact durable Entered cut must be independently Current before
+        // the one external effect. Unknown publication never grants a resend.
+        self.acknowledge_external_current().await?;
+
         // Then consume the single-use grant and revalidate it immediately at
         // target entry. If either check fails before the adapter is entered we
         // know no external effect happened. HOS2 retains an internal proof
@@ -1582,6 +1590,7 @@ impl ProductionDurableWriter {
                     hos2_tests::checkpoint("before-proof")
                         .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
                     operation_claims::record_rejection(&self.store, proof, now_unix_ms()?).await?;
+                    self.acknowledge_external_current().await?;
                     #[cfg(all(test, unix))]
                     hos2_tests::checkpoint("after-proof")
                         .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
@@ -1603,6 +1612,7 @@ impl ProductionDurableWriter {
                         now_unix_ms().unwrap_or(1),
                     )
                     .await;
+                    self.acknowledge_external_current().await?;
                 }
                 return Err(ProductionWriterError::FinalUse(error));
             }
@@ -1628,6 +1638,7 @@ impl ProductionDurableWriter {
                     hos2_tests::checkpoint("before-proof")
                         .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
                     operation_claims::record_rejection(&self.store, proof, now_unix_ms()?).await?;
+                    self.acknowledge_external_current().await?;
                     #[cfg(all(test, unix))]
                     hos2_tests::checkpoint("after-proof")
                         .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
@@ -1649,6 +1660,7 @@ impl ProductionDurableWriter {
                         now_unix_ms().unwrap_or(1),
                     )
                     .await;
+                    self.acknowledge_external_current().await?;
                 }
                 return Err(ProductionWriterError::FinalUse(error));
             }
@@ -1696,6 +1708,9 @@ impl ProductionDurableWriter {
                 now_unix_ms().unwrap_or(1),
             )
             .await;
+        }
+        if settled.is_ok() {
+            self.acknowledge_external_current().await?;
         }
         if let Ok(receipt) = &settled
             && receipt.request.topic == crate::NOTES_REPLACE_TOPIC_V1

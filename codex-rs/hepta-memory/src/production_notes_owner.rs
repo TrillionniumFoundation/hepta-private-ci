@@ -119,7 +119,7 @@ impl ProductionDurableWriter {
         // after verification but before the application's receipt is retired.
         let mut transaction = self
             .store
-            .pool
+            .observation_pool()
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
@@ -152,6 +152,8 @@ impl ProductionDurableWriter {
                 "Notes terminal event is not applied".to_string(),
             ));
         }
+        self.acknowledge_external_current_transaction(&mut transaction)
+            .await?;
         let permit = NotesRetirementPermit { request, receipt };
         // Recheck the original verifier after all SQLite awaits and immediately
         // before the synchronous metadata-only destination call.
@@ -190,7 +192,7 @@ impl ProductionDurableWriter {
                AND e.event_kind = 'reconcile_committed'
              ORDER BY e.event_sequence DESC LIMIT 1",
         ).bind(self.lease_id()).bind(target.destination_id()).bind(crate::NOTES_REPLACE_TOPIC_V1)
-            .fetch_optional(&self.store.pool).await
+            .fetch_optional(self.store.observation_pool()).await
             .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
         if let Some(operation_id) = latest {
             self.retire_notes_receipt(target, &operation_id).await?;
