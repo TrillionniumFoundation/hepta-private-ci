@@ -87,6 +87,9 @@ pub struct AgentdConfig {
     production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
     native_memory_cell: Option<std::sync::Arc<crate::AgentdNativeMemoryCell>>,
     native_memory_registration: Option<std::sync::Arc<crate::AgentdNativeMemoryRegistrationV1>>,
+    #[cfg(target_os = "linux")]
+    native_memory_process_host:
+        Option<std::sync::Arc<crate::native_memory_host_bootstrap::NativeMemoryProcessHost>>,
     cognitive_retrieval_mode: CognitiveRetrievalMode,
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
@@ -212,6 +215,8 @@ impl AgentdConfig {
             production_writer_host: None,
             native_memory_cell: None,
             native_memory_registration: None,
+            #[cfg(target_os = "linux")]
+            native_memory_process_host: None,
             cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
@@ -429,6 +434,27 @@ impl AgentdConfig {
         &self,
     ) -> Option<std::sync::Arc<crate::AgentdNativeMemoryRegistrationV1>> {
         self.native_memory_registration.clone()
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn with_native_memory_process_host(
+        mut self,
+        host: std::sync::Arc<crate::native_memory_host_bootstrap::NativeMemoryProcessHost>,
+    ) -> Result<Self, AgentdError> {
+        if self.native_memory_process_host.is_some() {
+            return Err(AgentdError::Invalid(
+                "native memory process host is already configured".into(),
+            ));
+        }
+        self.native_memory_process_host = Some(host);
+        Ok(self)
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn native_memory_process_host(
+        &self,
+    ) -> Option<std::sync::Arc<crate::native_memory_host_bootstrap::NativeMemoryProcessHost>> {
+        self.native_memory_process_host.clone()
     }
 
     /// Select the retrieval product profile explicitly. Compatibility preserves
