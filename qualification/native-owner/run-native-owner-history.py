@@ -231,7 +231,7 @@ def execute(args, result):
     disk, disk_info = common.disk_fixture(args.output)
     require("," not in str(disk), "invalid QEMU path")
     argv = [str(qemu), "-kernel", str(args.output / "kernel.elf"), "-initrd", str(args.output / "initramfs.cpio.gz"),
-            "-append", "earlycon console=ttyS0 loglevel=info rdinit=/test/g1d-init SHELL=/bin/sh LOGNAME=root HOME=/ USER=root PATH=/bin:/sbin --",
+            "-append", "earlycon console=ttyS0 loglevel=warn rdinit=/test/g1d-init SHELL=/bin/sh LOGNAME=root HOME=/ USER=root PATH=/bin:/sbin --",
             "-machine", "q35", "-accel", "tcg", "-cpu", "max", "-bios", str(args.output / "bios.bin"), "-m", "3072M", "-smp", "1",
             "-nodefaults", "-no-user-config", "-no-reboot", "-nographic", "-display", "none", "-monitor", "none", "-serial", "stdio",
             "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04", "-drive", f"file={disk},if=none,format=raw,id=hepta-store,snapshot=off,cache=writeback",

@@ -27,6 +27,10 @@ Root resource observation and Agentd delivery-history observation remain distinc
 
 Both enforce bounded artifacts/logs, a fixed 3072 MiB experimental guest budget,
 no networking, finite 900-second maximum per boot, and source/artifact rechecks.
+The guest uses kernel `loglevel=warn`: the actual SQLite workload otherwise
+exhausts the unchanged 4 MiB serial bound with per-syscall and virtio INFO logs.
+Warnings/errors and direct image/role/owner qualification prints remain visible.
+The complete raw serial is retained without filtering; excess output still fails.
 Keep every failed attempt; `passed` is only set after actual evidence validates.
 Neither enables production or claims general cross-boot writer handoff.
 

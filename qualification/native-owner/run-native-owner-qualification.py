@@ -359,7 +359,7 @@ def execute(args, output, result):
         image_path.write_bytes(image)
         require("," not in str(disk), "QEMU fixture path contains a comma")
         argv = [str(qemu), "-kernel", str(output / "kernel.elf"), "-initrd", str(image_path),
-                "-append", "earlycon console=ttyS0 loglevel=info rdinit=/test/g1d-init SHELL=/bin/sh LOGNAME=root HOME=/ USER=root PATH=/bin:/sbin --",
+                "-append", "earlycon console=ttyS0 loglevel=warn rdinit=/test/g1d-init SHELL=/bin/sh LOGNAME=root HOME=/ USER=root PATH=/bin:/sbin --",
                 "-machine", "q35", "-accel", "tcg", "-cpu", "max", "-bios", str(output / "bios.bin"),
                 "-m", f"{MEMORY_MIB}M", "-smp", "1", "-nodefaults", "-no-user-config", "-no-reboot", "-nographic",
                 "-display", "none", "-monitor", "none", "-serial", "stdio",
