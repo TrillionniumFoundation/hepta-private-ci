@@ -1,0 +1,146 @@
+name: Hepta caption controls exploratory replay
+on:
+  push:
+    branches: [research/dot-caption-controls-replay-20261025]
+    paths:
+      - qa/caption-controls-replay/**
+      - .github/workflows/hepta-caption-controls-replay.yml
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: caption-controls-replay-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  replay:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    env:
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 2
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Bind candidate source and tools
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git rev-parse HEAD^)" = 3cdb6e8b369d481f614914dd44bace9961f03bbe
+          test -z "$(git status --porcelain)"
+          mkdir "$RUNNER_TEMP/caption-evidence"
+          git rev-parse HEAD 'HEAD^{tree}' > "$RUNNER_TEMP/caption-evidence/source.txt"
+          git diff-tree --no-commit-id --name-only -r HEAD > "$RUNNER_TEMP/caption-evidence/changed-paths.txt"
+          python - <<'PYCODE'
+          import hashlib, json, os
+          from pathlib import Path
+          binding = json.loads(Path('qa/caption-controls-replay/bindings.json').read_text())
+          actual = (Path(os.environ['RUNNER_TEMP']) / 'caption-evidence/changed-paths.txt').read_text().splitlines()
+          evidence = Path(os.environ['RUNNER_TEMP']) / 'caption-evidence'
+          (evidence / 'expected-bindings.json').write_text(json.dumps(binding, sort_keys=True) + '\n')
+          original = {name: hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in binding['source_sha256']}
+          (evidence / 'original-source.before.json').write_text(json.dumps(original, sort_keys=True) + '\n')
+          if original != binding['source_sha256']:
+              raise SystemExit('Original research source binding mismatch')
+          if sorted(actual) != binding['candidate_paths']:
+              raise SystemExit('Unexpected changed path set; no replay')
+          PYCODE
+          sha256sum qa/caption-controls-replay/* .github/workflows/hepta-caption-controls-replay.yml > "$RUNNER_TEMP/caption-evidence/source.sha256"
+          python --version > "$RUNNER_TEMP/caption-evidence/tools.txt"
+          gh --version >> "$RUNNER_TEMP/caption-evidence/tools.txt"
+          sha256sum "$(command -v gh)" >> "$RUNNER_TEMP/caption-evidence/tools.txt"
+          python -m unittest discover -s qa/caption-controls-replay -p test_replay.py -v
+          python -O -m unittest discover -s qa/caption-controls-replay -p test_replay.py -v
+      - name: Install two isolated locked NumPy wheels
+        timeout-minutes: 3
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/caption-venv"
+          "$RUNNER_TEMP/caption-venv/bin/python" -m pip install --disable-pip-version-check --no-cache-dir --retries 0 --timeout 30 --no-deps --require-hashes --only-binary=:all: -r qa/caption-controls-replay/requirements.txt
+          "$RUNNER_TEMP/caption-venv/bin/python" -m pip check
+          python -m venv "$RUNNER_TEMP/caption-audit-venv"
+          "$RUNNER_TEMP/caption-audit-venv/bin/python" -m pip install --disable-pip-version-check --no-cache-dir --retries 0 --timeout 30 --no-deps --require-hashes --only-binary=:all: -r qa/caption-controls-replay/audit-requirements.txt
+          "$RUNNER_TEMP/caption-audit-venv/bin/python" -m pip check
+      - name: Retrieve the one original ZIP through GitHub CLI
+        timeout-minutes: 2
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_DEBUG: ""
+          DEBUG: ""
+          GH_HOST: github.com
+        run: |
+          set -euo pipefail
+          # gh strips authentication on cross-host redirects; no custom headers,
+          # verbose traces, signed URL logging, fallbacks, or alternate artifacts.
+          ulimit -f 8192
+          if ! timeout 90 gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12579262528/zip > "$RUNNER_TEMP/original-caption.zip" 2> "$RUNNER_TEMP/download-private.stderr"; then
+            echo 'Original artifact unavailable; replay stopped without substitution.'
+            exit 1
+          fi
+          test "$(stat -c %s "$RUNNER_TEMP/original-caption.zip")" = 6007837
+          echo "560c7d14ffd3d81ee3bbe86a9c8667cfbeaddfa12c5fdba991ae2039e298c423  $RUNNER_TEMP/original-caption.zip" | sha256sum -c -
+      - name: Offline immutable controls replay twice
+        timeout-minutes: 4
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/caption-venv/bin/python" -B qa/caption-controls-replay/replay.py --zip "$RUNNER_TEMP/original-caption.zip" --repo "$GITHUB_WORKSPACE" --ledger-python "$RUNNER_TEMP/caption-audit-venv/bin/python" --output "$RUNNER_TEMP/caption-replay"
+      - name: Always retain evidence and verify post-run source identity
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/caption-evidence"
+          python - <<'PYCODE'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          evidence = Path(os.environ['RUNNER_TEMP']) / 'caption-evidence'
+          replay = Path(os.environ['RUNNER_TEMP']) / 'caption-replay'
+          for name in ['ledger-audit.json', 'replay-receipt.json', 'controls-tests.log', 'caption-strong-controls-539d-20261025T0007Z/results.json']:
+              source = replay / name
+              if source.is_file():
+                  (evidence / source.name).write_bytes(source.read_bytes())
+          checks = {}
+          try:
+              binding = json.loads((evidence / 'expected-bindings.json').read_text())
+              head = subprocess.run(['git', 'rev-parse', 'HEAD', 'HEAD^{tree}'], text=True, capture_output=True, check=True).stdout
+              (evidence / 'source.after.txt').write_text(head)
+              checks['head_and_tree_unchanged'] = head == (evidence / 'source.txt').read_text()
+              status = subprocess.run(['git', 'status', '--porcelain'], text=True, capture_output=True, check=True).stdout
+              (evidence / 'status.after.txt').write_text(status)
+              checks['clean_worktree'] = status == ''
+              actual = {name: hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in binding['candidate_paths']}
+              after = ''.join(f'{actual[name]}  {name}\n' for name in binding['candidate_paths'])
+              (evidence / 'source.after.sha256').write_text(after)
+              before = dict((line.split('  ', 1)[1], line.split('  ', 1)[0]) for line in (evidence / 'source.sha256').read_text().splitlines())
+              checks['candidate_source_unchanged'] = actual == before
+              original = {name: hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in binding['source_sha256']}
+              (evidence / 'original-source.after.json').write_text(json.dumps(original, sort_keys=True) + '\n')
+              checks['original_sources_still_bound'] = original == binding['source_sha256'] == json.loads((evidence / 'original-source.before.json').read_text())
+          except (OSError, ValueError, KeyError, subprocess.SubprocessError) as error:
+              checks['verification_error'] = type(error).__name__
+          passed = len(checks) == 4 and all(value is True for value in checks.values())
+          (evidence / 'source-integrity.json').write_text(json.dumps({'passed': passed, 'checks': checks}, sort_keys=True, indent=2) + '\n')
+          if not passed:
+              raise SystemExit('Post-run source integrity failed; see compact evidence')
+          PYCODE
+      - name: Upload only compact replay evidence, not inputs
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: caption-controls-replay-${{ github.sha }}
+          path: ${{ runner.temp }}/caption-evidence/
+          if-no-files-found: error
+          retention-days: 14
