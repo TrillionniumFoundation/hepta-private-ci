@@ -1,0 +1,116 @@
+name: Windows Git descendant regression on exact maintenance source
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'codex-rs/git-utils/src/git_process_tests.rs'
+      - '.github/workflows/windows-git-2751-exact.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  native-git-descendant:
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'codex/2751-windows-git-native-child-file-20261025-watch11'
+    runs-on: windows-latest
+    timeout-minutes: 120
+    env:
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_TERM_COLOR: never
+      CARGO_TARGET_DIR: ${{ runner.temp }}/git-descendant-2751-target
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: 5fd8ee8b6a333b6385733b9ff8ebe1d076177766
+      TEST_PATH: codex-rs/git-utils/src/git_process_tests.rs
+      TEST_BLOB: 7f7f2b0007dc07ec8011addb710f24095c9ba1a4
+    steps:
+      - name: Checkout exact source head, without credential persistence
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact source, lock identity and isolated changes
+        shell: pwsh
+        run: |
+          @'
+          import os
+          import subprocess
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          base = os.environ["BASE_SHA"]
+          expected = os.environ["EXPECTED_HEAD"]
+          path = os.environ["TEST_PATH"]
+          assert git("rev-parse", "HEAD") == expected
+          assert git("merge-base", base, "HEAD") == base
+          assert git("rev-parse", base + ":" + path) == "33a9f0994f1b2811fff207ea621608040c102857"
+          assert git("rev-parse", "HEAD:" + path) == os.environ["TEST_BLOB"]
+          changed = set(git("diff", "--name-only", base, "HEAD").splitlines())
+          assert changed == {path, ".github/workflows/windows-git-2751-exact.yml"}, changed
+          for locked in ("codex-rs/Cargo.lock", "MODULE.bazel", "MODULE.bazel.lock",
+                         "codex-rs/git-utils/Cargo.toml", "codex-rs/git-utils/src/git_process.rs"):
+              assert git("rev-parse", "HEAD:" + locked) == git("rev-parse", base + ":" + locked), locked
+          assert not git("status", "--porcelain=v1", "--untracked-files=all")
+          subprocess.run(["git", "diff", "--check", base, "HEAD"], check=True)
+          print("Exact #2751 source and unchanged Cargo/Bazel/production inputs verified:", expected)
+          '@ | python -
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Install the repository's pinned native test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Report pinned tool versions
+        working-directory: codex-rs
+        shell: pwsh
+        run: |
+          rustc --version --verbose
+          cargo --version
+          just --version
+          cargo nextest --version
+
+      - name: Test Windows descendant when wrapper outlives it
+        working-directory: codex-rs
+        shell: pwsh
+        run: |
+          just test --locked -p codex-git-utils --no-tests=fail --retries 0 --lib -E 'test(=git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running)' --test-threads 1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Test Windows descendant after wrapper exits
+        working-directory: codex-rs
+        shell: pwsh
+        run: |
+          just test --locked -p codex-git-utils --no-tests=fail --retries 0 --lib -E 'test(=git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running)' --test-threads 1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Test complete Git utility package without retries
+        working-directory: codex-rs
+        shell: pwsh
+        run: |
+          just test --locked -p codex-git-utils --no-tests=fail --retries 0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Confirm no test mutated tracked sources or locks
+        if: always()
+        shell: pwsh
+        run: |
+          $changed = git status --porcelain=v1 --untracked-files=all
+          if ($changed) { Write-Error "Unexpected source changes: $changed"; exit 1 }
+          @'
+          import os, subprocess
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          base = os.environ["BASE_SHA"]
+          for locked in ("codex-rs/Cargo.lock", "MODULE.bazel", "MODULE.bazel.lock"):
+              assert git("rev-parse", "HEAD:" + locked) == git("rev-parse", base + ":" + locked)
+          '@ | python -
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
