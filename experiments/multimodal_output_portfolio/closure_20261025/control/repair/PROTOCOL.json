@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.closure.control-actor-repair-development.v1",
+  "status": "registered_before_repair_training_not_a_new_source_test",
+  "seeds": [17, 29, 43, 59, 71],
+  "source_scope": "Only original forecast_fit[480,736) and forecast_calibration[448,576), all old views/scenarios; no new source/future evaluation, no primary fresh outcome access",
+  "candidates": [
+    {"name": "original_32_600", "hidden": 32, "steps": 600, "reuse_original_actor": true},
+    {"name": "wide_128_2000", "hidden": 128, "steps": 2000, "reuse_original_actor": false},
+    {"name": "wide_256_2000", "hidden": 256, "steps": 2000, "reuse_original_actor": false}
+  ],
+  "unchanged": "Same 481 public features, original frozen paired critic, original frozen strong teacher, actor cross-entropy labels, Adam lr .002/batch256, deterministic seed, exact original threshold grid/admission/quoted-net-cost selection",
+  "actor_training_seed": "2026103500 + generator seed, same minibatch sequence namespace as original",
+  "fidelity": "Report actual root-H2 and all four child-H1 actions separately and together, on fit and selection; additionally teacher-reached-node action agreement. The earlier H1-only diagnostic included a counterfactual root-H1 input and is not the same metric.",
+  "quality_admission": "Raw CE and exact success may not fall below the cached teacher's historical selection point estimates; no relaxation",
+  "cost": "Re-measure original 128-fit-node median kernel quote for each candidate, retaining overlap for fallback; quote is developmental, not fresh request or energy evidence",
+  "all_candidates_retained": true,
+  "early_stopping_or_unbounded_search": false,
+  "deployment": "No replacement of frozen primary candidates, no native parameter installation, no prospective efficacy claim. A later confirmation requires separately registered unconsumed sources."
+}
