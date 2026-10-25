@@ -20,6 +20,10 @@ import macos_six_evidence as evidence
 
 def retain_watchdog_receipts(root, destination):
     """Preserve bounded-command evidence before unittest deletes owned temp dirs."""
+    for receipt in root.rglob("startup-observations.json"):
+        target = destination / receipt.relative_to(root)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(receipt, target)
     for receipt in list(root.rglob("result.json")):
         relative = receipt.parent.relative_to(root)
         target = destination / relative
@@ -30,6 +34,7 @@ def retain_watchdog_receipts(root, destination):
             "stdout.log",
             "stderr.log",
             "child-ready.json",
+            "startup-observations.json",
             "probe-state.stdout.log",
             "probe-state.stderr.log",
         ):
@@ -340,7 +345,9 @@ class EvidenceTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 evidence.validate_list(path, "original-automation-migrations")
 
-    def owned_snapshot_fixture(self, process, directory, stage, state="S"):
+    def owned_snapshot_fixture(
+        self, process, directory, stage, state="S", **capture_bounds
+    ):
         directory.mkdir(parents=True, exist_ok=True)
         (directory / "probe-state.stdout.log").write_text(
             f"{process.pid} {os.getpid()} {process.pid} 0 {os.geteuid()} {state} Sun Oct 25 01:48:48 2026\n"
@@ -382,7 +389,7 @@ class EvidenceTests(unittest.TestCase):
                     returncode,
                 ]
 
-                def snapshot(process, directory, stage):
+                def snapshot(process, directory, stage, **capture_bounds):
                     return self.owned_snapshot_fixture(
                         process,
                         directory,
@@ -442,7 +449,7 @@ class EvidenceTests(unittest.TestCase):
                 child = Mock(pid=4242, returncode=None)
                 child.wait.side_effect = subprocess.TimeoutExpired("fake", 0)
 
-                def snapshot(process, directory, stage):
+                def snapshot(process, directory, stage, **capture_bounds):
                     return self.owned_snapshot_fixture(
                         process,
                         directory,
@@ -575,7 +582,7 @@ class EvidenceTests(unittest.TestCase):
                 child.returncode = 0 if mutation == "reaped" else None
                 directory = self.root / mutation
 
-                def snapshot(process, directory, stage):
+                def snapshot(process, directory, stage, **capture_bounds):
                     receipt = self.owned_snapshot_fixture(
                         process, directory, stage, "Z<"
                     )
@@ -675,7 +682,7 @@ class EvidenceTests(unittest.TestCase):
         ):
             identity = evidence.bind_owned_leader(child, self.root / "multi-start")
 
-        def snapshot(process, directory, stage):
+        def snapshot(process, directory, stage, **capture_bounds):
             receipt = self.owned_snapshot_fixture(process, directory, stage, "Z<")
             path = directory / "probe-state.stdout.log"
             with path.open("a") as stream:
@@ -728,7 +735,7 @@ class EvidenceTests(unittest.TestCase):
         ]:
             child.returncode = None
 
-            def snapshot(process, directory, stage):
+            def snapshot(process, directory, stage, **capture_bounds):
                 return self.owned_snapshot_fixture(process, directory, stage, "Z<")
 
             with (
@@ -855,7 +862,7 @@ class EvidenceTests(unittest.TestCase):
         child.wait.side_effect = AssertionError("must not auto-reap")
         child.poll.side_effect = AssertionError("must not auto-reap")
 
-        def startup(process, directory, stage):
+        def startup(process, directory, stage, **capture_bounds):
             return self.owned_snapshot_fixture(process, directory, stage, "Z<")
 
         with (
@@ -894,7 +901,7 @@ class EvidenceTests(unittest.TestCase):
     def test_fast_exited_owned_leader_uses_derived_session_not_invented_getsid(self):
         child = Mock(pid=4242, returncode=None)
 
-        def snapshot(process, directory, stage):
+        def snapshot(process, directory, stage, **capture_bounds):
             return self.owned_snapshot_fixture(process, directory, stage, "Z<")
 
         with (
@@ -1706,6 +1713,355 @@ class StageCompositionTests(unittest.TestCase):
             (root / phase / "run/stdout.log").write_text(reversed_stages)
             with self.assertRaisesRegex(ValueError, "denial must follow"):
                 evidence.validate_stages(root)
+
+
+class StartupObservationTests(unittest.TestCase):
+    """Synthetic startup decisions; actual batch102 bytes are not a green run."""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        self.addCleanup(self.temp.cleanup)
+        self.addCleanup(self.retain_startup_receipts)
+        self.child = Mock(pid=4242, returncode=None)
+        self.clock = SyntheticClock()
+        self.calls = []
+        self.raw = []
+
+    def retain_startup_receipts(self):
+        destination = os.environ.get("EVIDENCE")
+        if destination:
+            retain_watchdog_receipts(
+                Path(self.temp.name),
+                Path(destination) / "validator-cases" / self._testMethodName,
+            )
+
+    def test_real_owned_probe_respects_reduced_capture_limit(self):
+        real_popen = subprocess.Popen
+        directory = self.root / "bounded-probe"
+        directory.mkdir()
+
+        def fake_ps(command, **kwargs):
+            return real_popen(
+                [sys.executable, "-c", "import sys;sys.stdout.write('x'*2000)"],
+                **kwargs,
+            )
+
+        with (
+            patch.object(evidence.platform, "system", return_value="Darwin"),
+            patch.object(evidence.subprocess, "Popen", side_effect=fake_ps),
+        ):
+            receipt = evidence.snapshot_owned_group(
+                4242, directory, capture_limit_bytes=256
+            )
+        self.assertIn("unavailable", receipt)
+        self.assertEqual(receipt["capture_limit_bytes"], 256)
+        self.assertEqual(
+            sum(
+                (directory / f"probe-state.{s}.log").stat().st_size
+                for s in ["stdout", "stderr"]
+            ),
+            256,
+        )
+
+    def test_departed_pid_cannot_reappear_during_unknown_triage(self):
+        def mutate(index, text, receipt, directory):
+            if index == 1:
+                text = text.replace("4243 4242", "4244 4242")
+            return text
+
+        with self.assertRaisesRegex(ValueError, "identity reappeared"):
+            self.observe(["?<", "?<", "S"], mutate=mutate)
+        self.assertEqual(len(self.calls), 3)
+
+    def test_lost_or_denied_anchor_stops_before_second_probe(self):
+        for error in [PermissionError(1, "denied"), ProcessLookupError(3, "gone")]:
+            with self.subTest(error=type(error).__name__):
+                self.root = Path(self.temp.name) / type(error).__name__
+                self.root.mkdir()
+                self.calls = []
+                self.raw = []
+                with (
+                    patch.object(evidence.time, "monotonic", self.clock.monotonic),
+                    patch.object(evidence.time, "sleep", self.clock.sleep),
+                    patch.object(evidence.os, "getsid", side_effect=[4242, error]),
+                    patch.object(evidence.os, "getpgid", return_value=4242),
+                    patch.object(
+                        evidence,
+                        "capture_owned_snapshot",
+                        side_effect=self.capture(["?<", "S"]),
+                    ),
+                    patch.object(evidence.os, "killpg") as signals,
+                ):
+                    with self.assertRaises(type(error)):
+                        evidence.bind_owned_leader(
+                            self.child, self.root / "startup", self.clock.now + 3
+                        )
+                    signals.assert_not_called()
+                self.assertEqual(len(self.calls), 1)
+
+    def capture(self, states, mutate=None, advance=0):
+        def capture(process, directory, stage, **bounds):
+            index = len(self.calls)
+            self.calls.append(bounds)
+            receipt = EvidenceTests.owned_snapshot_fixture(
+                self, process, directory, stage, "R<s"
+            )
+            path = directory / "probe-state.stdout.log"
+            text = path.read_text() + (
+                f"4243 4242 4242 0 {os.geteuid()} {states[min(index, len(states) - 1)]} "
+                "Sun Oct 25 01:48:48 2026\n"
+            )
+            if mutate:
+                text = mutate(index, text, receipt, directory)
+            data = text.encode()
+            self.raw.append(data)
+            limit = bounds["capture_limit_bytes"]
+            if len(data) > limit:
+                receipt["unavailable"] = "snapshot output exceeds bound"
+            path.write_bytes(data[:limit])
+            receipt.update(
+                timeout_seconds=bounds["timeout_seconds"], capture_limit_bytes=limit
+            )
+            evidence.write(directory / "result.json", receipt)
+            self.clock.now += advance
+            return receipt
+
+        return capture
+
+    def observe(self, states, mutate=None, deadline=3, sid=4242, advance=0):
+        from contextlib import ExitStack
+
+        with ExitStack() as stack:
+            stack.enter_context(
+                patch.object(evidence.time, "monotonic", self.clock.monotonic)
+            )
+            stack.enter_context(patch.object(evidence.time, "sleep", self.clock.sleep))
+            stack.enter_context(
+                patch.object(
+                    evidence.os,
+                    "getsid",
+                    side_effect=sid if isinstance(sid, Exception) else None,
+                    return_value=sid,
+                )
+            )
+            stack.enter_context(patch.object(evidence.os, "getpgid", return_value=4242))
+            signals = stack.enter_context(patch.object(evidence.os, "killpg"))
+            reaps = stack.enter_context(patch.object(evidence.os, "waitpid"))
+            stack.enter_context(
+                patch.object(
+                    evidence,
+                    "capture_owned_snapshot",
+                    side_effect=self.capture(states, mutate, advance),
+                )
+            )
+            try:
+                return evidence.bind_owned_leader(
+                    self.child, self.root / "startup", self.clock.now + deadline
+                )
+            finally:
+                signals.assert_not_called()
+                reaps.assert_not_called()
+                self.child.wait.assert_not_called()
+                self.child.poll.assert_not_called()
+
+    def test_unknown_children_then_known_preserves_every_raw_attempt(self):
+        identity = self.observe(["?<E", "?<", "S"])
+        self.assertEqual(identity["pid"], 4242)
+        self.assertEqual(identity["observed_sid"], 4242)
+        self.assertEqual(len(self.calls), 3)
+        for index, raw in enumerate(self.raw):
+            self.assertEqual(
+                (
+                    self.root
+                    / "startup"
+                    / f"attempt-{index:04d}"
+                    / "probe-state.stdout.log"
+                ).read_bytes(),
+                raw,
+            )
+        receipt = json.loads(
+            (self.root / "startup/startup-observations.json").read_text()
+        )
+        self.assertEqual(receipt["selected_attempt"], 2)
+        self.assertEqual(receipt["deadline_monotonic"] - receipt["start_monotonic"], 2)
+        self.assertEqual(receipt["cumulative_bytes"], sum(map(len, self.raw)))
+        self.assertGreater(
+            self.calls[0]["timeout_seconds"], self.calls[2]["timeout_seconds"]
+        )
+        self.assertEqual(self.calls[1]["capture_limit_bytes"], 16384 - len(self.raw[0]))
+
+    def test_persistent_unknown_stops_at_three_and_never_signals(self):
+        with self.assertRaisesRegex(ValueError, "persisted"):
+            self.observe(["?<"])
+        self.assertEqual(len(self.calls), 3)
+
+    def test_explicit_permission_denial_is_not_reobserved(self):
+        with self.assertRaises(PermissionError):
+            self.observe(["?<"], sid=PermissionError(1, "denied session query"))
+        self.assertEqual(len(self.calls), 1)
+
+    def test_bad_snapshot_never_reobserved(self):
+        def mutation(kind):
+            def mutate(index, text, receipt, directory):
+                if kind == "unknown-leader":
+                    return text.replace("R<s", "?<")
+                if kind == "unknown-suffix":
+                    return text.replace("?<", "?<BAD")
+                if kind == "bare-unknown":
+                    return text.replace("?<", "?")
+                if kind == "bad-state":
+                    return text.replace("R<s", "Q")
+                if kind == "missing-leader":
+                    return text.splitlines(True)[1]
+                if kind == "duplicate":
+                    return text + text.splitlines(True)[1]
+                if kind == "foreign-group":
+                    return text.replace("4243 4242 4242", "4243 4242 9999")
+                if kind == "foreign-uid":
+                    return text.replace(f"0 {os.geteuid()} ?<", "0 999999 ?<")
+                if kind == "ancestry":
+                    return text.replace("4243 4242", "4243 9999")
+                if kind == "bad-session-display":
+                    return text.replace(" 0 ", " xyz ", 1)
+                if kind == "bad-start":
+                    return text.replace("Sun Oct", "bad Oct")
+                if kind == "nonzero":
+                    receipt["exit"] = 1
+                if kind == "unavailable":
+                    receipt["unavailable"] = "Permission denied"
+                if kind == "stderr":
+                    (directory / "probe-state.stderr.log").write_text(
+                        "Permission denied"
+                    )
+                if kind == "reaped":
+                    self.child.returncode = 0
+                return text
+
+            return mutate
+
+        for kind in [
+            "unknown-leader",
+            "unknown-suffix",
+            "bare-unknown",
+            "bad-state",
+            "missing-leader",
+            "duplicate",
+            "foreign-group",
+            "foreign-uid",
+            "ancestry",
+            "bad-session-display",
+            "bad-start",
+            "nonzero",
+            "unavailable",
+            "stderr",
+            "reaped",
+        ]:
+            with self.subTest(kind=kind):
+                self.root = Path(self.temp.name) / kind
+                self.root.mkdir()
+                self.calls = []
+                self.raw = []
+                self.child.returncode = None
+                with self.assertRaises(ValueError):
+                    self.observe(["?<"], mutate=mutation(kind))
+                self.assertEqual(len(self.calls), 1)
+
+    def test_changed_identity_or_binary_stops_before_accepting_known_snapshot(self):
+        for kind in ["leader", "child", "binary"]:
+            with self.subTest(kind=kind):
+                self.root = Path(self.temp.name) / kind
+                self.root.mkdir()
+                self.calls = []
+                self.raw = []
+
+                def mutate(index, text, receipt, directory):
+                    if index:
+                        if kind == "binary":
+                            receipt["binary_sha256"] = "b" * 64
+                        else:
+                            lines = text.splitlines(True)
+                            n = 0 if kind == "leader" else 1
+                            lines[n] = lines[n].replace("01:48:48", "01:48:49")
+                            text = "".join(lines)
+                    return text
+
+                with self.assertRaisesRegex(ValueError, "identity changed"):
+                    self.observe(["?<", "S"], mutate=mutate)
+                self.assertEqual(len(self.calls), 2)
+
+    def test_deadline_is_shared_and_late_proof_rejected(self):
+        with self.assertRaisesRegex(ValueError, "budget exhausted"):
+            self.observe(["?<", "S"], deadline=0.03)
+        self.assertEqual(len(self.calls), 1)
+        self.root = Path(self.temp.name) / "late"
+        self.root.mkdir()
+        self.calls = []
+        self.raw = []
+        with self.assertRaisesRegex(ValueError, "exceeded deadline"):
+            self.observe(["S"], advance=2.01)
+        self.assertEqual(len(self.calls), 1)
+
+    def test_cumulative_capture_cap_is_enforced_not_reset(self):
+        def padded(index, text, receipt, directory):
+            return text.rstrip("\n") + " " * 9000 + "\n"
+
+        with self.assertRaisesRegex(ValueError, "unavailable"):
+            self.observe(["?<"], mutate=padded)
+        self.assertEqual(len(self.calls), 2)
+        total = sum(
+            x.stat().st_size
+            for x in (self.root / "startup").glob("attempt-*/probe-state.stdout.log")
+        )
+        self.assertEqual(total, 16384)
+
+    def test_wrong_numeric_sid_is_not_replaced_by_sess_display(self):
+        with self.assertRaisesRegex(ValueError, "session anchor mismatch"):
+            self.observe(["?<"], sid=9999)
+        self.assertEqual(len(self.calls), 1)
+
+    def test_bounded_unknown_startup_returns125_without_target_signals_or_reap(self):
+        with (
+            patch.object(evidence.time, "monotonic", self.clock.monotonic),
+            patch.object(evidence.time, "sleep", self.clock.sleep),
+            patch.object(evidence.platform, "system", return_value="Darwin"),
+            patch.object(evidence.os, "getsid", return_value=4242),
+            patch.object(evidence.os, "getpgid", return_value=4242),
+            patch.object(evidence.subprocess, "Popen", return_value=self.child),
+            patch.object(
+                evidence, "capture_owned_snapshot", side_effect=self.capture(["?<"])
+            ),
+            patch.object(evidence.os, "killpg") as signals,
+            patch.object(evidence.os, "waitpid") as reaps,
+        ):
+            result = evidence.bounded(
+                ["synthetic-native"],
+                self.root / "bounded",
+                self.clock.now + 3,
+                self.root,
+            )
+        self.assertEqual(result, 125)
+        signals.assert_not_called()
+        reaps.assert_not_called()
+        self.assertEqual(len(self.calls), 3)
+        self.child.wait.assert_not_called()
+        self.child.poll.assert_not_called()
+
+    def test_original_strict_parser_rejects_actual_batch102_unknown_tokens(self):
+        target = self.root / "actual"
+        receipt = EvidenceTests.owned_snapshot_fixture(
+            self, self.child, target, "fixture"
+        )
+        raw = (
+            f"4242 {os.getpid()} 4242 0 {os.geteuid()} R<s Sun Oct 25 07:43:40 2026\n"
+            f"4243 4242 4242 0 {os.geteuid()} ?<E Sun Oct 25 07:43:40 2026\n"
+            f"4244 4242 4242 0 {os.geteuid()} ?< Sun Oct 25 07:43:40 2026\n"
+        )
+        (target / "probe-state.stdout.log").write_text(raw)
+        with self.assertRaisesRegex(ValueError, "malformed process state"):
+            evidence.snapshot_rows(receipt, target, 4242)
+        rows = evidence.startup_snapshot_rows(receipt, target, 4242)
+        self.assertEqual([r["state"] for r in rows], ["R<s", "?<E", "?<"])
 
 
 if __name__ == "__main__":

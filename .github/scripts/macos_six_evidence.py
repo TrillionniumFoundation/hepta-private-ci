@@ -21,7 +21,7 @@ import xml.etree.ElementTree as ET
 
 HERE = Path(__file__).resolve().parent
 PROFILE = "macos-six"
-BASE = "f74db860a92f5d54e5e11858b4de3be7446f0248"
+BASE = "cb6f278fef51c4b2c4a96a05efa64a105fbbd4a8"
 MANIFEST = json.loads((HERE / "macos_six_cases.json").read_text())
 PHASES = tuple(MANIFEST["phases"])
 PROFILE_APPENDIX = '\n# Diagnostic profile only; all original defaults and overrides remain above.\n[profile.macos-six]\nretries = 0\n\n[profile.macos-six.junit]\npath = "junit.xml"\nreport-name = "macos-six"\n'
@@ -129,8 +129,12 @@ def validate_report(path, phase):
     return sorted(identities)
 
 
-def snapshot_owned_group(pgid, directory, timeout_seconds=2):
+def snapshot_owned_group(pgid, directory, timeout_seconds=2, capture_limit_bytes=16384):
     """One bounded read-only Darwin group snapshot, never a cleanup verdict."""
+    require(
+        type(capture_limit_bytes) is int and 0 < capture_limit_bytes <= 16384,
+        "invalid snapshot capture bound",
+    )
     snapshot = {
         "stage": "first-eperm-after-term-signal-zero",
         "owned_pgid": pgid,
@@ -152,6 +156,7 @@ def snapshot_owned_group(pgid, directory, timeout_seconds=2):
     ]
     require(0 < timeout_seconds <= 2, "invalid snapshot time bound")
     snapshot.update(argv=command, limit_bytes=16384, timeout_seconds=timeout_seconds)
+    snapshot["capture_limit_bytes"] = capture_limit_bytes
     process = None
     probe_stop_attempted = False
     output = {"stdout": bytearray(), "stderr": bytearray()}
@@ -180,12 +185,14 @@ def snapshot_owned_group(pgid, directory, timeout_seconds=2):
                 ready = selector.select(remaining)
                 for key, _ in ready:
                     total = sum(len(value) for value in output.values())
-                    chunk = os.read(key.fileobj.fileno(), min(4096, 16385 - total))
+                    chunk = os.read(
+                        key.fileobj.fileno(), min(4096, capture_limit_bytes + 1 - total)
+                    )
                     if not chunk:
                         selector.unregister(key.fileobj)
                     else:
                         output[key.data].extend(chunk)
-                if sum(len(value) for value in output.values()) > 16384:
+                if sum(len(value) for value in output.values()) > capture_limit_bytes:
                     snapshot["unavailable"] = "snapshot output exceeds bound"
                     break
         if "unavailable" not in snapshot:
@@ -217,7 +224,7 @@ def snapshot_owned_group(pgid, directory, timeout_seconds=2):
             for stream in (process.stdout, process.stderr):
                 if stream is not None:
                     stream.close()
-        remaining = 16384
+        remaining = capture_limit_bytes
         for name, value in output.items():
             kept = bytes(value[:remaining])
             remaining -= len(kept)
@@ -226,9 +233,16 @@ def snapshot_owned_group(pgid, directory, timeout_seconds=2):
     return snapshot
 
 
-def capture_owned_snapshot(process, directory, stage):
+def capture_owned_snapshot(
+    process, directory, stage, timeout_seconds=2, capture_limit_bytes=16384
+):
     directory.mkdir(parents=True)
-    snapshot = snapshot_owned_group(process.pid, directory)
+    snapshot = snapshot_owned_group(
+        process.pid,
+        directory,
+        timeout_seconds=timeout_seconds,
+        capture_limit_bytes=capture_limit_bytes,
+    )
     snapshot["stage"] = stage
     write(directory / "result.json", snapshot)
     return snapshot
@@ -307,6 +321,86 @@ def snapshot_rows(snapshot, directory, pgid):
     return rows
 
 
+def startup_snapshot_rows(snapshot, directory, pgid):
+    """Startup syntax only: unknown child tokens NEVER authorize signals or reaping."""
+    require("unavailable" not in snapshot, "unavailable group snapshot")
+    require(
+        type(snapshot.get("exit")) is int and snapshot["exit"] == 0,
+        "unsuccessful group snapshot",
+    )
+    require(snapshot.get("owned_pgid") == pgid, "snapshot group mismatch")
+    require(snapshot.get("observer_pid") == os.getpid(), "snapshot observer mismatch")
+    require(snapshot.get("observer_euid") == os.geteuid(), "snapshot uid mismatch")
+    require(
+        re.fullmatch(r"[0-9a-f]{64}", snapshot.get("binary_sha256", "")) is not None,
+        "missing ps binary identity",
+    )
+    require(
+        snapshot.get("argv")
+        == [
+            "/bin/ps",
+            "-g",
+            str(pgid),
+            "-o",
+            "pid=,ppid=,pgid=,sess=,uid=,state=,lstart=",
+        ],
+        "unexpected snapshot command",
+    )
+    require(
+        snapshot.get("limit_bytes") == 16384
+        and isinstance(snapshot.get("timeout_seconds"), (int, float))
+        and 0 < snapshot["timeout_seconds"] <= 2,
+        "unexpected snapshot bounds",
+    )
+    stdout = (directory / "probe-state.stdout.log").read_bytes()
+    stderr = (directory / "probe-state.stderr.log").read_bytes()
+    require(not stderr and len(stdout) <= 16384, "partial or noisy group snapshot")
+    rows = []
+    for line in stdout.decode("ascii").splitlines():
+        parts = line.split()
+        require(len(parts) == 11, "malformed process row")
+        require(all(parts[i].isdigit() for i in (0, 1, 2, 4)), "malformed process id")
+        require(
+            (
+                re.fullmatch(r"[A-Z][A-Za-z+<>-]*", parts[5]) is not None
+                or parts[5] in {"?<", "?<E"}
+            ),
+            "malformed process state",
+        )
+        require(
+            re.fullmatch(
+                r"(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat) (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2} \d{2}:\d{2}:\d{2} \d{4}",
+                " ".join(parts[6:]),
+            )
+            is not None,
+            "malformed process start",
+        )
+        require(
+            re.fullmatch(r"[0-9a-fA-F]+", parts[3]) is not None,
+            "malformed session display",
+        )
+        rows.append(
+            {
+                "pid": int(parts[0]),
+                "ppid": int(parts[1]),
+                "pgid": int(parts[2]),
+                "uid": int(parts[4]),
+                "state": parts[5],
+                "start": " ".join(parts[6:]),
+            }
+        )
+    require(bool(rows), "empty group snapshot")
+    require(
+        all(r["pid"] > 1 and r["ppid"] > 0 for r in rows), "invalid process identity"
+    )
+    require(len({r["pid"] for r in rows}) == len(rows), "duplicate process row")
+    require(
+        all(r["pgid"] == pgid and r["uid"] == os.geteuid() for r in rows),
+        "foreign process group member",
+    )
+    return rows
+
+
 def require_unreaped_owner(process):
     require(process.returncode is None, "leader already reaped")
     require(
@@ -315,10 +409,153 @@ def require_unreaped_owner(process):
     require(threading.active_count() == 1, "concurrent child reaper cannot be excluded")
 
 
-def bind_owned_leader(process, directory):
-    require_unreaped_owner(process)
-    snapshot = capture_owned_snapshot(process, directory, "startup-owned-identity")
-    rows = snapshot_rows(snapshot, directory, process.pid)
+def startup_owned_observation(process, directory, deadline):
+    """Bounded read-only startup triage; '?' is never an ownership verdict."""
+    started = time.monotonic()
+    end = min(started + 2, deadline) if deadline is not None else started + 2
+    require(
+        math.isfinite(end) and end > started, "startup observation budget exhausted"
+    )
+    directory.mkdir(parents=True)
+    receipt = {
+        "start_monotonic": started,
+        "deadline_monotonic": end,
+        "max_observations": 3,
+        "cumulative_limit_bytes": 16384,
+        "attempts": [],
+    }
+    used = 0
+    anchor = None
+    seen = {}
+    previous_pids = set()
+    departed = set()
+    try:
+        for index in range(3):
+            require_unreaped_owner(process)
+            remaining = end - time.monotonic()
+            require(
+                remaining > 0 and used < 16384, "startup observation budget exhausted"
+            )
+            if anchor is not None:
+                require(
+                    os.getsid(process.pid) == process.pid
+                    and os.getpgid(process.pid) == process.pid,
+                    "startup session anchor changed",
+                )
+            remaining = end - time.monotonic()
+            require(remaining > 0, "startup anchor check exhausted deadline")
+            target = directory / f"attempt-{index:04d}"
+            attempt = {
+                "index": index,
+                "remaining_seconds": remaining,
+                "capture_limit_bytes": 16384 - used,
+                "directory": target.name,
+                "classification": "unverified",
+            }
+            receipt["attempts"].append(attempt)
+            snapshot = capture_owned_snapshot(
+                process,
+                target,
+                "startup-owned-identity",
+                timeout_seconds=min(2, remaining),
+                capture_limit_bytes=16384 - used,
+            )
+            require_unreaped_owner(process)
+            require(time.monotonic() <= end, "startup observation exceeded deadline")
+            count = sum(
+                (target / f"probe-state.{name}.log").stat().st_size
+                for name in ("stdout", "stderr")
+            )
+            used += count
+            attempt.update(bytes=count, cumulative_bytes=used)
+            require(used <= 16384, "startup cumulative output exceeds bound")
+            rows = startup_snapshot_rows(snapshot, target, process.pid)
+            leaders = [r for r in rows if r["pid"] == process.pid]
+            require(len(leaders) == 1, "missing owned startup leader")
+            leader = leaders[0]
+            require(
+                leader["ppid"] == os.getpid(), "startup leader not our direct child"
+            )
+            require(not leader["state"].startswith("?"), "unknown startup leader state")
+            unknown = [r["pid"] for r in rows if r["state"].startswith("?")]
+            if not unknown and anchor is None:
+                # Preserve the original clean-snapshot binding path. The extra
+                # ancestry/session gate applies only to unknown-state triage.
+                snapshot_rows(snapshot, target, process.pid)
+                attempt["classification"] = "strict-snapshot-verified"
+                receipt["selected_attempt"] = index
+                return snapshot, target, end
+            known = {process.pid}
+            pending = {r["pid"]: r for r in rows if r["pid"] != process.pid}
+            while pending:
+                children = {pid for pid, row in pending.items() if row["ppid"] in known}
+                require(bool(children), "unverified startup ancestry")
+                known.update(children)
+                for pid in children:
+                    del pending[pid]
+            stable = {k: leader[k] for k in ("pid", "ppid", "pgid", "uid", "start")}
+            stable["ps_sha256"] = snapshot["binary_sha256"]
+            if anchor is not None:
+                require(stable == anchor, "startup leader identity changed")
+            current_pids = {r["pid"] for r in rows}
+            require(not current_pids & departed, "startup process identity reappeared")
+            for row in rows:
+                identity = {k: row[k] for k in ("pid", "ppid", "pgid", "uid", "start")}
+                require(
+                    row["pid"] not in seen or seen[row["pid"]] == identity,
+                    "startup process identity changed",
+                )
+                seen[row["pid"]] = identity
+            departed.update(previous_pids - current_pids)
+            previous_pids = current_pids
+            unknown = [r["pid"] for r in rows if r["state"].startswith("?")]
+            if unknown or anchor is not None:
+                require(
+                    all(
+                        r["state"] in {"?<", "?<E"}
+                        or re.fullmatch(r"[RUSITHZ](?:<|N)?X?E?V?L?s?\+?", r["state"])
+                        is not None
+                        for r in rows
+                    ),
+                    "unsupported startup state syntax",
+                )
+                # sess is a display field, not the POSIX numeric SID. A real
+                # lookup failure is terminal here: no retry/fallback after it.
+                sid, pgid = os.getsid(process.pid), os.getpgid(process.pid)
+                require(
+                    sid == process.pid and pgid == process.pid,
+                    "startup session anchor mismatch",
+                )
+                require_unreaped_owner(process)
+                attempt.update(observed_sid=sid, observed_pgid=pgid, leader=stable)
+                anchor = stable
+            require(time.monotonic() <= end, "startup identity proof exceeded deadline")
+            if not unknown:
+                snapshot_rows(snapshot, target, process.pid)
+                attempt["classification"] = "strict-snapshot-verified"
+                receipt["selected_attempt"] = index
+                return snapshot, target, end
+            attempt.update(classification="unknown-child-state", unknown_pids=unknown)
+            require(index < 2, "startup unknown state persisted")
+            remaining = end - time.monotonic()
+            require(remaining > 0, "startup observation budget exhausted")
+            time.sleep(min(0.05, remaining))
+        raise ValueError("startup observation exhausted")
+    except Exception as error:
+        receipt.update(error_type=type(error).__name__, error=str(error))
+        raise
+    finally:
+        receipt.update(
+            elapsed_seconds=time.monotonic() - started, cumulative_bytes=used
+        )
+        write(directory / "startup-observations.json", receipt)
+
+
+def bind_owned_leader(process, directory, deadline=None):
+    snapshot, observation_directory, startup_deadline = startup_owned_observation(
+        process, directory, deadline
+    )
+    rows = snapshot_rows(snapshot, observation_directory, process.pid)
     leaders = [r for r in rows if r["pid"] == process.pid]
     require(len(leaders) == 1, "missing owned leader")
     leader = leaders[0]
@@ -349,6 +586,7 @@ def bind_owned_leader(process, directory):
                 observed_sid=sid,
                 observed_pgid=pgid,
             )
+    require(time.monotonic() <= startup_deadline, "startup binding exceeded deadline")
     return {
         **{k: v for k, v in leader.items() if k != "state"},
         "ps_sha256": snapshot["binary_sha256"],
@@ -589,7 +827,7 @@ def bounded(command, directory, deadline, cwd, grace=10):
             if platform.system() == "Darwin":
                 try:
                     identity = bind_owned_leader(
-                        process, directory / "startup-identity"
+                        process, directory / "startup-identity", deadline
                     )
                     record["leader_identity"] = identity
                 except Exception as identity_error:
