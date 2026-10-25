@@ -1,0 +1,98 @@
+{
+  "schema": "hepta.memory-publication.python-format-bridge.v1",
+  "formatter": "just fmt in isolated checkout",
+  "tests_or_models_after_formatter": false,
+  "all_raw_python_asts_identical": false,
+  "all_computation_asts_identical": true,
+  "docstring_normalization": "inspect.cleandoc on module/class/function leading docstring only",
+  "files": {
+    "scripts/memory_cell/parametric_model.py": {
+      "before_sha256": "39f06b882730662de2d1e4eb9791e051f9daf7d7393bc31daf3ebdd77155684b",
+      "after_sha256": "803303b575a2e3b8b5b105b1b5b6dff5b53aa5547735cee7ec47b54091f2077b",
+      "bytes": 22794,
+      "lines": 516,
+      "same_python_ast": true,
+      "same_ast_after_docstring_indentation_normalization": true,
+      "ast_sha256": "42556ec7077a973d1bff02cc4367268eb4a98bfe6596e7b74cab455beda60f07"
+    },
+    "scripts/memory_cell/source_value_margin_v2.py": {
+      "before_sha256": "81adada474be70e9d28df494116fb23c07b81a0c7bf6277359738d19c7fe6e85",
+      "after_sha256": "051aed5de847988518d2820cfc606b0c771570e1b692482200ab9f489b4efe25",
+      "bytes": 6934,
+      "lines": 180,
+      "same_python_ast": false,
+      "same_ast_after_docstring_indentation_normalization": true,
+      "ast_sha256": "e41b5db8bc32e16b2edfd0288ee7700b87ddcf1ac46bf84a728a33908b6d2503",
+      "difference": "Ruff indented the value_margin_loss docstring; literal __doc__ whitespace changes, computation AST unchanged"
+    },
+    "scripts/memory_cell_retention_v2/README.md": {
+      "before_sha256": "ffc7c2f265c1d2cd60ecfe6b02df1c8d0c70e2336343200e225617f0436b4c61",
+      "after_sha256": "ffc7c2f265c1d2cd60ecfe6b02df1c8d0c70e2336343200e225617f0436b4c61",
+      "bytes": 6706,
+      "lines": 121
+    },
+    "scripts/memory_cell_retention_v2/retention_common.py": {
+      "before_sha256": "513dff5441f0485e4fbbfc120d6430717c6cbd53e845b6abb565451e7da088ba",
+      "after_sha256": "cffc161a1ab7623d191fd162935003b3edc866e5aa5ed59468a807a784120e32",
+      "bytes": 2818,
+      "lines": 92,
+      "same_python_ast": true,
+      "same_ast_after_docstring_indentation_normalization": true,
+      "ast_sha256": "11cc67a210cc65a20baee6c661cd68d71f7218b5c41aca9f7bd1cc4fdc2d66b5"
+    },
+    "scripts/memory_cell_retention_v2/retention_protocol.py": {
+      "before_sha256": "e35bb4b05ccb5a8d3366a03aef2a7ec49d0666b4c8964f95dc3acf5c48c9cdbb",
+      "after_sha256": "cb793b95c5537e69ed276f4a3254ccc1106c39e36905d0ffb939ec5e041dbdf7",
+      "bytes": 7361,
+      "lines": 187,
+      "same_python_ast": true,
+      "same_ast_after_docstring_indentation_normalization": true,
+      "ast_sha256": "cda8fbc8a1948214e88c777f77b2ecca223ab21e9de1aa5cf94b0e0256ae29e0"
+    },
+    "scripts/memory_cell_retention_v2/retention_read.py": {
+      "before_sha256": "beb25af4701b0f20fff0d7e63fb77324d08d94a9bba86366a9e4b838b828f207",
+      "after_sha256": "ee475376a08e8500059be7dfe58a2b8e25f3f81086883fa1094eba6857c67d75",
+      "bytes": 7646,
+      "lines": 201,
+      "same_python_ast": true,
+      "same_ast_after_docstring_indentation_normalization": true,
+      "ast_sha256": "463a2b7e04c607cb7c4ba5675625b063049e4b1049492b9506e4ff0cb8601cea"
+    },
+    "scripts/memory_cell_retention_v2/retention_runner.py": {
+      "before_sha256": "39fa7d2741a07c9f085d97d25440e2198a7a8fe3e4f1f4136c177b3d6c6b70b8",
+      "after_sha256": "1a8e51fea8f14362b925e2461c910b5b1f41255d8b00149d935c7d71c41cf561",
+      "bytes": 10736,
+      "lines": 285,
+      "same_python_ast": true,
+      "same_ast_after_docstring_indentation_normalization": true,
+      "ast_sha256": "8760f6270cf9a5e2547022cb1943dc4d15015f64c9e7b0d760ebc4e67589ccd7"
+    },
+    "scripts/memory_cell_retention_v2/test_retention.py": {
+      "before_sha256": "b349477c04bc33d5186898e41cfc42b0d8d043d255878b695803ef64fa06af3f",
+      "after_sha256": "b3aee6fe21f58a8a0b238d206547b6a855eba0941c978487010d39a92ddfa1e6",
+      "bytes": 9345,
+      "lines": 237,
+      "same_python_ast": true,
+      "same_ast_after_docstring_indentation_normalization": true,
+      "ast_sha256": "c180321bd43ba9650f1adccedf553be5ebe306720899ef93872e90b1caa46c20"
+    },
+    "scripts/memory_cell_retention_v2/test_value_margin.py": {
+      "before_sha256": "a24aa522b583a3e9a29cf298ba8bd4bcb1c26e6bc26f72103d32a8c093ef1a04",
+      "after_sha256": "486551bd502c1e0fb4290b085ed460c875ea32e65b6e930820acc6293dd70093",
+      "bytes": 11741,
+      "lines": 303,
+      "same_python_ast": true,
+      "same_ast_after_docstring_indentation_normalization": true,
+      "ast_sha256": "d082e3db78254981936414914d7494409d1318ec3889f71090efbe0a9a7d4565"
+    },
+    "scripts/memory_cell_retention_v2/train_worker.py": {
+      "before_sha256": "9e6f337819516b3895c6457cffc16aa75ee923238c436cac57f68df0ecaf0540",
+      "after_sha256": "06e62bb9a56c22f81904ebcadd435901456820e4890cb497850417b4367c01a6",
+      "bytes": 9019,
+      "lines": 260,
+      "same_python_ast": true,
+      "same_ast_after_docstring_indentation_normalization": true,
+      "ast_sha256": "d81a39724b46529f94c5b8aa47b405d60d201ebe0bc7dffa33f008ff5b0f2317"
+    }
+  }
+}
