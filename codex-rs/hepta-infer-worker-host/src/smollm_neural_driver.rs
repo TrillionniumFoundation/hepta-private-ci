@@ -35,7 +35,6 @@ use profile::Ready;
 use profile::SCHEMA;
 pub use profile::SmolLmNeuralReadConfigV1;
 use session::Session;
-use session::read_bounded;
 use session::write_private;
 
 #[derive(Deserialize)]
@@ -73,6 +72,7 @@ pub(super) struct SmolLmDriver {
     pub(super) mailbox: Mailbox,
     runtime: tokio::runtime::Handle,
     cancellation: CancellationToken,
+    startup_deadline: Instant,
     session: Option<Session>,
 }
 
@@ -84,6 +84,7 @@ impl SmolLmDriver {
         mailbox: Mailbox,
         runtime: tokio::runtime::Handle,
         cancellation: CancellationToken,
+        startup_deadline: Instant,
     ) -> Self {
         Self {
             config,
@@ -92,14 +93,17 @@ impl SmolLmDriver {
             mailbox,
             runtime,
             cancellation,
+            startup_deadline,
             session: None,
         }
     }
 
     fn start(&mut self) -> Result<DriverModelHandle, String> {
-        if self.cancellation.is_cancelled() {
-            return Err("neural worker startup cancelled before material use".to_owned());
-        }
+        let startup_execution = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(
+            self.startup_deadline,
+            self.cancellation.clone(),
+        );
+        startup_execution.check()?;
         let config = &self.config;
         config.verify_sources()?;
         if self.parameters.len() > 2 * 1024 * 1024
@@ -157,60 +161,48 @@ impl SmolLmDriver {
         if self.cancellation.is_cancelled() {
             return Err("neural worker startup cancelled before process spawn".to_owned());
         }
-        let child = Command::new(&config.python)
-            .arg(&config.script)
-            .arg("serve")
-            .arg("--materials")
-            .arg(&config.materials)
-            .arg("--parent")
-            .arg(root.join("parent.json"))
-            .arg("--parent-sha256")
-            .arg(Digest32::of_bytes(&parent).to_string())
-            .arg("--actions")
-            .arg(root.join("actions.json"))
-            .arg("--actions-sha256")
-            .arg(Digest32::of_bytes(&actions).to_string())
-            .arg("--output")
-            .arg(root.join("session"))
-            .arg("--threads")
-            .arg("4")
-            .env("CUDA_VISIBLE_DEVICES", "")
-            .env("HF_HUB_OFFLINE", "1")
-            .env("TRANSFORMERS_OFFLINE", "1")
-            .stdin(Stdio::null())
-            .stdout(log.try_clone().map_err(|error| error.to_string())?)
-            .stderr(log)
-            .spawn()
-            .map_err(|error| error.to_string())?;
+        let session = Session::prepare(
+            directory,
+            self.runtime.clone(),
+            self.startup_deadline,
+            &self.cancellation,
+        )?;
+        session.spawn(
+            Command::new(&config.python)
+                .arg(&config.script)
+                .arg("serve")
+                .arg("--materials")
+                .arg(&config.materials)
+                .arg("--parent")
+                .arg(root.join("parent.json"))
+                .arg("--parent-sha256")
+                .arg(Digest32::of_bytes(&parent).to_string())
+                .arg("--actions")
+                .arg(root.join("actions.json"))
+                .arg("--actions-sha256")
+                .arg(Digest32::of_bytes(&actions).to_string())
+                .arg("--output")
+                .arg(root.join("session"))
+                .arg("--threads")
+                .arg("4")
+                .env("CUDA_VISIBLE_DEVICES", "")
+                .env("HF_HUB_OFFLINE", "1")
+                .env("TRANSFORMERS_OFFLINE", "1")
+                .stdin(Stdio::null())
+                .stdout(log.try_clone().map_err(|error| error.to_string())?)
+                .stderr(log),
+        )?;
         // The session keeps a descriptor even while waiting for the worker
         // directory. Drop always retains the original observer for cleanup.
-        self.session = Some(Session::new(directory, child, self.runtime.clone()));
-        let ready_path = self
-            .session
-            .as_ref()
-            .ok_or("neural session missing")?
-            .path("ready.json");
-        let deadline = Instant::now() + Duration::from_secs(120);
-        loop {
-            let session = self.session.as_mut().ok_or("neural session missing")?;
-            if self.cancellation.is_cancelled() {
-                // Returning drops the worker/session through its original
-                // reaper. A cancelled load remains indeterminate in control.
-                return Err("neural worker startup cancelled while loading".to_owned());
-            }
-            if session.has_exited()? {
-                return Err("neural worker terminated before ready".to_owned());
-            }
-            if ready_path.exists() {
-                break;
-            }
-            if Instant::now() >= deadline {
-                return Err("neural load deadline exceeded".to_owned());
-            }
-            std::thread::sleep(Duration::from_millis(20));
-        }
-        let ready: Ready = serde_json::from_slice(&read_bounded(&ready_path, 65536)?)
-            .map_err(|error| error.to_string())?;
+        self.session = Some(session);
+        let ready: Ready = serde_json::from_slice(
+            &self
+                .session
+                .as_mut()
+                .ok_or("neural session missing")?
+                .wait_ready(&startup_execution)?,
+        )
+        .map_err(|error| error.to_string())?;
         let mut sources = config.source_identities()?;
         let worker_source = sources
             .remove("llm_neural_read_worker.py")
@@ -230,6 +222,7 @@ impl SmolLmDriver {
         {
             return Err("neural ready observation differs from the admitted material".to_owned());
         }
+        startup_execution.check()?;
         Ok(DriverModelHandle {
             opaque_id: self.pin.payload_digest.to_string(),
             observed_memory_bytes: ready.observed_rss_bytes,

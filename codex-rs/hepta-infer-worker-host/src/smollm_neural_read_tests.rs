@@ -384,3 +384,87 @@ fn expired_or_cancelled_read_cannot_claim_and_postclaim_cancellation_never_refun
     assert_eq!(issuer.authority.capacity().unwrap().used_nonces, 1);
     context.settle(&admitted, None, true, 0).unwrap();
 }
+
+#[test]
+fn late_load_settlement_rejects_delivery_without_rewriting_completion_or_nonce() {
+    let runtime = runtime();
+    for cancel in [false, true] {
+        let directory = tempfile::tempdir().unwrap();
+        let issuer = Arc::new(TestIssuer::open(&directory.path().join("authority")));
+        let path = directory.path().join("inference.control");
+        let control = Arc::new(Mutex::new(DurableInferenceControl::open(&path, 8).unwrap()));
+        let context = ControlContext {
+            control: control.clone(),
+            authorizer: issuer.clone(),
+            runtime: runtime.handle().clone(),
+            owner_id: owner(),
+            body_generation: 1,
+            worker_id: "controlled-neural-worker".to_owned(),
+            grant: grant(),
+            model_digest: Digest32::of_bytes(b"model").to_string(),
+        };
+        let admitted = context
+            .admit(Digest32::of_bytes(b"controlled-load"), 120_000)
+            .unwrap();
+        let cancellation = CancellationToken::new();
+        let execution = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(
+            std::time::Instant::now() + Duration::from_secs(2),
+            cancellation.clone(),
+        );
+        drop(
+            context
+                .enter(
+                    &admitted,
+                    Digest32::of_bytes(b"registered-scope"),
+                    &execution,
+                )
+                .unwrap(),
+        );
+        assert_eq!(issuer.authority.capacity().unwrap().used_nonces, 1);
+        execution.check().unwrap();
+        let expiry = execution.deadline();
+        let held_control = control.lock().unwrap();
+        let (started_tx, started_rx) = std::sync::mpsc::channel();
+        let (done_tx, done_rx) = std::sync::mpsc::channel();
+        let observed =
+            Digest32::of_bytes(b"controlled-physical-completion-not-model-qualification");
+        let waiter = std::thread::spawn(move || {
+            started_tx.send(()).unwrap();
+            let result = context.settle_load(&admitted, observed, &execution);
+            done_tx.send(()).unwrap();
+            (result, admitted.request_id)
+        });
+        started_rx.recv_timeout(Duration::from_secs(1)).unwrap();
+        assert!(done_rx.try_recv().is_err());
+        if cancel {
+            cancellation.cancel();
+        } else {
+            std::thread::sleep(
+                expiry.saturating_duration_since(std::time::Instant::now())
+                    + Duration::from_millis(5),
+            );
+        }
+        assert!(done_rx.try_recv().is_err());
+        drop(held_control);
+        let (result, request_id) = waiter.join().unwrap();
+        assert!(
+            result
+                .unwrap_err()
+                .contains(if cancel { "cancelled" } else { "deadline" })
+        );
+        let completed = control.lock().unwrap().get(&request_id).unwrap().clone();
+        assert_eq!(completed.state, RequestState::Completed);
+        assert_eq!(issuer.authority.capacity().unwrap().used_nonces, 1);
+        let signed = issuer.issued.lock().unwrap()[0].clone();
+        assert!(
+            issuer
+                .authority
+                .claim(&signed, &signed.grant.binding)
+                .is_err()
+        );
+        assert_eq!(issuer.authority.capacity().unwrap().used_nonces, 1);
+        drop(control);
+        let reopened = DurableInferenceControl::open(path, 8).unwrap();
+        assert_eq!(reopened.get(&request_id), Some(&completed));
+    }
+}
