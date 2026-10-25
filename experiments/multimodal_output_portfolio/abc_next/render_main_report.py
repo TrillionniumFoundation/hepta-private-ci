@@ -162,6 +162,10 @@ def per_seed_metrics(execution, analysis, controllers, receipts):
 
 def measured_stages(protocol, execution, architecture, controllers, sensor, qualification, receipts, timing):
     stages = []
+    process_names = ("public-sensor-001", "architecture-001", "controllers-001", "qualification-001", "qualification-analysis-001", "evaluation-001", "evaluation-analysis-001") + (("timing-001",) if timing is not None else ())
+    process_costs = {name: read(RUNS / f"{name}.process.json", receipts) for name in process_names}
+    if any(row["exit_code"] != 0 or row["schema"] != "hepta.abc-next.process-receipt.v1" for row in process_costs.values()):
+        raise ValueError("The declared completed process-cost receipts are not established")
     for name, value, scope in (
         ("new_public_sensor", sensor, "fit, temperature choice, snapshot and identity checks; entry-scope timer"),
         ("architecture_development", architecture, "new fit/selection tree collection and all four matched candidates"),
@@ -182,6 +186,9 @@ def measured_stages(protocol, execution, architecture, controllers, sensor, qual
             "scope": "19200 resident requests, archive writing/closing, readback/scoring, setup and aggregation; stage scopes remain explicit"})
     return {"new_round_stages": stages, "sum_reported_stage_wall_seconds": sum(x["wall_seconds"] for x in stages),
             "sum_reported_stage_cpu_seconds": sum(x["cpu_seconds"] for x in stages),
+            "complete_process_receipts": process_costs, "process_and_entry_stage_costs_overlap": True, "rss_scope_is_wrapper_children_high_water_not_exclusive_target_peak": True,
+            "sum_complete_process_wall_seconds": sum(x["wall_ns"] for x in process_costs.values()) / 1e9,
+            "sum_complete_process_cpu_seconds": sum(x["child_cpu_ns"] + x["wrapper_cpu_ns"] for x in process_costs.values()) / 1e9,
             "sum_is_recorded_stage_cost_not_project_lifetime_cost": True,
             "reused_generator_training_process": old_training,
             "new_training_and_development_wall_seconds": sum(x["wall_seconds"] for x in stages[:3]),
@@ -291,7 +298,7 @@ def render(summary, figure_name):
     if figure_name:
         lines.extend([f"![Registered test contrast intervals]({figure_name})", "", "图直接显示已封存分析中的区间，没有重新估计主要统计量。", ""])
     lines += ["## 2. 先冻结后开启：来源和估计对象", "",
-        f"最终协议 SHA256 为 `{EXPECTED_PROTOCOL}`，已在 [GitHub commit {FREEZE_COMMIT[:12]}](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/{FREEZE_COMMIT}) 发布，之后才启动正式 test。十五个生成器和控制器、逐 seed/训练臂的最强非反馈引用以及源身份均在开启前固定。", "",
+        f"最终协议 SHA256 为 `{EXPECTED_PROTOCOL}`，已在 [GitHub commit {FREEZE_COMMIT[:12]}](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/{FREEZE_COMMIT}) 发布，之后才启动正式 test。十五个生成器和控制器、逐 seed/训练臂的开发选定非反馈引用（注册三类候选）以及源身份均在开启前固定。", "",
         "正式数据是 **512 个来源对、1024 个不同 source IDs**，来自 MNIST 官方 test 分区中的冻结角色；开发/qualification 来源来自独立的官方 train 角色。五个训练 seed、八种视图和四个生成场景形成配对重复。每条件 81920 行、十五模型×五策略共 1228800 行策略结果，都不改变来源组数 512。没有可用 writer 聚类身份，不能额外宣称已控制手写者相关性。", "",
         "4000 次交叉重采样同时重采来源对和训练 seed，所有同源视图、场景与策略保持配对。固定五 seed 的区间只重采来源，其解释条件于这五个已经训练好的模型；不能把它当成对训练 seed 母体的同一推断。五个 seed 下交叉 percentile bootstrap 的覆盖率仍是有限样本近似。", "",
         "104 来源 qualification 在同一冻结后只执行一次，没有重新选架构、拟合策略或依据负结果压住 test；它与 512 来源的正式结果分开，不能合并成 616 个确认性来源。"]
@@ -342,7 +349,7 @@ def render(summary, figure_name):
                     f(b["p95"]), f(b["cvar"]), f(cell["net_utility"]["mean_conditional_ce"])))
         table(lines, ("训练臂", "策略", "均值损失", "逐输出 P95", "逐输出 CVaR90", "来源均值 P95", "来源均值 CVaR90", "平均 conditional net CE"), rows)
     lines += ["## 5. 分视图和缺失信息", "",
-        "以下列出 NDU 的新反馈、固定、最强非反馈和旧反馈的全部视图，完整三训练臂×六策略×八视图数据保留在 SUMMARY.json。物理模态完成与任务事实正确分别评价；完全缺失输入不能通过 sensor 凭空恢复私有目标。"]
+        "以下列出 NDU 的新反馈、固定、开发选定非反馈和旧反馈的全部视图，完整三训练臂×六策略×八视图数据保留在 SUMMARY.json。物理模态完成与任务事实正确分别评价；完全缺失输入不能通过 sensor 凭空恢复私有目标。"]
     for observer in ("primary", "secondary"):
         rows = []
         for view in official["views"]:
@@ -359,15 +366,15 @@ def render(summary, figure_name):
             f(100 * row["selection"]["metrics"]["feedback"]["joint_success"], 4),
             f(row["selection"]["metrics"]["feedback"]["mean_actions"]), f(row["fit_and_selection_wall_ns"] / 1e9, 3))
            for row in summary["development"]["architecture"]["candidates"]])
-    lines += ["新反馈相对 legacy 的同源正式对比识别的是整个控制器更新包：新训练数据、来源 OOF、H1 支配约束和公开特征改变。不能把其全部差值归因于 90 个新公开特征。匹配 one-shot 有独立 route head，是增强后的非反馈对照，其训练没有替代或共同训练反馈 head。最终 test 只运行开发选定架构，未把四候选全部在 test 重选。", "",
+    lines += ["新反馈相对 legacy 的同源正式对比识别的是整个控制器更新包：新训练数据、来源 OOF、H1 支配约束和公开特征改变。不能把其全部差值归因于 90 个新公开特征。one-shot 与反馈匹配 sensor、输入维度、hidden=32、来源、风险目标口径和逐 head 训练配置；不匹配总参数量或总训练计算。排除共享 sensor 后，每个 5 输出 Q head 有 24613 个参数，Q1+Q2 共 49226，21 输出 route head 有 25141；Q1 还经历 OOF/refit。one-shot 使用独立 route head，其训练没有替代或共同训练反馈 head。正式收益识别整套反馈方法，尚未单独隔离持续观测信息或 head 容量的贡献。最终 test 只运行开发选定架构，未把四候选全部在 test 重选。", "",
         "one_shot / initial-only controller 在初始公开历史一次决定完整后续路线；它检验控制器是否持续读取实际生成状态。生成器随后仍使用相同的 persistent encoder context，故这一对比不是生成器的 encoder-initial-only 与持续 Encoder 条件访问消融。本轮没有执行该生成器条件访问轴的独立消融或相应架构重训。", "",
         "public sensor 是第三个独立训练 reader，使用 train role；原始公开输入、mask、提示可靠性和实际当前草稿进入其特征。Primary/Secondary 评分器不进入在线策略。温度选择只用了 train role 尾部，它给出预测语义概率，没有形成精确 Bayesian 后验或独立目标域校准证书。", "",
         "H1 semantic 保留当前两模态输出而多支付 0.002，故新候选统一禁止该最后一步动作；H2 首步 semantic 可用于后续修正并保留。先 semantic 再 stop 仍可能是近似 Q2/Q1 联合选择的结果；其频率完整保留在 SUMMARY.json 和计划计数中。", ""]
-    table(lines, ("seed", "训练臂", "冻结最强非反馈", "静态计划 index", "控制器 SHA256"),
+    table(lines, ("seed", "训练臂", "开发选定非反馈", "静态计划 index", "控制器 SHA256"),
           [(row["seed"], row["arm"], row["selection"]["selected_nonfeedback"], row["selection"]["static_plan_index"], row["controller_sha256"])
            for row in summary["development"]["controller_choices"]])
     lines.extend(["### 历史 128 来源与本次 512 来源", "",
-        "旧结果是已经看过的开发来源；本次是新冻结官方 test 角色，两者没有合并成新样本或做跨队列的配对差值。旧 feedback−fixed 主比较与本次 feedback−开发最强非反馈主比较的参照也不同。真正同源的旧/新控制器比较应读取本次 `feedback − legacy`。", ""])
+        "旧结果是已经看过的开发来源；本次是新冻结官方 test 角色，两者没有合并成新样本或做跨队列的配对差值。旧 feedback−fixed 主比较与本次 feedback−开发选定非反馈主比较的参照也不同。真正同源的旧/新控制器比较应读取本次 `feedback − legacy`。", ""])
     old = summary["historical_128_source_summary"]["scientific_support_flags"]["primary_checks"]
     table(lines, ("历史主比较", "旧128来源 Net CE差", "旧 nominal 97.5% CI"),
           [(name, f"{row['gain']:+.6f}", ci(row["interval"])) for name, row in old.items()])
@@ -381,6 +388,10 @@ def render(summary, figure_name):
     costs = summary["measured_costs"]
     table(lines, ("本轮阶段", "记录 wall 秒", "记录 CPU 秒", "计时范围"),
           [(row["stage"], f(row["wall_seconds"], 3), f(row["cpu_seconds"], 3), row["scope"]) for row in costs["new_round_stages"]])
+    lines += ["以下完整进程凭据覆盖 subprocess 启动、导入、退出与日志 flush，另列统计分析；不含最后 receipt 自身的写入。它们与上表入口阶段计时重叠，不能相加。CPU 分列已回收 child 的前后增量与 wrapper。RSS 字段来自 RUSAGE_CHILDREN 累计高水位，未保存前序 child 基线，保守解释为 wrapper 范围，不能声称是目标 child 独有的精确峰值。", ""]
+    table(lines, ("完整进程", "Wall 秒", "Child CPU 秒", "Wrapper CPU 秒", "Wrapper children 高水位 RSS bytes"),
+          [(name, f(row["wall_ns"] / 1e9, 6), f(row["child_cpu_ns"] / 1e9, 6), f(row["wrapper_cpu_ns"] / 1e9, 6), row["child_maximum_rss_bytes"]) for name, row in costs["complete_process_receipts"].items()])
+    lines += [f"这 {len(costs['complete_process_receipts'])} 个已记录进程合计 wall {f(costs['sum_complete_process_wall_seconds'], 6)} 秒、child 加 wrapper CPU {f(costs['sum_complete_process_cpu_seconds'], 6)} 秒；计入的流程以上表为准，不包括报告渲染、其他实验或未保留的历史尝试。", ""]
     lines += [f"新增 sensor、架构开发和全控制器开发合计记录 wall **{f(costs['new_training_and_development_wall_seconds'], 3)} 秒**、CPU **{f(costs['new_training_and_development_cpu_seconds'], 3)} 秒**。这些阶段包含其数据生成、离线评分、训练和选择；不能再次把嵌套 head 训练时间加上造成重复计数。", "",
         f"复用的旧十五生成器训练进程另有 wall {f(costs['reused_generator_training_process']['wall_seconds'], 3)} 秒、CPU {f(costs['reused_generator_training_process']['cpu_seconds'], 3)} 秒的记录，本轮新增生成器更新为零。该旧 receipt 没有保留全部此前失败尝试成本，阶段计时范围也各自明确；上述数字不声称覆盖整个项目生命周期。", ""]
     work = summary["actual_execution_work"]
@@ -398,7 +409,12 @@ def render(summary, figure_name):
               [(key, f(row["cost"]["wall_ms"]["point_estimates"]["mean"]), f(row["cost"]["wall_ms"]["point_estimates"]["p50"]),
                 f(row["cost"]["wall_ms"]["point_estimates"]["p95"]), f(row["cost"]["cpu_ms"]["point_estimates"]["mean"]),
                 f(100 * row["required_output_completion_rate"], 4)) for key, row in timing["conditions"].items()])
-        lines += ["完整配对来源×seed 95% 成本区间、各对照差值及同队列质量在 SUMMARY 的 timing 部分。16 来源成本队列不替换 512 来源主要统计；失败请求不删去，其受影响条件的质量推断被阻止。", ""]
+        lines += ["完整配对来源×seed 描述性 95% 成本区间、各对照差值及同队列质量在 SUMMARY 的 timing 部分，另见[串行计时详报](TIMING_REPORT.md)与[原始聚合摘要](TIMING_SUMMARY.json)。16 来源为同一 512 来源主 test 的预注册子集，不构成额外独立确认，也不替换主统计；所有请求与慢请求均保留，失败时受影响条件的质量推断被阻止。", ""]
+        timed = timing["comparisons"]["output_ndu/feedback-minus-selected_nonfeedback"]
+        lines += [f"在该计时子队列，NDU 新反馈相对开发选定非反馈的平均 Wall 增量为 {f(timed['cost_increase']['wall_ms']['point_estimates']['mean'])} ms，描述性 95% 区间 {ci(timed['cost_increase']['wall_ms']['intervals']['mean'])}；P95 增量为 {f(timed['cost_increase']['wall_ms']['point_estimates']['p95'])} ms，区间 {ci(timed['cost_increase']['wall_ms']['intervals']['p95'])}。这是真实时间成本增加，不能用主 test CE 通过直接宣称其已获补偿。", ""]
+        for observer, value in timed["observers"].items():
+            if not value["quality_inference_available"]: continue
+            lines += [f"计时子队列 {observer}：NDU 新反馈减开发选定非反馈的 raw CE 差 {value['raw_joint_CE_gain']['gain']:+.6f}，95% 区间 {ci(value['raw_joint_CE_gain']['interval'])}；0.002 步代理 net CE 差 {value['step_proxy_net_joint_CE_gain']['gain']:+.6f}，区间 {ci(value['step_proxy_net_joint_CE_gain']['interval'])}；成功率差 {100 * value['joint_success_gain']['gain']:+.6f} 个百分点，区间 {ci(value['joint_success_gain']['interval'], 100)}。均为描述性子队列结果。", ""]
     lines += ["## 8. 范围、验证和仍未建立的结论", "",
         "本轮独立 Python 验证共 30 个测试方法：observability 4、execute 1、共同历史/数值 9、value 边界 6、timing 边界 6、analysis 边界 4。原生 151 项验证另列在原生报告，本表不合并为统计样本。报告生成器不重训、不重选，也不重跑这些测试。", "",
         "旧共同历史诊断区分了公开信息可实现选择与隐藏目标/未来 oracle 优势，并发现 H1 支配错误；它不是本次 512 来源的额外独立样本。[共同历史详报](../../design/COMMON_HISTORY_REVIEW.md) 保留其宽区间和未识别结论。", "",
@@ -441,7 +457,7 @@ def plot_primary(summary, destination):
                 (-.09, row["fixed_five_seed_source_interval"], "#d36a2d", "dashed", "s")):
                 ax.hlines(y + shift, *data["interval"], color=color, linewidth=2, linestyles=style)
                 ax.plot(data["gain"], y + shift, marker=marker, color=color, markersize=6)
-            labels.append((y, f"{observer.title()}: " + ("NDU - mean, fixed" if index == 0 else "Feedback - frozen strongest nonfeedback")))
+            labels.append((y, f"{observer.title()}: " + ("NDU - mean, fixed" if index == 0 else "Feedback - development-selected nonfeedback")))
     ax.axvline(0, color="#666666", linewidth=1)
     ax.set_yticks([y for y, _ in labels], [label for _, label in labels])
     ax.set_xlabel("Net joint CE difference (higher favors candidate)")
