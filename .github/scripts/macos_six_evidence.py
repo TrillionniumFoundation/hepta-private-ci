@@ -21,7 +21,10 @@ import xml.etree.ElementTree as ET
 
 HERE = Path(__file__).resolve().parent
 PROFILE = "macos-six"
-BASE = "cb6f278fef51c4b2c4a96a05efa64a105fbbd4a8"
+BASE = "a2ca5c5517d0c766631faaeae4f2d147b725ca26"
+SOURCE_SHA = "253d1b6d3b9c2fb4fc250886d0b8457a107842e9"
+SOURCE_TREE = "429aa6b7d0027d1f92aabad14e716083ccf86c78"
+SOURCE_BASE = "e4ee552d37040a62e8cee6ef4172aae8b6680204"
 MANIFEST = json.loads((HERE / "macos_six_cases.json").read_text())
 PHASES = tuple(MANIFEST["phases"])
 PROFILE_APPENDIX = '\n# Diagnostic profile only; all original defaults and overrides remain above.\n[profile.macos-six]\nretries = 0\n\n[profile.macos-six.junit]\npath = "junit.xml"\nreport-name = "macos-six"\n'
@@ -40,12 +43,139 @@ def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def source_root():
+    raw = Path(os.environ["SOURCE_ROOT"])
+    require(raw.is_absolute() and raw == raw.resolve(), "source root alias")
+    control = HERE.parent.parent.resolve()
+    require(
+        raw != control and raw not in control.parents and control not in raw.parents,
+        "source/control roots overlap",
+    )
+    return raw
+
+
 def git(*args):
-    return subprocess.check_output(["git", *args], text=True).strip()
+    return subprocess.check_output(["git", *args], cwd=source_root(), text=True).strip()
+
+
+def control_git(*args):
+    return subprocess.check_output(
+        ["git", *args], cwd=HERE.parent.parent, text=True
+    ).strip()
+
+
+def full_worktree_identity(root):
+    """Check EVERY tracked working-tree byte/mode against immutable Git blobs."""
+    raw = subprocess.check_output(["git", "ls-tree", "-rz", "HEAD"], cwd=root)
+    inventory = {}
+    for entry in raw.split(b"\0"):
+        if not entry:
+            continue
+        header, name = entry.split(b"\t", 1)
+        mode, kind, blob = header.decode().split()
+        path = os.fsdecode(name)
+        require(
+            kind == "blob" and mode in {"100644", "100755", "120000"},
+            "unsupported source tree entry",
+        )
+        target = root / path
+        require(target.parent.resolve().is_relative_to(root), "source path escape")
+        if mode == "120000":
+            require(target.is_symlink(), "symlink mode drift")
+            data = os.fsencode(os.readlink(target))
+        else:
+            require(target.is_file() and not target.is_symlink(), "source type drift")
+            require(
+                bool(target.stat().st_mode & 0o111) == (mode == "100755"),
+                "source executable mode drift",
+            )
+            data = target.read_bytes()
+        actual = hashlib.sha1(
+            b"blob " + str(len(data)).encode() + b"\0" + data
+        ).hexdigest()
+        require(actual == blob, f"working source blob drift: {path}")
+        inventory[path] = {
+            "blob": blob,
+            "mode": mode,
+            "sha256": hashlib.sha256(data).hexdigest(),
+        }
+    require(bool(inventory), "empty source tree")
+    return inventory
+
+
+def validate_roots(pins):
+    require(os.environ["SOURCE_SHA"] == SOURCE_SHA, "wrong immutable source input")
+    source = source_root()
+    control = HERE.parent.parent.resolve()
+    require(Path.cwd().resolve() == source, "controller not launched from source root")
+    require(git("rev-parse", "HEAD") == SOURCE_SHA, "wrong source head")
+    require(git("rev-parse", "HEAD^{tree}") == SOURCE_TREE, "wrong source tree")
+    require(
+        not git("status", "--porcelain=v1", "--untracked-files=all"), "dirty source"
+    )
+    require(
+        control_git("rev-parse", "HEAD")
+        == os.environ["CANDIDATE_SHA"]
+        == os.environ["WORKFLOW_SHA"],
+        "wrong control head",
+    )
+    require(control_git("rev-parse", "HEAD^") == BASE, "wrong control parent")
+    require(
+        control_git("rev-parse", BASE + "^{tree}") == pins["base_tree"],
+        "wrong control parent tree",
+    )
+    require(
+        not control_git("status", "--porcelain=v1", "--untracked-files=all"),
+        "dirty control",
+    )
+    require(
+        set(
+            control_git(
+                "diff", "--name-only", "--no-renames", BASE, "HEAD"
+            ).splitlines()
+        )
+        == set(pins["changed_paths"]),
+        "unexpected control delta",
+    )
+    require(
+        set(
+            git("diff", "--name-only", "--no-renames", SOURCE_BASE, "HEAD").splitlines()
+        )
+        == set(pins["source_changed_paths"]),
+        "unexpected source delta",
+    )
+    chain = git("rev-list", "--first-parent", SOURCE_BASE + "..HEAD").splitlines()
+    require(chain == pins["source_chain"], "wrong source ancestry")
+    require(
+        git("rev-parse", SOURCE_BASE + "^{tree}") == pins["source_base_tree"],
+        "wrong source base tree",
+    )
+    for path, sha in pins["control_sha256"].items():
+        require(digest(control / path) == sha, f"control pin mismatch: {path}")
+    for path, blob in pins["lock_blobs"].items():
+        require(git("rev-parse", f"HEAD:{path}") == blob, "lock drift")
+    require(
+        (HERE / "macos_six_nextest.toml").read_text()
+        == (source / "codex-rs/.config/nextest.toml").read_text() + PROFILE_APPENDIX,
+        "inherited nextest policy drift",
+    )
+    return {
+        "source": full_worktree_identity(source),
+        "control": full_worktree_identity(control),
+        "source_root": str(source),
+        "control_root": str(control),
+        "control_head": control_git("rev-parse", "HEAD"),
+        "control_tree": control_git("rev-parse", "HEAD^{tree}"),
+        "source_tree": SOURCE_TREE,
+    }
 
 
 def expected(phase):
     record = MANIFEST["phases"][phase]
+    if phase == "supervisor-integration":
+        pairs = [(row["binary"], row["case"]) for row in record["cases"]]
+        require(len(pairs) == 2 and len(set(pairs)) == 2, "bad integration inventory")
+        return set(pairs)
     names = record["cases"]
     require(names and len(names) == len(set(names)), "bad fixed inventory")
     return {(record["package"], name) for name in names}
@@ -56,6 +186,7 @@ def selection(phase):
     expression = (
         " | ".join(f"test(={name})" for _, name in sorted(expected(phase)))
         if phase.startswith("original-")
+        or phase in {"fleet-owning", "supervisor-owning", "supervisor-integration"}
         else f"test({record['module']}::)"
     )
     if phase == "evidence-outbox":
@@ -66,7 +197,7 @@ def selection(phase):
         "--locked",
         "-p",
         record["package"],
-        "--lib",
+        *(["--tests"] if phase == "supervisor-integration" else ["--lib"]),
         "--config-file",
         str(HERE / "macos_six_nextest.toml"),
         "-E",
@@ -789,6 +920,7 @@ def bounded(command, directory, deadline, cwd, grace=10):
     started = time.monotonic()
     record = {
         "argv": command,
+        "cwd": str(Path(cwd).resolve()),
         "remaining_seconds": max(0, deadline - started),
         "timed_out": False,
     }
@@ -928,76 +1060,53 @@ def shared_deadline(out):
 def bind(out):
     require(shared_deadline(out) > time.monotonic(), "setup exhausted shared budget")
     pins = json.loads((HERE / "macos_six_pins.json").read_text())
-    head = git("rev-parse", "HEAD")
-    require(
-        head == os.environ["CANDIDATE_SHA"] == os.environ["WORKFLOW_SHA"],
-        "head/workflow mismatch",
-    )
-    require(git("rev-parse", "HEAD^") == BASE, "wrong direct parent")
-    require(git("rev-parse", BASE + "^{tree}") == pins["base_tree"], "wrong base tree")
-    require(not git("status", "--porcelain=v1"), "dirty source")
-    original_config = Path("codex-rs/.config/nextest.toml").read_text()
-    config = (HERE / "macos_six_nextest.toml").read_text()
-    require(
-        config == original_config + PROFILE_APPENDIX, "inherited nextest policy drift"
-    )
-    require(
-        set(git("diff", "--name-only", "--no-renames", BASE, head).splitlines())
-        == set(pins["changed_paths"]),
-        "unexpected changes",
-    )
-    require(
-        git("rev-parse", "HEAD:codex-rs/Cargo.lock") == pins["lock_blob"], "lock drift"
-    )
-    for path, sha in pins["source_sha256"].items():
-        require(digest(path) == sha, f"source pin mismatch: {path}")
+    require(git("rev-parse", "HEAD") == SOURCE_SHA, "head/workflow mismatch")
+    roots = validate_roots(pins)
     source = {
-        "head": head,
-        "tree": git("rev-parse", "HEAD^{tree}"),
-        "base": BASE,
-        "base_tree": pins["base_tree"],
-        "workflow_sha": os.environ["WORKFLOW_SHA"],
-        "lock_blob": pins["lock_blob"],
+        "head": SOURCE_SHA,
+        "tree": SOURCE_TREE,
+        "roots": roots,
         "budget_sha256": digest(out / "budget.json"),
     }
-    paths = sorted(
-        set(pins["changed_paths"])
-        | set(pins["support_paths"])
-        | set(pins["source_sha256"])
-    )
-    source["files"] = {
-        p: {"sha256": digest(p), "blob": git("rev-parse", f"HEAD:{p}")} for p in paths
-    }
     write(out / "source.json", source)
-    (out / "candidate.patch").write_bytes(
-        subprocess.check_output(["git", "diff", "--binary", "--full-index", BASE, head])
+    source_paths = sorted(
+        set(pins["source_support_paths"])
+        | set(pins["source_changed_paths"])
+        | {
+            f"codex-rs/{name}"
+            for name in (
+                "rollout",
+                "sandboxing",
+                "state",
+                "hepta-evidence",
+                "hepta-bao-adapter",
+                "hepta-automation",
+                "hepta-authbus",
+                "hepta-fleet",
+                "hepta-supervisor",
+            )
+        }
     )
-    (out / "tree.txt").write_bytes(
-        subprocess.check_output(["git", "ls-tree", "-r", "HEAD"])
-    )
-    with (out / "source.tar").open("wb") as artifact:
-        subprocess.run(
-            [
-                "git",
-                "archive",
-                "HEAD",
-                *[
-                    f"codex-rs/{name}"
-                    for name in (
-                        "rollout",
-                        "sandboxing",
-                        "state",
-                        "hepta-evidence",
-                        "hepta-bao-adapter",
-                        "hepta-automation",
-                        "hepta-authbus",
-                    )
-                ],
-                *paths,
-            ],
-            stdout=artifact,
-            check=True,
+    for name, root, paths in (
+        ("source", source_root(), source_paths),
+        ("control", HERE.parent.parent, pins["control_paths"]),
+    ):
+        (out / f"{name}-tree.txt").write_bytes(
+            subprocess.check_output(["git", "ls-tree", "-r", "HEAD"], cwd=root)
         )
+        with (out / f"{name}.tar").open("wb") as artifact:
+            subprocess.run(
+                ["git", "archive", "HEAD", *paths],
+                cwd=root,
+                stdout=artifact,
+                check=True,
+            )
+    (out / "candidate.patch").write_bytes(
+        subprocess.check_output(
+            ["git", "diff", "--binary", "--full-index", SOURCE_BASE, SOURCE_SHA],
+            cwd=source_root(),
+        )
+    )
 
 
 def validate_version(tool, raw, prefix):
@@ -1070,8 +1179,13 @@ def execute(out):
         digest(out / "budget.json") == source["budget_sha256"],
         "shared budget was reset",
     )
+    require(
+        validate_roots(json.loads((HERE / "macos_six_pins.json").read_text()))
+        == source["roots"],
+        "pre-execution roots drift",
+    )
     deadline = shared_deadline(out)
-    cwd = Path.cwd() / "codex-rs"
+    cwd = source_root() / "codex-rs"
     failed = False
     metadata = out / "metadata"
     status = bounded(
@@ -1130,18 +1244,41 @@ def execute(out):
     require(not failed, "one or more native phases failed; see original evidence")
 
 
+def validate_native_receipt(record):
+    require(
+        record["exit"] == 0 and record["timed_out"] is False, "native command failed"
+    )
+    require(record["cwd"] == str(source_root() / "codex-rs"), "wrong native cwd")
+    identity, life = record["leader_identity"], record["leader_lifecycle"]
+    require(
+        life["reaped"] is True
+        and life["pid"]
+        == identity["pid"]
+        == identity["pgid"]
+        == identity["sid"]
+        == record["owned_pgid"],
+        "unverified exact native leader reap",
+    )
+    require(
+        life["ownership"] == "sole-pinned-unreaped-direct-child-zombie"
+        and life["returncode"] == 0 == os.waitstatus_to_exitcode(life["wait_status"]),
+        "wrong native reap result",
+    )
+    require(
+        record["cleanup_observations"][-1]["state"] == "sole-terminal-leader",
+        "native descendants remain unverified",
+    )
+
+
 def verify(out):
     before = json.loads((out / "source.json").read_text())
-    require(
-        before["head"]
-        == git("rev-parse", "HEAD")
-        == os.environ["CANDIDATE_SHA"]
-        == os.environ["WORKFLOW_SHA"],
-        "head drift",
-    )
+    require(before["head"] == git("rev-parse", "HEAD") == SOURCE_SHA, "head drift")
     require(not git("status", "--porcelain=v1"), "dirty after run")
-    for path, item in before["files"].items():
-        require(digest(path) == item["sha256"], f"source drift {path}")
+    require(
+        validate_roots(json.loads((HERE / "macos_six_pins.json").read_text()))
+        == before["roots"],
+        "source/control drift after run",
+    )
     require(
         digest(out / "budget.json") == before["budget_sha256"], "shared budget changed"
     )
@@ -1155,7 +1292,13 @@ def verify(out):
             f"tool version changed: {tool}",
         )
     metadata = json.loads((out / "metadata/result.json").read_text())
+    validate_native_receipt(metadata)
     require(metadata["exit"] == 0 and not metadata["timed_out"], "metadata failed")
+    require(metadata["cwd"] == str(source_root() / "codex-rs"), "wrong metadata cwd")
+    require(
+        metadata["argv"] == ["cargo", "metadata", "--locked", "--format-version=1"],
+        "wrong metadata command",
+    )
     results = {}
     for phase in PHASES:
         directory = out / phase
@@ -1190,6 +1333,10 @@ def verify(out):
         }
         for mode in ("list", "run"):
             record = json.loads((directory / mode / "result.json").read_text())
+            validate_native_receipt(record)
+            require(
+                record["cwd"] == str(source_root() / "codex-rs"), "wrong native cwd"
+            )
             require(record["argv"] == expected_commands[mode], "wrong native command")
             require(
                 json.loads((directory / mode / "command.json").read_text())

@@ -1,30 +1,41 @@
 {
-  "base_tree": "20b4a468b09b3115efbfd005389b76f9ebae8fa2",
-  "lock_blob": "8a9eab30d8957daab7dd027e86e88ca792e04a1c",
-  "source_sha256": {
-    ".github/scripts/macos_six_cases.json": "2dfee2e4b333cac550ae34c1b8bf76c3814cf50f4ddd411efacda658bd8c72b5",
-    ".github/scripts/macos_six_evidence.py": "e1f6c5564ef2a5b77cf7f1c1fa10f24e4cd837a0798f35d514d1ca4a66043946",
-    ".github/scripts/macos_six_nextest.toml": "57e6d6cce89e170f34b77abf0f25d07d4398b387617f0ea42f2d92170207e113",
-    ".github/scripts/macos_six_stages.json": "51a32c9446c1ef30119f43e70e1fd5f38ef3b790804a994f7b8dfb704b4be9d4",
-    ".github/scripts/test_macos_six_evidence.py": "fdce8db65a1a663d8e01f15e9dc9335f549c29a557af69fc6851ff16e8259e17",
-    ".github/workflows/hepta-macos-six-fixtures.yml": "b0806ad5e43a8a18a1d056f0c0b2a6052a47f07772a9dbe928843e92052cdb83",
-    "codex-rs/hepta-automation/src/migration_convergence_tests.rs": "27385a89421193c215e5d6f5f530755f316c0029ac3e5023c4aa65ca519e3351",
-    "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs": "7a61d40f74da627f584bd74cb76584d458c11787f469c6a7db54227bc0ae2c8b",
-    "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs": "04605b8e5b0ce76c849bedd370c32c9da6dbe0fab5e06969a3f105c0b71b193f",
-    "codex-rs/rollout/src/recorder_tests.rs": "d632258c26a2b8b02b372bcaf045e0d1eb7c30c27b0a74e3200d37baf24e295e",
-    "codex-rs/sandboxing/src/seatbelt_tests.rs": "b54d85e0a067400e5246cbb43448d9e543d5ffb287803b48cb4a84a250063f9c",
-    "codex-rs/state/src/sqlite_recovery_image_tests.rs": "66c4357281ab623ddb5deb3dae1add55c72b1415845041841ed3b4af9bbc235e"
-  },
-  "changed_paths": [
-    ".github/scripts/macos_six_evidence.py",
-    ".github/scripts/macos_six_pins.json",
-    ".github/scripts/test_macos_six_evidence.py"
+  "base_tree": "e5c5e2acfa57369954196382c7e549272268a936",
+  "source_base_tree": "1370b500afd30d73ab4b762ddad6a6457590bb12",
+  "source_chain": [
+    "253d1b6d3b9c2fb4fc250886d0b8457a107842e9",
+    "79d196dcb5660ad3b0b95d16cb623417cc1202eb",
+    "c8e3e4f7e94c850cc2e509c9f99d2b0a6dab368e",
+    "85ab78b213f4e40e448f84ea5e2d5d3675b7e104",
+    "653a7cbbf7fa77b599ba019595813418e0907d38"
   ],
-  "support_paths": [
-    ".github/scripts/macos_six_cases.json",
-    ".github/scripts/macos_six_nextest.toml",
-    ".github/scripts/macos_six_stages.json",
-    ".github/workflows/hepta-macos-six-fixtures.yml",
+  "source_changed_paths": [
+    "codex-rs/hepta-fleet/Cargo.toml",
+    "codex-rs/hepta-fleet/src/release.rs",
+    "codex-rs/hepta-fleet/src/release_publication_macos.rs",
+    "codex-rs/hepta-fleet/src/release_publication_macos_tests.rs",
+    "codex-rs/hepta-supervisor/src/tick.rs",
+    "codex-rs/hepta-supervisor/tests/restart_budget.rs",
+    "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+    "codex-rs/Cargo.lock",
+    "MODULE.bazel.lock",
+    "codex-rs/rollout/src/recorder_tests.rs",
+    "codex-rs/sandboxing/src/seatbelt_tests.rs",
+    "codex-rs/state/src/sqlite_recovery_image_tests.rs",
+    "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
+    "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+    "scripts/list-bazel-clippy-targets.sh",
+    ".github/scripts/test_run_bazel_clippy_targets.py",
+    "codex-rs/hepta-authbus/src/authority_schema_tests.rs",
+    "codex-rs/hepta-automation/tests/automation.rs",
+    ".github/workflows/hepta-architecture-convergence.yml",
+    ".github/workflows/blob-size-policy.yml"
+  ],
+  "lock_blobs": {
+    "codex-rs/Cargo.lock": "62b728f0bf795100627d72cb9af433faf3c24c0a",
+    "MODULE.bazel.lock": "42c81bc19e21627d642c88fa753d530aa27eab4b"
+  },
+  "source_support_paths": [
     "AGENTS.md",
     "codex-rs/.config/nextest.toml",
     "codex-rs/Cargo.lock",
@@ -47,5 +58,32 @@
     "justfile",
     "scripts/just-shell.py",
     "scripts/run-nextest.py"
+  ],
+  "control_paths": [
+    ".github/scripts/macos_six_cases.json",
+    ".github/scripts/macos_six_evidence.py",
+    ".github/scripts/macos_six_nextest.toml",
+    ".github/scripts/macos_six_pins.json",
+    ".github/scripts/macos_six_stages.json",
+    ".github/scripts/test_macos_six_evidence.py",
+    ".github/scripts/test_macos_six_sourcebound.py",
+    ".github/workflows/hepta-macos-six-fixtures.yml"
+  ],
+  "control_sha256": {
+    ".github/workflows/hepta-macos-six-fixtures.yml": "3d3ec2d78a664d241ab41c6b7cf707cbef00db2a1825855ea767db1eb89cadec",
+    ".github/scripts/macos_six_cases.json": "170477edeab16a2f6f3e66b4bffd7d64c3b449c4c6aba7d265cd4b705cea3a1b",
+    ".github/scripts/test_macos_six_sourcebound.py": "7dadee59f42a15ac22a62dc5181a75fd5bc7258b445628e51d612928571ea249",
+    ".github/scripts/macos_six_nextest.toml": "57e6d6cce89e170f34b77abf0f25d07d4398b387617f0ea42f2d92170207e113",
+    ".github/scripts/test_macos_six_evidence.py": "faae7c3eb294591229de61b10c24cd045ded1ef6b561d35ec451408033fad231",
+    ".github/scripts/macos_six_stages.json": "51a32c9446c1ef30119f43e70e1fd5f38ef3b790804a994f7b8dfb704b4be9d4",
+    ".github/scripts/macos_six_evidence.py": "102294ffd6aefef08920f7265013a7a874ffc3dbce66f269cd47c4b8b34f53ad"
+  },
+  "changed_paths": [
+    ".github/scripts/macos_six_cases.json",
+    ".github/scripts/macos_six_evidence.py",
+    ".github/scripts/macos_six_pins.json",
+    ".github/scripts/test_macos_six_evidence.py",
+    ".github/scripts/test_macos_six_sourcebound.py",
+    ".github/workflows/hepta-macos-six-fixtures.yml"
   ]
 }

@@ -1,4 +1,4 @@
-name: Hepta macOS six-fixture diagnostic qualification
+name: Hepta macOS combined source-bound diagnostic qualification
 
 on:
   push:
@@ -14,6 +14,8 @@ jobs:
     timeout-minutes: 90
     env:
       CANDIDATE_SHA: ${{ github.sha }}
+      SOURCE_SHA: "253d1b6d3b9c2fb4fc250886d0b8457a107842e9"
+      SOURCE_ROOT: ${{ github.workspace }}/source
       WORKFLOW_SHA: ${{ github.workflow_sha }}
       CARGO_INCREMENTAL: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
@@ -29,7 +31,7 @@ jobs:
         run: |
           set -euo pipefail
           export EVIDENCE="$RUNNER_TEMP/hepta-macos-six-evidence"
-          export CARGO_TARGET_DIR="$RUNNER_TEMP/hepta-macos-six-target-$CANDIDATE_SHA"
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/hepta-macos-six-target-$SOURCE_SHA-$CANDIDATE_SHA-$GITHUB_RUN_ID"
           printf 'EVIDENCE=%s\nCARGO_TARGET_DIR=%s\n' "$EVIDENCE" "$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
           mkdir "$EVIDENCE"
           python3 - <<'PYTHON'
@@ -52,17 +54,26 @@ jobs:
           ref: ${{ github.sha }}
           persist-credentials: false
           fetch-depth: 2
+          path: control
+      - timeout-minutes: 3
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: "253d1b6d3b9c2fb4fc250886d0b8457a107842e9"
+          persist-credentials: false
+          fetch-depth: 6
+          path: source
       - name: Retain and bind reviewed source before setup
         id: source
         timeout-minutes: 2
         shell: bash
         run: |
           set -euo pipefail
+          cd "$SOURCE_ROOT"
           test ! -e "$CARGO_TARGET_DIR"
           git rev-parse HEAD HEAD^ 'HEAD^{tree}' > "$EVIDENCE/checkout-identities.txt"
           git diff --binary --full-index HEAD^ HEAD > "$EVIDENCE/checkout.patch"
           git status --porcelain=v1 > "$EVIDENCE/checkout-status.txt"
-          python3 .github/scripts/macos_six_evidence.py bind "$EVIDENCE" 2>&1 | tee "$EVIDENCE/source.log"
+          python3 "$GITHUB_WORKSPACE/control/.github/scripts/macos_six_evidence.py" bind "$EVIDENCE" 2>&1 | tee "$EVIDENCE/source.log"
       - timeout-minutes: 10
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
@@ -78,35 +89,39 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 .github/scripts/macos_six_evidence.py tools "$EVIDENCE" 2>&1 | tee "$EVIDENCE/tools.log"
+          cd "$SOURCE_ROOT"
+          python3 "$GITHUB_WORKSPACE/control/.github/scripts/macos_six_evidence.py" tools "$EVIDENCE" 2>&1 | tee "$EVIDENCE/tools.log"
           sw_vers > "$EVIDENCE/sw-vers.txt"
           xcodebuild -version > "$EVIDENCE/xcode-version.txt"
           python3 --version > "$EVIDENCE/python-version.txt"
           df -h > "$EVIDENCE/disk-before.txt"
-          python3 -m unittest discover -s .github/scripts -p test_macos_six_evidence.py -v 2>&1 | tee "$EVIDENCE/validator-tests.log"
+          python3 -m unittest discover -s "$GITHUB_WORKSPACE/control/.github/scripts" -p 'test_macos_six*.py' -v 2>&1 | tee "$EVIDENCE/validator-tests.log"
       - name: Native metadata, selection and original just tests using remaining shared 75-minute budget
         if: success()
         shell: bash
         run: |
           set -euo pipefail
-          python3 .github/scripts/macos_six_evidence.py run "$EVIDENCE" 2>&1 | tee "$EVIDENCE/runner.log"
+          cd "$SOURCE_ROOT"
+          python3 "$GITHUB_WORKSPACE/control/.github/scripts/macos_six_evidence.py" run "$EVIDENCE" 2>&1 | tee "$EVIDENCE/runner.log"
       - name: Verify exact selected outcomes and retain failure evidence
         if: always() && steps.source.outcome == 'success'
         timeout-minutes: 2
         shell: bash
         run: |
           set -euo pipefail
+          cd "$SOURCE_ROOT"
           git diff --binary > "$EVIDENCE/post-run.patch"
           git status --porcelain=v1 > "$EVIDENCE/post-run-status.txt"
           df -h > "$EVIDENCE/disk-after.txt"
-          python3 .github/scripts/macos_six_evidence.py verify "$EVIDENCE" 2>&1 | tee "$EVIDENCE/verification.log"
+          python3 "$GITHUB_WORKSPACE/control/.github/scripts/macos_six_evidence.py" verify "$EVIDENCE" 2>&1 | tee "$EVIDENCE/verification.log"
       - name: Seal finalized evidence after verification log closes
         if: always() && steps.source.outcome == 'success'
         timeout-minutes: 1
         shell: bash
         run: |
           set -euo pipefail
-          python3 .github/scripts/macos_six_evidence.py seal "$EVIDENCE"
+          cd "$SOURCE_ROOT"
+          python3 "$GITHUB_WORKSPACE/control/.github/scripts/macos_six_evidence.py" seal "$EVIDENCE"
       - name: Retain source, original logs, exits and separate reports on success or failure
         if: always()
         timeout-minutes: 10

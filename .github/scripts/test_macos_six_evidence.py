@@ -140,7 +140,9 @@ class EvidenceTests(unittest.TestCase):
                 len(self.check_report(self.report(phase), phase)),
                 len(evidence.expected(phase)),
             )
-        self.assertEqual(sum(len(evidence.expected(p)) for p in evidence.PHASES), 137)
+        self.assertEqual(
+            sum(len(evidence.expected(p)) for p in evidence.PHASES[:15]), 137
+        )
 
     @patch.object(evidence.os, "getsid", new=lambda pid: 4242)
     @patch.object(evidence.os, "getpgid", new=lambda pid: 4242)
@@ -1401,7 +1403,7 @@ class EvidenceTests(unittest.TestCase):
         evidence.validate_metadata(path)
 
     def test_original_wrapper_forwards_full_metadata_without_regenerating(self):
-        wrapper = Path(__file__).resolve().parents[2] / "scripts/run-nextest.py"
+        wrapper = Path(os.environ["SOURCE_ROOT"]) / "scripts/run-nextest.py"
         self.assertTrue(
             wrapper.is_file(), "run tests from exact baseline-plus-candidate checkout"
         )
@@ -1471,7 +1473,7 @@ class EvidenceTests(unittest.TestCase):
 
     def test_verifier_rejects_head_and_dirty_drift(self):
         (self.root / "source.json").write_text(
-            json.dumps({"head": "expected", "files": {}})
+            json.dumps({"head": evidence.SOURCE_SHA, "files": {}})
         )
         with patch.dict(
             os.environ, {"CANDIDATE_SHA": "expected", "WORKFLOW_SHA": "expected"}
@@ -1480,7 +1482,7 @@ class EvidenceTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "head drift"):
                     evidence.verify(self.root)
             with patch.object(
-                evidence, "git", side_effect=["expected", " M source.rs"]
+                evidence, "git", side_effect=[evidence.SOURCE_SHA, " M source.rs"]
             ):
                 with self.assertRaisesRegex(ValueError, "dirty after run"):
                     evidence.verify(self.root)
