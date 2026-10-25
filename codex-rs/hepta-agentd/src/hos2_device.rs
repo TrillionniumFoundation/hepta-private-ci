@@ -18,7 +18,7 @@ use codex_hepta_memory::Hos2RetirementObservation;
 use codex_hepta_memory::Hos2RetirementPermit;
 
 const HEADER_BYTES: usize = 64;
-const HOS2_IOCTL: libc::c_ulong = 0xc020_4802;
+const HOS2_IOCTL: u32 = 0xc020_4802;
 
 /// Retains a control file for the current manager or recovery image. The
 /// constructor verifies QueryAbi against the sealed bootstrap discovery page;
@@ -84,8 +84,13 @@ impl ControlTransport for FileTransport {
         // remain live for this synchronous ioctl. The lengths describe their
         // actual bounds. HOS2 snapshots input and copies output before return;
         // it retains no Rust reference. The File retains the process binding.
-        let result =
-            unsafe { libc::ioctl(self.file.as_raw_fd(), HOS2_IOCTL, descriptor.as_mut_ptr()) };
+        let result = unsafe {
+            libc::ioctl(
+                self.file.as_raw_fd(),
+                HOS2_IOCTL as _,
+                descriptor.as_mut_ptr(),
+            )
+        };
         if result != 0 {
             // EINTR is not retried: the original outbox must query D after an
             // ambiguous call, never dispatch the operation a second time.

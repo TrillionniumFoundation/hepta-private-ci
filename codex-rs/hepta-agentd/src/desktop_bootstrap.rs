@@ -49,7 +49,8 @@ pub(crate) fn receive_desktop_session_with_channel(
     message.msg_iov = &mut vector;
     message.msg_iovlen = 1;
     message.msg_control = control.as_mut_ptr().cast();
-    message.msg_controllen = mem::size_of_val(&control);
+    // The fixed buffer fits both glibc size_t and musl socklen_t.
+    message.msg_controllen = mem::size_of_val(&control) as _;
     // SAFETY: only live initialized buffers are passed; CLOEXEC adoption is atomic.
     let got = unsafe { libc::recvmsg(bootstrap.as_raw_fd(), &mut message, libc::MSG_CMSG_CLOEXEC) };
     if got < 0 {

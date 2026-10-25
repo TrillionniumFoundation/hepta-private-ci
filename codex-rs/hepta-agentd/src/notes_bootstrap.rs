@@ -340,7 +340,8 @@ fn receive_offer(
     message.msg_iov = &mut vector;
     message.msg_iovlen = 1;
     message.msg_control = control.as_mut_ptr().cast();
-    message.msg_controllen = mem::size_of_val(&control);
+    // The fixed buffer fits both glibc size_t and musl socklen_t.
+    message.msg_controllen = mem::size_of_val(&control) as _;
     // SAFETY: descriptor is live, and message points only to initialized,
     // writable bounded buffers. CLOEXEC is atomic for received descriptors.
     let length =
@@ -394,6 +395,8 @@ fn receive_offer(
     Ok((offer, endpoint, recovery))
 }
 
+// libc uses usize for these fields on glibc and socklen_t on musl.
+#[allow(clippy::unnecessary_cast)]
 pub(crate) fn received_descriptors(message: &libc::msghdr) -> (Vec<OwnedFd>, bool) {
     let mut descriptors = Vec::new();
     let mut valid = true;
@@ -406,15 +409,16 @@ pub(crate) fn received_descriptors(message: &libc::msghdr) -> (Vec<OwnedFd>, boo
         let value = unsafe { &*header };
         let minimum = unsafe { libc::CMSG_LEN(0) } as usize;
         let offset = (header as usize).checked_sub(message.msg_control as usize);
-        if value.cmsg_len < minimum
+        let header_len = value.cmsg_len as usize;
+        if header_len < minimum
             || offset
-                .and_then(|offset| offset.checked_add(value.cmsg_len))
-                .is_none_or(|end| end > message.msg_controllen)
+                .and_then(|offset| offset.checked_add(header_len))
+                .is_none_or(|end| end > message.msg_controllen as usize)
         {
             valid = false;
             break;
         }
-        let count_bytes = value.cmsg_len - minimum;
+        let count_bytes = header_len - minimum;
         if value.cmsg_level == libc::SOL_SOCKET && value.cmsg_type == libc::SCM_RIGHTS {
             valid &= count_bytes.is_multiple_of(mem::size_of::<RawFd>());
             for index in 0..count_bytes / mem::size_of::<RawFd>() {
