@@ -34,7 +34,7 @@ def execute_policy(warmup, split, old_anchor, policy, configuration):
     spec, state = POLICIES[policy], warmup.clone()
     origin = warmup.digest()
     states, actions, records, receipts = [state.clone()], [], [], []
-    plans, status, cpu_total, wall_total = [], "completed", 0, 0
+    plans, status, error_record, cpu_total, wall_total = [], "completed", None, 0, 0
     try:
         while len(actions) < configuration["steps"]:
             began, cpu = time.perf_counter_ns(), time.process_time_ns()
@@ -103,14 +103,16 @@ def execute_policy(warmup, split, old_anchor, policy, configuration):
         cpu_total += elapsed_cpu
         wall_total += elapsed_wall
         status = "not_executed_unresolved"
+        error_record = {"type": type(error).__name__, "message": str(error)}
         records.append({"at_step": len(actions), "status": status, "committed_steps": 0,
-            "error": {"type": type(error).__name__, "message": str(error)},
+            "error": error_record,
             "cpu_ns": elapsed_cpu, "wall_ns": elapsed_wall, "state_sha256": state.digest()})
     if warmup.digest() != origin:
         raise RuntimeError("policy mutated shared initial checkpoint")
     a = np.asarray(actions).reshape(-1, state.parameter_count)
     return {"state": state, "states": states, "actions": a, "plans": plans, "receipts": receipts,
         "record": {"schema": "hepta.cell-field-policy.v5", "policy": policy, "status": status,
+            "error": error_record,
             "completed_steps": len(actions), "registered_steps": configuration["steps"], "steps": records,
             "cpu_ns": cpu_total, "wall_ns": wall_total, "initial_state_sha256": origin,
             "terminal_state_sha256": state.digest(),
