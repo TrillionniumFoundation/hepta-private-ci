@@ -76,6 +76,16 @@ pub(super) fn create_local(runtime: &Path) {
     let path = std::ffi::CString::new(local.as_os_str().as_encoded_bytes()).unwrap();
     // SAFETY: root-created, NUL-free fixture directory; no caller pointer remains.
     assert_eq!(unsafe { libc::chown(path.as_ptr(), 60001, 60001) }, 0);
+    for purpose in ["device", "notes"] {
+        let child = local.join(purpose);
+        std::fs::DirBuilder::new()
+            .mode(0o700)
+            .create(&child)
+            .unwrap();
+        let child = std::ffi::CString::new(child.as_os_str().as_encoded_bytes()).unwrap();
+        // SAFETY: fresh root-created fixture child, with no links.
+        assert_eq!(unsafe { libc::chown(child.as_ptr(), 60001, 60001) }, 0);
+    }
 }
 
 pub(super) fn release(

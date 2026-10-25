@@ -312,7 +312,7 @@ fn read_existing_private(path: &Path) -> io::Result<()> {
     Ok(())
 }
 
-fn verify_process(registration: &HostAuthorityRegistration, uid: u32) -> io::Result<()> {
+pub(super) fn verify_process(registration: &HostAuthorityRegistration, uid: u32) -> io::Result<()> {
     if registration.peer_pid == 0
         || registration.peer_pid > i32::MAX as u32
         || registration.process_start_ticks == 0

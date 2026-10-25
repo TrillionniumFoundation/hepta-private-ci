@@ -2,12 +2,13 @@
 
 #[cfg(target_os = "linux")]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    use std::io::Write;
     use std::os::fd::AsFd;
     use std::path::PathBuf;
     let mut args = std::env::args_os().skip(1);
     let command = args
         .next()
-        .ok_or("initialize, register-writer or serve-session required")?;
+        .ok_or("initialize, register-writer, capture-and-serve or serve-session required")?;
     let mut options = std::collections::BTreeMap::new();
     let mut pidfd_stdin = false;
     while let Some(option) = args.next() {
@@ -44,6 +45,23 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         let proof = codex_hepta_agentd::register_host_writer_authorization(&config)?;
         println!("{}", serde_json::to_string(&proof)?);
+    } else if command == "capture-and-serve" {
+        let config = take("--config")?;
+        let registration = take("--registration")?;
+        let device = take("--device-local")?;
+        let notes = take("--notes-local")?;
+        if !options.is_empty() || !pidfd_stdin {
+            return Err("unknown option or missing pre-held owner pidfd".into());
+        }
+        let owner = std::io::stdin().as_fd().try_clone_to_owned()?;
+        let bundle = codex_hepta_agentd::capture_host_authority_bootstrap(
+            &config,
+            &registration,
+            codex_hepta_agentd::HostAuthorityLocalConsumers { device, notes },
+        )?;
+        println!("{}", serde_json::to_string(&bundle)?);
+        std::io::stdout().flush()?;
+        codex_hepta_agentd::serve_host_authority_session(&config, &registration, owner)?;
     } else if command == "serve-session" {
         let config = take("--config")?;
         let registration = take("--registration")?;

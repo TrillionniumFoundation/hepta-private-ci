@@ -17,7 +17,6 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use std::io::Read;
 use std::os::fd::FromRawFd;
 use std::os::fd::OwnedFd;
-use std::os::unix::fs::DirBuilderExt;
 use std::os::unix::net::UnixStream;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -125,7 +124,6 @@ pub(super) fn qualify(
             )?);
             assert_eq!(frontier.load(&signer)?, slot.frontier);
             let path = &slot.local_state_dir;
-            std::fs::DirBuilder::new().mode(0o700).create(&path)?;
             let owner = FinalUseAuthority::open_state_dir_with_issuer_keys(
                 &path, signer.clone(),
                 vec![FinalUseIssuerTrustKey::from(bundle.issuer_key.clone())], head.clone(), session.clock(), frontier.clone(),

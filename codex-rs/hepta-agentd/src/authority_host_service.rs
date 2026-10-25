@@ -22,6 +22,9 @@ use crate::AuthBusObjectiveBody;
 use crate::AuthBusObjectiveIngress;
 use crate::DeploymentFinalUseIssuer;
 
+#[path = "authority_host_launch.rs"]
+pub(super) mod launch;
+
 #[path = "authority_host_writer.rs"]
 mod writer;
 use writer::RegisteredWriter;

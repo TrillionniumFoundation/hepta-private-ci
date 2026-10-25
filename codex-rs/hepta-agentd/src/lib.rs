@@ -71,6 +71,12 @@ pub use authority_host_config::HostAuthorityRegisteredIdentity;
 #[cfg(target_os = "linux")]
 mod authority_host_runtime;
 #[cfg(target_os = "linux")]
+pub use authority_host_service::launch::HostAuthorityLocalConsumers;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::launch::capture_host_authority_bootstrap;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::launch::initialize_host_authority_owners;
+#[cfg(target_os = "linux")]
 mod authority_host_service;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::initialize_host_authority;

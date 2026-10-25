@@ -596,70 +596,95 @@ fn root_service_qualification(mode: Qualification) {
         }
     }
     let config_path = if let Some(cut) = checkpoint_cut {
-        let (clock, leases, issuer) = open_registered_issuer(&config).unwrap();
-        let service = HostAuthorityService::from_registered_owner(
-            issuer.clone(),
-            clock.clone(),
-            registration.registered_identity.identity().unwrap(),
-        )
-        .unwrap()
-        .with_registered_writer(config.writer.clone().unwrap(), leases.verifier())
-        .unwrap();
-        let peer = codex_hepta_memory::CognitiveCheckpointPeerLifetime {
-            uid: 60001,
-            pid: registration.peer_pid,
-            boot_id: registration.boot_id.clone(),
-            process_start_ticks: registration.process_start_ticks,
-        };
-        let registered = service
-            .writer
-            .as_ref()
-            .unwrap()
-            .checkpoint_registration(&issuer, registration.publisher_epoch, peer)
-            .unwrap();
-        let directory = config.state_dir.join("checkpoint");
-        std::fs::DirBuilder::new()
-            .mode(0o700)
-            .create(&directory)
-            .unwrap();
-        let backend = crate::HostCognitiveCheckpoint::initialize_fresh(
-            RootAuthorityDirectory::open(&directory).unwrap(),
-            registered.clone(),
-            cut,
-            clock,
-        )
-        .unwrap();
-        drop(backend);
-        config.checkpoint_state_dir = Some(directory);
-        let path = root.join("service-checkpoint.json");
-        write_json(&path, &config);
-        // A whole-writer binding from a different original authority/token
-        // cannot open this protected head, even for the same publisher/peer.
-        let mut wrong = registered;
-        wrong.writer_binding.fencing_token_digest =
-            codex_hepta_contracts::Sha256Digest::for_bytes(b"wrong-token");
-        assert!(
-            crate::HostCognitiveCheckpoint::open(
-                RootAuthorityDirectory::open(config.checkpoint_state_dir.as_ref().unwrap())
-                    .unwrap(),
-                wrong,
-                service.clock,
+        if original_owner {
+            config.checkpoint_state_dir = Some(config.state_dir.join("checkpoint"));
+            config.consumers = Some(HostAuthorityConsumersConfig {
+                device: HostAuthorityConsumerConfig {
+                    state_dir: config.state_dir.join("device-consumer"),
+                    owner_id: config.signer_id.clone(),
+                },
+                notes: HostAuthorityConsumerConfig {
+                    state_dir: config.state_dir.join("notes-consumer"),
+                    owner_id: config.signer_id.clone(),
+                },
+            });
+            config.sockets.device_frontier = Some(runtime.path().join("device-frontier.sock"));
+            config.sockets.notes_frontier = Some(runtime.path().join("notes-frontier.sock"));
+            let path = root.join("service-owners.json");
+            write_json(&path, &config);
+            crate::initialize_host_authority_owners(&path, &registration_path, cut.clone())
+                .unwrap();
+            assert!(
+                crate::initialize_host_authority_owners(&path, &registration_path, cut).is_err()
+            );
+            path
+        } else {
+            let (clock, leases, issuer) = open_registered_issuer(&config).unwrap();
+            let service = HostAuthorityService::from_registered_owner(
+                issuer.clone(),
+                clock.clone(),
+                registration.registered_identity.identity().unwrap(),
             )
-            .is_err()
-        );
-        path
+            .unwrap()
+            .with_registered_writer(config.writer.clone().unwrap(), leases.verifier())
+            .unwrap();
+            let peer = codex_hepta_memory::CognitiveCheckpointPeerLifetime {
+                uid: 60001,
+                pid: registration.peer_pid,
+                boot_id: registration.boot_id.clone(),
+                process_start_ticks: registration.process_start_ticks,
+            };
+            let registered = service
+                .writer
+                .as_ref()
+                .unwrap()
+                .checkpoint_registration(&issuer, registration.publisher_epoch, peer)
+                .unwrap();
+            let directory = config.state_dir.join("checkpoint");
+            std::fs::DirBuilder::new()
+                .mode(0o700)
+                .create(&directory)
+                .unwrap();
+            let backend = crate::HostCognitiveCheckpoint::initialize_fresh(
+                RootAuthorityDirectory::open(&directory).unwrap(),
+                registered.clone(),
+                cut,
+                clock,
+            )
+            .unwrap();
+            drop(backend);
+            config.checkpoint_state_dir = Some(directory);
+            let path = root.join("service-checkpoint.json");
+            write_json(&path, &config);
+            // A whole-writer binding from a different original authority/token
+            // cannot open this protected head, even for the same publisher/peer.
+            let mut wrong = registered;
+            wrong.writer_binding.fencing_token_digest =
+                codex_hepta_contracts::Sha256Digest::for_bytes(b"wrong-token");
+            assert!(
+                crate::HostCognitiveCheckpoint::open(
+                    RootAuthorityDirectory::open(config.checkpoint_state_dir.as_ref().unwrap())
+                        .unwrap(),
+                    wrong,
+                    service.clock,
+                )
+                .is_err()
+            );
+            path
+        }
     } else {
         config_path
     };
-    let config_path = if std::env::var_os("HEPTA_SERVICE_CONSUMERS").is_some() {
-        assert!(config.writer.is_some());
-        consumer_fixture::initialize(&mut config);
-        let path = root.join("service-consumers.json");
-        write_json(&path, &config);
-        path
-    } else {
-        config_path
-    };
+    let config_path =
+        if std::env::var_os("HEPTA_SERVICE_CONSUMERS").is_some() && config.consumers.is_none() {
+            assert!(config.writer.is_some());
+            consumer_fixture::initialize(&mut config);
+            let path = root.join("service-consumers.json");
+            write_json(&path, &config);
+            path
+        } else {
+            config_path
+        };
     consumer_fixture::release(&mut child, &config, &registration);
     let result = serve_host_authority_session(&config_path, &registration_path, pidfd);
     let status = child.wait().unwrap();

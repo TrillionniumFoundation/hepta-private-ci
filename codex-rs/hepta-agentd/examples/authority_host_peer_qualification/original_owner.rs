@@ -7,7 +7,6 @@ use codex_hepta_types::StableId;
 use std::io::Write;
 use std::os::fd::FromRawFd;
 use std::os::fd::OwnedFd;
-use std::os::unix::fs::DirBuilderExt;
 use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::net::UnixStream;
 use std::sync::Arc;
@@ -64,6 +63,7 @@ pub(super) fn qualify(
         .enable_all()
         .build()?;
     runtime.block_on(async move {
+        let started = std::time::Instant::now();
         let registered = &bundle.registered_identity;
         let fleet = codex_hepta_paths::HeptaFleetRoot::parse(registered.fleet_root.clone())?;
         let layout = fleet.layout().agent(&registered.agent_id);
@@ -73,9 +73,6 @@ pub(super) fn qualify(
             registered.workspace.clone(),
         )?;
         let identity = config.identity().clone();
-        for slot in [&bundle.consumers.device, &bundle.consumers.notes] {
-            std::fs::DirBuilder::new().mode(0o700).create(&slot.local_state_dir)?;
-        }
         let fd: i32 = std::env::var("HEPTA_SERVICE_ROOT_PIDFD")?.parse()?;
         assert_eq!(fd, 198);
         // SAFETY: the root qualification parent transferred one owned pre-held
@@ -95,8 +92,9 @@ pub(super) fn qualify(
             lanes: AgentdRootAuthorityLanes { observation, issuer, checkpoint, device_frontier: device, notes_frontier: notes, root_pidfd },
             target: AgentdRootPrimaryTarget::Notes(target.clone()), timeout: Duration::from_millis(500),
             lifetime: Duration::from_secs(20), reconcile_interval: Duration::from_millis(100),
-        }).await?;
-        attachment.verify_live()?;
+        }).await.map_err(|error| format!("original Root attachment after {:?}: {error}", started.elapsed()))?;
+        eprintln!("HEPTA_ROOT_OWNER_STAGE attached elapsed={:?}", started.elapsed());
+        attachment.verify_live().map_err(|error| format!("post-attachment live verifier: {error}"))?;
         // Use the same original attach_target operation as Agentd runtime.
         // This clones only a wrapper over the existing writer, never a ledger.
         let host = attachment.writer_host().as_ref().clone().attach_target(
@@ -104,11 +102,17 @@ pub(super) fn qualify(
         )?;
         let writer = host.writer();
         let intent = notes_operation_intent(&target_identity, &payload, StableId::new(identity.agent_id.as_str())?, Generation::new(1)?)?;
-        let queued = writer.prepare_operation(intent, NOTES_REPLACE_TOPIC_V1, payload).await?;
+        let queued = writer.prepare_operation(intent, NOTES_REPLACE_TOPIC_V1, payload).await
+            .map_err(|error| format!("original prepare after {:?}: {error}", started.elapsed()))?;
+        eprintln!("HEPTA_ROOT_OWNER_STAGE prepared elapsed={:?}", started.elapsed());
         let operation = queued.occurrence_key.clone();
-        assert_eq!(host.dispatch_with_grant_provider(queued).await?.state, LocalOutcomeState::Indeterminate);
+        assert_eq!(host.dispatch_with_grant_provider(queued).await
+            .map_err(|error| format!("original dispatch after {:?}: {error}", started.elapsed()))?.state, LocalOutcomeState::Indeterminate);
+        eprintln!("HEPTA_ROOT_OWNER_STAGE dispatched elapsed={:?}", started.elapsed());
         assert_eq!(target.effects.load(Ordering::SeqCst), 1);
-        assert_eq!(host.reconcile(1).await?, 1);
+        assert_eq!(host.reconcile(1).await
+            .map_err(|error| format!("original reconcile after {:?}: {error}", started.elapsed()))?, 1);
+        eprintln!("HEPTA_ROOT_OWNER_STAGE reconciled elapsed={:?}", started.elapsed());
         assert_eq!(writer.status(&operation).await?, LocalOutcomeState::Committed);
         assert_eq!(target.retired.load(Ordering::SeqCst), 1);
         let current = writer.recovery_anchor().await?;
