@@ -1,0 +1,43 @@
+{
+  "failures": [],
+  "protocol_sha256": "30880ddaae978f622cf6a99cf3888771daa954777e6f9ce2a75c25f01f166280",
+  "scope": "source/predictor identities only; validation/final label files not opened",
+  "tasks": {
+    "newsgroups": {
+      "normalized_duplicate_inputs": 0,
+      "previous_registered_component_overlap": "different_public_task_family",
+      "role_counts": {
+        "current_probe": 32,
+        "current_train": 64,
+        "current_validation": 64,
+        "future_test": 128,
+        "old_probe": 32,
+        "old_test": 64,
+        "old_train": 64,
+        "old_validation": 64
+      },
+      "rows": 512,
+      "source_and_predictor_hashes_verified": true,
+      "truncated_character_inputs": 35,
+      "unique_source_groups": 512
+    },
+    "uci": {
+      "normalized_duplicate_inputs": 0,
+      "previous_registered_component_overlap": 0,
+      "role_counts": {
+        "current_probe": 16,
+        "current_train": 32,
+        "current_validation": 32,
+        "future_test": 112,
+        "old_probe": 32,
+        "old_test": 32,
+        "old_train": 64,
+        "old_validation": 32
+      },
+      "rows": 352,
+      "source_and_predictor_hashes_verified": true,
+      "truncated_character_inputs": 0,
+      "unique_source_groups": 352
+    }
+  }
+}
