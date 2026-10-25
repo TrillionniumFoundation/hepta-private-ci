@@ -105,11 +105,12 @@ async fn probe(root: &Path, config_path: &Path, document_path: &Path, anchor: &s
         "delivery_allowed": true, "same_process_owner_recovered": true,
         "backend_dispatches": cell.backend_dispatch_attempts(), "context_provider_calls": context.calls(),
     }))?;
-    let withdrawal_source = source(b"Withdraw the controlled pretrained shadow source".to_vec(),
+    let withdrawal_reason = "controlled shadow source withdrawal";
+    let withdrawal_source = source(withdrawal_reason.as_bytes().to_vec(),
         "qualification:pretrained-shadow-withdrawal")?;
     let withdrawal = host.forget_with_kg(&access, &claim.production.write.memory.id.memory_id,
         claim.production.write.memory.id.revision, &withdrawal_source, &ForgetMemoryDraft {
-            scope: CognitiveScope::AgentPrivate, reason: "controlled shadow source withdrawal".to_string(),
+            scope: CognitiveScope::AgentPrivate, reason: withdrawal_reason.to_string(),
             valid_from_unix_seconds: withdrawal_source.observed_at_unix_seconds, citations: vec![],
         }).await?;
     retain(&root.join("source-tombstone.json"), &withdrawal)?;

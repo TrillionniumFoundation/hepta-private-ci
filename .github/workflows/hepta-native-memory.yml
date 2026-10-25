@@ -63,6 +63,16 @@ jobs:
       - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
         with:
           enable-cache: false
+      - name: Install pinned formatter launcher
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --show-error --silent --location --max-time 120 https://github.com/facebook/dotslash/releases/download/v0.5.8/dotslash-ubuntu-22.04.x86_64.tar.gz --output "$NATIVE_ARTIFACT_ROOT/dotslash.tar.gz"
+          echo "3905bd406a0b4cc5fbe69843dca96fc7937fed6109164a6d56335fbf61187120  $NATIVE_ARTIFACT_ROOT/dotslash.tar.gz" | sha256sum --check
+          mkdir "$RUNNER_TEMP/hepta-native-tools"
+          tar -xzf "$NATIVE_ARTIFACT_ROOT/dotslash.tar.gz" -C "$RUNNER_TEMP/hepta-native-tools"
+          echo "$RUNNER_TEMP/hepta-native-tools" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/hepta-native-tools/dotslash" --version | tee "$NATIVE_ARTIFACT_ROOT/dotslash-version.txt"
       - name: Native build prerequisites
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y pkg-config libssl-dev
       - name: Evidence driver failure and timeout regressions
