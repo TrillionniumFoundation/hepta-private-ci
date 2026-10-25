@@ -1,5 +1,5 @@
 """Linux-only, exact source-only ZIP2 owner test. No raw stream publication."""
-import hashlib,json,os,re,shutil,sys,time,tomllib,math
+import hashlib,json,os,re,shutil,sys,time,tomllib,math,stat
 import xml.etree.ElementTree as ET
 from pathlib import Path
 import zip_native_owned as owned
@@ -14,7 +14,7 @@ PROFILE_APPENDIX='\n# Owner diagnostic only: original defaults and overrides pre
 NEXTTEST_BASE_BLOB='f0430497b34b5335929e24b9e19745f467362641'
 DEADLINE=None
 FINALIZING=False
-CONTROL_PARENT='577c6d23316e59727bf7c42c9f02cc62b38216ee'
+CONTROL_PARENT='c1bcba7361a83aa6fa2d043de722537167f58605'
 FINAL_READ_REPOS=frozenset()
 FINAL_GIT_READS={('ls-files','-z'),('status','--porcelain','--untracked-files=all'),('rev-parse','HEAD'),('rev-parse','HEAD^{tree}')}
 class Hold(Exception):pass
@@ -30,7 +30,7 @@ DIAGNOSTIC_PREDICATES={'gate_failed','platform','budget_origin','budget_elapsed'
     'admin_promisor','admin_worktree_remnant','admin_file_symlink','admin_file_bound','admin_missing_file','admin_ref_bound',
     'admin_ref_type','admin_identity_changed','config_size','config_encoding','config_section',
     'config_syntax','config_key','config_duplicate','config_value','config_required','config_branch_pair',
-    'index_empty','index_format','index_mode','index_gitmodules','index_duplicate','checkout_delta','physical_index','control_head','control_parent',
+    'index_empty','index_format','index_mode','index_gitmodules','index_duplicate','checkout_delta','physical_index','build_environment','control_head','control_parent',
     'control_dirty','control_blob','source_head','source_tree','source_dirty','source_blob',
     'policy_identity','lock_identity','cargo_config_identity','permission_denied','io_error','unexpected_error'}
 DIAGNOSTIC_ITEMS={'commondir','gitdir','worktrees','modules','config_worktree','config_lock','index_lock',
@@ -66,6 +66,7 @@ def guard():
     require(DEADLINE is not None and time.monotonic()<DEADLINE+(180 if FINALIZING else 0)-10,'deadline')
 GIT_ADMIN_BASELINES={}
 CARGO_CONFIG_BASELINE=None
+BUILD_ENV_BASELINE=None
 CARGO_CONFIG_PATHS=[]
 GIT_SAFE_FLAGS=['-c','core.fsmonitor=false','-c','core.untrackedCache=false',
     '-c','core.hooksPath=/dev/null','-c','core.attributesFile=/dev/null',
@@ -167,6 +168,7 @@ def recheck_cargo_config():
     require(CARGO_CONFIG_BASELINE is not None and cargo_config_identity()==CARGO_CONFIG_BASELINE,'cargo_config_identity')
 
 def capture(argv,env,maximum,records,disk):
+    if argv and argv[0]=='cargo':validate_build_environment(env)
     guard()
     git_repo=None
     if argv and argv[0]=='cargo':recheck_cargo_config()
@@ -320,6 +322,77 @@ def validate_junit(data,expected):
     return {'identities':sorted(names),'count':len(names),'failures':0,'errors':0,'skipped':0,'retries':0,
             'sha256':sha(data),'bytes':len(data)}
 
+STORAGE_CLASSES=('target_incremental','target_other','registry_cache','registry_src','registry_index',
+    'cargo_git','cargo_other','rustup','tmp','home','other')
+
+def storage_class(parts):
+    if parts[0]=='target':
+        return 'target_incremental' if len(parts)>2 and parts[1]=='dev-small' and parts[2]=='incremental' else 'target_other'
+    if parts[0]=='cargo':
+        if len(parts)>2 and parts[1]=='registry' and parts[2] in {'cache','src','index'}:return 'registry_'+parts[2]
+        return 'cargo_git' if len(parts)>1 and parts[1]=='git' else 'cargo_other'
+    return parts[0] if parts[0] in {'rustup','tmp','home'} else 'other'
+
+def storage_observation(root,deadline,entry_cap=100000):
+    # Read metadata only, after confirmed owned cleanup. No file content, arbitrary
+    # names, exception text, subprocess, unlink, or network. Path sums can count
+    # hardlinks more than once and exclude directory/symlink allocation.
+    result={'complete':False,'stop':'deadline','entries':0,'entry_cap':entry_cap,
+        'measurement':'regular_file_path_sums_not_filesystem_growth',
+        'classes':{k:{'files':0,'directories':0,'symlinks':0,'logical_bytes':0,'allocated_bytes':0} for k in STORAGE_CLASSES}}
+    class Stop(Exception):pass
+    def stop(reason):result['stop']=reason;raise Stop()
+    def tick():
+        if time.monotonic()>=deadline:stop('deadline')
+    flags=os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC
+    def walk(fd,parts,device):
+        tick()
+        if len(parts)>64:stop('depth_limit')
+        with os.scandir(fd) as entries:
+            for item in entries:
+                tick()
+                if result['entries']>=entry_cap:stop('entry_limit')
+                result['entries']+=1
+                # The safe output directory is excluded, never reingested.
+                if not parts and item.name=='public':continue
+                current=parts+(item.name,);bucket=result['classes'][storage_class(current)]
+                info=item.stat(follow_symlinks=False)
+                if info.st_dev!=device:stop('other_device')
+                if stat.S_ISLNK(info.st_mode):bucket['symlinks']+=1
+                elif stat.S_ISREG(info.st_mode):
+                    bucket['files']+=1;bucket['logical_bytes']+=info.st_size;bucket['allocated_bytes']+=info.st_blocks*512
+                elif stat.S_ISDIR(info.st_mode):
+                    child=os.open(item.name,flags,dir_fd=fd)
+                    try:
+                        actual=os.fstat(child)
+                        if (actual.st_dev,actual.st_ino)!=(info.st_dev,info.st_ino):stop('identity_changed')
+                        bucket['directories']+=1;walk(child,current,device)
+                    finally:os.close(child)
+                else:stop('unsupported_type')
+    try:
+        tick();before=root.lstat()
+        if not stat.S_ISDIR(before.st_mode):stop('unsupported_type')
+        fd=os.open(root,flags)
+        try:
+            actual=os.fstat(fd)
+            if (actual.st_dev,actual.st_ino)!=(before.st_dev,before.st_ino):stop('identity_changed')
+            walk(fd,(),actual.st_dev);tick()
+            after=root.lstat()
+            if (after.st_dev,after.st_ino)!=(actual.st_dev,actual.st_ino):stop('identity_changed')
+        finally:os.close(fd)
+        tick()  # Include final root identity read and fd close in the observation budget.
+        result['complete']=True;result['stop']='complete'
+    except Stop:pass
+    except PermissionError:result['stop']='permission_denied'
+    except OSError:result['stop']='io_error'
+    except Exception:result['stop']='unsupported_metadata'
+    return result
+
+def validate_build_environment(env):
+    require(BUILD_ENV_BASELINE is not None and tuple(sorted(env.items()))==BUILD_ENV_BASELINE,'build_environment')
+    require(env.get('CARGO_INCREMENTAL')=='0','build_environment')
+    require(not any(k.startswith('CARGO_PROFILE_') or k in {'RUSTFLAGS','CARGO_ENCODED_RUSTFLAGS','CARGO_BUILD_INCREMENTAL','RUSTC_WRAPPER','RUSTC_WORKSPACE_WRAPPER'} for k in env),'build_environment')
+
 def command_plan(source,temp):
     manifest=str(source/'codex-rs/Cargo.toml');common=['cargo','+1.95.0']
     selection=['--manifest-path',manifest,'--locked','--all-features','-p','codex-core-plugins','--lib',
@@ -335,19 +408,22 @@ def command_plan(source,temp):
     return commands
 
 def main(control,source,temp):
-    global DEADLINE,FINALIZING,FINAL_READ_REPOS,GIT_ADMIN_BASELINES,CARGO_CONFIG_BASELINE,CARGO_CONFIG_PATHS,DIAGNOSTIC
+    global DEADLINE,FINALIZING,FINAL_READ_REPOS,GIT_ADMIN_BASELINES,CARGO_CONFIG_BASELINE,CARGO_CONFIG_PATHS,BUILD_ENV_BASELINE,DIAGNOSTIC
     FINALIZING=False
     DIAGNOSTIC={'stage':'initial','failure':None,'final_failure':None}
     FINAL_READ_REPOS=frozenset({str(control),str(source)})
-    GIT_ADMIN_BASELINES={};CARGO_CONFIG_BASELINE=None;CARGO_CONFIG_PATHS=[]
+    GIT_ADMIN_BASELINES={};CARGO_CONFIG_BASELINE=None;CARGO_CONFIG_PATHS=[];BUILD_ENV_BASELINE=None
     temp.mkdir(mode=0o700);public=temp/'public';public.mkdir(mode=0o700)
     initial_cwd=Path.cwd()
     records=[];report={'schema':1,'qualified':False,'raw_exported':False,'windows':'HOLD_unreviewed_job_object',
       'base':BASE,'base_tree':BASE_TREE,'dependency_upgrade':False,'native_execution_complete':False}
     env={'PATH':os.environ['PATH'],'HOME':str(temp/'home'),'CARGO_HOME':str(temp/'cargo'),
-         'RUSTUP_HOME':str(temp/'rustup'),'CARGO_TARGET_DIR':str(temp/'target'),'CARGO_BUILD_JOBS':'2',
+         'RUSTUP_HOME':str(temp/'rustup'),'CARGO_TARGET_DIR':str(temp/'target'),'CARGO_BUILD_JOBS':'2','CARGO_INCREMENTAL':'0',
          'GIT_TERMINAL_PROMPT':'0','GIT_CONFIG_NOSYSTEM':'1','GIT_CONFIG_GLOBAL':'/dev/null',
          'CARGO_TERM_COLOR':'never','CI':'true','LANG':'C.UTF-8','TMPDIR':str(temp/'tmp')}
+    # Exact private mapping binding: no values or mapping hashes are published.
+    BUILD_ENV_BASELINE=tuple(sorted(env.items()))
+    validate_build_environment(env)
     for key in ['HOME','CARGO_HOME','RUSTUP_HOME','CARGO_TARGET_DIR','TMPDIR']:Path(env[key]).mkdir(mode=0o700)
     try:
         diagnostic_stage('platform');require(sys.platform=='linux','platform')
@@ -441,7 +517,8 @@ def main(control,source,temp):
         require(profiles['dev']=={'debug':'limited'})
         report['cargo_build_profile']={'name':'dev-small','manifest_blob':blob(manifest_bytes),
             'inherits':'dev','opt_level':0,'debug':'none','strip':'symbols',
-            'debug_assertions':True,'overflow_checks':True,'features_unchanged':True}
+            'debug_assertions':True,'overflow_checks':True,'features_unchanged':True,'incremental':False,'incremental_source':'CARGO_INCREMENTAL=0',
+            'codegen_units':'unoverridden_rustc_defaults_may_change_256_to_16'}
         original_config=(source/'codex-rs/.config/nextest.toml').read_bytes()
         require(blob(original_config)==NEXTTEST_BASE_BLOB)
         profile=(control/'.github/scripts/zip_native_nextest.toml').read_bytes()
@@ -454,6 +531,7 @@ def main(control,source,temp):
         diagnostic_stage('native_commands')
         for index,argv in enumerate(command_plan(source,temp)):
             recheck_cargo_config()
+            validate_build_environment(env)
             is_list='nextest' in argv and 'list' in argv
             is_run='nextest' in argv and 'run' in argv
             if is_run:require(not junit.exists() and pending is not None)
@@ -482,6 +560,7 @@ def main(control,source,temp):
         report['owned_commands_cleanup_confirmed']=not owned.OWNERSHIP_UNCERTAIN and all(x['cleanup']['confirmed'] for x in records)
         try:
             require(not owned.OWNERSHIP_UNCERTAIN)
+            validate_build_environment(env)
             recheck_cargo_config()
             require('source_before_sha256' in report and 'control_before' in report)
             after=snapshot(source,env,records,temp)
@@ -508,6 +587,12 @@ def main(control,source,temp):
         except Exception as error:
             diagnostic_failure('permission_denied' if isinstance(error,PermissionError) else 'io_error' if isinstance(error,OSError) else 'unexpected_error')
             report['hold']=True;report['cleanup_confirmed']=False
+        # Optional diagnostic only: partial metadata is never claimed complete.
+        # It cannot authorize Cargo or change the qualification gates.
+        if not owned.OWNERSHIP_UNCERTAIN and all(x['cleanup']['confirmed'] for x in records) and DEADLINE is not None:
+            report['storage_observation']=storage_observation(temp,min(time.monotonic()+3,DEADLINE+170))
+        else:
+            report['storage_observation']={'complete':False,'stop':'cleanup_or_deadline_unconfirmed'}
         report['preflight_diagnostic']=DIAGNOSTIC
         report['commands']=records
         os.chdir(initial_cwd)

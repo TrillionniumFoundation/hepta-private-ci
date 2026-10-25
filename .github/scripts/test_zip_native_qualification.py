@@ -4,7 +4,100 @@ from unittest import mock
 import zip_native_qualification as q
 import zip_native_owned as support
 class PolicyTests(unittest.TestCase):
-    def tearDown(self):q.DEADLINE=None;q.FINALIZING=False;q.FINAL_READ_REPOS=frozenset();q.GIT_ADMIN_BASELINES={};q.CARGO_CONFIG_BASELINE=None;q.CARGO_CONFIG_PATHS=[];support.OWNERSHIP_UNCERTAIN=False
+    def tearDown(self):q.DEADLINE=None;q.FINALIZING=False;q.FINAL_READ_REPOS=frozenset();q.GIT_ADMIN_BASELINES={};q.CARGO_CONFIG_BASELINE=None;q.CARGO_CONFIG_PATHS=[];q.BUILD_ENV_BASELINE=None;support.OWNERSHIP_UNCERTAIN=False
+    def test_storage_categories_and_secret_non_export(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            paths={'target/dev-small/incremental/SecretName': 'target_incremental',
+                'target/dev-small/deps/SecretName':'target_other','cargo/registry/cache/a':'registry_cache',
+                'cargo/registry/src/a':'registry_src','cargo/registry/index/a':'registry_index',
+                'cargo/git/a':'cargo_git','cargo/a':'cargo_other','rustup/a':'rustup',
+                'tmp/a':'tmp','home/a':'home','unclassified/a':'other'}
+            for name in paths:
+                path=root/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(b'SecretPayload')
+            (root/'public').mkdir();(root/'public/SecretIgnored').write_bytes(b'x'*100)
+            r=q.storage_observation(root,time.monotonic()+5)
+            self.assertTrue(r['complete']);self.assertEqual(r['stop'],'complete')
+            for category in paths.values():
+                self.assertEqual(r['classes'][category]['files'],1)
+                self.assertEqual(r['classes'][category]['logical_bytes'],13)
+            self.assertNotIn('Secret',json.dumps(r));self.assertNotIn(td,json.dumps(r))
+    def test_storage_symlink_not_followed_and_fifo_never_opened(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td);(root/'tmp').mkdir();(root/'tmp/SecretLink').symlink_to('/etc')
+            r=q.storage_observation(root,time.monotonic()+5)
+            self.assertTrue(r['complete']);self.assertEqual(r['classes']['tmp']['symlinks'],1)
+            os.mkfifo(root/'tmp/SecretFifo')
+            r=q.storage_observation(root,time.monotonic()+5)
+            self.assertFalse(r['complete']);self.assertEqual(r['stop'],'unsupported_type')
+            self.assertNotIn('Secret',json.dumps(r))
+    def test_storage_final_identity_and_close_spend_deadline_without_fd_leak(self):
+        for slow in ['lstat','close']:
+            with self.subTest(slow=slow),tempfile.TemporaryDirectory() as td:
+                root=Path(td);clock=[100];opened=[];closed=[];lstat_calls=[0]
+                original_lstat=Path.lstat;original_open=q.os.open;original_close=q.os.close
+                def lstat(path):
+                    value=original_lstat(path);lstat_calls[0]+=1
+                    if slow=='lstat' and lstat_calls[0]==2:clock[0]=105
+                    return value
+                def op(*args,**kwargs):
+                    fd=original_open(*args,**kwargs);opened.append(fd);return fd
+                def close(fd):
+                    original_close(fd);closed.append(fd)
+                    if slow=='close':clock[0]=105
+                with mock.patch.object(q.time,'monotonic',side_effect=lambda:clock[0]),mock.patch.object(Path,'lstat',lstat),mock.patch.object(q.os,'open',side_effect=op),mock.patch.object(q.os,'close',side_effect=close):
+                    result=q.storage_observation(root,101)
+                self.assertFalse(result['complete']);self.assertEqual(result['stop'],'deadline')
+                self.assertEqual(opened,closed);self.assertEqual(len(opened),1)
+                with self.assertRaises(OSError):os.fstat(opened[0])
+
+    def test_storage_deadline_entry_bound_denial_and_no_retry(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td);(root/'a').write_bytes(b'x')
+            with mock.patch.object(q.os,'open',side_effect=PermissionError('SecretException')) as op:
+                r=q.storage_observation(root,time.monotonic()-1);self.assertEqual(r['stop'],'deadline');op.assert_not_called()
+                r=q.storage_observation(root,time.monotonic()+5);self.assertEqual(r['stop'],'permission_denied');self.assertEqual(op.call_count,1)
+            self.assertNotIn('Secret',json.dumps(r))
+            r=q.storage_observation(root,time.monotonic()+5,entry_cap=0)
+            self.assertEqual(r['stop'],'entry_limit');self.assertEqual(r['entries'],0)
+    def test_storage_root_symlink_and_identity_replacement_rejected(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td);link=root/'link';link.symlink_to(root,target_is_directory=True)
+            self.assertEqual(q.storage_observation(link,time.monotonic()+5)['stop'],'unsupported_type')
+            original=q.os.fstat
+            from types import SimpleNamespace
+            with mock.patch.object(q.os,'fstat',side_effect=lambda fd:SimpleNamespace(st_dev=original(fd).st_dev,st_ino=original(fd).st_ino+1)):
+                self.assertEqual(q.storage_observation(root,time.monotonic()+5)['stop'],'identity_changed')
+    def test_build_environment_exact_incremental_no_implicit_overrides(self):
+        q.BUILD_ENV_BASELINE=None
+        with self.assertRaises(q.Hold):q.validate_build_environment({'CARGO_INCREMENTAL':'0'})
+        q.BUILD_ENV_BASELINE=(('CARGO_INCREMENTAL','0'),)
+        q.validate_build_environment({'CARGO_INCREMENTAL':'0'})
+        bad=[{}, {'CARGO_INCREMENTAL':'1'}, {'CARGO_INCREMENTAL':'false'}]
+        for name in ['CARGO_PROFILE_DEV_SMALL_CODEGEN_UNITS','CARGO_PROFILE_DEV_SMALL_DEBUG_ASSERTIONS','CARGO_BUILD_INCREMENTAL','RUSTFLAGS','CARGO_ENCODED_RUSTFLAGS','RUSTC_WRAPPER','RUSTC_WORKSPACE_WRAPPER']:
+            bad.append({'CARGO_INCREMENTAL':'0',name:'SecretValue'})
+        for env in bad:
+            with self.subTest(keys=list(env)),self.assertRaises(q.Hold):q.validate_build_environment(env)
+    def test_build_environment_exact_mapping_rejects_all_late_key_value_changes(self):
+        env={'CARGO_INCREMENTAL':'0','PATH':'PrivateInitialPath','HOME':'PrivateInitialHome','CARGO_BUILD_JOBS':'2'}
+        q.BUILD_ENV_BASELINE=tuple(sorted(env.items()))
+        q.validate_build_environment(dict(env))
+        mutations=[]
+        for key in env:
+            changed=dict(env);changed[key]='SecretChanged';mutations.append(changed)
+            removed=dict(env);del removed[key];mutations.append(removed)
+        for key in ['CARGO_BUILD_RUSTFLAGS','CARGO_BUILD_RUSTC','RUSTC','SOME_UNKNOWN_KEY']:
+            added=dict(env);added[key]='SecretAdded';mutations.append(added)
+        for changed in mutations:
+            with self.assertRaises(q.Hold):q.validate_build_environment(changed)
+        q.validate_build_environment(env)
+        self.assertNotIn('Secret',json.dumps(q.DIAGNOSTIC))
+
+    def test_direct_cargo_capture_rejects_bad_env_before_launch(self):
+        with mock.patch.object(support,'capture') as launch:
+            with self.assertRaises(q.Hold):q.capture(['cargo','+1.95.0','metadata'],{},10,[],Path('/tmp'))
+            launch.assert_not_called()
+
     def test_admin_preflight_spends_absolute_work_and_final_deadline(self):
         for final in [False,True]:
             for exhausted in [False,True]:
@@ -190,9 +283,12 @@ class GitAdminAndCargoIdentityTests(unittest.TestCase):
     def test_cargo_capture_rechecks_after_outer_gate_before_launch(self):
         with tempfile.TemporaryDirectory() as td:
             path=Path(td)/'config.toml';q.CARGO_CONFIG_PATHS=[path];q.CARGO_CONFIG_BASELINE=q.cargo_config_identity();q.DEADLINE=time.monotonic()+30
+            env={'CARGO_INCREMENTAL':'0'};q.BUILD_ENV_BASELINE=tuple(sorted(env.items()))
+            q.DIAGNOSTIC={'stage':'native_commands','failure':None,'final_failure':None}
             q.recheck_cargo_config();path.write_text('[profile.dev-small]\ndebug-assertions=false\n')
             with mock.patch.object(support,'capture',side_effect=AssertionError('must not launch')) as call:
-                with self.assertRaises(q.Hold):q.capture(['cargo','+1.95.0','metadata'],{},20,[],Path(td))
+                with self.assertRaises(q.Hold):q.capture(['cargo','+1.95.0','metadata'],env,20,[],Path(td))
+                self.assertEqual(q.DIAGNOSTIC['failure']['predicate'],'cargo_config_identity')
                 call.assert_not_called()
     def test_real_safe_final_git_status_preserves_admin_identity(self):
         with tempfile.TemporaryDirectory() as td:
@@ -554,6 +650,43 @@ class NativeEvidenceTests(unittest.TestCase):
         self.assertNotIn('store-success-output = true',config.decode())
 
 class HarnessTests(unittest.TestCase):
+    def test_optional_storage_partial_does_not_change_native_gate(self):
+        partial={'complete':False,'stop':'deadline'}
+        for fault in [None,'disk']:
+            with mock.patch.object(q,'storage_observation',return_value=partial):
+                code,report,calls=self.exercise(fault)
+            self.assertEqual(report['storage_observation'],partial)
+            self.assertEqual(report['qualified'],fault is None)
+            self.assertEqual(code,0 if fault is None else 125)
+    def test_storage_not_started_when_owned_cleanup_unknown(self):
+        with mock.patch.object(q,'storage_observation') as sample:
+            code,report,calls=self.exercise('cleanup')
+        sample.assert_not_called();self.assertEqual(code,125)
+        self.assertFalse(report['qualified']);self.assertFalse(report['storage_observation']['complete'])
+    def test_full_harness_all_mapping_mutations_before_cargo_and_final(self):
+        for phase in ['before','final']:
+            for key in ['CARGO_BUILD_RUSTFLAGS','RUSTC','PATH','HOME','REMOVE_HOME']:
+                with self.subTest(phase=phase,key=key):
+                    code,report,calls=self.exercise('env-'+phase+'-'+key)
+                    self.assertEqual(code,125);self.assertFalse(report['qualified'])
+                    failure=report['preflight_diagnostic']['final_failure' if phase=='final' else 'failure']
+                    self.assertEqual(failure['predicate'],'build_environment')
+                    if phase=='before':self.assertFalse(any(x[0]=='cargo' for x in calls))
+                    self.assertNotIn('SecretEnvMutation',json.dumps(report))
+    def test_incremental_explicit_and_storage_receipt_success(self):
+        code,report,calls=self.exercise()
+        self.assertEqual(code,0);self.assertTrue(report['qualified'])
+        self.assertFalse(report['cargo_build_profile']['incremental'])
+        self.assertEqual(report['cargo_build_profile']['codegen_units'],'unoverridden_rustc_defaults_may_change_256_to_16')
+        self.assertTrue(report['storage_observation']['complete'])
+    def test_final_build_environment_rejected(self):
+        code,report,calls=self.exercise('final-build-env')
+        self.assertEqual(code,125);self.assertFalse(report['qualified'])
+        self.assertEqual(report['preflight_diagnostic']['final_failure']['predicate'],'build_environment')
+    def test_late_build_environment_rejected(self):
+        code,report,calls=self.exercise('late-build-env')
+        self.assertEqual(code,125);self.assertFalse(report['qualified'])
+        self.assertFalse(any(x[0]=='cargo' for x in calls))
     def exercise(self,fault=None):
         import shutil
         from types import SimpleNamespace
@@ -636,6 +769,12 @@ class HarnessTests(unittest.TestCase):
                 if target.startswith('HEAD:'):return ('e'*40 if fault=='control-blob' else q.blob((repo/target[5:]).read_bytes())).encode()
                 raise AssertionError(args)
             def capture(argv,env,maximum,records,disk):
+                if argv[0]=='cargo':q.validate_build_environment(env)
+                if fault=='late-build-env' and argv[0]=='rustup':env['CARGO_INCREMENTAL']='1'
+                if isinstance(fault,str) and (fault.startswith('env-before-') and argv[0]=='rustup' or fault.startswith('env-final-') and '--offline' in argv and 'run' in argv):
+                    key=fault.split('-',2)[2]
+                    if key=='REMOVE_HOME':del env['HOME']
+                    else:env[key]='SecretEnvMutation'
                 calls.append(argv)
                 self.assertEqual(Path.cwd(),source/'codex-rs')
                 record={'argv':argv,'exit':0,'stop':None,'cleanup':{'confirmed':True},'streams':[]};records.append(record)
@@ -647,6 +786,7 @@ class HarnessTests(unittest.TestCase):
                     (Path(env['CARGO_HOME'])/'config.toml').write_text('[profile.dev-small]\noverflow-checks=false\ndebug-assertions=false\n')
                 if fault=='late-ancestor-config' and argv[0]=='rustup':
                     (source/'.cargo').mkdir(exist_ok=True);(source/'.cargo/config.toml').write_text('[profile.dev-small]\noverflow-checks=false\n')
+                if fault=='final-build-env' and '--offline' in argv and 'run' in argv:env['CARGO_INCREMENTAL']='1'
                 if fault=='final-private-config' and '--offline' in argv and 'run' in argv:
                     (Path(env['CARGO_HOME'])/'config.toml').write_text('[profile.dev-small]\noverflow-checks=false\n')
                 if fault=='disk' and 'nextest' in argv and 'list' in argv:
