@@ -1,6 +1,6 @@
 {
-  "base_tree": "975e8afe39f2df9fc241979d2b0336549dc320ca",
-  "lock_blob": "2823b2e99c8c035c1aa169416fea83ac945d29d7",
+  "base_tree": "e77b5a5eaac55cc0c9724d1cf828384b58a6501d",
+  "lock_blob": "e2ccf86e8c36a68fd2c1332cd84ace666f636756",
   "source_sha256": {
     "codex-rs/.config/nextest.toml": "9d5de909a5b6cd4e9bb4b9a71b0f053b4efc8f206df4c04b179382022f0dd48d",
     "codex-rs/hepta-memory/src/cognitive_test_support.rs": "4ade78c7435ba7932b04419aee40e73b80519446c46de91ea85b378bae6efc02",
@@ -9,12 +9,23 @@
     "codex-rs/hepta-supervisor/src/tick.rs": "7ef521f4e419677c0567d291b5e38eda5f73ee427691f227db255eb4d84ec367",
     "codex-rs/hepta-supervisor/tests/restart_budget.rs": "51d6d4345d7b53a24b5b8542c0d663abd67dd809db8acff9c8158ad2a7ab585c",
     "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs": "7e1497ea2cd0ebf0bea195d4252ff0fb8b46e35b8c22c01fdc4b114c1a5e2864",
-    "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs": "b327b36d0ab979b4e256363eed77c814993e3002049f7c3718a1494d4b2efcbb"
+    "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs": "b327b36d0ab979b4e256363eed77c814993e3002049f7c3718a1494d4b2efcbb",
+    "MODULE.bazel.lock": "825db8bf34237cef491eee58fa51c070d140f421df300ecb9086a474181eea31",
+    "codex-rs/hepta-fleet/Cargo.toml": "af8df10620c477a299cdfd315a3f163d6c492c3d55965b2220e2a0a0244eebb9",
+    "codex-rs/hepta-fleet/src/release.rs": "df5c2ddb1c5853142cfa736b55d8b1efbcce13f2aaf6b21584f3a4ff788eb4ce",
+    "codex-rs/hepta-fleet/src/release_publication_macos.rs": "65bea28b580acadbe0fac125eddec0244084110f710f007d9115711d9eda0288",
+    "codex-rs/hepta-fleet/src/release_publication_macos_tests.rs": "fdb4cdc484b3d6a5eb1e4c14386bc196b4271922456a2467ffd8a598d31692bf"
   },
   "changed_paths": [
+    ".github/scripts/macos_owner_cases.json",
     ".github/scripts/macos_owner_evidence.py",
     ".github/scripts/macos_owner_pins.json",
-    ".github/scripts/test_macos_owner_evidence.py"
+    ".github/scripts/test_macos_owner_evidence.py",
+    "codex-rs/Cargo.lock",
+    "codex-rs/hepta-fleet/Cargo.toml",
+    "codex-rs/hepta-fleet/src/release.rs",
+    "codex-rs/hepta-fleet/src/release_publication_macos.rs",
+    "codex-rs/hepta-fleet/src/release_publication_macos_tests.rs"
   ],
   "support_paths": [
     "AGENTS.md",

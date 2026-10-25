@@ -1395,5 +1395,24 @@
       "prior": "ok",
       "reason": ""
     }
+  ],
+  "fleet": [
+    "release::tests::catalog_resolves_only_digest_bound_per_agent_allowances",
+    "release::tests::schema_v2_bundle_binds_both_exact_programs_and_closed_world",
+    "release::tests::strict_schema_v1_catalog_and_allowance_remain_agentd_only_compatible",
+    "release::tests::program_mutation_is_detected_and_release_state_survives_reopen",
+    "release::copy_tests::readonly_source_is_copied_synced_and_preserved_on_duplicate_install",
+    "release::macos_publication::tests::darwin_readonly_directory_rename_denial_is_not_retried",
+    "release::macos_publication::tests::published_unsealed_release_is_corrupt_until_owned_handle_seal",
+    "release::macos_publication::tests::interrupted_unsealed_slot_is_retained_and_never_adopted",
+    "release::macos_publication::tests::no_replace_preserves_existing_empty_full_and_symlink_targets",
+    "release::macos_publication::tests::two_prepared_installers_have_one_winner_without_clobber",
+    "release::macos_publication::tests::replaced_final_path_is_not_chmodded_or_removed",
+    "release::macos_publication::tests::replaced_staging_is_rejected_before_publication",
+    "release::macos_publication::tests::unexpected_prepared_entry_fails_before_publication",
+    "release::macos_publication::tests::concurrent_no_replace_publications_choose_one_owned_inode",
+    "release::macos_publication::tests::changed_unsealed_mode_cannot_be_silently_repaired",
+    "release::macos_publication::tests::symlink_replacement_before_seal_never_changes_target",
+    "release::macos_publication::tests::failed_public_install_retains_only_its_unsealed_staging"
   ]
 }

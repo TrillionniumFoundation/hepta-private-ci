@@ -104,7 +104,95 @@ class EvidenceTests(unittest.TestCase):
                 len(self.check_report(self.report(phase), phase)),
                 len(evidence.expected(phase)),
             )
-        self.assertEqual(sum(len(evidence.expected(p)) for p in evidence.PHASES), 278)
+        self.assertEqual(
+            sum(
+                len(evidence.expected(p))
+                for p in evidence.PHASES
+                if p != "fleet-owning"
+            ),
+            278,
+        )
+
+    def test_fleet_exact_phase_and_original_selection_retained(self):
+        self.assertEqual(len(evidence.expected("fleet-owning")), 17)
+        self.assertEqual(sum(len(evidence.expected(p)) for p in evidence.PHASES), 295)
+        self.assertEqual(
+            evidence.selection("fleet-owning")[:4],
+            ["--locked", "-p", "codex-hepta-fleet", "--lib"],
+        )
+
+    def test_fleet_list_missing_ignored_extra_foreign_rejected(self):
+        for mutation in ["missing", "ignored", "extra", "foreign", "filtered"]:
+            names = sorted(name for _, name in evidence.expected("fleet-owning"))
+            tests = {
+                name: {"ignored": False, "filter-match": {"status": "matches"}}
+                for name in names
+            }
+            key = "codex-hepta-fleet"
+            if mutation == "missing":
+                tests.pop(names[0])
+            elif mutation == "ignored":
+                tests[names[0]]["ignored"] = True
+            elif mutation == "extra":
+                tests["release::unexpected"] = tests[names[0]]
+            elif mutation == "foreign":
+                key = "other-binary"
+            else:
+                tests[names[0]]["filter-match"]["status"] = "mismatch"
+            path = self.root / "fleet-list.json"
+            path.write_text(
+                json.dumps(
+                    {
+                        "rust-suites": {
+                            key: {
+                                "binary-id": key,
+                                "status": "listed",
+                                "testcases": tests,
+                            }
+                        }
+                    }
+                )
+            )
+            with self.assertRaises(ValueError):
+                evidence.validate_list(path, "fleet-owning")
+
+    def test_fleet_inventory_missing_duplicate_rejected(self):
+        inventory = json.loads((evidence.HERE / "macos_owner_cases.json").read_text())
+        for mutation in ["missing", "duplicate"]:
+            rows = list(inventory["fleet"])
+            if mutation == "missing":
+                rows.pop()
+            else:
+                rows[-1] = rows[0]
+            with patch.object(
+                Path, "read_text", return_value=json.dumps({"fleet": rows})
+            ):
+                with self.assertRaises(ValueError):
+                    evidence.expected("fleet-owning")
+
+    def test_fleet_junit_failure_skip_retry_identity_rejected(self):
+        for mutation in [
+            "failure",
+            "skipped",
+            "rerunFailure",
+            "duplicate",
+            "foreign",
+            "missing",
+            "profile",
+        ]:
+            root = self.report("fleet-owning")
+            if mutation == "duplicate":
+                root[0].append(root[0][0])
+            elif mutation == "foreign":
+                root[0][0].set("classname", "other-binary")
+            elif mutation == "missing":
+                root[0].remove(root[0][0])
+            elif mutation == "profile":
+                root.set("name", "nextest-run")
+            else:
+                ET.SubElement(root[0][0], mutation)
+            with self.assertRaises(ValueError):
+                self.check_report(root, "fleet-owning")
 
     def test_bad_report_variants(self):
         for tag in [
@@ -1286,7 +1374,7 @@ class EvidenceTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             command = json.loads(calls.read_text().splitlines()[-1])
             self.assertEqual(command, ["nextest", "run", "--no-fail-fast", *args])
-        self.assertEqual(len(calls.read_text().splitlines()), 3)
+        self.assertEqual(len(calls.read_text().splitlines()), 4)
 
     def test_exact_just_version_rejects_suffix(self):
         evidence.validate_version("just", b"just 1.59.0\n", "just 1.59.0")

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bounded native macOS qualification of 278 exact owner tests, not full CI."""
+"""Bounded native macOS qualification of 295 exact owner tests, not full CI."""
 
 from collections import Counter
 import hashlib
@@ -21,8 +21,8 @@ import xml.etree.ElementTree as ET
 
 HERE = Path(__file__).resolve().parent
 PROFILE = "macos-owner"
-BASE = "f403a36fad9ec59c74a4429ef62cdb568eafdd21"
-PHASES = ("memory", "supervisor-owning", "supervisor-integration")
+BASE = "61ea91b7544b5147a5f825a62e569c8ca5a32fd5"
+PHASES = ("memory", "supervisor-owning", "supervisor-integration", "fleet-owning")
 OWNER = (
     "restart_budget::tests::budget_is_durable_bounded_and_pending_is_idempotent",
     "restart_policy::tests::restart_schedule_is_exponential_and_stops_after_three_attempts",
@@ -72,6 +72,16 @@ def expected(phase):
         return {
             ("codex-hepta-memory", r["name"]) for r in rows if r["prior"] != "ignored"
         }
+    if phase == "fleet-owning":
+        rows = json.loads((HERE / "macos_owner_cases.json").read_text())["fleet"]
+        require(len(rows) == 17 and len(set(rows)) == 17, "bad fleet inventory")
+        require(
+            all(
+                isinstance(name, str) and name.startswith("release::") for name in rows
+            ),
+            "bad fleet name",
+        )
+        return {("codex-hepta-fleet", name) for name in rows}
     if phase == "supervisor-owning":
         return {("codex-hepta-supervisor", name) for name in OWNER}
     require(phase == "supervisor-integration", "unknown phase")
@@ -82,6 +92,8 @@ def selection(phase):
     args = ["--locked", "-p"]
     if phase == "memory":
         args += ["codex-hepta-memory", "--lib"]
+    elif phase == "fleet-owning":
+        args += ["codex-hepta-fleet", "--lib"]
     elif phase == "supervisor-owning":
         args += ["codex-hepta-supervisor", "--lib"]
     else:
@@ -762,6 +774,7 @@ def bind(out):
                 "git",
                 "archive",
                 "HEAD",
+                "codex-rs/hepta-fleet",
                 "codex-rs/hepta-memory",
                 "codex-rs/hepta-supervisor",
                 *paths,
