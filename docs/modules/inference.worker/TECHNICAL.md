@@ -121,6 +121,48 @@ and native whole-unit lifetime-owner integration remain required. No second
 ledger, key or nonce store is created. Existing ordinary Child observations retain their narrower
 semantics, original assertions and eight-second deadline.
 
+The PN3 SmolLM read owner retains bounded measurement observations in its
+existing mailbox: one validated actual worker Ready and one last successfully
+settled forward. `smollm_neural_measurement.rs` owns opaque, non-serializable
+load/forward observations; the original driver supplies actual response values
+and exact raw-byte hashes. The original control owner attaches its unique load,
+request and reservation IDs after successful settlement. No expected config
+field is copied into an observed root. A new entered read clears the previous
+forward slot; failed/unknown execution exposes no new forward proof. An unload
+attempt closes observation access while retaining evidence on failure; exact
+terminal unload clears both slots. A previously bound load ID cannot be rebound
+or reopened by a later settlement call. This is ephemeral observation state, with no
+history, new writer, journal or recovery authority. The read-only observation
+callback holds the same original worker guard with the worker-to-mailbox lock
+order. Concurrent or recursive reads fail before admission instead of queueing
+behind the callback; the callback must remain bounded and may not dispatch effects.
+
+An explicit fixed-initial-backbone sub-proof checks the actual observed backbone,
+tokenizer and contract against the code-owned SmolLM2 initial commitments. A
+valid generic/trained observation does not automatically receive this proof.
+The proof also remains bound to its actual parameter bytes, generation, Ready
+hash and original control load ID; a future initial constructor must match those
+against the original selected initial material. Ready does not return the raw
+269,060,552-byte upstream file hash, so this observation does not claim that
+missing direct receipt. The worker itself retains its original real material
+hash checks and loaded-tensor contract comparison.
+
+The original real-worker native check writes the additional test-only
+`actual-neural-measurement-v1.json` observation after releasing the owner guard.
+It records this one actual settled forward and its unique control IDs under a
+fresh schema, without changing the existing native result V1 or executing an
+additional load/forward/claim.
+
+The ordinary neural read still uses its original FinalUse/resource admission,
+120-second startup, two-second request and original neural unload boundary
+(currently ten seconds in `Session::shutdown`). The separate Chain aggregate
+terminal boundary remains eight seconds and is untouched. No existing
+evaluated/SystemLongitudinal/child gate changes. Agentd currently drops
+the forward receipt when producing scores; a separately reviewed versioned
+ordinary-task wire is still required. `CognitiveContextSnapshot` V1 and its
+`deny_unknown_fields` schema are unchanged. These observations do not grant
+installation, selection, efficacy, reward or execution authority.
+
 Produced contracts:
 
 None.
