@@ -1,0 +1,265 @@
+{
+  "schema": 1,
+  "original_failures": 14,
+  "phases": {
+    "original-rollout-recorder": {
+      "package": "codex-rollout",
+      "module": "recorder::tests",
+      "cases": [
+        "recorder::tests::list_threads_default_filter_returns_filesystem_scan_results",
+        "recorder::tests::list_threads_search_repairs_stale_state_db_hits_before_returning",
+        "recorder::tests::list_threads_state_db_only_skips_jsonl_repair_scan"
+      ],
+      "source": "codex-rs/rollout/src/recorder_tests.rs"
+    },
+    "original-sandboxing-seatbelt": {
+      "package": "codex-sandboxing",
+      "module": "seatbelt::tests",
+      "cases": [
+        "seatbelt::tests::create_seatbelt_args_for_cwd_as_git_repo",
+        "seatbelt::tests::create_seatbelt_args_with_read_only_git_and_codex_subpaths"
+      ],
+      "source": "codex-rs/sandboxing/src/seatbelt_tests.rs"
+    },
+    "original-state-image": {
+      "package": "codex-state",
+      "module": "sqlite_recovery::image::tests",
+      "cases": [
+        "sqlite_recovery::image::tests::cold_image_is_immutable_and_reconnects_to_same_copy",
+        "sqlite_recovery::image::tests::cold_image_rejects_wrong_guard_replacement_sidecars_and_size"
+      ],
+      "source": "codex-rs/state/src/sqlite_recovery_image_tests.rs"
+    },
+    "original-evidence-outbox": {
+      "package": "codex-hepta-evidence",
+      "module": "authbus_outbox_tests",
+      "cases": [
+        "authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed"
+      ],
+      "source": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs"
+    },
+    "original-bao-consumer": {
+      "package": "codex-hepta-bao-adapter",
+      "module": "https_consumer::tests",
+      "cases": [
+        "https_consumer::tests::authbus_product_path_reserves_fences_final_use_and_settles_observed_cost",
+        "https_consumer::tests::authbus_timeout_keeps_quota_held_as_indeterminate"
+      ],
+      "source": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+    },
+    "original-automation-migrations": {
+      "package": "codex-hepta-automation",
+      "module": "store::migration_convergence_tests",
+      "cases": [
+        "store::migration_convergence_tests::canonical_cut_after_rebind_reopens",
+        "store::migration_convergence_tests::canonical_cut_before_rebind_reopens",
+        "store::migration_convergence_tests::displaced_cut_after_rebind_reopens",
+        "store::migration_convergence_tests::displaced_cut_before_rebind_reopens"
+      ],
+      "source": "codex-rs/hepta-automation/src/migration_convergence_tests.rs"
+    },
+    "rollout-recorder": {
+      "package": "codex-rollout",
+      "module": "recorder::tests",
+      "cases": [
+        "recorder::tests::append_repair_terminates_nonempty_rollout_tail",
+        "recorder::tests::append_rollout_item_to_path_assigns_next_paginated_ordinal",
+        "recorder::tests::fill_missing_thread_item_metadata_preserves_identity_and_prefers_state_git_fields",
+        "recorder::tests::list_threads_db_disabled_does_not_skip_paginated_items",
+        "recorder::tests::list_threads_db_enabled_preserves_metadata_for_missing_rollout_paths",
+        "recorder::tests::list_threads_default_filter_returns_filesystem_scan_results",
+        "recorder::tests::list_threads_metadata_filter_overlays_state_db_list_metadata",
+        "recorder::tests::list_threads_search_repairs_stale_state_db_hits_before_returning",
+        "recorder::tests::list_threads_state_db_only_skips_jsonl_repair_scan",
+        "recorder::tests::load_rollout_items_defaults_legacy_session_id",
+        "recorder::tests::load_rollout_items_filters_legacy_ghost_snapshots_from_compaction_history",
+        "recorder::tests::load_rollout_items_ignores_unknown_fork_source_history_mode",
+        "recorder::tests::load_rollout_items_preserves_legacy_guardian_assessment_lines",
+        "recorder::tests::load_rollout_items_preserves_security_risk_scores",
+        "recorder::tests::opening_existing_rollout_preserves_modified_time",
+        "recorder::tests::paginated_ordinal_overflow_fails_without_appending",
+        "recorder::tests::persist_reports_filesystem_error_and_retries_buffered_items",
+        "recorder::tests::recorder_materializes_on_flush_with_pending_items",
+        "recorder::tests::recorder_omits_ordinals_from_legacy_rollouts",
+        "recorder::tests::referenced_paginated_rollout_starts_at_history_cutoff_and_resumes",
+        "recorder::tests::resume_candidate_matches_cwd_reads_latest_turn_context",
+        "recorder::tests::resumed_empty_rollout_omits_ordinals",
+        "recorder::tests::resumed_paginated_rollout_continues_after_ordinal_gap",
+        "recorder::tests::resumed_paginated_rollout_repairs_unsafe_tail",
+        "recorder::tests::resumed_paginated_subagent_rollout_rejects_incomplete_prefix",
+        "recorder::tests::rollout_id_preserves_session_meta_thread_id",
+        "recorder::tests::state_db_init_backfills_before_returning",
+        "recorder::tests::strip_legacy_ghost_snapshot_keeps_checkpoint_metadata_aligned",
+        "recorder::tests::writer_state_retries_write_error_before_reporting_flush_success"
+      ],
+      "source": "codex-rs/rollout/src/recorder_tests.rs"
+    },
+    "rollout-state-db": {
+      "package": "codex-rollout",
+      "module": "state_db::tests",
+      "cases": [
+        "state_db::tests::cursor_to_anchor_normalizes_timestamp_format",
+        "state_db::tests::cursor_to_anchor_preserves_recency_tie_breaker",
+        "state_db::tests::filesystem_repair_preserves_existing_rollout_path",
+        "state_db::tests::list_threads_db_rejects_mismatched_sqlite_config_without_cleanup",
+        "state_db::tests::reconcile_rollout_preserves_existing_explicit_title",
+        "state_db::tests::reconcile_rollout_preserves_existing_paginated_memory_mode",
+        "state_db::tests::try_init_times_out_waiting_for_stuck_startup_backfill",
+        "state_db::tests::try_init_waits_for_concurrent_startup_backfill"
+      ],
+      "source": "codex-rs/rollout/src/state_db_tests.rs"
+    },
+    "sandboxing-seatbelt": {
+      "package": "codex-sandboxing",
+      "module": "seatbelt::tests",
+      "cases": [
+        "seatbelt::tests::base_policy_allows_kmp_registration_shm_read_create_and_unlink",
+        "seatbelt::tests::base_policy_allows_node_cpu_sysctls",
+        "seatbelt::tests::create_seatbelt_args_allowlists_explicit_unix_socket_paths_without_proxy",
+        "seatbelt::tests::create_seatbelt_args_allowlists_unix_socket_paths",
+        "seatbelt::tests::create_seatbelt_args_allows_all_unix_sockets_when_enabled",
+        "seatbelt::tests::create_seatbelt_args_allows_local_binding_when_explicitly_enabled",
+        "seatbelt::tests::create_seatbelt_args_block_first_time_dot_codex_creation_with_metadata_name_regex",
+        "seatbelt::tests::create_seatbelt_args_for_cwd_as_git_repo",
+        "seatbelt::tests::create_seatbelt_args_full_network_with_proxy_is_still_proxy_only",
+        "seatbelt::tests::create_seatbelt_args_merges_proxy_and_explicit_unix_socket_paths",
+        "seatbelt::tests::create_seatbelt_args_preserves_full_network_with_explicit_unix_socket_paths",
+        "seatbelt::tests::create_seatbelt_args_rejects_symlinked_writable_root",
+        "seatbelt::tests::create_seatbelt_args_routes_network_through_proxy_ports",
+        "seatbelt::tests::create_seatbelt_args_uses_literal_non_directory_writable_roots",
+        "seatbelt::tests::create_seatbelt_args_with_read_only_git_and_codex_subpaths",
+        "seatbelt::tests::create_seatbelt_args_with_read_only_git_pointer_file",
+        "seatbelt::tests::dynamic_network_policy_allows_tls_without_darwin_user_cache_write",
+        "seatbelt::tests::dynamic_network_policy_blocks_dns_when_local_binding_has_no_proxy_ports",
+        "seatbelt::tests::dynamic_network_policy_preserves_restricted_policy_for_managed_network_without_proxy_config",
+        "seatbelt::tests::dynamic_network_policy_preserves_restricted_policy_when_proxy_config_without_ports",
+        "seatbelt::tests::explicit_unreadable_paths_are_excluded_from_full_disk_read_and_write_access",
+        "seatbelt::tests::explicit_unreadable_paths_are_excluded_from_readable_roots",
+        "seatbelt::tests::filesystem_helper_platform_defaults_do_not_grant_applications_directory",
+        "seatbelt::tests::glob_ancestors_close_brace_alternatives_split_by_path_separators",
+        "seatbelt::tests::nested_protected_paths_cannot_be_bypassed_by_renaming_ancestors",
+        "seatbelt::tests::normalize_path_for_sandbox_rejects_relative_paths",
+        "seatbelt::tests::overlapping_writable_roots_preserve_nested_metadata_protection",
+        "seatbelt::tests::preferences_access_requires_unrestricted_reads",
+        "seatbelt::tests::prepared_managed_network_context_allows_only_its_proxy_ports",
+        "seatbelt::tests::restricted_reads_cannot_read_preferences_outside_allowed_roots",
+        "seatbelt::tests::seatbelt_allows_file_root_replacement_and_deletion",
+        "seatbelt::tests::seatbelt_allows_semaphore_limit_sysconf",
+        "seatbelt::tests::seatbelt_does_not_follow_rebound_writable_root_ancestor",
+        "seatbelt::tests::seatbelt_file_root_does_not_follow_replacement_symlink",
+        "seatbelt::tests::seatbelt_prevents_writable_directory_root_rename",
+        "seatbelt::tests::seatbelt_prevents_writable_root_replacement",
+        "seatbelt::tests::seatbelt_protects_file_root_replaced_with_directory",
+        "seatbelt::tests::seatbelt_protects_resolved_target_of_symlinked_metadata_directory",
+        "seatbelt::tests::seatbelt_protects_writable_root_created_as_directory",
+        "seatbelt::tests::unix_socket_dir_params_use_stable_param_names",
+        "seatbelt::tests::unix_socket_policy_non_empty_output_is_newline_terminated",
+        "seatbelt::tests::unreadable_glob_policy_includes_canonicalized_static_prefix",
+        "seatbelt::tests::unreadable_globs_support_backslash_escapes",
+        "seatbelt::tests::unreadable_globs_support_brace_alternation",
+        "seatbelt::tests::unreadable_globs_treat_unclosed_character_classes_as_literals",
+        "seatbelt::tests::unreadable_globs_use_git_style_component_matching",
+        "seatbelt::tests::unreadable_globstar_slash_matches_zero_or_more_directories"
+      ],
+      "source": "codex-rs/sandboxing/src/seatbelt_tests.rs"
+    },
+    "state-image": {
+      "package": "codex-state",
+      "module": "sqlite_recovery::image::tests",
+      "cases": [
+        "sqlite_recovery::image::tests::cold_image_is_immutable_and_reconnects_to_same_copy",
+        "sqlite_recovery::image::tests::cold_image_rejects_wrong_guard_replacement_sidecars_and_size"
+      ],
+      "source": "codex-rs/state/src/sqlite_recovery_image_tests.rs"
+    },
+    "state-recovery": {
+      "package": "codex-state",
+      "module": "sqlite_recovery::tests",
+      "cases": [
+        "sqlite_recovery::tests::rename_replacement_is_indeterminate_without_mutation_or_reconnect",
+        "sqlite_recovery::tests::sidecar_appearance_after_binding_is_indeterminate_and_unchanged",
+        "sqlite_recovery::tests::symlink_hardlink_and_mode_inputs_are_indeterminate_and_unchanged",
+        "sqlite_recovery::tests::validated_file_set_is_unavailable_without_mutation_or_reconnect",
+        "sqlite_recovery::tests::wal_byte_drift_after_binding_is_indeterminate_before_materialization"
+      ],
+      "source": "codex-rs/state/src/sqlite_recovery_tests.rs"
+    },
+    "evidence-outbox": {
+      "package": "codex-hepta-evidence",
+      "module": "authbus_outbox_tests",
+      "cases": [
+        "authbus_outbox_tests::actual_process_crash_after_send_before_ack_redelivers_same_id",
+        "authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed",
+        "authbus_outbox_tests::delivery_attempt_budget_quarantines_without_resending_forever",
+        "authbus_outbox_tests::enqueue_commit_response_loss_is_idempotent_across_reopen",
+        "authbus_outbox_tests::expired_lease_cannot_renew_retry_or_ack_before_or_after_reclaim",
+        "authbus_outbox_tests::expiry_and_current_revocation_are_terminal_and_never_acknowledged",
+        "authbus_outbox_tests::failed_insert_rolls_back_replay_and_direct_admission_cannot_be_upgraded",
+        "authbus_outbox_tests::missing_outbox_guard_is_rejected_on_reopen",
+        "authbus_outbox_tests::one_issuer_cannot_exhaust_the_global_active_outbox_across_epochs",
+        "authbus_outbox_tests::payload_route_and_retained_message_identity_cannot_be_substituted",
+        "authbus_outbox_tests::two_handles_serialize_claim_and_every_new_fence_rejects_old_worker"
+      ],
+      "source": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs"
+    },
+    "bao-consumer": {
+      "package": "codex-hepta-bao-adapter",
+      "module": "https_consumer::tests",
+      "cases": [
+        "https_consumer::tests::authbus_product_path_reserves_fences_final_use_and_settles_observed_cost",
+        "https_consumer::tests::authbus_timeout_keeps_quota_held_as_indeterminate",
+        "https_consumer::tests::consumer_failure_after_delivery_is_indeterminate",
+        "https_consumer::tests::invalid_signature_and_provider_denial_do_not_release_secret",
+        "https_consumer::tests::oversized_reply_fails_without_consumer_delivery",
+        "https_consumer::tests::provider_not_found_and_malformed_success_are_denied",
+        "https_consumer::tests::real_tls_read_uses_headers_exact_version_and_secret_only_consumer",
+        "https_consumer::tests::revocation_during_network_wait_prevents_consumer_delivery",
+        "https_consumer::tests::root_namespace_omits_namespace_header",
+        "https_consumer::tests::timeout_does_not_retry_or_release_a_secret",
+        "https_consumer::tests::untrusted_tls_certificate_fails_before_secret_delivery",
+        "https_consumer::tests::version_and_digest_mismatches_never_deliver"
+      ],
+      "source": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+    },
+    "automation-migrations": {
+      "package": "codex-hepta-automation",
+      "module": "store::migration_convergence_tests",
+      "cases": [
+        "store::migration_convergence_tests::both_historical_branches_converge_without_rewriting_checksums",
+        "store::migration_convergence_tests::canonical_cut_after_rebind_reopens",
+        "store::migration_convergence_tests::canonical_cut_before_rebind_reopens",
+        "store::migration_convergence_tests::displaced_cut_after_rebind_reopens",
+        "store::migration_convergence_tests::displaced_cut_before_rebind_reopens",
+        "store::migration_convergence_tests::occupied_relocation_rolls_back_all_history_rebinding",
+        "store::migration_convergence_tests::unknown_or_dirty_history_is_not_relabelled"
+      ],
+      "source": "codex-rs/hepta-automation/src/migration_convergence_tests.rs"
+    },
+    "authbus-recovery": {
+      "package": "codex-hepta-authbus",
+      "module": "recovery::tests",
+      "cases": [
+        "recovery::tests::advanced_external_checkpoint_rejects_real_old_database_restore",
+        "recovery::tests::restart_fences_new_reservations_until_dispatch_attempts_become_indeterminate"
+      ],
+      "source": "codex-rs/hepta-authbus/src/recovery_tests.rs"
+    }
+  },
+  "ignored_child_not_a_pass": [
+    {
+      "package": "codex-hepta-evidence",
+      "name": "authbus_outbox_tests::crash_delivery_child",
+      "reason": "#[ignore = \"subprocess crash fixture\"]",
+      "exercised_by": "authbus_outbox_tests::actual_process_crash_after_send_before_ack_redelivers_same_id",
+      "required_exit": 73
+    }
+  ],
+  "full_bazel_targets": [
+    "//codex-rs/rollout:rollout-unit-tests",
+    "//codex-rs/sandboxing:sandboxing-unit-tests",
+    "//codex-rs/state:state-unit-tests",
+    "//codex-rs/hepta-evidence:hepta-evidence-unit-tests",
+    "//codex-rs/hepta-bao-adapter:hepta-bao-adapter-unit-tests",
+    "//codex-rs/hepta-automation:hepta-automation-unit-tests"
+  ]
+}

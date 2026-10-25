@@ -1251,10 +1251,11 @@ async fn list_threads_db_enabled_preserves_metadata_for_missing_rollout_paths()
 #[tokio::test]
 async fn list_threads_state_db_only_skips_jsonl_repair_scan() -> std::io::Result<()> {
     let home = TempDir::new().expect("temp dir");
-    let config = test_config(home.path());
+    let home_path = home.path().canonicalize()?;
+    let config = test_config(home_path.as_path());
 
     let runtime = codex_state::StateRuntime::init(
-        codex_state::SqliteConfig::new_for_testing(home.path().abs()),
+        codex_state::SqliteConfig::new_for_testing(home_path.as_path().abs()),
         config.model_provider_id.clone(),
     )
     .await
@@ -1266,7 +1267,7 @@ async fn list_threads_state_db_only_skips_jsonl_repair_scan() -> std::io::Result
 
     let uuid = Uuid::from_u128(9012);
     let ts = "2025-01-03T14-00-00";
-    let day_dir = home.path().join("sessions/2025/01/03");
+    let day_dir = home_path.as_path().join("sessions/2025/01/03");
     fs::create_dir_all(&day_dir)?;
     let path = day_dir.join(format!("rollout-{ts}-{uuid}.jsonl"));
     let mut file = File::create(&path)?;
@@ -1277,7 +1278,7 @@ async fn list_threads_state_db_only_skips_jsonl_repair_scan() -> std::io::Result
             "session_id": uuid,
             "id": uuid,
             "timestamp": ts,
-            "cwd": home.path().display().to_string(),
+            "cwd": home_path.as_path().display().to_string(),
             "originator": "test_originator",
             "cli_version": "test_version",
             "source": "cli",
@@ -1296,7 +1297,7 @@ async fn list_threads_state_db_only_skips_jsonl_repair_scan() -> std::io::Result
     });
     writeln!(file, "{user_event}")?;
 
-    let cwd_filters = [home.path().to_path_buf()];
+    let cwd_filters = [home_path.as_path().to_path_buf()];
     let state_db_only_page = RolloutRecorder::list_threads_from_state_db(
         Some(runtime.clone()),
         &config,
@@ -1350,15 +1351,16 @@ async fn list_threads_state_db_only_skips_jsonl_repair_scan() -> std::io::Result
 #[tokio::test]
 async fn list_threads_default_filter_returns_filesystem_scan_results() -> std::io::Result<()> {
     let home = TempDir::new().expect("temp dir");
-    let config = test_config(home.path());
+    let home_path = home.path().canonicalize()?;
+    let config = test_config(home_path.as_path());
 
     let uuid = Uuid::from_u128(9013);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
-    let real_path = write_session_file(home.path(), "2025-01-03T13-00-00", uuid)?;
-    let stale_cwd = home.path().join("stale-cwd");
+    let real_path = write_session_file(home_path.as_path(), "2025-01-03T13-00-00", uuid)?;
+    let stale_cwd = home_path.as_path().join("stale-cwd");
 
     let runtime = codex_state::StateRuntime::init(
-        codex_state::SqliteConfig::new_for_testing(home.path().abs()),
+        codex_state::SqliteConfig::new_for_testing(home_path.as_path().abs()),
         config.model_provider_id.clone(),
     )
     .await
@@ -1597,14 +1599,15 @@ fn fill_missing_thread_item_metadata_preserves_identity_and_prefers_state_git_fi
 #[tokio::test]
 async fn list_threads_search_repairs_stale_state_db_hits_before_returning() -> std::io::Result<()> {
     let home = TempDir::new().expect("temp dir");
-    let config = test_config(home.path());
+    let home_path = home.path().canonicalize()?;
+    let config = test_config(home_path.as_path());
 
     let uuid = Uuid::from_u128(9014);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
-    let real_path = write_session_file(home.path(), "2025-01-03T15-00-00", uuid)?;
+    let real_path = write_session_file(home_path.as_path(), "2025-01-03T15-00-00", uuid)?;
 
     let runtime = codex_state::StateRuntime::init(
-        codex_state::SqliteConfig::new_for_testing(home.path().abs()),
+        codex_state::SqliteConfig::new_for_testing(home_path.as_path().abs()),
         config.model_provider_id.clone(),
     )
     .await
@@ -1624,7 +1627,7 @@ async fn list_threads_search_repairs_stale_state_db_hits_before_returning() -> s
         SessionSource::Cli,
     );
     builder.model_provider = Some(config.model_provider_id.clone());
-    builder.cwd = home.path().to_path_buf();
+    builder.cwd = home_path.as_path().to_path_buf();
     let mut metadata = builder.build(config.model_provider_id.as_str());
     metadata.title = "needle stale first user".to_string();
     metadata.first_user_message = Some(metadata.title.clone());
