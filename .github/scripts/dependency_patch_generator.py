@@ -354,7 +354,7 @@ def main(repo, out, control):
                  '--output_user_root=' + str(out / 'bazel-root'),
                  '--output_base=' + str(out / 'bazel-output'),
                  '--noexperimental_remote_repo_contents_cache']
-        require(run(bazel + ['--version'], 120, repo).strip() == b'bazel 9.0.0', 'bazel_version_mismatch')
+        require(run(bazel + ['version', '--gnu_format'], 120, repo).strip() == b'bazel 9.0.0', 'bazel_version_mismatch')
         report['current_registry_records'] = registry_recheck()
         processed = []
         for target in TARGETS:
@@ -573,7 +573,7 @@ def bootstrap_bazel(repo, out, control):
         command = [str(binary), '--batch', '--nosystem_rc', '--nohome_rc',
                    '--output_user_root=' + str(out / 'bazel-root'),
                    '--output_base=' + str(out / 'bazel-output'),
-                   '--noexperimental_remote_repo_contents_cache', '--version']
+                   '--noexperimental_remote_repo_contents_cache', 'version', '--gnu_format']
         result, streams = support.capture(command, env, 60, disk=out)
         receipt['commands'].append(result)
         require(result['exit'] == 0 and result['stop'] is None and result['cleanup']['confirmed'],

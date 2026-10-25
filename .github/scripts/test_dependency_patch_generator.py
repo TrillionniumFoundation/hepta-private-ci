@@ -371,7 +371,7 @@ class ActualPublicationSuccess(unittest.TestCase):
                     if argv[:3]==['cargo','+1.95.0','-V']:stdout=b'cargo 1.95.0 test'
                     elif argv[:3]==['rustc','+1.95.0','-Vv']:stdout=b'rustc 1.95.0 test'
                     elif argv[0]=='rustup':stdout=str(tool).encode()
-                    elif argv[-1]=='--version':stdout=b'bazel 9.0.0'
+                    elif argv[-2:]==['version','--gnu_format']:stdout=b'bazel 9.0.0'
                     elif argv[:3]==['cargo','+1.95.0','update']:
                         i=next(i for i,t in enumerate(g.TARGETS) if t['name']+'@'+t['old']==argv[4])
                         packages[i]=fixture.new[i];(repo/g.LOCKS[0]).write_bytes(encode(packages))
@@ -398,6 +398,11 @@ class ActualPublicationSuccess(unittest.TestCase):
                 report=json.loads((out/'public/report.json').read_text())
                 self.assertTrue(report['publication_gate_passed'])
                 self.assertTrue(report['known_lock_content_confirmed'])
+                self.assertEqual([c['argv'] for c in report['commands'] if 'version' in c['argv']],
+                    [['bazel','--batch','--nosystem_rc','--nohome_rc',
+                      '--output_user_root='+str(out/'bazel-root'),
+                      '--output_base='+str(out/'bazel-output'),
+                      '--noexperimental_remote_repo_contents_cache','version','--gnu_format']])
                 self.assertEqual([c['argv'] for c in report['commands'] if 'metadata' in c['argv']],
                                  g.metadata_commands())
                 for command in report['commands']:
@@ -408,6 +413,16 @@ class ActualPublicationSuccess(unittest.TestCase):
 
 
 class KeylessBootstrap(unittest.TestCase):
+    def test_official_version_shortcut_requires_argc_two(self):
+        # Bazel9 blaze.cc blob c0a717e933ea63948acebd1be488cb098e01bf73:
+        # if (argc == 2 && strcmp(argv[1], "--version") == 0).
+        # This is a source-contract regression, not local Bazel execution.
+        def official_shortcut(argv):
+            return len(argv)==2 and argv[1]=='--version'
+        self.assertTrue(official_shortcut(['bazel','--version']))
+        self.assertFalse(official_shortcut(['bazel','--batch','--version']))
+        self.assertFalse(official_shortcut(['bazel','--batch','version','--gnu_format']))
+
     def test_asset_redirect_allowlist_and_single_hop(self):
         import urllib.request
         good='https://release-assets.githubusercontent.com/github-production-release-asset/20773773/asset?signature=private'
@@ -470,7 +485,9 @@ class KeylessBootstrap(unittest.TestCase):
                 self.assertEqual(g.bootstrap_bazel(repo,out,control),0)
             self.assertEqual(github_path.read_text(),str(out/'job-tools')+'\n')
             self.assertEqual(len(calls),2)
-            self.assertIn('--batch',calls[1]);self.assertIn('--version',calls[1])
+            self.assertEqual(calls[1], [str(out/'job-tools/bazel'), '--batch', '--nosystem_rc', '--nohome_rc',
+                '--output_user_root='+str(out/'bazel-root'), '--output_base='+str(out/'bazel-output'),
+                '--noexperimental_remote_repo_contents_cache', 'version', '--gnu_format'])
             self.assertEqual({p.name for p in (out/'public').iterdir()},{'bootstrap.json'})
             receipt=(out/'public/bootstrap.json').read_text()
             self.assertNotIn('neverpublishsecret',receipt)
