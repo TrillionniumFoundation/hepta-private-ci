@@ -176,47 +176,89 @@ fn dropped_session_does_not_extend_its_expired_stop_window() {
     }
 }
 
-
 #[test]
 fn cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor() {
     use std::os::unix::net::UnixListener;
-    let runtime = tokio::runtime::Builder::new_multi_thread().worker_threads(2).enable_all().build().unwrap();
+    let runtime = tokio::runtime::Builder::new_multi_thread()
+        .worker_threads(2)
+        .enable_all()
+        .build()
+        .unwrap();
     let directory = tempfile::tempdir().unwrap();
     let worker = directory.path().join("session/worker");
     fs::create_dir_all(&worker).unwrap();
     let listener = UnixListener::bind(worker.join("model.sock")).unwrap();
     listener.set_nonblocking(true).unwrap();
-    let mut supervisor = Command::new("/bin/sh").args(["-c", "exit 0"]).spawn().unwrap();
+    let mut supervisor = Command::new("/bin/sh")
+        .args(["-c", "exit 0"])
+        .spawn()
+        .unwrap();
     assert!(supervisor.wait().unwrap().success());
-    let session = Session::new(File::open(directory.path()).unwrap(), supervisor, runtime.handle().clone());
+    let session = Session::new(
+        File::open(directory.path()).unwrap(),
+        supervisor,
+        runtime.handle().clone(),
+    );
     let cancellation = tokio_util::sync::CancellationToken::new();
     cancellation.cancel();
-    let cancelled = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(Instant::now() + Duration::from_secs(2), cancellation);
-    assert!(session.exchange(b"bounded-frame", cancelled.deadline(), &cancelled).is_err());
-    assert_eq!(listener.accept().unwrap_err().kind(), std::io::ErrorKind::WouldBlock);
+    let cancelled = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(
+        Instant::now() + Duration::from_secs(2),
+        cancellation,
+    );
+    assert!(
+        session
+            .exchange(b"bounded-frame", cancelled.deadline(), &cancelled)
+            .is_err()
+    );
+    assert_eq!(
+        listener.accept().unwrap_err().kind(),
+        std::io::ErrorKind::WouldBlock
+    );
     listener.set_nonblocking(false).unwrap();
     let (observed_tx, observed_rx) = std::sync::mpsc::channel();
     let (release_tx, release_rx) = std::sync::mpsc::channel();
     let peer = std::thread::spawn(move || {
         let (mut stream, _) = listener.accept().unwrap();
-        stream.set_read_timeout(Some(Duration::from_secs(1))).unwrap();
+        stream
+            .set_read_timeout(Some(Duration::from_secs(1)))
+            .unwrap();
         let mut frame = Vec::new();
         loop {
             let mut byte = [0_u8; 1];
             stream.read_exact(&mut byte).unwrap();
             frame.push(byte[0]);
-            if byte[0] == b'\n' { break; }
+            if byte[0] == b'\n' {
+                break;
+            }
         }
         observed_tx.send(frame).unwrap();
         release_rx.recv_timeout(Duration::from_secs(2)).unwrap();
         listener.set_nonblocking(true).unwrap();
-        assert_eq!(listener.accept().unwrap_err().kind(), std::io::ErrorKind::WouldBlock);
+        assert_eq!(
+            listener.accept().unwrap_err().kind(),
+            std::io::ErrorKind::WouldBlock
+        );
     });
-    let execution = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(Instant::now() + Duration::from_millis(50), tokio_util::sync::CancellationToken::new());
-    assert!(session.exchange(b"bounded-frame", execution.deadline(), &execution).is_err());
-    assert_eq!(observed_rx.recv_timeout(Duration::from_secs(1)).unwrap(), b"bounded-frame\n");
+    let execution = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(
+        Instant::now() + Duration::from_millis(50),
+        tokio_util::sync::CancellationToken::new(),
+    );
+    assert!(
+        session
+            .exchange(b"bounded-frame", execution.deadline(), &execution)
+            .is_err()
+    );
+    assert_eq!(
+        observed_rx.recv_timeout(Duration::from_secs(1)).unwrap(),
+        b"bounded-frame\n"
+    );
     let successor = codex_hepta_agentd::NeuralCognitiveExecutionV1::bounded_read();
-    assert!(session.exchange(b"must-not-send", successor.deadline(), &successor).unwrap_err().contains("unresolved physical execution"));
+    assert!(
+        session
+            .exchange(b"must-not-send", successor.deadline(), &successor)
+            .unwrap_err()
+            .contains("unresolved physical execution")
+    );
     release_tx.send(()).unwrap();
     peer.join().unwrap();
     assert!(session.in_flight_or_unknown.load(Ordering::SeqCst));

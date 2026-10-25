@@ -87,7 +87,9 @@ impl TurnStartAuthorizer for TestIssuer {
             let signed = SignedFinalUseGrant { grant, signature };
             self.issued.lock().unwrap().push(signed.clone());
             let token = self.authority.claim(&signed, &binding)?;
-            if let Some(cancellation) = self.cancel_after_claim.lock().unwrap().as_ref() { cancellation.cancel(); }
+            if let Some(cancellation) = self.cancel_after_claim.lock().unwrap().as_ref() {
+                cancellation.cancel();
+            }
             Ok(token)
         })
     }
@@ -139,7 +141,13 @@ fn original_control_and_final_use_bind_resource_epoch_owner_and_body_on_reopen()
     let payload = Digest32::of_bytes(b"actual-request-binding-fixture");
     let scope = Digest32::of_bytes(b"registered-execution-profile-fixture");
     let first = context.admit(payload, 2000).unwrap();
-    let entered = context.enter(&first, scope, &codex_hepta_agentd::NeuralCognitiveExecutionV1::bounded_read()).unwrap();
+    let entered = context
+        .enter(
+            &first,
+            scope,
+            &codex_hepta_agentd::NeuralCognitiveExecutionV1::bounded_read(),
+        )
+        .unwrap();
     assert!(entered.matches(&issuer.bindings.lock().unwrap()[0]));
     drop(entered);
     context
@@ -152,7 +160,13 @@ fn original_control_and_final_use_bind_resource_epoch_owner_and_body_on_reopen()
         .unwrap();
     context.grant.authority_epoch += 1;
     let second = context.admit(payload, 2000).unwrap();
-    let entered = context.enter(&second, scope, &codex_hepta_agentd::NeuralCognitiveExecutionV1::bounded_read()).unwrap();
+    let entered = context
+        .enter(
+            &second,
+            scope,
+            &codex_hepta_agentd::NeuralCognitiveExecutionV1::bounded_read(),
+        )
+        .unwrap();
     drop(entered);
     {
         let bindings = issuer.bindings.lock().unwrap();
@@ -161,11 +175,27 @@ fn original_control_and_final_use_bind_resource_epoch_owner_and_body_on_reopen()
     context.settle(&second, None, true, 0).unwrap();
     context.body_generation += 1;
     let third = context.admit(payload, 2000).unwrap();
-    drop(context.enter(&third, scope, &codex_hepta_agentd::NeuralCognitiveExecutionV1::bounded_read()).unwrap());
+    drop(
+        context
+            .enter(
+                &third,
+                scope,
+                &codex_hepta_agentd::NeuralCognitiveExecutionV1::bounded_read(),
+            )
+            .unwrap(),
+    );
     context.settle(&third, None, true, 0).unwrap();
     context.owner_id = AgentId::parse("00000000-0000-4000-8000-000000000220").unwrap();
     let fourth = context.admit(payload, 2000).unwrap();
-    drop(context.enter(&fourth, scope, &codex_hepta_agentd::NeuralCognitiveExecutionV1::bounded_read()).unwrap());
+    drop(
+        context
+            .enter(
+                &fourth,
+                scope,
+                &codex_hepta_agentd::NeuralCognitiveExecutionV1::bounded_read(),
+            )
+            .unwrap(),
+    );
     context.settle(&fourth, None, true, 0).unwrap();
     {
         let bindings = issuer.bindings.lock().unwrap();
@@ -298,20 +328,38 @@ fn original_final_use_denial_prevents_even_starting_the_model_process() {
 #[path = "smollm_neural_native_tests.rs"]
 mod native;
 
-
 #[test]
 fn expired_or_cancelled_read_cannot_claim_and_postclaim_cancellation_never_refunds_nonce() {
     let directory = tempfile::tempdir().unwrap();
     let runtime = runtime();
     let issuer = Arc::new(TestIssuer::open(&directory.path().join("authority")));
-    let control = Arc::new(Mutex::new(DurableInferenceControl::open(directory.path().join("inference.control"), 8).unwrap()));
-    let context = ControlContext { control, authorizer: issuer.clone(), runtime: runtime.handle().clone(), owner_id: owner(), body_generation: 1, worker_id: "controlled-neural-worker".to_owned(), grant: grant(), model_digest: Digest32::of_bytes(b"model").to_string() };
-    let admitted = context.admit(Digest32::of_bytes(b"cancelled-request"), 2000).unwrap();
+    let control = Arc::new(Mutex::new(
+        DurableInferenceControl::open(directory.path().join("inference.control"), 8).unwrap(),
+    ));
+    let context = ControlContext {
+        control,
+        authorizer: issuer.clone(),
+        runtime: runtime.handle().clone(),
+        owner_id: owner(),
+        body_generation: 1,
+        worker_id: "controlled-neural-worker".to_owned(),
+        grant: grant(),
+        model_digest: Digest32::of_bytes(b"model").to_string(),
+    };
+    let admitted = context
+        .admit(Digest32::of_bytes(b"cancelled-request"), 2000)
+        .unwrap();
     let scope = Digest32::of_bytes(b"registered-scope");
     let cancellation = CancellationToken::new();
     cancellation.cancel();
-    let cancelled = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(std::time::Instant::now() + Duration::from_secs(2), cancellation);
-    let expired = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(std::time::Instant::now(), CancellationToken::new());
+    let cancelled = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(
+        std::time::Instant::now() + Duration::from_secs(2),
+        cancellation,
+    );
+    let expired = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(
+        std::time::Instant::now(),
+        CancellationToken::new(),
+    );
     for execution in [&cancelled, &expired] {
         assert!(context.enter(&admitted, scope, execution).is_err());
         assert_eq!(issuer.authority.capacity().unwrap().used_nonces, 0);
@@ -319,12 +367,20 @@ fn expired_or_cancelled_read_cannot_claim_and_postclaim_cancellation_never_refun
     }
     let cancellation = CancellationToken::new();
     *issuer.cancel_after_claim.lock().unwrap() = Some(cancellation.clone());
-    let execution = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(std::time::Instant::now() + Duration::from_secs(2), cancellation);
+    let execution = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(
+        std::time::Instant::now() + Duration::from_secs(2),
+        cancellation,
+    );
     assert!(context.enter(&admitted, scope, &execution).is_err());
     assert_eq!(issuer.bindings.lock().unwrap().len(), 1);
     assert_eq!(issuer.authority.capacity().unwrap().used_nonces, 1);
     let signed = issuer.issued.lock().unwrap()[0].clone();
-    assert!(issuer.authority.claim(&signed, &signed.grant.binding).is_err());
+    assert!(
+        issuer
+            .authority
+            .claim(&signed, &signed.grant.binding)
+            .is_err()
+    );
     assert_eq!(issuer.authority.capacity().unwrap().used_nonces, 1);
     context.settle(&admitted, None, true, 0).unwrap();
 }

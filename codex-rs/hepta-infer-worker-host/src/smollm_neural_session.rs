@@ -11,8 +11,9 @@ use std::os::unix::net::UnixStream;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Child;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Instant;
 
 use serde::Deserialize;
@@ -80,20 +81,25 @@ impl Session {
     }
 
     pub(super) fn exchange(
-        &self, bytes: &[u8], deadline: Instant,
+        &self,
+        bytes: &[u8],
+        deadline: Instant,
         execution: &codex_hepta_agentd::NeuralCognitiveExecutionV1,
     ) -> Result<Vec<u8>, String> {
         execution.check()?;
         let deadline = deadline.min(execution.deadline());
         if self.in_flight_or_unknown.load(Ordering::SeqCst) {
-            return Err("neural session has unresolved physical execution; unload required".to_owned());
+            return Err(
+                "neural session has unresolved physical execution; unload required".to_owned(),
+            );
         }
         if bytes.is_empty() || bytes.len() >= 8192 || bytes.contains(&b'\n') {
             return Err("neural request frame bound".to_owned());
         }
         let mut stream = self.connect(deadline)?;
         execution.check()?;
-        self.in_flight_or_unknown.compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
+        self.in_flight_or_unknown
+            .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
             .map_err(|_| "neural session has unresolved physical execution; unload required")?;
         let mut frame = bytes.to_vec();
         frame.push(b'\n');
