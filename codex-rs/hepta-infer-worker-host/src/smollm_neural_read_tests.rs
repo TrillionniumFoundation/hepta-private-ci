@@ -468,3 +468,84 @@ fn late_load_settlement_rejects_delivery_without_rewriting_completion_or_nonce()
         assert_eq!(reopened.get(&request_id), Some(&completed));
     }
 }
+
+#[test]
+fn concurrent_original_load_admissions_keep_distinct_signed_nonces_and_cold_records() {
+    let directory = tempfile::tempdir().unwrap();
+    let runtime = runtime();
+    let issuer = Arc::new(TestIssuer::open(&directory.path().join("authority")));
+    let path = directory.path().join("inference.control");
+    let control = Arc::new(Mutex::new(DurableInferenceControl::open(&path, 8).unwrap()));
+    let barrier = std::sync::Barrier::new(2);
+    let load = |role: &str| {
+        let context = ControlContext {
+            control: control.clone(),
+            authorizer: issuer.clone(),
+            runtime: runtime.handle().clone(),
+            owner_id: owner(),
+            body_generation: 1,
+            worker_id: role.to_owned(),
+            grant: grant(),
+            model_digest: Digest32::of_bytes(role.as_bytes()).to_string(),
+        };
+        let execution = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(
+            std::time::Instant::now() + Duration::from_secs(120),
+            CancellationToken::new(),
+        );
+        barrier.wait();
+        let admitted = context
+            .admit(Digest32::of_bytes(role.as_bytes()), 120_000)
+            .unwrap();
+        drop(
+            context
+                .enter(
+                    &admitted,
+                    Digest32::of_bytes(b"registered-scope"),
+                    &execution,
+                )
+                .unwrap(),
+        );
+        context
+            .settle_load(&admitted, Digest32::of_bytes(role.as_bytes()), &execution)
+            .unwrap();
+        admitted.request_id
+    };
+    let (left, right) = std::thread::scope(|scope| {
+        let left = scope.spawn(|| load("candidate"));
+        let right = load("baseline");
+        (left.join().unwrap(), right)
+    });
+    assert_ne!(left, right);
+    assert_eq!(issuer.authority.capacity().unwrap().used_nonces, 2);
+    let issued = issuer.issued.lock().unwrap();
+    assert_eq!(issued.len(), 2);
+    assert_ne!(issued[0].grant.nonce, issued[1].grant.nonce);
+    for signed in issued.iter() {
+        assert!(
+            issuer
+                .authority
+                .claim(signed, &signed.grant.binding)
+                .is_err()
+        );
+    }
+    let records = {
+        let control = control.lock().unwrap();
+        [&left, &right].map(|id| control.get(id).unwrap().clone())
+    };
+    assert!(
+        records
+            .iter()
+            .all(|record| record.state == RequestState::Completed)
+    );
+    assert_eq!(
+        records
+            .iter()
+            .map(|record| record.consumed_tokens)
+            .sum::<u32>(),
+        0
+    );
+    drop(control);
+    let recovered = DurableInferenceControl::open(path, 8).unwrap();
+    assert_eq!(recovered.get(&left), Some(&records[0]));
+    assert_eq!(recovered.get(&right), Some(&records[1]));
+}

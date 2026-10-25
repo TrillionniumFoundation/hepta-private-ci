@@ -12,6 +12,7 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::MutexGuard;
 use std::sync::OnceLock;
+use std::sync::TryLockError;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicI32;
 use std::sync::atomic::AtomicU8;
@@ -25,7 +26,37 @@ use tokio_util::sync::CancellationToken;
 
 const CAPACITY: usize = 2;
 const STACK_BYTES: usize = 1024 * 1024;
+const ROOT_LOCK_ATTEMPTS: usize = 256;
 static OWNERS: Mutex<[Option<Arc<Slot>>; CAPACITY]> = Mutex::new([const { None }; CAPACITY]);
+
+fn reserve_roots(
+    deadline: Instant,
+    cancellation: &CancellationToken,
+) -> Result<MutexGuard<'static, [Option<Arc<Slot>>; CAPACITY]>, String> {
+    for _ in 0..ROOT_LOCK_ATTEMPTS {
+        if cancellation.is_cancelled() || Instant::now() >= deadline {
+            return Err("neural reaper preparation exceeded original startup".to_owned());
+        }
+        match OWNERS.try_lock() {
+            Ok(roots) => {
+                if cancellation.is_cancelled() || Instant::now() >= deadline {
+                    return Err("neural reaper preparation exceeded original startup".to_owned());
+                }
+                return Ok(roots);
+            }
+            Err(TryLockError::Poisoned(_)) => {
+                return Err("neural owner roots busy or poisoned".to_owned());
+            }
+            Err(TryLockError::WouldBlock) => {
+                std::thread::park_timeout(
+                    Duration::from_millis(1)
+                        .min(deadline.saturating_duration_since(Instant::now())),
+                );
+            }
+        }
+    }
+    Err("neural owner roots busy or poisoned".to_owned())
+}
 
 struct Lease {
     origin: Instant,
@@ -90,9 +121,7 @@ impl SupervisorOwner {
             cutoff_ns: AtomicU64::new(super::SUPERVISOR_WALL_SECONDS * 1_000_000_000),
             requested: AtomicBool::new(false),
         });
-        let mut roots = OWNERS
-            .try_lock()
-            .map_err(|_| "neural owner roots busy or poisoned")?;
+        let mut roots = reserve_roots(deadline, cancellation)?;
         let mut fresh = false;
         let mut chosen = None;
         for entry in roots.iter_mut() {

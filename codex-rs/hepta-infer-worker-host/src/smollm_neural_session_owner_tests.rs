@@ -333,3 +333,117 @@ fn exact_supervisor_exit_without_original_worker_receipt_stays_closed() {
     assert!(child.try_wait().unwrap().unwrap().success());
     assert!(payload.lease.requested.load(Ordering::Acquire));
 }
+
+#[test]
+fn contended_root_reservation_starts_two_original_children_without_retrying_birth() {
+    let directory = tempfile::tempdir().unwrap();
+    let roots = OWNERS.lock().unwrap();
+    let barrier = std::sync::Barrier::new(3);
+    let (first, second) = std::thread::scope(|scope| {
+        let start = || {
+            barrier.wait();
+            prepare(directory.path())
+        };
+        let first = scope.spawn(start);
+        let second = scope.spawn(start);
+        barrier.wait();
+        std::thread::sleep(Duration::from_millis(20));
+        drop(roots);
+        (first.join().unwrap(), second.join().unwrap())
+    });
+    first.spawn(&mut command()).unwrap();
+    second.spawn(&mut command()).unwrap();
+    assert_ne!(first.id(), second.id());
+    assert!(first.try_wait().unwrap().is_none());
+    assert!(second.try_wait().unwrap().is_none());
+    assert!(
+        SupervisorOwner::prepare(
+            File::open(directory.path()).unwrap(),
+            Instant::now() + Duration::from_secs(2),
+            &CancellationToken::new(),
+        )
+        .err()
+        .unwrap()
+        .contains("capacity busy")
+    );
+    for owner in [&first, &second] {
+        owner.take_stdin().unwrap().write_all(b"stop\n").unwrap();
+        assert!(owner.wait().unwrap().success());
+        owner.release_verified_terminal().unwrap();
+    }
+}
+
+#[test]
+fn root_contention_preserves_original_deadline_and_cancellation_before_reservation() {
+    let directory = tempfile::tempdir().unwrap();
+    for cancel in [false, true] {
+        let roots = OWNERS.lock().unwrap();
+        let cancellation = CancellationToken::new();
+        let barrier = std::sync::Barrier::new(2);
+        std::thread::scope(|scope| {
+            let waiter = scope.spawn(|| {
+                barrier.wait();
+                SupervisorOwner::prepare(
+                    File::open(directory.path()).unwrap(),
+                    Instant::now() + Duration::from_millis(40),
+                    &cancellation,
+                )
+            });
+            barrier.wait();
+            if cancel {
+                cancellation.cancel();
+            }
+            assert!(
+                waiter
+                    .join()
+                    .unwrap()
+                    .err()
+                    .unwrap()
+                    .contains("exceeded original startup")
+            );
+            assert!(roots.iter().all(Option::is_none));
+        });
+    }
+}
+
+#[test]
+fn poisoned_roots_never_wait_or_reserve_an_owner() {
+    let directory = tempfile::tempdir().unwrap();
+    assert!(
+        std::thread::spawn(|| {
+            let _roots = OWNERS.lock().unwrap();
+            panic!("controlled roots poison before any birth");
+        })
+        .join()
+        .is_err()
+    );
+    assert!(
+        SupervisorOwner::prepare(
+            File::open(directory.path()).unwrap(),
+            Instant::now() + Duration::from_secs(2),
+            &CancellationToken::new(),
+        )
+        .err()
+        .unwrap()
+        .contains("busy or poisoned")
+    );
+    let poisoned = OWNERS.lock().err().unwrap().into_inner();
+    assert!(poisoned.iter().all(Option::is_none));
+}
+
+#[test]
+fn root_contention_attempt_cap_refuses_without_waiting_for_a_longer_startup_window() {
+    let directory = tempfile::tempdir().unwrap();
+    let roots = OWNERS.lock().unwrap();
+    let started = Instant::now();
+    let error = SupervisorOwner::prepare(
+        File::open(directory.path()).unwrap(),
+        started + Duration::from_secs(10),
+        &CancellationToken::new(),
+    )
+    .err()
+    .unwrap();
+    assert!(error.contains("busy or poisoned"));
+    assert!(started.elapsed() < Duration::from_secs(2));
+    assert!(roots.iter().all(Option::is_none));
+}

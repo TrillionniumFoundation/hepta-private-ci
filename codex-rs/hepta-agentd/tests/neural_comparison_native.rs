@@ -26,6 +26,8 @@ use codex_hepta_types::Digest32;
 mod ledger_fixture;
 #[path = "support/neural_native_owner.rs"]
 mod native;
+#[path = "support/neural_parallel_start.rs"]
+mod parallel_start;
 #[path = "support/neural_holdout_plan.rs"]
 mod plan_fixture;
 
@@ -131,19 +133,28 @@ fn real_gen2_gen3_forwards_score_only_after_original_holdout_consumption() -> na
         &journal_path,
         128,
     )?));
-    let candidate = native::start(
-        candidate_model,
-        "candidate",
-        control.clone(),
-        issuer.clone(),
-        &runtime,
-    )?;
-    let baseline = native::start(
-        baseline_model,
-        "baseline",
-        control.clone(),
-        issuer.clone(),
-        &runtime,
+    let (candidate, baseline) = parallel_start::start_pair(
+        || {
+            native::start(
+                candidate_model,
+                "candidate",
+                control.clone(),
+                issuer.clone(),
+                &runtime,
+            )
+            .map_err(|error| error.to_string())
+        },
+        || {
+            native::start(
+                baseline_model,
+                "baseline",
+                control.clone(),
+                issuer.clone(),
+                &runtime,
+            )
+            .map_err(|error| error.to_string())
+        },
+        |survivor| survivor.shutdown(),
     )?;
     let mut provider = NeuralFinalHoldoutProviderV1::new(
         material.clone(),
