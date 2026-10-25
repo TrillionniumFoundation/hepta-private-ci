@@ -108,7 +108,7 @@ F(\theta)=\frac{M_\theta-1}{\gamma}+\lambda A_\theta,
 当 `λ=0` 时，最小化该指数矩等价于最大化 joint CE。保留辅助项时，必须报告上述实际目标：
 
 \[
-\nabla F=M_\theta\left[-\nabla C_\gamma+
+\nabla F=M_\theta\left[-\nabla C_\gamma(U_\theta)+
 \frac{\lambda}{M_\theta}\nabla A_\theta\right].
 \]
 
