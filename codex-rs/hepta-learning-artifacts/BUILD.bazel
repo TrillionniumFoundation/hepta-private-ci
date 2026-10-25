@@ -2,6 +2,7 @@ load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
     name = "hepta-learning-artifacts",
+    compile_data = glob(["profiles/*"]),
     crate_name = "codex_hepta_learning_artifacts",
     deps_extra = ["@crates//:pretty_assertions"],
 )

@@ -35,6 +35,9 @@ use crate::RevalidatingCandidate;
 use crate::VerifiedCurrentRegistryViewV1;
 use crate::load_pinned_candidate;
 
+#[path = "initial_smollm_genesis.rs"]
+mod initial_smollm_genesis;
+
 const MAX_TRUSTED_SELECTORS: usize = 32;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -395,8 +398,10 @@ pub fn load_selected_candidate(
     payload_file: File,
     selection: VerifiedArtifactSelectionV1,
 ) -> Result<RevalidatingCandidate, ArtifactSelectionError> {
+    initial_smollm_genesis::validate_manifest(&selection.pin.manifest)?;
     let loaded = load_pinned_candidate(snapshot_file, payload_file, selection.pin)
         .map_err(ArtifactSelectionError::Load)?;
+    initial_smollm_genesis::validate_payload(&loaded)?;
     Ok(RevalidatingCandidate::new(loaded))
 }
 
@@ -438,6 +443,7 @@ pub enum ArtifactSelectionError {
     CurrentHeadMismatch,
     ArtifactUnavailable,
     ManifestMismatch,
+    InitialGenesisMaterial,
     RoleCollision,
     Lifecycle(ArtifactLifecycleJournalError),
     Load(PinnedCandidateLoadError),
@@ -467,6 +473,7 @@ impl StdError for ArtifactSelectionError {
             | Self::CurrentHeadMismatch
             | Self::ArtifactUnavailable
             | Self::ManifestMismatch
+            | Self::InitialGenesisMaterial
             | Self::RoleCollision => None,
         }
     }
