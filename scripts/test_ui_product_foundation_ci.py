@@ -1,5 +1,6 @@
 """Exercise the actual synthetic-merge action with its caller's history depth."""
 
+import hashlib
 import os
 from pathlib import Path
 import re
@@ -216,6 +217,73 @@ class ProductGatewayWorkflowTests(unittest.TestCase):
         ):
             self.assertIn("      - " + path, self.workflow)
         self.assertIn("lane: [source-head, base-merge]", self.workflow)
+
+
+@unittest.skipUnless(os.name == "posix", "Ubuntu workflow shell integration")
+class NativePresentationTargetEnvironmentTests(unittest.TestCase):
+    def setUp(self):
+        workflow = (ROOT / ".github/workflows/ui-product-foundation.yml").read_text()
+        self.job = workflow.split("\n  native-presentation:\n", 1)[1].split(
+            "\n  ui-bazel-lock-generation:\n", 1
+        )[0]
+
+    def test_job_environment_uses_only_contexts_available_before_runner_start(self):
+        environment = self.job.split("    env:\n", 1)[1].split("    steps:\n", 1)[0]
+        self.assertNotRegex(environment, r"\$\{\{\s*runner(?:\.|\[)")
+
+    def test_actual_binding_step_exports_the_same_target_outside_the_checkout(self):
+        step = self.job.split(
+            "- name: Bind source before installing native inputs\n", 1
+        )[1].split("      - name:", 1)[0]
+        script = textwrap.dedent(step.split("        run: |\n", 1)[1])
+        with tempfile.TemporaryDirectory(prefix="native target env ") as directory:
+            root = Path(directory)
+            checkout = root / "checkout"
+            git = ProductUiMergeCheckoutTests.git
+            git(root, "init", "-q", "-b", "main", str(checkout))
+            lock = checkout / "apps/hepta-control-ui/rust/Cargo.lock"
+            lock.parent.mkdir(parents=True)
+            lock.write_text("immutable fixture lock\n")
+            git(checkout, "add", ".")
+            git(checkout, "commit", "-qm", "fixture")
+            runner = root / "runner temp"
+            runner.mkdir()
+            github_env = root / "github env"
+            env = dict(os.environ, RUNNER_TEMP=str(runner), GITHUB_ENV=str(github_env))
+            env.pop("CARGO_TARGET_DIR", None)
+            result = subprocess.run(
+                ["bash", "-c", script],
+                cwd=checkout,
+                env=env,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertTrue(github_env.is_file(), "binding step must export the target")
+            entries = [
+                line.partition("=") for line in github_env.read_text().splitlines()
+            ]
+            targets = [
+                value
+                for name, separator, value in entries
+                if name == "CARGO_TARGET_DIR" and separator
+            ]
+            self.assertEqual(targets, [str(runner / "native-presentation-target")])
+            self.assertEqual(git(checkout, "status", "--porcelain").strip(), "")
+            evidence = runner / "native-presentation-evidence"
+            self.assertEqual(
+                (evidence / "tested-head.txt").read_text().strip(),
+                git(checkout, "rev-parse", "HEAD").strip(),
+            )
+            self.assertEqual(
+                (evidence / "tested-tree.txt").read_text().strip(),
+                git(checkout, "rev-parse", "HEAD^{tree}").strip(),
+            )
+            self.assertEqual(
+                (evidence / "original-lock.sha256").read_text().split()[0],
+                hashlib.sha256(lock.read_bytes()).hexdigest(),
+            )
 
 
 if __name__ == "__main__":
