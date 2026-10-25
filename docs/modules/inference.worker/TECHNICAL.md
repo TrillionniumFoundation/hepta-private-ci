@@ -121,6 +121,13 @@ and native whole-unit lifetime-owner integration remain required. No second
 ledger, key or nonce store is created. Existing ordinary Child observations retain their narrower
 semantics, original assertions and eight-second deadline.
 
+The private SmolLM process driver consumes `SmolLmRuntimeIdentityV1`: only the
+parameter digest/generation and executable family/profile copied from the
+existing qualified pin. The unchanged read port retains that complete evaluated
+pin, including its objective/dataset binding, exact request equality and original
+compatibility/FinalUse scope. This private factoring grants no initial admission
+and does not interpret missing evaluation fields as an initial qualification.
+
 The PN3 SmolLM read owner retains bounded measurement observations in its
 existing mailbox: one validated actual worker Ready and one last successfully
 settled forward. `smollm_neural_measurement.rs` owns opaque, non-serializable
