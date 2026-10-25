@@ -128,7 +128,7 @@ class DiagnosticTests(unittest.TestCase):
                 self.assertNotEqual(old, d.snapshot(root, {}))
 
 
-    def exercise_main(self, build_exit=0, run_exit=0, changed=False, gate=True, cleanup_exit=0, cleanup_stop=None, control_change=False, run_stop=None):
+    def exercise_main(self, build_exit=0, run_exit=0, changed=False, gate=True, cleanup_exit=0, cleanup_stop=None, control_change=False, run_stop=None, action_error=None):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
             source, action, temp = [root / name for name in ['source', 'action', 'temp']]
@@ -147,7 +147,7 @@ class DiagnosticTests(unittest.TestCase):
                 code = build_exit if argv[1] == 'build' else run_exit if argv[1] == 'run' else cleanup_exit
                 return {'argv': argv, 'exit': code, 'stop': cleanup_stop if argv[1] == 'rm' else run_stop if argv[1] == 'run' else None,
                         'streams': [stream.finish() for stream in streams]}, streams
-            with mock.patch.object(d, 'control_receipt', side_effect=[{'head': 'fixed'}, {'head': 'changed' if control_change else 'fixed'}]), mock.patch.object(d, 'identity'), mock.patch.object(d, 'BLOBS', {}), \
+            with mock.patch.object(d, 'control_receipt', side_effect=[{'head': 'fixed'}, {'head': 'changed' if control_change else 'fixed'}]), mock.patch.object(d, 'action_identity', return_value={'tag_object': d.ACTION}, side_effect=action_error), mock.patch.object(d, 'identity'), mock.patch.object(d, 'BLOBS', {}), \
                  mock.patch.object(d, 'input_gate', return_value=gate), \
                  mock.patch.object(d, 'snapshot', side_effect=['before', 'after' if changed else 'before']), \
                  mock.patch.object(d, 'git', return_value=b''), \
@@ -287,6 +287,50 @@ class DiagnosticTests(unittest.TestCase):
         ]
         for value, kind in variants:
             self.assertFalse(d.reviewed_source_url(value, kind), (value, kind))
+
+
+    def test_annotated_tag_is_not_head_and_peels_exactly(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            subprocess.run(['git', 'init', '-q', str(root)], check=True)
+            config = ['git', '-C', str(root), '-c', 'user.name=fixture', '-c', 'user.email=fixture@example.invalid']
+            subprocess.run(config + ['commit', '--allow-empty', '-qm', 'fixture'], check=True)
+            subprocess.run(config + ['tag', '-a', 'fixture', '-m', 'fixed public tag'], check=True)
+            def rev(name):
+                return subprocess.check_output(['git', '-C', str(root), 'rev-parse', name]).decode().strip()
+            tag, commit, tree = rev('fixture'), rev('HEAD'), rev('HEAD^{tree}')
+            self.assertNotEqual(tag, commit)
+            with self.assertRaises(ValueError):
+                d.identity(root, tag, tree, os.environ.copy())  # original bug
+            with mock.patch.object(d, 'ACTION', tag), mock.patch.object(d, 'ACTION_COMMIT', commit), mock.patch.object(d, 'ACTION_TREE', tree):
+                receipt = d.action_identity(root, os.environ.copy())
+                self.assertEqual(receipt['tag_object'], tag)
+                self.assertEqual(receipt['peeled_commit'], commit)
+                self.assertEqual(receipt['tree'], tree)
+                for wrong in ['ACTION_COMMIT', 'ACTION_TREE']:
+                    with mock.patch.object(d, wrong, '0' * 40):
+                        with self.assertRaises(ValueError):
+                            d.action_identity(root, os.environ.copy())
+            with mock.patch.object(d, 'ACTION', commit):
+                with self.assertRaises(ValueError):
+                    d.action_identity(root, os.environ.copy())
+
+    def test_bounded_metadata_error_has_no_raw_output_or_argv(self):
+        with self.assertRaises(d.MetadataFailure) as caught:
+            d.checked([sys.executable, '-c', 'import sys; print("secret-fixture"); sys.exit(7)'], os.environ.copy())
+        self.assertEqual(set(caught.exception.safe), {'exit', 'stop', 'stdout_bytes', 'stderr_bytes'})
+        self.assertEqual(caught.exception.safe['exit'], 7)
+        self.assertNotIn('secret-fixture', str(caught.exception.safe))
+
+
+    def test_fixed_stage_identifies_action_identity_failure(self):
+        code, receipt, calls = self.exercise_main(action_error=ValueError('private fixture not exported'))
+        self.assertEqual(code, 125)
+        self.assertEqual(receipt['stage'], 'action_identity')
+        self.assertTrue(receipt['collector_error'])
+        self.assertEqual(receipt['records'], [])
+        self.assertNotIn('private fixture', json.dumps(receipt))
+        self.assertFalse(any(argv[1] in ['build', 'run'] for argv in calls))
 
 
 if __name__ == '__main__':

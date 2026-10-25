@@ -16,7 +16,9 @@ from urllib.parse import urlsplit
 
 SOURCE = '2e259b959339f1709370772c380145834e6bc0b7'
 TREE = '010629adca9f5a6f5a2a93842f4d701d9e7d10a4'
-ACTION = '82eb9f621fbc699dd0918f3ea06864c14cc84246'
+ACTION = '82eb9f621fbc699dd0918f3ea06864c14cc84246'  # immutable annotated tag object
+ACTION_COMMIT = '3fd3802e88374d3fe9159b834c7714ec57d6c979'
+ACTION_TREE = 'f2b8fc397f80f6a28f5b5826d01feacb3512c4f3'
 BASE = 'rust:1.85.0-alpine3.20@sha256:f0cef6c65992995b1c7816cb667de95799852e3fbed9d06f95855cbc512a0fd0'
 BLOBS = {'Dockerfile': '94f38ebce29aa536404c614879576defbb272c15',
          'entrypoint.sh': 'ba9fa82bb74e75bbf14ab3aa1852e2c601d5234e',
@@ -144,10 +146,17 @@ def capture(argv, env, seconds, disk=None, abort=None):
     return result, streams
 
 
+class MetadataFailure(ValueError):
+    def __init__(self, result, streams):
+        super().__init__('bounded_metadata_failed')
+        self.safe = {'exit': result['exit'], 'stop': result['stop'],
+                     'stdout_bytes': streams[0].count, 'stderr_bytes': streams[1].count}
+
+
 def checked(argv, env):
     result, streams = capture(argv, env, 20)
     if result['exit'] != 0 or result['stop'] or any(s.count > 1024 * 1024 for s in streams):
-        raise ValueError('bounded_metadata_failed')
+        raise MetadataFailure(result, streams)
     return streams[0].retained()
 
 
@@ -162,6 +171,22 @@ def identity(repo, commit, tree, env):
         raise ValueError('source_tree_mismatch')
     if git(repo, env, 'status', '--porcelain', '--untracked-files=all'):
         raise ValueError('source_dirty')
+
+
+
+def action_identity(repo, env):
+    # A uses SHA may name an annotated tag object; HEAD names its peeled commit.
+    if git(repo, env, 'cat-file', '-t', ACTION).decode().strip() != 'tag':
+        raise ValueError('action_tag_object_type_mismatch')
+    if git(repo, env, 'rev-parse', ACTION + '^{commit}').decode().strip() != ACTION_COMMIT:
+        raise ValueError('action_tag_peel_mismatch')
+    identity(repo, ACTION_COMMIT, ACTION_TREE, env)
+    body = git(repo, env, 'cat-file', 'tag', ACTION)
+    if len(body) > 4096 or hashlib.sha1(b'tag ' + str(len(body)).encode() + b'\0' + body).hexdigest() != ACTION:
+        raise ValueError('action_tag_object_hash_mismatch')
+    return {'tag_object': ACTION, 'tag_object_sha256': hashlib.sha256(body).hexdigest(),
+            'tag_object_bytes': len(body), 'peeled_commit': ACTION_COMMIT,
+            'tree': ACTION_TREE}
 
 
 def snapshot(repo, env):
@@ -333,19 +358,26 @@ def main(source, action, temp, control, event_sha, workflow_sha):
         except Exception:
             pass
     try:
+        report['stage'] = 'control_identity'
         report['control_before'] = control_receipt(control, event_sha, workflow_sha, env)
+        report['stage'] = 'source_identity'
         identity(source, SOURCE, TREE, env)
-        identity(action, ACTION, None, env)
+        report['stage'] = 'action_identity'
+        report['action_identity'] = action_identity(action, env)
+        report['stage'] = 'action_blobs'
         for name, expected in BLOBS.items():
             data = (action / name).read_bytes()
             actual = hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
             if actual != expected:
                 raise ValueError('action_blob_mismatch')
+        report['stage'] = 'source_snapshot'
         report['source_before'] = snapshot(source, env)
         report['lock_before'] = hashlib.sha256((source / 'codex-rs/Cargo.lock').read_bytes()).hexdigest()
+        report['stage'] = 'input_gate'
         report['inputs_ok'] = input_gate(source, env)
         if not report['inputs_ok']:
             raise ValueError('input_credential_or_url_gate')
+        report['stage'] = 'disk_preflight'
         if shutil.disk_usage(temp).free < 12 * 1024**3:
             raise ValueError('insufficient_initial_disk')
         # Minimal build context contains only unchanged official build inputs.
@@ -353,11 +385,13 @@ def main(source, action, temp, control, event_sha, workflow_sha):
         context.mkdir()
         for name in ['Dockerfile', 'entrypoint.sh']:
             shutil.copy2(action / name, context / name)
+        report['stage'] = 'image_build'
         build, streams = capture(['docker', 'build', '--tag', image, str(context)], env, 600, temp)
         records.append(('build', build, streams))
         exit_code = build['exit'] if build['exit'] is not None and build['exit'] > 0 else 125
         if build['exit'] != 0 or build['stop']:
             raise DiagnosticStop()
+        report['stage'] = 'image_identity'
         value = checked(['docker', 'image', 'inspect', '--format', '{{.Id}}', image], env).decode().strip()
         if not re.fullmatch('sha256:[0-9a-f]{64}', value):
             raise ValueError('image_identity_invalid')
@@ -374,12 +408,14 @@ def main(source, action, temp, control, event_sha, workflow_sha):
                 '--env', 'HOME=/github/home', '--env', 'CARGO_HOME=/diagnostic-cargo',
                 '--env', 'GITHUB_WORKSPACE=/github/workspace', '--env', 'CI=true',
                 '--env', 'GITHUB_ACTIONS=true', value, *ARGS]
+        report['stage'] = 'container_run'
         container_attempted = True
         run, streams = capture(argv, env, 900, temp, cleanup)
         records.append(('run', run, streams))
         exit_code = run['exit'] if run['exit'] is not None and run['exit'] >= 0 else 125
         if run['stop']:
             exit_code = 125
+        report['stage'] = 'container_state'
         if not run['stop']:
             try:
                 state = checked(['docker', 'inspect', '--format',
@@ -393,10 +429,12 @@ def main(source, action, temp, control, event_sha, workflow_sha):
                     exit_code = 125
             except Exception:
                 exit_code = 125
+        report['stage'] = 'advisory_receipt'
         try:
             report['advisory_revisions'] = advisory_revisions(cargo)
         except (OSError, UnicodeError):
             report['advisory_revisions'] = None
+        report['stage'] = 'source_after'
         report['source_after'] = snapshot(source, env)
         report['lock_after'] = hashlib.sha256((source / 'codex-rs/Cargo.lock').read_bytes()).hexdigest()
         report['source_changed'] = (report['source_after'] != report['source_before'] or bool(git(source, env, 'status', '--porcelain', '--untracked-files=all')))
@@ -404,8 +442,10 @@ def main(source, action, temp, control, event_sha, workflow_sha):
             exit_code = 125
     except DiagnosticStop:
         pass
-    except Exception:
-        # Never echo exceptions containing raw child output, paths or credentials.
+    except Exception as error:
+        # Only fixed stage and numeric/bounded status fields, never raw errors.
+        if isinstance(error, MetadataFailure):
+            report['metadata_failure'] = error.safe
         report['collector_error'] = True
         exit_code = 125
     finally:
