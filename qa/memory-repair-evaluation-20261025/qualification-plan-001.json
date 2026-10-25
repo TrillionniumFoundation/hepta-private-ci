@@ -1,0 +1,98 @@
+{
+  "contracts_immutable": true,
+  "controls": [
+    "original all-skip falsegreen missingeachtool, and original21pass when provisioned",
+    "knownhistorical runner plus selectedworkflow21pass; both missingtool profiles refuse beforetests",
+    "emptyrunner0tests rejected",
+    "partial-suiterunner1passedtest rejected",
+    "source/candidate/workflow scope refusals",
+    "runtimehash refusal and sourceonly9fileexport"
+  ],
+  "expected_codec_checks": 6,
+  "files": {
+    "CODEC_V2.md": {
+      "bytes": 6915,
+      "lines": 110,
+      "sha256": "8d870b0987b6eab588d256c4a6fdbc40755f2a9410e73370126c660e509b525d"
+    },
+    "README.md": {
+      "bytes": 5900,
+      "lines": 105,
+      "sha256": "18c7ac449404a7555b02361a230ac2027c63decbd883401268d45f8292b73b04"
+    },
+    "attempt_ledger.py": {
+      "bytes": 3415,
+      "lines": 53,
+      "sha256": "5e60c5045fd9f14172c0f14d73422b87775255b744ccfa86e14d0c9a23e01989"
+    },
+    "bounded_process.py": {
+      "bytes": 3597,
+      "lines": 113,
+      "sha256": "462a4088e1d5f28cd6d4aac45b9463862b531d58885c0bbc119258718caf1b88"
+    },
+    "candidate_observer_v2.py": {
+      "bytes": 4708,
+      "lines": 107,
+      "sha256": "6b5e61a13a9b069bc526808dd0cfbbcaf76bfaeb2709ae9ee3a9b721e2393050"
+    },
+    "codec_contract_v2.json": {
+      "bytes": 6082,
+      "lines": 131,
+      "sha256": "12077c2c7559b4ba9b8000b0bf437e420a33f283fc66eea4deacbf1023dba30a"
+    },
+    "codec_executor_v2.py": {
+      "bytes": 8931,
+      "lines": 161,
+      "sha256": "34f018a404f5f21e7f80189b8489c1ffe9eec32343ada5db0f906435901f3944"
+    },
+    "process_meter_v2.py": {
+      "bytes": 2997,
+      "lines": 70,
+      "sha256": "ed7ffc4465df9da437546408d70866befc08ed19e62e9bcf9cd81fc35c5ae455"
+    },
+    "ruff_contract.json": {
+      "bytes": 12212,
+      "lines": 182,
+      "sha256": "df2507680813e86d08b94877e6985476927b2bb76d5ec4bdb083ad5b3e86a8dc"
+    },
+    "ruff_executor.py": {
+      "bytes": 11349,
+      "lines": 284,
+      "sha256": "b805ff912b107bc67ea00c6d7b47fa199516a0468e94c558c5975f6d911f2999"
+    },
+    "ruff_judge.py": {
+      "bytes": 2596,
+      "lines": 84,
+      "sha256": "259380ca4b1f60a5b4729dd3d5c0efaa7b35fac60a688ee8604e00368520fc1b"
+    },
+    "runtime_profile.py": {
+      "bytes": 1883,
+      "lines": 36,
+      "sha256": "265ff1e77a166e8d32fd646f826428e99e0ca2ff2e1b41449cc1726f45676700"
+    },
+    "task_contract_v2.py": {
+      "bytes": 3206,
+      "lines": 74,
+      "sha256": "f7de1cd2211eb9e0fec8266ed37f509c1e6dc247ce1240ebdb68eca0ef16b62a"
+    },
+    "test_codec_executor_v2.py": {
+      "bytes": 7243,
+      "lines": 124,
+      "sha256": "604c3da5f75f6eec2c1a12ab25c43a05bae9f915d24b5532e93b5649c9f6ea76"
+    },
+    "test_ruff_executor.py": {
+      "bytes": 9088,
+      "lines": 228,
+      "sha256": "1e0495719e92e801976e6044140991741f0c9b43ef061fc57b66434af5354045"
+    }
+  },
+  "frozen_utc": "2026-10-25T12:23:00.570889+00:00",
+  "max_added_disk_bytes": 31457280,
+  "max_planned_local_model_calls": 0,
+  "max_planned_qualification_cpu_seconds": 300,
+  "method_changes_after_freeze": "Any corrections must be separately recorded with all failed runs retained.",
+  "new_future_cases": 0,
+  "new_ruff_qualification": "existing9checks under new explicit controller profile, original76IDs unchanged",
+  "runtime_profile": "controller-supplied exact hashes of current binaries, no new packages",
+  "schema": "hepta.memory-cell.codec-qualification-plan.v1"
+}
