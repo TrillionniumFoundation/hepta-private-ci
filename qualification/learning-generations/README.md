@@ -14,6 +14,14 @@ gain over the strongest matched control. It grants no installation or three-roun
 closure. Continue the existing [real neural product sequence](../../docs/lane-e/END_TO_END_LEARNING_SEQUENCE.md#8-real-neural-model-upgrade-through-the-ordinary-product-path);
 the tabular study below does not substitute for that neural target.
 
+The subsequent [controlled real-parameter and original-owner observations](real-model-owner-controlled-20261025/SCOPE.md)
+retain three actual inherited parameter generations and next-task forwards,
+the two passing original Hepta neural cases, the failing original 60-second
+comparison, and a passing signed neural read/unload over peer-fetched model
+weights. The adapter is supplied separately; CURRENT and three-round product
+closure remain unchanged. These compact files match the Chain plan's evidence
+byte for byte and preserve the unsuccessful attempts and raw-archive hashes.
+
 Four actual SQLite memory records contain arithmetic instructions. The initial
 model supports one query family; each of three candidate fits receives fresh
 observed training tasks for one additional family and all previous families.

@@ -1,0 +1,47 @@
+{
+  "schema": "trnm.controlled-neural-original-owner-observation.v1",
+  "Hepta_source": "07731d314366bb9215753d23355b3ebf6449b32b",
+  "Hepta_tree": "07c7e7c34b53de5adf0209f38ef074a3ec5b7063",
+  "Chain_runtime_source": "ef2a6958a6f3d8fdfaea25fbc58fb1ecd188134c",
+  "native_source_unchanged": true,
+  "source_bound_build_receipt_sha256": "18268c21ef719a19bbc8d6ac9ad9894da7425f5cc5ab9af7d79cad209e7b67e9",
+  "actual_archive_sha256": "2a99c6f0d884e294e330c892dacc27241da36b91396baef97a49d587a0072c1d",
+  "original_cases": [
+    {
+      "name": "real_smollm_material_publishes_and_recovers_through_original_artifact_owner",
+      "outcome": "PASS",
+      "seconds": 1.094
+    },
+    {
+      "name": "real_smollm_parent_query_original_control_final_use_and_terminal_unload",
+      "outcome": "PASS",
+      "seconds": 18.082
+    },
+    {
+      "name": "real_gen2_gen3_forwards_score_only_after_original_holdout_consumption",
+      "outcome": "FAIL",
+      "reason": "Original 60-second nextest timeout; original retry refuses existing output. 37 original submits and 36 settlements retained; 66 required records not reached.",
+      "unchanged_test_timeout_seconds": 60
+    }
+  ],
+  "p2p_loaded_original_case": {
+    "outcome": "PASS",
+    "seconds": 17.753,
+    "wrapper_seconds": 23.714180060000217,
+    "actual_archive_sha256": "46233d0709cbc6536ce363911ce7a3ac2e5661c067e00d4ddde549f9c82449ac",
+    "log_sha256": "a6869621e031e2e0648696b340daf7de56462fe2a554b63c63ca2214d5be8eff",
+    "material_release": "d5320584bb56bbb75e8a084ead14c806335cd2e9dad8c20cfa78f633455de1d7",
+    "model_weight_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+    "scope": "Original signed neural read and verified unload over actual peer-fetched upstream model weights. Parameter adapter supplied by controlled real lineage; not a selected complete Cell release."
+  },
+  "setup_failure_preserved": "First archive run exit96 before any tests: missing extraction directory. Separate second output identities retain this failure.",
+  "product_deadlines_seconds": {
+    "read": 2,
+    "startup": 120,
+    "terminal": 8
+  },
+  "CURRENT_updated": false,
+  "three_round_closed": false,
+  "funded_whole_u": false,
+  "public_reward_eligible": false
+}

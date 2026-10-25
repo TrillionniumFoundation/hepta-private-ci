@@ -346,11 +346,39 @@ declared public smoke tasks supply reproducible engineering observations only.
 The separate TCL4 release-profile transfer moves and rehashes 271,178,816 bytes
 across three controlled nodes with the origin stopped before the second hop;
 its [exact source evidence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/tree/ef2a6958a6f3d8fdfaea25fbc58fb1ecd188134c/evidence/pon-upgrade-implementation-20261018/native-rounds/cell-tcl4-release-three-host-20261024)
-does not prove that Hepta loaded or selected those fetched bytes. Neither result
-closes the three-round installed-parent/ordinary-next-task target. Inference-platform
-must next run the actual neural Session controls over pinned parameter material;
-learning-platform and agent-runtime must then compose the original ledger,
+fixes that transfer separately from the subsequent model execution.
+
+The [controlled original-owner observations](../../qualification/learning-generations/real-model-owner-controlled-20261025/SCOPE.md)
+retain three subsequent real parameter generations at the same Chain source.
+Each generation loads its actual predecessor; all three training calls and all
+three direct next-task forwards complete. These calls do not install CURRENT.
+The original Hepta neural cases on clean source `07731d31` then actually pass
+real-parameter artifact publication/recovery (1.094 seconds) and the complete
+signed neural read/control/FinalUse/unload case (18.082 seconds). The original
+gen2/gen3 comparison fails its unchanged 60-second nextest limit: its retained
+journal contains 37 submits and 36 settlements, rather than the required 66
+records. The original retry rejects the existing output; it is not a clean retry
+or a passing result. The earlier archive setup failure dispatched no test and
+remains separate.
+
+The same unchanged signed neural case also passes in 17.753 seconds with the
+actual peer-fetched model weights from that TCL4 release, using the separately
+supplied controlled parameter adapter. This demonstrates actual loading and
+inference over transported weights. It does not prove selection or installation
+of a complete Cell release. Source-bound build/execution receipts, raw archives
+and hashes distinguish these runs from the earlier five-control experiment.
+The same compact observation files are retained in the Chain development-plan
+evidence; they grant no new trust or admission authority.
+
+Inference-platform must fix and rerun the full original neural comparison at
+the original 60-second limit, preserving both independent model owners, all 32
+tasks, 64 real forwards, 66 signed control records and every terminal assertion.
+Learning-platform and agent-runtime must then compose the original ledger,
 evaluation, selection, artifact/CURRENT and next-task owners in the order above.
+The separate fresh native host raw-U observation still fails its original
+eight-second cutoff; its post-deadline 4,096-byte kernel charge is diagnostic,
+with the same original owner retained. Funded resource return remains open.
+None of these component observations closes the three-round product target.
 The original two-second read, 120-second startup and eight-second terminal
 bounds remain unchanged; the experiment's training/inference budgets are
 separate and cannot replace them.

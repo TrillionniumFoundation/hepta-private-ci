@@ -1,0 +1,120 @@
+{
+  "schema": "trnm.controlled-real-parameter-lineage-observation.v1",
+  "source": "ef2a6958a6f3d8fdfaea25fbc58fb1ecd188134c",
+  "archive_sha256": "091e8bed6ca59f07fc89a4266251f994ad71e857aa2267eadb2f1d523b4f7b03",
+  "source_unchanged": true,
+  "rows": [
+    {
+      "generation": 1,
+      "parent_sha256": "3436450530110138a46b9d5a6cabd0927359895f82ddc7d324b8486277c37e2f",
+      "artifact_file_sha256": "3b92436e8103176d7511ed139f97f7453fb2c5ddfa6f80f8f5743cff683f335e",
+      "adapter": "99026017296d19ed8b419bac5b44af6a03dbdadf5c05077808defd9982f7a208",
+      "actual_loaded_parent": "303ac1b87d13642617a6298bd4479881ea4fa5bff48e56a897f39754389c7c69",
+      "direct_next_task_forward": true,
+      "training_supervisor": {
+        "outcome": "success",
+        "exit_code": 0,
+        "observed_wall_ns": 445528565525,
+        "child_cpu_ns": 94760145000,
+        "waited_child_peak_rss_bytes": 3060236288,
+        "waited_child_reaped": true,
+        "owned_child_reap_resolved": true,
+        "waited_child_observation_error": null,
+        "budget": {
+          "rss_bytes": 17179869184,
+          "wall_seconds": 1800
+        }
+      },
+      "next_task_supervisor": {
+        "outcome": "success",
+        "exit_code": 0,
+        "observed_wall_ns": 209065452744,
+        "child_cpu_ns": 39785433000,
+        "waited_child_peak_rss_bytes": 1141927936,
+        "waited_child_reaped": true,
+        "owned_child_reap_resolved": true,
+        "waited_child_observation_error": null,
+        "budget": {
+          "rss_bytes": 8589934592,
+          "wall_seconds": 600
+        }
+      }
+    },
+    {
+      "generation": 2,
+      "parent_sha256": "06423d16e112f84fb750b3f2c2978ea28440699887a5cfe8a51d982714173809",
+      "artifact_file_sha256": "49c37bd230bdb800d796881b6d8d578ddaac48b526839777b376c3362ab1f36c",
+      "adapter": "3e752ba54aa340be38a83114567664b5c509858affc8f5ec76cdae06fb858b52",
+      "actual_loaded_parent": "99026017296d19ed8b419bac5b44af6a03dbdadf5c05077808defd9982f7a208",
+      "direct_next_task_forward": true,
+      "training_supervisor": {
+        "outcome": "success",
+        "exit_code": 0,
+        "observed_wall_ns": 444508406659,
+        "child_cpu_ns": 96573324000,
+        "waited_child_peak_rss_bytes": 3064467456,
+        "waited_child_reaped": true,
+        "owned_child_reap_resolved": true,
+        "waited_child_observation_error": null,
+        "budget": {
+          "rss_bytes": 17179869184,
+          "wall_seconds": 1800
+        }
+      },
+      "next_task_supervisor": {
+        "outcome": "success",
+        "exit_code": 0,
+        "observed_wall_ns": 79037926843,
+        "child_cpu_ns": 31083846000,
+        "waited_child_peak_rss_bytes": 1141481472,
+        "waited_child_reaped": true,
+        "owned_child_reap_resolved": true,
+        "waited_child_observation_error": null,
+        "budget": {
+          "rss_bytes": 8589934592,
+          "wall_seconds": 600
+        }
+      }
+    },
+    {
+      "generation": 3,
+      "parent_sha256": "ea6199fcbf2f3421d7a0ba3f69ee4995848dffb6a97ead69865143be89671b41",
+      "artifact_file_sha256": "30504b3d1e4d6e17841b073e1457b119b5f65d2ffe083611a78bff592c391a29",
+      "adapter": "4f1afd0b023545b2bbc069d1add8b5594a24fbd6272aaf56368e84f0f137cd18",
+      "actual_loaded_parent": "3e752ba54aa340be38a83114567664b5c509858affc8f5ec76cdae06fb858b52",
+      "direct_next_task_forward": true,
+      "training_supervisor": {
+        "outcome": "success",
+        "exit_code": 0,
+        "observed_wall_ns": 62781101124,
+        "child_cpu_ns": 81063768000,
+        "waited_child_peak_rss_bytes": 3073236992,
+        "waited_child_reaped": true,
+        "owned_child_reap_resolved": true,
+        "waited_child_observation_error": null,
+        "budget": {
+          "rss_bytes": 17179869184,
+          "wall_seconds": 1800
+        }
+      },
+      "next_task_supervisor": {
+        "outcome": "success",
+        "exit_code": 0,
+        "observed_wall_ns": 18424398930,
+        "child_cpu_ns": 27571750000,
+        "waited_child_peak_rss_bytes": 1145053184,
+        "waited_child_reaped": true,
+        "owned_child_reap_resolved": true,
+        "waited_child_observation_error": null,
+        "budget": {
+          "rss_bytes": 8589934592,
+          "wall_seconds": 600
+        }
+      }
+    }
+  ],
+  "CURRENT_updated": false,
+  "three_installed_upgrades_qualified": false,
+  "funded_whole_u": false,
+  "public_reward_eligible": false
+}
