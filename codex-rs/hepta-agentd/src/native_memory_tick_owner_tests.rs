@@ -23,7 +23,8 @@ fn binding(f: &Fixture) -> NativeShadowHostBinding {
 async fn shadow_delivery_is_immutable_owner_bound_and_late_withdrawal_closes_owner() {
     enum Withdrawal { Authority, SourceTombstone }
     for withdrawal in [Withdrawal::Authority, Withdrawal::SourceTombstone] {
-    let f = fixture().await;
+    let mut f = fixture().await;
+    f.config.output_width = 5;
     let a = tempfile::tempdir().unwrap();
     let b = tempfile::tempdir().unwrap();
     let context = Context(NativeMemoryTickContextV1 {

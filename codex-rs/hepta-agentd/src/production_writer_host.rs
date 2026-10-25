@@ -12,6 +12,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use codex_hepta_cognitive_store::CognitiveAccess;
+use codex_hepta_cognitive_store::CognitiveRecoveryAnchor;
 use codex_hepta_cognitive_store::CognitiveRecoveryRequirement;
 use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_cognitive_store::ForgetMemoryDraft;
@@ -210,6 +211,7 @@ pub struct AgentdProductionWriterHost {
     // exposing ProductionDurableWriter's crate-private raw-store handle.
     cognitive_runtime: codex_hepta_memory::CognitiveRuntime,
     mutation: Option<Arc<ProductionCognitiveMutationCapability>>,
+    recovered_source_anchor: Option<CognitiveRecoveryAnchor>,
 }
 
 impl fmt::Debug for AgentdProductionWriterHost {
@@ -273,6 +275,11 @@ impl AgentdProductionWriterHost {
         .map_err(|error| {
             AgentdError::Protocol(format!("recover production cognitive store: {error}"))
         })?;
+        // Capture the actual recovered state before opening the writer appends
+        // its host-bound lease. This is distinct from the subsequent live cut.
+        let recovered_source_anchor = store.recovery_anchor().await.map_err(|error| {
+            AgentdError::Protocol(format!("observe recovered cognitive store: {error}"))
+        })?;
         let runtime_store = store.clone();
         let writer = Arc::new(
             ProductionDurableWriter::open_with_live_verifier(
@@ -291,6 +298,7 @@ impl AgentdProductionWriterHost {
                 runtime_store,
             )),
             mutation: Some(mutation),
+            recovered_source_anchor: Some(recovered_source_anchor),
             dispatchers: BTreeMap::new(),
             grants: None,
         })
@@ -323,6 +331,7 @@ impl AgentdProductionWriterHost {
                 runtime_store,
             )),
             mutation: None,
+            recovered_source_anchor: None,
         })
     }
 
@@ -382,6 +391,13 @@ impl AgentdProductionWriterHost {
 
     pub fn writer(&self) -> Arc<ProductionDurableWriter> {
         Arc::clone(&self.writer)
+    }
+
+    /// Actual state observed after exact-cut recovery and before writer lease
+    /// acquisition. The qualification-only already-open-store seam has none.
+    /// This historical receipt is not the writer's current recovery anchor.
+    pub fn recovered_source_anchor(&self) -> Option<&CognitiveRecoveryAnchor> {
+        self.recovered_source_anchor.as_ref()
     }
 
     /// Reuse the exact recovered generation for Agentd's read side without

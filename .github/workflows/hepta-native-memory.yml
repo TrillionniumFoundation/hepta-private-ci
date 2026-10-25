@@ -79,7 +79,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          just test --locked -p codex-hepta-memory -p codex-hepta-agent-protocol -p codex-hepta-agentd -p codex-hepta-neuron -p codex-hepta-cognitive-store --features codex-hepta-agentd/qualification-cognitive-write 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/scoped-tests.log"
+          just test --locked -p codex-arg0 -p codex-hepta-memory -p codex-hepta-agent-protocol -p codex-hepta-agentd -p codex-hepta-neuron -p codex-hepta-cognitive-store --features codex-hepta-agentd/qualification-cognitive-write 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/scoped-tests.log"
       - name: Build actual daemon probe
         working-directory: codex-rs
         shell: bash
@@ -103,7 +103,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          just fix --locked -p codex-hepta-memory -p codex-hepta-agent-protocol -p codex-hepta-agentd -p codex-hepta-neuron -p codex-hepta-cognitive-store --features codex-hepta-agentd/qualification-cognitive-write --examples 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/scoped-fix.log"
+          just fix --locked -p codex-arg0 -p codex-hepta-memory -p codex-hepta-agent-protocol -p codex-hepta-agentd -p codex-hepta-neuron -p codex-hepta-cognitive-store --features codex-hepta-agentd/qualification-cognitive-write --examples 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/scoped-fix.log"
           just fmt --base 429894ac8e0818102cfdea4ad47a56e4583b2902 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/final-format.log"
       - name: Retain proposed changes without running tests after formatting
         if: always()
