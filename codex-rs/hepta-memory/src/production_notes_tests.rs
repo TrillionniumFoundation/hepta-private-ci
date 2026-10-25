@@ -22,6 +22,43 @@ fn fixture() -> Fixture {
         .expect("shared Notes wire fixture")
 }
 
+#[test]
+fn exact_recovery_golden_binds_original_payload_and_full_terminal_receipt() -> TestResult {
+    let fixture = fixture();
+    let recovery: serde_json::Value =
+        serde_json::from_str(include_str!("../tests/fixtures/notes-recovery-v1.json"))?;
+    let receipt =
+        NotesTerminalReceipt::from_json(&fixture.request_utf8, &fixture.application_response_utf8)?;
+    assert_eq!(receipt.outcome(), crate::LocalReconcileOutcome::Committed);
+    let digest = Sha256Digest::for_bytes(receipt.as_str().as_bytes());
+    let target = identity();
+    let ack = serde_json::to_string(&NotesAcknowledge {
+        schema_version: 1,
+        action: "acknowledge_terminal",
+        target: &target,
+        operation_id: "fixture-notes-v1",
+        payload_sha256: &fixture.payload_sha256,
+        receipt_sha256: digest.as_str(),
+    })?;
+    assert_eq!(
+        ack,
+        recovery["acknowledge_utf8"].as_str().ok_or("golden ack")?
+    );
+    for key in ["released_utf8", "already_released_utf8"] {
+        let response: NotesRetirementResponse =
+            serde_json::from_str(recovery[key].as_str().ok_or("golden response")?)?;
+        assert_eq!(response.receipt_sha256, digest.as_str());
+        assert_eq!(response.target, target);
+    }
+    let mut wrong: serde_json::Value = serde_json::from_str(&fixture.application_response_utf8)?;
+    wrong["operation_id"] = serde_json::json!("another-operation");
+    assert!(
+        NotesTerminalReceipt::from_json(&fixture.request_utf8, &serde_json::to_string(&wrong)?)
+            .is_err()
+    );
+    Ok(())
+}
+
 fn identity() -> NotesTargetIdentity {
     NotesTargetIdentity {
         session_instance: "1".repeat(32),
@@ -87,6 +124,10 @@ impl NotesPrivateChannel for Channel {
             .expect("fixture response lock")
             .pop_front()
             .unwrap_or_else(|| Err("fixture has no response".to_string()))
+    }
+
+    fn recovery_exchange(&self, request: &[u8]) -> Result<Vec<u8>, String> {
+        self.exchange(request)
     }
 
     fn invalidate(&self) {
