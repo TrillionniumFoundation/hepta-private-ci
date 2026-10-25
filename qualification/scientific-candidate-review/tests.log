@@ -1,0 +1,110 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+   Compiling codex-hepta-learning-artifacts v0.0.0 (/workspace/scratch/60f94d809f44/native-qualification/codex-rs/hepta-learning-artifacts)
+    Finished `test` profile [unoptimized] target(s) in 1.95s
+────────────
+ Nextest run ID 635780b3-1b82-4ac8-b88d-6b6907c715a1 with nextest profile: local
+    Starting 102 tests across 1 binary (1 test skipped)
+        PASS [   0.005s] (  1/102) codex-hepta-learning-artifacts admin::tests::owner_status_is_bounded_read_only_and_scope_specific
+        PASS [   0.005s] (  2/102) codex-hepta-learning-artifacts admission_v3::tests::art_05_withdrawal_race_invalidates_admission
+        PASS [   0.006s] (  3/102) codex-hepta-learning-artifacts admission_v3::tests::art_05_admission_rejects_unscoped_withdrawal_registry
+        PASS [   0.005s] (  4/102) codex-hepta-learning-artifacts admission_v3::tests::art_05_admission_is_domain_registry_and_scope_bound
+        PASS [   0.005s] (  5/102) codex-hepta-learning-artifacts admission_v3::tests::art_05_admission_binds_exact_withdrawal_head
+        PASS [   0.161s] (  6/102) codex-hepta-learning-artifacts candidate_review::tests::current_source_withdrawal_rejects_previously_signed_candidate
+        PASS [   0.185s] (  7/102) codex-hepta-learning-artifacts candidate_review::tests::independent_host_reviewer_trust_cannot_be_replaced_by_request
+        PASS [   0.186s] (  8/102) codex-hepta-learning-artifacts candidate_review::tests::forged_payload_manifest_policy_and_expiry_reject_before_owner_write
+        PASS [   0.005s] (  9/102) codex-hepta-learning-artifacts closure_v2::tests::art_01_manifest_v2_normalizes_complete_lineage
+        PASS [   0.005s] ( 10/102) codex-hepta-learning-artifacts closure_v2::tests::art_02_persistent_withdrawal_blocks_future_admission_and_replays
+        PASS [   0.004s] ( 11/102) codex-hepta-learning-artifacts closure_v2::tests::art_03_registry_head_witness_rejects_rollback
+        PASS [   0.004s] ( 12/102) codex-hepta-learning-artifacts closure_v2::tests::art_04_lifecycle_forbids_self_selection_and_state_skips
+        PASS [   0.004s] ( 13/102) codex-hepta-learning-artifacts closure_v2::tests::artifact_manifest_rejects_duplicate_lineage_and_missing_rollback_parent
+        PASS [   0.005s] ( 14/102) codex-hepta-learning-artifacts dataset_revocation::tests::batch_revokes_direct_targets_and_blocks_descendants_without_mutating_input
+        PASS [   0.011s] ( 15/102) codex-hepta-learning-artifacts dataset_revocation::tests::changed_notice_or_evaluator_under_same_operation_conflicts
+        PASS [   0.005s] ( 16/102) codex-hepta-learning-artifacts dataset_revocation::tests::identical_retry_reuses_existing_events_and_history
+        PASS [   0.004s] ( 17/102) codex-hepta-learning-artifacts dataset_revocation::tests::later_target_role_collision_discards_entire_preparation
+        PASS [   0.007s] ( 18/102) codex-hepta-learning-artifacts dataset_revocation::tests::persisted_batch_reopens_and_blocks_candidate_but_keeps_clean_rollback
+        PASS [   0.005s] ( 19/102) codex-hepta-learning-artifacts dataset_revocation::tests::quarantined_targets_revoke_and_previously_revoked_targets_are_reported
+        PASS [   0.004s] ( 20/102) codex-hepta-learning-artifacts dataset_revocation::tests::stale_snapshot_missing_dataset_and_empty_notice_reject
+        PASS [   0.016s] ( 21/102) codex-hepta-learning-artifacts dataset_revocation::tests::target_quota_rejects_without_partial_registry_mutation
+        PASS [   0.006s] ( 22/102) codex-hepta-learning-artifacts durable_snapshots::tests::art_08_lifecycle_snapshot_recovers_after_historical_actor_expiry
+        PASS [   0.005s] ( 23/102) codex-hepta-learning-artifacts durable_snapshots::tests::art_08_scoped_withdrawal_snapshot_round_trips_and_rejects_cross_scope_receipt
+        PASS [   0.006s] ( 24/102) codex-hepta-learning-artifacts iteration::tests::candidate_requires_predecessor_after_draft
+        PASS [   0.004s] ( 25/102) codex-hepta-learning-artifacts iteration::tests::transitions_are_monotonic_and_terminal
+        PASS [   0.004s] ( 26/102) codex-hepta-learning-artifacts iteration_ledger::tests::records_bounded_external_transitions
+        PASS [   0.296s] ( 27/102) codex-hepta-learning-artifacts candidate_review::tests::frozen_task_margin_is_strict_while_retention_and_cost_limits_are_inclusive
+        PASS [   0.004s] ( 28/102) codex-hepta-learning-artifacts iteration_ledger::tests::snapshot_replay_is_exact_and_duplicate_receipts_fail
+        PASS [   0.303s] ( 29/102) codex-hepta-learning-artifacts candidate_review::tests::acknowledged_artifact_rejects_different_operation_even_with_a_fresh_signature
+        PASS [   0.004s] ( 30/102) codex-hepta-learning-artifacts lifecycle_journal::tests::art_06_lifecycle_journal_replays_exact_snapshot
+        PASS [   0.004s] ( 31/102) codex-hepta-learning-artifacts lifecycle_journal::tests::art_06_lifecycle_journal_enforces_head_state_and_role
+        PASS [   0.004s] ( 32/102) codex-hepta-learning-artifacts lifecycle_journal::tests::art_06_lifecycle_snapshot_replay_survives_actor_expiry
+        PASS [   0.155s] ( 33/102) codex-hepta-learning-artifacts candidate_review::tests::validly_readmitted_stale_generation_and_registry_parent_cannot_write
+        PASS [   0.207s] ( 34/102) codex-hepta-learning-artifacts candidate_review::tests::missing_and_each_failed_measurement_leave_all_owner_bytes_unchanged
+        PASS [   0.068s] ( 35/102) codex-hepta-learning-artifacts owner_host::tests::current_head_rotation_preserves_history_and_requires_current_key_epoch
+        PASS [   0.072s] ( 36/102) codex-hepta-learning-artifacts owner_host::tests::authenticated_current_head_is_discovered_and_signature_drift_rejects
+        PASS [   0.072s] ( 37/102) codex-hepta-learning-artifacts owner_host::tests::independent_current_head_anchor_rejects_restored_old_backup
+        PASS [   0.008s] ( 38/102) codex-hepta-learning-artifacts pinned::tests::cached_consumer_observes_revocation_before_use_and_cannot_revive_from_backup
+        PASS [   0.392s] ( 39/102) codex-hepta-learning-artifacts candidate_review::tests::accepted_measurements_publish_only_a_candidate_and_preserve_baseline
+        PASS [   0.011s] ( 40/102) codex-hepta-learning-artifacts pinned::tests::cached_consumer_rejects_longer_fork_and_backwards_frontier
+        PASS [   0.055s] ( 41/102) codex-hepta-learning-artifacts owner_host::tests::owner_host_checkpoint_recovery_requires_exact_snapshot
+        PASS [   0.402s] ( 42/102) codex-hepta-learning-artifacts candidate_review::tests::correctly_signed_invalid_metrics_still_fail_each_numeric_gate
+        PASS [   0.009s] ( 43/102) codex-hepta-learning-artifacts pinned::tests::loads_exact_pinned_manifest_and_payload
+        PASS [   0.006s] ( 44/102) codex-hepta-learning-artifacts pinned::tests::quarantined_candidate_blocks_loading
+        PASS [   0.008s] ( 45/102) codex-hepta-learning-artifacts pinned::tests::objective_and_compatibility_drift_are_pin_mismatches
+        PASS [   0.018s] ( 46/102) codex-hepta-learning-artifacts pinned::tests::cached_consumer_rejects_new_scope_and_corrupt_current_file_without_calling_consumer
+        PASS [   0.039s] ( 47/102) codex-hepta-learning-artifacts owner_host::tests::owner_host_exclusively_fences_writer_lease
+        PASS [   0.006s] ( 48/102) codex-hepta-learning-artifacts pinned::tests::tampered_payload_is_rejected
+        PASS [   0.005s] ( 49/102) codex-hepta-learning-artifacts publication::tests::art_07_crash_snapshots_never_promote_partial_publication
+        PASS [   0.005s] ( 50/102) codex-hepta-learning-artifacts publication::tests::art_07_publication_requires_ordered_durable_phases_before_ack
+        PASS [   0.004s] ( 51/102) codex-hepta-learning-artifacts publication::tests::art_07_registry_projection_cannot_swap_payload_or_identity
+        PASS [   0.014s] ( 52/102) codex-hepta-learning-artifacts pinned::tests::revoked_ancestor_blocks_loading
+        PASS [   0.006s] ( 53/102) codex-hepta-learning-artifacts publication::tests::art_07_withdrawal_advance_blocks_recovered_publication
+        PASS [   0.011s] ( 54/102) codex-hepta-learning-artifacts pinned::tests::wrong_epoch_binding_is_rejected
+        PASS [   0.004s] ( 55/102) codex-hepta-learning-artifacts registry::tests::ancestor_revocation_makes_derived_artifacts_ineligible
+        PASS [   0.004s] ( 56/102) codex-hepta-learning-artifacts registry::tests::artifact_producer_cannot_self_evaluate
+        PASS [   0.003s] ( 57/102) codex-hepta-learning-artifacts registry::tests::registration_is_immutable_and_idempotent
+        PASS [   0.005s] ( 58/102) codex-hepta-learning-artifacts registry::tests::derived_artifact_requires_monotonic_matching_lineage
+        PASS [   0.005s] ( 59/102) codex-hepta-learning-artifacts registry::tests::quarantine_and_revoke_remove_candidate_eligibility
+        PASS [   0.005s] ( 60/102) codex-hepta-learning-artifacts registry::tests::event_identity_reuse_with_drift_fails
+        PASS [   0.005s] ( 61/102) codex-hepta-learning-artifacts registry::tests::snapshot_replay_preserves_lineage_and_state
+        PASS [   0.005s] ( 62/102) codex-hepta-learning-artifacts sensor_core_registry::tests::operator_sensor_core_projection_has_one_physical_owner
+        PASS [   0.006s] ( 63/102) codex-hepta-learning-artifacts sensor_core_registry::tests::operator_sensor_core_projection_tracks_revocation_without_second_write
+        PASS [   0.007s] ( 64/102) codex-hepta-learning-artifacts selection::tests::art_12_selection_rejects_self_selection_and_revoked_selector
+        PASS [   0.005s] ( 65/102) codex-hepta-learning-artifacts storage::budget_tests::empty_snapshot_keeps_corrupt_semantics
+        PASS [   0.004s] ( 66/102) codex-hepta-learning-artifacts storage::budget_tests::global_ceiling_and_empty_payload_keep_capacity_semantics
+        PASS [   0.006s] ( 67/102) codex-hepta-learning-artifacts storage::budget_tests::exact_file_is_read_from_start_even_with_a_nonzero_cursor
+        PASS [   0.004s] ( 68/102) codex-hepta-learning-artifacts storage::budget_tests::pre_read_and_post_read_metadata_use_the_same_error_priority
+        PASS [   0.004s] ( 69/102) codex-hepta-learning-artifacts storage::budget_tests::short_nonempty_file_is_also_rejected_without_reading
+        PASS [   0.437s] ( 70/102) codex-hepta-learning-artifacts candidate_review::tests::every_signed_field_and_measurement_is_covered_by_signature
+        PASS [   0.004s] ( 71/102) codex-hepta-learning-artifacts storage::lock_tests::created_target_held_by_another_writer_fails_busy_without_writing
+        PASS [   0.005s] ( 72/102) codex-hepta-learning-artifacts storage::budget_tests::wrong_exact_length_is_rejected_before_any_seek_or_read
+        PASS [   0.019s] ( 73/102) codex-hepta-learning-artifacts selection::tests::art_12_independent_selector_binds_exact_current_and_manifest
+        PASS [   0.019s] ( 74/102) codex-hepta-learning-artifacts selection::tests::art_12_verified_selection_records_only_selected_transition
+        PASS [   0.006s] ( 75/102) codex-hepta-learning-artifacts storage::lock_tests::failed_read_releases_own_lock_with_transient_duplicate_retained
+        PASS [   0.007s] ( 76/102) codex-hepta-learning-artifacts storage::lock_tests::readonly_handles_load_registry_and_payload
+        PASS [   0.005s] ( 77/102) codex-hepta-learning-artifacts storage::lock_tests::write_guard_releases_lock_with_transient_duplicate_retained
+        PASS [   0.005s] ( 78/102) codex-hepta-learning-artifacts storage::tests::bytes_appearing_after_atomic_creation_are_indeterminate
+        PASS [   0.007s] ( 79/102) codex-hepta-learning-artifacts storage::lock_tests::shared_readers_coexist_and_existing_path_cannot_be_recreated
+        PASS [   0.006s] ( 80/102) codex-hepta-learning-artifacts storage::tests::concurrent_creation_has_exactly_one_winner
+        PASS [   0.006s] ( 81/102) codex-hepta-learning-artifacts storage::tests::contained_write_rejects_escape_and_validates_before_create
+        PASS [   0.005s] ( 82/102) codex-hepta-learning-artifacts storage::tests::contained_write_rejects_symlink_ancestor
+        PASS [   0.005s] ( 83/102) codex-hepta-learning-artifacts storage::tests::create_only_capability_debug_is_opaque
+        PASS [   0.005s] ( 84/102) codex-hepta-learning-artifacts storage::tests::current_head_witness_rejects_stale_or_tampered_receipts
+        PASS [   0.007s] ( 85/102) codex-hepta-learning-artifacts storage::tests::created_target_permissions_are_never_wider_than_owner_read_write
+        PASS [   0.007s] ( 86/102) codex-hepta-learning-artifacts storage::tests::current_head_witness_round_trips_only_with_current_requirement
+        PASS [   0.004s] ( 87/102) codex-hepta-learning-artifacts storage::tests::existing_empty_and_truncated_files_are_never_adopted
+        PASS [   0.005s] ( 88/102) codex-hepta-learning-artifacts storage::tests::existing_nonempty_file_is_never_reopened_for_writing
+        PASS [   0.006s] ( 89/102) codex-hepta-learning-artifacts storage::tests::existing_symlinks_are_never_followed_for_creation
+        PASS [   0.006s] ( 90/102) codex-hepta-learning-artifacts storage::tests::noncanonical_encoding_rejects_even_with_rehashed_file_receipt
+        PASS [   0.005s] ( 91/102) codex-hepta-learning-artifacts storage::tests::revoked_payload_cannot_be_loaded_from_current_registry
+        PASS [   0.007s] ( 92/102) codex-hepta-learning-artifacts storage::tests::payload_corruption_and_invalid_receipt_reject
+        PASS [   0.007s] ( 93/102) codex-hepta-learning-artifacts storage::tests::payload_rejects_wrong_bytes_without_reusing_its_created_target
+        PASS [   0.005s] ( 94/102) codex-hepta-learning-artifacts storage::tests::sensor_core_kind_survives_durable_registry_roundtrip
+        PASS [   0.004s] ( 95/102) codex-hepta-learning-artifacts storage::tests::zero_binding_leaves_created_file_empty_for_host_reconciliation
+        PASS [   0.006s] ( 96/102) codex-hepta-learning-artifacts storage::tests::snapshot_reopens_exact_history_and_revoked_ancestors
+        PASS [   0.004s] ( 97/102) codex-hepta-learning-artifacts storage_hygiene::tests::orphan_cleanup_never_follows_final_symlink
+        PASS [   0.004s] ( 98/102) codex-hepta-learning-artifacts storage_hygiene::tests::orphan_cleanup_rejects_path_escape
+        PASS [   0.005s] ( 99/102) codex-hepta-learning-artifacts storage_hygiene::tests::orphan_cleanup_removes_only_zero_length_regular_file
+        PASS [   0.047s] (100/102) codex-hepta-learning-artifacts storage::tests::every_truncation_and_wrong_external_witness_rejects_without_repair
+        PASS [   0.233s] (101/102) codex-hepta-learning-artifacts owner_service::tests::named_owner_service_publishes_retries_and_reopens_from_current_head
+        PASS [   0.717s] (102/102) codex-hepta-learning-artifacts owner_host::tests::owner_host_process_kill_reopen_matrix
+────────────
+     Summary [   1.092s] 102 tests run: 102 passed, 1 skipped
