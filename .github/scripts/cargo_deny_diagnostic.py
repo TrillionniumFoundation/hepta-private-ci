@@ -51,14 +51,102 @@ def suspicious(data):
     return False
 
 
+# Declared cargo-deny 0.19.0 docs/registry intersection, NOT binary attestation.
+# Registry Git blob: 1714ff8644dda1e8b3381c5bbdaf74d3f86463de.
+DIAGNOSTIC_CODES = ('accepted', 'advisory-ignored', 'advisory-not-detected', 'allowed', 'allowed-by-organization', 'allowed-by-wrapper', 'allowed-source', 'banned', 'build-script-not-allowed', 'checksum-match', 'checksum-mismatch', 'default-feature-enabled', 'denied-by-extension', 'detected-executable', 'detected-executable-script', 'duplicate', 'empty-license-field', 'exact-features-mismatch', 'feature-banned', 'feature-not-explicitly-allowed', 'features-enabled', 'gather-failure', 'git-source-underspecified', 'index-cache-load-failure', 'index-failure', 'license-exception-not-encountered', 'license-not-encountered', 'missing-clarification-file', 'no-license-field', 'non-root-path', 'not-allowed', 'notice', 'parse-error', 'path-bypassed', 'path-bypassed-by-glob', 'rejected', 'skipped', 'skipped-by-root', 'skipped-private-workspace-crate', 'source-not-allowed', 'unable-to-check-path', 'unknown-advisory', 'unknown-feature', 'unlicensed', 'unmaintained', 'unmatched-bypass', 'unmatched-glob', 'unmatched-organization', 'unmatched-path-bypass', 'unmatched-skip', 'unmatched-skip-root', 'unmatched-source', 'unmatched-wrapper', 'unnecessary-skip', 'unresolved-workspace-dependency', 'unsound', 'unused-workspace-dependency', 'unused-wrapper', 'vulnerability', 'wildcard', 'workspace-duplicate', 'yanked', 'yanked-ignored', 'yanked-not-detected')
+SEVERITIES = ('error', 'warning', 'note')
+SGR = re.compile(rb'\x1b\[(?:[0-9]{1,3}(?:;[0-9]{0,3}){0,15})?m')
+HEADER = re.compile(rb'^(error|warning|note)\[([^\]\r\n]*)\]:')
+
+
+class DiagnosticCounts:
+    """Bounded lexical observations only; never preserve arbitrary text."""
+    LIMIT = 2**32 - 1
+    LINE_LIMIT = 65536
+
+    def __init__(self):
+        self.counts = {severity: {code: 0 for code in DIAGNOSTIC_CODES}
+                       for severity in SEVERITIES}
+        self.unknown_code_headers = 0
+        self.overlong_lines_skipped = 0
+        self.invalid_ansi_lines_skipped = 0
+        self.saturated = False
+        self.pending = b''
+        self.dropping_line = False
+
+    def increment(self, mapping, key):
+        if mapping[key] < self.LIMIT:
+            mapping[key] += 1
+        else:
+            self.saturated = True
+
+    def increment_field(self, field):
+        value = getattr(self, field)
+        if value < self.LIMIT:
+            setattr(self, field, value + 1)
+        else:
+            self.saturated = True
+
+    def line(self):
+        if self.dropping_line:
+            self.increment_field('overlong_lines_skipped')
+        else:
+            clean = SGR.sub(b'', self.pending)
+            if b'\x1b' in clean:
+                self.increment_field('invalid_ansi_lines_skipped')
+            else:
+                match = HEADER.match(clean)
+                if match:
+                    severity = match[1].decode('ascii')
+                    # Decode no arbitrary bytes, and never emit unknown strings.
+                    code = next((value for value in DIAGNOSTIC_CODES
+                                 if value.encode('ascii') == match[2]), None)
+                    if code is None:
+                        self.increment_field('unknown_code_headers')
+                    else:
+                        self.increment(self.counts[severity], code)
+        self.pending = b''
+        self.dropping_line = False
+
+    def feed(self, data):
+        pieces = data.split(b'\n')
+        for index, piece in enumerate(pieces):
+            if not self.dropping_line:
+                if len(self.pending) + len(piece) > self.LINE_LIMIT:
+                    self.pending = b''
+                    self.dropping_line = True
+                else:
+                    self.pending += piece
+            if index < len(pieces) - 1:
+                self.line()
+
+    def finish(self):
+        if self.pending or self.dropping_line:
+            self.line()
+
+    def receipt(self, complete):
+        return {'schema': 'lexical_diagnostic_header_observations_v1',
+                'declared_code_version': '0.19.0', 'binary_version_verified': False,
+                'counts': self.counts,
+                'unknown_code_headers': self.unknown_code_headers,
+                'overlong_lines_skipped': self.overlong_lines_skipped,
+                'invalid_ansi_lines_skipped': self.invalid_ansi_lines_skipped,
+                'count_saturated': self.saturated, 'summary_complete': complete,
+                'known_header_observed': any(value for values in self.counts.values()
+                                             for value in values.values()),
+                'cargo_substage_success_proven': False}
+
+
 class Stream:
     def __init__(self, cap=CAP):
         self.cap, self.count = cap, 0
         self.head, self.tail, self.line = b'', b'', b''
         self.digest = hashlib.sha256()
         self.suspect = False
+        self.diagnostics = DiagnosticCounts()
 
     def feed(self, data):
+        self.diagnostics.feed(data)
         self.count += len(data)
         self.digest.update(data)
         self.head += data[:max(0, self.cap - len(self.head))]
@@ -73,6 +161,7 @@ class Stream:
             self.line = self.line[-65536:]
 
     def finish(self):
+        self.diagnostics.finish()
         self.suspect |= suspicious(self.line)
         self.line = b''
         return {'bytes': self.count, 'sha256': self.digest.hexdigest(),
@@ -295,6 +384,13 @@ def publish(directory, records, inputs_ok):
     for name, result, streams in records:
         allowed = inputs_ok and not result['stop'] and not any(s.suspect for s in streams)
         result['raw_published'] = allowed
+        # inputs_ok also binds unchanged control and confirmed cleanup at caller.
+        result['diagnostic_summary_withheld'] = not inputs_ok
+        if inputs_ok:
+            result['diagnostic_summaries'] = [
+                stream.diagnostics.receipt(complete=result['stop'] is None)
+                for stream in streams
+            ]
         if allowed:
             for label, stream in zip(['stdout', 'stderr'], streams):
                 (directory / f'{name}-{label}.bin').write_bytes(stream.retained())

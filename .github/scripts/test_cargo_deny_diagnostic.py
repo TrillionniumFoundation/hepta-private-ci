@@ -208,12 +208,14 @@ class DiagnosticTests(unittest.TestCase):
             self.assertFalse(receipt['cleanup_confirmed'])
             self.assertEqual(sum(argv[1] == 'rm' for argv in calls), 1)
             self.assertFalse(any(r['raw_published'] for r in receipt['records']))
+            self.assertFalse(any('diagnostic_summaries' in r for r in receipt['records']))
 
     def test_control_change_fails_and_withholds(self):
         result, receipt, _ = self.exercise_main(control_change=True)
         self.assertEqual(result, 125)
         self.assertFalse(receipt['control_unchanged'])
         self.assertFalse(any(r['raw_published'] for r in receipt['records']))
+        self.assertFalse(any('diagnostic_summaries' in r for r in receipt['records']))
 
     def test_control_sha_mismatch_rejected(self):
         with self.assertRaises(ValueError):
@@ -331,6 +333,126 @@ class DiagnosticTests(unittest.TestCase):
         self.assertEqual(receipt['records'], [])
         self.assertNotIn('private fixture', json.dumps(receipt))
         self.assertFalse(any(argv[1] in ['build', 'run'] for argv in calls))
+
+
+    def test_all_known_headers_are_counted_for_each_severity(self):
+        counter = d.DiagnosticCounts()
+        for severity in d.SEVERITIES:
+            for code in d.DIAGNOSTIC_CODES:
+                counter.feed(f'{severity}[{code}]: ignored text\n'.encode())
+        counter.finish()
+        receipt = counter.receipt(True)
+        self.assertTrue(receipt['known_header_observed'])
+        self.assertFalse(receipt['cargo_substage_success_proven'])
+        for counts in receipt['counts'].values():
+            self.assertEqual(set(counts.values()), {1})
+
+    def test_header_and_sgr_every_chunk_boundary(self):
+        data = b'\x1b[31merror\x1b[0m[vulnerability]: secret-fixture\n'
+        for split in range(len(data) + 1):
+            counter = d.DiagnosticCounts()
+            counter.feed(data[:split])
+            counter.feed(data[split:])
+            counter.finish()
+            receipt = counter.receipt(True)
+            self.assertEqual(receipt['counts']['error']['vulnerability'], 1)
+            self.assertNotIn('secret-fixture', json.dumps(receipt))
+            self.assertEqual(receipt['invalid_ansi_lines_skipped'], 0)
+
+    def test_secret_messages_withhold_raw_but_only_emit_fixed_counts(self):
+        stream = d.Stream(8)
+        stream.feed(b'error[unlicensed]: token=privatecredential123 https://u:p@private.invalid/x\n')
+        stream.finish()
+        with tempfile.TemporaryDirectory() as td:
+            result = {'stop': None}
+            target = Path(td) / 'public'
+            d.publish(target, [('run', result, [stream, d.Stream()])], True)
+            self.assertFalse(result['raw_published'])
+            self.assertEqual(list(target.iterdir()), [])
+            summary = result['diagnostic_summaries'][0]
+            self.assertEqual(summary['counts']['error']['unlicensed'], 1)
+            text = json.dumps(summary)
+            for secret in ['privatecredential123', 'private.invalid', 'token=', 'https://']:
+                self.assertNotIn(secret, text)
+
+    def test_unknown_code_is_only_a_number(self):
+        counter = d.DiagnosticCounts()
+        counter.feed(b'error[secret-fixture-code]: ignored\n')
+        counter.finish()
+        receipt = counter.receipt(True)
+        self.assertEqual(receipt['unknown_code_headers'], 1)
+        self.assertNotIn('secret-fixture-code', json.dumps(receipt))
+        self.assertFalse(receipt['known_header_observed'])
+
+    def test_longline_skipped_whole_not_tail_header(self):
+        counter = d.DiagnosticCounts()
+        counter.feed(b'error[banned]: ' + b'x' * 65536)
+        counter.feed(b'error[vulnerability]: fake-tail\nwarning[duplicate]: real\n')
+        counter.finish()
+        receipt = counter.receipt(True)
+        self.assertEqual(receipt['overlong_lines_skipped'], 1)
+        self.assertEqual(receipt['counts']['error']['banned'], 0)
+        self.assertEqual(receipt['counts']['error']['vulnerability'], 0)
+        self.assertEqual(receipt['counts']['warning']['duplicate'], 1)
+        self.assertEqual(counter.pending, b'')
+
+    def test_invalid_ansi_skips_entire_line(self):
+        for line in [b'\x1b[31Kerror[banned]: x', b'error[banned]: x\x1b]8;;secret\x07',
+                     b'error[banned]: x\x1b[', b'\x1b[9999merror[banned]: x']:
+            counter = d.DiagnosticCounts()
+            for byte in line:
+                counter.feed(bytes([byte]))
+            counter.finish()
+            receipt = counter.receipt(True)
+            self.assertEqual(receipt['invalid_ansi_lines_skipped'], 1)
+            self.assertFalse(receipt['known_header_observed'])
+
+    def test_counts_independent_of_raw_head_tail_truncation(self):
+        stream = d.Stream(8)
+        stream.feed(b'error[banned]: first\n' + b'harmless\n' * 1000 + b'warning[duplicate]: last')
+        meta = stream.finish()
+        self.assertTrue(meta['truncated'])
+        self.assertLessEqual(len(stream.retained()), 16)
+        receipt = stream.diagnostics.receipt(True)
+        self.assertEqual(receipt['counts']['error']['banned'], 1)
+        self.assertEqual(receipt['counts']['warning']['duplicate'], 1)
+        stream.finish()
+        self.assertEqual(stream.diagnostics.receipt(True), receipt)
+
+    def test_counter_saturation_bounded(self):
+        counter = d.DiagnosticCounts()
+        counter.counts['error']['banned'] = counter.LIMIT
+        counter.unknown_code_headers = counter.LIMIT
+        counter.feed(b'error[banned]: x\nerror[unknown-fixture]: x\n')
+        counter.finish()
+        receipt = counter.receipt(True)
+        self.assertTrue(receipt['count_saturated'])
+        self.assertEqual(receipt['counts']['error']['banned'], 2**32 - 1)
+        self.assertEqual(receipt['unknown_code_headers'], 2**32 - 1)
+
+    def test_no_code_text_does_not_claim_substage(self):
+        counter = d.DiagnosticCounts()
+        counter.feed(b'error: rustup failure fixture\ninfo: cargo-deny succeeded fixture\n')
+        counter.finish()
+        receipt = counter.receipt(True)
+        self.assertFalse(receipt['known_header_observed'])
+        self.assertFalse(receipt['cargo_substage_success_proven'])
+        self.assertEqual(receipt['unknown_code_headers'], 0)
+
+    def test_summary_incomplete_on_stop_and_withheld_on_failed_safety_gate(self):
+        stream = d.Stream()
+        stream.feed(b'error[banned]: fixture\n')
+        stream.finish()
+        with tempfile.TemporaryDirectory() as td:
+            result = {'stop': 'timeout'}
+            d.publish(Path(td) / 'public', [('run', result, [stream, d.Stream()])], True)
+            self.assertFalse(result['diagnostic_summaries'][0]['summary_complete'])
+            self.assertFalse(result['raw_published'])
+        with tempfile.TemporaryDirectory() as td:
+            result = {'stop': None}
+            d.publish(Path(td) / 'public', [('run', result, [stream, d.Stream()])], False)
+            self.assertTrue(result['diagnostic_summary_withheld'])
+            self.assertNotIn('diagnostic_summaries', result)
 
 
 if __name__ == '__main__':
