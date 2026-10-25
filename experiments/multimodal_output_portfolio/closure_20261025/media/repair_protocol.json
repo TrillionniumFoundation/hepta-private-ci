@@ -1,0 +1,17 @@
+{
+  "schema": "hepta.closure.media-development-repair.v1",
+  "seed": 17291,
+  "threads": 1,
+  "previous_attempt": "training-001 and development-001, all failure evidence retained",
+  "trigger": "Validation observer 0.6533, ingress 0.7733, audio generation 0.6; cross-event video state bleed",
+  "same_source_roles": true,
+  "steps": {"reward": 1500, "audit": 1500, "audio_input": 1500, "acoustic": 600, "video": 800},
+  "batch_size": 24,
+  "learning_rate": 0.001,
+  "classification": "GroupNorm CNN with per-spectrum standardization, dropout 0.15, random time roll +/-10, Gaussian spectrum noise 0.025, 8-bin frequency and 8-frame time masks",
+  "acoustic": "Continue original VAE: spectral L1 + 0.0005 KL + 0.15 repaired fixed reward CE",
+  "video": "New event-isolated recurrent pixel decoder: actual pixel BCE + 0.15 fixed image reward CE; two declared ten-frame events",
+  "inference": "One predicted hard semantic code per event, shared by acoustic/video output; retain original soft-condition contrast on identical states",
+  "heldout_test_opened": false,
+  "acceptance_thresholds": "Unchanged from protocol.json; no claim of qualification until actual validation"
+}
