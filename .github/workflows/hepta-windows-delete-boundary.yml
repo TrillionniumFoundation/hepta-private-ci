@@ -59,7 +59,7 @@ jobs:
           set -euo pipefail
           test ! -e "$RUNNER_TEMP/windows-delete-boundary"
           mkdir -p "$RUNNER_TEMP/windows-delete-boundary"
-          printf 'Three existing native Windows deletion-boundary regressions, four native private-state mechanism probes, all 40 private-state library controls including the original five owner-descriptor controls, four native owner-lock process controls, all eight current ACL unit controls, a test-only full-restriction token candidate, four read-only same-handle local-NTFS controls, four live effective-token continuity controls, seven original FinalUse and held-stage controls, and three original Registry controls. Real remote-device rejection remains a C2b acceptance gap. AccessCheck output is diagnostic; original deletion assertions determine success. Candidate success does not admit a production sandbox. Mechanism and descriptor control success does not establish Windows private-state owner support, parent or volume admission, power-loss durability, whole-project or PoN qualification.\n' > "$RUNNER_TEMP/windows-delete-boundary/SCOPE.txt"
+          printf 'Three existing native Windows deletion-boundary regressions, four native private-state mechanism probes, all 40 private-state library controls including the original five owner-descriptor controls, four native owner-lock process controls, all eight current ACL unit controls, a test-only full-restriction token candidate, four read-only same-handle local-NTFS controls, four live effective-token continuity controls, seven original FinalUse and held-stage controls, three original Registry controls, and three retained same-plan restrictive RX observations. The latter provide query-only root observations, not a prepared sandbox launch context. Real remote-device rejection remains a C2b acceptance gap. AccessCheck output is diagnostic; original deletion assertions determine success. Candidate success does not admit a production sandbox. Mechanism and descriptor control success does not establish Windows private-state owner support, parent or volume admission, power-loss durability, whole-project or PoN qualification.\n' > "$RUNNER_TEMP/windows-delete-boundary/SCOPE.txt"
           git config --global core.autocrlf false
           git config --global core.longpaths true
           printf 'CARGO_TARGET_DIR=%s/windows-delete-boundary-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
@@ -185,13 +185,18 @@ jobs:
                   "durable::platform::tests::native_registry_existing_marker_with_missing_manifest_never_reinitializes",
               ),
           }
-          required = ("partial-delete-deny", "broad-identity-delete", "legacy-delete-boundary", *probes, "acl-unit-controls", "private-owner-descriptor", "full-restriction-candidate", "private-local-ntfs", "private-principal-continuity", "private-owner-lock", *store_selectors)
+          required = ("partial-delete-deny", "broad-identity-delete", "legacy-delete-boundary", *probes, "acl-unit-controls", "private-owner-descriptor", "full-restriction-candidate", "held-read-acl", "private-local-ntfs", "private-principal-continuity", "private-owner-lock", *store_selectors)
           filtered_selectors = {
               "partial-delete-deny": ("token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",),
               "broad-identity-delete": ("token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",),
               "legacy-delete-boundary": ("unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",),
               "acl-unit-controls": acl_selectors,
               "full-restriction-candidate": ("token::tests::full_restriction::native_full_restriction_preserves_reads_and_refuses_parent_delete",),
+              "held-read-acl": (
+                  "filesystem_read_acl::tests::actual_readv3_query_retains_same_plan_noninherited_handles_without_acl_repair",
+                  "filesystem_read_acl::tests::actual_read_role_extra_mutation_and_changed_descriptor_are_sticky_refusals",
+                  "filesystem_read_acl::tests::actual_read_role_different_plan_and_registry_change_never_rebind_an_old_proof",
+              ),
               **{name: (selector,) for name, (selector, _) in probes.items()},
           }
           if sys.argv[1] == "tests":
@@ -411,6 +416,14 @@ jobs:
           codes="${PIPESTATUS[*]}"
           set -e
           python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests full-restriction-candidate 1 "$codes"
+      - name: Run all three retained same-plan restrictive RX observations
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: |
+          set +e
+          just test --locked -p codex-windows-sandbox --lib -E 'test(/^filesystem_read_acl::tests::/)' --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-delete-boundary/held-read-acl.log"
+          codes="${PIPESTATUS[*]}"
+          set -e
+          python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests held-read-acl 3 "$codes"
       - name: Run original partial delete-deny repair regression
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
         run: |
@@ -475,7 +488,7 @@ jobs:
           codes="${PIPESTATUS[*]}"
           set -e
           python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests acl-unit-controls 8 "$codes"
-      - name: Require unchanged source and all fifteen completed Windows result receipts
+      - name: Require unchanged source and all sixteen completed Windows result receipts
         if: ${{ always() && steps.source.outcome == 'success' }}
         run: python "$RUNNER_TEMP/windows-delete-boundary/check.py" source after
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

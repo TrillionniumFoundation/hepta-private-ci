@@ -666,7 +666,7 @@ npm, Python, build or exact-source CI gates. Complete PN0 before treating later
 PoN or model experiments as a qualified integration baseline.
 
 Cross-repository qualification follows the Chain plan's single
-[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/7bce5ff4850790d939b40840494bc1ddb3614eb1/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
+[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/ef2a6958a6f3d8fdfaea25fbc58fb1ecd188134c/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
 PN0 exact-source/security baseline → PN1 work security and PN2 bounded state →
 PN3 real-model closure → PN4 five-budget/effect-liability qualification →
 PN5 independent-operator WAN/discovery/availability → PN6 governed migration and
@@ -681,29 +681,37 @@ optimizer, durable journal or authority issuer. Parameter, topology, executable
 and consensus upgrades retain their separate admission and release boundaries.
 
 PN0's native pair pins Chain source
-`7bce5ff4850790d939b40840494bc1ddb3614eb1`, tree
-`b97351201aaf05728b0839a64d679afcca59e79a`, against unchanged default main
+`ef2a6958a6f3d8fdfaea25fbc58fb1ecd188134c`, tree
+`abbc28203d6affb92dea676bdc0a3d50c21dc24c`, against unchanged default main
 `9fedf7ecbbe07177069c030592b4e03dcffebb81`. Its source-head lane tests that source;
 its base-merge lane pins the published main qualification object
-`fc71756516693d8e5d49eecd9b08c0c0b831a184`, with ordered parents `[9fedf7ec, 7bce5ff4]`
+`81d9d829228c8c23ab52ead7ab4f35800891ae85`, with ordered parents `[9fedf7ec, ef2a6958]`
 and the original exact merge-tree checks. The separate original-integration base
 `57c1ed545d067937cbd7aaa7570d5f22123265e6` now has actual GitHub PR preview
-`3ee8d3a901c3a39e509e185b92304cb6a5951f83`, ordered parents `[57c1ed54, 7bce5ff4]`.
+`9147b4bbe3721c655d33e16ecd41dc36ba8bb57f`, ordered parents `[57c1ed54, ef2a6958]`.
 Both prospective trees equal the source tree; their different parent identities
 and required executions remain distinct. The qualification branch
-`fix/chain-retained-owner-main-pair-20261024` publishes the main object; it is not
-an executed GitHub PR merge. Source and actual original-integration preview CI
-are pending, including required baseline run
-[40116162665](https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40116162665).
+`fix/chain-retirement-preparation-main-pair-20261024` publishes the main object;
+it is not an executed GitHub PR merge. On 2026-10-25 the fourteen baseline
+execution jobs passed on source and actual original-integration preview;
+three baseline aggregation jobs and all thirteen priority jobs remained queued in
+[40120511787](https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40120511787)
+and [40120511792](https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40120511792).
 Publication, a matching tree or a pin refresh supplies no passing execution.
 
-The source preserves all concurrent `8e0f7adc` fixes and adds the TCL4 cache,
-fresh host child preparation and the private C-to-A launch composition. Its
-146 original-owner controls pass with zero skips. Strict workspace Clippy, the
-exact Cargo graph, source-integrity checks and 1,151 local links pass. Original
+The source preserves all concurrent `8e0f7adc` fixes, the TCL4 cache,
+fresh host child preparation and private C-to-A launch composition. Its
+retirement-preparation slice `01c65582` passes 159 controls with zero skips,
+strict workspace Clippy, exact Cargo graph and source-integrity checks. The
+actual original concurrent native driver reports zero ThreadSanitizer warnings;
+the earlier eighteen warnings remain failures of source `9cf5de77`. The nine
+tested native/test/workflow/inventory/Rust objects remain exact in this pair.
+Original
 C retains its A wait slot after unknown syscall results; original O retains C,
 and one fixed C/A owner root survives loss of all temporary caller references.
 The root is retained even after a timely receipt, pending actual retirement.
+The preborn native worker is preparation only; its activation/retirement
+successor is unpublished and is not supplied by this paired source.
 This supplies no funded entry, real fresh-cgroup execution or whole-U return.
 Scope-only preparation still requires the original caller to retain its cap.
 The controlled empty-child observation on source `03b67a95` remains partial,
@@ -1113,6 +1121,22 @@ prepared ACLs, PE/DLL loading, desktop, stdio or containment. Setup's real read
 handles end with its process; a serialized marker cannot replace final readiness
 in the executing owner. All original production launch guards remain closed.
 
+The isolated four-lane Windows diagnostics on published source `394d1c75`
+and actual preview `1dddb018` completed on both x64 and ARM in
+[40117218852](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40117218852).
+All lanes passed the four live-principal, four volume, four held-stage, four
+private-state mechanism, eight ACL and test-only full-restriction controls.
+Each lane still failed 23 of 37 private-state library cases, three original
+FinalUse cases, three Registry cases, three owner-lock cases and both original
+broad-identity/legacy deletion regressions. The parent-anchor diagnostics place
+the owner failures at the initial ancestor with the exact TrustedInstaller SID.
+The successor admits only that exact OS namespace owner/maintenance identity;
+it adds three exact/nearby-SID and mutation controls, and leaves private-child
+user-only ownership unchanged. Fresh source/actual-preview execution remains
+required: this addresses the observed initial cause without claiming all deeper
+ancestors or production sandbox admission will pass. The two deletion failures
+remain independent blockers.
+
 The same PN0 sandbox item retains seven source-backed blockers below. Security-authority
 coordinates the sandbox package owners; runtime-control owns the PN4 process-owner
 composition. Paths in the first six rows are under
@@ -1130,7 +1154,23 @@ ownership to `utils/windows-private-state`.
 | PN0 stdio: `process.rs` has a global inheritable-stdio fallback; `acl.rs::allow_null_device` mutates shared NUL ACLs.                                                                                                | `OwnedChildStdio`/closed-stdio plans duplicate only exact endpoints and always supply an explicit handle list when inheriting. Pass preopened NUL or closed endpoints; retain RAII cleanup and exclude runner/token/Job/store/ancestor handles.                                                                                                                                             | Test open/closed stdin, split/merged output, EOF, backpressure, cancellation and ConPTY. A deliberately inheritable unrelated sentinel and private/control handles must stay inaccessible; no device-wide ACL repair may manufacture success.                                                                 |
 | PN4 controlled containment: `process.rs`, `conpty/mod.rs` and `codex-rs/utils/pty/src/win/job.rs` currently select a breakaway-enabled Job.                                                                          | The controlled route uses `create_without_breakaway`, atomic `PROC_THREAD_ATTRIBUTE_JOB_LIST` assignment and the original retained process owner until terminal reconciliation. Preserve unrelated interactive descendant-lifetime contracts.                                                                                                                                               | Execute breakaway attempts, child/grandchild pipelines and cancellation/process-death cases under the original eight-second terminal bound. Actual PE/DLL/script execution is required; `FILE_EXECUTE` handle access, exit code or PID lookup does not prove launch, containment or resource return.          |
 
-First collect the existing source-head/base-merge fifteen-receipt results; a primitive
+The existing setup/RX dependency now includes the query-only library API
+`observe_filesystem_read_acl` and opaque `HeldFilesystemReadAcl::revalidate`.
+It retains at most 64 non-inheritable query handles, complete bounded owner/DACL
+bytes and identities for every exact root in the original ReadV3 plan. Missing
+root RX, mutation rights, another declared root's role, changed registry/plan or
+changed path binding refuse; the first revalidation failure is permanent for
+that observation. It neither creates ACLs nor replaces the setup-binary-only
+`PreparedFilesystemAclContext`. Fresh managed normal identities, effective
+tokens, descendants and PE/DLL loading remain predecessor requirements for the
+production launch factory. The original Linux sandbox suite passes all 30
+portable controls with zero skips; three new native Windows controls remain
+NOT_RUN locally. The existing four-lane source/actual-preview diagnostics now
+requires those exact three named results as an additional receipt, preserving
+all original fifteen groups, assertions and deadlines. MSVC component compilation
+is not native execution or whole-package qualification.
+
+First collect the existing source-head/base-merge sixteen-receipt results; a primitive
 pass cannot replace an original red. Continue within PN0 in dependency order:
 bounded role plan and versioned setup/runner fields, explicit RX/readiness,
 mutation deny plus full-token/default-object policy, then desktop/stdio/controlled
