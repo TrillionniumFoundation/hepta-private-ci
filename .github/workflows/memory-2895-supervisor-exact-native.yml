@@ -1,0 +1,86 @@
+name: Supervisor restart-budget exact-source native qualification
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/memory-2895-supervisor-exact-native.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  supervisor-restart-budget:
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'automation/memory-2895-exact-supervisor-native-20261025'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_TERM_COLOR: never
+      SOURCE_SHA: bddca69f03c9dfd1e42cc9d90614256079dbf729
+      TEST_BLOB: 1707de670c0baa17ee68138f7fdd5029234e0aa9
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Checkout exact candidate without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Reject source drift and unrelated modifications
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git merge-base "$SOURCE_SHA" HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse "HEAD:codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs")" = "$TEST_BLOB"
+          test "$(git rev-parse "HEAD:codex-rs/Cargo.lock")" = "$(git rev-parse "$SOURCE_SHA:codex-rs/Cargo.lock")"
+          test "$(git rev-parse "HEAD:MODULE.bazel")" = "$(git rev-parse "$SOURCE_SHA:MODULE.bazel")"
+          test "$(git rev-parse "HEAD:MODULE.bazel.lock")" = "$(git rev-parse "$SOURCE_SHA:MODULE.bazel.lock")"
+          changed="$(git diff --name-only "$SOURCE_SHA" HEAD)"
+          test "$changed" = ".github/workflows/memory-2895-supervisor-exact-native.yml"
+          git diff --check "$SOURCE_SHA" HEAD
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          echo "Isolated workflow only; supervisor test, manifest and locks match source: $SOURCE_SHA"
+
+      - name: Install pinned native test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Report compiler and runner versions
+        working-directory: codex-rs
+        run: |
+          rustc --version --verbose
+          cargo --version
+          just --version
+          cargo nextest --version
+
+      - name: Run exact persisted restart-budget recovery test with no retries
+        working-directory: codex-rs
+        timeout-minutes: 75
+        run: |
+          just test --locked -p codex-hepta-supervisor --no-tests=fail --retries 0 --test restart_budget_recovery -E 'test(=restart_budget_survives_repeated_supervisord_recovery)' --test-threads 1
+
+      - name: Run complete Supervisor crate without retries
+        working-directory: codex-rs
+        timeout-minutes: 30
+        run: |
+          just test --locked -p codex-hepta-supervisor --no-tests=fail --retries 0
+
+      - name: Confirm tests left source and locks unmodified
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          test "$(git rev-parse "HEAD:codex-rs/Cargo.lock")" = "$(git rev-parse "$SOURCE_SHA:codex-rs/Cargo.lock")"
+          test "$(git rev-parse "HEAD:MODULE.bazel.lock")" = "$(git rev-parse "$SOURCE_SHA:MODULE.bazel.lock")"
