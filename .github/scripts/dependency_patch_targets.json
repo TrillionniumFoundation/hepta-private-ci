@@ -1,0 +1,464 @@
+{
+  "index_commit": "adad2614216e371fe1bd2573657ea24b4f649be8",
+  "targets": [
+    {
+      "name": "rustls-webpki",
+      "old": "0.103.15",
+      "new": "0.103.16",
+      "checksum": "4443b1b6d39d7c663139942cc4558262562d2c84123bb6282ef177009ca8b281",
+      "fact": {
+        "dependencies": [
+          {
+            "name": "aws-lc-rs",
+            "req": "^1.18",
+            "optional": true,
+            "default_features": false
+          },
+          {
+            "name": "base64",
+            "req": "^0.23",
+            "kind": "dev"
+          },
+          {
+            "name": "bencher",
+            "req": "^0.1.5",
+            "kind": "dev"
+          },
+          {
+            "name": "bzip2",
+            "req": "^0.6",
+            "kind": "dev"
+          },
+          {
+            "name": "once_cell",
+            "req": "^1.17.2",
+            "kind": "dev"
+          },
+          {
+            "name": "pki-types",
+            "req": "^1.12",
+            "package": "rustls-pki-types",
+            "default_features": false
+          },
+          {
+            "name": "rcgen",
+            "req": "^0.14.2",
+            "features": [
+              "aws_lc_rs"
+            ],
+            "default_features": false,
+            "kind": "dev"
+          },
+          {
+            "name": "ring",
+            "req": "^0.17",
+            "optional": true,
+            "default_features": false
+          },
+          {
+            "name": "serde",
+            "req": "^1.0",
+            "features": [
+              "derive"
+            ],
+            "kind": "dev"
+          },
+          {
+            "name": "serde_json",
+            "req": "^1.0",
+            "kind": "dev"
+          },
+          {
+            "name": "untrusted",
+            "req": "^0.9"
+          },
+          {
+            "name": "x509-parser",
+            "req": "^0.18.1",
+            "kind": "dev"
+          }
+        ],
+        "features": {
+          "alloc": [
+            "ring?/alloc",
+            "pki-types/alloc"
+          ],
+          "aws-lc-rs": [
+            "dep:aws-lc-rs",
+            "aws-lc-rs/aws-lc-sys",
+            "aws-lc-rs/prebuilt-nasm"
+          ],
+          "aws-lc-rs-fips": [
+            "dep:aws-lc-rs",
+            "aws-lc-rs/fips"
+          ],
+          "aws-lc-rs-unstable": [
+            "aws-lc-rs"
+          ],
+          "default": [
+            "std"
+          ],
+          "ring": [
+            "dep:ring"
+          ],
+          "std": [
+            "alloc",
+            "pki-types/std"
+          ]
+        }
+      },
+      "index_blob": "6496ec57acc995f159667c24583aa2480b8f9bb8"
+    },
+    {
+      "name": "rustls",
+      "old": "0.23.45",
+      "new": "0.23.46",
+      "checksum": "48e13bd8c0e9365c43cfa5c9e8f9ad49d3c8444926c9aac819e0e4dc503c8fdf",
+      "fact": {
+        "dependencies": [
+          {
+            "name": "aws-lc-rs",
+            "req": "^1.18",
+            "optional": true,
+            "default_features": false
+          },
+          {
+            "name": "base64",
+            "req": "^0.22",
+            "kind": "dev"
+          },
+          {
+            "name": "bencher",
+            "req": "^0.1.5",
+            "kind": "dev"
+          },
+          {
+            "name": "brotli",
+            "req": "^8",
+            "features": [
+              "std"
+            ],
+            "optional": true,
+            "default_features": false
+          },
+          {
+            "name": "brotli-decompressor",
+            "req": "^5.0.0",
+            "optional": true
+          },
+          {
+            "name": "env_logger",
+            "req": "^0.11",
+            "kind": "dev"
+          },
+          {
+            "name": "hashbrown",
+            "req": "^0.15",
+            "features": [
+              "default-hasher",
+              "inline-more"
+            ],
+            "optional": true,
+            "default_features": false
+          },
+          {
+            "name": "hex",
+            "req": "^0.4",
+            "kind": "dev"
+          },
+          {
+            "name": "log",
+            "req": "^0.4.8",
+            "optional": true
+          },
+          {
+            "name": "log",
+            "req": "^0.4.8",
+            "kind": "dev"
+          },
+          {
+            "name": "macro_rules_attribute",
+            "req": "^0.2",
+            "kind": "dev"
+          },
+          {
+            "name": "num-bigint",
+            "req": "^0.4.4",
+            "kind": "dev"
+          },
+          {
+            "name": "once_cell",
+            "req": "^1.16",
+            "features": [
+              "alloc",
+              "race"
+            ],
+            "default_features": false
+          },
+          {
+            "name": "pki-types",
+            "req": "^1.12",
+            "features": [
+              "alloc"
+            ],
+            "package": "rustls-pki-types"
+          },
+          {
+            "name": "rcgen",
+            "req": "^0.14",
+            "features": [
+              "pem",
+              "aws_lc_rs"
+            ],
+            "default_features": false,
+            "kind": "dev"
+          },
+          {
+            "name": "ring",
+            "req": "^0.17",
+            "optional": true
+          },
+          {
+            "name": "rustversion",
+            "req": "^1.0.6",
+            "optional": true,
+            "kind": "build"
+          },
+          {
+            "name": "serde",
+            "req": "^1",
+            "features": [
+              "derive"
+            ],
+            "kind": "dev"
+          },
+          {
+            "name": "serde_json",
+            "req": "^1",
+            "kind": "dev"
+          },
+          {
+            "name": "subtle",
+            "req": "^2.5.0",
+            "default_features": false
+          },
+          {
+            "name": "time",
+            "req": "^0.3.6",
+            "default_features": false,
+            "kind": "dev"
+          },
+          {
+            "name": "webpki",
+            "req": "^0.103.14",
+            "features": [
+              "alloc"
+            ],
+            "default_features": false,
+            "package": "rustls-webpki"
+          },
+          {
+            "name": "webpki-roots",
+            "req": "^1",
+            "kind": "dev"
+          },
+          {
+            "name": "x509-parser",
+            "req": "^0.17",
+            "kind": "dev"
+          },
+          {
+            "name": "zeroize",
+            "req": "^1.8"
+          },
+          {
+            "name": "zlib-rs",
+            "req": "^0.6",
+            "optional": true
+          }
+        ],
+        "features": {
+          "custom-provider": [],
+          "logging": [
+            "log"
+          ],
+          "read_buf": [
+            "rustversion",
+            "std"
+          ],
+          "std": [
+            "webpki/std",
+            "pki-types/std",
+            "once_cell/std"
+          ],
+          "tls12": [],
+          "aws-lc-rs": [
+            "aws_lc_rs"
+          ],
+          "aws_lc_rs": [
+            "dep:aws-lc-rs",
+            "webpki/aws-lc-rs",
+            "aws-lc-rs/aws-lc-sys",
+            "aws-lc-rs/prebuilt-nasm"
+          ],
+          "brotli": [
+            "dep:brotli",
+            "dep:brotli-decompressor",
+            "std"
+          ],
+          "default": [
+            "aws_lc_rs",
+            "logging",
+            "prefer-post-quantum",
+            "std",
+            "tls12"
+          ],
+          "fips": [
+            "aws_lc_rs",
+            "aws-lc-rs?/fips",
+            "webpki/aws-lc-rs-fips"
+          ],
+          "prefer-post-quantum": [
+            "aws_lc_rs"
+          ],
+          "ring": [
+            "dep:ring",
+            "webpki/ring"
+          ],
+          "zlib": [
+            "dep:zlib-rs"
+          ]
+        }
+      },
+      "index_blob": "bd7fdb7c08a30570dae909ea60d90b787f5b3ae2"
+    },
+    {
+      "name": "webpki-roots",
+      "old": "1.0.9",
+      "new": "1.0.10",
+      "checksum": "1c1c8e20c8a38fc7d65abfe74eb7280e4aa667e8eec8bc84996d2874810748d9",
+      "fact": {
+        "dependencies": [
+          {
+            "name": "aws-lc-rs",
+            "req": "^1.15.2",
+            "kind": "dev"
+          },
+          {
+            "name": "hex",
+            "req": "^0.4.3",
+            "kind": "dev"
+          },
+          {
+            "name": "percent-encoding",
+            "req": "^2.3",
+            "kind": "dev"
+          },
+          {
+            "name": "pki-types",
+            "req": "^1.8",
+            "default_features": false,
+            "package": "rustls-pki-types"
+          },
+          {
+            "name": "rcgen",
+            "req": "^0.14.3",
+            "kind": "dev"
+          },
+          {
+            "name": "rustls",
+            "req": "^0.23",
+            "kind": "dev"
+          },
+          {
+            "name": "tokio",
+            "req": "^1",
+            "features": [
+              "macros",
+              "rt-multi-thread"
+            ],
+            "kind": "dev"
+          },
+          {
+            "name": "webpki",
+            "req": "^0.103",
+            "features": [
+              "alloc"
+            ],
+            "kind": "dev",
+            "package": "rustls-webpki"
+          },
+          {
+            "name": "x509-parser",
+            "req": "^0.18",
+            "kind": "dev"
+          },
+          {
+            "name": "yasna",
+            "req": "^0.6",
+            "kind": "dev"
+          }
+        ],
+        "features": {}
+      },
+      "index_blob": "3d93d9bb79ca204abadb244459e27d28888bfa4c"
+    },
+    {
+      "name": "webpki-root-certs",
+      "old": "1.0.5",
+      "new": "1.0.10",
+      "checksum": "58ec80e73fd8baf57bf0d9615554c75348bda990d6d5bbeab964dd068319fecb",
+      "fact": {
+        "dependencies": [
+          {
+            "name": "aws-lc-rs",
+            "req": "^1.15.2",
+            "kind": "dev"
+          },
+          {
+            "name": "hex",
+            "req": "^0.4.3",
+            "kind": "dev"
+          },
+          {
+            "name": "percent-encoding",
+            "req": "^2.3",
+            "kind": "dev"
+          },
+          {
+            "name": "pki-types",
+            "req": "^1.8",
+            "default_features": false,
+            "package": "rustls-pki-types"
+          },
+          {
+            "name": "tokio",
+            "req": "^1",
+            "features": [
+              "macros",
+              "rt-multi-thread"
+            ],
+            "kind": "dev"
+          },
+          {
+            "name": "webpki",
+            "req": "^0.103",
+            "features": [
+              "alloc"
+            ],
+            "kind": "dev",
+            "package": "rustls-webpki"
+          },
+          {
+            "name": "x509-parser",
+            "req": "^0.18",
+            "kind": "dev"
+          }
+        ],
+        "features": {}
+      },
+      "index_blob": "e4a279f87fa88b70933507fe74e337ccaf13736d"
+    }
+  ],
+  "scope": "four_observed_tls_patch_targets"
+}
