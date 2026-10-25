@@ -1,6 +1,7 @@
 """Synthetic evidence/watchdog regressions, never native-test evidence."""
 
 import json
+from functools import wraps
 import math
 import os
 import shutil
@@ -28,12 +29,42 @@ def retain_watchdog_receipts(root, destination):
             "command.json",
             "stdout.log",
             "stderr.log",
+            "child-ready.json",
             "probe-state.stdout.log",
             "probe-state.stderr.log",
         ):
             source = receipt.parent / name
             if source.is_file() and not source.is_symlink():
                 shutil.copyfile(source, target / name)
+
+
+class SyntheticClock:
+    """Only fully mocked process tests: logical phases, never host latency proof."""
+
+    def __init__(self):
+        self.now = 1000000.0
+
+    def monotonic(self):
+        return self.now
+
+    def sleep(self, seconds):
+        if seconds < 0:
+            raise AssertionError("negative synthetic sleep")
+        self.now += seconds
+
+
+def synthetic_clock(test):
+    @wraps(test)
+    def run(self, *args, **kwargs):
+        clock = SyntheticClock()
+        self.synthetic_clock = clock
+        with (
+            patch.object(evidence.time, "monotonic", side_effect=clock.monotonic),
+            patch.object(evidence.time, "sleep", side_effect=clock.sleep),
+        ):
+            return test(self, *args, **kwargs)
+
+    return run
 
 
 class EvidenceTests(unittest.TestCase):
@@ -105,6 +136,109 @@ class EvidenceTests(unittest.TestCase):
                 len(evidence.expected(phase)),
             )
         self.assertEqual(sum(len(evidence.expected(p)) for p in evidence.PHASES), 137)
+
+    @patch.object(evidence.os, "getsid", new=lambda pid: 4242)
+    @patch.object(evidence.os, "getpgid", new=lambda pid: 4242)
+    @synthetic_clock
+    def test_short_cleanup_deadline_still_fails_closed_before_late_proof(self):
+        for late_stage in ["before-term", "after-term"]:
+            child = Mock(pid=4242, returncode=None)
+            directory = self.root / ("late-" + late_stage)
+
+            def snapshot(process, target, stage, deadline):
+                receipt = self.live_cleanup_fixture(process, target, stage, deadline)
+                if stage == late_stage:
+                    self.synthetic_clock.sleep(0.21)
+                return receipt
+
+            with (
+                patch.object(evidence.platform, "system", return_value="Darwin"),
+                patch.object(evidence.subprocess, "Popen", return_value=child),
+                patch.object(
+                    evidence,
+                    "capture_owned_snapshot",
+                    side_effect=self.owned_snapshot_fixture,
+                ),
+                patch.object(
+                    evidence, "capture_cleanup_snapshot", side_effect=snapshot
+                ),
+                patch.object(evidence, "observe_command", return_value=0),
+                patch.object(evidence, "observe_leader", return_value=None),
+                patch.object(evidence.os, "killpg") as signals,
+                patch.object(evidence.os, "waitpid") as reap,
+            ):
+                status = evidence.bounded(
+                    ["fake"], directory, time.monotonic() + 3, self.root, grace=0.1
+                )
+            self.assertEqual(status, 125)
+            self.assertEqual(
+                [call.args for call in signals.call_args_list],
+                []
+                if late_stage == "before-term"
+                else [(4242, evidence.signal.SIGTERM)],
+            )
+            reap.assert_not_called()
+            record = json.loads((directory / "result.json").read_text())
+            self.assertEqual(record["error_type"], "ValueError")
+            self.assertIn("deadline", record["error"])
+
+    def real_owned_parent(self, directory, marker, exit_leader):
+        ready = directory / "child-ready.json"
+        child = (
+            "import json,os,time;from pathlib import Path;"
+            "identity=dict(pid=os.getpid(),ppid=os.getppid(),pgid=os.getpgrp(),sid=os.getsid(0),uid=os.geteuid());"
+            f"ready=Path({str(ready)!r});temporary=ready.with_suffix('.tmp');"
+            "temporary.write_text(json.dumps(identity));temporary.rename(ready);"
+            "print(json.dumps(identity),flush=True);time.sleep(0.8);"
+            f"open({str(marker)!r},'w').close()"
+        )
+        return (
+            "import json,os,subprocess,sys,time;from pathlib import Path;"
+            f"child=subprocess.Popen([sys.executable,'-c',{child!r}]);ready=Path({str(ready)!r});"
+            "print(json.dumps(dict(parent_pid=os.getpid(),child_pid=child.pid,pgid=os.getpgrp(),uid=os.geteuid())),flush=True);"
+            "limit=time.monotonic()+3\n"
+            "while not ready.exists():\n"
+            " if time.monotonic()>=limit:raise RuntimeError('owned child readiness timeout')\n"
+            " time.sleep(.005)\n" + ("" if exit_leader else "time.sleep(20)\n")
+        )
+
+    def assert_real_owned_lifecycle(self, directory, status):
+        ready = json.loads((directory / "child-ready.json").read_text())
+        record = json.loads((directory / "result.json").read_text())
+        parents = [
+            json.loads(line)
+            for line in (directory / "stdout.log").read_text().splitlines()
+            if "parent_pid" in line
+        ]
+        self.assertEqual(len(parents), 1)
+        self.assertEqual(ready["pid"], parents[0]["child_pid"])
+        self.assertEqual(ready["ppid"], record["owned_pgid"])
+        self.assertEqual(ready["pgid"], record["owned_pgid"])
+        self.assertEqual(ready["sid"], record["owned_pgid"])
+        self.assertEqual(ready["uid"], os.geteuid())
+        self.assertEqual(parents[0]["parent_pid"], record["owned_pgid"])
+        self.assertEqual(record["exit"], status)
+        self.assertEqual(record["timed_out"], status == 124)
+        # Linux uses its existing distinct cleanup path; Darwin must retain exact leader evidence.
+        if evidence.platform.system() == "Darwin":
+            identity = record["leader_identity"]
+            self.assertEqual(identity["pid"], record["owned_pgid"])
+            self.assertEqual(identity["uid"], ready["uid"])
+            self.assertTrue(
+                any(
+                    ready["pid"] in item.get("live_pids", [])
+                    for item in record["cleanup_observations"]
+                )
+            )
+            lifecycle = record["leader_lifecycle"]
+            self.assertTrue(lifecycle["reaped"])
+            self.assertEqual(lifecycle["pid"], record["owned_pgid"])
+            self.assertEqual(
+                lifecycle["returncode"],
+                os.waitstatus_to_exitcode(lifecycle["wait_status"]),
+            )
+            if status == 0:
+                self.assertEqual(lifecycle["returncode"], 0)
 
     def test_bad_report_variants(self):
         for tag in [
@@ -238,6 +372,7 @@ class EvidenceTests(unittest.TestCase):
 
     @patch.object(evidence.os, "getsid", new=lambda pid: 4242)
     @patch.object(evidence.os, "getpgid", new=lambda pid: 4242)
+    @synthetic_clock
     def test_lifecycle_sole_zombie_reaps_exact_child_without_final_signal(self):
         for wait_status, returncode in [(0, 0), (15, -15)]:
             with self.subTest(wait_status=wait_status):
@@ -298,6 +433,7 @@ class EvidenceTests(unittest.TestCase):
 
     @patch.object(evidence.os, "getsid", new=lambda pid: 4242)
     @patch.object(evidence.os, "getpgid", new=lambda pid: 4242)
+    @synthetic_clock
     def test_lifecycle_reap_error_returns_125_without_later_group_signal(self):
         for index, failure in enumerate(
             [ChildProcessError("ECHILD"), OSError("reap failure"), (0, 0)]
@@ -713,6 +849,7 @@ class EvidenceTests(unittest.TestCase):
         finally:
             os.waitid = saved
 
+    @synthetic_clock
     def test_fast_exit_before_session_read_completes_without_any_signal(self):
         child = Mock(pid=4242, returncode=None)
         child.wait.side_effect = AssertionError("must not auto-reap")
@@ -777,6 +914,7 @@ class EvidenceTests(unittest.TestCase):
 
     @patch.object(evidence.os, "getsid", new=lambda pid: 4242)
     @patch.object(evidence.os, "getpgid", new=lambda pid: 4242)
+    @synthetic_clock
     def test_owned_orphan_session_cleanup_keeps_leader_unreaped_without_signal_zero(
         self,
     ):
@@ -944,6 +1082,7 @@ class EvidenceTests(unittest.TestCase):
 
     @patch.object(evidence.os, "getsid", new=lambda pid: 4242)
     @patch.object(evidence.os, "getpgid", new=lambda pid: 4242)
+    @synthetic_clock
     def test_term_and_kill_denials_snapshot_once_without_further_signals(self):
         for sig, stage, effects, grace in [
             (
@@ -1341,18 +1480,17 @@ class EvidenceTests(unittest.TestCase):
 
     def test_owned_descendant_after_leader_exit(self):
         marker = self.root / "orphan-ran"
-        child = f"import json,os,time;print(json.dumps(dict(pid=os.getpid(),ppid=os.getppid(),pgid=os.getpgrp(),sid=os.getsid(0),uid=os.geteuid())),flush=True);time.sleep(0.8);open({str(marker)!r},'w').close()"
-        parent = f"import json,os,subprocess,sys;child=subprocess.Popen([sys.executable,'-c',{child!r}]);print(json.dumps(dict(parent_pid=os.getpid(),child_pid=child.pid,pgid=os.getpgrp(),uid=os.geteuid())),flush=True)"
+        parent = self.real_owned_parent(self.root / "orphan", marker, exit_leader=True)
         self.assertEqual(
             evidence.bounded(
                 [sys.executable, "-c", parent],
                 self.root / "orphan",
                 time.monotonic() + 3,
                 self.root,
-                grace=0.1,
             ),
             0,
         )
+        self.assert_real_owned_lifecycle(self.root / "orphan", 0)
         time.sleep(0.8)
         self.assertFalse(marker.exists())
 
@@ -1368,7 +1506,6 @@ class EvidenceTests(unittest.TestCase):
                 out,
                 time.monotonic() + 3,
                 self.root,
-                grace=0.1,
             )
             self.assertEqual(status, code)
             self.assertEqual((out / "stdout.log").read_bytes(), b"raw stdout\n")
@@ -1382,7 +1519,6 @@ class EvidenceTests(unittest.TestCase):
                 self.root / "first",
                 deadline,
                 self.root,
-                grace=0.1,
             ),
             124,
         )
@@ -1402,16 +1538,15 @@ class EvidenceTests(unittest.TestCase):
     @unittest.skipUnless(os.name == "posix", "owned process groups are Unix-only")
     def test_owned_descendant_cleanup(self):
         marker = self.root / "descendant-ran"
-        child = f"import json,os,time;print(json.dumps(dict(pid=os.getpid(),ppid=os.getppid(),pgid=os.getpgrp(),sid=os.getsid(0),uid=os.geteuid())),flush=True);time.sleep(0.8);open({str(marker)!r},'w').close()"
-        parent = f"import subprocess,sys,time;subprocess.Popen([sys.executable,'-c',{child!r}]);time.sleep(20)"
+        parent = self.real_owned_parent(self.root / "group", marker, exit_leader=False)
         status = evidence.bounded(
             [sys.executable, "-c", parent],
             self.root / "group",
             time.monotonic() + 0.2,
             self.root,
-            grace=0.1,
         )
         self.assertEqual(status, 124)
+        self.assert_real_owned_lifecycle(self.root / "group", 124)
         time.sleep(0.8)
         self.assertFalse(marker.exists())
 

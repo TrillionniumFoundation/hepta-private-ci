@@ -21,7 +21,7 @@ import xml.etree.ElementTree as ET
 
 HERE = Path(__file__).resolve().parent
 PROFILE = "macos-six"
-BASE = "75873a87df1c9012d0011b07fb4f1af5cb93c28e"
+BASE = "f74db860a92f5d54e5e11858b4de3be7446f0248"
 MANIFEST = json.loads((HERE / "macos_six_cases.json").read_text())
 PHASES = tuple(MANIFEST["phases"])
 PROFILE_APPENDIX = '\n# Diagnostic profile only; all original defaults and overrides remain above.\n[profile.macos-six]\nretries = 0\n\n[profile.macos-six.junit]\npath = "junit.xml"\nreport-name = "macos-six"\n'
