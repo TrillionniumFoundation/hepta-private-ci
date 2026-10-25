@@ -19,7 +19,7 @@ import xml.etree.ElementTree as ET
 
 HERE = Path(__file__).resolve().parent
 PROFILE = "macos-owner"
-BASE = "2d67a3d86f81ce37331da9fef453a2e02411bfb2"
+BASE = "e56ede6cc9e338ed78d2e1ac76a12c7eb0ca26ed"
 PHASES = ("memory", "supervisor-owning", "supervisor-integration")
 OWNER = (
     "restart_budget::tests::budget_is_durable_bounded_and_pending_is_idempotent",
@@ -258,6 +258,24 @@ def bounded(command, directory, deadline, cwd, grace=10):
         "timed_out": False,
     }
     process = None
+
+    def signal_owned_group(sig, stage):
+        try:
+            os.killpg(process.pid, sig)
+        except PermissionError:
+            # First denial terminates cleanup; never send another group signal.
+            try:
+                record["owned_group_snapshot"] = snapshot_owned_group(
+                    process.pid, directory
+                )
+            except Exception as diagnostic_error:
+                record["owned_group_snapshot"] = {
+                    "unavailable": str(diagnostic_error),
+                    "classification": "unverified",
+                }
+            record["owned_group_snapshot"]["stage"] = stage
+            raise
+
     try:
         require(deadline > started, "total native budget exhausted before command")
         with (
@@ -279,7 +297,7 @@ def bounded(command, directory, deadline, cwd, grace=10):
                 # This group was created by us, never an unrelated global PID search.
                 # Clean descendants even if the leader already exited.
                 try:
-                    os.killpg(process.pid, signal.SIGTERM)
+                    signal_owned_group(signal.SIGTERM, "first-eperm-term")
                 except ProcessLookupError:
                     pass
                 else:
@@ -287,24 +305,12 @@ def bounded(command, directory, deadline, cwd, grace=10):
                     while time.monotonic() < end:
                         process.poll()
                         try:
-                            os.killpg(process.pid, 0)
+                            signal_owned_group(0, "first-eperm-after-term-signal-zero")
                         except ProcessLookupError:
                             break
-                        except PermissionError:
-                            # Preserve the first denial; diagnostic failure never masks it.
-                            try:
-                                record["owned_group_snapshot"] = snapshot_owned_group(
-                                    process.pid, directory
-                                )
-                            except Exception as diagnostic_error:
-                                record["owned_group_snapshot"] = {
-                                    "unavailable": str(diagnostic_error),
-                                    "classification": "unverified",
-                                }
-                            raise
                         time.sleep(0.05)
                     try:
-                        os.killpg(process.pid, signal.SIGKILL)
+                        signal_owned_group(signal.SIGKILL, "first-eperm-kill")
                     except ProcessLookupError:
                         pass
                 try:

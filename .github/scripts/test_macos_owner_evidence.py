@@ -235,6 +235,67 @@ class EvidenceTests(unittest.TestCase):
         self.assertEqual(receipt["error_type"], "PermissionError")
         self.assertIn("injected EPERM", receipt["traceback"])
 
+    def test_term_and_kill_denials_snapshot_once_without_further_signals(self):
+        for sig, stage, effects, grace in [
+            (
+                evidence.signal.SIGTERM,
+                "first-eperm-term",
+                [PermissionError(1, "denied term")],
+                0.2,
+            ),
+            (
+                evidence.signal.SIGKILL,
+                "first-eperm-kill",
+                [None, PermissionError(1, "denied kill")],
+                0,
+            ),
+        ]:
+            for diagnostic_failure in [False, True]:
+                with self.subTest(signal=sig, diagnostic_failure=diagnostic_failure):
+                    child = Mock(pid=4242)
+                    child.wait.return_value = 0
+                    directory = self.root / f"denied-{sig}-{diagnostic_failure}"
+                    with (
+                        patch.object(evidence.subprocess, "Popen", return_value=child),
+                        patch.object(
+                            evidence.os, "killpg", side_effect=effects
+                        ) as signals,
+                        patch.object(
+                            evidence,
+                            "snapshot_owned_group",
+                            side_effect=OSError("diagnostic unavailable")
+                            if diagnostic_failure
+                            else None,
+                            return_value={"classification": "unverified", "state": "Z"},
+                        ) as snapshot,
+                    ):
+                        status = evidence.bounded(
+                            ["fake-native-command"],
+                            directory,
+                            time.monotonic() + 3,
+                            self.root,
+                            grace=grace,
+                        )
+                    self.assertEqual(status, 125)
+                    expected = [(4242, evidence.signal.SIGTERM)]
+                    if sig == evidence.signal.SIGKILL:
+                        expected.append((4242, evidence.signal.SIGKILL))
+                    self.assertEqual(
+                        [call.args for call in signals.call_args_list], expected
+                    )
+                    snapshot.assert_called_once_with(4242, directory)
+                    receipt = json.loads((directory / "result.json").read_text())
+                    self.assertEqual(receipt["error_type"], "PermissionError")
+                    self.assertIn("denied", receipt["error"])
+                    self.assertEqual(receipt["owned_group_snapshot"]["stage"], stage)
+                    self.assertEqual(
+                        receipt["owned_group_snapshot"]["classification"], "unverified"
+                    )
+                    self.assertEqual(
+                        "unavailable" in receipt["owned_group_snapshot"],
+                        diagnostic_failure,
+                    )
+
     def test_snapshot_failure_preserves_original_eperm(self):
         child = Mock(pid=4242)
         child.wait.return_value = 0
