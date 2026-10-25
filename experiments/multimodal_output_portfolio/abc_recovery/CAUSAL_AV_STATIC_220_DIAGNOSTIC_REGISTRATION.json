@@ -1,0 +1,89 @@
+{
+  "fixtures": [
+    {
+      "receipt": {
+        "actual_media_or_evaluation_inputs_read": false,
+        "command": [
+          "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+          "-m",
+          "unittest",
+          "experiments.multimodal_output_portfolio.abc_recovery.temporal_static220_tests",
+          "-v"
+        ],
+        "cpu_seconds": 0.646527,
+        "maximum_rss_bytes": 29843456,
+        "returncode": 0,
+        "source_pins": {
+          "CAUSAL_AV_STATIC_220_DIAGNOSTIC_PROTOCOL.json": "30162bf54e596943134592d6b2a33349235ed942c00f7d5a465c16ace43f531d",
+          "temporal_static220.py": "4aca457ce2153df42c6a619e47a49ed9336d7f7047eae9262bc1d3124fc53406",
+          "temporal_static220_tests.py": "a8f951dad6c177dcebb12a85f69a17dae467ca8bfdf374a746181c2e47044bd4"
+        },
+        "wall_seconds": 0.11831308500040905
+      },
+      "receipt_sha256": "2ef178b6643b140f8df5115b6234f42847c81d1b0c8808063eba0b4053dd4e2c",
+      "run": "causal-av-static220-fixtures-001"
+    },
+    {
+      "receipt": {
+        "actual_media_or_evaluation_inputs_read": false,
+        "command": [
+          "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+          "-m",
+          "unittest",
+          "experiments.multimodal_output_portfolio.abc_recovery.temporal_static220_tests",
+          "-v"
+        ],
+        "cpu_seconds": 0.6989569999999999,
+        "maximum_rss_bytes": 30064640,
+        "returncode": 0,
+        "source_pins": {
+          "CAUSAL_AV_STATIC_220_DIAGNOSTIC_PROTOCOL.json": "2ca03795c99c2d11eae0a1a6e7b0763885a3b4c10fc38da9cb60c1853253719e",
+          "temporal_static220.py": "15485175125666187a4757f96ed1100f8c46f8a1c1e5b8a5484328d31d173bdc",
+          "temporal_static220_tests.py": "9c8072ef7f894873a2ab838c0674ed675f9bb63856e9f42257a321ac9c05e771"
+        },
+        "wall_seconds": 0.12475410800107056
+      },
+      "receipt_sha256": "3f0591117398918b763f987f8b988173b655629091190b219bc25e1819b6fabb",
+      "run": "causal-av-static220-fixtures-002"
+    }
+  ],
+  "format_validation": {
+    "command": "just fmt",
+    "result": "No changed files need formatting",
+    "returncode": 0
+  },
+  "independent_review": {
+    "formula_and_scope_passed": true,
+    "found_issue": "240 actions alone do not uniquely identify the original arrival table",
+    "repair_before_diagnostic_outcomes": "Bind exact complete finite event headers to original hash-pinned240 public_trace header union; targeted fixture demonstrates identical240 actions but altered220 timeline",
+    "repair_rechecked_and_closed": true,
+    "reviewer": "/root/actual_emission",
+    "reviewer_did_not_run_or_read_diagnostic_outcomes": true
+  },
+  "new_diagnostic_execution_started": false,
+  "no_new_media_or_service_measurement": true,
+  "only_new_timeout_ms": 220,
+  "original_C_outcomes_already_known_at_design": true,
+  "original_results_to_remain_unchanged": true,
+  "posthoc": true,
+  "protocol_and_source_pins": {
+    "CAUSAL_AV_STATIC_220_DIAGNOSTIC_PROTOCOL.json": {
+      "bytes": 7308,
+      "lines": 98,
+      "sha256": "2ca03795c99c2d11eae0a1a6e7b0763885a3b4c10fc38da9cb60c1853253719e"
+    },
+    "temporal_static220.py": {
+      "bytes": 21209,
+      "lines": 332,
+      "sha256": "15485175125666187a4757f96ed1100f8c46f8a1c1e5b8a5484328d31d173bdc"
+    },
+    "temporal_static220_tests.py": {
+      "bytes": 4332,
+      "lines": 76,
+      "sha256": "9c8072ef7f894873a2ab838c0674ed675f9bb63856e9f42257a321ac9c05e771"
+    }
+  },
+  "registered_utc": "2026-10-25T01:58:13Z",
+  "root_authorization": "After both AB timing processes exited0, root explicitly authorized the unique220 diagnostic and fixtures",
+  "schema": "hepta-causal-av-static220-execution-registration-v1"
+}
