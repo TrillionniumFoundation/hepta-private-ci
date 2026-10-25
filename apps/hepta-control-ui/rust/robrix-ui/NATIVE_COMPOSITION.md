@@ -104,6 +104,53 @@ IME session, device authority, admitted chat or completed external operations.
 
 ## Console through the existing widgets
 
+### Finite Notes controls beside the original composer
+
+An embedding may return `Some(NativeNotesView { status, can_write, can_refresh,
+can_cancel })` from `NativeChatComposition::notes_view`. The default returns
+`None`, which hides the Notes panel and refuses all Notes actions. The optional
+panel uses the same original RoomScreen and the sole `ChatWorkspace` draft;
+there is no second editor, transcript, operation ledger or generic tool runner.
+Its explicit buttons are **写入笔记**, **核对结果** and **取消笔记任务**. Status is a
+bounded host projection (at most 4096 UTF-8 bytes), never optimistic saved text.
+The host puts a compact human-readable state first; technical target/revision
+details wrap inside an 88-pixel-high scroll area. Notes actions and the sole
+composer remain outside that area so a long status cannot push them downward.
+
+The original widget dispatch and presentation receiver both check the exact
+rendered `RoomKey`, current presentation epoch and active room. Notes actions
+also require the Conversations tab, closed navigation and inactive composition.
+Write requires a nonempty original draft within the original signed-text limit
+and rejects `InputLimit`; readback needs no new draft. Each action respects its
+separate advertised capability. Authenticated model-chat Send availability does
+not grant Notes availability or vice versa.
+
+The callbacks are `request_write_note(RoomKey)`,
+`request_notes_refresh(RoomKey)` and `request_notes_cancel(RoomKey)`, each
+returning `Result<(), String>` with a refusing default. Implementations must
+recheck current room/epoch, composition, closed-client state and original owner
+availability before queuing the existing finite Notes path. Write reads the
+same original draft without clearing it. Refresh queries the retained original
+identity; cancellation uses the existing owner and is not a rollback guarantee.
+All callbacks remain nonblocking and create no signing key or new authority.
+A callback error is a local presentation notice and cannot settle an operation.
+
+Desktop implements these callbacks through its same `ObjectivePanel` and
+existing Objective bridge used by the egui path. The original conversation draft
+and context are retained. Fresh document observations may show the exact target,
+revision, bounded digest and pending-receipt/freshness state; observing a run's
+terminal status alone is not an exact persisted application receipt or durable
+original-writer result. Independent readback and crash recovery keep their
+original operation and incarnation identities.
+
+The existing native AccessKit visitor discovers these visible button/label
+widgets and preserves the same room/IME action fences; no parallel accessibility
+or input pipeline is added. Focused control tests cover missing/unavailable
+hosts, IME composition, hidden/stale rooms and epochs, draft bounds and unchanged
+default callback refusal. Actual connected Notes effects, persisted readback,
+pixel layout and assistive-technology operation need their separate full host
+and real-window gates.
+
 `poll_console` runs outside Draw and without a live mutable workspace borrow.
 It must be nonblocking: consume already received responses, apply the existing
 reducer and freshness rules, and return a view. Desktop keeps host task/context

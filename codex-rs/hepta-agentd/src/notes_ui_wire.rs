@@ -2,7 +2,8 @@
 //! from Hepta back into Desktop. Source: trillionnium-os-desktop f4872ca,
 //! ui/core/src/objective.rs. Only navigation IDs/text enter; no authority does.
 //! Changes must remain compatible with that Session decoder.
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 pub const MAX_INTENT_BYTES: usize = 16 * 1024;
 pub const MAX_OBJECTIVE_VIEWS: usize = 128;
@@ -103,6 +104,18 @@ pub struct ObjectiveRunObservation {
     pub terminal_observed: bool,
 }
 
+/// Current application readback, independent of an Objective's outcome. This
+/// disposable snapshot cannot admit an effect or retire an original receipt.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct NotesDocumentObservation {
+    pub target: codex_hepta_memory::NotesTargetIdentity,
+    pub observed_unix_ms: u64,
+    pub revision: u64,
+    pub text_sha256: String,
+    pub receipt_pending: bool,
+}
+
 /// Navigation IDs read from the original owner's retained requests. No signed
 /// request, admission, sending permission or effect result is projected here.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -158,6 +171,8 @@ pub struct ObjectiveObservation {
     pub issue: Option<ObjectiveHostIssue>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub retained_intents: Option<ObjectiveRetainedIntents>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub notes_document: Option<NotesDocumentObservation>,
 }
 
 impl ObjectiveObservation {
@@ -165,7 +180,9 @@ impl ObjectiveObservation {
         Self {
             observed_unix_ms: std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
-                .map_or(0, |duration| duration.as_millis().min(u128::from(u64::MAX)) as u64),
+                .map_or(0, |duration| {
+                    duration.as_millis().min(u128::from(u64::MAX)) as u64
+                }),
             client_intent_id,
             stage,
             request_retained: false,
@@ -174,6 +191,7 @@ impl ObjectiveObservation {
             cancellation: ObjectiveCancellation::NotRequested,
             issue: None,
             retained_intents: None,
+            notes_document: None,
         }
     }
 }

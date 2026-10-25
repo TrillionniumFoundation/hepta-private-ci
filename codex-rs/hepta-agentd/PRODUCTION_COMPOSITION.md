@@ -148,8 +148,28 @@ authenticates it in both socket metadata and kernel SO_PEERCRED. Bootstrap
 checks AF_UNIX, SOCK_STREAM, listening state, the exact private node, actual
 held pidfd, boot ID and process birth. Each accepted connection rechecks the
 actual Session UID/PID and held lifetime. The original ObjectiveBridge v1
-newline JSON wire is unchanged: availability, literal ID/text submission,
+newline JSON request wire remains availability, literal ID/text submission,
 ID-only status and ID-only cancellation. Unknown fields are rejected.
+
+The paired Desktop decoder also accepts the optional `notes_document` response
+projection. It contains the exact attached target, its current application
+revision, UTF-8 text digest, pending-receipt bit and independent observation
+time. The adapter reads this through the original `AgentdNotesDocumentObserver`
+and its existing private recovery lane. The same single blocking slot and
+queued-call deadline bound the read; Draw and the Session exchange never wait
+for it. Cancellation or failed readback clears the previous snapshot rather
+than renewing its freshness. No document text, effect endpoint or signer is
+returned to the renderer.
+
+This snapshot describes the current document, which may have changed since an
+older request. It cannot prove that that request caused the contents, that an
+operation is terminal, or that a receipt was durably retained by Root. A
+`Succeeded` run is never converted into a saved-note acknowledgement. Exact
+operation receipt reconciliation/retirement stays in the original writer. The
+shared `notes-document-observation-v1.json` fixture is decoded by both crates;
+the Desktop dependency guard binds its bytes to the exact companion source.
+Older strict decoders do not accept this additional field, so ship the paired
+Cargo source/locks together instead of mixing independently updated binaries.
 
 The receiver returns a cached view and queues work within a 75 ms exchange
 budget, inside the existing Session's 150 ms limit. Eight FIFO action slots

@@ -139,6 +139,17 @@ script_mod! {
     empty_state := Label {width: Fill height: Fit padding: 24 flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Your conversation starts here. Write a local draft below."}
     timeline := mod.widgets.Timeline {}
     jump_to_latest := mod.widgets.AuroraButton {visible: false text: "Jump to latest"}
+    original_notes := View {visible: false width: Fill height: Fit flow: Down padding: Inset{left: 20, right: 20, top: 6, bottom: 6} spacing: 6
+     original_notes_title := Label {width: Fill height: Fit draw_text.color: COLOR_TEXT text: "Notes / 笔记 · 使用当前草稿"}
+     original_notes_status_scroll := ScrollYView {width: Fill height: 88 flow: Down
+      original_notes_status := Label {width: Fill height: Fit flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT}
+     }
+     original_notes_actions := View {width: Fill height: Fit flow: Flow.Right{wrap: true} spacing: 8
+      original_notes_write := mod.widgets.AuroraButton {text: "写入笔记"}
+      original_notes_refresh := mod.widgets.AuroraButton {text: "核对结果"}
+      original_notes_cancel := mod.widgets.AuroraButton {text: "取消笔记任务"}
+     }
+    }
     room_input_bar := mod.widgets.RoomInputBar {}
    }
   }

@@ -38,17 +38,50 @@ original SQLite owner is closed and reopened. They are not real app tests.
 
 Build the same Desktop source's `trill-session`, `trill-app-window` and
 `trill-notes-recovery` beside each other. The helper must include the
-`TRILL_NOTES_RECOVERY_READY_V1` startup marker. Start an isolated test-owned
-Xvfb/display, then use absolute paths:
+`TRILL_NOTES_RECOVERY_READY_V1` startup marker. Cargo's development output may
+be group-writable and hardlinked to its dependency output. The recovery guard
+correctly refuses a group-writable executable. Copy all three unchanged
+binaries to a fresh private qualification directory, verify both SHA-256
+values, and record their custody before running:
+
+```sh
+set -euo pipefail
+notes_source_build=/absolute/pinned-build
+notes_qualification=$(mktemp -d /absolute/evidence/notes-owner.XXXXXX)
+notes_qualified_bin="$notes_qualification/bin"
+install -d -m 0700 "$notes_qualified_bin"
+for notes_name in trill-session trill-app-window trill-notes-recovery; do
+  install -m 0500 "$notes_source_build/$notes_name" "$notes_qualified_bin/$notes_name"
+  notes_source_sha=$(sha256sum "$notes_source_build/$notes_name" | cut -d ' ' -f 1)
+  notes_staged_sha=$(sha256sum "$notes_qualified_bin/$notes_name" | cut -d ' ' -f 1)
+  test "$notes_source_sha" = "$notes_staged_sha"
+  printf '%s source=%s staged=%s\n' "$notes_name" "$notes_source_sha" "$notes_staged_sha" \
+    >> "$notes_qualification/companion-sha256.txt"
+  stat -c '%n uid=%u gid=%g mode=%a links=%h' \
+    "$notes_source_build/$notes_name" "$notes_qualified_bin/$notes_name" \
+    >> "$notes_qualification/companion-custody.txt"
+done
+chmod 0500 "$notes_qualified_bin"
+```
+
+Do not change permissions on Cargo's hardlinked originals or relax the helper
+guard. The staged files are independent single-link copies with the same
+bytes. Keep any failed runtime log alongside the staging records. Start an
+isolated test-owned Xvfb/display, then use these absolute staged paths:
 
 ```sh
 TRILL_NOTES_PROBE_ISOLATED=1 \
-HEPTA_NOTES_SESSION_BIN=/absolute/pinned-build/trill-session \
-HEPTA_NOTES_CRASH_QUALIFICATION_OUTPUT=/absolute/evidence/notes-crash-owner.json \
+HEPTA_NOTES_SESSION_BIN="$notes_qualified_bin/trill-session" \
+HEPTA_NOTES_CRASH_QUALIFICATION_OUTPUT="$notes_qualification/notes-crash-owner.json" \
 just test --locked --cargo-profile dev-small -p codex-hepta-agentd --lib \
   -E 'test(notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart)' \
   --run-ignored ignored-only --no-capture
 ```
+
+Only this ignored durable lifecycle qualification has a 240-second complete-run
+watchdog and no automatic retry. All original per-operation deadlines and
+assertions remain in force. Its elapsed stage diagnostics explain progress;
+only the complete successful oracle and retained JSON qualify the run.
 
 The test uses a temporary Fleet and real original SQLite writer, an explicitly
 test-only source authority/verifier and FinalUse issuer, and three actual

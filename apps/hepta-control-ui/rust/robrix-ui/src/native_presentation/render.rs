@@ -163,6 +163,21 @@ impl RendererPresentation {
                     {
                         composition.inner.request_latest_history(room)
                     }
+                    ChatIntent::WriteNote(room)
+                        if controls.permits_write_note(room, composition.inner.workspace()) =>
+                    {
+                        composition.inner.request_write_note(room)
+                    }
+                    ChatIntent::NotesRefresh(room)
+                        if controls.permits_notes_refresh(room, composition.inner.workspace()) =>
+                    {
+                        composition.inner.request_notes_refresh(room)
+                    }
+                    ChatIntent::NotesCancel(room)
+                        if controls.permits_notes_cancel(room, composition.inner.workspace()) =>
+                    {
+                        composition.inner.request_notes_cancel(room)
+                    }
                     ChatIntent::Approval(room, id, decision)
                         if controls.permits_approval(
                             room,
@@ -182,6 +197,15 @@ impl RendererPresentation {
         }
         let availability = composition.inner.poll_chat();
         let approval = composition.inner.pending_approval();
+        let mut notes = composition.inner.notes_view();
+        if let Some(notes) = &mut notes {
+            // Bounded display text is not a transcript or an effect receipt.
+            let mut end = notes.status.len().min(4096);
+            while !notes.status.is_char_boundary(end) {
+                end -= 1;
+            }
+            notes.status.truncate(end);
+        }
         let workspace = composition.inner.workspace();
         let controls = Controls {
             room: Some(RoomKey {
@@ -190,6 +214,7 @@ impl RendererPresentation {
             }),
             availability,
             approval,
+            notes,
         };
         if *cx.global::<Controls>() != controls {
             *cx.global::<Controls>() = controls;

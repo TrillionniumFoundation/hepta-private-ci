@@ -187,6 +187,13 @@ fn read_document(path: &Path) -> Result<serde_json::Value, Box<dyn Error>> {
 #[ignore = "requires explicitly isolated Xvfb and pinned durable Session/App/recovery binaries"]
 async fn notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart()
 -> Result<(), Box<dyn Error>> {
+    let started = Instant::now();
+    let stage = |name: &str| {
+        eprintln!(
+            "HEPTA_NOTES_CRASH_STAGE {name} elapsed_ms={}",
+            started.elapsed().as_millis()
+        );
+    };
     if std::env::var("TRILL_NOTES_PROBE_ISOLATED").as_deref() != Ok("1")
         || std::env::var_os("DISPLAY").is_none()
     {
@@ -204,6 +211,7 @@ async fn notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart()
     let session_sha = Sha256Digest::for_bytes(&fs::read(&session_binary)?);
     let app_sha = Sha256Digest::for_bytes(&fs::read(&app_binary)?);
     let helper_sha = Sha256Digest::for_bytes(&fs::read(&helper_binary)?);
+    stage("companion_binaries_pinned");
     let NotesHostFixture {
         directory,
         config,
@@ -213,6 +221,7 @@ async fn notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart()
         final_use,
         primary_device,
     } = notes_host_fixture().await?;
+    stage("original_owner_prepared");
     let state = directory.path().join("durable-notes");
     let authority = operations.authority.clone();
     let verifier = operations.verifier.clone();
@@ -234,9 +243,12 @@ async fn notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart()
             },
         )
         .await?;
+    stage("old_session_bootstrapped");
     old_session.instance = Some(old.session_instance.clone());
     let (host, _) = operations.attach(Arc::new(host)).await?;
+    stage("original_dispatcher_attached");
     let old_first_frame = old_session.wait_for_notes_layout(&old)?;
+    stage("old_notes_first_frame");
     let app_pidfd = retained_app_pidfd(&old_session, &old)?;
     let operation_id = "notes-real-crash-original-owner";
     let text = "Original Hepta owner survives Notes crash / 中文";
@@ -261,6 +273,7 @@ async fn notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart()
         .await?;
     assert_eq!(lost.state, LocalOutcomeState::Indeterminate);
     assert!(lost.target_receipt.is_none());
+    stage("original_effect_reply_lost");
     let old_document = document_path(&state, &old);
     let deadline = Instant::now() + Duration::from_secs(5);
     loop {
@@ -275,6 +288,7 @@ async fn notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart()
         tokio::time::sleep(Duration::from_millis(25)).await;
     }
     kill_and_observe_reap(&old_session, app_pidfd)?;
+    stage("actual_app_killed_and_reaped");
     assert_eq!(effect_probe.effect_attempts.load(Ordering::SeqCst), 1);
     assert_eq!(effect_probe.complete_fault_writes.load(Ordering::SeqCst), 1);
     let issuer_requests = issuer.requests.load(Ordering::SeqCst);
@@ -293,6 +307,7 @@ async fn notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart()
     drop(runtime);
     let store = Arc::try_unwrap(store).map_err(|_| "original read-side store is still retained")?;
     store.close().await;
+    stage("original_writer_closed");
     let reopened = AgentdProductionWriterHost::open_with_recovery(
         &config,
         CognitiveRecoveryRequirement::ExactCurrentCut(&cut),
@@ -302,6 +317,7 @@ async fn notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart()
         generation,
     )
     .await?;
+    stage("original_writer_reopened_at_exact_cut");
     assert_eq!(
         reopened.writer().status(operation_id).await?,
         LocalOutcomeState::Indeterminate
@@ -313,6 +329,7 @@ async fn notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart()
         .await?;
     current_session.instance = Some(current.session_instance.clone());
     let current_first_frame = current_session.wait_for_notes_layout(&current)?;
+    stage("current_notes_first_frame");
     assert_ne!(old, current);
     let current_document = document_path(&state, &current);
     let fresh = fs::read(&current_document)?;
@@ -348,6 +365,7 @@ async fn notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart()
         )
         .await?;
     process.start()?;
+    stage("previous_recovery_helper_started");
     assert_eq!(
         host.destination_count(),
         1,
@@ -367,6 +385,7 @@ async fn notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart()
         host.writer().status(operation_id).await?,
         LocalOutcomeState::Committed
     );
+    stage("original_operation_reconciled_and_committed");
     assert!(traffic.dropped.load(Ordering::SeqCst));
     let retired = read_document(&old_document)?;
     assert!(retired["pending_receipt"].is_null());
@@ -381,6 +400,7 @@ async fn notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart()
         0
     );
     assert_eq!(process.starts_for_test(), 2);
+    stage("helper_restarted_and_retirement_replayed");
     let observed = traffic
         .observed
         .lock()
@@ -458,6 +478,7 @@ async fn notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart()
         )?;
     }
     eprintln!("HEPTA_NOTES_CRASH_OWNER_QUALIFICATION={evidence}");
+    stage("qualification_evidence_retained");
     drop(host);
     drop(traffic);
     drop(process);
