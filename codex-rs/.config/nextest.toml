@@ -143,3 +143,52 @@ report-skipped = "none"
 [[profile.native-recovery.overrides]]
 filter = 'test(=cognitive_store::lifecycle_tests::close_marks_clone_pool_immediately_and_retains_recovery_guard_until_drop) | test(=cognitive_store::lifecycle_tests::close_waits_for_checked_out_transaction_commit_and_preserves_all_source_fields) | test(=cognitive_store::lifecycle_tests::close_cancelled_before_pool_drain_can_be_retried_and_is_idempotent) | test(=cognitive_store::lifecycle_tests::close_does_not_close_independently_opened_pool_for_same_database) | test(=cognitive_store::lifecycle_tests::close_preserves_unresolved_queued_lease_and_release_still_fails_closed) | test(=real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends) | test(=agentd_product_host_commits_through_canonical_cognitive_store) | test(=agentd_product_host_recovers_exact_cut_into_fenced_writer_generation) | test(=agentd_product_host_recovers_existing_active_lease_without_advancing_cut)'
 junit.report-skipped = "all"
+
+# Isolated bootstrap validation; prior profiles remain byte-identical.
+[profile.native-bootstrap-owning]
+retries = 0
+slow-timeout = { period = "30s", terminate-after = 8 }
+
+[profile.native-bootstrap-owning.junit]
+path = "junit.xml"
+report-name = "native-bootstrap"
+store-success-output = true
+store-failure-output = true
+report-skipped = "none"
+
+[[profile.native-bootstrap-owning.overrides]]
+filter = 'test(=cognitive_store::lifecycle_tests::close_cancelled_before_pool_drain_can_be_retried_and_is_idempotent) | test(=cognitive_store::lifecycle_tests::close_does_not_close_independently_opened_pool_for_same_database) | test(=cognitive_store::lifecycle_tests::close_marks_clone_pool_immediately_and_retains_recovery_guard_until_drop) | test(=cognitive_store::lifecycle_tests::close_preserves_unresolved_queued_lease_and_release_still_fails_closed) | test(=cognitive_store::lifecycle_tests::close_waits_for_checked_out_transaction_commit_and_preserves_all_source_fields)'
+junit.report-skipped = "all"
+retries = 0
+
+[profile.native-bootstrap-integration]
+retries = 0
+slow-timeout = { period = "30s", terminate-after = 8 }
+
+[profile.native-bootstrap-integration.junit]
+path = "junit.xml"
+report-name = "native-bootstrap"
+store-success-output = true
+store-failure-output = true
+report-skipped = "none"
+
+[[profile.native-bootstrap-integration.overrides]]
+filter = 'test(=real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends) | test(=agentd_product_host_commits_through_canonical_cognitive_store) | test(=agentd_product_host_recovers_exact_cut_into_fenced_writer_generation) | test(=agentd_product_host_recovers_existing_active_lease_without_advancing_cut)'
+junit.report-skipped = "all"
+retries = 0
+
+[profile.native-bootstrap-bootstrap]
+retries = 0
+slow-timeout = { period = "30s", terminate-after = 8 }
+
+[profile.native-bootstrap-bootstrap.junit]
+path = "junit.xml"
+report-name = "native-bootstrap"
+store-success-output = true
+store-failure-output = true
+report-skipped = "none"
+
+[[profile.native-bootstrap-bootstrap.overrides]]
+filter = 'test(=cognitive_store::database_init_tests::abrupt_child_keeps_private_sidecars_and_public_exact_cut_recovery) | test(=cognitive_store::database_init_tests::crash_tests::abrupt_bootstrap_fresh_process_recovery_new_write_survives_third_process) | test(=cognitive_store::database_init_tests::existing_fifo_is_rejected_without_waiting_for_a_peer) | test(=cognitive_store::database_init_tests::existing_links_and_restrictive_permissions_are_rejected_without_repair) | test(=cognitive_store::database_init_tests::existing_private_bytes_are_neither_truncated_nor_rewritten) | test(=cognitive_store::database_init_tests::lock_tests::competing_first_opens_keep_private_consistent_state_or_fail_closed) | test(=cognitive_store::database_init_tests::lock_tests::existing_main_validation_preserves_live_sqlite_posix_locks) | test(=cognitive_store::database_init_tests::open_rejects_existing_nonprivate_main_without_repair) | test(=cognitive_store::database_init_tests::recovery_does_not_repair_an_unsafe_existing_sidecar) | test(=lane_c_snapshot_tests::retained_cut_detects_old_valid_backup_after_ordinary_reopen)'
+junit.report-skipped = "all"
+retries = 0
