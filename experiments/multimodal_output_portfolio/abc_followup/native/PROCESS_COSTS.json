@@ -1,0 +1,410 @@
+{
+  "exact_child_receipts": {
+    "balanced-candidates-001.process.json": {
+      "group": "historical_diagnostics_and_failures",
+      "receipt": {
+        "child_cpu_ns": 110359000,
+        "exact_child_peak_rss_bytes_linux": 46514176,
+        "exit_code": 1,
+        "log_sha256": "8b9b5fe106c277a66a43d87e7b2d342b187cd13b34dea4f82155bea6c3a61e5e",
+        "pid": 12,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "cf7f512eb7799833d74ff404c0dd01d3eb9ba68d61c6e41622dd18f3ea5fce3e",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 113634525,
+        "wrapper_cpu_ns": 367416
+      },
+      "receipt_sha256": "f3b5e1cbe3fbe88b155a5c702e29c9852a2fe2b6b4cd139fbfaca5d2a0f1db37"
+    },
+    "balanced-candidates-002.process.json": {
+      "group": "historical_diagnostics_and_failures",
+      "receipt": {
+        "child_cpu_ns": 116024000,
+        "exact_child_peak_rss_bytes_linux": 46632960,
+        "exit_code": 1,
+        "log_sha256": "425b37f493a5cf875b216897657aeb831432796bcd41f7eeac736a4d088e70e6",
+        "pid": 10,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "f6eeffd7411ec5a07c9475449cc6f8f907548ae9bedb336c864717c6e8ac07b1",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 119201692,
+        "wrapper_cpu_ns": 427116
+      },
+      "receipt_sha256": "d42107704b49dff19079c32170aae92767540bf71f7a9eac957ed301d7674bdd"
+    },
+    "balanced-candidates-003.process.json": {
+      "group": "historical_diagnostics_and_failures",
+      "receipt": {
+        "child_cpu_ns": 128299000,
+        "exact_child_peak_rss_bytes_linux": 46624768,
+        "exit_code": 0,
+        "log_sha256": "aa0cd98eb94f600e85505a734d9ff6698b98cb7606c66f63699ad057c5dbd5aa",
+        "pid": 10,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "f33bf69755a144d483f2c5660c9ad0739303387b470a5262a3acdd65eaf8344d",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 131984799,
+        "wrapper_cpu_ns": 390200
+      },
+      "receipt_sha256": "8d2ef8b370bd24b4927019e179da61f970ae97b68bf5ed3dd7d7be6c6c14f1cc"
+    },
+    "balanced-continuous-001.process.json": {
+      "group": "historical_diagnostics_and_failures",
+      "receipt": {
+        "child_cpu_ns": 1624978000,
+        "exact_child_peak_rss_bytes_linux": 22966272,
+        "exit_code": 0,
+        "log_sha256": "9521975c15537104fa3ae5928d2019c25276c71485fd65ae7dcd10cf0139f460",
+        "pid": 10,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "98b431646790950d7a434f76e40c3951a6c8cb0dbadffe12bf645bef588ea2bc",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 4898440780,
+        "wrapper_cpu_ns": 507888
+      },
+      "receipt_sha256": "5ece71bc2576e00ccbe2e3d31909a47316d14d5682ea4ad6994f8912b1a205e6"
+    },
+    "calibration.process.json": {
+      "group": "main_future_study",
+      "receipt": {
+        "child_cpu_ns": 6434088000,
+        "exact_child_peak_rss_bytes_linux": 372744192,
+        "exit_code": 0,
+        "log_sha256": "d5a5f78debcbe9096613abf91799fca67f7d5f4ff88318cb246deb129ab8c407",
+        "pid": 8,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "bdcfb5a07c745179738bab6f61a9cb00cb30e94748dec5e04cf86129e3fb4c55",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 6488073768,
+        "wrapper_cpu_ns": 481335
+      },
+      "receipt_sha256": "9a27769623550f8c944d8b07dcfd7b7a6e592cd188946c255a7d2aff76c59f43"
+    },
+    "calibrator.process.json": {
+      "group": "main_future_study",
+      "receipt": {
+        "child_cpu_ns": 1798330000,
+        "exact_child_peak_rss_bytes_linux": 251412480,
+        "exit_code": 0,
+        "log_sha256": "af0041343855a0b9401b5ac5f7abf2775381f8065170594d1491e371a622d8d5",
+        "pid": 8,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "d6e6f680acd171a10d913a6d3a8b6f694c5ac07f2e023d6a06d141c3bf7a4558",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 1808940477,
+        "wrapper_cpu_ns": 558069
+      },
+      "receipt_sha256": "10fb555fc5fbe30a82d5e610ff0d2acef1a898a4c5bbd350a3d283558b13daca"
+    },
+    "candidate-feature-preflight-001.process.json": {
+      "group": "historical_diagnostics_and_failures",
+      "receipt": {
+        "child_cpu_ns": 2665692000,
+        "exact_child_peak_rss_bytes_linux": 374382592,
+        "exit_code": 0,
+        "log_sha256": "4796a256a4e97ec6c2591a7ae67e4ce4a5e1b405de214a4c67b1768180d2d074",
+        "pid": 8,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "bb1a14fe7714628e7d25ed68b5ece4f770c4837c8216eebb3d3bbeae3956befb",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 2678157472,
+        "wrapper_cpu_ns": 418361
+      },
+      "receipt_sha256": "4a0f3cdecacb94f36ac8df0f2ada095f974dd07020e9b8d367d0c11bf9c6db50"
+    },
+    "candidate-verification-001.process.json": {
+      "group": "main_future_study",
+      "receipt": {
+        "child_cpu_ns": 2595981000,
+        "exact_child_peak_rss_bytes_linux": 299438080,
+        "exit_code": 0,
+        "log_sha256": "bfceb3cc6407abeffd23b66b596e5b9e86c5a6c0924f8b4e51572a649aa61c2b",
+        "pid": 8,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "e7f772f066c8daab658e6f3259da0f73d579f03843db198b093029fc318b7b6e",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 2600492079,
+        "wrapper_cpu_ns": 451150
+      },
+      "receipt_sha256": "2cc1b48fb56cbec966de9fd3ad274a3df3059fe07ad4b6f6b99405c23511e282"
+    },
+    "continuous-001.process.json": {
+      "group": "historical_diagnostics_and_failures",
+      "receipt": {
+        "child_cpu_ns": 1689975000,
+        "exact_child_peak_rss_bytes_linux": 16871424,
+        "exit_code": 0,
+        "log_sha256": "cc9313b5578665b3f7892720fa1506fd6fa69e01261dd21b45d380c2f7205d7b",
+        "pid": 10,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "332fcc5ecd93c952923ce1730ca8d223283e279114f5e0d7057812be1a954760",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 5472730566,
+        "wrapper_cpu_ns": 643349
+      },
+      "receipt_sha256": "0b1c944192b0804790b0a8c8a4f1c23a13d0b63d294f8f479e5e601a25c5361f"
+    },
+    "continuous-002.process.json": {
+      "group": "historical_diagnostics_and_failures",
+      "receipt": {
+        "child_cpu_ns": 1560941000,
+        "exact_child_peak_rss_bytes_linux": 17014784,
+        "exit_code": 0,
+        "log_sha256": "30f2b1a9353c240fb09c06bf8c743acb756005e49c9b56a47943fecf71188573",
+        "pid": 10,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "7c9437f94ba2a0b1367efb307f67f11bf0479be9803dda9b7bd3f15ebf754bc7",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 4688975268,
+        "wrapper_cpu_ns": 728193
+      },
+      "receipt_sha256": "66a354edd6c17aca771477a7b5166756d1b4bfcadfc7753911e5f6c5bed463d4"
+    },
+    "development.process.json": {
+      "group": "main_future_study",
+      "receipt": {
+        "child_cpu_ns": 30839198000,
+        "exact_child_peak_rss_bytes_linux": 441593856,
+        "exit_code": 0,
+        "log_sha256": "2d71bf34d999038a0788592e8ccc7679c1517cc6bf14ed9908196e9ddc1192c2",
+        "pid": 8,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "43e9473c7c35ed40bab9eb7c8534d63254b681d6524e7cd4a954397d5ef9ed99",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 31129619328,
+        "wrapper_cpu_ns": 617458
+      },
+      "receipt_sha256": "3c46256ce6ed462ea40327d2b02bc3e6fb58d244093c281b1b5c0dca55d8c955"
+    },
+    "evidence-audit-001.process.json": {
+      "group": "main_future_study",
+      "receipt": {
+        "child_cpu_ns": 3502865000,
+        "exact_child_peak_rss_bytes_linux": 287043584,
+        "exit_code": 0,
+        "log_sha256": "8a114886be5eafd5fef7b640e32345f414e82b716f179a63fba4422c68edbe75",
+        "pid": 8,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "417488594fa37d41a1d3607670754cb9b15b23389cdc0e65e9a3e6c47b4c73a3",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 3507628937,
+        "wrapper_cpu_ns": 473814
+      },
+      "receipt_sha256": "ae4a024d2077ed80c88c243074a53ebda6756c91b872a1d3569ab1dcb6148175"
+    },
+    "fit.process.json": {
+      "group": "main_future_study",
+      "receipt": {
+        "child_cpu_ns": 5229594000,
+        "exact_child_peak_rss_bytes_linux": 434118656,
+        "exit_code": 0,
+        "log_sha256": "38e0b9de817f645c4bec37c0d4a3e58baecccb040f5718dc069a72c7385a0bed",
+        "pid": 8,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "fdc6fcb2663fb8d468f2a5e15ae855a43fe1c6d7cf9d95cb552c57aad3184ea7",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 5244436356,
+        "wrapper_cpu_ns": 469987
+      },
+      "receipt_sha256": "e8c1f98d127b11bf073f5645c79cfab4baec64d2fc91db59c33246bdd4722c8f"
+    },
+    "future-native-001.process.json": {
+      "group": "main_future_study",
+      "receipt": {
+        "child_cpu_ns": 4078486000,
+        "exact_child_peak_rss_bytes_linux": 336805888,
+        "exit_code": 0,
+        "log_sha256": "cab130d62cecff74aa5a0b4ad7e1c63eaf18c181f1d394e9595083351b4c9bb8",
+        "pid": 8,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "c7bc31999a27af48d073e448938821ecc47b39d8e484dc2278b10a6f2a25bff0",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 7523863668,
+        "wrapper_cpu_ns": 514334
+      },
+      "receipt_sha256": "63519b716bf4f99f166306ccf397fc7ff7b6c8fe2c5c750136e01af27e255c51"
+    },
+    "future-packet-001.process.json": {
+      "group": "main_future_study",
+      "receipt": {
+        "child_cpu_ns": 3587902000,
+        "exact_child_peak_rss_bytes_linux": 345055232,
+        "exit_code": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pid": 8,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "525f1d5b8ea4bc61ee0aff1f7df2fe2c580720edb72d35799d81a3373ff7a641",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 3616759785,
+        "wrapper_cpu_ns": 553803
+      },
+      "receipt_sha256": "f5af47d83ec805c518897480bf94bb5754d681ce0cbfe768a7de8429e8b245cc"
+    },
+    "legacy-proposal-refusal-001.process.json": {
+      "group": "historical_diagnostics_and_failures",
+      "receipt": {
+        "child_cpu_ns": 73297000,
+        "exact_child_peak_rss_bytes_linux": 36265984,
+        "exit_code": 1,
+        "log_sha256": "cc5fb73006b370b7c75bf4e74b487fa5e8a0e06889fdd89839bf4ed089c640ef",
+        "pid": 10,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "58eb0de668677abab2edcc444f2c7b137e787847166209cb2d21cc14fb8c5fd4",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 74532046,
+        "wrapper_cpu_ns": 384582
+      },
+      "receipt_sha256": "10dce9c2f054a0d889f0b35ee2d70290931412ac6cc7569f039a04ee83130314"
+    },
+    "live-old-001.process.json": {
+      "group": "historical_diagnostics_and_failures",
+      "receipt": {
+        "child_cpu_ns": 3754466000,
+        "exact_child_peak_rss_bytes_linux": 273719296,
+        "exit_code": 0,
+        "log_sha256": "48cfcbf402ff3fd0a7c1e86d1d9c39c143698063325a1160be38c3f8f7ea3108",
+        "pid": 10,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "dc8fd8058a505e206830cca236bbd97065eadbb931fc346c20233e440468a0f1",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 6908717494,
+        "wrapper_cpu_ns": 395159
+      },
+      "receipt_sha256": "eae2f6d39cf464c63391b86e15b0128e707ec3c7bd3f8a7059fccfc0848485cc"
+    },
+    "prospective-verification-001.process.json": {
+      "group": "main_future_study",
+      "receipt": {
+        "child_cpu_ns": 4082775000,
+        "exact_child_peak_rss_bytes_linux": 310235136,
+        "exit_code": 0,
+        "log_sha256": "2d3781a965606f0ec25e6715728eb0e0a71ed6e0a25e6a0f46c1b76415e9383e",
+        "pid": 8,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "1627cbb3b50d40d724b21d7a02f14d4cb0193309a0ecbd1aaef614f22b7e8706",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 4107184797,
+        "wrapper_cpu_ns": 763948
+      },
+      "receipt_sha256": "25d04837bb8cc693e3670940d7dd1f676fc0c595ee7270cea7df9d049d0d0c7e"
+    },
+    "residual-native-001.process.json": {
+      "group": "main_future_study",
+      "receipt": {
+        "child_cpu_ns": 233576000,
+        "exact_child_peak_rss_bytes_linux": 42397696,
+        "exit_code": 0,
+        "log_sha256": "87360e9f5891ceb1ae7f6b56311771e67369446deb734f7582ac12415bcf25d9",
+        "pid": 8,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "5a451ba1905a19987f68de7e3c36c263034030cfbcc31f8cb384003be97b046f",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 236163575,
+        "wrapper_cpu_ns": 384062
+      },
+      "receipt_sha256": "f57128ab2c125f20c14edcfcb1c1b2a5260594b1cf6c043ee28e87109168e70d"
+    },
+    "residual-packet-001.process.json": {
+      "group": "main_future_study",
+      "receipt": {
+        "child_cpu_ns": 3903956000,
+        "exact_child_peak_rss_bytes_linux": 360534016,
+        "exit_code": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pid": 8,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "f427da2a2caa889d483d0228e4b743117c6dd187843466104cc3f4c2d6acd3c3",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 3931708706,
+        "wrapper_cpu_ns": 410802
+      },
+      "receipt_sha256": "7fdb6a6724ecd7ba8946ec889baceed6466ebc1c2173d72d40eceff927b461b4"
+    },
+    "verification-001.process.json": {
+      "group": "main_future_study",
+      "receipt": {
+        "child_cpu_ns": 9518880000,
+        "exact_child_peak_rss_bytes_linux": 372498432,
+        "exit_code": 0,
+        "log_sha256": "bbbfaf0c16ce9cc96e628f3ad557be65d8b00dbd215c4d7c75833f9f2b1729f2",
+        "pid": 8,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "df7ccf0069d86bea613aeec7779fcedba110eec603cb48a89e8216be9e886959",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 9617507568,
+        "wrapper_cpu_ns": 752070
+      },
+      "receipt_sha256": "d1658149a9b7e44cfe479cb45e67bed59c8a0eb1d02e413efabbf191eeee9f0b"
+    },
+    "verification-analysis-001.process.json": {
+      "group": "main_future_study",
+      "receipt": {
+        "child_cpu_ns": 3424663000,
+        "exact_child_peak_rss_bytes_linux": 273219584,
+        "exit_code": 0,
+        "log_sha256": "7107e9f60d63782a60a1ec5920364e6349fa8dea363eb772e56b4d519be897a8",
+        "pid": 8,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "abd70017ae7b260a833df1b6e88f5092943e592fdfc7e9152ea61faeef90182f",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 3439559486,
+        "wrapper_cpu_ns": 384030
+      },
+      "receipt_sha256": "70781a622646fc6975dff5a869bef1a445eb43adad68d1dccfa626945a82743e"
+    }
+  },
+  "includes_compilation_cost": false,
+  "includes_upstream_preexisting_generator_training": false,
+  "nested_receipts_not_added_to_parent": {
+    "future-native-001/live-evaluation.process.json": {
+      "child_cpu_ns": 2080987000,
+      "exact_child_peak_rss_bytes_linux": 336805888,
+      "exit_code": 0,
+      "log_sha256": "104a9693221cc531670512483eb324ddff59c2dadfee3056bd6fbd7205ed2713",
+      "pid": 11,
+      "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+      "registration_sha256": "ce1b748ad84bd3efa1ba56339b8367f33452bc8e5fb06af0c45824d19c383b2a",
+      "schema": "hepta.abc4.exact-child-process-receipt.v1",
+      "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+      "wall_ns": 2089036660,
+      "wrapper_cpu_ns": 1566640
+    },
+    "live-old-001/live-evaluation.process.json": {
+      "child_cpu_ns": 1916307000,
+      "exact_child_peak_rss_bytes_linux": 273719296,
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pid": 13,
+      "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+      "registration_sha256": "10d3993da76a21f80da3712620ca90d51e0504d2adf5aad7f477102f82e449f8",
+      "schema": "hepta.abc4.exact-child-process-receipt.v1",
+      "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+      "wall_ns": 1938071480,
+      "wrapper_cpu_ns": 404863
+    }
+  },
+  "schema": "hepta.abc4.native-cost-index.v1",
+  "scope": "Actual local task execution receipts. Nested hook evaluation is contained in native wall time and not added again. Parallel stage wall times are not an end-to-end elapsed latency. Prior unmeasured build/debug costs are not zero."
+}
