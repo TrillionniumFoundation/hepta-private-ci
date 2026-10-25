@@ -1,0 +1,53 @@
+{
+  "actual_png_and_utf8_files_read": 4000,
+  "bootstrap_rerun": false,
+  "both_registered_intervals_include_zero": true,
+  "calibrated_probability_changes": [
+    0,
+    0
+  ],
+  "commit_arrays_exactly_match_final_prediction_arrays": true,
+  "commit_files": 72,
+  "complete_source_action_census": true,
+  "data_sha256": "7fe98027bd00944273bb599f9106dc57045f9fbc88b650c946be61c2b1b569b5",
+  "frozen_calibration_group_changes": [
+    0,
+    0
+  ],
+  "frozen_input_file_pins_checked": 12,
+  "frozen_source_pins_checked": 42,
+  "future_outputs": 2000,
+  "head_predictions": 6000,
+  "individual_ids_match_original_manifest": true,
+  "individual_source_ids": 2000,
+  "media_byte_hash_mismatches": 0,
+  "minimum_both_commits_before_first_transition_ns": 1562,
+  "new_generated_outputs_by_review": 0,
+  "new_project_independent_source_pairs": 0,
+  "pin_mismatches": 0,
+  "production_acceptance_claimed": false,
+  "protocol_sha256": "36a8af4745be2523f22f49000f9d6813a8c09d075e1611573a81c59b7d38de3c",
+  "published_pair_mean_brier_improvement": [
+    2.3829517146976094e-07,
+    1.1915275672783094e-07
+  ],
+  "raw_classification_changes_at_half": [
+    0,
+    0
+  ],
+  "recomputed_pair_mean_brier_improvement": [
+    2.3829517146976097e-07,
+    1.1915275672783092e-07
+  ],
+  "result_sha256": "f49b6e77c67ee7249b31400a60d688b93768801617106418887a5625e7014a95",
+  "reviewed_unix_ns": 1792920666462908818,
+  "reviewer": "control_cost_v2",
+  "reviewer_contribution_disclosure": "Reviewer implemented this supplement source guard and previously contributed the historical future_candidate evaluator; collector and analysis were implemented/executed by the native owner. This is a cross-check of completed evidence, not an independent data replication.",
+  "row_labels_match_actual_collector_observer_scores": true,
+  "schema": "hepta.abc4.fixed-candidate-reuse-independent-read-audit.v1",
+  "scope": "Read-only pins, full completed metadata/array census, byte-hash media audit, paired point estimates and prespecified interval interpretation. No new generation, relabeling, candidate selection or policy change.",
+  "source_pairs": 1000,
+  "state_forecast_arrays_exactly_equal_between_heads": true,
+  "status": "passed",
+  "timestamp_scope": "Commit timestamps are recorded after fsync returns; subsequent local transition timestamps and frozen code order are checked. No externally authenticated clock claimed."
+}

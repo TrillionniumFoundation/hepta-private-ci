@@ -1,0 +1,132 @@
+{
+  "access_registration": {
+    "opened_unix_ns": 1792920500524040523,
+    "origin_role": "unallocated_test",
+    "original_assignment_sha256": "42c5bb90adefb4d536001d433a6fe8c8345a3547857ba7edb72555043ae3dc52",
+    "pair_count": 1000,
+    "pair_start": 0,
+    "prior_completed_execution_sha256": "7d6daac9c4692d2a30afeec244dd5318b399e37b1f0296036e2b96f861e17da6",
+    "prior_metrics_used_as_future_labels": false,
+    "protocol_sha256": "36a8af4745be2523f22f49000f9d6813a8c09d075e1611573a81c59b7d38de3c",
+    "reuse_assignment_sha256": "842b96e49c775b30464fca79eda03c4feb2929c3140f04fc79a030dd7611a39c",
+    "schema": "hepta.abc4.native-candidate-reuse-access.v1",
+    "source_identity": {
+      "individual_sources": 2000,
+      "ordered_source_ids_sha256": "815890b1f35b3180583b672ad7cc352289f15ac088e1cd151b03c1b62eb2a6d2",
+      "pair_end_exclusive": 1000,
+      "pair_start": 0,
+      "pairing": "No-replacement adjacent IDs [2k,2k+1] in the original manifest order",
+      "sorted_pixel_hashes_sha256": "278631cc2224c21ca35ad81be067a847b24171eb77a2f9dd54ad0e76bba123a0",
+      "source_pairs": 1000,
+      "source_role": "unallocated_test",
+      "unique_pixel_sha256": 2000
+    },
+    "source_previously_observed": true,
+    "source_role": "repair_test",
+    "study_role": "native_candidate_reuse",
+    "timeline_sha256": "dc4b1f41feab9cf5be462968b45596e99d7035428b4ca6fea21f19c936482a4f",
+    "unique_new_source_pairs": 0
+  },
+  "access_registration_sha256": "8b03bef73fddd5b48eb8136d01e0bd30939d082475caf79771301761d269d31b",
+  "additional_training_steps": 0,
+  "collector_internal_cost": {
+    "cpu_ns": 6959697913,
+    "data_sha256": "7fe98027bd00944273bb599f9106dc57045f9fbc88b650c946be61c2b1b569b5",
+    "future_rows": 2000,
+    "model_predictions": 6000,
+    "new_project_independent_source_pairs": 0,
+    "protocol_sha256": "36a8af4745be2523f22f49000f9d6813a8c09d075e1611573a81c59b7d38de3c",
+    "rows_sha256": "b31a517bd864961c1eda473764775107e373425b998ec9917c6f6bda6c237c73",
+    "scope": "source loading, actual prefix, six forecasts per pair committed, two real future branches, media readback and independent scoring; fixed predictor comparison without generator update",
+    "source_pairs": 1000,
+    "wall_ns": 7021290886
+  },
+  "collector_internal_cost_sha256": "7ffd776ad2511ef6301b5168585165eab08da7389f18c73d11fa31ea8915a032",
+  "cost_scope_excludes": "Prior generator/predictor training, original proposal generation/native history, earlier repair experiment, code authoring/metadata hashing and independent read-only audit. Summed phase wall time is not end-to-end elapsed time or per-forward service latency.",
+  "host_overlap": "Temporal feedback experiment continued on the shared host; this short one-CPU overlap was notified and disclosed. No timings were discarded or adjusted.",
+  "including_preaccess_checks_child_cpu_sum_ns": 14738271000,
+  "including_preaccess_checks_wall_sum_ns": 14828985635,
+  "maximum_exact_child_peak_rss_bytes": 356888576,
+  "measurement_method": "Linux exact-PID os.wait4, one-thread BLAS/OMP/MKL and torch, unchanged common process wrapper. Receipt filesystem mtime is local persistence metadata, not a signed completion time.",
+  "phases": [
+    {
+      "phase": "candidate-reuse-001",
+      "receipt": {
+        "child_cpu_ns": 8919399000,
+        "exact_child_peak_rss_bytes_linux": 356888576,
+        "exit_code": 0,
+        "log_sha256": "9d1afbeb2bbf6bfce240a6b54a14e1615050345b569fe3a01f715902f5ff92d3",
+        "pid": 8,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "542d45f68fb1119171eea9e1a8ea544f6151c5dbd1ea3083e18fe5eaf95f96ce",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 8989925418,
+        "wrapper_cpu_ns": 511561
+      },
+      "receipt_filesystem_mtime_unix_ns": 1792920507936575788,
+      "receipt_sha256": "8100d22e352052d675e848cb511b5b1a72d7458920dd1fd57b9db9463d5ef575",
+      "registration": {
+        "command": [
+          "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+          "-B",
+          "-m",
+          "experiments.multimodal_output_portfolio.abc_followup.native_candidate.collect",
+          "--protocol",
+          "experiments/multimodal_output_portfolio/abc_followup/native_candidate/PROTOCOL.json"
+        ],
+        "cwd": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery",
+        "entrypoint_sha256": "1bfa951bfcab8087104934cd2ab19c392367ac672400b6feadb655eca60a21b1",
+        "schema": "hepta.abc4.exact-child-process-registration.v1",
+        "unix_ns": 1792920498946082538,
+        "wrapper_sha256": "eb348e00b48496559b6cc2953e4af7b8c82041425bf049991f55b8db0e91ba2d"
+      },
+      "registration_sha256": "542d45f68fb1119171eea9e1a8ea544f6151c5dbd1ea3083e18fe5eaf95f96ce"
+    },
+    {
+      "phase": "candidate-reuse-analysis-001",
+      "receipt": {
+        "child_cpu_ns": 3786655000,
+        "exact_child_peak_rss_bytes_linux": 282533888,
+        "exit_code": 0,
+        "log_sha256": "4b11b153b5b4406e09268c51711a5218f70d23f18a16f1567416437d03c5e13f",
+        "pid": 8,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "396944dbdc078d56749249312a91daf40233270f60bd4dfa5fd85bb21b03160c",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 3794168331,
+        "wrapper_cpu_ns": 483960
+      },
+      "receipt_filesystem_mtime_unix_ns": 1792920521318001815,
+      "receipt_sha256": "bbf333383e4d1ae29c46b3d01a7015ef3644528eabbb5dd14c602fb2ed8c7e21",
+      "registration": {
+        "command": [
+          "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+          "-B",
+          "-m",
+          "experiments.multimodal_output_portfolio.abc_followup.native_candidate.analysis",
+          "--protocol",
+          "experiments/multimodal_output_portfolio/abc_followup/native_candidate/PROTOCOL.json"
+        ],
+        "cwd": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery",
+        "entrypoint_sha256": "777a63d7b9b209461cc3f8a83a5fbaaa765c43b8236616184927bfe44fad250b",
+        "schema": "hepta.abc4.exact-child-process-registration.v1",
+        "unix_ns": 1792920517523277860,
+        "wrapper_sha256": "eb348e00b48496559b6cc2953e4af7b8c82041425bf049991f55b8db0e91ba2d"
+      },
+      "registration_sha256": "396944dbdc078d56749249312a91daf40233270f60bd4dfa5fd85bb21b03160c"
+    }
+  ],
+  "preaccess_receipts_sha256": "aca961baf02916fcaea9e59fede16b48d3f2be04b87be0482e93c5ca15735894",
+  "primary_collection_and_analysis_child_cpu_sum_ns": 12706054000,
+  "primary_collection_and_analysis_wall_sum_ns": 12784093749,
+  "publication_before_source_access": {
+    "confirmed_commit": "5f67ed90455e63cca697ff7f8fd9694fc42abccf",
+    "confirmed_tree": "f1029dc3d790ebe1f730978edb3c3cfceaba8aec",
+    "evidence_scope": "Coordinator confirmed remote exact tree and all17 manifest file hashes before authorizing actual collection; this is repository publication evidence, not a cryptographically authenticated wall-clock oracle.",
+    "freeze_ready_sha256": "cedabef32c5772e3a5f158251b6cef14f4125cf8bf3639e01621d4143a849009",
+    "protocol_sha256": "36a8af4745be2523f22f49000f9d6813a8c09d075e1611573a81c59b7d38de3c"
+  },
+  "schema": "hepta.abc4.native-candidate-execution-receipts.v1"
+}
