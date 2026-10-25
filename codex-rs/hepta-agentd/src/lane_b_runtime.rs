@@ -133,6 +133,7 @@ pub enum AgentRunError {
 #[derive(Clone, Debug)]
 struct RunRecord {
     snapshot: RunSnapshot,
+    incarnation: u64,
     revision: u64,
     phase: RunPhase,
     context_digest: Option<String>,
@@ -153,6 +154,7 @@ pub struct AgentRunCoordinator {
     runs: BTreeMap<String, RunRecord>,
     accepting_runs: bool,
     max_active_runs: usize,
+    admission_sequence: u64,
 }
 
 impl AgentRunCoordinator {
@@ -172,6 +174,7 @@ impl AgentRunCoordinator {
             runs: BTreeMap::new(),
             accepting_runs: true,
             max_active_runs,
+            admission_sequence: 0,
         })
     }
 
@@ -205,8 +208,13 @@ impl AgentRunCoordinator {
         if self.active_run_count() >= self.max_active_runs || self.runs.len() >= MAX_RETAINED_RUNS {
             return Err(AgentRunError::CapacityExceeded);
         }
+        let incarnation = self
+            .admission_sequence
+            .checked_add(1)
+            .ok_or(AgentRunError::ArithmeticOverflow)?;
         let record = RunRecord {
             snapshot: snapshot.clone(),
+            incarnation,
             revision: 1,
             phase: RunPhase::Admitted,
             context_digest: None,
@@ -216,6 +224,7 @@ impl AgentRunCoordinator {
         };
         let result = receipt(&record, /*idempotent*/ false);
         self.runs.insert(snapshot.run_id, record);
+        self.admission_sequence = incarnation;
         Ok(result)
     }
 
@@ -449,8 +458,13 @@ impl AgentRunCoordinator {
         if self.active_run_count() >= self.max_active_runs || self.runs.len() >= MAX_RETAINED_RUNS {
             return Err(AgentRunError::CapacityExceeded);
         }
+        let incarnation = self
+            .admission_sequence
+            .checked_add(1)
+            .ok_or(AgentRunError::ArithmeticOverflow)?;
         let record = RunRecord {
             snapshot: recovery.snapshot,
+            incarnation,
             revision: recovery.revision,
             phase: RunPhase::Indeterminate,
             context_digest: Some(recovery.context_digest),
@@ -460,6 +474,7 @@ impl AgentRunCoordinator {
         };
         let result = receipt(&record, /*idempotent*/ false);
         self.runs.insert(run_id, record);
+        self.admission_sequence = incarnation;
         Ok(result)
     }
 
@@ -543,6 +558,16 @@ impl AgentRunCoordinator {
         self.runs
             .get(run_id)
             .map(|record| receipt(record, /*idempotent*/ false))
+    }
+
+    pub(crate) fn run_observation(&self, run_id: &str) -> Option<(RunSnapshot, u64, RunReceipt)> {
+        self.runs.get(run_id).map(|record| {
+            (
+                record.snapshot.clone(),
+                record.incarnation,
+                receipt(record, /*idempotent*/ false),
+            )
+        })
     }
 
     pub fn active_run_count(&self) -> usize {
