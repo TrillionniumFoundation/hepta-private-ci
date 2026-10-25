@@ -142,8 +142,15 @@ fn base_policy_allows_node_cpu_sysctls() {
     );
 }
 
+// Qualification consumes these source-bound test receipts, not a passing JUnit
+// label alone: inherited platform-unavailable returns remain not exercised.
+fn record_seatbelt_stage(case: &str, stage: &str) {
+    eprintln!("HEPTA_SEATBELT_STAGE|{case}|{stage}");
+}
+
 #[test]
 fn seatbelt_allows_semaphore_limit_sysconf() {
+    record_seatbelt_stage("seatbelt_allows_semaphore_limit_sysconf", "begin");
     let workspace = TempDir::new().expect("temp workspace");
     for policy in [
         SandboxPolicy::new_read_only_policy(),
@@ -168,13 +175,19 @@ fn seatbelt_allows_semaphore_limit_sysconf() {
             && stderr.contains("sandbox-exec: sandbox_apply: Operation not permitted")
         {
             eprintln!("skipping semaphore limit query: nested Seatbelt is unavailable");
+            record_seatbelt_stage("seatbelt_allows_semaphore_limit_sysconf", "not_exercised");
             return;
         }
         assert!(
             output.status.success(),
             "semaphore limit query should succeed under {policy:?}: {stderr}"
         );
+        record_seatbelt_stage(
+            "seatbelt_allows_semaphore_limit_sysconf",
+            "sandbox_started_and_control_succeeded",
+        );
     }
+    record_seatbelt_stage("seatbelt_allows_semaphore_limit_sysconf", "complete");
 }
 
 #[test]
@@ -192,6 +205,10 @@ fn base_policy_allows_kmp_registration_shm_read_create_and_unlink() {
 
 #[test]
 fn filesystem_helper_platform_defaults_do_not_grant_applications_directory() {
+    record_seatbelt_stage(
+        "filesystem_helper_platform_defaults_do_not_grant_applications_directory",
+        "begin",
+    );
     let workspace = TempDir::new().expect("temp workspace");
     let workspace_root = AbsolutePathBuf::from_absolute_path(workspace.path())
         .expect("workspace path should be absolute");
@@ -239,11 +256,19 @@ fn filesystem_helper_platform_defaults_do_not_grant_applications_directory() {
     if !allowed.status.success()
         && allowed_stderr.contains("sandbox-exec: sandbox_apply: Operation not permitted")
     {
+        record_seatbelt_stage(
+            "filesystem_helper_platform_defaults_do_not_grant_applications_directory",
+            "not_exercised",
+        );
         return;
     }
     assert!(
         allowed.status.success(),
         "the explicitly allowed workspace should remain readable: {allowed_stderr}"
+    );
+    record_seatbelt_stage(
+        "filesystem_helper_platform_defaults_do_not_grant_applications_directory",
+        "filesystem_helper_started_and_workspace_allowed",
     );
 
     let process_allowed = list_directory(Path::new("/Applications"), MacosSeatbeltProfile::Process);
@@ -251,6 +276,10 @@ fn filesystem_helper_platform_defaults_do_not_grant_applications_directory() {
     assert!(
         process_allowed.status.success(),
         "normal process sandboxes should preserve /Applications access: {process_allowed_stderr}"
+    );
+    record_seatbelt_stage(
+        "filesystem_helper_platform_defaults_do_not_grant_applications_directory",
+        "process_profile_started_and_applications_allowed",
     );
 
     let denied = list_directory(
@@ -261,6 +290,14 @@ fn filesystem_helper_platform_defaults_do_not_grant_applications_directory() {
     assert!(
         !denied.status.success() && denied_stderr.contains("Operation not permitted"),
         "filesystem helper platform defaults should not grant /Applications: {denied_stderr}"
+    );
+    record_seatbelt_stage(
+        "filesystem_helper_platform_defaults_do_not_grant_applications_directory",
+        "applications_denied",
+    );
+    record_seatbelt_stage(
+        "filesystem_helper_platform_defaults_do_not_grant_applications_directory",
+        "complete",
     );
 }
 
@@ -406,6 +443,10 @@ fn explicit_unreadable_paths_are_excluded_from_full_disk_read_and_write_access()
 
 #[test]
 fn nested_protected_paths_cannot_be_bypassed_by_renaming_ancestors() {
+    record_seatbelt_stage(
+        "nested_protected_paths_cannot_be_bypassed_by_renaming_ancestors",
+        "begin",
+    );
     #[derive(Clone, Copy, Debug)]
     enum Protection {
         Deny,
@@ -414,7 +455,7 @@ fn nested_protected_paths_cannot_be_bypassed_by_renaming_ancestors() {
         DenyGlobAboveRoot,
     }
 
-    for protection in [
+    for (protection_index, protection) in [
         Protection::DenyGlobAboveRoot,
         Protection::DenyGlob(".githu?"),
         Protection::DenyGlob("{.github,.gitlab}"),
@@ -422,7 +463,10 @@ fn nested_protected_paths_cannot_be_bypassed_by_renaming_ancestors() {
         Protection::DenyGlob("*"),
         Protection::Deny,
         Protection::Read,
-    ] {
+    ]
+    .into_iter()
+    .enumerate()
+    {
         let temp_dir = TempDir::new().expect("temp dir");
         let workspace = temp_dir.path().join("workspace");
         let github = workspace.join(".github");
@@ -502,7 +546,9 @@ fn nested_protected_paths_cannot_be_bypassed_by_renaming_ancestors() {
             protected_access,
         ));
 
-        for protected_ancestor in [&workspace, &github, &workflows] {
+        for (ancestor_index, protected_ancestor) in
+            [&workspace, &github, &workflows].into_iter().enumerate()
+        {
             let renamed_ancestor = if protected_ancestor == &workspace {
                 destination.join("moved")
             } else {
@@ -568,6 +614,52 @@ fn nested_protected_paths_cannot_be_bypassed_by_renaming_ancestors() {
                 "protected ancestor denies must follow broader allowances: {policy}"
             );
 
+            // Probe the exact restricted policy before attempting the denied rename.
+            // Only the command after `--` changes: true receives no target paths and
+            // cannot read, rename or write the protected file. This is not a retry.
+            let command_separator = args
+                .iter()
+                .position(|arg| arg == "--")
+                .expect("seatbelt command separator");
+            let mut startup_args = args[..=command_separator].to_vec();
+            startup_args.push("/usr/bin/true".to_string());
+            let startup = match Command::new(MACOS_PATH_TO_SEATBELT_EXECUTABLE)
+                .args(startup_args)
+                .current_dir(temp_dir.path())
+                .output()
+            {
+                Ok(output) => output,
+                Err(error) if error.kind() == std::io::ErrorKind::PermissionDenied => {
+                    eprintln!("restricted policy startup control unavailable: {error}");
+                    record_seatbelt_stage(
+                        "nested_protected_paths_cannot_be_bypassed_by_renaming_ancestors",
+                        "not_exercised",
+                    );
+                    return;
+                }
+                Err(error) => panic!("execute restricted policy startup control: {error}"),
+            };
+            let startup_stderr = String::from_utf8_lossy(&startup.stderr);
+            if !startup.status.success()
+                && (startup_stderr.contains("Operation not permitted")
+                    || startup_stderr.contains("Permission denied"))
+            {
+                eprintln!("restricted policy startup control unavailable: {startup_stderr}");
+                record_seatbelt_stage(
+                    "nested_protected_paths_cannot_be_bypassed_by_renaming_ancestors",
+                    "not_exercised",
+                );
+                return;
+            }
+            assert!(
+                startup.status.success(),
+                "restricted policy startup control failed: {startup_stderr}"
+            );
+            record_seatbelt_stage(
+                "nested_protected_paths_cannot_be_bypassed_by_renaming_ancestors",
+                &format!("restricted_policy_started:{protection_index}:{ancestor_index}"),
+            );
+
             let output = Command::new(MACOS_PATH_TO_SEATBELT_EXECUTABLE)
                 .args(args)
                 .current_dir(temp_dir.path())
@@ -577,6 +669,10 @@ fn nested_protected_paths_cannot_be_bypassed_by_renaming_ancestors() {
             if !output.status.success()
                 && stderr.contains("sandbox-exec: sandbox_apply: Operation not permitted")
             {
+                record_seatbelt_stage(
+                    "nested_protected_paths_cannot_be_bypassed_by_renaming_ancestors",
+                    "not_exercised",
+                );
                 return;
             }
             assert!(
@@ -584,9 +680,17 @@ fn nested_protected_paths_cannot_be_bypassed_by_renaming_ancestors() {
                 "{protection:?} path must not become accessible by renaming {}",
                 protected_ancestor.display()
             );
+            record_seatbelt_stage(
+                "nested_protected_paths_cannot_be_bypassed_by_renaming_ancestors",
+                &format!("ancestor_rename_denied:{protection_index}:{ancestor_index}"),
+            );
             assert_eq!(
                 fs::read_to_string(&protected_file).expect("read protected workflow"),
                 "original workflow"
+            );
+            record_seatbelt_stage(
+                "nested_protected_paths_cannot_be_bypassed_by_renaming_ancestors",
+                &format!("protected_bytes_unchanged:{protection_index}:{ancestor_index}"),
             );
 
             if matches!(
@@ -600,9 +704,19 @@ fn nested_protected_paths_cannot_be_bypassed_by_renaming_ancestors() {
                     .output()
                     .expect("execute control seatbelt command");
                 assert!(output.status.success(), "unprotected ancestor: {output:?}");
+                record_seatbelt_stage(
+                    "nested_protected_paths_cannot_be_bypassed_by_renaming_ancestors",
+                    &format!(
+                        "unprotected_policy_started_and_control_succeeded:{protection_index}:{ancestor_index}"
+                    ),
+                );
             }
         }
     }
+    record_seatbelt_stage(
+        "nested_protected_paths_cannot_be_bypassed_by_renaming_ancestors",
+        "complete",
+    );
 }
 
 #[test]
@@ -882,6 +996,10 @@ fn preferences_access_requires_unrestricted_reads() {
 
 #[test]
 fn restricted_reads_cannot_read_preferences_outside_allowed_roots() {
+    record_seatbelt_stage(
+        "restricted_reads_cannot_read_preferences_outside_allowed_roots",
+        "begin",
+    );
     struct PreferenceDomain(String);
 
     impl Drop for PreferenceDomain {
@@ -993,10 +1111,18 @@ fn restricted_reads_cannot_read_preferences_outside_allowed_roots() {
     if !control.status.success()
         && control_stderr.contains("sandbox-exec: sandbox_apply: Operation not permitted")
     {
+        record_seatbelt_stage(
+            "restricted_reads_cannot_read_preferences_outside_allowed_roots",
+            "not_exercised",
+        );
         return;
     }
     assert!(control.status.success(), "control failed: {control_stderr}");
     assert_eq!(control.stdout, b"allowed");
+    record_seatbelt_stage(
+        "restricted_reads_cannot_read_preferences_outside_allowed_roots",
+        "restricted_policy_started_and_file_control_succeeded",
+    );
 
     let direct = run(
         &restricted,
@@ -1006,6 +1132,10 @@ fn restricted_reads_cannot_read_preferences_outside_allowed_roots() {
         !direct.status.success()
             && String::from_utf8_lossy(&direct.stderr).contains("Operation not permitted"),
         "direct plist read should be denied: {direct:?}"
+    );
+    record_seatbelt_stage(
+        "restricted_reads_cannot_read_preferences_outside_allowed_roots",
+        "direct_plist_read_denied",
     );
 
     let read_preference = || {
@@ -1022,12 +1152,24 @@ fn restricted_reads_cannot_read_preferences_outside_allowed_roots() {
             !denied.status.success() && !String::from_utf8_lossy(&denied.stdout).contains(marker),
             "restricted preferences read returned protected data: {denied:?}"
         );
+        record_seatbelt_stage(
+            "restricted_reads_cannot_read_preferences_outside_allowed_roots",
+            "preference_read_denied_and_canary_absent",
+        );
 
         // The full-read control also warms the cache before the next attempt.
         let allowed = run(&full_read, read_preference());
         assert!(allowed.status.success(), "full-read control: {allowed:?}");
         assert_eq!(String::from_utf8_lossy(&allowed.stdout).trim(), marker);
+        record_seatbelt_stage(
+            "restricted_reads_cannot_read_preferences_outside_allowed_roots",
+            "full_read_policy_started_and_canary_control_succeeded",
+        );
     }
+    record_seatbelt_stage(
+        "restricted_reads_cannot_read_preferences_outside_allowed_roots",
+        "complete",
+    );
 }
 
 #[test]
@@ -1460,8 +1602,43 @@ fn create_seatbelt_args_full_network_with_proxy_is_still_proxy_only() {
     );
 }
 
+// Exclusion indices follow discovery order, not metadata-name order. Check the
+// exact paths and the actual parameter-to-root policy binding independently.
+fn assert_writable_root_exclusions(args: &[String], root_index: usize, expected: &[PathBuf]) {
+    let prefix = format!("-DWRITABLE_ROOT_{root_index}_EXCLUDED_");
+    let definitions: Vec<_> = args
+        .iter()
+        .filter_map(|arg| arg.strip_prefix(&prefix))
+        .collect();
+    assert_eq!(definitions.len(), expected.len());
+    let mut paths = Vec::new();
+    let mut policy_prefix =
+        format!("(require-all (subpath (param \"WRITABLE_ROOT_{root_index}\"))");
+    for (index, definition) in definitions.into_iter().enumerate() {
+        let (actual_index, path) = definition.split_once('=').expect("exclusion definition");
+        assert_eq!(actual_index, index.to_string());
+        paths.push(PathBuf::from(path));
+        let parameter = format!("WRITABLE_ROOT_{root_index}_EXCLUDED_{index}");
+        policy_prefix.push_str(&format!(
+            " (require-not (literal (param \"{parameter}\"))) (require-not (subpath (param \"{parameter}\")))"
+        ));
+    }
+    paths.sort();
+    let mut expected = expected.to_vec();
+    expected.sort();
+    assert_eq!(paths, expected, "unexpected root {root_index} exclusions");
+    assert!(
+        seatbelt_policy_arg(args).contains(&policy_prefix),
+        "exclusions must deny literal and subtree writes under their exact root: {policy_prefix}"
+    );
+}
+
 #[test]
 fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
+    record_seatbelt_stage(
+        "create_seatbelt_args_with_read_only_git_and_codex_subpaths",
+        "begin",
+    );
     // Create a temporary workspace with two writable roots: one containing
     // top-level workspace metadata paths and one without them.
     let tmp = TempDir::new().expect("tempdir");
@@ -1551,59 +1728,47 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
         "expected empty root metadata protection regex requirements in policy:\n{policy_text}",
     );
 
+    let cwd_canonical = cwd.canonicalize().expect("canonicalize cwd");
+    assert_writable_root_exclusions(
+        &args,
+        /*root_index*/ 0,
+        &[
+            cwd_canonical.join(".git"),
+            cwd_canonical.join(".agents"),
+            cwd_canonical.join(".codex"),
+        ],
+    );
+    assert_writable_root_exclusions(
+        &args,
+        /*root_index*/ 1,
+        &[dot_git_canonical.clone(), dot_codex_canonical.clone()],
+    );
     let expected_definitions = [
-        format!(
-            "-DWRITABLE_ROOT_0={}",
-            cwd.canonicalize()
-                .expect("canonicalize cwd")
-                .to_string_lossy()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_0_EXCLUDED_0={}",
-            cwd.canonicalize()
-                .expect("canonicalize cwd")
-                .join(".git")
-                .display()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_0_EXCLUDED_1={}",
-            cwd.canonicalize()
-                .expect("canonicalize cwd")
-                .join(".agents")
-                .display()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_0_EXCLUDED_2={}",
-            cwd.canonicalize()
-                .expect("canonicalize cwd")
-                .join(".codex")
-                .display()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_1={}",
-            vulnerable_root_canonical.to_string_lossy()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_1_EXCLUDED_0={}",
-            dot_git_canonical.to_string_lossy()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_1_EXCLUDED_1={}",
-            dot_codex_canonical.to_string_lossy()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_2={}",
-            empty_root_canonical.to_string_lossy()
-        ),
+        format!("-DWRITABLE_ROOT_0={}", cwd_canonical.display()),
+        format!("-DWRITABLE_ROOT_1={}", vulnerable_root_canonical.display()),
+        format!("-DWRITABLE_ROOT_2={}", empty_root_canonical.display()),
     ];
+    assert_eq!(
+        args.iter()
+            .filter(|arg| arg.starts_with("-DWRITABLE_ROOT_"))
+            .count(),
+        8,
+        "exactly three roots and five exclusions must be defined"
+    );
     let writable_definitions: Vec<String> = args
         .iter()
-        .filter(|arg| arg.starts_with("-DWRITABLE_ROOT_"))
+        .filter(|arg| arg.starts_with("-DWRITABLE_ROOT_") && !arg.contains("_EXCLUDED_"))
         .cloned()
         .collect();
     assert_eq!(
         writable_definitions, expected_definitions,
         "unexpected writable-root parameter definitions in {args:#?}"
+    );
+    assert!(
+        !args
+            .iter()
+            .any(|arg| arg.starts_with("-DWRITABLE_ROOT_2_EXCLUDED_")),
+        "empty root must not acquire unexpected exclusions"
     );
     let command_index = args
         .iter()
@@ -1630,6 +1795,10 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
         &config_toml.display()
     );
     assert_seatbelt_denied(&output.stderr, &config_toml);
+    record_seatbelt_stage(
+        "create_seatbelt_args_with_read_only_git_and_codex_subpaths",
+        "codex_write_denied_and_original_bytes_retained",
+    );
 
     // Create a similar Seatbelt command that tries to write to a file in
     // the .git folder, which should also be blocked.
@@ -1668,6 +1837,10 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
         &pre_commit_hook.display()
     );
     assert_seatbelt_denied(&output.stderr, &pre_commit_hook);
+    record_seatbelt_stage(
+        "create_seatbelt_args_with_read_only_git_and_codex_subpaths",
+        "git_write_denied_and_hook_absent",
+    );
 
     // Verify that writing a file to the folder containing .git and .codex is allowed.
     let allowed_file = vulnerable_root_canonical.join("allowed.txt");
@@ -1698,6 +1871,10 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
     if !output.status.success()
         && stderr.contains("sandbox-exec: sandbox_apply: Operation not permitted")
     {
+        record_seatbelt_stage(
+            "create_seatbelt_args_with_read_only_git_and_codex_subpaths",
+            "not_exercised",
+        );
         return;
     }
     assert!(
@@ -1710,6 +1887,14 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
         String::from_utf8_lossy(&fs::read(&allowed_file).expect("read allowed.txt")),
         "{} should contain the written text",
         allowed_file.display()
+    );
+    record_seatbelt_stage(
+        "create_seatbelt_args_with_read_only_git_and_codex_subpaths",
+        "sandbox_started_and_allowed_write_bytes_verified",
+    );
+    record_seatbelt_stage(
+        "create_seatbelt_args_with_read_only_git_and_codex_subpaths",
+        "complete",
     );
 }
 
@@ -2495,29 +2680,10 @@ fn create_seatbelt_args_for_cwd_as_git_repo() {
         args.contains(&expected_root),
         "missing {expected_root}: {args:#?}"
     );
-    let expected_dot_git = format!(
-        "-DWRITABLE_ROOT_0_EXCLUDED_0={}",
-        dot_git_canonical.to_string_lossy()
-    );
-    assert!(
-        args.contains(&expected_dot_git),
-        "missing {expected_dot_git}: {args:#?}"
-    );
-    let expected_dot_codex = format!(
-        "-DWRITABLE_ROOT_0_EXCLUDED_2={}",
-        dot_codex_canonical.to_string_lossy()
-    );
-    assert!(
-        args.contains(&expected_dot_codex),
-        "missing {expected_dot_codex}: {args:#?}"
-    );
-    let expected_dot_agents = format!(
-        "-DWRITABLE_ROOT_0_EXCLUDED_1={}",
-        dot_agents_canonical.to_string_lossy()
-    );
-    assert!(
-        args.contains(&expected_dot_agents),
-        "missing {expected_dot_agents}: {args:#?}"
+    assert_writable_root_exclusions(
+        &args,
+        /*root_index*/ 0,
+        &[dot_git_canonical, dot_agents_canonical, dot_codex_canonical],
     );
     let expected_slash_tmp = format!("-DWRITABLE_ROOT_1={}", slash_tmp.to_string_lossy());
     assert!(

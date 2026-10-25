@@ -50,7 +50,9 @@ class BakeoffContractTests(unittest.TestCase):
                     "calibration_sha256": calibration["sha256"],
                     **({"head_sha256": head["sha256"]} if head else {})}
                    for r in self.rows if r["split"] in ("test", "future")]
-            spec = {"arm": arm, "revision": "b" * 40, "license": "fixture-only",
+            pin = bakeoff.candidate_registry()[arm]
+            spec = {"arm": arm, "revision": pin["revision"], "repository": pin["repository"],
+                    "subfolder": pin["subfolder"], "license": pin["license"],
                     "weights": weights, "tokenizer": tokenizer, "runtime": runtime,
                     "calibration": calibration,
                     "predictions": self.put_jsonl(arm + ".predictions.jsonl", obs)}
@@ -63,11 +65,35 @@ class BakeoffContractTests(unittest.TestCase):
                 spec["training_report"] = self.put(arm + ".train.json",
                     bakeoff.canonical(training_report))
             self.manifest["models"].append(spec)
-        workloads = [{"arm": arm, "logical_cells": scale, "active_cells": min(scale, 16),
-                      "requests": 256, "throughput_per_sec": 50., "p95_ms": 10., "p99_ms": 20.,
-                      "load_ms": 300., "peak_rss_bytes": 12345678,
-                      "host_id": "test-host", "execution_kind": "observed-real-model"}
-                     for arm in bakeoff.ARMS for scale in bakeoff.SCALES]
+        # Complete synthetic traces test the verifier, not a real model or host.
+        # Crucially, every declared Cell needs at least one request ID.
+        workloads = []
+        for arm in bakeoff.ARMS:
+            weight_digest = next(s["weights"]["sha256"] for s in self.manifest["models"] if s["arm"] == arm)
+            for scale in bakeoff.SCALES:
+                active = min(scale, 16)
+                n = max(100, scale)
+                trace = []
+                for i in range(n):
+                    begin = 10_000_000 + (i // active) * 10_000_000
+                    trace.append({
+                        "request_id": f"{arm}-{scale}-req-{i}", "cell_id": f"cell-{i % scale}",
+                        "submitted_ns": begin, "started_ns": begin + 10_000,
+                        "completed_ns": begin + 5_010_000,
+                        "arm": arm, "host_id": "test-host", "device": "cpu",
+                        "model_weights_sha256": weight_digest, "rss_bytes": 12345678,
+                        "gpu_peak_bytes": None})
+                first = trace[0]["submitted_ns"]
+                last = trace[-1]["completed_ns"]
+                workloads.append({
+                    "arm": arm, "logical_cells": scale, "active_cells": active,
+                    "requests": n, "throughput_per_sec": n / ((last - first) / 1e9),
+                    "p95_ms": 5.01, "p99_ms": 5.01, "load_ms": 1.0,
+                    "load_started_ns": 0, "load_completed_ns": 1_000_000,
+                    "peak_rss_bytes": 12345678, "peak_gpu_bytes": None,
+                    "device": "cpu", "model_weights_sha256": weight_digest,
+                    "host_id": "test-host", "execution_kind": "observed-real-model",
+                    "trace": self.put_jsonl(f"trace.{arm}.{scale}.jsonl", trace)})
         self.manifest["workload"] = self.put_jsonl("workload.jsonl", workloads)
         self.lifecycle = {"schema": "hepta.neuron-bakeoff.lifecycle.v1", "events": [
             {"name": name, "owner": owner, "status": "observed_success",
@@ -105,6 +131,9 @@ class BakeoffContractTests(unittest.TestCase):
         self.assertEqual(report["models"]["laya-typed"]["test"]["accuracy_with_abstentions"], 1.0)
         self.assertEqual(report["lifecycle"]["generation"], 10)
         self.assertEqual(report["qualification"], "evaluation_evidence_only_not_release_or_promotion")
+        self.assertFalse(report["independent_acceptance"])
+        self.assertFalse(report["all_blockers_closed"])
+        self.assertFalse(report["production_activation_allowed"])
 
     def test_group_leakage_fails(self):
         self.rows[0]["group_id"] = self.rows[2]["group_id"]
@@ -115,6 +144,16 @@ class BakeoffContractTests(unittest.TestCase):
     def test_missing_model_fails(self):
         self.manifest["models"].pop()
         with self.assertRaisesRegex(bakeoff.EvidenceError, "five candidate"):
+            self.run_eval()
+
+    def test_unpinned_candidate_revision_denied(self):
+        self.manifest["models"][0]["revision"] = "c" * 40
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "differs from committed pins"):
+            self.run_eval()
+
+    def test_swapped_model_repository_denied(self):
+        self.manifest["models"][2]["repository"] = "untrusted/publisher"
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "differs from committed pins"):
             self.run_eval()
 
     def test_changed_weights_fails_before_scoring(self):
@@ -173,6 +212,57 @@ class BakeoffContractTests(unittest.TestCase):
         data = bakeoff.records(self.root / "workload.jsonl")
         self.manifest["workload"] = self.put_jsonl("workload.jsonl", data[:-1])
         with self.assertRaisesRegex(bakeoff.EvidenceError, "not all 5 models"):
+            self.run_eval()
+
+    def test_forged_workload_p99_is_rejected(self):
+        rows = bakeoff.records(self.root / "workload.jsonl")
+        # Keep summary ordering valid so this reaches the raw-trace comparison.
+        rows[0]["p99_ms"] *= 2
+        self.manifest["workload"] = self.put_jsonl("workload.jsonl", rows)
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "raw trace disagrees with p99_ms"):
+            self.run_eval()
+
+    def test_p99_below_p95_is_rejected(self):
+        rows = bakeoff.records(self.root / "workload.jsonl")
+        rows[0]["p99_ms"] = 0.00001
+        self.manifest["workload"] = self.put_jsonl("workload.jsonl", rows)
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "invalid workload measurement"):
+            self.run_eval()
+
+    def test_missing_trace_cannot_prove_p99(self):
+        rows = bakeoff.records(self.root / "workload.jsonl")
+        rows[0].pop("trace")
+        self.manifest["workload"] = self.put_jsonl("workload.jsonl", rows)
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "raw request trace"):
+            self.run_eval()
+
+    def test_same_stateful_cell_cannot_overlap_its_own_tick(self):
+        workloads = bakeoff.records(self.root / "workload.jsonl")
+        selected = next(r for r in workloads if r["logical_cells"] == 64)
+        traces = bakeoff.records(self.root / selected["trace"]["path"])
+        traces[1]["cell_id"] = traces[0]["cell_id"]
+        traces[64]["cell_id"] = "cell-1"  # preserve 64-cell coverage; still overlaps.
+        selected["trace"] = self.put_jsonl(selected["trace"]["path"], traces)
+        self.manifest["workload"] = self.put_jsonl("workload.jsonl", workloads)
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "overlapping request spans"):
+            self.run_eval()
+
+    def test_fake_throughput_rejected(self):
+        workloads = bakeoff.records(self.root / "workload.jsonl")
+        workloads[0]["throughput_per_sec"] *= 10
+        self.manifest["workload"] = self.put_jsonl("workload.jsonl", workloads)
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "throughput_per_sec"):
+            self.run_eval()
+
+    def test_4096_cell_claim_with_one_cell_observed_is_rejected(self):
+        workloads = bakeoff.records(self.root / "workload.jsonl")
+        selected = next(r for r in workloads if r["logical_cells"] == 4096)
+        traces = bakeoff.records(self.root / selected["trace"]["path"])
+        for record in traces:
+            record["cell_id"] = "same-cell"
+        selected["trace"] = self.put_jsonl(selected["trace"]["path"], traces)
+        self.manifest["workload"] = self.put_jsonl("workload.jsonl", workloads)
+        with self.assertRaisesRegex(bakeoff.EvidenceError, "not all declared logical Cells"):
             self.run_eval()
 
     def test_lifecycle_no_trusted_key_fails(self):

@@ -24,6 +24,10 @@ use sha2::Sha256;
 use crate::FleetRegistry;
 use crate::FleetRegistryError;
 
+#[cfg(target_os = "macos")]
+#[path = "release_publication_macos.rs"]
+mod macos_publication;
+
 pub const RELEASE_METADATA_SCHEMA_VERSION: u32 = 2;
 pub const AGENT_RELEASE_STATE_SCHEMA_VERSION: u32 = 1;
 const RELEASE_MANIFEST_FILE: &str = "release.json";
@@ -255,6 +259,10 @@ impl FleetRegistry {
             std::process::id(),
             RELEASE_SEQUENCE.fetch_add(1, Ordering::Relaxed)
         ));
+        #[cfg(target_os = "macos")]
+        let publication =
+            macos_publication::Publication::create(self.layout().releases_root(), &staging)?;
+        #[cfg(not(target_os = "macos"))]
         std::fs::create_dir(&staging)?;
         let result = (|| {
             let bin_root = staging.join("bin");
@@ -293,14 +301,24 @@ impl FleetRegistry {
             set_mode(&bin_root, /*mode*/ 0o555)?;
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
-            set_mode(&staging, /*mode*/ 0o555)?;
-            std::fs::rename(&staging, &final_root)?;
-            sync_directory(self.layout().releases_root())?;
+            #[cfg(target_os = "macos")]
+            publication.publish(&final_root)?;
+            #[cfg(not(target_os = "macos"))]
+            {
+                set_mode(&staging, /*mode*/ 0o555)?;
+                std::fs::rename(&staging, &final_root)?;
+                sync_directory(self.layout().releases_root())?;
+            }
             Ok(())
         })();
         if let Err(error) = result {
-            make_tree_removable(&staging);
-            let _ = std::fs::remove_dir_all(&staging);
+            // macOS failures retain the new staging/unsealed slot. Never chmod
+            // or delete a published pathname that could now name another inode.
+            #[cfg(not(target_os = "macos"))]
+            {
+                make_tree_removable(&staging);
+                let _ = std::fs::remove_dir_all(&staging);
+            }
             return Err(error);
         }
         resolve_catalog_release(self.layout().releases_root(), &release_id)
@@ -1038,6 +1056,7 @@ fn set_mode(path: &Path, mode: u32) -> Result<(), FleetRegistryError> {
     Ok(())
 }
 
+#[cfg(any(not(target_os = "macos"), test))]
 fn make_tree_removable(path: &Path) {
     if path.exists() {
         let _ = set_mode(path, /*mode*/ 0o755);

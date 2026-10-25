@@ -8,6 +8,7 @@ use std::os::unix::fs::PermissionsExt;
 async fn cold_image_is_immutable_and_reconnects_to_same_copy() -> anyhow::Result<()> {
     let home = unique_temp_dir();
     std::fs::create_dir(&home)?;
+    let home = home.canonicalize()?;
     std::fs::set_permissions(&home, std::fs::Permissions::from_mode(0o700))?;
     let config = SqliteConfig::new_for_testing(home.as_path().abs());
     let path = home.join("cold.sqlite3");
@@ -47,6 +48,7 @@ async fn cold_image_is_immutable_and_reconnects_to_same_copy() -> anyhow::Result
 async fn cold_image_rejects_wrong_guard_replacement_sidecars_and_size() -> anyhow::Result<()> {
     let home = unique_temp_dir();
     std::fs::create_dir(&home)?;
+    let home = home.canonicalize()?;
     std::fs::set_permissions(&home, std::fs::Permissions::from_mode(0o700))?;
     let config = SqliteConfig::new_for_testing(home.as_path().abs());
     let path = home.join("cold.sqlite3");
