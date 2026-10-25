@@ -7,13 +7,13 @@ use crate::production_notes::NotesTerminalReceipt;
 /// Non-serializable evidence created only by the original writer when FinalUse
 /// rejects synchronously before the target is entered. This is not an
 /// application receipt and cannot be supplied by a target or public caller.
-pub(crate) struct NotesPreDispatchRejection {
+pub(crate) struct PrivateOrganPreDispatchRejection {
     request: ProductionDispatchRequest,
     dispatch_event_id: String,
     reason: String,
 }
 
-impl NotesPreDispatchRejection {
+impl PrivateOrganPreDispatchRejection {
     pub(super) fn at_rejected_entry(
         request: &ProductionDispatchRequest,
         dispatch_event_id: &str,
@@ -71,20 +71,19 @@ impl ProductionDurableWriter {
         Ok(target)
     }
 
-    pub(super) async fn settle_notes_terminal(
+    pub(super) async fn settle_private_organ_terminal(
         &self,
         request: &ProductionDispatchRequest,
         evidence: &str,
         expected: LocalReconcileOutcome,
     ) -> Result<ProductionOutcomeReceipt, ProductionWriterError> {
         self.verify_authority().await?;
-        if request.topic != crate::NOTES_REPLACE_TOPIC_V1 {
-            return Err(ProductionWriterError::Invalid(
-                "Notes evidence targets another topic".to_string(),
-            ));
-        }
-        let receipt = NotesTerminalReceipt::from_json(&request.payload_json, evidence)
-            .map_err(ProductionWriterError::Invalid)?;
+        let receipt = crate::production_private_organ::PrivateOrganTerminalReceipt::from_json(
+            &request.topic,
+            &request.payload_json,
+            evidence,
+        )
+        .map_err(ProductionWriterError::Invalid)?;
         if receipt.outcome() != expected {
             return Err(ProductionWriterError::Invalid(
                 "Notes disposition differs from terminal evidence".to_string(),
@@ -92,7 +91,7 @@ impl ProductionDurableWriter {
         }
         Ok(self
             .lease
-            .reconcile_notes_terminal(&request.occurrence_key, &receipt)
+            .reconcile_private_organ_terminal(&request.occurrence_key, &receipt)
             .await?
             .into())
     }

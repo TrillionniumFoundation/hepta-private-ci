@@ -409,3 +409,6 @@ mod gui_tests;
 
 #[path = "production_notes_fairness_tests.rs"]
 mod fairness_tests;
+
+#[path = "production_desktop_host_tests.rs"]
+mod desktop_tests;

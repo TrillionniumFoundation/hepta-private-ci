@@ -286,3 +286,10 @@ pub use topology_plasticity_host::rollover_agentd_topology_writer_v1;
 use control::AgentdControlServer;
 use event_buffer::EventBuffer;
 use state::AgentdState;
+
+#[cfg(target_os = "linux")]
+mod desktop_bootstrap;
+#[cfg(target_os = "linux")]
+mod desktop_channel;
+#[cfg(target_os = "linux")]
+pub use desktop_bootstrap::receive_desktop_session;

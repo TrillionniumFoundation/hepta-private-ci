@@ -35,8 +35,10 @@ mod model_receipt;
 mod neuron_proposal;
 mod operation_claims;
 mod production_cognitive_source_target;
+mod production_desktop;
 mod production_hos2;
 mod production_notes;
+mod production_private_organ;
 mod production_writer;
 mod recall;
 mod shadow_advisory;
@@ -541,3 +543,20 @@ mod cognitive_test_support;
 #[cfg(test)]
 #[path = "lane_c_snapshot_tests.rs"]
 mod lane_c_snapshot_tests;
+
+pub use production_desktop::DESKTOP_INPUT_TOPIC_V1;
+pub use production_desktop::DesktopObservationChannel;
+pub use production_desktop::DesktopPrivateChannel;
+pub use production_desktop::ProductionDesktopTarget;
+pub use production_desktop::desktop_operation_intent;
+pub use production_desktop::wire::DesktopBootstrapAck;
+pub use production_desktop::wire::DesktopBootstrapOffer;
+pub use production_desktop::wire::DesktopBootstrapStatus;
+pub use production_desktop::wire::DesktopCapture;
+pub use production_desktop::wire::DesktopInput;
+pub use production_desktop::wire::DesktopObservationRequest;
+pub use production_desktop::wire::DesktopReceipt;
+pub use production_desktop::wire::DesktopTargetIdentity;
+pub use production_desktop::wire::InputAction;
+pub use production_desktop::wire::InputEvent;
+pub use production_desktop::wire::InputResult;

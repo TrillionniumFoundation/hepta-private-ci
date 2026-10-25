@@ -68,8 +68,8 @@ pub use hos2_owner::Hos2RetirementPermit;
 
 #[path = "production_notes_owner.rs"]
 mod notes_owner;
-pub(crate) use notes_owner::NotesPreDispatchRejection;
 pub use notes_owner::NotesRetirementPermit;
+pub(crate) use notes_owner::PrivateOrganPreDispatchRejection;
 
 #[path = "production_hos2_execution.rs"]
 mod hos2_execution;
@@ -1025,8 +1025,11 @@ impl ProductionDurableWriter {
                             LocalReconcileOutcome::Committed,
                         )
                         .await?;
-                    } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
-                        self.settle_notes_terminal(
+                    } else if matches!(
+                        request.topic.as_str(),
+                        crate::NOTES_REPLACE_TOPIC_V1 | crate::DESKTOP_INPUT_TOPIC_V1
+                    ) {
+                        self.settle_private_organ_terminal(
                             &request,
                             &receipt,
                             LocalReconcileOutcome::Committed,
@@ -1046,8 +1049,11 @@ impl ProductionDurableWriter {
                             LocalReconcileOutcome::Rejected,
                         )
                         .await?;
-                    } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
-                        self.settle_notes_terminal(
+                    } else if matches!(
+                        request.topic.as_str(),
+                        crate::NOTES_REPLACE_TOPIC_V1 | crate::DESKTOP_INPUT_TOPIC_V1
+                    ) {
+                        self.settle_private_organ_terminal(
                             &request,
                             &reason,
                             LocalReconcileOutcome::Rejected,
@@ -1665,13 +1671,19 @@ impl ProductionDurableWriter {
         inherited: bool,
         reason: String,
     ) -> Result<ProductionOutcomeReceipt, ProductionWriterError> {
-        if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+        if matches!(
+            request.topic.as_str(),
+            crate::NOTES_REPLACE_TOPIC_V1 | crate::DESKTOP_INPUT_TOPIC_V1
+        ) {
             self.verify_authority().await?;
-            let proof =
-                NotesPreDispatchRejection::at_rejected_entry(request, dispatch_event_id, reason);
+            let proof = PrivateOrganPreDispatchRejection::at_rejected_entry(
+                request,
+                dispatch_event_id,
+                reason,
+            );
             Ok(self
                 .lease
-                .reject_notes_before_dispatch(&proof)
+                .reject_private_organ_before_dispatch(&proof)
                 .await?
                 .into())
         } else if inherited {
@@ -1697,9 +1709,16 @@ impl ProductionDurableWriter {
                 let local = if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
                     self.settle_hos2_terminal(&request, &receipt, LocalReconcileOutcome::Committed)
                         .await?
-                } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
-                    self.settle_notes_terminal(&request, &receipt, LocalReconcileOutcome::Committed)
-                        .await?
+                } else if matches!(
+                    request.topic.as_str(),
+                    crate::NOTES_REPLACE_TOPIC_V1 | crate::DESKTOP_INPUT_TOPIC_V1
+                ) {
+                    self.settle_private_organ_terminal(
+                        &request,
+                        &receipt,
+                        LocalReconcileOutcome::Committed,
+                    )
+                    .await?
                 } else {
                     self.reconcile(occurrence_key, LocalReconcileOutcome::Committed)
                         .await?
@@ -1718,9 +1737,16 @@ impl ProductionDurableWriter {
                 let local = if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
                     self.settle_hos2_terminal(&request, &reason, LocalReconcileOutcome::Rejected)
                         .await?
-                } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
-                    self.settle_notes_terminal(&request, &reason, LocalReconcileOutcome::Rejected)
-                        .await?
+                } else if matches!(
+                    request.topic.as_str(),
+                    crate::NOTES_REPLACE_TOPIC_V1 | crate::DESKTOP_INPUT_TOPIC_V1
+                ) {
+                    self.settle_private_organ_terminal(
+                        &request,
+                        &reason,
+                        LocalReconcileOutcome::Rejected,
+                    )
+                    .await?
                 } else {
                     self.reconcile(occurrence_key, LocalReconcileOutcome::Rejected)
                         .await?
@@ -1782,8 +1808,11 @@ impl ProductionDurableWriter {
                         LocalReconcileOutcome::Committed,
                     )
                     .await
-                } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
-                    self.settle_notes_terminal(
+                } else if matches!(
+                    request.topic.as_str(),
+                    crate::NOTES_REPLACE_TOPIC_V1 | crate::DESKTOP_INPUT_TOPIC_V1
+                ) {
+                    self.settle_private_organ_terminal(
                         &request,
                         &target_receipt,
                         LocalReconcileOutcome::Committed,
@@ -1811,9 +1840,16 @@ impl ProductionDurableWriter {
                 let local = if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
                     self.settle_hos2_terminal(&request, &reason, LocalReconcileOutcome::Rejected)
                         .await?
-                } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
-                    self.settle_notes_terminal(&request, &reason, LocalReconcileOutcome::Rejected)
-                        .await?
+                } else if matches!(
+                    request.topic.as_str(),
+                    crate::NOTES_REPLACE_TOPIC_V1 | crate::DESKTOP_INPUT_TOPIC_V1
+                ) {
+                    self.settle_private_organ_terminal(
+                        &request,
+                        &reason,
+                        LocalReconcileOutcome::Rejected,
+                    )
+                    .await?
                 } else {
                     self.reject(occurrence_key, &reason).await?
                 };
