@@ -1,9 +1,9 @@
 //! Shared journal and witness transaction for neuron execution.
 
 use super::*;
-use std::time::Instant;
-use codex_hepta_types::AuthorityPosture;
 use crate::SparseTick;
+use codex_hepta_types::AuthorityPosture;
+use std::time::Instant;
 
 impl<W: AnchorWitnessStore> NeuronRuntime<W> {
     pub(super) fn tick_profile(
@@ -105,40 +105,39 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             queue_age_micros: model_output.queue_age_micros,
         };
         let output = if let Some(config) = &self.calibrated {
-            let (confidence_ppm, ood_ppm, abstain) = calibrate(
-                &config.calibration, &sparse_receipt, input.logical_sequence,
-            )?;
+            let (confidence_ppm, ood_ppm, abstain) =
+                calibrate(&config.calibration, &sparse_receipt, input.logical_sequence)?;
             let abstain = abstain || resource_exceeded;
-        let tick_receipt = NeuronTickReceiptV1 {
-            tick_id: input.tick_id.clone(),
-            checkpoint_before: sparse_receipt.checkpoint_before,
-            checkpoint_after: sparse_receipt.checkpoint_after,
-            activation_digest,
-            active_indices,
-            sparsity_ppm: sparse_receipt.active_fraction_ppm,
-            threshold_digest,
-            eligibility_digest,
-            prediction_error_q24: sparse_receipt.prediction_error_q24,
-            confidence_ppm,
-            ood_ppm,
-            abstain,
-            resource_receipt,
-        };
-        let signal = NeuronSignalReceiptV1 {
-            signal_set_id: input.tick_id,
-            model_runtime_digest,
-            temporal_state_digest: checkpoint.temporal_state_digest(),
-            signals_q24: sparse_receipt.activation_q24.clone(),
-            activation_sparsity_ppm: sparse_receipt.active_fraction_ppm,
-            ood_ppm,
-            abstain,
-            authority: AuthorityPosture::DENY_ALL,
-        };
-        ProfileOutput::Calibrated(NeuronRuntimeOutputV1 {
-            tick: tick_receipt,
-            signal,
-            model_runtime: model_output.runtime_receipt,
-        })
+            let tick_receipt = NeuronTickReceiptV1 {
+                tick_id: input.tick_id.clone(),
+                checkpoint_before: sparse_receipt.checkpoint_before,
+                checkpoint_after: sparse_receipt.checkpoint_after,
+                activation_digest,
+                active_indices,
+                sparsity_ppm: sparse_receipt.active_fraction_ppm,
+                threshold_digest,
+                eligibility_digest,
+                prediction_error_q24: sparse_receipt.prediction_error_q24,
+                confidence_ppm,
+                ood_ppm,
+                abstain,
+                resource_receipt,
+            };
+            let signal = NeuronSignalReceiptV1 {
+                signal_set_id: input.tick_id,
+                model_runtime_digest,
+                temporal_state_digest: checkpoint.temporal_state_digest(),
+                signals_q24: sparse_receipt.activation_q24.clone(),
+                activation_sparsity_ppm: sparse_receipt.active_fraction_ppm,
+                ood_ppm,
+                abstain,
+                authority: AuthorityPosture::DENY_ALL,
+            };
+            ProfileOutput::Calibrated(NeuronRuntimeOutputV1 {
+                tick: tick_receipt,
+                signal,
+                model_runtime: model_output.runtime_receipt,
+            })
         } else {
             ProfileOutput::Shadow(NeuronShadowOutputV1 {
                 tick_id: input.tick_id,
@@ -174,5 +173,4 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         }
         Ok(output)
     }
-
 }

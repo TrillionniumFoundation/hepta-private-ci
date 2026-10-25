@@ -152,9 +152,9 @@ impl ProductionDurableWriter {
         &self,
         admission: &MemoryCellAdmissionV1,
     ) -> Result<(), MemoryCellSourceError> {
-        let current = self.authorize_memory_cell(
-            &admission.access, &admission.query, &admission.claim,
-        ).await?;
+        let current = self
+            .authorize_memory_cell(&admission.access, &admission.query, &admission.claim)
+            .await?;
         if current != admission.binding {
             return Err(MemoryCellSourceError::Invalid("source binding changed"));
         }

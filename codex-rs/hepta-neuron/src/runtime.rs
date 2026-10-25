@@ -9,10 +9,10 @@ use crate::JournalError;
 use crate::JournalScope;
 use crate::NeuronDeletionRebuildPlanV1;
 use crate::NeuronDeletionRebuildReceiptV1;
-use crate::SparseConfig;
-use crate::SparseJournal;
 use crate::NeuronShadowConfigV1;
 use crate::NeuronShadowOutputV1;
+use crate::SparseConfig;
+use crate::SparseJournal;
 use crate::runtime_types::*;
 use crate::validate_deletion_rebuild;
 
@@ -49,7 +49,12 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
     ) -> Result<Self, NeuronRuntimeError> {
         config.validate_native(&native)?;
         let mut runtime = Self::bootstrap_shadow(
-            file, native, scope, max_records, NeuronShadowConfigV1::from(&config), witness,
+            file,
+            native,
+            scope,
+            max_records,
+            NeuronShadowConfigV1::from(&config),
+            witness,
         )?;
         runtime.calibrated = Some(config);
         Ok(runtime)
@@ -99,7 +104,13 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
     ) -> Result<Self, NeuronRuntimeError> {
         config.validate_native(&native)?;
         let mut runtime = Self::recover_shadow(
-            file, native, scope, max_records, NeuronShadowConfigV1::from(&config), anchor, witness,
+            file,
+            native,
+            scope,
+            max_records,
+            NeuronShadowConfigV1::from(&config),
+            anchor,
+            witness,
         )?;
         runtime.calibrated = Some(config);
         Ok(runtime)
@@ -227,9 +238,12 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             .current()
             .map_err(|_| crate::NeuronProtocolError::BindingMismatch("journal"))?
             .ok_or(crate::NeuronProtocolError::BindingMismatch("checkpoint"))?;
-        let config = self.calibrated.as_ref().ok_or(
-            crate::NeuronProtocolError::BindingMismatch("uncalibrated shadow profile"),
-        )?;
+        let config =
+            self.calibrated
+                .as_ref()
+                .ok_or(crate::NeuronProtocolError::BindingMismatch(
+                    "uncalibrated shadow profile",
+                ))?;
         crate::canonical_checkpoint_v1(config, checkpoint, tick, expires_unix_ms)
     }
 

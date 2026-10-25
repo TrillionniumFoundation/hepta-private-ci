@@ -121,11 +121,22 @@ impl AgentdNativeMemoryCell {
         profile: crate::NativeMemoryShadowProfileV1,
         context: C,
     ) -> Result<Arc<crate::AgentdNativeMemoryShadowOwner<C>>, NativeMemoryError> {
-        crate::AgentdNativeMemoryShadowOwner::open(crate::native_memory_tick_owner::NativeShadowHostBinding {
-            writer: Arc::clone(&self.writer), access: self.access.clone(), key: self.key.clone(),
-            claim: self.claim.clone(), model: self.config.clone(), dispatches: Arc::clone(&self.dispatches),
-            capacity: Arc::clone(&self.capacity), cancellation: self.cancellation.clone(),
-        }, files, profile, context).await
+        crate::AgentdNativeMemoryShadowOwner::open(
+            crate::native_memory_tick_owner::NativeShadowHostBinding {
+                writer: Arc::clone(&self.writer),
+                access: self.access.clone(),
+                key: self.key.clone(),
+                claim: self.claim.clone(),
+                model: self.config.clone(),
+                dispatches: Arc::clone(&self.dispatches),
+                capacity: Arc::clone(&self.capacity),
+                cancellation: self.cancellation.clone(),
+            },
+            files,
+            profile,
+            context,
+        )
+        .await
     }
 
     /// Per-process backend dispatch attempts, including failed invocations.
@@ -198,14 +209,14 @@ impl AgentdNativeMemoryCell {
         let owner = Arc::clone(self);
         tokio::spawn(async move {
             let result = owner.execute(admission).await;
-            if let Ok(mut jobs) = owner.jobs.lock() {
-                if let Some((_, record)) = jobs.get_mut(&ingress.invocation_id) {
-                    match result {
-                        Ok(completed) => *record = completed,
-                        Err(error) => {
-                            record.state = MemoryCellReadState::Rejected;
-                            record.refusal = Some(error.to_string().chars().take(2048).collect());
-                        }
+            if let Ok(mut jobs) = owner.jobs.lock()
+                && let Some((_, record)) = jobs.get_mut(&ingress.invocation_id)
+            {
+                match result {
+                    Ok(completed) => *record = completed,
+                    Err(error) => {
+                        record.state = MemoryCellReadState::Rejected;
+                        record.refusal = Some(error.to_string().chars().take(2048).collect());
                     }
                 }
             }

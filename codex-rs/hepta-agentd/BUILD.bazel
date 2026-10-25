@@ -15,11 +15,11 @@ codex_rust_crate(
     name = "hepta-agentd",
     crate_name = "codex_hepta_agentd",
     integration_test_timeout = "long",
-    unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
     test_data_extra = [
         "//scripts/memory_cell_native:native_tick_contract.py",
         "//scripts/memory_cell_native:native_tick_interop.py",
     ],
+    unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
 )
 
 # Compile the local writer qualification separately from the default product
@@ -39,12 +39,12 @@ rust_library(
 
 rust_test(
     name = "hepta-agentd-cognitive-write-qualification-test-bin",
+    crate = ":hepta-agentd-cognitive-write-qualification-lib",
+    crate_features = ["qualification-cognitive-write"],
     data = [
         "//scripts/memory_cell_native:native_tick_contract.py",
         "//scripts/memory_cell_native:native_tick_interop.py",
     ],
-    crate = ":hepta-agentd-cognitive-write-qualification-lib",
-    crate_features = ["qualification-cognitive-write"],
     rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [
         "--remap-path-prefix=../codex-rs=",
         "--remap-path-prefix=codex-rs=",

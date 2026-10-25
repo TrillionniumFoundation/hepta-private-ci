@@ -1,8 +1,17 @@
 //! Uncalibrated model bindings and observations, with no signal promotion API.
 
-use codex_hepta_types::{AuthorityPosture, Digest32, Generation, StableId};
-use crate::{JournalError, SparseConfig};
-use crate::runtime_types::{LocalModelRuntimeReceiptV1, NeuronResourceEnvelopeV1, NeuronResourceReceiptV1, NeuronRuntimeConfigV1, NeuronRuntimeError, push_id};
+use crate::JournalError;
+use crate::SparseConfig;
+use crate::runtime_types::LocalModelRuntimeReceiptV1;
+use crate::runtime_types::NeuronResourceEnvelopeV1;
+use crate::runtime_types::NeuronResourceReceiptV1;
+use crate::runtime_types::NeuronRuntimeConfigV1;
+use crate::runtime_types::NeuronRuntimeError;
+use crate::runtime_types::push_id;
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 
 /// An explicitly registered execution profile. It contains no calibration,
 /// measured ECE, false-acceptance estimate, or permission to emit a signal.
@@ -72,20 +81,43 @@ impl NeuronShadowConfigV1 {
         push_id(&mut bytes, &self.config_id)?;
         push_id(&mut bytes, &self.model_id)?;
         bytes.extend_from_slice(&self.generation.get().to_be_bytes());
-        for digest in [self.model_manifest_digest, self.encoder_digest, self.head_digest,
-            self.weights_digest, self.tokenizer_digest, self.preprocessor_digest,
-            self.quantization_digest, self.runtime_digest, self.device_digest,
-            self.normalization_digest, self.native_config_digest] {
-            if digest.is_zero() { return Err(NeuronRuntimeError::InvalidConfig); }
+        for digest in [
+            self.model_manifest_digest,
+            self.encoder_digest,
+            self.head_digest,
+            self.weights_digest,
+            self.tokenizer_digest,
+            self.preprocessor_digest,
+            self.quantization_digest,
+            self.runtime_digest,
+            self.device_digest,
+            self.normalization_digest,
+            self.native_config_digest,
+        ] {
+            if digest.is_zero() {
+                return Err(NeuronRuntimeError::InvalidConfig);
+            }
             bytes.extend_from_slice(digest.as_array());
         }
-        for value in [self.input_feature_dimension, self.state_width, self.modulator_dimension] {
-            bytes.extend_from_slice(&u64::try_from(value).map_err(|_| NeuronRuntimeError::Arithmetic)?.to_be_bytes());
+        for value in [
+            self.input_feature_dimension,
+            self.state_width,
+            self.modulator_dimension,
+        ] {
+            bytes.extend_from_slice(
+                &u64::try_from(value)
+                    .map_err(|_| NeuronRuntimeError::Arithmetic)?
+                    .to_be_bytes(),
+            );
         }
         let resource = &self.resource_envelope;
-        for value in [resource.p95_latency_micros, resource.p99_latency_micros,
-            resource.transient_allocation_bytes, resource.checkpoint_bytes,
-            u64::from(resource.write_amplification_ppm)] {
+        for value in [
+            resource.p95_latency_micros,
+            resource.p99_latency_micros,
+            resource.transient_allocation_bytes,
+            resource.checkpoint_bytes,
+            u64::from(resource.write_amplification_ppm),
+        ] {
             bytes.extend_from_slice(&value.to_be_bytes());
         }
         Ok(Digest32::of_bytes(&bytes))

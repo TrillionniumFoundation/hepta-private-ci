@@ -532,7 +532,10 @@ pub(crate) fn subject_scope_digest(subject: &StableId) -> Result<Digest32, Neuro
     Ok(Digest32::of_bytes(&bytes))
 }
 
-pub(crate) fn body_digest(config: &crate::NeuronShadowConfigV1, input: &NeuronTickInputV1) -> Digest32 {
+pub(crate) fn body_digest(
+    config: &crate::NeuronShadowConfigV1,
+    input: &NeuronTickInputV1,
+) -> Digest32 {
     let mut bytes = b"hepta.neuron.body-binding.v1".to_vec();
     bytes.extend_from_slice(config.head_digest.as_array());
     bytes.extend_from_slice(&config.generation.get().to_be_bytes());

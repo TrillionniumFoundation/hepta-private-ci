@@ -20,8 +20,8 @@ use codex_hepta_types::StableId;
 use serde::Serialize;
 
 use crate::native_memory_process;
-use crate::native_memory_types::*;
 use crate::native_memory_tick_binding::NativeTickBindingV1;
+use crate::native_memory_types::*;
 
 pub(crate) struct NativeMemoryModelPort {
     writer: Arc<ProductionDurableWriter>,
@@ -108,12 +108,18 @@ impl NativeMemoryModelPort {
         request: &NeuronModelRequestV1,
     ) -> Result<(), NativeMemoryError> {
         let mut expected = self.expected.clone();
-        expected.input_digest = input.semantic_digest()
+        expected.input_digest = input
+            .semantic_digest()
             .map_err(|e| NativeMemoryError::Rejected(e.to_string()))?;
-        if self.attempted || self.tick_binding.is_some() || request != &expected
+        if self.attempted
+            || self.tick_binding.is_some()
+            || request != &expected
             || request.request_id != input.tick_id
-            || request.feature_vector_q24 != input.feature_vector_q24 {
-            return Err(NativeMemoryError::Rejected("tick differs from admitted native model tuple".to_string()));
+            || request.feature_vector_q24 != input.feature_vector_q24
+        {
+            return Err(NativeMemoryError::Rejected(
+                "tick differs from admitted native model tuple".to_string(),
+            ));
         }
         self.tick_binding = Some(NativeTickBindingV1::new(input, self.admission.binding())?);
         self.expected = expected;
@@ -157,7 +163,11 @@ impl NativeMemoryModelPort {
             .question()
             .map_err(|e| reject(e.to_string()))?;
         let wire = WorkerRequest {
-            schema: if self.tick_binding.is_some() { "hepta.memory-cell.native-request.v2" } else { "hepta.memory-cell.native-request.v1" },
+            schema: if self.tick_binding.is_some() {
+                "hepta.memory-cell.native-request.v2"
+            } else {
+                "hepta.memory-cell.native-request.v1"
+            },
             repo: &self.config.repo,
             model: &self.config.model,
             checkpoint: &self.config.checkpoint,
