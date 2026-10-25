@@ -5,6 +5,99 @@
 //! It does not implement a second runtime kernel or a fleet-wide message bus.
 
 mod app_runtime;
+#[cfg(target_os = "linux")]
+mod authority_host_consumer_frontier;
+#[cfg(target_os = "linux")]
+pub use authority_host_consumer_frontier::HostConsumerFrontier;
+#[cfg(target_os = "linux")]
+mod authority_host_checkpoint;
+#[cfg(target_os = "linux")]
+pub use authority_host_checkpoint::HostCognitiveCheckpoint;
+#[cfg(target_os = "linux")]
+pub use authority_host_checkpoint::HostCognitiveCheckpointRegistration;
+#[cfg(target_os = "linux")]
+pub use authority_host_checkpoint::RetainedCheckpointPublisher;
+#[cfg(target_os = "linux")]
+mod authority_host_wire;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HOST_AUTHORITY_OBSERVATION_V2;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HOST_WRITER_AUTHORIZATION_V1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostAuthorityObservationRequestV2;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostAuthorityObservationResponseV2;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostAuthorityWriterObservationV2;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostConsumerFrontierRequestV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostConsumerFrontierResponseV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostConsumerFrontierStatusV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostSignedWriterAuthorizationV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostWriterAuthorizationClaimsV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostWriterAuthorizationReadRequestV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostWriterAuthorizationReadResponseV1;
+
+#[cfg(target_os = "linux")]
+mod authority_host_bootstrap;
+#[cfg(target_os = "linux")]
+mod authority_host_config;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HOST_AUTHORITY_BOOTSTRAP_BOUND;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HOST_AUTHORITY_BOOTSTRAP_V1;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HostAuthorityFiveLanePathsV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HostAuthorityPublicBootstrapV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HostAuthorityPublicConsumerV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HostAuthorityPublicConsumersV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HostAuthorityPublicIssuerKeyV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_config::HostAuthorityConsumerConfig;
+#[cfg(target_os = "linux")]
+pub use authority_host_config::HostAuthorityConsumersConfig;
+#[cfg(target_os = "linux")]
+pub use authority_host_config::HostAuthorityRegisteredIdentity;
+#[cfg(target_os = "linux")]
+mod authority_host_runtime;
+#[cfg(target_os = "linux")]
+mod authority_host_service;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::initialize_host_authority;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::register_host_writer_authorization;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::serve_host_authority_session;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::HostAuthorityLane;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::HostAuthorityService;
+#[cfg(target_os = "linux")]
+mod root_authority_session;
+#[cfg(target_os = "linux")]
+mod root_observation_cache;
+#[cfg(target_os = "linux")]
+mod root_observation_stream;
+#[cfg(target_os = "linux")]
+pub use root_authority_session::AgentdRootAuthoritySession;
+#[cfg(target_os = "linux")]
+mod root_writer_proof;
+#[cfg(target_os = "linux")]
+pub use root_observation_stream::AgentdRootAuthorityPeer;
+#[cfg(target_os = "linux")]
+pub use root_writer_proof::AgentdRootAuthorityError;
+#[cfg(target_os = "linux")]
+pub use root_writer_proof::AgentdRootWriterTrust;
 mod authbus_checkpoint;
 mod authbus_dispatch;
 mod authbus_ingress;
@@ -14,12 +107,28 @@ mod automation_effect_host;
 mod automation_recovery;
 mod browser_servo;
 mod client;
+#[cfg(target_os = "linux")]
+mod cognitive_checkpoint_unix;
 mod cognitive_context;
 mod cognitive_ranker;
 mod cognitive_retrieval_context;
 mod cognitive_retrieval_learning;
 mod config;
 mod control;
+#[cfg(target_os = "linux")]
+mod deployment_frontier;
+#[cfg(target_os = "linux")]
+pub use deployment_frontier::DeploymentFrontierStore;
+#[cfg(target_os = "linux")]
+mod deployment_issuer;
+#[cfg(target_os = "linux")]
+pub use deployment_issuer::DeploymentFinalUseIssuer;
+#[cfg(target_os = "linux")]
+pub use deployment_issuer::DeploymentGrantPolicy;
+#[cfg(target_os = "linux")]
+pub use deployment_issuer::DeploymentIssuerObserver;
+#[cfg(target_os = "linux")]
+pub use deployment_issuer::HostAuthorityWriterRegistration;
 mod error;
 mod event_buffer;
 mod evidence_frontier;
@@ -155,6 +264,10 @@ pub use codex_hepta_automation::AutomationTaskId;
 pub use codex_hepta_automation::AutomationTimeZoneProfileV1;
 pub use codex_hepta_automation::AutomationTimezoneTransitionV1;
 pub use codex_hepta_memory::RetrievalExecutionContextV1;
+#[cfg(target_os = "linux")]
+pub use cognitive_checkpoint_unix::AgentdCognitiveCheckpointPeer;
+#[cfg(target_os = "linux")]
+pub use cognitive_checkpoint_unix::AgentdUnixCognitiveCheckpointTransport;
 pub use cognitive_ranker::CurrentCognitiveRegistry;
 pub use cognitive_ranker::PinnedCognitiveRanker;
 pub use cognitive_ranker::cognitive_action_id;
@@ -263,6 +376,7 @@ pub use production_composition::attach_production_operation_host;
 pub use production_writer_host::AgentdFinalUseGrantProvider;
 pub use production_writer_host::AgentdProductionOperationRuntimeConfig;
 pub use production_writer_host::AgentdProductionWriterHost;
+pub use production_writer_host::AgentdProtectedCheckpointInputs;
 pub use prompt_runtime::AgentdPromptPipelineError;
 pub use prompt_runtime::AgentdPromptPipelineOwner;
 pub use prompt_runtime::AgentdPromptRuntimeError;
@@ -293,3 +407,5 @@ mod desktop_bootstrap;
 mod desktop_channel;
 #[cfg(target_os = "linux")]
 pub use desktop_bootstrap::receive_desktop_session;
+
+pub use objective_runtime::authbus_objective_claims;

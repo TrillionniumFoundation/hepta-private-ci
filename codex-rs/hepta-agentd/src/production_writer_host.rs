@@ -41,6 +41,9 @@ use codex_hepta_memory::ProductionFinalUseOutboxDispatcher;
 use crate::AgentdConfig;
 use crate::AgentdError;
 use crate::grant_provider_worker::GrantProviderWorker;
+#[path = "production_protected_host.rs"]
+mod protected_host;
+pub use protected_host::AgentdProtectedCheckpointInputs;
 
 /// Externally owned grant source. Agentd asks for a grant bound to the exact
 /// FinalUseBinding; it never receives or constructs the issuer signing key.
@@ -321,6 +324,23 @@ impl AgentdProductionWriterHost {
         .map_err(|error| {
             AgentdError::Protocol(format!("recover production cognitive store: {error}"))
         })?;
+        Self::from_recovered_store(
+            store,
+            authority,
+            verifier,
+            lease_id.into(),
+            lease_generation,
+        )
+        .await
+    }
+
+    async fn from_recovered_store(
+        store: CognitiveStore,
+        authority: ProductionAuthorityLease,
+        verifier: Arc<dyn ProductionAuthorityVerifier>,
+        lease_id: String,
+        lease_generation: u64,
+    ) -> Result<Self, AgentdError> {
         let runtime_store = store.clone();
         let writer = match ProductionDurableWriter::open_with_live_verifier(
             store,
