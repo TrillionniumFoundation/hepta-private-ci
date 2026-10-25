@@ -707,21 +707,28 @@ Summary fields or a short successful burst cannot establish sustained tail laten
 must compare the same workload and limits with overload/fault cases retained.
 
 PN0's current native pair pins Chain source
-`a6209f91d6cb8211e7d193279c920ddeb5a37a2f`, tree
-`6a7c4d581cdeb91d82fba96a0026ce2f526dce23`, and preserves main base
+`630f871293e48588e0a1ceae7ceb64973d3ec31d`, tree
+`c32644ac308156d1be4a05bcf83bb40705765c3c`, and preserves main base
 `9fedf7ecbbe07177069c030592b4e03dcffebb81`. The source-head lane executes
 that source; the base-merge lane uses published qualification object
-`d8bc149e8a6ee339a29cda4da5219bb38d1c2524`, ordered parents
-`[9fedf7ec, a6209f91]`, with the unchanged canonical merge-tree checks.
+`a8950fcb2b0f7a0b33e9a313b6fd2785a88a7b3b`, ordered parents
+`[9fedf7ec, 630f8712]`, with the unchanged canonical merge-tree checks.
 The separate actual #328 integration preview is
-`a1ddc0f7fc77e168b52bb92b52aaa215bf796363`, ordered parents
-`[57c1ed54, a6209f91]`. Both trees reproduce the source tree, but the main
-qualification object is not that PR preview or a performed merge. No branch
-was activated or advanced by publishing the qualification object. All 65 pair
+`32622f287d96bcb4ba18e827c42bd57c0d34349d`, ordered parents
+`[57c1ed54, 630f8712]`. Both trees reproduce the source tree, but the main
+qualification object is not that PR preview or a performed merge. Publishing the qualification object did not merge #328 or activate a runtime. All 65 pair
 steps, including 57 executable run bodies, native commands, minimum-test counts
 and four Linux lanes are preserved;
 their current head/merge execution receipts and Windows sixteen-group results
 must still finish before merge eligibility can be claimed.
+
+The preceding source `a6209f91d6cb8211e7d193279c920ddeb5a37a2f`
+used tree `6a7c4d581cdeb91d82fba96a0026ce2f526dce23`, main qualification
+`d8bc149e8a6ee339a29cda4da5219bb38d1c2524` and actual integration preview
+`a1ddc0f7fc77e168b52bb92b52aaa215bf796363`; these observations remain historical
+and do not qualify the current source. The current source retains the raw-U
+retirement implementation and both local and 4060 original-model outcomes in
+the existing paired evidence, including the unresolved first-query failure.
 
 The previous native pair pinned Chain source
 `ef2a6958a6f3d8fdfaea25fbc58fb1ecd188134c`, tree
