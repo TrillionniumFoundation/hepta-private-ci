@@ -1,0 +1,254 @@
+{
+  "schema": "hepta.ndu-fresh-training-factorial.v1",
+  "status": "template_requires_audited_exposure_census_and_published_resolved_protocol",
+  "study_id": "fresh-matched-training-factor-isolation-20261025-v1",
+  "original_source_commit": "b98961ceb71414490e1c6ae397cf635bca3093f4",
+  "original_evidence_commit": "406a926f8fdfd1eed28abc9cfe449daa1fea02cc",
+  "prior_protocol_canonical_sha256": "d46eba91baaec2988756a5730f4be337b9f61cc904491447ce56374dc75c7af2",
+  "required_prior_pixel_count": 360,
+  "original_source_files": {
+    "../conditioned.py": "ccb5f9a78e58d6f1d1511a95f50de3602e1f39e7254fce5566e97a994d5b4cba",
+    "../data.py": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29",
+    "../neural.py": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742",
+    "../observer.py": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e",
+    "../plan_training.py": "b43ff714960139d4b58d02dec86b69d27ac51d5abfd75509936ee2c5c355997b"
+  },
+  "environment": {
+    "python_major_minor": "3.12",
+    "reference_python": "3.12.14",
+    "python_patch_policy": "record patch; require identical actual environment across stages; no cross-host bit-equivalence claim",
+    "packages": {
+      "numpy": "2.3.5",
+      "torch": "2.14.1+cpu",
+      "Pillow": "12.3.0"
+    },
+    "threads": 2,
+    "device": "cpu",
+    "deterministic_algorithms": true
+  },
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "arms": {
+    "b0g0": {
+      "base": "supervised",
+      "gate": "supervised"
+    },
+    "b0g1": {
+      "base": "supervised",
+      "gate": "terminal_entropic_ndu"
+    },
+    "b1g0": {
+      "base": "terminal_entropic_ndu",
+      "gate": "supervised"
+    },
+    "b1g1": {
+      "base": "terminal_entropic_ndu",
+      "gate": "terminal_entropic_ndu"
+    }
+  },
+  "base_training": {
+    "architecture": "public-command-film-layernorm-v1",
+    "batch_size": 64,
+    "hidden": 96,
+    "learning_rate": 0.001,
+    "noise_scale": 0.15,
+    "refinement_steps": 3,
+    "risk_aversion": 2,
+    "scenarios": 2,
+    "steps": 2000,
+    "threads": 2
+  },
+  "gate_fit": {
+    "fit_pairs": 128,
+    "steps": 120,
+    "scenarios": 2,
+    "risk_aversion": 2
+  },
+  "expected_gate_fits": 12,
+  "expected_gate_optimizer_updates": 1440,
+  "fixed_suffix": [
+    "refine_image",
+    "refine_text",
+    "couple"
+  ],
+  "noise_seed_recipe": "seed * 10000 + case index; common across all four arms",
+  "case_order": "future indices then retention indices; every seed uses every case",
+  "arm_order_seed": 431125,
+  "dynamic_controller": false,
+  "forecast": false,
+  "common_inference_calls": {
+    "encoder": 1,
+    "gate": 1,
+    "initial_transitions": 2,
+    "suffix_transitions": 3,
+    "decoder": 1,
+    "emitted_modalities": 2,
+    "audit_observer": 0,
+    "forecast": 0,
+    "search": 0
+  },
+  "audit_crop_predictions_per_output": 2,
+  "cost_scope": "all fresh optimizer work plus preparation, inference, separate-process full replay, scoring, interpreter startup and failed stages; fixed structural calls matched; no equal-latency, FLOP or energy claim",
+  "dataset_manifest_sha256": "224911f36aa829245ad5a0fbe8ee0c971147150ee848183404781279592f1f39",
+  "source_files": [
+    {
+      "bytes": 9912422,
+      "md5": "f68b3c2dcbeaaa9fbdd348bbdeb94873",
+      "name": "train-images-idx3-ubyte.gz",
+      "sha256": "440fcabf73cc546fa21475e81ea370265605f56be210a4024d2ca8f203523609",
+      "url": "https://ossci-datasets.s3.amazonaws.com/mnist/train-images-idx3-ubyte.gz"
+    },
+    {
+      "bytes": 28881,
+      "md5": "d53e105ee54ea40749a09fcbcd1e9432",
+      "name": "train-labels-idx1-ubyte.gz",
+      "sha256": "3552534a0a558bbed6aed32b30c495cca23d567ec52cac8be1a0730e8010255c",
+      "url": "https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz"
+    },
+    {
+      "bytes": 1648877,
+      "md5": "9fb629c4189551a2d022fa330f9573f3",
+      "name": "t10k-images-idx3-ubyte.gz",
+      "sha256": "8d422c7b0a1c1c79245a5bcf07fe86e33eeafee792b84584aec276f5a2dbc4e6",
+      "url": "https://ossci-datasets.s3.amazonaws.com/mnist/t10k-images-idx3-ubyte.gz"
+    },
+    {
+      "bytes": 4542,
+      "md5": "ec29112dd5afa0611ce80d1b7f02629c",
+      "name": "t10k-labels-idx1-ubyte.gz",
+      "sha256": "f7ae60f92e00ec6debd23a6088c31dbd2371eca3ffa0defaefb259924204aec6",
+      "url": "https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz"
+    }
+  ],
+  "expected_cases": {
+    "future": 60,
+    "retention": 30
+  },
+  "case_ranges": {
+    "future": {
+      "offset": 120,
+      "count": 60
+    },
+    "retention": {
+      "offset": 60,
+      "count": 30
+    }
+  },
+  "corruptions": [
+    "clean",
+    "occlusion",
+    "missing",
+    "heavy_noise",
+    "wrong_hint",
+    "missing_no_hint"
+  ],
+  "development_only_pair_ranges": {
+    "future": [
+      900,
+      999
+    ],
+    "retention": [
+      450,
+      499
+    ]
+  },
+  "reserve_policy": "unselected source identities absent from the audited exposure census and development ranges remain reserved without pixels or target labels; source ranges do not silently change on overlap",
+  "expected_rows": 1080,
+  "primary": {
+    "metric": "joint_loss",
+    "split": "future",
+    "contrasts": [
+      "base_main_effect",
+      "gate_main_effect",
+      "interaction"
+    ],
+    "family_size": 3,
+    "alpha": 0.05,
+    "bootstrap_replicates": 10000,
+    "bootstrap_seed": 431125,
+    "stratify": "corruption",
+    "fixed_seed_average_first": true,
+    "improvement_rule": "upper endpoint below zero for main effects; interaction is reported with direction and interval, not an improvement gate"
+  },
+  "secondary": [
+    "joint_fact_correct",
+    "per-seed four-cell effects",
+    "CVaR90 descriptive",
+    "clean-retention point estimates, not forgetting",
+    "all actual time/cost including replay and training"
+  ],
+  "control_invariants": [
+    "Same original seeded initializer and 2000-update batch/action/noise recipe for the two base objectives per seed",
+    "Same gate initializer, 120-update schedule, training source pairs, utility table within each new base",
+    "Two new disjoint-source observers; Audit B never supplied to base or gate training",
+    "Same paired new sources and latent noise across four arms",
+    "Exact same three-action suffix, no online controller or forecasting",
+    "Twenty new model files bound by append-only generation seal before heldout inference; 1080 emitted outputs replayed before final access"
+  ],
+  "final_access": "one pre-registered absolute source owner; create-only data and final ledger after complete checkpoint/output seals and label-free replay audit; alternate harness output cannot create another cohort owner",
+  "metric_sha256": "14f83e58554ed1293fbf3bdea4232caf5cee1c473f28e8301da47b6a5450b72d",
+  "metric": {
+    "image_observer": "separate_source_pool_frozen_mnist_classifier",
+    "raw_modalities": [
+      "text/utf-8",
+      "image/png;grayscale;56x28"
+    ],
+    "schema": "hepta.ndu-v6.joint-observation.v1",
+    "unsupported": [
+      "natural_language_generalization",
+      "audio",
+      "video",
+      "human_verified_semantics",
+      "authenticated_outcome_owner"
+    ],
+    "utility": "1 - 2 * joint_loss",
+    "weights": {
+      "crossmodal_disagreement": 0.1,
+      "image_fact": 0.35,
+      "pixel_mse": 0.1,
+      "relation": 0.15,
+      "text_fact": 0.3
+    }
+  },
+  "scope": "Constructed MNIST digit-pair text/image domain; six newly trained bases, two newly trained observers, twelve newly fitted gates and three original fixed seeds. Conditional source-sampling uncertainty; no independent-seed replication, recovered-old-weight, pooled-old-outcome, dynamic-controller, AGI or production claim.",
+  "gate_factor_scope": "hard mean-best imitation versus direct finite entropic utility is an objective package, not isolated risk aversion",
+  "source_census_requirement": "All mandatory exact published v6 records plus reviewed named prior-evidence roots; 360 original pixels, validation-only probes, full/replay/owner lineage, and reserved smoke ranges. Unknown source exposure gaps block fresh confirmation. Historical binary archive absence is disclosed, never relabeled recovered.",
+  "authority": "DENY_ALL",
+  "production_authority": false,
+  "fresh_generation": true,
+  "historical_archive_recovered": false,
+  "historical_absolute_outcomes_pooled": false,
+  "environment_confirmation": {
+    "status": "verified_before_source_freeze",
+    "preflight_path": "registration/environment-preflight.json",
+    "preflight_sha256": "f891be2ab1c5d054d76e98ea7b793e5244cbf3785c7c84962ee42ceef50ea183",
+    "confirmation_scope": "Official pinned-version availability checked by root before training; installation and identical actual CPU package versions remain enforced at every stage."
+  },
+  "new_base_optimizer_updates": 12000,
+  "new_observer_optimizer_updates": 600,
+  "base_parameter_count": 1007464,
+  "gate_parameter_count": 3236,
+  "observer_training": {
+    "steps": 300,
+    "sources_per_observer": 5000,
+    "training_per_observer": 4000,
+    "calibration_per_observer": 1000,
+    "seeds": {
+      "reward": 314159,
+      "audit": 161803
+    },
+    "learning_rate": 0.002,
+    "batch_size": 128,
+    "calibration_used_for_selection": false
+  },
+  "resource_budget": {
+    "total_compute_seconds": 1800,
+    "maximum_child_rss_bytes": 2147483648,
+    "maximum_new_evidence_bytes": 1073741824,
+    "threads": 2,
+    "setup_cost_scope": "record separately; not included in the 1800-second harness bound"
+  }
+}

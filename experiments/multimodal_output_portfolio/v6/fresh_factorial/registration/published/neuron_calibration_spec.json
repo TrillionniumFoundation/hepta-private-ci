@@ -1,0 +1,154 @@
+{
+  "authority": "deny_all",
+  "baseline_commit": "b98961ceb71414490e1c6ae397cf635bca3093f4",
+  "calibration": {
+    "additional_metrics": [
+      "joint_success_rate",
+      "semantic_false_acceptance_among_incorrect_outputs",
+      "semantic_error_among_accepted_outputs",
+      "coverage",
+      "per_action_and_domain_counts"
+    ],
+    "confidence": "1000000 - min(1000000, error_q24 * 1000000 // zero_confidence_error_q24)",
+    "ece": "sum_bins(abs(sum(confidence_ppm) - 1000000 * sum(success_label))) / total_rows; fixed bins min(9, confidence_ppm*10//1000001); store ceiling in native ppm",
+    "ece_bins": 10,
+    "failure": "preserve raw metrics and artifacts; construct native profile with measured values unchanged so real bootstrap rejects if any frozen gate fails; never tune scale, model, action or threshold after observing results",
+    "interpretation": "latent persistence confidence is an unqualified hypothesis; semantic success and confidence are not equivalent",
+    "intervals": "report descriptive Wilson 95% OOD-FAR interval, not a gate or guarantee",
+    "maximum_ece_ppm": 30000,
+    "maximum_false_acceptance_ppm": 4999,
+    "maximum_in_domain_error_q24": 16777216,
+    "maximum_ood_ppm": 500000,
+    "minimum_confidence_ppm": 750000,
+    "native_measured_values": "max(calibration_cohort_metric, verification_cohort_metric); bind both complete raw cohorts in artifacts",
+    "ood": "min(1000000, error_q24 * 1000000 // maximum_in_domain_error_q24)",
+    "ood_false_acceptance": "count(predeclared_ood AND ood_ppm <= maximum_ood_ppm) / count(predeclared_ood); store ceiling in native ppm",
+    "undefined_denominator": "report null, never zero; native calibration requires nonempty predeclared OOD cohort",
+    "zero_confidence_error_q24": 33554432
+  },
+  "implementation_status": "draft outside frozen repository; no calibration, model execution or Cargo compilation performed",
+  "native_profile": {
+    "activity_decay_q24": 8388608,
+    "checkpoint_bytes": 1048576,
+    "eligibility_decay_q24": 12582912,
+    "expires_after_sequence": 128,
+    "generation": 1,
+    "inhibition": [],
+    "inhibition_gain_q24": 0,
+    "maximum_active_ppm": 145000,
+    "maximum_projection_count": 0,
+    "minimum_active_ppm": 105000,
+    "p95_latency_micros": 3000,
+    "p99_latency_micros": 8000,
+    "scope": "local cold-process sandbox admission, not production latency qualification or daemon activation",
+    "target_activity_q24": 2097152,
+    "temporal_decay_q24": 8388608,
+    "threshold_max_q24": 16777216,
+    "threshold_min_q24": -16777216,
+    "threshold_rate_q24": 262144,
+    "top_k": 12,
+    "transient_process_resident_charge_bytes": 524288,
+    "valid_from_sequence": 1,
+    "width": 96,
+    "write_amplification_ppm": 4000000
+  },
+  "normative_reference": {
+    "ece": "<=0.03",
+    "file": "docs/learning/NEURAL_BIOMIMICRY_SPEC.md",
+    "ood_false_acceptance": "<0.005; integer-ppm native maximum4999",
+    "resource": "p95<=3ms,p99<=8ms,transient allocation<=512KiB,checkpoint<=1MiB,write-amplification<=4x",
+    "resource_limitation": "Cold-worker process RSS is a separately declared resident-byte charge, never an allocator allocation upper bound; target-host allocation qualification remains unestablished. Runtime will abstain when the measured charge or full execution latency exceeds the fixed envelope.",
+    "sections": [
+      "runtime-cost paragraph",
+      "11 Quantitative acceptance gates"
+    ]
+  },
+  "observations": {
+    "action_assignment": "actions[cohort_ordinal % 4]; exactly one action after initial encode/plan",
+    "actions": [
+      "refine_semantic",
+      "refine_image",
+      "refine_text",
+      "couple"
+    ],
+    "batch_seed": "97531000 + absolute pair index",
+    "content_control": true,
+    "id_assignment": "ordinal < 32; corruption [clean,occlusion,missing,train][(ordinal // 4) % 4]; preserve public missing-digit hints",
+    "id_rows_per_cohort": 32,
+    "noise_seed": "18675000 + absolute pair index",
+    "ood_assignment": "ordinal >= 32; start with clean pair then replace all public pixels and mask by zero, and both digit hints by unknown; retain original keep/swap command",
+    "ood_meaning": "constructed complete visual-evidence absence without digit hints, outside training observation support; declared from public input transformation, not output error or Target",
+    "ood_rows_per_cohort": 32,
+    "prior": "actual initial encoded/plan state of the same public observation before chosen action",
+    "rows_per_cohort": 64,
+    "success_label": "Reward A caption_valid AND text_fact=relation=image_fact=crossmodal_disagreement=0; original raw caption and quantized PNG scored without repair"
+  },
+  "preregistration_history": [
+    {
+      "previous_sha256": "d73b591ecbf32a556129de2722563b72e9586a040471d8caf6f8b3b169b72144",
+      "reason": "Before any checkpoint load or calibration, source review located the normative thresholds; replace illustrative test-profile thresholds, not outcome-based tuning."
+    }
+  ],
+  "projection": {
+    "blocks": [
+      "h",
+      "image",
+      "text",
+      "context"
+    ],
+    "custody": "bind full raw request, all model pins, complete previous state and backend_state_sha256; a lossy projection digest alone is insufficient",
+    "drive": "project(current actual state)",
+    "error": "max_i(abs(drive_q24_i - prediction_q24_i))",
+    "formula": "p_i = tanh((((float64(h_i)+float64(image_i))+float64(text_i))+float64(context_i))/4)",
+    "hidden": 96,
+    "prediction": "project(previous actual state)",
+    "quantization": "round-half-away-from-zero(p_i * 16777216)",
+    "raw_validation": "all 384 IEEE754 float32 values finite and within [-8,8]; no raw clipping",
+    "raw_width": 384,
+    "schema": "hepta.ndu-v6.four-state-tanh-persistence.q24.v1"
+  },
+  "schema": "hepta.ndu-v6.neuron-calibration-spec.v1",
+  "selection": {
+    "artifact_file_hashes": "pin exact selected checkpoint and Reward A bytes once before execution",
+    "checkpoint_name": "seed-17-terminal_entropic_ndu.pt",
+    "experiment": "full-002",
+    "forbidden_inputs": [
+      "audit-observer.pt",
+      "rollouts.jsonl",
+      "formal future cases",
+      "formal retention cases"
+    ],
+    "reward_name": "reward-observer.pt",
+    "seed": 17,
+    "selection_rule": "first registered seed; fixed before formal results; no score-based selection",
+    "training": "terminal_entropic_ndu"
+  },
+  "sources": {
+    "calibration_pair_range_half_open": [
+      640,
+      704
+    ],
+    "excluded_pair_ranges_half_open": [
+      [
+        0,
+        256
+      ],
+      [
+        512,
+        576
+      ]
+    ],
+    "native_minimum_sample_count": null,
+    "native_minimum_sample_count_note": "NeuronCalibrationProfileV1 and CanonicalPolicyProfileV1 do not specify a minimum; 64 is a bounded pilot design, not an independent-statistics certification",
+    "required_capacity_pairs": 768,
+    "required_disjointness": "source IDs and original pixel SHA256 across all named cohorts and excluded ranges",
+    "split": "validation",
+    "split_seed": 271828,
+    "unit": "one observation, one chosen action and one label per nonreplacement source pair",
+    "verification_pair_range_half_open": [
+      704,
+      768
+    ]
+  },
+  "status": "preregistered_before_calibration_not_yet_executed"
+}
