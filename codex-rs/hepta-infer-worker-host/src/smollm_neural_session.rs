@@ -175,27 +175,7 @@ impl Session {
             .ok_or("neural supervisor missing")?
             .try_wait()
             .map_err(|error| error.to_string())?;
-        if !supervisor_status.is_some_and(|status| status.success()) {
-            return Err("neural supervisor did not exit successfully".to_owned());
-        }
-        let receipt: SupervisorReceipt =
-            serde_json::from_slice(&read_bounded(&self.path("supervisor.json"), 1024 * 1024)?)
-                .map_err(|error| error.to_string())?;
-        if receipt.outcome != "success"
-            || receipt.exit_code != Some(0)
-            || receipt.stop_reason.is_some()
-            || !receipt.waited_child_reaped
-            || !receipt.owned_child_reap_resolved
-            || receipt.waited_child_observation_error.is_some()
-            || receipt.budget.wall_seconds != SUPERVISOR_WALL_SECONDS
-            || receipt.budget.rss_bytes != 8 * 1024 * 1024 * 1024
-            || receipt.observed_wall_ns > 600_000_000_000
-            || !receipt
-                .waited_child_peak_rss_bytes
-                .is_some_and(|value| value > 0 && value <= receipt.budget.rss_bytes)
-        {
-            return Err("neural unload lacks a successful original owned-child receipt".to_owned());
-        }
+        verify_terminal_receipt(&self.directory, supervisor_status)?;
         self.supervisor.take();
         Ok(())
     }
@@ -268,6 +248,39 @@ impl Drop for Session {
             });
         }
     }
+}
+
+fn verify_terminal_receipt(
+    directory: &File,
+    supervisor_status: Option<std::process::ExitStatus>,
+) -> Result<(), String> {
+    if !supervisor_status.is_some_and(|status| status.success()) {
+        return Err("neural supervisor did not exit successfully".to_owned());
+    }
+    let receipt: SupervisorReceipt = serde_json::from_slice(&read_bounded(
+        &PathBuf::from(format!(
+            "/proc/self/fd/{}/session/worker/supervisor.json",
+            directory.as_raw_fd()
+        )),
+        1024 * 1024,
+    )?)
+    .map_err(|error| error.to_string())?;
+    if receipt.outcome != "success"
+        || receipt.exit_code != Some(0)
+        || receipt.stop_reason.is_some()
+        || !receipt.waited_child_reaped
+        || !receipt.owned_child_reap_resolved
+        || receipt.waited_child_observation_error.is_some()
+        || receipt.budget.wall_seconds != SUPERVISOR_WALL_SECONDS
+        || receipt.budget.rss_bytes != 8 * 1024 * 1024 * 1024
+        || receipt.observed_wall_ns > 600_000_000_000
+        || !receipt
+            .waited_child_peak_rss_bytes
+            .is_some_and(|value| value > 0 && value <= receipt.budget.rss_bytes)
+    {
+        return Err("neural unload lacks a successful original owned-child receipt".to_owned());
+    }
+    Ok(())
 }
 
 #[derive(Deserialize)]
