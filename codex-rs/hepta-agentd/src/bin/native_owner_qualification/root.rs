@@ -72,6 +72,15 @@ pub fn run(boot: Boot) -> Result<()> {
     )?;
     chown(Path::new(RUN), 0, 60002)?;
     std::fs::set_permissions(RUN, std::fs::Permissions::from_mode(0o2710))?;
+    let mode = super::history::requested_case()?;
+    if Path::new(STATE).exists() {
+        anyhow::ensure!(
+            mode == super::history::Case::CrashAfterApplied,
+            "existing owner only permits explicit historical qualification"
+        );
+        return super::history::historical_root(boot);
+    }
+    super::history::publish_case(mode)?;
     for parent in [
         "/mnt/hepta-store/agent-owner",
         "/mnt/hepta-store/consumer-local",
@@ -229,8 +238,23 @@ pub fn run(boot: Boot) -> Result<()> {
     std::fs::rename(handoff, Path::new(RUN).join("bootstrap.json"))?;
     File::open(RUN)?.sync_all()?;
     println!("HEPTA_NATIVE_ROOT_SERVICE_BEGIN peer_uid=60002 production_ready=false");
+    let crash_monitor = (mode == super::history::Case::CrashAfterApplied).then(|| {
+        let bytes = boot.bytes.clone();
+        let pid = boot.agent_pid;
+        std::thread::spawn(move || {
+            if let Err(error) = super::history::monitor_crash(bytes, pid) {
+                eprintln!("HEPTA_NATIVE_FAILURE crash_monitor={error:#}");
+            }
+        })
+    });
     let result = serve_host_authority_session(&config_path, &registration_path, owner_pidfd);
     println!("HEPTA_NATIVE_ROOT_SERVICE_END result={result:?}");
+    if let Some(monitor) = crash_monitor {
+        let _ = monitor.join();
+        return Err(anyhow::anyhow!(
+            "crash qualification did not end at actual VM kill"
+        ));
+    }
     let mut status = 0;
     anyhow::ensure!(
         unsafe { libc::waitpid(boot.agent_pid as i32, &mut status, 0) } == boot.agent_pid as i32

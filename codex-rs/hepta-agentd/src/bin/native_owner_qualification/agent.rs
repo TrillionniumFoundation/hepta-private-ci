@@ -93,6 +93,10 @@ pub fn run(boot: Boot) -> Result<()> {
     println!(
         "HEPTA_NATIVE_AGENT_CREDENTIALS uid=60002 capabilities=0 no_new_privs=true same_image=true"
     );
+    let mode = super::history::read_case()?;
+    if mode == super::history::Case::Historical {
+        return super::history::historical_agent(&boot, native);
+    }
     let handoff = Path::new(RUN).join("bootstrap.json");
     wait_file(&handoff)?;
     let bundle: HostAuthorityPublicBootstrapV1 = read_json(&handoff, 0)?;
@@ -161,6 +165,14 @@ pub fn run(boot: Boot) -> Result<()> {
         anyhow::ensure!(dispatched.state == LocalOutcomeState::Indeterminate && device.installs.load(Ordering::SeqCst) == 1, "withheld reply state differs");
         let independently_observed = device.native.query(&request.delivery).map_err(anyhow::Error::msg)?;
         anyhow::ensure!(matches!(independently_observed,Hos2DeliveryObservation::Applied {previous_revision:1,revision:2,..}), "native independent history differs");
+        if mode == super::history::Case::CrashAfterApplied {
+            anyhow::ensure!(unsafe { libc::kill(std::process::id() as i32,libc::SIGTERM) } == 0, "daemon stop signal");
+            tokio::time::timeout(Duration::from_secs(15),daemon).await???;
+            anyhow::ensure!(device.installs.load(Ordering::SeqCst) == 1
+                && writer.status(&operation).await? == LocalOutcomeState::Indeterminate,
+                "crash boundary changed original operation");
+            return super::history::stop_at_crash_boundary(&writer, &request, independently_observed).await;
+        }
         device.observe_enabled.store(true,Ordering::SeqCst);
         let terminal_deadline = tokio::time::Instant::now() + Duration::from_secs(10);
         loop {

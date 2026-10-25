@@ -7,6 +7,9 @@ mod agent;
 #[path = "native_owner_qualification/common.rs"]
 #[cfg(target_os = "linux")]
 mod common;
+#[path = "native_owner_qualification/history.rs"]
+#[cfg(target_os = "linux")]
+mod history;
 #[path = "native_owner_qualification/root.rs"]
 #[cfg(target_os = "linux")]
 mod root;
