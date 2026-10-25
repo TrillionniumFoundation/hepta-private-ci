@@ -81,7 +81,7 @@ verification 的 ID ECE 来源 bootstrap 区间为 **[0.011978, 0.049021]**，�
 
 原来分离的 singleton context 隐藏了长期阈值漂移。本轮先保留全部真实失败，再定位机制：第一次 continuous driver 漏掉原测量器每 tick 的 `start_window`，把旧高水位带入后续 tick，测得 5,012,756 B 并全部弃权。恢复原测量生命周期后，瞬态分配降到 5,845 B，但原 ±Q 阈值配置仍仅 **40/800 ID tick admitted**。
 
-对原 kernel 的逐步重放与真实记录的全部 1,600 个 eligibility digest/activity 精确吻合。第 **65** tick 首次出现 `projection_count>8`；第 **66** 个 ID tick 的 8 次 threshold clamp 加 1 次 eligibility L1 projection 构成真实拒绝。最后有 15 个 threshold clamp；全程 1,527 个 tick 超过 projection gate。没有删除计数、抬高 gate、周期 reset 或用短前缀代替完整流。[DYNAMICS_RESULTS.json](DYNAMICS_RESULTS.json)
+对原 kernel 的逐步重放与真实记录的全部 1,600 个 eligibility digest/activity 精确吻合。第 **65** tick 首次出现 `projection_count>8`；**sequence 66 的 ID tick（pair33）**的 8 次 threshold clamp 加 1 次 eligibility L1 projection 构成真实拒绝。最后有 15 个 threshold clamp；全程 1,527 个 tick 超过 projection gate。没有删除计数、抬高 gate、周期 reset 或用短前缀代替完整流。[DYNAMICS_RESULTS.json](DYNAMICS_RESULTS.json)
 
 原 dynamics 的 `h_t=0.5 h_(t-1)+drive_t`，homeostasis 按原 eta=Q/8 调整阈值。旧 head 由无噪声有界 Encoder 条件和两个 0.25tanh shared 更新得到解析 drive 界 **B=1.5Q**；新 emitted-state head 为 **B=Q**。故 recurrent state 有界于 2B。旧 ±Q 阈值不足以为这些驱动保留竞争余量；新 width33 若仍用 target=Q/8，期望总活动 4.125 还超过 top-k=4。
 
