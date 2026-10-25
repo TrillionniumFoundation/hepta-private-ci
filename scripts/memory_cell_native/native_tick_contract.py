@@ -31,12 +31,27 @@ def validate_tick_binding(request):
     """Recompute canonical NeuronTickInputV1 bytes, then its source/query join."""
     binding = request["tick_binding"]
     expected = {
-        "schema", "tick_id", "subject_id", "logical_sequence", "monotonic_time_micros",
-        "checkpoint_digest", "input_feature_digest", "objective_digest", "ndu_snapshot_digest",
-        "body_generation", "modulator_digest", "tick_digest", "query_digest",
-        "source_binding_digest", "joint_digest",
+        "schema",
+        "tick_id",
+        "subject_id",
+        "logical_sequence",
+        "monotonic_time_micros",
+        "checkpoint_digest",
+        "input_feature_digest",
+        "objective_digest",
+        "ndu_snapshot_digest",
+        "body_generation",
+        "modulator_digest",
+        "tick_digest",
+        "query_digest",
+        "source_binding_digest",
+        "joint_digest",
     }
-    if not isinstance(binding, dict) or set(binding) != expected or binding["schema"] != "hepta.memory-cell.native-tick-binding.v1":
+    if (
+        not isinstance(binding, dict)
+        or set(binding) != expected
+        or binding["schema"] != "hepta.memory-cell.native-tick-binding.v1"
+    ):
         raise ValueError("closed tick binding schema")
     neuron = request["neuron_request"]
     features = neuron["feature_vector_q24"]
@@ -45,7 +60,9 @@ def validate_tick_binding(request):
     if any(type(v) is not int or not -(8 << 24) <= v <= 8 << 24 for v in features):
         raise ValueError("Q24 feature range")
     vector = b"".join(struct.pack(">q", v) for v in features)
-    feature_digest = hashlib.sha256(b"hepta.neuron.input-features.q24.v1" + _u64(len(features)) + vector).digest()
+    feature_digest = hashlib.sha256(
+        b"hepta.neuron.input-features.q24.v1" + _u64(len(features)) + vector
+    ).digest()
     if _digest(binding["input_feature_digest"]) != feature_digest:
         raise ValueError("feature digest mismatch")
     sequence, monotonic = binding["logical_sequence"], binding["monotonic_time_micros"]
@@ -55,16 +72,27 @@ def validate_tick_binding(request):
     checkpoint = _digest(binding["checkpoint_digest"], allow_zero=True)
     if (sequence == 1) != (not any(checkpoint)):
         raise ValueError("checkpoint sequence mismatch")
-    raw = b"hepta.neuron.tick-input.v1" + _id(binding["tick_id"]) + _id(binding["subject_id"])
+    raw = (
+        b"hepta.neuron.tick-input.v1"
+        + _id(binding["tick_id"])
+        + _id(binding["subject_id"])
+    )
     raw += sequence_bytes + monotonic_bytes + checkpoint + feature_digest
-    raw += _digest(binding["objective_digest"]) + _digest(binding["ndu_snapshot_digest"])
+    raw += _digest(binding["objective_digest"]) + _digest(
+        binding["ndu_snapshot_digest"]
+    )
     body = binding["body_generation"]
     raw += b"\0" if body is None else b"\1" + _u64(body)
     modulator = binding["modulator_digest"]
     raw += b"\0" if modulator is None else b"\1" + _digest(modulator)
     tick = hashlib.sha256(raw + vector).digest()
-    source, query = _digest(request["source_binding_digest"]), _digest(request["query_digest"])
-    joint = hashlib.sha256(b"hepta.memory-cell.source-query-tick.v1" + source + query + tick).digest()
+    source, query = (
+        _digest(request["source_binding_digest"]),
+        _digest(request["query_digest"]),
+    )
+    joint = hashlib.sha256(
+        b"hepta.memory-cell.source-query-tick.v1" + source + query + tick
+    ).digest()
     if (
         request["schema"] != "hepta.memory-cell.native-request.v2"
         or binding["tick_id"] != neuron["request_id"]

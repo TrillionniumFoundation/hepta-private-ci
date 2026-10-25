@@ -46,9 +46,15 @@ fn main() -> anyhow::Result<()> {
     codex_utils_home_dir::set_process_codex_home_override(home)?;
     codex_arg0::arg0_dispatch_or_else(move |arg0_paths| async move {
         let result = probe(
-            &root, Path::new(&args[2]), Path::new(&args[3]), &args[4],
-            config, registry, arg0_paths,
-        ).await;
+            &root,
+            Path::new(&args[2]),
+            Path::new(&args[3]),
+            &args[4],
+            config,
+            registry,
+            arg0_paths,
+        )
+        .await;
         if let Err(error) = &result {
             retain(
                 &root.join("failure.json"),
@@ -110,10 +116,7 @@ async fn probe(
     let config = config
         .with_production_writer_host(Arc::clone(&host))?
         .with_native_memory_cell(Arc::clone(&cell))?;
-    let daemon = tokio::spawn(codex_hepta_agentd::run(
-        config,
-        arg0_paths,
-    ));
+    let daemon = tokio::spawn(codex_hepta_agentd::run(config, arg0_paths));
     let client = AgentdClient::new(socket, owner()?, 1)?;
     let until = tokio::time::Instant::now() + Duration::from_secs(120);
     loop {

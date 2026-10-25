@@ -130,11 +130,7 @@ pub(crate) async fn fixture() -> Fixture {
     let claim = MemoryCellSourceClaimV1 { event, production };
     let admission = Arc::new(
         writer
-            .admit_memory_cell(
-                &access,
-                &query,
-                &claim,
-            )
+            .admit_memory_cell(&access, &query, &claim)
             .await
             .unwrap(),
     );

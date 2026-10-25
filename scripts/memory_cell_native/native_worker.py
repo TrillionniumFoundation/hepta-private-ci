@@ -38,7 +38,8 @@ def run(raw):
     if request.get("schema") == "hepta.memory-cell.native-request.v2":
         required.add("tick_binding")
     if set(request) != required or request["schema"] not in {
-        "hepta.memory-cell.native-request.v1", "hepta.memory-cell.native-request.v2"
+        "hepta.memory-cell.native-request.v1",
+        "hepta.memory-cell.native-request.v2",
     }:
         raise ValueError("closed request schema")
     expected_repo = Path(__file__).resolve().parents[2]
@@ -64,10 +65,7 @@ def run(raw):
         "feature_vector_q24",
         "expected_output_width",
     }
-    if (
-        set(n) != fields
-        or n["feature_vector_q24"] != features(request["question"])
-    ):
+    if set(n) != fields or n["feature_vector_q24"] != features(request["question"]):
         raise ValueError("actual query differs from native input features")
     if (
         n["encoder_digest"] != sha(ENCODER)

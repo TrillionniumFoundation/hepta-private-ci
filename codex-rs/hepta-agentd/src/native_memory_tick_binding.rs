@@ -36,10 +36,14 @@ impl NativeTickBindingV1 {
         input: &NeuronTickInputV1,
         source: &MemoryCellSourceBindingV1,
     ) -> Result<Self, NativeMemoryError> {
-        let tick = input.semantic_digest().map_err(|e| NativeMemoryError::Rejected(e.to_string()))?;
+        let tick = input
+            .semantic_digest()
+            .map_err(|e| NativeMemoryError::Rejected(e.to_string()))?;
         let joint = Digest32::of_parts(&[
             b"hepta.memory-cell.source-query-tick.v1",
-            source.binding_digest.as_array(), source.query_digest.as_array(), tick.as_array(),
+            source.binding_digest.as_array(),
+            source.query_digest.as_array(),
+            tick.as_array(),
         ]);
         Ok(Self {
             schema: "hepta.memory-cell.native-tick-binding.v1",

@@ -120,7 +120,10 @@ async fn agentd_product_host_persists_queued_intent_and_fences_release()
     );
     let settled = host
         .writer()
-        .rollback_occurrence(&queued.occurrence_key, "qualification fixture never dispatched")
+        .rollback_occurrence(
+            &queued.occurrence_key,
+            "qualification fixture never dispatched",
+        )
         .await?;
     assert_eq!(settled.state, LocalOutcomeState::RolledBack);
     assert!(!settled.external_effect);

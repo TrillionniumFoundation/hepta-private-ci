@@ -34,14 +34,14 @@ mod native_memory;
 #[path = "native_memory_control_tests.rs"]
 mod native_memory_control_tests;
 mod native_memory_model;
-mod native_memory_tick_binding;
+mod native_memory_process;
 #[cfg(feature = "qualification-cognitive-write")]
 mod native_memory_shadow_namespace;
-#[cfg(feature = "qualification-cognitive-write")]
-mod native_memory_tick_owner;
-mod native_memory_process;
 #[cfg(test)]
 mod native_memory_test_support;
+mod native_memory_tick_binding;
+#[cfg(feature = "qualification-cognitive-write")]
+mod native_memory_tick_owner;
 mod native_memory_types;
 mod neuron_runtime;
 mod objective_runtime;
@@ -198,9 +198,19 @@ pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
 pub use native_memory::AgentdNativeMemoryCell;
 #[cfg(feature = "qualification-cognitive-write")]
-pub use native_memory_tick_owner::{AgentdNativeMemoryShadowOwner, NativeMemoryContextAuthorityV1, NativeMemoryShadowReadV1, NativeMemoryTickContextV1};
+pub use native_memory_shadow_namespace::NativeMemoryShadowFilesV1;
 #[cfg(feature = "qualification-cognitive-write")]
-pub use native_memory_shadow_namespace::{NativeMemoryShadowFilesV1, NativeMemoryShadowProfileV1, NativeMemoryShadowStartV1};
+pub use native_memory_shadow_namespace::NativeMemoryShadowProfileV1;
+#[cfg(feature = "qualification-cognitive-write")]
+pub use native_memory_shadow_namespace::NativeMemoryShadowStartV1;
+#[cfg(feature = "qualification-cognitive-write")]
+pub use native_memory_tick_owner::AgentdNativeMemoryShadowOwner;
+#[cfg(feature = "qualification-cognitive-write")]
+pub use native_memory_tick_owner::NativeMemoryContextAuthorityV1;
+#[cfg(feature = "qualification-cognitive-write")]
+pub use native_memory_tick_owner::NativeMemoryShadowReadV1;
+#[cfg(feature = "qualification-cognitive-write")]
+pub use native_memory_tick_owner::NativeMemoryTickContextV1;
 pub use native_memory_types::NativeMemoryError;
 pub use native_memory_types::NativeMemoryExecutionV1;
 pub use native_memory_types::NativeMemoryModelConfigV1;
