@@ -25,6 +25,8 @@ import sys
 
 import time
 
+import threading
+
 import tomllib
 
 import uuid
@@ -116,6 +118,58 @@ def _subreaper():
         raise RuntimeError('subreaper_setup_failed')
 
 
+def _observe_and_reap_adopted(receipt, deadline):
+    """Only terminal kernel children, under exclusive initial ownership.
+    WNOWAIT pins each zombie PID until exact waitpid; never signal adoptees.
+    Live/unknown children get only natural wait within original cleanup deadline.
+    """
+    receipt['adopted_terminal_events'] = []
+    while True:
+        if time.monotonic() >= deadline:
+            receipt['error'] = 'adopted_children_deadline'
+            return False
+        try:
+            event = os.waitid(os.P_ALL, 0, os.WEXITED | os.WNOWAIT | os.WNOHANG)
+        except ChildProcessError:
+            return True  # Kernel reports no remaining children, not just no event.
+        except PermissionError:
+            receipt['error'] = 'adopted_wait_permission_denied'
+            return False
+        except Exception:
+            receipt['error'] = 'adopted_wait_unsupported'
+            return False
+        if event is None:
+            time.sleep(min(.01, max(0, deadline-time.monotonic())))
+            continue
+        if (len(receipt['adopted_terminal_events']) >= 128 or event.si_pid <= 0
+                or event.si_uid != os.getuid()
+                or event.si_code not in (os.CLD_EXITED, os.CLD_KILLED, os.CLD_DUMPED)):
+            receipt['error'] = 'adopted_terminal_identity_unsupported'
+            return False
+        kind = {os.CLD_EXITED:'exited', os.CLD_KILLED:'killed', os.CLD_DUMPED:'dumped'}[event.si_code]
+        receipt['adopted_terminal_events'].append(
+            {'pid': event.si_pid, 'uid': event.si_uid, 'status': {'kind':kind, 'value':event.si_status}})
+        try:
+            pid, status = os.waitpid(event.si_pid, os.WNOHANG)
+        except PermissionError:
+            receipt['error'] = 'adopted_reap_permission_denied'
+            return False
+        except Exception:
+            receipt['error'] = 'adopted_reap_identity_unconfirmed'
+            return False
+        matched = (pid == event.si_pid and (
+            (event.si_code == os.CLD_EXITED and os.WIFEXITED(status) and os.WEXITSTATUS(status) == event.si_status)
+            or (event.si_code in (os.CLD_KILLED, os.CLD_DUMPED) and os.WIFSIGNALED(status)
+                and os.WTERMSIG(status) == event.si_status
+                and bool(os.WCOREDUMP(status)) == (event.si_code == os.CLD_DUMPED))))
+        if not matched:
+            receipt['error'] = 'adopted_reap_identity_unconfirmed'
+            return False
+        if event.si_code != os.CLD_EXITED or event.si_status != 0:
+            receipt['error'] = 'adopted_helper_unsuccessful'
+            return False
+
+
 def _cleanup_owned(proc, timeout=5):
     # Leader is still unreaped (WNOWAIT): its PID/PGID cannot be reused before
     # this ONE destructive signal. Permission denial is terminal, never retried.
@@ -141,8 +195,7 @@ def _cleanup_owned(proc, timeout=5):
                 try:
                     os.killpg(proc.pid, 0)
                 except ProcessLookupError:
-                    if not _no_children():
-                        receipt['error'] = 'unexpected_adopted_children'
+                    if not _observe_and_reap_adopted(receipt, deadline):
                         return receipt
                     receipt['confirmed'] = True
                     return receipt
@@ -165,9 +218,14 @@ def capture(argv, env, seconds, disk=None, abort=None):
     try:
         if OWNERSHIP_UNCERTAIN:
             raise RuntimeError('prior_cleanup_uncertain')
+        if (threading.current_thread() is not threading.main_thread()
+                or threading.active_count() != 1 or signal.getsignal(signal.SIGCHLD) != signal.SIG_DFL):
+            raise RuntimeError('exclusive_waiter_assumptions_required')
         _subreaper()
         if not _no_children():
             raise RuntimeError('exclusive_ownership_required')
+        result['ownership'] = {'main_thread': True, 'python_threads': 1,
+                               'sigchld_default': True, 'initial_children_absent': True}
         initial_free = globals().get('DISK_INITIAL_FREE', shutil.disk_usage(disk).free) if disk else None
         deadline = time.monotonic() + seconds
         proc = subprocess.Popen(argv, env=env, stdin=subprocess.DEVNULL,

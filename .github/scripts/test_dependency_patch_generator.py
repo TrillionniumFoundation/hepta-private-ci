@@ -112,6 +112,7 @@ class Gates(unittest.TestCase):
 # unittest children never become eligible for owned teardown.
 import os
 import subprocess
+import signal
 import sys
 import time
 from unittest.mock import patch
@@ -208,14 +209,6 @@ class OwnedSupervisor(unittest.TestCase):
             sentinel.terminate()
             sentinel.wait(timeout=5)
 
-    def test_escaped_descendant_marks_uncertain_without_broad_signal(self):
-        escaped = 'import os,time;os.setsid();os.close(1);os.close(2);time.sleep(.4)'
-        leader = 'import subprocess,sys,time;subprocess.Popen([sys.executable,"-c",sys.argv[1]]);time.sleep(.05)'
-        result = self.isolated([sys.executable, '-c', leader, escaped], 2)
-        self.assertFalse(result['cleanup']['confirmed'])
-        self.assertEqual(result['cleanup']['error'], 'unexpected_adopted_children')
-        self.assertEqual(result['cleanup']['signal_attempts'], ['SIGKILL'])
-        time.sleep(.5)  # Escaped test child exits naturally; never signal another PGID.
 
 
 class PublicationGates(unittest.TestCase):
@@ -505,6 +498,95 @@ class KeylessBootstrap(unittest.TestCase):
             self.assertEqual(capture.call_count,1);self.assertEqual(github_path.read_bytes(),b'')
             receipt=json.loads((out/'public/bootstrap.json').read_text())
             self.assertEqual(receipt['hold'],'public_asset_http_denied_or_failed')
+
+
+class AdoptedChildEvidence(unittest.TestCase):
+    def detached(self, exit_status, lifetime, cleanup_timeout=5):
+        driver = DRIVER.replace("r,streams=s.capture", 
+            "original=s._cleanup_owned\ns._cleanup_owned=lambda p:original(p,"+str(cleanup_timeout)+")\nr,streams=s.capture")
+        child = ('import os,time,sys;from pathlib import Path;os.setsid();'
+                 'Path(sys.argv[1]).write_text(str(os.getpid()));'
+                 'os.close(1);os.close(2);time.sleep('+str(lifetime)+');sys.exit('+str(exit_status)+')')
+        leader = ('import subprocess,sys,time;from pathlib import Path;'
+                  'subprocess.Popen([sys.executable,"-c",sys.argv[1],sys.argv[2]]);'
+                  '\nwhile not Path(sys.argv[2]).exists():time.sleep(.005)')
+        with tempfile.TemporaryDirectory() as root:
+            pidfile=Path(root)/'pid'
+            sentinel=subprocess.Popen([sys.executable,'-c','import time;time.sleep(4)'])
+            try:
+                result=subprocess.run([sys.executable,'-c',driver,str(Path(support.__file__).parent),
+                    json.dumps([sys.executable,'-c',leader,child,str(pidfile)]),'3'],
+                    capture_output=True,text=True,timeout=8,check=True)
+                self.assertIsNone(sentinel.poll())
+                return json.loads(result.stdout),int(pidfile.read_text())
+            finally:
+                sentinel.terminate();sentinel.wait(timeout=5)
+
+    def test_real_detached_zero_exit_is_observed_exactly_reaped_without_signal(self):
+        result,pid=self.detached(0,.15)
+        self.assertTrue(result['cleanup']['confirmed'],result)
+        self.assertEqual(result['exit'],0)
+        self.assertEqual(result['cleanup']['signal_attempts'],['SIGKILL'])
+        self.assertEqual(result['cleanup']['adopted_terminal_events'],
+                         [{'pid':pid,'uid':os.getuid(),'status':{'kind':'exited','value':0}}])
+        self.assertTrue(result['ownership']['initial_children_absent'])
+        with self.assertRaises(ProcessLookupError):os.kill(pid,0)
+
+    def test_real_detached_nonzero_reaped_but_holds(self):
+        result,pid=self.detached(17,.15)
+        self.assertFalse(result['cleanup']['confirmed'])
+        self.assertEqual(result['cleanup']['error'],'adopted_helper_unsuccessful')
+        self.assertEqual(result['cleanup']['adopted_terminal_events'][0]['status']['value'],17)
+        self.assertIsNone(result['exit'])
+        with self.assertRaises(ProcessLookupError):os.kill(pid,0)
+
+    def test_real_detached_live_timeout_not_signalled(self):
+        result,pid=self.detached(0,1,.15)
+        self.assertFalse(result['cleanup']['confirmed'])
+        self.assertEqual(result['cleanup']['error'],'adopted_children_deadline')
+        self.assertEqual(result['cleanup']['adopted_terminal_events'],[])
+        self.assertEqual(result['cleanup']['signal_attempts'],['SIGKILL'])
+        os.kill(pid,0)  # Still live after supervisor stopped: never signalled.
+        time.sleep(1.05)  # It exits naturally; no cleanup signal to outside group.
+
+    def event(self,status=0):
+        from types import SimpleNamespace
+        return SimpleNamespace(si_pid=43210,si_uid=os.getuid(),si_code=os.CLD_EXITED,si_status=status)
+
+    def test_exact_reaping_pid_and_status_mismatch_hold(self):
+        for value in [(43211,0),(43210,1<<8),(0,0)]:
+            with patch.object(support.os,'waitid',return_value=self.event()),                  patch.object(support.os,'waitpid',return_value=value) as reap,                  patch.object(support.os,'kill',side_effect=AssertionError('No signal')):
+                receipt={}
+                self.assertFalse(support._observe_and_reap_adopted(receipt,time.monotonic()+1))
+                self.assertEqual(receipt['error'],'adopted_reap_identity_unconfirmed')
+                reap.assert_called_once_with(43210,os.WNOHANG)
+
+    def test_wait_and_reap_denial_once_no_retry(self):
+        for which in ('waitid','waitpid'):
+            with patch.object(support.os,'waitid',return_value=self.event()) as wait,                  patch.object(support.os,'waitpid',return_value=(43210,0)) as reap:
+                denied=wait if which=='waitid' else reap
+                denied.side_effect=PermissionError('secret-denial')
+                receipt={}
+                self.assertFalse(support._observe_and_reap_adopted(receipt,time.monotonic()+1))
+                self.assertEqual(denied.call_count,1)
+                self.assertNotIn('secret',json.dumps(receipt))
+                if which=='waitid':reap.assert_not_called()
+
+    def test_assumptions_fail_before_launch(self):
+        for target,value in [('active_count',2),('current_thread',object())]:
+            with patch.object(support.threading,target,return_value=value),                  patch.object(support.subprocess,'Popen',side_effect=AssertionError('No launch')):
+                result,_=support.capture(['never'],{},1)
+                self.assertFalse(result['cleanup']['confirmed'])
+        with patch.object(support.signal,'getsignal',return_value=signal.SIG_IGN),              patch.object(support.subprocess,'Popen',side_effect=AssertionError('No launch')):
+            result,_=support.capture(['never'],{},1)
+            self.assertFalse(result['cleanup']['confirmed'])
+
+    def test_unsupported_terminal_uid_holds_without_reap(self):
+        event=self.event();event.si_uid=os.getuid()+1
+        with patch.object(support.os,'waitid',return_value=event),              patch.object(support.os,'waitpid',side_effect=AssertionError('No reap')):
+            receipt={}
+            self.assertFalse(support._observe_and_reap_adopted(receipt,time.monotonic()+1))
+            self.assertEqual(receipt['error'],'adopted_terminal_identity_unsupported')
 
 
 if __name__ == '__main__':
