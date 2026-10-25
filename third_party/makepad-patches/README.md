@@ -126,8 +126,8 @@ native builds use `hepta-native-makepad`; candidate builds use the explicit
 clipboard feature and the generated config together.
 
 `apps/hepta-native/resources/NATIVE-SDK-PATCH.json` separately binds the actual
-original MIT license, exact source manifest, all three complete patches and this
-provenance note. These six files are installed under `dependency-notices/makepad/`; the
+original MIT license, exact source manifest, all four complete patches and this
+provenance note. These seven files are installed under `dependency-notices/makepad/`; the
 font resource inventory remains unchanged. The native UI exports the compiled
 notice contract so startup can refuse a mismatched bundle.
 
@@ -136,3 +136,35 @@ clipboard-owner timeout/oversize refusal, cross-room and IME fencing, original
 undo/redo, and D-Bus PasteText readback must pass on the exact built source before
 promotion. Wayland PasteText and physical assistive-technology evaluation remain
 separate coverage.
+
+
+## Native edit transaction candidate (reconstructed, unqualified)
+
+The additional `native-ime-transactions.patch` opts the composer into typed
+Preview/Committed/Cancelled outcomes under `native-ime-sdk` (also enabled by
+`native-clipboard-sdk`). Legacy Changed remains available to other consumers.
+The SDK mints an origin scope before production and records ordered snapshots;
+the application binds that scope to one RoomKey. Rejected edits rotate scope,
+invalidating already-produced successors. Cancellation restores the original
+SDK text, selection and undo history rather than deleting the preview alone.
+
+This is the native replace_last protocol, not mobile full-state/range sync;
+those replacement events fail closed in scoped mode. Programmatic replacement
+while scoped composition is active returns Composing, even outside the preview.
+An in-field mouse/touch press during composition cancels only: after redraw a
+new press can select. Programmatic set_selection cancels then selects, with its
+actual before-state preserved if a later same-batch edit is rejected.
+
+Scope fencing covers widget outcomes already produced. Origin-less late raw OS
+IME commits cannot be attributed to an old session by this patch; platform/XIC
+session fencing and the original libpinyin window remain separate qualification.
+
+This source was reconstructed from retained editing commands after the local
+working environment changed. It is not byte-identical recovery of the earlier
+unpublished candidate. The current MANIFEST fixes its new source identity. No
+Rust build or tests have run on this reconstructed candidate. The earlier
+candidate stopped at missing wayland-client.pc before UI compilation, with zero
+Rust/UI tests executed; its metadata verification is not transferred here.
+The added real-SDK test source does not establish a passing compile, test run,
+live input result, or product promotion. Preparation and actual dependency-graph
+verification must precede a new qualified build using this exact source.

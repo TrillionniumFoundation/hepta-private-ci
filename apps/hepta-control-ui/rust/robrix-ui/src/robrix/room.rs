@@ -414,6 +414,12 @@ impl Widget for RoomScreen {
                 list.set_tail_range(true);
                 list.scroll_to_end(cx);
             }
+            #[cfg(feature = "native-ime-sdk")]
+            for outcome in input.edit_outcomes(actions) {
+                self.composer_transaction.outcome(cx, &input, workspace, outcome);
+                self.view.redraw(cx);
+            }
+            #[cfg(not(feature = "native-ime-sdk"))]
             if let Some(text) = input.changed(actions) {
                 self.composer_transaction
                     .edit(cx, &input, workspace, source, text);
