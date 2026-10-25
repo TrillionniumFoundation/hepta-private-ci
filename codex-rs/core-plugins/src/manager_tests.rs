@@ -7197,3 +7197,85 @@ fn plugin_install_error_preserves_store_io_sub_error_type() {
         Some("failed_to_copy_plugin_file".to_string())
     );
 }
+
+#[test]
+fn remote_catalog_in_flight_stale_refresh_deduplicates_without_suppressing_force() {
+    let config = RemotePluginServiceConfig::new(
+        "https://plugins.example/".to_string(),
+        test_http_client_factory(),
+    );
+    let request = |service_config: RemotePluginServiceConfig,
+                   scopes: &[RemotePluginScope],
+                   mode: RemoteCatalogCacheRefreshMode| RemoteCatalogCacheRefreshRequest {
+        service_config,
+        auth: None,
+        scopes: scopes.iter().copied().collect(),
+        mode,
+    };
+    let state = RemoteCatalogCacheRefreshState {
+        active_request: Some(request(
+            config.clone(),
+            &[RemotePluginScope::Global, RemotePluginScope::User],
+            RemoteCatalogCacheRefreshMode::OnlyIfStale,
+        )),
+        ..Default::default()
+    };
+
+    // Two stale requests do not create two network calls while the first is
+    // active, including when its eventual cache publish fails.
+    assert!(
+        state
+            .without_in_flight_stale_scopes(request(
+                config.clone(),
+                &[RemotePluginScope::Global],
+                RemoteCatalogCacheRefreshMode::OnlyIfStale,
+            ))
+            .is_none()
+    );
+
+    // Only the overlapping scope is removed. A new scope still refreshes.
+    let partial = state
+        .without_in_flight_stale_scopes(request(
+            config.clone(),
+            &[RemotePluginScope::Global, RemotePluginScope::Workspace],
+            RemoteCatalogCacheRefreshMode::OnlyIfStale,
+        ))
+        .expect("new workspace scope must still refresh");
+    assert_eq!(
+        partial.scopes,
+        BTreeSet::from([RemotePluginScope::Workspace])
+    );
+
+    // Explicit force and independent cache identities must remain eligible.
+    let forced = state
+        .without_in_flight_stale_scopes(request(
+            config.clone(),
+            &[RemotePluginScope::Global],
+            RemoteCatalogCacheRefreshMode::Force,
+        ))
+        .expect("explicit force must not be suppressed");
+    assert_eq!(forced.scopes, BTreeSet::from([RemotePluginScope::Global]));
+
+    let mut other_config = config.clone();
+    other_config.chatgpt_base_url = "https://other-plugins.example/".to_string();
+    assert!(
+        state
+            .without_in_flight_stale_scopes(request(
+                other_config,
+                &[RemotePluginScope::Global],
+                RemoteCatalogCacheRefreshMode::OnlyIfStale,
+            ))
+            .is_some()
+    );
+
+    // After the active fetch exits, a later failed-cache retry is still legal.
+    assert!(
+        RemoteCatalogCacheRefreshState::default()
+            .without_in_flight_stale_scopes(request(
+                config,
+                &[RemotePluginScope::Global],
+                RemoteCatalogCacheRefreshMode::OnlyIfStale,
+            ))
+            .is_some()
+    );
+}
