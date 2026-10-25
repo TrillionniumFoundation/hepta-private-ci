@@ -25,10 +25,16 @@ use crate::model_worker::ModelDriver;
 use crate::model_worker::ModelManifest;
 use crate::model_worker::WorkerRequest;
 
+#[path = "smollm_neural_measurement.rs"]
+mod measurement;
 #[path = "smollm_neural_profile.rs"]
 mod profile;
 #[path = "smollm_neural_session.rs"]
 mod session;
+use measurement::MailboxState;
+pub use measurement::SmolLmFixedInitialBackboneProofV1;
+pub use measurement::SmolLmMeasuredForwardV1;
+pub use measurement::SmolLmMeasuredLoadV1;
 use profile::NoAuthority;
 use profile::PROFILE;
 use profile::Ready;
@@ -61,9 +67,9 @@ pub(super) struct Exchange {
     pub(super) execution: codex_hepta_agentd::NeuralCognitiveExecutionV1,
     pub(super) request_id: String,
     pub(super) payload_digest: String,
-    pub(super) response: Option<(Response, Digest32)>,
+    pub(super) response: Option<(Response, Digest32, Vec<u8>)>,
 }
-pub(super) type Mailbox = Arc<Mutex<Option<Exchange>>>;
+pub(super) type Mailbox = Arc<Mutex<MailboxState>>;
 
 pub(super) struct SmolLmDriver {
     pub(super) config: SmolLmNeuralReadConfigV1,
@@ -195,14 +201,12 @@ impl SmolLmDriver {
         // The session keeps a descriptor even while waiting for the worker
         // directory. Drop always retains the original observer for cleanup.
         self.session = Some(session);
-        let ready: Ready = serde_json::from_slice(
-            &self
-                .session
-                .as_mut()
-                .ok_or("neural session missing")?
-                .wait_ready(&startup_execution)?,
-        )
-        .map_err(|error| error.to_string())?;
+        let raw_ready = self
+            .session
+            .as_mut()
+            .ok_or("neural session missing")?
+            .wait_ready(&startup_execution)?;
+        let ready: Ready = serde_json::from_slice(&raw_ready).map_err(|error| error.to_string())?;
         let mut sources = config.source_identities()?;
         let worker_source = sources
             .remove("llm_neural_read_worker.py")
@@ -223,6 +227,11 @@ impl SmolLmDriver {
             return Err("neural ready observation differs from the admitted material".to_owned());
         }
         startup_execution.check()?;
+        self.mailbox
+            .lock()
+            .map_err(|_| "neural exchange poisoned")?
+            .measurements
+            .retain_ready(&raw_ready)?;
         Ok(DriverModelHandle {
             opaque_id: self.pin.payload_digest.to_string(),
             observed_memory_bytes: ready.observed_rss_bytes,
@@ -252,7 +261,10 @@ impl ModelDriver for SmolLmDriver {
                 .mailbox
                 .lock()
                 .map_err(|_| "neural exchange poisoned")?;
-            let exchange = mailbox.as_mut().ok_or("neural exchange unavailable")?;
+            let exchange = mailbox
+                .exchange
+                .as_mut()
+                .ok_or("neural exchange unavailable")?;
             if exchange.request_id != request.request_id
                 || exchange.payload_digest != request.payload_digest
                 || exchange.response.is_some()
@@ -309,7 +321,7 @@ impl ModelDriver for SmolLmDriver {
                 .acknowledge_response();
             let output = Digest32::of_bytes(&raw);
             let observed_memory_bytes = response.observed_rss_bytes;
-            exchange.response = Some((response, output));
+            exchange.response = Some((response, output, raw));
             Ok(DriverRunObservation {
                 terminal_observed: true,
                 succeeded: true,
@@ -330,6 +342,11 @@ impl ModelDriver for SmolLmDriver {
             .shutdown()
             .map_err(Error::DriverFailure)?;
         self.session.take();
+        self.mailbox
+            .lock()
+            .map_err(|_| Error::DriverFailure("neural exchange poisoned".to_owned()))?
+            .measurements
+            .clear();
         Ok(())
     }
 }
