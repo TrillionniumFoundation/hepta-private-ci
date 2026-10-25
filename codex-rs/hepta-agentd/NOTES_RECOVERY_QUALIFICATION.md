@@ -21,9 +21,11 @@ physical display/input are separate qualifications.
 From `codex-rs`, using the repository's locked toolchain and dependencies:
 
 ```sh
-just test --locked -p codex-hepta-memory -E 'test(notes_explicit_previous)'
-cargo check --locked -p codex-hepta-agentd
-just test --locked -p codex-hepta-agentd --lib --no-run
+just test --locked --cargo-profile dev-small -p codex-hepta-memory \
+  -E 'test(notes_explicit_previous)'
+cargo check --locked --profile dev-small -p codex-hepta-agentd
+just test --locked --cargo-profile dev-small -p codex-hepta-agentd --lib \
+  -E 'test(notes_literal_)'
 ```
 
 The memory tests use an explicitly simulated application channel. They verify
@@ -43,9 +45,9 @@ Xvfb/display, then use absolute paths:
 TRILL_NOTES_PROBE_ISOLATED=1 \
 HEPTA_NOTES_SESSION_BIN=/absolute/pinned-build/trill-session \
 HEPTA_NOTES_CRASH_QUALIFICATION_OUTPUT=/absolute/evidence/notes-crash-owner.json \
-just test --locked -p codex-hepta-agentd --lib \
+just test --locked --cargo-profile dev-small -p codex-hepta-agentd --lib \
   -E 'test(notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart)' \
-  --run-ignored ignored-only --nocapture --test-threads=1
+  --run-ignored ignored-only --no-capture
 ```
 
 The test uses a temporary Fleet and real original SQLite writer, an explicitly

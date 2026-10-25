@@ -36,8 +36,8 @@ use crate::authority_host_config::read_root_json;
 #[path = "authority_host_listeners.rs"]
 mod listeners;
 use listeners::serve_lanes;
-pub(crate) use listeners::validate_runtime_lanes;
 pub(crate) use listeners::validate_lane_paths;
+pub(crate) use listeners::validate_runtime_lanes;
 
 #[path = "authority_host_session.rs"]
 mod session;
@@ -260,7 +260,7 @@ pub(super) fn open_registered_writer(
     } else {
         service
     };
-    Ok(service.retain_original_root_registry(leases))
+    Ok(service.retain_original_root_registry(Arc::new(leases)))
 }
 
 /// Explicit root administration authorizes a new original registry writer
