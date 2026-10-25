@@ -14,7 +14,7 @@ PROFILE_APPENDIX='\n# Owner diagnostic only: original defaults and overrides pre
 NEXTTEST_BASE_BLOB='f0430497b34b5335929e24b9e19745f467362641'
 DEADLINE=None
 FINALIZING=False
-CONTROL_PARENT='410d1967c5d21c141b48382dc126275f713296db'
+CONTROL_PARENT='cd113a6da5a3a2d661a1eb74da9600eadc3eb51f'
 FINAL_READ_REPOS=frozenset()
 FINAL_GIT_READS={('ls-files','-z'),('status','--porcelain','--untracked-files=all'),('rev-parse','HEAD'),('rev-parse','HEAD^{tree}')}
 class Hold(Exception):pass
@@ -27,7 +27,7 @@ DIAGNOSTIC_STAGES={'initial','platform','budget','event','disk','control_admin',
 DIAGNOSTIC_PREDICATES={'gate_failed','platform','budget_origin','budget_elapsed','deadline',
     'event_ref','event_sha','workflow_sha','workflow_ref','initial_disk',
     'admin_directory','admin_forbidden_entry','admin_required_directory','admin_object_bound',
-    'admin_promisor','admin_file_symlink','admin_file_bound','admin_missing_file','admin_ref_bound',
+    'admin_promisor','admin_worktree_remnant','admin_file_symlink','admin_file_bound','admin_missing_file','admin_ref_bound',
     'admin_ref_type','admin_identity_changed','config_size','config_encoding','config_section',
     'config_syntax','config_key','config_duplicate','config_value','config_required','config_branch_pair',
     'index_empty','index_format','index_mode','index_gitmodules','control_head','control_parent',
@@ -110,13 +110,26 @@ def strict_git_config(data):
     require(((branch_section,'remote') in values)==((branch_section,'merge') in values),'config_branch_pair')
     return sha(data)
 
+# Public output reproduced from pinned actions/checkout's non-sparse cleanup.
+# Main config still rejects extensions.worktreeConfig, so this must be inactive.
+INACTIVE_WORKTREE_REMNANT=b'[core]\n\tsparseCheckout = false\n\tsparseCheckoutCone = false\n[index]\n\tsparse = false\n'
+
 def git_admin_snapshot(repo):
     # Fresh checkout only. No Git command is used to inspect its own configuration.
     admin=repo/'.git';require(admin.is_dir() and not admin.is_symlink(),'admin_directory')
     result={'admin_identity':[admin.stat().st_dev,admin.stat().st_ino]}
-    for name in ['commondir','gitdir','worktrees','modules','config.worktree','config.lock','index.lock',
+    for name in ['commondir','gitdir','worktrees','modules','config.lock','index.lock',
                  'objects/info/alternates','objects/info/http-alternates','refs/replace','info/grafts']:
         path=admin/name;require(not path.exists() and not path.is_symlink(),'admin_forbidden_entry',{'item':name.replace('/','_').replace('.','_')})
+    remnant=admin/'config.worktree'
+    require(not remnant.is_symlink(),'admin_worktree_remnant',{'item':'config_worktree'})
+    result['config.worktree']={'present':False}
+    if remnant.exists():
+        require(remnant.is_file() and remnant.stat().st_size==len(INACTIVE_WORKTREE_REMNANT),'admin_worktree_remnant',{'item':'config_worktree'})
+        with remnant.open('rb') as handle:data=handle.read(len(INACTIVE_WORKTREE_REMNANT)+1)
+        require(data==INACTIVE_WORKTREE_REMNANT,'admin_worktree_remnant',{'item':'config_worktree'})
+        result['config.worktree']={'present':True,'bytes':len(data),'sha256':sha(data),
+            'device':remnant.stat().st_dev,'inode':remnant.stat().st_ino}
     for name in ['info','objects','objects/info','objects/pack','refs']:
         path=admin/name;require(path.is_dir() and not path.is_symlink(),'admin_required_directory',{'item':name.replace('/','_')})
         result[name]=[path.stat().st_dev,path.stat().st_ino]
@@ -155,6 +168,7 @@ def recheck_cargo_config():
 
 def capture(argv,env,maximum,records,disk):
     guard()
+    git_repo=None
     if argv and argv[0]=='cargo':recheck_cargo_config()
     if FINALIZING:
         # Only fixed identity reads may bypass the build disk-growth gate.
@@ -166,7 +180,8 @@ def capture(argv,env,maximum,records,disk):
         disk=None
     if argv and argv[0]=='git':
         require(len(argv)>=4 and argv[:2]==['git','-C'] and argv[2] in GIT_ADMIN_BASELINES)
-        require(git_admin_snapshot(Path(argv[2]))==GIT_ADMIN_BASELINES[argv[2]],'admin_identity_changed')
+        git_repo=Path(argv[2])
+        require(git_admin_snapshot(git_repo)==GIT_ADMIN_BASELINES[str(git_repo)],'admin_identity_changed')
         env=dict(env);env.update({'GIT_OPTIONAL_LOCKS':'0','GIT_NO_LAZY_FETCH':'1',
             'GIT_NO_REPLACE_OBJECTS':'1','GIT_ATTR_NOSYSTEM':'1'})
         argv=['git',*GIT_SAFE_FLAGS,*argv[1:]]
@@ -179,6 +194,10 @@ def capture(argv,env,maximum,records,disk):
     result['final_readonly']=FINALIZING
     result['cwd']=os.getcwd()
     records.append(result)
+    if git_repo is not None and result['cleanup']['confirmed']:
+        guard()
+        require(git_admin_snapshot(git_repo)==GIT_ADMIN_BASELINES[str(git_repo)],'admin_identity_changed')
+        guard()
     require(result['exit']==0 and result['stop'] is None and result['cleanup']['confirmed'])
     return streams
 

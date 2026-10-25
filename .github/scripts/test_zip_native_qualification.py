@@ -202,6 +202,72 @@ class GitAdminAndCargoIdentityTests(unittest.TestCase):
             completed=subprocess.run([sys.executable,'-c',driver,str(Path(q.__file__).parent),str(repo)],capture_output=True,text=True,timeout=10,check=True)
             self.assertEqual(json.loads(completed.stdout),{'unchanged':True,'cleanup':True,'exit':0,'final_readonly':True})
 
+    def test_real_checkout_inactive_remnant_exact_public_bytes(self):
+        with tempfile.TemporaryDirectory() as td:
+            repo=Path(td)/'repo'
+            for argv in [['git','init','--quiet',str(repo)],['git','-C',str(repo),'sparse-checkout','disable'],['git','-C',str(repo),'config','--local','--unset-all','extensions.worktreeConfig']]:
+                subprocess.run(argv,check=True,capture_output=True)
+            (repo/'ordinary').write_text('harmless');subprocess.run(['git','-C',str(repo),'add','ordinary'],check=True,capture_output=True)
+            remnant=repo/'.git/config.worktree';self.assertEqual(remnant.read_bytes(),q.INACTIVE_WORKTREE_REMNANT)
+            self.assertEqual(len(remnant.read_bytes()),83)
+            self.assertEqual(q.sha(remnant.read_bytes()),'443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454')
+            before=q.git_admin_snapshot(repo)
+            subprocess.run(['git',*q.GIT_SAFE_FLAGS,'-C',str(repo),'status','--porcelain','--untracked-files=all'],env={'PATH':os.environ['PATH'],'GIT_OPTIONAL_LOCKS':'0','GIT_NO_LAZY_FETCH':'1','GIT_NO_REPLACE_OBJECTS':'1','GIT_CONFIG_NOSYSTEM':'1','GIT_CONFIG_GLOBAL':'/dev/null'},check=True,capture_output=True)
+            self.assertEqual(q.git_admin_snapshot(repo),before)
+            self.assertEqual(before['config.worktree']['sha256'],'443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454')
+            self.assertTrue(before['config.worktree']['present'])
+    def test_worktree_remnant_rejects_changed_or_executable_bytes_without_export(self):
+        for data in [b'',b'ordinary but different',q.INACTIVE_WORKTREE_REMNANT+b'\n',q.INACTIVE_WORKTREE_REMNANT.replace(b'false',b'true '),b'[core]\nfsmonitor=SecretMarkerNeverExecute\n',b'[filter "x"]\nprocess=SecretMarkerNeverExecute\n',b'[include]\npath=SecretPathNeverRead\n']:
+            with tempfile.TemporaryDirectory() as td:
+                repo=self.fixture(td);(repo/'.git/config.worktree').write_bytes(data)
+                q.DIAGNOSTIC={'stage':'control_admin','failure':None,'final_failure':None}
+                with self.subTest(data=data),self.assertRaises(q.Hold):q.git_admin_snapshot(repo)
+                self.assertEqual(q.DIAGNOSTIC['failure']['predicate'],'admin_worktree_remnant');self.assertNotIn('Secret',json.dumps(q.DIAGNOSTIC))
+    def test_worktree_remnant_symlink_directory_fifo_refused_without_open(self):
+        for kind in ['symlink','directory','fifo']:
+            with tempfile.TemporaryDirectory() as td:
+                repo=self.fixture(td);path=repo/'.git/config.worktree'
+                if kind=='symlink':
+                    target=Path(td)/'target';target.write_bytes(q.INACTIVE_WORKTREE_REMNANT);path.symlink_to(target)
+                elif kind=='directory':path.mkdir()
+                else:os.mkfifo(path)
+                with self.subTest(kind=kind),self.assertRaises(q.Hold):q.git_admin_snapshot(repo)
+    def test_active_worktree_extension_refused_even_for_exact_remnant(self):
+        for value in ['true','false','1','0']:
+            with tempfile.TemporaryDirectory() as td:
+                repo=self.fixture(td);(repo/'.git/config.worktree').write_bytes(q.INACTIVE_WORKTREE_REMNANT)
+                with (repo/'.git/config').open('a') as f:f.write('[extensions]\nworktreeConfig='+value+'\n')
+                q.DIAGNOSTIC={'stage':'control_admin','failure':None,'final_failure':None}
+                with self.subTest(value=value),self.assertRaises(q.Hold):q.git_admin_snapshot(repo)
+                self.assertEqual(q.DIAGNOSTIC['failure']['predicate'],'config_key')
+    def test_late_remnant_creation_removal_and_same_bytes_replacement_hold(self):
+        for operation in ['create','remove','replace','change']:
+            with tempfile.TemporaryDirectory() as td:
+                repo=self.fixture(td);path=repo/'.git/config.worktree'
+                if operation!='create':path.write_bytes(q.INACTIVE_WORKTREE_REMNANT)
+                q.GIT_ADMIN_BASELINES={str(repo):q.git_admin_snapshot(repo)}
+                if operation=='remove':path.unlink()
+                elif operation=='replace':
+                    other=repo/'.git/replacement';other.write_bytes(q.INACTIVE_WORKTREE_REMNANT);os.replace(other,path)
+                elif operation=='change':path.write_bytes(q.INACTIVE_WORKTREE_REMNANT.replace(b'false',b'true '))
+                else:path.write_bytes(q.INACTIVE_WORKTREE_REMNANT)
+                q.DEADLINE=time.monotonic()+10;q.FINALIZING=True;q.FINAL_READ_REPOS=frozenset({str(repo)})
+                with mock.patch.object(support,'capture',side_effect=AssertionError('must not launch')) as launch:
+                    with self.subTest(operation=operation),self.assertRaises(q.Hold):q.capture(['git','-C',str(repo),'status','--porcelain','--untracked-files=all'],{},5,[],Path(td))
+                    launch.assert_not_called()
+                q.FINALIZING=False;q.DEADLINE=None
+
+    def test_git_postcheck_rejects_remnant_replacement_after_owned_command(self):
+        with tempfile.TemporaryDirectory() as td:
+            repo=self.fixture(td);path=repo/'.git/config.worktree';path.write_bytes(q.INACTIVE_WORKTREE_REMNANT)
+            q.GIT_ADMIN_BASELINES={str(repo):q.git_admin_snapshot(repo)};q.DEADLINE=time.monotonic()+30
+            def owned(argv,env,seconds,disk):
+                other=repo/'.git/replacement';other.write_bytes(q.INACTIVE_WORKTREE_REMNANT);os.replace(other,path)
+                return {'exit':0,'stop':None,'cleanup':{'confirmed':True}},[]
+            with mock.patch.object(support,'capture',side_effect=owned) as launch:
+                with self.assertRaises(q.Hold):q.capture(['git','-C',str(repo),'status','--porcelain','--untracked-files=all'],{},5,[],Path(td))
+                self.assertEqual(launch.call_count,1)
+
     def test_real_fsmonitor_marker_refused_before_final_git_launch(self):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td);repo=root/'repo';subprocess.run(['git','init','--quiet',str(repo)],check=True,capture_output=True)
