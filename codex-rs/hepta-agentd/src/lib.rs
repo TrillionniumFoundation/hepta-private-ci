@@ -41,6 +41,8 @@ mod native_memory_current_test_support;
 #[cfg(all(test, unix))]
 #[path = "native_memory_current_tests.rs"]
 mod native_memory_current_tests;
+#[cfg(target_os = "linux")]
+mod native_memory_host_bootstrap;
 mod native_memory_model;
 mod native_memory_process;
 #[cfg(target_os = "linux")]
@@ -215,6 +217,8 @@ pub use native_memory_current::AgentdNativeMemoryPreparedReadV1;
 pub use native_memory_current::NativeMemoryClockObservationV1;
 pub use native_memory_current::NativeMemoryTickClockV1;
 pub use native_memory_current::native_memory_subject_digest_v1;
+#[cfg(target_os = "linux")]
+pub use native_memory_host_bootstrap::configure_native_memory_process_v1;
 pub use native_memory_registration::AgentdNativeMemoryHostV1;
 pub use native_memory_registration::AgentdNativeMemoryRegistrationV1;
 pub use native_memory_registration::NativeMemorySourceConfigV1;
