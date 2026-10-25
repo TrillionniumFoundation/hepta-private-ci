@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/home/qian-qi/work/hepta-architecture-20261025/ndu-venv/bin/python",
+    "-m",
+    "experiments.multimodal_output_portfolio.v6.fresh_factorial.exposure",
+    "freeze",
+    "--template",
+    "experiments/multimodal_output_portfolio/v6/fresh_factorial/template.json",
+    "--census",
+    "/home/qian-qi/work/hepta-architecture-20261025/ndu-exposure-census-r2/exposure-census.json",
+    "--attestation",
+    "/home/qian-qi/work/hepta-architecture-20261025/ndu-final-exposure-review-r2/exposure-review.json",
+    "--source-commit",
+    "689c45e1903a6b28dcff6d05c7b732a07511f512",
+    "--source-owner",
+    "/home/qian-qi/work/hepta-architecture-20261025/ndu-fresh-evidence-v1",
+    "--output",
+    "/home/qian-qi/work/hepta-architecture-20261025/ndu-fresh-registration-r2"
+  ],
+  "exit": 0,
+  "wall_seconds": 18.314668307997636,
+  "algorithm_commit": "689c45e1903a6b28dcff6d05c7b732a07511f512",
+  "review_sha256": "89d9a5fd3302b2729fae25b01fb4600e082c25924c0a6288dd2a5bbde783f627",
+  "new_data_or_models_run": false,
+  "source_owner_created": false,
+  "protocol": {
+    "path": "/home/qian-qi/work/hepta-architecture-20261025/ndu-fresh-registration-r2/protocol.json",
+    "bytes": 48276,
+    "sha256": "a3531af321d47e82d98d31d2bb5db0cb9eb87809ac30a470468a7b7cde5c1e46"
+  }
+}
