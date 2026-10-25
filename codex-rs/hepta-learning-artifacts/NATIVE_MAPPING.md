@@ -45,6 +45,7 @@ flattened into one V1 predecessor.
 | verify selector trust independently of artifact-owner keys | `ArtifactSelectionVerifierV1::verify` | `src/selection.rs` | implemented |
 | bind verified selector evidence to selected lifecycle transition | `record_verified_selection` | `src/selection.rs` | implemented |
 | load exact independently selected immutable candidate | `load_selected_candidate` | `src/selection.rs` | qualification-composed source |
+| verify the fixed initial SmolLM positive-zero material profile after original selector admission | private `initial_smollm_genesis` consumer in `load_selected_candidate` | `src/initial_smollm_genesis.rs` | non-installing selected-byte prerequisite; main-weight load NOT_OBSERVED |
 | prepare snapshot-local dataset revocation | `prepare_dataset_revocation` | `src/dataset_revocation.rs` | retained |
 | validate complete V2 manifest | `validate_artifact_manifest_v2` | `src/closure_v2.rs` | implemented |
 | persist dataset withdrawal frontier in memory | `DatasetWithdrawalRegistry::append` | `src/closure_v2.rs` | implemented |
@@ -64,6 +65,47 @@ flattened into one V1 predecessor.
 | record externally evidenced iteration state | `IterationLedgerV1::append_candidate` / `transition` / `from_snapshot` | `src/iteration_ledger.rs` | implemented |
 
 ## V2/V3 manifest and withdrawal binding
+
+### Initial neural baseline material prerequisite
+
+The additive `hepta.learning-artifacts.smollm2-initial-positive-zero.v1`
+namespace belongs to `learning.artifacts`. Its sole consumer is the original
+`load_selected_candidate`, after independent `ArtifactSelectionVerifierV1`
+admission. It accepts only a Parameters Genesis manifest at generation 1 and
+one fixed, canonical safetensors encoding of all 120 F32 A/B factors: all
+230,400 values must have the positive-zero bit pattern. The immutable profile
+commits the upstream revision/file identity, expected backbone/tokenizer roots,
+target contract, exact shapes and adapter expression. These expectations come
+from code-owned profile bytes, never the supplied tensor header.
+
+The compatibility commitment is
+`561414aec8b51f2a18ae3948dd44a321f924b1e12961a8e0139774b42387fcf0`:
+SHA-256 of the exact [profile bytes](profiles/smollm2-initial-positive-zero-v1.profile).
+The fixed [canonical header](profiles/smollm2-initial-positive-zero-v1.safetensors.header)
+is 12,056 bytes; its preceding little-endian length and the following 921,600
+positive-zero factor bytes are exact. Manifest bounds are checked before the
+original payload reader allocates the selected bytes. The header is compiled
+as data in Cargo and Bazel; no untrusted header supplies a shape or expectation.
+
+Only this new compatibility commitment invokes the additional validation.
+Existing trained contracts, stored registry schemas, CURRENT and eligibility
+semantics remain unchanged. Header aliases, duplicate/unknown keys, changed
+shapes/offsets, non-F32 values, negative zero and trailing data are outside this
+single canonical encoding and fail closed. There is no new parser dependency,
+public material factory, signing key, model constructor or state journal.
+The returned value remains the original generic `RevalidatingCandidate`, not a
+new genesis authority token. Future host code must use this selected-loader
+consumer or repeat the strict check; a namespace copied onto bytes loaded
+through another generic loader is not proof of canonical initial material.
+
+This check observes the selected adapter bytes, not the main upstream weight
+bytes. The expected backbone/tokenizer identities are commitments rather than
+actual-load observations. It grants no efficacy, installation, route, FinalUse,
+resource, reward or selection authority. A later separately reviewed initial
+baseline host path still needs original independent selection, authenticated
+CURRENT, real upstream loading, resource/FinalUse owners and ordinary-task
+readback. The existing SystemLongitudinal upgrade gate is unchanged; neither
+Qualification evidence nor a learned gen2 artifact can impersonate that parent.
 
 `LearningArtifactManifestV2` binds every source dataset digest, additional
 lineage evidence, multiple predecessor IDs, optional rollback predecessor,
@@ -177,3 +219,10 @@ Cross-crate Lane E composition remains in
 `../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. The exact
 candidate is qualified only by the corresponding GitHub workflow execution;
 source files and this mapping are not pass receipts.
+
+The initial-material controls use actual temporary payload and registry files,
+the original signed CURRENT verifier and independent selector factory. They
+exercise cold byte reopening, nonzero/negative-zero/nonfinite factors, header
+aliases, shapes/ranges, selector/profile/head/role/expiry conflicts and a newer
+revocation. Test keys exercise signature separation only; they do not establish
+production enrollment, model efficacy or a selected ordinary neural route.
