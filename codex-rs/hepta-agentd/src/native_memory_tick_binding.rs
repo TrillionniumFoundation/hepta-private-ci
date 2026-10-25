@@ -1,14 +1,10 @@
 //! The tick digest and the admitted query/source cut have distinct meanings.
 
-#[cfg(any(test, feature = "qualification-cognitive-write"))]
 use codex_hepta_memory::MemoryCellSourceBindingV1;
-#[cfg(any(test, feature = "qualification-cognitive-write"))]
 use codex_hepta_neuron::NeuronTickInputV1;
-#[cfg(any(test, feature = "qualification-cognitive-write"))]
 use codex_hepta_types::Digest32;
 use serde::Serialize;
 
-#[cfg(any(test, feature = "qualification-cognitive-write"))]
 use crate::native_memory_types::NativeMemoryError;
 
 #[derive(Clone, Debug, Serialize)]
@@ -30,7 +26,6 @@ pub(crate) struct NativeTickBindingV1 {
     joint_digest: String,
 }
 
-#[cfg(any(test, feature = "qualification-cognitive-write"))]
 impl NativeTickBindingV1 {
     pub(crate) fn new(
         input: &NeuronTickInputV1,

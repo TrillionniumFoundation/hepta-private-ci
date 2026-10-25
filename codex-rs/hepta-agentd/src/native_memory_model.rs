@@ -5,13 +5,13 @@ use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
 use codex_hepta_memory::MemoryCellAdmissionV1;
+use codex_hepta_memory::MemoryCellQueryV1;
 use codex_hepta_memory::ProductionDurableWriter;
 use codex_hepta_neuron::LocalModelRuntimeReceiptV1;
 use codex_hepta_neuron::NeuronModelError;
 use codex_hepta_neuron::NeuronModelOutputV1;
 use codex_hepta_neuron::NeuronModelPort;
 use codex_hepta_neuron::NeuronModelRequestV1;
-#[cfg(any(test, feature = "qualification-cognitive-write"))]
 use codex_hepta_neuron::NeuronTickInputV1;
 use codex_hepta_neuron::canonical_model_output_digest_v1;
 use codex_hepta_types::Digest32;
@@ -101,7 +101,6 @@ impl NativeMemoryModelPort {
 
     /// Preserve the registered model tuple and source admission while binding
     /// the full live tick. A source hash cannot stand in for objective or NDU.
-    #[cfg(any(test, feature = "qualification-cognitive-write"))]
     pub(crate) fn bind_tick(
         &mut self,
         input: &NeuronTickInputV1,
@@ -143,6 +142,7 @@ impl NativeMemoryModelPort {
     fn execute_checked(
         &mut self,
         request: &NeuronModelRequestV1,
+        mut current_guard: impl FnMut(&MemoryCellQueryV1) -> Result<(), String>,
     ) -> Result<NeuronModelOutputV1, String> {
         let reject = |message: String| message;
         if request != &self.expected || self.attempted {
@@ -184,6 +184,9 @@ impl NativeMemoryModelPort {
         };
         let input = serde_json::to_vec(&wire).map_err(|e| reject(e.to_string()))?;
         let request_digest = Digest32::of_bytes(&input).to_string();
+        // No await, source I/O or user callback may separate this current-owner
+        // check from entering the decoder. It does not claim another nonce.
+        current_guard(self.admission.query())?;
         self.attempted = true;
         self.dispatches.fetch_add(1, Ordering::SeqCst);
         let output = native_memory_process::execute(&self.config, input, &self.cancellation)?;
@@ -292,15 +295,32 @@ pub(crate) fn verify_execution(
     Ok(())
 }
 
+impl NativeMemoryModelPort {
+    pub(crate) fn execute_with_current_guard(
+        &mut self,
+        request: &NeuronModelRequestV1,
+        current_guard: impl FnMut(&MemoryCellQueryV1) -> Result<(), String>,
+    ) -> Result<NeuronModelOutputV1, NeuronModelError> {
+        self.execute_checked(request, current_guard)
+            .map_err(|error| {
+                self.failure = Some(error);
+                NeuronModelError::Rejected
+            })
+    }
+}
+
 impl NeuronModelPort for NativeMemoryModelPort {
     fn execute(
         &mut self,
         request: &NeuronModelRequestV1,
     ) -> Result<NeuronModelOutputV1, NeuronModelError> {
-        self.execute_checked(request).map_err(|error| {
-            self.failure = Some(error);
-            NeuronModelError::Rejected
-        })
+        // A tick-bound call cannot bypass its current-owner wrapper. The
+        // original direct v1 path has no Objective/NDU context to revalidate.
+        if self.tick_binding.is_some() {
+            self.failure = Some("tick-bound model requires current-owner guard".to_string());
+            return Err(NeuronModelError::Rejected);
+        }
+        self.execute_with_current_guard(request, |_query| Ok(()))
     }
 }
 
