@@ -1,0 +1,122 @@
+{
+  "cost": {
+    "argv": [
+      "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+      "-B",
+      "-m",
+      "experiments.multimodal_output_portfolio.abc_recovery.base_recovery",
+      "--execute",
+      "/workspace/scratch/2b3c256bef7d/abc2-runs/base-recovery-001/rebuild-registration.json"
+    ],
+    "child_cpu_ns": 480297730000,
+    "child_peak_rss_bytes": 517804032,
+    "exit_code": 0,
+    "historical_cost_recovered": false,
+    "includes": "registration, loading, training, diagnostics, checkpoint/report/log writes and child exit",
+    "schema": "hepta.ndu-abc.rebuild-process-cost.v1",
+    "wrapper_and_child_wall_ns": 242253303373,
+    "wrapper_cpu_ns": 52728172
+  },
+  "old_lost_ABC_outputs_recovered": false,
+  "result": {
+    "bases": {
+      "supervised": {
+        "exact_original_file_recovered": true,
+        "expected_original_file_sha256": "12cd2560b03acd23cdf52d56aedc025bbc2663d58d6b7979fffd26a1fbc7c464",
+        "file_sha256": "12cd2560b03acd23cdf52d56aedc025bbc2663d58d6b7979fffd26a1fbc7c464",
+        "parameter_sha256": "9db0d456193b568adf6797a79255a642fcbc3a79810f941bfc728e6f435eb00e",
+        "snapshot_sha256": "7174507042556da461d4d70333d791d1335cc5a28a61eb92ddb7fa5e5cb7b75c"
+      },
+      "terminal_entropic_ndu": {
+        "exact_original_file_recovered": true,
+        "expected_original_file_sha256": "2b95156f6848a82ce985b5ab1b31624c2e2f8bd4cf7296358f680e39fdd83d6c",
+        "file_sha256": "2b95156f6848a82ce985b5ab1b31624c2e2f8bd4cf7296358f680e39fdd83d6c",
+        "parameter_sha256": "64c3331c319d854192207375b1da78dd343850a952ca68b4061bae659c16fbc8",
+        "snapshot_sha256": "e63257f7e3354cdd024f9201b7b284daeb765929f3ae31d63f8facc3aa56fd98"
+      }
+    },
+    "execution_cpu_ns": 479605994854,
+    "execution_wall_ns": 241507909588,
+    "formal_v7_outcomes_opened": false,
+    "materialized_source_roles": {
+      "historical_v6_audit_within_excluded_v6_train": 5000,
+      "v7_reward": 5000,
+      "v7_train": 12000
+    },
+    "new_task_outcomes_opened": false,
+    "observers": {
+      "audit": {
+        "diagnostic": {
+          "bernoulli_accuracy": 0.944,
+          "bernoulli_correct": 944,
+          "bernoulli_gate": true,
+          "observer_parameter_sha256": "b02514987ea2986321e00652e0823111d30ebb79104ff85eb88ef0eae9e35474",
+          "original_accuracy": 0.949,
+          "original_correct": 949,
+          "original_gate": false,
+          "parameters_unchanged": true,
+          "rows_sha256": "c0df743cf676126560e90106de63f15c78211142ef5a743e49182125dbe4f332",
+          "sampled_pixels_artifact_sha256": "6c2c06814f5aa4d44ab8e608aa990f480f3767400b631375d8ff664f3f81a473",
+          "scope": "New bounded observer diagnostic; not a new generation result or general certification.",
+          "source_ids_sha256": "f443d837f57f23ab15c99d43d9c164a4daeca9088b6f69ab91b176418763b8af",
+          "sources": 1000
+        },
+        "exact_original_file_recovered": true,
+        "expected_original_file_sha256": "cd560d4ec2f45cef6a0f4db9809b902ea68833c8693798f7597135a83a6e3589",
+        "file_sha256": "cd560d4ec2f45cef6a0f4db9809b902ea68833c8693798f7597135a83a6e3589",
+        "parameter_sha256": "b02514987ea2986321e00652e0823111d30ebb79104ff85eb88ef0eae9e35474",
+        "training_report": {
+          "calibration_accuracy": 0.9490000009536743,
+          "calibration_sources": 1000,
+          "independence": "disjoint source pool and parameters; same local host",
+          "seed": 161803,
+          "source_ids_sha256": "1f986079f5c85e333b0f59675e39a9559af5304b0b396eba205fc31a7913af14",
+          "steps": 300,
+          "train_sources": 4000,
+          "wall_ns": 4909920002
+        }
+      },
+      "reward": {
+        "diagnostic": {
+          "bernoulli_accuracy": 0.959,
+          "bernoulli_correct": 959,
+          "bernoulli_gate": true,
+          "observer_parameter_sha256": "8d2b16722e9da2f23313d5d9f42bec4d60c28f4e52bfb37204e875456e2e36a3",
+          "original_accuracy": 0.966,
+          "original_correct": 966,
+          "original_gate": true,
+          "parameters_unchanged": true,
+          "rows_sha256": "0d6d82b59ceb1d1f6201ff97316ce96d57979b803cd48b3016db253b9f42058a",
+          "sampled_pixels_artifact_sha256": "40f408c7f7cab402c9f37cdc8eb5b5797fd8842bc9b3977f4b23d7a9c1ff58b4",
+          "scope": "New bounded observer diagnostic; not a new generation result or general certification.",
+          "source_ids_sha256": "8feda48994fbdaa1fced0bc72d8b3d5777a39c68298ab9b43a290e2384bb00da",
+          "sources": 1000
+        },
+        "exact_original_file_recovered": false,
+        "expected_original_file_sha256": "dc5813185707586f54877f2172f79d7bc3675b4ee41b3e93d19b8b598228aac0",
+        "file_sha256": "8cfca1b0cd0a69bcfcc6a9d34d0a672c07c28f3342823ef8a3f6763e9430a003",
+        "new_wrapper_identity_reason": "Embedded wall_ns is a new measurement; no historical-byte equivalence is asserted.",
+        "parameter_sha256": "8d2b16722e9da2f23313d5d9f42bec4d60c28f4e52bfb37204e875456e2e36a3",
+        "training_report": {
+          "calibration_accuracy": 0.9660000205039978,
+          "calibration_sources": 1000,
+          "independence": "disjoint source pool and parameters; same local host",
+          "seed": 314159,
+          "source_ids_sha256": "c21bebdbd621769b02d16a234d79a5be0411a358591fd7bae091e459ba43bfb7",
+          "steps": 1000,
+          "train_sources": 4000,
+          "wall_ns": 15886656004
+        }
+      }
+    },
+    "original_training_history_expected_sha256": "fbe31e19780acacd8cbad23d20bb25d8832a4a7d6bbb8e6e80c3706a705e46e4",
+    "original_training_history_recovered": false,
+    "original_training_timers": "Unavailable; all recorded CPU/wall values belong to this new rebuild.",
+    "registration_sha256": "5a43d902f449395489d10443397b74ea3c77f2de09c00e09a3bf3641a014f2ac",
+    "schema": "hepta.ndu-abc.base-recovery-result.v1",
+    "status": "completed",
+    "training_history_file_sha256": "0f935b44c3f6d18c3fa99cfeecbaf5794633d149b0a1bf64b3192c70a360f4c6"
+  },
+  "schema": "hepta.abc.published-base-recovery.v1",
+  "source_result_sha256": "553e9e1c084466f66242827b4c2aeff6f7af88993944bdfeb82f672a77a30462"
+}

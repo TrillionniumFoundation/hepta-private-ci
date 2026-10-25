@@ -1,0 +1,123 @@
+{
+  "actual_inputs_file_sha256": "da2667629727ba519f2c81065f57bd0f13ef30bbc56c94cfbca4f67f0f2f17d0",
+  "both_qualified": true,
+  "cost": {
+    "argv": [
+      "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+      "-B",
+      "-m",
+      "experiments.multimodal_output_portfolio.abc_recovery.qualification",
+      "--execute",
+      "/workspace/scratch/2b3c256bef7d/abc2-runs/qualification-001/qualification-registration.json"
+    ],
+    "child_cpu_ns": 42550949000,
+    "child_peak_rss_bytes": 489558016,
+    "exit_code": 0,
+    "includes": "registration, loading, secondary training, qualification, raw IO, report/log writes and child exit",
+    "schema": "hepta.ndu-abc.qualification-process-cost.v1",
+    "wrapper_and_child_wall_ns": 23972567638,
+    "wrapper_cpu_ns": 150040378
+  },
+  "independent_sources": 256,
+  "legacy_secondary_95_percent_gate": false,
+  "legacy_secondary_original_accuracy": 0.949,
+  "observers": {
+    "primary": {
+      "all_view_census": {
+        "accuracy": 0.9661458333333334,
+        "correct": 742,
+        "independent_sources": 256,
+        "n": 768
+      },
+      "bernoulli_pooled": {
+        "accuracy": 0.962890625,
+        "correct": 493,
+        "independent_sources": 256,
+        "n": 512,
+        "passed": true,
+        "scenarios_per_source": 2,
+        "threshold": 0.9
+      },
+      "parameter_sha256": "8d2b16722e9da2f23313d5d9f42bec4d60c28f4e52bfb37204e875456e2e36a3",
+      "per_view": {
+        "bernoulli_0": {
+          "accuracy": 0.96484375,
+          "correct": 247,
+          "independent_sources": 256,
+          "n": 256,
+          "passed": true,
+          "threshold": 0.9
+        },
+        "bernoulli_1": {
+          "accuracy": 0.9609375,
+          "correct": 246,
+          "independent_sources": 256,
+          "n": 256,
+          "passed": true,
+          "threshold": 0.9
+        },
+        "original": {
+          "accuracy": 0.97265625,
+          "correct": 249,
+          "independent_sources": 256,
+          "n": 256,
+          "passed": true,
+          "threshold": 0.95
+        }
+      },
+      "qualified": true
+    },
+    "secondary": {
+      "all_view_census": {
+        "accuracy": 0.9544270833333334,
+        "correct": 733,
+        "independent_sources": 256,
+        "n": 768
+      },
+      "bernoulli_pooled": {
+        "accuracy": 0.951171875,
+        "correct": 487,
+        "independent_sources": 256,
+        "n": 512,
+        "passed": true,
+        "scenarios_per_source": 2,
+        "threshold": 0.9
+      },
+      "parameter_sha256": "8ef501856a0578793d321b8f6977fdb172b67c0f78bc418e3c10fe761b265986",
+      "per_view": {
+        "bernoulli_0": {
+          "accuracy": 0.953125,
+          "correct": 244,
+          "independent_sources": 256,
+          "n": 256,
+          "passed": true,
+          "threshold": 0.9
+        },
+        "bernoulli_1": {
+          "accuracy": 0.94921875,
+          "correct": 243,
+          "independent_sources": 256,
+          "n": 256,
+          "passed": true,
+          "threshold": 0.9
+        },
+        "original": {
+          "accuracy": 0.9609375,
+          "correct": 246,
+          "independent_sources": 256,
+          "n": 256,
+          "passed": true,
+          "threshold": 0.95
+        }
+      },
+      "qualified": true
+    }
+  },
+  "predictions_file_sha256": "39e33680f222523af9b807795cf1283483cc52b4e7693460ef83a890ea1fdded",
+  "primary_file_sha256": "8cfca1b0cd0a69bcfcc6a9d34d0a672c07c28f3342823ef8a3f6763e9430a003",
+  "schema": "hepta.abc.published-observer-qualification.v1",
+  "scope": "Bounded source-image observer qualification; not a generated-output or general reliability guarantee.",
+  "secondary_file_sha256": "b0851ce56189d159b53449cfc914cf84b9b63e82a6f0050228096666752595fe",
+  "source_ids_sha256": "cad149866bb8415c47d4b489d16507589738e1d50f9b4b2f12834c854f69c581",
+  "source_result_sha256": "e5691fa2caf0df9d849d166673e0dd51e53af15647b0cc7223f435776ed77458"
+}
