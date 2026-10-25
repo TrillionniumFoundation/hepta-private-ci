@@ -1224,12 +1224,18 @@ flush access required by the OS, keeping its original owner and all assertions.
 Its full three local cases, including the original history/concurrency profile,
 pass; this still requires the original Windows native target to execute.
 
+The original four x64/ARM source-head/base-merge diagnostic archives are preserved
+unchanged in [the failure manifest](../qualification/windows-delete-boundary/07731d31-original-failures/manifest.json).
+All 64 log hashes and each lane's before/after source identity were verified;
+every lane passed fourteen groups and failed the same broad-identity and legacy
+deletion groups. These are historical failures, never current-source passes.
+
 The same PN0 sandbox item retains seven source-backed blockers below. Security-authority
 coordinates the sandbox package owners; runtime-control owns the PN4 process-owner
 composition. Paths in the first six rows are under
-`codex-rs/windows-sandbox-rs/src/`. All new interface names are proposed contracts,
-not implemented factories or admission authority; this does not transfer sandbox
-ownership to `utils/windows-private-state`.
+`codex-rs/windows-sandbox-rs/src/`. The interface contracts below remain admission
+requirements. The bounded mechanisms described after the table implement only
+part of them and do not transfer sandbox ownership to `utils/windows-private-state`.
 
 | Existing responsibility and source blocker                                                                                                                                                                           | Interface correction and dependency                                                                                                                                                                                                                                                                                                                                                         | Native acceptance still required                                                                                                                                                                                                                                                                              |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1241,7 +1247,39 @@ ownership to `utils/windows-private-state`.
 | PN0 stdio: `process.rs` has a global inheritable-stdio fallback; `acl.rs::allow_null_device` mutates shared NUL ACLs.                                                                                                | `OwnedChildStdio`/closed-stdio plans duplicate only exact endpoints and always supply an explicit handle list when inheriting. Pass preopened NUL or closed endpoints; retain RAII cleanup and exclude runner/token/Job/store/ancestor handles.                                                                                                                                             | Test open/closed stdin, split/merged output, EOF, backpressure, cancellation and ConPTY. A deliberately inheritable unrelated sentinel and private/control handles must stay inaccessible; no device-wide ACL repair may manufacture success.                                                                 |
 | PN4 controlled containment: `process.rs`, `conpty/mod.rs` and `codex-rs/utils/pty/src/win/job.rs` currently select a breakaway-enabled Job.                                                                          | The controlled route uses `create_without_breakaway`, atomic `PROC_THREAD_ATTRIBUTE_JOB_LIST` assignment and the original retained process owner until terminal reconciliation. Preserve unrelated interactive descendant-lifetime contracts.                                                                                                                                               | Execute breakaway attempts, child/grandchild pipelines and cancellation/process-death cases under the original eight-second terminal bound. Actual PE/DLL/script execution is required; `FILE_EXECUTE` handle access, exit code or PID lookup does not prove launch, containment or resource return.          |
 
-The existing setup/RX dependency now includes the query-only library API
+The next implementation slice adds retained library-side bounded root preparation
+in `prepared_filesystem.rs` and the private `create_full_filesystem_token_from`
+mechanism. Preparation grants only the declared root role on an original held
+object, retains query handles and complete descriptors, checks effective access
+with the exact base and output tokens, and permanently refuses changed bindings.
+Read roles receive RX only; write roles exclude parent `FILE_DELETE_CHILD`,
+`WRITE_DAC` and `WRITE_OWNER`. Existing generic or excess role grants are refused.
+The token's original default DACL remains unchanged, all surviving privileges
+are checked, and query/duplication-only source authority is retained to compare
+the same TokenId/ModifiedId. The existing total 128-subject launch bound includes
+the distinct desktop role; an overfull filesystem union is refused, not truncated.
+
+`OwnedChildStdio` now duplicates only exact endpoints and always supplies a handle
+list without changing their original inheritance bits. `DesktopCapability` uses
+a fresh OS-random session role; desktop creation supplies a protected DACL
+atomically and reads it back without repairing occupied names. The private
+`PreparedProcessContext` retains the exact token, private desktop and a
+non-breakaway Job; pipe and ConPTY mechanisms consume that context. Controlled
+Jobs refuse descendant-preservation requests, while the original interactive
+lifetime contract remains. These are mechanisms, not accepted production callers.
+
+Four additional diagnostic groups exercise bounded ACL/full-token operations,
+stdio sentinel exclusion, separate session desktops and controlled versus
+interactive Job flags. All original sixteen groups, exact failing tests, script,
+assertions and deadlines remain. The combined twenty-group receipts still report
+production admission false. Neither bounded root readback nor an AccessCheck
+proves descendant ACLs, PE/DLL initialization, namespace confinement, terminal
+reconciliation or the legacy full-disk-read contract. Do not replace that contract
+with the finite platform defaults, rewrite its fixture, or use these new bounded
+tests to supersede either original red. The existing direct/elevated/runner guards
+remain closed until that complete route passes fresh native execution.
+
+The existing setup/RX dependency also includes the query-only library API
 `observe_filesystem_read_acl` and opaque `HeldFilesystemReadAcl::revalidate`.
 It retains at most 64 non-inheritable query handles, complete bounded owner/DACL
 bytes and identities for every exact root in the original ReadV3 plan. Missing
@@ -1257,8 +1295,8 @@ requires those exact three named results as an additional receipt, preserving
 all original fifteen groups, assertions and deadlines. MSVC component compilation
 is not native execution or whole-package qualification.
 
-First collect the existing source-head/base-merge sixteen-receipt results; a primitive
-pass cannot replace an original red. Continue within PN0 in dependency order:
+Collect all twenty source-head/base-merge receipts, including the original sixteen;
+a primitive pass cannot replace an original red. Continue within PN0 in dependency order:
 bounded role plan and versioned setup/runner fields, explicit RX/readiness,
 mutation deny plus full-token/default-object policy, then desktop/stdio/controlled
 Job and real direct/elevated/broker caller/WFP integration. Expose only opaque
