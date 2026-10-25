@@ -717,8 +717,9 @@ The separate actual #328 integration preview is
 `a1ddc0f7fc77e168b52bb92b52aaa215bf796363`, ordered parents
 `[57c1ed54, a6209f91]`. Both trees reproduce the source tree, but the main
 qualification object is not that PR preview or a performed merge. No branch
-was activated or advanced by publishing the qualification object. All 56 pair
-steps, native commands, minimum-test counts and four Linux lanes are preserved;
+was activated or advanced by publishing the qualification object. All 65 pair
+steps, including 57 executable run bodies, native commands, minimum-test counts
+and four Linux lanes are preserved;
 their current head/merge execution receipts and Windows sixteen-group results
 must still finish before merge eligibility can be claimed.
 

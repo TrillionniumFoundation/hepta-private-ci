@@ -349,8 +349,11 @@ reorg and round re-entry cannot reset deadlines or accounting.
 Unknown after a possible effect retains the original operation and reservation;
 callers cannot erase it by starting another round. Publish measured costs and
 terminal evidence through existing ledgers/receipts, without a parallel journal.
-The original two-second read, 120-second startup and eight-second terminal
-contracts remain fixed; model training/evaluation plans declare separate bounds.
+The original Hepta two-second read and 120-second startup contracts remain
+fixed, as does Chain's absolute eight-second host/raw-U terminal boundary. The
+existing Hepta Session shutdown observer separately retains its original
+ten-second limit; this is not an extension or proof of Chain's eight-second
+boundary. Model training/evaluation plans declare separate bounds.
 
 Acceptance has two separate results. **Three-round mechanism closure** permits
 no-update and proves correct training/evaluation/rejection, durable reconciliation
