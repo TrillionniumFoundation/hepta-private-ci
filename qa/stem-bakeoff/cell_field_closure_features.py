@@ -13,22 +13,24 @@ import time
 import numpy as np
 
 from cell_field_action_io import deny_withheld_labels
-from cell_field_closure_data import run_new_stage, write
+from cell_field_closure_data import registered_source_directory, run_new_stage, write
 from cell_field_features import file_hash
 
 
 def extract(data, snapshot, protocol, v3_data, v3_features, output):
     sys.addaudithook(deny_withheld_labels)
+    plan = json.loads(Path(protocol).read_bytes())
+    data, root = registered_source_directory(plan, data), Path(output)
     import torch
     from real_encoder import FrozenRealEncoder
     from shared_feature_contract import SourceEvent
     from shared_feature_extract import SharedFeatureEncoder
     from teacher_snapshot import inventory
 
-    data, root = Path(data), Path(output)
-    plan = json.loads(Path(protocol).read_bytes())
     receipt = json.loads((data / "data_receipt.json").read_bytes())
     if (receipt["protocol_sha256"] != file_hash(protocol)
+            or receipt["source_owner_directory"] != plan["source_owner_directory"]
+            or receipt["prepared_source_directory"] != str(data)
             or receipt["files"]["predictors.json"]["sha256"] != file_hash(data / "predictors.json")):
         raise ValueError("source/feature protocol mismatch")
     rows = json.loads((data / "predictors.json").read_bytes())["rows"]

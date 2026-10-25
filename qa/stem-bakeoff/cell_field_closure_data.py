@@ -31,6 +31,28 @@ def write(path, value):
     return {"sha256": sha(payload), "bytes": len(payload)}
 
 
+def registered_source_directory(plan, data):
+    """One published source owner, shared by preparation and every consumer."""
+    name = plan.get("source_owner_directory")
+    if not isinstance(name, str) or not name:
+        raise ValueError("registered source owner is required")
+    owner = Path(name)
+    if (not owner.is_absolute() or str(owner) != name or ".." in owner.parts
+            or owner.resolve() != owner):
+        raise ValueError("registered source owner must be an absolute path without aliases")
+    expected = owner / "data"
+    actual = Path(data).absolute()
+    if actual != expected or actual.resolve() != expected:
+        raise ValueError("source directory differs from the registered source owner")
+    return expected
+
+
+def claim_final_access(plan, data, access):
+    """Create-only at the original prepared source, including after failures."""
+    root = registered_source_directory(plan, data)
+    write(root / "final_access_v4.json", access)
+
+
 def run_new_stage(callback, arguments):
     root = Path(arguments["output"])
     existed = root.exists()
@@ -46,10 +68,10 @@ def run_new_stage(callback, arguments):
 
 def prepare(archive, previous_v1, previous_v2, previous_v3, protocol, output):
     began, cpu = time.perf_counter_ns(), time.process_time_ns()
-    root = Path(output)
-    root.mkdir(parents=True, exist_ok=False)
     plan_bytes = Path(protocol).read_bytes()
     plan = json.loads(plan_bytes)
+    root = registered_source_directory(plan, output)
+    root.mkdir(parents=True, exist_ok=False)
     prior = {}
     for name, source in zip(("v1", "v2", "v3"), (previous_v1, previous_v2, previous_v3)):
         payload = Path(source).read_bytes()
@@ -147,6 +169,7 @@ def prepare(archive, previous_v1, previous_v2, previous_v3, protocol, output):
     files = {name: write(root / name, {"schema": "hepta.cell-closure-news.v4", **payload})
              for name, payload in payloads.items()}
     receipt = {"schema": "hepta.cell-closure-news.v4", "protocol_sha256": sha(plan_bytes),
+               "source_owner_directory": str(root.parent), "prepared_source_directory": str(root),
                "source_archive_sha256": ARCHIVE_SHA256, "prior_source_hashes": PINS,
                "selected_components": len(selected), "reserved_components": len(reserved),
                "eligible_counts": {f"{month}/{label}": len(v) for (month, label), v in buckets.items()},

@@ -79,8 +79,17 @@ The common calibration prevents a claim that low output dimension alone makes
 the whole system lightweight. No cell splitting, autonomous topology growth,
 general intelligence or broad agent superiority is tested here.
 
-All commands create fresh output directories. Any failure is preserved. Missing
-registered branches block final access. The source-level final-access ledger
-prevents using a new output directory to repeat exposure. Unit-test fixtures
-verify mechanisms and integrity only; they are never counted as new task results.
+The single registered source owner is
+`/home/qian-qi/work/hepta-architecture-20261025/cell-v4-evidence-v1`.
+Preparation and all source consumers accept only its `data` directory, without
+symlink aliases. Preparation creates that directory once; a changed feature,
+run or evaluation output directory cannot create another copy of this cohort.
+The final-access ledger is create-only in that same registered source directory.
+Preserve the directory and ledger after every failure. These checks bind this
+published protocol and local source owner; they do not claim protection against
+deleting evidence or changing the published protocol.
+
+Other stage commands create fresh output directories. Any failure is preserved.
+Missing registered branches block final access. Unit-test fixtures verify
+mechanisms and integrity only; they are never counted as new task results.
 Numerical and encoder workloads are limited to two CPU threads.

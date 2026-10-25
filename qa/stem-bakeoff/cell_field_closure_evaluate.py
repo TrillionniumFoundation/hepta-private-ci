@@ -11,7 +11,7 @@ import time
 import numpy as np
 
 from cell_field_closure_audit import verify_run
-from cell_field_closure_data import write
+from cell_field_closure_data import claim_final_access, registered_source_directory, write
 from cell_field_closure_run import seal, source_hashes
 from cell_field_features import file_hash
 
@@ -49,6 +49,7 @@ def preflight(runs, data, audit_path):
     """Every check here is label-free and must pass before the access ledger exists."""
     root, data = Path(runs), Path(data)
     plan, run = verify_run(root)
+    data = registered_source_directory(plan, data)
     frozen = json.loads((root / "source-freeze.json").read_bytes())
     if source_hashes() != frozen["files"]:
         raise ValueError("evaluation source differs from the published executed source")
@@ -60,6 +61,8 @@ def preflight(runs, data, audit_path):
             or file_hash(data / "sources.json") != inputs["new_sources_sha256"]
             or receipt["files"]["final_labels.json"]["sha256"] != inputs["final_labels_sha256"]
             or receipt["protocol_sha256"] != frozen["protocol_sha256"]
+            or receipt["source_owner_directory"] != plan["source_owner_directory"]
+            or receipt["prepared_source_directory"] != str(data)
             or report["status"] != "passed" or report["final_labels_opened"] is not False
             or report["run_seal_sha256"] != file_hash(root / "run-seal.json")
             or len(report["ranking_rows"]) != 90 or report["registered_branches"] != 306
@@ -91,13 +94,15 @@ def evaluate(runs, data, audit, output):
                   "run_seal_sha256": file_hash(root / "run-seal.json"),
                   "pre_unseal_audit_sha256": file_hash(audit),
                   "expected_final_sha256": inputs["final_labels_sha256"],
+                  "source_owner_directory": plan["source_owner_directory"],
+                  "prepared_source_directory": str(registered_source_directory(plan, data)),
                   "attempt": 1, "outputs": str(output.absolute()),
                   "policy": "single final exposure; preserve failures, do not select a new protocol on these sources",
                   "authority": "DENY_ALL"}
-        # A fresh output name cannot bypass the source-level single-access ledger.
-        write(data / "final_access_v4.json", access)
-        write(output / "final-access.json", access)
+        # Both preparation and final access use this one published source owner.
+        claim_final_access(plan, data, access)
         opened = True
+        write(output / "final-access.json", access)
         payload = (data / "final_labels.json").read_bytes()
         if (hashlib.sha256(payload).hexdigest() != inputs["final_labels_sha256"]
                 or len(payload) != receipt["files"]["final_labels.json"]["bytes"]):
