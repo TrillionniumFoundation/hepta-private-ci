@@ -1,0 +1,329 @@
+{
+  "schema": "hepta.memory.current-relay.local-qualification.v1",
+  "recorded_at_utc": "2026-10-25T10:40:34.278574+00:00",
+  "parent_head": "ba32a22de7c586ae6a1ac6ebeb5d67b54259021b",
+  "frozen_legacy": {
+    "scripts/memory_cell_distributed/relay_trial.py": {
+      "unchanged_from_HEAD": true,
+      "sha256": "e970b2d441d84fa13f4eefee5eb7fbb976d7dfe6505ae7127a31c11ea36c2663"
+    },
+    "scripts/memory_cell_distributed/relay_evaluate.py": {
+      "unchanged_from_HEAD": true,
+      "sha256": "f695606d64bb83dbb739ee694c40655a163157adccb8a6a21f6a004b004490d2"
+    },
+    "scripts/memory_cell_distributed/artifact_relay.py": {
+      "unchanged_from_HEAD": true,
+      "sha256": "0710190c1f697826e4923bc54e74233c8bc0b4a9abe9836bf0ef1cacb29d4311"
+    },
+    ".github/workflows/hepta-memory-multihost-relay.yml": {
+      "unchanged_from_HEAD": true,
+      "sha256": "ab6ea23a15be3b68104d9e4f85f39d91364e496a1179db85cc92b2e0ac259e02"
+    }
+  },
+  "local_qualification": {
+    "command": [
+      "/tmp/hepta-memory-current-relay-runtime/bin/python",
+      "-B",
+      "-m",
+      "unittest",
+      "relay_current_tests",
+      "test_relay_contract",
+      "-v"
+    ],
+    "started_utc": "2026-10-25T10:38:58.419122+00:00",
+    "wall_seconds": 2.5815882070019143,
+    "exit_code": 0,
+    "source_files": 79,
+    "source_changed_during_execution": [],
+    "new_model_training_updates": 0,
+    "new_decoder_calls": 0,
+    "scope": "Separate crypto venv with crypto-first path and explicitly reused shared model site-packages for frozen eager torch import. Signatures and artifact/runner fixtures, actual source store/epoch/revocation and source placement refusal. No hosted run claim.",
+    "output_files": {
+      "runtime.json": {
+        "bytes": 5402,
+        "sha256": "d40581f33ac41a9e951f37618d4ab9aaebf31f9ea0c5009ebb9b7b83eb4ff85a"
+      },
+      "source-after.json": {
+        "bytes": 11470,
+        "sha256": "1f49d2bd4b2822d51ddc943befe6dc6a962883fa8dc31b7bf45807855d9bc3cb"
+      },
+      "source-before.json": {
+        "bytes": 11470,
+        "sha256": "1f49d2bd4b2822d51ddc943befe6dc6a962883fa8dc31b7bf45807855d9bc3cb"
+      },
+      "stderr.log": {
+        "bytes": 1921,
+        "sha256": "f6523a22d8f4765c9c23653029b18a02e637d5747643b6a4af589663a0da9932"
+      },
+      "stdout.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "actual_test_counts": {
+    "new_passed": 8,
+    "legacy_passed": 3,
+    "skipped": 0
+  },
+  "test_fixture_limits": [
+    "authenticated GitHub artifact API delivery is mocked locally",
+    "source/target runner identities are fixtures",
+    "prior target callback count 33 is a fixture locally",
+    "MemoryService writes/corrections/revocation, SourceEvidence dispatch, Ed25519 signatures and source placement refusal execute real code"
+  ],
+  "hosted_execution_completed": false,
+  "workflow_static_review": {
+    "schema": "hepta.memory.current-relay.workflow-static-review.v1",
+    "parser": "PyYAML BaseLoader",
+    "parser_version": "6.0.3",
+    "workflow_sha256": "b2345cf94c3fd43239e358f54f60f9933d2fc48de29e74eaff2539ba57b26689",
+    "checked": [
+      "two parallel jobs",
+      "explicit trigger branch",
+      "read-only token permissions",
+      "pinned action SHAs",
+      "six uniquely named artifact publication stages and exact JSON basenames"
+    ],
+    "hosted_execution": false,
+    "limitations": "Static YAML and choreography checks; GitHub Actions expression/server validation and actual artifact delivery require the hosted run."
+  },
+  "launch_branch": "codex/memory-current-relay-20261025",
+  "new_local_training_updates": 0,
+  "new_local_decoder_calls": 0,
+  "claims": {
+    "online_authority": false,
+    "replicated_authority": false,
+    "physical_hardware_attestation": false,
+    "production_acceptance": false,
+    "independent_future_tasks": 0,
+    "future_accuracy": null,
+    "full_research_gates_closed": 0
+  },
+  "prior_attempts": [
+    {
+      "name": "relay-current-tests-001",
+      "exit_code": 1,
+      "outcome": "new module import failed: cryptography absent; no test executed",
+      "started_utc": "2026-10-25T10:33:06.867453+00:00",
+      "receipt_sha256": "d4d704ac37037779b6e0b9c93843cd87aa2aabd6933d35380d373405f8f0c11c",
+      "source_files": 24,
+      "source_changed_during_execution": []
+    },
+    {
+      "name": "relay-current-tests-002",
+      "exit_code": 0,
+      "outcome": "4 earlier-source tests passed in shared model venv after dependency addition; retained, superseded by 004",
+      "started_utc": "2026-10-25T10:33:46.544136+00:00",
+      "receipt_sha256": "9640ba4506545f416f2f55fb65806f1aa04f76a145edacf69d8c7b68b08f3158",
+      "source_files": 24,
+      "source_changed_during_execution": []
+    },
+    {
+      "name": "relay-current-tests-003",
+      "exit_code": 1,
+      "outcome": "3 frozen legacy tests passed; new module import failed: eager frozen tensor_contract torch dependency missing in crypto-only venv",
+      "started_utc": "2026-10-25T10:37:42.650547+00:00",
+      "receipt_sha256": "7978b28581fb5db7a9f6d9b7b67c40ab6f82f9e628cb575dc198f537210cbe90",
+      "source_files": 79,
+      "source_changed_during_execution": []
+    }
+  ],
+  "runtime_addition_event": "relay-runtime-addition.json",
+  "runtime_addition_event_sha256": "25fceb74bff3af6de13dd70863684f5b18781ef220418a059ba13ea08670bab7",
+  "peer_review": {
+    "agent": "/root/memory_quality_development",
+    "disposition": "No required source changes found; report must distinguish first accepted delivery from withdrawn duplicate delivery",
+    "source_changes": false,
+    "model_runs": false
+  },
+  "stage_sizes": {
+    "executed_layout_python_changed_lines": 448,
+    "formatted_implementation_changed_lines": 489,
+    "formatted_tests_and_workflow_changed_lines": 456,
+    "qa_documentation_separate": true
+  },
+  "frozen_protocol_ast_unchanged": true,
+  "runtime_004": {
+    "executable": "/tmp/hepta-memory-current-relay-runtime/bin/python",
+    "module_origins": {
+      "cryptography": {
+        "file": "/tmp/hepta-memory-current-relay-runtime/lib/python3.12/site-packages/cryptography/__init__.py",
+        "version": "50.0.2"
+      },
+      "torch": {
+        "file": "/tmp/hepta-memory-resume-runtime/lib/python3.12/site-packages/torch/__init__.py",
+        "version": "2.5.1+cpu"
+      }
+    },
+    "path_priority": [
+      "separate crypto venv site-packages",
+      "repository implementation directories",
+      "shared model site-packages explicitly reused for frozen eager torch import"
+    ],
+    "separate_installed_packages": {
+      "cryptography": "50.0.2",
+      "cffi": "2.1.1",
+      "pycparser": "3.12"
+    },
+    "model_dependency_install_for_004": false,
+    "fully_independent_model_dependency_tree": false
+  },
+  "shared_runtime_addition": {
+    "command": "env UV_CACHE_DIR=/tmp/hepta-memory-resume-uv-cache uv pip install --python /tmp/hepta-memory-resume-runtime/bin/python --only-binary :all: cryptography==50.0.2",
+    "exit_code": 0,
+    "packages": [
+      {
+        "distribution": "cryptography-50.0.2.dist-info",
+        "installer_mtime_utc": "2026-10-25T10:33:34.915606+00:00",
+        "metadata_sha256": "047cfc71226409de4318b360aef15c63a2adf609731e3dcf7fe932f14ea042ee"
+      },
+      {
+        "distribution": "cffi-2.1.1.dist-info",
+        "installer_mtime_utc": "2026-10-25T10:33:34.915361+00:00",
+        "metadata_sha256": "558bafb9093a8e790175d9ecff9688382981d744877dad86fd6770db0f4dc918"
+      },
+      {
+        "distribution": "pycparser-3.12.dist-info",
+        "installer_mtime_utc": "2026-10-25T10:33:34.913586+00:00",
+        "metadata_sha256": "ad8db5fe2b0e0a3b0e8419fe5041b80be92470a40b06bd9c1462a0a8bb637c92"
+      }
+    ],
+    "exact_command_start_time_captured": false,
+    "time_evidence": "INSTALLER filesystem mtime records observed; distribution payload mtimes may predate installation due to wheel/cache provenance",
+    "removed_or_replaced_packages_reported": [],
+    "no_rollback_performed": true,
+    "parent_notified": true
+  },
+  "retained_raw_logs": "Original failed/successful local receipts and logs retained in the working-session control directory; no raw archive is committed in this QA stage.",
+  "executed_source": {
+    "scripts/memory_cell_distributed/relay_current.py": {
+      "bytes": 11368,
+      "lines": 191,
+      "sha256": "f024c51e3ba0b17e318f748f59499cd6276d50583f73062f083ec80bfd8fd33e"
+    },
+    "scripts/memory_cell_distributed/relay_current_contract.py": {
+      "bytes": 4756,
+      "lines": 96,
+      "sha256": "cc83903256a0bbf88a12166fcb330d5b462b8ac582757322f3aecd85abe5264e"
+    },
+    "scripts/memory_cell_distributed/relay_current_tests.py": {
+      "bytes": 10562,
+      "lines": 159,
+      "sha256": "0db3c6ee5dcf8e2562952ed7d27a8d02cce798e9b070ec6b78a2de9903cd9ebd"
+    },
+    "scripts/memory_cell_distributed/relay_protocol.py": {
+      "bytes": 4267,
+      "lines": 132,
+      "sha256": "5b1e16a23b1b2e06d36366ca6156b25900119b87f379824c65cd1d5f597f5212"
+    },
+    ".github/workflows/hepta-memory-current-relay.yml": {
+      "bytes": 8886,
+      "lines": 176,
+      "sha256": "b2345cf94c3fd43239e358f54f60f9933d2fc48de29e74eaff2539ba57b26689"
+    }
+  },
+  "formatted_source": {
+    "scripts/memory_cell_distributed/relay_current.py": {
+      "bytes": 12866,
+      "lines": 346,
+      "sha256": "77d44021bba1ecd7ea4a7b4dbf64e43d8187ed2d5649c78c269b4e32eabb73f2"
+    },
+    "scripts/memory_cell_distributed/relay_current_contract.py": {
+      "bytes": 5071,
+      "lines": 134,
+      "sha256": "b6e555e3f92696539bb00d3b7f0d6f88f6c013ff2654d9b7bcae73c5bdee0711"
+    },
+    "scripts/memory_cell_distributed/relay_current_tests.py": {
+      "bytes": 12281,
+      "lines": 280,
+      "sha256": "bdac7309fde54440b5ea09a5d04286d2940b8423b7fc7c25495a50db6aa32826"
+    },
+    "scripts/memory_cell_distributed/relay_protocol.py": {
+      "bytes": 4322,
+      "lines": 139,
+      "sha256": "4c2e4bf0743ad730e212d9d848d55bb44522c15427ac368dd366aae21d0b32e4"
+    },
+    ".github/workflows/hepta-memory-current-relay.yml": {
+      "bytes": 8886,
+      "lines": 176,
+      "sha256": "b2345cf94c3fd43239e358f54f60f9933d2fc48de29e74eaff2539ba57b26689"
+    }
+  },
+  "publication_formatting": {
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "cwd": "/workspace/scratch/12ef9c5bdc23/hepta-relay-publish-20261025/codex-rs",
+    "started_utc": "2026-10-25T10:43:31.962343+00:00",
+    "wall_seconds": 0.12070718000177294,
+    "exit_code": 0,
+    "formatter_project_environment": "/tmp/hepta-current-relay-format-runtime",
+    "model_runtime_modified": false,
+    "tests_rerun": false,
+    "formatter": "ruff 0.15.13 via frozen scripts/uv.lock",
+    "setup": "Separate local shallow Git checkout with shared object alternates; no remote configured or fetched",
+    "source_scope_changes": [
+      "scripts/memory_cell_distributed/relay_current.py",
+      "scripts/memory_cell_distributed/relay_current_contract.py",
+      "scripts/memory_cell_distributed/relay_current_tests.py",
+      "scripts/memory_cell_distributed/relay_protocol.py"
+    ],
+    "ignored_generated_outputs": [
+      ".ruff_cache/.gitignore",
+      ".ruff_cache/0.15.13/1909274535446994544",
+      ".ruff_cache/CACHEDIR.TAG"
+    ],
+    "unexpected_source_changes": [],
+    "main_repo_selected_files_unchanged": true,
+    "bridge_method": "ast.dump(ast.parse(source), include_attributes=False)",
+    "python_ast_bridge": {
+      "scripts/memory_cell_distributed/relay_current.py": {
+        "equal": true,
+        "ast_sha256": "b16c1958e74bf91690559b37477497b85d3301a997f28d785abfac236c2f39f4"
+      },
+      "scripts/memory_cell_distributed/relay_current_contract.py": {
+        "equal": true,
+        "ast_sha256": "70ad94e0919167a261cc679f65db1f9b5f1043036503eff2d1e9cf9bc862d73a"
+      },
+      "scripts/memory_cell_distributed/relay_current_tests.py": {
+        "equal": true,
+        "ast_sha256": "77e60cad3fe6b5e418fec18118192e601844cea40874a1596963eee0a97b4068"
+      },
+      "scripts/memory_cell_distributed/relay_protocol.py": {
+        "equal": true,
+        "ast_sha256": "86d8b712eca1f9457dfc6eba36a4eb41d78bd4fb70ade7b67065947c4c8e56d4"
+      }
+    },
+    "formatted_bytes_tested_locally": false,
+    "qualification_scope": "11/11 belongs to executed_source bytes. Formatted Python preserves the location-free AST, but has not been re-executed locally. No post-fmt tests were run."
+  },
+  "suggested_stages": [
+    {
+      "name": "implementation",
+      "paths": [
+        "scripts/memory_cell_distributed/relay_current.py",
+        "scripts/memory_cell_distributed/relay_current_contract.py",
+        "scripts/memory_cell_distributed/relay_protocol.py"
+      ],
+      "changed_lines": 489
+    },
+    {
+      "name": "tests-and-workflow",
+      "paths": [
+        "scripts/memory_cell_distributed/relay_current_tests.py",
+        ".github/workflows/hepta-memory-current-relay.yml"
+      ],
+      "changed_lines": 456
+    },
+    {
+      "name": "qualification-record",
+      "paths": [
+        "qa/memory-current-relay-20261025/README.md",
+        "qa/memory-current-relay-20261025/local-qualification.json"
+      ],
+      "logic_changes": false
+    }
+  ]
+}
