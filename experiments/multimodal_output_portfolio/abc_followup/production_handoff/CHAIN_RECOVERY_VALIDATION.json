@@ -1,0 +1,177 @@
+{
+  "actual_anchor": "f0d9280bf614d3b27572e1ce9806d26f39541b3310b2e4f08967de12ecef15c2",
+  "actual_eligibility_matched": true,
+  "actual_segments": 13,
+  "actual_sequence": 1600,
+  "bootstrap_full_crate_compiled": false,
+  "build": {
+    "binary_sha256": "11b07a8a24ee67a54f00cc1ae05af57f8b974609775a1b0a34de3053849861c6",
+    "dependency_rlibs": {
+      "codex_hepta_neuron": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_neuron-2f0c355b62be5eae.rlib",
+        "sha256": "dc89842770b606b275f9e03c6e23c581154862ac9dd5e5ecc64361935b8e0b1c"
+      },
+      "codex_hepta_types": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_types-17d3f3691422d6e5.rlib",
+        "sha256": "38779cb6724d8a291228491aeae90f32e566354666d41bff103ce919320cadef"
+      },
+      "serde": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde-93ef7b2e0c96e7ec.rlib",
+        "sha256": "516b03b41b6a65b87c97a0cfdd53d8bee890fa7ba39e6fd431d2ad9ca3d708db"
+      },
+      "serde_json": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde_json-6d058f81b7b562eb.rlib",
+        "sha256": "c0514c87e4263b4a0e0852e1f680d8f1040c11122fd842e04cc76b0645acc910"
+      }
+    },
+    "input_result_sha256": "4098c9ecd2e8a38de08bb67e4a8e705d335035c57d6b34bf8f13d0eaebb84e8d",
+    "packet_sha256": "59de69591388b1a9858e4e3b47aa7fb2488d3b2512fddb27048f2b0fa6611173",
+    "probe_result_sha256": "abfd61f8966f86af6652907e55688f744c6ed47d750fda43d20a62de5cdc9c82",
+    "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
+    "rustc_sha256": "bff349e72704ff70bc08a234a3847338e797065bbedde5e556808bc87b7bf7c6",
+    "schema": "hepta.production-handoff.chain-build.v1",
+    "scope": "original 9595221 journal dependencies; target f8c9419 bootstrap patch is not a deployed or fully compiled Agentd",
+    "single_cpu_affinity": [
+      0
+    ],
+    "sources": {
+      "chain_recovery_probe.rs": "998791ca49c8ca9c9aa1e366a39f4aaeaa9dd35ba4f9e676c8079a338546ab31",
+      "neuron_chain_recovery.rs": "3e4d777ef17c588878cdf0c5b281b606afb3cfe4819ae983af090a771c38b96c"
+    },
+    "status": "passed",
+    "wall_ns": 2588157111
+  },
+  "checks": [
+    {
+      "case": "real_13_segment_exact_anchor_and_eligibility",
+      "status": "passed"
+    },
+    {
+      "case": "legacy_single_file",
+      "status": "passed"
+    },
+    {
+      "case": "ambiguous_descriptor",
+      "error": "choose exactly one complete neuron journal source: single file or segment_chain",
+      "status": "rejected"
+    },
+    {
+      "case": "explicit_empty_chain_with_single",
+      "error": "choose exactly one complete neuron journal source: single file or segment_chain",
+      "status": "rejected"
+    },
+    {
+      "case": "legacy_capacity_with_chain",
+      "error": "choose exactly one complete neuron journal source: single file or segment_chain",
+      "status": "rejected"
+    },
+    {
+      "case": "empty_descriptor",
+      "error": "choose exactly one complete neuron journal source: single file or segment_chain",
+      "status": "rejected"
+    },
+    {
+      "case": "empty_chain",
+      "error": "empty neuron segment chain",
+      "status": "rejected"
+    },
+    {
+      "case": "duplicate_path",
+      "error": "duplicate neuron segment path",
+      "status": "rejected"
+    },
+    {
+      "case": "missing_middle_segment",
+      "error": "InvalidAnchor",
+      "status": "rejected"
+    },
+    {
+      "case": "wrong_order",
+      "error": "ContextMismatch",
+      "status": "rejected"
+    },
+    {
+      "case": "missing_file",
+      "error": "No such file or directory (os error 2)",
+      "status": "rejected"
+    },
+    {
+      "case": "wrong_capacity",
+      "error": "Capacity",
+      "status": "rejected"
+    },
+    {
+      "case": "wrong_generation",
+      "error": "ContextMismatch",
+      "status": "rejected"
+    },
+    {
+      "case": "wrong_scope",
+      "error": "ContextMismatch",
+      "status": "rejected"
+    },
+    {
+      "case": "wrong_objective",
+      "error": "ContextMismatch",
+      "status": "rejected"
+    },
+    {
+      "case": "wrong_final_digest",
+      "error": "AnchorMismatch",
+      "status": "rejected"
+    },
+    {
+      "case": "missing_final_record",
+      "error": "AcknowledgedHistoryMissing",
+      "status": "rejected"
+    },
+    {
+      "case": "unacknowledged_final_suffix",
+      "error": "AnchorMismatch",
+      "status": "rejected"
+    },
+    {
+      "case": "hardlink_alias",
+      "error": "neuron segment file changed or aliases another segment",
+      "status": "rejected"
+    },
+    {
+      "case": "symlink_segment",
+      "error": "neuron recovery requires an existing nonempty regular non-symlink file",
+      "status": "rejected"
+    },
+    {
+      "case": "empty_segment_no_bootstrap",
+      "error": "neuron recovery requires an existing nonempty regular non-symlink file",
+      "status": "rejected"
+    }
+  ],
+  "exact_base_patch_apply_check_passed": true,
+  "frozen_native_manifest_hashes_unchanged": true,
+  "new_independent_samples": 0,
+  "new_native_ticks": 0,
+  "patch_applied_to_deployment": false,
+  "patch_sha256": "b156737e5ca460fae69dc5d042a3e8ba41522f377d6ba646261acca33d6f8ff8",
+  "patched_bootstrap_sha256": "da059737645c7a611cfe9b083022d1af0de8a160e65b0afb02dc50800cab620d",
+  "production_admission": false,
+  "schema": "hepta.production-handoff.chain-validation.v1",
+  "source_files_unchanged": true,
+  "source_segment_sha256": {
+    "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001/case-0000/neuron-0000.journal": "33d47c6cbcdfa9d6f1d7ce74764363e445d3728a16fcc8c0d27b962047eee2ae",
+    "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001/case-0000/neuron-0001.journal": "e3a36123de44c26a3eb859c5d688793a23ffc517a3f789410be12a978b583fab",
+    "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001/case-0000/neuron-0002.journal": "12267acc656c7a221b74e54367a129f0cc763cedc54431cc36b66fd1abfdb73b",
+    "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001/case-0000/neuron-0003.journal": "f8c480ff5c45ea0e4bf9ee21c22105dbae8c92ba2646c382e214c6c48cd7e81e",
+    "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001/case-0000/neuron-0004.journal": "57d3f7f843651fe54a20b36fd677cd4e62acbddfb539f351c9fa91bf399a11c4",
+    "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001/case-0000/neuron-0005.journal": "26cd535388eccee0dd20de4cad11f882d68381fa371472b4c2563a282cf1da39",
+    "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001/case-0000/neuron-0006.journal": "eb99360f86bd791588c498b2a511be6f6f26dde0b73f415386c1b7eba7f9f4e6",
+    "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001/case-0000/neuron-0007.journal": "7982fe953c6ff319e94bfb7af7b7c9e1c8992170b00e11f67f66a8d2a7f53841",
+    "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001/case-0000/neuron-0008.journal": "0c8dd1d9865a8284329a89ad0ede0ede038c04358bd683917f8de003c9f83c21",
+    "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001/case-0000/neuron-0009.journal": "fe126df3c8af6e12fdb548d20c6fd1b659491491857bd6f59729782ec93d9f48",
+    "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001/case-0000/neuron-0010.journal": "5ed86915934bb76a5cb1e85c960da1597db1fcce5488e3313295e04fe276aaa7",
+    "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001/case-0000/neuron-0011.journal": "b988b07b582e1ff9d28498f2526052b3b5373c9bd393add8004cf920cbd8c0f0",
+    "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001/case-0000/neuron-0012.journal": "e9339ada62c0413825616bdc0e673fbb0b533452c268df102bbc82c4532c60f1"
+  },
+  "target_bootstrap_git_blob": "f44c8858a55886c7997562a02ba87b9a7d359bf2",
+  "target_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "tested_journal_source_reference": "9595221c21f1fe0775295a9c8756a1ba4d69ea49"
+}
