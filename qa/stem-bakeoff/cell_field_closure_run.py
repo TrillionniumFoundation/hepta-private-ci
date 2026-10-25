@@ -14,7 +14,7 @@ import numpy as np
 from cell_field_action_control import score_common
 from cell_field_action_io import EXTRA_SOURCE_FILES, deny_withheld_labels, environment, load_inputs, project, split_arrays
 from cell_field_closure_control import ARMS, closure_maps, fixed_actions
-from cell_field_closure_data import write
+from cell_field_closure_data import registered_source_directory, write
 from cell_field_control import build_reference
 from cell_field_features import file_hash, load_features
 from cell_field_state import CellTrainingState, dataset_digest
@@ -58,6 +58,7 @@ def execute(v3_data, v3_features, v3_protocol, data, features, protocol, source_
     began, cpu = time.perf_counter_ns(), time.process_time_ns()
     try:
         plan = json.loads(Path(protocol).read_bytes())
+        data = registered_source_directory(plan, data)
         if tuple(plan["arms"]) != ARMS or plan["horizon"] != 8:
             raise ValueError("registered closure census changed")
         if any(os.environ.get(key) not in {"1", "2"} for key in
@@ -90,6 +91,8 @@ def execute(v3_data, v3_features, v3_protocol, data, features, protocol, source_
         receipt = json.loads((data / "data_receipt.json").read_bytes())
         sources = json.loads((data / "sources.json").read_bytes())["rows"]
         if (receipt["protocol_sha256"] != file_hash(protocol)
+                or receipt["source_owner_directory"] != plan["source_owner_directory"]
+                or receipt["prepared_source_directory"] != str(data)
                 or receipt["files"]["sources.json"]["sha256"] != file_hash(data / "sources.json")
                 or new_report["plan"]["data_receipt_sha256"] != file_hash(data / "data_receipt.json")
                 or new_report["plan"]["source_ids"] != [x["source_id"] for x in sources]

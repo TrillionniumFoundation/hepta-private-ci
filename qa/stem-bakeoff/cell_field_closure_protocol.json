@@ -39,6 +39,8 @@
   "moment_definition": "existing reference C_extended: current loss, old loss, current gradient dot momentum, old gradient dot momentum",
   "new_source_plan": [{"role": "old_test_v4", "month": "2014-04", "rows": 32}, {"role": "future_july_v4", "month": "2014-07", "rows": 64}],
   "source_salt": "hepta-cell-closure-v4-20261025",
+  "source_owner_directory": "/home/qian-qi/work/hepta-architecture-20261025/cell-v4-evidence-v1",
+  "source_owner_policy": "prepare and consume only source_owner_directory/data; create-only preparation and final access; changing run, feature or evaluation output directories does not authorize a new copy of this cohort; preserve the owner directory after every failure",
   "exclude": ["legacy_five_cohorts", "all_v1_components", "all_v2_components", "all_v3_components"],
   "source_scope_reason": "V3 exhausted eligible June health sources and left only two August health components; source feasibility fixes scope before new outcomes; no silent reuse of exposed final labels",
   "reserve_policy": "all unselected eligible component identities remain reserved; do not emit their labels/titles into the V4 final payload or use them for this run",

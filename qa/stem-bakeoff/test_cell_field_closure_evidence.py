@@ -10,6 +10,7 @@ from unittest.mock import patch
 import numpy as np
 
 import cell_field_closure_data as data
+import cell_field_closure_evaluate as evaluation
 from cell_field_closure_audit import (direct_cost, predictions_from_state, replay_branch,
                                      verify_candidate_members, verify_seal)
 from cell_field_closure_control import closure_maps, fixed_actions
@@ -22,6 +23,56 @@ from cell_learning_models import NumpyCellHead
 
 
 class EvidenceTests(unittest.TestCase):
+    def test_registered_source_owner_blocks_repreparation_in_a_new_directory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            plan = {"source_owner_directory": str(root / "owner")}
+            protocol = root / "protocol.json"
+            data.write(protocol, plan)
+            original = root / "owner/data"
+            original.mkdir(parents=True)
+            with patch.object(data, "_read_archive") as source_read:
+                with self.assertRaises(FileExistsError):
+                    data.prepare("unused", "unused", "unused", "unused", protocol, original)
+                with self.assertRaisesRegex(ValueError, "registered source owner"):
+                    data.prepare("unused", "unused", "unused", "unused", protocol, root / "new-output/data")
+                source_read.assert_not_called()
+            self.assertFalse((root / "new-output").exists())
+
+    def test_final_access_remains_at_original_owner_across_output_names_and_copies(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            plan = {"source_owner_directory": str(root / "owner")}
+            original, copied = root / "owner/data", root / "copied/data"
+            original.mkdir(parents=True)
+            copied.mkdir(parents=True)
+            data.claim_final_access(plan, original, {"outputs": "first", "failure_consumes_sources": True})
+            with self.assertRaises(FileExistsError):
+                data.claim_final_access(plan, original, {"outputs": "new-evaluation-output"})
+            with self.assertRaisesRegex(ValueError, "registered source owner"):
+                data.claim_final_access(plan, copied, {"outputs": "copied-source-output"})
+            self.assertFalse((copied / "final_access_v4.json").exists())
+            with patch.object(evaluation, "verify_run", return_value=(plan, {})):
+                with self.assertRaisesRegex(ValueError, "registered source owner"):
+                    evaluation.preflight(root / "unused-run", copied, root / "unused-audit")
+
+    def test_source_owner_rejects_missing_relative_and_symlink_aliases(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            owner = root / "owner"
+            owner.mkdir()
+            alias = root / "alias"
+            alias.symlink_to(owner, target_is_directory=True)
+            for plan, source in (({}, owner / "data"),
+                                 ({"source_owner_directory": "relative"}, owner / "data"),
+                                 ({"source_owner_directory": str(alias)}, alias / "data"),
+                                 ({"source_owner_directory": str(owner)}, alias / "data")):
+                with self.subTest(plan=plan, source=source), self.assertRaises(ValueError):
+                    data.registered_source_directory(plan, source)
+            (owner / "data").symlink_to(root / "other", target_is_directory=True)
+            with self.assertRaises(ValueError):
+                data.registered_source_directory({"source_owner_directory": str(owner)}, owner / "data")
+
     def test_class_stratification_preserves_fixed_class_effects(self):
         labels = np.repeat(np.arange(4), 16)
         effects = np.repeat([-1.0, 0.5, -0.25, 0.25], 16)
@@ -166,18 +217,19 @@ class EvidenceTests(unittest.TestCase):
                 paths.append(str(path))
                 pins[name] = identity["sha256"]
             protocol = root / "protocol.json"
-            data.write(protocol, {"source_salt": "explicit-synthetic-test-only", "new_source_plan": [
+            data.write(protocol, {"source_owner_directory": str(root.resolve()),
+                "source_salt": "explicit-synthetic-test-only", "new_source_plan": [
                 {"role": "old_test_v4", "month": "2014-04", "rows": 4},
                 {"role": "future_july_v4", "month": "2014-07", "rows": 4}]})
             with patch.object(data, "PINS", pins), patch.object(data, "_read_archive", return_value=rows), \
                  patch.object(data, "select_rows", return_value={"train": [legacy[0]]}), \
                  patch.object(data, "publisher_is_ood", return_value=False):
-                result = data.prepare("unused-fixture-archive", *paths, str(protocol), str(root / "new"))
+                result = data.prepare("unused-fixture-archive", *paths, str(protocol), str(root / "data"))
             self.assertEqual(result["selected_components"], 8)
             self.assertEqual(result["reserved_components"], 16)
             self.assertEqual(result["excluded_counts"], {"prior": 3, "legacy": 1, "cross_month": 1, "conflict": 1})
-            sources = json.loads((root / "new/sources.json").read_bytes())["rows"]
-            reserve = json.loads((root / "new/reserved_components.json").read_bytes())
+            sources = json.loads((root / "data/sources.json").read_bytes())["rows"]
+            reserve = json.loads((root / "data/reserved_components.json").read_bytes())
             selected_ids = {r["component_id"] for r in sources}
             expected = {"news-group:" + data.sha([r["source_id"]]) for r in ordinary}
             self.assertEqual(selected_ids | set(reserve["component_ids"]), expected)
