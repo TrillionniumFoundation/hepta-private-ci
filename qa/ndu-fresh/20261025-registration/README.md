@@ -1,6 +1,6 @@
 # Fresh NDU factorial: preregistered execution boundary
 
-This registration is published before any new data preparation, model training, or final-cohort access. Algorithms are fixed at 689c45e1903a6b28dcff6d05c7b732a07511f512; the executable protocol is ../../../../experiments/multimodal_output_portfolio/v6/fresh_factorial/protocol.json.
+This registration is published before any new data preparation, model training, or final-cohort access. Algorithms are fixed at 689c45e1903a6b28dcff6d05c7b732a07511f512; the executable protocol is experiments/multimodal_output_portfolio/v6/fresh_factorial/protocol.json (repository-relative path).
 
 The actual host freeze completed its original identity/inventory recheck over all four named prior-evidence roots. It retained 520 explicitly enumerated old source identities: 360 original full-study pixels, 128 published validation pixels, 8 recovered CI smoke pixels, and 24 forecast development pixels. The scope is audited_known_v6_sources_only. It is not a universal claim about inaccessible, deleted, differently named or unpublished history. The missing original full-002 model archive remains missing. Old smoke checkpoints do not substitute for it.
 
