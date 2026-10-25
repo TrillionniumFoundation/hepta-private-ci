@@ -1,0 +1,164 @@
+{
+  "schema": "hepta.closure.status.v1",
+  "scope": "Finite digit-domain research; execution and qualification are separate.",
+  "all_requested_success_gates_closed": false,
+  "source_allocation": {
+    "independent_pairs": 800,
+    "roles": {
+      "factorial": 256,
+      "control": 256,
+      "native": 64,
+      "media": 64,
+      "control_repair": 96,
+      "v6_oracle": 64
+    },
+    "unknown_external_use_excluded": false
+  },
+  "workstreams": [
+    {
+      "id": 1,
+      "name": "Original V6 actual-output headroom",
+      "execution": "completed",
+      "answer": "Finite private-truth headroom observed; current risk-aware superiority over strong fixed not established.",
+      "evidence": [
+        "v6_oracle/REPORT.md",
+        "v6_oracle/RESULTS.json",
+        "v6_oracle/review/AUDIT.json"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Paired action-value differences",
+      "execution": "completed",
+      "answer": "Source-cross-fit difference critic and selected-action calibration executed; no uniform conditional regret certificate or qualified replacement.",
+      "evidence": [
+        "control/README.md",
+        "control/FRESH_RESULT.json",
+        "native/review/CONTROL_REVIEW.json"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Training attribution",
+      "execution": "completed",
+      "answer": "Dynamic factor passes primary adjusted CE gate; base-risk and gate-risk main effects do not.",
+      "evidence": [
+        "factorial/REPORT.md",
+        "factorial/RESULTS.json",
+        "native/review/FACTORIAL_REVIEW.json"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Control cost",
+      "execution": "completed_with_rejected_candidates",
+      "answer": "Original cheap gate is identical fallback; bounded wider actor fails independent quality and actual wall-time confirmation.",
+      "evidence": [
+        "control/GATES.json",
+        "control/repair/CONFIRM_RESULT.json",
+        "control/PROCESS_EVIDENCE.json"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Actual dynamic feedback",
+      "execution": "completed",
+      "answer": "Current actual draft reaches adaptive controller. Exploratory allocation comparison positive; strong nonfeedback comparison unresolved; factorial dynamic intervention is algorithm plus feedback.",
+      "evidence": [
+        "control/supplemental/PROTOCOL.json",
+        "control/supplemental/RESULT.json",
+        "factorial/REPORT.md"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Actual audio and video",
+      "execution": "completed_with_local_proxy_pass_and_external_asr_disagreement",
+      "answer": "Original local digit-observer, codec and clock sample gates pass; frozen external ASR recognizes only 22/64 generated versus 55/64 real input pairs. Natural intelligibility and general audio quality remain unresolved.",
+      "evidence": [
+        "media/FINAL_PROTOCOL.json",
+        "media/REPORT.md",
+        "media/RESULTS.json",
+        "media/review/AUDIT.json"
+      ],
+      "sample_gates_passed": true,
+      "source_pairs": 64,
+      "actual_outputs": 640,
+      "hard_joint_success_counts": {
+        "image": 49,
+        "text": 64,
+        "audio": 62,
+        "video": 55,
+        "audio_video": 59
+      },
+      "population_lower_bound_above_sample_gate_claimed": false,
+      "end_to_end_joint_ndu_training": false,
+      "external_asr_pair_success_counts": {
+        "real_input": 55,
+        "generated_output": 22,
+        "denominator": 64
+      },
+      "external_asr_generated_digit_success": {
+        "successes": 47,
+        "denominator": 128
+      },
+      "natural_audio_intelligibility_closed": false
+    },
+    {
+      "id": 7,
+      "name": "Native model execution",
+      "execution": "causal_owner_integration_completed",
+      "answer": "Original owner actually executes qualified correctness head, generation, observation and NDU recovery. New NDU action-value production policy is not installed.",
+      "evidence": [
+        "native/REPORT.md",
+        "native/RESULTS.json",
+        "native/FORMAT_ONLY_VALIDATION.json"
+      ]
+    }
+  ],
+  "unmet_claims_and_release_gates": [
+    {
+      "id": "cheap_quality_cost",
+      "status": "failed_independent_confirmation",
+      "needed": "A frozen public-state policy satisfying original CE/success noninferiority and real total-cost gates on untouched sources.",
+      "current_disposition": "Reject cheap replacement; retain evaluated strong controller."
+    },
+    {
+      "id": "achievable_action_value",
+      "status": "not_established",
+      "needed": "Demonstrated calibrated conditional action gains on public information, rather than private-truth realized maxima.",
+      "current_disposition": "Retain oracle only as a finite diagnostic upper bound."
+    },
+    {
+      "id": "audio_intelligibility",
+      "status": "local_proxy_pass_but_cross_observer_failure",
+      "needed": "Real decoded speech that transfers to independently qualified observers and human perceptual evaluation on new confirmation sources, without fitting the already-open final panel.",
+      "current_disposition": "Retain actual codec/clock implementation and local digit results; reject a broad audio-quality or all-four-modality quality closure claim."
+    },
+    {
+      "id": "native_ndu_policy",
+      "status": "not_qualified_or_installed",
+      "needed": "NDU action-value policy ABI within native limits, calibration, independent quality/cost evidence, and real owner execution with that policy.",
+      "current_disposition": "Only already-qualified correctness head enters current owner chain."
+    },
+    {
+      "id": "production_lifecycle",
+      "status": "external_product_inputs_and_qualification_missing",
+      "needed": "Authentic Dataset/Generator/Observer/Evaluator identities and trust material, full daemon and model-service integration, deployment-host qualification.",
+      "current_disposition": "authority=deny_all; no production activation or fabricated signatures."
+    },
+    {
+      "id": "joint_foundation_model_claim",
+      "status": "not_established",
+      "needed": "Joint end-to-end NDU training across all modalities, natural audio/video tasks, larger-scale generalization and cost evidence.",
+      "current_disposition": "Bound results to small digit-domain models, recording-disjoint speech and constructed motion."
+    }
+  ],
+  "integrity": {
+    "failed_candidates_retained": true,
+    "thresholds_relaxed": false,
+    "post_final_training_performed": false,
+    "private_truth_oracle_called_deployable": false,
+    "production_authority_changed": false
+  }
+}

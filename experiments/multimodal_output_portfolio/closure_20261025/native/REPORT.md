@@ -8,13 +8,13 @@
 
 这里的动作选择仍是**已冻结、原先有资格证据的 correctness head，在当前原生门准入动作中取概率最大值**。NDU 保存实际后验 utility，并被下一 tick 的 objective/subject/context 绑定及恢复使用；它尚未作为 action-value 优化器改变动作选择。这个结果完成的是原始 owner 的因果执行整合，不证明一般 NDU 最优控制，也不构成新策略的生产资格或完整 daemon 部署。
 
-全部事实、原始失败记录、构建命令与成本在 [RESULTS.json](RESULTS.json)。[PROTOCOL.json](PROTOCOL.json) 是新来源开放前冻结的 41 项文件身份。[RAW_EVIDENCE.tar.gz](RAW_EVIDENCE.tar.gz) 保存完整运行证据和实际 binary；[RAW_MANIFEST.json](RAW_MANIFEST.json) 列出每个归档文件的字节数与 SHA256。
+全部事实、原始失败记录、构建命令与成本在 [RESULTS.json](RESULTS.json)。[PROTOCOL.json](PROTOCOL.json) 是新来源开放前冻结的 41 项文件身份。`RAW_EVIDENCE.tar.gz` 保存完整运行证据和实际 binary，作为native外部证据包的成员，位置与保存状态见 [归档索引](../EVIDENCE.json)；[RAW_MANIFEST.json](RAW_MANIFEST.json) 列出每个归档文件的字节数与 SHA256。
 
 ### 执行字节与发布格式化版本
 
 本轮64对主结果绑定的是格式化前真正编译执行的Rust字节；旧 `PROTOCOL.json`、`RESULTS.json`、`RAW_EVIDENCE.tar.gz` 保持原字节及SHA。收尾时先把10个实际编译Rust源另存为 [SOURCE.tar](frozen-execution-001/SOURCE.tar) 和 [MANIFEST.json](frozen-execution-001/MANIFEST.json)，然后才为当前3个活动Rust文件添加edition2024配置、运行仓库原始 `just fmt`。当前活动源是这一纯格式化版本；不能把它的SHA填回历史protocol。旧protocol中的活动Rust路径在当前格式化工作树中自然不再等SHA，要重现历史身份应使用所保留的原始快照。
 
-[FORMAT_ONLY.diff](FORMAT_ONLY.diff) 记录全部自动格式化差异；[FORMAT_ONLY_VALIDATION.json](FORMAT_ONLY_VALIDATION.json) 与 [FORMAT_ONLY_VALIDATION.tar.gz](FORMAT_ONLY_VALIDATION.tar.gz) 单独保存格式化命令、原工具身份、新构建及旧dev验证。新binary SHA为 `522f6376f8934199d9a72f8308bc1ec2b00062edb251ab1999437dd211b9afc9`，仅在原来已用的12对train输入上执行：24个候选prediction/confidence/OOD/admission字段与原开发运行逐项相同，12个选择相同，6份实际媒体SHA和observer分数完全相同，20项反例及两种恢复通过。这里没有新增独立来源，也没有重新打开64对主结果来源。
+[FORMAT_ONLY.diff](FORMAT_ONLY.diff) 记录全部自动格式化差异；[FORMAT_ONLY_VALIDATION.json](FORMAT_ONLY_VALIDATION.json) 与native外部证据包中的 `FORMAT_ONLY_VALIDATION.tar.gz` 单独保存格式化命令、原工具身份、新构建及旧dev验证。新binary SHA为 `522f6376f8934199d9a72f8308bc1ec2b00062edb251ab1999437dd211b9afc9`，仅在原来已用的12对train输入上执行：24个候选prediction/confidence/OOD/admission字段与原开发运行逐项相同，12个选择相同，6份实际媒体SHA和observer分数完全相同，20项反例及两种恢复通过。这里没有新增独立来源，也没有重新打开64对主结果来源。
 
 完成该旧dev验证后再次运行原 `just fmt` 及 `just fmt --check`，两者exit0且三个活动源SHA不变；此后不再运行实验或测试。原source archive作为历史证据保存在二进制tar内，不作为另一套需要编译的活动实现。
 
