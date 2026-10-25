@@ -23,6 +23,27 @@ per window. It does not silently remove composition protection to position
 the candidate window. Position/Nothing are still creation-time compatibility
 fallbacks; **they do not qualify for this profile's preedit guarantee**.
 
+The real IBus candidate window also exposed a separate focus transition bug.
+X11 VisibilityNotify sends WindowGotFocus even while the same native window
+already has focus. The original Window handler then restored a stale
+last_known_area, cancelled TextInput composition, and queued HideTextIME.
+An owned-window GDB trace established that chain through XUnsetICFocus;
+its visibility callsite differs from genuine FocusIn. This patch restores
+the saved editor only on the actual false-to-true window focus transition.
+Duplicate gain notifications preserve the current editor and preedit;
+WindowLostFocus followed by WindowGotFocus still restores the saved editor.
+The matching true-to-false loss guard retains that saved editor across
+repeated loss notifications, instead of replacing it with the already
+cleared focus. Events belonging to another window keep their isolation.
+
+The preparation helper permits exactly widgets/src/window.rs and its sibling
+window_focus_tests.rs only for this explicit preedit profile. Arbitrary
+widget changes and either widget file in the clipboard profile remain
+rejected. The sibling tests dispatch real Window focus events and preedit
+through an actual drawn SDK TextInput; they cover repeated gain, repeated
+loss followed by return, genuine loss/return, and other-window isolation. These source tests do not replace
+the real private IBus acceptance below.
+
 The second patch is the byte-identical existing `sdk-num-traits-path.patch`.
 It makes an explicit path build use the same original num-traits 0.2.20 vendor
 source as Git package discovery. It does not introduce a dependency version
@@ -38,7 +59,8 @@ contain no user text; they establish negotiation only, not IME success.
 ## Prepare and bind the complete Cargo graph
 
 Use a new Desktop candidate worktree, a separate target directory, the
-original Hepta 7ea source, and the exact existing native/text feature set.
+same integrated Hepta companion as product execution, and the exact existing
+native/text feature set.
 This profile reuses the source preparation/verification tools through their
 explicit `--profile preedit-callbacks` argument. Omitting the argument retains
 their historical clipboard behavior. The preedit-only profile rejects the

@@ -2,7 +2,7 @@ diff --git a/platform/src/os/linux/x11/xlib_app.rs b/platform/src/os/linux/x11/x
 index 8bd43f179b30ca40279e4b7d7b3a4387c66bbe07..9f21b31d1146fa3b8a4df07329d41df95ee36a45 100644
 --- a/platform/src/os/linux/x11/xlib_app.rs
 +++ b/platform/src/os/linux/x11/xlib_app.rs
-@@ -416,21 +416,34 @@
+@@ -416,16 +416,18 @@ unsafe fn create_xim_nothing_input_context(
  
  /// Creates an input context for `window`.
  ///
@@ -26,42 +26,38 @@ index 8bd43f179b30ca40279e4b7d7b3a4387c66bbe07..9f21b31d1146fa3b8a4df07329d41df9
          return None;
      }
  
-     let supported_styles = query_xim_supported_styles(xim);
+@@ -433,22 +435,24 @@ pub unsafe fn create_xim_input_context(
      let supported_styles = supported_styles.as_deref();
-+
-+    for status_style in xim_status_candidates() {
+ 
+     for status_style in xim_status_candidates() {
+-        let input_style = x11_sys::XIMPreeditPosition as c_ulong | status_style;
 +        let input_style = x11_sys::XIMPreeditCallbacks as c_ulong | status_style;
-+        if !xim_style_supported(supported_styles, input_style) {
-+            continue;
-+        }
+         if !xim_style_supported(supported_styles, input_style) {
+             continue;
+         }
+-        if let Some(position_context) = create_xim_position_input_context(xim, window, status_style) {
+-            return Some(position_context);
 +        if let Some(callback_context) = create_xim_callback_input_context(xim, window, status_style) {
 +            eprintln!("makepad-x11-ime profile=preedit-callbacks-v1 style=callback window={window}");
 +            return Some(callback_context);
-+        }
-+    }
- 
-     for status_style in xim_status_candidates() {
-         let input_style = x11_sys::XIMPreeditPosition as c_ulong | status_style;
-@@ -438,17 +451,8 @@
-             continue;
-         }
-         if let Some(position_context) = create_xim_position_input_context(xim, window, status_style) {
-+            eprintln!("makepad-x11-ime profile=preedit-callbacks-v1 style=position window={window}");
-             return Some(position_context);
--        }
--    }
--
--    for status_style in xim_status_candidates() {
--        let input_style = x11_sys::XIMPreeditCallbacks as c_ulong | status_style;
--        if !xim_style_supported(supported_styles, input_style) {
--            continue;
--        }
--        if let Some(callback_context) = create_xim_callback_input_context(xim, window, status_style) {
--            return Some(callback_context);
          }
      }
  
-@@ -458,10 +462,12 @@
+     for status_style in xim_status_candidates() {
+-        let input_style = x11_sys::XIMPreeditCallbacks as c_ulong | status_style;
++        let input_style = x11_sys::XIMPreeditPosition as c_ulong | status_style;
+         if !xim_style_supported(supported_styles, input_style) {
+             continue;
+         }
+-        if let Some(callback_context) = create_xim_callback_input_context(xim, window, status_style) {
+-            return Some(callback_context);
++        if let Some(position_context) = create_xim_position_input_context(xim, window, status_style) {
++            eprintln!("makepad-x11-ime profile=preedit-callbacks-v1 style=position window={window}");
++            return Some(position_context);
+         }
+     }
+ 
+@@ -458,10 +462,12 @@ pub unsafe fn create_xim_input_context(
              continue;
          }
          if let Some(nothing_context) = create_xim_nothing_input_context(xim, window, status_style) {
@@ -78,7 +74,7 @@ diff --git a/platform/src/os/linux/x11/xlib_window.rs b/platform/src/os/linux/x1
 index d4ae1de40b1d02d9ef21037c46a4f1e26384c9af..6590f6441e7263e6aae57c077c824b107cb071fa 100644
 --- a/platform/src/os/linux/x11/xlib_window.rs
 +++ b/platform/src/os/linux/x11/xlib_window.rs
-@@ -36,6 +36,8 @@
+@@ -36,6 +36,8 @@ pub struct XlibWindow {
      pub last_mouse_pos: Vec2d,
      // When ime_active is false, XSetICFocus is not used so the IME candidate window does not show.
      pub ime_active: bool,
@@ -87,7 +83,7 @@ index d4ae1de40b1d02d9ef21037c46a4f1e26384c9af..6590f6441e7263e6aae57c077c824b10
      pub is_popup: bool,
      pub popup_parent: Option<WindowId>,
  }
-@@ -87,6 +89,7 @@
+@@ -87,6 +89,7 @@ pub fn new(window_id: WindowId) -> XlibWindow {
              current_cursor: MouseCursor::Default,
              last_mouse_pos: Vec2d::default(),
              ime_active: false,
@@ -95,7 +91,7 @@ index d4ae1de40b1d02d9ef21037c46a4f1e26384c9af..6590f6441e7263e6aae57c077c824b10
              is_popup: false,
              popup_parent: None,
          }
-@@ -763,7 +766,17 @@
+@@ -763,7 +766,17 @@ pub fn set_ime_rect(&mut self, rect: Rect, area_rect: Rect) {
                  preedit_attr,
                  ptr::null_mut::<c_void>(),
              );
@@ -114,3 +110,198 @@ index d4ae1de40b1d02d9ef21037c46a4f1e26384c9af..6590f6441e7263e6aae57c077c824b10
                  if let Some(new_context) = self.create_position_xic_with_spot(
                      xim_context.status_style(),
                      spot_px,
+diff --git a/widgets/src/window.rs b/widgets/src/window.rs
+index a176a5b2a2992ff6129d8a158f1bc585ce55a978..d81f4fa79f48abd9b80289bf838ef120059b1d24 100644
+--- a/widgets/src/window.rs
++++ b/widgets/src/window.rs
+@@ -1743,7 +1743,10 @@ fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+             Event::MouseUp(ev) => ev.window_id != self.window.window_id(),
+             Event::Scroll(ev) => ev.window_id != self.window.window_id(),
+             Event::WindowGotFocus(window_id) => {
+-                if *window_id == self.window.window_id() {
++                // X11 visibility changes can repeat this event while an IME
++                // candidate is open. Only a real focus return restores the
++                // saved editor; a duplicate must retain the live composition.
++                if *window_id == self.window.window_id() && !self.has_focus {
+                     self.has_focus = true;
+                     cx.set_key_focus(self.last_known_area);
+                 }
+@@ -1751,7 +1754,9 @@ fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+                 *window_id != self.window.window_id()
+             }
+             Event::WindowLostFocus(window_id) => {
+-                if *window_id == self.window.window_id() {
++                // A repeated loss must not replace the saved editor with the
++                // empty focus installed by the first notification.
++                if *window_id == self.window.window_id() && self.has_focus {
+                     self.has_focus = false;
+                     self.last_known_area = cx.key_focus();
+                     cx.set_key_focus(Area::Empty);
+@@ -1846,3 +1851,7 @@ fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawSte
+         DrawStep::done()
+     }
+ }
++
++#[cfg(test)]
++#[path = "window_focus_tests.rs"]
++mod focus_tests;
+diff --git a/widgets/src/window_focus_tests.rs b/widgets/src/window_focus_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..956ca0595452a6b3becd9a7dcb5b84b3e6414936
+--- /dev/null
++++ b/widgets/src/window_focus_tests.rs
+@@ -0,0 +1,154 @@
++use super::*;
++use crate::text_input::{TextInputAction, TextInputRef, TextInputWidgetRefExt};
++use crate::WidgetRef;
++use makepad_draw::cx_draw::CxDraw;
++use std::cell::RefCell;
++use std::rc::Rc;
++
++struct Surface {
++    cx: Cx,
++    window: WindowRef,
++    input: TextInputRef,
++    _pass: DrawPass,
++    _draw_list: DrawList2d,
++}
++
++impl Surface {
++    fn new() -> Self {
++        let target = Rc::new(RefCell::new(None::<TextInputRef>));
++        let dispatch_target = target.clone();
++        let mut cx = Cx::new(Box::new(move |cx, event| {
++            if matches!(event, Event::KeyFocus(_)) {
++                if let Some(input) = dispatch_target.borrow().as_ref() {
++                    input.borrow_mut().unwrap().handle_event(cx, event, &mut Scope::empty());
++                }
++            }
++        }));
++        cx.init_cx_os();
++        let (window, input) = cx.with_vm(|vm| {
++            crate::script_mod(vm);
++            let window = vm.eval(crate::makepad_script::script! {
++                use mod.prelude.widgets.*
++                Window { create_on_start: false }
++            });
++            let input = vm.eval(crate::makepad_script::script! {
++                use mod.prelude.widgets.*
++                TextInput {}
++            });
++            (WidgetRef::script_from_value(vm, window).as_window(),
++             WidgetRef::script_from_value(vm, input).as_text_input())
++        });
++        *target.borrow_mut() = Some(input.clone());
++        let size = dvec2(640.0, 160.0);
++        let pass = DrawPass::new(&mut cx);
++        pass.set_size(&mut cx, size);
++        let mut draw_list = DrawList2d::new(&mut cx);
++        {
++            let event = DrawEvent::default();
++            let mut draw = CxDraw::new(&mut cx, &event);
++            let mut cx2d = Cx2d::new(&mut draw);
++            cx2d.begin_pass(&pass, None);
++            draw_list.begin_always(&mut cx2d);
++            cx2d.begin_root_turtle(size, Layout::flow_down());
++            input.borrow_mut().unwrap().draw_all(&mut cx2d, &mut Scope::empty());
++            cx2d.end_pass_sized_turtle();
++            draw_list.end(&mut cx2d);
++            cx2d.end_pass(&pass);
++        }
++        assert!(input.area().is_valid(&cx));
++        let mut surface = Self { cx, window, input, _pass: pass, _draw_list: draw_list };
++        surface.event(Event::WindowGotFocus(surface.window.window_id().unwrap()));
++        surface.input.take_key_focus(&mut surface.cx);
++        surface.pump();
++        assert_eq!(surface.cx.key_focus(), surface.input.area());
++        surface
++    }
++
++    fn pump(&mut self) {
++        self.cx.widget_action(self.input.widget_uid(), TextInputAction::KeyFocus);
++        self.cx.handle_actions();
++    }
++
++    fn event(&mut self, event: Event) {
++        self.window.borrow_mut().unwrap().handle_event(&mut self.cx, &event, &mut Scope::empty());
++        self.pump();
++    }
++
++    fn preedit(&mut self) {
++        self.input.borrow_mut().unwrap().handle_event(
++            &mut self.cx,
++            &Event::TextInput(TextInputEvent {
++                input: "你好".into(),
++                replace_last: true,
++                ..Default::default()
++            }),
++            &mut Scope::empty(),
++        );
++        self.pump();
++        assert!(self.input.is_composing());
++        assert_eq!(self.input.text(), "你好");
++    }
++}
++
++#[test]
++fn duplicate_window_got_focus_preserves_live_editor_and_preedit() {
++    let mut surface = Surface::new();
++    surface.preedit();
++    let before = format!("{:?}", surface.input.save_state());
++    for _ in 0..3 {
++        surface.event(Event::WindowGotFocus(surface.window.window_id().unwrap()));
++        assert_eq!(surface.cx.key_focus(), surface.input.area());
++        assert!(surface.input.is_composing());
++        assert_eq!(format!("{:?}", surface.input.save_state()), before);
++    }
++}
++
++#[test]
++fn genuine_window_lost_then_got_focus_restores_the_original_editor() {
++    let mut surface = Surface::new();
++    let id = surface.window.window_id().unwrap();
++    surface.event(Event::WindowLostFocus(id));
++    assert_eq!(surface.cx.key_focus(), Area::Empty);
++    assert!(!surface.window.borrow().unwrap().has_focus);
++    surface.event(Event::WindowGotFocus(id));
++    assert_eq!(surface.cx.key_focus(), surface.input.area());
++    assert!(surface.window.borrow().unwrap().has_focus);
++    surface.preedit();
++}
++
++#[test]
++fn other_window_focus_events_cannot_change_this_windows_editor() {
++    let mut surface = Surface::new();
++    surface.preedit();
++    let other = surface.cx.with_vm(|vm| {
++        let value = vm.eval(crate::makepad_script::script! {
++            use mod.prelude.widgets.*
++            Window { create_on_start: false }
++        });
++        WidgetRef::script_from_value(vm, value).as_window()
++    });
++    let other_id = other.window_id().unwrap();
++    assert_ne!(surface.window.window_id().unwrap(), other_id);
++    for event in [Event::WindowLostFocus(other_id), Event::WindowGotFocus(other_id)] {
++        surface.event(event);
++        assert_eq!(surface.cx.key_focus(), surface.input.area());
++        assert!(surface.input.is_composing());
++        assert!(surface.window.borrow().unwrap().has_focus);
++        assert_eq!(surface.input.text(), "你好");
++    }
++}
++
++#[test]
++fn duplicate_window_lost_focus_retains_the_saved_editor_for_return() {
++    let mut surface = Surface::new();
++    let id = surface.window.window_id().unwrap();
++    for _ in 0..3 {
++        surface.event(Event::WindowLostFocus(id));
++        assert_eq!(surface.cx.key_focus(), Area::Empty);
++        assert!(!surface.window.borrow().unwrap().has_focus);
++    }
++    surface.event(Event::WindowGotFocus(id));
++    assert_eq!(surface.cx.key_focus(), surface.input.area());
++    assert!(surface.window.borrow().unwrap().has_focus);
++    surface.preedit();
++}

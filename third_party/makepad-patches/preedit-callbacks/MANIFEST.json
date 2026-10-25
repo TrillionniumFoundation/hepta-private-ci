@@ -4,7 +4,7 @@
   "upstream_repository": "https://github.com/kevinaboos/makepad",
   "upstream_commit": "337566c8b25d47f7e4fff6a202157b65bf183330",
   "upstream_tree": "c6e18be7754f9634492ec5251bac3e8b4f7e09b7",
-  "patched_tree": "073cc6739391265f96c4ff18c1b95898a2bda98d",
+  "patched_tree": "8d867396d16dcdca812ef27da21e8da59e7aee6f",
   "package": {
     "name": "makepad-platform",
     "version": "2.0.0"
@@ -12,8 +12,8 @@
   "patches": [
     {
       "file": "native-preedit-callbacks.patch",
-      "sha256": "b7de43140473c249dca3f07ca6d1d3195fb43a54ef96a205324ee5a0291c28c0",
-      "bytes": 5421
+      "sha256": "24eaa6bfa6e0422c7dce7c936687067e6a27d851373071560ed709a0f9caabee",
+      "bytes": 13752
     },
     {
       "file": "sdk-num-traits-path.patch",
@@ -45,6 +45,18 @@
       "upstream_sha256": "99655c7b791930cc9648ab142620f03b199a7e732b89ebd72862d2af7ef1a917",
       "patched_sha256": "2ef1e620085a44556042d463232e1496a0a7aa24997ec8332aa7ad0ca3a470c7",
       "bytes": 3672
+    },
+    {
+      "path": "widgets/src/window.rs",
+      "upstream_sha256": "32764d4a6970f431057d5136eda6212e641c33489faebea2289d9fc3288abefe",
+      "patched_sha256": "2e4166e871fd9059c8ce9ed9bc0206ce2de584946329176938175af2a627c1b8",
+      "bytes": 78038
+    },
+    {
+      "path": "widgets/src/window_focus_tests.rs",
+      "upstream_sha256": null,
+      "patched_sha256": "4d837ac596e9ea662e2ce774bfff643a0272d6a557dfa76bf360315ed79da301",
+      "bytes": 5708
     }
   ],
   "license": {
@@ -57,7 +69,8 @@
     "diagnostic_prefix": "makepad-x11-ime profile=preedit-callbacks-v1",
     "required_style": "callback",
     "callback_spot_refusal_keeps_context": true,
-    "position_and_nothing_fallback_qualified": false
+    "position_and_nothing_fallback_qualified": false,
+    "duplicate_window_focus_notifications_preserve_editor": true
   },
   "effects_authority": false,
   "automatic_update": false

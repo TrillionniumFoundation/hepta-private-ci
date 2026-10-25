@@ -25,6 +25,9 @@ GRAPH_MANIFESTS = {
     "libs/vulkan/makepad-half/Cargo.toml",
     "libs/vulkan/naga/Cargo.toml",
 }
+# Only the explicit preedit candidate may correct the witnessed duplicate
+# WindowGotFocus transition and carry its original-widget lifecycle regression.
+PREEDIT_WIDGET_SOURCES = {"widgets/src/window.rs", "widgets/src/window_focus_tests.rs"}
 
 
 def require_native_feature(metadata, profile="clipboard"):
@@ -138,7 +141,8 @@ def prepare(upstream, destination, hepta, profile="clipboard"):
     for record in manifest["changed_files"]:
         relative = Path(record["path"])
         if (relative.is_absolute()
-                or (relative.parts[0] != "platform" and str(relative) not in GRAPH_MANIFESTS)
+                or (relative.parts[0] != "platform" and str(relative) not in GRAPH_MANIFESTS
+                    and not (profile == "preedit-callbacks" and str(relative) in PREEDIT_WIDGET_SOURCES))
                 or any(part in ("", ".", "..") for part in relative.parts) or str(relative) in changed):
             raise ValueError("Invalid or duplicate SDK source path")
         changed.add(str(relative))
