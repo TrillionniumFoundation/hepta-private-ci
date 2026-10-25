@@ -3,6 +3,26 @@
 pub use codex_hepta_memory_federation::FederatedCoverageV2;
 pub use codex_hepta_memory_federation::FederatedFailureCoverageV2;
 
+mod cognitive_checkpoint;
+mod cognitive_checkpoint_wire;
+pub use cognitive_checkpoint::CognitiveCheckpointTransport;
+pub use cognitive_checkpoint::ProtectedCognitiveCheckpoint;
+pub use cognitive_checkpoint_wire::COGNITIVE_CHECKPOINT_FRAME_LIMIT;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointCommand;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointHead;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointPeerLifetime;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointPhase;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointProposal;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointReason;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointReceipt;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointRequest;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointResponse;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointRetainedProposal;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointRetainedRequest;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointStatus;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointToken;
+pub use cognitive_checkpoint_wire::CognitiveCheckpointWriterBinding;
+
 mod cognitive_compact;
 mod cognitive_federation;
 mod cognitive_intelligence_writer;
@@ -70,6 +90,23 @@ pub use production_notes::notes_operation_intent;
 pub use production_writer::Hos2RetirementObservation;
 pub use production_writer::Hos2RetirementPermit;
 pub use production_writer::NotesRetirementPermit;
+
+pub use production_writer::ObjectiveSenderCheckpoint;
+pub use production_writer::ObjectiveSenderCheckpointError;
+pub use production_writer::ObjectiveSenderError;
+pub use production_writer::ObjectiveSenderIdentity;
+pub use production_writer::ObjectiveSenderInputError;
+pub use production_writer::ObjectiveSenderObservation;
+pub use production_writer::ObjectiveSenderObservationKind;
+pub use production_writer::ObjectiveSenderOrigin;
+pub use production_writer::ObjectiveSenderRequest;
+pub use production_writer::ObjectiveSenderRetainedCursor;
+pub use production_writer::ObjectiveSenderRetainedPage;
+pub use production_writer::ObjectiveSenderRetainedPosition;
+pub use production_writer::ObjectiveSenderSnapshot;
+pub use production_writer::ObjectiveSenderTicket;
+pub use production_writer::ObjectiveSenderWriterFence;
+pub use production_writer::ProductionObjectiveSender;
 
 pub use shared_experience::SharedExperienceGrantV1;
 pub use shared_experience::SharedExperiencePurposeV1;
@@ -432,6 +469,7 @@ pub use production_writer::ProductionOutboxTarget;
 pub use production_writer::ProductionOutcomeReceipt;
 pub use production_writer::ProductionQueuedReceipt;
 pub use production_writer::ProductionRecoveryReceipt;
+pub use production_writer::ProductionRetainedOperation;
 pub use production_writer::ProductionTargetOutcome;
 pub use production_writer::ProductionTerminalObservation;
 pub use production_writer::ProductionTerminalObservationFuture;

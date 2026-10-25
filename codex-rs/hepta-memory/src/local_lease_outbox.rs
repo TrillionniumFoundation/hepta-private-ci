@@ -8,6 +8,9 @@
 //! receipt and no scheduler, router, KG writer, or production caller is wired
 //! here.
 
+#[path = "local_retained_operation.rs"]
+mod retained_operation;
+
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::time::SystemTime;
@@ -953,13 +956,13 @@ impl LocalLeaseOutbox {
         // recovery seam as proof that the lease is still current.
         let mut transaction = self
             .store
-            .pool
+            .observation_pool()
             .begin()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
         self.verify_current_in_transaction(&mut transaction).await?;
         transaction
-            .commit()
+            .rollback()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
         Ok(())
@@ -974,14 +977,14 @@ impl LocalLeaseOutbox {
     pub(crate) async fn verify_current_hot_path(&self) -> Result<(), LocalLeaseOutboxError> {
         let mut transaction = self
             .store
-            .pool
+            .observation_pool()
             .begin()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
         let lease = self.current_lease(&mut transaction).await?;
         ensure_current_active(&lease, self)?;
         transaction
-            .commit()
+            .rollback()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
         Ok(())
@@ -2989,7 +2992,7 @@ impl LocalLeaseOutbox {
         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
         let mut transaction = self
             .store
-            .pool
+            .observation_pool()
             .begin()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
@@ -3031,7 +3034,7 @@ impl LocalLeaseOutbox {
         )
         .await?;
         transaction
-            .commit()
+            .rollback()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
         Ok(state)
@@ -3070,7 +3073,7 @@ impl LocalLeaseOutbox {
 
         let mut transaction = self
             .store
-            .pool
+            .observation_pool()
             .begin()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
@@ -3122,7 +3125,7 @@ impl LocalLeaseOutbox {
             ));
         }
         transaction
-            .commit()
+            .rollback()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
         Ok(())
@@ -3240,7 +3243,7 @@ impl LocalLeaseOutbox {
     pub async fn snapshot_counts(&self) -> Result<LocalLeaseOutboxCounts, LocalLeaseOutboxError> {
         let mut transaction = self
             .store
-            .pool
+            .observation_pool()
             .begin()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
@@ -3251,7 +3254,7 @@ impl LocalLeaseOutbox {
         let outbox_rows =
             count_rows(&mut transaction, "cognitive_local_outbox", &self.lease_id).await?;
         transaction
-            .commit()
+            .rollback()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
         Ok(LocalLeaseOutboxCounts {
@@ -3259,6 +3262,22 @@ impl LocalLeaseOutbox {
             event_rows,
             outbox_rows,
         })
+    }
+
+    /// Reuse the original host-bound lease fence in a caller-owned SQLite write
+    /// transaction without appending an effect or opening a second transaction.
+    pub(crate) async fn require_current_transaction(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+    ) -> Result<LocalLease, LocalLeaseOutboxError> {
+        if self.binding().is_none() {
+            return Err(LocalLeaseOutboxError::Invalid(
+                "owner transaction requires a host-bound lease".to_string(),
+            ));
+        }
+        let lease = self.current_lease(transaction).await?;
+        ensure_current_active(&lease, self)?;
+        Ok(lease)
     }
 
     async fn current_lease(

@@ -6,11 +6,13 @@ use super::*;
 
 #[tokio::test]
 async fn compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected() {
-    let temp = tempfile::tempdir().expect("reference SQLite root");
-    let sqlite_home =
-        AbsolutePathBuf::try_from(temp.path().to_path_buf()).expect("absolute SQLite root");
-    let pool = SqliteConfig::new_for_testing(sqlite_home)
-        .open_durable_evidence_pool(&temp.path().join("reference.sqlite3"))
+    // Use the central SQLite shim and the same durable evidence profile as
+    // the owner. Keep this private fixture independent of owner database bytes.
+    let temp = tempfile::tempdir().expect("schema fixture directory");
+    let home = AbsolutePathBuf::try_from(temp.path().canonicalize().expect("fixture path"))
+        .expect("absolute fixture path");
+    let pool = SqliteConfig::new_for_testing(home)
+        .open_durable_evidence_pool(&temp.path().join("schema-oracle.sqlite"))
         .await
         .expect("reference SQLite");
     MIGRATOR.run(&pool).await.expect("compiled migration chain");
