@@ -12,7 +12,7 @@
 
 控制器只接收已经到达的 headers、当前队列及观测到的历史延迟；source PTS 是公开且正确的。已提交内容不能重写。缺失 packet 使用预设 placeholder，但仍计入 source 交付损失；内容回读 fidelity 与 source 交付 coverage 分开评价。
 
-正式执行的 192 个 MKV 全部完成并通过回读，0 个系统失败。产物复核确认 565,504,105 bytes 的实际 MKV、14,400 条提交链、14,400 帧视频和每声道 25,214,976 个音频 samples；末尾短音频块没有截断。逐文件 SHA、真实 clock receipts、服务计时及完整原结果见 [CAUSAL_AV_EVALUATION.json](../../CAUSAL_AV_EVALUATION.json)。来源及资格链分别见 [TEMPORAL_SOURCE_RECEIPT.json](../../TEMPORAL_SOURCE_RECEIPT.json) 和 [CAUSAL_AV_READY.json](../../CAUSAL_AV_READY.json)。
+正式执行的 192 个 MKV 全部完成并通过回读，0 个系统失败。产物复核确认 565,504,105 bytes 的实际 MKV、14,400 条提交记录（192 条逐序哈希链）、14,400 帧视频和每声道 25,214,976 个音频 samples；末尾短音频块没有截断。逐文件 SHA、真实 clock receipts、服务计时及完整原结果见 [CAUSAL_AV_EVALUATION.json](../../CAUSAL_AV_EVALUATION.json)。来源及资格链分别见 [TEMPORAL_SOURCE_RECEIPT.json](../../TEMPORAL_SOURCE_RECEIPT.json) 和 [CAUSAL_AV_READY.json](../../CAUSAL_AV_READY.json)。
 
 ## 原登记比较与事后比较
 

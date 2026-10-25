@@ -4,6 +4,20 @@
 
 历史 v7 源码与部分 checkpoint 已按原始 Git blob／文件 hashes 恢复。历史 ABC 原始运行记录及计时没有恢复；本目录的新结果不冒充那些旧运行。
 
+## 已完成的结果
+
+完整结论见 [RESULTS.md](RESULTS.md)，机器可读状态见 [GATES.json](GATES.json)。两个 A/B 主比较的原 nominal 97.5% 区间均跨零；时序传输子实验通过有限基线家族的工程收益门，但未完成全模态神经生成或原生 Hepta 资格。`all_blockers_closed` 仍为 false。
+
+| 证据 | 阅读入口 |
+| --- | --- |
+| A/B 全部条件、主比较、消融、风险层次 | [独立审阅](results/ab-001/REVIEW.md)、[全部聚合数值](results/ab-001/summary.json)、[置信区间图](results/ab-001/effect-intervals.png) |
+| 实际时延、CPU、匹配质量和完整价格网格 | [成本审阅](results/cost-001/REVIEW.md)、[完整压缩报告](results/cost-001/cost-analysis-report.json.gz)、[进程回执](results/cost-001/execution-receipts.json) |
+| 真实 AV 字节与因果传输、唯一事后 220 ms 基线 | [C 审阅](results/causal-av-001/REVIEW.md)、[正式聚合](CAUSAL_AV_EVALUATION.json)、[事后诊断](CAUSAL_AV_STATIC_220_DIAGNOSTIC_RESULT.json) |
+| 当前原生契约与旧 owner 实测记录 | [原生资格审阅](results/native-review-001/REVIEW.md)、[固定提交的文档身份](results/native-review-001/FETCH_METADATA.json) |
+| 全部本地原始证据的范围与哈希清单 | [聚合 inventory 审阅](results/evidence-inventory-001/REVIEW.md) |
+
+原始媒体、模型和逐步记录共 47,770 个文件、5,448,401,856 bytes，完整本地清单已完成。Git 中保存源码、协议与聚合证据；原始证据的长期归档仍等待具体导出授权。
+
 ## 方法与协议
 
 - [设计解释与适用边界](DESIGN_AND_SCOPE.md)：Merton 对应、NDU profile、训练与推理控制、消融的识别范围。
