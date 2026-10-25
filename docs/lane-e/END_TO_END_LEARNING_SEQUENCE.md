@@ -370,11 +370,28 @@ and hashes distinguish these runs from the earlier five-control experiment.
 The same compact observation files are retained in the Chain development-plan
 evidence; they grant no new trust or admission authority.
 
-Inference-platform must fix and rerun the full original neural comparison at
-the original 60-second limit, preserving both independent model owners, all 32
-tasks, 64 real forwards, 66 signed control records and every terminal assertion.
+The subsequent bounded parallel-start repair is actually tested on clean Hepta
+`43ad626b` on the local ROG Linux CPU host. The same three original native cases
+all pass: artifact publication/recovery in 0.239 seconds, complete gen2/gen3
+comparison in 13.651 seconds and signed read/unload in 5.943 seconds. Both model
+owners remain independent. All 32 tasks, 64 real forwards, 66 signed claims,
+66 submit/reserve/assign/settle records, exact control cold reopen and both
+terminal unload assertions pass within the unchanged limits. The original
+runner returns `Ineligible` for `binary-correctness`, so no installation follows.
+The [source-bound observation](../../qualification/learning-generations/real-model-owner-controlled-20261025/parallel-start-original-native.json)
+binds the unchanged tensors and training receipts, explicitly relocated parent
+descriptors with new hashes, original execution receipts and raw archive. The
+4060 is offline; this local result does not replace its pending rerun. The old
+077 timeout, failed retry and setup observations remain retained.
+
 Learning-platform and agent-runtime must then compose the original ledger,
 evaluation, selection, artifact/CURRENT and next-task owners in the order above.
+First bind a genuine initial neural parent through the original selector and
+CURRENT. The evaluated neural constructor still requires an eligible
+SystemLongitudinal child; a Qualification comparison or an unselected trained
+generation cannot supply that initial parent. Any genesis material prerequisite
+must prove the actual fixed upstream roots and zero-effect parameters without
+granting evaluation, selection or installation authority by itself.
 The separate fresh native host raw-U observation still fails its original
 eight-second cutoff; its post-deadline 4,096-byte kernel charge is diagnostic,
 with the same original owner retained. Funded resource return remains open.

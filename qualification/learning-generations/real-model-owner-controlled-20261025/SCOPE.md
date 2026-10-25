@@ -24,6 +24,19 @@ selected complete Cell release, CURRENT installation or three-round ordinary
 product loop is implied. The source-bound build and execution receipts, raw
 archives and complete hashes remain in the task workspace.
 
+The bounded parallel-start successor is separately executed on clean Hepta
+`43ad626b` on the local ROG Linux CPU host. All three original native cases pass:
+publication/recovery 0.239 seconds, full comparison 13.651 seconds and signed
+read/unload 5.943 seconds. The comparison retains its original 60-second limit,
+32 tasks, 64 real forwards, 66 signed claims, all 66 control records and exact
+cold reopen. Both original model unloads succeed. The original evaluator still
+returns `Ineligible` for binary correctness; no installation is authorized.
+Only local material paths and the parent descriptors' directory field are
+relocated and freshly hashed; tensors, training receipts and all five runtime
+source pins are unchanged. The 4060 is offline, so its rerun remains pending.
+The earlier failures are not replaced. This is controlled component execution,
+not an initial selected neural parent or three ordinary product upgrades.
+
 Actual fresh native host runs on `6a96dd94` and `ec6868da` prove the original
 C/A waits and ordered child retirement. The latter raw-U observation fails the
 original eight-second cutoff and retains its original owner and handles. A
