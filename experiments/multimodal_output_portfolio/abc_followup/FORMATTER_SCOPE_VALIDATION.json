@@ -1,0 +1,16 @@
+{
+  "schema": "hepta.formatter.scoped-python-test-observation.v1",
+  "command": ["python3", "-B", "-m", "unittest", "discover", "-s", "scripts", "-p", "test_hepta_format_scope.py", "-v"],
+  "cwd": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery",
+  "exit_code": 0,
+  "tests_run": 33,
+  "elapsed_seconds_reported_by_unittest": 0.597,
+  "status": "OK",
+  "evidence_origin": "Previously completed tool execution in this task; receipt transcribed without rerunning tests",
+  "original_test_git_blob": "35be2cf79af0f05e772d29844690a6846ef61920",
+  "source_hashes_at_execution_not_recorded": true,
+  "formatters_executed": false,
+  "rust_tests_executed": false,
+  "ci_executed": false,
+  "known_expected_diagnostic": "fatal: Needed a single revision emitted by existing missing-base rejection test; that test passed"
+}
