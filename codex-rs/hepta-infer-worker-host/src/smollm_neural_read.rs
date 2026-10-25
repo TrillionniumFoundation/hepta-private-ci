@@ -198,6 +198,18 @@ impl ControlContext {
         token.enter(&binding).map_err(|error| error.to_string())
     }
 
+    fn settle_load(
+        &self,
+        admitted: &Admitted,
+        observed: Digest32,
+        execution: &codex_hepta_agentd::NeuralCognitiveExecutionV1,
+    ) -> Result<(), String> {
+        self.settle(admitted, Some(observed), true, 0)?;
+        // Durable control may wait. Reject late delivery without rewriting the
+        // real completion or refunding its already consumed FinalUse nonce.
+        execution.check()
+    }
+
     fn settle(
         &self,
         admitted: &Admitted,
@@ -365,6 +377,7 @@ impl SmolLmNeuralReadPortV1 {
             mailbox.clone(),
             context.runtime.clone(),
             cancellation,
+            load_execution.deadline(),
         );
         let mut worker = InferenceWorker::new(now, worker_id, grant.generation, grant, driver)
             .map_err(|error| error.to_string())?;
@@ -394,12 +407,16 @@ impl SmolLmNeuralReadPortV1 {
                 return Err(error.to_string());
             }
         };
+        if let Err(error) = load_execution.check() {
+            context.settle(&admitted, None, false, 0)?;
+            return Err(error);
+        }
         let observed = Digest32::of_parts(&[
             b"hepta.smollm-loaded.v1\0",
             loaded.handle_id.as_bytes(),
             &loaded.observed_memory_bytes.to_be_bytes(),
         ]);
-        context.settle(&admitted, Some(observed), true, 0)?;
+        context.settle_load(&admitted, observed, &load_execution)?;
         Ok(Self {
             pin,
             model_id,

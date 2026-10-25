@@ -7,6 +7,16 @@ use std::process::Stdio;
 
 use super::*;
 
+fn prepared(directory: &Path, runtime: &tokio::runtime::Runtime) -> Session {
+    Session::prepare(
+        File::open(directory).unwrap(),
+        runtime.handle().clone(),
+        Instant::now() + Duration::from_secs(120),
+        &tokio_util::sync::CancellationToken::new(),
+    )
+    .unwrap()
+}
+
 #[test]
 fn terminal_unload_requires_successful_supervisor_and_original_child_receipt() {
     let runtime = tokio::runtime::Builder::new_current_thread()
@@ -42,21 +52,20 @@ fn terminal_unload_requires_successful_supervisor_and_original_child_receipt() {
             serde_json::to_vec(&receipt).unwrap(),
         )
         .unwrap();
-        let mut supervisor = Command::new("/bin/sh")
-            .args(["-c", command])
-            .stdin(Stdio::null())
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .spawn()
+        let mut session = prepared(directory.path(), &runtime);
+        session
+            .spawn(
+                Command::new("/bin/sh")
+                    .args(["-c", command])
+                    .stdin(Stdio::null())
+                    .stdout(Stdio::null())
+                    .stderr(Stdio::null()),
+            )
             .unwrap();
+        let supervisor = &session.supervisor;
         // Reap this controlled supervisor before composition, without a sleep
         // race. std::process::Child retains its exact status for try_wait.
         assert_eq!(supervisor.wait().unwrap().code(), Some(exit_code));
-        let mut session = Session::new(
-            File::open(directory.path()).unwrap(),
-            supervisor,
-            runtime.handle().clone(),
-        );
         assert_eq!(session.shutdown(), Err(expected.to_owned()));
         assert!(session.supervisor.is_some());
     }
@@ -75,20 +84,20 @@ fn dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper() {
     fs::create_dir_all(&worker).unwrap();
     // A controlled supervisor remains alive until this test observes the exact
     // STOP frame. No model, issuer or successful supervisor receipt is faked.
-    let mut supervisor = Command::new("/bin/sh")
-        .args(["-c", "read -r value; test \"$value\" = stop"])
-        .stdin(Stdio::piped())
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .spawn()
+    let session = prepared(directory.path(), &runtime);
+    session
+        .spawn(
+            Command::new("/bin/sh")
+                .args(["-c", "read -r value; test \"$value\" = stop"])
+                .stdin(Stdio::piped())
+                .stdout(Stdio::null())
+                .stderr(Stdio::null()),
+        )
         .unwrap();
+    let supervisor = &session.supervisor;
     let pid = supervisor.id();
-    let mut input = supervisor.stdin.take().unwrap();
-    drop(Session::new(
-        File::open(directory.path()).unwrap(),
-        supervisor,
-        runtime.handle().clone(),
-    ));
+    let mut input = supervisor.take_stdin().unwrap();
+    drop(session);
     // Publish after the drop path's initial attempt, as in a cancelled cold
     // load. The original one-shot cleanup would forget this absent socket.
     std::thread::sleep(Duration::from_millis(100));
@@ -138,20 +147,19 @@ fn dropped_session_does_not_extend_its_expired_stop_window() {
     let directory = tempfile::tempdir().unwrap();
     let worker = directory.path().join("session/worker");
     fs::create_dir_all(&worker).unwrap();
-    let mut supervisor = Command::new("/bin/sh")
-        .args(["-c", "read -r value; test \"$value\" = stop"])
-        .stdin(Stdio::piped())
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .spawn()
+    let mut session = prepared(directory.path(), &runtime);
+    session
+        .spawn(
+            Command::new("/bin/sh")
+                .args(["-c", "read -r value; test \"$value\" = stop"])
+                .stdin(Stdio::piped())
+                .stdout(Stdio::null())
+                .stderr(Stdio::null()),
+        )
         .unwrap();
+    let supervisor = &session.supervisor;
     let pid = supervisor.id();
-    let mut input = supervisor.stdin.take().unwrap();
-    let mut session = Session::new(
-        File::open(directory.path()).unwrap(),
-        supervisor,
-        runtime.handle().clone(),
-    );
+    let mut input = supervisor.take_stdin().unwrap();
     // Shorten the controlled owner's deadline; no production deadline is
     // overridden or renewed by a late socket becoming available.
     session.cleanup_deadline = Instant::now();
@@ -176,48 +184,173 @@ fn dropped_session_does_not_extend_its_expired_stop_window() {
     }
 }
 
-
 #[test]
 fn cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor() {
     use std::os::unix::net::UnixListener;
-    let runtime = tokio::runtime::Builder::new_multi_thread().worker_threads(2).enable_all().build().unwrap();
+    let runtime = tokio::runtime::Builder::new_multi_thread()
+        .worker_threads(2)
+        .enable_all()
+        .build()
+        .unwrap();
     let directory = tempfile::tempdir().unwrap();
     let worker = directory.path().join("session/worker");
     fs::create_dir_all(&worker).unwrap();
     let listener = UnixListener::bind(worker.join("model.sock")).unwrap();
     listener.set_nonblocking(true).unwrap();
-    let mut supervisor = Command::new("/bin/sh").args(["-c", "exit 0"]).spawn().unwrap();
+    let session = prepared(directory.path(), &runtime);
+    session
+        .spawn(Command::new("/bin/sh").args(["-c", "exit 0"]))
+        .unwrap();
+    let supervisor = &session.supervisor;
     assert!(supervisor.wait().unwrap().success());
-    let session = Session::new(File::open(directory.path()).unwrap(), supervisor, runtime.handle().clone());
     let cancellation = tokio_util::sync::CancellationToken::new();
     cancellation.cancel();
-    let cancelled = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(Instant::now() + Duration::from_secs(2), cancellation);
-    assert!(session.exchange(b"bounded-frame", cancelled.deadline(), &cancelled).is_err());
-    assert_eq!(listener.accept().unwrap_err().kind(), std::io::ErrorKind::WouldBlock);
+    let cancelled = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(
+        Instant::now() + Duration::from_secs(2),
+        cancellation,
+    );
+    assert!(
+        session
+            .exchange(b"bounded-frame", cancelled.deadline(), &cancelled)
+            .is_err()
+    );
+    assert_eq!(
+        listener.accept().unwrap_err().kind(),
+        std::io::ErrorKind::WouldBlock
+    );
     listener.set_nonblocking(false).unwrap();
     let (observed_tx, observed_rx) = std::sync::mpsc::channel();
     let (release_tx, release_rx) = std::sync::mpsc::channel();
     let peer = std::thread::spawn(move || {
         let (mut stream, _) = listener.accept().unwrap();
-        stream.set_read_timeout(Some(Duration::from_secs(1))).unwrap();
+        stream
+            .set_read_timeout(Some(Duration::from_secs(1)))
+            .unwrap();
         let mut frame = Vec::new();
         loop {
             let mut byte = [0_u8; 1];
             stream.read_exact(&mut byte).unwrap();
             frame.push(byte[0]);
-            if byte[0] == b'\n' { break; }
+            if byte[0] == b'\n' {
+                break;
+            }
         }
         observed_tx.send(frame).unwrap();
         release_rx.recv_timeout(Duration::from_secs(2)).unwrap();
         listener.set_nonblocking(true).unwrap();
-        assert_eq!(listener.accept().unwrap_err().kind(), std::io::ErrorKind::WouldBlock);
+        assert_eq!(
+            listener.accept().unwrap_err().kind(),
+            std::io::ErrorKind::WouldBlock
+        );
     });
-    let execution = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(Instant::now() + Duration::from_millis(50), tokio_util::sync::CancellationToken::new());
-    assert!(session.exchange(b"bounded-frame", execution.deadline(), &execution).is_err());
-    assert_eq!(observed_rx.recv_timeout(Duration::from_secs(1)).unwrap(), b"bounded-frame\n");
+    let execution = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(
+        Instant::now() + Duration::from_millis(50),
+        tokio_util::sync::CancellationToken::new(),
+    );
+    assert!(
+        session
+            .exchange(b"bounded-frame", execution.deadline(), &execution)
+            .is_err()
+    );
+    assert_eq!(
+        observed_rx.recv_timeout(Duration::from_secs(1)).unwrap(),
+        b"bounded-frame\n"
+    );
     let successor = codex_hepta_agentd::NeuralCognitiveExecutionV1::bounded_read();
-    assert!(session.exchange(b"must-not-send", successor.deadline(), &successor).unwrap_err().contains("unresolved physical execution"));
+    assert!(
+        session
+            .exchange(b"must-not-send", successor.deadline(), &successor)
+            .unwrap_err()
+            .contains("unresolved physical execution")
+    );
     release_tx.send(()).unwrap();
     peer.join().unwrap();
     assert!(session.in_flight_or_unknown.load(Ordering::SeqCst));
+}
+
+#[test]
+fn ready_published_after_original_startup_window_cannot_be_adopted() {
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    let worker = directory.path().join("session/worker");
+    fs::create_dir_all(&worker).unwrap();
+    let mut session = prepared(directory.path(), &runtime);
+    session
+        .spawn(
+            Command::new("/bin/sh")
+                .args(["-c", "read -r value; test \"$value\" = stop"])
+                .stdin(Stdio::piped())
+                .stdout(Stdio::null())
+                .stderr(Stdio::null()),
+        )
+        .unwrap();
+    let execution = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(
+        Instant::now() + Duration::from_millis(20),
+        tokio_util::sync::CancellationToken::new(),
+    );
+    let publisher = std::thread::spawn(move || {
+        std::thread::sleep(Duration::from_millis(30));
+        fs::write(worker.join("ready.json"), b"{}").unwrap();
+    });
+    publisher.join().unwrap();
+    assert!(
+        session
+            .wait_ready(&execution)
+            .unwrap_err()
+            .contains("deadline")
+    );
+    assert!(!session.has_exited().unwrap());
+    session
+        .supervisor
+        .take_stdin()
+        .unwrap()
+        .write_all(b"stop\n")
+        .unwrap();
+    assert!(session.supervisor.wait().unwrap().success());
+}
+
+#[test]
+fn cancelled_original_startup_cannot_adopt_an_already_published_ready() {
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    let worker = directory.path().join("session/worker");
+    fs::create_dir_all(&worker).unwrap();
+    let mut session = prepared(directory.path(), &runtime);
+    session
+        .spawn(
+            Command::new("/bin/sh")
+                .args(["-c", "read -r value; test \"$value\" = stop"])
+                .stdin(Stdio::piped())
+                .stdout(Stdio::null())
+                .stderr(Stdio::null()),
+        )
+        .unwrap();
+    let cancellation = tokio_util::sync::CancellationToken::new();
+    let execution = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(
+        Instant::now() + Duration::from_secs(2),
+        cancellation.clone(),
+    );
+    fs::write(worker.join("ready.json"), b"{}").unwrap();
+    assert_eq!(session.wait_ready(&execution).unwrap(), b"{}");
+    cancellation.cancel();
+    assert!(
+        session
+            .wait_ready(&execution)
+            .unwrap_err()
+            .contains("cancelled")
+    );
+    assert!(!session.has_exited().unwrap());
+    session
+        .supervisor
+        .take_stdin()
+        .unwrap()
+        .write_all(b"stop\n")
+        .unwrap();
+    assert!(session.supervisor.wait().unwrap().success());
 }

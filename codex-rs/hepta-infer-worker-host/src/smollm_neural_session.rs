@@ -10,9 +10,11 @@ use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::net::UnixStream;
 use std::path::Path;
 use std::path::PathBuf;
-use std::process::Child;
+use std::process::Command;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Instant;
 
 use serde::Deserialize;
@@ -20,23 +22,39 @@ use serde::Deserialize;
 const STOP: &[u8] = b"{\"schema\":\"hepta-smollm-neural-read-worker-v1\",\"stop\":true}\n";
 const SUPERVISOR_WALL_SECONDS: u64 = 600;
 
+#[path = "smollm_neural_session_owner.rs"]
+mod owner;
+use owner::SupervisorOwner;
+
 pub(super) struct Session {
-    directory: File,
-    supervisor: Option<Child>,
+    directory: Arc<File>,
+    supervisor: SupervisorOwner,
     runtime: tokio::runtime::Handle,
     cleanup_deadline: Instant,
     in_flight_or_unknown: AtomicBool,
 }
 
 impl Session {
-    pub(super) fn new(directory: File, supervisor: Child, runtime: tokio::runtime::Handle) -> Self {
-        Self {
+    pub(super) fn prepare(
+        directory: File,
+        runtime: tokio::runtime::Handle,
+        deadline: Instant,
+        cancellation: &tokio_util::sync::CancellationToken,
+    ) -> Result<Self, String> {
+        let supervisor = SupervisorOwner::prepare(directory, deadline, cancellation)?;
+        let directory = supervisor.directory()?;
+        let cleanup_deadline = supervisor.cutoff();
+        Ok(Self {
             directory,
-            supervisor: Some(supervisor),
+            supervisor,
             runtime,
-            cleanup_deadline: Instant::now() + Duration::from_secs(SUPERVISOR_WALL_SECONDS),
+            cleanup_deadline,
             in_flight_or_unknown: AtomicBool::new(false),
-        }
+        })
+    }
+
+    pub(super) fn spawn(&self, command: &mut Command) -> Result<(), String> {
+        self.supervisor.spawn(command)
     }
 
     pub(super) fn path(&self, relative: &str) -> PathBuf {
@@ -47,12 +65,27 @@ impl Session {
     }
 
     pub(super) fn has_exited(&mut self) -> Result<bool, String> {
-        self.supervisor
-            .as_mut()
-            .ok_or("neural supervisor missing")?
-            .try_wait()
-            .map(|value| value.is_some())
-            .map_err(|error| error.to_string())
+        self.supervisor.try_wait().map(|value| value.is_some())
+    }
+
+    pub(super) fn wait_ready(
+        &mut self,
+        execution: &codex_hepta_agentd::NeuralCognitiveExecutionV1,
+    ) -> Result<Vec<u8>, String> {
+        let ready_path = self.path("ready.json");
+        loop {
+            execution.check()?;
+            if self.has_exited()? {
+                return Err("neural worker terminated before ready".to_owned());
+            }
+            if ready_path.exists() {
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(20));
+        }
+        let bytes = read_bounded(&ready_path, 65536)?;
+        execution.check()?;
+        Ok(bytes)
     }
 
     fn connect(&self, deadline: Instant) -> Result<UnixStream, String> {
@@ -80,20 +113,25 @@ impl Session {
     }
 
     pub(super) fn exchange(
-        &self, bytes: &[u8], deadline: Instant,
+        &self,
+        bytes: &[u8],
+        deadline: Instant,
         execution: &codex_hepta_agentd::NeuralCognitiveExecutionV1,
     ) -> Result<Vec<u8>, String> {
         execution.check()?;
         let deadline = deadline.min(execution.deadline());
         if self.in_flight_or_unknown.load(Ordering::SeqCst) {
-            return Err("neural session has unresolved physical execution; unload required".to_owned());
+            return Err(
+                "neural session has unresolved physical execution; unload required".to_owned(),
+            );
         }
         if bytes.is_empty() || bytes.len() >= 8192 || bytes.contains(&b'\n') {
             return Err("neural request frame bound".to_owned());
         }
         let mut stream = self.connect(deadline)?;
         execution.check()?;
-        self.in_flight_or_unknown.compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
+        self.in_flight_or_unknown
+            .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
             .map_err(|_| "neural session has unresolved physical execution; unload required")?;
         let mut frame = bytes.to_vec();
         frame.push(b'\n');
@@ -163,105 +201,49 @@ impl Session {
             }
             std::thread::sleep(Duration::from_millis(10));
         }
-        let supervisor_status = self
-            .supervisor
-            .as_mut()
-            .ok_or("neural supervisor missing")?
-            .try_wait()
-            .map_err(|error| error.to_string())?;
-        if !supervisor_status.is_some_and(|status| status.success()) {
-            return Err("neural supervisor did not exit successfully".to_owned());
-        }
-        let receipt: SupervisorReceipt =
-            serde_json::from_slice(&read_bounded(&self.path("supervisor.json"), 1024 * 1024)?)
-                .map_err(|error| error.to_string())?;
-        if receipt.outcome != "success"
-            || receipt.exit_code != Some(0)
-            || receipt.stop_reason.is_some()
-            || !receipt.waited_child_reaped
-            || !receipt.owned_child_reap_resolved
-            || receipt.waited_child_observation_error.is_some()
-            || receipt.budget.wall_seconds != SUPERVISOR_WALL_SECONDS
-            || receipt.budget.rss_bytes != 8 * 1024 * 1024 * 1024
-            || receipt.observed_wall_ns > 600_000_000_000
-            || !receipt
-                .waited_child_peak_rss_bytes
-                .is_some_and(|value| value > 0 && value <= receipt.budget.rss_bytes)
-        {
-            return Err("neural unload lacks a successful original owned-child receipt".to_owned());
-        }
-        self.supervisor.take();
+        verify_terminal_receipt(&self.directory, self.supervisor.try_wait()?)?;
+        self.supervisor.release_verified_terminal()?;
         Ok(())
     }
 }
 
 impl Drop for Session {
     fn drop(&mut self) {
-        if let Some(mut supervisor) = self.supervisor.take() {
-            let directory = self.directory.try_clone();
-            let deadline = self.cleanup_deadline;
-            // Keep the observer alive, rather than killing it and stranding its
-            // wait4-owned model child. No completion is reported by this reaper.
-            // A cold model may not have published its socket yet. Retain the
-            // directory FD and retry STOP until it does or the observer exits;
-            // never lose the stop request because the first connect was early.
-            // Retry cannot extend the original 600-second owner window. Once
-            // it ends, retain only wait/reap under the original supervisor.
-            std::thread::spawn(move || {
-                use tokio::io::AsyncWriteExt;
-
-                let socket = directory.as_ref().ok().map(|directory| {
-                    format!(
-                        "/proc/self/fd/{}/session/worker/model.sock",
-                        directory.as_raw_fd()
-                    )
-                });
-                // Cleanup may outlive the embedding runtime. Its private I/O
-                // timer only bounds STOP; it issues no resource or use grant.
-                if let Some(socket) = socket
-                    && let Ok(runtime) = tokio::runtime::Builder::new_current_thread()
-                        .enable_all()
-                        .build()
-                {
-                    runtime.block_on(async {
-                        loop {
-                            match supervisor.try_wait() {
-                                Ok(Some(_)) | Err(_) => break,
-                                Ok(None) => {}
-                            }
-                            let remaining = deadline.saturating_duration_since(Instant::now());
-                            if remaining.is_zero() {
-                                break;
-                            }
-                            let stop = async {
-                                let mut connection =
-                                    tokio::net::UnixStream::connect(&socket).await?;
-                                connection.write_all(STOP).await
-                            };
-                            if matches!(
-                                tokio::time::timeout(
-                                    remaining.min(Duration::from_millis(250)),
-                                    stop
-                                )
-                                .await,
-                                Ok(Ok(()))
-                            ) {
-                                break;
-                            }
-                            tokio::time::sleep(
-                                deadline
-                                    .saturating_duration_since(Instant::now())
-                                    .min(Duration::from_millis(20)),
-                            )
-                            .await;
-                        }
-                    });
-                }
-                let _ = supervisor.wait();
-                drop(directory);
-            });
-        }
+        self.supervisor.request_cleanup(self.cleanup_deadline);
     }
+}
+
+fn verify_terminal_receipt(
+    directory: &File,
+    supervisor_status: Option<std::process::ExitStatus>,
+) -> Result<(), String> {
+    if !supervisor_status.is_some_and(|status| status.success()) {
+        return Err("neural supervisor did not exit successfully".to_owned());
+    }
+    let receipt: SupervisorReceipt = serde_json::from_slice(&read_bounded(
+        &PathBuf::from(format!(
+            "/proc/self/fd/{}/session/worker/supervisor.json",
+            directory.as_raw_fd()
+        )),
+        1024 * 1024,
+    )?)
+    .map_err(|error| error.to_string())?;
+    if receipt.outcome != "success"
+        || receipt.exit_code != Some(0)
+        || receipt.stop_reason.is_some()
+        || !receipt.waited_child_reaped
+        || !receipt.owned_child_reap_resolved
+        || receipt.waited_child_observation_error.is_some()
+        || receipt.budget.wall_seconds != SUPERVISOR_WALL_SECONDS
+        || receipt.budget.rss_bytes != 8 * 1024 * 1024 * 1024
+        || receipt.observed_wall_ns > 600_000_000_000
+        || !receipt
+            .waited_child_peak_rss_bytes
+            .is_some_and(|value| value > 0 && value <= receipt.budget.rss_bytes)
+    {
+        return Err("neural unload lacks a successful original owned-child receipt".to_owned());
+    }
+    Ok(())
 }
 
 #[derive(Deserialize)]
