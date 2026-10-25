@@ -295,10 +295,7 @@ async fn malformed_raw_roots_are_rejected_but_explicit_empty_roots_are_preserved
     let request = app
         .send_thread_resume_request(ThreadResumeParams {
             thread_id,
-            config: Some(HashMap::from([(
-                "workspace_roots".to_string(),
-                json!([]),
-            )])),
+            config: Some(HashMap::from([("workspace_roots".to_string(), json!([]))])),
             ..Default::default()
         })
         .await?;

@@ -11,6 +11,10 @@ path = "junit.xml"
 [profile.local]
 inherits = "default"
 
+# Nextest 0.9.103 does not inherit the default profile's JUnit path.
+[profile.local.junit]
+path = "junit.xml"
+
 [test-groups.app_server_protocol_codegen]
 max-threads = 1
 
