@@ -35,6 +35,12 @@ mod native_memory_context_binding;
 #[path = "native_memory_control_tests.rs"]
 mod native_memory_control_tests;
 mod native_memory_current;
+#[cfg(all(test, unix))]
+#[path = "native_memory_current_test_support.rs"]
+mod native_memory_current_test_support;
+#[cfg(all(test, unix))]
+#[path = "native_memory_current_tests.rs"]
+mod native_memory_current_tests;
 mod native_memory_model;
 mod native_memory_process;
 mod native_memory_shadow_namespace;
