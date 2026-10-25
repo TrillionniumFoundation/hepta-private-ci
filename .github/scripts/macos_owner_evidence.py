@@ -13,11 +13,12 @@ import signal
 import subprocess
 import sys
 import time
+import traceback
 import xml.etree.ElementTree as ET
 
 HERE = Path(__file__).resolve().parent
 PROFILE = "macos-owner"
-BASE = "c6784f0e4259cf4fce301691c890caf359961517"
+BASE = "b1d61707cbc102397828ec552c217d3c3bf5feb5"
 PHASES = ("memory", "supervisor-owning", "supervisor-integration")
 OWNER = (
     "restart_budget::tests::budget_is_durable_bounded_and_pending_is_idempotent",
@@ -199,11 +200,15 @@ def bounded(command, directory, deadline, cwd, grace=10):
                         pass
                 try:
                     process.wait(timeout=grace)
-                except subprocess.TimeoutExpired:
+                except subprocess.TimeoutExpired as error:
+                    record["cleanup_error_type"] = type(error).__name__
+                    record["cleanup_traceback"] = traceback.format_exc()
                     record["cleanup_error"] = "owned leader not reaped"
                     record["exit"] = 125
     except Exception as error:
         record["error"] = str(error)
+        record["error_type"] = type(error).__name__
+        record["traceback"] = traceback.format_exc()
         record["exit"] = 125
     finally:
         record["elapsed_seconds"] = time.monotonic() - started
@@ -238,7 +243,7 @@ def shared_deadline(out):
         budget["seconds"] == 4500 and budget["clock"] == "monotonic", "wrong budget"
     )
     require(
-        deadline - start == 4500 and 0 <= start <= time.monotonic(),
+        deadline == start + 4500 and 0 <= start <= time.monotonic(),
         "invalid shared deadline",
     )
     require(budget["head"] == os.environ["CANDIDATE_SHA"], "wrong budget head")
@@ -275,7 +280,11 @@ def bind(out):
         "lock_blob": pins["lock_blob"],
         "budget_sha256": digest(out / "budget.json"),
     }
-    paths = sorted(set(pins["changed_paths"]) | set(pins["support_paths"]))
+    paths = sorted(
+        set(pins["changed_paths"])
+        | set(pins["support_paths"])
+        | set(pins["source_sha256"])
+    )
     source["files"] = {
         p: {"sha256": digest(p), "blob": git("rev-parse", f"HEAD:{p}")} for p in paths
     }
@@ -514,6 +523,18 @@ def verify(out):
     )
 
 
+def seal(out):
+    """Hash finalized files only after all command/log producers have closed."""
+    write(
+        out / "artifact-hashes.json",
+        {
+            str(p.relative_to(out)): digest(p)
+            for p in sorted(out.rglob("*"))
+            if p.is_file() and p.name != "artifact-hashes.json"
+        },
+    )
+
+
 def main():
     action, directory = sys.argv[1:]
     out = Path(directory).resolve()
@@ -525,17 +546,9 @@ def main():
     elif action == "run":
         execute(out)
     elif action == "verify":
-        try:
-            verify(out)
-        finally:
-            write(
-                out / "artifact-hashes.json",
-                {
-                    str(p.relative_to(out)): digest(p)
-                    for p in sorted(out.rglob("*"))
-                    if p.is_file() and p.name != "artifact-hashes.json"
-                },
-            )
+        verify(out)
+    elif action == "seal":
+        seal(out)
     else:
         raise ValueError("unknown action")
 

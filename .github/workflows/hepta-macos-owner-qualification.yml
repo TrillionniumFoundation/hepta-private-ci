@@ -100,6 +100,13 @@ jobs:
           git status --porcelain=v1 > "$EVIDENCE/post-run-status.txt"
           df -h > "$EVIDENCE/disk-after.txt"
           python3 .github/scripts/macos_owner_evidence.py verify "$EVIDENCE" 2>&1 | tee "$EVIDENCE/verification.log"
+      - name: Seal finalized evidence after verification log closes
+        if: always() && steps.source.outcome == 'success'
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/macos_owner_evidence.py seal "$EVIDENCE"
       - name: Retain source, original logs, exits and separate reports on success or failure
         if: always()
         timeout-minutes: 10

@@ -1,7 +1,9 @@
 """Synthetic evidence/watchdog regressions, never native-test evidence."""
 
 import json
+import math
 import os
+import shutil
 import subprocess
 from pathlib import Path
 import sys
@@ -14,15 +16,28 @@ import xml.etree.ElementTree as ET
 import macos_owner_evidence as evidence
 
 
+def retain_watchdog_receipts(root, destination):
+    """Preserve bounded-command evidence before unittest deletes owned temp dirs."""
+    for receipt in list(root.rglob("result.json")):
+        relative = receipt.parent.relative_to(root)
+        target = destination / relative
+        target.mkdir(parents=True, exist_ok=True)
+        for name in ("result.json", "command.json", "stdout.log", "stderr.log"):
+            source = receipt.parent / name
+            if source.is_file() and not source.is_symlink():
+                shutil.copyfile(source, target / name)
+
+
 class EvidenceTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
         self.addCleanup(self.temp.cleanup)
+        self.addCleanup(self.retain_watchdog_receipts)
         self.env = patch.dict(os.environ, {"CANDIDATE_SHA": "expected"})
         self.env.start()
         self.addCleanup(self.env.stop)
-        start = time.monotonic()
+        start = float(int(time.monotonic()))
         self.budget = {
             "seconds": 4500,
             "clock": "monotonic",
@@ -32,6 +47,14 @@ class EvidenceTests(unittest.TestCase):
             "python": evidence.python_identity(),
         }
         (self.root / "budget.json").write_text(json.dumps(self.budget))
+
+    def retain_watchdog_receipts(self):
+        destination = os.environ.get("EVIDENCE")
+        if not destination:
+            return
+        retain_watchdog_receipts(
+            self.root, Path(destination) / "validator-cases" / self._testMethodName
+        )
 
     def report(self, phase="supervisor-owning"):
         root = ET.Element(
@@ -171,6 +194,66 @@ class EvidenceTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 evidence.validate_list(path, "supervisor-owning")
 
+    def test_failed_command_receipts_survive_temporary_cleanup(self):
+        # Reproduce the old loss and establish preservation without executing a child.
+        with tempfile.TemporaryDirectory() as old:
+            old_root = Path(old)
+            with patch.object(
+                evidence.subprocess,
+                "Popen",
+                side_effect=OSError("diagnostic injected error"),
+            ):
+                self.assertEqual(
+                    evidence.bounded(
+                        ["fake-native-command"],
+                        old_root / "failed",
+                        time.monotonic() + 3,
+                        old_root,
+                    ),
+                    125,
+                )
+            old_receipt = old_root / "failed/result.json"
+            self.assertTrue(old_receipt.is_file())
+        self.assertFalse(old_receipt.exists())
+        with tempfile.TemporaryDirectory() as new:
+            new_root = Path(new)
+            with patch.object(
+                evidence.subprocess,
+                "Popen",
+                side_effect=OSError("diagnostic injected error"),
+            ):
+                self.assertEqual(
+                    evidence.bounded(
+                        ["fake-native-command"],
+                        new_root / "failed",
+                        time.monotonic() + 3,
+                        new_root,
+                    ),
+                    125,
+                )
+            retain_watchdog_receipts(new_root, self.root / "retained")
+        record = json.loads((self.root / "retained/failed/result.json").read_text())
+        self.assertEqual(record["exit"], 125)
+        self.assertEqual(record["error_type"], "OSError")
+        self.assertIn("diagnostic injected error", record["traceback"])
+        for name in ("command.json", "stdout.log", "stderr.log"):
+            self.assertTrue((self.root / "retained/failed" / name).is_file())
+
+    def test_post_log_seal_captures_late_traceback(self):
+        log = self.root / "verification.log"
+        log.write_text("verification started\n")
+        evidence.seal(self.root)
+        premature = json.loads((self.root / "artifact-hashes.json").read_text())[
+            "verification.log"
+        ]
+        with log.open("a") as stream:
+            stream.write("Traceback: diagnostic final failure\n")
+        self.assertNotEqual(premature, evidence.digest(log))
+        evidence.seal(self.root)
+        final = json.loads((self.root / "artifact-hashes.json").read_text())
+        self.assertEqual(final["verification.log"], evidence.digest(log))
+        self.assertNotIn("artifact-hashes.json", final)
+
     def test_unsupported_python_fails_closed(self):
         with patch.object(evidence.sys, "version_info", (3, 9, 20)):
             with self.assertRaisesRegex(ValueError, "Python >= 3.10"):
@@ -183,6 +266,19 @@ class EvidenceTests(unittest.TestCase):
         (self.root / "budget.json").write_text(json.dumps(self.budget))
         with self.assertRaisesRegex(ValueError, "interpreter changed"):
             evidence.shared_deadline(self.root)
+
+    def test_cross_exponent_budget_and_one_ulp_tamper(self):
+        start = 11970.084807301
+        deadline = start + 4500
+        self.assertNotEqual(deadline - start, 4500)
+        self.budget.update(start_monotonic=start, deadline_monotonic=deadline)
+        (self.root / "budget.json").write_text(json.dumps(self.budget))
+        with patch.object(evidence.time, "monotonic", return_value=start + 600):
+            self.assertEqual(evidence.shared_deadline(self.root), deadline)
+            self.budget["deadline_monotonic"] = math.nextafter(deadline, math.inf)
+            (self.root / "budget.json").write_text(json.dumps(self.budget))
+            with self.assertRaisesRegex(ValueError, "invalid shared deadline"):
+                evidence.shared_deadline(self.root)
 
     def test_budget_is_shared_not_restarted_after_setup(self):
         initial = evidence.shared_deadline(self.root)
