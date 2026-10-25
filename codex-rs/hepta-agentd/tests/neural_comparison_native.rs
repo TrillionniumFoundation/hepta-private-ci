@@ -175,8 +175,27 @@ fn real_gen2_gen3_forwards_score_only_after_original_holdout_consumption() -> na
     let mut runner = plan_fixture::runner(&input.output.join("original-fenced-holdout"));
     let result =
         runner.evaluate_temporal_comparison(&plan, &candidate_plan, &baseline_plan, &mut provider);
+    let candidate_failure = candidate.first_exchange_failure();
+    let baseline_failure = baseline.first_exchange_failure();
     let candidate_shutdown = candidate.shutdown();
     let baseline_shutdown = baseline.shutdown();
+    let candidate_after = candidate.first_exchange_failure();
+    let baseline_after = baseline.first_exchange_failure();
+    if let Err(error) = &result {
+        eprintln!("original neural comparison failed before diagnostic export: {error}");
+    }
+    let diagnostic_export = save(
+        &input.output.join("actual-neural-first-failure-v1.json"),
+        &serde_json::json!({
+            "schema":"actual-neural-first-failure-v1", "historical_only":true,
+            "candidate_before_shutdown":candidate_failure, "candidate_after_shutdown":candidate_after,
+            "baseline_before_shutdown":baseline_failure, "baseline_after_shutdown":baseline_after,
+            "execution_authority":false,
+        }),
+    );
+    if let Err(error) = &diagnostic_export {
+        eprintln!("first-failure diagnostic export failed: {error}");
+    }
     let rows = provider.observations().iter().map(|row| serde_json::json!({
         "decision_id":row.decision_id.as_str(), "query_sha256":row.query_digest.to_string(),
         "candidate_scores_q32":row.candidate_scores_q32, "baseline_scores_q32":row.baseline_scores_q32,
@@ -197,6 +216,9 @@ fn real_gen2_gen3_forwards_score_only_after_original_holdout_consumption() -> na
     candidate_shutdown?;
     baseline_shutdown?;
     let receipt = result?;
+    diagnostic_export?;
+    assert_eq!(candidate_failure, candidate_after);
+    assert_eq!(baseline_failure, baseline_after);
     let context = roles.context();
     let bundle = runner.qualification_bundle(&receipt, &context)?;
     let evidence = roles.comparison_evidence(&bundle, &plan.metric_roles);

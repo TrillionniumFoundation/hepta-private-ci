@@ -221,3 +221,6 @@ impl<'a> FailureRecorder<'a> {
     }
 }
 
+#[cfg(test)]
+#[path = "smollm_neural_failure_tests.rs"]
+mod tests;

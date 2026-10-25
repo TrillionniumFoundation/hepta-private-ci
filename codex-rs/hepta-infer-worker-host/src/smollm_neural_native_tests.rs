@@ -153,7 +153,24 @@ fn real_smollm_parent_query_original_control_final_use_and_terminal_unload()
         &request,
         &parameter_bytes,
         &codex_hepta_agentd::NeuralCognitiveExecutionV1::bounded_read(),
-    )?;
+    );
+    let first_failure = port.first_exchange_failure();
+    if let Err(error) = &observed {
+        eprintln!("original neural execution failed before diagnostic export: {error}");
+    }
+    let diagnostic_export = fs::write(
+        input.output.join("actual-neural-first-failure-v1.json"),
+        serde_json::to_vec_pretty(&serde_json::json!({
+            "schema":"actual-neural-first-failure-v1", "historical_only":true,
+            "first_failure":first_failure, "execution_authority":false,
+        }))?,
+    );
+    if let Err(error) = &diagnostic_export {
+        eprintln!("first-failure diagnostic export failed: {error}");
+    }
+    let observed = observed?;
+    diagnostic_export?;
+    assert_eq!(first_failure?, None);
     assert_eq!(observed.request, request);
     assert_eq!(observed.scores_q32.as_ref().map(Vec::len), Some(2));
     assert!(!observed.execution_receipt_digest.is_zero());
@@ -161,6 +178,7 @@ fn real_smollm_parent_query_original_control_final_use_and_terminal_unload()
     let measured_forward_id =
         measured::forwarded(&port, &observed, actual_ready_digest, &input.output)?;
     assert!(port.with_measurements(|_, _| port.with_measurements(|_, _| ()).is_err())?);
+    assert!(port.with_measurements(|_, _| port.first_exchange_failure().is_err())?);
     assert!(port.with_measurements(|_, _| {
         port.execute(
             &request,
@@ -210,6 +228,7 @@ fn real_smollm_parent_query_original_control_final_use_and_terminal_unload()
     );
     assert_eq!(issuer.bindings.lock().unwrap().len(), 3);
     port.shutdown()?;
+    assert_eq!(port.first_exchange_failure()?, None);
     assert!(port.with_measurements(|_, _| ()).is_err());
     let journal = fs::read_to_string(&journal_path)?;
     let ids: Vec<_> = journal
