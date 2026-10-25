@@ -127,6 +127,13 @@ def read(path):
 
 
 def artifact_name(stage):
-    if stage not in ("offer", "ready", "withdrawal", "finished"):
+    if stage not in (
+        "offer",
+        "ready",
+        "withdrawal",
+        "finished",
+        "current-evidence",
+        "current-ack",
+    ):
         raise ValueError("unknown relay stage")
     return f"memory-multihost-{stage}-{os.environ['SOURCE_SHA']}-{os.environ['GITHUB_RUN_ATTEMPT']}"
