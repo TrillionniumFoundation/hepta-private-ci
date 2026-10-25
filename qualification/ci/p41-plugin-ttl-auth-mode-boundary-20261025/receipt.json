@@ -1,0 +1,29 @@
+{
+  "schema": "hepta.p41-plugin-ttl-auth-mode-boundary-review.v1",
+  "date_utc": "2026-10-25",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "parent_pr": 3893,
+  "parent_exact_head": "ebd8d4fe5abe8252c7e29a036d2fef58b86edc60",
+  "base_tree_sha": "40f4ce83845acb396746cb766f7275543a9523d3",
+  "observed_code_gap": "RemoteCatalogCacheRefreshRequest::has_same_cache_identity compared account/user/workspace but omitted the AuthMode already included in RemoteInstalledPluginsAuthIdentity; distinct auth modes with otherwise matching fields could be merged into one in-flight OnlyIfStale scope.",
+  "patch_scope": "Reuse existing RemoteInstalledPluginsAuthIdentity::from_auth comparison and add a negative regression for an API-key versus headers authentication-mode collision.",
+  "expected_test": "remote_catalog_in_flight_stale_refresh_preserves_auth_mode_boundary; existing dedupe/Force/other-scope checks retained",
+  "not_claimed": [
+    "not an observed production cross-user access",
+    "no measured AppServer TTL network success",
+    "no Windows cache publication OS error 5 root cause",
+    "no cargo-deny or Windows DELETE closure",
+    "no complete full-policy or target-device qualification"
+  ],
+  "validation": {
+    "source_blob_verified": true,
+    "local_rust_toolchain_available": false,
+    "compiled": false,
+    "owning_native_ci_for_new_head": "PENDING",
+    "original_plugin_ttl_request_count": "OPEN",
+    "required_windows_mac_linux_bazel_architecture_v8": "OPEN"
+  },
+  "mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "go_no_go": "HOLD_NO_GO"
+}
