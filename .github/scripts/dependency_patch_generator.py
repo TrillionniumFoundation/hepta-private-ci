@@ -294,7 +294,7 @@ def main(repo, out, control):
     public = out / 'public'
     public.mkdir(exist_ok=True)
     for retained in public.iterdir():
-        if retained.name not in {'before-Cargo.lock', 'before-MODULE.bazel.lock', 'report.json'} and retained.is_file():
+        if retained.name not in {'before-Cargo.lock', 'before-MODULE.bazel.lock', 'report.json', 'bootstrap.json'} and retained.is_file():
             retained.unlink()  # Own output directory: never retain prior-run derived bytes.
     report = {'source_commit': BASE, 'source_tree': BASE_TREE, 'raw_stream_policy': 'never_publish', 'qualified': False, 'publish_allowed': False,
               'historical_cause_claim': False, 'commands': [], 'phases': [],
@@ -472,7 +472,141 @@ def preflight(repo, out, control):
     return 0 if result.get('preflight_passed') else 1
 
 
+BAZEL_ASSET_URL = 'https://github.com/bazelbuild/bazel/releases/download/9.0.0/bazel-9.0.0-linux-x86_64'
+BAZEL_ASSET_BYTES = 65821854
+BAZEL_ASSET_SHA256 = 'c44a93f25398c68f904fa1d19b61d321de6c0d2f09dca375d7bc0dc9b9428403'
+
+
+class OfficialAssetRedirect(urllib.request.HTTPRedirectHandler):
+    def __init__(self):
+        self.followed = False
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        from urllib.parse import urlsplit
+        target = urlsplit(newurl)
+        require(not self.followed and req.full_url == BAZEL_ASSET_URL
+                and code in (301, 302, 303, 307, 308)
+                and target.scheme == 'https'
+                and target.netloc == 'release-assets.githubusercontent.com'
+                and target.path.startswith('/github-production-release-asset/20773773/')
+                and not target.fragment and not target.username and not target.password,
+                'asset_redirect_not_authorized')
+        self.followed = True
+        # Signed redirect query remains private; never save URL or exception text.
+        return urllib.request.Request(newurl, headers={'Accept-Encoding': 'identity'})
+
+
+def copy_official_asset(response, destination, clock):
+    deadline = clock() + 150
+    require(response.status == 200, 'asset_http_status')
+    require(response.headers.get('Content-Encoding', 'identity') == 'identity', 'asset_encoding')
+    require(response.headers.get('Content-Length') == str(BAZEL_ASSET_BYTES), 'asset_size_header')
+    total = 0
+    hasher = hashlib.sha256()
+    with destination.open('xb') as output:
+        while True:
+            require(clock() < deadline, 'asset_download_deadline')
+            chunk = response.read1(min(65536, BAZEL_ASSET_BYTES - total + 1))
+            if not chunk:
+                break
+            total += len(chunk)
+            require(total <= BAZEL_ASSET_BYTES, 'asset_byte_cap')
+            hasher.update(chunk)
+            output.write(chunk)
+    require(total == BAZEL_ASSET_BYTES, 'asset_short_body')
+    require(hasher.hexdigest() == BAZEL_ASSET_SHA256, 'asset_digest_mismatch')
+
+
+def download_official_asset(destination):
+    """Single unauthenticated public asset request; no retries or fallback."""
+    import time
+    import urllib.error
+    try:
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), OfficialAssetRedirect())
+        request = urllib.request.Request(BAZEL_ASSET_URL, headers={'Accept-Encoding': 'identity'})
+        # Default HTTPSHandler verifies certificates and hostnames. No custom CA,
+        # credentials, cookie handler, proxy, netrc, or authorization header.
+        with opener.open(request, timeout=20) as response:
+            copy_official_asset(response, destination, time.monotonic)
+        return 0
+    except urllib.error.HTTPError as error:
+        return 23 if error.code in (401, 403) else 24
+    except Exception:
+        return 25
+
+
+def bootstrap_bazel(repo, out, control):
+    """Bootstrap only: immutable official binary under the same owned supervisor."""
+    repo, out, control = repo.resolve(), out.resolve(), control.resolve()
+    public = out / 'public'
+    public.mkdir(parents=True, exist_ok=True)
+    receipt = {'phase': 'keyless_bazel_bootstrap', 'qualified': False,
+               'raw_stream_policy': 'never_publish', 'asset_url': BAZEL_ASSET_URL,
+               'expected_bytes': BAZEL_ASSET_BYTES, 'expected_sha256': BAZEL_ASSET_SHA256,
+               'commands': [], 'bootstrap_passed': False}
+    tools_dir = out / 'job-tools'
+    env = {'PATH': os.environ['PATH'], 'HOME': str(out / 'home'),
+           'LANG': 'C.UTF-8', 'GIT_CONFIG_NOSYSTEM': '1', 'GIT_CONFIG_GLOBAL': '/dev/null',
+           'GIT_TERMINAL_PROMPT': '0', 'PYTHONDONTWRITEBYTECODE': '1'}
+    old_cwd = Path.cwd()
+    binary = tools_dir / 'bazel'
+    try:
+        require(shutil.disk_usage(out).free >= 20 * 1024**3, 'preflight_disk_below_20GiB')
+        support.DISK_INITIAL_FREE = shutil.disk_usage(out).free
+        receipt['control_before'] = control_gate(control, env)
+        support.identity(repo, BASE, BASE_TREE, env)
+        require((repo / '.bazelversion').read_bytes() == b'9.0.0\n', 'bazel_version_file_mismatch')
+        require(sys.platform == 'linux' and os.uname().machine == 'x86_64', 'bootstrap_platform_mismatch')
+        tools_dir.mkdir(mode=0o700)  # Existing directory: HOLD, never overwrite or retry.
+        os.chdir(tools_dir)
+        command = [sys.executable, str(control / '.github/scripts/dependency_patch_generator.py'),
+                   '--download-bazel-asset', str(binary)]
+        result, streams = support.capture(command, env, 180, disk=out)
+        receipt['commands'].append(result)
+        require(result['cleanup']['confirmed'] and result['stop'] is None, 'asset_owned_cleanup_or_timeout')
+        require(result['exit'] not in (23, 24), 'public_asset_http_denied_or_failed')
+        require(result['exit'] == 0, 'public_asset_download_or_integrity_failed')
+        require(binary.is_file() and not binary.is_symlink()
+                and binary.stat().st_size == BAZEL_ASSET_BYTES, 'asset_size_mismatch')
+        require(digest(binary.read_bytes()) == BAZEL_ASSET_SHA256, 'asset_digest_mismatch')
+        binary.chmod(0o700)
+        command = [str(binary), '--batch', '--nosystem_rc', '--nohome_rc',
+                   '--output_user_root=' + str(out / 'bazel-root'),
+                   '--output_base=' + str(out / 'bazel-output'),
+                   '--noexperimental_remote_repo_contents_cache', '--version']
+        result, streams = support.capture(command, env, 60, disk=out)
+        receipt['commands'].append(result)
+        require(result['exit'] == 0 and result['stop'] is None and result['cleanup']['confirmed'],
+                'bootstrap_version_command_failed')
+        require(streams[0].count <= 128 and streams[0].retained().strip() == b'bazel 9.0.0',
+                'bootstrap_bazel_version_mismatch')
+        require(digest(binary.read_bytes()) == BAZEL_ASSET_SHA256, 'bootstrap_binary_drift')
+        receipt['actual'] = {'bytes': binary.stat().st_size, 'sha256': BAZEL_ASSET_SHA256,
+                             'version': 'bazel 9.0.0'}
+        support.identity(repo, BASE, BASE_TREE, env)
+        receipt['control_after'] = control_gate(control, env, receipt['control_before'])
+        require(not support.OWNERSHIP_UNCERTAIN, 'cleanup_unconfirmed')
+        github_path = Path(os.environ['GITHUB_PATH'])
+        require(github_path.is_file() and not github_path.is_symlink(), 'github_path_invalid')
+        require('\n' not in str(tools_dir) and '\r' not in str(tools_dir), 'job_tools_path_invalid')
+        with github_path.open('a') as path_file:
+            path_file.write(str(tools_dir) + '\n')
+        receipt['bootstrap_passed'] = True
+    except Exception as error:
+        receipt['hold'] = error_code(error)
+    finally:
+        os.chdir(old_cwd)
+        # Raw streams, redirect URLs, exception strings and partial binary never
+        # enter upload directory. No retry or fallback after any failure.
+        (public / 'bootstrap.json').write_text(json.dumps(receipt, indent=2) + '\n')
+    return 0 if receipt['bootstrap_passed'] else 1
+
+
 if __name__ == '__main__':
+    if sys.argv[1] == '--download-bazel-asset':
+        raise SystemExit(download_official_asset(Path(sys.argv[2])))
+    if sys.argv[1] == '--bootstrap-bazel':
+        raise SystemExit(bootstrap_bazel(Path(sys.argv[2]), Path(sys.argv[3]), Path(sys.argv[4])))
     if sys.argv[1] == '--preflight':
         raise SystemExit(preflight(Path(sys.argv[2]), Path(sys.argv[3]), Path(sys.argv[4])))
     raise SystemExit(main(Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3])))

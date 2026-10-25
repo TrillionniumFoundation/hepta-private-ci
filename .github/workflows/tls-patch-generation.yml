@@ -52,17 +52,12 @@ jobs:
         with:
           toolchain: "1.95.0"
 
-      - name: Set up existing pinned Bazelisk (no repository setup-ci action)
-        uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86
-        with:
-          bazelisk-version: "1.28.1"
-          module-root: source
-          token: ""
-          cache-save: false
-          output-base: ${{ runner.temp }}/tls-patch-generation/bazel-output
-          bazelisk-cache: false
-          repository-cache: false
-          disk-cache: false
+      - name: Bootstrap exact official Bazel 9.0.0 without credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 control/.github/scripts/dependency_patch_generator.py --bootstrap-bazel \
+            "$GITHUB_WORKSPACE/source" "$RUNNER_TEMP/tls-patch-generation" "$GITHUB_WORKSPACE/control"
 
       - name: Generate both locks and qualify locked cross-platform metadata
         shell: bash

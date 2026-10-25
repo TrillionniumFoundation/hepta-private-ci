@@ -407,5 +407,88 @@ class ActualPublicationSuccess(unittest.TestCase):
                         self.assertIsInstance(stream['bytes'],int)
 
 
+class KeylessBootstrap(unittest.TestCase):
+    def test_asset_redirect_allowlist_and_single_hop(self):
+        import urllib.request
+        good='https://release-assets.githubusercontent.com/github-production-release-asset/20773773/asset?signature=private'
+        for bad in ('http://release-assets.githubusercontent.com/github-production-release-asset/20773773/x',
+                    'https://evil.invalid/asset', 'https://user@release-assets.githubusercontent.com/github-production-release-asset/20773773/x',
+                    'https://release-assets.githubusercontent.com:443/github-production-release-asset/20773773/x',
+                    'https://release-assets.githubusercontent.com/github-production-release-asset/99/x'):
+            with self.assertRaises(g.GateError):
+                g.OfficialAssetRedirect().redirect_request(urllib.request.Request(g.BAZEL_ASSET_URL),None,302,'',{},bad)
+        handler=g.OfficialAssetRedirect()
+        result=handler.redirect_request(urllib.request.Request(g.BAZEL_ASSET_URL),None,302,'',{},good)
+        self.assertEqual(result.full_url,good)
+        self.assertNotIn('Authorization',result.headers)
+        with self.assertRaises(g.GateError):
+            handler.redirect_request(result,None,302,'',{},good)
+
+    def test_download_content_size_hash_deadline_gates(self):
+        import io
+        body=b'official-test-binary'
+        class Response:
+            status=200
+            headers={'Content-Length':str(len(body))}
+            def __init__(self,data):self.buffer=io.BytesIO(data)
+            def read1(self,n):return self.buffer.read(n)
+        with tempfile.TemporaryDirectory() as root, patch.object(g,'BAZEL_ASSET_BYTES',len(body)),              patch.object(g,'BAZEL_ASSET_SHA256',g.digest(body)):
+            g.copy_official_asset(Response(body),Path(root)/'valid',lambda:0)
+            for name,data in [('long',body+b'x'),('short',body[:-1]),('hash',b'x'*len(body))]:
+                with self.assertRaises(g.GateError):
+                    g.copy_official_asset(Response(data),Path(root)/name,lambda:0)
+            with self.assertRaisesRegex(g.GateError,'asset_download_deadline'):
+                g.copy_official_asset(Response(body),Path(root)/'deadline',iter([0,151]).__next__)
+            with self.assertRaises(FileExistsError):
+                g.copy_official_asset(Response(body),Path(root)/'valid',lambda:0)
+
+    def test_http_denial_never_retries_or_exports_error(self):
+        import urllib.error
+        error=urllib.error.HTTPError(g.BAZEL_ASSET_URL,403,'private-secret-message',{},None)
+        with patch.object(g.urllib.request,'build_opener') as build:
+            build.return_value.open.side_effect=error
+            self.assertEqual(g.download_official_asset(Path('never-written')),23)
+            self.assertEqual(build.return_value.open.call_count,1)
+
+    def test_bootstrap_success_private_receipt_and_github_path(self):
+        with tempfile.TemporaryDirectory() as root:
+            root=Path(root);repo=root/'source';repo.mkdir();(repo/'.bazelversion').write_bytes(b'9.0.0\n')
+            control=root/'control';control.mkdir();out=root/'out';out.mkdir();github_path=root/'path';github_path.touch()
+            body=b'test-binary';calls=[]
+            def capture(argv,env,seconds,disk):
+                self.assertEqual(set(env),{'PATH','HOME','LANG','GIT_CONFIG_NOSYSTEM','GIT_CONFIG_GLOBAL',
+                                          'GIT_TERMINAL_PROMPT','PYTHONDONTWRITEBYTECODE'})
+                calls.append(argv)
+                stdout=b''
+                if '--download-bazel-asset' in argv:Path(argv[-1]).write_bytes(body)
+                else:stdout=b'bazel 9.0.0\n'
+                streams=[support.Stream(),support.Stream()]
+                streams[0].feed(stdout);streams[1].feed(b'token=neverpublishsecret')
+                return {'argv':argv,'exit':0,'stop':None,'cleanup':{'confirmed':True},
+                        'streams':[s.finish() for s in streams]},streams
+            with patch.dict(os.environ,{'GITHUB_PATH':str(github_path)}),                  patch.object(g,'BAZEL_ASSET_BYTES',len(body)),patch.object(g,'BAZEL_ASSET_SHA256',g.digest(body)),                  patch.object(g,'control_gate',return_value={'bound':True}),patch.object(support,'identity'),                  patch.object(support,'capture',side_effect=capture),                  patch.object(g.shutil,'disk_usage',return_value=type('Disk',(),{'free':100*1024**3})()):
+                self.assertEqual(g.bootstrap_bazel(repo,out,control),0)
+            self.assertEqual(github_path.read_text(),str(out/'job-tools')+'\n')
+            self.assertEqual(len(calls),2)
+            self.assertIn('--batch',calls[1]);self.assertIn('--version',calls[1])
+            self.assertEqual({p.name for p in (out/'public').iterdir()},{'bootstrap.json'})
+            receipt=(out/'public/bootstrap.json').read_text()
+            self.assertNotIn('neverpublishsecret',receipt)
+            self.assertTrue(json.loads(receipt)['bootstrap_passed'])
+
+    def test_bootstrap_denied_download_never_versions_or_sets_path(self):
+        with tempfile.TemporaryDirectory() as root:
+            root=Path(root);repo=root/'source';repo.mkdir();(repo/'.bazelversion').write_bytes(b'9.0.0\n')
+            control=root/'control';control.mkdir();out=root/'out';out.mkdir();github_path=root/'path';github_path.touch()
+            streams=[support.Stream(),support.Stream()]
+            result={'argv':['fixed'],'exit':23,'stop':None,'cleanup':{'confirmed':True},
+                    'streams':[s.finish() for s in streams]}
+            with patch.dict(os.environ,{'GITHUB_PATH':str(github_path)}),                  patch.object(g,'control_gate',return_value={'bound':True}),patch.object(support,'identity'),                  patch.object(support,'capture',return_value=(result,streams)) as capture,                  patch.object(g.shutil,'disk_usage',return_value=type('Disk',(),{'free':100*1024**3})()):
+                self.assertEqual(g.bootstrap_bazel(repo,out,control),1)
+            self.assertEqual(capture.call_count,1);self.assertEqual(github_path.read_bytes(),b'')
+            receipt=json.loads((out/'public/bootstrap.json').read_text())
+            self.assertEqual(receipt['hold'],'public_asset_http_denied_or_failed')
+
+
 if __name__ == '__main__':
     unittest.main()
