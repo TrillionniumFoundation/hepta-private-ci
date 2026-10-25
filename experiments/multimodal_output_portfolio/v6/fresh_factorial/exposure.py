@@ -15,12 +15,28 @@ PIXEL = re.compile(r"[0-9a-f]{64}")
 SOURCE = re.compile(r"mnist:(?:train|test):[0-9]+:([0-9a-f]{64})(?![0-9a-zA-Z])")
 PIXEL_KEYS = {"source_pixel_sha256", "source_pixels_sha256", "pixel_hashes", "pixel_ids"}
 SOURCE_KEYS = {"source_ids", "source_id", "pair_source_ids"}
+PAIRED_SOURCE_SCHEMA = "hepta.ndu-v6.paired-owner-fixture.v1"
+DATA_RECIPE_PATH = "experiments/multimodal_output_portfolio/v6/data.py"
+DATA_RECIPE_SHA256 = "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29"
 
 
 def exposed_pixels(value):
     result = set()
+    paired_source = isinstance(value, dict) and value.get("schema") == PAIRED_SOURCE_SCHEMA
 
-    def walk(item, key=None):
+    def walk(item, key=None, location=()):
+        if (paired_source and isinstance(item, dict) and len(location) == 2
+                and location[0] == "recipe_sources" and type(location[1]) is int
+                and item.get("path") == DATA_RECIPE_PATH):
+            # The original paired exporter embeds exact Python source, including
+            # its symbolic identity f-string. Verify its immutable bytes before
+            # treating this one capsule as .py text; never execute the source.
+            if (set(item) != {"path", "sha256", "text"} or not isinstance(item["text"], str)
+                    or item["sha256"] != DATA_RECIPE_SHA256
+                    or digest(item["text"].encode()) != DATA_RECIPE_SHA256):
+                raise ValueError("unverified historical data.py source capsule")
+            result.update(SOURCE.findall(item["text"]))
+            return
         if isinstance(item, str):
             if key in SOURCE_KEYS and SOURCE.fullmatch(item) is None:
                 raise ValueError("malformed declared MNIST source identity")
@@ -36,11 +52,11 @@ def exposed_pixels(value):
             elif "mnist:" in item:
                 raise ValueError("malformed MNIST identity in prior manifest")
         elif isinstance(item, list):
-            for child in item:
-                walk(child, key)
+            for index, child in enumerate(item):
+                walk(child, key, location + (index,))
         elif isinstance(item, dict):
             for name, child in item.items():
-                walk(child, key if key in PIXEL_KEYS | SOURCE_KEYS else name)
+                walk(child, key if key in PIXEL_KEYS | SOURCE_KEYS else name, location + (name,))
         elif key in PIXEL_KEYS | SOURCE_KEYS:
             raise ValueError("declared source/pixel identity must be a string or nested collection")
     walk(value)

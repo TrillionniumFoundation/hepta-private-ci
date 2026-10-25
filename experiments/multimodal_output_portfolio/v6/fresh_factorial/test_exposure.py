@@ -27,6 +27,70 @@ def review_for(record, discovery):
 
 
 class SourceExposureTests(unittest.TestCase):
+    def source_capsule_fixture(self):
+        raw = Path(__file__).parent.parent.joinpath("data.py").read_bytes()
+        self.assertEqual(io.digest(raw), exposure.DATA_RECIPE_SHA256)
+        return {"schema": exposure.PAIRED_SOURCE_SCHEMA,
+                "recipe_sources": [{"path": exposure.DATA_RECIPE_PATH,
+                                    "sha256": io.digest(raw), "text": raw.decode()}],
+                "source_ids": ["mnist:test:4:" + "a" * 64]}
+
+    def test_exact_source_capsule_is_scanned_as_source_without_dropping_data(self):
+        fixture = self.source_capsule_fixture()
+        self.assertEqual(exposure.parse_payload(io.canonical(fixture), ".json"), {"a" * 64})
+        with tempfile.TemporaryDirectory() as tmp:
+            archive = Path(tmp) / "paired.tgz"
+            with tarfile.open(archive, "w:gz") as stream:
+                raw = io.canonical(fixture)
+                member = tarfile.TarInfo("paired-owner/fixture.json")
+                member.size = len(raw)
+                stream.addfile(member, memory.BytesIO(raw))
+            record, pixels = census.scan_archive(archive, exposure.parse_payload)
+            self.assertEqual(pixels, {"a" * 64})
+            self.assertEqual(record["members"]["paired-owner/fixture.json"]["sha256"], io.digest(raw))
+
+    def test_source_capsule_pin_schema_location_and_fields_cannot_be_rewritten(self):
+        for mutation in ("schema", "path", "sha", "text", "resealed_text", "missing_text",
+                         "nonstring_text", "extra_field", "relocated", "copied_text"):
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                fixture = self.source_capsule_fixture()
+                capsule = fixture["recipe_sources"][0]
+                if mutation == "schema":
+                    fixture["schema"] = "unreviewed-schema"
+                elif mutation == "path":
+                    capsule["path"] = "unreviewed/data.py"
+                elif mutation == "sha":
+                    capsule["sha256"] = "0" * 64
+                elif mutation in ("text", "resealed_text"):
+                    capsule["text"] += "\n# mnist:test:99:" + "b" * 64 + "\n"
+                    if mutation == "resealed_text":
+                        capsule["sha256"] = io.digest(capsule["text"].encode())
+                elif mutation == "missing_text":
+                    del capsule["text"]
+                elif mutation == "nonstring_text":
+                    capsule["text"] = None
+                elif mutation == "extra_field":
+                    capsule["source_ids"] = ["mnist:test:99:" + "b" * 64]
+                elif mutation == "relocated":
+                    fixture["nested"] = {"recipe_sources": fixture.pop("recipe_sources")}
+                elif mutation == "copied_text":
+                    fixture["notes"] = capsule["text"]
+                exposure.parse_payload(io.canonical(fixture), ".json")
+
+    def test_valid_capsule_does_not_relax_actual_or_mixed_identity_validation(self):
+        for field, value in (("source_ids", [None]), ("source_ids", ["mnist:test:5:broken"]),
+                             ("source_ids", ["mnist:other:5:" + "b" * 64]),
+                             ("source_pixel_sha256", [False]),
+                             ("notes", "mnist:test:4:" + "a" * 64 + " mnist:test:5:broken")):
+            with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+                fixture = self.source_capsule_fixture()
+                fixture[field] = value
+                exposure.parse_payload(io.canonical(fixture), ".json")
+        fixture = self.source_capsule_fixture()
+        fixture["source_ids"] = [fixture["recipe_sources"][0]["text"]]
+        with self.assertRaises(ValueError):
+            exposure.parse_payload(io.canonical(fixture), ".json")
+
     def test_exact_published_records_reconstruct_known_sources(self):
         custody, required, union = published.published_exposures(plan())
         self.assertEqual((len(custody["files"]), len(required), len(union)), (20, 360, 488))
