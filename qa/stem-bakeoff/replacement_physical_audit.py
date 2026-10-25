@@ -161,6 +161,24 @@ def audit_arm(name: str, result: Any, spec: dict) -> list[str]:
             errors.append(f"{name}: inconsistent tokenizer rewrite or original-weight identity")
     elif compat is not None:
         errors.append(f"{name}: non-Laya Encoder must not claim Laya tokenizer compatibility")
+    # The pinned GTE remote-code nonpersistent RoPE buffers can be invalid
+    # after meta loading. An Arctic arm must disclose the bounded, CPU-only
+    # reconstruction rather than present unverified logits as physical evidence.
+    rope = perf.get("arctic_rope_compat") if isinstance(perf, dict) else None
+    if name == "arctic_305m":
+        expected_keys = {"method", "original_position_buffer_valid",
+                         "original_rope_cache_valid", "max_position_embeddings",
+                         "rope_dim", "rope_theta", "production_qualified"}
+        if (not isinstance(rope, dict) or set(rope) != expected_keys
+                or rope["method"] != "pinned_gte_runtime_buffers_v1"
+                or type(rope["original_position_buffer_valid"]) is not bool
+                or type(rope["original_rope_cache_valid"]) is not bool
+                or rope["max_position_embeddings"] != 8192
+                or rope["rope_dim"] != 64 or rope["rope_theta"] != 160000
+                or rope["production_qualified"] is not False):
+            errors.append(f"{name}: missing or unqualified pinned Arctic RoPE receipt")
+    elif rope is not None:
+        errors.append(f"{name}: unrelated model must not claim Arctic RoPE reconstruction")
     limits = result["limits"]
     if (not isinstance(limits, dict)
             or limits.get("historical_2014_dataset") is not True
