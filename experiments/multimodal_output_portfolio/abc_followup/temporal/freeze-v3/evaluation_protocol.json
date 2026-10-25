@@ -1,0 +1,115 @@
+{
+  "acquisition": "private source owner pre-samples noisy facts; action releases a real new spoken cue via synthesis/persist/unrestricted Vosk; no hidden truth returned",
+  "bootstrap": {
+    "draws": 4000,
+    "finite_sample_coverage_guarantee": false,
+    "price_grid_family_size": 10,
+    "price_grid_individual_confidence": 0.995,
+    "primary_family_size": 3,
+    "resample": "underlying fact groups, preserving all templates/scenarios/policies",
+    "seed": 20261025044
+  },
+  "break_even_scan": {
+    "points": 41,
+    "references": "fixed at primary-price selection; no per-price reselection",
+    "start": 0.0,
+    "stop": 0.2
+  },
+  "causal_scope": "controlled delayed sensor evidence, not an external live sensor; same public fusion operator in all controls",
+  "claims_excluded": [
+    "all-modal foundation model",
+    "acoustic model training",
+    "natural voice/template population",
+    "global conditional optimum",
+    "production native admission",
+    "externally priced economic benefit"
+  ],
+  "code_hashes": {
+    "new/analysis.py": "3113e2f8cc21538ff8fa5e814cee59f690b77a9735d2d67c149903364aa0d261",
+    "new/episodes.py": "5e7deb01e7e0c7b88ef6c93d286b862934cecbfa1d7c6a22e7fd7c54dfb59a7a",
+    "new/qualification.py": "797592a2ddc86c969958202ccbb1574ed186080d6949dfa2ef70857f02ddc6a9",
+    "new/registration.py": "71415d693202a8db4c742e707929448c11d08f751097b192b25584aecaa0e26b",
+    "new/run.py": "a38cb0865253ed569fc06f8ec1a9262482d8d9f96597cdfcea9ecf88dca995b4",
+    "new/score.py": "cdc2f85d252651908528ef5c68ab95f502e84bd477d57d46543bfbcf161ea26a",
+    "new/state.py": "87f7f069691b5bb253d9c29a58d385f3b8687eeb001ea0dc6acc8708ffe5d349",
+    "new/tasks.py": "5ffeaa2b1fe488e6fadddd9f9ccb40ed49b0543ac3fe389e98169feb39f73e80",
+    "new/value.py": "d2a32cdd94c33619b83118d55fcd6cde537166a53fee2416a38524fdfbfe678f",
+    "reused/audit.py": "a3159b5a1968e58e0bb886b759cf98f91859eecffc4c61733aef310e0b56138a",
+    "reused/external.py": "5d373cbb613a95affccf10449e8a4c181b21a28f0b5bc928cff8621dd6361292",
+    "reused/facts.py": "a42288fc764d9e22d88a8aa12e19bc7340f1e796fef3f234f9a812d3f03886e1",
+    "reused/speech.py": "eca5e7c4a19a79a92fa329436a8fad9df614373e8167e739ca01c0340dfe7e4d",
+    "reused/stream.py": "f842f8db05e52537ee5b950f90bbc0b953cbb93a64ef799ef71335663034af5c"
+  },
+  "cost_scope": "owner construction, neutral prefix, actual cue production/persistence/ASR, policy decisions, both output commits, WAV serialization/readback; excludes model load and terminal measurement ASR, all separately reported",
+  "critic_seeds": [
+    17,
+    29,
+    43
+  ],
+  "cue_only_mask": "previous_audio_fact fully replaced with missing before features; elapsed not a feature; training inter-gate cost subtracts measured prefix-probe component; final actually omits that operation",
+  "external_assets_sha256": "926646d5e8c507c1f985edb710c64702b5923a8b560c602ac51541ffa971ca4c",
+  "failure_rule": "retain complete fixed census and all failures; no policy/price/threshold/source/observer changes after final freeze",
+  "fit_config": {
+    "feedback_hidden": 32,
+    "feedback_variants": [
+      "full",
+      "cue_only"
+    ],
+    "folds": 2,
+    "gamma": 2.0,
+    "initial_hidden": 64,
+    "l2": 0.0005,
+    "learning_rate": 0.008,
+    "positive_floor": 0.001,
+    "price": 0.05,
+    "steps": 1200
+  },
+  "gamma": 2.0,
+  "generation": "all selected requests serial, counterbalanced policy order, fresh actual source/output TTS, no sleep or precomputed waveform lookup",
+  "net_utility": "utility minus price times actual same-request wall seconds",
+  "offline_scoring": "after all generation closes; reuse target-free Whisper transcription only for exact complete-WAV hash, recalculate metrics for each target",
+  "policies": [
+    "selection-selected constant two-stage query route",
+    "learned initial-only route ensemble",
+    "learned two-gate feedback ensemble"
+  ],
+  "policy_sha256": "c9e26b1a984b247f06b74b27ff5118adc6cd0c229d339332d783c1e25d83db4d",
+  "price": 0.05,
+  "price_grid": [
+    0.0,
+    0.025,
+    0.05,
+    0.1,
+    0.2
+  ],
+  "price_unit": "research utility per actual online wall-second; not externally calibrated economic value",
+  "primary_confidence": 0.9833333333333333,
+  "primary_family": [
+    "priced_CE(feedback)-priced_CE(selected_fixed)>0",
+    "priced_CE(feedback)-priced_CE(initial_only)>0",
+    "success_probability(feedback)-success_probability(selected_fixed)>=0"
+  ],
+  "qualification_protocol_sha256": "43a9fb360ecf7b44842717c9344d30e5c70e3c3c591bd9b40b9127f7ee03db2c",
+  "qualification_result_path": "/workspace/scratch/2b3c256bef7d/abc4-temporal-runs/qualification-001/result.json",
+  "qualification_result_sha256": "3d3b36aaa60b1575d5d48558ecda6d3e48f4c4f11e3c6c6f266aeeb5b480ac2d",
+  "quality_cost_identity": "only independently observed actual outputs of those same serial requests",
+  "registered_unix_ns": 1792918766316221933,
+  "requests": 768,
+  "scenarios": 2,
+  "schema": "hepta.abc4.temporal-final-protocol.v1",
+  "selected_feedback_variant": "cue_only",
+  "selected_fixed_route": [
+    1,
+    0
+  ],
+  "selection_candidates": "four constant routes, one initial-only ensemble, full-prefix-observer feedback, cue-only feedback;448actual serial selection requests; choose fixed and feedback separately using only Vosk primary-price CE",
+  "source_groups": 64,
+  "source_manifest_path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_followup/temporal/freeze-v3/sources.json",
+  "source_manifest_sha256": "839c3db526ce1384675c999a98eae79b86a2f326d6b52e0379332cebbe62ddb5",
+  "state": "82 public features: initial words, full shared posterior, actual committed-prefix ASR categories, uncertainty/history summaries; no source ID, target or unreleased cue",
+  "strict_success_margin": 0.0,
+  "templates": 2,
+  "tts_online_assets_sha256": "0a0e4e81519471124cdfb13b9385ae5af54a041ac7847cbc61302f2ca9fe1984",
+  "utility": ".6*(text_fact_accuracy+audio_fact_accuracy)/2+.2*nonmissing_agreement+.2*joint_exact_success",
+  "value_clock_origins": "Q1 after second gate; Q2 backup exp(gamma*price*(tau1-tau0))*min(mean_OOF_Q1); initial-only and final outcomes use complete request T"
+}

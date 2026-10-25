@@ -1,0 +1,183 @@
+{
+  "external_observer_used": false,
+  "final_generation_started_at_registration": false,
+  "final_protocol_sha256": "b7ef440308a497448d02af1445582c8175a2acb0c3d87dd151092a17fc1a64a8",
+  "final_registration_process_receipt": {
+    "child_cpu_ns": 1599035000,
+    "exact_child_peak_rss_bytes_linux": 158216192,
+    "exit_code": 0,
+    "log_sha256": "c386b9f9a45b41666908ad9e33fe28e512495fee407cf6ba21742dcf7059f90c",
+    "pid": 8,
+    "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+    "registration_sha256": "46c810a24e1b42b84269d90988dc1ef3120402b51ab90ca01c1e129bf6cbb036",
+    "schema": "hepta.abc4.exact-child-process-receipt.v1",
+    "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+    "wall_ns": 1600862558,
+    "wrapper_cpu_ns": 431604
+  },
+  "fit_identity_sha256": "ba6f5950e537ab19e4407137a8cc665e95580d287d4ae8bfda991ad9ced3f3d3",
+  "policy_sha256": "c9e26b1a984b247f06b74b27ff5118adc6cd0c229d339332d783c1e25d83db4d",
+  "preselection_policy_sha256": "d75c65e2a2544419106be421dbfb294d2373ed5787e57343169f25b3c2889945",
+  "published_before_selection_parent_confirmed": {
+    "core": "93cc4621f859a1a22803f52b6a0360d92f6a8193",
+    "qualification_method": "bd38df51b00f87a17655e519d5914ad3d55b40ed"
+  },
+  "qualification_summary_sha256": "b5aef9151ab76ac0b4c80e46c8d32d41303f27744e4f46f99b1c84825f44f58e",
+  "raw_archival_required": false,
+  "registered_unix_ns": 1792918822782693290,
+  "schema": "hepta.abc4.temporal-selected-policy-identity.v1",
+  "selected_feedback_variant": "cue_only",
+  "selected_fixed_route": [
+    1,
+    0
+  ],
+  "selection_candidates": {
+    "feedback-cue_only": {
+      "Vosk_priced_CE": 0.7881258275860288,
+      "Vosk_raw_CE": 0.872412900863103,
+      "Vosk_semantic_completion": 0.890625,
+      "Vosk_success": 0.75,
+      "mean_online_cpu_seconds": 1.6891965807343752,
+      "mean_online_wall_seconds": 1.699377004,
+      "p50_online_wall_seconds": 1.4683490309999998,
+      "p95_online_wall_seconds": 2.7498274894999986,
+      "requests": 64,
+      "route_counts": {
+        "00": 37,
+        "01": 9,
+        "10": 14,
+        "11": 4
+      },
+      "source_groups": 16
+    },
+    "feedback-full": {
+      "Vosk_priced_CE": 0.7631613024770683,
+      "Vosk_raw_CE": 0.87988665611079,
+      "Vosk_semantic_completion": 0.890625,
+      "Vosk_success": 0.765625,
+      "mean_online_cpu_seconds": 2.351025550515625,
+      "mean_online_wall_seconds": 2.36157388075,
+      "p50_online_wall_seconds": 2.163263324,
+      "p95_online_wall_seconds": 3.3188638162499995,
+      "requests": 64,
+      "route_counts": {
+        "00": 35,
+        "01": 8,
+        "10": 16,
+        "11": 5
+      },
+      "source_groups": 16
+    },
+    "fixed-00": {
+      "Vosk_priced_CE": 0.7161800500265925,
+      "Vosk_raw_CE": 0.7806828265417944,
+      "Vosk_semantic_completion": 0.890625,
+      "Vosk_success": 0.59375,
+      "mean_online_cpu_seconds": 1.2988317206874997,
+      "mean_online_wall_seconds": 1.3138683824843749,
+      "p50_online_wall_seconds": 1.287392003,
+      "p95_online_wall_seconds": 1.6213551812499998,
+      "requests": 64,
+      "route_counts": {
+        "00": 64
+      },
+      "source_groups": 16
+    },
+    "fixed-01": {
+      "Vosk_priced_CE": 0.7237888853042801,
+      "Vosk_raw_CE": 0.8297746658195957,
+      "Vosk_semantic_completion": 0.890625,
+      "Vosk_success": 0.65625,
+      "mean_online_cpu_seconds": 2.123627852859375,
+      "mean_online_wall_seconds": 2.133777680640625,
+      "p50_online_wall_seconds": 2.1106574035000003,
+      "p95_online_wall_seconds": 2.4997924491999997,
+      "requests": 64,
+      "route_counts": {
+        "01": 64
+      },
+      "source_groups": 16
+    },
+    "fixed-10": {
+      "Vosk_priced_CE": 0.8042080725772545,
+      "Vosk_raw_CE": 0.9109515725183577,
+      "Vosk_semantic_completion": 0.890625,
+      "Vosk_success": 0.828125,
+      "mean_online_cpu_seconds": 2.138963787734375,
+      "mean_online_wall_seconds": 2.15231431478125,
+      "p50_online_wall_seconds": 2.097611005,
+      "p95_online_wall_seconds": 2.5025515102999996,
+      "requests": 64,
+      "route_counts": {
+        "10": 64
+      },
+      "source_groups": 16
+    },
+    "fixed-11": {
+      "Vosk_priced_CE": 0.7613070565265563,
+      "Vosk_raw_CE": 0.9109515725183577,
+      "Vosk_semantic_completion": 0.890625,
+      "Vosk_success": 0.828125,
+      "mean_online_cpu_seconds": 3.018214017953125,
+      "mean_online_wall_seconds": 3.029337338296875,
+      "p50_online_wall_seconds": 3.0115909235,
+      "p95_online_wall_seconds": 3.47135426035,
+      "requests": 64,
+      "route_counts": {
+        "11": 64
+      },
+      "source_groups": 16
+    },
+    "initial": {
+      "Vosk_priced_CE": 0.7706927580386361,
+      "Vosk_raw_CE": 0.8732062581563039,
+      "Vosk_semantic_completion": 0.890625,
+      "Vosk_success": 0.765625,
+      "mean_online_cpu_seconds": 2.090977781625,
+      "mean_online_wall_seconds": 2.104369418265625,
+      "p50_online_wall_seconds": 2.142238529,
+      "p95_online_wall_seconds": 2.45952150775,
+      "requests": 64,
+      "route_counts": {
+        "00": 5,
+        "01": 11,
+        "10": 48
+      },
+      "source_groups": 16
+    }
+  },
+  "selection_choice_process_receipt": {
+    "child_cpu_ns": 408467000,
+    "exact_child_peak_rss_bytes_linux": 47800320,
+    "exit_code": 0,
+    "log_sha256": "cd6a3f4d85320e2e2759707728d2e47620610b0aa4c4773d1f3bc17e5aa53347",
+    "pid": 8,
+    "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+    "registration_sha256": "c467d75de840a4c9b47384757ed46dae7f4f1cad7ec57b81ac62497988de5309",
+    "schema": "hepta.abc4.exact-child-process-receipt.v1",
+    "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+    "wall_ns": 411070092,
+    "wrapper_cpu_ns": 473724
+  },
+  "selection_complete_sha256": "92ff90eb1b0fc77ed2cce1158dd3d5480372601e22c71d7d2f8beff6ef3da446",
+  "selection_index_sha256": "315dd83c8db438f2fd025af8e957a5134dafc87c6996db3e341f9808e2294907",
+  "selection_interpretation": "Best selected feedback did not exceed selected fixed on selection Vosk priced CE; preserve this unfavorable result. Final independent Whisper comparison remains unopened.",
+  "selection_process_receipt": {
+    "child_cpu_ns": 1426985485000,
+    "exact_child_peak_rss_bytes_linux": 501321728,
+    "exit_code": 0,
+    "log_sha256": "c0712bf571a7c9e5c82854b918743c2531f245abcc92e7ca936d84de44dc54e5",
+    "pid": 8,
+    "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+    "registration_sha256": "85876840cb9d1dac5db50e11a2606a42818d1bc5d8e2cf496eaf1ed5fa75c7dc",
+    "schema": "hepta.abc4.exact-child-process-receipt.v1",
+    "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+    "wall_ns": 1432772135866,
+    "wrapper_cpu_ns": 420956
+  },
+  "selection_result_used_to_refit_models": false,
+  "selection_rule": "Select constant route and feedback variant separately by actual Vosk CE(U-.05*T), gamma=2. Do not require selection superiority or change candidates after selection.",
+  "selection_sources": 16,
+  "validated_census": "16 registered sources x 2 templates x 2 noisy cue futures x 7 candidates = 448 distinct requests; row/index hashes, exact key set, per-policy counts, candidate execution scope and policy replay all pass.",
+  "weights_included": false
+}
