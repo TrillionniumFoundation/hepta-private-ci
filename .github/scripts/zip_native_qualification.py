@@ -14,7 +14,7 @@ PROFILE_APPENDIX='\n# Owner diagnostic only: original defaults and overrides pre
 NEXTTEST_BASE_BLOB='f0430497b34b5335929e24b9e19745f467362641'
 DEADLINE=None
 FINALIZING=False
-CONTROL_PARENT='cd113a6da5a3a2d661a1eb74da9600eadc3eb51f'
+CONTROL_PARENT='577c6d23316e59727bf7c42c9f02cc62b38216ee'
 FINAL_READ_REPOS=frozenset()
 FINAL_GIT_READS={('ls-files','-z'),('status','--porcelain','--untracked-files=all'),('rev-parse','HEAD'),('rev-parse','HEAD^{tree}')}
 class Hold(Exception):pass
@@ -30,7 +30,7 @@ DIAGNOSTIC_PREDICATES={'gate_failed','platform','budget_origin','budget_elapsed'
     'admin_promisor','admin_worktree_remnant','admin_file_symlink','admin_file_bound','admin_missing_file','admin_ref_bound',
     'admin_ref_type','admin_identity_changed','config_size','config_encoding','config_section',
     'config_syntax','config_key','config_duplicate','config_value','config_required','config_branch_pair',
-    'index_empty','index_format','index_mode','index_gitmodules','control_head','control_parent',
+    'index_empty','index_format','index_mode','index_gitmodules','index_duplicate','checkout_delta','physical_index','control_head','control_parent',
     'control_dirty','control_blob','source_head','source_tree','source_dirty','source_blob',
     'policy_identity','lock_identity','cargo_config_identity','permission_denied','io_error','unexpected_error'}
 DIAGNOSTIC_ITEMS={'commondir','gitdir','worktrees','modules','config_worktree','config_lock','index_lock',
@@ -206,16 +206,49 @@ def checked(argv,env,records,disk):
     require(streams[0].count<=1024*1024)
     return streams[0].retained()
 def git(repo,env,records,disk,*args):return checked(['git','-C',str(repo),*args],env,records,disk)
-def snapshot(repo,env,records,disk):
+def parse_tracked_index(data):
+    require(bool(data) and data.endswith(b'\0'),'index_empty')
+    result={}
+    for entry in data[:-1].split(b'\0'):
+        require(b'\t' in entry,'index_format')
+        fields,raw_name=entry.split(b'\t',1);parts=fields.split(b' ')
+        require(len(parts)==3,'index_format');mode,oid,stage=parts
+        require(mode in {b'100644',b'100755',b'120000'} and stage==b'0' and re.fullmatch(b'[0-9a-f]{40}',oid),'index_mode')
+        require(raw_name and not raw_name.startswith(b'/') and all(part not in {b'',b'.',b'..'} for part in raw_name.split(b'/')),'index_format')
+        require(raw_name.split(b'/')[-1]!=b'.gitmodules','index_gitmodules')
+        name=os.fsdecode(raw_name);require(name not in result,'index_duplicate')
+        result[name]=(mode.decode('ascii'),oid.decode('ascii'))
+    return result
+
+def validate_checkout_delta(source_map,control_map,policy,control_blobs):
+    modifications={x['path'] for x in policy['source_files']};additions=set(CONTROL)
+    allowed=modifications|additions
+    require(len(modifications)==2 and len(additions)==6 and len(allowed)==8,'checkout_delta')
+    require(set(control_map)-set(source_map)==additions and not set(source_map)-set(control_map),'checkout_delta')
+    different={name for name in set(source_map)|set(control_map) if source_map.get(name)!=control_map.get(name)}
+    require(different==allowed and set(control_blobs)==allowed,'checkout_delta')
+    for name in allowed:require(control_map[name]==('100644',control_blobs[name]),'checkout_delta')
+    for item in policy['source_files']:
+        require(source_map[item['path']]==('100644',item['base_blob']),'checkout_delta')
+        require(control_map[item['path']]==('100644',item['candidate_blob']),'checkout_delta')
+    return {'source_entries':len(source_map),'control_entries':len(control_map),
+        'source_map_sha256':sha(json.dumps(source_map,sort_keys=True).encode()),
+        'control_map_sha256':sha(json.dumps(control_map,sort_keys=True).encode()),
+        'added':sorted(additions),'modified':sorted(modifications),'removed_count':0,'other_delta_count':0}
+
+def snapshot(repo,env,records,disk,expected_index=None):
     paths=git(repo,env,records,disk,'ls-files','-z').split(b'\0');result={}
+    if expected_index is not None:require({os.fsdecode(raw) for raw in filter(None,paths)}==set(expected_index),'physical_index')
     for raw in filter(None,paths):
         guard();name=os.fsdecode(raw);p=repo/name
         if p.is_symlink():
             require(name=='codex-rs/vendor/bubblewrap/LICENSE')
-            result[name]=sha(b'link\0'+os.fsencode(os.readlink(p)))
+            data=os.fsencode(os.readlink(p));result[name]=sha(b'link\0'+data)
+            if expected_index is not None:require(expected_index[name]==('120000',blob(data)),'physical_index')
         else:
             require(p.is_file() and p.stat().st_size<=16*1024**2)
-            result[name]=sha(b'file\0'+p.read_bytes())
+            data=p.read_bytes();result[name]=sha(b'file\0'+data)
+            if expected_index is not None:require(expected_index[name]==('100755' if p.stat().st_mode & 0o100 else '100644',blob(data)),'physical_index')
     return result
 
 def no_v8(lock):
@@ -336,35 +369,37 @@ def main(control,source,temp):
         for repo in [control,source]:
             diagnostic_stage('control_admin' if repo==control else 'source_admin')
             GIT_ADMIN_BASELINES[str(repo)]=git_admin_snapshot(repo)
-            diagnostic_stage('control_index' if repo==control else 'source_index')
-            entries=git(repo,env,records,temp,'ls-files','--stage','-z').split(b'\0')
-            require(any(entries),'index_empty')
-            for entry in filter(None,entries):
-                require(entry.count(b'\t')>=1,'index_format')
-                fields,name=entry.split(b'\t',1);parts=fields.split(b' ');require(len(parts)==3,'index_format');mode,oid,stage=parts
-                require(mode in {b'100644',b'100755',b'120000'} and stage==b'0' and re.fullmatch(b'[0-9a-f]{40}',oid),'index_mode')
-                require(name.split(b'/')[-1]!=b'.gitmodules','index_gitmodules')
-        diagnostic_stage('control_identity')
         report['git_admin_before_sha256']={repo:sha(json.dumps(value,sort_keys=True).encode()) for repo,value in GIT_ADMIN_BASELINES.items()}
+        diagnostic_stage('control_identity')
         require(git(control,env,records,temp,'rev-parse','HEAD').decode().strip()==event,'control_head')
         require(git(control,env,records,temp,'rev-parse','HEAD^').decode().strip()==CONTROL_PARENT,'control_parent')
+        control_tree=git(control,env,records,temp,'rev-parse','HEAD^{tree}').decode().strip()
+        require(bool(re.fullmatch('[a-f0-9]{40}',control_tree)),'control_head')
+        diagnostic_stage('source_identity')
+        require(git(source,env,records,temp,'rev-parse','HEAD').decode().strip()==BASE,'source_head')
+        require(git(source,env,records,temp,'rev-parse','HEAD^{tree}').decode().strip()==BASE_TREE,'source_tree')
+        tracked={}
+        for repo in [control,source]:
+            diagnostic_stage('control_index' if repo==control else 'source_index')
+            tracked[str(repo)]=parse_tracked_index(git(repo,env,records,temp,'ls-files','--stage','-z'))
+        diagnostic_stage('control_identity')
         require(not git(control,env,records,temp,'status','--porcelain','--untracked-files=all'),'control_dirty')
+        require(not git(source,env,records,temp,'status','--porcelain','--untracked-files=all'),'source_dirty')
         policy_path=control/'.github/scripts/zip_native_policy.json';policy=json.loads(policy_path.read_bytes())
         require(set(policy)=={'base','base_tree','source_files','locks','tests'} and policy['base']==BASE and policy['base_tree']==BASE_TREE,'policy_identity')
         paths=CONTROL+[x['path'] for x in policy['source_files']]
         require(len(paths)==8 and len(set(paths))==8)
-        control_before={}
+        control_before={};control_blobs={}
         for name in paths:
             p=control/name;require(p.is_file() and not p.is_symlink() and p.stat().st_size<128*1024)
-            b=p.read_bytes();require(blob(b)==git(control,env,records,temp,'rev-parse','HEAD:'+name).decode().strip(),'control_blob');control_before[name]=sha(b)
-        report['control_before']={'head':event,'tree':git(control,env,records,temp,'rev-parse','HEAD^{tree}').decode().strip(),'files':control_before}
-        changed=git(control,env,records,temp,'diff','--name-only',BASE,event).decode().splitlines();require(set(changed)==set(paths))
+            b=p.read_bytes();require(blob(b)==git(control,env,records,temp,'rev-parse','HEAD:'+name).decode().strip(),'control_blob');control_before[name]=sha(b);control_blobs[name]=blob(b)
+        report['control_before']={'head':event,'tree':control_tree,'files':control_before}
+        delta=validate_checkout_delta(tracked[str(source)],tracked[str(control)],policy,control_blobs)
+        report['checkout_delta']={**delta,'source_head':BASE,'source_tree':BASE_TREE,
+            'control_head':event,'control_tree':control_tree}
         diagnostic_stage('source_identity')
-        require(git(source,env,records,temp,'rev-parse','HEAD').decode().strip()==BASE,'source_head')
-        require(git(source,env,records,temp,'rev-parse','HEAD^{tree}').decode().strip()==BASE_TREE,'source_tree')
-        require(not git(source,env,records,temp,'status','--porcelain','--untracked-files=all'),'source_dirty')
         require(b'extraheader' not in (source/'.git/config').read_bytes().lower())
-        original=snapshot(source,env,records,temp)
+        original=snapshot(source,env,records,temp,expected_index=tracked[str(source)])
         report['original_snapshot_sha256']=sha(json.dumps(original,sort_keys=True).encode())
         diagnostic_stage('source_overlay')
         for item in policy['source_files']:

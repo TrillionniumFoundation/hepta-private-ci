@@ -303,6 +303,81 @@ class SafeDiagnosticUnitTests(unittest.TestCase):
             with self.subTest(expected=expected),self.assertRaises(q.Hold):q.strict_git_config(data)
             self.assertEqual(q.DIAGNOSTIC['failure']['predicate'],expected);self.assertNotIn('Secret',json.dumps(q.DIAGNOSTIC))
 
+class CrossCheckoutMapTests(unittest.TestCase):
+    def tearDown(self):q.DEADLINE=None;q.FINALIZING=False
+    def maps(self):
+        source={'owner/a.rs':('100644','a'*40),'owner/b.rs':('100644','b'*40),'same':('100644','c'*40)}
+        control=dict(source);control.update({x:('100644','d'*40) for x in q.CONTROL});control['owner/a.rs']=('100644','e'*40);control['owner/b.rs']=('100644','f'*40)
+        policy={'source_files':[{'path':'owner/a.rs','base_blob':'a'*40,'candidate_blob':'e'*40},{'path':'owner/b.rs','base_blob':'b'*40,'candidate_blob':'f'*40}]}
+        blobs={name:control[name][1] for name in set(q.CONTROL)|{'owner/a.rs','owner/b.rs'}}
+        return source,control,policy,blobs
+    def test_exact_map_closure_and_extra_mode_blob_path_negatives(self):
+        source,control,policy,blobs=self.maps();result=q.validate_checkout_delta(source,control,policy,blobs)
+        self.assertEqual(result['added'],sorted(q.CONTROL));self.assertEqual(result['modified'],['owner/a.rs','owner/b.rs'])
+        for fault in ['extra','remove','mode','blob','allowed-mode','source-mode','old-control','no-change','wrong-physical-blob']:
+            a,b,p,c=self.maps()
+            if fault=='extra':b['extra']=('100644','0'*40)
+            if fault=='remove':del b['same']
+            if fault=='mode':b['same']=('100755','c'*40)
+            if fault=='blob':b['same']=('100644','0'*40)
+            if fault=='allowed-mode':b[q.CONTROL[0]]=('100755','d'*40)
+            if fault=='source-mode':a['owner/a.rs']=('100755','a'*40)
+            if fault=='old-control':a[q.CONTROL[0]]=b[q.CONTROL[0]]
+            if fault=='no-change':b['owner/a.rs']=a['owner/a.rs']
+            if fault=='wrong-physical-blob':c[q.CONTROL[0]]='0'*40
+            with self.subTest(fault=fault),self.assertRaises(q.Hold):q.validate_checkout_delta(a,b,p,c)
+    def test_index_parser_nonzero_duplicate_and_malformed_entries(self):
+        row=b'100644 '+b'a'*40+b' 0\tordinary\0';self.assertEqual(q.parse_tracked_index(row),{'ordinary':('100644','a'*40)})
+        for data in [b'',row[:-1],row+row,row.replace(b' 0\t',b' 1\t'),row.replace(b'100644',b'160000'),row.replace(b'ordinary',b'.gitmodules'),row.replace(b'ordinary',b'../escape'),row.replace(b'ordinary',b'/absolute'),row.replace(b'a'*40,b'not-a-blob')]:
+            with self.subTest(data=data),self.assertRaises(q.Hold):q.parse_tracked_index(data)
+    def test_source_physical_snapshot_matches_index_not_only_status(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td);path=root/'ordinary';path.write_bytes(b'harmless');q.DEADLINE=time.monotonic()+30
+            mapping={'ordinary':('100644',q.blob(path.read_bytes()))}
+            with mock.patch.object(q,'git',return_value=b'ordinary\0'):
+                q.snapshot(root,{},[],root,expected_index=mapping)
+                path.write_bytes(b'changed')
+                with self.assertRaises(q.Hold):q.snapshot(root,{},[],root,expected_index=mapping)
+                path.write_bytes(b'harmless');path.chmod(0o755)
+                with self.assertRaises(q.Hold):q.snapshot(root,{},[],root,expected_index=mapping)
+    def test_real_two_shallow_repos_no_base_in_control_object_database(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td);origin=root/'origin';control=root/'control';source=root/'source'
+            def git(repo,*args,success=True):
+                value=subprocess.run(['git','-C',str(repo),*args],capture_output=True,check=False)
+                if success:self.assertEqual(value.returncode,0)
+                return value
+            origin.mkdir();git(origin,'init','--quiet');git(origin,'config','user.name','Fixture');git(origin,'config','user.email','fixture@example.invalid')
+            for name in ['owner/a.rs','owner/b.rs','same']:
+                path=origin/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_text('baseline '+name)
+            git(origin,'add','.');git(origin,'commit','--quiet','-m','baseline');base=git(origin,'rev-parse','HEAD').stdout.strip().decode();git(origin,'branch','baseline')
+            baseline_blobs={name:git(origin,'rev-parse','HEAD:'+name).stdout.strip().decode() for name in ['owner/a.rs','owner/b.rs']}
+            for name in q.CONTROL+['owner/a.rs','owner/b.rs']:
+                path=origin/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_text('candidate '+name)
+            git(origin,'add','.');git(origin,'commit','--quiet','-m','candidate')
+            for i in range(2):
+                (origin/q.CONTROL[0]).write_text('follow-on '+str(i));git(origin,'add','.');git(origin,'commit','--quiet','-m','follow-on')
+            head=git(origin,'rev-parse','HEAD').stdout.strip().decode()
+            for repo,depth,ref in [(control,'2','HEAD'),(source,'1','refs/heads/baseline')]:
+                repo.mkdir();git(repo,'init','--quiet');git(repo,'-c','protocol.file.allow=always','fetch','--quiet','--depth',depth,origin.as_uri(),ref);git(repo,'checkout','--quiet','--detach','FETCH_HEAD')
+            self.assertEqual(git(control,'rev-parse','HEAD').stdout.strip().decode(),head);self.assertEqual(git(source,'rev-parse','HEAD').stdout.strip().decode(),base)
+            self.assertEqual(git(control,'rev-parse','HEAD^{tree}').stdout,git(origin,'rev-parse',head+'^{tree}').stdout)
+            self.assertEqual(git(source,'rev-parse','HEAD^{tree}').stdout,git(origin,'rev-parse',base+'^{tree}').stdout)
+            self.assertEqual(git(control,'rev-parse','HEAD^').stdout,git(origin,'rev-parse',head+'^').stdout)
+            self.assertNotEqual(git(control,'cat-file','-e',base+'^{commit}',success=False).returncode,0)
+            a=q.parse_tracked_index(git(source,'ls-files','--stage','-z').stdout);b=q.parse_tracked_index(git(control,'ls-files','--stage','-z').stdout)
+            policy={'source_files':[{'path':name,'base_blob':baseline_blobs[name],'candidate_blob':b[name][1]} for name in ['owner/a.rs','owner/b.rs']]}
+            blobs={name:q.blob((control/name).read_bytes()) for name in q.CONTROL+['owner/a.rs','owner/b.rs']}
+            result=q.validate_checkout_delta(a,b,policy,blobs);self.assertEqual(result['other_delta_count'],0)
+            self.assertEqual(git(control,'status','--porcelain').stdout,b'');self.assertEqual(git(source,'status','--porcelain').stdout,b'')
+            (control/'one-more-file').write_text('harmless');git(control,'add','one-more-file')
+            with self.assertRaises(q.Hold):q.validate_checkout_delta(a,q.parse_tracked_index(git(control,'ls-files','--stage','-z').stdout),policy,blobs)
+    def test_cross_history_diff_removed_but_equivalent_gate_present(self):
+        text=Path(q.__file__).read_text();self.assertNotIn("'diff','--name-only',BASE,event",text)
+        self.assertIn('validate_checkout_delta(tracked[str(source)],tracked[str(control)],policy,control_blobs)',text)
+        self.assertIn('expected_index=tracked[str(source)]',text)
+        self.assertLess(text.index("'source_tree')",text.index('def main(')),text.index('tracked={}',text.index('def main(')))
+
 DRIVER = '''import sys,json,os
 sys.path.insert(0,sys.argv[1]);import zip_native_owned as s
 r,streams=s.capture(json.loads(sys.argv[2]),dict(os.environ),float(sys.argv[3]))
@@ -529,7 +604,7 @@ class HarnessTests(unittest.TestCase):
             original['codex-rs/.cargo/config.toml']=q.sha(cargoconfig.read_bytes())
             expected=dict(original);expected.update({x['path']:x['sha256'] for x in policy['source_files']})
             event='d'*40;calls=[];snapshots=[]
-            def snapshot(*args):
+            def snapshot(*args,**kwargs):
                 snapshots.append(1)
                 if len(snapshots)==1:return dict(original)
                 value=dict(expected)
@@ -537,15 +612,25 @@ class HarnessTests(unittest.TestCase):
                 return value
             def git(repo,env,records,disk,*args):
                 if args[:2]==('ls-files','--stage'):
-                    mode=b'160000' if fault=='gitlink' else b'100644'
-                    name=b'.gitmodules' if fault=='gitmodules' else b'known-source'
-                    return mode+b' '+b'a'*40+b' 0\t'+name+b'\0'
+                    mapping={name:('100644',q.blob((source/name).read_bytes())) for name in original}
+                    if repo==control:
+                        for name in q.CONTROL+[x['path'] for x in policy['source_files']]:mapping[name]=('100644',q.blob((control/name).read_bytes()))
+                        if fault=='extra-path':mapping['unexpected.txt']=('100644','a'*40)
+                        if fault=='mode-only':mapping['codex-rs/Cargo.lock']=('100755',mapping['codex-rs/Cargo.lock'][1])
+                        if fault=='blob-drift':mapping['codex-rs/Cargo.lock']=('100644','e'*40)
+                    rows=[]
+                    for i,(name,(mode,oid)) in enumerate(sorted(mapping.items())):
+                        if i==0 and fault=='gitlink':mode='160000'
+                        if i==0 and fault=='gitmodules':name='.gitmodules'
+                        stage='1' if i==0 and fault=='index-stage' else '0'
+                        rows.append((mode+' '+oid+' '+stage+'\t'+name).encode()+b'\0')
+                    return b''.join(rows)
                 if args[0]=='status':
                     if repo==source and snapshots:return ''.join(' M '+x['path']+'\n' for x in policy['source_files']).encode()
                     return b''
                 if args[0]=='diff':return ('\n'.join(q.CONTROL+[x['path'] for x in policy['source_files']])+'\n').encode()
                 target=args[1]
-                if target=='HEAD':return (('e'*40 if fault=='control-head' else event) if repo==control else q.BASE).encode()
+                if target=='HEAD':return (('e'*40 if fault=='control-head' else event) if repo==control else ('e'*40 if fault=='source-head' else q.BASE)).encode()
                 if target=='HEAD^':return q.CONTROL_PARENT.encode()
                 if target=='HEAD^{tree}':return ('a'*40 if repo==control else q.BASE_TREE).encode()
                 if target.startswith('HEAD:'):return ('e'*40 if fault=='control-blob' else q.blob((repo/target[5:]).read_bytes())).encode()
@@ -644,7 +729,7 @@ class HarnessTests(unittest.TestCase):
         self.assertEqual([p['junit']['count'] for p in report['test_phases']],[36,36])
         self.assertEqual(report['config_before'],report['config_after'])
     def test_mock_command_source_control_lock_cleanup_hold(self):
-        for fault in ['command','source','control','lock','cleanup','zero-tests','missing-junit','retry-junit','profile-config','late-private-config','late-ancestor-config','final-private-config','gitlink','gitmodules']:
+        for fault in ['command','source','control','lock','cleanup','zero-tests','missing-junit','retry-junit','profile-config','late-private-config','late-ancestor-config','final-private-config','gitlink','gitmodules','extra-path','mode-only','blob-drift','index-stage','source-head']:
             with self.subTest(fault=fault):
                 code,report,_=self.exercise(fault);self.assertEqual(code,125);self.assertFalse(report['qualified'])
 
