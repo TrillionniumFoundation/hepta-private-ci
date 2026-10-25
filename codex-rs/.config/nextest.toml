@@ -113,9 +113,10 @@ slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
 
 # Isolated macOS owner qualification; existing profiles remain unchanged.
+# nextest 0.9.103 custom profiles automatically layer over profile.default.
 [profile.macos-owner]
-inherits = "default"
 retries = 0
 
 [profile.macos-owner.junit]
 path = "junit.xml"
+report-name = "macos-owner"

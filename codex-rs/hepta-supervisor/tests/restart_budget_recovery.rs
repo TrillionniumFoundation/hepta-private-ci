@@ -216,14 +216,23 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     let release_id = ReleaseId::parse("restart-budget-release")?;
     let release_source = temp.path().join("restart-budget-release");
     std::fs::write(&release_source, b"#!/bin/sh\nexit 0\n")?;
-    registry.install_release(release_id.clone(), &release_source, Vec::new())?;
-    registry.allow_release(&agent_id, &release_id)?;
-    let release = AgentRelease::try_from(registry.resolve_release(&agent_id, &release_id)?)?;
+    registry
+        .install_release(release_id.clone(), &release_source, Vec::new())
+        .inspect_err(|_| eprintln!("restart recovery fixture: install_release failed"))?;
+    registry
+        .allow_release(&agent_id, &release_id)
+        .inspect_err(|_| eprintln!("restart recovery fixture: allow_release failed"))?;
+    let release = AgentRelease::try_from(
+        registry
+            .resolve_release(&agent_id, &release_id)
+            .inspect_err(|_| eprintln!("restart recovery fixture: resolve_release failed"))?,
+    )?;
 
     let control = FakeControl::default();
     let mut now = Instant::now();
     let (mut supervisor, recovered) =
-        Supervisor::recover(registry.clone(), control.driver(), config(), now)?;
+        Supervisor::recover(registry.clone(), control.driver(), config(), now)
+            .inspect_err(|_| eprintln!("restart recovery fixture: initial recover failed"))?;
     assert_eq!(recovered, TickReport::default());
     supervisor.start_release(&agent_id, release, now)?;
     control.healthy(&agent_id);
@@ -243,7 +252,8 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     // Recover supervisord around the same live child. The next failure must
     // consume attempt 2 and retain the 500 ms delay instead of resetting to 1.
     let (mut supervisor, recovered) =
-        Supervisor::recover(registry.clone(), control.driver(), config(), now)?;
+        Supervisor::recover(registry.clone(), control.driver(), config(), now)
+            .inspect_err(|_| eprintln!("restart recovery fixture: second recover failed"))?;
     assert_eq!(recovered, TickReport::default());
     assert!(supervisor.snapshot(&agent_id).expect("snapshot").active);
     now += Duration::from_millis(1);
@@ -274,7 +284,8 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
 
     // Repeat once more: the recovered counter must advance to attempt 3.
     let (mut supervisor, recovered) =
-        Supervisor::recover(registry.clone(), control.driver(), config(), now)?;
+        Supervisor::recover(registry.clone(), control.driver(), config(), now)
+            .inspect_err(|_| eprintln!("restart recovery fixture: third recover failed"))?;
     assert_eq!(recovered, TickReport::default());
     now += Duration::from_millis(1);
     control.crash(&agent_id);
@@ -306,7 +317,8 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     // A fourth crash after yet another supervisord recovery is budget
     // exhaustion, not a fresh attempt 1.
     let (mut supervisor, recovered) =
-        Supervisor::recover(registry, control.driver(), config(), now)?;
+        Supervisor::recover(registry, control.driver(), config(), now)
+            .inspect_err(|_| eprintln!("restart recovery fixture: fourth recover failed"))?;
     assert_eq!(recovered, TickReport::default());
     now += Duration::from_millis(1);
     let previous_event_count = supervisor

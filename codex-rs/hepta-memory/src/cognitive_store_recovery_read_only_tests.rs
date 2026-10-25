@@ -193,13 +193,18 @@ async fn crash_reopen_refuses_pending_wal() {
     let (store, _, _) = seeded(&temp, &owner).await;
     let anchor = store.recovery_anchor().await.expect("independent witness");
     store.pool.close().await;
+    let child_fleet = temp.path().join("fleet");
+    // Match the owned fixture root used by seeded/layout on macOS, where the
+    // system temporary directory may have a symlinked spelling.
+    #[cfg(target_os = "macos")]
+    let child_fleet = std::fs::canonicalize(&child_fleet).expect("canonical child fleet");
     let status = std::process::Command::new(std::env::current_exe().expect("test binary"))
         .args([
             "--exact",
             "cognitive_store::recovery::tests::cold_read_only::crash_reopen_refuses_pending_wal",
             "--nocapture",
         ])
-        .env(CHILD_ROOT, temp.path().join("fleet"))
+        .env(CHILD_ROOT, child_fleet)
         .status()
         .expect("child process");
     assert_eq!(status.code(), Some(73));

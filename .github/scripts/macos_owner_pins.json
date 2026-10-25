@@ -1,19 +1,22 @@
 {
-  "base_tree": "d5b4bd3cbbe9ba8702d8caf491aca2f437282da0",
+  "base_tree": "8a0ef8042a2ed3757bdad964676c473a3e1290a8",
   "lock_blob": "2823b2e99c8c035c1aa169416fea83ac945d29d7",
   "source_sha256": {
-    "codex-rs/.config/nextest.toml": "0da1c586c2e61d5d1382813d27a55a1673c1a7cc9a58bec56d56a706fc4cc8ee",
+    "codex-rs/.config/nextest.toml": "9d5de909a5b6cd4e9bb4b9a71b0f053b4efc8f206df4c04b179382022f0dd48d",
     "codex-rs/hepta-memory/src/cognitive_test_support.rs": "4ade78c7435ba7932b04419aee40e73b80519446c46de91ea85b378bae6efc02",
     "codex-rs/hepta-memory/src/h7_trajectory_store_tests.rs": "ede53e834b3fd3f051130b5994a91f424f4812f94024fe19a67562f7b121af76",
     "codex-rs/hepta-memory/src/local_turn_binding.rs": "e8909c93f4a5dca1dc4453cd615009185f4b1ec866b5d42ff1c324fc89b387bc",
     "codex-rs/hepta-supervisor/src/tick.rs": "7ef521f4e419677c0567d291b5e38eda5f73ee427691f227db255eb4d84ec367",
     "codex-rs/hepta-supervisor/tests/restart_budget.rs": "51d6d4345d7b53a24b5b8542c0d663abd67dd809db8acff9c8158ad2a7ab585c",
-    "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs": "84860e3cbd67e9fd0408916b7b1dc18c26c60002868db602065b5189f427e596"
+    "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs": "7e1497ea2cd0ebf0bea195d4252ff0fb8b46e35b8c22c01fdc4b114c1a5e2864",
+    "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs": "b327b36d0ab979b4e256363eed77c814993e3002049f7c3718a1494d4b2efcbb"
   },
   "changed_paths": [
     ".github/scripts/macos_owner_evidence.py",
     ".github/scripts/macos_owner_pins.json",
-    ".github/scripts/test_macos_owner_evidence.py"
+    "codex-rs/.config/nextest.toml",
+    "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+    "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs"
   ],
   "support_paths": [
     "AGENTS.md",
@@ -27,6 +30,7 @@
     "codex-rs/hepta-memory/Cargo.toml",
     "codex-rs/hepta-supervisor/Cargo.toml",
     ".github/scripts/macos_owner_cases.json",
-    ".github/workflows/hepta-macos-owner-qualification.yml"
+    ".github/workflows/hepta-macos-owner-qualification.yml",
+    ".github/scripts/test_macos_owner_evidence.py"
   ]
 }

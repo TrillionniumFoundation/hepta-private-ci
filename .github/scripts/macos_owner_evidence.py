@@ -19,7 +19,7 @@ import xml.etree.ElementTree as ET
 
 HERE = Path(__file__).resolve().parent
 PROFILE = "macos-owner"
-BASE = "e56ede6cc9e338ed78d2e1ac76a12c7eb0ca26ed"
+BASE = "1bdcad4c1ea4ffe9f534c763a118d256abf07e4a"
 PHASES = ("memory", "supervisor-owning", "supervisor-integration")
 OWNER = (
     "restart_budget::tests::budget_is_durable_bounded_and_pending_is_idempotent",
