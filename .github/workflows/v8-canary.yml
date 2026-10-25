@@ -319,6 +319,9 @@ jobs:
 
           (
             cd codex-rs
+            # Build-script rustc may run from registry directories with another
+            # rustup default; pin the compiler as well as the Cargo executable.
+            export RUSTUP_TOOLCHAIN=1.95.0
             CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
