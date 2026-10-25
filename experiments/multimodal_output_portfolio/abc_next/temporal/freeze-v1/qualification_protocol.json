@@ -1,0 +1,53 @@
+{
+  "allow_template_or_threshold_adaptation": false,
+  "controls": [
+    "new normal speech",
+    "new slow speech",
+    "new intentionally wrong number speech",
+    "actual silent PCM",
+    "actual truncated speech containing no complete fact"
+  ],
+  "external_assets_sha256": "926646d5e8c507c1f985edb710c64702b5923a8b560c602ac51541ffa971ca4c",
+  "external_decode": {
+    "beam_size": 5,
+    "best_of": 1,
+    "compression_ratio_threshold": 2.4,
+    "condition_on_previous_text": false,
+    "hotwords": null,
+    "initial_prompt": null,
+    "language": "en",
+    "log_prob_threshold": -1.0,
+    "max_new_tokens": 128,
+    "no_speech_threshold": 0.6,
+    "prefix": null,
+    "task": "transcribe",
+    "temperature": 0.0,
+    "vad_filter": false,
+    "word_timestamps": true
+  },
+  "gates": {
+    "maximum_silent_or_truncated_semantic_completion": 0,
+    "maximum_wrong_fact_exact_acceptance": 0,
+    "minimum_external_exact_each_speed": 0.75,
+    "minimum_external_fact_accuracy_each_speed": 0.9,
+    "minimum_online_exact_each_speed": 0.65,
+    "minimum_online_fact_accuracy_each_speed": 0.85
+  },
+  "groups": 16,
+  "length_scales": {
+    "normal": 1.0,
+    "slow": 1.2
+  },
+  "observer_boundary": "Whisper only qualification/offline final; never value fit, feature, fixed-policy or hyperparameter selection",
+  "qualification_failure": "preserve result; do not evaluate or silently change the registered observer, parser or thresholds",
+  "role": "qualification",
+  "schema": "hepta.abc3.text-speech-qualification.v1",
+  "source_hashes": {
+    "external.py": "5d373cbb613a95affccf10449e8a4c181b21a28f0b5bc928cff8621dd6361292",
+    "facts.py": "a42288fc764d9e22d88a8aa12e19bc7340f1e796fef3f234f9a812d3f03886e1",
+    "qualification.py": "a501a198ec997ee15a4f818862d6ba7796c1c7fe31ed5939b6e7d8a136461887",
+    "speech.py": "eca5e7c4a19a79a92fa329436a8fad9df614373e8167e739ca01c0340dfe7e4d"
+  },
+  "source_manifest_sha256": "33371f7332a70ca9957ab70dca6eb5770311b6caae54913fc839429c456af490",
+  "tts_online_assets_sha256": "0a0e4e81519471124cdfb13b9385ae5af54a041ac7847cbc61302f2ca9fe1984"
+}
