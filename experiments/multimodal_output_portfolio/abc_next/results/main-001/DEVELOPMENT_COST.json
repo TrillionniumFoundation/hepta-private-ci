@@ -1,0 +1,35 @@
+{
+  "public-sensor-001.process.json": {
+    "child_cpu_ns": 53028566000,
+    "child_maximum_rss_bytes": 459915264,
+    "exit_code": 0,
+    "log_sha256": "e1237b3b43066bae7b84c730dbf1af744c8c844dc19a9aa225d29d7d2387555a",
+    "registration_sha256": "8b284a41ee6db803c3ef68fa8cb32eb205c313abee45bf663a0cef2676c2fbcb",
+    "schema": "hepta.abc-next.process-receipt.v1",
+    "scope": "subprocess launch through exit and log flush; includes imports, fitting and child serialization; excludes this final receipt write",
+    "wall_ns": 28028083988,
+    "wrapper_cpu_ns": 2033552
+  },
+  "architecture-001.process.json": {
+    "child_cpu_ns": 215517474000,
+    "child_maximum_rss_bytes": 783126528,
+    "exit_code": 0,
+    "log_sha256": "ccde532371d357053fe88a6edf63b128ca5bdd285ac9ad7a589e1e7297c24c52",
+    "registration_sha256": "6f74aa3ca8b4cc6860546089aa930f2763500bca7eeaefc607d6bb787b893921",
+    "schema": "hepta.abc-next.process-receipt.v1",
+    "scope": "subprocess launch through exit and log flush; includes imports, fitting and child serialization; excludes this final receipt write",
+    "wall_ns": 111807868872,
+    "wrapper_cpu_ns": 963661
+  },
+  "controllers-001.process.json": {
+    "child_cpu_ns": 2304143449000,
+    "child_maximum_rss_bytes": 819585024,
+    "exit_code": 0,
+    "log_sha256": "9a075f71c90841b86716065186ab5139f7980e7dc951c97bfbc0c25972cc23ca",
+    "registration_sha256": "9af7497c8f067fe1d03072bb5c0684d5d9c91b19df779d7467529e5ef2876b8d",
+    "schema": "hepta.abc-next.process-receipt.v1",
+    "scope": "subprocess launch through exit and log flush; includes imports, fitting and child serialization; excludes this final receipt write",
+    "wall_ns": 1186653009907,
+    "wrapper_cpu_ns": 2541627
+  }
+}

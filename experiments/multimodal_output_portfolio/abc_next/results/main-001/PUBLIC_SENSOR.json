@@ -1,0 +1,179 @@
+{
+  "checkpoint_file_sha256": "982b23e560af025af212433ebcdefe87f49277f6d4944b74cdcaa802f7150e80",
+  "config": {
+    "augmentation_views": [
+      "original",
+      "noisy",
+      "occluded",
+      "bernoulli"
+    ],
+    "batch_size": 128,
+    "learning_rate": 0.002,
+    "seed": 20261025,
+    "steps": 1200,
+    "temperature_grid": [
+      0.75,
+      1.0,
+      1.25,
+      1.5,
+      2.0
+    ],
+    "temperature_individual_sources": 2000,
+    "threads": 2,
+    "training_individual_sources": 10000
+  },
+  "cpu_ns": 50473315306,
+  "independent_target_domain_qualification": false,
+  "maximum_rss_bytes": 459915264,
+  "parameter_sha256": "a4d781d17c6a260adaf93832ce0ba8f8613019c2113e99305bc05902a4334346",
+  "posterior_calibration_certificate": false,
+  "registration_sha256": "5cc3ff436a04515eae1c1f4bef37fad476ce93078a9249cc27773235206dc55d",
+  "schema": "hepta.abc-next.public-sensor-result.v1",
+  "selected_temperature": 1.25,
+  "status": "completed",
+  "temperature_source_ids_sha256": "fa476312f495f7ae278aeb2e3d757cdcd8453c4b9c883e347917a7140ef88b65",
+  "temperature_trials": [
+    {
+      "by_view_NLL": {
+        "bernoulli": 0.1284824013710022,
+        "noisy": 0.11044415831565857,
+        "occluded": 0.20972003042697906,
+        "original": 0.10116251558065414
+      },
+      "mean_NLL": 0.1374522764235735,
+      "temperature": 0.75
+    },
+    {
+      "by_view_NLL": {
+        "bernoulli": 0.10754334181547165,
+        "noisy": 0.09654740244150162,
+        "occluded": 0.18399342894554138,
+        "original": 0.08532021939754486
+      },
+      "mean_NLL": 0.11835109815001488,
+      "temperature": 1.0
+    },
+    {
+      "by_view_NLL": {
+        "bernoulli": 0.09925129264593124,
+        "noisy": 0.09426964074373245,
+        "occluded": 0.1787460595369339,
+        "original": 0.07950727641582489
+      },
+      "mean_NLL": 0.11294356733560562,
+      "temperature": 1.25
+    },
+    {
+      "by_view_NLL": {
+        "bernoulli": 0.09842405468225479,
+        "noisy": 0.09975404292345047,
+        "occluded": 0.18593136966228485,
+        "original": 0.07982485741376877
+      },
+      "mean_NLL": 0.11598358117043972,
+      "temperature": 1.5
+    },
+    {
+      "by_view_NLL": {
+        "bernoulli": 0.11212024092674255,
+        "noisy": 0.1287829428911209,
+        "occluded": 0.22491280734539032,
+        "original": 0.09400563687086105
+      },
+      "mean_NLL": 0.1399554070085287,
+      "temperature": 2.0
+    }
+  ],
+  "timer_scope": "entry through fit, temperature selection, snapshot save and final identity check; process launch separately measured",
+  "trace": [
+    {
+      "augmentation": "original",
+      "minibatch_loss": 2.3091957569122314,
+      "step": 1
+    },
+    {
+      "augmentation": "bernoulli",
+      "minibatch_loss": 0.4410800039768219,
+      "step": 100
+    },
+    {
+      "augmentation": "bernoulli",
+      "minibatch_loss": 0.14583930373191833,
+      "step": 200
+    },
+    {
+      "augmentation": "bernoulli",
+      "minibatch_loss": 0.24726490676403046,
+      "step": 300
+    },
+    {
+      "augmentation": "bernoulli",
+      "minibatch_loss": 0.18727706372737885,
+      "step": 400
+    },
+    {
+      "augmentation": "bernoulli",
+      "minibatch_loss": 0.0744476467370987,
+      "step": 500
+    },
+    {
+      "augmentation": "bernoulli",
+      "minibatch_loss": 0.0670299381017685,
+      "step": 600
+    },
+    {
+      "augmentation": "bernoulli",
+      "minibatch_loss": 0.07207619398832321,
+      "step": 700
+    },
+    {
+      "augmentation": "bernoulli",
+      "minibatch_loss": 0.0391048826277256,
+      "step": 800
+    },
+    {
+      "augmentation": "bernoulli",
+      "minibatch_loss": 0.03322627767920494,
+      "step": 900
+    },
+    {
+      "augmentation": "bernoulli",
+      "minibatch_loss": 0.02794552966952324,
+      "step": 1000
+    },
+    {
+      "augmentation": "bernoulli",
+      "minibatch_loss": 0.05564417317509651,
+      "step": 1100
+    },
+    {
+      "augmentation": "bernoulli",
+      "minibatch_loss": 0.012392355129122734,
+      "step": 1200
+    }
+  ],
+  "training_role_tail_by_view": {
+    "bernoulli": {
+      "accuracy": 0.9664999842643738,
+      "correct": 1933,
+      "source_count": 2000
+    },
+    "noisy": {
+      "accuracy": 0.968999981880188,
+      "correct": 1938,
+      "source_count": 2000
+    },
+    "occluded": {
+      "accuracy": 0.9409999847412109,
+      "correct": 1882,
+      "source_count": 2000
+    },
+    "original": {
+      "accuracy": 0.9754999876022339,
+      "correct": 1951,
+      "source_count": 2000
+    }
+  },
+  "training_source_ids_sha256": "20b3d51f369317ac9066728e64532217feac7aa2c22f67414e8b85a4c563dd85",
+  "wall_ns": 26196726682
+}
