@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   real-caption-pair-research:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 120
     env:
       HF_HUB_OFFLINE: "1"
@@ -40,6 +40,14 @@ jobs:
           git diff --check
           mkdir "$RUNNER_TEMP/hepta-multimodal"
           git rev-parse HEAD > "$RUNNER_TEMP/hepta-multimodal/source-sha.txt"
+      - name: Set up the fixed research Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Verify the exact research Python
+        run: |
+          set -euo pipefail
+          test "$(python3 -c 'import platform; print(platform.python_version())')" = "3.12.14"
       - name: Install pinned CPU runtime
         run: |
           set -euo pipefail
