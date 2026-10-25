@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.ndu-abc-recovery.prospective-descriptive-analysis.v1",
+  "base_protocol_sha256": "48e7e9fbf940e425825be880de2cc5bec233fd1db5ae198dc88f0a8bbf153e1d",
+  "amendment001_sha256": "298e2fd0fe7387dab984b2176a908eb9cf8ed00a6fbe2dc477579f4142e96239",
+  "amendment002_sha256": "626061f0b6a62c8692d94fabf217a65886a6cbd57c39524b3273234697f7544b",
+  "registered_before": "any resident timing execution or inspection of real timing outcomes; current development uses source review and synthetic tests only",
+  "scope": "descriptive matched quality/cost analysis of completed supplementary_all timing only",
+  "cohort": {
+    "training_seeds": [17, 29, 43, 59, 71],
+    "source_pair_start": 608,
+    "source_pairs": 8,
+    "views": ["clean", "noise", "occlusion", "missing_trusted", "conflict_untrusted", "missing_untrusted", "missing_unknown", "both_missing"],
+    "generation_scenarios": 2,
+    "timing_rounds": [0, 1],
+    "conditions": 18,
+    "observed_timing_rows": 23040,
+    "canonical_quality_rows": 11520,
+    "additional_independent_sources_from_replays_or_reports": 0
+  },
+  "quality": {
+    "canonical_round": 0,
+    "other_round": "verify identical retained output and observed scores; report every delivery/scoring failure separately; never replace round0 by the better or successful round",
+    "primary_risk_level": "gamma=2; CE within each trained seed over source/view/scenario, then mean across trained seeds",
+    "raw_utility": "unchanged primary or secondary observer utility, assessed separately on actual resident outputs",
+    "proxy_net_utility": "raw utility minus 0.002 times the known committed non-stop continuation path length",
+    "main128_source_quality": "retained separately; do not substitute these eight-source estimates or pool them with the primary three-view run"
+  },
+  "cost": {
+    "retained_rounds": [0, 1],
+    "measures": ["wall_ms", "cpu_ms"],
+    "outlier_or_first_round_deletion": false,
+    "planner_subset_counts_added_to_raw_counts": false,
+    "sampling_unit": "crossed training seed and source pair, preserving every view/scenario/round/condition within each sampled source block"
+  },
+  "failure_handling": {
+    "observed_generation_exception": "retain actual timing and the previously registered raw utility=-1, joint_loss=1, success=0, completion=0 execution-failure penalties; these are not measured semantic scores",
+    "unknown_action_path": "proxy net utility unobserved; do not invent an action count or impute zero cost",
+    "offline_observer_exception": "that observer score remains unobserved; physical output completion remains observed; no replacement with zero or another observer",
+    "missing_metric": "no available-case risk or confidence interval; the affected paired metric is unavailable until its complete balanced census exists",
+    "priced_curve_eligibility": "both compared conditions require every round to have successful generation, complete observed raw scores for that observer, and identical round outputs/scores; otherwise no priced curve is reported, while all costs and canonical quality/failure diagnostics remain retained"
+  },
+  "price_sensitivity": {
+    "utility_units_per_wall_millisecond": [0.0, 0.00001, 0.00003, 0.0001, 0.0003, 0.001, 0.003, 0.01],
+    "external_calibration": false,
+    "interpretation": "arbitrary fixed preference scenarios, not calibrated human utility, a recommended price, energy use, dollars, or a conversion of the 0.002 action proxy",
+    "priced_outcome": "raw actual utility minus lambda times actual full resident wall_ms; do not also subtract the 0.002 proxy in this alternate objective",
+    "random_cost": "keep each realized wall_ms paired with its source/view/scenario/round and inside exp(-gamma*(U-lambda*wall_ms)); average exponentials within each trained seed, then average seed CEs",
+    "repeated_quality": "canonical round0 utility may be paired with both observed timing rounds only after output/score replay consistency and completeness checks",
+    "not_equivalent_to": "CE(U) minus lambda times mean wall_ms when timing is random",
+    "threshold_reporting": "report every grid point and strict adjacent point-estimate sign-change brackets; no claim of a unique break-even threshold or unobserved crossings",
+    "grid_winner_is_primary_success_criterion": false
+  },
+  "comparisons": "the main analysis non-oracle contrasts whose two conditions occur in the timing census; all are descriptive",
+  "bootstrap": {
+    "replicates": 4000,
+    "seed": 20261024,
+    "confidence": 0.95,
+    "paired_indices_shared_across_quality_cost_prices_and_conditions": true,
+    "finite_seed_coverage_guarantee": false,
+    "multiplicity_adjusted_primary_claim": false
+  },
+  "primary_endpoint_and_CI_changed": false,
+  "production_approval_or_global_optimality_claim": false,
+  "all_blockers_closed": false
+}
