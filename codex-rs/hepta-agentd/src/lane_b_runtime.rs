@@ -1,5 +1,15 @@
 use std::collections::BTreeMap;
 
+#[cfg(all(test, unix))]
+#[path = "lane_b_journal.rs"]
+mod journal;
+#[cfg(all(test, unix))]
+#[derive(Clone, Copy)]
+pub(crate) enum JournalOpenMode {
+    Create,
+    Reopen,
+}
+
 use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
 
@@ -10,6 +20,7 @@ const CANCEL_ACK_TIMEOUT_MS: u64 = 3_000;
 const DEADLINE_CANCEL_REASON: &str = "deadline_elapsed";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[cfg_attr(test, derive(serde::Serialize, serde::Deserialize))]
 pub enum RunPhase {
     Admitted,
     ContextAttached,
@@ -39,6 +50,8 @@ impl RunPhase {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(test, derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(test, serde(deny_unknown_fields))]
 pub struct RuntimeComposition {
     pub agent_id: String,
     pub supervisor_generation: u64,
@@ -49,6 +62,8 @@ pub struct RuntimeComposition {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(test, derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(test, serde(deny_unknown_fields))]
 pub struct RunSnapshot {
     pub run_id: String,
     pub request_digest: String,
@@ -128,9 +143,13 @@ pub enum AgentRunError {
     TerminalObservationRequired,
     ArithmeticOverflow,
     InvalidRunStart(&'static str),
+    #[cfg(all(test, unix))]
+    PersistenceUnavailable,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(test, derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(test, serde(deny_unknown_fields))]
 struct RunRecord {
     snapshot: RunSnapshot,
     revision: u64,
@@ -153,6 +172,8 @@ pub struct AgentRunCoordinator {
     runs: BTreeMap<String, RunRecord>,
     accepting_runs: bool,
     max_active_runs: usize,
+    #[cfg(all(test, unix))]
+    journal: Option<journal::LifecycleJournal>,
 }
 
 impl AgentRunCoordinator {
@@ -172,6 +193,8 @@ impl AgentRunCoordinator {
             runs: BTreeMap::new(),
             accepting_runs: true,
             max_active_runs,
+            #[cfg(all(test, unix))]
+            journal: None,
         })
     }
 
@@ -184,6 +207,15 @@ impl AgentRunCoordinator {
     }
 
     pub fn close_admissions(&mut self) {
+        #[cfg(all(test, unix))]
+        if self.journal.is_some() {
+            // This legacy emergency API has no acknowledgement channel. A
+            // failed durable close still closes RAM and poisons further writes.
+            let _ = self.transact(|staged| {
+                staged.accepting_runs = false;
+                Ok(())
+            });
+        }
         self.accepting_runs = false;
     }
 
@@ -192,6 +224,10 @@ impl AgentRunCoordinator {
         now_ms: u64,
         snapshot: RunSnapshot,
     ) -> Result<RunReceipt, AgentRunError> {
+        #[cfg(all(test, unix))]
+        if self.journal.is_some() {
+            return self.transact(|staged| staged.start_run(now_ms, snapshot));
+        }
         validate_snapshot(now_ms, &snapshot)?;
         if let Some(current) = self.runs.get(&snapshot.run_id) {
             if current.snapshot == snapshot {
@@ -278,6 +314,11 @@ impl AgentRunCoordinator {
         expected_revision: u64,
         attachment: ContextAttachment,
     ) -> Result<RunReceipt, AgentRunError> {
+        #[cfg(all(test, unix))]
+        if self.journal.is_some() {
+            return self
+                .transact(|staged| staged.attach_context(now_ms, expected_revision, attachment));
+        }
         validate_attachment(&attachment)?;
         let record = self
             .runs
@@ -319,6 +360,11 @@ impl AgentRunCoordinator {
         run_id: &str,
         expected_revision: u64,
     ) -> Result<RunReceipt, AgentRunError> {
+        #[cfg(all(test, unix))]
+        if self.journal.is_some() {
+            return self
+                .transact(|staged| staged.mark_dispatched(now_ms, run_id, expected_revision));
+        }
         validate_identity(run_id, "run")?;
         let record = self
             .runs
@@ -347,6 +393,27 @@ impl AgentRunCoordinator {
         expected_revision: u64,
         reason: &str,
     ) -> Result<(CancellationDisposition, RunReceipt), AgentRunError> {
+        #[cfg(all(test, unix))]
+        if self.journal.is_some() {
+            return self.transact(|staged| {
+                // The original owner intentionally expires a cancel
+                // acknowledgement timeout before returning InvalidTransition. Preserve
+                // only that completed transition, never arbitrary error-side
+                // mutations such as a revision overflow.
+                let timeout_due = staged.runs.get(run_id).is_some_and(|record| {
+                    record.phase == RunPhase::Cancelling
+                        && record
+                            .cancel_ack_deadline_ms
+                            .is_some_and(|deadline| deadline <= now_ms)
+                });
+                let result = staged.cancel_run(now_ms, run_id, expected_revision, reason);
+                if timeout_due && result == Err(AgentRunError::InvalidTransition) {
+                    Ok(result)
+                } else {
+                    result.map(Ok)
+                }
+            })?;
+        }
         validate_identity(run_id, "run")?;
         validate_cancel_reason(reason)?;
         let record = self
@@ -405,6 +472,12 @@ impl AgentRunCoordinator {
         phase: RunPhase,
         terminal_observed: bool,
     ) -> Result<RunReceipt, AgentRunError> {
+        #[cfg(all(test, unix))]
+        if self.journal.is_some() {
+            return self.transact(|staged| {
+                staged.observe_terminal(run_id, expected_revision, phase, terminal_observed)
+            });
+        }
         validate_identity(run_id, "run")?;
         let record = self
             .runs
@@ -440,6 +513,10 @@ impl AgentRunCoordinator {
         &mut self,
         recovery: RunRecovery,
     ) -> Result<RunReceipt, AgentRunError> {
+        #[cfg(all(test, unix))]
+        if self.journal.is_some() {
+            return self.transact(|staged| staged.recover_indeterminate(recovery));
+        }
         validate_recovery(&recovery)?;
         let run_id = recovery.snapshot.run_id.clone();
         if let Some(current) = self.runs.get(&run_id) {
@@ -473,6 +550,10 @@ impl AgentRunCoordinator {
     }
 
     pub fn expire_deadlines(&mut self, now_ms: u64) -> Result<usize, AgentRunError> {
+        #[cfg(all(test, unix))]
+        if self.journal.is_some() {
+            return self.transact(|staged| staged.expire_deadlines(now_ms));
+        }
         let mut changed = 0usize;
         for record in self.runs.values_mut() {
             if expire_record(record, now_ms)? {
@@ -485,6 +566,10 @@ impl AgentRunCoordinator {
     }
 
     pub fn begin_drain(&mut self, now_ms: u64, reason: &str) -> Result<usize, AgentRunError> {
+        #[cfg(all(test, unix))]
+        if self.journal.is_some() {
+            return self.transact(|staged| staged.begin_drain(now_ms, reason));
+        }
         validate_cancel_reason(reason)?;
         self.accepting_runs = false;
         for record in self.runs.values_mut() {
@@ -514,6 +599,10 @@ impl AgentRunCoordinator {
     }
 
     pub fn mark_unresolved_indeterminate(&mut self, reason: &str) -> Result<usize, AgentRunError> {
+        #[cfg(all(test, unix))]
+        if self.journal.is_some() {
+            return self.transact(|staged| staged.mark_unresolved_indeterminate(reason));
+        }
         validate_cancel_reason(reason)?;
         let mut changed = 0usize;
         for record in self.runs.values_mut() {
@@ -537,6 +626,10 @@ impl AgentRunCoordinator {
         run_id: &str,
         expected_revision: u64,
     ) -> Result<RunReceipt, AgentRunError> {
+        #[cfg(all(test, unix))]
+        if self.journal.is_some() {
+            return self.transact(|staged| staged.remove_closed_run(run_id, expected_revision));
+        }
         validate_identity(run_id, "run")?;
         let record = self.runs.get(run_id).ok_or(AgentRunError::RunNotFound)?;
         require_revision(record, expected_revision)?;
