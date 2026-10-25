@@ -1,18 +1,10 @@
 {
-  "base_tree": "81198b9ca66ec85e02a4e623ed4eaa96ca6e7bc7",
+  "base_tree": "86272882663eff135f55e2b250b87b34809e723f",
   "lock_blob": "62b728f0bf795100627d72cb9af433faf3c24c0a",
   "changed_paths": [
-    ".github/scripts/macos_owner_cases.json",
     ".github/scripts/macos_owner_evidence.py",
     ".github/scripts/macos_owner_pins.json",
-    ".github/scripts/test_macos_owner_evidence.py",
-    ".github/workflows/hepta-macos-release-qualification.yml",
-    "codex-rs/.config/nextest.toml",
-    "codex-rs/Cargo.lock",
-    "codex-rs/hepta-fleet/Cargo.toml",
-    "codex-rs/hepta-fleet/src/release.rs",
-    "codex-rs/hepta-fleet/src/release_publication_macos.rs",
-    "codex-rs/hepta-fleet/src/release_publication_macos_tests.rs"
+    ".github/scripts/test_macos_owner_evidence.py"
   ],
   "source_sha256": {
     "MODULE.bazel.lock": "1fa8234aa094436e6f645a73d692c1346d1ccea858676b56c5026aa5baeff75f",
@@ -39,6 +31,8 @@
     "codex-rs/.config/nextest.toml",
     "codex-rs/hepta-fleet/src/release.rs",
     "codex-rs/hepta-supervisor/tests/restart_budget.rs",
-    "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs"
+    "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+    ".github/scripts/macos_owner_cases.json",
+    ".github/workflows/hepta-macos-release-qualification.yml"
   ]
 }

@@ -21,7 +21,7 @@ import xml.etree.ElementTree as ET
 
 HERE = Path(__file__).resolve().parent
 PROFILE = "macos-release"
-BASE = "c01cc098e2ba9a8eb6acd132a4dcbb3bbebc536f"
+BASE = "52ad3b2a6cffdf691eac438cd0bee824f353d977"
 PHASES = ("fleet-owning", "supervisor-integration")
 INTEGRATION = {
     (
