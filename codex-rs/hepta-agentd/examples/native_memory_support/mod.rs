@@ -55,6 +55,8 @@ pub async fn prepare(root: &Path) -> anyhow::Result<()> {
     registry.compare_and_transition(&owner()?, 0, AgentLifecycle::Starting)?;
     let store = CognitiveStore::open(&record.layout).await?;
     let anchor = store.recovery_anchor().await?;
+    // Complete the database handoff before publishing the retained logical cut.
+    store.close().await;
     retain(&root.join("anchor.json"), &anchor)?;
     let hash = Digest32::of_bytes(&std::fs::read(root.join("anchor.json"))?).to_string();
     retain(
