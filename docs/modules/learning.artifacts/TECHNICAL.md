@@ -158,6 +158,48 @@ sharing preserve bounded resources and revocation freshness; per-token WAN fetch
 cannot be presented as a qualified interactive inference path without measurements.
 These are unmet integration acceptance conditions, not new source/status claims.
 
+#### BT-style transport inside the existing I09/I10 boundary
+
+Evolve the existing TCM1/TCR1 and TCL4 data path incrementally: keep immutable
+content identities, bounded resumable chunk fetch and full-object verification.
+Register the full-release dependency adapter before changing accepted formats;
+the present configured-peer TCP/rendezvous path is not a deployed DHT or an
+arbitrary-model loader. A magnet-like locator names content and optional discovery
+hints; only a selected, scope-authorized release closure may reach I10. Discovery
+and transfer remain the Chain data owner's responsibility, not a new registry
+or downloader inside `learning.artifacts`.
+
+| Existing boundary  | Required implementation / acceptance                                                                                                                                                                                                                                                     |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Provider discovery | Bound lookup depth, responses, identities, expiry and global/per-peer work. Test false provider claims, stale records, sybils/eclipse, bootstrap loss and timeouts; a signature does not establish availability or independent custody.                                                  |
+| Chunk transport    | Support multi-source, resumable verified chunks with bounded queues/concurrency and backpressure. Retain partial-byte accounting across interruption/restart; corrupt, duplicated and late chunks cannot alter the content identity or evade the shared budget.                          |
+| Durable custody    | Distinguish disposable cache from provider-pinned obligations with replica/failure-domain policy, expiry/renewal, audit and repair deadlines. PN4 must bind an actual funded Chain lock/obligation before claiming funded custody; a local reservation/retention record is insufficient. |
+| Replica repair     | Detect complete-closure loss, select authorized surviving providers, verify replacement bytes and restore the declared independent replica floor before deadline. PN5 tests origin outage and failure-domain loss, not only copying among one administrator's hosts.                     |
+| Local load         | Prefetch the fixed closure into bounded SSD, RAM and device tiers; hash/decode/load before route publication. Keep per-tier occupancy and duplicate/shared-base accounting. Cold failure preserves the still-authorized old runnable route and reports the missing dependency.           |
+
+An archive indexes many immutable releases; each runnable release pins one
+compatible dependency closure. The global union of all historical Cell objects
+does not define a single executable model, guarantee every release remains
+retrievable or authorize independent "latest Cell" substitution. Declare which
+versions are retained and funded. Start with independently held full replicas;
+evaluate cold-history erasure coding and bounded delta chains only after restore,
+repair and complete-snapshot evidence exists. Full fine-tuning may change most
+chunks; report actual cross-version deduplication rather than assuming savings.
+
+Define separate cold and warm workloads for full base, adapter-only and shared
+Cell loads. Measure time to first usable ordinary task, verified goodput, peer
+churn, hash/decode/device time, tokens/second, cache hit rate, repair latency and
+SSD/RAM/VRAM peaks. Retain per-attempt raw traces, all-attempt counts and explicit
+failure/timeout censoring denominators. Report completed-sample p50/p95/p99 as
+conditional; do not infer an all-attempt tail from censored failures or invent
+their durations. A summary `rawTrace` label without samples is not tail evidence.
+Compare bounded prefetch/batching with demand-load on the same
+network and hardware. Dynamic Cell fetch must fit the declared task deadline;
+per-token WAN cold fetch requires its own interactive-latency qualification.
+Private weights require authorized export and an explicit transport/access
+security contract; content hashes alone provide integrity, not confidentiality,
+backdoor resistance or revocation of copies already distributed.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

@@ -267,20 +267,27 @@ with a real backend, exact weights, tokenizer, tensor layout, precision, runtime
 device and training code. Run at least three complete rounds; retain the complete
 attempt lineage, including rejection, interruption and no-update. Each round:
 
-1. Read back the currently selected and actually loaded parent from the ordinary
-   Neuron/inference caller; freeze its release root and objective. Revalidate
-   withdrawal, authority, workspace and resource scope. Training starts from
-   those exact parent bytes; copied labels naming a parent are insufficient.
+1. Read back CURRENT/selected head and the actually loaded parent from the ordinary
+   Neuron/inference caller; freeze release root, parameter hash, generation and
+   objective. Revalidate withdrawal, current local authority/FinalUse, workspace
+   and resource scope. Reconcile a selected/loaded mismatch before training.
+   Training starts from those exact parent bytes; copied labels naming a parent
+   are insufficient.
 2. Ledger-owned authenticated decisions, independent terminal outcomes and a
-   frozen dataset produce the next candidate off the current-run path. Train
-   only inside its admitted bounds; create immutable manifest/lineage and bytes.
-3. Freeze the reproducible engineering evaluation plan and declared task bytes,
+   frozen dataset produce the next candidate off the current-run path. Bind the
+   actual authorized task, consent/export scope and source lineage; secrets and
+   unauthorized task data cannot enter a contribution or peer advertisement.
+   Train real neural parameters only inside admitted bounds; create immutable
+   manifest/lineage and bytes, with before/after tensor hashes and actual cost.
+3. Before observing candidate evaluation outcomes, freeze the reproducible
+   engineering evaluation plan and declared task bytes,
    versions, exposure/reuse and budgets. Public or previously seen tasks are
    admissible; unseen future data and independent data custody are not entry
    conditions for the three-round mechanism test. Preserve the existing evaluator
    and selector authority, credential and signing key, matched lifecycle cost,
-   a frozen baseline, best
-   single expert and simple-merge controls. Compare the complete routed model as
+   a frozen actual-parent baseline, best single expert, simple-merge and
+   compute/data-matched adapter/full-tune controls where applicable. Compare the
+   complete routed model as
    well as the changed Cell; test retention, safety, poisoning/backdoor, OOD,
    support and withdrawal. Existing causal/longitudinal estimators still apply.
    Ineligible/insufficient evidence takes the explicit no-update branch: record
@@ -294,14 +301,19 @@ attempt lineage, including rejection, interruption and no-update. Each round:
    separately required successful cross-node I09/I10 load-and-next-task cohort.
 4. For an eligible update, submit only owner-approved task/evaluation/artifact
    references through the existing TaskFlow/PoN effect seam. Reconcile the exact submitted packet,
-   task, output, active membership, depth and cumulative work. Chain settlement
-   is a point-in-time observation; local acceptance/selection remains separate.
+   task, output, active membership, depth and cumulative work under the original
+   durable operation/outbox identity. Reorg changes that observation, not an
+   already executed external effect or its retry safety. Chain settlement is a
+   point-in-time observation; local acceptance/selection remains separate.
 5. Fetch the complete selected release closure from another node, verify each
    dependency and safe loader compatibility, then perform authorized shadow and
-   canary. A separate selector signs the current artifact head and exact root;
+   canary under current local install authority. Keep the still-authorized prior route available
+   until the new loader has validated every required dependency and device
+   allocation. A separate selector signs the current artifact head and exact root;
    the next generation loads those immutable bytes and publishes its route.
 6. A subsequent ordinary task must execute that route and return an authenticated
-   runtime/readback receipt tied to the same root, parent, generation and outcome.
+   runtime/readback receipt tied to the same root, parent, generation and outcome,
+   read from the real loader/session rather than copied from its request.
    Only that installed version may become the next round's parent. Crash/restart
    at any boundary reconciles existing owners rather than recreating a journal.
 
@@ -316,6 +328,30 @@ implementation; bind parent/root, task/evaluation identities, dependency-closure
 digest and loaded-root readback to the existing semantic digest. A receipt must
 never copy its expected values from the untrusted observation it validates.
 
+The following interface obligations refine those anchors through the existing
+module ports. Field names are semantic requirements for a registered adapter,
+not new accepted fields in V1/V2/V3 or a claim that an RPC already exists.
+
+| Anchor / owner boundary                                                               | Request and independently checked result                                                                                                                                                                                         | Bounds and failure ownership                                                                                                                                                                                                          |
+| ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| I06 contribution/export — ledger/plasticity/artifacts to the existing Chain task seam | Bind round, task/operation, installed parent, dataset/source/export scope, candidate/tensor roots and training/runtime version. Return immutable admitted contribution references and actual cost evidence, or a typed refusal.  | Freeze byte/count, CPU/GPU, memory/disk and duration limits before work. Source owners retain lineage and rejected/partial attempts; unauthorized export fails before network publication.                                            |
+| I07 evaluation — artifacts/ledger to learning.eval and independent selector           | Bind candidate, actual parent, complete release closure, dataset, frozen plan/controls and evaluator/controller identity. Return signed measurements, eligibility/no-update reason and selection evidence with matching digests. | Bound evaluation/search/reuse and deadline; insufficient support, invalid provenance, poisoning or budget exhaustion cannot become an eligible release. The existing evaluator owns its receipt; the selector owns selection.         |
+| I08 exact-task observation — existing effect owner to Chain observer                  | Bind original operation/outbox, packet/task/output and observation request. Verify block/state identity, membership, depth/work, verifier/trust version and observation time.                                                    | Bound bytes, query depth, retries and deadline. Unavailable, stale, reorged, rejected and Unknown remain distinct. The original effect owner reconciles possible dispatch; the observer never grants install/FinalUse or blind retry. |
+| I09 release fetch — artifact consumer to Chain data-availability owner                | Bind immutable release/closure root, all dependencies, export scope and provider facts. Return verified chunk/object roots, complete inventory, bytes, source peers, timings and missing dependencies.                           | One shared fetch budget covers discovery, peer retries, partial bytes, hashing and repair. Data owner retains partial-download accounting; incomplete/unavailable/invalid content prevents I10 and does not change CURRENT.           |
+| I10 install/readback — selector/artifacts to existing inference and runtime owners    | Bind selected root, expected CURRENT/predecessor, generation, compatibility and current local grant. Return actual loaded root/device/session and a later ordinary-task result under that same generation.                       | Bound decode, SSD/RAM/VRAM, startup/canary and next-task deadlines. Loader owns load failure; selector/registry own head changes. An uncertain install or possible effect reconciles in its original owner before retry or rollback.  |
+
+Each adapter binds the original operation, paired source/profile, request/result
+identity, semantic digest, expected predecessor/parent/release/task, contract and
+local policy generation, finite CPU/worker/byte/disk ceilings and the original
+absolute deadline. Results retain that identity, independently checked facts,
+actual cost and completion/typed refusal or an explicit Unknown owner. Retry,
+reorg and round re-entry cannot reset deadlines or accounting.
+Unknown after a possible effect retains the original operation and reservation;
+callers cannot erase it by starting another round. Publish measured costs and
+terminal evidence through existing ledgers/receipts, without a parallel journal.
+The original two-second read, 120-second startup and eight-second terminal
+contracts remain fixed; model training/evaluation plans declare separate bounds.
+
 Acceptance has two separate results. **Three-round mechanism closure** permits
 no-update and proves correct training/evaluation/rejection, durable reconciliation
 and continued task use of the unchanged parent. **Three beneficial releases**
@@ -328,6 +364,19 @@ calendar windows for longitudinal efficacy claims; a reused future holdout is
 no longer future evidence. Engineering results are reported on the named test
 dataset and do not imply generalization to unknown tasks. Independent future
 data is not a blocker for this controlled mechanism test.
+
+For each of the three cycles, retain one auditable join from ordinary task and
+actual parent readback through authorized dataset, training, frozen controls,
+evaluation and decision to the later ordinary-task readback. An accepted cycle
+must include original I08 reconciliation and complete cross-node I09/I10;
+a no-update cycle must prove the old parent actually ran and mark only the
+unexecuted update stages not applicable. Three no-update cycles cannot satisfy
+the separate successful transfer/install cohort or three-beneficial-release gate.
+Inject loss/crash before and after export, settlement, fetch completion, CURRENT
+CAS, route publication and next-task readback; neither missing receipt nor
+Unknown can be filled with an expected-value echo. Final acceptance records
+mechanism closure, transfer/install closure and beneficial-release count as
+separate results in the existing versioned qualification record.
 
 Retain exact paired commits, product caller, signed role/controller provenance,
 model/tensor roots, datasets, sealed plans, raw measurements, task/effect IDs,
@@ -343,6 +392,9 @@ original wait4/peak-RSS reconciliation. Candidate, fresh matched LoRA and matche
 full-tune each score 1/2; the backbone and random control score zero. Gain against
 the strongest control is zero, so no adoption or reward is justified. These
 declared public smoke tasks supply reproducible engineering observations only.
+Its `product_installation`, `three_round_closed` and
+`network_transfer_integrated_with_loader` remain false; this documentation
+refinement supplies no new run or status change.
 The separate TCL4 release-profile transfer moves and rehashes 271,178,816 bytes
 across three controlled nodes with the origin stopped before the second hop;
 its [exact source evidence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/tree/ef2a6958a6f3d8fdfaea25fbc58fb1ecd188134c/evidence/pon-upgrade-implementation-20261018/native-rounds/cell-tcl4-release-three-host-20261024)

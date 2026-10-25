@@ -175,6 +175,31 @@ establish pool/process cold recovery, wait4/cgroup resource retirement, model
 acceptance or deployed authority custody. See the existing
 [worker authority boundary](../../../codex-rs/hepta-infer-worker-host/FINAL_USE_AUTHORITY_PORT.md).
 
+The sixteen permanent destination entries qualify a finite fixture, not a
+long-lived self-upgrade service. Before PN4 can claim sustained operation,
+define numerical admission limits for live, terminal and Unknown operations and
+qualify operation 17 and sustained churn without resetting the pool or losing
+deduplication. Exhaustion must reject before physical dispatch. Any future
+terminal-capacity reclamation requires versioned segment/checkpoint retention,
+stable dedupe/anti-resurrection evidence and confirmation that no process,
+outbox, acknowledgement or resource obligation remains live. Unknown entries
+remain retained and count against admission; deleting a tombstone or recycling
+its identity is not a capacity fix. These are unmet targets and do not change
+the current permanent-entry semantics.
+
+For PN3 I08, `ProviderEffectIntent`/`AutomationEffectChainObservation` carry
+bounded evidence for the exact original task, packet/output, block membership,
+depth/work and observation freshness under the declared verifier/trust contract.
+Reorg, withdrawal, transport timeout and lost acknowledgement update that
+observation, not the immutable operation or already performed effect. The
+existing outbox/destination owner retains possible effects as Unknown and
+reconciles them; no new task ID, changed payload, chain confirmation or model
+generation permits blind resend. I09 completion cannot manufacture an I10
+installation receipt, and neither observation issues local CURRENT/FinalUse.
+PN4 must separately prove the original funded Chain obligation and whole-unit
+resource retirement; local reservation, queue acceptance and a Child exit are
+insufficient evidence for that combined result.
+
 `AgentdProductionWriterHost` is final-use-only and supports stable destination registration plus bounded observer-only reconciliation. It requires externally supplied authority/grants; default daemon startup does not synthesize them.
 
 Ordinary mutation uses targeted current-row checks. Full append-only chain verification is reserved for open/reopen/recovery/audit boundaries, avoiding an O(n) full scan on each mutation.
