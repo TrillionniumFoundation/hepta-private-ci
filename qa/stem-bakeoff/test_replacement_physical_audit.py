@@ -35,6 +35,12 @@ def fake(name):
                    original_weight_sha256=spec["weight_sha256"],
                    no_original_snapshot_mutation_observed=True)
               if name.startswith("laya_") else None)
+    arctic_rope = (dict(method="pinned_gte_runtime_buffers_v1",
+                       original_position_buffer_valid=False,
+                       original_rope_cache_valid=False,
+                       max_position_embeddings=8192, rope_dim=64, rope_theta=160000,
+                       production_qualified=False)
+                   if name == "arctic_305m" else None)
     return dict(schema="hepta.neuron.replacement-physical-shadow.v1",
                 candidate=name, checkpoint=dict(
                     repository=spec["repository"], revision=spec["revision"],
@@ -49,7 +55,8 @@ def fake(name):
                     original_forward_latency_ms=[1.0] * 40,
                     load_ms=200., forward_latency_p50_ms=1.,
                     raw_forward_throughput_per_second=1.0,
-                    laya_tokenizer_compat=compat),
+                    laya_tokenizer_compat=compat,
+                    arctic_rope_compat=arctic_rope),
                 limits=dict(historical_2014_dataset=True, target_device_qualified=False,
                     prospective_holdout=False, independent_observer_attested=False,
                     retrieval_quality_measured=False, multilingual_quality_measured=False),
@@ -68,6 +75,26 @@ class PhysicalAuditTests(unittest.TestCase):
         self.assertFalse(report["production_activation_allowed"])
         self.assertFalse(report["all_six_production_blockers_closed"])
         self.assertEqual(report["authority"], "DENY_ALL")
+
+
+    def test_arctic_rope_integrity_receipt_fail_closed(self):
+        case = fake("arctic_305m")
+        self.assertEqual(audit_arm("arctic_305m", case,
+                                  REGISTRY["models"]["arctic_305m"]), [])
+        del case["performance"]["arctic_rope_compat"]
+        self.assertTrue(any("Arctic RoPE" in x for x in
+                            audit_arm("arctic_305m", case,
+                                      REGISTRY["models"]["arctic_305m"])))
+        case = fake("arctic_305m")
+        case["performance"]["arctic_rope_compat"]["production_qualified"] = True
+        self.assertTrue(any("Arctic RoPE" in x for x in
+                            audit_arm("arctic_305m", case,
+                                      REGISTRY["models"]["arctic_305m"])))
+        case = fake("harrier_270m")
+        case["performance"]["arctic_rope_compat"] = dict(method="forged")
+        self.assertTrue(any("unrelated model" in x for x in
+                            audit_arm("harrier_270m", case,
+                                      REGISTRY["models"]["harrier_270m"])))
 
     def test_metric_forgery_rejected(self):
         cases = samples()
