@@ -44,6 +44,8 @@ mod native_memory_current_tests;
 mod native_memory_model;
 mod native_memory_process;
 #[cfg(target_os = "linux")]
+mod native_memory_process_schema;
+#[cfg(target_os = "linux")]
 mod native_memory_process_trust;
 mod native_memory_registration;
 mod native_memory_shadow_namespace;
