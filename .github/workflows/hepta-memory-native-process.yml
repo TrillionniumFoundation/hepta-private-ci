@@ -1,0 +1,160 @@
+name: Hepta default memory daemon process qualification
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  actual-default-daemon:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.head_ref == 'codex/memory-native-tick-process-qualified-20261025'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 150
+    env:
+      CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_BUILD_JOBS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Bind source and new evidence paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          mkdir -m 700 "$RUNNER_TEMP/hepta-native-process-artifacts"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-native-process-artifacts/source.txt"
+          echo "NATIVE_ARTIFACT_ROOT=$RUNNER_TEMP/hepta-native-process-artifacts" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/hepta-native-process-target" >> "$GITHUB_ENV"
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: clippy,rustfmt
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.59.0,nextest@0.9.149
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          enable-cache: false
+      - name: Install pinned formatter launcher
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --show-error --silent --location --max-time 120 https://github.com/facebook/dotslash/releases/download/v0.5.8/dotslash-ubuntu-22.04.x86_64.tar.gz --output "$RUNNER_TEMP/native-process-dotslash.tar.gz"
+          echo "3905bd406a0b4cc5fbe69843dca96fc7937fed6109164a6d56335fbf61187120  $RUNNER_TEMP/native-process-dotslash.tar.gz" | sha256sum --check
+          mkdir "$RUNNER_TEMP/hepta-native-process-tools"
+          tar -xzf "$RUNNER_TEMP/native-process-dotslash.tar.gz" -C "$RUNNER_TEMP/hepta-native-process-tools"
+          echo "$RUNNER_TEMP/hepta-native-process-tools" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/hepta-native-process-tools/dotslash" --version > "$NATIVE_ARTIFACT_ROOT/dotslash-version.txt"
+      - name: Native build prerequisites
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y pkg-config libssl-dev
+      - name: Owner retained-claim gates without model calls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -I -B scripts/memory_cell_native/current/native_process_command.py --repo "$GITHUB_WORKSPACE" --out "$NATIVE_ARTIFACT_ROOT/retained-tests" --expected-head "$CANDIDATE_SHA" -- just test --locked -p codex-hepta-memory --lib --retries 0 -E 'test(memory_cell_retained)'
+      - name: Default-build authority and post-await currentness gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -I -B scripts/memory_cell_native/current/native_process_command.py --repo "$GITHUB_WORKSPACE" --out "$NATIVE_ARTIFACT_ROOT/current-tests" --expected-head "$CANDIDATE_SHA" -- just test --locked -p codex-hepta-agentd --lib --retries 0 -E 'test(native_memory_process_trust) | test(native_memory_current_) | test(native_memory_registration) | test(native_memory_host_session)'
+      - name: Actual default process negative lifecycle without model calls
+        shell: bash
+        env:
+          HEPTA_NATIVE_MEMORY_PROCESS_ROOT: /tmp/hmp-n
+        run: |
+          set -euo pipefail
+          mkdir -m 700 "$HEPTA_NATIVE_MEMORY_PROCESS_ROOT"
+          python -I -B scripts/memory_cell_native/current/native_process_command.py --repo "$GITHUB_WORKSPACE" --out "$NATIVE_ARTIFACT_ROOT/process-negative-test" --expected-head "$CANDIDATE_SHA" -- just test --locked -p codex-hepta-agentd --test native_memory_process --retries 0 -E 'test(default_daemon_current_process_refuses_pin_drift_and_revoked_read_without_model)'
+      - name: Install pinned CPU model runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1+cpu' 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/install-torch.log"
+          python -m pip install 'transformers==4.57.1' 'peft==0.17.1' 'tokenizers==0.22.2' 'safetensors==0.6.2' 'numpy==1.26.4' 'huggingface-hub==0.35.3' 'accelerate==1.10.1' 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/install-runtime.log"
+          python -m pip freeze > "$NATIVE_ARTIFACT_ROOT/runtime-freeze.txt"
+      - name: Recover the exact previously qualified checkpoint without training
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python -I -B scripts/memory_cell_native/current/native_process_restore.py --repo "$GITHUB_WORKSPACE" --base "$RUNNER_TEMP/hepta-native-process-base" --out "$NATIVE_ARTIFACT_ROOT/restored" --download-to "$RUNNER_TEMP/native-memory-40188170696-1.zip" --acquire-base
+      - name: Register the only new decoder query before execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -m 700 /tmp/hmp
+          python -I -B scripts/memory_cell_native/current/native_process_ci.py prepare --repo "$GITHUB_WORKSPACE" --prior-config "$NATIVE_ARTIFACT_ROOT/restored/rebased-prior-config.json" --training-run "$NATIVE_ARTIFACT_ROOT/restored/run/trial" --source-document "$NATIVE_ARTIFACT_ROOT/restored/run/trial/source_document.json" --out "$NATIVE_ARTIFACT_ROOT/positive" --fixture-root /tmp/hmp/positive --source-profile committed --expected-head "$CANDIDATE_SHA" --allow-runtime-refresh
+      - name: One decoder query through the actual default daemon and real controlled issuer
+        shell: bash
+        env:
+          HEPTA_NATIVE_MEMORY_PROCESS_ROOT: /tmp/hmp
+        run: |
+          set -euo pipefail
+          export HEPTA_NATIVE_MEMORY_PROCESS_MODEL_CONFIG="$NATIVE_ARTIFACT_ROOT/positive/model_config.json"
+          export HEPTA_NATIVE_MEMORY_PROCESS_SOURCE_DOCUMENT="$NATIVE_ARTIFACT_ROOT/restored/run/trial/source_document.json"
+          python -I -B scripts/memory_cell_native/current/native_process_command.py --repo "$GITHUB_WORKSPACE" --out "$NATIVE_ARTIFACT_ROOT/process-positive-test" --expected-head "$CANDIDATE_SHA" -- just test --locked -p codex-hepta-agentd --test native_memory_process --run-ignored only --retries 0 -E 'test(pretrained_default_daemon_current_process_delivers_once_then_refuses_revocation)'
+      - name: Join raw process, delivery, revocation, Drain and restart evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -I -B scripts/memory_cell_native/current/native_process_ci.py finish --repo "$GITHUB_WORKSPACE" --prior-config "$NATIVE_ARTIFACT_ROOT/restored/rebased-prior-config.json" --training-run "$NATIVE_ARTIFACT_ROOT/restored/run/trial" --source-document "$NATIVE_ARTIFACT_ROOT/restored/run/trial/source_document.json" --out "$NATIVE_ARTIFACT_ROOT/positive" --fixture-root /tmp/hmp/positive --source-profile committed --expected-head "$CANDIDATE_SHA" --allow-runtime-refresh --test-receipt "$NATIVE_ARTIFACT_ROOT/process-positive-test/receipt.json"
+      - name: Final scoped lint fix and formatter proposal with no following tests
+        working-directory: codex-rs
+        shell: bash
+        env:
+          FORMAT_BASE: 454a43ab0fc6e58e88450c7dd5748a0513fc99a4
+        run: |
+          set -euo pipefail
+          just fix --locked -p codex-hepta-memory -p codex-hepta-agentd 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/final-fix.log"
+          just fmt --base "$FORMAT_BASE" 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/final-format.log"
+      - name: Retain raw fixture files and post-test changes on success or failure
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/hepta-native-process-artifacts"
+          git diff --binary > "$RUNNER_TEMP/hepta-native-process-artifacts/post-test-fix-format.patch"
+          git status --porcelain=v1 > "$RUNNER_TEMP/hepta-native-process-artifacts/final-worktree-status.txt"
+          df -h > "$RUNNER_TEMP/hepta-native-process-artifacts/final-filesystem.txt"
+          python -I -B - <<'PY'
+          import hashlib, json, os, shutil, stat
+          from pathlib import Path
+          out = Path(os.environ["RUNNER_TEMP"]) / "hepta-native-process-artifacts"
+          rows = {}
+          for name, root in (("negative", Path("/tmp/hmp-n")), ("positive", Path("/tmp/hmp"))):
+              for path in sorted(root.rglob("*")):
+                  if not stat.S_ISREG(path.lstat().st_mode):
+                      continue
+                  dest = out / "fixtures" / name / path.relative_to(root)
+                  dest.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copyfile(path, dest)
+                  with dest.open("rb") as stream:
+                      rows[str(dest.relative_to(out))] = {"bytes": dest.stat().st_size, "sha256": hashlib.file_digest(stream, "sha256").hexdigest()}
+          (out / "retained-fixtures.json").write_text(json.dumps(rows, indent=2) + "\n")
+          PY
+      - name: Preserve bounded success or failure evidence without base weights or the old ZIP
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: native-process-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-native-process-artifacts
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
