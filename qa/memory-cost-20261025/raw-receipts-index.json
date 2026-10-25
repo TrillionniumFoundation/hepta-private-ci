@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.memory.cost-v2.published-receipts.v1",
+  "artifacts": {
+    "measurement-receipts.jsonl.gz": {
+      "records": 69,
+      "uncompressed_bytes": 306361,
+      "bytes": 56814,
+      "sha256": "6e2be3fbae334fd7d58ecd9103e115491438c290cf129ef6fd54a9eb5b230e2d"
+    },
+    "frozen-protocols.jsonl.gz": {
+      "records": 2,
+      "uncompressed_bytes": 8447526,
+      "bytes": 1910772,
+      "sha256": "a8237ce48ac13b26de367f2208b4b9fafef56faa335c663fb1394a7c5622daaa"
+    },
+    "storage-inventories.jsonl.gz": {
+      "records": 5,
+      "uncompressed_bytes": 13697994,
+      "bytes": 2087867,
+      "sha256": "3818112acdafb359ebe232959a9b95eff8d71e229265a48a51ea5b359fca0557"
+    }
+  },
+  "scope": "actual local observed inventory and bounded warm probe, including superseded zero-call plan, source snapshots, accounting tests, original failures and independent raw audit",
+  "unknown": "full OS/runtime closure, shared physical extents, energy, billing, sustained-load outcomes and end-to-end native service costs"
+}
