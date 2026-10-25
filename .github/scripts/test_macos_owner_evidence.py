@@ -1,0 +1,396 @@
+"""Synthetic evidence/watchdog regressions, never native-test evidence."""
+
+import json
+import os
+import subprocess
+from pathlib import Path
+import sys
+import tempfile
+import time
+import unittest
+from unittest.mock import patch
+import xml.etree.ElementTree as ET
+
+import macos_owner_evidence as evidence
+
+
+class EvidenceTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        self.addCleanup(self.temp.cleanup)
+        self.env = patch.dict(os.environ, {"CANDIDATE_SHA": "expected"})
+        self.env.start()
+        self.addCleanup(self.env.stop)
+        start = time.monotonic()
+        self.budget = {
+            "seconds": 4500,
+            "clock": "monotonic",
+            "start_monotonic": start,
+            "deadline_monotonic": start + 4500,
+            "head": "expected",
+            "python": evidence.python_identity(),
+        }
+        (self.root / "budget.json").write_text(json.dumps(self.budget))
+
+    def report(self, phase="supervisor-owning"):
+        root = ET.Element(
+            "testsuites",
+            name=evidence.PROFILE,
+            tests=str(len(evidence.expected(phase))),
+            failures="0",
+            errors="0",
+        )
+        for identity in sorted({x[0] for x in evidence.expected(phase)}):
+            cases = [x for x in sorted(evidence.expected(phase)) if x[0] == identity]
+            suite = ET.SubElement(
+                root,
+                "testsuite",
+                name=identity,
+                tests=str(len(cases)),
+                failures="0",
+                errors="0",
+                skipped="0",
+            )
+            for classname, name in cases:
+                ET.SubElement(
+                    suite,
+                    "testcase",
+                    classname=classname,
+                    name=name,
+                    timestamp="2026-10-24T00:00:00Z",
+                )
+        return root
+
+    def check_report(self, root, phase="supervisor-owning"):
+        path = self.root / "junit.xml"
+        ET.ElementTree(root).write(path)
+        return evidence.validate_report(path, phase)
+
+    def test_exact_all_phases(self):
+        for phase in evidence.PHASES:
+            self.assertEqual(
+                len(self.check_report(self.report(phase), phase)),
+                len(evidence.expected(phase)),
+            )
+        self.assertEqual(sum(len(evidence.expected(p)) for p in evidence.PHASES), 278)
+
+    def test_bad_report_variants(self):
+        for tag in [
+            "failure",
+            "error",
+            "skipped",
+            "rerunFailure",
+            "flakyFailure",
+            "unknown",
+        ]:
+            with self.subTest(tag=tag):
+                root = self.report()
+                ET.SubElement(root[0][0], tag)
+                with self.assertRaises(ValueError):
+                    self.check_report(root)
+        for mutation in [
+            "missing",
+            "duplicate",
+            "wrong-name",
+            "wrong-class",
+            "no-time",
+            "bad-count",
+            "wrong-profile",
+            "extra-suite",
+        ]:
+            with self.subTest(mutation=mutation):
+                root = self.report()
+                if mutation == "missing":
+                    root[0].remove(root[0][0])
+                elif mutation == "duplicate":
+                    root[0].append(root[0][0])
+                elif mutation == "wrong-name":
+                    root[0][0].set("name", "fake")
+                elif mutation == "wrong-class":
+                    root[0][0].set("classname", "fake")
+                elif mutation == "no-time":
+                    root[0][0].attrib.pop("timestamp")
+                elif mutation == "bad-count":
+                    root.set("failures", "1")
+                elif mutation == "wrong-profile":
+                    root.set("name", "local")
+                else:
+                    ET.SubElement(
+                        root,
+                        "testsuite",
+                        name="extra",
+                        tests="0",
+                        failures="0",
+                        errors="0",
+                    )
+                with self.assertRaises(ValueError):
+                    self.check_report(root)
+
+    def listing(self):
+        return {
+            "rust-suites": {
+                "codex-hepta-supervisor": {
+                    "binary-id": "codex-hepta-supervisor",
+                    "status": "listed",
+                    "testcases": {
+                        name: {"ignored": False, "filter-match": {"status": "matches"}}
+                        for _, name in evidence.expected("supervisor-owning")
+                    },
+                }
+            }
+        }
+
+    def test_list_exact_and_filtered_not_passed(self):
+        listing = self.listing()
+        listing["rust-suites"]["codex-hepta-supervisor"]["testcases"]["unselected"] = {
+            "ignored": True,
+            "filter-match": {"status": "mismatch"},
+        }
+        path = self.root / "list.json"
+        path.write_text(json.dumps(listing))
+        self.assertEqual(len(evidence.validate_list(path, "supervisor-owning")), 4)
+
+    def test_list_missing_ignored_extra_mismatch(self):
+        for mutation in ["missing", "ignored", "extra", "mismatch", "binary"]:
+            listing = self.listing()
+            suite = listing["rust-suites"]["codex-hepta-supervisor"]
+            name = next(iter(suite["testcases"]))
+            if mutation == "missing":
+                suite["testcases"].pop(name)
+            elif mutation == "ignored":
+                suite["testcases"][name]["ignored"] = True
+            elif mutation == "extra":
+                suite["testcases"]["fake"] = suite["testcases"][name]
+            elif mutation == "mismatch":
+                suite["testcases"][name]["filter-match"]["status"] = "mismatch"
+            else:
+                suite["binary-id"] = "wrong"
+            path = self.root / "list.json"
+            path.write_text(json.dumps(listing))
+            with self.assertRaises(ValueError):
+                evidence.validate_list(path, "supervisor-owning")
+
+    def test_unsupported_python_fails_closed(self):
+        with patch.object(evidence.sys, "version_info", (3, 9, 20)):
+            with self.assertRaisesRegex(ValueError, "Python >= 3.10"):
+                evidence.python_identity()
+            with self.assertRaisesRegex(ValueError, "Python >= 3.10"):
+                evidence.shared_deadline(self.root)
+
+    def test_budget_interpreter_drift_fails_closed(self):
+        self.budget["python"]["sha256"] = "different-binary"
+        (self.root / "budget.json").write_text(json.dumps(self.budget))
+        with self.assertRaisesRegex(ValueError, "interpreter changed"):
+            evidence.shared_deadline(self.root)
+
+    def test_budget_is_shared_not_restarted_after_setup(self):
+        initial = evidence.shared_deadline(self.root)
+        with patch.object(
+            evidence.time,
+            "monotonic",
+            return_value=self.budget["start_monotonic"] + 600,
+        ):
+            self.assertEqual(evidence.shared_deadline(self.root), initial)
+            self.assertEqual(
+                evidence.shared_deadline(self.root) - evidence.time.monotonic(), 3900
+            )
+
+    def test_budget_bad_values_and_changed_head(self):
+        for key, value in [
+            ("seconds", 9000),
+            ("clock", "wall"),
+            ("head", "wrong"),
+            ("deadline_monotonic", float("nan")),
+            ("start_monotonic", float("inf")),
+            ("deadline_monotonic", True),
+        ]:
+            data = dict(self.budget)
+            data[key] = value
+            (self.root / "budget.json").write_text(json.dumps(data))
+            with self.assertRaises(ValueError):
+                evidence.shared_deadline(self.root)
+
+    def test_budget_cannot_be_reset_before_execute(self):
+        (self.root / "source.json").write_text(
+            json.dumps({"budget_sha256": "not-current-budget"})
+        )
+        with self.assertRaisesRegex(ValueError, "budget was reset"):
+            evidence.execute(self.root)
+
+    def test_full_metadata_requires_resolve_graph(self):
+        path = self.root / "metadata.json"
+        for resolve in [None, {}, {"nodes": []}]:
+            path.write_text(
+                json.dumps(
+                    {"resolve": resolve, "packages": ["p"], "workspace_members": ["p"]}
+                )
+            )
+            with self.assertRaises(ValueError):
+                evidence.validate_metadata(path)
+        path.write_text(
+            json.dumps(
+                {
+                    "resolve": {"nodes": [{"id": "p"}]},
+                    "packages": ["p"],
+                    "workspace_members": ["p"],
+                }
+            )
+        )
+        evidence.validate_metadata(path)
+
+    def test_original_wrapper_forwards_full_metadata_without_regenerating(self):
+        wrapper = Path(__file__).resolve().parents[2] / "scripts/run-nextest.py"
+        self.assertTrue(
+            wrapper.is_file(), "run tests from exact baseline-plus-candidate checkout"
+        )
+        fakebin = self.root / "bin"
+        fakebin.mkdir()
+        cargo = fakebin / "cargo"
+        calls = self.root / "cargo-calls.jsonl"
+        cargo.write_text(
+            f"#!{sys.executable}\nimport json,sys\nwith open({str(calls)!r}, 'a') as output: output.write(json.dumps(sys.argv[1:]) + '\\n')\n"
+        )
+        cargo.chmod(0o755)
+        metadata = self.root / "full-metadata.json"
+        metadata.write_text('{"resolve":{"nodes":[]}}')
+        for phase in evidence.PHASES:
+            args = evidence.selection(phase) + [
+                "--cargo-metadata",
+                str(metadata),
+                "--profile",
+                evidence.PROFILE,
+                "--retries",
+                "0",
+                "--no-tests",
+                "fail",
+            ]
+            env = dict(os.environ, PATH=str(fakebin) + os.pathsep + os.environ["PATH"])
+            result = subprocess.run(
+                [sys.executable, str(wrapper), *args],
+                cwd=self.root,
+                env=env,
+                capture_output=True,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            command = json.loads(calls.read_text().splitlines()[-1])
+            self.assertEqual(command, ["nextest", "run", "--no-fail-fast", *args])
+        self.assertEqual(len(calls.read_text().splitlines()), 3)
+
+    def test_exact_just_version_rejects_suffix(self):
+        evidence.validate_version("just", b"just 1.59.0\n", "just 1.59.0")
+        for raw in [b"just 1.59.00\n", b"just 1.59.0-custom\n", b"just 1.59.1\n"]:
+            with self.assertRaises(ValueError):
+                evidence.validate_version("just", raw, "just 1.59.0")
+
+    def test_binding_rejects_wrong_head_before_build(self):
+        with (
+            patch.object(evidence, "git", return_value="wrong-head"),
+            patch.dict(
+                os.environ, {"CANDIDATE_SHA": "expected", "WORKFLOW_SHA": "expected"}
+            ),
+        ):
+            with self.assertRaisesRegex(ValueError, "head/workflow mismatch"):
+                evidence.bind(self.root)
+
+    def test_verifier_rejects_missing_source(self):
+        with self.assertRaises(FileNotFoundError):
+            evidence.verify(self.root)
+
+    def test_verifier_rejects_head_and_dirty_drift(self):
+        (self.root / "source.json").write_text(
+            json.dumps({"head": "expected", "files": {}})
+        )
+        with patch.dict(
+            os.environ, {"CANDIDATE_SHA": "expected", "WORKFLOW_SHA": "expected"}
+        ):
+            with patch.object(evidence, "git", return_value="wrong"):
+                with self.assertRaisesRegex(ValueError, "head drift"):
+                    evidence.verify(self.root)
+            with patch.object(
+                evidence, "git", side_effect=["expected", " M source.rs"]
+            ):
+                with self.assertRaisesRegex(ValueError, "dirty after run"):
+                    evidence.verify(self.root)
+
+    def test_owned_descendant_after_leader_exit(self):
+        marker = self.root / "orphan-ran"
+        child = f"import time;time.sleep(0.8);open({str(marker)!r},'w').close()"
+        parent = (
+            f"import subprocess,sys;subprocess.Popen([sys.executable,'-c',{child!r}])"
+        )
+        self.assertEqual(
+            evidence.bounded(
+                [sys.executable, "-c", parent],
+                self.root / "orphan",
+                time.monotonic() + 3,
+                self.root,
+                grace=0.1,
+            ),
+            0,
+        )
+        time.sleep(0.8)
+        self.assertFalse(marker.exists())
+
+    def test_command_success_and_failure_raw_logs(self):
+        for code in [0, 7]:
+            out = self.root / str(code)
+            status = evidence.bounded(
+                [
+                    sys.executable,
+                    "-c",
+                    f"import sys; print('raw stdout'); print('raw stderr',file=sys.stderr);sys.exit({code})",
+                ],
+                out,
+                time.monotonic() + 3,
+                self.root,
+                grace=0.1,
+            )
+            self.assertEqual(status, code)
+            self.assertEqual((out / "stdout.log").read_bytes(), b"raw stdout\n")
+            self.assertEqual((out / "stderr.log").read_bytes(), b"raw stderr\n")
+
+    def test_total_deadline_and_unstarted_command(self):
+        deadline = time.monotonic() + 0.1
+        self.assertEqual(
+            evidence.bounded(
+                [sys.executable, "-c", "import time;time.sleep(20)"],
+                self.root / "first",
+                deadline,
+                self.root,
+                grace=0.1,
+            ),
+            124,
+        )
+        marker = self.root / "should-not-exist"
+        self.assertEqual(
+            evidence.bounded(
+                [sys.executable, "-c", f"open({str(marker)!r},'w').close()"],
+                self.root / "second",
+                deadline,
+                self.root,
+                grace=0.1,
+            ),
+            125,
+        )
+        self.assertFalse(marker.exists())
+
+    @unittest.skipUnless(os.name == "posix", "owned process groups are Unix-only")
+    def test_owned_descendant_cleanup(self):
+        marker = self.root / "descendant-ran"
+        child = f"import time;time.sleep(0.8);open({str(marker)!r},'w').close()"
+        parent = f"import subprocess,sys,time;subprocess.Popen([sys.executable,'-c',{child!r}]);time.sleep(20)"
+        status = evidence.bounded(
+            [sys.executable, "-c", parent],
+            self.root / "group",
+            time.monotonic() + 0.2,
+            self.root,
+            grace=0.1,
+        )
+        self.assertEqual(status, 124)
+        time.sleep(0.8)
+        self.assertFalse(marker.exists())
+
+
+if __name__ == "__main__":
+    unittest.main()

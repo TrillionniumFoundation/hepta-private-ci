@@ -307,25 +307,21 @@ fn hash_part(hasher: &mut Sha256, value: &[u8]) {
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
     use std::time::SystemTime;
     use std::time::UNIX_EPOCH;
 
     use crate::CognitiveStore;
     use crate::CompactFence;
     use crate::LocalLeaseAcquire;
+    use crate::cognitive_test_support::layout;
     use codex_hepta_contracts::AgentId;
-    use codex_hepta_paths::HeptaFleetRoot;
     use tempfile::TempDir;
 
     use super::*;
 
     async fn prepared(temp: &TempDir, bound: bool) -> (LocalLeaseOutbox, LocalCompactExecutor) {
-        let fleet_root = temp.path().join("fleet");
-        fs::create_dir_all(&fleet_root).expect("fleet root");
-        let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet root");
         let owner = AgentId::parse("00000000-0000-4000-8000-000000000931").expect("owner");
-        let store = CognitiveStore::open(&fleet.layout().agent(&owner))
+        let store = CognitiveStore::open(&layout(temp, &owner))
             .await
             .expect("store");
         let fence = CompactFence::new(11, 13, 1, "turn-binding-fence").expect("fence");

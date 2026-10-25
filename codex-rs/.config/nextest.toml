@@ -111,3 +111,11 @@ filter = 'package(codex-hepta-operations) & test(growing_history_keeps_early_ide
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
+
+# Isolated macOS owner qualification; existing profiles remain unchanged.
+[profile.macos-owner]
+inherits = "default"
+retries = 0
+
+[profile.macos-owner.junit]
+path = "junit.xml"

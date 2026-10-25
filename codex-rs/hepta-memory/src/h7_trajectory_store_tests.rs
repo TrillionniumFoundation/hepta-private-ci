@@ -1,11 +1,9 @@
-use std::fs;
 use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_paths::HeptaFleetRoot;
 use tempfile::TempDir;
 
 use crate::CognitiveStore;
@@ -23,6 +21,7 @@ use crate::H7TrajectoryStoreError;
 use crate::LocalLeaseState;
 use crate::LocalTurnLifecycleBinding;
 use crate::append_h7_trajectory_event_bound;
+use crate::cognitive_test_support::layout;
 use crate::read_h7_trajectory_bound;
 use crate::read_h7_trajectory_bound_for_recovery;
 
@@ -64,11 +63,8 @@ async fn prepared() -> (
     LocalTurnLifecycleBinding,
 ) {
     let temp = TempDir::new().expect("temp");
-    let root = temp.path().join("fleet");
-    fs::create_dir_all(&root).expect("fleet root");
-    let fleet = HeptaFleetRoot::parse(root).expect("fleet");
     let owner = AgentId::parse("00000000-0000-4000-8000-000000000971").expect("owner");
-    let store = CognitiveStore::open(&fleet.layout().agent(&owner))
+    let store = CognitiveStore::open(&layout(&temp, &owner))
         .await
         .expect("store");
     let fence = CompactFence::new(31, 37, 1, "h7-trajectory-fence").expect("fence");
@@ -107,11 +103,8 @@ async fn prepared_with_ttl(
     LocalTurnLifecycleBinding,
 ) {
     let temp = TempDir::new().expect("temp");
-    let root = temp.path().join("fleet");
-    fs::create_dir_all(&root).expect("fleet root");
-    let fleet = HeptaFleetRoot::parse(root).expect("fleet");
     let owner = AgentId::parse("00000000-0000-4000-8000-000000000972").expect("owner");
-    let store = CognitiveStore::open(&fleet.layout().agent(&owner))
+    let store = CognitiveStore::open(&layout(&temp, &owner))
         .await
         .expect("store");
     let fence = CompactFence::new(31, 37, 1, "h7-trajectory-expiring-fence").expect("fence");
@@ -342,8 +335,7 @@ async fn bound_trajectory_is_append_only_causal_and_reopenable() {
     drop(lease);
     drop(store);
     let owner = AgentId::parse("00000000-0000-4000-8000-000000000971").expect("owner");
-    let fleet = HeptaFleetRoot::parse(temp.path().join("fleet")).expect("fleet reopen");
-    let reopened = CognitiveStore::open(&fleet.layout().agent(&owner))
+    let reopened = CognitiveStore::open(&layout(&temp, &owner))
         .await
         .expect("reopen store");
     let reopened_read = reopened
@@ -500,8 +492,7 @@ async fn head_scoped_expired_terminal_gate_survives_store_reopen() {
     tokio::time::sleep(Duration::from_secs(6)).await;
 
     let owner = AgentId::parse("00000000-0000-4000-8000-000000000972").expect("owner");
-    let fleet = HeptaFleetRoot::parse(temp.path().join("fleet")).expect("reopen fleet");
-    let reopened = CognitiveStore::open(&fleet.layout().agent(&owner))
+    let reopened = CognitiveStore::open(&layout(&temp, &owner))
         .await
         .expect("reopen store");
     let inspected = reopened

@@ -1,0 +1,39 @@
+{
+  "base_tree": "c6940644cffa553766cfa6ca4dd14be7b0954f76",
+  "lock_blob": "2823b2e99c8c035c1aa169416fea83ac945d29d7",
+  "source_sha256": {
+    "codex-rs/.config/nextest.toml": "0da1c586c2e61d5d1382813d27a55a1673c1a7cc9a58bec56d56a706fc4cc8ee",
+    "codex-rs/hepta-memory/src/cognitive_test_support.rs": "4ade78c7435ba7932b04419aee40e73b80519446c46de91ea85b378bae6efc02",
+    "codex-rs/hepta-memory/src/h7_trajectory_store_tests.rs": "ede53e834b3fd3f051130b5994a91f424f4812f94024fe19a67562f7b121af76",
+    "codex-rs/hepta-memory/src/local_turn_binding.rs": "e8909c93f4a5dca1dc4453cd615009185f4b1ec866b5d42ff1c324fc89b387bc",
+    "codex-rs/hepta-supervisor/src/tick.rs": "7ef521f4e419677c0567d291b5e38eda5f73ee427691f227db255eb4d84ec367",
+    "codex-rs/hepta-supervisor/tests/restart_budget.rs": "51d6d4345d7b53a24b5b8542c0d663abd67dd809db8acff9c8158ad2a7ab585c",
+    "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs": "84860e3cbd67e9fd0408916b7b1dc18c26c60002868db602065b5189f427e596"
+  },
+  "changed_paths": [
+    ".github/scripts/macos_owner_cases.json",
+    ".github/scripts/macos_owner_evidence.py",
+    ".github/scripts/macos_owner_pins.json",
+    ".github/scripts/test_macos_owner_evidence.py",
+    ".github/workflows/hepta-macos-owner-qualification.yml",
+    "codex-rs/.config/nextest.toml",
+    "codex-rs/hepta-memory/src/cognitive_test_support.rs",
+    "codex-rs/hepta-memory/src/h7_trajectory_store_tests.rs",
+    "codex-rs/hepta-memory/src/local_turn_binding.rs",
+    "codex-rs/hepta-supervisor/src/tick.rs",
+    "codex-rs/hepta-supervisor/tests/restart_budget.rs",
+    "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs"
+  ],
+  "support_paths": [
+    "AGENTS.md",
+    "justfile",
+    "scripts/run-nextest.py",
+    "scripts/just-shell.py",
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/rust-toolchain.toml",
+    "codex-rs/rustfmt.toml",
+    "codex-rs/hepta-memory/Cargo.toml",
+    "codex-rs/hepta-supervisor/Cargo.toml"
+  ]
+}

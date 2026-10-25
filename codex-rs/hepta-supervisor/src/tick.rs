@@ -105,15 +105,32 @@ impl<D: ProcessDriver> Supervisor<D> {
                     Err(error) => return Some(error),
                 };
                 slot.restart_pending = true;
+                // Retain the legacy notification for operator consumers, but
+                // also publish the real durably claimed automatic attempt.
                 slot.event(
                     record.lifecycle.generation,
                     SupervisorEventKind::RestartQueued,
+                );
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::AutomaticRestartQueued {
+                        attempt: claim.attempt,
+                    },
                 );
                 None
             }
             Err(RestartBudgetError::Exhausted) => {
                 slot.restart_pending = false;
                 slot.restart_not_before = None;
+                slot.restart_attempt = self.config.restart_max_attempts;
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::AutomaticRestartBudgetExhausted {
+                        attempts: self.config.restart_max_attempts,
+                    },
+                );
+                // Keep the operator-visible fault rather than silently
+                // acknowledging an exhausted restart budget as a clean tick.
                 Some(SupervisorError::RestartBudgetExhausted(agent_id.clone()))
             }
             Err(error) => {

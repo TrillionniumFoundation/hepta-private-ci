@@ -1,0 +1,111 @@
+name: Hepta macOS owner qualification
+
+on:
+  push:
+    branches: ["fix/dot-macos-owner-qualification-20261024"]
+
+permissions:
+  contents: read
+
+jobs:
+  native-owner:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: macos-15-intel
+    timeout-minutes: 90
+    env:
+      CANDIDATE_SHA: ${{ github.sha }}
+      WORKFLOW_SHA: ${{ github.workflow_sha }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_BUILD_JOBS: "3"
+      PYTHONDONTWRITEBYTECODE: "1"
+      NEXTEST_USER_CONFIG_FILE: "none"
+      RUST_MIN_STACK: "8388608"
+    steps:
+      - name: Start shared setup and native budget before checkout
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          export EVIDENCE="$RUNNER_TEMP/hepta-macos-owner-evidence"
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/hepta-macos-owner-target-$CANDIDATE_SHA"
+          printf 'EVIDENCE=%s\nCARGO_TARGET_DIR=%s\n' "$EVIDENCE" "$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
+          mkdir "$EVIDENCE"
+          python3 - <<'PYTHON'
+          import hashlib, json, os, sys, time
+          from pathlib import Path
+          if sys.version_info < (3, 10):
+              raise SystemExit("Python >= 3.10 required for cross-process macOS monotonic clock")
+          interpreter = Path(sys.executable).resolve()
+          python = {"path": str(interpreter), "version": sys.version,
+                    "sha256": hashlib.sha256(interpreter.read_bytes()).hexdigest()}
+          start = time.monotonic()
+          budget = {"seconds": 4500, "clock": "monotonic", "start_monotonic": start,
+                    "deadline_monotonic": start + 4500, "head": os.environ["CANDIDATE_SHA"], "python": python,
+                    "scope": "checkout, binding, setup, validation, native metadata/list/build/test"}
+          (Path(os.environ["EVIDENCE"]) / "budget.json").write_text(json.dumps(budget, indent=2) + "\n")
+          PYTHON
+      - timeout-minutes: 3
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Retain and bind reviewed source before setup
+        id: source
+        timeout-minutes: 2
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e "$CARGO_TARGET_DIR"
+          git rev-parse HEAD HEAD^ 'HEAD^{tree}' > "$EVIDENCE/checkout-identities.txt"
+          git diff --binary --full-index HEAD^ HEAD > "$EVIDENCE/checkout.patch"
+          git status --porcelain=v1 > "$EVIDENCE/checkout-status.txt"
+          python3 .github/scripts/macos_owner_evidence.py bind "$EVIDENCE" 2>&1 | tee "$EVIDENCE/source.log"
+      - timeout-minutes: 10
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: rustfmt
+      - timeout-minutes: 5
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest@0.9.103,just@1.59.0
+      - name: Verify tools and evidence validator
+        id: tools
+        timeout-minutes: 2
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/macos_owner_evidence.py tools "$EVIDENCE" 2>&1 | tee "$EVIDENCE/tools.log"
+          sw_vers > "$EVIDENCE/sw-vers.txt"
+          xcodebuild -version > "$EVIDENCE/xcode-version.txt"
+          python3 --version > "$EVIDENCE/python-version.txt"
+          df -h > "$EVIDENCE/disk-before.txt"
+          python3 -m unittest discover -s .github/scripts -p test_macos_owner_evidence.py -v 2>&1 | tee "$EVIDENCE/validator-tests.log"
+      - name: Native metadata, selection and original just tests using remaining shared 75-minute budget
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/macos_owner_evidence.py run "$EVIDENCE" 2>&1 | tee "$EVIDENCE/runner.log"
+      - name: Verify exact selected outcomes and retain failure evidence
+        if: always() && steps.source.outcome == 'success'
+        timeout-minutes: 2
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --binary > "$EVIDENCE/post-run.patch"
+          git status --porcelain=v1 > "$EVIDENCE/post-run-status.txt"
+          df -h > "$EVIDENCE/disk-after.txt"
+          python3 .github/scripts/macos_owner_evidence.py verify "$EVIDENCE" 2>&1 | tee "$EVIDENCE/verification.log"
+      - name: Retain source, original logs, exits and separate reports on success or failure
+        if: always()
+        timeout-minutes: 10
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: macos-owner-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-macos-owner-evidence
+          if-no-files-found: error
+          retention-days: 14
