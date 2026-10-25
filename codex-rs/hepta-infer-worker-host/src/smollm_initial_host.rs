@@ -28,6 +28,7 @@ pub struct PreparedSelectedInitialSmolLmV1 {
     current: ArtifactOwnerCurrentReaderV1,
     session: SmolLmCognitiveSessionV1,
     association: Option<(Digest32, String, String)>,
+    cleanup: Option<tokio::task::JoinHandle<Result<(), String>>>,
 }
 
 /// Borrowed actual load evidence for one still-current selected initial parent.
@@ -83,7 +84,8 @@ impl InitialSmolLmPreparationErrorV1 {
         &self.reason
     }
 
-    /// No retained session means no pending cleanup, never a terminal receipt.
+    /// Absence means no Prepared session to await here; original startup
+    /// custodians may still owe cleanup. Ok is never a terminal receipt.
     pub async fn shutdown_retained(&mut self) -> Result<(), String> {
         if let Some(owner) = self.retained.as_mut() {
             owner.shutdown().await?;
@@ -185,17 +187,23 @@ impl PreparedSelectedInitialSmolLmV1 {
     /// No failed unload or asynchronous Drop is a terminal resource receipt.
     pub async fn shutdown(&mut self) -> Result<(), String> {
         self.material = None;
-        let port = self
-            .session
-            .port
-            .as_ref()
-            .cloned()
-            .ok_or("initial session is closed")?;
-        self.session
-            .runtime
-            .spawn_blocking(move || port.shutdown())
-            .await
-            .map_err(|e| format!("initial terminal unload worker: {e}"))??;
+        if self.cleanup.is_none() {
+            let port = self
+                .session
+                .port
+                .as_ref()
+                .cloned()
+                .ok_or("initial session is closed")?;
+            self.cleanup = Some(self.session.runtime.spawn_blocking(move || port.shutdown()));
+        }
+        // Cancellation drops only this borrow, retaining the same task/result.
+        let result = self
+            .cleanup
+            .as_mut()
+            .ok_or("initial cleanup unavailable")?
+            .await;
+        self.cleanup = None;
+        result.map_err(|e| format!("initial terminal unload worker: {e}"))??;
         self.session.port = None;
         Ok(())
     }
@@ -318,6 +326,7 @@ fn prepare_initial(
             runtime,
         },
         association: None,
+        cleanup: None,
     };
     let verified = prepared.observe(clock, |_| {
         if cancellation.is_cancelled() {
