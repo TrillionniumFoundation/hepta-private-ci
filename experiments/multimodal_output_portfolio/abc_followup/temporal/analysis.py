@@ -80,6 +80,8 @@ def analyze(args):
         if sha256(observation_file) != item["observation_sha256"]:
             raise ValueError("Independent observation changed")
         if item["policy"] == "feedback":
+            if row["feedback_variant"] != policy.variant or len(row["prefix_probes"]) != int(policy.needs_prefix_probe()):
+                raise ValueError("Executed feedback observation variant differs from freeze")
             expected = [policy.feedback_action(Frame(**f)) for f in row["frames"]]
         elif item["policy"] == "initial":
             expected = list(policy.initial_route(Frame(**row["frames"][0])))
@@ -169,6 +171,7 @@ def analyze(args):
               "price_interpretation": "Research utility price .05 per actual wall-second; not an externally calibrated willingness-to-pay. References frozen at .05, not reselected at other prices.",
               "source_groups": 64, "templates": 2, "scenarios": 2, "requests": 768,
               "trained_policy": "three-seed ensemble; uncertainty conditional on fitted ensemble, not independent critic-seed population",
+              "selected_feedback_variant": policy.variant,
               "bootstrap": {"draws": BOOTSTRAPS, "seed": BOOTSTRAP_SEED, "unit": "underlying fact group; retain all templates/scenarios/policies", "primary_confidence": PRIMARY_CONFIDENCE,
                             "qualification": "nominal percentile/Bonferroni intervals; no exact finite-sample or project-wide coverage claim"},
               "generation_receipt": generation, "scoring_receipt": scoring,

@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.abc4.temporal-preselection-review.v1",
+  "selection_started": false,
+  "changes": [
+    "exact448unique source/template/scenario/policy census",
+    "completed index hash",
+    "expected16 source IDs, domain0/1,7 policies and64 per policy",
+    "row/index/actual mode and route identities",
+    "frozen-policy actual decision replay",
+    "reject duplicate,missing,foreign or shifted-domain rows"
+  ],
+  "tests": {
+    "methods": 6,
+    "exit_code": 0,
+    "reported_wall_seconds": 0.162,
+    "command": "speech-env/bin/python -m experiments.multimodal_output_portfolio.abc_followup.temporal.boundary_tests",
+    "new_focus": "valid448fixture, consistently rehashed duplicate-with-missing, missing row, altered index"
+  },
+  "value_sha256": "d2a32cdd94c33619b83118d55fcd6cde537166a53fee2416a38524fdfbfe678f",
+  "boundary_tests_sha256": "d07bdd3ed78bdfdcc10c709b70375549b9d1eca0e5b9b26ca2d4c6f5f403703d",
+  "critic_fit_code_changes": [
+    "select"
+  ],
+  "critic_fit_code_additions": [
+    "selection_rows"
+  ],
+  "fitting_math_changed_after_fit": false
+}

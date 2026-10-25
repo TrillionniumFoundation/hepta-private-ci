@@ -70,7 +70,9 @@ def main():
         if policy is None or args.shards != 1:
             raise ValueError("Reference selection needs serial actual policy execution")
         specifications = [("fixed", route, "fixed-" + "".join(map(str, route))) for route in ROUTES]
-        specifications.extend((("initial", None, "initial"), ("feedback", None, "feedback")))
+        specifications.extend((("initial", None, "initial"),
+                               ("feedback", None, "feedback-full"),
+                               ("feedback", None, "feedback-cue_only")))
     else:
         specifications = [("matrix", route, "route-" + "".join(map(str, route))) for route in ROUTES]
     write_json(args.output / "start.json", {"role": args.role, "source_groups": len(sources),
@@ -94,9 +96,10 @@ def main():
                     order = rng.permutation(len(specifications))
                     for position in order:
                         mode, route, label = specifications[int(position)]
+                        active_policy = policy.for_variant(label.removeprefix("feedback-")) if label.startswith("feedback-") else policy
                         folder = args.output / f"source-{source_index:03d}" / f"t{template}-s{scenario}" / label
                         case = execute(backend, source, scenario, template, folder,
-                                       mode, route, policy, external)
+                                       mode, route, active_policy, external)
                         entry = {"source_id": source["source_id"], "template": template,
                                  "scenario": scenario, "policy": label, "case": str(folder / "case.json"),
                                  "sha256": sha256(folder / "case.json")}

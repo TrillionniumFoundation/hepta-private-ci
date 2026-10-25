@@ -75,7 +75,7 @@ def execute(backend, source, scenario, template, directory, mode, route=None, po
         if stage == 0:
             state = frame.detached()
             state["first_action"] = action
-            if mode in ("feedback", "matrix"):
+            if mode == "matrix" or (mode == "feedback" and policy.needs_prefix_probe()):
                 # Actual committed speech is observed before the second gate.
                 observation = backend.observe(chunk)
                 prefix_probes.append(observation)
@@ -90,6 +90,7 @@ def execute(backend, source, scenario, template, directory, mode, route=None, po
     offline = external.observe(output_path) if external is not None else None
     physical = verification["commit_count"] == 3 and verification["exact_committed_span_readback"]
     record = {"source_id": source["source_id"], "scenario": scenario, "template": template,
+              "feedback_variant": policy.variant if mode == "feedback" else None,
               "mode": mode, "route": choices, "frames": frames, "decisions": decisions,
               "first_commit_ns": first_commit_ns, "generation_cost": generation_cost,
               "initial_route_sha256": sha256(directory / "initial-route.json"),

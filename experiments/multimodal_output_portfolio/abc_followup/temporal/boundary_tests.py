@@ -21,6 +21,7 @@ class ActualPcmFixture:
 
     def __init__(self):
         self.texts = {}
+        self.observed_paths = []
 
     def synthesize(self, text, output):
         write_pcm(output, 16000, np.full(1600, 1200, dtype=np.int16))
@@ -28,6 +29,7 @@ class ActualPcmFixture:
         return {"sample_rate": 16000, "sha256": sha256(output), "wall_ns": 1, "cpu_ns": 1}
 
     def observe(self, path):
+        self.observed_paths.append(str(path))
         text = self.texts.get(str(path))
         if text is None:
             text = (Path(path).parent / "output.txt").read_text()
@@ -38,6 +40,10 @@ class ActualPcmFixture:
 class RecordingPolicy:
     def __init__(self):
         self.seen = []
+        self.variant = "full"
+
+    def needs_prefix_probe(self):
+        return self.variant == "full"
 
     def feedback_action(self, frame):
         if type(frame) is not Frame:
@@ -84,6 +90,23 @@ class BoundaryTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             features(CueOwner(manifest()["roles"]["development"][0], 0))
 
+    def test_cue_only_physically_omits_probe_and_masks_its_categories(self):
+        with tempfile.TemporaryDirectory() as directory:
+            policy = RecordingPolicy()
+            policy.variant = "cue_only"
+            backend = ActualPcmFixture()
+            row = execute(backend, manifest()["roles"]["development"][0], 0, 0,
+                          Path(directory) / "episode", "feedback", policy=policy)
+            self.assertEqual(row["prefix_probes"], [])
+            self.assertFalse(any(path.endswith("chunk-0.wav") for path in backend.observed_paths))
+            self.assertEqual(tuple(row["frames"][1]["previous_audio_fact"]), (None, None, None))
+        frame = initial_frame((0, 0, 0), 0)
+        data = frame.detached()
+        data["previous_audio_fact"] = (7, 3, 2)
+        altered = Frame(**data)
+        np.testing.assert_array_equal(value.public_features(frame, "cue_only"), value.public_features(altered, "cue_only"))
+        self.assertFalse(np.array_equal(value.public_features(frame, "full"), value.public_features(altered, "full")))
+
     def test_crossfit_backup_does_not_use_own_fold_future_labels(self):
         rng = np.random.default_rng(31)
         x = rng.normal(size=(24, 4))
@@ -103,6 +126,44 @@ class BoundaryTests(unittest.TestCase):
         self.assertTrue(np.isfinite(first).all())
         self.assertTrue((first > 0).all())
         self.assertFalse(np.array_equal(first[assignment == 1], second[assignment == 1]))
+
+    def test_selection_census_rejects_consistently_rehashed_duplicate_and_missing(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            entries = []
+            labels = ("fixed-00", "fixed-01", "fixed-10", "fixed-11", "initial", "feedback-full", "feedback-cue_only")
+            for source in manifest()["roles"]["selection"]:
+                for template in (0, 1):
+                    for scenario in (0, 1):
+                        for label in labels:
+                            mode = "fixed" if label.startswith("fixed-") else "feedback" if label.startswith("feedback-") else "initial"
+                            path = root / f"case-{len(entries)}.json"
+                            row = {"source_id": source["source_id"], "template": template, "scenario": scenario,
+                                   "mode": mode, "route": [int(v) for v in label[-2:]] if mode == "fixed" else [0, 0],
+                                   "feedback_variant": label.removeprefix("feedback-") if mode == "feedback" else None,
+                                   "prefix_probes": [{}] if label == "feedback-full" else [], "offline_observation": None}
+                            path.write_text(json.dumps(row))
+                            entries.append({"source_id": source["source_id"], "template": template, "scenario": scenario,
+                                            "policy": label, "case": str(path), "sha256": sha256(path)})
+
+            def close_index(records):
+                index = root / "index.jsonl"
+                index.write_text("\n".join(json.dumps(r) for r in records) + "\n")
+                (root / "complete.json").write_text(json.dumps({"role": "selection", "complete": True,
+                      "requests": 448, "source_groups": 16, "index_sha256": sha256(index)}))
+
+            close_index(entries)
+            self.assertEqual(len(value.selection_rows(root)), 448)
+            close_index([*entries[:-1], entries[0]])
+            with self.assertRaisesRegex(ValueError, "duplicate"):
+                value.selection_rows(root)
+            close_index(entries[:-1])
+            with self.assertRaisesRegex(ValueError, "Missing"):
+                value.selection_rows(root)
+            close_index(entries)
+            (root / "index.jsonl").write_text((root / "index.jsonl").read_text() + "\n")
+            with self.assertRaisesRegex(ValueError, "index changed"):
+                value.selection_rows(root)
 
 
 if __name__ == "__main__":

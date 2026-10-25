@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.abc4.cue-only-prefit-amendment.v1",
+  "registered_unix_ns": 1792916706706732646,
+  "prior_source_commit": "5b266e6e8a085bd65df83d8263c737f921d14bab",
+  "critic_fit_or_selection_or_final_started": false,
+  "qualification_thresholds_and_rendering_changed": false,
+  "active_qualification_protocol_sha256": "43a9fb360ecf7b44842717c9344d30e5c70e3c3c591bd9b40b9127f7ee03db2c",
+  "reason": "Development measured a material prefix-Vosk probe cost and observer disagreement. Evaluate whether its information pays for its actual operation, using a predeclared alternative before fitting/selection/final.",
+  "feedback_candidates": [
+    "full",
+    "cue_only"
+  ],
+  "mask": "cue_only sets every previous_audio_fact category to missing before all feature extraction; elapsed is not a feature; input-cue observations remain available.",
+  "training_cost_estimate": "For cue_only Q2, subtract the actual measured prefix probe wall from tau1-tau0. Q1 T-tau1 already cancels the same past probe. Training estimate only; selection/final actually omit operation.",
+  "selection": "16 sources x2templates x2scenarios x(4fixed+1initial+2feedback)=448 actual serial requests. Independently select fixed route and feedback variant by Vosk CE at gamma2, price.05. No Whisper used.",
+  "previous_selection_requests": 384,
+  "amended_selection_requests": 448,
+  "final_requests_unchanged": 768,
+  "primary_endpoints_unchanged": true,
+  "code_sha256": {
+    "value.py": "41bb49504ccede504256ddad5caeb82737c890bb4545f60d4363c644a4ef086a",
+    "episodes.py": "5e7deb01e7e0c7b88ef6c93d286b862934cecbfa1d7c6a22e7fd7c54dfb59a7a",
+    "run.py": "a38cb0865253ed569fc06f8ec1a9262482d8d9f96597cdfcea9ecf88dca995b4",
+    "analysis.py": "3113e2f8cc21538ff8fa5e814cee59f690b77a9735d2d67c149903364aa0d261",
+    "registration.py": "71415d693202a8db4c742e707929448c11d08f751097b192b25584aecaa0e26b",
+    "boundary_tests.py": "a21caac52c1c765b3bda5aa43819dc479e348bdfd278cea763dd4fd88abf36b2"
+  },
+  "boundary_tests": {
+    "methods": 5,
+    "exit_code": 0,
+    "reported_wall_seconds": 0.052,
+    "command": "speech-env/bin/python -m experiments.multimodal_output_portfolio.abc_followup.temporal.boundary_tests"
+  }
+}
