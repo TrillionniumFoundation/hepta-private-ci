@@ -319,6 +319,28 @@ impl CognitiveStore {
         let path = resolve_active_database_path(&root)?;
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            use std::os::unix::fs::PermissionsExt;
+
+            // SQLite inherits the main file's creation mode for WAL/SHM.
+            // Protect a new file before the first connection can create them.
+            match OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .mode(0o600)
+                .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
+                .open(&path)
+            {
+                Ok(file) => file
+                    .set_permissions(fs::Permissions::from_mode(0o600))
+                    .map_err(unavailable)?,
+                // Preserve the existing legacy-file and concurrent-open path.
+                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
+                Err(error) => return Err(unavailable(error)),
+            }
+        }
         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
             .open_durable_evidence_pool(&path)
             .await

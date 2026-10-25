@@ -90,6 +90,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          export HEPTA_MEMORY_CRASH_EVIDENCE_ROOT="$NATIVE_ARTIFACT_ROOT/bootstrap-crash-tests"
           just test --locked -p codex-arg0 -p codex-hepta-memory -p codex-hepta-agent-protocol -p codex-hepta-agentd -p codex-hepta-neuron -p codex-hepta-cognitive-store --features codex-hepta-agentd/qualification-cognitive-write 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/scoped-tests.log"
       - name: Build actual daemon probe
         working-directory: codex-rs
