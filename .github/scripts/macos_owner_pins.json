@@ -1,5 +1,5 @@
 {
-  "base_tree": "8a0ef8042a2ed3757bdad964676c473a3e1290a8",
+  "base_tree": "4cb75a11af1137a296d7dc04b0f38d96f917d017",
   "lock_blob": "2823b2e99c8c035c1aa169416fea83ac945d29d7",
   "source_sha256": {
     "codex-rs/.config/nextest.toml": "9d5de909a5b6cd4e9bb4b9a71b0f053b4efc8f206df4c04b179382022f0dd48d",
@@ -14,9 +14,7 @@
   "changed_paths": [
     ".github/scripts/macos_owner_evidence.py",
     ".github/scripts/macos_owner_pins.json",
-    "codex-rs/.config/nextest.toml",
-    "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
-    "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs"
+    ".github/scripts/test_macos_owner_evidence.py"
   ],
   "support_paths": [
     "AGENTS.md",
@@ -30,7 +28,6 @@
     "codex-rs/hepta-memory/Cargo.toml",
     "codex-rs/hepta-supervisor/Cargo.toml",
     ".github/scripts/macos_owner_cases.json",
-    ".github/workflows/hepta-macos-owner-qualification.yml",
-    ".github/scripts/test_macos_owner_evidence.py"
+    ".github/workflows/hepta-macos-owner-qualification.yml"
   ]
 }

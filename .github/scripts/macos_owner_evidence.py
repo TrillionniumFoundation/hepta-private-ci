@@ -8,18 +8,20 @@ import math
 import os
 from pathlib import Path
 import platform
+import re
 import shutil
 import selectors
 import signal
 import subprocess
 import sys
 import time
+import threading
 import traceback
 import xml.etree.ElementTree as ET
 
 HERE = Path(__file__).resolve().parent
 PROFILE = "macos-owner"
-BASE = "1bdcad4c1ea4ffe9f534c763a118d256abf07e4a"
+BASE = "9d7fe59a4620c57fdc45d42637ce4b81c8a110ad"
 PHASES = ("memory", "supervisor-owning", "supervisor-integration")
 OWNER = (
     "restart_budget::tests::budget_is_durable_bounded_and_pending_is_idempotent",
@@ -247,6 +249,150 @@ def snapshot_owned_group(pgid, directory):
     return snapshot
 
 
+def capture_owned_snapshot(process, directory, stage):
+    directory.mkdir(parents=True)
+    snapshot = snapshot_owned_group(process.pid, directory)
+    snapshot["stage"] = stage
+    write(directory / "result.json", snapshot)
+    return snapshot
+
+
+def snapshot_rows(snapshot, directory, pgid):
+    """Validate a complete read-only receipt, not a signal authorization."""
+    require("unavailable" not in snapshot, "unavailable group snapshot")
+    require(
+        type(snapshot.get("exit")) is int and snapshot["exit"] == 0,
+        "unsuccessful group snapshot",
+    )
+    require(snapshot.get("owned_pgid") == pgid, "snapshot group mismatch")
+    require(snapshot.get("observer_pid") == os.getpid(), "snapshot observer mismatch")
+    require(snapshot.get("observer_euid") == os.geteuid(), "snapshot uid mismatch")
+    require(
+        re.fullmatch(r"[0-9a-f]{64}", snapshot.get("binary_sha256", "")) is not None,
+        "missing ps binary identity",
+    )
+    require(
+        snapshot.get("argv")
+        == [
+            "/bin/ps",
+            "-g",
+            str(pgid),
+            "-o",
+            "pid=,ppid=,pgid=,sess=,uid=,state=,lstart=",
+        ],
+        "unexpected snapshot command",
+    )
+    require(
+        snapshot.get("limit_bytes") == 16384 and snapshot.get("timeout_seconds") == 2,
+        "unexpected snapshot bounds",
+    )
+    stdout = (directory / "probe-state.stdout.log").read_bytes()
+    stderr = (directory / "probe-state.stderr.log").read_bytes()
+    require(not stderr and len(stdout) <= 16384, "partial or noisy group snapshot")
+    rows = []
+    for line in stdout.decode("ascii").splitlines():
+        parts = line.split()
+        require(len(parts) == 11, "malformed process row")
+        require(all(parts[i].isdigit() for i in (0, 1, 2, 4)), "malformed process id")
+        require(
+            re.fullmatch(r"[A-Z][A-Za-z+<>-]*", parts[5]) is not None,
+            "malformed process state",
+        )
+        require(
+            re.fullmatch(
+                r"(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat) (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2} \d{2}:\d{2}:\d{2} \d{4}",
+                " ".join(parts[6:]),
+            )
+            is not None,
+            "malformed process start",
+        )
+        rows.append(
+            {
+                "pid": int(parts[0]),
+                "ppid": int(parts[1]),
+                "pgid": int(parts[2]),
+                "uid": int(parts[4]),
+                "state": parts[5],
+                "start": " ".join(parts[6:]),
+            }
+        )
+    require(bool(rows), "empty group snapshot")
+    require(
+        all(r["pid"] > 1 and r["ppid"] > 0 for r in rows), "invalid process identity"
+    )
+    require(len({r["pid"] for r in rows}) == len(rows), "duplicate process row")
+    require(
+        all(r["pgid"] == pgid and r["uid"] == os.geteuid() for r in rows),
+        "foreign process group member",
+    )
+    return rows
+
+
+def require_unreaped_owner(process):
+    require(process.returncode is None, "leader already reaped")
+    require(
+        signal.getsignal(signal.SIGCHLD) == signal.SIG_DFL, "nondefault child reaper"
+    )
+    require(threading.active_count() == 1, "concurrent child reaper cannot be excluded")
+
+
+def bind_owned_leader(process, directory):
+    require_unreaped_owner(process)
+    snapshot = capture_owned_snapshot(process, directory, "startup-owned-identity")
+    rows = snapshot_rows(snapshot, directory, process.pid)
+    leaders = [r for r in rows if r["pid"] == process.pid]
+    require(len(leaders) == 1, "missing owned leader")
+    leader = leaders[0]
+    require(leader["ppid"] == os.getpid(), "leader is not our direct child")
+    require(process.returncode is None, "leader already reaped at binding")
+    return {
+        **{k: v for k, v in leader.items() if k != "state"},
+        "ps_sha256": snapshot["binary_sha256"],
+    }
+
+
+def pre_kill_owned_leader(process, identity, directory):
+    """Reap only a sole pinned direct-child zombie; never reinterpret EPERM."""
+    require_unreaped_owner(process)
+    require(identity is not None, "unverified startup leader identity")
+    snapshot = capture_owned_snapshot(process, directory, "before-final-kill")
+    rows = snapshot_rows(snapshot, directory, process.pid)
+    require(snapshot["binary_sha256"] == identity["ps_sha256"], "ps identity changed")
+    leader = next((r for r in rows if r["pid"] == process.pid), None)
+    require(leader is not None, "owned leader missing before final kill")
+    require(
+        {k: v for k, v in leader.items() if k != "state"}
+        == {k: v for k, v in identity.items() if k != "ps_sha256"},
+        "owned leader identity changed",
+    )
+    require(leader["ppid"] == os.getpid(), "leader parent changed")
+    # A complete live family tree is required to retain the original cleanup.
+    known = {process.pid}
+    pending = {r["pid"]: r for r in rows if r["pid"] != process.pid}
+    while pending:
+        children = {pid for pid, row in pending.items() if row["ppid"] in known}
+        require(bool(children), "unverified group member ancestry")
+        known.update(children)
+        for pid in children:
+            del pending[pid]
+    require_unreaped_owner(process)
+    if len(rows) != 1 or not leader["state"].startswith("Z"):
+        return {"reaped": False, "ownership": "pinned-direct-child-family"}
+    require_unreaped_owner(process)
+    # No Popen.wait cached/ECHILD success: require this exact terminal reap.
+    pid, status = os.waitpid(process.pid, os.WNOHANG)
+    require(pid == process.pid, "owned zombie was not reaped")
+    require(os.WIFEXITED(status) or os.WIFSIGNALED(status), "nonterminal wait status")
+    process.returncode = os.waitstatus_to_exitcode(status)
+    return {
+        "reaped": True,
+        "pid": pid,
+        "wait_status": status,
+        "returncode": process.returncode,
+        "ownership": "sole-pinned-unreaped-direct-child-zombie",
+    }
+
+
 def bounded(command, directory, deadline, cwd, grace=10):
     """One new owned process group, raw output, deadline and bounded cleanup."""
     directory.mkdir(parents=True)
@@ -286,6 +432,15 @@ def bounded(command, directory, deadline, cwd, grace=10):
                 command, cwd=cwd, stdout=stdout, stderr=stderr, start_new_session=True
             )
             record["owned_pgid"] = process.pid
+            identity = None
+            if platform.system() == "Darwin":
+                try:
+                    identity = bind_owned_leader(
+                        process, directory / "startup-identity"
+                    )
+                    record["leader_identity"] = identity
+                except Exception as identity_error:
+                    record["leader_identity_error"] = str(identity_error)
             try:
                 record["exit"] = process.wait(
                     timeout=max(0, deadline - time.monotonic())
@@ -301,18 +456,28 @@ def bounded(command, directory, deadline, cwd, grace=10):
                 except ProcessLookupError:
                     pass
                 else:
+                    group_absent = False
                     end = time.monotonic() + grace
                     while time.monotonic() < end:
                         process.poll()
                         try:
                             signal_owned_group(0, "first-eperm-after-term-signal-zero")
                         except ProcessLookupError:
+                            group_absent = True
                             break
                         time.sleep(0.05)
-                    try:
-                        signal_owned_group(signal.SIGKILL, "first-eperm-kill")
-                    except ProcessLookupError:
-                        pass
+                    reaped = False
+                    if not group_absent and platform.system() == "Darwin":
+                        lifecycle = pre_kill_owned_leader(
+                            process, identity, directory / "before-final-kill"
+                        )
+                        record["leader_lifecycle"] = lifecycle
+                        reaped = lifecycle["reaped"]
+                    if not group_absent and not reaped:
+                        try:
+                            signal_owned_group(signal.SIGKILL, "first-eperm-kill")
+                        except ProcessLookupError:
+                            pass
                 try:
                     process.wait(timeout=grace)
                 except subprocess.TimeoutExpired as error:
