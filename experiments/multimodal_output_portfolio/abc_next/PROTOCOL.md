@@ -107,7 +107,10 @@ checked, and only then assigned offline outcomes. Large raw archives are not
 pushed. Formal control execution commits root decisions before producing any
 future child and commits child decisions before its grandchild; common owner-side
 forks pair policy comparisons. Batched counterfactual work is explicitly distinct
-from single-request latency. Separate sequential timing includes initialization,
+from single-request latency. Main-study JSON decision records are closed before
+their corresponding future draws, but are not fsynced or claimed crash-durable;
+native durable journal tests are a separate, explicitly measured chain.
+Separate sequential timing includes initialization,
 public feature extraction, critic decisions, all actual generator work, and
 serialization/witness components as named in each receipt.
 

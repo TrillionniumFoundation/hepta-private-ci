@@ -140,13 +140,19 @@ def analyze(directory, protocol_path, output):
                 (("output_ndu", "feedback"), ("output_ndu", "fixed"), ("output_mean", "feedback"), ("output_mean", "fixed"))), bootstrap=bootstrap),
             "risk_vs_sft_interaction": ce_interaction(*(cells[c]["net_utility"] for c in
                 (("output_ndu", "feedback"), ("output_ndu", "fixed"), ("sft_continuation", "feedback"), ("sft_continuation", "fixed"))), bootstrap=bootstrap)}
+        observers[name]["risk_vs_mean_interaction"].update({
+            "estimand": "[CE(output_ndu,feedback)-CE(output_ndu,fixed)]-[CE(output_mean,feedback)-CE(output_mean,fixed)]",
+            "positive_means": "feedback CE increment is greater under output_ndu than output_mean; neither increment is necessarily positive",
+            "cells_in_signed_order": [["output_ndu", "feedback"], ["output_ndu", "fixed"],
+                                      ["output_mean", "feedback"], ["output_mean", "fixed"]]})
     primary_results = observers["primary"]["comparisons"][:2]
     report = {"schema": "hepta.abc-next.new-source-analysis.v1", "phase": execution["phase"],
         "protocol_sha256": file_sha(protocol_path), "execution_result_sha256": file_sha(directory / "result.json"),
         "source_pairs": count, "training_seeds": SEEDS, "views": VIEWS,
         "scenarios_per_source": execution["source_range"]["scenarios"], "observers": observers,
         "plan_counts": plans, "primary_positive_lower_endpoints": [r["net_joint_CE"]["interval"][0] > 0 for r in primary_results],
-        "qualification_is_formal_test": False, "source_rows_are_independent_n": False,
+        "qualification_is_formal_test": False, "is_formal_test": execution["phase"] == "test",
+        "source_rows_are_independent_n": False,
         "unobserved_writer_clusters_available": False,
         "all_blockers_closed": False, "global_optimum_certified": False,
         "raw_data_archival_required": False, "empirical_tail_and_few_seed_interval_limits_apply": True}
