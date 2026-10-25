@@ -36,13 +36,48 @@ The matching true-to-false loss guard retains that saved editor across
 repeated loss notifications, instead of replacing it with the already
 cleared focus. Events belonging to another window keep their isolation.
 
-The preparation helper permits exactly widgets/src/window.rs and its sibling
-window_focus_tests.rs only for this explicit preedit profile. Arbitrary
-widget changes and either widget file in the clipboard profile remain
-rejected. The sibling tests dispatch real Window focus events and preedit
+The preparation helper permits exactly `widgets/src/window.rs`, its sibling
+`window_focus_tests.rs`, `widgets/src/text_input.rs`, and its sibling
+`text_input_composition_undo_tests.rs` only for this explicit preedit profile.
+Arbitrary widget changes and all four widget files in the clipboard profile
+remain rejected. The window sibling tests dispatch real Window focus events and preedit
 through an actual drawn SDK TextInput; they cover repeated gain, repeated
 loss followed by return, genuine loss/return, and other-window isolation. These source tests do not replace
 the real private IBus acceptance below.
+
+After those focus corrections, the actual packaged candidate committed 你好
+through real IBus but failed the required single-step Ctrl+Z check. The SDK
+put every preview and the identical final commit into separate `Other` undo
+groups. The last inverse edit therefore replaced 你好 with the same 你好.
+Cancelling also deleted selected original text and cleared prior redo.
+
+The TextInput correction treats regular preedit as one transient transaction.
+It retains the original selected text and complete directional selection;
+previews update the visible editor without changing undo/redo. A final
+commit records one net inverse edit, separated from typing and other
+compositions. A net unchanged commit adds no empty undo step. Cancellation
+restores the original selected text and selection without discarding prior
+undo/redo. An empty preedit before final commit and a late empty notification
+after commit retain the same boundaries.
+
+The existing `replace_range` contract still permits edits outside the
+composition. Their inverse edits and selections use committed UTF-8
+coordinates; cancellation preserves those edits. The transaction range stays
+at exact character boundaries even when an external combining character
+joins its displayed grapheme. Selection movement uses the existing external
+edit carry rule on the committed projection. `save_state` excludes the
+uncommitted preview and retains matching committed text, history and selection.
+Focus loss, selection/document replacement and history commands terminate
+pending previews, and an unconsumed Return cannot submit one.
+
+The dedicated sibling tests draw the real SDK TextInput and send its actual
+text/keyboard events. They cover commit/undo/redo, reversed selections and
+cursor affinity, adjacent typing, consecutive compositions, cancellation with
+prior redo, outside edits and combining boundaries, checkpoint/restore and
+pending-state cleanup. These logic regressions do not qualify native pixels,
+the mobile full-state IME paths, or a real input method. The Linux X11 product
+still requires the fresh packaged window acceptance below; earlier failed
+candidate receipts remain failed.
 
 The second patch is the byte-identical existing `sdk-num-traits-path.patch`.
 It makes an explicit path build use the same original num-traits 0.2.20 vendor

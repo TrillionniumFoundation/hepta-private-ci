@@ -85,7 +85,7 @@ class PreeditWidgetPreparationTests(unittest.TestCase):
         self.hepta = self.root / "hepta"
         self.license = b"Synthetic preparation fixture, not the actual SDK license.\n"
         (self.upstream / "LICENSE").write_bytes(self.license)
-        for name in ("window.rs", "unrelated.rs"):
+        for name in ("window.rs", "text_input.rs", "unrelated.rs"):
             path = self.upstream / "widgets/src" / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(b"original fixture\n")
@@ -137,7 +137,8 @@ class PreeditWidgetPreparationTests(unittest.TestCase):
         return path, manifest, self.root / f"prepared-{self.sequence}"
 
     def test_exact_preedit_widget_files_prepare_and_bind_the_complete_tree(self):
-        for relative in ("widgets/src/window.rs", "widgets/src/window_focus_tests.rs"):
+        for relative in ("widgets/src/window.rs", "widgets/src/window_focus_tests.rs",
+                         "widgets/src/text_input.rs", "widgets/src/text_input_composition_undo_tests.rs"):
             with self.subTest(relative=relative):
                 _, manifest, destination = self.manifest(relative, "preedit-callbacks")
                 result = fixture.VERIFY.PREPARE.prepare(
@@ -152,7 +153,8 @@ class PreeditWidgetPreparationTests(unittest.TestCase):
             fixture.VERIFY.PREPARE.prepare(self.upstream, destination, self.hepta, "preedit-callbacks")
 
     def test_clipboard_profile_cannot_adopt_preedit_widget_changes(self):
-        for relative in ("widgets/src/window.rs", "widgets/src/window_focus_tests.rs"):
+        for relative in ("widgets/src/window.rs", "widgets/src/window_focus_tests.rs",
+                         "widgets/src/text_input.rs", "widgets/src/text_input_composition_undo_tests.rs"):
             with self.subTest(relative=relative):
                 _, _, destination = self.manifest(relative, "clipboard")
                 with self.assertRaisesRegex(ValueError, "Invalid or duplicate SDK source path"):
