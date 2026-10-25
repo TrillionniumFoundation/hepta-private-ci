@@ -1,0 +1,79 @@
+{
+  "limitations": [
+    "Rendition pilot uses8development facts and3templates; VOI pilot uses first4of those facts and2templates\u00d72sensor futures.",
+    "VOI fixed-cost estimates subtract the actual first-output Vosk probe from matrix wall; they are not separately executed optimized-fixed latency.",
+    "Vosk confidence varies across identical-PCM replays; value fitting uses each actual history with action-masked labels, not paired counterfactual states.",
+    "These development runs were locally exploratory and code changed during subsequent development; no prospective frozen-source or held-out claim.",
+    "No qualification, selection or final outcomes used."
+  ],
+  "rendition": {
+    "compact": {
+      "Vosk_exact": 20,
+      "Whisper_exact": 24,
+      "mean_tts_ms": 178.952417875,
+      "requests": 24
+    },
+    "explicit": {
+      "Vosk_exact": 24,
+      "Whisper_exact": 21,
+      "mean_tts_ms": 294.79897604166666,
+      "requests": 24
+    },
+    "redundant": {
+      "Vosk_exact": 22,
+      "Whisper_exact": 20,
+      "mean_tts_ms": 470.1426607916667,
+      "requests": 24
+    }
+  },
+  "rendition_cost": {
+    "cpu_ns": 128552108346,
+    "wall_ns": 128767454807
+  },
+  "rendition_raw_sha256": "10c13da2206cc3498d7cc60b8b2269b2a294177bd779d861522721b4101a9658",
+  "role": "development only; no confirmatory inference",
+  "schema": "hepta.abc4.temporal-development.v1",
+  "voi": {
+    "00": {
+      "Vosk_priced_CE": 0.6332562791621824,
+      "Whisper_priced_CE": 0.6523404508593638,
+      "Whisper_success": 0.5,
+      "mean_component_seconds": 1.3542332609999999,
+      "requests": 16
+    },
+    "01": {
+      "Vosk_priced_CE": 0.5834459170588285,
+      "Whisper_priced_CE": 0.6030851791604,
+      "Whisper_success": 0.5,
+      "mean_component_seconds": 2.341175012625,
+      "requests": 16
+    },
+    "10": {
+      "Vosk_priced_CE": 0.8114602964856275,
+      "Whisper_priced_CE": 0.8420325759056051,
+      "Whisper_success": 0.9375,
+      "mean_component_seconds": 2.4257417488125,
+      "requests": 16
+    },
+    "11": {
+      "Vosk_priced_CE": 0.7660556494334781,
+      "Whisper_priced_CE": 0.7968913525802976,
+      "Whisper_success": 0.9375,
+      "mean_component_seconds": 3.3142459011875003,
+      "requests": 16
+    }
+  },
+  "voi_cost": {
+    "clock_scope": "after argument parsing/output mkdir; includes model loads, requests, offline scoring and index writes; excludes imports/final receipt",
+    "complete": true,
+    "cpu_ns": 316701370873,
+    "failures": 0,
+    "index_sha256": "7c3037652dcc24028801e3656b0b0fac7a6f824c2f227348e4e6a5aecb50f913",
+    "requests": 64,
+    "role": "development",
+    "self_peak_rss_kib": 673412,
+    "source_groups": 4,
+    "wall_end_unix_ns": 1792915372413025473,
+    "wall_ns": 317902966194
+  }
+}

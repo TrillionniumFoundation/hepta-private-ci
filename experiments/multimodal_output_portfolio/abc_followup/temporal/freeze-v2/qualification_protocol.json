@@ -1,0 +1,34 @@
+{
+  "assets_sha256": "0a0e4e81519471124cdfb13b9385ae5af54a041ac7847cbc61302f2ca9fe1984",
+  "controls": [
+    "correct",
+    "wrong",
+    "silent",
+    "truncated"
+  ],
+  "external_assets_sha256": "926646d5e8c507c1f985edb710c64702b5923a8b560c602ac51541ffa971ca4c",
+  "failure_rule": "retain failures; do not open final evaluation or change thresholds/parser/observer",
+  "gates": {
+    "external_exact_success": 0.75,
+    "external_fact_accuracy": 0.9,
+    "online_exact_success": 0.65,
+    "online_fact_accuracy": 0.85,
+    "silent_or_truncated_semantic_completion": 0,
+    "wrong_fact_exact_acceptance": 0
+  },
+  "schema": "hepta.abc4.temporal-observer-qualification.v1",
+  "scope": "constructed source groups, fixed templates and one pretrained voice; point qualification only",
+  "source_hashes": {
+    "new/qualification.py": "797592a2ddc86c969958202ccbb1574ed186080d6949dfa2ef70857f02ddc6a9",
+    "new/state.py": "0257111ebff82dd9b70ed367f81ab9872e6518ab0060df3172dc1fa400933700",
+    "new/tasks.py": "5ffeaa2b1fe488e6fadddd9f9ccb40ed49b0543ac3fe389e98169feb39f73e80",
+    "reused/audit.py": "a3159b5a1968e58e0bb886b759cf98f91859eecffc4c61733aef310e0b56138a",
+    "reused/external.py": "5d373cbb613a95affccf10449e8a4c181b21a28f0b5bc928cff8621dd6361292",
+    "reused/facts.py": "a42288fc764d9e22d88a8aa12e19bc7340f1e796fef3f234f9a812d3f03886e1",
+    "reused/speech.py": "eca5e7c4a19a79a92fa329436a8fad9df614373e8167e739ca01c0340dfe7e4d",
+    "reused/stream.py": "f842f8db05e52537ee5b950f90bbc0b953cbb93a64ef799ef71335663034af5c"
+  },
+  "source_manifest_sha256": "839c3db526ce1384675c999a98eae79b86a2f326d6b52e0379332cebbe62ddb5",
+  "sources": 8,
+  "templates": 2
+}
