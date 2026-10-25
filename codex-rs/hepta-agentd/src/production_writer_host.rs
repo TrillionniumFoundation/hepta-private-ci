@@ -9,6 +9,8 @@
 use std::collections::BTreeMap;
 use std::fmt;
 use std::sync::Arc;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 use codex_hepta_cognitive_store::CognitiveAccess;
@@ -38,11 +40,22 @@ use codex_hepta_memory::ProductionFinalUseOutboxDispatcher;
 
 use crate::AgentdConfig;
 use crate::AgentdError;
+use crate::grant_provider_worker::GrantProviderWorker;
 
 /// Externally owned grant source. Agentd asks for a grant bound to the exact
 /// FinalUseBinding; it never receives or constructs the issuer signing key.
+/// Implementations must bound their synchronous work. The original host runs
+/// one request on a blocking worker, retaining that capacity across cancellation.
 pub trait AgentdFinalUseGrantProvider: Send + Sync {
     fn signed_grant(&self, binding: &FinalUseBinding) -> Result<SignedFinalUseGrant, AgentdError>;
+}
+
+#[cfg(target_os = "linux")]
+impl AgentdFinalUseGrantProvider for crate::AgentdUnixFinalUseGrantProvider {
+    fn signed_grant(&self, binding: &FinalUseBinding) -> Result<SignedFinalUseGrant, AgentdError> {
+        self.request_grant(binding)
+            .map_err(|error| AgentdError::Protocol(format!("final-use issuer transport: {error}")))
+    }
 }
 
 /// Explicit runtime composition input for the production operation service.
@@ -210,8 +223,9 @@ impl AgentdProductionOperationRuntimeConfig {
 #[derive(Clone)]
 pub struct AgentdProductionWriterHost {
     writer: Arc<ProductionDurableWriter>,
+    reconcile_cursor: Arc<AtomicUsize>,
     dispatchers: BTreeMap<String, ProductionFinalUseOutboxDispatcher>,
-    grants: Option<Arc<dyn AgentdFinalUseGrantProvider>>,
+    grants: Option<Arc<GrantProviderWorker>>,
     // Private read-side clone of the exact recovered generation. Runtime
     // composition can reuse the same fenced owner without reopening by path or
     // exposing ProductionDurableWriter's crate-private raw-store handle.
@@ -236,6 +250,33 @@ impl fmt::Debug for AgentdProductionWriterHost {
 }
 
 impl AgentdProductionWriterHost {
+    /// Quiesce this sole host and close the original pool before its owner
+    /// fences are released. Other shared hosts or mutation users cause refusal.
+    pub async fn close(self) -> Result<(), AgentdError> {
+        let Self {
+            writer,
+            dispatchers,
+            grants,
+            cognitive_runtime,
+            mutation,
+            reconcile_cursor,
+        } = self;
+        drop((
+            dispatchers,
+            grants,
+            cognitive_runtime,
+            mutation,
+            reconcile_cursor,
+        ));
+        let writer = Arc::try_unwrap(writer).map_err(|_| {
+            AgentdError::Invalid("cannot close a shared original writer host".into())
+        })?;
+        writer
+            .close()
+            .await
+            .map_err(|error| AgentdError::Protocol(error.to_string()))
+    }
+
     /// Open a production writer only from an independently authenticated exact
     /// current cut. No ordinary writable `CognitiveStore::open` fallback exists
     /// at this product boundary.
@@ -281,23 +322,37 @@ impl AgentdProductionWriterHost {
             AgentdError::Protocol(format!("recover production cognitive store: {error}"))
         })?;
         let runtime_store = store.clone();
-        let writer = Arc::new(
-            ProductionDurableWriter::open_with_live_verifier(
-                store,
-                authority,
-                verifier,
-                lease_id,
-                lease_generation,
-            )
-            .await?,
-        );
-        let mutation = Arc::new(writer.cognitive_mutation_capability()?);
+        let writer = match ProductionDurableWriter::open_with_live_verifier(
+            store,
+            authority,
+            verifier,
+            lease_id,
+            lease_generation,
+        )
+        .await
+        {
+            Ok(writer) => Arc::new(writer),
+            Err(error) => {
+                // Retain the source fence through SQLx's close barrier even
+                // when the original writer rejects a late live-authority check.
+                runtime_store.close().await;
+                return Err(error.into());
+            }
+        };
+        let mutation = match writer.cognitive_mutation_capability() {
+            Ok(mutation) => Arc::new(mutation),
+            Err(error) => {
+                runtime_store.close().await;
+                return Err(error.into());
+            }
+        };
         Ok(Self {
             writer,
             cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(
                 runtime_store,
             )),
             mutation: Some(mutation),
+            reconcile_cursor: Arc::new(AtomicUsize::new(0)),
             dispatchers: BTreeMap::new(),
             grants: None,
         })
@@ -324,6 +379,7 @@ impl AgentdProductionWriterHost {
                 .await?;
         Ok(Self {
             writer: Arc::new(writer),
+            reconcile_cursor: Arc::new(AtomicUsize::new(0)),
             dispatchers: BTreeMap::new(),
             grants: None,
             cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(
@@ -427,7 +483,7 @@ impl AgentdProductionWriterHost {
             destination,
             ProductionFinalUseOutboxDispatcher::attach(final_use, target),
         );
-        self.grants = Some(grants);
+        self.grants = Some(Arc::new(GrantProviderWorker::new(grants)));
         Ok(self)
     }
 
@@ -503,7 +559,7 @@ impl AgentdProductionWriterHost {
             .writer
             .final_use_binding(&receipt, dispatcher.destination_id())
             .await?;
-        let signed = grants.signed_grant(&binding)?;
+        let signed = grants.signed_grant(&binding).await?;
         Ok(dispatcher
             .dispatch(self.writer.as_ref(), &signed, &binding, receipt)
             .await?)
@@ -522,8 +578,12 @@ impl AgentdProductionWriterHost {
                 "production final-use outbox dispatcher is not explicitly attached".to_string(),
             ));
         }
+        // Share the cursor across host clones. Unknown results consume the
+        // original global budget, but cannot starve a later destination forever.
+        let count = self.dispatchers.len();
+        let start = self.reconcile_cursor.fetch_add(1, Ordering::Relaxed) % count;
         let mut total = 0_usize;
-        for dispatcher in self.dispatchers.values() {
+        for dispatcher in self.dispatchers.values().cycle().skip(start).take(count) {
             if total >= limit {
                 break;
             }
@@ -563,7 +623,7 @@ impl AgentdProductionWriterHost {
                     .await?;
                 // An issuer refusal does not mutate the original operation or
                 // manufacture a grant. The same proof remains pending.
-                let Ok(signed) = grants.signed_grant(&binding) else {
+                let Ok(signed) = grants.signed_grant(&binding).await else {
                     continue;
                 };
                 match dispatcher

@@ -57,12 +57,17 @@ pub use production_hos2::ProductionHos2Target;
 pub use production_notes::NOTES_REPLACE_TOPIC_V1;
 pub use production_notes::NOTES_REQUEST_MAX_BYTES;
 pub use production_notes::NOTES_RESPONSE_MAX_BYTES;
+pub use production_notes::NotesDocumentState;
 pub use production_notes::NotesPrivateChannel;
+pub use production_notes::NotesRecoveryChannel;
 pub use production_notes::NotesTargetIdentity;
+pub use production_notes::ProductionNotesObserver;
+pub use production_notes::ProductionNotesRecoveryTarget;
 pub use production_notes::ProductionNotesTarget;
 pub use production_notes::notes_operation_intent;
 pub use production_writer::Hos2RetirementObservation;
 pub use production_writer::Hos2RetirementPermit;
+pub use production_writer::NotesRetirementPermit;
 
 pub use shared_experience::SharedExperienceGrantV1;
 pub use shared_experience::SharedExperiencePurposeV1;
