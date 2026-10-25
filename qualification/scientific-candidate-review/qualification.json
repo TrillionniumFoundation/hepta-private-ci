@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.scientific_candidate_publication_qualification.v1",
+  "date": "2026-10-25",
+  "baseline_commit": "a47190bb84714cb1262fcd85ebb723081fdb0581",
+  "scope": "isolated actual-source learning-artifacts crate with hepta-types dependency; separate workspace and transitive lock",
+  "source_closure_files": 77,
+  "toolchain": {
+    "rustc": "1.95.0 (59807616e 2026-04-14)",
+    "cargo": "1.95.0 (f2d3ce0bd 2026-03-21)",
+    "cargo_nextest": "0.9.149 (3fe4ef319 2026-10-20)",
+    "just": "1.59.0"
+  },
+  "tests": {
+    "command": "just test -p codex-hepta-learning-artifacts --config-file .config/isolated-nextest.toml",
+    "exit_code": 0,
+    "run_id": "635780b3-1b82-4ac8-b88d-6b6907c715a1",
+    "passed": 102,
+    "failed": 0,
+    "skipped": 1,
+    "new_gate_tests": 10,
+    "compile_seconds": 1.95,
+    "test_seconds": 1.092,
+    "skip_reason": "existing owner_host_process_fault_worker is invoked by the passing owner_host_process_kill_reopen_matrix",
+    "source_hashes": "source-tested.json"
+  },
+  "final_clippy": {
+    "command": "just fix -p codex-hepta-learning-artifacts --allow-no-vcs",
+    "exit_code": 0,
+    "warnings": 0,
+    "compile_seconds": 1.58
+  },
+  "final_format": {
+    "command": "just fmt",
+    "exit_code": 0,
+    "scope": "three changed native Rust files via original repository formatter"
+  },
+  "post_test_mechanical_changes": [
+    "Clippy let-chain simplification",
+    "box large review evidence enum; corresponding test call-site allocation",
+    "rustfmt whitespace/import formatting",
+    "documentation of trusted host clock boundary"
+  ],
+  "tests_rerun_after_fix_or_format": false,
+  "no_rerun_reason": "repository AGENTS.md requires no tests after fix/fmt",
+  "independent_source_review": "strict task threshold and exact operation/retry binding issues fixed before the final test suite; source reread clear",
+  "scientific_acceptance_proven": false,
+  "production_activation": false,
+  "positive_fixture_payload": "synthetic baseline/candidate strings",
+  "retained_initial_failures": [
+    "initial-profile-failure.log",
+    "initial-fix-sandbox-failure.log"
+  ],
+  "evidence_files": {
+    "Cargo.lock": "abae1e209314dfd799d49e78f5c899844cf6f981200c011621ef15f6c7b0e4fe",
+    "README.md": "be3784981e6641560c55c5b92a4ad806645eaf6dbdae6bd072ab9e269eddc06a",
+    "fix.log": "cd6c363ceb5215ca8ddb8ba0fd035c8a364c6b47b271e2d2e86a8034eae1ad2f",
+    "initial-fix-sandbox-failure.log": "6bb10e993781fcfafa03cdc3bb9385d58a4125ed406243f1ca86f8aa893f5afd",
+    "initial-profile-failure.log": "d0f94842cd6bbcec4db0b31043a610513324eab5bd53e38d4b490282b6d05b1d",
+    "nextest.toml": "14e8b530eb21acbb60044a9cf015959a16dc4651d4f41b6827ffc12891ec967b",
+    "rust-toolchain.toml": "b9155ba342e46bf646f9cec39a6d0afe1ee09f200744c5342a07e413f3fe1966",
+    "source-final.json": "833fe018bb1b13667687f63bbee0cf6bad6a878d2ec3985012b73c30f83d21a9",
+    "source-tested.json": "8b43fcc24e55340051d820c0115e4c7cf9ee97b7309ce2a2beef20e623a2e7ca",
+    "tests.log": "00d1783e28c033f6d1ba45676e5913ef02a936890556fa6a18a71b9c6e8fe930",
+    "workspace.toml": "1b787a1d73e74c75e666da0dceb2f8ef3463b821ff17c4ab988690115eea7dd3"
+  }
+}
