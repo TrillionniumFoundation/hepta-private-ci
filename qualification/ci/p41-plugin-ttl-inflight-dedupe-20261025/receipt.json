@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.plugin-catalog-inflight-stale-dedupe-candidate.v1",
+  "date_utc": "2026-10-25",
+  "parent_pr": 3785,
+  "parent_sha": "4bb6be14e2bfe9193cdf2c3735ea5c1a3c1c984d",
+  "source_failure": {
+    "run": 39803292028,
+    "job": 119947359208,
+    "cache_publish_error": "PermissionDenied / OS error 5",
+    "original_ttl_expectation": "/ps/plugins/list exactly 1",
+    "actual_count": 2
+  },
+  "change_scope": "Active refresh identity and scope deduplication for OnlyIfStale only; Force, distinct identities/new scopes, and later retries preserved",
+  "edits": [
+    "request_clone",
+    "state_active",
+    "scheduler_recheck",
+    "worker_active"
+  ],
+  "original_strict_ttl_test_unchanged": true,
+  "owning_test_result": "NOT_EXECUTED",
+  "rust_toolchain_available_in_current_container": false,
+  "windows_os5_root_cause_proved": false,
+  "production_authority": "SHADOW_ONLY/DENY_ALL/HOLD_NO_GO",
+  "nonclosure_note": "Candidate requires actual native core-plugins/app-server/Windows + required CI; no claims of TTL closure."
+}

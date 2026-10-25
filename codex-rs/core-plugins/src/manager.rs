@@ -286,6 +286,7 @@ struct RemoteInstalledPluginsCacheRefreshState {
     in_flight: bool,
 }
 
+#[derive(Clone)]
 struct RemoteCatalogCacheRefreshRequest {
     service_config: RemotePluginServiceConfig,
     auth: Option<CodexAuth>,
@@ -314,7 +315,26 @@ enum RemoteCatalogCacheRefreshMode {
 #[derive(Default)]
 struct RemoteCatalogCacheRefreshState {
     requests: VecDeque<RemoteCatalogCacheRefreshRequest>,
+    active_request: Option<RemoteCatalogCacheRefreshRequest>,
     in_flight: bool,
+}
+
+impl RemoteCatalogCacheRefreshState {
+    // Coalesce stale scopes already being refreshed. Pending-only coalescing
+    // cannot prevent a second fetch while the first has been dequeued and
+    // its disk publication is still in progress.
+    fn without_in_flight_stale_scopes(
+        &self,
+        mut request: RemoteCatalogCacheRefreshRequest,
+    ) -> Option<RemoteCatalogCacheRefreshRequest> {
+        if request.mode == RemoteCatalogCacheRefreshMode::OnlyIfStale
+            && let Some(active) = &self.active_request
+            && active.has_same_cache_identity(&request)
+        {
+            request.scopes.retain(|scope| !active.scopes.contains(scope));
+        }
+        (!request.scopes.is_empty()).then_some(request)
+    }
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
@@ -2876,6 +2896,9 @@ impl PluginsManager {
                 Ok(state) => state,
                 Err(err) => err.into_inner(),
             };
+            let Some(request) = state.without_in_flight_stale_scopes(request) else {
+                return;
+            };
             if let Some(pending) = state
                 .requests
                 .iter_mut()
@@ -3215,8 +3238,14 @@ impl PluginsManager {
                     Ok(state) => state,
                     Err(err) => err.into_inner(),
                 };
+                // Change the active snapshot atomically with the next dequeue,
+                // so schedulers never mistake an active fetch for an idle queue.
+                state.active_request = None;
                 match state.requests.pop_front() {
-                    Some(request) => request,
+                    Some(request) => {
+                        state.active_request = Some(request.clone());
+                        request
+                    }
                     None => {
                         state.in_flight = false;
                         return;
