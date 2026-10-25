@@ -1,0 +1,119 @@
+{
+  "schema": "hepta.memory.source-owner-wal-read-only-review.v1",
+  "written_utc": "2026-10-25T01:18:12.374610+00:00",
+  "compiled_source_head": "3a1431c5879d084bf49b9df67f9792af8f3acbc7",
+  "verdict": "A concrete first-generation creation-order risk remains beyond example teardown; admitted recovered generations have a separate mode0600 creation path. Cross-process writable WAL crash recovery remains unqualified by the inspected evidence.",
+  "source_basis": {
+    "compiled_source_files": 15,
+    "all_sha256_match_native_build002": true,
+    "all_reviewed_current_primary_files_equal_compiled_files_at_read": true,
+    "source_manifest": "source-pins.json",
+    "sqlite_crate": "libsqlite3-sys 0.37.0",
+    "sqlite_package_lock_checksum_verified": true,
+    "sqlite_source_matches_cached_crate": true,
+    "sqlite_link": "bundled static sqlite3",
+    "dependency_evidence": "sqlite-build-evidence.json",
+    "sqlite_engine_version": "3.51.3"
+  },
+  "confirmed_creation_order": [
+    {
+      "location": "codex-rs/hepta-memory/src/cognitive_store.rs::CognitiveStore::open",
+      "lines": "316-327",
+      "fact": "Create/chmod the directory0700, acquire shared store guard, then open the durable evidence pool and run migrations; only afterward chmod the main database0600. Existing WAL/SHM are not chmodded."
+    },
+    {
+      "location": "codex-rs/state/src/sqlite.rs::open_durable_evidence_pool",
+      "lines": "299-311",
+      "fact": "SQLx create_if_missing(true), WAL, synchronous FULL, maximum five connections; no private main-file precreation in this method."
+    },
+    {
+      "location": "libsqlite3-sys-0.37.0/sqlite3/sqlite3.c::robust_open/findCreateFileMode/unixOpenSharedMemory",
+      "lines": "39367-39368;40018-40071;44180-44240;45640-45712",
+      "fact": "Unix main-file default is0644 masked by umask. WAL/journal and SHM inherit the main-file permissions when created. Chmodding the main file later does not retrofit already existing sidecars."
+    },
+    {
+      "location": "codex-rs/hepta-agentd/src/runtime.rs::run cognitive_runtime initialization",
+      "lines": "191-205",
+      "fact": "When no production_writer_host is attached, normal runtime initialization calls CognitiveStore::open. The ordinary initialization path is therefore not limited to the native example."
+    },
+    {
+      "location": "codex-rs/state/src/sqlite_recovery.rs::FileSnapshot::validated",
+      "lines": "342-364",
+      "fact": "Every present retained private file, including WAL/SHM/journal, must have exactly0600, same effective owner, regular type and link count1. Parent must be0700. The actual original WAL/SHM0644 violate this predicate."
+    }
+  ],
+  "observations": {
+    "original_failed_prepare": {
+      "main_mode": "0600",
+      "wal_mode": "0644",
+      "wal_bytes": 1021792,
+      "shm_mode": "0644",
+      "shm_bytes": 32768,
+      "daemon_probe_exit": 1,
+      "evidence": "original-sqlite-metadata.json and copied original daemon failure receipt"
+    },
+    "successful_source_owner": {
+      "main_mode": "0600",
+      "recovered_main_mode": "0600",
+      "recovered_wal_mode": "0600",
+      "recovered_shm_mode": "0600",
+      "evidence": "successful-native-source-owner-file-metadata.json"
+    },
+    "clean_prepare_repair": "Awaiting the consuming close in shared prepare completed the clean handoff; subsequent v1 and v2 actual probes recovered their freshly prepared exact owner cuts. This does not exercise source-owner process death."
+  },
+  "unclean_process_risk": {
+    "status": "source-supported consequence; no new abrupt-crash experiment run for this review",
+    "conditions": "First creation through ordinary CognitiveStore::open, ambient mask permits0644, WAL/SHM created before main chmod, process terminates before all relevant SQLite connections close normally.",
+    "consequence": "Surviving0644 sidecars cause strict identity admission to refuse the exact-cut recovery before copied WAL replay, even if the logical cut was independently retained.",
+    "scope": "Initial/legacy generation, including ordinary Agentd initialization or a first provisioning writer that remains live. It is not merely the prepare command spelling.",
+    "not_claimed": "No permanent committed-data loss is established. Ordinary legacy reopen may use SQLite path replay, but production host has no such fallback and that path is not a substitute for independently authorized exact-cut recovery.",
+    "separate_generation_protection": "materialize_identity_bound_recovery_copy creates new DB, copied WAL and journal with create_new+mode0600+O_NOFOLLOW. open_with_recovery validates exact cut/integrity, closes/checkpoints candidate, cleans sidecars, protects main, then reopens WAL. New sidecars inherit0600; actual completed production-writer generations have observed0600 sidecars.",
+    "blanket_production_crash_failure_claim_supported": false
+  },
+  "existing_test_boundaries": [
+    {
+      "test": "exact_current_cut_recovers_writable_generation_and_persists_activation",
+      "observed_result": "PASS in shadow-tests-006",
+      "scope": "Explicitly closes seed store before writable recovery, and closes recovered store before ordinary reopen. Positive clean handoff, not abrupt WAL crash replay."
+    },
+    {
+      "test": "agentd_product_host_recovers_exact_cut_into_fenced_writer_generation",
+      "scope": "Product fixture explicitly store.close().await before host open. Exact pre-lease anchor and post-lease assertions remain; no source-owner forced death."
+    },
+    {
+      "test": "cold_read_only::crash_reopen_refuses_pending_wal",
+      "observed_result": "PASS in shadow-tests-006",
+      "scope": "Child exits73 without destructors after opening an already clean-seeded store. Parent intentionally tests read-only cold recovery rejecting present WAL. It is neither positive writable crash recovery nor proof that this child had0644 sidecars."
+    },
+    {
+      "test": "hostile_file_identities_fail_closed_without_additional_mutation",
+      "observed_result": "PASS in shadow-tests-006",
+      "scope": "Confirms permission/symlink/hardlink/missing identity rejection after a clean seed close; retain this strict behavior."
+    },
+    {
+      "test": "state sqlite_recovery_image/tests and sqlite_recovery_tests",
+      "scope": "Inspected source covers cold-image behavior, sidecar rejection/identity drift and materialization guards; no positive fresh-process unclean writable owner replay was found in the inspected modules. State tests were not run during this review."
+    }
+  ],
+  "v2_recovery_boundary": "The two successful v2 Recover operations recreate the shadow owner/journal runtime in one process while the production source host remains live; they do not reopen a crashed SQLite source owner in another process.",
+  "minimal_fix_proposal_not_applied": [
+    "Before any SQLite open for a genuinely absent initial main database, atomically create the owned file as0600 under the existing canonical private directory/store guard, using create_new and no-follow semantics. Then connect/migrate; WAL/journal/SHM inherit0600 from the start.",
+    "Handle a concurrent AlreadyExists only by validating the winner and preserving existing-file admission semantics; never replace, truncate or silently chmod suspect crash evidence.",
+    "Do not relax strict0600 recovery checks and do not use a temporary process-global umask change in a multithreaded runtime.",
+    "Already existing0644 sidecars need separately authorized migration/recovery handling; the new-file fix must not rewrite the original frozen failed owner."
+  ],
+  "validation_needed_before_closing_crash_claim": [
+    "A child starts with a predictable ordinary creation mask, creates a fresh store, commits a real mutation and independently retains/syncs the current cut, then terminates without close. Assert actual DB/WAL/SHM private modes and pending WAL bytes before recovery.",
+    "A separate fresh process supplies the retained cut plus current authority/fence and executes writable open_with_recovery, verifies full logical equality, and successfully commits a new write while original source bytes remain unchanged.",
+    "Repeat for an already admitted recovered generation and keep stale-cut, revoked-authority and hostile-identity rejection cases. Clean shutdown and cold-reader rejection must remain separately labelled."
+  ],
+  "review_operations": {
+    "SQLite_connections": 0,
+    "Rust_tests_or_builds": 0,
+    "model_executions": 0,
+    "original_repository_edits": 0,
+    "original_run_writes": 0,
+    "remote_writes": 0
+  },
+  "final_ci_boundary": "This report does not block or alter the separately prepared independent final CI. It does not modify the already published successful-run artifact."
+}
