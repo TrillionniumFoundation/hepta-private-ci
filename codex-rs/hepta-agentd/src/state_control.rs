@@ -30,6 +30,12 @@ use super::AgentdState;
 use super::poisoned_state;
 use super::run_error;
 
+#[path = "state_run_control.rs"]
+mod run_control;
+#[cfg(all(test, unix))]
+pub(crate) use run_control::InstanceCommand;
+use run_control::RunControlSnapshot;
+
 const AUTOMATION_UNAVAILABLE_CODE: &str = "automation_unavailable";
 const AUTOMATION_UNAVAILABLE_MESSAGE: &str =
     "this Agent's private automation storage is unavailable";
@@ -56,6 +62,7 @@ impl AgentdState {
         }
         self.refresh_generation()?;
         let (
+            run_control_snapshot,
             current_generation,
             lifecycle,
             app_server_ready,
@@ -67,6 +74,7 @@ impl AgentdState {
         ) = {
             let runtime = self.runtime.lock().map_err(poisoned_state)?;
             (
+                RunControlSnapshot::capture(&runtime),
                 runtime.current_generation,
                 runtime.lifecycle,
                 runtime.app_server_ready,
@@ -431,117 +439,14 @@ impl AgentdState {
                     AgentdPayload::Events(batch)
                 }
             }
-            crate::AgentdMethod::RunStart { snapshot } => {
-                require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
-                require_current_run_identity(
-                    &self.identity,
-                    current_generation,
-                    snapshot.generation,
-                    &snapshot.fence_digest,
-                )?;
-                let receipt = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
-                    .start_run(now_ms()?, internal_run_snapshot(snapshot))
-                    .map_err(run_error)?;
-                AgentdPayload::RunReceipt(wire_run_receipt(receipt))
-            }
-            crate::AgentdMethod::RunAttachContext {
-                expected_revision,
-                attachment,
-            } => {
-                require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
-                require_current_run_identity(
-                    &self.identity,
-                    current_generation,
-                    attachment.generation,
-                    &attachment.fence_digest,
-                )?;
-                let receipt = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
-                    .attach_context(
-                        now_ms()?,
-                        expected_revision,
-                        internal_context_attachment(attachment),
-                    )
-                    .map_err(run_error)?;
-                AgentdPayload::RunReceipt(wire_run_receipt(receipt))
-            }
-            crate::AgentdMethod::RunMarkDispatched {
-                run_id,
-                expected_revision,
-            } => {
-                require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
-                let receipt = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
-                    .mark_dispatched(now_ms()?, &run_id, expected_revision)
-                    .map_err(run_error)?;
-                AgentdPayload::RunReceipt(wire_run_receipt(receipt))
-            }
-            crate::AgentdMethod::RunCancel {
-                run_id,
-                expected_revision,
-                reason,
-            } => {
-                require_run_reconciliation_ready(lifecycle, fenced)?;
-                let (disposition, receipt) = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
-                    .cancel_run(now_ms()?, &run_id, expected_revision, &reason)
-                    .map_err(run_error)?;
-                AgentdPayload::RunCancellation(crate::AgentRunCancellation {
-                    disposition: wire_cancellation_disposition(disposition),
-                    receipt: wire_run_receipt(receipt),
-                })
-            }
-            crate::AgentdMethod::RunObserveTerminal {
-                run_id,
-                expected_revision,
-                phase,
-                terminal_observed,
-            } => {
-                require_run_reconciliation_ready(lifecycle, fenced)?;
-                let receipt = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
-                    .observe_terminal(
-                        &run_id,
-                        expected_revision,
-                        internal_run_phase(phase),
-                        terminal_observed,
-                    )
-                    .map_err(run_error)?;
-                AgentdPayload::RunReceipt(wire_run_receipt(receipt))
-            }
-            crate::AgentdMethod::RunStatus { run_id } => {
-                require_run_reconciliation_ready(lifecycle, fenced)?;
-                let run = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
-                    .run(&run_id)
-                    .map(wire_run_receipt);
-                AgentdPayload::RunStatus { run }
-            }
-            crate::AgentdMethod::RunReleaseClosed {
-                run_id,
-                expected_revision,
-            } => {
-                require_run_reconciliation_ready(lifecycle, fenced)?;
-                let receipt = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
-                    .remove_closed_run(&run_id, expected_revision)
-                    .map_err(run_error)?;
-                AgentdPayload::RunReceipt(wire_run_receipt(receipt))
+            method @ (crate::AgentdMethod::RunStart { .. }
+            | crate::AgentdMethod::RunAttachContext { .. }
+            | crate::AgentdMethod::RunMarkDispatched { .. }
+            | crate::AgentdMethod::RunCancel { .. }
+            | crate::AgentdMethod::RunObserveTerminal { .. }
+            | crate::AgentdMethod::RunStatus { .. }
+            | crate::AgentdMethod::RunReleaseClosed { .. }) => {
+                self.run_control_response(method, run_control_snapshot)?
             }
             crate::AgentdMethod::AutomationCreate { draft } => {
                 require_automation_ready(

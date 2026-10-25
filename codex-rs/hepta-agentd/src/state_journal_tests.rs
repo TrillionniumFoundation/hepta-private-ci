@@ -9,7 +9,16 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 use std::path::PathBuf;
 
+type Constructor = fn(
+    AgentdIdentity,
+    FleetRegistry,
+    usize,
+    &Path,
+    JournalOpenMode,
+) -> Result<AgentdState, AgentdError>;
+
 struct Fixture {
+    construct: Constructor,
     registry: FleetRegistry,
     state: Option<AgentdState>,
     _writer: File,
@@ -31,6 +40,10 @@ fn construct(
 
 impl Fixture {
     fn new() -> anyhow::Result<Self> {
+        Self::using(construct)
+    }
+
+    fn using(constructor: Constructor) -> anyhow::Result<Self> {
         let mut writer = None;
         let mut path = None;
         let (temp, registry, state) =
@@ -51,12 +64,13 @@ impl Fixture {
                 std::fs::set_permissions(&home, std::fs::Permissions::from_mode(0o700))?;
                 let file = home.join("runs.json");
                 let state =
-                    construct(identity, registry, capacity, &file, JournalOpenMode::Create)?;
+                    constructor(identity, registry, capacity, &file, JournalOpenMode::Create)?;
                 writer = Some(lock);
                 path = Some(file);
                 Ok(state)
             })?;
         Ok(Self {
+            construct: constructor,
             _temp: temp,
             registry,
             state: Some(state),
@@ -78,7 +92,7 @@ impl Fixture {
             .ok_or_else(|| anyhow::anyhow!("fixture state was consumed"))?;
         let identity = old.identity.clone();
         drop(old);
-        let state = construct(
+        let state = (self.construct)(
             identity,
             self.registry.clone(),
             16,
@@ -377,3 +391,6 @@ async fn failed_real_state_close_denies_local_control_and_corrupt_reopen() -> an
     );
     Ok(())
 }
+
+#[path = "state_instance_tests.rs"]
+mod instance_tests;
