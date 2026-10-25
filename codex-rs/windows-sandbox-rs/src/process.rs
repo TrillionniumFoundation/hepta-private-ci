@@ -1,4 +1,7 @@
 use crate::desktop::LaunchDesktop;
+#[path = "owned_child_stdio.rs"]
+mod owned_child_stdio;
+use owned_child_stdio::OwnedChildStdio;
 use crate::logging;
 use crate::proc_thread_attr::ProcThreadAttributeList;
 use crate::winutil::argv_to_command_line;
@@ -17,21 +20,13 @@ use std::sync::Arc;
 use windows_sys::Win32::Foundation::CloseHandle;
 use windows_sys::Win32::Foundation::GetLastError;
 use windows_sys::Win32::Foundation::HANDLE;
-use windows_sys::Win32::Foundation::HANDLE_FLAG_INHERIT;
-use windows_sys::Win32::Foundation::INVALID_HANDLE_VALUE;
-use windows_sys::Win32::Foundation::SetHandleInformation;
 use windows_sys::Win32::Storage::FileSystem::ReadFile;
-use windows_sys::Win32::System::Console::GetStdHandle;
-use windows_sys::Win32::System::Console::STD_ERROR_HANDLE;
-use windows_sys::Win32::System::Console::STD_INPUT_HANDLE;
-use windows_sys::Win32::System::Console::STD_OUTPUT_HANDLE;
 use windows_sys::Win32::System::Pipes::CreatePipe;
 use windows_sys::Win32::System::Threading::CREATE_NO_WINDOW;
 use windows_sys::Win32::System::Threading::CREATE_UNICODE_ENVIRONMENT;
 use windows_sys::Win32::System::Threading::CreateProcessAsUserW;
 use windows_sys::Win32::System::Threading::EXTENDED_STARTUPINFO_PRESENT;
 use windows_sys::Win32::System::Threading::PROCESS_INFORMATION;
-use windows_sys::Win32::System::Threading::STARTF_USESTDHANDLES;
 use windows_sys::Win32::System::Threading::STARTUPINFOEXW;
 use windows_sys::Win32::System::Threading::STARTUPINFOW;
 
@@ -67,23 +62,6 @@ pub fn make_env_block(env: &HashMap<String, String>) -> Vec<u16> {
     w
 }
 
-unsafe fn ensure_inheritable_stdio(si: &mut STARTUPINFOW) -> Result<()> {
-    for kind in [STD_INPUT_HANDLE, STD_OUTPUT_HANDLE, STD_ERROR_HANDLE] {
-        let h = GetStdHandle(kind);
-        if h == 0 || h == INVALID_HANDLE_VALUE {
-            return Err(anyhow!("GetStdHandle failed: {}", GetLastError()));
-        }
-        if SetHandleInformation(h, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT) == 0 {
-            return Err(anyhow!("SetHandleInformation failed: {}", GetLastError()));
-        }
-    }
-    si.dwFlags |= STARTF_USESTDHANDLES;
-    si.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
-    si.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-    si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
-    Ok(())
-}
-
 /// Low-level process creation using the supplied token, without permission-profile
 /// admission or any filesystem isolation guarantee.
 ///
@@ -116,8 +94,8 @@ pub unsafe fn create_process_as_user(
         | (None, ConsoleMode::Inherit)
         | (None, ConsoleMode::NoWindow) => 0,
     };
-    let attr_count = if stdio.is_some() { 2 } else { 1 };
-    let mut attrs = ProcThreadAttributeList::new(attr_count)?;
+    let child_stdio = OwnedChildStdio::duplicate(stdio)?;
+    let mut attrs = ProcThreadAttributeList::new(/*attr_count*/ 2)?;
     attrs.set_job(job.as_raw_handle() as HANDLE)?;
 
     let mut si: STARTUPINFOEXW = std::mem::zeroed();
@@ -126,30 +104,8 @@ pub unsafe fn create_process_as_user(
     // if lpDesktop is not set when launching with a restricted token.
     // Point explicitly at the interactive desktop or a private desktop.
     si.StartupInfo.lpDesktop = desktop.startup_info_desktop();
-    match stdio {
-        Some((stdin_h, stdout_h, stderr_h)) => {
-            si.StartupInfo.dwFlags |= STARTF_USESTDHANDLES;
-            si.StartupInfo.hStdInput = stdin_h;
-            si.StartupInfo.hStdOutput = stdout_h;
-            si.StartupInfo.hStdError = stderr_h;
-            let mut inherited_handles = vec![stdin_h, stdout_h];
-            if !inherited_handles.contains(&stderr_h) {
-                inherited_handles.push(stderr_h);
-            }
-            for &handle in &inherited_handles {
-                if SetHandleInformation(handle, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT) == 0 {
-                    return Err(anyhow!(
-                        "SetHandleInformation failed for stdio handle: {}",
-                        GetLastError()
-                    ));
-                }
-            }
-            attrs.set_handle_list(inherited_handles)?;
-        }
-        None => {
-            ensure_inheritable_stdio(&mut si.StartupInfo)?;
-        }
-    }
+    child_stdio.apply(&mut si.StartupInfo);
+    attrs.set_handle_list(child_stdio.handle_list())?;
     si.lpAttributeList = attrs.as_mut_ptr();
 
     let creation_flags = CREATE_UNICODE_ENVIRONMENT | EXTENDED_STARTUPINFO_PRESENT | console_flags;
