@@ -68,6 +68,8 @@ pub async fn run(
     let mut production_writer_host = config.production_writer_host();
     let native_memory_cell = config.native_memory_cell();
     let native_memory_registration = config.native_memory_registration();
+    #[cfg(target_os = "linux")]
+    let native_memory_process_host = config.native_memory_process_host();
     if native_memory_registration.is_some()
         && (production_writer_host.is_none() || objective_profile_file.is_none())
     {
@@ -266,6 +268,15 @@ pub async fn run(
                 .map_err(|error| AgentdError::Protocol(error.to_string()))
         })
         .transpose()?;
+    #[cfg(target_os = "linux")]
+    let native_memory_control = native_memory_process_host
+        .map(|host| {
+            crate::native_memory_host_control::NativeMemoryProcessControl::bind(
+                host,
+                cancellation.clone(),
+            )
+        })
+        .transpose()?;
     let control = AgentdControlServer::bind(
         identity.control_socket.clone(),
         Arc::clone(&state),
@@ -276,6 +287,10 @@ pub async fn run(
     // All fallible owner opens and control binding above precede task startup.
     let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?;
     let startup: Result<(), AgentdError> = async {
+        #[cfg(target_os = "linux")]
+        if let Some(control) = native_memory_control {
+            tasks.spawn_required("native-memory-current-control", control.run())?;
+        }
         if let Some((host, interval)) = production_operations {
             tasks.spawn_required(
                 "production-operation-reconciler",

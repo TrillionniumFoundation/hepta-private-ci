@@ -29,6 +29,8 @@ fn main() -> anyhow::Result<()> {
         let mut automation_effect_host = None;
         let mut evidence_recovery_frontier = None;
         let mut evidence_recovery_frontier_trust = None;
+        let mut native_memory_bootstrap: Option<PathBuf> = None;
+        let mut native_memory_bootstrap_digest: Option<Digest32> = None;
         while let Some(flag) = args.next() {
             let path = args
                 .next()
@@ -36,6 +38,27 @@ fn main() -> anyhow::Result<()> {
             if flag == "--authbus-trust-file" {
                 anyhow::ensure!(authbus_trust.is_none(), "duplicate --authbus-trust-file");
                 authbus_trust = Some(path);
+            } else if flag == "--native-memory-bootstrap" {
+                anyhow::ensure!(
+                    native_memory_bootstrap.is_none(),
+                    "duplicate --native-memory-bootstrap"
+                );
+                native_memory_bootstrap = Some(path.into());
+            } else if flag == "--native-memory-bootstrap-digest" {
+                anyhow::ensure!(
+                    native_memory_bootstrap_digest.is_none(),
+                    "duplicate --native-memory-bootstrap-digest"
+                );
+                native_memory_bootstrap_digest = Some(
+                    path.into_string()
+                        .map_err(|_| {
+                            anyhow::anyhow!("native memory bootstrap digest must be UTF-8")
+                        })?
+                        .parse::<Digest32>()
+                        .map_err(|error| {
+                            anyhow::anyhow!("invalid native memory bootstrap digest: {error}")
+                        })?,
+                );
             } else if flag == "--plasticity-bootstrap-descriptor" {
                 anyhow::ensure!(
                     plasticity_bootstrap_descriptor.is_none(),
@@ -181,6 +204,26 @@ fn main() -> anyhow::Result<()> {
             ),
         }
 
+        match (native_memory_bootstrap, native_memory_bootstrap_digest) {
+            (Some(path), Some(digest)) => {
+                #[cfg(target_os = "linux")]
+                {
+                    config = codex_hepta_agentd::configure_native_memory_process_v1(
+                        config, &path, digest,
+                    )
+                    .await?;
+                }
+                #[cfg(not(target_os = "linux"))]
+                {
+                    let _ = (path, digest);
+                    anyhow::bail!("native memory process compatibility profile requires Linux");
+                }
+            }
+            (None, None) => {}
+            _ => anyhow::bail!(
+                "--native-memory-bootstrap and --native-memory-bootstrap-digest must be supplied together"
+            ),
+        }
         codex_hepta_agentd::run(config, arg0_paths).await?;
         Ok(())
     })
