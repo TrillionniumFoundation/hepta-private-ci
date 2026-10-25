@@ -98,6 +98,35 @@ The shared contract and record design are in
 This target does not change the current native implementation, source status or
 product/activation evidence recorded below. No existing wire version is redefined.
 
+### PN3 real-neural evaluation and decision target
+
+Use I07 through the existing artifact/ledger/evaluation ports and registered
+receipt adapters. Before observing candidate evaluation outcomes, seal task/data exposure,
+actual installed-parent root, candidate/complete-model root, evaluator/controller
+provenance, seeds, metrics, improvement/confidence rule, resource/safety floors
+and matched lifecycle budget. Freeze actual-parent/no-change, best-expert,
+simple-merge and applicable adapter/full-tune controls. Account for training,
+search, evaluation, transfer/load and failed attempts; selectively reporting
+successful runs or degrading a control cannot establish improvement.
+
+Evaluate the complete routed model alongside the changed Cell; include retention,
+negative transfer, compatibility, poisoning/backdoor, withdrawal and OOD checks.
+Reject task/plan/root mismatch, forged metrics, insufficient support and exhausted
+budgets with an explicit decision. An ineligible candidate takes no-update:
+retain/revalidate the actual parent and prove ordinary next-task use. Three
+mechanism cycles and three beneficial installed releases are separate gates;
+each beneficial release must exceed its own actual parent under the sealed rule.
+Public/reused tasks can test mechanics, with exposure recorded; they do not
+supply unseen-task or longitudinal generalization evidence.
+
+The retained SmolLM2-135M five-control smoke run has zero gain over its strongest
+control and does not justify adoption, reward or a beneficial-release count.
+Extra signing keys or processes under one administrator do not establish
+independent evaluation/custody. PN5 independence requires the paired plan's
+independently administered operators/failure domains and WAN evidence; commit–
+reveal cannot by itself remove leakage or collusion. The evaluator emits facts;
+the existing selector and local authority owners retain acceptance/install rights.
+
 ### Capacity, depth and learning evidence target
 
 Separate expressivity, stability, learning, unseen-task adaptation and scaling hypotheses. Use withheld tasks/scales, matched search and lifecycle cost, richer-state closure controls and retained failed/plateau runs. Do not import LLM exponents or count replay steps as independent data.
