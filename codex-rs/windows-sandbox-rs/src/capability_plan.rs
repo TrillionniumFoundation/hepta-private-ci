@@ -401,6 +401,13 @@ impl FilesystemCapabilityPlan {
         self.write.iter().map(|root| root.sid.as_str())
     }
 
+    #[cfg(target_os = "windows")]
+    pub(crate) fn write_root_sids(&self) -> impl Iterator<Item = (&str, &str)> {
+        self.write
+            .iter()
+            .map(|root| (root.path.as_str(), root.sid.as_str()))
+    }
+
     /// Returns only the separately declared network-route identity.
     pub fn network_route_sid(&self) -> Option<&str> {
         self.network_route.as_ref().map(|role| role.sid.as_str())

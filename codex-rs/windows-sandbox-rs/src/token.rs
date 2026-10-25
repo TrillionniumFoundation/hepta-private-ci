@@ -9,6 +9,7 @@ use anyhow::Result;
 use anyhow::anyhow;
 pub use full_restriction::UnqualifiedFullRestrictionToken;
 use std::ffi::c_void;
+pub(crate) use token_query::TokenBytes;
 use windows_sys::Win32::Foundation::CloseHandle;
 use windows_sys::Win32::Foundation::ERROR_SUCCESS;
 use windows_sys::Win32::Foundation::GetLastError;

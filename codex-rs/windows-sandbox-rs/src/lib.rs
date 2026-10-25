@@ -85,6 +85,8 @@ mod managed_token_policy;
 #[cfg(target_os = "windows")]
 mod path_normalization;
 #[cfg(target_os = "windows")]
+mod prepared_filesystem;
+#[cfg(target_os = "windows")]
 mod process;
 #[cfg(target_os = "windows")]
 mod read_acl_query;
