@@ -47,6 +47,15 @@ def _arrays(path):
     return arrays
 
 
+def _verified_protocol(root, protocol_path, expected_sha256):
+    _require(file_hash(protocol_path) == expected_sha256, "pinned protocol differs")
+    plan = _read(protocol_path)
+    _require(_read(root / "protocol.json") == plan, "canonical protocol copy changed fields")
+    seal = verify_pre_label_seal(root, protocol_path)
+    _require(seal.get("validation_labels_opened") is False, "validation access disposition differs")
+    return plan, seal
+
+
 def _exact(actual, expected, label):
     _require(np.shape(actual) == np.shape(expected) and np.array_equal(actual, expected),
              "exact replay mismatch: " + label)
@@ -249,7 +258,7 @@ def _mpc_replay(directory, warmup, expected, split, projected, plan, old_anchor)
             "state_receipts_and_probabilities_exact": True}
 
 
-def audit(run_directory, output, expected_protocol_sha256):
+def audit(run_directory, output, expected_protocol_sha256, protocol_path):
     root, target = Path(run_directory).resolve(), Path(output).resolve()
     _require(not target.is_relative_to(root) and not target.exists(),
              "new audit output must be outside the sealed run")
@@ -270,11 +279,8 @@ def audit(run_directory, output, expected_protocol_sha256):
         "plan_absolute_tolerance": PLAN_TOLERANCE,
         "scope": "sealed local execution replay; no scientific gate, independent attestation, or promotion"}
     try:
-        _require(file_hash(root / "protocol.json") == expected_protocol_sha256, "pinned protocol differs")
-        seal = verify_pre_label_seal(root, root / "protocol.json")
-        _require(seal.get("validation_labels_opened") is False, "validation access disposition differs")
-        summary, plan, hashes = (_read(root / name) for name in
-                                ("run.json", "protocol.json", "executed_source.json"))
+        plan, seal = _verified_protocol(root, Path(protocol_path), expected_protocol_sha256)
+        summary, hashes = (_read(root / name) for name in ("run.json", "executed_source.json"))
         _require(summary.get("completed_at") and summary["registered_fits"] == 12
                  and len(summary["fits"]) == 12, "run has not completed its registered fit census")
         expected_fits = [(task, seed, head) for task in plan["tasks"]
@@ -293,6 +299,8 @@ def audit(run_directory, output, expected_protocol_sha256):
                      and file_hash(source_root / name) == digest, "executed source closure differs: " + name)
         report.update(source_files_verified=len(hashes), sealed_files_verified=len(seal["files"]),
                       seal_sha256=file_hash(root / "pre_evaluation_seal.json"),
+                      protocol_file=str(Path(protocol_path).resolve()),
+                      canonical_protocol_copy_sha256=file_hash(root / "protocol.json"),
                       executed_source_sha256=file_hash(root / "executed_source.json"))
         task_inputs = {task: _task_inputs(root, task, plan) for task in plan["tasks"]}
         for task, seed, head in expected_fits:
@@ -318,7 +326,7 @@ def audit(run_directory, output, expected_protocol_sha256):
             except Exception as exc:
                 report["failures"].append({"fit_id": fit_id, "type": type(exc).__name__, "message": str(exc)})
         # The inventory is checked again after replay; audit writes only its external report.
-        verify_pre_label_seal(root, root / "protocol.json")
+        _verified_protocol(root, Path(protocol_path), expected_protocol_sha256)
         report["run_unchanged_after_replay"] = True
         report["status"] = "passed" if not report["failures"] else "failed"
     except Exception as exc:
@@ -335,6 +343,7 @@ if __name__ == "__main__":
     parser.add_argument("--run-directory", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--expected-protocol-sha256", required=True)
+    parser.add_argument("--protocol-path", required=True)
     result = audit(**vars(parser.parse_args()))
     print(json.dumps({"status": result["status"], "fits": len(result["fits"]),
                       "failures": result["failures"]}), flush=True)

@@ -10,8 +10,10 @@ import numpy as np
 
 from cell_field_action_io import save_arrays, write_json
 from cell_field_experiments_v4 import fixed_anchor
+from cell_field_features import file_hash
+from cell_field_io_v4 import seal_run
 from cell_field_mpc_v4 import execute_policy
-from cell_field_replay_v4 import CANDIDATE, _fixed_anchor, _mpc_replay
+from cell_field_replay_v4 import CANDIDATE, _fixed_anchor, _mpc_replay, _verified_protocol
 from cell_field_state import CellTrainingState, dataset_digest
 from cell_learning_models import NumpyCellHead, normalize_features
 
@@ -84,6 +86,21 @@ class ReplayAuditTests(unittest.TestCase):
 
 
 class FixedReplayAuditTests(unittest.TestCase):
+    def test_canonical_protocol_copy_preserves_semantics_but_cannot_change_fields(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root, original = Path(temporary) / "run", Path(temporary) / "original.json"
+            root.mkdir()
+            document = {"registered_steps": 8, "candidate": CANDIDATE}
+            original.write_text(json.dumps(document, indent=2))
+            write_json(root / "protocol.json", document)
+            seal = seal_run(root, original)
+            pin = file_hash(original)
+            self.assertNotEqual(pin, file_hash(root / "protocol.json"))
+            self.assertEqual(_verified_protocol(root, original, pin), (document, seal))
+            write_json(root / "protocol.json", {**document, "registered_steps": 7})
+            with self.assertRaisesRegex(ValueError, "canonical protocol copy changed fields"):
+                _verified_protocol(root, original, pin)
+
     def test_all_nonlinear_suffixes_replay_and_an_intermediate_state_fault_rejects(self):
         rng = np.random.default_rng(17)
         split = {role: (rng.normal(size=(8, 8)), np.tile(np.arange(4), 2))
