@@ -282,3 +282,49 @@ async fn uncertain_original_consumer_update_fences_even_with_fresh_root_response
     tokio::time::sleep(Duration::from_millis(20)).await;
     peer.join().unwrap();
 }
+
+#[tokio::test]
+async fn refresh_contention_keeps_feed_but_never_authorizes_a_caller() {
+    let (session, _, peer, key) = connected().await;
+    let (device, _, _device_dir) = owner(&session, key);
+    let (notes, _, _notes_dir) = owner(&session, key);
+    session
+        .activate_final_use_owners(vec![device, notes])
+        .await
+        .unwrap();
+    let verifier = session.verifier();
+    let authority = session.authority();
+    session
+        .live
+        .cache
+        .current_with_clock(|| {
+            // The real cache mutex is held here. Exercise the same post-accept
+            // check used by refresh, not a synthetic Busy result or a sleep race.
+            assert_eq!(
+                session.live.current().unwrap_err(),
+                ObservationReadError::Busy
+            );
+            session.live.validate_refresh().unwrap();
+            assert_eq!(
+                verifier.verify(&authority, &authority.agent_id),
+                Err("root writer observation cache is busy; no authority sample available".into())
+            );
+            boottime_ns()
+        })
+        .unwrap();
+    verifier.verify(&authority, &authority.agent_id).unwrap();
+    session.live.cache.begin_update();
+    assert!(session.live.validate_refresh().is_err());
+    assert_eq!(
+        verifier.verify(&authority, &authority.agent_id),
+        Err("root writer revocation synchronization is incomplete".into())
+    );
+    session.live.cache.end_update();
+    session.live.validate_refresh().unwrap();
+    session.live.cache.fence();
+    assert!(session.live.validate_refresh().is_err());
+    assert!(verifier.verify(&authority, &authority.agent_id).is_err());
+    drop(session);
+    tokio::time::sleep(Duration::from_millis(20)).await;
+    peer.join().unwrap();
+}

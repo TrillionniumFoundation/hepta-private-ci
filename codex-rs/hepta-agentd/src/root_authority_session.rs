@@ -10,6 +10,7 @@ use crate::HostAuthorityObservationResponseV2;
 use crate::HostWriterAuthorizationReadRequestV1;
 use crate::HostWriterAuthorizationReadResponseV1;
 use crate::root_observation_cache::MAX_AGE_NS;
+use crate::root_observation_cache::ObservationReadError;
 use crate::root_observation_cache::RootObservationCache;
 use crate::root_observation_cache::boottime_ns;
 use crate::root_observation_stream::RootObservationStream;
@@ -43,12 +44,12 @@ struct LiveRoot {
 impl LiveRoot {
     fn current(
         &self,
-    ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), AgentdRootAuthorityError> {
+    ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), ObservationReadError> {
         if check_lifetime(self.root.get_ref()).is_err()
             || boottime_ns().map_or(true, |now| now >= self.end_boottime_ns)
         {
             self.cache.fence();
-            return Err(AgentdRootAuthorityError::Unavailable);
+            return Err(ObservationReadError::Unavailable);
         }
         let (observation, now) = self.cache.current()?;
         if self.proof.matches_observation(&observation).is_err()
@@ -61,9 +62,21 @@ impl LiveRoot {
             || check_lifetime(self.root.get_ref()).is_err()
         {
             self.cache.fence();
-            return Err(AgentdRootAuthorityError::Unavailable);
+            return Err(ObservationReadError::Unavailable);
         }
         Ok((observation, now))
+    }
+
+    // This validates an already accepted refresh; it never grants authority.
+    // A concurrent reader may briefly hold the cache lock. Keep the feed alive
+    // in that case only; expiry, invalid evidence and lifetime loss still fail.
+    fn validate_refresh(&self) -> Result<(), AgentdRootAuthorityError> {
+        match self.current() {
+            Ok(_) | Err(ObservationReadError::Busy) => Ok(()),
+            Err(ObservationReadError::Updating | ObservationReadError::Unavailable) => {
+                Err(AgentdRootAuthorityError::Unavailable)
+            }
+        }
     }
 }
 impl AuthorityClock for LiveRoot {
@@ -87,9 +100,17 @@ impl ProductionAuthorityVerifier for LiveRoot {
                 "root writer registration is inactive or differs from its verified proof".into(),
             );
         }
-        self.current()
-            .map(|_| ())
-            .map_err(|_| "root writer observation is unavailable or fenced".into())
+        self.current().map(|_| ()).map_err(|error| match error {
+            ObservationReadError::Busy => {
+                "root writer observation cache is busy; no authority sample available".into()
+            }
+            ObservationReadError::Updating => {
+                "root writer revocation synchronization is incomplete".into()
+            }
+            ObservationReadError::Unavailable => {
+                "root writer observation is unavailable or fenced".into()
+            }
+        })
     }
 }
 
@@ -172,6 +193,7 @@ impl AgentdRootAuthoritySession {
         self.live
             .current()
             .map(|(value, _)| value.revocations.clone())
+            .map_err(Into::into)
     }
     /// Install the exact original Device/Notes owners, not replacement state
     /// or a second nonce ledger. Their separate original frontier stores remain
@@ -267,8 +289,7 @@ async fn refresh(
         synchronize_consumers(consumers, head, started).await?;
         live.cache.end_update();
     }
-    live.current()?;
-    Ok(())
+    live.validate_refresh()
 }
 async fn synchronize_consumers(
     consumers: Vec<FinalUseAuthority>,

@@ -65,3 +65,36 @@ run the owning Agentd suite through `just test`. The ignored
 qualification requires a fresh isolated Root bind, all five lanes and the original
 peer qualification executable. Never target an existing authority directory.
 Finish with scoped `just fix -p codex-hepta-agentd` and `just fmt`.
+
+## Observation concurrency
+
+The original 500 ms age limit includes the request's start, response validation
+and consumer synchronization. An expired sample, clock rollback, malformed or
+changed identity, poisoned lock, lost Root lifetime or uncertain stream still
+closes authority. No timeout or lease is extended by local scheduling delays.
+
+Cache acceptance and current reads now sample BOOTTIME after acquiring the
+retained-state lock. Sampling before the lock allowed a delayed reader's earlier
+sample to arrive after another reader had advanced `last_checked_ns`, falsely
+classifying a monotonic clock as backward. Real backward samples still fence.
+Synchronous authority reads remain nonblocking: lock contention returns Busy,
+and an incomplete consumer barrier returns Updating. Neither returns an authority
+observation. The post-accept refresh check tolerates only Busy, keeping the feed
+alive for its next bounded refresh; it does not accept Updating, stale evidence,
+poison or any other Unavailable result. Caller failure does not retry an effect.
+
+Deterministic tests check that both real sampling callbacks execute while the
+cache mutex is held, that a contended reader never samples or gains authority,
+and that the actual Root session's post-refresh check preserves the feed only
+for Busy. Backward clocks, clock failure and poisoned locks remain permanently
+fenced alongside the existing expiry and revocation tests.
+The owning Agentd library passed 306 tests with 26 skipped qualifications in
+44.364 seconds for this stage. That includes the five new concurrency regressions;
+it is not a rerun of the privileged Root or native guest qualification.
+
+The earlier `root-launch-actual-root-01` failure remains unclassified: it logged
+only `root writer observation is unavailable or fenced`, without the failing
+phase, sample age or cache reason. Its successful `02` comparison used the same
+test executable but a different client-helper ELF. These fixes establish two
+reachable concurrency defects; they do not retrospectively establish either as
+the cause of that particular failure. Preserve both original runs.

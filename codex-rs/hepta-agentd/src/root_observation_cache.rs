@@ -7,10 +7,29 @@ use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::AuthorityTrustError;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::TryLockError;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
 pub(crate) const MAX_AGE_NS: u64 = 500_000_000;
+/// Only Busy is a harmless failed sample for the background refresh worker.
+/// Neither Busy nor Updating supplies an authority observation to a caller.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(super) enum ObservationReadError {
+    Busy,
+    Updating,
+    Unavailable,
+}
+impl From<AgentdRootAuthorityError> for ObservationReadError {
+    fn from(_: AgentdRootAuthorityError) -> Self {
+        Self::Unavailable
+    }
+}
+impl From<ObservationReadError> for AgentdRootAuthorityError {
+    fn from(_: ObservationReadError) -> Self {
+        Self::Unavailable
+    }
+}
 struct Retained {
     observation: Arc<HostAuthorityObservationResponseV2>,
     request_started_ns: u64,
@@ -59,14 +78,14 @@ impl RootObservationCache {
         started: u64,
         ended: u64,
     ) -> Result<(), AgentdRootAuthorityError> {
-        self.accept_at(observation, started, ended, boottime_ns()?)
+        self.accept_with_clock(observation, started, ended, boottime_ns)
     }
-    fn accept_at(
+    fn accept_with_clock(
         &self,
         observation: HostAuthorityObservationResponseV2,
         started: u64,
         ended: u64,
-        now: u64,
+        clock_now: impl FnOnce() -> Result<u64, AgentdRootAuthorityError>,
     ) -> Result<(), AgentdRootAuthorityError> {
         if self.fenced.load(Ordering::Acquire) {
             return Err(AgentdRootAuthorityError::Unavailable);
@@ -76,6 +95,10 @@ impl RootObservationCache {
                 .retained
                 .lock()
                 .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+            // The clock sample and retained ordering share one critical section.
+            // A sample taken before waiting for this lock can be older than a
+            // different reader's last_checked_ns despite a monotonic clock.
+            let now = clock_now()?;
             let clock = &observation.clock;
             let head = &observation.revocations;
             if observation.schema_version != 2
@@ -155,40 +178,50 @@ impl RootObservationCache {
     }
     pub(crate) fn current(
         &self,
-    ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), AgentdRootAuthorityError> {
-        let now = boottime_ns().inspect_err(|_| self.fence())?;
-        self.current_at(now)
+    ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), ObservationReadError> {
+        self.current_with_clock(boottime_ns)
     }
-    fn current_at(
+    pub(super) fn current_with_clock(
         &self,
-        now: u64,
-    ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), AgentdRootAuthorityError> {
-        if self.fenced.load(Ordering::Acquire) || self.updating.load(Ordering::Acquire) {
-            return Err(AgentdRootAuthorityError::Unavailable);
+        clock_now: impl FnOnce() -> Result<u64, AgentdRootAuthorityError>,
+    ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), ObservationReadError> {
+        if self.fenced.load(Ordering::Acquire) {
+            return Err(ObservationReadError::Unavailable);
+        }
+        if self.updating.load(Ordering::Acquire) {
+            return Err(ObservationReadError::Updating);
         }
         // Contention is a local unavailable read, never a wait behind a writer.
         // Unlike invalid evidence, contention alone does not destroy the feed.
-        let mut slot = self
-            .retained
-            .try_lock()
-            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        let mut slot = match self.retained.try_lock() {
+            Ok(slot) => slot,
+            Err(TryLockError::WouldBlock) => return Err(ObservationReadError::Busy),
+            Err(TryLockError::Poisoned(_)) => {
+                self.fence();
+                return Err(ObservationReadError::Unavailable);
+            }
+        };
         let result = (|| {
-            let retained = slot.as_mut().ok_or(AgentdRootAuthorityError::Unavailable)?;
+            let now = clock_now()?;
+            let retained = slot.as_mut().ok_or(ObservationReadError::Unavailable)?;
             if now < retained.last_checked_ns
                 || now
                     .checked_sub(retained.request_started_ns)
                     .is_none_or(|age| age > MAX_AGE_NS)
             {
-                return Err(AgentdRootAuthorityError::Unavailable);
+                return Err(ObservationReadError::Unavailable);
             }
             let projected = project(&retained.observation, now)?;
             retained.last_checked_ns = now;
-            if self.fenced.load(Ordering::Acquire) || self.updating.load(Ordering::Acquire) {
-                return Err(AgentdRootAuthorityError::Unavailable);
+            if self.fenced.load(Ordering::Acquire) {
+                return Err(ObservationReadError::Unavailable);
+            }
+            if self.updating.load(Ordering::Acquire) {
+                return Err(ObservationReadError::Updating);
             }
             Ok((Arc::clone(&retained.observation), projected))
         })();
-        if result.is_err() && !self.updating.load(Ordering::Acquire) {
+        if matches!(result, Err(ObservationReadError::Unavailable)) {
             self.fence();
         }
         result

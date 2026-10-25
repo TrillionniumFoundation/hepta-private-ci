@@ -3,6 +3,23 @@ use crate::root_writer_proof::tests::fixture;
 use crate::root_writer_proof::tests::observation;
 use pretty_assertions::assert_eq;
 const START: u64 = 1_000_000_000;
+impl RootObservationCache {
+    fn accept_at(
+        &self,
+        observation: HostAuthorityObservationResponseV2,
+        started: u64,
+        ended: u64,
+        now: u64,
+    ) -> Result<(), AgentdRootAuthorityError> {
+        self.accept_with_clock(observation, started, ended, || Ok(now))
+    }
+    fn current_at(
+        &self,
+        now: u64,
+    ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), ObservationReadError> {
+        self.current_with_clock(|| Ok(now))
+    }
+}
 fn value(elapsed_ms: u64) -> HostAuthorityObservationResponseV2 {
     let (_, proof) = fixture();
     let mut sample = observation(&proof);
@@ -148,4 +165,114 @@ fn revocations_only_accumulate_and_update_barrier_does_not_publish_early() {
             )
             .is_err()
     );
+}
+
+#[test]
+fn both_clock_samples_are_serialized_with_retained_state() {
+    let cache = cache();
+    let sample = |now| {
+        // Checking the actual held lock makes this deterministic: moving either
+        // clock sample before lock acquisition fails, without scheduler timing.
+        assert!(matches!(
+            cache.retained.try_lock(),
+            Err(TryLockError::WouldBlock)
+        ));
+        Ok(now)
+    };
+    cache
+        .accept_with_clock(value(0), START, START, || sample(START))
+        .unwrap();
+    assert_eq!(
+        cache.current_with_clock(|| sample(START + 1)).unwrap().1,
+        2_001
+    );
+    cache
+        .accept_with_clock(value(100), START + 100_000_000, START + 100_000_000, || {
+            sample(START + 100_000_001)
+        })
+        .unwrap();
+    assert_eq!(
+        cache
+            .current_with_clock(|| sample(START + 100_000_002))
+            .unwrap()
+            .1,
+        2_101
+    );
+}
+
+#[test]
+fn contention_and_update_barrier_never_sample_or_supply_authority() {
+    let cache = cache();
+    cache.accept_at(value(0), START, START, START).unwrap();
+    let never_sample = || -> Result<u64, AgentdRootAuthorityError> {
+        panic!("unavailable readers must not sample before acquiring the lock")
+    };
+    let held = cache.retained.lock().unwrap();
+    assert_eq!(
+        cache.current_with_clock(never_sample).unwrap_err(),
+        ObservationReadError::Busy
+    );
+    assert!(!cache.fenced.load(Ordering::Acquire));
+    drop(held);
+    cache.begin_update();
+    assert_eq!(
+        cache.current_with_clock(never_sample).unwrap_err(),
+        ObservationReadError::Updating
+    );
+    cache.end_update();
+    assert_eq!(cache.current_at(START + 1).unwrap().1, 2_001);
+    cache.fence();
+    let _held = cache.retained.lock().unwrap();
+    assert_eq!(
+        cache.current_with_clock(never_sample).unwrap_err(),
+        ObservationReadError::Unavailable
+    );
+}
+
+#[test]
+fn actual_backward_clock_and_clock_failure_remain_permanently_fenced() {
+    for acceptance in [false, true] {
+        let cache = cache();
+        cache.accept_at(value(0), START, START, START).unwrap();
+        cache.current_at(START + 100).unwrap();
+        if acceptance {
+            assert!(cache.accept_at(value(0), START, START, START + 99).is_err());
+        } else {
+            assert_eq!(
+                cache.current_at(START + 99).unwrap_err(),
+                ObservationReadError::Unavailable
+            );
+        }
+        assert!(cache.current_at(START + 101).is_err());
+        assert!(
+            cache
+                .accept_at(value(0), START, START, START + 101)
+                .is_err()
+        );
+    }
+    let cache = cache();
+    cache.accept_at(value(0), START, START, START).unwrap();
+    assert_eq!(
+        cache
+            .current_with_clock(|| Err(AgentdRootAuthorityError::Unavailable))
+            .unwrap_err(),
+        ObservationReadError::Unavailable
+    );
+    assert!(cache.current_at(START + 1).is_err());
+}
+
+#[test]
+fn poisoned_cache_is_not_classified_as_harmless_contention() {
+    let cache = cache();
+    cache.accept_at(value(0), START, START, START).unwrap();
+    let poisoned = std::panic::catch_unwind(|| {
+        let _held = cache.retained.lock().unwrap();
+        panic!("controlled cache lock poison");
+    });
+    assert!(poisoned.is_err());
+    assert_eq!(
+        cache.current_at(START + 1).unwrap_err(),
+        ObservationReadError::Unavailable
+    );
+    assert!(cache.fenced.load(Ordering::Acquire));
 }
