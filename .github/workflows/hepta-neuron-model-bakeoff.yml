@@ -3,8 +3,8 @@ name: Hepta NEU-1 model-bakeoff contracts (source-only)
 on:
   pull_request:
     paths:
-      - 'qualification/neuron-model-bakeoff/**'
-      - '.github/workflows/hepta-neuron-model-bakeoff.yml'
+      - "qualification/neuron-model-bakeoff/**"
+      - ".github/workflows/hepta-neuron-model-bakeoff.yml"
   workflow_dispatch:
 
 permissions:
