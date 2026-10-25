@@ -1,0 +1,70 @@
+{
+  "arms": [
+    "mean",
+    "risk",
+    "risk_success"
+  ],
+  "auxiliary_weight": 0.05,
+  "batch_seed": "202610260000 + seed*1000003 + step",
+  "candidate_draw_seed": "202610270000 + seed*1000033 + step",
+  "conditions": 16,
+  "constraint": "E failure(candidate) <= E failure(frozen mean warm start), zero margin",
+  "constraint_certificate_claimed": false,
+  "dual_cap": 5.0,
+  "dual_initial": 0.0,
+  "dual_rate": 0.1,
+  "dual_update": "project(lambda_old + .1*(batch_failure - independent_reference_batch_failure), [0,5]); use lambda_old in current primal step",
+  "formal_holdout_opened": false,
+  "gamma": 2.0,
+  "learning_rate": 0.0001,
+  "manifest_sha256": "60c24d44e12eb3defb3b1b8146d91879b84918b057e0524117137d7e4f793058",
+  "model_selection": "last fixed update; no outcome-based checkpoint choice",
+  "objective": "F_gamma(-actual_utility) + .05 supervised; constrained arm additionally dual * actual_failure",
+  "output": "/workspace/scratch/2b3c256bef7d/abc4-training-runs/training-001",
+  "plan": [
+    "refine_image",
+    "refine_text"
+  ],
+  "primary_observer_sha256": "8cfca1b0cd0a69bcfcc6a9d34d0a672c07c28f3342823ef8a3f6763e9430a003",
+  "raw_archival_required": false,
+  "reference_cost_matched_in_every_arm": true,
+  "reference_draw_seed": "202610280000 + seed*1000037 + step",
+  "scenarios": 8,
+  "schema": "hepta.abc4.actual-generator-training.v1",
+  "seeds": [
+    17,
+    29,
+    43,
+    59,
+    71
+  ],
+  "source_role": "train",
+  "source_sha256": {
+    "experiments/multimodal_output_portfolio/abc_followup/process.py": "eb348e00b48496559b6cc2953e4af7b8c82041425bf049991f55b8db0e91ba2d",
+    "experiments/multimodal_output_portfolio/abc_followup/training/objective.py": "4e2800bf03bc3841699cf92e52c6dc5108b3f84d802726741374cc7d40d38360",
+    "experiments/multimodal_output_portfolio/abc_followup/training/train.py": "21f4ef860de1a5569dfeb5e8bce0ddc2b873635dc76ff9fc528800eeaf3baa1a",
+    "experiments/multimodal_output_portfolio/abc_next/compact_tree.py": "6ff38c2a68a5103c4e5278087bbd1b9106a82e01857f26ea53d17056d25c1630",
+    "experiments/multimodal_output_portfolio/abc_next/settings.py": "1f96cd70794c0bd74e167c84a535963ad4e82037eafa7a8bcd8fab08a04b746e",
+    "experiments/multimodal_output_portfolio/abc_recovery/base_recovery.py": "bfe7f2f635db74075decb0e20dcb1d73d203d1d0445d902e8c4254fca46d80fb",
+    "experiments/multimodal_output_portfolio/abc_recovery/emission.py": "748cdafc6bca00fa07e88a7e294d331d5217c04d3e8208e094bdb906ec5fe1f3",
+    "experiments/multimodal_output_portfolio/abc_recovery/runtime.py": "11e2e0859d706e3186ee5e4688330ad2f4da54d397fe6b33bd335d8ee69f5919",
+    "experiments/multimodal_output_portfolio/v6/data.py": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29",
+    "experiments/multimodal_output_portfolio/v6/neural.py": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742",
+    "experiments/multimodal_output_portfolio/v6/observer.py": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e",
+    "experiments/multimodal_output_portfolio/v7/data.py": "41892eb63420a6288121b39f577597067c3e168d3c7467c868230c64ed092cb9",
+    "experiments/multimodal_output_portfolio/v7/evaluation.py": "9f229b3b1092cfc8f89b8376375a8bb5d7efe9c7bb91979026ee5f32182c79da",
+    "experiments/multimodal_output_portfolio/v7/model.py": "156aa5c73c7e9192ebefecafdc568cbbae3e906e7d1bbb2bf50f7535bd2d8fca",
+    "experiments/multimodal_output_portfolio/v7/snapshot.py": "01655335b9807a09005bde0ae11d9fbe1a0665bd0113d9f28e38310f1f4bb474",
+    "experiments/multimodal_output_portfolio/v7/sources.py": "b6b27b86ba71a4bafd9c2abe4af033e7cfe73079296bdd2ed1addad045881e9f"
+  },
+  "steps": 400,
+  "threads": 2,
+  "unix_ns": 1792914939772803024,
+  "warm_start_sha256": {
+    "17": "bb889c008ac9c034af75c60c989326180b33c5d864c178f23419020d080f5a1d",
+    "29": "2d3682288ec8006d5a2d94ac1258770ae2ee2a2c46e083d8fbdcb77f61973b10",
+    "43": "58161e2c7d1aa09b6c0f8983ef57edf5000f5c994a493fbc7d3be1243adcb25d",
+    "59": "0bc555b7b04225a7b81dba2367904f6226e067ea16f23e1325e5964a5ac67159",
+    "71": "ce500d99f1aa2914323eed234dc142c2db2971139ac71febee300005cfac478f"
+  }
+}
