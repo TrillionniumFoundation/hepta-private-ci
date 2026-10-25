@@ -24,6 +24,64 @@ class ReplacementPhysicalTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "unexpected pinned Arctic"):
                     p.configure_arctic_cpu(bad)
 
+
+    def test_arctic_nonpersistent_rope_buffer_reconstruction_strict(self):
+        from types import SimpleNamespace
+        import torch
+
+        class RotaryEmbedding(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.dim = 64
+                self.base = 160000
+                self.max_position_embeddings = 8192
+                self.max_seq_len_cached = 8192
+                self.register_buffer("inv_freq", torch.full((32,), float("nan")), persistent=False)
+                self.register_buffer("cos_cached", torch.full((8192, 64), float("nan")), persistent=False)
+                self.register_buffer("sin_cached", torch.full((8192, 64), float("nan")), persistent=False)
+
+        class GteEmbeddings(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.register_buffer("position_ids", torch.full(
+                    (8192,), 9223372036854775807, dtype=torch.long), persistent=False)
+                self.rotary_emb = RotaryEmbedding()
+
+        class GteModel(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.config = SimpleNamespace(
+                    max_position_embeddings=8192, hidden_size=768, num_attention_heads=12,
+                    rope_theta=160000, rope_scaling=None, position_embedding_type="rope",
+                    use_memory_efficient_attention=False, unpad_inputs=False)
+                self.embeddings = GteEmbeddings()
+                self.weight = torch.nn.Parameter(torch.tensor([3.0]))
+
+        model = GteModel()
+        before = p.tensor_digest(model)
+        receipt = p.restore_arctic_nonpersistent_buffers(model)
+        self.assertEqual(receipt["method"], "pinned_gte_runtime_buffers_v1")
+        self.assertFalse(receipt["original_position_buffer_valid"])
+        self.assertFalse(receipt["original_rope_cache_valid"])
+        self.assertIs(receipt["production_qualified"], False)
+        self.assertEqual(before, p.tensor_digest(model))
+        self.assertEqual(model.embeddings.position_ids[:13].tolist(), list(range(13)))
+        rotary = model.embeddings.rotary_emb
+        self.assertTrue(torch.all(torch.isfinite(rotary.cos_cached)))
+        self.assertTrue(torch.all(torch.isfinite(rotary.sin_cached)))
+        self.assertTrue(torch.allclose(rotary.cos_cached[0], torch.ones(64)))
+        self.assertTrue(torch.allclose(rotary.sin_cached[0], torch.zeros(64)))
+        self.assertEqual(rotary.max_seq_len_cached, 8192)
+
+        # Rerun is deterministic and never reclassifies a test as a real model execution.
+        repeat = p.restore_arctic_nonpersistent_buffers(model)
+        self.assertTrue(repeat["original_position_buffer_valid"])
+        self.assertTrue(repeat["original_rope_cache_valid"])
+        model.config.rope_scaling = {"type": "ntk", "factor": 2}
+        with self.assertRaisesRegex(ValueError, "unexpected pinned Arctic"):
+            p.restore_arctic_nonpersistent_buffers(model)
+        self.assertEqual(before, p.tensor_digest(model))
+
     def test_file_hash_and_symlink_denial(self):
         with tempfile.TemporaryDirectory() as t:
             root = Path(t)
