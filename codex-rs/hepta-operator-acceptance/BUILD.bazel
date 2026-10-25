@@ -25,6 +25,11 @@ rust_library(
 rust_test(
     name = "hepta-operator-acceptance-tests",
     crate = ":hepta-operator-acceptance-lib",
+    # Windows OpenSSH reads ProgramData before initializing its stdio layer.
+    env_inherit = select({
+        "@platforms//os:windows": ["ProgramData"],
+        "//conditions:default": [],
+    }),
     rustc_flags = select({
         "@platforms//os:windows": [
             "-Aunused-imports",
