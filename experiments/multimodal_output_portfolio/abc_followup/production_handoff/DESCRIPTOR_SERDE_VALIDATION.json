@@ -1,0 +1,110 @@
+{
+  "build": {
+    "binary_sha256": "91a1158d970d1523974c90681fc7eebe2efe19cab6846cbffbd53144883fc6c9",
+    "exact_descriptor_snippet_sha256": "4ba9b0d98816ecd1e5cf743fadf263907dca52e2e84f549474fe3211ac088299",
+    "generated_probe_sha256": "455c228249a0e9a8b7772842e0a1bfd8ea19d438749a667f7591f1bc8187872d",
+    "helper_sha256": "3e4d777ef17c588878cdf0c5b281b606afb3cfe4819ae983af090a771c38b96c",
+    "patched_bootstrap_sha256": "da059737645c7a611cfe9b083022d1af0de8a160e65b0afb02dc50800cab620d",
+    "rlibs": {
+      "codex_hepta_neuron": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libcodex_hepta_neuron-2f0c355b62be5eae.rlib",
+        "sha256": "dc89842770b606b275f9e03c6e23c581154862ac9dd5e5ecc64361935b8e0b1c"
+      },
+      "serde": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde-93ef7b2e0c96e7ec.rlib",
+        "sha256": "516b03b41b6a65b87c97a0cfdd53d8bee890fa7ba39e6fd431d2ad9ca3d708db"
+      },
+      "serde_json": {
+        "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/target/release/deps/libserde_json-6d058f81b7b562eb.rlib",
+        "sha256": "c0514c87e4263b4a0e0852e1f680d8f1040c11122fd842e04cc76b0645acc910"
+      }
+    },
+    "runner_sha256": "f37d903f8da0de573b6c1e50dae177fa696978133826c92fe70a323814b90d09",
+    "rustc_sha256": "bff349e72704ff70bc08a234a3847338e797065bbedde5e556808bc87b7bf7c6",
+    "single_cpu_affinity": [
+      0
+    ],
+    "wall_ns": 1645201454
+  },
+  "checks": [
+    {
+      "case": "legacy_single_json",
+      "status": "passed"
+    },
+    {
+      "case": "new_chain_json",
+      "status": "passed"
+    },
+    {
+      "case": "null_legacy_fields_are_none",
+      "status": "passed"
+    },
+    {
+      "case": "null_chain_is_none",
+      "status": "passed"
+    },
+    {
+      "case": "both_sources",
+      "error": "choose exactly one complete neuron journal source: single file or segment_chain",
+      "status": "rejected"
+    },
+    {
+      "case": "single_plus_empty_chain",
+      "error": "choose exactly one complete neuron journal source: single file or segment_chain",
+      "status": "rejected"
+    },
+    {
+      "case": "empty_chain",
+      "error": "choose exactly one complete neuron journal source: single file or segment_chain",
+      "status": "rejected"
+    },
+    {
+      "case": "missing_single_capacity",
+      "error": "choose exactly one complete neuron journal source: single file or segment_chain",
+      "status": "rejected"
+    },
+    {
+      "case": "capacity_without_path",
+      "error": "choose exactly one complete neuron journal source: single file or segment_chain",
+      "status": "rejected"
+    },
+    {
+      "case": "unknown_neuron_field",
+      "error": "unknown field `unexpected`, expected one of `journal_path`, `segment_chain`, `owner_id`, `scope_digest`, `objective_digest`, `max_records`, `anchor_sequence`, `anchor_checkpoint_digest`, `config`",
+      "status": "rejected"
+    },
+    {
+      "case": "unknown_segment_field",
+      "error": "unknown field `unexpected`, expected `journal_path` or `max_records`",
+      "status": "rejected"
+    },
+    {
+      "case": "negative_segment_capacity",
+      "error": "invalid value: integer `-1`, expected usize",
+      "status": "rejected"
+    },
+    {
+      "case": "wrong_chain_type",
+      "error": "invalid type: map, expected a sequence",
+      "status": "rejected"
+    },
+    {
+      "case": "missing_required_owner",
+      "error": "missing field `owner_id`",
+      "status": "rejected"
+    },
+    {
+      "case": "unknown_config_field",
+      "error": "unknown field `unexpected`, expected one of `model_digest`, `normalization_digest`, `generation`, `width`, `top_k`, `temporal_decay_q24`, `inhibition_gain_q24`, `inhibition`, `activity_decay_q24`, `target_activity_q24`, `threshold_rate_q24`, `threshold_min_q24`, `threshold_max_q24`, `eligibility_decay_q24`",
+      "status": "rejected"
+    }
+  ],
+  "journal_files_opened": false,
+  "new_independent_samples": 0,
+  "original_loader_called": false,
+  "owner_authority_claim": false,
+  "runtime_or_error_stub_used": false,
+  "schema": "hepta.production-handoff.descriptor-serde.v1",
+  "scope": "exact patched serde declaration and real source-selection helper only; no Agentd loader/body/runtime composition qualification",
+  "status": "passed"
+}
