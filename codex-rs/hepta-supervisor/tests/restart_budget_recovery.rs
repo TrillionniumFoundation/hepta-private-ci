@@ -18,6 +18,7 @@ use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_supervisor::AdoptSpec;
 use codex_hepta_supervisor::Adoption;
+use codex_hepta_supervisor::AgentFault;
 use codex_hepta_supervisor::AgentRelease;
 use codex_hepta_supervisor::ManagedProcess;
 use codex_hepta_supervisor::ProcessDriver;
@@ -289,6 +290,12 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
                 SupervisorEventKind::AutomaticRestartQueued { attempt: 3 }
             ))
     );
+    // A recovered third attempt must still wait for its exact 1,000 ms backoff.
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(999)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&agent_id), 3);
     now += Duration::from_secs(1);
     assert_eq!(supervisor.tick(now), TickReport::default());
     assert_eq!(control.spawn_count(&agent_id), 4);
@@ -302,14 +309,47 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
         Supervisor::recover(registry, control.driver(), config(), now)?;
     assert_eq!(recovered, TickReport::default());
     now += Duration::from_millis(1);
+    let previous_event_count = supervisor
+        .snapshot(&agent_id)
+        .expect("snapshot")
+        .events
+        .len();
     control.crash(&agent_id);
-    assert_eq!(supervisor.tick(now), TickReport::default());
+    // Budget exhaustion must remain an operator-visible fail-closed fault.
+    assert_eq!(
+        supervisor.tick(now),
+        TickReport {
+            faults: vec![AgentFault {
+                agent_id: agent_id.clone(),
+                message: SupervisorError::RestartBudgetExhausted(agent_id.clone()).to_string(),
+            }],
+        }
+    );
     let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
     assert!(!snapshot.active);
-    assert!(snapshot.events.iter().any(|event| matches!(
-        &event.kind,
-        SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
-    )));
+    // The exhausted crash emits one terminal receipt, never another queued restart.
+    let restart_events = snapshot.events[previous_event_count..]
+        .iter()
+        .filter_map(|event| match &event.kind {
+            kind @ (SupervisorEventKind::RestartQueued
+            | SupervisorEventKind::AutomaticRestartQueued { .. }
+            | SupervisorEventKind::AutomaticRestartBudgetExhausted { .. }) => Some(kind.clone()),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(
+        restart_events,
+        vec![SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }]
+    );
     assert_eq!(control.spawn_count(&agent_id), 4);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_secs(10)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&agent_id), 4);
+    assert_eq!(
+        supervisor.snapshot(&agent_id).expect("snapshot").events,
+        snapshot.events
+    );
     Ok(())
 }
