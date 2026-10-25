@@ -341,3 +341,7 @@ fn initial_now_seconds() -> Result<u64, String> {
         .map(|time| time.as_secs())
         .map_err(|e| e.to_string())
 }
+
+#[cfg(test)]
+#[path = "smollm_initial_host_tests.rs"]
+mod tests;
