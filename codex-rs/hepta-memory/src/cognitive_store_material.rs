@@ -53,6 +53,7 @@ impl VerifiedCognitiveMaterial {
     }
 }
 
+#[inline(never)]
 pub(super) async fn validate_private_candidate(
     config: &SqliteConfig,
     candidate: &Path,

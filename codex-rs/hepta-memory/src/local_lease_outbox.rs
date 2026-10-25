@@ -3988,6 +3988,7 @@ async fn insert_operation(
     Ok(())
 }
 
+#[inline(never)]
 async fn verify_operation_ledger(
     transaction: &mut Transaction<'_, Sqlite>,
     lease_id: &str,

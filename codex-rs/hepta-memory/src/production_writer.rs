@@ -810,6 +810,7 @@ impl ProductionDurableWriter {
         result
     }
 
+    #[inline(never)]
     async fn reconcile_target_batch_with_owner<T>(
         &self,
         target: &T,
@@ -1215,6 +1216,7 @@ impl ProductionDurableWriter {
         result
     }
 
+    #[inline(never)]
     async fn dispatch_final_use_target_with_owner<T: FinalUseProductionOutboxTarget + ?Sized>(
         &self,
         final_use: &FinalUseAuthority,

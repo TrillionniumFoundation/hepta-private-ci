@@ -477,6 +477,7 @@ impl CognitiveStore {
     }
 }
 
+#[inline(never)]
 pub(crate) async fn verify_revision_fact_digests(
     pool: &SqlitePool,
     owner: &codex_hepta_contracts::AgentId,

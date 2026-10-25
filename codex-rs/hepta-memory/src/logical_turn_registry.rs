@@ -1366,6 +1366,7 @@ async fn append_attempt(
     })
 }
 
+#[inline(never)]
 async fn load_attempt_chain(
     transaction: &mut Transaction<'_, Sqlite>,
     owner: &AgentId,
