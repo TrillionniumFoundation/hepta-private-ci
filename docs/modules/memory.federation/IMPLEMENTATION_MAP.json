@@ -2,20 +2,16 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3297b7fd3b572021616f3cb61c3f31f374ab53ae",
-    "tree": "2faa2ab44f0a49da96dcd09473c03f488aa519a8"
+    "commit": "d0a178825eb22f45f37e778a1e9ab19eedf7f821",
+    "tree": "6a3fda78b4619d70bb8df97157e91cedb142d9c0"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
   "owner": "cognitive-platform",
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/memory.federation/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-memory-federation"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-memory-federation"
-  ],
+  "declaredRoots": ["codex-rs/hepta-memory-federation"],
+  "resolvedRoots": ["codex-rs/hepta-memory-federation"],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "composed_candidate_pending_execution",
@@ -46,9 +42,7 @@
       "sourcePath": "codex-rs/hepta-memory-federation/src/v2.rs",
       "state": "source_hardened_candidate_pending_execution",
       "authority": "none",
-      "tests": [
-        "codex-rs/hepta-memory-federation/src/v2_tests.rs"
-      ],
+      "tests": ["codex-rs/hepta-memory-federation/src/v2_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "observe_cancellation",
       "mappingClass": "owner_native",
@@ -75,9 +69,7 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": [
-    "codex-rs/hepta-memory-federation"
-  ],
+  "sourceRoot": ["codex-rs/hepta-memory-federation"],
   "headAttestation": {
     "candidateBranch": "fix/memory-federation-v2-closure-20260920",
     "baseCommit": "a74246c4d7657d4c6b09fc50c41f1d715ace5e0e",
@@ -150,8 +142,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "3297b7fd3b572021616f3cb61c3f31f374ab53ae",
-    "tree": "2faa2ab44f0a49da96dcd09473c03f488aa519a8"
+    "commit": "d0a178825eb22f45f37e778a1e9ab19eedf7f821",
+    "tree": "6a3fda78b4619d70bb8df97157e91cedb142d9c0"
   },
   "observedSourcePaths": [
     ".github/workflows/memory-federation-v2-final-verify.yml",
@@ -198,7 +190,7 @@
     },
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "fff9588de64edf9ef5e603c16b3bdde0310f4aed"
+      "object": "be377029f542b2f1bac08d9165a7632b22c559b3"
     },
     {
       "path": "codex-rs/Cargo.toml",

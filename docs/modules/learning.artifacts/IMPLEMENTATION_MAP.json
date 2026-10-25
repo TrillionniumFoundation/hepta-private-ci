@@ -2,20 +2,16 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8cc078f540e7f31f3253deaff9db76489533f744",
-    "tree": "677b5b74e7e7461191883ae62ec6ef5f827c7181"
+    "commit": "d0a178825eb22f45f37e778a1e9ab19eedf7f821",
+    "tree": "6a3fda78b4619d70bb8df97157e91cedb142d9c0"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.artifacts",
   "owner": "learning-platform",
   "deputy": "durability-kernel",
   "technicalGuide": "docs/modules/learning.artifacts/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-learning-artifacts"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-learning-artifacts"
-  ],
+  "declaredRoots": ["codex-rs/hepta-learning-artifacts"],
+  "resolvedRoots": ["codex-rs/hepta-learning-artifacts"],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "explicit_read_and_writer_service_composed",
@@ -380,9 +376,7 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": [
-    "codex-rs/hepta-learning-artifacts"
-  ],
+  "sourceRoot": ["codex-rs/hepta-learning-artifacts"],
   "productCallerBindings": [
     {
       "operation": "load_pinned_candidate",
@@ -444,7 +438,7 @@
     },
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "fff9588de64edf9ef5e603c16b3bdde0310f4aed"
+      "object": "be377029f542b2f1bac08d9165a7632b22c559b3"
     },
     {
       "path": "codex-rs/Cargo.toml",
@@ -532,8 +526,8 @@
     }
   ],
   "observedAtHead": {
-    "commit": "8cc078f540e7f31f3253deaff9db76489533f744",
-    "tree": "677b5b74e7e7461191883ae62ec6ef5f827c7181"
+    "commit": "d0a178825eb22f45f37e778a1e9ab19eedf7f821",
+    "tree": "6a3fda78b4619d70bb8df97157e91cedb142d9c0"
   },
   "sourceObservationScope": "Current source navigation was independently re-observed at sourceBase. Source objects and observed paths bind that source snapshot; this observation does not renew historical execution, acceptance, activation or release evidence.",
   "observedSourcePaths": [
