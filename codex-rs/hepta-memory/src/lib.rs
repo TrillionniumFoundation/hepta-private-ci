@@ -415,6 +415,7 @@ pub use production_writer::ProductionTargetOutcome;
 pub use production_writer::ProductionTerminalObservation;
 pub use production_writer::ProductionTerminalObservationFuture;
 pub use production_writer::ProductionWriterError;
+pub use production_writer::decode_retained_memory_cell_source_claim_v1;
 pub use recall::RECALL_OBSERVATION_SCHEMA_VERSION;
 pub use recall::RecallCandidate;
 pub use recall::RecallCounts;
