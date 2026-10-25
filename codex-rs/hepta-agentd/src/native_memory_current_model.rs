@@ -38,3 +38,6 @@ impl<C: NativeMemoryContextAuthorityV1> NeuronModelPort for NativeCurrentModel<'
     }
 }
 
+#[cfg(all(test, unix))]
+#[path = "native_memory_current_model_tests.rs"]
+mod tests;

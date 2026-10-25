@@ -446,3 +446,6 @@ impl<C: NativeMemoryContextAuthorityV1 + 'static> AgentdNativeMemoryShadowOwner<
 #[path = "native_memory_tick_owner_tests.rs"]
 mod tests;
 
+#[cfg(all(test, feature = "qualification-cognitive-write"))]
+#[path = "native_memory_context_binding_tests.rs"]
+mod context_binding_tests;
