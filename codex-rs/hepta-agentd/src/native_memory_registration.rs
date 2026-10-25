@@ -167,6 +167,9 @@ mod tests;
 #[path = "native_memory_registration_current_tests.rs"]
 mod current_tests;
 
+#[cfg(all(test, unix))]
+#[path = "native_memory_registration_pretrained_tests.rs"]
+mod pretrained_tests;
 
 #[cfg(all(test, unix))]
 #[path = "native_memory_registration_startup_tests.rs"]

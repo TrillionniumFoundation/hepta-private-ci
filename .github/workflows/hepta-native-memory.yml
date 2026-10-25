@@ -6,6 +6,7 @@ on:
       - "codex-rs/arg0/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-ndu/**"
       - "codex-rs/hepta-agent-protocol/**"
       - "codex-rs/hepta-agentd/**"
       - "scripts/memory_cell/**"
@@ -91,7 +92,13 @@ jobs:
         run: |
           set -euo pipefail
           export HEPTA_MEMORY_CRASH_EVIDENCE_ROOT="$NATIVE_ARTIFACT_ROOT/bootstrap-crash-tests"
-          just test --locked -p codex-arg0 -p codex-hepta-memory -p codex-hepta-agent-protocol -p codex-hepta-agentd -p codex-hepta-neuron -p codex-hepta-cognitive-store --features codex-hepta-agentd/qualification-cognitive-write 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/scoped-tests.log"
+          just test --locked -p codex-arg0 -p codex-hepta-memory -p codex-hepta-agent-protocol -p codex-hepta-agentd -p codex-hepta-neuron -p codex-hepta-ndu -p codex-hepta-cognitive-store --features codex-hepta-agentd/qualification-cognitive-write 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/scoped-tests.log"
+      - name: Current-owner registration in the default Agentd build
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-agentd --lib -E 'test(native_memory_current_) | test(native_memory_registration)' 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/default-current-owner-tests.log"
       - name: Build actual daemon probe
         working-directory: codex-rs
         shell: bash
@@ -121,12 +128,30 @@ jobs:
         run: |
           set -euo pipefail
           python -I -B scripts/memory_cell_native/shadow/native_shadow_ci.py --repo "$GITHUB_WORKSPACE" --binary "$CARGO_TARGET_DIR/debug/examples/native_memory_shadow" --native-run "$NATIVE_ARTIFACT_ROOT/run" --out "$NATIVE_ARTIFACT_ROOT/shadow" --expected-head "$CANDIDATE_SHA" 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/shadow-driver.log"
+      - name: Prepare independent current-owner factory inputs without retraining
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -I -B scripts/memory_cell_native/current/native_current_ci.py prepare --repo "$GITHUB_WORKSPACE" --native-run "$NATIVE_ARTIFACT_ROOT/run" --shadow-run "$NATIVE_ARTIFACT_ROOT/shadow" --out "$NATIVE_ARTIFACT_ROOT/current" --expected-head "$CANDIDATE_SHA"
+      - name: One actual pretrained callback through the default current-owner factory
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HEPTA_NATIVE_MEMORY_CURRENT_MODEL_CONFIG="$NATIVE_ARTIFACT_ROOT/current/model_config.json"
+          export HEPTA_NATIVE_MEMORY_CURRENT_SOURCE_DOCUMENT="$NATIVE_ARTIFACT_ROOT/run/trial/source_document.json"
+          just test --locked -p codex-hepta-agentd --lib --run-ignored only --retries 0 -E 'test(pretrained_current_factory_executes_one_exact_decoder_and_fences_delivery)' 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/current-factory-tests.log"
+      - name: Verify unchanged pretrained inputs and the actual current-owner receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -I -B scripts/memory_cell_native/current/native_current_ci.py finish --repo "$GITHUB_WORKSPACE" --native-run "$NATIVE_ARTIFACT_ROOT/run" --shadow-run "$NATIVE_ARTIFACT_ROOT/shadow" --out "$NATIVE_ARTIFACT_ROOT/current" --expected-head "$CANDIDATE_SHA"
       - name: Scoped lint fix and final formatting proposal
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          just fix --locked -p codex-arg0 -p codex-hepta-memory -p codex-hepta-agent-protocol -p codex-hepta-agentd -p codex-hepta-neuron -p codex-hepta-cognitive-store --features codex-hepta-agentd/qualification-cognitive-write --examples 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/scoped-fix.log"
+          just fix --locked -p codex-arg0 -p codex-hepta-memory -p codex-hepta-agent-protocol -p codex-hepta-agentd -p codex-hepta-neuron -p codex-hepta-ndu -p codex-hepta-cognitive-store --features codex-hepta-agentd/qualification-cognitive-write --examples 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/scoped-fix.log"
           just fmt --base 429894ac8e0818102cfdea4ad47a56e4583b2902 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/final-format.log"
       - name: Retain proposed changes without running tests after formatting
         if: always()
