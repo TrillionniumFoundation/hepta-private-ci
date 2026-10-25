@@ -7204,14 +7204,15 @@ fn remote_catalog_in_flight_stale_refresh_deduplicates_without_suppressing_force
         "https://plugins.example/".to_string(),
         test_http_client_factory(),
     );
-    let request = |service_config: RemotePluginServiceConfig,
-                   scopes: &[RemotePluginScope],
-                   mode: RemoteCatalogCacheRefreshMode| RemoteCatalogCacheRefreshRequest {
-        service_config,
-        auth: None,
-        scopes: scopes.iter().copied().collect(),
-        mode,
-    };
+    let request =
+        |service_config: RemotePluginServiceConfig,
+         scopes: &[RemotePluginScope],
+         mode: RemoteCatalogCacheRefreshMode| RemoteCatalogCacheRefreshRequest {
+            service_config,
+            auth: None,
+            scopes: scopes.iter().copied().collect(),
+            mode,
+        };
     let state = RemoteCatalogCacheRefreshState {
         active_request: Some(request(
             config.clone(),

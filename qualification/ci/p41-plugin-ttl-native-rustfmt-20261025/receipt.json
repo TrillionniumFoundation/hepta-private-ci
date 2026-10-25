@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.p41-plugin-ttl-native-rustfmt-receipt.v1",
+  "date_utc": "2026-10-25",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "parent_pull_request": 3883,
+  "source_parent_sha": "e92fd978634973bddb84455587475a342d1206c3",
+  "native_failure": {
+    "origin_pr": 3840,
+    "origin_head_sha": "54022968f3c9a8525d429547392ffcccf9a43710",
+    "run_id": 40155856323,
+    "job_id": 121161457823,
+    "step": "Check formatting (run `just fmt` to fix)",
+    "observed_result": "FAILURE",
+    "diagnostic": "Rustfmt diff at codex-rs/core-plugins/src/manager.rs:331 and manager_tests.rs:7204"
+  },
+  "repair": {
+    "scope": "Two formatting-only Rust expressions exactly following native rustfmt output",
+    "files": [
+      "codex-rs/core-plugins/src/manager.rs",
+      "codex-rs/core-plugins/src/manager_tests.rs"
+    ],
+    "production_behavior_changed": false,
+    "original_positive_negative_assertions_removed": false
+  },
+  "qualification": {
+    "local_rustfmt_executed": false,
+    "owning_native_tests_executed_on_new_sha": false,
+    "blocking_ci_current_sha": "PENDING",
+    "required_architecture": "PENDING",
+    "v8": "PENDING",
+    "windows_delete": "OPEN",
+    "plugin_ttl": "OPEN",
+    "rustsec_crypto_bigint": "OPEN",
+    "full_policy": "OPEN",
+    "target_device_perf_energy": "OPEN"
+  },
+  "authority": "DENY_ALL",
+  "mode": "SHADOW_ONLY",
+  "go_no_go": "HOLD_NO_GO"
+}

@@ -331,7 +331,9 @@ impl RemoteCatalogCacheRefreshState {
             && let Some(active) = &self.active_request
             && active.has_same_cache_identity(&request)
         {
-            request.scopes.retain(|scope| !active.scopes.contains(scope));
+            request
+                .scopes
+                .retain(|scope| !active.scopes.contains(scope));
         }
         (!request.scopes.is_empty()).then_some(request)
     }
