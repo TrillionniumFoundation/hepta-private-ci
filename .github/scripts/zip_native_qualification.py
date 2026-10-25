@@ -14,6 +14,9 @@ PROFILE_APPENDIX='\n# Owner diagnostic only: original defaults and overrides pre
 NEXTTEST_BASE_BLOB='f0430497b34b5335929e24b9e19745f467362641'
 DEADLINE=None
 FINALIZING=False
+CONTROL_PARENT='f61a23820d2ae6ac510d80e81f72d9638cc2f16a'
+FINAL_READ_REPOS=frozenset()
+FINAL_GIT_READS={('ls-files','-z'),('status','--porcelain','--untracked-files=all'),('rev-parse','HEAD'),('rev-parse','HEAD^{tree}')}
 class Hold(Exception):pass
 
 def sha(b):return hashlib.sha256(b).hexdigest()
@@ -22,10 +25,108 @@ def require(v):
     if not v:raise Hold()
 def guard():
     require(DEADLINE is not None and time.monotonic()<DEADLINE+(180 if FINALIZING else 0)-10)
+GIT_ADMIN_BASELINES={}
+CARGO_CONFIG_BASELINE=None
+CARGO_CONFIG_PATHS=[]
+GIT_SAFE_FLAGS=['-c','core.fsmonitor=false','-c','core.untrackedCache=false',
+    '-c','core.hooksPath=/dev/null','-c','core.attributesFile=/dev/null',
+    '-c','submodule.recurse=false','-c','protocol.allow=never']
+
+def strict_git_config(data):
+    require(len(data)<=16384)
+    section=None;values={}
+    allowed={
+      ('core','repositoryformatversion'):{'0'},('core','filemode'):{'true','false'},
+      ('core','bare'):{'false'},('core','logallrefupdates'):{'true'},
+      ('core','symlinks'):{'true','false'},('core','ignorecase'):{'true','false'},
+      ('core','precomposeunicode'):{'true','false'},
+      ('remote "origin"','url'):{'https://github.com/TrillionniumFoundation/hepta-private-ci','https://github.com/TrillionniumFoundation/hepta-private-ci.git'},
+      ('remote "origin"','fetch'):{'+refs/heads/*:refs/remotes/origin/*'},
+      ('extensions','objectformat'):{'sha1'},('gc','auto'):{'0'},
+      ('branch \"'+BRANCH+'\"','remote'):{'origin'},
+      ('branch \"'+BRANCH+'\"','merge'):{'refs/heads/'+BRANCH}}
+    for line in data.decode('utf-8').splitlines():
+        line=line.strip()
+        if not line or line.startswith(('#',';')):continue
+        if line.startswith('['):
+            require(line in {'[core]','[remote "origin"]','[extensions]','[http "https://github.com/"]','[gc]','[branch "'+BRANCH+'"]'})
+            section=line[1:-1];continue
+        match=re.fullmatch(r'([A-Za-z][A-Za-z0-9]*)\s*=\s*([^\r\n]+)',line)
+        require(match is not None and section is not None)
+        key=(section,match[1].lower());value=match[2].strip()
+        require(key in allowed and key not in values and value in allowed[key]);values[key]=value
+    require(values.get(('core','repositoryformatversion'))=='0' and values.get(('core','bare'))=='false')
+    branch_section='branch \"'+BRANCH+'\"'
+    require(((branch_section,'remote') in values)==((branch_section,'merge') in values))
+    return sha(data)
+
+def git_admin_snapshot(repo):
+    # Fresh checkout only. No Git command is used to inspect its own configuration.
+    admin=repo/'.git';require(admin.is_dir() and not admin.is_symlink())
+    result={'admin_identity':[admin.stat().st_dev,admin.stat().st_ino]}
+    for name in ['commondir','gitdir','worktrees','modules','config.worktree','config.lock','index.lock',
+                 'objects/info/alternates','objects/info/http-alternates','refs/replace','info/grafts']:
+        path=admin/name;require(not path.exists() and not path.is_symlink())
+    for name in ['info','objects','objects/info','objects/pack','refs']:
+        path=admin/name;require(path.is_dir() and not path.is_symlink())
+        result[name]=[path.stat().st_dev,path.stat().st_ino]
+    for index,path in enumerate((admin/'objects').rglob('*')):
+        require(index<100000 and not path.is_symlink())
+        require(not path.name.endswith('.promisor'))
+        if DEADLINE is not None:guard()
+    for name in ['config','HEAD','index','shallow','packed-refs','info/attributes']:
+        path=admin/name;require(not path.is_symlink())
+        if path.exists():
+            require(path.is_file() and path.stat().st_size<=16*1024**2)
+            data=path.read_bytes();result[name]={'sha256':sha(data),'device':path.stat().st_dev,'inode':path.stat().st_ino}
+            if name=='config':strict_git_config(data)
+        else:result[name]=None
+    require(result['config'] is not None and result['HEAD'] is not None and result['index'] is not None)
+    for index,path in enumerate((admin/'refs').rglob('*')):
+        require(index<100000 and not path.is_symlink())
+        if DEADLINE is not None:guard()
+        if path.is_file():
+            require(path.stat().st_size<=4096);result['ref:'+path.relative_to(admin).as_posix()]=sha(path.read_bytes())
+        else:require(path.is_dir())
+    return result
+
+def cargo_config_identity():
+    result={}
+    for path in CARGO_CONFIG_PATHS:
+        require(not path.is_symlink() and not path.parent.is_symlink())
+        if path.exists():
+            require(path.is_file() and path.stat().st_size<=1024*1024)
+            result[str(path)]=sha(path.read_bytes())
+        else:result[str(path)]=None
+    return result
+
+def recheck_cargo_config():
+    require(CARGO_CONFIG_BASELINE is not None and cargo_config_identity()==CARGO_CONFIG_BASELINE)
+
 def capture(argv,env,maximum,records,disk):
     guard()
+    if argv and argv[0]=='cargo':recheck_cargo_config()
+    if FINALIZING:
+        # Only fixed identity reads may bypass the build disk-growth gate.
+        # They retain the same remaining reserve and owned-process supervisor.
+        require(not owned.OWNERSHIP_UNCERTAIN)
+        require(len(argv)>=4 and argv[:2]==['git','-C'])
+        require(argv[2] in FINAL_READ_REPOS and tuple(argv[3:]) in FINAL_GIT_READS)
+        env=dict(env);env['GIT_OPTIONAL_LOCKS']='0'
+        disk=None
+    if argv and argv[0]=='git':
+        require(len(argv)>=4 and argv[:2]==['git','-C'] and argv[2] in GIT_ADMIN_BASELINES)
+        require(git_admin_snapshot(Path(argv[2]))==GIT_ADMIN_BASELINES[argv[2]])
+        env=dict(env);env.update({'GIT_OPTIONAL_LOCKS':'0','GIT_NO_LAZY_FETCH':'1',
+            'GIT_NO_REPLACE_OBJECTS':'1','GIT_ATTR_NOSYSTEM':'1'})
+        argv=['git',*GIT_SAFE_FLAGS,*argv[1:]]
+    # Administrative/configuration preflight spends the same absolute budget.
+    # Recompute only after all such checks, immediately before process launch.
+    guard()
     seconds=min(maximum,DEADLINE+(180 if FINALIZING else 0)-time.monotonic()-10)
+    require(seconds>0)
     result,streams=owned.capture(argv,env,seconds,disk)
+    result['final_readonly']=FINALIZING
     result['cwd']=os.getcwd()
     records.append(result)
     require(result['exit']==0 and result['stop'] is None and result['cleanup']['confirmed'])
@@ -120,7 +221,7 @@ def validate_junit(data,expected):
 def command_plan(source,temp):
     manifest=str(source/'codex-rs/Cargo.toml');common=['cargo','+1.95.0']
     selection=['--manifest-path',manifest,'--locked','--all-features','-p','codex-core-plugins','--lib',
-               '--config-file',str(temp/'nextest.toml'),'--profile','zip-owner','-E','test(startup_sync::tests::)']
+               '--cargo-profile','dev-small','--config-file',str(temp/'nextest.toml'),'--profile','zip-owner','-E','test(startup_sync::tests::)']
     commands=[['rustup','toolchain','install','1.95.0','--profile','minimal','--component','rustfmt'],
       ['rustc','+1.95.0','--version'],common+['--version'],common+['nextest','--version'],
       ['rustup','run','1.95.0','rustfmt','--check','--edition','2024','--config','skip_children=true',
@@ -132,7 +233,10 @@ def command_plan(source,temp):
     return commands
 
 def main(control,source,temp):
-    global DEADLINE,FINALIZING
+    global DEADLINE,FINALIZING,FINAL_READ_REPOS,GIT_ADMIN_BASELINES,CARGO_CONFIG_BASELINE,CARGO_CONFIG_PATHS
+    FINALIZING=False
+    FINAL_READ_REPOS=frozenset({str(control),str(source)})
+    GIT_ADMIN_BASELINES={};CARGO_CONFIG_BASELINE=None;CARGO_CONFIG_PATHS=[]
     temp.mkdir(mode=0o700);public=temp/'public';public.mkdir(mode=0o700)
     initial_cwd=Path.cwd()
     records=[];report={'schema':1,'qualified':False,'raw_exported':False,'windows':'HOLD_unreviewed_job_object',
@@ -151,8 +255,17 @@ def main(control,source,temp):
         require(event==os.environ.get('GITHUB_WORKFLOW_SHA'))
         require(os.environ.get('GITHUB_WORKFLOW_REF')=='TrillionniumFoundation/hepta-private-ci/'+WORKFLOW+'@refs/heads/'+BRANCH)
         require(shutil.disk_usage(temp).free>=20*1024**3);owned.DISK_INITIAL_FREE=shutil.disk_usage(temp).free
+        for repo in [control,source]:
+            GIT_ADMIN_BASELINES[str(repo)]=git_admin_snapshot(repo)
+            entries=git(repo,env,records,temp,'ls-files','--stage','-z').split(b'\0')
+            require(any(entries))
+            for entry in filter(None,entries):
+                fields,name=entry.split(b'\t',1);mode,oid,stage=fields.split(b' ')
+                require(mode in {b'100644',b'100755',b'120000'} and stage==b'0' and re.fullmatch(b'[0-9a-f]{40}',oid))
+                require(name.split(b'/')[-1]!=b'.gitmodules')
+        report['git_admin_before_sha256']={repo:sha(json.dumps(value,sort_keys=True).encode()) for repo,value in GIT_ADMIN_BASELINES.items()}
         require(git(control,env,records,temp,'rev-parse','HEAD').decode().strip()==event)
-        require(git(control,env,records,temp,'rev-parse','HEAD^').decode().strip()==BASE)
+        require(git(control,env,records,temp,'rev-parse','HEAD^').decode().strip()==CONTROL_PARENT)
         require(not git(control,env,records,temp,'status','--porcelain','--untracked-files=all'))
         policy_path=control/'.github/scripts/zip_native_policy.json';policy=json.loads(policy_path.read_bytes())
         require(set(policy)=={'base','base_tree','source_files','locks','tests'} and policy['base']==BASE and policy['base_tree']==BASE_TREE)
@@ -183,6 +296,30 @@ def main(control,source,temp):
         report['no_v8_locked_reachable_count']=no_v8((source/'codex-rs/Cargo.lock').read_bytes())
         expected=source_inventory((source/'codex-rs/core-plugins/src/startup_sync_tests.rs').read_text())
         require(expected==policy['tests'])
+        manifest_bytes=(source/'codex-rs/Cargo.toml').read_bytes()
+        require(blob(manifest_bytes)=='d2703b590935ab17316e6c258657c0ce5ab7412a')
+        cargo_config=source/'codex-rs/.cargo/config.toml'
+        require(blob(cargo_config.read_bytes())=='8a6f2c11ee7afbb11f7033ef3390fb1c57b4cd44')
+        # Cargo searches cwd ancestors as well as private CARGO_HOME. Unknown
+        # configuration could override the profile; reject instead of bypassing.
+        for directory in [source/'codex-rs',*(source/'codex-rs').parents]:
+            for name in ['config','config.toml']:
+                candidate=directory/'.cargo'/name
+                if candidate!=cargo_config:require(not candidate.exists() and not candidate.is_symlink())
+        for name in ['config','config.toml']:
+            candidate=Path(env['CARGO_HOME'])/name
+            require(not candidate.exists() and not candidate.is_symlink())
+        CARGO_CONFIG_PATHS=list(dict.fromkeys([
+            directory/'.cargo'/name for directory in [source/'codex-rs',*(source/'codex-rs').parents]
+            for name in ['config','config.toml']]+[Path(env['CARGO_HOME'])/name for name in ['config','config.toml']]))
+        CARGO_CONFIG_BASELINE=cargo_config_identity()
+        report['cargo_config_before_sha256']=sha(json.dumps(CARGO_CONFIG_BASELINE,sort_keys=True).encode())
+        profiles=tomllib.loads(manifest_bytes.decode())['profile']
+        require(profiles['dev-small']=={'inherits':'dev','opt-level':0,'debug':'none','strip':'symbols'})
+        require(profiles['dev']=={'debug':'limited'})
+        report['cargo_build_profile']={'name':'dev-small','manifest_blob':blob(manifest_bytes),
+            'inherits':'dev','opt_level':0,'debug':'none','strip':'symbols',
+            'debug_assertions':True,'overflow_checks':True,'features_unchanged':True}
         original_config=(source/'codex-rs/.config/nextest.toml').read_bytes()
         require(blob(original_config)==NEXTTEST_BASE_BLOB)
         profile=(control/'.github/scripts/zip_native_nextest.toml').read_bytes()
@@ -193,6 +330,7 @@ def main(control,source,temp):
         os.chdir(source/'codex-rs')
         junit=temp/'target/nextest/zip-owner/junit.xml';pending=None
         for index,argv in enumerate(command_plan(source,temp)):
+            recheck_cargo_config()
             is_list='nextest' in argv and 'list' in argv
             is_run='nextest' in argv and 'run' in argv
             if is_run:require(not junit.exists() and pending is not None)
@@ -216,8 +354,10 @@ def main(control,source,temp):
         report['hold']=True  # Fixed error only, no raw exceptions.
     finally:
         FINALIZING=True
+        report['owned_commands_cleanup_confirmed']=not owned.OWNERSHIP_UNCERTAIN and all(x['cleanup']['confirmed'] for x in records)
         try:
             require(not owned.OWNERSHIP_UNCERTAIN)
+            recheck_cargo_config()
             require('source_before_sha256' in report and 'control_before' in report)
             after=snapshot(source,env,records,temp)
             require(sha(json.dumps(after,sort_keys=True).encode())==report['source_before_sha256'])
@@ -234,6 +374,10 @@ def main(control,source,temp):
             report['source_after_sha256']=sha(json.dumps(after,sort_keys=True).encode());report['control_after']=report['control_before']
             report['locks_after']={name:{'blob':blob((source/name).read_bytes()),'sha256':sha((source/name).read_bytes())} for name in policy['locks']}
             require(report['locks_before']==report['locks_after'])
+            recheck_cargo_config()
+            report['cargo_config_after_sha256']=sha(json.dumps(cargo_config_identity(),sort_keys=True).encode())
+            report['git_admin_after_sha256']={repo:sha(json.dumps(git_admin_snapshot(Path(repo)),sort_keys=True).encode()) for repo in GIT_ADMIN_BASELINES}
+            require(report['git_admin_before_sha256']==report['git_admin_after_sha256'])
             report['cleanup_confirmed']=True
             report['qualified']=report['native_execution_complete'] and not report.get('hold',False)
         except Exception:report['hold']=True;report['cleanup_confirmed']=False

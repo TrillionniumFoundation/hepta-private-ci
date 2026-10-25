@@ -210,6 +210,18 @@ def _cleanup_owned(proc, timeout=5):
     return receipt
 
 
+def _disk_sample(initial_free, free, previous=None):
+    growth = initial_free - free
+    return {'initial_free_bytes': initial_free, 'free_bytes': free,
+            'growth_bytes': growth, 'floor_bytes': 4 * 1024**3,
+            'growth_limit_bytes': 8 * 1024**3,
+            'floor_breached': free < 4 * 1024**3,
+            'growth_breached': growth > 8 * 1024**3,
+            'samples': (previous['samples'] if previous else 0) + 1,
+            'minimum_free_bytes': min(free, previous['minimum_free_bytes']) if previous else free,
+            'maximum_growth_bytes': max(growth, previous['maximum_growth_bytes']) if previous else growth}
+
+
 def capture(argv, env, seconds, disk=None, abort=None):
     global OWNERSHIP_UNCERTAIN
     streams = [Stream(), Stream()]
@@ -237,7 +249,8 @@ def capture(argv, env, seconds, disk=None, abort=None):
                 reason = 'timeout' if time.monotonic() >= deadline else None
                 if disk:
                     free = shutil.disk_usage(disk).free
-                    if free < 4 * 1024**3 or initial_free - free > 8 * 1024**3:
+                    result['disk_observation'] = _disk_sample(initial_free, free, result.get('disk_observation'))
+                    if result['disk_observation']['floor_breached'] or result['disk_observation']['growth_breached']:
                         reason = 'disk_floor_or_total_budget'
                 if reason:
                     result['stop'] = reason
