@@ -39,6 +39,9 @@ mod driver;
 use driver::Exchange;
 use driver::Mailbox;
 use driver::SmolLmDriver;
+pub use driver::SmolLmFixedInitialBackboneProofV1;
+pub use driver::SmolLmMeasuredForwardV1;
+pub use driver::SmolLmMeasuredLoadV1;
 pub use driver::SmolLmNeuralReadConfigV1;
 
 static REQUEST_SEQUENCE: AtomicU64 = AtomicU64::new(1);
@@ -369,7 +372,7 @@ impl SmolLmNeuralReadPortV1 {
             std::time::Instant::now() + Duration::from_secs(120),
             cancellation.clone(),
         );
-        let mailbox = Arc::new(Mutex::new(None));
+        let mailbox = Arc::new(Mutex::new(Default::default()));
         let driver = SmolLmDriver::new(
             config,
             pin.clone(),
@@ -417,6 +420,11 @@ impl SmolLmNeuralReadPortV1 {
             &loaded.observed_memory_bytes.to_be_bytes(),
         ]);
         context.settle_load(&admitted, observed, &load_execution)?;
+        mailbox
+            .lock()
+            .map_err(|_| "neural exchange poisoned")?
+            .measurements
+            .settle_load(&admitted);
         Ok(Self {
             pin,
             model_id,
@@ -427,6 +435,29 @@ impl SmolLmNeuralReadPortV1 {
         })
     }
 
+    /// Observe one original settled load and the last settled forward only.
+    /// These borrowed historical receipts grant no current execution authority.
+    /// The bounded read-only closure must not reenter this port or dispatch effects.
+    pub fn with_measurements<T>(
+        &self,
+        consume: impl FnOnce(&SmolLmMeasuredLoadV1, Option<&SmolLmMeasuredForwardV1>) -> T,
+    ) -> Result<T, String> {
+        // Match execute/shutdown lock order; an observer never queues a read
+        // behind an arbitrary callback after that read has been admitted.
+        let _worker = self
+            .worker
+            .try_lock()
+            .map_err(|_| "original neural worker is active or poisoned")?;
+        if self.admission_closed.load(Ordering::SeqCst) {
+            return Err("neural session has unresolved physical execution".to_owned());
+        }
+        self.mailbox
+            .lock()
+            .map_err(|_| "neural exchange poisoned")?
+            .measurements
+            .observe(consume)
+    }
+
     /// Explicit original-owner unload. Success requires the Python supervisor's
     /// exact terminal wait4/RSS receipt; asynchronous Drop cleanup earns no such
     /// completion. Call from the same blocking host executor used by start.
@@ -435,6 +466,11 @@ impl SmolLmNeuralReadPortV1 {
             .worker
             .try_lock()
             .map_err(|_| "original neural worker is active or poisoned")?;
+        self.mailbox
+            .lock()
+            .map_err(|_| "neural exchange poisoned")?
+            .measurements
+            .suspend();
         let observed = worker
             .unload_model(now_ms()?, &self.model_id)
             .map_err(|error| error.to_string())?;
@@ -514,20 +550,24 @@ impl NeuralCognitiveInferencePortV1 for SmolLmNeuralReadPortV1 {
                     return Err(error);
                 }
             };
-        *self
+        let mut mailbox = self
             .mailbox
             .lock()
-            .map_err(|_| "neural exchange poisoned")? = Some(Exchange {
+            .map_err(|_| "neural exchange poisoned")?;
+        mailbox.measurements.clear_forward();
+        mailbox.exchange = Some(Exchange {
             request: request.clone(),
             execution: execution.clone(),
             request_id: admitted.request_id.clone(),
             payload_digest: admitted.payload_digest.clone(),
             response: None,
         });
+        drop(mailbox);
         if let Err(error) = execution.check() {
             self.mailbox
                 .lock()
                 .map_err(|_| "neural exchange poisoned")?
+                .exchange
                 .take();
             self.context.settle(&admitted, None, true, 0)?;
             return Err(error);
@@ -556,6 +596,7 @@ impl NeuralCognitiveInferencePortV1 for SmolLmNeuralReadPortV1 {
                 self.mailbox
                     .lock()
                     .map_err(|_| "neural exchange poisoned")?
+                    .exchange
                     .take();
                 self.context.settle(&admitted, None, false, 0)?;
                 return Err(error.to_string());
@@ -565,9 +606,10 @@ impl NeuralCognitiveInferencePortV1 for SmolLmNeuralReadPortV1 {
             .mailbox
             .lock()
             .map_err(|_| "neural exchange poisoned")?
+            .exchange
             .take()
             .ok_or("neural observation missing")?;
-        let (response, receipt) = exchange
+        let (response, receipt, raw_response) = exchange
             .response
             .ok_or("neural terminal response missing")?;
         if execution.check().is_err()
@@ -589,6 +631,18 @@ impl NeuralCognitiveInferencePortV1 for SmolLmNeuralReadPortV1 {
         }
         self.context
             .settle(&admitted, Some(receipt), true, observed.consumed_tokens)?;
+        let mut mailbox = self
+            .mailbox
+            .lock()
+            .map_err(|_| "neural exchange poisoned")?;
+        mailbox
+            .measurements
+            .retain_forward(&admitted, &raw_response, receipt)?;
+        if let Err(error) = execution.check() {
+            mailbox.measurements.clear_forward();
+            return Err(error);
+        }
+        drop(mailbox);
         let scores = request
             .action_ids
             .iter()

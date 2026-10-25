@@ -9,6 +9,9 @@ use serde::Deserialize;
 
 use super::*;
 
+#[path = "smollm_neural_native_measurement_checks.rs"]
+mod measured;
+
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct NativeInput {
@@ -133,6 +136,7 @@ fn real_smollm_parent_query_original_control_final_use_and_terminal_unload()
         issuer.clone(),
         runtime.handle().clone(),
     )?;
+    let (actual_ready_digest, measured_load_id) = measured::loaded(&port, &input.output, &pin)?;
     let query = "Answer with only yes or no. Is 101 greater than 29?".to_owned();
     let request = NeuralCognitiveRequestV1 {
         owner_id: owner(),
@@ -145,23 +149,56 @@ fn real_smollm_parent_query_original_control_final_use_and_terminal_unload()
             StableId::new("native-answer-yes")?,
         ],
     };
-    let observed = port.execute(&request, &parameter_bytes, &codex_hepta_agentd::NeuralCognitiveExecutionV1::bounded_read())?;
+    let observed = port.execute(
+        &request,
+        &parameter_bytes,
+        &codex_hepta_agentd::NeuralCognitiveExecutionV1::bounded_read(),
+    )?;
     assert_eq!(observed.request, request);
     assert_eq!(observed.scores_q32.as_ref().map(Vec::len), Some(2));
     assert!(!observed.execution_receipt_digest.is_zero());
     assert_eq!(observed.authority, AuthorityPosture::DENY_ALL);
+    let measured_forward_id =
+        measured::forwarded(&port, &observed, actual_ready_digest, &input.output)?;
+    assert!(port.with_measurements(|_, _| port.with_measurements(|_, _| ()).is_err())?);
+    assert!(port.with_measurements(|_, _| {
+        port.execute(
+            &request,
+            &parameter_bytes,
+            &codex_hepta_agentd::NeuralCognitiveExecutionV1::bounded_read(),
+        )
+        .is_err()
+    })?);
     assert!(
-        port.execute(&request, b"different unadmitted bytes", &codex_hepta_agentd::NeuralCognitiveExecutionV1::bounded_read())
-            .is_err()
+        port.execute(
+            &request,
+            b"different unadmitted bytes",
+            &codex_hepta_agentd::NeuralCognitiveExecutionV1::bounded_read()
+        )
+        .is_err()
     );
     let before_cross_owner = fs::read(&journal_path)?;
     let claims_before_cross_owner = issuer.bindings.lock().unwrap().len();
     let mut another_owner = request.clone();
     another_owner.owner_id = AgentId::parse("00000000-0000-4000-8000-000000000220")?;
-    assert!(port.execute(&another_owner, &parameter_bytes, &codex_hepta_agentd::NeuralCognitiveExecutionV1::bounded_read()).is_err());
+    assert!(
+        port.execute(
+            &another_owner,
+            &parameter_bytes,
+            &codex_hepta_agentd::NeuralCognitiveExecutionV1::bounded_read()
+        )
+        .is_err()
+    );
     let mut another_body = request.clone();
     another_body.body_generation += 1;
-    assert!(port.execute(&another_body, &parameter_bytes, &codex_hepta_agentd::NeuralCognitiveExecutionV1::bounded_read()).is_err());
+    assert!(
+        port.execute(
+            &another_body,
+            &parameter_bytes,
+            &codex_hepta_agentd::NeuralCognitiveExecutionV1::bounded_read()
+        )
+        .is_err()
+    );
     assert_eq!(fs::read(&journal_path)?, before_cross_owner);
     assert_eq!(
         issuer.bindings.lock().unwrap().len(),
@@ -173,6 +210,7 @@ fn real_smollm_parent_query_original_control_final_use_and_terminal_unload()
     );
     assert_eq!(issuer.bindings.lock().unwrap().len(), 3);
     port.shutdown()?;
+    assert!(port.with_measurements(|_, _| ()).is_err());
     let journal = fs::read_to_string(&journal_path)?;
     let ids: Vec<_> = journal
         .lines()
@@ -180,6 +218,10 @@ fn real_smollm_parent_query_original_control_final_use_and_terminal_unload()
         .map(|line| line.split('|').next().unwrap().to_owned())
         .collect();
     assert_eq!(ids.len(), 3);
+    assert_eq!(
+        (&measured_load_id, &measured_forward_id),
+        (&ids[0], &ids[1])
+    );
     let records: Vec<_> = {
         let control = control.lock().unwrap();
         ids.iter()
