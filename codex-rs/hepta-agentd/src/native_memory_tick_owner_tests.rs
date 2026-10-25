@@ -1,7 +1,8 @@
 //! Controlled source/journal receipts exercise owner identity, not model quality.
 use super::*;
+use codex_hepta_memory::ProductionCognitiveMutation;
 use std::sync::atomic::Ordering;
-use pretty_assertions::assert_eq;
+use std::assert_eq;
 use crate::native_memory_shadow_namespace::NativeMemoryShadowStartV1;
 use crate::native_memory_shadow_namespace::tests::{FixtureModel, files, profile};
 use crate::native_memory_test_support::{Fixture, execution, fixture};

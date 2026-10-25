@@ -1,4 +1,5 @@
 use super::*;
+use pretty_assertions::assert_eq;
 
 #[test]
 fn shadow_advances_actual_journal_and_recovers_without_calibrated_publication() {

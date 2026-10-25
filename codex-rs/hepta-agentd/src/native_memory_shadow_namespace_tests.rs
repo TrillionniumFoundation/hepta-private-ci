@@ -4,7 +4,7 @@ use std::fs::OpenOptions;
 use codex_hepta_neuron::{LocalModelRuntimeReceiptV1, NeuronModelError, NeuronModelOutputV1,
     NeuronModelPort, NeuronModelRequestV1, NeuronTickInputV1, canonical_feature_vector_digest_v1,
     canonical_model_output_digest_v1};
-use pretty_assertions::assert_eq;
+use std::assert_eq;
 use crate::native_memory_test_support::fixture;
 use crate::native_memory_types::query_features;
 
