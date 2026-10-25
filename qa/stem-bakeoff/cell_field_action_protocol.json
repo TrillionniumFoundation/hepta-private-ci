@@ -1,0 +1,325 @@
+{
+  "paper_commit": "f8df0a6075f58f3ab9431a889b773cdf8d6e771d",
+  "paper_revision": "revision_2026-09-26-r45",
+  "encoder": "granite97m",
+  "encoder_revision": "835ad14087e140460703cf0fae09f97d469d65c2",
+  "encoder_inventory_sha256": "08bdb7bb7eefb051ac74924787354a3638ba8a0e6fe6ffdd96ae57d6f1402db3",
+  "encoder_profile": "text",
+  "encoder_max_tokens": 192,
+  "encoder_batch_size": 16,
+  "encoder_threads": 4,
+  "feature_retention": "global",
+  "projection": {
+    "width": 8,
+    "seed": 20261024,
+    "method": "Gaussian QR; diagonal R sign fixed; label-independent"
+  },
+  "task": "UCI News Aggregator four-class headline classification",
+  "source_archive_sha256": "1f5f08691f0ce576cb0b5cfdbcb8c55e0ec14dda8f3e07933da72c500338845a",
+  "head_modes": [
+    "linear",
+    "gated"
+  ],
+  "classes": 4,
+  "seeds": [
+    7,
+    17,
+    29
+  ],
+  "warmup_steps": 64,
+  "optimizer": {
+    "learning_rate": 0.02,
+    "l2": 0.001,
+    "beta1": 0.9,
+    "beta2": 0.999,
+    "epsilon": 1e-08,
+    "gradient_clip": 5.0,
+    "sampler": "full_batch"
+  },
+  "h": 0.02,
+  "effort_price": 0.1,
+  "schema": "hepta.cell-parameter-field.action-protocol.v3",
+  "base_commit": "3372a726affb287b97e531645ccbcc3afc91013f",
+  "source_role_plan": [
+    {
+      "role": "old_train",
+      "month": "2014-04",
+      "rows": 64,
+      "access": "train"
+    },
+    {
+      "role": "old_probe",
+      "month": "2014-04",
+      "rows": 32,
+      "access": "train"
+    },
+    {
+      "role": "old_validation",
+      "month": "2014-04",
+      "rows": 64,
+      "access": "validation"
+    },
+    {
+      "role": "old_test",
+      "month": "2014-04",
+      "rows": 64,
+      "access": "final"
+    },
+    {
+      "role": "current_train",
+      "month": "2014-05",
+      "rows": 64,
+      "access": "train"
+    },
+    {
+      "role": "current_probe",
+      "month": "2014-05",
+      "rows": 32,
+      "access": "train"
+    },
+    {
+      "role": "current_validation",
+      "month": "2014-05",
+      "rows": 64,
+      "access": "validation"
+    },
+    {
+      "role": "future_june",
+      "month": "2014-06",
+      "rows": 48,
+      "access": "final"
+    },
+    {
+      "role": "future_july",
+      "month": "2014-07",
+      "rows": 128,
+      "access": "final"
+    },
+    {
+      "role": "future_august",
+      "month": "2014-08",
+      "rows": 64,
+      "access": "final"
+    }
+  ],
+  "source_counts": {
+    "old_train": 64,
+    "old_probe": 32,
+    "old_validation": 64,
+    "old_test": 64,
+    "current_train": 64,
+    "current_probe": 32,
+    "current_validation": 64,
+    "future_june": 48,
+    "future_july": 128,
+    "future_august": 64
+  },
+  "source_split_salt": "hepta-cell-action-v3-20261024",
+  "prior_experiments": {
+    "v1": {
+      "sources_sha256": "d3d8c203c2fd88966fa937d0e0b5cf2826399f558a26dc1e256e47ab479a0482",
+      "data_receipt_sha256": "57742ed6e70c5c33053e4092bc3f58d46f791e84ffedb2efe79fd187e2e707ea"
+    },
+    "v2": {
+      "sources_sha256": "e0e03839ba6cf957288023b04895eaceae5ac89a9b1ae161ff7518c22f9dd482",
+      "data_receipt_sha256": "41955087b6ac5cb3fb48ff15d4cb17014eb4a5965c1ba9c6324ce9a0dacc263f"
+    }
+  },
+  "source_split": "full story/title union components; exclude conflicts, cross-month, legacy five cohorts, all V1 and all V2 components",
+  "source_selection_scope": "source-only feasibility before new model outcomes; no post-outcome sampling changes",
+  "anchor_offsets": [
+    0,
+    8,
+    16
+  ],
+  "anchor_path": "ordinary zero-extra-intervention current-task Adam from common complete old-warmup state",
+  "evaluation_horizon": 8,
+  "observations": [
+    "loss2",
+    "full"
+  ],
+  "lookaheads": [
+    1,
+    4,
+    8
+  ],
+  "objectives": [
+    "tracking_soft",
+    "direct_soft",
+    "direct_hard"
+  ],
+  "method_id_format": "{observation}_h{lookahead}_{objective}; zero baseline is zero",
+  "action_mask": "all",
+  "action_bound": 1.0,
+  "action_budget": "one first intervention only; coordinate box abs(u_j)<=1/sqrt(p), hence norm(h*B*u)<=0.02; seven subsequent common zero interventions",
+  "action": "post-Adam additive h*B*u on parameters; moments not directly changed; no execution clipping",
+  "current_shift": 0.03,
+  "direct_coefficient": 0.03,
+  "direct_scale_reason": "matches derivative of half*(eta_current+0.03)^2 at eta_current=0, keeping old-loss and effort weights fixed",
+  "objectives_definition": {
+    "tracking_soft": "half squared current displacement plus 0.03; half squared positive old excess above warmup; same effort",
+    "direct_soft": "0.03 times reference-relative current loss; unchanged old positive-excess penalty and effort",
+    "direct_hard": "same direct_soft objective plus old predicted loss constraints for all future steps1..8"
+  },
+  "objective_time_weights": "h at steps0..lookahead-1 and 1 at lookahead; effort h*rho/2 times norm(u)^2; common evaluation always uses full8 horizon",
+  "retention_anchor": "old-probe loss at end of warmup; unchanged for all checkpoints and candidates",
+  "retention_tolerance": 0.0,
+  "constraint_horizon": 8,
+  "constraint_scope": "future steps1..8, same for every objective lookahead; inherited step0 violation reported separately",
+  "feasibility_tolerance": 1e-09,
+  "solver": {
+    "algorithm": "bounded convex one-impulse squared-hinge QP; SLSQP candidate with independent multiplier and strong-convexity certificate; bounded LP/Farkas infeasibility witness",
+    "max_iterations": 300,
+    "ftol": 1e-13,
+    "gap_tolerance": 1e-09,
+    "initialization": "deterministic solver initialization; no previous candidate hidden warm start",
+    "scope": "floating arithmetic certificate on declared tangent problem; hard inequalities enlarged by stated numerical tolerance; no nonlinear or interval-roundoff guarantee",
+    "failure_policy": "retain certified tangent infeasibility separately from unresolved numerical failure; no fallback action or discarded condition"
+  },
+  "registered_warmups": 6,
+  "registered_anchors": 18,
+  "registered_candidates_per_anchor": 19,
+  "registered_conditions": 342,
+  "candidate_order": "zero then objectives in protocol order, observations in protocol order, lookaheads in protocol order",
+  "candidate_freeze": "all candidates at all anchors frozen before any candidate action is executed in a real branch",
+  "same_action_prediction": "every qualified candidate action scored by both loss2 and full tangent models over the identical H8 sequence [u,0,...,0]",
+  "ranking_primary_objective": "direct_soft_total over common H8",
+  "ranking_secondary_objective": "tracking_soft_total over common H8",
+  "ranking_tie_tolerance": 1e-10,
+  "ranking_metrics": [
+    "pairwise concordance and discordance",
+    "predicted-only, actual-only, both ties",
+    "strict-pair coverage and agreement",
+    "Kendall tau-b",
+    "actual regret of predicted minimum including tied-minimum worst regret"
+  ],
+  "ranking_scope": "finite executed candidate census at fixed states; candidate oracle diagnostic only, never selects an online policy; no bootstrap treating anchors as independent tasks",
+  "validation_roles": [
+    "old_validation",
+    "current_validation"
+  ],
+  "final_roles": [
+    "old_test",
+    "future_june",
+    "future_july",
+    "future_august"
+  ],
+  "future_roles": [
+    "future_june",
+    "future_july",
+    "future_august"
+  ],
+  "future_pooling": "equal month means despite different component counts",
+  "primary_family": {
+    "alpha": 0.05,
+    "comparisons": 8,
+    "anchor_offset": 16,
+    "retention_margin": 0.0
+  },
+  "primary_comparisons": [
+    {
+      "id": "direct_vs_tracking_future",
+      "left": "loss2_h8_direct_soft",
+      "right": "loss2_h8_tracking_soft",
+      "roles": [
+        "future_june",
+        "future_july",
+        "future_august"
+      ],
+      "metric": "nll",
+      "upper_bound_rule": "strictly_below_zero"
+    },
+    {
+      "id": "remaining_vs_myopic_future",
+      "left": "loss2_h8_direct_soft",
+      "right": "loss2_h1_direct_soft",
+      "roles": [
+        "future_june",
+        "future_july",
+        "future_august"
+      ],
+      "metric": "nll",
+      "upper_bound_rule": "strictly_below_zero"
+    },
+    {
+      "id": "hard_vs_soft_old",
+      "left": "loss2_h8_direct_hard",
+      "right": "loss2_h8_direct_soft",
+      "roles": [
+        "old_test"
+      ],
+      "metric": "nll",
+      "upper_bound_rule": "at_most_zero"
+    },
+    {
+      "id": "hard_vs_warmup_old",
+      "left": "loss2_h8_direct_hard",
+      "right": "warmup",
+      "roles": [
+        "old_test"
+      ],
+      "metric": "nll",
+      "upper_bound_rule": "at_most_zero"
+    }
+  ],
+  "primary_interpretation": "four diagnostic hypotheses per Head, not a joint efficacy guarantee for one policy; aggregate field all_registered_diagnostics_met",
+  "bootstrap_replicates": 10000,
+  "bootstrap_seed": 830241,
+  "uncertainty": "class-stratified paired source bootstrap, average fixed seeds before resampling; primary8 Bonferroni approximate percentile intervals; no finite-sample or seed-population guarantee",
+  "secondary_pairs": [
+    [
+      "loss2_h8_direct_hard",
+      "loss2_h8_direct_soft"
+    ],
+    [
+      "loss2_h8_direct_soft",
+      "zero"
+    ],
+    [
+      "full_h8_direct_soft",
+      "loss2_h8_direct_soft"
+    ],
+    [
+      "full_h8_direct_hard",
+      "loss2_h8_direct_hard"
+    ],
+    [
+      "loss2_h8_tracking_soft",
+      "zero"
+    ],
+    [
+      "loss2_h8_direct_soft",
+      "loss2_h4_direct_soft"
+    ]
+  ],
+  "secondary_metrics": [
+    "nll",
+    "accuracy"
+  ],
+  "secondary_scope": "anchor16; per final role pointwise95 intervals; hard-vs-soft future harm is an explicit tradeoff endpoint",
+  "independent_retention": "mean source NLL first, then max over time; report inherited step0, future steps1..8 and whole path separately; independent validation and final anchors are predictions of the same warmup model",
+  "label_access": "preparer writes train/validation/final payloads; runner and pre-score audits cannot open validation or final payloads; all plans, branches, checkpoints, predictions sealed before validation; validation report sealed before final scoring; no method changes between stages",
+  "failure_inference": "keep every registered condition; any missing registered seed makes relevant paired source inference unavailable, never selected-subset inference",
+  "replay": {
+    "method_id": "loss2_h8_direct_soft",
+    "anchor_offset": 16,
+    "heads": [
+      "linear",
+      "gated"
+    ],
+    "seeds": [
+      7,
+      17,
+      29
+    ],
+    "whole_steps": 8,
+    "midpoint_steps": 4,
+    "scope": "fresh-process candidate plan recomputation and exact fixed-plan continuation; no hidden feedback state"
+  },
+  "noise_model": "deterministic full-batch Q=0",
+  "evaluation_scope": "local single-intervention diagnostics on historical holdouts, not ongoing closed-loop policy efficacy or pretraining-unseen claim",
+  "authority": "DENY_ALL",
+  "production_authority": false,
+  "publication_scope": "new additive V3 files and evidence, preserve all V1/V2 code/results",
+  "registration": "local freeze and remote protocol publication before V3 features/model outcomes; not third-party preregistration"
+}
