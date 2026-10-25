@@ -7297,7 +7297,10 @@ fn remote_catalog_in_flight_stale_refresh_preserves_auth_mode_boundary() {
     let headers_identity = RemoteInstalledPluginsAuthIdentity::from_auth(Some(&headers_auth));
     assert_ne!(api_identity.auth_mode, headers_identity.auth_mode);
     assert_eq!(api_identity.account_id, headers_identity.account_id);
-    assert_eq!(api_identity.chatgpt_user_id, headers_identity.chatgpt_user_id);
+    assert_eq!(
+        api_identity.chatgpt_user_id,
+        headers_identity.chatgpt_user_id
+    );
     assert_eq!(
         api_identity.is_workspace_account,
         headers_identity.is_workspace_account
