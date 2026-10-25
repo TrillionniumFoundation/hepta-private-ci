@@ -23,6 +23,10 @@ use std::io::Read;
 use std::path::Path;
 use std::path::PathBuf;
 
+#[path = "managed_account_source.rs"]
+mod managed_account_source;
+pub(crate) use managed_account_source::ManagedAccountSource;
+
 #[derive(Debug, Clone)]
 struct SandboxIdentity {
     username: String,
