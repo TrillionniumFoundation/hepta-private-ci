@@ -11,7 +11,6 @@ import json
 import os
 from pathlib import Path
 import platform
-import resource
 import subprocess
 import sys
 import time
@@ -80,18 +79,18 @@ def run(args):
         raise FileExistsError(receipt)
     environment = dict(os.environ)
     environment.update(ENVIRONMENT)
-    before = resource.getrusage(resource.RUSAGE_CHILDREN)
-    if before.ru_utime or before.ru_stime or before.ru_maxrss:
-        raise ValueError("Full-process wrapper must start with no earlier child executions")
     launch_utc = datetime.now(timezone.utc).isoformat()
     started = time.perf_counter_ns()
     child = subprocess.Popen(plan["command"], cwd=plan["cwd"], env=environment)
-    exit_code = child.wait()
+    waited_pid, status, usage = os.wait4(child.pid, 0)
+    if waited_pid != child.pid:
+        raise RuntimeError("Resource measurement returned a different child PID")
+    exit_code = os.waitstatus_to_exitcode(status)
+    child.returncode = exit_code
     wall_ns = time.perf_counter_ns() - started
     exit_utc = datetime.now(timezone.utc).isoformat()
-    after = resource.getrusage(resource.RUSAGE_CHILDREN)
-    user_ns = round((after.ru_utime - before.ru_utime) * 1e9)
-    system_ns = round((after.ru_stime - before.ru_stime) * 1e9)
+    user_ns = round(usage.ru_utime * 1e9)
+    system_ns = round(usage.ru_stime * 1e9)
     result = {"schema": "hepta.abc3.temporal-full-timing-process-receipt.v1",
               "measurement_plan_sha256": digest(args.plan), "command": plan["command"],
               "command_sha256": plan["command_sha256"], "wrapper_sha256": plan["wrapper_sha256"],
@@ -102,9 +101,10 @@ def run(args):
               "launch_utc": launch_utc, "exit_utc": exit_utc, "full_child_wall_ns": wall_ns,
               "full_child_user_cpu_ns": user_ns, "full_child_system_cpu_ns": system_ns,
               "full_child_cpu_ns": user_ns + system_ns,
-              "child_peak_rss_kib": after.ru_maxrss if sys.platform.startswith("linux") else None,
-              "peak_rss_scope": "OS RUSAGE_CHILDREN maximum individual child RSS; not sum of concurrent process-tree resident sets",
-              "cpu_scope": "OS user+system resource use of the completed child, including its native threads",
+              "child_peak_rss_kib": usage.ru_maxrss if sys.platform.startswith("linux") else None,
+              "peak_rss_scope": "OS wait4 exact-PID child peak RSS; not sum of concurrent process-tree resident sets",
+              "cpu_scope": "OS wait4 exact-PID child user+system resource use, including native threads; excludes unrelated earlier child counters",
+              "resource_measurement": "os.wait4(child.pid, 0), with Popen.returncode assigned from os.waitstatus_to_exitcode",
               "includes": ["subprocess launch/exec", "Python startup and imports", "CLI and frozen-input validation",
                            "model/policy loading", "all registered sequential timing executions",
                            "per-execution measurement receipts", "final timing-report serialization", "normal child interpreter exit"],
