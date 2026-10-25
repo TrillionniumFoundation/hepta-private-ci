@@ -520,6 +520,9 @@ class HarnessTests(unittest.TestCase):
             if fault=='workflow-ref':env['GITHUB_WORKFLOW_REF']='SecretRefNeverExport'
             if fault=='budget-origin':env['ZIP_STARTED_MONOTONIC_NS']='SecretBudgetNeverExport'
             if fault=='budget-elapsed':env['ZIP_STARTED_MONOTONIC_NS']='0'
+            # A newly booted runner can legitimately have monotonic() <1500.
+            # Expiry is a synthetic boundary, not an assumption about host uptime.
+            observed_clock=(lambda:1500.0) if fault=='budget-elapsed' else time.monotonic
             admin_original=q.git_admin_snapshot
             def admin_snapshot(repo):
                 if fault=='admin-denied':raise PermissionError('SecretExceptionNeverExport')
@@ -527,7 +530,7 @@ class HarnessTests(unittest.TestCase):
                 if fault=='admin-unexpected':raise ValueError('SecretExceptionNeverExport')
                 return admin_original(repo)
             support.OWNERSHIP_UNCERTAIN=False
-            with mock.patch.object(q,'git_admin_snapshot',side_effect=admin_snapshot),mock.patch.dict(os.environ,env),mock.patch.object(q,'git',side_effect=git),mock.patch.object(q,'snapshot',side_effect=snapshot),mock.patch.object(q,'capture',side_effect=capture),mock.patch.object(q.shutil,'disk_usage',return_value=SimpleNamespace(free=(1 if fault=='initial-disk' else 30)*1024**3)):
+            with mock.patch.object(q.time,'monotonic',side_effect=observed_clock),mock.patch.object(q,'git_admin_snapshot',side_effect=admin_snapshot),mock.patch.dict(os.environ,env),mock.patch.object(q,'git',side_effect=git),mock.patch.object(q,'snapshot',side_effect=snapshot),mock.patch.object(q,'capture',side_effect=capture),mock.patch.object(q.shutil,'disk_usage',return_value=SimpleNamespace(free=(1 if fault=='initial-disk' else 30)*1024**3)):
                 code=q.main(control,source,root/'run')
             output=(root/'run/public/receipt.json').read_text()
             self.assertNotIn('private_never_export_this',output)
@@ -553,6 +556,13 @@ class HarnessTests(unittest.TestCase):
                 if fault in ['config-section','config-key']:
                     self.assertRegex(failure['detail']['sha256'],'^[0-9a-f]{64}$');self.assertEqual(failure['detail']['count'],1)
                 if fault=='initial-disk':self.assertEqual(report['preflight_diagnostic']['initial_disk'],{'preflight_free_bytes':1024**3,'minimum_free_bytes':20*1024**3})
+
+    def test_expired_budget_fixture_is_independent_of_runner_uptime(self):
+        for uptime in [0.0,1.0,100.0,1499.0,1500.0,100000.0]:
+            with self.subTest(uptime=uptime),mock.patch.object(q.time,'monotonic',return_value=uptime):
+                code,report,calls=self.exercise('budget-elapsed')
+                self.assertEqual(code,125);self.assertFalse(report['qualified']);self.assertEqual(calls,[])
+                self.assertEqual(report['preflight_diagnostic']['failure'],{'stage':'budget','predicate':'budget_elapsed'})
 
     def test_disk_hold_preserves_final_identity_but_never_qualifies(self):
         code,report,calls=self.exercise('disk')

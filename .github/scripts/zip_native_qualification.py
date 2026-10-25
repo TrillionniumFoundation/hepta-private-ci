@@ -14,7 +14,7 @@ PROFILE_APPENDIX='\n# Owner diagnostic only: original defaults and overrides pre
 NEXTTEST_BASE_BLOB='f0430497b34b5335929e24b9e19745f467362641'
 DEADLINE=None
 FINALIZING=False
-CONTROL_PARENT='42b5f8d07065a6251e83cb0d4ba4f679e3efec63'
+CONTROL_PARENT='410d1967c5d21c141b48382dc126275f713296db'
 FINAL_READ_REPOS=frozenset()
 FINAL_GIT_READS={('ls-files','-z'),('status','--porcelain','--untracked-files=all'),('rev-parse','HEAD'),('rev-parse','HEAD^{tree}')}
 class Hold(Exception):pass
