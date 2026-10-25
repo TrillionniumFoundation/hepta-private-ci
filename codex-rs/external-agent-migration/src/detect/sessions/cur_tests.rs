@@ -264,6 +264,86 @@ fn parses_windows_cursor_fixture_project_directory() {
 }
 
 #[test]
+fn resolves_cur_project_with_punctuated_ancestor_and_leaf() {
+    let root = TempDir::new().expect("tempdir");
+    let project = root.path().join("ntfs-fixture").join("my-project");
+    fs::create_dir_all(&project).expect("project root");
+
+    assert_eq!(
+        decode_cur_project_path(&encode_project_path(&project)),
+        Some(project)
+    );
+}
+
+#[test]
+fn rejects_ambiguous_cur_project_below_punctuated_ancestor() {
+    let root = TempDir::new().expect("tempdir");
+    let shared = root.path().join("ntfs-fixture");
+    let first = shared.join("a-b").join("c-d");
+    let second = shared.join("a").join("b").join("c").join("d");
+    fs::create_dir_all(&first).expect("first project");
+    fs::create_dir_all(&second).expect("second project");
+    let encoded = encode_project_path(&first);
+
+    assert_eq!(encoded, encode_project_path(&second));
+    assert_eq!(decode_cur_project_path(&encoded), None);
+}
+
+#[test]
+fn resolves_cur_project_with_multiple_punctuated_ancestors_and_leaf() {
+    let root = TempDir::new().expect("tempdir");
+    let project = root
+        .path()
+        .join("ntfs-fixture")
+        .join("account-name")
+        .join("my-awesome-cool-project");
+    fs::create_dir_all(&project).expect("project root");
+
+    assert_eq!(
+        decode_cur_project_path(&encode_project_path(&project)),
+        Some(project)
+    );
+}
+
+#[test]
+fn ignores_incomplete_cur_project_reconstruction() {
+    let root = TempDir::new().expect("tempdir");
+    let project = root.path().join("my-project");
+    fs::create_dir_all(&project).expect("project root");
+    fs::create_dir_all(root.path().join("my")).expect("incomplete alternative");
+
+    assert_eq!(
+        decode_cur_project_path(&encode_project_path(&project)),
+        Some(project)
+    );
+}
+
+#[test]
+fn rejects_cur_project_when_shared_probe_budget_cannot_establish_uniqueness() {
+    let root = TempDir::new().expect("tempdir");
+    let project = root.path().join("a&b").join("c&d").join("e&f");
+    fs::create_dir_all(&project).expect("project root");
+    let encoded = format!("{}-a-b-c-d-e-f", encode_project_path(root.path()));
+    assert_eq!(decode_cur_project_path(&encoded), Some(project));
+
+    // These alternatives are incomplete, not ambiguous complete projects. The
+    // search must refuse once their combined probes exhaust the same budget.
+    for separator in CUR_PROJECT_SEPARATORS {
+        if separator != "&" {
+            fs::create_dir_all(
+                root.path()
+                    .join(format!("a{separator}b"))
+                    .join("c")
+                    .join("d")
+                    .join("e"),
+            )
+            .expect("incomplete alternative");
+        }
+    }
+    assert_eq!(decode_cur_project_path(&encoded), None);
+}
+
+#[test]
 fn ignores_cur_sessions_older_than_import_window() {
     let root = TempDir::new().expect("tempdir");
     let project_root = root.path().join("workspace");
