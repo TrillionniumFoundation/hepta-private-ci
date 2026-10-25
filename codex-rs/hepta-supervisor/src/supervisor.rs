@@ -840,14 +840,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             // retried under the same digest-bound directive.
             crate::restart_budget::complete_restart(record.layout.run_root())
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            if slot.release_transaction.as_ref().is_some_and(|transaction| {
-                transaction.phase == ReleaseTransactionPhase::RecoveryRequired
-            }) {
-                self.advance_release_transaction(
-                    agent_id,
-                    slot,
-                    ReleaseTransactionPhase::Aborted,
-                )?;
+            if slot
+                .release_transaction
+                .as_ref()
+                .is_some_and(|transaction| {
+                    transaction.phase == ReleaseTransactionPhase::RecoveryRequired
+                })
+            {
+                self.advance_release_transaction(agent_id, slot, ReleaseTransactionPhase::Aborted)?;
             }
             let aborted = intent
                 .with_status(SignedIntentStatus::Aborted)
