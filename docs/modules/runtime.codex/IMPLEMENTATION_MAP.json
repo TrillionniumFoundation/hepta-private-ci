@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
-    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
+    "commit": "d0a178825eb22f45f37e778a1e9ab19eedf7f821",
+    "tree": "6a3fda78b4619d70bb8df97157e91cedb142d9c0"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.codex",
@@ -12,10 +12,7 @@
     "codex-rs/codex-app-server",
     "codex-rs/hepta-codex-adapter"
   ],
-  "resolvedRoots": [
-    "codex-rs/app-server",
-    "codex-rs/hepta-codex-adapter"
-  ],
+  "resolvedRoots": ["codex-rs/app-server", "codex-rs/hepta-codex-adapter"],
   "stateOwnerDisposition": "The existing App Server and Codex core remain the sole thread, turn, model, and tool execution spine.",
   "terminalObserverDisposition": "The App Server/client path supplies typed process-local terminal and request-level observations; runtime.codex validates exact correlation. External tool/provider terminality remains with its effect owner and target-host trust is independently qualified.",
   "operations": [
@@ -162,10 +159,7 @@
   "owner": "codex-integration",
   "deputy": "agent-runtime",
   "technicalGuide": "docs/modules/runtime.codex/TECHNICAL.md",
-  "sourceRoot": [
-    "codex-rs/codex-app-server",
-    "codex-rs/hepta-codex-adapter"
-  ],
+  "sourceRoot": ["codex-rs/codex-app-server", "codex-rs/hepta-codex-adapter"],
   "productionCallerBindings": [
     {
       "role": "production_caller",
@@ -283,10 +277,7 @@
     "commitCommand": "git rev-parse HEAD",
     "treeCommand": "git rev-parse HEAD^{tree}",
     "verifier": "scripts/hepta-lane-b-truth.py verify",
-    "receiptFields": [
-      "exactHead",
-      "exactTree"
-    ],
+    "receiptFields": ["exactHead", "exactTree"],
     "hardCodedInMap": false,
     "rationale": "A committed map cannot safely hard-code its own Git commit/tree identity without becoming self-referential. Exact candidate identity is derived and emitted from the checked-out candidate by the verifier; sourceBase remains historical provenance only."
   },
@@ -309,11 +300,11 @@
   "sourceObjects": [
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "b796d291c279450e11042b6aaa1b348657f14f3a"
+      "object": "be377029f542b2f1bac08d9165a7632b22c559b3"
     },
     {
       "path": "codex-rs/Cargo.toml",
-      "object": "70c7b8dc2bc9768f6fc673049c2e348baddce838"
+      "object": "317b69e9559ce96208e0822c3ff83f38ac2c2841"
     },
     {
       "path": "codex-rs/app-server",
@@ -401,11 +392,11 @@
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
-      "object": "ddfe32dd3c3e2dd9273abb6a66d10497d8ac00cd"
+      "object": "c05ff38091d4769f945a85b18da490cad8e99cad"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
-      "object": "7dbca8ee4ac5f664aa139dfbc3877897a837fa7d"
+      "object": "799fd7f159bd57108988bcb167e99a2a584e548a"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
@@ -421,8 +412,8 @@
     }
   ],
   "observedAtHead": {
-    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
-    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
+    "commit": "d0a178825eb22f45f37e778a1e9ab19eedf7f821",
+    "tree": "6a3fda78b4619d70bb8df97157e91cedb142d9c0"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",

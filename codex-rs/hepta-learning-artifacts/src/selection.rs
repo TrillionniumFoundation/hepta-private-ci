@@ -35,6 +35,12 @@ use crate::RevalidatingCandidate;
 use crate::VerifiedCurrentRegistryViewV1;
 use crate::load_pinned_candidate;
 
+#[path = "initial_smollm_genesis.rs"]
+mod initial_smollm_genesis;
+#[path = "selected_initial_smollm.rs"]
+mod selected_initial_smollm;
+pub use selected_initial_smollm::SelectedInitialSmolLmMaterialV1;
+
 const MAX_TRUSTED_SELECTORS: usize = 32;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -132,6 +138,7 @@ pub struct VerifiedArtifactSelectionV1 {
     expires_at: u64,
     trust_digest: Digest32,
     authority: AuthorityPosture,
+    initial_window: selected_initial_smollm::InitialSelectionWindowV1,
 }
 
 impl VerifiedArtifactSelectionV1 {
@@ -347,6 +354,12 @@ impl ArtifactSelectionVerifierV1 {
             expires_at: signed.expires_at,
             trust_digest: self.trust_digest,
             authority: AuthorityPosture::DENY_ALL,
+            initial_window: selected_initial_smollm::InitialSelectionWindowV1 {
+                verified_at: now,
+                expires_at: signed.expires_at.min(selector.expires_at),
+                revoked_at: selector.revoked_at,
+                owner_trust_digest: self.artifact_owner_trust_digest,
+            },
         })
     }
 }
@@ -395,8 +408,10 @@ pub fn load_selected_candidate(
     payload_file: File,
     selection: VerifiedArtifactSelectionV1,
 ) -> Result<RevalidatingCandidate, ArtifactSelectionError> {
+    initial_smollm_genesis::validate_manifest(&selection.pin.manifest)?;
     let loaded = load_pinned_candidate(snapshot_file, payload_file, selection.pin)
         .map_err(ArtifactSelectionError::Load)?;
+    initial_smollm_genesis::validate_payload(&loaded)?;
     Ok(RevalidatingCandidate::new(loaded))
 }
 
@@ -438,6 +453,7 @@ pub enum ArtifactSelectionError {
     CurrentHeadMismatch,
     ArtifactUnavailable,
     ManifestMismatch,
+    InitialGenesisMaterial,
     RoleCollision,
     Lifecycle(ArtifactLifecycleJournalError),
     Load(PinnedCandidateLoadError),
@@ -467,6 +483,7 @@ impl StdError for ArtifactSelectionError {
             | Self::CurrentHeadMismatch
             | Self::ArtifactUnavailable
             | Self::ManifestMismatch
+            | Self::InitialGenesisMaterial
             | Self::RoleCollision => None,
         }
     }

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import argparse
+import ast
+import copy
 import importlib
 import importlib.metadata
 import json
@@ -410,16 +412,6 @@ def _variant_collision_key(base: str, variant: dict[str, Any], generated_name: s
     return "|".join(parts)
 
 
-def _set_discriminator_titles(props: dict[str, Any], owner: str) -> None:
-    for key in DISCRIMINATOR_KEYS:
-        prop = props.get(key)
-        if not isinstance(prop, dict):
-            continue
-        if _string_literal(prop) is None or "title" in prop:
-            continue
-        prop["title"] = f"{owner}{_to_pascal_case(key)}"
-
-
 def _annotate_variant_list(variants: list[Any], base: str | None) -> None:
     seen = {
         variant["title"]
@@ -451,27 +443,22 @@ def _annotate_variant_list(variants: list[Any], base: str | None) -> None:
             seen.add(generated_name)
             variant_name = generated_name
 
-        if isinstance(variant_name, str):
-            props = variant.get("properties")
-            if isinstance(props, dict):
-                _set_discriminator_titles(props, variant_name)
-
-        _annotate_schema(variant, base)
+        _annotate_schema(variant, base, is_inline=True)
 
 
-def _annotate_schema(value: Any, base: str | None = None) -> None:
+def _annotate_schema(value: Any, base: str | None = None, *, is_inline: bool = False) -> None:
     if isinstance(value, list):
         for item in value:
-            _annotate_schema(item, base)
+            _annotate_schema(item, base, is_inline=True)
         return
 
     if not isinstance(value, dict):
         return
 
-    owner = value.get("title")
-    props = value.get("properties")
-    if isinstance(owner, str) and isinstance(props, dict):
-        _set_discriminator_titles(props, owner)
+    # Name object/union variants and standalone definitions. Generator 0.64
+    # otherwise wraps inline single literals, changing field/union runtime values.
+    if is_inline and _string_literal(value) is not None:
+        value.pop("title", None)
 
     one_of = value.get("oneOf")
     if isinstance(one_of, list):
@@ -497,7 +484,7 @@ def _annotate_schema(value: Any, base: str | None = None) -> None:
     for key, child in value.items():
         if key in {"oneOf", "anyOf", "definitions", "$defs"}:
             continue
-        _annotate_schema(child, base)
+        _annotate_schema(child, base, is_inline=True)
 
 
 def _make_chatgpt_account_email_nullable(schema: dict[str, Any]) -> None:
@@ -551,6 +538,17 @@ def _normalized_schema_bundle_text(schema_dir: Path) -> str:
     schema = json.loads(schema_bundle_path(schema_dir).read_text())
     _make_chatgpt_account_email_nullable(schema)
     definitions = schema.get("definitions", {})
+    # Keep the existing Python constructor's omitted-section behavior. The
+    # serialized request still contains sectionId: null, as the server requires.
+    move = definitions.get("ThreadSectionMoveParams", {})
+    section = move.get("properties", {}).get("sectionId", {})
+    if section.get("type") != ["string", "null"] or move.get("required") != [
+        "sectionId",
+        "threadId",
+    ]:
+        raise RuntimeError("ThreadSectionMoveParams sectionId schema changed")
+    section["default"] = None
+    move["required"] = ["threadId"]
     if isinstance(definitions, dict):
         for definition in definitions.values():
             if isinstance(definition, dict):
@@ -584,7 +582,9 @@ def generate_v2_all(schema_dir: Path) -> None:
                 "--output-model-type",
                 "pydantic_v2.BaseModel",
                 "--target-python-version",
-                "3.11",
+                "3.10",
+                # Keep the existing Enum API and the SDK's declared Python floor.
+                "--no-use-specialized-enum",
                 "--use-standard-collections",
                 "--enum-field-as-literal",
                 "one",
@@ -610,6 +610,118 @@ def generate_v2_all(schema_dir: Path) -> None:
     _preserve_thread_source_enum(out_path)
     _preserve_plan_type_enum(out_path)
     _normalize_generated_timestamps(out_path)
+    _preserve_default_validation(out_path)
+    run_python_module("ruff", ["format", str(out_path)], cwd=sdk_root())
+
+
+_LEGACY_LIST_DEFAULTS = {
+    ("ManagedHooksRequirements", "session_end"): "ConfiguredHookMatcherGroup",
+    ("WorkspaceWriteSandboxPolicy", "writable_roots"): "AbsolutePathBuf",
+    ("TextUserInput", "text_elements"): "TextElement",
+    ("MigrationDetails", "commands"): "CommandMigration",
+    ("MigrationDetails", "hooks"): "HookMigration",
+    ("MigrationDetails", "mcp_servers"): "McpServerMigration",
+    ("MigrationDetails", "plugins"): "PluginsMigration",
+    ("MigrationDetails", "sessions"): "SessionMigration",
+    ("MigrationDetails", "skills"): "SkillMigration",
+    ("MigrationDetails", "subagents"): "SubagentMigration",
+    ("Model", "service_tiers"): "ModelServiceTier",
+    ("ExternalAgentConfigDetectResponse", "connectors"): "ExternalAgentDetectedConnectorCandidate",
+    ("ThreadForkResponse", "instruction_sources"): "LegacyAppPathString",
+    ("ThreadResumeResponse", "instruction_sources"): "LegacyAppPathString",
+    ("ThreadStartResponse", "instruction_sources"): "LegacyAppPathString",
+    ("PluginInstalledResponse", "marketplace_load_errors"): "MarketplaceLoadErrorInfo",
+    ("PluginListResponse", "marketplace_load_errors"): "MarketplaceLoadErrorInfo",
+}
+
+
+def _preserve_default_validation(out_path: Path) -> None:
+    """Restore only the existing 17 empty-list defaults' validator semantics."""
+    source = out_path.read_bytes()
+    tree = ast.parse(source)
+    lines = source.splitlines(keepends=True)
+    offsets = [0]
+    for line in lines:
+        offsets.append(offsets[-1] + len(line))
+    edits = []
+    seen = set()
+    permitted_calls = set()
+    for model in tree.body:
+        if not isinstance(model, ast.ClassDef):
+            continue
+        for field in model.body:
+            if not isinstance(field, ast.AnnAssign) or not isinstance(field.target, ast.Name):
+                continue
+            calls = [
+                node
+                for node in ast.walk(field.annotation)
+                if isinstance(node, ast.Call)
+                and any(keyword.arg == "validate_default" for keyword in node.keywords)
+            ]
+            if not calls:
+                continue
+            identity = (model.name, field.target.id)
+            element = _LEGACY_LIST_DEFAULTS.get(identity)
+            annotation = field.annotation
+            if (
+                element is None
+                or identity in seen
+                or len(calls) != 1
+                or not isinstance(field.value, ast.List)
+                or field.value.elts
+                or not isinstance(annotation, ast.Subscript)
+                or not isinstance(annotation.value, ast.Name)
+                or annotation.value.id != "Annotated"
+                or not isinstance(annotation.slice, ast.Tuple)
+                or len(annotation.slice.elts) != 2
+            ):
+                raise RuntimeError(f"Generated default validation shape changed: {identity}")
+            call = calls[0]
+            expected_type = ast.parse(f"list[{element}] | None", mode="eval").body
+            keywords = [keyword for keyword in call.keywords if keyword.arg == "validate_default"]
+            if (
+                annotation.slice.elts[1] is not call
+                or call.args
+                or not isinstance(call.func, ast.Name)
+                or call.func.id != "Field"
+                or ast.dump(annotation.slice.elts[0]) != ast.dump(expected_type)
+                or len(keywords) != 1
+                or not isinstance(keywords[0].value, ast.Constant)
+                or keywords[0].value.value is not True
+            ):
+                raise RuntimeError(f"Generated default validation field changed: {identity}")
+            seen.add(identity)
+            permitted_calls.add(id(call))
+            replacement = copy.deepcopy(call)
+            replacement.keywords = [
+                keyword for keyword in replacement.keywords if keyword.arg != "validate_default"
+            ]
+            start = offsets[call.lineno - 1] + call.col_offset
+            end = offsets[call.end_lineno - 1] + call.end_col_offset
+            # AST columns count UTF-8 bytes, including Unicode descriptions.
+            if source[start:end].decode() != ast.get_source_segment(source.decode(), call):
+                raise RuntimeError("Generated default validation source span changed")
+            edits.append((start, end, ast.unparse(replacement).encode()))
+    all_calls = {
+        id(node)
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Call)
+        and any(keyword.arg == "validate_default" for keyword in node.keywords)
+    }
+    if seen != set(_LEGACY_LIST_DEFAULTS) or all_calls != permitted_calls:
+        raise RuntimeError("Generated default validation field coverage changed")
+    expected = copy.deepcopy(tree)
+    for node in ast.walk(expected):
+        if isinstance(node, ast.Call):
+            node.keywords = [
+                keyword for keyword in node.keywords if keyword.arg != "validate_default"
+            ]
+    rewritten = source
+    for start, end, replacement in sorted(edits, reverse=True):
+        rewritten = rewritten[:start] + replacement + rewritten[end:]
+    if ast.dump(ast.parse(rewritten)) != ast.dump(expected):
+        raise RuntimeError("Generated default validation changed unrelated syntax")
+    out_path.write_bytes(rewritten)
 
 
 def _require_nullable_chatgpt_account_email(out_path: Path) -> None:
@@ -623,17 +735,10 @@ def _require_nullable_chatgpt_account_email(out_path: Path) -> None:
         class_end = len(source)
 
     class_source = source[class_start:class_end]
-    nullable_with_default = "    email: str | None = None"
-    if class_source.count(nullable_with_default) != 1:
+    if class_source.splitlines().count("    email: str | None") != 1:
         raise RuntimeError(
-            "Generated ChatgptAccount email did not have the expected nullable shape"
+            "Generated ChatgptAccount email did not have the required nullable shape"
         )
-    class_source = class_source.replace(
-        nullable_with_default,
-        "    email: str | None",
-        1,
-    )
-    out_path.write_text(source[:class_start] + class_source + source[class_end:])
 
 
 def _preserve_reasoning_effort_enum(out_path: Path) -> None:

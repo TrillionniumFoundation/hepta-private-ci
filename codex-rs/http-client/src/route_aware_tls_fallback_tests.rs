@@ -26,9 +26,113 @@ use super::RouteAwareRequestError;
 use super::SelectedTlsBackend;
 use crate::tls_backend_fallback::should_retry_with_rustls;
 
+use crate::route_aware_tls_fixture as fixture;
+use crate::route_aware_tls_fixture::read_complete_client_hello;
+
 const PROTOCOL_VERSION_TLS_ALERT: &[u8] = &[21, 3, 3, 0, 2, 2, 70];
 
 type SuccessfulTlsFallbackServer = (String, HttpClient, mpsc::Receiver<io::Result<Vec<String>>>);
+
+fn observe_native_error_chain(error: &(dyn std::error::Error + 'static)) -> bool {
+    let mut current = Some(error);
+    let mut native = false;
+    for depth in 0..32 {
+        let Some(error) = current else {
+            break;
+        };
+        let io = error.downcast_ref::<io::Error>();
+        native |= error.is::<native_tls::Error>();
+        let message: String = error.to_string().chars().take(/*n*/ 512).collect();
+        eprintln!(
+            "TLS_FIXTURE_ERROR depth={depth} native={} rustls={} io_code={:?} message={message:?}",
+            error.is::<native_tls::Error>(),
+            error.is::<rustls::Error>(),
+            io.and_then(io::Error::raw_os_error)
+        );
+        current = match io.and_then(io::Error::get_ref) {
+            Some(inner) => Some(inner as &(dyn std::error::Error + 'static)),
+            None => error.source(),
+        };
+    }
+    native
+}
+
+#[tokio::test]
+async fn certificate_rejection_never_retries_or_caches_a_fallback() {
+    let (url, attempts, stop_server) =
+        fixture::spawn_certificate_rejection_server().expect("certificate server");
+    let destination = reqwest::Url::parse(&url).unwrap();
+    let pool = RouteAwareClientPool::new(
+        HttpClientFactory::new(OutboundProxyPolicy::ReqwestDefault),
+        ClientRouteClass::Other,
+    )
+    .with_tls_backend_fallback();
+    let error = pool
+        .send_with_resolver(
+            reqwest::Request::new(Method::POST, destination.clone()),
+            |_| async { Ok(OutboundProxyRoute::Direct) },
+        )
+        .await
+        .expect_err("untrusted self-signed certificate");
+    observe_native_error_chain(&error);
+    let _ = stop_server.send(());
+    let RouteAwareRequestError::Request(ref request_error) = error else {
+        panic!("expected certificate request error: {error:?}");
+    };
+    assert!(request_error.is_connect() && !request_error.is_timeout());
+    let detail = format!("{request_error:?}").to_ascii_lowercase();
+    assert!(
+        detail.contains("certificate")
+            || detail.contains("unknownissuer")
+            || detail.contains("untrusted")
+            || detail.contains("-2146893019")
+            || detail.contains("-2146762487"),
+        "real certificate rejection, not a transport timeout: {detail}"
+    );
+    assert!(!should_retry_with_rustls(request_error));
+    assert_eq!(attempts.recv().unwrap().unwrap(), 1);
+    let cache = pool.rustls_clients.as_ref().unwrap();
+    assert_eq!(
+        (
+            cache.requires_rustls(&destination, &OutboundProxyRoute::Direct),
+            cache
+                .client_for_route(&OutboundProxyRoute::Direct)
+                .is_some()
+        ),
+        (false, false)
+    );
+}
+
+#[test]
+fn tls_fixture_receives_a_fragmented_client_hello_larger_than_the_old_buffer() {
+    codex_utils_rustls_provider::ensure_rustls_crypto_provider();
+    let mut config = rustls::ClientConfig::builder()
+        .with_root_certificates(rustls::RootCertStore::empty())
+        .with_no_client_auth();
+    config.alpn_protocols = (0..20).map(|index| vec![index + 1; 200]).collect();
+    let mut client =
+        rustls::ClientConnection::new(Arc::new(config), "localhost".try_into().unwrap()).unwrap();
+    let mut hello = Vec::new();
+    client.write_tls(&mut hello).unwrap();
+    assert!(hello.len() > 2048);
+    let listener = TcpListener::bind(("127.0.0.1", 0)).unwrap();
+    let address = listener.local_addr().unwrap();
+    let expected = hello.len();
+    let sender = thread::spawn(move || {
+        let mut stream = std::net::TcpStream::connect(address).unwrap();
+        for chunk in hello.chunks(/*chunk_size*/ 7) {
+            stream.write_all(chunk).unwrap();
+        }
+    });
+    let (mut stream, _) = listener.accept().unwrap();
+    let observed = read_complete_client_hello(
+        &mut stream,
+        Instant::now() + Duration::from_secs(/*secs*/ 2),
+    )
+    .unwrap();
+    sender.join().unwrap();
+    assert_eq!(observed, expected);
+}
 
 #[tokio::test]
 async fn default_pool_does_not_retry_a_native_tls_protocol_failure() {
@@ -126,6 +230,7 @@ async fn retries_a_native_tls_failure_after_another_request_caches_rustls() {
         .execute_without_request_logging(request)
         .await
         .expect_err("native TLS handshake should fail");
+    observe_native_error_chain(&error);
     let rustls_client = pool
         .rustls_client_for_route(&route)
         .expect("rustls fallback client should build");
@@ -388,13 +493,10 @@ fn spawn_successful_tls_fallback_server() -> io::Result<SuccessfulTlsFallbackSer
                 stream.set_write_timeout(Some(Duration::from_secs(5)))?;
 
                 if connection_index == 0 {
-                    let mut client_hello = [0_u8; 2_048];
-                    if stream.read(&mut client_hello)? == 0 {
-                        return Err(io::Error::new(
-                            io::ErrorKind::UnexpectedEof,
-                            "native TLS peer closed before sending a ClientHello",
-                        ));
-                    }
+                    read_complete_client_hello(
+                        &mut stream,
+                        Instant::now() + Duration::from_secs(5),
+                    )?;
                     stream.write_all(PROTOCOL_VERSION_TLS_ALERT)?;
                     stream.flush()?;
                     continue;
@@ -485,13 +587,10 @@ fn spawn_protocol_version_rejection_server(
                     Ok((mut stream, _)) => {
                         stream.set_nonblocking(false)?;
                         stream.set_read_timeout(Some(Duration::from_secs(2)))?;
-                        let mut client_hello = [0_u8; 2_048];
-                        if stream.read(&mut client_hello)? == 0 {
-                            return Err(io::Error::new(
-                                io::ErrorKind::UnexpectedEof,
-                                "TLS peer closed before sending a ClientHello",
-                            ));
-                        }
+                        read_complete_client_hello(
+                            &mut stream,
+                            deadline.min(Instant::now() + Duration::from_secs(2)),
+                        )?;
                         stream.write_all(PROTOCOL_VERSION_TLS_ALERT)?;
                         attempts += 1;
                     }

@@ -11,6 +11,7 @@ use std::cell::Cell;
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::fmt;
+#[cfg(not(windows))]
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
@@ -53,6 +54,13 @@ use crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION;
 
 #[path = "durable_payloads.rs"]
 mod payloads;
+#[path = "durable_store_platform.rs"]
+mod platform;
+use platform::Directory;
+#[cfg(windows)]
+use platform::entry_exists;
+#[cfg(windows)]
+use platform::open_private;
 
 const STORE_SCHEMA: u32 = 2;
 const MAX_STATE_BYTES: u64 = 32 * 1024 * 1024;
@@ -1230,7 +1238,8 @@ enum StoredAny {
 }
 
 struct Store {
-    root: File,
+    root: Directory,
+    #[cfg(not(windows))]
     _lock: File,
     payloads: payloads::PayloadState,
     #[cfg(test)]
@@ -1241,14 +1250,17 @@ struct Store {
 
 impl Store {
     fn open(directory: &Path) -> Result<(Self, Option<StoredAny>), DurableRegistryError> {
-        let root = prepare_directory(directory)?;
-        let initialized = entry_exists(&root, "registry.lock")?;
-        let lock = open_private(&root, "registry.lock", Access::Create)?;
-        lock.try_lock()
-            .map_err(|_| DurableRegistryError::StateLocked)?;
+        Self::open_locked(platform::lock_directory(directory)?)
+    }
+
+    fn open_locked(
+        opened: platform::LockedDirectory,
+    ) -> Result<(Self, Option<StoredAny>), DurableRegistryError> {
+        let initialized = opened.initialized;
         let mut store = Self {
-            root,
-            _lock: lock,
+            root: opened.root,
+            #[cfg(not(windows))]
+            _lock: opened.lock,
             payloads: payloads::PayloadState::default(),
             #[cfg(test)]
             fail_directory_sync_after_rename_once: Cell::new(false),
@@ -1316,7 +1328,7 @@ impl Store {
         file.write_all(&bytes)
             .and_then(|()| file.sync_all())
             .map_err(map_precommit_io)?;
-        replace_state(&self.root)?;
+        replace_state(&self.root, &file)?;
         // After rename succeeds the durable outcome is unknown if directory
         // fsync fails. The caller must poison this writer and reopen/reconcile;
         // treating this as an ordinary pre-commit failure could overwrite a
@@ -1404,12 +1416,12 @@ fn open_private(
     Ok(file)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn prepare_directory(_root: &Path) -> Result<File, DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn open_private(
     _directory: &File,
     _name: &str,
@@ -1427,19 +1439,32 @@ fn entry_exists(directory: &File, name: &str) -> Result<bool, DurableRegistryErr
     }
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
 
 #[cfg(unix)]
-fn replace_state(directory: &File) -> Result<(), DurableRegistryError> {
+fn replace_state(directory: &File, _stage: &File) -> Result<(), DurableRegistryError> {
     rustix::fs::renameat(directory, "registry.next", directory, "registry.json")
         .map_err(|_| DurableRegistryError::Unavailable)
 }
 
-#[cfg(not(unix))]
-fn replace_state(_directory: &File) -> Result<(), DurableRegistryError> {
+#[cfg(windows)]
+fn replace_state(
+    _directory: &Directory,
+    stage: &codex_hepta_contracts::windows_private_owner::OriginalStoreFile<'_>,
+) -> Result<(), DurableRegistryError> {
+    use codex_hepta_contracts::windows_private_owner::StageReplaceError;
+    stage
+        .replace_synced("registry.json")
+        .map_err(|error| match error {
+            StageReplaceError::Indeterminate(_) => DurableRegistryError::IndeterminateDurability,
+            StageReplaceError::BeforePublication(_) => DurableRegistryError::Unavailable,
+        })
+}
+#[cfg(not(any(unix, windows)))]
+fn replace_state(_directory: &File, _stage: &File) -> Result<(), DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
 

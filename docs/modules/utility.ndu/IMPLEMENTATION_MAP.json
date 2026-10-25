@@ -9,9 +9,7 @@
     "docs/readiness/NDU_SYSTEM_EXECUTION.md",
     "docs/learning/NDU_FBSDE_SPEC.md"
   ],
-  "sourceRoot": [
-    "codex-rs/hepta-ndu"
-  ],
+  "sourceRoot": ["codex-rs/hepta-ndu"],
   "authorityDelta": "none",
   "productCallerState": "request_local_read_only_source_composed_current_execution_pending_authenticated_owner_source_candidate_not_product_composed",
   "productionWriterState": "durable_writer_source_candidate_not_selected_or_activated",
@@ -25,9 +23,7 @@
         "UtilityProfile",
         "optional ScalarizationProfile"
       ],
-      "outputs": [
-        "NduEvaluationReceipt"
-      ],
+      "outputs": ["NduEvaluationReceipt"],
       "state": "source_implemented_compatibility_entry",
       "authority": "none",
       "semanticProfile": "legacy-sum-max-zero-tolerance-v1",
@@ -57,9 +53,7 @@
         "optional ScalarizationProfile",
         "EvaluationPolicyV1"
       ],
-      "outputs": [
-        "NduEvaluationReceiptV2"
-      ],
+      "outputs": ["NduEvaluationReceiptV2"],
       "state": "source_implemented_owner_local_v2",
       "authority": "none",
       "tests": [
@@ -94,13 +88,8 @@
       "operation": "canonical_evaluation_policy_digest",
       "nativeSymbol": "codex_hepta_ndu::canonical_evaluation_policy_digest",
       "sourcePath": "codex-rs/hepta-ndu/src/evaluator.rs",
-      "inputs": [
-        "UtilityProfile",
-        "EvaluationPolicyV1"
-      ],
-      "outputs": [
-        "evaluation policy digest"
-      ],
+      "inputs": ["UtilityProfile", "EvaluationPolicyV1"],
+      "outputs": ["evaluation policy digest"],
       "state": "source_implemented",
       "authority": "none",
       "tests": [
@@ -119,11 +108,7 @@
       "operation": "solve_preference_target",
       "nativeSymbol": "codex_hepta_ndu::solve_preference_target",
       "sourcePath": "codex-rs/hepta-ndu/src/preference.rs",
-      "inputs": [
-        "PreferenceState",
-        "target AxisValue set",
-        "eta"
-      ],
+      "inputs": ["PreferenceState", "target AxisValue set", "eta"],
       "outputs": [
         "PreferenceState",
         "NduSolverTerminationReceipt",
@@ -168,13 +153,8 @@
       "operation": "bind_solver_iteration_receipt_v1",
       "nativeSymbol": "codex_hepta_ndu::bind_solver_iteration_receipt_v1",
       "sourcePath": "codex-rs/hepta-ndu/src/protocol.rs",
-      "inputs": [
-        "NduIterationContextV1",
-        "NduSolverIterationReceipt"
-      ],
-      "outputs": [
-        "owner-local NduIterationReceiptV1"
-      ],
+      "inputs": ["NduIterationContextV1", "NduSolverIterationReceipt"],
+      "outputs": ["owner-local NduIterationReceiptV1"],
       "state": "source_implemented_protocol_adapter",
       "authority": "deny_all",
       "tests": [
@@ -201,13 +181,8 @@
       "operation": "solve_backward_regression",
       "nativeSymbol": "codex_hepta_ndu::solve_backward_regression",
       "sourcePath": "codex-rs/hepta-ndu/src/covariance.rs",
-      "inputs": [
-        "conditional moments",
-        "admitted covariance profile"
-      ],
-      "outputs": [
-        "ZEstimateV1"
-      ],
+      "inputs": ["conditional moments", "admitted covariance profile"],
+      "outputs": ["ZEstimateV1"],
       "state": "source_implemented_shadow_numeric_kernel",
       "authority": "none",
       "tests": [
@@ -231,9 +206,7 @@
         "source digest",
         "admitted coordinate/Q24 profile"
       ],
-      "outputs": [
-        "ZQ24ConversionReceiptV1"
-      ],
+      "outputs": ["ZQ24ConversionReceiptV1"],
       "state": "source_implemented_shadow_conversion_admission",
       "authority": "deny_all",
       "nonClaim": "coordinate and Q24 conversion evidence is not coefficient provenance, conditional identification, learned FBSDE qualification or production selection",
@@ -269,9 +242,7 @@
       "operation": "NduProjectionJournalV1",
       "nativeSymbol": "codex_hepta_ndu::NduProjectionJournalV1",
       "sourcePath": "codex-rs/hepta-ndu/src/projection_journal.rs",
-      "inputs": [
-        "immutable projection, selection and revocation records"
-      ],
+      "inputs": ["immutable projection, selection and revocation records"],
       "outputs": [
         "bounded hash-chain journal bytes",
         "selected projection view"
@@ -373,9 +344,7 @@
         "AdmittedCovarianceProfileV1",
         "AdmittedZConversionProfileV1"
       ],
-      "outputs": [
-        "AdmittedNduCoefficientProfileV1"
-      ],
+      "outputs": ["AdmittedNduCoefficientProfileV1"],
       "state": "source_implemented_stochastic_provenance_profile",
       "authority": "deny_all",
       "nonClaim": "artifact manifest binding and numeric compatibility are source admission, not artifact selection, currentness, efficacy or activation",
@@ -401,9 +370,7 @@
         "AdmittedZConversionProfileV1",
         "now_unix_ms"
       ],
-      "outputs": [
-        "NduCoefficientProjectionV1"
-      ],
+      "outputs": ["NduCoefficientProjectionV1"],
       "state": "source_implemented_stochastic_projection_chain",
       "authority": "deny_all",
       "nonClaim": "requires exact covariance provenance and admitted conversion profile; does not establish current artifact eligibility or independent convergence",
@@ -516,12 +483,8 @@
     "releaseState": "not_established"
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
-  "declaredRoots": [
-    "codex-rs/hepta-ndu"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-ndu"
-  ],
+  "declaredRoots": ["codex-rs/hepta-ndu"],
+  "resolvedRoots": ["codex-rs/hepta-ndu"],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "claimBoundary": {
@@ -544,8 +507,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
-    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
+    "commit": "d0a178825eb22f45f37e778a1e9ab19eedf7f821",
+    "tree": "6a3fda78b4619d70bb8df97157e91cedb142d9c0"
   },
   "repositoryControlledGaps": [
     "Run the exact-current-head and deterministic synthetic-merge NDU workflow after the final documentation/source commit; workflow definitions and earlier heads are not receipts.",
@@ -608,15 +571,15 @@
   "sourceObjects": [
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "b796d291c279450e11042b6aaa1b348657f14f3a"
+      "object": "be377029f542b2f1bac08d9165a7632b22c559b3"
     },
     {
       "path": "codex-rs/Cargo.toml",
-      "object": "70c7b8dc2bc9768f6fc673049c2e348baddce838"
+      "object": "317b69e9559ce96208e0822c3ff83f38ac2c2841"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "object": "ed471e437cd611d90fecae8615242a95e0433a43"
+      "object": "ec01ed0d9d48fedd95ab3e00180a3a69b2dffb9a"
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
@@ -624,11 +587,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "d6fddb0fccc02297e6a6bac983cd8be62cef9580"
+      "object": "cb4221b11f598f514ba513e8c64bc68129579743"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use.rs",
-      "object": "3cc75fab4185789514e4ecc7522e52f1ca59249f"
+      "object": "32c5f8f823f898d88b429c4fa3dea2d07910be75"
     },
     {
       "path": "codex-rs/hepta-control-plane/src/planner_context.rs",
@@ -772,9 +735,7 @@
           "docs/readiness/NDU_SYSTEM_EXECUTION.md",
           "docs/learning/NDU_FBSDE_SPEC.md"
         ],
-        "sourceRoot": [
-          "codex-rs/hepta-ndu"
-        ],
+        "sourceRoot": ["codex-rs/hepta-ndu"],
         "authorityDelta": "none",
         "productCallerState": "request_local_read_only_established_authenticated_owner_source_candidate_not_product_composed",
         "productionWriterState": "durable_writer_source_candidate_not_selected_or_activated",
@@ -788,9 +749,7 @@
               "UtilityProfile",
               "optional ScalarizationProfile"
             ],
-            "outputs": [
-              "NduEvaluationReceipt"
-            ],
+            "outputs": ["NduEvaluationReceipt"],
             "state": "source_implemented_compatibility_entry",
             "authority": "none",
             "semanticProfile": "legacy-sum-max-zero-tolerance-v1",
@@ -820,9 +779,7 @@
               "optional ScalarizationProfile",
               "EvaluationPolicyV1"
             ],
-            "outputs": [
-              "NduEvaluationReceiptV2"
-            ],
+            "outputs": ["NduEvaluationReceiptV2"],
             "state": "source_implemented_owner_local_v2",
             "authority": "none",
             "tests": [
@@ -857,13 +814,8 @@
             "operation": "canonical_evaluation_policy_digest",
             "nativeSymbol": "codex_hepta_ndu::canonical_evaluation_policy_digest",
             "sourcePath": "codex-rs/hepta-ndu/src/evaluator.rs",
-            "inputs": [
-              "UtilityProfile",
-              "EvaluationPolicyV1"
-            ],
-            "outputs": [
-              "evaluation policy digest"
-            ],
+            "inputs": ["UtilityProfile", "EvaluationPolicyV1"],
+            "outputs": ["evaluation policy digest"],
             "state": "source_implemented",
             "authority": "none",
             "tests": [
@@ -882,11 +834,7 @@
             "operation": "solve_preference_target",
             "nativeSymbol": "codex_hepta_ndu::solve_preference_target",
             "sourcePath": "codex-rs/hepta-ndu/src/preference.rs",
-            "inputs": [
-              "PreferenceState",
-              "target AxisValue set",
-              "eta"
-            ],
+            "inputs": ["PreferenceState", "target AxisValue set", "eta"],
             "outputs": [
               "PreferenceState",
               "NduSolverTerminationReceipt",
@@ -931,13 +879,8 @@
             "operation": "bind_solver_iteration_receipt_v1",
             "nativeSymbol": "codex_hepta_ndu::bind_solver_iteration_receipt_v1",
             "sourcePath": "codex-rs/hepta-ndu/src/protocol.rs",
-            "inputs": [
-              "NduIterationContextV1",
-              "NduSolverIterationReceipt"
-            ],
-            "outputs": [
-              "owner-local NduIterationReceiptV1"
-            ],
+            "inputs": ["NduIterationContextV1", "NduSolverIterationReceipt"],
+            "outputs": ["owner-local NduIterationReceiptV1"],
             "state": "source_implemented_protocol_adapter",
             "authority": "deny_all",
             "tests": [
@@ -964,13 +907,8 @@
             "operation": "solve_backward_regression",
             "nativeSymbol": "codex_hepta_ndu::solve_backward_regression",
             "sourcePath": "codex-rs/hepta-ndu/src/covariance.rs",
-            "inputs": [
-              "conditional moments",
-              "admitted covariance profile"
-            ],
-            "outputs": [
-              "ZEstimateV1"
-            ],
+            "inputs": ["conditional moments", "admitted covariance profile"],
+            "outputs": ["ZEstimateV1"],
             "state": "source_implemented_shadow_numeric_kernel",
             "authority": "none",
             "tests": [
@@ -994,9 +932,7 @@
               "source digest",
               "admitted coordinate/Q24 profile"
             ],
-            "outputs": [
-              "ZQ24ConversionReceiptV1"
-            ],
+            "outputs": ["ZQ24ConversionReceiptV1"],
             "state": "source_implemented_shadow_conversion_admission",
             "authority": "deny_all",
             "nonClaim": "coordinate and Q24 conversion evidence is not coefficient provenance, conditional identification, learned FBSDE qualification or production selection",
@@ -1136,9 +1072,7 @@
               "AdmittedCovarianceProfileV1",
               "AdmittedZConversionProfileV1"
             ],
-            "outputs": [
-              "AdmittedNduCoefficientProfileV1"
-            ],
+            "outputs": ["AdmittedNduCoefficientProfileV1"],
             "state": "source_implemented_stochastic_provenance_profile",
             "authority": "deny_all",
             "nonClaim": "artifact manifest binding and numeric compatibility are source admission, not artifact selection, currentness, efficacy or activation",
@@ -1164,9 +1098,7 @@
               "AdmittedZConversionProfileV1",
               "now_unix_ms"
             ],
-            "outputs": [
-              "NduCoefficientProjectionV1"
-            ],
+            "outputs": ["NduCoefficientProjectionV1"],
             "state": "source_implemented_stochastic_projection_chain",
             "authority": "deny_all",
             "nonClaim": "requires exact covariance provenance and admitted conversion profile; does not establish current artifact eligibility or independent convergence",
@@ -1279,12 +1211,8 @@
           "releaseState": "not_established"
         },
         "laneId": "LANE-D-OBJECTIVE-VALUE",
-        "declaredRoots": [
-          "codex-rs/hepta-ndu"
-        ],
-        "resolvedRoots": [
-          "codex-rs/hepta-ndu"
-        ],
+        "declaredRoots": ["codex-rs/hepta-ndu"],
+        "resolvedRoots": ["codex-rs/hepta-ndu"],
         "sourceRootPresent": true,
         "productionImplementation": false,
         "claimBoundary": {
@@ -1459,8 +1387,8 @@
     }
   ],
   "observedAtHead": {
-    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
-    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
+    "commit": "d0a178825eb22f45f37e778a1e9ab19eedf7f821",
+    "tree": "6a3fda78b4619d70bb8df97157e91cedb142d9c0"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",

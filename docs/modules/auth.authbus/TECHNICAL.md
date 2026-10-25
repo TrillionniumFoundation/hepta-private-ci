@@ -143,6 +143,17 @@ Projection domains rebuild from declared sources and publish complete generation
 
 `AuthBusAuthorityHost` is the production-shaped mutation façade for policy/quota/trust state. Its SQLite store uses WAL, FULL synchronous writes and `BEGIN IMMEDIATE`; mutating owner calls must not bypass the host because successful or failed mutations can advance trusted time and every dirty frontier must be published to the independently retained checkpoint before returning. Replay/delivery remains owned by `HeptaEvidenceStore`, with Agentd separately publishing the replay frontier checkpoint. `DispatchAttempted` is committed before the registered effect boundary; restart converts unresolved attempts to `Indeterminate` before new reservation issuance.
 
+First settlement reads the current `Settlement` issuer-purpose row, exact epoch,
+key and lifecycle state within that same write transaction. The public
+`SettlementIssuerRegistration` argument is only a four-field consistency hint;
+it cannot provision trust or bypass a later revocation. Verification uses the
+durable current record, including after database-lock waiting. A terminal exact
+receipt retry preserves its existing historical-read semantics and performs no
+new quota mutation. Real SQLite regressions in `settlement_issuer_tests.rs`
+exercise missing enrollment, substituted key/epoch, stale snapshots and a
+second owner's actual revocation commit; preparation uses the existing public
+enroll/revoke owner APIs. These controls do not qualify aggregate resource return.
+
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback

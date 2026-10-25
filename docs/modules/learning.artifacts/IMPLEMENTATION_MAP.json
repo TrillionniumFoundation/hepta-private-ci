@@ -2,20 +2,16 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
-    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
+    "commit": "b5b9379bedaf0065f8f3b373c5da59228f8d9539",
+    "tree": "2e9edf3eeaa49b22e8a9135774b3ee12638af9ea"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.artifacts",
   "owner": "learning-platform",
   "deputy": "durability-kernel",
   "technicalGuide": "docs/modules/learning.artifacts/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-learning-artifacts"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-learning-artifacts"
-  ],
+  "declaredRoots": ["codex-rs/hepta-learning-artifacts"],
+  "resolvedRoots": ["codex-rs/hepta-learning-artifacts"],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "explicit_read_and_writer_service_composed",
@@ -380,9 +376,7 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": [
-    "codex-rs/hepta-learning-artifacts"
-  ],
+  "sourceRoot": ["codex-rs/hepta-learning-artifacts"],
   "productCallerBindings": [
     {
       "operation": "load_pinned_candidate",
@@ -444,19 +438,19 @@
     },
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "b796d291c279450e11042b6aaa1b348657f14f3a"
+      "object": "be377029f542b2f1bac08d9165a7632b22c559b3"
     },
     {
       "path": "codex-rs/Cargo.toml",
-      "object": "70c7b8dc2bc9768f6fc673049c2e348baddce838"
+      "object": "317b69e9559ce96208e0822c3ff83f38ac2c2841"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "object": "ed471e437cd611d90fecae8615242a95e0433a43"
+      "object": "ec01ed0d9d48fedd95ab3e00180a3a69b2dffb9a"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
-      "object": "baf4e1ba6db9520dc0df84c5ccf067e00c5a63d0"
+      "object": "a9e4cd73db49551c6e95b343c87c5f001ea24ab7"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
@@ -464,11 +458,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "d6fddb0fccc02297e6a6bac983cd8be62cef9580"
+      "object": "cb4221b11f598f514ba513e8c64bc68129579743"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts",
-      "object": "184f69825b0d6ce11f9a54e7dea85ca7713d10af"
+      "object": "c34087820d3c2b8ff94e5208d92c8ecd3d31f0ac"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
@@ -496,7 +490,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
-      "object": "68a600b5916c6cfce747f042a8c24b662dd2a362"
+      "object": "102b65d3695fcac9d9d2d6d82e832f0c2d1f2975"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
@@ -512,7 +506,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/selection.rs",
-      "object": "ac48b729592628809723337eb028a956ed41c81d"
+      "object": "38a8e5e1746516cdbb64a1495bd5d8c97f6076d9"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/sensor_core_registry.rs",
@@ -528,12 +522,12 @@
     },
     {
       "path": "docs/modules/learning.artifacts/TECHNICAL.md",
-      "object": "c693b6e0a78375b78e70d1243661819446c74fb7"
+      "object": "1d6fd037ef47dd6f695064ce9fd4b4006b30586f"
     }
   ],
   "observedAtHead": {
-    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
-    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
+    "commit": "b5b9379bedaf0065f8f3b373c5da59228f8d9539",
+    "tree": "2e9edf3eeaa49b22e8a9135774b3ee12638af9ea"
   },
   "sourceObservationScope": "Current source navigation was independently re-observed at sourceBase. Source objects and observed paths bind that source snapshot; this observation does not renew historical execution, acceptance, activation or release evidence.",
   "observedSourcePaths": [

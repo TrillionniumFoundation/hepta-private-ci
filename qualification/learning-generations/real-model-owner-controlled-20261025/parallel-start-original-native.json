@@ -1,0 +1,90 @@
+{
+  "schema": "hepta.controlled.parallel-start-original-native-observation.v1",
+  "Hepta_source": "43ad626b17623e31867e75cad0463b328925aa08",
+  "Hepta_tree": "68dab583197772fba9f8cc997ed0cf670b11bbb9",
+  "execution_host": "local ROG controlled Linux CPU; not a4060 replay",
+  "source_unchanged": true,
+  "source_bound_build_receipt_sha256": "083d3a160d0e1f3783c746b40b1bb8b1105f436e6a12fb1a435c0c45e54f187e",
+  "test_archive_sha256": "f1a5a43a1ea43f6b598900d1e8b654989c0a9dd2fbb68e8a2f60cd2aa426d408",
+  "raw_results_archive_sha256": "7e0446de979fab01bfc2a228fd6af875e11d9573fe5e8f7a5114a13f80a86cb9",
+  "raw_results_archive_bytes": 4331520,
+  "original_execution_receipt_sha256": "1e2e5771f2daf78c4266ab504a857facd1ee7fc8cd842d34610c6df639d1d1a7",
+  "original_execution_log_sha256": "ed7c55bf3f8820d1973b8addffd2e177206e7ce041fe4784763db5ade81d208f",
+  "actual_cases": [
+    {
+      "name": "real_smollm_material_publishes_and_recovers_through_original_artifact_owner",
+      "seconds": 0.239,
+      "outcome": "PASS"
+    },
+    {
+      "name": "real_gen2_gen3_forwards_score_only_after_original_holdout_consumption",
+      "seconds": 13.651,
+      "outcome": "PASS"
+    },
+    {
+      "name": "smollm_neural_read::tests::native::real_smollm_parent_query_original_control_final_use_and_terminal_unload",
+      "seconds": 5.943,
+      "outcome": "PASS"
+    }
+  ],
+  "comparison": {
+    "tasks": 32,
+    "actual_forwards": 64,
+    "original_signed_claims": 66,
+    "control_journal_counts": {
+      "submit": 66,
+      "reserve": 66,
+      "assign": 66,
+      "settle": 66
+    },
+    "control_journal_sha256": "0f89e9955bb2d82f0006632daf59d8bff8b7529132ce301270ce15426553eb24",
+    "exact_cold_reopen": true,
+    "both_original_terminal_unloads": true,
+    "original_nextest_limit_seconds": 60,
+    "original_runner_decision": "Ineligible",
+    "failed_metrics": ["binary-correctness"],
+    "qualification_grants_authority": false,
+    "raw_result_sha256": "d5b7c113cddae0d44f74794ec39eaf48a9bac0fa9c1e35509d97606425e18ff5"
+  },
+  "input_binding": {
+    "original_parameter_file_hashes_unchanged": true,
+    "original_training_input_and_receipt_hashes_unchanged": true,
+    "all_five_original_training_source_pins_match": true,
+    "parent_descriptor_change": "Only absolute directory relocated; each descriptor gets a fresh expected SHA256. Tensor/artifact/contract/generation/operation fields are unchanged.",
+    "parents": {
+      "2": {
+        "original_sha256": "06423d16e112f84fb750b3f2c2978ea28440699887a5cfe8a51d982714173809",
+        "local_sha256": "a02f66f9a15c3e33c0c3d8b3b72ec217c2f80967666a67fdf0a2879ca5bf0500",
+        "changed_keys": ["directory"]
+      },
+      "3": {
+        "original_sha256": "ea6199fcbf2f3421d7a0ba3f69ee4995848dffb6a97ead69865143be89671b41",
+        "local_sha256": "ab800c2bbf6c36add589aa4f9ca612daf706c970244e1035d2b56db710c2cffb",
+        "changed_keys": ["directory"]
+      }
+    },
+    "material_manifest_sha256": "e84bf22d543592b96ee1e4e41f396a01c611ca460bdae3718bb0da4c45d2190a"
+  },
+  "component_suite": {
+    "source": "d57a84c0d2841d0999cb08f583e77702beff275d",
+    "passed": 369,
+    "inherited_ignored": 12,
+    "scope": "Original complete two-package execution before required fix/fmt; all relevant Rust blobs equal this integrated source. The separate original3 opt-in cases above execute real models; this is not all-workspace CI."
+  },
+  "prior_observations_preserved": [
+    "077 original60s timeout and original AlreadyExists retry failure",
+    "077 archive setup failure before test dispatch",
+    "Local first preparation failed before dispatch because two source-pin paths were resolved under the wrong source directory",
+    "4060 offline/SSH connection timeout; no new4060 test executed"
+  ],
+  "product_deadlines_seconds": {
+    "read": 2,
+    "startup": 120,
+    "terminal": 8
+  },
+  "CURRENT_updated": false,
+  "three_round_closed": false,
+  "ordinary_cognitive_context_qualified": false,
+  "funded_whole_u": false,
+  "public_reward_eligible": false
+}

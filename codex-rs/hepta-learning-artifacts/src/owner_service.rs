@@ -522,7 +522,9 @@ mod tests {
             ));
             let _ = fs::remove_dir_all(&path);
             fs::create_dir_all(&path).fixture("create service test dir");
-            Self(path)
+            // The reader requires the same canonical root retained by the writer,
+            // including temporary-directory aliases such as macOS /var.
+            Self(path.canonicalize().fixture("canonical service test dir"))
         }
     }
 

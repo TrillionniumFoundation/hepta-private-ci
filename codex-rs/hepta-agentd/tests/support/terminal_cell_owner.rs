@@ -195,6 +195,20 @@ impl Fixture {
     }
 
     pub(super) fn directory(&self) -> File {
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::OpenOptionsExt;
+            // The existing ledger sync needs a writable directory handle on Windows.
+            // This fixture owns the directory; it does not establish runtime authority.
+            const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
+                .open(&self.root)
+                .unwrap()
+        }
+        #[cfg(not(windows))]
         File::open(&self.root).unwrap()
     }
 

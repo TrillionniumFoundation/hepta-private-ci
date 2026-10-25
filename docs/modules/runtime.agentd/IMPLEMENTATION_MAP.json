@@ -2,18 +2,14 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7a56b99e2839cda8fe207e5c1787a8e9320d3bac",
-    "tree": "d7f626ab7e1081fd22fb5f6298264d6b126b6750"
+    "commit": "d0a178825eb22f45f37e778a1e9ab19eedf7f821",
+    "tree": "6a3fda78b4619d70bb8df97157e91cedb142d9c0"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
   "sourceMaturity": "native_composition_host",
-  "declaredRoots": [
-    "codex-rs/hepta-agentd"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-agentd"
-  ],
+  "declaredRoots": ["codex-rs/hepta-agentd"],
+  "resolvedRoots": ["codex-rs/hepta-agentd"],
   "stateOwnerDisposition": "Owns only ephemeral run admission, immutable snapshot references, and runtime-health composition state.",
   "terminalObserverDisposition": "Agentd preserves dispatch-boundary uncertainty and accepts terminal state only from the delegated execution/effect owner.",
   "operations": [
@@ -310,9 +306,7 @@
   "owner": "agent-runtime",
   "deputy": "runtime-control",
   "technicalGuide": "docs/modules/runtime.agentd/TECHNICAL.md",
-  "sourceRoot": [
-    "codex-rs/hepta-agentd"
-  ],
+  "sourceRoot": ["codex-rs/hepta-agentd"],
   "currentSourceEvidence": {
     "commit": "cbb3cee084a4caf4702dd4e575cae5504486c176",
     "tree": "e22806b086240bb2015344dfb545734342c7fdb3",
@@ -344,7 +338,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "66bcce284f0ea804f80620d71024446e076f6ff9"
+      "object": "9ec8e78abd0ebf29cd10e87976f995e29e91af5a"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
@@ -380,7 +374,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "d6fddb0fccc02297e6a6bac983cd8be62cef9580"
+      "object": "cb4221b11f598f514ba513e8c64bc68129579743"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
@@ -404,7 +398,7 @@
     },
     {
       "path": "docs/modules/runtime.agentd/TECHNICAL.md",
-      "object": "53e77a65368f3cd86ed9004e8f3ae18cfcf8a454"
+      "object": "1c9a0614e1ea851a4ff141cb153303f2a496995e"
     }
   ]
 }

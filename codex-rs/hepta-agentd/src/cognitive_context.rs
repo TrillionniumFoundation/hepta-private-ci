@@ -55,6 +55,7 @@ impl From<CognitiveStoreError> for CognitiveContextError {
 
 /// Borrowed optional adapters used by the current cognitive read owner.
 pub(crate) struct CognitiveContextReadAdapters<'a> {
+    pub(crate) execution: &'a crate::NeuralCognitiveExecutionV1,
     pub(crate) ranker: Option<&'a std::sync::Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) current_retrieval:
         Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
@@ -79,6 +80,7 @@ pub(crate) async fn read(
         query,
         limit,
         CognitiveContextReadAdapters {
+            execution: &crate::NeuralCognitiveExecutionV1::bounded_read(),
             ranker,
             current_retrieval: None,
             learning_sink: None,
@@ -105,6 +107,7 @@ pub(crate) async fn read_with_retrieval_context(
         query,
         limit,
         CognitiveContextReadAdapters {
+            execution: &crate::NeuralCognitiveExecutionV1::bounded_read(),
             ranker,
             current_retrieval,
             learning_sink: None,
@@ -124,6 +127,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     request_id: Option<u64>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
     let CognitiveContextReadAdapters {
+        execution,
         ranker,
         current_retrieval,
         learning_sink,
@@ -293,12 +297,15 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         let ranker = std::sync::Arc::clone(ranker);
         let rank_owner = owner.clone();
         let rank_query = query.to_string();
+        let rank_execution = execution.clone();
         let (ranked_items, rank_observation) = tokio::task::spawn_blocking(move || {
-            let observation = ranker.rank(
+            rank_execution.check()?;
+            let observation = ranker.rank_with_execution(
                 &rank_owner,
                 body_generation,
                 &rank_query,
                 &mut admitted_items,
+                &rank_execution,
             )?;
             Ok::<_, String>((admitted_items, observation))
         })

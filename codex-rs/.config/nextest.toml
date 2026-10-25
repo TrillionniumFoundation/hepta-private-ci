@@ -111,3 +111,48 @@ filter = 'package(codex-hepta-operations) & test(growing_history_keeps_early_ide
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
+
+# Explicit 1000-operation qualifications retain every FULL/fsync, historical
+# replay and actual child kill/reopen. Both exceeded the ordinary 60s watchdog.
+# Use the existing serialized capacity budget, never a product latency waiver:
+# per-child bounds, all workload/assertions and the 8s runtime deadline remain.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-memory) & (test(/^local_compact_executor_tests::sqlite_1000_operation_seeded_reopen_replay_stress$/) | test(/^local_compact_executor_tests::host_restart_reopen_replay_process_soak$/))'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 20 }
+retries = 0
+
+# These cases run real Agentd/App Server fleets, isolated process recovery, or
+# actual neural workers. Serialize independent cases while retaining each
+# case's own concurrent agents and all existing timeouts and retry settings.
+[test-groups.hepta_process_integration]
+max-threads = 1
+
+[[profile.default.overrides]]
+filter = '''
+package(codex-hepta-agentd) & kind(test) & (
+    binary(=authbus_text_product)
+    | binary(=cognitive_product_e2e)
+    | binary(=five_agent_rolling_upgrade)
+    | binary(=fleet_harness_diagnostics)
+    | binary(=kernel_evidence_product)
+    | binary(=optional_module_restart)
+    | binary(=plasticity_process_e2e)
+    | binary(=queue_capacity_product)
+    | binary(=runtime_codex_product_e2e)
+    | binary(=supervised_two_agents)
+    | binary(=supervisord_product_e2e)
+    | binary(=two_agent_turn_recovery)
+    | binary(=neural_comparison_native)
+)
+'''
+test-group = 'hepta_process_integration'
+
+[[profile.default.overrides]]
+filter = '''
+package(codex-hepta-infer-worker-host) & (
+    test(=native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone)
+    | test(=smollm_neural_read::tests::native::real_smollm_parent_query_original_control_final_use_and_terminal_unload)
+)
+'''
+test-group = 'hepta_process_integration'

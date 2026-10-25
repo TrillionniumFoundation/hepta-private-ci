@@ -40,15 +40,18 @@ function positiveInteger(value, name) {
 }
 
 function canonicalValue(value, depth = 0) {
-  if (depth > 32) throw new TypeError("Agentd browser frame nesting exceeds limit");
-  if (value === null || typeof value === "boolean" || typeof value === "string") return value;
+  if (depth > 32)
+    throw new TypeError("Agentd browser frame nesting exceeds limit");
+  if (value === null || typeof value === "boolean" || typeof value === "string")
+    return value;
   if (typeof value === "number") {
     if (!Number.isSafeInteger(value)) {
       throw new TypeError("Agentd browser frame numbers must be safe integers");
     }
     return value;
   }
-  if (Array.isArray(value)) return value.map((item) => canonicalValue(item, depth + 1));
+  if (Array.isArray(value))
+    return value.map((item) => canonicalValue(item, depth + 1));
   const record = requireRecord(value, "Agentd browser frame value");
   return Object.fromEntries(
     Object.keys(record)
@@ -62,12 +65,20 @@ export function canonicalAgentdBrowserJson(value) {
 }
 
 export function agentdBrowserPayloadDigest(payload) {
-  return createHash("sha256").update(canonicalAgentdBrowserJson(payload)).digest("hex");
+  return createHash("sha256")
+    .update(canonicalAgentdBrowserJson(payload))
+    .digest("hex");
 }
 
-export function buildAgentdBrowserFrame({ sequence, kind, requestId, payload }) {
+export function buildAgentdBrowserFrame({
+  sequence,
+  kind,
+  requestId,
+  payload,
+}) {
   positiveInteger(sequence, "sequence");
-  if (!KINDS.has(kind)) throw new TypeError("Agentd browser frame kind is not registered");
+  if (!KINDS.has(kind))
+    throw new TypeError("Agentd browser frame kind is not registered");
   stableId(requestId, "requestId");
   const canonicalPayload = canonicalValue(requireRecord(payload, "payload"));
   return Object.freeze({
@@ -93,10 +104,18 @@ export function normalizeAgentdBrowserFrame(value) {
     "schema",
     "sequence",
   ].sort();
-  if (keys.length !== expected.length || keys.some((key, index) => key !== expected[index])) {
-    throw new TypeError("Agentd browser frame contains missing or unknown fields");
+  if (
+    keys.length !== expected.length ||
+    keys.some((key, index) => key !== expected[index])
+  ) {
+    throw new TypeError(
+      "Agentd browser frame contains missing or unknown fields",
+    );
   }
-  if (frame.schema !== SCHEMA || frame.protocolVersion !== BROWSER_AGENTD_PROTOCOL_VERSION) {
+  if (
+    frame.schema !== SCHEMA ||
+    frame.protocolVersion !== BROWSER_AGENTD_PROTOCOL_VERSION
+  ) {
     throw new TypeError("Agentd browser frame protocol is unsupported");
   }
   const normalized = buildAgentdBrowserFrame(frame);

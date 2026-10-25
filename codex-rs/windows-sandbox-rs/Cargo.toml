@@ -95,3 +95,6 @@ version = "0.52"
 [dev-dependencies]
 codex-utils-cargo-bin = { workspace = true }
 pretty_assertions = { workspace = true }
+
+[target.'cfg(windows)'.dev-dependencies]
+codex-utils-windows-private-state = { workspace = true }

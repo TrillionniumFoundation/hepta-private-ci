@@ -2,20 +2,16 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
-    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
+    "commit": "d0a178825eb22f45f37e778a1e9ab19eedf7f821",
+    "tree": "6a3fda78b4619d70bb8df97157e91cedb142d9c0"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "knowledge.graph",
   "owner": "knowledge-graph",
   "deputy": "cognitive-platform",
   "technicalGuide": "docs/modules/knowledge.graph/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-kg"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-kg"
-  ],
+  "declaredRoots": ["codex-rs/hepta-kg"],
+  "resolvedRoots": ["codex-rs/hepta-kg"],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "composed_cognitive_read_default_agentd_write_and_prompt_optimizer_pending_exact_head",
@@ -166,9 +162,7 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": [
-    "codex-rs/hepta-kg"
-  ],
+  "sourceRoot": ["codex-rs/hepta-kg"],
   "compositionRoots": [
     "codex-rs/Cargo.toml",
     ".github/workflows/hepta-knowledge-graph-qualification.yml",
@@ -204,8 +198,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "85d0cce30b2583bba6997754a7fd8c2d4a19af2f",
-    "tree": "7142a9a69e686946c8e7b60ed8691906262ff713"
+    "commit": "d0a178825eb22f45f37e778a1e9ab19eedf7f821",
+    "tree": "6a3fda78b4619d70bb8df97157e91cedb142d9c0"
   },
   "observedSourcePaths": [
     ".github/workflows/hepta-knowledge-graph-qualification.yml",
@@ -264,11 +258,11 @@
     },
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "b796d291c279450e11042b6aaa1b348657f14f3a"
+      "object": "be377029f542b2f1bac08d9165a7632b22c559b3"
     },
     {
       "path": "codex-rs/Cargo.toml",
-      "object": "70c7b8dc2bc9768f6fc673049c2e348baddce838"
+      "object": "317b69e9559ce96208e0822c3ff83f38ac2c2841"
     },
     {
       "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
@@ -372,7 +366,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
-      "object": "e2e2c8eae3ab1f6bdc5dd38f3670d96725b3fc9a"
+      "object": "01bfa4391daa8bf50f8acbfc4d1ba442bc8f7409"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
@@ -384,7 +378,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/lib.rs",
-      "object": "be8b5db419744eef83df58bec3cd6bb40756e114"
+      "object": "a76446e13015e78a21f0dabd2d59840aa48897db"
     },
     {
       "path": "codex-rs/hepta-prompt-optimizer/Cargo.toml",

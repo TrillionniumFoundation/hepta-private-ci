@@ -41,6 +41,9 @@ use crate::cognitive_test_support::agent_id;
 use crate::cognitive_test_support::layout;
 use crate::compact_persistence::checkpoint_digest;
 
+#[path = "local_compact_capacity_tests.rs"]
+mod capacity;
+
 // These environment variables are intentionally test-only.  The process
 // soak is an ignored qualification harness and never participates in the
 // runtime/production path.

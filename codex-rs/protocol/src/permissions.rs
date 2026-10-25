@@ -1302,16 +1302,22 @@ impl FileSystemSandboxPolicy {
                         Some(effective_path)
                     }),
             );
+            // Preserve literal paths so sandboxes can mask symlink inodes.
+            let mut read_only_subpaths =
+                dedup_absolute_paths(read_only_subpaths, /*normalize_effective_paths*/ false);
+            // Canonical and logical entries can supply the same protections
+            // in different orders. Keep direct metadata numbering stable;
+            // other carveouts retain their relative order and exact paths.
+            read_only_subpaths.sort_by_key(|path| {
+                PROTECTED_METADATA_PATH_NAMES
+                    .iter()
+                    .position(|name| path == &root.join(name))
+                    .unwrap_or(PROTECTED_METADATA_PATH_NAMES.len())
+            });
             WritableRoot {
                 protected_metadata_names,
                 root,
-                // Preserve literal in-root protected paths like `.git` and
-                // `.codex` so downstream sandboxes can still detect and mask
-                // the symlink itself instead of only its resolved target.
-                read_only_subpaths: dedup_absolute_paths(
-                    read_only_subpaths,
-                    /*normalize_effective_paths*/ false,
-                ),
+                read_only_subpaths,
             }
         })
         .collect()
@@ -2151,6 +2157,10 @@ fn resolve_gitdir_from_file(dot_git: &AbsolutePathBuf) -> Option<AbsolutePathBuf
 }
 
 #[cfg(test)]
+#[path = "permissions_writable_root_order_tests.rs"]
+mod writable_root_order_tests;
+
+#[cfg(test)]
 mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
@@ -2385,7 +2395,12 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn writable_roots_proactively_protect_missing_dot_codex() {
-        let cwd = TempDir::new().expect("tempdir");
+        let cwd = TempDir::new_in(
+            std::env::temp_dir()
+                .canonicalize()
+                .expect("canonical temporary parent"),
+        )
+        .expect("tempdir");
         let expected_root = AbsolutePathBuf::from_absolute_path(
             cwd.path().canonicalize().expect("canonicalize cwd"),
         )
@@ -2570,7 +2585,12 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn writable_roots_skip_default_dot_codex_when_explicit_user_rule_exists() {
-        let cwd = TempDir::new().expect("tempdir");
+        let cwd = TempDir::new_in(
+            std::env::temp_dir()
+                .canonicalize()
+                .expect("canonical temporary parent"),
+        )
+        .expect("tempdir");
         let expected_root = AbsolutePathBuf::from_absolute_path(
             cwd.path().canonicalize().expect("canonicalize cwd"),
         )
@@ -2860,7 +2880,12 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn writable_roots_preserve_symlinked_protected_subpaths() {
-        let cwd = TempDir::new().expect("tempdir");
+        let cwd = TempDir::new_in(
+            std::env::temp_dir()
+                .canonicalize()
+                .expect("canonical temporary parent"),
+        )
+        .expect("tempdir");
         let root = cwd.path().join("root");
         let decoy = root.join("decoy-codex");
         let dot_codex = root.join(".codex");
@@ -2998,7 +3023,12 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn writable_roots_preserve_explicit_symlinked_carveouts_that_alias_root() {
-        let cwd = TempDir::new().expect("tempdir");
+        let cwd = TempDir::new_in(
+            std::env::temp_dir()
+                .canonicalize()
+                .expect("canonical temporary parent"),
+        )
+        .expect("tempdir");
         let root = cwd.path().join("root");
         let alias = root.join("alias-root");
         fs::create_dir_all(&root).expect("create root");

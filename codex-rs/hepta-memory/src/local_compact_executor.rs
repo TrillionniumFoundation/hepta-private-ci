@@ -273,6 +273,16 @@ impl LocalCompactExecutor {
 
     /// Reopens and verifies the durable append-only journal.
     pub async fn snapshot(&self) -> Result<CompactPersistenceSnapshot, LocalCompactExecutorError> {
+        let journal = self.read_verified_journal().await?;
+        Ok(journal.snapshot())
+    }
+
+    // Keep the verified journal from this read, rather than cloning its entries
+    // into a snapshot and replaying that same in-memory chain a second time.
+    // Every caller still reads and validates the complete durable journal.
+    async fn read_verified_journal(
+        &self,
+    ) -> Result<CompactPersistenceJournal, LocalCompactExecutorError> {
         let mut transaction = self
             .store
             .pool
@@ -284,7 +294,7 @@ impl LocalCompactExecutor {
             .commit()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
-        Ok(journal.snapshot())
+        Ok(journal)
     }
 
     /// Returns the durable state for one operation after chain verification.
@@ -293,8 +303,7 @@ impl LocalCompactExecutor {
         operation_id: &str,
     ) -> Result<Option<CompactPersistenceState>, LocalCompactExecutorError> {
         validate_text(operation_id, "operation id", /*max_bytes*/ 512)?;
-        let snapshot = self.snapshot().await?;
-        let journal = CompactPersistenceJournal::reopen(snapshot)?;
+        let journal = self.read_verified_journal().await?;
         Ok(journal.state(operation_id))
     }
 
@@ -317,8 +326,26 @@ impl LocalCompactExecutor {
         let plan = checkpoint
             .rehydration_plan(expected_revision)
             .map_err(|error| LocalCompactExecutorError::Invalid(error.to_string()))?;
-        let snapshot = self.snapshot().await?;
-        let journal = CompactPersistenceJournal::reopen(snapshot)?;
+        let journal = self.read_verified_journal().await?;
+        Self::read_rehydration_from_verified_journal(
+            &journal,
+            operation_id,
+            checkpoint,
+            expected_revision,
+            plan,
+        )
+    }
+
+    // This is a read of the journal already verified by this transaction, not
+    // a cached snapshot or an authority grant. Both public reads and the
+    // original mutation owner retain the same state/digest/witness checks.
+    fn read_rehydration_from_verified_journal(
+        journal: &CompactPersistenceJournal,
+        operation_id: &str,
+        checkpoint: &CompactCheckpoint,
+        expected_revision: u64,
+        plan: RehydrationPlan,
+    ) -> Result<LocalRehydrationRead, LocalCompactExecutorError> {
         if journal.state(operation_id) != Some(CompactPersistenceState::Committed) {
             return Err(LocalCompactExecutorError::Invalid(format!(
                 "operation {operation_id} is not durably committed"
@@ -373,18 +400,29 @@ impl LocalCompactExecutor {
         checkpoint: &CompactCheckpoint,
         expected_revision: u64,
     ) -> Result<RehydrationPlan, LocalCompactExecutorError> {
-        let read = self
-            .read_rehydration(operation_id, checkpoint, expected_revision)
-            .await?;
-        let _ = self
-            .mutate(|journal| {
-                journal.record_rehydration(operation_id, &read.checkpoint_sha256, expected_revision)
+        validate_text(operation_id, "operation id", /*max_bytes*/ 512)?;
+        let plan = checkpoint
+            .rehydration_plan(expected_revision)
+            .map_err(|error| LocalCompactExecutorError::Invalid(error.to_string()))?;
+        self.mutate(|journal| {
+            let read = Self::read_rehydration_from_verified_journal(
+                journal,
+                operation_id,
+                checkpoint,
+                expected_revision,
+                plan,
+            )?;
+            let _ = journal.record_rehydration(
+                operation_id,
+                &read.checkpoint_sha256,
+                expected_revision,
+            )?;
+            Ok::<_, LocalCompactExecutorError>(RehydrationPlan {
+                status: RehydrationStatus::Complete,
+                ..read.plan
             })
-            .await?;
-        Ok(RehydrationPlan {
-            status: RehydrationStatus::Complete,
-            ..read.plan
         })
+        .await
     }
 
     /// Returns the durable local rehydration witness after reopening and
@@ -394,19 +432,14 @@ impl LocalCompactExecutor {
         operation_id: &str,
     ) -> Result<Option<CompactRehydrationRecord>, LocalCompactExecutorError> {
         validate_text(operation_id, "operation id", /*max_bytes*/ 512)?;
-        let snapshot = self.snapshot().await?;
-        let journal = CompactPersistenceJournal::reopen(snapshot)?;
+        let journal = self.read_verified_journal().await?;
         Ok(journal.rehydration(operation_id).cloned())
     }
 
-    async fn mutate<F>(
-        &self,
-        mutation: F,
-    ) -> Result<CompactPersistenceAppend, LocalCompactExecutorError>
+    async fn mutate<R, F, E>(&self, mutation: F) -> Result<R, LocalCompactExecutorError>
     where
-        F: FnOnce(
-            &mut CompactPersistenceJournal,
-        ) -> Result<CompactPersistenceAppend, CompactPersistenceError>,
+        F: FnOnce(&mut CompactPersistenceJournal) -> Result<R, E>,
+        E: Into<LocalCompactExecutorError>,
     {
         let mut transaction = self
             .store
@@ -438,7 +471,12 @@ impl LocalCompactExecutor {
         }
         let mut journal = self.load_journal(&mut transaction).await?;
         let before = journal.entries().len();
-        let result = mutation(&mut journal)?;
+        let result = mutation(&mut journal).map_err(Into::<LocalCompactExecutorError>::into)?;
+        if journal.entries().len() > MAX_JOURNAL_EVENTS {
+            return Err(LocalCompactExecutorError::Invalid(format!(
+                "journal exceeds {MAX_JOURNAL_EVENTS} event append limit"
+            )));
+        }
         for entry in &journal.entries()[before..] {
             self.insert_event(&mut transaction, entry).await?;
         }
@@ -461,7 +499,8 @@ impl LocalCompactExecutor {
                     compact_event_binding_sha256
              FROM cognitive_compact_events
              WHERE journal_id = ?
-             ORDER BY sequence",
+             ORDER BY sequence
+             LIMIT 4097",
         )
         .bind(&self.journal_id)
         .fetch_all(&mut **transaction)
@@ -477,7 +516,7 @@ impl LocalCompactExecutor {
             let sequence: i64 = row
                 .try_get("sequence")
                 .map_err(crate::cognitive_store::unavailable)?;
-            let owner_agent_id: String = row
+            let owner_agent_id: &str = row
                 .try_get("owner_agent_id")
                 .map_err(crate::cognitive_store::unavailable)?;
             let authority_epoch: Option<i64> = row
@@ -489,16 +528,16 @@ impl LocalCompactExecutor {
             let generation: i64 = row
                 .try_get("generation")
                 .map_err(crate::cognitive_store::unavailable)?;
-            let fencing_token: String = row
+            let fencing_token: &str = row
                 .try_get("fencing_token")
                 .map_err(crate::cognitive_store::unavailable)?;
-            let event_json: String = row
+            let event_json: &str = row
                 .try_get("event_json")
                 .map_err(crate::cognitive_store::unavailable)?;
-            let previous_sha256: String = row
+            let previous_sha256: &str = row
                 .try_get("previous_sha256")
                 .map_err(crate::cognitive_store::unavailable)?;
-            let event_sha256: String = row
+            let event_sha256: &str = row
                 .try_get("event_sha256")
                 .map_err(crate::cognitive_store::unavailable)?;
             let lease_id: Option<String> = row
@@ -537,7 +576,7 @@ impl LocalCompactExecutor {
                     "event owner or fence does not match executor".to_string(),
                 ));
             }
-            let entry: CompactPersistenceEvent = serde_json::from_str(&event_json)
+            let entry: CompactPersistenceEvent = serde_json::from_str(event_json)
                 .map_err(|error| LocalCompactExecutorError::Serialization(error.to_string()))?;
             if sequence != i64::try_from(entry.sequence).unwrap_or(i64::MAX)
                 || authority_epoch != entry.authority_epoch
@@ -612,7 +651,7 @@ impl LocalCompactExecutor {
                         &lease_head_sha256,
                         authority_epoch,
                         owner_epoch,
-                        &fencing_token,
+                        fencing_token,
                         self.fence.generation,
                     )
                     .await?;

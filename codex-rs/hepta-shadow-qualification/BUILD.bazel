@@ -1,3 +1,4 @@
+load("@crates//:defs.bzl", "all_crate_deps")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 
 rust_library(
@@ -8,17 +9,7 @@ rust_library(
     crate_root = "src/lib.rs",
     edition = "2024",
     visibility = ["//visibility:private"],
-    deps = [
-        "@crates//:libc",
-        "@crates//:rand",
-        "@crates//:serde",
-        "@crates//:serde_json",
-        "@crates//:sha2",
-        "@crates//:sqlx",
-        "@crates//:thiserror",
-        "@crates//:tokio",
-        "@crates//:toml",
-    ],
+    deps = all_crate_deps(normal = True),
 )
 
 rust_test(

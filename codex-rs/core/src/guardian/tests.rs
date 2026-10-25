@@ -86,6 +86,7 @@ use std::sync::Arc;
 use std::time::Duration;
 use tempfile::TempDir;
 use tokio_util::sync::CancellationToken;
+use tracing::instrument::WithSubscriber;
 
 fn fixed_guardian_parent_session_id() -> ThreadId {
     ThreadId::from_string("11111111-1111-4111-8111-111111111111")
@@ -2296,6 +2297,32 @@ async fn build_guardian_prompt_items_includes_parent_session_id() -> anyhow::Res
 async fn guardian_reuses_prompt_cache_key_and_appends_prior_reviews() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
 
+    #[derive(Clone)]
+    struct WarningWriter(Arc<std::sync::Mutex<std::io::Cursor<[u8; 8192]>>>);
+
+    impl std::io::Write for WarningWriter {
+        fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+            let mut warnings = self.0.lock().expect("guardian warnings lock");
+            let remaining = warnings.get_ref().len() - warnings.position() as usize;
+            std::io::Write::write_all(&mut *warnings, &bytes[..remaining.min(bytes.len())])?;
+            Ok(bytes.len())
+        }
+
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
+    }
+
+    let persistence_warnings = Arc::new(std::sync::Mutex::new(std::io::Cursor::new([0; 8192])));
+    let warning_writer = WarningWriter(Arc::clone(&persistence_warnings));
+    let diagnostic_subscriber = tracing::Dispatch::new(
+        tracing_subscriber::fmt()
+            .with_ansi(false)
+            .with_env_filter("codex_core::guardian::review_session=warn")
+            .with_writer(move || warning_writer.clone())
+            .finish(),
+    );
+
     let server = start_mock_server().await;
     let first_rationale = "first guardian rationale from the prior review";
     let request_log = mount_sse_sequence(
@@ -2372,6 +2399,7 @@ async fn guardian_reuses_prompt_cache_key_and_appends_prior_reviews() -> anyhow:
         /*external_cancel*/ None,
         /*max_attempts*/ 1,
     )
+    .with_subscriber(diagnostic_subscriber.clone())
     .await;
     session
         .record_conversation_items(
@@ -2423,12 +2451,19 @@ async fn guardian_reuses_prompt_cache_key_and_appends_prior_reviews() -> anyhow:
         /*external_cancel*/ None,
         /*max_attempts*/ 1,
     )
+    .with_subscriber(diagnostic_subscriber.clone())
     .await;
     let committed_rollout_items = session
         .guardian_review_session
         .committed_fork_rollout_items_for_test()
         .await
-        .expect("committed guardian fork snapshot");
+        .unwrap_or_else(|| {
+            let warnings = persistence_warnings.lock().expect("guardian warnings lock");
+            panic!(
+                "committed guardian fork snapshot; first_outcome={first_outcome:?}; second_outcome={second_outcome:?}; persistence_warnings={}",
+                String::from_utf8_lossy(&warnings.get_ref()[..warnings.position() as usize]),
+            )
+        });
     assert_eq!(
         committed_rollout_items
             .iter()
@@ -3375,11 +3410,19 @@ async fn guardian_ephemeral_retry_preserves_parallel_trunk_and_fork_history() ->
         });
 
         let second_request_observed = tokio::time::timeout(Duration::from_secs(5), async {
-            loop {
-                if server.requests().await.len() >= 2 {
-                    break;
+            tokio::select! {
+                biased;
+                () = async {
+                    loop {
+                        if server.requests().await.len() >= 2 {
+                            break;
+                        }
+                        tokio::task::yield_now().await;
+                    }
+                } => {}
+                outcome = &mut second_review => {
+                    panic!("second guardian review completed before its request was observed: {outcome:?}");
                 }
-                tokio::task::yield_now().await;
             }
         })
         .await;

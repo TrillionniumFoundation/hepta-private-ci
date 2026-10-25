@@ -2,20 +2,16 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7a56b99e2839cda8fe207e5c1787a8e9320d3bac",
-    "tree": "d7f626ab7e1081fd22fb5f6298264d6b126b6750"
+    "commit": "d0a178825eb22f45f37e778a1e9ab19eedf7f821",
+    "tree": "6a3fda78b4619d70bb8df97157e91cedb142d9c0"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
   "owner": "learning-platform",
   "deputy": "qualification-plane",
   "technicalGuide": "docs/modules/learning.operator/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-bellman-operator"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-bellman-operator"
-  ],
+  "declaredRoots": ["codex-rs/hepta-bellman-operator"],
+  "resolvedRoots": ["codex-rs/hepta-bellman-operator"],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "explicit_read_consumer_composed_default_learning_loop_absent",
@@ -289,13 +285,11 @@
     "defaultProductLoopWired": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": [
-    "codex-rs/hepta-bellman-operator"
-  ],
+  "sourceRoot": ["codex-rs/hepta-bellman-operator"],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "7a56b99e2839cda8fe207e5c1787a8e9320d3bac",
-    "tree": "d7f626ab7e1081fd22fb5f6298264d6b126b6750"
+    "commit": "d0a178825eb22f45f37e778a1e9ab19eedf7f821",
+    "tree": "6a3fda78b4619d70bb8df97157e91cedb142d9c0"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -318,19 +312,19 @@
   "sourceObjects": [
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "b796d291c279450e11042b6aaa1b348657f14f3a"
+      "object": "be377029f542b2f1bac08d9165a7632b22c559b3"
     },
     {
       "path": "codex-rs/Cargo.toml",
-      "object": "70c7b8dc2bc9768f6fc673049c2e348baddce838"
+      "object": "317b69e9559ce96208e0822c3ff83f38ac2c2841"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "object": "ed471e437cd611d90fecae8615242a95e0433a43"
+      "object": "ec01ed0d9d48fedd95ab3e00180a3a69b2dffb9a"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
-      "object": "baf4e1ba6db9520dc0df84c5ccf067e00c5a63d0"
+      "object": "a9e4cd73db49551c6e95b343c87c5f001ea24ab7"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
@@ -338,7 +332,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "d6fddb0fccc02297e6a6bac983cd8be62cef9580"
+      "object": "cb4221b11f598f514ba513e8c64bc68129579743"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
