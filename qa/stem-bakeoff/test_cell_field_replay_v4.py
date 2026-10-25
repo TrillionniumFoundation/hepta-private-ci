@@ -9,8 +9,9 @@ import unittest
 import numpy as np
 
 from cell_field_action_io import save_arrays, write_json
+from cell_field_experiments_v4 import fixed_anchor
 from cell_field_mpc_v4 import execute_policy
-from cell_field_replay_v4 import CANDIDATE, _mpc_replay
+from cell_field_replay_v4 import CANDIDATE, _fixed_anchor, _mpc_replay
 from cell_field_state import CellTrainingState, dataset_digest
 from cell_learning_models import NumpyCellHead, normalize_features
 
@@ -80,6 +81,37 @@ class ReplayAuditTests(unittest.TestCase):
             write_json(path, manifest)
             with self.assertRaisesRegex(ValueError, "complete training state checksum"):
                 self.audit(target)
+
+
+class FixedReplayAuditTests(unittest.TestCase):
+    def test_all_nonlinear_suffixes_replay_and_an_intermediate_state_fault_rejects(self):
+        rng = np.random.default_rng(17)
+        split = {role: (rng.normal(size=(8, 8)), np.tile(np.arange(4), 2))
+                 for role in ("old_train", "old_probe", "current_train", "current_probe")}
+        contexts = {role: dataset_digest(*split[role]) for role in ("old_train", "current_train")}
+        state = CellTrainingState(NumpyCellHead(8, 4, "linear", seed=7),
+            bindings={"scope": "engineering-fixture"}, seed=7, contexts=contexts, active_context="old_train")
+        for _ in range(8):
+            state.advance(*split["old_train"])
+        state.select_context("current_train")
+        expected = {"expected_bindings": state.bindings, "expected_protocol": state.protocol,
+                    "expected_contexts": contexts}
+        plan = {"h": 0.02, "evaluation_horizon": 8}
+        projected = np.vstack([pair[0] for pair in split.values()])
+        x, y = split["old_probe"]
+        anchor = float(state.head.loss_gradients(normalize_features(x), y, 0.0)[0])
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "anchor"
+            fixed_anchor(state, split, plan, projected, np.arange(4), anchor, target)
+            result = _fixed_anchor(target, state, expected, split, plan, anchor)
+            self.assertEqual(result["replayed_optimizer_steps"], 392)
+            self.assertTrue(result["nonlinear_h8_states_and_losses_exact"])
+            with np.load(target / "actual_trajectories.npz", allow_pickle=False) as archive:
+                arrays = {name: archive[name] for name in archive.files}
+            arrays["states"][1, 5, 0] += 1e-4
+            save_arrays(target / "actual_trajectories.npz", arrays)
+            with self.assertRaisesRegex(ValueError, "fixed nonlinear H8 state replay"):
+                _fixed_anchor(target, state, expected, split, plan, anchor)
 
 
 if __name__ == "__main__":

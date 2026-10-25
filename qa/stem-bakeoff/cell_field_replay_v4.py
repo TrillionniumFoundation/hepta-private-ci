@@ -118,7 +118,7 @@ def _warmup(directory, task, seed, head, inputs, split, projected, contexts, pla
     return state, warm, expected, len(manifests)
 
 
-def _fixed_anchor(directory, baseline, expected, plan, old_anchor):
+def _fixed_anchor(directory, baseline, expected, split, plan, old_anchor):
     frozen = _read(directory / "frozen_plan.json")
     checkpoint = CellTrainingState.load(directory / "initial", **expected,
                                        expected_state_digest=baseline.digest())
@@ -168,15 +168,24 @@ def _fixed_anchor(directory, baseline, expected, plan, old_anchor):
            "unforced zero branch observations")
     _exact(actual["real_delta"], actual["observations"] - reference["reference_observations"][:, :2],
            "measured loss deviations")
+    probes = [(normalize_features(split[role][0]), split[role][1])
+              for role in ("current_probe", "old_probe")]
     for index, row in enumerate(rows):
-        terminal = checkpoint.clone()
-        terminal.set_vector(actual["states"][index, -1])
-        terminal.step_count += h
-        _require(terminal.digest() == row["final_state_sha256"], "fixed terminal state commitment differs")
+        replay = checkpoint.clone()
+        for k in range(h+1):
+            _exact(replay.vector(), actual["states"][index, k], "fixed nonlinear H8 state replay")
+            losses = np.asarray([replay.head.loss_gradients(x, y, 0.0)[0] for x, y in probes])
+            _exact(losses, actual["observations"][index, k], "fixed nonlinear H8 loss replay")
+            if k < h:
+                u = actions[index] if k == 0 else np.zeros(p)
+                replay.advance(*split["current_train"], intervention=plan["h"] * u)
+        _require(replay.digest() == row["final_state_sha256"], "fixed terminal state commitment differs")
     return {"path": str(directory.name), "branches": 49, "status": "passed",
             "map_application_max_abs": algebra_error, "full_tangent_max_abs": full_error,
             "first_step_tangent_max_abs": first_error, "zero_branch_exact": True,
-            "first_step_nonlinear_state_exact": True}
+            "first_step_nonlinear_state_exact": True, "nonlinear_h8_states_and_losses_exact": True,
+            "replayed_optimizer_steps": 49*h,
+            "tangent_scope": "algebra from sealed A/C/scales; no independent derivative reconstruction"}
 
 
 def _mpc_replay(directory, warmup, expected, split, projected, plan, old_anchor):
@@ -273,6 +282,12 @@ def audit(run_directory, output, expected_protocol_sha256):
         _require([(f["task"], f["seed"], f["head"]) for f in summary["fits"]] == expected_fits,
                  "fit identities or registered order changed")
         source_root = Path(__file__).parent
+        required_sources = {"cell_field_state.py", "cell_learning_models.py", "cell_field_control.py",
+            "cell_field_dynamics_v4.py", "cell_field_experiments_v4.py", "cell_field_mpc_v4.py",
+            "cell_field_joint_run_v4.py", "cell_field_action_control.py", "cell_field_fixed_actions.py",
+            "cell_field_action_io.py", "cell_field_action_run.py", "cell_field_io_v4.py"}
+        _require(isinstance(hashes, dict) and required_sources <= set(hashes),
+                 "recorded source inventory omits a required execution module")
         for name, digest in hashes.items():
             _require(Path(name).name == name and not (source_root / name).is_symlink()
                      and file_hash(source_root / name) == digest, "executed source closure differs: " + name)
@@ -296,7 +311,7 @@ def audit(run_directory, output, expected_protocol_sha256):
                         baseline.advance(*split["current_train"])
                         offset += 1
                     row["fixed"].append(_fixed_anchor(directory / f"fixed/anchor{anchor}",
-                        baseline, expected, plan, warm["old_anchor"]))
+                        baseline, expected, split, plan, warm["old_anchor"]))
                 row["mpc"] = _mpc_replay(directory / "mpc" / CANDIDATE, warmup, expected,
                                          split, projected, plan, warm["old_anchor"])
                 row["status"] = "passed"
