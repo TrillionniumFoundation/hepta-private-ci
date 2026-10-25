@@ -1,0 +1,39 @@
+{
+  "started_at": "2026-10-23T06:12:33.947498+00:00",
+  "command": [
+    "just",
+    "clippy",
+    "-p",
+    "codex-hepta-agentd-issuer-source-check",
+    "--locked",
+    "--offline",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "cwd": "/workspace/scratch/3d6a75235bcb/work/hepta-integration/production-composition/validation/source-check",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "cargo clippy --tests {args}\n    Checking typenum v1.20.0\n    Checking zeroize v1.8.2\n    Checking const-oid v0.9.6\n    Checking cfg-if v1.0.4\n    Checking cpufeatures v0.2.17\n    Checking serde_core v1.0.228\n    Checking signature v2.2.0\n    Checking linux-raw-sys v0.12.1\n    Checking subtle v2.6.1\n    Checking bitflags v2.13.1\n    Checking zmij v1.0.19\n    Checking libc v0.2.186\n    Checking itoa v1.0.17\n    Checking der v0.7.10\n    Checking memchr v2.8.1\n    Checking yansi v1.0.1\n    Checking diff v0.1.13\n    Checking once_cell v1.21.4\n    Checking fastrand v2.3.0\n    Checking pretty_assertions v1.4.1\n    Checking generic-array v0.14.7\n    Checking getrandom v0.4.2\n    Checking block-buffer v0.10.4\n    Checking crypto-common v0.1.7\n    Checking digest v0.10.7\n    Checking curve25519-dalek v4.1.3\n    Checking sha2 v0.10.9\n    Checking spki v0.7.3\n    Checking pkcs8 v0.10.2\n    Checking rustix v1.1.4\n    Checking ed25519 v2.2.3\n    Checking serde_json v1.0.149\n    Checking serde v1.0.228\n    Checking ed25519-dalek v2.2.0\n    Checking tempfile v3.27.0\n    Checking codex-hepta-contracts v0.0.0 (/workspace/scratch/3d6a75235bcb/work/hepta-integration/production-composition/validation/source-check/codex-rs/contracts)\n    Checking codex-hepta-agentd-issuer-source-check v0.0.0 (/workspace/scratch/3d6a75235bcb/work/hepta-integration/production-composition/validation/source-check/codex-rs/issuer)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 11.00s\n",
+  "source_sha256_before": {
+    "config.rs": "a5e08e510c106ec795b06c06cec144e8b67a7650b75a442d236162570d23fc4f",
+    "lib.rs": "17d994df31d925b82b312dd66c41def5714c286d67aed853f8b540edd3530009",
+    "production_authority.rs": "30ecb92c79ec9a0718d54a59bace10f8f6568cd2927abf926117c406ec996374",
+    "production_authority_tests.rs": "dab3c288686685107d2248f4c207b7e2fbf30f0e7e9af11ffeefac642869bcce",
+    "production_composition.rs": "c34dc7bcbc2a6d625054d018f07eb6eca3e3382fea635a2b03133520551eaa95",
+    "production_composition_fixture.rs": "4a6269520527e2a92b310627909aebca3b6030ac882361fe94a97c31d4de3dc5",
+    "production_composition_notes_tests.rs": "64f49402ebb604f51178e810a1575acc40179912dbccc2d52c3573b5319b221e",
+    "production_composition_tests.rs": "b38ce61b97170dd9c2a8b3f230134fbf3aff7e09c3d89eacc5ddfca1c3acb3e1"
+  },
+  "source_sha256_after": {
+    "config.rs": "a5e08e510c106ec795b06c06cec144e8b67a7650b75a442d236162570d23fc4f",
+    "lib.rs": "17d994df31d925b82b312dd66c41def5714c286d67aed853f8b540edd3530009",
+    "production_authority.rs": "30ecb92c79ec9a0718d54a59bace10f8f6568cd2927abf926117c406ec996374",
+    "production_authority_tests.rs": "dab3c288686685107d2248f4c207b7e2fbf30f0e7e9af11ffeefac642869bcce",
+    "production_composition.rs": "c34dc7bcbc2a6d625054d018f07eb6eca3e3382fea635a2b03133520551eaa95",
+    "production_composition_fixture.rs": "4a6269520527e2a92b310627909aebca3b6030ac882361fe94a97c31d4de3dc5",
+    "production_composition_notes_tests.rs": "64f49402ebb604f51178e810a1575acc40179912dbccc2d52c3573b5319b221e",
+    "production_composition_tests.rs": "b38ce61b97170dd9c2a8b3f230134fbf3aff7e09c3d89eacc5ddfca1c3acb3e1"
+  },
+  "scope": "Isolated original contracts + published issuer + new protected authority module only. Does not compile or execute production_composition, its tests, original Agentd, Tokio worker, SQLite writer, or Notes handoff."
+}

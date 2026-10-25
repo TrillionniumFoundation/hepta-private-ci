@@ -1,0 +1,38 @@
+{
+  "started_at": "2026-10-23T06:12:25.977996+00:00",
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd-issuer-source-check",
+    "-E",
+    "test(production_authority::tests::)"
+  ],
+  "cwd": "/workspace/scratch/3d6a75235bcb/work/hepta-integration/production-composition/validation/source-check",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py \"$@\"\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata\n   Compiling codex-hepta-contracts v0.0.0 (/workspace/scratch/3d6a75235bcb/work/hepta-integration/production-composition/validation/source-check/codex-rs/contracts)\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.228` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.149` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.2` which wasn't produced by cargo metadata\n   Compiling codex-hepta-agentd-issuer-source-check v0.0.0 (/workspace/scratch/3d6a75235bcb/work/hepta-integration/production-composition/validation/source-check/codex-rs/issuer)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.64s\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n Nextest run ID 253f4c86-2234-4d6c-a4e4-c8ce0b5b3795 with nextest profile: local\n    Starting 5 tests across 1 binary (7 tests skipped)\n        PASS [   0.016s] (1/5) codex-hepta-agentd-issuer-source-check production_authority::tests::external_frontier_mismatch_is_not_repaired_from_the_local_directory\n        PASS [   0.016s] (2/5) codex-hepta-agentd-issuer-source-check production_authority::tests::missing_clock_keyring_or_external_frontier_has_no_compatibility_fallback\n        PASS [   0.035s] (3/5) codex-hepta-agentd-issuer-source-check production_authority::tests::rejected_keyring_drift_preserves_original_durable_claims\n        PASS [   0.036s] (4/5) codex-hepta-agentd-issuer-source-check production_authority::tests::original_authority_uses_the_injected_clock_keyring_and_external_cas\n        PASS [   0.049s] (5/5) codex-hepta-agentd-issuer-source-check production_authority::tests::expired_revoked_and_wrong_epoch_grants_never_reach_nonce_admission\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n     Summary [   0.052s] 5 tests run: 5 passed, 7 skipped\n",
+  "source_sha256_before": {
+    "config.rs": "a5e08e510c106ec795b06c06cec144e8b67a7650b75a442d236162570d23fc4f",
+    "lib.rs": "17d994df31d925b82b312dd66c41def5714c286d67aed853f8b540edd3530009",
+    "production_authority.rs": "30ecb92c79ec9a0718d54a59bace10f8f6568cd2927abf926117c406ec996374",
+    "production_authority_tests.rs": "dab3c288686685107d2248f4c207b7e2fbf30f0e7e9af11ffeefac642869bcce",
+    "production_composition.rs": "c34dc7bcbc2a6d625054d018f07eb6eca3e3382fea635a2b03133520551eaa95",
+    "production_composition_fixture.rs": "4a6269520527e2a92b310627909aebca3b6030ac882361fe94a97c31d4de3dc5",
+    "production_composition_notes_tests.rs": "64f49402ebb604f51178e810a1575acc40179912dbccc2d52c3573b5319b221e",
+    "production_composition_tests.rs": "b38ce61b97170dd9c2a8b3f230134fbf3aff7e09c3d89eacc5ddfca1c3acb3e1"
+  },
+  "source_sha256_after": {
+    "config.rs": "a5e08e510c106ec795b06c06cec144e8b67a7650b75a442d236162570d23fc4f",
+    "lib.rs": "17d994df31d925b82b312dd66c41def5714c286d67aed853f8b540edd3530009",
+    "production_authority.rs": "30ecb92c79ec9a0718d54a59bace10f8f6568cd2927abf926117c406ec996374",
+    "production_authority_tests.rs": "dab3c288686685107d2248f4c207b7e2fbf30f0e7e9af11ffeefac642869bcce",
+    "production_composition.rs": "c34dc7bcbc2a6d625054d018f07eb6eca3e3382fea635a2b03133520551eaa95",
+    "production_composition_fixture.rs": "4a6269520527e2a92b310627909aebca3b6030ac882361fe94a97c31d4de3dc5",
+    "production_composition_notes_tests.rs": "64f49402ebb604f51178e810a1575acc40179912dbccc2d52c3573b5319b221e",
+    "production_composition_tests.rs": "b38ce61b97170dd9c2a8b3f230134fbf3aff7e09c3d89eacc5ddfca1c3acb3e1"
+  },
+  "scope": "Isolated original contracts + published issuer + new protected authority module only. Does not compile or execute production_composition, its tests, original Agentd, Tokio worker, SQLite writer, or Notes handoff."
+}

@@ -1,0 +1,496 @@
+//! Root service lanes for the single canonical issuer. Registration is a
+//! launcher input; no peer can choose an identity, lease, signer or publisher.
+
+use std::io;
+use std::os::fd::OwnedFd;
+use std::os::unix::net::UnixStream;
+use std::sync::Arc;
+
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_contracts::HostAuthorityClock;
+use codex_hepta_contracts::HostAuthorityClockProjection;
+use codex_hepta_contracts::HostAuthorityPeerChannel;
+use codex_hepta_contracts::HostAuthorityPeerPolicy;
+use codex_hepta_contracts::HostIssuerTransportError;
+use codex_hepta_contracts::SignedFinalUseGrant;
+use serde::Deserialize;
+use serde::Serialize;
+
+use crate::AgentdIdentity;
+use crate::AuthBusObjectiveBody;
+use crate::AuthBusObjectiveIngress;
+use crate::DeploymentFinalUseIssuer;
+
+#[path = "authority_host_writer.rs"]
+mod writer;
+pub use writer::FreshHostCognitiveState;
+use writer::RegisteredWriter;
+#[path = "authority_host_checkpoint_lane.rs"]
+mod checkpoint;
+use checkpoint::RegisteredCheckpoint;
+#[path = "authority_host_consumers.rs"]
+mod consumers;
+use consumers::RegisteredConsumers;
+#[path = "authority_host_text_ui.rs"]
+mod text_ui;
+pub use text_ui::HostAuthorityTextUiRegistration;
+
+/// A lane is fixed by its private listener, never selected by a wire request.
+#[derive(Clone, Copy, Debug)]
+pub enum HostAuthorityLane {
+    Observation,
+    Issuer,
+    Checkpoint,
+    DeviceConsumerFrontier,
+    NotesConsumerFrontier,
+}
+
+/// All lanes share this exact original issuer/key/head/sequence. The clock
+/// and registered identity are retained by the root launcher, not supplied in
+/// requests. Missing checkpoint registration never initializes a cut.
+pub struct HostAuthorityService {
+    issuer: Arc<DeploymentFinalUseIssuer>,
+    clock: Arc<HostAuthorityClock>,
+    identity: AgentdIdentity,
+    writer: Option<RegisteredWriter>,
+    notes: Option<crate::RootNotesGrantAdmission>,
+    // The exact Registry object opened by the original Root factory. Its Arc
+    // shares the existing lock/owner; Notes registration must never reopen it.
+    root_registry: Option<Arc<codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry>>,
+    checkpoint: Option<RegisteredCheckpoint>,
+    consumers: Option<RegisteredConsumers>,
+}
+
+impl HostAuthorityService {
+    pub fn from_registered_owner(
+        issuer: Arc<DeploymentFinalUseIssuer>,
+        clock: Arc<HostAuthorityClock>,
+        identity: AgentdIdentity,
+    ) -> io::Result<Self> {
+        if identity.spawn_generation == 0 {
+            return Err(io::Error::other("registered spawn required"));
+        }
+        Ok(Self {
+            issuer,
+            clock,
+            identity,
+            writer: None,
+            notes: None,
+            root_registry: None,
+            checkpoint: None,
+            consumers: None,
+        })
+    }
+
+    /// Open a previously root-provisioned original writer proof. This does not
+    /// create a lease/proof, select a peer identity or activate a publisher.
+    pub fn with_registered_writer(
+        mut self,
+        registration: crate::HostAuthorityWriterRegistration,
+        leases: codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier,
+    ) -> io::Result<Self> {
+        self.writer = Some(RegisteredWriter::open(
+            &self.issuer,
+            &self.identity,
+            registration,
+            leases,
+        )?);
+        Ok(self)
+    }
+
+    /// Install one Root-created fixed Notes delegation for this same retained
+    /// writer. The peer wire cannot create policy or select a lease identity.
+    pub fn with_registered_notes(
+        mut self,
+        notes: crate::RootNotesGrantAdmission,
+    ) -> io::Result<Self> {
+        let writer = self
+            .writer
+            .as_ref()
+            .ok_or_else(|| io::Error::other("registered writer required for Notes"))?;
+        if !writer.matches_notes(&notes) {
+            return Err(io::Error::other("Notes delegation writer mismatch"));
+        }
+        self.notes = Some(notes);
+        Ok(self)
+    }
+
+    pub(crate) fn retain_original_root_registry(
+        mut self,
+        registry: Arc<codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry>,
+    ) -> Self {
+        self.root_registry = Some(registry);
+        self
+    }
+
+    pub(crate) fn with_notes_from_original_session(
+        self,
+        target: &codex_hepta_memory::NotesTargetIdentity,
+        lifetime_ms: u64,
+    ) -> io::Result<Self> {
+        if self.notes.is_some() {
+            return Err(io::Error::other("the original Notes route is already registered"));
+        }
+        let registry = self.root_registry.as_ref()
+            .ok_or_else(|| io::Error::other("retained original Root Registry required for Notes"))?;
+        let writer = self.writer.as_ref().ok_or_else(|| io::Error::other("original registered writer required"))?;
+        let notes = crate::RootNotesGrantAdmission::from_registered_notes(
+            &self.issuer, Arc::clone(registry), writer.registration.clone(), target, lifetime_ms,
+        )?;
+        self.with_registered_notes(notes)
+    }
+
+    /// Open the existing protected checkpoint for this verified writer and
+    /// trusted launcher's actual peer lifetime. Missing state never initializes.
+    pub fn with_registered_checkpoint(
+        mut self,
+        directory: Arc<codex_hepta_contracts::RootAuthorityDirectory>,
+        publisher_epoch: u64,
+        peer: codex_hepta_memory::CognitiveCheckpointPeerLifetime,
+    ) -> io::Result<Self> {
+        let writer = self
+            .writer
+            .as_ref()
+            .ok_or_else(|| io::Error::other("registered writer required"))?;
+        let registration = writer.checkpoint_registration(&self.issuer, publisher_epoch, peer)?;
+        self.checkpoint = Some(RegisteredCheckpoint::open(
+            directory,
+            registration,
+            self.clock.clone(),
+        )?);
+        Ok(self)
+    }
+
+    /// Open both existing original consumer stores with fixed root namespaces.
+    /// The trusted launcher supplies these fields; no wire initializes an owner.
+    pub fn with_registered_consumers(
+        mut self,
+        protected_state: &std::path::Path,
+        config: &crate::HostAuthorityConsumersConfig,
+    ) -> io::Result<Self> {
+        let writer = self
+            .writer
+            .as_ref()
+            .ok_or_else(|| io::Error::other("registered writer required"))?;
+        self.consumers = Some(RegisteredConsumers::open(
+            protected_state,
+            config,
+            &self.issuer.trust_key()?.key_id,
+            self.clock.clone(),
+            writer.registration.authority_lease.expires_at_unix_ms,
+        )?);
+        Ok(self)
+    }
+
+    /// Serve one pre-accepted root-launcher channel until EOF or uncertainty.
+    /// Independent lane threads keep observation out of an issuer work queue;
+    /// underlying durability stalls still legitimately expire feed freshness.
+    pub fn serve(
+        &self,
+        lane: HostAuthorityLane,
+        stream: UnixStream,
+        mut policy: HostAuthorityPeerPolicy,
+        owner_pidfd: OwnedFd,
+    ) -> Result<(), HostIssuerTransportError> {
+        let bound = match lane {
+            HostAuthorityLane::Observation => 16 * 1024,
+            HostAuthorityLane::Issuer => 64 * 1024,
+            HostAuthorityLane::Checkpoint => 32 * 1024,
+            HostAuthorityLane::DeviceConsumerFrontier
+            | HostAuthorityLane::NotesConsumerFrontier => 16 * 1024,
+        };
+        policy.request_bound = bound;
+        policy.response_bound = bound;
+        if matches!(lane, HostAuthorityLane::Checkpoint)
+            && let Some(checkpoint) = &self.checkpoint
+        {
+            checkpoint.validate_peer(policy.peer).map_err(unavailable)?;
+        }
+        let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)?;
+        while channel.exchange(|bytes| self.handle(lane, bytes))? {}
+        Ok(())
+    }
+
+    fn handle(
+        &self,
+        lane: HostAuthorityLane,
+        bytes: &[u8],
+    ) -> Result<Vec<u8>, HostIssuerTransportError> {
+        match lane {
+            HostAuthorityLane::Observation => self.observe(bytes),
+            HostAuthorityLane::Issuer => self.issue(bytes),
+            HostAuthorityLane::Checkpoint => self
+                .writer
+                .as_ref()
+                .ok_or(HostIssuerTransportError::Unavailable)?
+                .exchange_checkpoint(
+                    &self.issuer,
+                    &self.clock,
+                    &self
+                        .checkpoint
+                        .as_ref()
+                        .ok_or(HostIssuerTransportError::Unavailable)?
+                        .backend,
+                    bytes,
+                ),
+            HostAuthorityLane::DeviceConsumerFrontier
+            | HostAuthorityLane::NotesConsumerFrontier => {
+                let consumers = self
+                    .consumers
+                    .as_ref()
+                    .ok_or(HostIssuerTransportError::Unavailable)?;
+                let backend = if matches!(lane, HostAuthorityLane::DeviceConsumerFrontier) {
+                    &consumers.device
+                } else {
+                    &consumers.notes
+                };
+                self.writer
+                    .as_ref()
+                    .ok_or(HostIssuerTransportError::Unavailable)?
+                    .exchange_consumer(&self.issuer, &self.clock, backend, bytes)
+            }
+        }
+    }
+
+    fn observe(&self, bytes: &[u8]) -> Result<Vec<u8>, HostIssuerTransportError> {
+        let request: ObservationRequest = decode(bytes)?;
+        if request.operation != "runtime.authority.observation.v1" {
+            return self
+                .writer
+                .as_ref()
+                .ok_or(HostIssuerTransportError::Unavailable)?
+                .observe(&self.issuer, &self.clock, &self.identity, &request);
+        }
+        if request.schema_version != 1 {
+            return Err(HostIssuerTransportError::InvalidRequest);
+        }
+        self.issuer
+            .with_live_lease(|lease| {
+                if lease.binding.principal_id != self.identity.agent_id.as_str() {
+                    return Err(io::Error::new(
+                        io::ErrorKind::PermissionDenied,
+                        "registered lease owner mismatch",
+                    ));
+                }
+                let revocations = self.issuer.revocations()?;
+                // The original lease fence remains held through these local reads.
+                // Sample after durability work and refuse a lease expiring during it.
+                // Do not do another clock-writing verification after this projection.
+                let observation = self.clock.refresh_projection().map_err(io::Error::other)?;
+                validate_observation_lease(lease, &revocations, observation.observed_unix_ms)?;
+                encode_bounded(
+                    &ObservationResponse {
+                        schema_version: 1,
+                        operation: "runtime.authority.observation.v1",
+                        authority_epoch: revocations.authority_epoch,
+                        revocations,
+                        clock: observation.projection,
+                        observed_unix_ms: observation.observed_unix_ms,
+                        registered_agent_id: self.identity.agent_id.as_str(),
+                        spawn_generation: self.identity.spawn_generation,
+                    },
+                    16 * 1024,
+                )
+                .map_err(io::Error::other)
+            })
+            .map_err(unavailable)
+    }
+
+    fn issue(&self, bytes: &[u8]) -> Result<Vec<u8>, HostIssuerTransportError> {
+        let request: IssuerRequest = decode(bytes)?;
+        match request {
+            IssuerRequest::FinalUse {
+                schema_version,
+                binding,
+            } => {
+                if schema_version != 1 || bytes.len() > 16 * 1024 {
+                    return Err(HostIssuerTransportError::InvalidRequest);
+                }
+                let result = match &self.notes {
+                    Some(notes) => notes.issue_registered_route(&self.issuer, &binding),
+                    None => self.issuer.issue(&binding),
+                };
+                let grant = match result {
+                    Ok(grant) => grant,
+                    Err(error) if error.kind() == io::ErrorKind::PermissionDenied => None,
+                    Err(error) => return Err(unavailable(error)),
+                };
+                let revocations = self.issuer.revocations().map_err(unavailable)?;
+                let observation = self.clock.refresh_projection().map_err(unavailable)?;
+                if grant.as_ref().is_some_and(|grant| {
+                    observation.observed_unix_ms >= grant.grant.expires_at_unix_ms
+                }) {
+                    return Err(HostIssuerTransportError::Unavailable);
+                }
+                let denied = grant.is_none();
+                encode_bounded(
+                    &FinalUseResponse {
+                        schema_version: 1,
+                        revocations,
+                        grant,
+                        denial_reason: denied.then_some("authorization_denied"),
+                    },
+                    64 * 1024,
+                )
+            }
+            IssuerRequest::Objective {
+                schema_version,
+                body,
+            } => {
+                if schema_version != 1 {
+                    return Err(HostIssuerTransportError::InvalidRequest);
+                }
+                let ingress = self
+                    .writer
+                    .as_ref()
+                    .ok_or(HostIssuerTransportError::Unavailable)?
+                    .sign_objective(&self.issuer, &self.identity, body)
+                    .map_err(unavailable)?;
+                let observation = self.clock.refresh_projection().map_err(unavailable)?;
+                if observation.observed_unix_ms >= ingress.expires_at_ms {
+                    return Err(HostIssuerTransportError::Unavailable);
+                }
+                encode_bounded(
+                    &ObjectiveResponse {
+                        schema_version: 1,
+                        operation: "runtime.authbus.objective.signed.v1",
+                        ingress,
+                    },
+                    64 * 1024,
+                )
+            }
+            IssuerRequest::Text {
+                schema_version,
+                request_id,
+                body,
+                mode,
+            } => {
+                if schema_version != 1 || bytes.len() > 32 * 1024 {
+                    return Err(HostIssuerTransportError::InvalidRequest);
+                }
+                let ingress = self
+                    .writer
+                    .as_ref()
+                    .ok_or(HostIssuerTransportError::Unavailable)?
+                    .text(&self.issuer, &self.identity, &request_id, body, mode)
+                    .map_err(unavailable)?;
+                // A lookup may return an expired original envelope as identity
+                // evidence. It never extends its expiry or permits a new send.
+                encode_bounded(
+                    &TextResponse {
+                        schema_version: 1,
+                        operation: "runtime.authbus.text.signed.v1",
+                        request_id,
+                        ingress,
+                    },
+                    32 * 1024,
+                )
+            }
+        }
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ObservationRequest {
+    schema_version: u32,
+    operation: String,
+}
+
+#[derive(Serialize)]
+struct ObservationResponse<'a> {
+    schema_version: u32,
+    operation: &'static str,
+    authority_epoch: u64,
+    revocations: FinalUseRevocations,
+    clock: HostAuthorityClockProjection,
+    observed_unix_ms: u64,
+    registered_agent_id: &'a str,
+    spawn_generation: u64,
+}
+
+#[derive(Deserialize)]
+#[serde(tag = "operation", deny_unknown_fields)]
+enum IssuerRequest {
+    #[serde(rename = "runtime.authbus.text.v1")]
+    Text {
+        schema_version: u32,
+        request_id: String,
+        body: crate::AuthBusTextBody,
+        mode: crate::TextIssuerOperation,
+    },
+    #[serde(rename = "runtime.agentd.production_operation")]
+    FinalUse {
+        schema_version: u32,
+        binding: FinalUseBinding,
+    },
+    #[serde(rename = "runtime.authbus.objective.sign.v1")]
+    Objective {
+        schema_version: u32,
+        body: AuthBusObjectiveBody,
+    },
+}
+
+#[derive(Serialize)]
+struct TextResponse {
+    schema_version: u32,
+    operation: &'static str,
+    request_id: String,
+    ingress: crate::AuthBusTextIngress,
+}
+
+#[derive(Serialize)]
+struct FinalUseResponse {
+    schema_version: u32,
+    revocations: FinalUseRevocations,
+    grant: Option<SignedFinalUseGrant>,
+    denial_reason: Option<&'static str>,
+}
+
+#[derive(Serialize)]
+struct ObjectiveResponse {
+    schema_version: u32,
+    operation: &'static str,
+    ingress: AuthBusObjectiveIngress,
+}
+
+fn validate_observation_lease(
+    lease: &codex_hepta_contracts::authority_lease::AuthorityLease,
+    head: &FinalUseRevocations,
+    post_io_unix_ms: u64,
+) -> io::Result<()> {
+    if lease.authority_epoch != head.authority_epoch
+        || post_io_unix_ms < lease.issued_at_unix_ms
+        || post_io_unix_ms >= lease.expires_at_unix_ms
+    {
+        return Err(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            "lease no longer live after observation I/O",
+        ));
+    }
+    Ok(())
+}
+
+fn decode<T: serde::de::DeserializeOwned>(bytes: &[u8]) -> Result<T, HostIssuerTransportError> {
+    serde_json::from_slice(bytes).map_err(|_| HostIssuerTransportError::InvalidRequest)
+}
+
+fn encode_bounded(
+    value: &impl Serialize,
+    bound: usize,
+) -> Result<Vec<u8>, HostIssuerTransportError> {
+    let bytes = serde_json::to_vec(value).map_err(unavailable)?;
+    if bytes.is_empty() || bytes.len() > bound {
+        return Err(HostIssuerTransportError::Unavailable);
+    }
+    Ok(bytes)
+}
+
+fn unavailable(_: impl std::fmt::Display) -> HostIssuerTransportError {
+    HostIssuerTransportError::Unavailable
+}
+
+#[cfg(test)]
+#[path = "authority_host_service_tests.rs"]
+mod tests;

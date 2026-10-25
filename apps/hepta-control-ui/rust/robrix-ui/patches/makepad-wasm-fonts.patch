@@ -1,0 +1,111 @@
+--- a/src/text/fonts.rs
++++ b/src/text/fonts.rs
+@@ -88,32 +88,42 @@
+
+         let mut msdf_job_sender: FromUISender<QueuedMsdfJob> = Default::default();
+         let msdf_result_receiver: ToUIReceiver<CompletedMsdfJob> = Default::default();
+-        let worker_rx = msdf_job_sender
+-            .receiver()
+-            .expect("MSDF worker receiver is taken exactly once");
+-        let worker_tx = msdf_result_receiver.sender();
+-        if let Ok(task) = cx.spawn_worker(move || {
+-            let mut msdfer = Msdfer::new(msdfer_settings);
+-            while let Ok(job) = worker_rx.recv() {
+-                let mut msdf = Image::<Bgra>::new(job.key.size);
+-                msdfer.outline_to_msdf(
+-                    &job.outline,
+-                    job.dpxs_per_em,
+-                    &mut msdf.subimage_mut(super::geom::Rect::from(job.key.size)),
+-                );
+-                if worker_tx
+-                    .send(CompletedMsdfJob {
+-                        key: job.key,
+-                        pixels: msdf.into_pixels(),
+-                        epoch: job.epoch,
+-                    })
+-                    .is_err()
+-                {
+-                    break;
++        if cfg!(all(target_arch = "wasm32", not(target_feature = "atomics"))) {
++            // The MSDF worker blocks on recv and cannot run on the browser UI
++            // thread. Use the existing synchronous SDF path; it queues no MSDF
++            // jobs and keeps the selected font set and Slug rendering intact.
++            layouter
++                .rasterizer()
++                .borrow_mut()
++                .set_outline_rasterization_mode(OutlineRasterizationMode::Sdf);
++        } else {
++            let worker_rx = msdf_job_sender
++                .receiver()
++                .expect("MSDF worker receiver is taken exactly once");
++            let worker_tx = msdf_result_receiver.sender();
++            if let Ok(task) = cx.spawn_worker(move || {
++                let mut msdfer = Msdfer::new(msdfer_settings);
++                while let Ok(job) = worker_rx.recv() {
++                    let mut msdf = Image::<Bgra>::new(job.key.size);
++                    msdfer.outline_to_msdf(
++                        &job.outline,
++                        job.dpxs_per_em,
++                        &mut msdf.subimage_mut(super::geom::Rect::from(job.key.size)),
++                    );
++                    if worker_tx
++                        .send(CompletedMsdfJob {
++                            key: job.key,
++                            pixels: msdf.into_pixels(),
++                            epoch: job.epoch,
++                        })
++                        .is_err()
++                    {
++                        break;
++                    }
+                 }
++            }) {
++                task.detach();
+             }
+-        }) {
+-            task.detach();
+         }
+
+         Self {
+--- a/src/shader/draw_text.rs
++++ b/src/shader/draw_text.rs
+@@ -3630,6 +3630,24 @@
+                             variations: Vec::new(),
+                         },
+                     );
++                } else if cx
++                    .script_data
++                    .resources
++                    .resources
++                    .borrow()
++                    .iter()
++                    .any(|resource| {
++                        resource.abs_path == member.resource_path
++                            && matches!(
++                                &resource.data,
++                                crate::makepad_platform::script::res::CxScriptResourceData::Loading
++                            )
++                    })
++                {
++                    // An async resource is not missing. Keep the family
++                    // incomplete so HTTP completion/redraw retries its bytes;
++                    // failed and unregistered resources still report below.
++                    continue;
+                 } else if fonts.note_missing_font(&member.resource_path) {
+                     error!(
+                         "font {:?} (member {}) is not packaged with this app, so its text will show as boxes. \
+--- a/src/text/rasterizer.rs
++++ b/src/text/rasterizer.rs
+@@ -307,6 +307,12 @@
+         glyph_id: GlyphId,
+         dpxs_per_em: f32,
+     ) -> Option<RasterizedGlyph> {
++        // Every outline enters here, including after an explicit MSDF mode
++        // override. A non-atomic browser has no MSDF worker, so never enqueue
++        // jobs that cannot complete; retain the synchronous SDF result.
++        if cfg!(all(target_arch = "wasm32", not(target_feature = "atomics"))) {
++            return self.rasterize_glyph_outline_sdf(font, glyph_id, dpxs_per_em);
++        }
+         match self.outline_rasterization_mode {
+             OutlineRasterizationMode::Sdf => {
+                 self.rasterize_glyph_outline_sdf(font, glyph_id, dpxs_per_em)

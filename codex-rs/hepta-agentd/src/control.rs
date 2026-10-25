@@ -28,9 +28,45 @@ const CONNECTION_CAPACITY: usize = 32;
 const IO_TIMEOUT: Duration = Duration::from_secs(2);
 const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
 
+/// Static host composition keeps finite Organ dispatch out of the full router.
+/// Neither the request schema nor the peer chooses this profile.
+trait ControlProfile {
+    fn response(
+        state: &AgentdState,
+        request: crate::AgentdRequest,
+    ) -> impl std::future::Future<Output = Result<AgentdResponse, AgentdError>> + Send;
+}
+
+struct FullControlProfile;
+#[cfg(target_os = "linux")]
+struct NotesControlProfile;
+
+impl ControlProfile for FullControlProfile {
+    async fn response(
+        state: &AgentdState,
+        request: crate::AgentdRequest,
+    ) -> Result<AgentdResponse, AgentdError> {
+        state
+            .response(request.request_id, request.spawn_generation, request.method)
+            .await
+    }
+}
+
+#[cfg(target_os = "linux")]
+impl ControlProfile for NotesControlProfile {
+    async fn response(
+        state: &AgentdState,
+        request: crate::AgentdRequest,
+    ) -> Result<AgentdResponse, AgentdError> {
+        state
+            .notes_response(request.request_id, request.spawn_generation, request.method)
+            .await
+    }
+}
+
 pub(crate) struct AgentdControlServer {
     listener: UnixListener,
-    socket_path: PathBuf,
+    owned_socket_path: Option<PathBuf>,
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
     connections: Arc<Semaphore>,
@@ -49,19 +85,50 @@ impl AgentdControlServer {
         set_owner_only(&socket_path).await?;
         Ok(Self {
             listener,
-            socket_path,
+            owned_socket_path: Some(socket_path),
             state,
             cancellation,
             connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
         })
     }
 
-    pub(crate) async fn run(mut self) -> Result<(), AgentdError> {
+    #[cfg(target_os = "linux")]
+    pub(crate) fn from_root_bound(
+        socket: std::os::fd::OwnedFd,
+        socket_path: &Path,
+        state: Arc<AgentdState>,
+        cancellation: CancellationToken,
+    ) -> Result<Self, AgentdError> {
+        let socket = crate::listen_root_bound_socket(socket, socket_path)?;
+        let listener = UnixListener::from_inherited(socket, socket_path)?;
+        Ok(Self {
+            listener,
+            owned_socket_path: None,
+            state,
+            cancellation,
+            connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
+        })
+    }
+
+    pub(crate) async fn run(self) -> Result<(), AgentdError> {
+        self.run_for::<FullControlProfile>().await
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) async fn run_notes(self) -> Result<(), AgentdError> {
+        self.run_for::<NotesControlProfile>().await
+    }
+
+    async fn run_for<P: ControlProfile + 'static>(mut self) -> Result<(), AgentdError> {
         loop {
             let stream = tokio::select! {
                 _ = self.cancellation.cancelled() => return Ok(()),
                 accepted = self.listener.accept() => accepted?,
             };
+            #[cfg(target_os = "linux")]
+            if self.owned_socket_path.is_none() && stream.ensure_current_user_or_root_peer().is_err() {
+                continue;
+            }
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
                 let mut stream = stream;
                 let _ = timeout(OVERLOAD_WRITE_TIMEOUT, async {
@@ -74,7 +141,7 @@ impl AgentdControlServer {
             let state = Arc::clone(&self.state);
             tokio::spawn(async move {
                 let _permit = permit;
-                let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
+                let _ = timeout(IO_TIMEOUT, serve_connection::<P>(stream, state)).await;
             });
         }
     }
@@ -82,18 +149,22 @@ impl AgentdControlServer {
 
 impl Drop for AgentdControlServer {
     fn drop(&mut self) {
-        if let Err(error) = std::fs::remove_file(&self.socket_path)
+        let Some(path) = &self.owned_socket_path else { return; };
+        if let Err(error) = std::fs::remove_file(path)
             && error.kind() != ErrorKind::NotFound
         {
             eprintln!(
                 "failed to remove agentd control socket {}: {error}",
-                self.socket_path.display()
+                path.display()
             );
         }
     }
 }
 
-async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result<(), AgentdError> {
+async fn serve_connection<P: ControlProfile>(
+    stream: UnixStream,
+    state: Arc<AgentdState>,
+) -> Result<(), AgentdError> {
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
@@ -113,15 +184,14 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
             "unsupported agentd control schema",
         )
     } else {
-        match state
-            .response(request.request_id, request.spawn_generation, request.method)
-            .await
-        {
+        let request_id = request.request_id;
+        let spawn_generation = request.spawn_generation;
+        match P::response(&state, request).await {
             Ok(response) => response,
             Err(error) => error_response(
                 &state,
-                request.request_id,
-                request.spawn_generation,
+                request_id,
+                spawn_generation,
                 "request_rejected",
                 &error.to_string(),
             ),
@@ -180,14 +250,30 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
                 ),
             )));
         }
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
-        Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
-        Err(_error) if !socket_path.exists() => return Ok(()),
+        Err(error)
+            if matches!(
+                error.kind(),
+                ErrorKind::NotFound | ErrorKind::ConnectionRefused
+            ) => {}
         Err(error) => {
             return Err(io_context(
                 /* operation */ "probe existing agentd control socket",
                 /* path */ socket_path,
                 /* source */ error,
+            ));
+        }
+    }
+    // Windows may refuse a missing rendezvous or report NotFound when following
+    // an existing AF_UNIX entry. Inspect the entry itself before deciding that
+    // cleanup is unnecessary; a dangling symlink is not an absent path.
+    match tokio::fs::symlink_metadata(socket_path).await {
+        Ok(_) => {}
+        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
+        Err(error) => {
+            return Err(io_context(
+                "inspect agentd control socket entry",
+                socket_path,
+                error,
             ));
         }
     }
@@ -230,3 +316,7 @@ async fn set_owner_only(path: &Path) -> Result<(), AgentdError> {
 async fn set_owner_only(_path: &Path) -> Result<(), AgentdError> {
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "control_socket_tests.rs"]
+mod tests;

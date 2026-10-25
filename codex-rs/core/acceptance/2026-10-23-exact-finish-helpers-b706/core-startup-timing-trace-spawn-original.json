@@ -1,0 +1,29 @@
+{
+  "name": "core-startup-timing-trace-spawn-original",
+  "cwd": "/data/hepta-mcp-implementation-closure",
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-core",
+    "--locked",
+    "--test-threads",
+    "2",
+    "--success-output",
+    "immediate",
+    "-E",
+    "test(deferred_executor_spawn_agent_inherits_ready_step_environments)"
+  ],
+  "baseSha": "f4044f8d77b1c1142f84525b1b1f243e2ddf95d6",
+  "workingDiffSha256": "6af3ff2c920b674b9e6bce90f91e32105feac8093fecad28b42ae1c37cd48f2d",
+  "startedAt": "2026-10-23T23:58:44.863101+00:00",
+  "finishedAt": "2026-10-23T23:59:31.420987+00:00",
+  "elapsedSeconds": 46.55788253992796,
+  "exitCode": 0,
+  "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/core-startup-timing-trace-spawn-original.log",
+  "environment": {
+    "CARGO_TARGET_DIR": "/data/hepta-mcp-integer-target",
+    "CARGO_BUILD_JOBS": "1",
+    "RUSTUP_TOOLCHAIN": "1.95.0"
+  }
+}

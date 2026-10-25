@@ -2,6 +2,26 @@
 
 `codex app-server` is the interface Codex uses to power rich interfaces such as the [Codex VS Code extension](https://marketplace.visualstudio.com/items?itemName=openai.chatgpt).
 
+## Embedding an inherited Unix listener
+
+On Linux an embedding that already owns a private listening descriptor can
+construct `InheritedControlSocket::from_inherited` and call
+`run_main_with_inherited_unix_listener`. This enters the original App Server
+runtime and preserves its JSON-RPC, thread store, extensions and drain behavior.
+The descriptor must be a listening Unix stream at the exact absolute canonical
+pathname, with a single socket node owned by the effective UID and mode `0600`.
+Accepted peers must have that same user identity or the actual Root supervisor's
+UID before WebSocket admission; Root already owns private pathname access.
+
+The embedding retains pathname creation and cleanup. This entry does not run
+the ordinary stale-socket probe, parent-directory permission repair, bind or
+unlink path. For a Root-created bound descriptor, the embedding must finish its
+credential transition and call `listen` as the final server process before
+adoption; listening as Root and merely transferring the descriptor preserves
+the wrong kernel peer credentials. There is no CLI or JSON-RPC method that
+constructs this descriptor capability, and ordinary `--listen` behavior is
+unchanged.
+
 ## Table of Contents
 
 - [Protocol](#protocol)
@@ -188,7 +208,7 @@ Example with notification opt-out:
 - `thread/goal/updated` — notification emitted whenever a thread goal changes; includes the full current goal.
 - `thread/goal/cleared` — notification emitted whenever a thread goal is removed.
 - `thread/queue/add` — experimental; persist a user turn for automatic FIFO submission when the thread next becomes idle.
-- `thread/queue/reconcile` — experimental; atomically reconcile or admit one text-only user turn against a durable `(threadId, clientUserMessageId, payload SHA-256)` binding. `allowIfAbsent` may create one queue row; `reconcileOnly` never creates one.
+- `thread/queue/reconcile` — experimental; atomically reconcile or admit one text-only user turn against a durable `(threadId, clientUserMessageId, payload SHA-256)` binding. `allowIfAbsent` may create one queue row; `reconcileOnly` never creates one; `closeIfAbsent` retains an original cancellation binding only for absent input.
 - `thread/queue/list` — experimental; return one page of a thread's queued turns.
 - `thread/queue/update` — experimental; edit a queued turn while preserving its stable submission ID, client message ID, and position.
 - `thread/queue/delete` — experimental; remove a queued turn by submission ID.
@@ -364,6 +384,10 @@ Start a fresh thread when you need a new Codex conversation.
 Valid `personality` values are `"friendly"`, `"pragmatic"`, and `"none"`. When `"none"` is selected, the personality placeholder is replaced with an empty string.
 
 To continue a stored session, call `thread/resume` with the `thread.id` you previously recorded. The response shape matches `thread/start`. When the stored session includes persisted token usage, the server emits `thread/tokenUsage/updated` immediately after the response so clients can render restored usage before the next turn starts. You can also pass the same configuration overrides supported by `thread/start`, including `approvalsReviewer`. On cold resume, approval policy and the active permission-profile ID select a source in this order: request override, latest persisted thread setting, current configured default. The persisted profile ID is resolved through the same config and requirements path as a `permissions` override. Threads without an active profile ID use current config instead of restoring their concrete historical permissions.
+
+An already-loaded thread can be resumed before its first user turn. The server materializes its lazy rollout through the existing writer and reattaches to the same live Core session without submitting input or creating a replacement thread. An unmaterialized thread whose live owner has exited cannot be recreated from its ID alone.
+
+Cold resume preserves the latest persisted execution environment's runtime cwd and workspace roots when the caller does not override them. Those roots do not restore historical write permissions: the active permission profile is resolved from current configuration and requirements, including a profile that has since become read-only.
 
 Parent-owned Multi-Agent V2 children are an exception: `thread/resume` ignores configuration overrides and reattaches to the existing child. An unloaded child is reloaded through its actual, currently loaded parent using parent-derived configuration. If that owner-controlled reload cannot be performed, the request returns JSON-RPC error `-32600`; resume the parent first, or use `thread/read` or `thread/turns/list` to inspect the child's stored history without loading it. This policy follows the child's multi-agent runtime, including leaf workers whose models cannot delegate further.
 
@@ -627,8 +651,12 @@ Paginated threads support the same views. Their `full` view is materialized from
 Each returned entry includes the containing `turnId` and its full `item`, so clients can group
 unfiltered pages into turns. Omit `turnId` or pass `null` to page items across the thread. Item
 cursors can be reused with or without `turnId`; the filter does not change the cursor's scope.
-Thread stores that do not implement item pagination return JSON-RPC `-32601` with message
-`thread/items/list is not supported yet`.
+Paginated threads use their original item index. Legacy threads reconstruct items from the same
+rollout and live turn overlay used by `thread/turns/list`, then return the requested bounded item
+count. This compatibility path replays the rollout on each request; individual items retain their
+complete original payload. Legacy cursors bind the thread and original turn/item anchor, reject a
+removed anchor after rollback, and may be reused with or without a turn filter. A cursor from a
+different thread is rejected. Neither path creates or changes a thread, turn, item, or input.
 
 `thread/searchOccurrences` searches one paginated thread without replaying its rollout. It returns
 occurrences in chronological message order from every visible user message, including steering
@@ -813,6 +841,8 @@ A queued submission contains its user input and a required, client-provided `cli
 ```
 
 Use `thread/queue/reconcile` when a transport needs one correctness operation instead of a paginated `queue/list` → `turns/list` → `queue/add` sequence. The request is limited to text input and includes the caller's canonical digest; the server normalizes the input, recomputes that digest, and returns the authoritative value. Reusing a client message ID with different content fails closed before admission. A queued outcome includes `created: true` only for the transaction that inserted the row; retries return the same row with `created: false`. Persisted, missing, and cancelled are separate outcomes.
+
+`closeIfAbsent` uses the same original per-thread dispatch guard, durable client reservation, and full rollout scan. If that exact client ID and payload are absent, its reservation is atomically retained as `cancelled`. A late `allowIfAbsent` for the same input then returns `cancelled`, including after the original owner restarts. Existing queued or persisted input is observed without modification. Changed payloads still conflict. This mode does not delete a queued input, interrupt a live turn, or assert that a model completed.
 
 ```json
 { "method": "thread/queue/reconcile", "id": 41, "params": {

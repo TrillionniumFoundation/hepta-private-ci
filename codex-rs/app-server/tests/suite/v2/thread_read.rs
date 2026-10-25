@@ -93,6 +93,9 @@ use tempfile::TempDir;
 use tokio::time::timeout;
 use uuid::Uuid;
 
+#[path = "thread_read_legacy_items_tests.rs"]
+mod legacy_items_tests;
+
 #[cfg(windows)]
 const DEFAULT_READ_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(25);
 #[cfg(not(windows))]
@@ -1940,7 +1943,7 @@ async fn paginated_history_lists_and_legacy_reads_use_projected_turns_and_items(
 }
 
 #[tokio::test]
-async fn thread_items_list_returns_unsupported() -> Result<()> {
+async fn thread_items_list_rejects_missing_thread() -> Result<()> {
     let server = create_mock_responses_server_repeating_assistant("Done").await;
     let codex_home = TempDir::new()?;
     MockResponsesConfig::new(&server.uri()).write(codex_home.path())?;
@@ -1966,10 +1969,10 @@ async fn thread_items_list_returns_unsupported() -> Result<()> {
     )
     .await??;
 
-    assert_eq!(read_err.error.code, -32601);
+    assert_eq!(read_err.error.code, -32600);
     assert_eq!(
         read_err.error.message,
-        "thread/items/list is not supported yet"
+        "thread not loaded: 00000000-0000-4000-8000-000000000123"
     );
 
     Ok(())

@@ -1,0 +1,178 @@
+{
+  "scope": "original owner component cold handoff; not Root production adoption or native ELF qualification",
+  "tree": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/goal-local-handoff",
+  "base": "22010a8c03",
+  "source": "9b133c5f2ebc97160f592fa32974b1f6be443c9d",
+  "commits": [
+    "7fbcab22ae3bf727e90cd4496ebf08e7d629c326",
+    "ce4e1520560bfa738fbf9aab796404195f8cf4a6",
+    "86b24739f1341466c89e0ca7be7d40b5218857b1",
+    "0777cb4206a6d66c0079c734fae265b13dbc4b12",
+    "5782568f4f8d55f5bdde889cf433b3f9f9ff9fda",
+    "9b133c5f2ebc97160f592fa32974b1f6be443c9d"
+  ],
+  "target": "/data/organ-hepta-integration-target-20261023",
+  "validation": [
+    {
+      "job_id": "1a16a681621-1b6abb-3d6f",
+      "source": "0777cb4206a6d66c0079c734fae265b13dbc4b12",
+      "status": "failed",
+      "exit_code": 100,
+      "passed": 52,
+      "failed": 1,
+      "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/local-handoff-tests-v1.log",
+      "failure": "new test overconstrained the wrapper error for a correctly refused SQLite commit; corrected with explicit gate check and unchanged cut assertion"
+    },
+    {
+      "job_id": "1a16a7a22e9-1b6abb-3d7d",
+      "source": "5782568f4f8d55f5bdde889cf433b3f9f9ff9fda",
+      "status": "failed",
+      "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/local-handoff-tests-v2.log",
+      "exit_code": 101,
+      "failure": "SQLx 0.9 rejects dynamic SQL in new trigger restoration test; replaced with original static migration DDL and exact schema equality assertion"
+    },
+    {
+      "job_id": "1a16a7ed0b2-1b6abb-3d80",
+      "source": "9b133c5f2ebc97160f592fa32974b1f6be443c9d",
+      "status": "succeeded",
+      "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/local-handoff-tests-v3.log",
+      "exit_code": 0,
+      "passed": 54,
+      "failed": 0,
+      "skipped": 610
+    },
+    {
+      "kind": "scoped just fix",
+      "job_id": "1a16a832b4a-1b6abb-3d84",
+      "source": "9b133c5f2ebc97160f592fa32974b1f6be443c9d",
+      "status": "succeeded",
+      "exit_code": 0,
+      "source_changed": false,
+      "log": "work/local-handoff-fix-v1.log"
+    }
+  ],
+  "qualified": true,
+  "limitations": [
+    "Root issuer and independent checkpoint in real-clock component tests are explicit fixtures.",
+    "Root pidfd/current adoption/fsync CAS are owned by peer and not established by these tests.",
+    "Before-expiry protected factory consumes Current into Dirty before original CAS refuses; deployment must wait real expiry before adoption/factory invocation.",
+    "No dedicated native release ELF is produced by this lane."
+  ],
+  "test_qualified": true,
+  "fix_status": "succeeded",
+  "format": {
+    "schema_version": 1,
+    "kind": "original just fmt",
+    "source": "9b133c5f2ebc97160f592fa32974b1f6be443c9d",
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "cwd": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/goal-local-handoff/codex-rs",
+    "started_at_utc": "2026-10-23T21:05:24.315599+00:00",
+    "finished_at_utc": "2026-10-23T21:05:24.515443+00:00",
+    "elapsed_seconds": 0.270097,
+    "exit_code": 0,
+    "status": "succeeded",
+    "log": {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/local-handoff-format.log",
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+      "bytes": 73
+    },
+    "before": {
+      "head": "9b133c5f2ebc97160f592fa32974b1f6be443c9d",
+      "status_porcelain_v1": "",
+      "diff_stat": "",
+      "diff_cached_stat": "",
+      "diff": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/local-handoff-format-before-diff.patch",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "diff_cached": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/local-handoff-format-before-diff_cached.patch",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "after": {
+      "head": "9b133c5f2ebc97160f592fa32974b1f6be443c9d",
+      "status_porcelain_v1": "",
+      "diff_stat": "",
+      "diff_cached_stat": "",
+      "diff": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/local-handoff-format-after-diff.patch",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "diff_cached": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/local-handoff-format-after-diff_cached.patch",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "source_changed": false,
+    "toolchain_pin": "[toolchain]\nchannel = \"1.96.0\"\ncomponents = [\"clippy\", \"rustfmt\", \"rust-src\"]\n",
+    "scope_note": "Original no-argument recipe uses changed_paths(base=None) against HEAD. On this clean committed source it reports no changed files; this receipt establishes command completion and no source change, not a full-tree or six-commit formatting check.",
+    "tests_run": false,
+    "build_run": false,
+    "target_used": false,
+    "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/local-handoff-format.json",
+    "receipt_sha256": "e17598079488c89106f2569eae179f68789f5ab9f6a335c50da209f7c523200b"
+  },
+  "format_committed_range_check": {
+    "kind": "original recipe committed-range check",
+    "source": "9b133c5f2ebc97160f592fa32974b1f6be443c9d",
+    "base": "22010a8c0388a4bba924dd1c99f1c88acf04656a",
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "22010a8c03",
+      "--check"
+    ],
+    "cwd": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/goal-local-handoff/codex-rs",
+    "started_at_utc": "2026-10-23T21:05:59.653071+00:00",
+    "finished_at_utc": "2026-10-23T21:06:00.871457+00:00",
+    "elapsed_seconds": 1.275758,
+    "exit_code": 0,
+    "status": "succeeded",
+    "before": {
+      "head": "9b133c5f2ebc97160f592fa32974b1f6be443c9d",
+      "status_porcelain_v1": "",
+      "diff": "",
+      "diff_cached": ""
+    },
+    "after": {
+      "head": "9b133c5f2ebc97160f592fa32974b1f6be443c9d",
+      "status_porcelain_v1": "",
+      "diff": "",
+      "diff_cached": ""
+    },
+    "source_changed": false,
+    "log": {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/local-handoff-format-six-leaf-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "changed_paths": [
+      "codex-rs/hepta-agentd/src/config.rs",
+      "codex-rs/hepta-agentd/src/notes_local_handoff_tests.rs",
+      "codex-rs/hepta-agentd/src/notes_objective_composition_tests.rs",
+      "codex-rs/hepta-agentd/src/production_composition.rs",
+      "codex-rs/hepta-agentd/src/production_protected_host.rs",
+      "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "codex-rs/hepta-memory/src/objective_sender.rs",
+      "codex-rs/hepta-memory/src/objective_sender_generation_tests.rs",
+      "codex-rs/hepta-memory/src/objective_sender_integrity.rs",
+      "codex-rs/hepta-memory/src/production_writer.rs"
+    ],
+    "tests_run": false,
+    "build_run": false,
+    "target_used": false,
+    "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/local-handoff-format-six-leaf-check.json",
+    "receipt_sha256": "e058999a3b608ec4dc35b29522a33ad91d4a9151857560e1fc2e84fd71ef107b"
+  }
+}

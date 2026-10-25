@@ -1,0 +1,93 @@
+{
+  "schema": "hepta.scoped-qualification-publication.v1",
+  "files": [
+    {
+      "original": "work/clock-window-publication-originals/root-clock-window-finish-01-format.log",
+      "published": "root-clock-window-finish-01-format.log.gz",
+      "raw_bytes": 73,
+      "raw_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+      "published_sha256": "8d5f1e8612b40722f1cb465624938d6c618418fc8231e9a978d3a58aaf8aa415",
+      "compressed": true
+    },
+    {
+      "original": "work/clock-window-publication-originals/root-clock-window-finish-01-result.json",
+      "published": "root-clock-window-finish-01-result.json",
+      "raw_bytes": 668,
+      "raw_sha256": "ef08688aa1d147bb63e2675d894aa9115383782095e1bad1fafa31a15a5b575f",
+      "published_sha256": "ef08688aa1d147bb63e2675d894aa9115383782095e1bad1fafa31a15a5b575f",
+      "compressed": false
+    },
+    {
+      "original": "work/clock-window-publication-originals/root-clock-window-finish-01-scoped-fix.log",
+      "published": "root-clock-window-finish-01-scoped-fix.log.gz",
+      "raw_bytes": 4262,
+      "raw_sha256": "a58064c6b3d5d6aa9eb12611c2a89ff4c1aad6c8364e5864e60446776885dc78",
+      "published_sha256": "2a8f9d861467ae90d822121cacfb3e5d426ccb9109711f0cda0b2d9d209b3b9a",
+      "compressed": true
+    },
+    {
+      "original": "work/clock-window-publication-originals/root-clock-window-qualification-01-actual-root-clock-tests.log",
+      "published": "root-clock-window-qualification-01-actual-root-clock-tests.log.gz",
+      "raw_bytes": 1111,
+      "raw_sha256": "f7f545d1b6e9d46635f27c474cbb4aa1287a872cd63db67e6fec00d0df4d9089",
+      "published_sha256": "6056483787c3cd39ff912936b4bed96840295fc47eebb71a696d5d7bc3c19dc0",
+      "compressed": true
+    },
+    {
+      "original": "work/clock-window-publication-originals/root-clock-window-qualification-01-compile-original-test-binaries.log",
+      "published": "root-clock-window-qualification-01-compile-original-test-binaries.log.gz",
+      "raw_bytes": 4426,
+      "raw_sha256": "bddf8178fd8c770129d7783cc3a20db70cd33f4a539c212439e86942ca6dbaf4",
+      "published_sha256": "4dc488e70e05cf54c1470e8d3ef767ce377138e369e9c6766ea34ab408ab46ef",
+      "compressed": true
+    },
+    {
+      "original": "work/clock-window-publication-originals/root-clock-window-qualification-01-original-complete-contracts.log",
+      "published": "root-clock-window-qualification-01-original-complete-contracts.log.gz",
+      "raw_bytes": 32062,
+      "raw_sha256": "e42a60acb6edcdc806c12b9342028585ace1907fe48e4be8eca40698b324ab51",
+      "published_sha256": "55aec51f1c2e5c3810d7c4f282e63ea4daf2be4e68a220b3d7cc39b7cfd5c6a0",
+      "compressed": true
+    },
+    {
+      "original": "work/clock-window-publication-originals/root-clock-window-qualification-01-result.json",
+      "published": "root-clock-window-qualification-01-result.json",
+      "raw_bytes": 3461,
+      "raw_sha256": "6fc01f1fe49e8254f2ed1001b022fabcf19d811a3478609f036eba405a325911",
+      "published_sha256": "6fc01f1fe49e8254f2ed1001b022fabcf19d811a3478609f036eba405a325911",
+      "compressed": false
+    },
+    {
+      "original": "work/clock-window-publication-originals/root-clock-window-qualification-01-source-after.json",
+      "published": "root-clock-window-qualification-01-source-after.json.gz",
+      "raw_bytes": 2389505,
+      "raw_sha256": "b9e57fcaeeeaf23110536d1dec05b5ca5d6fe3443ca7103c6cfb316de5cf8db3",
+      "published_sha256": "7920896a48e39c656916e7c0a06609308a9a0a117ec82fb7f36def5b8156979e",
+      "compressed": true
+    },
+    {
+      "original": "work/clock-window-publication-originals/root-clock-window-qualification-01-source-before.json",
+      "published": "root-clock-window-qualification-01-source-before.json.gz",
+      "raw_bytes": 2389505,
+      "raw_sha256": "b9e57fcaeeeaf23110536d1dec05b5ca5d6fe3443ca7103c6cfb316de5cf8db3",
+      "published_sha256": "7920896a48e39c656916e7c0a06609308a9a0a117ec82fb7f36def5b8156979e",
+      "compressed": true
+    }
+  ],
+  "full_composed_qualification": false,
+  "production_authority": false,
+  "source_leaf": "efadc8f1a67512f9dfc89eb4db9223845b441f62",
+  "root_import": "ab9a86297",
+  "rust_toolchain": "1.96.0",
+  "complete_original_contracts_passed": 227,
+  "complete_test_seconds": 35.114,
+  "explicit_root_tests_passed": 5,
+  "root_test_seconds": 5.031,
+  "root_fixture": "original /run controlled durability acknowledgement, not physical power loss",
+  "scoped_fix_seconds": 36.715,
+  "format_seconds": 0.215,
+  "final_diff_bytes": 0,
+  "source_inputs_unchanged": true,
+  "tests_repeated_after_finish": false,
+  "native_or_production_authority_qualified": false
+}

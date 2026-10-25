@@ -407,14 +407,37 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
         .await
         .unwrap();
     let id = enqueue(&store, 1).await.delivery_id;
-    // Fill active capacity using copies with independent fixture identities;
-    // admission hashing/signatures are exercised separately, not 4096 times.
-    sqlx::query("WITH RECURSIVE n(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM n WHERE x < 4095)
-        INSERT INTO authbus_outbox SELECT randomblob(32), issuer_id, key_epoch, 'fixture:' || x,
-        subject_id, scope_digest, payload_digest, sequence, expires_at_ms, signature, payload,
-        state, fence, attempts, worker_id, lease_until_ms, available_at_ms, created_at_ms,
-        updated_at_ms, terminal_at_ms, acknowledgement FROM authbus_outbox, n WHERE delivery_id = ?")
-        .bind(id.as_array().as_slice()).execute(&store.pool).await.unwrap();
+    // Fill the real global capacity without breaching the independent
+    // per-issuer limit. The first issuer retains 511 synthetic rows plus the
+    // original; seven other synthetic issuers each retain 512. Admission
+    // signatures are tested elsewhere: these are capacity-only fixture rows.
+    sqlx::query(
+        "WITH RECURSIVE n(x) AS
+            (SELECT 1 UNION ALL SELECT x + 1 FROM n WHERE x < ?)
+         INSERT INTO authbus_outbox SELECT randomblob(32),
+            CASE WHEN x < ? THEN issuer_id
+                 ELSE 'issuer:fixture:' || ((x - ?) / ?) END,
+            key_epoch, 'fixture:' || x,
+            subject_id, scope_digest, payload_digest, sequence, expires_at_ms, signature, payload,
+            state, fence, attempts, worker_id, lease_until_ms, available_at_ms, created_at_ms,
+            updated_at_ms, terminal_at_ms, acknowledgement
+         FROM authbus_outbox, n WHERE delivery_id = ?",
+    )
+    .bind(AUTHBUS_OUTBOX_MAX_ROWS - 1)
+    .bind(AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER)
+    .bind(AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER)
+    .bind(AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER)
+    .bind(id.as_array().as_slice())
+    .execute(&store.pool)
+    .await
+    .unwrap();
+    let saturated: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM authbus_outbox WHERE state IN ('queued', 'leased')",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .unwrap();
+    assert_eq!(saturated, AUTHBUS_OUTBOX_MAX_ROWS);
     let (issuer, message) = fixture(2, u64::MAX);
     assert!(matches!(
         store

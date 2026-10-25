@@ -344,15 +344,31 @@ pub async fn wait_for_event_with_timeout<F>(
 where
     F: FnMut(&codex_protocol::protocol::EventMsg) -> bool,
 {
+    use codex_protocol::protocol::EventMsg;
     use tokio::time::Duration;
-    use tokio::time::timeout;
+    use tokio::time::Instant;
+    use tokio::time::timeout_at;
     loop {
         // Allow a bit more time to accommodate async startup work (e.g. config IO, tool discovery)
-        let ev = timeout(wait_time.max(Duration::from_secs(10)), codex.next_event())
+        let deadline = Instant::now() + wait_time.max(Duration::from_secs(10));
+        let ev = timeout_at(deadline, codex.next_event())
             .await
             .expect("timeout waiting for event")
             .expect("stream ended unexpectedly");
         if predicate(&ev.msg) {
+            // Sequential fixtures may start work after this helper returns.
+            // TurnComplete is delivered before its exact finish owner retires;
+            // observe that owner using the same event budget. Raw-event timing
+            // tests can use next_event directly. Never wait by an aborted turn
+            // ID, which recovery may reuse for a different attempt.
+            if let EventMsg::TurnComplete(completed) = &ev.msg
+                && let Some(completion) =
+                    codex.pending_normal_turn_finish_completion(&completed.turn_id)
+            {
+                timeout_at(deadline, completion)
+                    .await
+                    .expect("timeout waiting for observed normal turn finish owner");
+            }
             return ev.msg;
         }
     }

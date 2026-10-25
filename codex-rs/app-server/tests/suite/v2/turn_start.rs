@@ -5073,3 +5073,71 @@ fn write_test_skill(codex_home: &Path, name: &str) -> std::io::Result<()> {
         format!("---\nname: {name}\ndescription: {name} description\n---\n\n# Body\n"),
     )
 }
+
+#[tokio::test]
+async fn normal_turn_completed_allows_immediate_next_start_without_retry() -> Result<()> {
+    let responses = vec![
+        create_final_assistant_message_sse_response("first")?,
+        create_final_assistant_message_sse_response("second")?,
+        create_final_assistant_message_sse_response("third")?,
+    ];
+    let server = create_mock_responses_server_sequence_unchecked(responses).await;
+    let codex_home = TempDir::new()?;
+    MockResponsesConfig::new(&server.uri()).write(codex_home.path())?;
+    let mut mcp = TestAppServer::builder()
+        .with_codex_home(codex_home.path())
+        .build_initialized()
+        .await?;
+    let ThreadStartResponse { thread, .. } = mcp
+        .start_thread(ThreadStartParams {
+            model: Some("mock-model".to_string()),
+            thread_source: Some(ThreadSource::User),
+            ..Default::default()
+        })
+        .await?;
+
+    timeout(DEFAULT_READ_TIMEOUT, async {
+        let mut turn_ids = Vec::new();
+        for prompt in ["first", "second", "third"] {
+            let TurnStartResponse { turn } = mcp
+                .request(|request_id| ClientRequest::TurnStart {
+                    request_id,
+                    params: TurnStartParams {
+                        thread_id: thread.id.clone(),
+                        input: vec![V2UserInput::Text {
+                            text: prompt.to_string(),
+                            text_elements: Vec::new(),
+                        }],
+                        ..Default::default()
+                    },
+                })
+                .await?;
+            assert!(!turn_ids.contains(&turn.id));
+            let started: TurnStartedNotification = mcp.read_notification("turn/started").await?;
+            assert_eq!(started.turn.id, turn.id);
+            let completed: TurnCompletedNotification =
+                mcp.read_notification("turn/completed").await?;
+            assert_eq!(completed.thread_id, thread.id);
+            assert_eq!(completed.turn.id, turn.id);
+            assert_eq!(completed.turn.status, TurnStatus::Completed);
+            turn_ids.push(turn.id);
+            // The next request is sent immediately: no sleep, probe or retry
+            // may hide an externally visible completion/admission race.
+        }
+        Ok::<(), anyhow::Error>(())
+    })
+    .await
+    .context("normal completion and immediate next starts must share one deadline")??;
+    let requests = server
+        .received_requests()
+        .await
+        .context("mock model requests")?;
+    assert_eq!(
+        requests
+            .iter()
+            .filter(|request| request.url.path().ends_with("/responses"))
+            .count(),
+        3
+    );
+    Ok(())
+}

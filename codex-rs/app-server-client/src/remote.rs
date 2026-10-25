@@ -67,6 +67,9 @@ use tokio_tungstenite::tungstenite::protocol::WebSocketConfig;
 use tracing::warn;
 use url::Url;
 
+#[path = "remote_shutdown.rs"]
+mod shutdown;
+
 const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
 const INITIALIZE_TIMEOUT: Duration = Duration::from_secs(10);
 const REMOTE_APP_SERVER_MAX_WEBSOCKET_MESSAGE_SIZE: usize = 128 << 20;
@@ -936,7 +939,7 @@ impl RemoteAppServerClient {
     {
         self.request_typed_observed_response(request)
             .await
-            .map(|observed| observed.into_response())
+            .map(RemoteAppServerObservedResponse::into_response)
     }
 
     pub async fn request_typed_observed_response<T>(
@@ -1084,18 +1087,26 @@ impl RemoteAppServerClient {
             worker_handle,
         } = self;
         let mut worker_handle = worker_handle;
+        let _abort_on_cancel = shutdown::AbortOnDrop(worker_handle.abort_handle());
+        let deadline = tokio::time::Instant::now() + SHUTDOWN_TIMEOUT;
         drop(event_rx);
         let (response_tx, response_rx) = oneshot::channel();
-        if command_tx
-            .send(RemoteClientCommand::Shutdown { response_tx })
-            .await
-            .is_ok()
-            && let Ok(Ok(close_result)) = timeout(SHUTDOWN_TIMEOUT, response_rx).await
-        {
-            close_result?;
+        let close = async {
+            if command_tx
+                .send(RemoteClientCommand::Shutdown { response_tx })
+                .await
+                .is_ok()
+                && let Ok(result) = response_rx.await
+            {
+                result?;
+            }
+            Ok::<_, IoError>(())
+        };
+        if let Ok(result) = tokio::time::timeout_at(deadline, close).await {
+            result?;
         }
 
-        if let Err(_elapsed) = timeout(SHUTDOWN_TIMEOUT, &mut worker_handle).await {
+        if let Err(_elapsed) = tokio::time::timeout_at(deadline, &mut worker_handle).await {
             worker_handle.abort();
             let _ = worker_handle.await;
         }

@@ -1,0 +1,98 @@
+{
+  "scope": "original protected owner Notes receipt retirement; explicit Root protocol and application observer fixtures, not production Root fsync or end-to-end device qualification",
+  "base": "9b133c5f2ebc97160f592fa32974b1f6be443c9d",
+  "negative_source": "0413d211b6657568d9a9fde5af6d00d269e6fb15",
+  "positive_source": "0f7a96752529a7914b7c24d07fadd527c5bd7bce",
+  "negative_tree": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/goal-notes-retirement",
+  "positive_tree": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/goal-notes-retirement-fix",
+  "target": "/data/organ-hepta-integration-target-20261023",
+  "qualified": true,
+  "jobs": [
+    {
+      "kind": "negative",
+      "host": "main",
+      "job_id": "1a16a952bce-1b6abb-3da4",
+      "status": "failed",
+      "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/notes-retirement-negative-v1.log",
+      "exit_code": 100,
+      "tests_passed": 0,
+      "tests_failed": 1,
+      "expected_negative": true,
+      "actual_retirements": 1,
+      "required_retirements": 0
+    },
+    {
+      "kind": "positive",
+      "host": "main",
+      "job_id": "1a16a9c55ee-1b6abb-3dc7",
+      "status": "failed",
+      "source": "0f7a96752529a7914b7c24d07fadd527c5bd7bce",
+      "log": "work/notes-retirement-positive-v1.log",
+      "exit_code": 100,
+      "tests_passed": 53,
+      "tests_failed": 1,
+      "source_qualified": false,
+      "reason": "shared target reused negative Memory binary; new five retirement tests absent; old absolute migration path in dep-info and no Memory compile"
+    },
+    {
+      "kind": "positive",
+      "host": "main",
+      "job_id": "1a16a9f1bff-1b6abb-3dd5",
+      "status": "succeeded",
+      "source": "0f7a96752529a7914b7c24d07fadd527c5bd7bce",
+      "log": "work/notes-retirement-positive-v2.log",
+      "fresh_memory_compile_observed": true,
+      "exit_code": 0,
+      "tests_passed": 59,
+      "tests_failed": 0,
+      "new_retirement_tests_executed": 6
+    },
+    {
+      "kind": "shared original production/HOS2 read-path regression",
+      "host": "main",
+      "job_id": "1a16aa22ec0-1b6abb-3de4",
+      "status": "succeeded",
+      "exit_code": 0,
+      "source": "0f7a96752529a7914b7c24d07fadd527c5bd7bce",
+      "tests_passed": 33,
+      "tests_failed": 0,
+      "log": "work/notes-retirement-shared-read-v1.log"
+    },
+    {
+      "kind": "scoped just fix -p codex-hepta-memory",
+      "host": "main",
+      "job_id": "1a16aa4780d-1b6abb-3df2",
+      "status": "succeeded",
+      "exit_code": 0,
+      "source": "0f7a96752529a7914b7c24d07fadd527c5bd7bce",
+      "source_changed": false,
+      "log": "work/notes-retirement-fix-v1.log"
+    }
+  ],
+  "related_hos2": {
+    "status": "source-only unvalidated",
+    "negative_source": "e2e113c4179127dcd8afc0b10a8723f78fbb43d8",
+    "positive_source": "8cf175a3cf23cb335462d3c1e91be5f392f49226"
+  },
+  "recompile": {
+    "method": "update positive hepta-memory/src/lib.rs mtime only to invalidate stale Cargo worktree fingerprint",
+    "lib_rs_sha256_before": "506ddbc13233d24a8d199bf7e5fd3987dcc7fbd28ab9f5d3f9259a1ff676d869",
+    "lib_rs_sha256_after": "506ddbc13233d24a8d199bf7e5fd3987dcc7fbd28ab9f5d3f9259a1ff676d869"
+  },
+  "test_qualified": true,
+  "component_tests_passed": 92,
+  "target_released_to_parent": true,
+  "limitations": [
+    "Explicit protocol peer and application observer fixtures are not production Root fsync/adoption or physical device evidence.",
+    "HOS2 receipt retirement and pre-effect entered-cut publication require their separate upcoming validations.",
+    "First positive run 3dc7 reused the old negative binary and is invalid as source verification; fresh Memory rebuild v2 3dd5 ran all six new tests."
+  ],
+  "final_committed_range_format_check": {
+    "command": "just fmt --base 9b133c5f2e --check",
+    "cwd": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/goal-notes-retirement-fix/codex-rs",
+    "exit_code": 0,
+    "checked_at_utc": "2026-10-23T21:32:38.283130+00:00",
+    "source_unchanged": true,
+    "tests_rerun_after_format_check": false
+  }
+}

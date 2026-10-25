@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.root-notes-admission-finish.v1",
+  "qualified_source": "b6a22e1552a2b530a2b5eeb41d2f0710ae82c0cd",
+  "target": "/data/hepta-root-service-196-target.e3i3hcbg",
+  "qualified_test_binary": "/data/hepta-root-service-196-target.e3i3hcbg/debug/deps/codex_hepta_agentd-376538b093a2091c",
+  "retained_test_binary": "/data/asterinas-audit-build.8tdrjboi/root-notes-admission-finish-01/original-positive-libtest",
+  "retained_test_sha256": "853747faa534dc1ffce7ff2d6e0e18d41c3cc503cb35b072a3bf2a00a7a01fac",
+  "commands": [
+    {
+      "stage": "scoped-fix",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "exit_code": 0,
+      "seconds": 327.728
+    },
+    {
+      "stage": "range-format",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt",
+        "--base",
+        "ad9c1b552"
+      ],
+      "exit_code": 0,
+      "seconds": 0.566
+    },
+    {
+      "stage": "default-format",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "seconds": 0.366
+    },
+    {
+      "stage": "range-format-check",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt",
+        "--base",
+        "ad9c1b552",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.516
+    }
+  ],
+  "passed": true,
+  "semantic_tests_after_finish": false,
+  "production_authority": false,
+  "status": "complete"
+}

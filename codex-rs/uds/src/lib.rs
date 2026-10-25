@@ -10,6 +10,9 @@ use tokio::io::AsyncRead;
 use tokio::io::AsyncWrite;
 use tokio::io::ReadBuf;
 
+#[cfg(target_os = "linux")]
+mod inherited;
+
 /// Creates `socket_dir` if needed and restricts it to the current user where
 /// the platform exposes Unix permissions.
 pub async fn prepare_private_socket_directory(socket_dir: impl AsRef<Path>) -> IoResult<()> {
@@ -71,6 +74,14 @@ impl UnixStream {
     /// peer identity on Unix.
     pub fn ensure_current_user_peer(&self) -> IoResult<()> {
         platform::ensure_current_user_peer(&self.inner)
+    }
+
+    /// Admit the dedicated process owner or its actual Root supervisor before
+    /// reading an inherited host-control protocol. This preserves Root's
+    /// existing private-path access without admitting another unprivileged UID.
+    #[cfg(target_os = "linux")]
+    pub fn ensure_current_user_or_root_peer(&self) -> IoResult<()> {
+        platform::ensure_current_user_or_root_peer(&self.inner)
     }
 }
 
@@ -158,6 +169,11 @@ mod platform {
         UnixListener::bind(socket_path).map(Listener)
     }
 
+    #[cfg(target_os = "linux")]
+    pub(super) fn from_std(listener: std::os::unix::net::UnixListener) -> IoResult<Listener> {
+        UnixListener::from_std(listener).map(Listener)
+    }
+
     impl Listener {
         pub(super) async fn accept(&mut self) -> IoResult<Stream> {
             self.0.accept().await.map(|(stream, _addr)| stream)
@@ -170,6 +186,17 @@ mod platform {
 
     #[cfg(any(target_os = "linux", target_os = "android"))]
     pub(super) fn ensure_current_user_peer(stream: &Stream) -> IoResult<()> {
+        ensure_peer_uid(peer_uid(stream)?)
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(super) fn ensure_current_user_or_root_peer(stream: &Stream) -> IoResult<()> {
+        let uid = peer_uid(stream)?;
+        if uid == 0 { Ok(()) } else { ensure_peer_uid(uid) }
+    }
+
+    #[cfg(any(target_os = "linux", target_os = "android"))]
+    fn peer_uid(stream: &Stream) -> IoResult<libc::uid_t> {
         let mut credentials = libc::ucred {
             pid: 0,
             uid: 0,
@@ -188,7 +215,10 @@ mod platform {
         if result != 0 {
             return Err(io::Error::last_os_error());
         }
-        ensure_peer_uid(credentials.uid)
+        if credentials_len as usize != std::mem::size_of::<libc::ucred>() {
+            return Err(io::Error::new(ErrorKind::PermissionDenied, "Unix peer credentials are incomplete"));
+        }
+        Ok(credentials.uid)
     }
 
     #[cfg(any(

@@ -1,0 +1,71 @@
+{
+  "schema": "hepta.original-lease-pair-qualification.v1",
+  "final_source_commit": "6393714e0bf3c619562dd5764273755ec29ddf62",
+  "source_tree": "215609d59079ea9e5c3f29f4bf719501144f7ea0",
+  "source_status": "",
+  "tests_before_format": true,
+  "tests_after_format": false,
+  "stages": {
+    "lease-pair-original-owner-scope-02": {
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "--locked",
+        "-E",
+        "test(authority_lease::)",
+        "--test-threads",
+        "2"
+      ],
+      "exit": 0,
+      "seconds": 17.60973223799374
+    },
+    "lease-pair-contracts-tests-02": {
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "--locked",
+        "--test-threads",
+        "2"
+      ],
+      "exit": 0,
+      "seconds": 10.040590291959234
+    },
+    "lease-pair-fmt-01": {
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt"
+      ],
+      "exit": 0,
+      "seconds": 0.40429078496526927
+    },
+    "lease-pair-fix-01": {
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fix",
+        "-p",
+        "codex-hepta-contracts"
+      ],
+      "exit": 0,
+      "seconds": 72.14241815498099
+    }
+  },
+  "preserved_failure": {
+    "file": "lease-pair-original-owner-scope-01.json",
+    "reason": "fixture hardcoded global revision2 instead of actual3; assertion before starting revoke worker caused scoped-join wait; original60s nextest termination and retry retained"
+  },
+  "production_authority": false,
+  "root_service_wire_qualification": false,
+  "new_issuer_or_ledger": false,
+  "counts": {
+    "original_lease_scope_passed": 23,
+    "contracts_passed": 227,
+    "contracts_failed": 0,
+    "contracts_original_ignored": 7
+  }
+}

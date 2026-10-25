@@ -13,6 +13,16 @@ use codex_hepta_paths::HeptaFleetRoot;
 
 use crate::AgentdError;
 
+#[path = "config_sockets.rs"]
+mod sockets;
+pub(crate) use sockets::AgentdSocketInputs;
+
+#[cfg(target_os = "linux")]
+#[path = "config_root_handoff.rs"]
+mod root_handoff;
+#[cfg(target_os = "linux")]
+pub use root_handoff::PreparedRootAgentdConfig;
+
 pub const HEPTA_AGENT_ID_ENV: &str = "HEPTA_AGENT_ID";
 pub const HEPTA_AGENT_GENERATION_ENV: &str = "HEPTA_AGENT_GENERATION";
 pub const HEPTA_AGENT_HOME_ENV: &str = "HEPTA_AGENT_HOME";
@@ -73,6 +83,7 @@ fn cognitive_retrieval_mode_from_process_environment() -> Result<CognitiveRetrie
 
 pub struct AgentdConfig {
     identity: AgentdIdentity,
+    sockets: AgentdSocketInputs,
     registry: FleetRegistry,
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
@@ -85,6 +96,9 @@ pub struct AgentdConfig {
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
     production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
+    notes_objective: Option<crate::AgentdNotesObjectiveConfig>,
+    #[cfg(target_os = "linux")]
+    notes_ui: Option<crate::AgentdNotesUiRuntime>,
     cognitive_retrieval_mode: CognitiveRetrievalMode,
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
@@ -198,6 +212,7 @@ impl AgentdConfig {
             },
             registry,
             _writer_lock: writer_lock,
+            sockets: AgentdSocketInputs::Bind,
             authbus_trust_file: None,
             evidence_trust_file: None,
             automation_effect_host_file: None,
@@ -208,6 +223,9 @@ impl AgentdConfig {
             cognitive_ranker: None,
             production_operations: None,
             production_writer_host: None,
+            notes_objective: None,
+            #[cfg(target_os = "linux")]
+            notes_ui: None,
             cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
@@ -318,6 +336,48 @@ impl AgentdConfig {
         self.cognitive_ranker.clone()
     }
 
+    #[cfg(target_os = "linux")]
+    pub(crate) fn require_unconfigured_production_hosts(&self) -> Result<(), AgentdError> {
+        if self.production_writer_host.is_some() || self.production_operations.is_some() {
+            return Err(AgentdError::Invalid(
+                "production host is already configured".to_string(),
+            ));
+        }
+        Ok(())
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn install_production_hosts(
+        &mut self,
+        host: std::sync::Arc<crate::AgentdProductionWriterHost>,
+        operations: crate::AgentdProductionOperationRuntimeConfig,
+    ) -> Result<(), AgentdError> {
+        self.require_unconfigured_production_hosts()?;
+        operations.validate_for(self)?;
+        let writer = host.writer();
+        if writer.owner_agent_id() != &self.identity.agent_id
+            || host.spawn_generation() != self.identity.spawn_generation
+            || writer.authority() != &operations.authority
+            || writer.lease_id() != operations.lease_id
+            || writer.generation() != operations.lease_generation
+        {
+            return Err(AgentdError::GenerationFenced(
+                "production recovered writer identity differs from Agentd".to_string(),
+            ));
+        }
+        // After every metadata callback and recovery await, recheck the same
+        // live verifier immediately before publishing either handle.
+        operations
+            .verifier
+            .verify(&operations.authority, &self.identity.agent_id)
+            .map_err(AgentdError::GenerationFenced)?;
+        // No fallible operation follows either assignment. The caller has
+        // revalidated this same original owner before this exclusive commit.
+        self.production_writer_host = Some(host);
+        self.production_operations = Some(operations);
+        Ok(())
+    }
+
     /// Attach an externally-authorized long-lived production operation host.
     /// Default process-environment startup never manufactures or loads this
     /// authority; an embedding must provide the complete verified runtime
@@ -342,6 +402,34 @@ impl AgentdConfig {
         self.production_operations.take()
     }
 
+    /// Install the actual Session UI beside the same original protected writer.
+    /// `run` supervises it as a required task; a Session exit drains this host.
+    #[cfg(target_os = "linux")]
+    pub fn with_original_notes_ui(mut self, runtime: crate::AgentdNotesUiRuntime) -> Result<Self, AgentdError> {
+        if self.notes_ui.is_some() {
+            return Err(AgentdError::Invalid("original Notes UI already configured".into()));
+        }
+        runtime.validate_for(&self)?;
+        self.notes_ui = Some(runtime);
+        Ok(self)
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn take_original_notes_ui(&mut self) -> Option<crate::AgentdNotesUiRuntime> {
+        self.notes_ui.take()
+    }
+
+    /// Explicit old-incarnation recovery from the trusted sealed deployment.
+    /// The actual current target is taken from the already installed Session
+    /// observer; no UI command supplies either target or a helper path.
+    #[cfg(target_os = "linux")]
+    pub fn with_original_notes_previous_recovery(mut self, launch: crate::AgentdNotesPreviousRecoveryLaunch) -> Result<Self, AgentdError> {
+        self.production_operations.as_mut()
+            .ok_or(AgentdError::CognitiveWriteRuntimeUnavailable)?
+            .select_previous_notes_process(launch)?;
+        Ok(self)
+    }
+
     /// Attach an externally verified production cognitive writer to normal
     /// Agentd composition. Agentd never manufactures this authority.
     pub fn with_production_writer_host(
@@ -359,10 +447,10 @@ impl AgentdConfig {
                 "production cognitive writer owner does not match Agentd identity".to_string(),
             ));
         }
-        if writer.generation() != self.identity.spawn_generation {
+        if host.spawn_generation() != self.identity.spawn_generation {
             return Err(AgentdError::GenerationFenced(format!(
-                "production cognitive writer generation {} does not match Agentd spawn generation {}",
-                writer.generation(),
+                "production host spawn generation {} does not match Agentd spawn generation {}",
+                host.spawn_generation(),
                 self.identity.spawn_generation
             )));
         }
@@ -532,6 +620,53 @@ impl AgentdConfig {
         &self,
     ) -> Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>> {
         self.intelligence_invocation_provider.clone()
+    }
+
+    /// Opt in to one frozen literal Notes profile; no general AI executor.
+    pub fn with_notes_objective(
+        mut self,
+        config: crate::AgentdNotesObjectiveConfig,
+    ) -> Result<Self, AgentdError> {
+        config.validate()?;
+        if self.notes_objective.is_some() {
+            return Err(AgentdError::Invalid(
+                "Notes Objective adapter already configured".into(),
+            ));
+        }
+        self.notes_objective = Some(config);
+        Ok(self)
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn require_finite_notes_profile(&self) -> Result<(), AgentdError> {
+        if self.production_writer_host.is_none()
+            || self.notes_objective.is_none()
+            || self.authbus_trust_file.is_none()
+            || self.authbus_checkpoint_file.is_none()
+            || self.objective_profile_file.is_none()
+            || self.production_operations.is_some()
+            || self.evidence_trust_file.is_some()
+            || self.evidence_recovery_frontier_file.is_some()
+            || self.evidence_recovery_frontier_trust_file.is_some()
+            || self.automation_effect_host_file.is_some()
+            || self.cognitive_ranker.is_some()
+            || self.cognitive_retrieval_mode != CognitiveRetrievalMode::Compatibility
+            || self.cognitive_retrieval_context.is_some()
+            || self.cognitive_retrieval_learning.is_some()
+            || self.plasticity_bootstrap.is_some()
+            || self.intuition_policy_host.is_some()
+            || self.intelligence_product_runner.is_some()
+            || self.intelligence_invocation_provider.is_some()
+        {
+            return Err(AgentdError::Invalid(
+                "finite Notes profile requires its original writer, Notes, AuthBus and admission owners without another execution plane".into(),
+            ));
+        }
+        Ok(())
+    }
+
+    pub(crate) fn notes_objective(&self) -> Option<crate::AgentdNotesObjectiveConfig> {
+        self.notes_objective.clone()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {

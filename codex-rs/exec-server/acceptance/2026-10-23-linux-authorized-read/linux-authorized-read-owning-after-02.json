@@ -1,0 +1,25 @@
+{
+  "name": "linux-authorized-read-owning-after-02",
+  "cwd": "/data/hepta-mcp-implementation-closure",
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-exec-server",
+    "--locked",
+    "--test-threads",
+    "2"
+  ],
+  "baseSha": "3b880e484c1e31632ffe900f97753209d14ab7d5",
+  "workingDiffSha256": "73a185c1d707077e7138a440ec6f253fa27ba883b43795491b92ea7cecd56d93",
+  "startedAt": "2026-10-23T20:12:13.464730+00:00",
+  "finishedAt": "2026-10-23T20:14:20.744883+00:00",
+  "elapsedSeconds": 127.28014943399467,
+  "exitCode": 0,
+  "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/linux-authorized-read-owning-after-02.log",
+  "environment": {
+    "CARGO_TARGET_DIR": "/data/hepta-mcp-integer-target",
+    "CARGO_BUILD_JOBS": "1",
+    "RUSTUP_TOOLCHAIN": "1.95.0"
+  }
+}

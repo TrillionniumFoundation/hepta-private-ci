@@ -1,0 +1,106 @@
+--- a/codex-rs/exec-server/src/linux_authorized_read.rs
++++ b/codex-rs/exec-server/src/linux_authorized_read.rs
+@@ -2,7 +2,9 @@
+ //!
+ //! The initial descriptor pins the inode while openat2 rejects symlink and magic-link
+ //! traversal during the secure reopen. Admission ends with matching namespace, mount,
+-//! device/inode, physical path, regular-file type and single-link metadata. Subsequent
++//! device/inode, physical path, regular-file type and single-link metadata. Both path
++//! opens use O_PATH; only the proved private regular-file descriptor is converted
++//! through its kernel proc link to a readable handle and verified again. Subsequent
+ //! reads use only that admitted descriptor. Unlike Darwin O_UNIQUE, Linux checks link
+ //! count after opening; this is not a claim of identical atomic kernel semantics.
+ 
+@@ -127,14 +129,28 @@
+     let fd = rustix::fs::openat2(
+         rustix::fs::CWD,
+         path,
+-        OFlags::RDONLY | OFlags::CLOEXEC | OFlags::NONBLOCK | OFlags::NOCTTY,
++        OFlags::PATH | OFlags::CLOEXEC,
+         Mode::empty(),
+         ResolveFlags::NO_SYMLINKS | ResolveFlags::NO_MAGICLINKS,
+     )
+     .map_err(|error| redact_file_access_error(error.into()))?;
+-    let file = File::from(fd);
+-    verify_identity(&file, path, expected)?;
+-    Ok(file)
++    let pinned = File::from(fd);
++    verify_identity(&pinned, path, expected)?;
++    // This is an internally owned, proved regular-file descriptor, never a
++    // caller-supplied path or descriptor number. Keep it alive through conversion
++    // so the proc link cannot resolve to a reused descriptor or another inode.
++    let fd = pinned.as_raw_fd();
++    let descriptor_path = format!("/proc/thread-self/fd/{fd}");
++    let readable = File::from(
++        rustix::fs::open(
++            descriptor_path.as_str(),
++            OFlags::RDONLY | OFlags::CLOEXEC | OFlags::NONBLOCK | OFlags::NOCTTY,
++            Mode::empty(),
++        )
++        .map_err(|error| redact_file_access_error(error.into()))?,
++    );
++    verify_identity(&readable, path, expected)?;
++    Ok(readable)
+ }
+ 
+ fn pin_file(path: &Path) -> io::Result<File> {
+@@ -218,8 +234,10 @@
+         let original = pin_file(&path)?;
+         let identity = file_identity(&original, Arc::new(MountNamespace::capture()?))?;
+         let physical_path = stable_file_path(&original)?;
+-        let admitted = secure_reopen(physical_path.as_path(), &identity)?;
+-        if physical_path.as_path() != path {
++        let mut admitted = secure_reopen(physical_path.as_path(), &identity)?;
++        let mut contents = Vec::new();
++        std::io::Read::read_to_end(&mut admitted, &mut contents)?;
++        if physical_path.as_path() != path || contents != b"probe" {
+             return Ok(false);
+         }
+         // Exercise each kernel resolution flag directly: a later descriptor-path
+@@ -228,7 +246,7 @@
+             rustix::fs::openat2(
+                 rustix::fs::CWD,
+                 path,
+-                OFlags::RDONLY | OFlags::CLOEXEC | OFlags::NONBLOCK | OFlags::NOCTTY,
++                OFlags::PATH | OFlags::CLOEXEC,
+                 Mode::empty(),
+                 resolve,
+             )
+--- a/codex-rs/exec-server/src/linux_authorized_read_tests.rs
++++ b/codex-rs/exec-server/src/linux_authorized_read_tests.rs
+@@ -80,3 +80,22 @@
+     );
+     Ok(())
+ }
++
++#[test]
++fn secure_reopen_reads_only_the_same_regular_file_from_a_private_pin() -> io::Result<()> {
++    let directory = tempfile::tempdir()?;
++    let path = directory.path().join("file.txt");
++    std::fs::write(&path, b"authorized")?;
++    let original = pin_file(&path)?;
++    let identity = file_identity(&original, Arc::new(MountNamespace::capture()?))?;
++    let physical = stable_file_path(&original)?;
++    let mut readable = secure_reopen(physical.as_path(), &identity)?;
++    let mut bytes = Vec::new();
++    std::io::Read::read_to_end(&mut readable, &mut bytes)?;
++    let actual = file_identity(&readable, Arc::clone(&identity.namespace))?;
++    assert_eq!(
++        (bytes, actual.device, actual.inode, actual.mount, stable_file_path(&readable)?),
++        (b"authorized".to_vec(), identity.device, identity.inode, identity.mount, physical)
++    );
++    Ok(())
++}
+--- a/codex-rs/exec-server/README.md
++++ b/codex-rs/exec-server/README.md
+@@ -400,6 +400,10 @@
+ 
+ Authorized reads keep the initial file descriptor alive while admitting a
+ second descriptor against the resolved physical path and permission policy.
++The Linux implementation uses `O_PATH` for both path opens without opening an
++unchecked object for I/O. Only a private descriptor already proved regular is
++converted through its kernel proc link to a readable handle and checked again;
++the conversion never falls back to opening the caller's path.
+ Linux requires a successful runtime probe of `openat2` link-resolution flags,
+ descriptor paths, mount identity, and single-link regular-file checks; a kernel
+ without these primitives advertises no capability and rejects the operation.

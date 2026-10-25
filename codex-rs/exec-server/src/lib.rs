@@ -16,6 +16,8 @@ mod forward;
 mod fs_helper;
 mod fs_helper_main;
 mod fs_sandbox;
+#[cfg(target_os = "linux")]
+mod linux_authorized_read;
 mod local_file_system;
 mod local_process;
 mod network_policy_decisions;

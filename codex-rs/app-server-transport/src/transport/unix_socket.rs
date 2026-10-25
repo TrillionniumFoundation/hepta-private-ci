@@ -21,6 +21,43 @@ use tracing::warn;
 #[cfg(unix)]
 const CONTROL_SOCKET_MODE: u32 = 0o600;
 
+/// A private listener already opened by the embedding process. The original
+/// pathname owner, rather than App Server, remains responsible for cleanup.
+pub struct InheritedControlSocket {
+    listener: UnixListener,
+    socket_path: AbsolutePathBuf,
+}
+
+impl InheritedControlSocket {
+    /// The embedding must perform any credential transition and `listen`
+    /// before adoption. Linux checks the exact pathname, owner and socket type.
+    #[cfg(target_os = "linux")]
+    pub fn from_inherited(
+        fd: std::os::fd::OwnedFd,
+        socket_path: AbsolutePathBuf,
+    ) -> IoResult<Self> {
+        let listener = UnixListener::from_inherited(fd, socket_path.as_path())?;
+        Ok(Self { listener, socket_path })
+    }
+
+    pub fn socket_path(&self) -> &AbsolutePathBuf {
+        &self.socket_path
+    }
+}
+
+/// Run the original WebSocket/JSON-RPC acceptor on the retained listener.
+/// No path preparation, stale-path probe, bind, chmod or unlink occurs.
+pub fn start_inherited_control_socket_acceptor(
+    socket: InheritedControlSocket,
+    transport_event_tx: mpsc::Sender<TransportEvent>,
+    shutdown_token: CancellationToken,
+) -> JoinHandle<()> {
+    info!(socket_path = %socket.socket_path.display(), "app-server inherited control socket listening");
+    tokio::spawn(run_control_socket_acceptor(
+        socket.listener, transport_event_tx, shutdown_token, /*socket_guard*/ None,
+    ))
+}
+
 pub async fn start_control_socket_acceptor(
     socket_path: AbsolutePathBuf,
     transport_event_tx: mpsc::Sender<TransportEvent>,
@@ -39,7 +76,7 @@ pub async fn start_control_socket_acceptor(
         listener,
         transport_event_tx,
         shutdown_token,
-        socket_guard,
+        Some(socket_guard),
     )))
 }
 
@@ -47,8 +84,9 @@ async fn run_control_socket_acceptor(
     mut listener: UnixListener,
     transport_event_tx: mpsc::Sender<TransportEvent>,
     shutdown_token: CancellationToken,
-    socket_guard: ControlSocketFileGuard,
+    socket_guard: Option<ControlSocketFileGuard>,
 ) {
+    let inherited = socket_guard.is_none();
     let _socket_guard = socket_guard;
     loop {
         let stream = tokio::select! {
@@ -74,17 +112,33 @@ async fn run_control_socket_acceptor(
             }
         };
 
+        #[cfg(target_os = "linux")]
+        if inherited && let Err(error) = stream.ensure_current_user_or_root_peer() {
+            warn!(%error, "refused inherited control socket peer before protocol admission");
+            continue;
+        }
         let transport_event_tx = transport_event_tx.clone();
+        let connection_shutdown = inherited.then(|| shutdown_token.clone());
         tokio::spawn(async move {
-            let websocket_stream = match accept_async(stream).await {
-                Ok(websocket_stream) => websocket_stream,
-                Err(err) => {
-                    warn!("failed to upgrade control socket websocket connection: {err}");
-                    return;
-                }
+            let serve = async {
+                let websocket_stream = match accept_async(stream).await {
+                    Ok(websocket_stream) => websocket_stream,
+                    Err(err) => {
+                        warn!("failed to upgrade control socket websocket connection: {err}");
+                        return;
+                    }
+                };
+                let (websocket_writer, websocket_reader) = websocket_stream.split();
+                run_websocket_connection(websocket_writer, websocket_reader, transport_event_tx).await;
             };
-            let (websocket_writer, websocket_reader) = websocket_stream.split();
-            run_websocket_connection(websocket_writer, websocket_reader, transport_event_tx).await;
+            match connection_shutdown {
+                Some(shutdown) => tokio::select! {
+                    biased;
+                    _ = shutdown.cancelled() => {}
+                    _ = serve => {}
+                },
+                None => serve.await,
+            }
         });
     }
     info!("control socket acceptor shutting down");

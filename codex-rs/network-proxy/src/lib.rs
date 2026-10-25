@@ -14,6 +14,7 @@ mod native_certs;
 mod network_policy;
 mod policy;
 mod proxy;
+mod rama_compat;
 mod reasons;
 mod remote_config;
 mod request_disconnect;

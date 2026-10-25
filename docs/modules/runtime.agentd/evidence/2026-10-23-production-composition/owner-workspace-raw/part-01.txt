@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-10-23T07:15:34.519665+00:00",
+  "baseline_head": "16418ddc3416a38a122b883cee46e2d3583cbd41",
+  "baseline_tree": "43fde98e9ea789b81b941e48bb65300c76c4292c",
+  "scope": "Original full workspace resolution and actual original owning-package compilation attempts. Factory, Notes, grant-provider worker and full Agentd tests have not executed in these attempts. This does not claim production qualification.",
+  "supersedes_environment_diagnosis": "The previous partial-workspace aws-auth manifest failure and offline missing dependency were resolved by the complete pinned source and working approved network. The latest blocker is measured local build capacity. All historical receipts are preserved.",
+  "previous_environment_receipt": {
+    "filename": "owner-environment-progress.json",
+    "bytes": 116410,
+    "sha256": "a70195c19b5f8d8e2f921c9aace2e327b41de34cae42e355e31f74c2de33fce2"
+  },
+  "original_source_inventory": {
+    "filename": "head3398-tree.json",
+    "bytes": 1320502,
+    "sha256": "04cd4c3c691cf4dacee120164f0c0176f65938f69342ab5eb1e6e76444cf80f8",
+    "ref_tree": "43fde98e9ea789b81b941e48bb65300c76c4292c",
+    "entries_verified": 9111
+  },
+  "target_dependency_graph": {
+    "command": [
+      "cargo",
+      "tree",
+      "--locked",
+      "-p",
+      "codex-hepta-agentd",
+      "--target",
+      "x86_64-unknown-linux-gnu",
+      "--edges",
+      "normal,build,dev",
+      "--prefix",
+      "none",
+      "--format",
+      "{p}"
+    ],
+    "exit_code": 0,
+    "unique_package_lines": 1019,
+    "display_lines": 4872,
+    "scope": "normal/build/dev package graph; not exact rustc compilation units and not whole-workspace cache completeness"
+  },
+  "unchanged_product_inputs": [
+    "original Cargo.lock",
+    "original workspace members",
+    "original Cargo profiles",
+    "published source and strict tests during all five Agentd attempts"
+  ],
+  "environment_changes": [
+    "Use existing system OpenSSL headers/libraries through openssl-sys-supported explicit variables; no fake pkg-config or dependency substitution.",
+    "rustup repaired the same required Rust 1.95.0 during resume-2; exact stderr and repeated tool versions retained. RUSTUP_AUTO_INSTALL=0 in subsequent attempts.",
+    "Resource thresholds are local execution budgets, not changes to product profiles or CI gates.",
+    "Only this task private build outputs outside the exact memory package graph were removed for a serial memory package test window. Their hashes are retained; Agentd must recompile those outputs."
+  ],
+  "current_unexecuted_tests": {
+    "production_composition_tests": 7,
+    "production_composition_notes_tests": 5,
+    "original_final_use_issuer_tests": 7,
+    "original_grant_provider_worker_tests": 1
+  },
+  "raw_receipts": [
+    {
+      "filename": "owner-complete-source-materialization.json",
+      "bytes": 1011,
+      "sha256": "c92b2932034209c8a9adfd9ff9cdfd289a331c82b04d58c11c0958a006d4d1c6",
+      "receipt": {
+        "head": "16418ddc3416a38a122b883cee46e2d3583cbd41",
+        "tree": "43fde98e9ea789b81b941e48bb65300c76c4292c",
+        "started_at": "2026-10-23T06:34:16.352788+00:00",
+        "completed_at": "2026-10-23T06:34:19.130214+00:00",
+        "command": [
+          "curl",
+          "--fail",
+          "--location",
+          "--silent",
+          "--show-error",
+          "--max-time",
+          "120",
+          "https://codeload.github.com/TrillionniumFoundation/hepta-private-ci/tar.gz/16418ddc3416a38a122b883cee46e2d3583cbd41"
+        ],
+        "exit_code": 0,
+        "stderr": "",
+        "source_directory": "/dev/shm/organ-3d6a75235bcb-hepta3398/source",
+        "verified_original_git_blobs": 9111,
+        "verified_original_source_bytes": 104204373,
+        "verified_original_modes": true,
+        "Cargo_lock_git_blob_sha1": "655cb6c88b86e0a00d1c1514ab2acf9ae86a7d34",
+        "Cargo_lock_sha256": "83651f11dea7f58dc96f3d119c120ab2bd8019e418979ab091ef49de7cceb9e8",
+        "source_inventory": "head3398-tree.json",
+        "scope": "Complete original pinned source tree, all archive blobs and modes verified; no build executed."
+      }
+    },
+    {
+      "filename": "original-online-target-tree.json",
+      "bytes": 202002,
+      "sha256": "9290a307375861c21de532ab31b1eea4c038f8ca24750ccb0a6908a10a85f55f",
+      "receipt": {
+        "head": "16418ddc3416a38a122b883cee46e2d3583cbd41",
+        "tree": "43fde98e9ea789b81b941e48bb65300c76c4292c",
+        "command": [
+          "cargo",
+          "tree",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--target",
+          "x86_64-unknown-linux-gnu",
+          "--edges",
+          "normal,build,dev",
+          "--prefix",
+          "none",
+          "--format",
+          "{p}"
+        ],
+        "cwd": "/dev/shm/organ-3d6a75235bcb-hepta3398/source/codex-rs",
+        "environment": {
+          "CARGO_HOME": "/dev/shm/organ-3d6a75235bcb-hepta3398/cargo-home",
+          "CARGO_TARGET_DIR": "/dev/shm/organ-3d6a75235bcb-hepta3398/target",
+          "CARGO_INCREMENTAL": "0",
+          "CARGO_BUILD_JOBS": "1",
+          "CARGO_HTTP_TIMEOUT": "30",
+          "CARGO_NET_RETRY": "1",
+          "RUSTUP_TOOLCHAIN": "1.95.0",
+          "TMPDIR": "/dev/shm/organ-3d6a75235bcb-hepta3398/tmp"
+        },
+        "started_at": "2026-10-23T06:35:16.470130+00:00",
+        "finished_at": "2026-10-23T06:35:44.751567+00:00",
+        "exit_code": 0,
+        "controlled_stop_reason": null,
+        "Cargo_lock_sha256_before": "83651f11dea7f58dc96f3d119c120ab2bd8019e418979ab091ef49de7cceb9e8",
+        "Cargo_lock_sha256_after": "83651f11dea7f58dc96f3d119c120ab2bd8019e418979ab091ef49de7cceb9e8",
+        "resources": [
+          {
+            "recorded_at": "2026-10-23T06:35:16.465229+00:00",
+            "cache_bytes": 6641972,
+            "target_bytes": 0,
+            "shm_available_bytes": 4510035968,
+            "memory_available_bytes": 3523866624
+          },
+          {
+            "recorded_at": "2026-10-23T06:35:26.477661+00:00",
+            "cache_bytes": 88178433,
+            "target_bytes": 0,
+            "shm_available_bytes": 4423598080,
+            "memory_available_bytes": 3006459904
+          },
+          {
+            "recorded_at": "2026-10-23T06:35:36.490678+00:00",
+            "cache_bytes": 193597386,
+            "target_bytes": 0,
+            "shm_available_bytes": 4304850944,
+            "memory_available_bytes": 2825138176
+          },
+          {
+            "recorded_at": "2026-10-23T06:35:44.534712+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 0,
+            "shm_available_bytes": 3251879936,
+            "memory_available_bytes": 4535611392
+          }
+        ],
+        "stdout": "codex-hepta-agentd v0.0.0 (/dev/shm/organ-3d6a75235bcb-hepta3398/source/codex-rs/hepta-agentd)\nanyhow v1.0.104\ncodex-app-server v0.0.0 (/dev/shm/organ-3d6a75235bcb-hepta3398/source/codex-rs/app-server)\nanyhow v1.0.104\naxum v0.8.9\naxum-core v0.5.6\nbytes v1.12.1\nfutures-core v0.3.34\nhttp v1.5.0\nbytes v1.12.1\nitoa v1.0.18\nhttp-body v1.1.0\nbytes v1.12.1\nhttp v1.5.0 (*)\nhttp-body-util v0.1.5\nbytes v1.12.1\nfutures-core v0.3.34\nhttp v1.5.0 (*)\nhttp-body v1.1.0 (*)\npin-project-lite v0.2.17\nmime v0.3.17\npin-project-lite v0.2.17\nsync_wrapper v1.0.2\nfutures-core v0.3.34\ntower-layer v0.3.3\ntower-service v0.3.3\nbase64 v0.22.1\nbytes v1.12.1\nfutures-util v0.3.34\nfutures-channel v0.3.34\nfutures-core v0.3.34\nfutures-sink v0.3.34\nfutures-core v0.3.34\nfutures-io v0.3.34\nfutures-macro v0.3.34 (proc-macro)\nproc-macro2 v1.0.107\nunicode-ident v1.0.27\nquote v1.0.47\nproc-macro2 v1.0.107 (*)\nsyn v3.0.9\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nunicode-ident v1.0.27\nfutures-sink v0.3.34\nfutures-task v0.3.34\nmemchr v2.8.3\npin-project-lite v0.2.17\nslab v0.4.12\nhttp v1.5.0 (*)\nhttp-body v1.1.0 (*)\nhttp-body-util v0.1.5 (*)\nhyper v1.12.0\natomic-waker v1.1.2\nbytes v1.12.1\nfutures-channel v0.3.34 (*)\nfutures-core v0.3.34\nh2 v0.4.20\natomic-waker v1.1.2\nbytes v1.12.1\nfnv v1.0.7\nfutures-core v0.3.34\nfutures-sink v0.3.34\nhttp v1.5.0 (*)\nindexmap v2.14.2\nequivalent v1.0.3\nhashbrown v0.17.1\nfoldhash v0.2.0\nserde_core v1.0.229\nslab v0.4.12\ntokio v1.53.3\nbytes v1.12.1\nlibc v0.2.191\nmio v1.2.4\nlibc v0.2.191\nlog v0.4.34\nparking_lot v0.12.5\nlock_api v0.4.14\nscopeguard v1.2.0\nparking_lot_core v0.9.12\ncfg-if v1.0.5\nlibc v0.2.191\nsmallvec v1.16.3\nserde v1.0.229\nserde_core v1.0.229\nserde_derive v1.0.229 (proc-macro)\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v3.0.9 (*)\npin-project-lite v0.2.17\nsignal-hook-registry v1.4.8\nerrno v0.3.14\nlibc v0.2.191\nlibc v0.2.191\nsocket2 v0.6.5\nlibc v0.2.191\ntokio-macros v2.7.2 (proc-macro)\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v3.0.9 (*)\ntokio-util v0.7.20\nbytes v1.12.1\nfutures-core v0.3.34\nfutures-sink v0.3.34\nfutures-util v0.3.34 (*)\nlibc v0.2.191\npin-project-lite v0.2.17\ntokio v1.53.3 (*)\ntracing v0.1.44\nlog v0.4.34\npin-project-lite v0.2.17\ntracing-attributes v0.1.31 (proc-macro)\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v2.0.119\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nunicode-ident v1.0.27\ntracing-core v0.1.36\nonce_cell v1.21.4\ncritical-section v1.2.0\nportable-atomic v1.15.0\nhttp v1.5.0 (*)\nhttp-body v1.1.0 (*)\nhttparse v1.10.1\nhttpdate v1.0.3\nitoa v1.0.18\npin-project-lite v0.2.17\nsmallvec v1.16.3 (*)\ntokio v1.53.3 (*)\nwant v0.3.2\ntry-lock v0.2.5\nhyper-util v0.1.21\nbase64 v0.23.1\nbytes v1.12.1\nfutures-channel v0.3.34 (*)\nfutures-util v0.3.34 (*)\nhttp v1.5.0 (*)\nhttp-body v1.1.0 (*)\nhttparse v1.10.1\nhyper v1.12.0 (*)\nipnet v2.12.2\nlibc v0.2.191\npercent-encoding v2.3.2\npin-project-lite v0.2.17\nsocket2 v0.6.5 (*)\ntokio v1.53.3 (*)\ntower-service v0.3.3\ntracing v0.1.44 (*)\nitoa v1.0.18\nmatchit v0.8.4\nmemchr v2.8.3\nmime v0.3.17\npercent-encoding v2.3.2\npin-project-lite v0.2.17\nserde_core v1.0.229\nserde_json v1.0.154\nitoa v1.0.18\nmemchr v2.8.3\nserde_core v1.0.229\nzmij v1.0.23\nserde_path_to_error v0.1.20\nitoa v1.0.18\nserde_core v1.0.229\nsha1 v0.10.7\ncfg-if v1.0.5\ncpufeatures v0.2.17\ndigest v0.10.7\nblock-buffer v0.10.4\ngeneric-array v0.14.7\ntypenum v1.20.1\nzeroize v1.9.1\nzeroize_derive v1.5.0 (proc-macro)\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v2.0.119 (*)\nversion_check v0.9.5\nconst-oid v0.9.6\ncrypto-common v0.1.7\ngeneric-array v0.14.7 (*)\nrand_core v0.6.4\ngetrandom v0.2.17\ncfg-if v1.0.5\nlibc v0.2.191\ntypenum v1.20.1\nsubtle v2.6.1\nsync_wrapper v1.0.2 (*)\ntokio v1.53.3 (*)\ntokio-tungstenite v0.29.0\nfutures-util v0.3.34 (*)\nlog v0.4.34\ntokio v1.53.3 (*)\ntungstenite v0.29.0\nbytes v1.12.1\ndata-encoding v2.11.1\nhttp v1.5.0 (*)\nhttparse v1.10.1\nlog v0.4.34\nrand v0.9.5\nrand_chacha v0.9.0\nppv-lite86 v0.2.21\nzerocopy v0.8.63\nrand_core v0.9.5\ngetrandom v0.3.4\ncfg-if v1.0.5\nlibc v0.2.191\nrand_core v0.9.5 (*)\nsha1 v0.10.7 (*)\nthiserror v2.0.21\nthiserror-impl v2.0.21 (proc-macro)\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v3.0.9 (*)\ntower v0.5.3\nfutures-core v0.3.34\nfutures-util v0.3.34 (*)\nindexmap v2.14.2 (*)\npin-project-lite v0.2.17\nslab v0.4.12\nsync_wrapper v1.0.2 (*)\ntokio v1.53.3 (*)\ntokio-util v0.7.20 (*)\ntower-layer v0.3.3\ntower-service v0.3.3\ntracing v0.1.44 (*)\ntower-layer v0.3.3\ntower-service v0.3.3\nbase64 v0.22.1\nchrono v0.4.45\niana-time-zone v0.1.65\nnum-traits v0.2.19\nautocfg v1.5.1\nserde v1.0.229 (*)\nclap v4.6.7\nclap_builder v4.6.7\nanstream v1.0.0\nanstyle v1.0.14\nanstyle-parse v1.0.0\nutf8parse v0.2.2\nanstyle-query v1.1.5\ncolorchoice v1.0.5\nis_terminal_polyfill v1.70.2\nutf8parse v0.2.2\nanstyle v1.0.14\nclap_lex v1.1.1\nstrsim v0.11.1\nterminal_size v0.4.4\nrustix v1.1.5\nbitflags v2.13.2\nlinux-raw-sys v0.12.1\nclap_derive v4.6.7 (proc-macro)\nheck v0.5.0\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v3.0.9 (*)\ncodex-agent-extension v0.0.0 (/dev/shm/organ-3d6a75235bcb-hepta3398/source/codex-rs/ext/agent)\ncodex-core v0.0.0 (/dev/shm/organ-3d6a75235bcb-hepta3398/source/codex-rs/core)\nanyhow v1.0.104\narc-swap v1.9.2\nrustversion v1.0.23 (proc-macro)\nasync-channel v2.5.0\nconcurrent-queue v2.5.0\ncrossbeam-utils v0.8.23\nevent-listener-strategy v0.5.4\nevent-listener v5.4.2\nparking v2.2.1\npin-project-lite v0.2.17\npin-project-lite v0.2.17\nfutures-core v0.3.34\npin-project-lite v0.2.17\nbase64 v0.22.1\nbm25 v2.3.2\ncached v0.56.0\nahash v0.8.12\ncfg-if v1.0.5\ngetrandom v0.3.4 (*)\nonce_cell v1.21.4 (*)\nzerocopy v0.8.63\nversion_check v0.9.5\ncached_proc_macro v0.25.0 (proc-macro)\ndarling v0.20.11\ndarling_core v0.20.11\nfnv v1.0.7\nident_case v1.0.1\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nstrsim v0.11.1\nsyn v2.0.119 (*)\ndarling_macro v0.20.11 (proc-macro)\ndarling_core v0.20.11 (*)\nquote v1.0.47 (*)\nsyn v2.0.119 (*)\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v2.0.119 (*)\ncached_proc_macro_types v0.1.1\nhashbrown v0.15.5\nallocator-api2 v0.2.21\nequivalent v1.0.3\nfoldhash v0.1.5\nonce_cell v1.21.4 (*)\nthiserror v2.0.21 (*)\nweb-time v1.1.0\ndeunicode v1.6.2\nfxhash v0.2.1\nbyteorder v1.5.0\nrust-stemmers v1.2.0\nserde v1.0.229 (*)\nserde_derive v1.0.229 (proc-macro) (*)\nstop-words v0.9.0\nserde_json v1.0.154\nfoldhash v0.2.0\nindexmap v2.14.2\nequivalent v1.0.3\nhashbrown v0.17.1\nitoa v1.0.18\nmemchr v2.8.3\nserde_core v1.0.229\nzmij v1.0.23\nunicode-segmentation v1.13.3\nchrono v0.4.45 (*)\nclap v4.6.7 (*)\ncodex-agent-graph-store v0.0.0 (/dev/shm/organ-3d6a75235bcb-hepta3398/source/codex-rs/agent-graph-store)\ncodex-protocol v0.0.0 (/dev/shm/organ-3d6a75235bcb-hepta3398/source/codex-rs/protocol)\nchardetng v0.1.17\ncfg-if v1.0.5\nencoding_rs v0.8.42\ncfg-if v1.0.5\ncore_detect v1.0.0\nmultiversion_no_op v1.0.0 (proc-macro)\nscopeguard v1.2.0\nsimdutf8 v0.1.5\nrustversion v1.0.23 (proc-macro)\nmemchr v2.8.3\nchrono v0.4.45 (*)\ncodex-async-utils v0.0.0 (/dev/shm/organ-3d6a75235bcb-hepta3398/source/codex-rs/async-utils)\ntokio v1.53.3 (*)\ntokio-util v0.7.20 (*)\ncodex-execpolicy v0.0.0 (/dev/shm/organ-3d6a75235bcb-hepta3398/source/codex-rs/execpolicy)\nanyhow v1.0.104\nclap v4.6.7 (*)\ncodex-utils-absolute-path v0.0.0 (/dev/shm/organ-3d6a75235bcb-hepta3398/source/codex-rs/utils/absolute-path)\ndirs v6.0.0\ndirs-sys v0.5.0\nlibc v0.2.191\noption-ext v0.2.0\ndunce v1.0.5\nschemars v0.8.22\ndyn-clone v1.0.20\nschemars_derive v0.8.22 (proc-macro)\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nserde_derive_internals v0.29.1\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v2.0.119 (*)\nsyn v2.0.119 (*)\nserde v1.0.229 (*)\nserde_json v1.0.154 (*)\nserde v1.0.229 (*)\nts-rs v11.1.0\nserde_json v1.0.154 (*)\nthiserror v2.0.21 (*)\nts-rs-macros v11.1.0 (proc-macro)\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v2.0.119 (*)\ntermcolor v1.4.1\nuuid v1.28.0\ngetrandom v0.4.3\ncfg-if v1.0.5\nlibc v0.2.191\nrand_core v0.10.1\nserde_core v1.0.229\nsha1_smol v1.0.1\nmultimap v0.10.1\nserde v1.0.229 (*)\nserde v1.0.229 (*)\nserde_json v1.0.154 (*)\nshlex v1.3.0\nstarlark v0.14.2\nallocative v0.3.6\nallocative_derive v0.3.6 (proc-macro)\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v2.0.119 (*)\nbumpalo v3.20.3\nctor v1.0.13\nlink-section v0.19.3\nlinktime-proc-macro v0.2.3 (proc-macro)\nhashbrown v0.16.1\nallocator-api2 v0.2.21\nequivalent v1.0.3\nfoldhash v0.2.0\nnum-bigint v0.4.8\nnum-integer v0.1.47\nnum-traits v0.2.19 (*)\nnum-traits v0.2.19 (*)\nserde v1.0.229 (*)\nanyhow v1.0.104\nblake3 v1.8.2\narrayref v0.3.9\narrayvec v0.7.8\nzeroize v1.9.1 (*)\ncfg-if v1.0.5\nconstant_time_eq v0.3.1\ndigest v0.10.7 (*)\nrayon-core v1.13.0\ncrossbeam-deque v0.8.8\ncrossbeam-epoch v0.9.21\ncrossbeam-utils v0.8.23\ncrossbeam-utils v0.8.23\ncrossbeam-utils v0.8.23\ncc v1.8.0\nfind-msvc-tools v0.1.14\njobserver v0.1.35\nlibc v0.2.191\nlibc v0.2.191\nshlex v2.0.1\nbumpalo v3.20.3\ncmp_any v0.8.1\ndashmap v6.2.1\ncfg-if v1.0.5\ncrossbeam-utils v0.8.23\nhashbrown v0.14.5\nlock_api v0.4.14 (*)\nonce_cell v1.21.4 (*)\nparking_lot_core v0.9.12 (*)\ndebugserver-types v0.5.0\nschemafy v0.5.2 (proc-macro)\nInflector v0.11.4\nlazy_static v1.5.1\nregex v1.13.1\naho-corasick v1.1.5\nmemchr v2.8.3\nmemchr v2.8.3\nregex-automata v0.4.18\naho-corasick v1.1.5 (*)\nmemchr v2.8.3\nregex-syntax v0.8.11\nregex-syntax v0.8.11\nschemafy_core v0.5.2\nserde v1.0.229\nserde_core v1.0.229\nserde_derive v1.0.229 (proc-macro) (*)\nserde_json v1.0.154 (*)\nschemafy_lib v0.5.2\nInflector v0.11.4 (*)\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nschemafy_core v0.5.2 (*)\nserde v1.0.229 (*)\nserde_derive v1.0.229 (proc-macro) (*)\nserde_json v1.0.154 (*)\nsyn v1.0.109\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nunicode-ident v1.0.27\nserde v1.0.229 (*)\nserde_derive v1.0.229 (proc-macro) (*)\nserde_json v1.0.154 (*)\nserde_repr v0.1.21 (proc-macro)\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v3.0.9 (*)\nsyn v1.0.109 (*)\nserde v1.0.229 (*)\nserde_json v1.0.154 (*)\nderivative v2.2.0 (proc-macro)\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v1.0.109 (*)\nderive_more v1.0.0\nderive_more-impl v1.0.0 (proc-macro)\nconvert_case v0.6.0\nunicode-segmentation v1.13.3\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v2.0.119 (*)\nunicode-xid v0.2.6\ndisplay_container v0.9.0\neither v1.19.0\nserde v1.0.229 (*)\nindenter v0.3.4\ndupe v0.9.1\ndupe_derive v0.9.1 (proc-macro)\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v2.0.119 (*)\neither v1.19.0 (*)\nerased-serde v0.3.31\nserde v1.0.229 (*)\nhashbrown v0.16.1 (*)\nindexmap v2.14.2 (*)\ninventory v0.3.25\nitertools v0.14.0\neither v1.19.0 (*)\nmaplit v1.0.2\nmemoffset v0.9.1\nautocfg v1.5.1\nnum-bigint v0.4.8 (*)\nnum-traits v0.2.19 (*)\nonce_cell v1.21.4 (*)\npagable v0.4.2\nallocative v0.3.6 (*)\nanyhow v1.0.104\nasync-trait v0.1.92 (proc-macro)\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v3.0.9 (*)\nblake3 v1.8.2 (*)\nbytemuck v1.25.2\nbytemuck_derive v1.12.1 (proc-macro)\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v3.0.9 (*)\ndashmap v6.2.1 (*)\ndupe v0.9.1 (*)\neither v1.19.0 (*)\nerased-serde v0.4.10\nserde_core v1.0.229\ntypeid v1.0.3\nfancy-regex v0.16.2\nbit-set v0.8.0\nbit-vec v0.8.0\nregex-automata v0.4.18\naho-corasick v1.1.5\nmemchr v2.8.3\nmemchr v2.8.3\nregex-syntax v0.8.11\nregex-syntax v0.8.11\nindexmap v2.14.2 (*)\ninventory v0.3.25\nnum-bigint v0.4.8 (*)\nonce_cell v1.21.4 (*)\npagable_derive v0.4.2 (proc-macro)\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v2.0.119 (*)\nparking_lot v0.12.5 (*)\npostcard v1.1.3\ncobs v0.3.0\nthiserror v2.0.21 (*)\ncrc v3.4.0\ncrc-catalog v2.5.0\nheapless v0.7.17\nhash32 v0.2.1\nbyteorder v1.5.0\nserde v1.0.229 (*)\nspin v0.9.9\nlock_api v0.4.14 (*)\nstable_deref_trait v1.2.1\nrustc_version v0.4.1\nsemver v1.0.28\nserde v1.0.229 (*)\nregex v1.13.1\naho-corasick v1.1.5 (*)\nmemchr v2.8.3\nregex-automata v0.4.18 (*)\nregex-syntax v0.8.11\nsequence_trie v0.3.6\nserde v1.0.229 (*)\nserde_json v1.0.154 (*)\nsmallvec v1.16.3 (*)\nsorted_vector_map v0.2.1\nitertools v0.14.0 (*)\nquickcheck v1.1.0\nenv_logger v0.11.11\nenv_filter v2.0.0\nlog v0.4.34\nregex v1.13.1 (*)\nlog v0.4.34\nlog v0.4.34\nrand v0.10.3\nchacha20 v0.10.2\ncfg-if v1.0.5\ncpufeatures v0.3.1\nrand_core v0.10.1\ngetrandom v0.4.3 (*)\nrand_core v0.10.1\nstatic_assertions v1.1.0\nstatic_interner v0.1.3\nequivalent v1.0.3\nlock_free_hashtable v0.1.4\natomic v0.5.3\nparking_lot v0.12.5 (*)\nstrong_hash v0.1.0\nref-cast v1.0.27\nref-cast-impl v1.0.27 (proc-macro)\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v3.0.9 (*)\nstrong_hash_derive v0.1.0 (proc-macro)\nquote v1.0.47 (*)\nsyn v2.0.119 (*)\ntake_mut v0.2.2\ntriomphe v0.1.17\nserde v1.0.229 (*)\nstable_deref_trait v1.2.1\npaste v1.0.15 (proc-macro)\nref-cast v1.0.27 (*)\nregex v1.13.1 (*)\nrustyline v14.0.0\nbitflags v2.13.2\ncfg-if v1.0.5\nfd-lock v4.0.4\ncfg-if v1.0.5\nrustix v1.1.5 (*)\nhome v0.5.12\nlibc v0.2.191\nlog v0.4.34\nmemchr v2.8.3\nnix v0.28.0\nbitflags v2.13.2\ncfg-if v1.0.5\nlibc v0.2.191\ncfg_aliases v0.1.1\nradix_trie v0.2.1\nendian-type v0.1.2\nnibble_vec v0.1.0\nsmallvec v1.16.3 (*)\nunicode-segmentation v1.13.3\nunicode-width v0.1.14\nutf8parse v0.2.2\nserde v1.0.229 (*)\nserde_json v1.0.154 (*)\nstarlark_derive v0.14.2 (proc-macro)\ndupe v0.9.1\ndupe_derive v0.9.1 (proc-macro) (*)\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v2.0.119 (*)\nstarlark_map v0.14.2\nallocative v0.3.6 (*)\ndupe v0.9.1 (*)\nequivalent v1.0.3\nfxhash v0.2.1 (*)\nhashbrown v0.16.1 (*)\npagable v0.4.2 (*)\nserde v1.0.229 (*)\nstrong_hash v0.1.0 (*)\nstarlark_syntax v0.14.2\nallocative v0.3.6 (*)\nannotate-snippets v0.9.2\nunicode-width v0.1.14\nanyhow v1.0.104\nderivative v2.2.0 (proc-macro) (*)\nderive_more v1.0.0 (*)\ndupe v0.9.1 (*)\nlogos v0.15.1\nlogos-derive v0.15.1 (proc-macro)\nlogos-codegen v0.15.1\nbeef v0.5.2\nfnv v1.0.7\nlazy_static v1.5.1\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nregex-syntax v0.8.11\nsyn v2.0.119 (*)\nrustc_version v0.4.1 (*)\nlsp-types v0.97.0\nbitflags v1.3.2\nfluent-uri v0.1.4\nbitflags v1.3.2\nserde v1.0.229 (*)\nserde_json v1.0.154 (*)\nserde_repr v0.1.21 (proc-macro) (*)\nmemchr v2.8.3\nnum-bigint v0.4.8 (*)\nnum-traits v0.2.19 (*)\nonce_cell v1.21.4 (*)\npagable v0.4.2 (*)\nstarlark_map v0.14.2 (*)\nthiserror v2.0.21 (*)\nstatic_assertions v1.1.0\nstrong_hash v0.1.0 (*)\nstrsim v0.10.0\ntextwrap v0.11.0\nunicode-width v0.1.14\nthiserror v2.0.21 (*)\ntempfile v3.27.0\nfastrand v2.5.0\ngetrandom v0.3.4 (*)\nonce_cell v1.21.4 (*)\nrustix v1.1.5 (*)\nthiserror v2.0.21 (*)\ntokio v1.53.3 (*)\ncodex-extension-items v0.0.0 (/dev/shm/organ-3d6a75235bcb-hepta3398/source/codex-rs/ext/items)\ncodex-utils-absolute-path v0.0.0 (/dev/shm/organ-3d6a75235bcb-hepta3398/source/codex-rs/utils/absolute-path) (*)\nschemars v0.8.22 (*)\nserde v1.0.229 (*)\nserde_json v1.0.154 (*)\nts-rs v11.1.0 (*)\ncodex-http-client v0.0.0 (/dev/shm/organ-3d6a75235bcb-hepta3398/source/codex-rs/http-client)\nbytes v1.12.1\ncodex-utils-rustls-provider v0.0.0 (/dev/shm/organ-3d6a75235bcb-hepta3398/source/codex-rs/utils/rustls-provider)\nrustls v0.23.46\naws-lc-rs v1.18.2\naws-lc-sys v0.46.0\ncc v1.8.0 (*)\ncmake v0.1.58\ncc v1.8.0 (*)\ndunce v1.0.5\nfs_extra v1.3.0\npkg-config v0.3.34\nuntrusted v0.7.1\nzeroize v1.9.1 (*)\nlog v0.4.34\nonce_cell v1.21.4 (*)\nring v0.17.14\ncfg-if v1.0.5\ngetrandom v0.2.17 (*)\nuntrusted v0.9.0\ncc v1.8.0 (*)\nrustls-pki-types v1.15.1\nzeroize v1.9.1 (*)\nrustls-webpki v0.103.15\naws-lc-rs v1.18.2 (*)\nring v0.17.14 (*)\nrustls-pki-types v1.15.1 (*)\nuntrusted v0.9.0\nsubtle v2.6.1\nzeroize v1.9.1 (*)\nfutures v0.3.34\nfutures-channel v0.3.34 (*)\nfutures-core v0.3.34\nfutures-executor v0.3.34\nfutures-core v0.3.34\nfutures-task v0.3.34\nfutures-util v0.3.34 (*)\nfutures-io v0.3.34\nfutures-sink v0.3.34\nfutures-task v0.3.34\nfutures-util v0.3.34 (*)\nhttp v1.5.0 (*)\nnative-tls v0.2.18\nlog v0.4.34\nopenssl v0.10.81\nbitflags v2.13.2\ncfg-if v1.0.5\nforeign-types v0.3.2\nforeign-types-shared v0.1.1\nlibc v0.2.191\nopenssl-macros v0.1.1 (proc-macro)\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v2.0.119 (*)\nopenssl-sys v0.9.117\nlibc v0.2.191\ncc v1.8.0 (*)\npkg-config v0.3.34\nvcpkg v0.2.15\nopenssl-probe v0.2.1\nopenssl-sys v0.9.117 (*)\nopentelemetry v0.31.0\nfutures-core v0.3.34\nfutures-sink v0.3.34\npin-project-lite v0.2.17\nthiserror v2.0.21 (*)\ntracing v0.1.44 (*)\nreqwest v0.12.28\nbase64 v0.22.1\nbytes v1.12.1\ncookie v0.18.2\npercent-encoding v2.3.2\ntime v0.3.55\nderanged v0.5.9\nlibc v0.2.191\nnum-conv v0.2.2\nnum_threads v0.1.8\npowerfmt v0.2.1\ntime-core v0.1.9\ntime-macros v0.2.32 (proc-macro)\nnum-conv v0.2.2\ntime-core v0.1.9\nversion_check v0.9.5\ncookie_store v0.22.1\ncookie v0.18.2 (*)\ndocument-features v0.2.12 (proc-macro)\nlitrs v1.0.1\nidna v1.1.0\nidna_adapter v1.2.2\nicu_normalizer v2.3.0\nicu_collections v2.3.0\ndisplaydoc v0.2.7 (proc-macro)\nproc-macro2 v1.0.107 (*)\nquote v1.0.47 (*)\nsyn v3.0.9 (*)\npotential_utf v0.1.6\nwriteable v0.6.4\nzerovec v0.11.8\nyoke v0.8.3\nstable_der

@@ -58,6 +58,11 @@ impl Arg0PathEntryGuard {
 }
 
 pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
+    dispatch_helpers();
+    prepare_regular_invocation()
+}
+
+fn dispatch_helpers() {
     // Determine if we were invoked via the special alias.
     let mut args = std::env::args_os();
     let argv0 = args.next().unwrap_or_default();
@@ -154,6 +159,9 @@ pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
         std::process::exit(exit_code);
     }
 
+}
+
+fn prepare_regular_invocation() -> Option<Arg0PathEntryGuard> {
     // This modifies the environment, which is not thread-safe, so do this
     // before creating any threads/the Tokio runtime.
     load_dotenv();
@@ -221,10 +229,27 @@ where
     F: FnOnce(Arg0DispatchPaths) -> Fut + Send + 'static,
     Fut: Future<Output = anyhow::Result<()>>,
 {
+    arg0_dispatch_or_else_with_preflight(|| Ok(main_fn))
+}
+
+/// Run a synchronous owner preflight only after helper dispatch and before
+/// creating any threads. The preflight returns the ordinary async entry point.
+/// Alias files and dotenv loading happen afterwards under the final owner, so
+/// an embedding can drop privileges without leaving Root-owned helper aliases.
+/// This does not authorize a privilege transition; the embedding must verify
+/// its original inherited ownership and capabilities itself.
+pub fn arg0_dispatch_or_else_with_preflight<P, F, Fut>(preflight: P) -> anyhow::Result<()>
+where
+    P: FnOnce() -> anyhow::Result<F>,
+    F: FnOnce(Arg0DispatchPaths) -> Fut + Send + 'static,
+    Fut: Future<Output = anyhow::Result<()>>,
+{
+    dispatch_helpers();
+    let main_fn = preflight()?;
     // Retain the TempDir so it exists for the lifetime of the invocation of
     // this executable. Admittedly, we could invoke `keep()` on it, but it
     // would be nice to avoid leaving temporary directories behind, if possible.
-    let path_entry_guard = arg0_dispatch();
+    let path_entry_guard = prepare_regular_invocation();
     let current_exe = std::env::current_exe().ok();
 
     // Regular invocation. Run the async entry point on a thread with the same

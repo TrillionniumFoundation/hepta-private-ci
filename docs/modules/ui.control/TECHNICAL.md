@@ -42,7 +42,15 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `ui.control`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact: the declared roots above are present.
+The dedicated closed-world inventory, focused tests, all-target compilation and
+strict lint remain verification entrypoints. Their presence does not establish
+that a selected tree passed them. Each result must identify the exact commit and
+tree, feature selection, lockfile, command and execution receipt. This status
+does not activate `ui.control`, create a production caller, grant runtime or
+effect authority, issue independent acceptance, select or promote a candidate,
+or authorize release. Any later source move updates `MODULES.json`,
+`SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -137,29 +145,58 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.control.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [apps/hepta-control-ui/src/control.js](../../../apps/hepta-control-ui/src/control.js) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.control.md)
+specifies this module's algorithm, pilot ceilings and capacity fixtures. Those
+target ceilings are not measurements and must not be reported as enforcement of
+an unimplemented API.
+
+Current product limits are owned by the Rust implementation:
+[ChatWorkspace](../../../apps/hepta-control-ui/rust/core/src/chat.rs) bounds local
+draft state, and the [native composition](../../../apps/hepta-control-ui/rust/robrix-ui/src/native_presentation/mod.rs)
+bounds the presentation port. The [original Root/Agentd text contract](../../../codex-rs/hepta-agentd/NATIVE_TEXT_SESSION.md)
+describes the separate signed-input, recovery and history bounds. The retained
+[control.js](../../../apps/hepta-control-ui/src/control.js) limits apply to the
+legacy JavaScript compatibility oracle.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-JavaScript presentation/client boundary, not a server or authority issuer. Connect an authenticated versioned backend, preserve request IDs over reconnect and visibly distinguish stale/pending/indeterminate states. Browser packaging, real backend integration and accessibility acceptance must match the selected host deployment.
+The product presentation and bounded client state are Rust/Makepad. Generated
+JavaScript loads the verified WASM artifact and transports platform input and
+resources. The retained JavaScript protocol fixtures are compatibility test
+oracles, with no authority or product entry. Connect an authenticated versioned
+owner through its registered port; preserve request identities and visibly
+distinguish stale, pending and indeterminate states. Browser packaging, real owner
+integration and accessibility acceptance must match the selected host deployment.
 
 Current operating and state-format references:
 
 - [apps/hepta-control-ui/README.md](../../../apps/hepta-control-ui/README.md).
+- [Original native composition](../../../apps/hepta-control-ui/rust/robrix-ui/NATIVE_COMPOSITION.md): caller-owned workspace, default-unavailable chat ports, original editor and IME routing.
+- [Original Root/Agentd text session](../../../codex-rs/hepta-agentd/NATIVE_TEXT_SESSION.md): existing authenticated session, trusted startup and same-thread recovery. The standalone preview does not provide these deployment inputs.
 - [docs/modules/ui.control/IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+Retained JavaScript compatibility oracle tests (source references, not product
+execution receipts):
 
 - [apps/hepta-control-ui/test/control.test.js](../../../apps/hepta-control-ui/test/control.test.js); named case: `runtime projection exposes only registered safe fields`.
 - [apps/hepta-control-ui/test/runtime-client.test.js](../../../apps/hepta-control-ui/test/runtime-client.test.js); named case: `submits and reconciles a generation-bound stop request`.
 
 From the repository root, run `node --test apps/hepta-control-ui/test/control.test.js apps/hepta-control-ui/test/runtime-client.test.js`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.control.md) separately labels target acceptance designs.
+
+The current Rust product source map, build entrypoints and real browser checks
+are listed in [MAIN_INTEGRATION.md](../../../apps/hepta-control-ui/MAIN_INTEGRATION.md).
+The dedicated `.github/workflows/ui-product-foundation.yml` rebuilds the exact PR
+source and its separately identified merge with the current base. It runs the
+shared Rust tests and actual Makepad renderer, then the real gateway and browser
+status/cancellation checks. Font transport diagnostics cannot replace Rust
+adoption, natural glyph use or screenshot verification. The legacy JavaScript
+operation mappings do not establish an attached product owner.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -241,3 +278,54 @@ The bootstrap source-location obligation for `ui.control` is implemented by work
 - `apps/hepta-control-ui`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## Selective Rust product foundation (2026-10-05)
+
+The owning standalone workspace is now `apps/hepta-control-ui/rust`, with
+explicit Rust1.95.0 UI tooling. The gateway follows the canonical backend
+`rust-toolchain.toml` pin, now Rust1.96.0 for Rama0.3 compatibility (Rust1.95.0 at
+the 2026-10-19 main import base); the
+historical port record describes its older backend pin. The shared
+Makepad renderer, typed bounded core, exact lock, SDK transformations, resource
+provenance and actual-host regressions are selectively imported; see the module
+README, `MAIN_INTEGRATION.md` and historical `PORT_SOURCE.json` for source
+identities and the selected dependency boundary. The internal Rust DOM
+compatibility member remains only to preserve the locked workspace graph.
+
+The additive product-entry candidate replaces gateway `GET /` with the verified
+Rust bundle. See the module README's completion ledger and developer commands.
+The old schema-v5 read adapter is preserved; no verified production initializer
+for that legacy layout is present. A bundle-enabled degraded entry can report
+actual NotAttached and legacy 503 without manufacturing databases or credentials.
+
+The modern owner-status endpoint is a separate versioned, token-free observation:
+generation/disposition only, with fixed sanitized failures. It does not reuse
+legacy schema5 labels for CognitiveStore model schema1. Its weak async adapter
+must be composed by an already-owning higher layer; no new Agentd dependency,
+store reopen or authority acquisition is added to the gateway. A response deadline
+does not cancel a still-running owner scan, and an active read may temporarily
+retain the owner until completion. Single-flight admission bounds that work.
+
+The Rust Console performs bounded reads only on explicit refresh and clears them
+on navigation/background/epoch changes. Numeric generations stay lossless through
+raw HTTP bytes and Rust serde. Host/Origin validation is a loopback browser boundary,
+not user authentication. The user sees a point-in-time observation, never writable
+or current-authority status. Chat principal/signing/Agentd dispatch, actual attached
+owner composition, native-host closure and installed-package qualification remain
+separate work. Send and Console mutation controls stay disabled. New gateway/status
+source needs its own execution and pixels; no foundation or historical receipt is
+rewritten or transferred as its proof.
+
+## Native external-workspace composition
+
+The original Makepad App can borrow an external caller's single `ChatWorkspace`
+through `NativeChatComposition`. The host retains its transport, authentication,
+signer, event generation fences and recovery; no runtime or owner is constructed
+by the renderer. Native Send and Stop use original widget actions and room-bound
+capability checks after the sole IME router. Default composition methods refuse
+both operations. The original editor restores its SDK selection and undo history
+when a complete edit is rejected, and discards checkpoints on room/epoch changes.
+See `apps/hepta-control-ui/rust/robrix-ui/NATIVE_COMPOSITION.md` for resource,
+lifecycle and acceptance requirements. Native pixels, physical input and AT-SPI
+results require execution against the selected source; API presence is not an
+installed-product acceptance claim.

@@ -1,0 +1,17 @@
+diff --git a/codex-rs/exec-server/src/linux_authorized_read_tests.rs b/codex-rs/exec-server/src/linux_authorized_read_tests.rs
+index fac15b17c..78319328b 100644
+--- a/codex-rs/exec-server/src/linux_authorized_read_tests.rs
++++ b/codex-rs/exec-server/src/linux_authorized_read_tests.rs
+@@ -13,7 +13,11 @@ fn path_pin_supports_identity_proof_without_opening_for_read() -> io::Result<()>
+         .expect_err("the initial path pin must not permit reads");
+     file_identity(&original, Arc::new(MountNamespace::capture()?))?;
+     assert_eq!(
+-        (error.raw_os_error(), bytes, stable_file_path(&original)?.into_path_buf()),
++        (
++            error.raw_os_error(),
++            bytes,
++            stable_file_path(&original)?.into_path_buf()
++        ),
+         (Some(libc::EBADF), Vec::new(), std::fs::canonicalize(path)?)
+     );
+     Ok(())

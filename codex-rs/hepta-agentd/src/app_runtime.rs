@@ -30,12 +30,19 @@ const QUALIFICATION_TURN_WRITER_ENABLED: bool = true;
 #[cfg(not(feature = "qualification-cognitive-write"))]
 const QUALIFICATION_TURN_WRITER_ENABLED: bool = false;
 
+pub(crate) enum AppServerSocket {
+    Bind,
+    #[cfg(target_os = "linux")]
+    RootBound(std::os::fd::OwnedFd),
+}
+
 pub(crate) async fn run_app_server(
     identity: AgentdIdentity,
     arg0_paths: Arg0DispatchPaths,
     cognitive_runtime: CognitiveRuntime,
     state: Arc<AgentdState>,
     production_writer_host: Option<Arc<crate::AgentdProductionWriterHost>>,
+    socket: AppServerSocket,
 ) -> std::io::Result<()> {
     let socket_path = AbsolutePathBuf::from_absolute_path(&identity.app_server_socket)?;
     let production_mutation: Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>> =
@@ -48,19 +55,28 @@ pub(crate) async fn run_app_server(
         cognitive_runtime,
         production_mutation,
     )?;
-    codex_app_server::run_main_with_transport_options(
-        arg0_paths,
-        config_overrides,
-        LoaderOverrides::default(),
-        /*strict_config*/ true,
-        /*default_analytics_enabled*/ false,
-        AppServerTransport::UnixSocket { socket_path },
-        SessionSource::Custom("hepta-agentd".to_string()),
-        AppServerWebsocketAuthSettings::default(),
-        runtime_options,
-    )
-    .await
-    .map_err(|error| {
+    let result = match socket {
+        AppServerSocket::Bind => codex_app_server::run_main_with_transport_options(
+            arg0_paths, config_overrides, LoaderOverrides::default(),
+            /*strict_config*/ true, /*default_analytics_enabled*/ false,
+            AppServerTransport::UnixSocket { socket_path },
+            SessionSource::Custom("hepta-agentd".to_string()),
+            AppServerWebsocketAuthSettings::default(), runtime_options,
+        ).await,
+        #[cfg(target_os = "linux")]
+        AppServerSocket::RootBound(socket) => {
+            let socket = crate::listen_root_bound_socket(socket, socket_path.as_path())
+                .map_err(std::io::Error::other)?;
+            let listener = codex_app_server::InheritedControlSocket::from_inherited(socket, socket_path)?;
+            codex_app_server::run_main_with_inherited_unix_listener(
+                arg0_paths, config_overrides, LoaderOverrides::default(),
+                /*strict_config*/ true, /*default_analytics_enabled*/ false,
+                listener, SessionSource::Custom("hepta-agentd".to_string()),
+                AppServerWebsocketAuthSettings::default(), runtime_options,
+            ).await
+        }
+    };
+    result.map_err(|error| {
         contextual_io_error(
             /* operation */ "run Codex App Server unix socket transport",
             /* path */ &identity.app_server_socket,

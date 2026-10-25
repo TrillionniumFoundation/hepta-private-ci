@@ -1,0 +1,91 @@
+{
+  "schema": "hepta.root-consumer-frontier-qualification.v1",
+  "source_head": "b80704b973d2cd3012a6631b0450330bb33c1ffd",
+  "source_tree": "0ee511b19d1d66f912926e9061f2b28bd5d70613",
+  "commands": [
+    {
+      "stage": "manifest-metadata",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "metadata",
+        "--no-deps",
+        "--format-version=1",
+        "--offline",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "seconds": 0.265
+    },
+    {
+      "stage": "compile-original-test-binaries",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "nextest",
+        "list",
+        "--cargo-profile",
+        "dev",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--cargo-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-final-use-frontier-qualification-01/cargo-metadata.json",
+        "--list-type",
+        "binaries-only",
+        "--message-format",
+        "json"
+      ],
+      "exit_code": 0,
+      "seconds": 1582.284
+    },
+    {
+      "stage": "actual-root-tests",
+      "argv": [
+        "sudo",
+        "-n",
+        "/usr/bin/env",
+        "PATH=/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin:/home/qian-qi/.cargo/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "RUSTUP_TOOLCHAIN=1.96.0",
+        "RUSTC=/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "CARGO_TARGET_DIR=/data/asterinas-audit-build.8tdrjboi/root-final-use-target",
+        "TMPDIR=/data/root-consumer-tmp.s9yjtrk5",
+        "CARGO_NET_OFFLINE=true",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "CARGO_HOME=/home/qian-qi/.cargo",
+        "HEPTA_CONSUMER_TEST_ROOT=/var/lib/hepta-authority-os3-20261023/consumer-qualification-hl31iu57",
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "-c",
+        "import os,sys; os.umask(0o077); os.execv(sys.argv[1],sys.argv[1:])",
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--cargo-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-final-use-frontier-qualification-01/cargo-metadata.json",
+        "--binaries-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-final-use-frontier-qualification-01/binaries-metadata.json",
+        "--run-ignored",
+        "only",
+        "-E",
+        "test(authority_host_consumer_frontier::tests::root_)",
+        "--test-threads",
+        "2"
+      ],
+      "exit_code": 0,
+      "seconds": 0.967
+    }
+  ],
+  "status": "complete",
+  "passed": true,
+  "production_authority": false,
+  "service_wire_qualified": false,
+  "clock_qualification": "controlled clock; actual protected clock separately qualified",
+  "cache_reused": true,
+  "root_fixture": {
+    "path": "/var/lib/hepta-authority-os3-20261023/consumer-qualification-hl31iu57",
+    "uid": 0,
+    "mode": "0o700"
+  },
+  "source_inputs_unchanged": true
+}

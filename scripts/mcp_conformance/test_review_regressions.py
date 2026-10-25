@@ -593,7 +593,7 @@ def test_review_matrix_appends_all_transport_catalog_boundaries(
         artifact_parent=tmp_path,
     )
 
-    assert observed[:9] == [
+    expected = [
         (SHIPPING_LEGACY_VERSION, REVIEW_PROFILE, "stdio"),
         (LEGACY_VERSION, REVIEW_PROFILE, "stdio"),
         (MODERN_VERSION, REVIEW_PROFILE, "stdio"),
@@ -603,12 +603,15 @@ def test_review_matrix_appends_all_transport_catalog_boundaries(
         (MODERN_VERSION, NULL_DISCOVERY_ID_PROFILE, "http"),
         (MODERN_VERSION, SSE_CR_COMMENTS_PROFILE, "http"),
         (MODERN_VERSION, SSE_COMMENT_FLOOD_PROFILE, "http"),
-    ]
-    assert observed[9:] == [
+    ] + [
         (mode, profile, transport)
         for mode in REVIEW_MODES
         for transport in CATALOG_BOUNDARY_TRANSPORTS
         for profile in CATALOG_BOUNDARY_PROFILES
+    ]
+    assert sorted(observed) == sorted(expected)
+    assert [(case["mode"], case["transport"]) for case in report["cases"]] == [
+        (mode, f"review-{transport}:{profile}") for mode, profile, transport in expected
     ]
     assert report["success"] is True
     assert report["summary"] == {

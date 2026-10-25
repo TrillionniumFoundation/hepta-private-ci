@@ -26,6 +26,14 @@ use std::path::Path;
 use std::sync::Arc;
 use std::sync::Mutex;
 
+#[cfg(windows)]
+#[path = "authority_lease_windows.rs"]
+mod windows;
+
+#[path = "authority_lease_pair_boundary.rs"]
+mod pair_boundary;
+pub use pair_boundary::AuthorityLeaseRetirement;
+
 const LEASE_SCHEMA_VERSION: u32 = 1;
 const STORE_SCHEMA_VERSION: u32 = 2;
 pub const MAX_AUTHORITY_LEASES: usize = 16_384;
@@ -669,8 +677,10 @@ impl AuthorityLeaseVerifier {
         expected_revision: u64,
         expected: &AuthorityLeaseBinding,
     ) -> Result<LeaseVerifiedUseToken, AuthorityLeaseError> {
-        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let state = self.lock_state()?;
+        // Sample only after acquiring the final owner fence: waiting for a
+        // preceding local boundary may itself consume the lease's lifetime.
+        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let lease = state
             .leases
             .get(lease_id)
@@ -720,8 +730,10 @@ impl AuthorityLeaseVerifier {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.lease.binding != expected {
             return Err(AuthorityLeaseError::BindingMismatch);
         }
-        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let state = self.lock_state()?;
+        // Sample only after acquiring the final owner fence: waiting for a
+        // preceding local boundary may itself consume the lease's lifetime.
+        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         validate_live(
             &token.lease,
             &state,
@@ -754,8 +766,10 @@ impl AuthorityLeaseVerifier {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.lease.binding != expected {
             return Err(AuthorityLeaseError::BindingMismatch);
         }
-        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let state = self.lock_state()?;
+        // Sample only after acquiring the final owner fence: waiting for a
+        // preceding local boundary may itself consume the lease's lifetime.
+        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         validate_live(
             &token.lease,
             &state,
@@ -1150,11 +1164,31 @@ fn replace_state(directory: &File) -> Result<(), AuthorityLeaseError> {
     .map_err(|_| AuthorityLeaseError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn prepare_directory(root: &Path) -> Result<File, AuthorityLeaseError> {
+    windows::prepare_directory(root)
+}
+
+#[cfg(windows)]
+fn open_private(directory: &File, name: &str, access: Access) -> Result<File, AuthorityLeaseError> {
+    windows::open_private(directory, name, access)
+}
+
+#[cfg(windows)]
+fn entry_exists(directory: &File, name: &str) -> Result<bool, AuthorityLeaseError> {
+    windows::entry_exists(directory, name)
+}
+
+#[cfg(windows)]
+fn replace_state(directory: &File) -> Result<(), AuthorityLeaseError> {
+    windows::replace_state(directory)
+}
+
+#[cfg(all(not(unix), not(windows)))]
 fn prepare_directory(_root: &Path) -> Result<File, AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn open_private(
     _directory: &File,
     _name: &str,
@@ -1162,11 +1196,11 @@ fn open_private(
 ) -> Result<File, AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn replace_state(_directory: &File) -> Result<(), AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
@@ -1708,3 +1742,7 @@ mod tests {
         assert_eq!(registry.capacity().unwrap().leases, 0);
     }
 }
+
+#[cfg(test)]
+#[path = "authority_lease_entry_clock_tests.rs"]
+mod entry_clock_tests;

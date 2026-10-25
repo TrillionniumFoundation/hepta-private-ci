@@ -1,0 +1,85 @@
+{
+  "schema": "hepta.source-bound-acceptance-publication.v1",
+  "raw_evidence_directory": "/data/asterinas-audit-build.8tdrjboi/root-checkpoint-qualification-01",
+  "files": [
+    {
+      "raw": "actual-root-tests.log",
+      "published": "actual-root-tests.log.gz",
+      "raw_bytes": 3214,
+      "raw_sha256": "ba4482535bbfb3eeb663adf7a511002d240f07545616b87687912dc766c2850a",
+      "published_sha256": "04030de75a11544809973799fee6f4aaa693943520624a226a22782a5b92333e",
+      "compressed": true
+    },
+    {
+      "raw": "binaries-metadata.json",
+      "published": "binaries-metadata.json",
+      "raw_bytes": 1547,
+      "raw_sha256": "e03777aeaff97f2a687a8db1ae68b2134457ec5e2a0d73e8b43d2a6f7045cfb1",
+      "published_sha256": "e03777aeaff97f2a687a8db1ae68b2134457ec5e2a0d73e8b43d2a6f7045cfb1",
+      "compressed": false
+    },
+    {
+      "raw": "cache-copy.log",
+      "published": "cache-copy.log.gz",
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "published_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "compressed": true
+    },
+    {
+      "raw": "cargo-metadata.json",
+      "published": "cargo-metadata.json.gz",
+      "raw_bytes": 951098,
+      "raw_sha256": "b8eaca8c7a551157558fb458de4e99185c3e275e5536c0c6daf03440d41d6ab8",
+      "published_sha256": "4c47aa3a31b7a8dc7c0e47d75fb513432d0160eda2c9ae9dffa708b4d3678be4",
+      "compressed": true
+    },
+    {
+      "raw": "compile-original-test-binaries.log",
+      "published": "compile-original-test-binaries.log.gz",
+      "raw_bytes": 45498,
+      "raw_sha256": "955d27288207dd0c74405ff639771745308a3220c8336148746062a4d36b5131",
+      "published_sha256": "4406c8863e911af1f2493de5573d0ae1c412bb0cb46a9e8987c58fb61c480234",
+      "compressed": true
+    },
+    {
+      "raw": "manifest-metadata.log",
+      "published": "manifest-metadata.log.gz",
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "published_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "compressed": true
+    },
+    {
+      "raw": "result.json",
+      "published": "result.json",
+      "raw_bytes": 2981,
+      "raw_sha256": "b55e3fe843871f06d4f45d95b64a6ebde97692f49e6bce2c8c31bdc82d77ed34",
+      "published_sha256": "b55e3fe843871f06d4f45d95b64a6ebde97692f49e6bce2c8c31bdc82d77ed34",
+      "compressed": false
+    },
+    {
+      "raw": "source-after.json",
+      "published": "source-after.json.gz",
+      "raw_bytes": 2336689,
+      "raw_sha256": "87e32e7e9a6d65eeeb22507324b51707cb167102cf30088ec27a6e5cb25af12d",
+      "published_sha256": "f892d36000cc2616e4d01aef511b32e440271fd9e4cab64b046e78a6a07647b0",
+      "compressed": true
+    },
+    {
+      "raw": "source-before.json",
+      "published": "source-before.json.gz",
+      "raw_bytes": 2336689,
+      "raw_sha256": "87e32e7e9a6d65eeeb22507324b51707cb167102cf30088ec27a6e5cb25af12d",
+      "published_sha256": "f892d36000cc2616e4d01aef511b32e440271fd9e4cab64b046e78a6a07647b0",
+      "compressed": true
+    }
+  ],
+  "selection": "Original text receipts/manifests/logs only. Private disks, keys, binaries and targets are not published. Original receipts retain binary hashes.",
+  "production_ready": false,
+  "g2_complete": false,
+  "passed": false,
+  "source_head": "792626129aa72d8da4c04da193d8c70fb083151e",
+  "source_tree": "32b46f657867f4e5ea463a661b90bccded0b6517",
+  "boundary": "Actual Root/data and fresh original SQLite anchors with controlled clocks/qualification writer binding, original just test.01 fivepass/one race-fixture failure;02 and03 sevenpass. Does not qualify service wire/live production/bootstrap."
+}

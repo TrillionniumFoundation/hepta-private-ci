@@ -1,0 +1,120 @@
+{
+  "stable_head": "69c52f3a65fc4bd493eb1b5c2de93570e89c26aa",
+  "stable_tree": "dc02dea3a2c86fd38060c357d9a40857805f997a",
+  "status": "",
+  "merge_base_with_five_lanes": "2ff4a7ed6",
+  "stages": [
+    {
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/sealed-bootstrap-scope-tests-01.json",
+      "exit": 0,
+      "seconds": 414.7466195980087,
+      "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/sealed-bootstrap-scope-tests-01.log"
+    },
+    {
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/sealed-bootstrap-cli-thin-build-01.json",
+      "exit": 0,
+      "seconds": 13.372147865011357,
+      "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/sealed-bootstrap-cli-thin-build-01.log"
+    },
+    {
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/sealed-bootstrap-root-ssd-custody-01.json",
+      "exit": 0,
+      "seconds": 0.023790012928657234,
+      "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/sealed-bootstrap-root-ssd-custody-01.log"
+    },
+    {
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/sealed-bootstrap-root-ssd-positive-01.json",
+      "exit": 0,
+      "seconds": 4.6460484359413385,
+      "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/sealed-bootstrap-root-ssd-positive-01.log"
+    },
+    {
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/sealed-bootstrap-root-ssd-expired-consumer-01.json",
+      "exit": 0,
+      "seconds": 5.709746835986152,
+      "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/sealed-bootstrap-root-ssd-expired-consumer-01.log"
+    },
+    {
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/sealed-bootstrap-fmt-01.json",
+      "exit": 0,
+      "seconds": 0.3243404399836436,
+      "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/sealed-bootstrap-fmt-01.log"
+    },
+    {
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/sealed-bootstrap-fix-01.json",
+      "exit": 0,
+      "seconds": 254.7620504569495,
+      "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/sealed-bootstrap-fix-01.log"
+    },
+    {
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/sealed-bootstrap-range-fmt-01.json",
+      "exit": 0,
+      "seconds": 0.31198629189748317,
+      "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/sealed-bootstrap-range-fmt-01.log"
+    },
+    {
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/sealed-bootstrap-range-fmt-check-01.json",
+      "exit": 0,
+      "seconds": 0.32048712798859924,
+      "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/sealed-bootstrap-range-fmt-check-01.log"
+    }
+  ],
+  "scope_passed": 48,
+  "scope_failed": 0,
+  "scope_flaky": 0,
+  "actual_root_custody_passed": 1,
+  "actual_root_ssd_service_positive_passed": 1,
+  "actual_root_ssd_expired_consumer_passed": 1,
+  "actual_service_writer_proof_read_before_feed_ms": 28,
+  "actual_service_legacy_feed_ms": 11,
+  "producer": "seal_host_authority_bootstrap(&HostAuthorityPublicBootstrapV1) -> io::Result<std::fs::File>",
+  "custody": {
+    "uid": 0,
+    "producer_pid_matches_current": true,
+    "regular": true,
+    "nlink": 0,
+    "mode": "0400",
+    "bound_bytes": 65536,
+    "seals": [
+      "F_SEAL_WRITE",
+      "F_SEAL_GROW",
+      "F_SEAL_SHRINK",
+      "F_SEAL_SEAL"
+    ],
+    "full_byte_readback_before_return": true,
+    "fd_returned_only_after_seals": true,
+    "ordinary_file_fallback": false
+  },
+  "negative_assertions": [
+    "non-root rejected",
+    "oversized serialization fragment did not append",
+    "write_at EPERM",
+    "truncate EPERM",
+    "grow EPERM",
+    "add seals after seal-closed EPERM",
+    "complete retained bytes unchanged"
+  ],
+  "compiled_source": {
+    "head": "2ff4a7ed65fa6cec5df4384a1023ec65c015281e",
+    "tree": "806cbf8ace4b12fcad18c76a62208169f2476c20",
+    "status": "M codex-rs/hepta-agentd/ROOT_AUTHORITY_CLIENT.md\n M codex-rs/hepta-agentd/src/authority_host_service_consumers_root.rs\n M codex-rs/hepta-agentd/src/lib.rs\n?? codex-rs/hepta-agentd/src/authority_host_bootstrap_seal.rs\n?? codex-rs/hepta-agentd/src/authority_host_bootstrap_seal_tests.rs",
+    "index_flags": [
+      "H"
+    ],
+    "files": 9353,
+    "live_source_sha256": "e0e4e6aa08fc24bbd76414aaf6d78877a4de801a5e70751239ef732181f4c941"
+  },
+  "prestyle_artifacts_receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/sealed-bootstrap-root-artifacts-01.json",
+  "retained_test_receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/local-authority-validation/sealed-bootstrap-retained-test-artifact-01.json",
+  "test_after_format": false,
+  "target": "/data/hepta-root-service-196-target.e3i3hcbg",
+  "target_tmp": "/data/hepta-root-service-196-tmp.z1gy_meq",
+  "target_released_to_parent_for_notes_phase": true,
+  "open_boundaries": [
+    "Root producer descriptor semantics qualified on Linux, no Asterinas result transferred",
+    "Service component fixture copies actual sealed bytes through stdin; production sealed FD transfer/loader remains OS4 qualification",
+    "Formal Root fresh Current/store initializer remains separate; no remote genesis",
+    "No actual Notes/HOS2 effect grant or full writer Prepare/Commit qualified here"
+  ],
+  "production_ready": false
+}

@@ -26,11 +26,15 @@ const WS_V2_BETA_HEADER_VALUE: &str = "responses_websockets=2026-02-06";
 async fn websocket_model_switch_to_responses_lite_omits_top_level_tools() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_websocket_server(vec![vec![
-        vec![ev_response_created("warm-1"), ev_completed("warm-1")],
-        vec![ev_response_created("resp-1"), ev_completed("resp-1")],
-        vec![ev_response_created("resp-2"), ev_completed("resp-2")],
-    ]])
+    // Changing the model's review/disabled metadata requires a new compatible
+    // connection. The tier-only tests below keep those fields unchanged.
+    let server = start_websocket_server(vec![
+        vec![
+            vec![ev_response_created("warm-1"), ev_completed("warm-1")],
+            vec![ev_response_created("resp-1"), ev_completed("resp-1")],
+        ],
+        vec![vec![ev_response_created("resp-2"), ev_completed("resp-2")]],
+    ])
     .await;
 
     let mut builder = test_codex()
@@ -46,7 +50,8 @@ async fn websocket_model_switch_to_responses_lite_omits_top_level_tools() -> Res
         .with_model("gpt-5.2");
     let test = builder.build_with_websocket_server(&server).await?;
 
-    test.submit_turn("non-lite turn").await?;
+    test.submit_turn_with_policy("non-lite turn", test.config.legacy_sandbox_policy())
+        .await?;
     test.codex
         .start_or_steer_turn(
             TurnInputRequest::user_input(vec![UserInput::Text {
@@ -64,15 +69,17 @@ async fn websocket_model_switch_to_responses_lite_omits_top_level_tools() -> Res
     })
     .await;
 
-    assert_eq!(server.handshakes().len(), 1);
-    let connection = server.single_connection();
-    assert_eq!(connection.len(), 3);
-    let non_lite_turn = connection
+    assert_eq!(server.handshakes().len(), 2);
+    let connections = server.connections();
+    assert_eq!(connections.len(), 2);
+    assert_eq!(connections[0].len(), 2);
+    assert_eq!(connections[1].len(), 1);
+    let non_lite_turn = connections[0]
         .get(1)
         .expect("missing non-lite turn request")
         .body_json();
-    let lite_turn = connection
-        .get(2)
+    let lite_turn = connections[1]
+        .first()
         .expect("missing lite turn request")
         .body_json();
 

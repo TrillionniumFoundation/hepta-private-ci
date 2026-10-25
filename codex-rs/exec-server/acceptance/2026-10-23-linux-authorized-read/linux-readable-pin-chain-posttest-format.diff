@@ -1,0 +1,27 @@
+diff --git a/codex-rs/exec-server/src/linux_authorized_read_tests.rs b/codex-rs/exec-server/src/linux_authorized_read_tests.rs
+index 337eee333..24861daa1 100644
+--- a/codex-rs/exec-server/src/linux_authorized_read_tests.rs
++++ b/codex-rs/exec-server/src/linux_authorized_read_tests.rs
+@@ -98,8 +98,20 @@ fn secure_reopen_reads_only_the_same_regular_file_from_a_private_pin() -> io::Re
+     std::io::Read::read_to_end(&mut readable, &mut bytes)?;
+     let actual = file_identity(&readable, Arc::clone(&identity.namespace))?;
+     assert_eq!(
+-        (bytes, actual.device, actual.inode, actual.mount, stable_file_path(&readable)?),
+-        (b"authorized".to_vec(), identity.device, identity.inode, identity.mount, physical)
++        (
++            bytes,
++            actual.device,
++            actual.inode,
++            actual.mount,
++            stable_file_path(&readable)?
++        ),
++        (
++            b"authorized".to_vec(),
++            identity.device,
++            identity.inode,
++            identity.mount,
++            physical
++        )
+     );
+     Ok(())
+ }
