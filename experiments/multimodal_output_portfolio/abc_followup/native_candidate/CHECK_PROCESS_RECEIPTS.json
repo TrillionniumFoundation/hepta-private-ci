@@ -1,0 +1,71 @@
+{
+  "phases": [
+    {
+      "phase": "candidate-boundary-checks-001",
+      "receipt": {
+        "child_cpu_ns": 1925215000,
+        "exact_child_peak_rss_bytes_linux": 305270784,
+        "exit_code": 0,
+        "log_sha256": "6c78894d0d5895018edc1d1b245ace1068a4a948a829e3073699c352c66d398c",
+        "pid": 8,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "34eb92af99dbfbc79a049b7c8d5857abcbdc504ea6a80b1916ef4da8fd5f7b71",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 1934870298,
+        "wrapper_cpu_ns": 423449
+      },
+      "receipt_sha256": "00e120ccea6d321db64fce3a19f05ef28745bf204661ea33ef8cc14aea72d785",
+      "registration": {
+        "command": [
+          "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+          "-B",
+          "-m",
+          "experiments.multimodal_output_portfolio.abc_followup.native_candidate.boundary_checks",
+          "--protocol",
+          "experiments/multimodal_output_portfolio/abc_followup/native_candidate/PROTOCOL.json",
+          "--output",
+          "/workspace/scratch/2b3c256bef7d/abc4-native-runs/candidate-boundary-checks-001.json"
+        ],
+        "cwd": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery",
+        "entrypoint_sha256": "05c66cbd6d08f201599b8f800bb7c7900dad81c9fad92859118216773e72306f",
+        "schema": "hepta.abc4.exact-child-process-registration.v1",
+        "unix_ns": 1792920389683305624,
+        "wrapper_sha256": "eb348e00b48496559b6cc2953e4af7b8c82041425bf049991f55b8db0e91ba2d"
+      },
+      "registration_sha256": "34eb92af99dbfbc79a049b7c8d5857abcbdc504ea6a80b1916ef4da8fd5f7b71"
+    },
+    {
+      "phase": "candidate-source-checks-001",
+      "receipt": {
+        "child_cpu_ns": 107002000,
+        "exact_child_peak_rss_bytes_linux": 21569536,
+        "exit_code": 0,
+        "log_sha256": "120fcf1e1b1ef6883b716f1b33b4fbea79c7089f1d1ff950e98c9608d82abb42",
+        "pid": 8,
+        "platform_scope": "Linux exact-PID wait4; shared host, not isolated hardware",
+        "registration_sha256": "331264f7db5f7a8097bd6fc9765e9a429a940c32b4ba1b9b07621e085e8c6d67",
+        "schema": "hepta.abc4.exact-child-process-receipt.v1",
+        "scope": "launch/imports/work/output serialization/exit/log fsync; excludes this receipt write",
+        "wall_ns": 110021588,
+        "wrapper_cpu_ns": 450829
+      },
+      "receipt_sha256": "aed74a4f03ba86926a39b6ec021610a453ba9beae0faf526e3e1fae12818b2d9",
+      "registration": {
+        "command": [
+          "/workspace/scratch/2b3c256bef7d/ndu-env/bin/python",
+          "-B",
+          "-m",
+          "experiments.multimodal_output_portfolio.abc_followup.native_candidate.source_guard_tests"
+        ],
+        "cwd": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery",
+        "entrypoint_sha256": "051b81310ec604dcdbf4ff7ab24856be8f4691966c765e9b7254cd78f07f8455",
+        "schema": "hepta.abc4.exact-child-process-registration.v1",
+        "unix_ns": 1792920401533375820,
+        "wrapper_sha256": "eb348e00b48496559b6cc2953e4af7b8c82041425bf049991f55b8db0e91ba2d"
+      },
+      "registration_sha256": "331264f7db5f7a8097bd6fc9765e9a429a940c32b4ba1b9b07621e085e8c6d67"
+    }
+  ],
+  "schema": "hepta.abc4.native-candidate-preaccess-processes.v1"
+}

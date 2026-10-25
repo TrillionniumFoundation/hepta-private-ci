@@ -1,0 +1,192 @@
+{
+  "actions": [
+    "refine_text",
+    "couple"
+  ],
+  "analysis_output": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/candidate-reuse-analysis-001",
+  "batch_size": 32,
+  "bootstrap_draws": 4000,
+  "bootstrap_rule": "Resample whole source pairs with replacement, retaining both actions and all three heads; shared draws for the two contrasts. Individual two-sided percentile intervals use quantiles [.0125,.9875]. Bonferroni family coverage is nominal95 within this prespecified two-comparison family.",
+  "bootstrap_seed": 291018,
+  "candidate_anchor": "e5e24dce4b89626b281def5f6c2af89a5df7e05c7d2c732b2a6bd1f98e5a46c4",
+  "candidate_delta_counts": [
+    0,
+    26,
+    23
+  ],
+  "candidate_ids": [
+    "candidate:no-change:9058ec1051babac8df4de39e582bdb045eba111d422c7e9725f01c10b2919b01",
+    "candidate:update:a37048291fca37e406e593f8f5309660db09accf4ab954b411db672c203dc3d4",
+    "candidate:update:fdd02ddb1908450167c2169d7f51744c9b3de663d76fd6f672e005c01ce55640"
+  ],
+  "candidate_maximum_abs_delta_q32": [
+    0,
+    369690,
+    184845
+  ],
+  "candidate_sequence": 802,
+  "descriptive_only": [
+    "ID and absence strata",
+    "five ID views",
+    "action strata",
+    "raw and frozen-calibration probability metrics",
+    "classification and frozen calibration-group changes",
+    "future-state and persistence MSE"
+  ],
+  "family_confidence": 0.95,
+  "file_pins": {
+    "calibration": "979cae1fccb2012dc016fe002dfb1c0ac42abe0b4c9715b4dba3cb6abef559b6",
+    "calibrator_freeze": "42e90963a5d5f7ccccb78606572011ac238abffabd40ebc78a698b0364a0b454",
+    "candidates": "409221dd6f892e3ccf0f317c4c4d86dc9cf9bcf68651c016349515094fa2dd24",
+    "generator": "2f766c9356333d86f7c78c1cb18e8c67e776019c1071ff7af4b112f294518549",
+    "historical_public_inputs": "aa8fb7a5e32f435ad3f1a72f86ecb1dee3830a2e65d1a97848ca33a303cbc4bd",
+    "manifest": "60c24d44e12eb3defb3b1b8146d91879b84918b057e0524117137d7e4f793058",
+    "observer": "8cfca1b0cd0a69bcfcc6a9d34d0a672c07c28f3342823ef8a3f6763e9430a003",
+    "predictor_freeze": "23475f242980f006329e4d6a200e8f0e553b3ddefd40a1221095a5264de96f2a",
+    "primary_protocol": "b94df6feac7cace3beb8f1f9f95b7a299f60dbb9b86c4fe414df5925c8c5416b",
+    "reuse_assignment": "842b96e49c775b30464fca79eda03c4feb2929c3140f04fc79a030dd7611a39c",
+    "timeline": "dc4b1f41feab9cf5be462968b45596e99d7035428b4ca6fea21f19c936482a4f",
+    "weights": "95d6fade17c609457cb6b978d6580a37fb3bdd02aafa125d964c60c48dd4cc0c"
+  },
+  "forecast_rule": "All three frozen heads on both public action-conditioned inputs are fsynced before either future branch RNG draw. The committed timestamp is recorded after fsync returns.",
+  "frozen_calibration_changed": false,
+  "generator_digest": "94c9582ba41a86a4fb1578484ca2f2a6cb0731dcc447816d0a7f487cc756600d",
+  "head_contract": "future_correctness",
+  "id_views": [
+    "clean",
+    "noise",
+    "occlusion",
+    "missing_trusted",
+    "conflict_untrusted"
+  ],
+  "independence_scope": "Sources are outside construction of these fixed seq802 candidates, as pinned chronological and static call-path evidence documents. All1000 sources were already observed by another project experiment; do not pool these experiments as independent replication or claim new project source N.",
+  "individual_confidence": 0.975,
+  "interpretation": "A fixed-head predictive diagnostic. This does not alter the generator, apply any proposed weights, demonstrate generated-output utility gain, or supply signed production evaluator/owner evidence.",
+  "label_rule": "Actual generated media must exactly match reopened media, then the fixed independent observer scores emitted image and caption against the original task target. Joint label requires valid caption and zero text, relation, image and cross-modal errors.",
+  "maximum_absolute_delta_q32": 429497,
+  "new_project_independent_source_pairs": 0,
+  "origin_role": "unallocated_test",
+  "output": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/candidate-reuse-001",
+  "pair_count": 1000,
+  "pair_start": 0,
+  "paths": {
+    "cache": "/workspace/scratch/2b3c256bef7d/abc2-assets/mnist",
+    "calibration": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/model-003/calibration.json",
+    "calibrator_freeze": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/model-003/calibrator-freeze.json",
+    "candidates": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001/live-proposal-candidates/candidates.json",
+    "generator": "/workspace/scratch/2b3c256bef7d/abc2-runs/training-001/seed-17/output_ndu/model.pt",
+    "historical_public_inputs": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/development-001/data.npz",
+    "manifest": "/workspace/scratch/2b3c256bef7d/abc2-runs/source-recovery-001/source-manifest.json",
+    "model": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/model-003",
+    "observer": "/workspace/scratch/2b3c256bef7d/abc2-runs/base-recovery-001/reward-observer.pt",
+    "predictor_freeze": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/model-003/predictor-freeze.json",
+    "primary_protocol": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_followup/native/PROTOCOL.json",
+    "reuse_assignment": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_followup/native_candidate/REUSE_ASSIGNMENT-v2.json",
+    "timeline": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_followup/native_candidate/TIMELINE-v2.json",
+    "weights": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/model-003/weights.json"
+  },
+  "permitted_parameter_surface": "w2[32][j], 0 <= j < 33; all other weights and biases unchanged",
+  "post_outcome_candidate_selection": false,
+  "prefix": [
+    "initialize",
+    "refine_image"
+  ],
+  "primary_endpoint": "source-pair mean raw Brier improvement: baseline minus each of the two fixed candidates, averaged over both actual future actions and all1000 pairs",
+  "refit_or_retraining": false,
+  "registered_unix_ns": 1792920384956253447,
+  "reuse_assignment_sha256": "842b96e49c775b30464fca79eda03c4feb2929c3140f04fc79a030dd7611a39c",
+  "schema": "hepta.abc4.native-candidate-prospective.v1",
+  "seed": 291017,
+  "segments": [
+    [
+      "clean",
+      0,
+      100
+    ],
+    [
+      "noise",
+      100,
+      100
+    ],
+    [
+      "occlusion",
+      200,
+      100
+    ],
+    [
+      "missing_trusted",
+      300,
+      100
+    ],
+    [
+      "conflict_untrusted",
+      400,
+      100
+    ],
+    [
+      "both_missing",
+      500,
+      500
+    ]
+  ],
+  "source_assignment_basis": "Original native calibration-style balanced allocation: five ID views equally represented, then complete absence; no repair result or per-view quality used for assignment.",
+  "source_identity": {
+    "individual_sources": 2000,
+    "ordered_source_ids_sha256": "815890b1f35b3180583b672ad7cc352289f15ac088e1cd151b03c1b62eb2a6d2",
+    "pair_end_exclusive": 1000,
+    "pair_start": 0,
+    "pairing": "No-replacement adjacent IDs [2k,2k+1] in the original manifest order",
+    "sorted_pixel_hashes_sha256": "278631cc2224c21ca35ad81be067a847b24171eb77a2f9dd54ad0e76bba123a0",
+    "source_pairs": 1000,
+    "source_role": "unallocated_test",
+    "unique_pixel_sha256": 2000
+  },
+  "source_pairs_reused_from_training_repair": 1000,
+  "source_pins": {
+    "../../abc_next/compact_tree.py": "6ff38c2a68a5103c4e5278087bbd1b9106a82e01857f26ea53d17056d25c1630",
+    "../../abc_next/native/features.py": "fdf2e8ab36f5fe7d38fd10edcb2a48cdb31f05b2572ac2d341df5ec7782d9a95",
+    "../../abc_next/observability.py": "6ffce394cfded8e90d294837b45b94b4443061100424034f57368c9e257b7846",
+    "../../abc_next/settings.py": "1f96cd70794c0bd74e167c84a535963ad4e82037eafa7a8bcd8fab08a04b746e",
+    "../../abc_recovery/base_recovery.py": "bfe7f2f635db74075decb0e20dcb1d73d203d1d0445d902e8c4254fca46d80fb",
+    "../../abc_recovery/emission.py": "748cdafc6bca00fa07e88a7e294d331d5217c04d3e8208e094bdb906ec5fe1f3",
+    "../../abc_recovery/media.py": "9ebc2dfe6561e78f306cad8e522e58705a3985bd6991af60dc9c38062a3b8ec9",
+    "../../abc_recovery/output_training.py": "a6f213cdf092581d700ef35196d6aab22a0774b3b4a35c37e820839f19dd1edb",
+    "../../abc_recovery/runtime.py": "11e2e0859d706e3186ee5e4688330ad2f4da54d397fe6b33bd335d8ee69f5919",
+    "../../abc_recovery/training_run.py": "3aa56c026cec01279ccb35b754b4fa4fdee77dd810f0024e2ed41d1811395093",
+    "../../abc_recovery/trees.py": "7bfc3f1c151fcc37499dab0760a5ba7924b9b2a530784de24a8aebf92ed74452",
+    "../../abc_recovery/warm_start.py": "e6503c80f77a6d26306fcf899b2ce390a75331c6e97b06c87bc7a72c60281bc3",
+    "../../v6/conditioned.py": "ccb5f9a78e58d6f1d1511a95f50de3602e1f39e7254fce5566e97a994d5b4cba",
+    "../../v6/data.py": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29",
+    "../../v6/neural.py": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742",
+    "../../v6/observer.py": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e",
+    "../../v7/data.py": "41892eb63420a6288121b39f577597067c3e168d3c7467c868230c64ed092cb9",
+    "../../v7/evaluation.py": "9f229b3b1092cfc8f89b8376375a8bb5d7efe9c7bb91979026ee5f32182c79da",
+    "../../v7/model.py": "156aa5c73c7e9192ebefecafdc568cbbae3e906e7d1bbb2bf50f7535bd2d8fca",
+    "../../v7/snapshot.py": "01655335b9807a09005bde0ae11d9fbe1a0665bd0113d9f28e38310f1f4bb474",
+    "../../v7/sources.py": "b6b27b86ba71a4bafd9c2abe4af033e7cfe73079296bdd2ed1addad045881e9f",
+    "../../v7/training.py": "99ef191f69422fdf83d1429d83c0b5e6b8b141bb59d0f12275a5e619aced3091",
+    "../native/boundaries.py": "92df685a76ea30f7068445dee5dff13c7458445eca038e9d7211fa06c1584385",
+    "../native/collect.py": "357a904fa4f19b399b624eb6f5ec54b668726638d8f20b3e3c31283f897b7185",
+    "../native/forecast.py": "34f24b827bfc2a9b0f13e0b715b4b639713b79ed351bf8dc0c3e918c86b8809d",
+    "../native/future_candidate.py": "21fc9a344550957c99fc8f937e4e458662d4eff3979000cf2a08b643d936ca5b",
+    "../native/qualify.py": "2a9ca8171c025be9447bf60b54583a38818749b158bc8b65a49dd6a2e39ee00a",
+    "../process.py": "eb348e00b48496559b6cc2953e4af7b8c82041425bf049991f55b8db0e91ba2d",
+    "../training/evaluate.py": "839187a84f6b0bbe300a3334e5ebecac5d8ee17e9695977aa07e0c9ae06e6d90",
+    "../training/objective.py": "4e2800bf03bc3841699cf92e52c6dc5108b3f84d802726741374cc7d40d38360",
+    "../training/train.py": "21f4ef860de1a5569dfeb5e8bce0ddc2b873635dc76ff9fc528800eeaf3baa1a",
+    "../training_repair/assigned_source.py": "ef969f1d7e74cdc491abfc9e231408c433f7e92088d3a2a8eb6f91cf30873489",
+    "../training_repair/evaluate.py": "db4cd0233474dbbfc74df1def962a74a473a0d78a16a81e3861571c8ea9a07c5",
+    "../training_repair/protocol.py": "aa14eaa531e43416e80e67d137fa4f946486c751bb0e806d0a9464097af0be0c",
+    "__init__.py": "5be72254154c561b7455766ab7f3fa021b257860e6a3d2d2c5297ac04501014c",
+    "analysis.py": "777a63d7b9b209461cc3f8a83a5fbaaa765c43b8236616184927bfe44fad250b",
+    "boundaries.py": "aab223674cb286ef7d3fa02711cabd7a5ca848b78cfe9f56b7ed4b6289485ce3",
+    "boundary_checks.py": "05c66cbd6d08f201599b8f800bb7c7900dad81c9fad92859118216773e72306f",
+    "collect.py": "1bfa951bfcab8087104934cd2ab19c392367ac672400b6feadb655eca60a21b1",
+    "protocol.py": "b67512aa517bae2538b72eebd565427adbe6e2aa23372ef9c92106a7ef757a3d",
+    "source_guard.py": "ec95a0ce904c9c03e71c865f040974669614c1d8683c736f6777bd8aad45228a",
+    "source_guard_tests.py": "051b81310ec604dcdbf4ff7ab24856be8f4691966c765e9b7254cd78f07f8455"
+  },
+  "source_role": "repair_test",
+  "study_role": "native_candidate_reuse",
+  "timeline_sha256": "dc4b1f41feab9cf5be462968b45596e99d7035428b4ca6fea21f19c936482a4f"
+}
