@@ -15,7 +15,7 @@ permissions:
 jobs:
   scope:
     name: Select blocking CI scope
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 5
     outputs:
       inference: ${{ steps.scope.outputs.inference }}
@@ -33,6 +33,17 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Set up exact scope Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+
+      - name: Verify exact scope interpreter
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -c 'import sys; expected = (3, 12, 14); actual = sys.version_info[:3]; print(sys.version); sys.exit(0 if actual == expected else "unexpected scope Python version")'
 
       - name: Select dependency impact
         id: scope
