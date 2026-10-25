@@ -226,6 +226,14 @@ class EvidenceTests(unittest.TestCase):
             "stage": stage,
         }
 
+    def terminal_cleanup_fixture(self, process, directory, stage, deadline):
+        return self.owned_snapshot_fixture(process, directory, stage, "Z<")
+
+    def live_cleanup_fixture(self, process, directory, stage, deadline):
+        return self.owned_snapshot_fixture(process, directory, stage, "S")
+
+    @patch.object(evidence.os, "getsid", new=lambda pid: 4242)
+    @patch.object(evidence.os, "getpgid", new=lambda pid: 4242)
     def test_lifecycle_sole_zombie_reaps_exact_child_without_final_signal(self):
         for wait_status, returncode in [(0, 0), (15, -15)]:
             with self.subTest(wait_status=wait_status):
@@ -250,6 +258,13 @@ class EvidenceTests(unittest.TestCase):
                     patch.object(
                         evidence, "capture_owned_snapshot", side_effect=snapshot
                     ),
+                    patch.object(evidence, "observe_command", return_value=None),
+                    patch.object(evidence, "observe_leader", return_value=returncode),
+                    patch.object(
+                        evidence,
+                        "capture_cleanup_snapshot",
+                        side_effect=self.terminal_cleanup_fixture,
+                    ),
                     patch.object(evidence.os, "killpg") as signals,
                     patch.object(
                         evidence.os, "waitpid", return_value=(4242, wait_status)
@@ -261,13 +276,13 @@ class EvidenceTests(unittest.TestCase):
                             directory,
                             time.monotonic() + 3,
                             self.root,
-                            grace=0,
+                            grace=0.1,
                         ),
                         124,
                     )
                 self.assertEqual(
                     [c.args for c in signals.call_args_list],
-                    [(4242, evidence.signal.SIGTERM)],
+                    [],
                 )
                 reap.assert_called_once_with(4242, os.WNOHANG)
                 self.assertEqual(child.returncode, returncode)
@@ -277,6 +292,8 @@ class EvidenceTests(unittest.TestCase):
                     ]["reaped"]
                 )
 
+    @patch.object(evidence.os, "getsid", new=lambda pid: 4242)
+    @patch.object(evidence.os, "getpgid", new=lambda pid: 4242)
     def test_lifecycle_reap_error_returns_125_without_later_group_signal(self):
         for index, failure in enumerate(
             [ChildProcessError("ECHILD"), OSError("reap failure"), (0, 0)]
@@ -300,6 +317,13 @@ class EvidenceTests(unittest.TestCase):
                     patch.object(
                         evidence, "capture_owned_snapshot", side_effect=snapshot
                     ),
+                    patch.object(evidence, "observe_command", return_value=None),
+                    patch.object(evidence, "observe_leader", return_value=0),
+                    patch.object(
+                        evidence,
+                        "capture_cleanup_snapshot",
+                        side_effect=self.terminal_cleanup_fixture,
+                    ),
                     patch.object(evidence.os, "killpg") as signals,
                     patch.object(
                         evidence.os,
@@ -314,21 +338,24 @@ class EvidenceTests(unittest.TestCase):
                             directory,
                             time.monotonic() + 3,
                             self.root,
-                            grace=0,
+                            grace=0.1,
                         ),
                         125,
                     )
                 self.assertEqual(
                     [c.args for c in signals.call_args_list],
-                    [(4242, evidence.signal.SIGTERM)],
+                    [],
                 )
                 self.assertIsNone(child.returncode)
 
-    def test_lifecycle_esrch_never_sends_gratuitous_final_kill(self):
+    @patch.object(evidence.os, "getsid", new=lambda pid: 4242)
+    @patch.object(evidence.os, "getpgid", new=lambda pid: 4242)
+    @patch.object(evidence.platform, "system", return_value="Linux")
+    def test_lifecycle_esrch_never_sends_gratuitous_final_kill(self, _platform):
         child = Mock(pid=4242, returncode=None)
         child.wait.return_value = 0
         with (
-            patch.object(evidence.platform, "system", return_value="Darwin"),
+            patch.object(evidence.platform, "system", return_value="Linux"),
             patch.object(evidence.subprocess, "Popen", return_value=child),
             patch.object(
                 evidence,
@@ -352,6 +379,8 @@ class EvidenceTests(unittest.TestCase):
         )
         reap.assert_not_called()
 
+    @patch.object(evidence.os, "getsid", new=lambda pid: 4242)
+    @patch.object(evidence.os, "getpgid", new=lambda pid: 4242)
     def test_lifecycle_unknown_startup_fails_before_kill(self):
         child = Mock(pid=4242, returncode=None)
         child.wait.return_value = 0
@@ -373,10 +402,10 @@ class EvidenceTests(unittest.TestCase):
                 ),
                 125,
             )
-        self.assertEqual(
-            [c.args for c in signals.call_args_list], [(4242, evidence.signal.SIGTERM)]
-        )
+        self.assertEqual([c.args for c in signals.call_args_list], [])
 
+    @patch.object(evidence.os, "getsid", new=lambda pid: 4242)
+    @patch.object(evidence.os, "getpgid", new=lambda pid: 4242)
     def test_lifecycle_snapshot_identity_and_completeness_negatives(self):
         child = Mock(pid=4242, returncode=None)
         with patch.object(
@@ -456,6 +485,8 @@ class EvidenceTests(unittest.TestCase):
                 reap.assert_not_called()
                 signals.assert_not_called()
 
+    @patch.object(evidence.os, "getsid", new=lambda pid: 4242)
+    @patch.object(evidence.os, "getpgid", new=lambda pid: 4242)
     def test_lifecycle_live_owned_family_never_counts_as_reaped(self):
         child = Mock(pid=4242, returncode=None)
         with patch.object(
@@ -495,6 +526,8 @@ class EvidenceTests(unittest.TestCase):
             if child.returncode is None:
                 child.wait(timeout=3)
 
+    @patch.object(evidence.os, "getsid", new=lambda pid: 4242)
+    @patch.object(evidence.os, "getpgid", new=lambda pid: 4242)
     def test_lifecycle_multiple_owned_zombies_are_not_accepted_as_terminal(self):
         child = Mock(pid=4242, returncode=None)
         with patch.object(
@@ -538,6 +571,8 @@ class EvidenceTests(unittest.TestCase):
             snapshot.assert_not_called()
             reap.assert_not_called()
 
+    @patch.object(evidence.os, "getsid", new=lambda pid: 4242)
+    @patch.object(evidence.os, "getpgid", new=lambda pid: 4242)
     def test_lifecycle_reap_requires_exact_terminal_status(self):
         child = Mock(pid=4242, returncode=None)
         with patch.object(
@@ -573,7 +608,299 @@ class EvidenceTests(unittest.TestCase):
             self.assertIsNone(child.returncode)
             signals.assert_not_called()
 
-    def test_first_eperm_diagnostic_does_not_retry_signal_or_pass(self):
+    @unittest.skipUnless(os.name == "posix", "owned waitid contract is POSIX-only")
+    def test_native_waitid_wnowait_keeps_child_waitable_until_single_reap(self):
+        evidence.require_waitid_contract()
+        child = subprocess.Popen(
+            [sys.executable, "-c", "raise SystemExit(7)"], start_new_session=True
+        )
+        try:
+            result = evidence.observe_command(child, time.monotonic() + 3)
+            self.assertEqual(result, 7)
+            self.assertIsNone(child.returncode)
+            second = evidence.observe_leader(child)
+            self.assertEqual(second, 7)
+            pid, status = os.waitpid(child.pid, os.WNOHANG)
+            self.assertEqual(pid, child.pid)
+            self.assertTrue(os.WIFEXITED(status))
+            child.returncode = os.waitstatus_to_exitcode(status)
+            self.assertEqual(child.returncode, 7)
+            with self.assertRaises(ChildProcessError):
+                os.waitid(os.P_PID, child.pid, os.WEXITED | os.WNOWAIT | os.WNOHANG)
+            receipt = self.root / "waitid-contract"
+            receipt.mkdir()
+            evidence.write(
+                receipt / "result.json",
+                {
+                    "purpose": "runtime WNOWAIT contract, not native278 qualification",
+                    "python": evidence.python_identity(),
+                    "pid": child.pid,
+                    "first_observed_exit": result,
+                    "second_observed_exit": second,
+                    "waitpid_pid": pid,
+                    "waitpid_status": status,
+                    "returncode": child.returncode,
+                    "second_waitid": "ChildProcessError asserted",
+                },
+            )
+        finally:
+            if child.returncode is None:
+                child.wait(timeout=3)
+
+    def test_waitid_observation_rejects_nonterminal_wrong_identity_and_maps_signals(
+        self,
+    ):
+        child = Mock(pid=4242, returncode=None)
+        for code, status, expected in [
+            (os.CLD_EXITED, 7, 7),
+            (os.CLD_KILLED, 15, -15),
+            (os.CLD_DUMPED, 6, -6),
+        ]:
+            event = Mock(
+                si_pid=4242,
+                si_signo=evidence.signal.SIGCHLD,
+                si_code=code,
+                si_status=status,
+                si_uid=0,
+            )
+            with patch.object(evidence.os, "waitid", return_value=event) as observe:
+                self.assertEqual(evidence.observe_leader(child), expected)
+            observe.assert_called_once_with(
+                os.P_PID, 4242, os.WEXITED | os.WNOWAIT | os.WNOHANG
+            )
+            self.assertIsNone(child.returncode)
+        for field, value in [
+            ("si_pid", 9999),
+            ("si_signo", 0),
+            ("si_code", os.CLD_STOPPED),
+            ("si_status", 999),
+        ]:
+            event = Mock(
+                si_pid=4242,
+                si_signo=evidence.signal.SIGCHLD,
+                si_code=os.CLD_EXITED,
+                si_status=0,
+            )
+            setattr(event, field, value)
+            with patch.object(evidence.os, "waitid", return_value=event):
+                with self.assertRaises(ValueError):
+                    evidence.observe_leader(child)
+
+    def test_missing_waitid_contract_fails_before_spawn_without_platform_fallback(self):
+        saved = os.waitid
+        try:
+            del os.waitid
+            with (
+                patch.object(evidence.platform, "system", return_value="Darwin"),
+                patch.object(evidence.subprocess, "Popen") as spawn,
+                patch.object(evidence.os, "killpg") as signals,
+            ):
+                self.assertEqual(
+                    evidence.bounded(
+                        ["fake"],
+                        self.root / "no-waitid",
+                        time.monotonic() + 3,
+                        self.root,
+                    ),
+                    125,
+                )
+            spawn.assert_not_called()
+            signals.assert_not_called()
+        finally:
+            os.waitid = saved
+
+    def test_fast_exit_before_session_read_completes_without_any_signal(self):
+        child = Mock(pid=4242, returncode=None)
+        child.wait.side_effect = AssertionError("must not auto-reap")
+        child.poll.side_effect = AssertionError("must not auto-reap")
+
+        def startup(process, directory, stage):
+            return self.owned_snapshot_fixture(process, directory, stage, "Z<")
+
+        with (
+            patch.object(evidence.platform, "system", return_value="Darwin"),
+            patch.object(evidence.subprocess, "Popen", return_value=child),
+            patch.object(evidence, "capture_owned_snapshot", side_effect=startup),
+            patch.object(
+                evidence,
+                "capture_cleanup_snapshot",
+                side_effect=self.terminal_cleanup_fixture,
+            ),
+            patch.object(evidence, "observe_leader", return_value=0),
+            patch.object(evidence.os, "getsid") as sid,
+            patch.object(evidence.os, "getpgid") as pgid,
+            patch.object(evidence.os, "killpg") as signals,
+            patch.object(evidence.os, "waitpid", return_value=(4242, 0)) as reap,
+        ):
+            self.assertEqual(
+                evidence.bounded(
+                    ["fake"],
+                    self.root / "fast-complete",
+                    time.monotonic() + 3,
+                    self.root,
+                    grace=0.1,
+                ),
+                0,
+            )
+        sid.assert_not_called()
+        pgid.assert_not_called()
+        signals.assert_not_called()
+        child.wait.assert_not_called()
+        child.poll.assert_not_called()
+        reap.assert_called_once_with(4242, os.WNOHANG)
+        self.assertEqual(child.returncode, 0)
+
+    def test_fast_exited_owned_leader_uses_derived_session_not_invented_getsid(self):
+        child = Mock(pid=4242, returncode=None)
+
+        def snapshot(process, directory, stage):
+            return self.owned_snapshot_fixture(process, directory, stage, "Z<")
+
+        with (
+            patch.object(evidence, "capture_owned_snapshot", side_effect=snapshot),
+            patch.object(evidence, "observe_leader", return_value=0),
+            patch.object(evidence.os, "getsid") as sid,
+            patch.object(evidence.os, "getpgid") as pgid,
+        ):
+            identity = evidence.bind_owned_leader(child, self.root / "fast-start")
+        self.assertEqual(identity["sid"], child.pid)
+        self.assertEqual(
+            identity["session_observation"], "derived: leader already terminal"
+        )
+        self.assertNotIn("observed_sid", identity)
+        sid.assert_not_called()
+        pgid.assert_not_called()
+
+    @patch.object(evidence.os, "getsid", new=lambda pid: 4242)
+    @patch.object(evidence.os, "getpgid", new=lambda pid: 4242)
+    def test_owned_orphan_session_cleanup_keeps_leader_unreaped_without_signal_zero(
+        self,
+    ):
+        child = Mock(pid=4242, returncode=None)
+        child.wait.side_effect = AssertionError("must not auto-reap")
+        child.poll.side_effect = AssertionError("must not auto-reap")
+        calls = 0
+
+        def snapshot(process, directory, stage, deadline):
+            nonlocal calls
+            receipt = self.terminal_cleanup_fixture(process, directory, stage, deadline)
+            if calls == 0:
+                with (directory / "probe-state.stdout.log").open("a") as stream:
+                    stream.write(
+                        f"4243 1 4242 0 {os.geteuid()} S Sun Oct 25 01:48:48 2026\n"
+                    )
+            calls += 1
+            return receipt
+
+        with (
+            patch.object(evidence.platform, "system", return_value="Darwin"),
+            patch.object(evidence.subprocess, "Popen", return_value=child),
+            patch.object(
+                evidence,
+                "capture_owned_snapshot",
+                side_effect=self.owned_snapshot_fixture,
+            ),
+            patch.object(evidence, "capture_cleanup_snapshot", side_effect=snapshot),
+            patch.object(evidence, "observe_command", return_value=0),
+            patch.object(evidence, "observe_leader", return_value=0),
+            patch.object(evidence.os, "killpg") as signals,
+            patch.object(evidence.os, "waitpid", return_value=(4242, 0)) as reap,
+        ):
+            self.assertEqual(
+                evidence.bounded(
+                    ["fake"],
+                    self.root / "orphan-session",
+                    time.monotonic() + 3,
+                    self.root,
+                    grace=0.2,
+                ),
+                0,
+            )
+        self.assertEqual(
+            [c.args for c in signals.call_args_list], [(4242, evidence.signal.SIGTERM)]
+        )
+        reap.assert_called_once_with(4242, os.WNOHANG)
+        child.wait.assert_not_called()
+        child.poll.assert_not_called()
+
+    @patch.object(evidence.os, "getsid", new=lambda pid: 4242)
+    @patch.object(evidence.os, "getpgid", new=lambda pid: 4242)
+    def test_nonchild_zombie_is_never_reaped_or_signaled_and_times_out_unknown(self):
+        child = Mock(pid=4242, returncode=None)
+
+        def snapshot(process, directory, stage, deadline):
+            receipt = self.terminal_cleanup_fixture(process, directory, stage, deadline)
+            with (directory / "probe-state.stdout.log").open("a") as stream:
+                stream.write(
+                    f"4243 1 4242 0 {os.geteuid()} Z Sun Oct 25 01:48:48 2026\n"
+                )
+            return receipt
+
+        with (
+            patch.object(evidence.platform, "system", return_value="Darwin"),
+            patch.object(evidence.subprocess, "Popen", return_value=child),
+            patch.object(
+                evidence,
+                "capture_owned_snapshot",
+                side_effect=self.owned_snapshot_fixture,
+            ),
+            patch.object(evidence, "capture_cleanup_snapshot", side_effect=snapshot),
+            patch.object(evidence, "observe_command", return_value=0),
+            patch.object(evidence, "observe_leader", return_value=0),
+            patch.object(evidence.os, "killpg") as signals,
+            patch.object(evidence.os, "waitpid") as reap,
+        ):
+            self.assertEqual(
+                evidence.bounded(
+                    ["fake"],
+                    self.root / "nonchild-zombie",
+                    time.monotonic() + 3,
+                    self.root,
+                    grace=0.01,
+                ),
+                125,
+            )
+        signals.assert_not_called()
+        reap.assert_not_called()
+
+    @patch.object(evidence.os, "getsid", new=lambda pid: 4242)
+    @patch.object(evidence.os, "getpgid", new=lambda pid: 4242)
+    def test_live_orphan_requires_real_sid_and_pgid_even_with_matching_ps_group(self):
+        child = Mock(pid=4242, returncode=None)
+        with patch.object(
+            evidence, "capture_owned_snapshot", side_effect=self.owned_snapshot_fixture
+        ):
+            identity = evidence.bind_owned_leader(child, self.root / "sid-start")
+        directory = self.root / "sid-state"
+        receipt = self.owned_snapshot_fixture(child, directory, "before-term", "Z<")
+        with (directory / "probe-state.stdout.log").open("a") as stream:
+            stream.write(f"4243 1 4242 0 {os.geteuid()} S Sun Oct 25 01:48:48 2026\n")
+        for name in ["getsid", "getpgid"]:
+            with (
+                patch.object(evidence, "observe_leader", return_value=0),
+                patch.object(evidence.os, name, return_value=9999),
+            ):
+                with self.assertRaises(ValueError):
+                    evidence.owned_session_state(child, identity, receipt, directory)
+        with (
+            patch.object(evidence, "observe_leader", return_value=0),
+            patch.object(evidence.os, "getsid", side_effect=ProcessLookupError()),
+        ):
+            self.assertEqual(
+                evidence.owned_session_state(child, identity, receipt, directory)[
+                    "state"
+                ],
+                "await-fresh-member-snapshot",
+            )
+        with (
+            patch.object(evidence, "observe_leader", return_value=0),
+            patch.object(evidence.os, "getsid", side_effect=PermissionError()),
+        ):
+            with self.assertRaises(PermissionError):
+                evidence.owned_session_state(child, identity, receipt, directory)
+
+    @patch.object(evidence.platform, "system", return_value="Linux")
+    def test_first_eperm_diagnostic_does_not_retry_signal_or_pass(self, _platform):
         child = Mock(pid=4242, returncode=None)
         child.wait.return_value = 0
         child.poll.return_value = 0
@@ -611,19 +938,21 @@ class EvidenceTests(unittest.TestCase):
         self.assertEqual(receipt["error_type"], "PermissionError")
         self.assertIn("injected EPERM", receipt["traceback"])
 
+    @patch.object(evidence.os, "getsid", new=lambda pid: 4242)
+    @patch.object(evidence.os, "getpgid", new=lambda pid: 4242)
     def test_term_and_kill_denials_snapshot_once_without_further_signals(self):
         for sig, stage, effects, grace in [
             (
                 evidence.signal.SIGTERM,
                 "first-eperm-term",
                 [PermissionError(1, "denied term")],
-                0.2,
+                0.06,
             ),
             (
                 evidence.signal.SIGKILL,
                 "first-eperm-kill",
                 [None, PermissionError(1, "denied kill")],
-                0,
+                0.06,
             ),
         ]:
             for diagnostic_failure in [False, True]:
@@ -633,6 +962,16 @@ class EvidenceTests(unittest.TestCase):
                     directory = self.root / f"denied-{sig}-{diagnostic_failure}"
                     with (
                         patch.object(evidence.subprocess, "Popen", return_value=child),
+                        patch.object(
+                            evidence.platform, "system", return_value="Darwin"
+                        ),
+                        patch.object(evidence, "observe_command", return_value=None),
+                        patch.object(evidence, "observe_leader", return_value=None),
+                        patch.object(
+                            evidence,
+                            "capture_cleanup_snapshot",
+                            side_effect=self.live_cleanup_fixture,
+                        ),
                         patch.object(
                             evidence,
                             "capture_owned_snapshot",
@@ -655,7 +994,7 @@ class EvidenceTests(unittest.TestCase):
                             directory,
                             time.monotonic() + 3,
                             self.root,
-                            grace=grace,
+                            grace=0.06,
                         )
                     self.assertEqual(status, 125)
                     expected = [(4242, evidence.signal.SIGTERM)]
@@ -677,7 +1016,10 @@ class EvidenceTests(unittest.TestCase):
                         diagnostic_failure,
                     )
 
-    def test_snapshot_failure_preserves_original_eperm(self):
+    @patch.object(evidence.os, "getsid", new=lambda pid: 4242)
+    @patch.object(evidence.os, "getpgid", new=lambda pid: 4242)
+    @patch.object(evidence.platform, "system", return_value="Linux")
+    def test_snapshot_failure_preserves_original_eperm(self, _platform):
         child = Mock(pid=4242, returncode=None)
         child.wait.return_value = 0
         child.poll.return_value = 0

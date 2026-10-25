@@ -21,7 +21,7 @@ import xml.etree.ElementTree as ET
 
 HERE = Path(__file__).resolve().parent
 PROFILE = "macos-owner"
-BASE = "9d7fe59a4620c57fdc45d42637ce4b81c8a110ad"
+BASE = "f403a36fad9ec59c74a4429ef62cdb568eafdd21"
 PHASES = ("memory", "supervisor-owning", "supervisor-integration")
 OWNER = (
     "restart_budget::tests::budget_is_durable_bounded_and_pending_is_idempotent",
@@ -153,7 +153,7 @@ def validate_report(path, phase):
     return sorted(identities)
 
 
-def snapshot_owned_group(pgid, directory):
+def snapshot_owned_group(pgid, directory, timeout_seconds=2):
     """One bounded read-only Darwin group snapshot, never a cleanup verdict."""
     snapshot = {
         "stage": "first-eperm-after-term-signal-zero",
@@ -174,7 +174,8 @@ def snapshot_owned_group(pgid, directory):
         "-o",
         "pid=,ppid=,pgid=,sess=,uid=,state=,lstart=",
     ]
-    snapshot.update(argv=command, limit_bytes=16384, timeout_seconds=2)
+    require(0 < timeout_seconds <= 2, "invalid snapshot time bound")
+    snapshot.update(argv=command, limit_bytes=16384, timeout_seconds=timeout_seconds)
     process = None
     probe_stop_attempted = False
     output = {"stdout": bytearray(), "stderr": bytearray()}
@@ -196,7 +197,7 @@ def snapshot_owned_group(pgid, directory):
                 os.set_blocking(stream.fileno(), False)
                 selector.register(stream, selectors.EVENT_READ, name)
             while selector.get_map():
-                remaining = started + 2 - time.monotonic()
+                remaining = started + timeout_seconds - time.monotonic()
                 if remaining <= 0:
                     snapshot["unavailable"] = "snapshot timeout"
                     break
@@ -214,7 +215,7 @@ def snapshot_owned_group(pgid, directory):
         if "unavailable" not in snapshot:
             try:
                 snapshot["exit"] = process.wait(
-                    timeout=max(0, started + 2 - time.monotonic())
+                    timeout=max(0, started + timeout_seconds - time.monotonic())
                 )
             except subprocess.TimeoutExpired:
                 snapshot["unavailable"] = "snapshot timeout"
@@ -283,7 +284,9 @@ def snapshot_rows(snapshot, directory, pgid):
         "unexpected snapshot command",
     )
     require(
-        snapshot.get("limit_bytes") == 16384 and snapshot.get("timeout_seconds") == 2,
+        snapshot.get("limit_bytes") == 16384
+        and isinstance(snapshot.get("timeout_seconds"), (int, float))
+        and 0 < snapshot["timeout_seconds"] <= 2,
         "unexpected snapshot bounds",
     )
     stdout = (directory / "probe-state.stdout.log").read_bytes()
@@ -345,24 +348,51 @@ def bind_owned_leader(process, directory):
     leader = leaders[0]
     require(leader["ppid"] == os.getpid(), "leader is not our direct child")
     require(process.returncode is None, "leader already reaped at binding")
+    session = {
+        "sid": process.pid,
+        "session_proof": "Popen start_new_session plus exact unreaped child PGID snapshot",
+    }
+    if leader["state"].startswith("Z"):
+        require(observe_leader(process) is not None, "zombie leader not waitable")
+        session["session_observation"] = "derived: leader already terminal"
+    else:
+        try:
+            sid, pgid = os.getsid(process.pid), os.getpgid(process.pid)
+        except ProcessLookupError:
+            require(
+                observe_leader(process) is not None, "live session identity unavailable"
+            )
+            session["session_observation"] = "derived: exited during startup read"
+        else:
+            require(
+                sid == process.pid and pgid == process.pid,
+                "spawned leader session mismatch",
+            )
+            session.update(
+                session_observation="observed live",
+                observed_sid=sid,
+                observed_pgid=pgid,
+            )
     return {
         **{k: v for k, v in leader.items() if k != "state"},
         "ps_sha256": snapshot["binary_sha256"],
+        **session,
     }
 
 
-def pre_kill_owned_leader(process, identity, directory):
+def pre_kill_owned_leader(process, identity, directory, snapshot=None):
     """Reap only a sole pinned direct-child zombie; never reinterpret EPERM."""
     require_unreaped_owner(process)
     require(identity is not None, "unverified startup leader identity")
-    snapshot = capture_owned_snapshot(process, directory, "before-final-kill")
+    if snapshot is None:
+        snapshot = capture_owned_snapshot(process, directory, "before-final-kill")
     rows = snapshot_rows(snapshot, directory, process.pid)
     require(snapshot["binary_sha256"] == identity["ps_sha256"], "ps identity changed")
     leader = next((r for r in rows if r["pid"] == process.pid), None)
     require(leader is not None, "owned leader missing before final kill")
     require(
         {k: v for k, v in leader.items() if k != "state"}
-        == {k: v for k, v in identity.items() if k != "ps_sha256"},
+        == {k: identity[k] for k in ("pid", "ppid", "pgid", "uid", "start")},
         "owned leader identity changed",
     )
     require(leader["ppid"] == os.getpid(), "leader parent changed")
@@ -391,6 +421,151 @@ def pre_kill_owned_leader(process, identity, directory):
         "returncode": process.returncode,
         "ownership": "sole-pinned-unreaped-direct-child-zombie",
     }
+
+
+def require_waitid_contract():
+    for name in (
+        "waitid",
+        "P_PID",
+        "WEXITED",
+        "WNOWAIT",
+        "WNOHANG",
+        "CLD_EXITED",
+        "CLD_KILLED",
+        "CLD_DUMPED",
+    ):
+        require(hasattr(os, name), f"required non-reaping wait API missing: {name}")
+
+
+def observe_leader(process):
+    """Observe this owned child's terminal result without releasing its PID."""
+    require_waitid_contract()
+    require_unreaped_owner(process)
+    event = os.waitid(os.P_PID, process.pid, os.WEXITED | os.WNOWAIT | os.WNOHANG)
+    if event is None:
+        return None
+    require(event.si_pid == process.pid, "waitid returned another process")
+    require(event.si_signo == signal.SIGCHLD, "unexpected waitid signal")
+    # Darwin need not populate si_uid: ownership comes from the pinned snapshot.
+    if event.si_code == os.CLD_EXITED:
+        require(0 <= event.si_status <= 255, "invalid observed exit code")
+        return event.si_status
+    require(event.si_code in (os.CLD_KILLED, os.CLD_DUMPED), "nonterminal waitid event")
+    require(0 < event.si_status < signal.NSIG, "invalid observed terminating signal")
+    return -event.si_status
+
+
+def observe_command(process, deadline):
+    while True:
+        result = observe_leader(process)
+        if result is not None:
+            return result
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            return None
+        time.sleep(min(0.05, remaining))
+
+
+def capture_cleanup_snapshot(process, directory, stage, deadline):
+    remaining = deadline - time.monotonic()
+    require(remaining > 0, "owned cleanup budget exhausted before snapshot")
+    directory.mkdir(parents=True)
+    snapshot = snapshot_owned_group(
+        process.pid, directory, timeout_seconds=min(2, remaining)
+    )
+    snapshot["stage"] = stage
+    write(directory / "result.json", snapshot)
+    return snapshot
+
+
+def owned_session_state(process, identity, snapshot, directory):
+    require_unreaped_owner(process)
+    require(identity is not None, "unverified startup leader identity")
+    rows = snapshot_rows(snapshot, directory, process.pid)
+    require(snapshot["binary_sha256"] == identity["ps_sha256"], "ps identity changed")
+    leader = next((row for row in rows if row["pid"] == process.pid), None)
+    require(leader is not None, "anchored leader missing")
+    keys = ("pid", "ppid", "pgid", "uid", "start")
+    require(
+        {k: leader[k] for k in keys} == {k: identity[k] for k in keys},
+        "anchored leader identity changed",
+    )
+    require(identity.get("sid") == process.pid, "missing owned session anchor")
+    observed = observe_leader(process)
+    if len(rows) == 1 and leader["state"].startswith("Z") and observed is not None:
+        return {"state": "sole-terminal-leader", "observed_exit": observed}
+    # A stale live row and a newer terminal event cannot authorize a signal.
+    if observed is not None and not leader["state"].startswith("Z"):
+        return {"state": "await-fresh-terminal-snapshot"}
+    live = [row for row in rows if not row["state"].startswith("Z")]
+    if not live:
+        # Non-child zombies are never reaped by this wrapper or counted gone.
+        return {"state": "await-nonchild-zombie-reaping"}
+    for row in live:
+        try:
+            sid = os.getsid(row["pid"])
+            pgid = os.getpgid(row["pid"])
+        except ProcessLookupError:
+            # Darwin excludes dead processes from these APIs. ESRCH is not absence.
+            return {"state": "await-fresh-member-snapshot"}
+        require(
+            sid == process.pid and pgid == process.pid,
+            "foreign session or reused group",
+        )
+    require_unreaped_owner(process)
+    return {"state": "owned-live-session", "live_pids": [row["pid"] for row in live]}
+
+
+def cleanup_owned_session(process, identity, record, directory, grace, send_signal):
+    require(identity is not None, "unverified startup leader identity")
+    started = time.monotonic()
+    term_end = started + grace
+    cleanup_end = term_end + grace
+    sent_term = False
+    sent_kill = False
+    index = 0
+    record["cleanup_observations"] = []
+    while True:
+        stage = (
+            "before-term"
+            if not sent_term
+            else "after-kill"
+            if sent_kill
+            else "after-term"
+        )
+        target = directory / f"cleanup-{index:04d}"
+        snapshot = capture_cleanup_snapshot(process, target, stage, cleanup_end)
+        require(
+            time.monotonic() <= cleanup_end,
+            "owned cleanup observation exceeded deadline",
+        )
+        state = owned_session_state(process, identity, snapshot, target)
+        record["cleanup_observations"].append({"stage": stage, **state})
+        index += 1
+        if state["state"] == "sole-terminal-leader":
+            require(
+                time.monotonic() <= cleanup_end, "owned cleanup proof exceeded deadline"
+            )
+            lifecycle = pre_kill_owned_leader(
+                process, identity, target, snapshot=snapshot
+            )
+            require(lifecycle["reaped"], "terminal leader was not reaped")
+            require(
+                lifecycle["returncode"] == state["observed_exit"],
+                "observed and reaped exit disagree",
+            )
+            record["leader_lifecycle"] = lifecycle
+            return
+        now = time.monotonic()
+        require(now < cleanup_end, "owned group cleanup remains unverified at deadline")
+        if state["state"] == "owned-live-session":
+            if not sent_term:
+                send_signal(signal.SIGTERM, "first-eperm-term")
+                sent_term = True
+            elif now >= term_end and not sent_kill:
+                send_signal(signal.SIGKILL, "first-eperm-kill")
+                sent_kill = True
+        time.sleep(min(0.05, max(0, cleanup_end - time.monotonic())))
 
 
 def bounded(command, directory, deadline, cwd, grace=10):
@@ -424,6 +599,8 @@ def bounded(command, directory, deadline, cwd, grace=10):
 
     try:
         require(deadline > started, "total native budget exhausted before command")
+        if platform.system() == "Darwin":
+            require_waitid_contract()
         with (
             (directory / "stdout.log").open("wb") as stdout,
             (directory / "stderr.log").open("wb") as stderr,
@@ -441,50 +618,54 @@ def bounded(command, directory, deadline, cwd, grace=10):
                     record["leader_identity"] = identity
                 except Exception as identity_error:
                     record["leader_identity_error"] = str(identity_error)
-            try:
-                record["exit"] = process.wait(
-                    timeout=max(0, deadline - time.monotonic())
+            if platform.system() == "Darwin":
+                require(identity is not None, "unverified startup leader identity")
+                observed = observe_command(process, deadline)
+                record["timed_out"] = observed is None
+                record["exit"] = 124 if observed is None else observed
+                cleanup_owned_session(
+                    process, identity, record, directory, grace, signal_owned_group
                 )
-            except subprocess.TimeoutExpired:
-                record["timed_out"] = True
-                record["exit"] = 124
-            finally:
-                # This group was created by us, never an unrelated global PID search.
-                # Clean descendants even if the leader already exited.
+            else:
                 try:
-                    signal_owned_group(signal.SIGTERM, "first-eperm-term")
-                except ProcessLookupError:
-                    pass
-                else:
-                    group_absent = False
-                    end = time.monotonic() + grace
-                    while time.monotonic() < end:
-                        process.poll()
-                        try:
-                            signal_owned_group(0, "first-eperm-after-term-signal-zero")
-                        except ProcessLookupError:
-                            group_absent = True
-                            break
-                        time.sleep(0.05)
-                    reaped = False
-                    if not group_absent and platform.system() == "Darwin":
-                        lifecycle = pre_kill_owned_leader(
-                            process, identity, directory / "before-final-kill"
-                        )
-                        record["leader_lifecycle"] = lifecycle
-                        reaped = lifecycle["reaped"]
-                    if not group_absent and not reaped:
-                        try:
-                            signal_owned_group(signal.SIGKILL, "first-eperm-kill")
-                        except ProcessLookupError:
-                            pass
-                try:
-                    process.wait(timeout=grace)
-                except subprocess.TimeoutExpired as error:
-                    record["cleanup_error_type"] = type(error).__name__
-                    record["cleanup_traceback"] = traceback.format_exc()
-                    record["cleanup_error"] = "owned leader not reaped"
-                    record["exit"] = 125
+                    record["exit"] = process.wait(
+                        timeout=max(0, deadline - time.monotonic())
+                    )
+                except subprocess.TimeoutExpired:
+                    record["timed_out"] = True
+                    record["exit"] = 124
+                finally:
+                    # This group was created by us, never an unrelated global PID search.
+                    # Clean descendants even if the leader already exited.
+                    try:
+                        signal_owned_group(signal.SIGTERM, "first-eperm-term")
+                    except ProcessLookupError:
+                        pass
+                    else:
+                        group_absent = False
+                        end = time.monotonic() + grace
+                        while time.monotonic() < end:
+                            process.poll()
+                            try:
+                                signal_owned_group(
+                                    0, "first-eperm-after-term-signal-zero"
+                                )
+                            except ProcessLookupError:
+                                group_absent = True
+                                break
+                            time.sleep(0.05)
+                        if not group_absent:
+                            try:
+                                signal_owned_group(signal.SIGKILL, "first-eperm-kill")
+                            except ProcessLookupError:
+                                pass
+                    try:
+                        process.wait(timeout=grace)
+                    except subprocess.TimeoutExpired as error:
+                        record["cleanup_error_type"] = type(error).__name__
+                        record["cleanup_traceback"] = traceback.format_exc()
+                        record["cleanup_error"] = "owned leader not reaped"
+                        record["exit"] = 125
     except Exception as error:
         record["error"] = str(error)
         record["error_type"] = type(error).__name__
