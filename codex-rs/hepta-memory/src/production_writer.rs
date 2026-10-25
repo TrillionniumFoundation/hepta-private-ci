@@ -59,12 +59,15 @@ use crate::operation_claims::DurableDispatchClaim;
 
 #[path = "memory_cell_invocation.rs"]
 mod memory_cell_invocation;
+#[path = "memory_cell_retained.rs"]
+mod memory_cell_retained;
 #[path = "memory_cell_source.rs"]
 mod memory_cell_source;
 #[path = "memory_cell_types.rs"]
 mod memory_cell_types;
 pub use memory_cell_invocation::MemoryCellAdmissionV1;
 pub use memory_cell_invocation::MemoryCellUseReceiptV1;
+pub use memory_cell_retained::decode_retained_memory_cell_source_claim_v1;
 pub use memory_cell_types::MemoryCellDocumentV1;
 pub use memory_cell_types::MemoryCellKeyV1;
 pub use memory_cell_types::MemoryCellQueryV1;
