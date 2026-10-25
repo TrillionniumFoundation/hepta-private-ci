@@ -1,0 +1,20 @@
+{
+  "command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 /workspace/scratch/2b3c256bef7d/ndu-env/bin/python -B -m experiments.multimodal_output_portfolio.abc_followup.native_candidate.source_guard_tests",
+  "elapsed_seconds_reported_by_runner": 0.01,
+  "exit_code": 0,
+  "new_future_outcomes_opened": false,
+  "original_source_guards_modified": false,
+  "real_sources_materialized": false,
+  "schema": "hepta.abc4.source-reuse-guard-validation.v1",
+  "scope": "Synthetic original20-model census and independent reuse access boundary checks repeated after metadata wording correction. Metadata-only registration invokes unchanged original guards and completed candidate/repair records; no source pixels/labels or new future outcomes materialized.",
+  "source_sha256": {
+    "REUSE_ASSIGNMENT-v2.json": "842b96e49c775b30464fca79eda03c4feb2929c3140f04fc79a030dd7611a39c",
+    "TIMELINE-v2.json": "dc4b1f41feab9cf5be462968b45596e99d7035428b4ca6fea21f19c936482a4f",
+    "source_guard.py": "ec95a0ce904c9c03e71c865f040974669614c1d8683c736f6777bd8aad45228a",
+    "source_guard_tests.py": "051b81310ec604dcdbf4ff7ab24856be8f4691966c765e9b7254cd78f07f8455"
+  },
+  "status": "passed",
+  "supersedes_prepublication_validation_sha256": "3374fbcf4f71e3d60026870d21fad41e9c07b37b411bca490e3e402a70570229",
+  "test_runner": "unittest",
+  "tests": 4
+}

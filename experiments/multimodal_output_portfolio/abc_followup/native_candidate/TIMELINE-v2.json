@@ -1,0 +1,90 @@
+{
+  "baseline_weights_sha256": "95d6fade17c609457cb6b978d6580a37fb3bdd02aafa125d964c60c48dd4cc0c",
+  "call_isolation": "Pinned proposal/hook reads original native test context and frozen weights; historical evaluator reads development only. No repair execution, metric, target or candidate-selection input is passed.",
+  "candidate_anchor": "e5e24dce4b89626b281def5f6c2af89a5df7e05c7d2c732b2a6bd1f98e5a46c4",
+  "candidate_artifact_existed_before_evaluation_registration_by_frozen_hook_order": true,
+  "candidate_context_pair": 1768,
+  "candidate_context_source_role": "test",
+  "candidate_evaluation_registered_unix_ns": 1792918528244689084,
+  "candidate_file_sha256": "409221dd6f892e3ccf0f317c4c4d86dc9cf9bcf68651c016349515094fa2dd24",
+  "candidate_ids": [
+    "candidate:no-change:9058ec1051babac8df4de39e582bdb045eba111d422c7e9725f01c10b2919b01",
+    "candidate:update:a37048291fca37e406e593f8f5309660db09accf4ab954b411db672c203dc3d4",
+    "candidate:update:fdd02ddb1908450167c2169d7f51744c9b3de663d76fd6f672e005c01ce55640"
+  ],
+  "candidate_precedes_any_formal_repair_access": true,
+  "candidate_sequence": 802,
+  "clock_scope": "Local process registration written and closed, completed-output/receipt filesystem mtimes, immutable artifact bindings and frozen call order. Registration time is not a consumption-completion upper bound; original registration JSON was not fsynced. These are not externally authenticated timestamps.",
+  "completed_artifact_local_filesystem_mtime_unix_ns": {
+    "candidate_evaluation_receipt": 1792918530334628243,
+    "historical_evaluation": 1792918529863988695,
+    "native_completion_receipt": 1792918533124678920
+  },
+  "completed_artifact_mtime_lead_before_repair_access_ns": 373733594883,
+  "generator_digest": "94c9582ba41a86a4fb1578484ca2f2a6cb0731dcc447816d0a7f487cc756600d",
+  "historical_evaluator_input": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/development-001",
+  "new_project_source_or_independent_replication_claimed": false,
+  "prepublication_correction": {
+    "reason": "Correct durability and registration-versus-consumption wording before protocol publication or new branch access; add completed receipts and their observed local mtimes. Old registration was write-and-close; new reuse access has explicit file and directory fsync. Candidate, source and statistics unchanged.",
+    "supersedes_timeline_sha256": "9b59c33d5a9c896fb932a9f8139c29e0ec3c266abe25f6061f9ed807c11b7d82"
+  },
+  "prior_repair_results_now_observed": true,
+  "proof_inputs": {
+    "candidate_consumption_registration": {
+      "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001/live-evaluation.process.registration.json",
+      "sha256": "ce1b748ad84bd3efa1ba56339b8367f33452bc8e5fb06af0c45824d19c383b2a"
+    },
+    "candidate_evaluation_receipt": {
+      "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001/live-evaluation.process.json",
+      "sha256": "bdc6ca2989b0da8cc69617546a4eccbc2a5de47c15a6f757f799ee583383290d"
+    },
+    "candidates": {
+      "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001/live-proposal-candidates/candidates.json",
+      "sha256": "409221dd6f892e3ccf0f317c4c4d86dc9cf9bcf68651c016349515094fa2dd24"
+    },
+    "frozen_geometry_source": {
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_followup/native/parameter_geometry.rs",
+      "sha256": "e5f6f1fbb8c89544a18a9a07920c8cddd91c9768e5e1ce508cae2b0b28190532"
+    },
+    "frozen_historical_evaluator_source": {
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_followup/native/future_candidate.py",
+      "sha256": "21fc9a344550957c99fc8f937e4e458662d4eff3979000cf2a08b643d936ca5b"
+    },
+    "frozen_hook_source": {
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_followup/native/proposal_hook.rs",
+      "sha256": "7a036e15bbff384b0b4b99fcfae3ab5e038c578021fe1a21ab846b8e77b78cc8"
+    },
+    "frozen_proposal_source": {
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_followup/native/proposal.rs",
+      "sha256": "f2592918091683b947874beea5a42e75342cc2654e9d6711971aa369ccb2d16a"
+    },
+    "historical_evaluation": {
+      "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001/live-proposal-evaluation.json",
+      "sha256": "c5b6511cb65e1515c0f2278a3346d80a58216978d3c227645e46d7576ad4189f"
+    },
+    "native_completion_receipt": {
+      "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001.process.json",
+      "sha256": "63519b716bf4f99f166306ccf397fc7ff7b6c8fe2c5c750136e01af27e255c51"
+    },
+    "native_start_registration": {
+      "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001.process.registration.json",
+      "sha256": "c7bc31999a27af48d073e448938821ecc47b39d8e484dc2278b10a6f2a25bff0"
+    },
+    "pending_candidates": {
+      "path": "/workspace/scratch/2b3c256bef7d/abc4-native-runs/future-native-001/live-proposal-pending/candidates.json",
+      "sha256": "409221dd6f892e3ccf0f317c4c4d86dc9cf9bcf68651c016349515094fa2dd24"
+    },
+    "repair_analysis_registration": {
+      "path": "/workspace/scratch/2b3c256bef7d/abc4-repair-runs/analysis-001.process.registration.json",
+      "sha256": "3be0719a9a6f8878d4c2ca5cd1e2b360b35bf5ec3cb797ed9ef01a1b3a9a6e86"
+    },
+    "repair_first_access_registration": {
+      "path": "/workspace/scratch/2b3c256bef7d/abc4-repair-runs/evaluation-001/access-registration.json",
+      "sha256": "c2ef90028c8e46f995a06f1987ecb9de1100bdcb55cf8a4daae11cfce00c70bc"
+    }
+  },
+  "registration_lead_before_repair_access_ns": 378613584719,
+  "repair_analysis_start_unix_ns": 1792919248466834952,
+  "repair_first_access_unix_ns": 1792918906858273803,
+  "schema": "hepta.abc4.fixed-candidate-reuse-timeline.v1"
+}
