@@ -509,9 +509,7 @@ fn persist(path: &Path, state: &StoredRegistryV1) -> Result<(), LeaseRegistryErr
         .and_then(|()| file.sync_all())
         .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
     std::fs::rename(&next, path).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    File::open(parent)
-        .and_then(|directory| directory.sync_all())
-        .map_err(|_| LeaseRegistryErrorV1::Unavailable)
+    directory_sync::sync_parent(parent).map_err(|_| LeaseRegistryErrorV1::Unavailable)
 }
 
 fn identifier(value: &str) -> bool {
@@ -525,3 +523,6 @@ fn identifier(value: &str) -> bool {
 #[cfg(test)]
 #[path = "lease_lifecycle_tests.rs"]
 mod tests;
+
+#[path = "lease_directory_sync.rs"]
+mod directory_sync;
