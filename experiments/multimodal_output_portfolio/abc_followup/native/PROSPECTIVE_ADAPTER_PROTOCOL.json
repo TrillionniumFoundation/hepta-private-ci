@@ -1,0 +1,73 @@
+{
+  "amendment_history": [
+    {
+      "before_verification": true,
+      "reason": "Historical continuous001 exposed omitted per-tick allocator window reset. Restore unchanged original instrument lifecycle; require explicit full future qualification matching pinned verification. No forecast, probability, source, threshold, selection or primary-analysis changes.",
+      "supersedes_sha256": "66bda792c7ea8763f52be47109d9a69e64d97289a28d990bb8e2d6d648911c18"
+    },
+    {
+      "before_verification": true,
+      "reason": "Separate analytically feasible homeostasis profile, checked actual1600 and finite stress; bind required samefuturehead live pendingproposal hook. No forecast weights/cuts/probabilities, source allocation or statistical acceptance threshold changes.",
+      "supersedes_sha256": "4e61cc00a293d77029afbb374b7b70d48ed6bcc9ed2e7edf49f7914931e54279"
+    }
+  ],
+  "calibrator_freeze_sha256": "42e90963a5d5f7ccccb78606572011ac238abffabd40ebc78a698b0364a0b454",
+  "dynamics_profile": "bounded_balanced",
+  "dynamics_profile_protocol_sha256": "c0836c91145372bed79040a5bdbab8248d86642d0ceaeb196c4faca2884a2772",
+  "frozen_unix_ns": 1792918055519232149,
+  "full_study_gates_required_for_any_supplemental_tick": true,
+  "gates": {
+    "calibration_and_verification_max_point_ece_ppm": 30000,
+    "ece_intervals": "4000 source-pair clustered bootstrap, reported descriptive95, not an additional significance gate",
+    "max_point_far_ppm": 4999,
+    "minimum_id_acceptance_fraction_both_roles": 0.25,
+    "verification_ood_pair_one_sided95_upper_max": 0.004999
+  },
+  "live_proposal_config_sha256": "6fcc773dcdfb1e573131249624ad282d122d8e627d2cfbc227fd5ec6777355f2",
+  "live_proposal_protocol_sha256": "c8e754c55221af5c999a2f28ece750a82caf84465d1fca4436f5d4d6eb75c84e",
+  "native_stream": {
+    "extra_same_anchor_recovery_after_proposal": true,
+    "journal_segment_capacity": 128,
+    "live_hook": "first actual admitted ID at or after sequence800; exact-anchor pendingproposal/recovery then continue1600; fail if no eligible hook",
+    "new_independent_samples": 0,
+    "order": "one absence(couple), one ID; repeated800 times; no outcome-dependent choice",
+    "recover_at_sequences": [
+      800,
+      1600
+    ],
+    "rows": 1600,
+    "same_subject_contexts": 1,
+    "scope": "same-context runtime lifecycle across observed tasks, not uninterrupted generation",
+    "selection": "all800 verification complete-absence pairs couple action, interleaved with first400 verification ID pairs both actions in pair/action order"
+  },
+  "original_protocol_sha256": "b94df6feac7cace3beb8f1f9f95b7a299f60dbb9b86c4fe414df5925c8c5416b",
+  "output_contract": {
+    "confidence": "original max residual -> frozen_p up to Q24 integer rounding",
+    "native_drive": "[1, observed_state32]",
+    "native_prediction": "[frozen_p, observed_state32]",
+    "observed_state_cancellation": "confidence carrier only; copied coordinates never called future forecasts",
+    "pre_generation_probability": "unchanged trained future correctness head and frozen8-bin calibration",
+    "real_future_state": "original independent forecast32 still precommitted and evaluated unchanged"
+  },
+  "primary_analysis_unchanged": true,
+  "reason": "Calibration identifies max-state-error confidence as a different quantity from semantic correctness; original failure retained. Supplement registered before opening verification.",
+  "schema": "hepta.abc4.future-correctness-supplement.v1",
+  "selection": "no predictor retraining/recalibration, statistical acceptance-threshold changes, action selection or adapter variants after verification",
+  "source_pins": {
+    "continuous.rs": "8fe2d052123bc0dfd7a1ab0262baf4292a655f8639895e927a2d163b14764b37",
+    "dynamics_profile.rs": "bbb85aea108723e4e526d5c71e6f81a1166a80cd932c2225843be3462c570d67",
+    "future_candidate.py": "21fc9a344550957c99fc8f937e4e458662d4eff3979000cf2a08b643d936ca5b",
+    "future_head.rs": "b53618d88c516059ae684fe0c3258c5dc9ed6f05bd5b30f4b38ae6b08c7be41f",
+    "future_head_tests.rs": "b0f586662caefd5d1198588f0715e29849c8a7f121ba605dbcf5976401622d74",
+    "ledger_probe.rs": "739b442e0caef21ca49f376b720ed23b92f366e0e3a76dc0fbb383225276d51b",
+    "native_run.py": "7a2fa04bd200f4e9d6b3e0227faea79b94b1624f169d29773448c8db3ec8ef21",
+    "packet.py": "038f7de71d7a7d3e7f780742f6671dcdf0c264a41906c24842d8927495332b32",
+    "parameter_geometry.rs": "e5f6f1fbb8c89544a18a9a07920c8cddd91c9768e5e1ce508cae2b0b28190532",
+    "proposal.rs": "f2592918091683b947874beea5a42e75342cc2654e9d6711971aa369ccb2d16a",
+    "proposal_hook.rs": "7a036e15bbff384b0b4b99fcfae3ab5e038c578021fe1a21ab846b8e77b78cc8",
+    "prospective.py": "9f97ce1c8cea67872af23248df3aef8ff9f1bbb3bd17355ef8611d98252273f8",
+    "prospective_tests.py": "bb922f78c8cebdfdd9e4141b86be0458b40fd7fc7f9cf9df1ea8b3f1422c8f7d",
+    "stream_io.rs": "8169bc9f7d47ef2f62b1fef079d80f3daa856b5f589bbb638350598bf705e2ca"
+  },
+  "source_roles": "same primary calibration and verification; no new source access or independent replication"
+}
