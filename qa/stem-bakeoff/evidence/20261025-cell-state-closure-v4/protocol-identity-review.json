@@ -1,0 +1,38 @@
+{
+  "schema": "hepta-v4-executed-protocol-identity-review:v1",
+  "executed_commit": "fa2a8f928dc41f8f3c48ea9bd0d45adf1e27ee09",
+  "published_protocol_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/fa2a8f928dc41f8f3c48ea9bd0d45adf1e27ee09/qa/stem-bakeoff/cell_field_closure_protocol.json",
+  "published_raw_protocol_sha256": "fe0057c499c1a77ca7f5781a05425d83d59693b4250fb1560cab978afb4cd5b2",
+  "source_freeze_protocol_sha256": "fe0057c499c1a77ca7f5781a05425d83d59693b4250fb1560cab978afb4cd5b2",
+  "feature_report_protocol_sha256": "fe0057c499c1a77ca7f5781a05425d83d59693b4250fb1560cab978afb4cd5b2",
+  "published_protocol_semantic_sha256": "8c4dbc77dc6b495173f7ea85f004360d18fe74fc4cb886f18fce9fc5ceecdaf7",
+  "published_preregistration_sha256": "ae4be0a7c2c8807f286f8d96581c6efa51e3a9f935cec7c1e515dd18d146866b",
+  "earlier_local_candidate_protocol_sha256": "f78eb8e5d76fc8cd44e9f978ef39fbe17874e27de3d601e8ca15ef12dfe34510",
+  "difference_is_only_serialization": false,
+  "added_protocol_fields": {
+    "source_owner_directory": "/home/qian-qi/work/hepta-architecture-20261025/cell-v4-evidence-v1",
+    "source_owner_policy": "prepare and consume only source_owner_directory/data; create-only preparation and final access; changing run, feature or evaluation output directories does not authorize a new copy of this cohort; preserve the owner directory after every failure"
+  },
+  "changed_existing_protocol_fields": [],
+  "removed_protocol_fields": [],
+  "scientific_action_objective_primary_settings_unchanged": true,
+  "source_hashes_verified_against_actual_freeze": {
+    "cell_field_closure_run.py": "e6101d6f4cbe7c122bfa29a9584a248667199baaaf06c811313670ff81fd8cb3",
+    "cell_field_closure_control.py": "f941a43b563f118442336673a7d972c291a790770fef4748dfbf5af90daf8813",
+    "cell_field_closure_features.py": "d475395320abdbdf7a61f3ca5c9d0ced8ab4d18563f915b8a568748d4cdb89c2",
+    "cell_field_control.py": "b91260462b26492e29d17da4daaa7f16be429e3b6f33e4af587bf0471e15780b",
+    "shared_feature_extract.py": "7338e9eb36f8909828b528ff926e9d3412ffa1c653d141dcea39af3cb2b0fa73",
+    "real_encoder.py": "c0255c26dd9c73cfb737f6acec48f8ae1fdd07a7e7477e98691603e724fba2af"
+  },
+  "collector_v1_error": "incorrect early candidate protocol pin; fail-closed before aggregate output; no result accepted",
+  "collector_v1_source_sha256": "4e696e23e955c383a9afc32c484440bcd233a5067855019266252e69da5f156e",
+  "collector_v1_failure_stderr_sha256_root_receipt": "ddeb04123a638f3bbcb57075cdf14c8211e9964988e4eabb4e6e9425593a09e8",
+  "collector_r2_source_sha256": "bbfd690a7ee81b2aabf71da95164208be1364cff019017ce46f8cb111aa2aa8d",
+  "remediation": "Pin only the actual published/executed protocol, additionally require its full semantic digest and six original instrumentation source hashes; do not accept either pin or weaken validation.",
+  "raw_evidence_modified": false,
+  "actual_input_file_sha256": {
+    "source-freeze.json": "0e19fae8ce6ddb3b568bb23d6fec8981982f02857d70912d62bd652a2d923176",
+    "feature-report.json": "316531d39aae5ffdb872b15e8c842daa78a3e1ec74090505d3b24e9b2aa1caed",
+    "feature-bridge.json": "51f34369d6338c3fec83732366d55e48efabfd73f4dc3176ba314bb5921728a0"
+  }
+}

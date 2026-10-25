@@ -1,0 +1,9 @@
+# Retained unsuccessful cost-collection attempt
+
+The first cost collector stopped at `ValueError: registered protocol differs` and produced zero stdout bytes. No aggregate was accepted and no training, model, or raw final-label operation was invoked. Its source is preserved byte for byte in [collect_v4_costs_v1_failed.py](collect_v4_costs_v1_failed.py), SHA-256 `4e696e23e955c383a9afc32c484440bcd233a5067855019266252e69da5f156e`. This historical failed helper is not the reproduction entry point for the report.
+
+[Failure metadata](collector-v1-failure-metadata.json) records the owner-reported failure and original stderr SHA-256 `ddeb04123a638f3bbcb57075cdf14c8211e9964988e4eabb4e6e9425593a09e8`. The exact 550-byte original log is included as [collector-v1-stderr.log](collector-v1-stderr.log). The owner also retains it at `cell-v4-cost-aggregation-v1/stderr.log`. The metadata is a summary; the original traceback was copied without reconstruction.
+
+The wrong pin was from an earlier local candidate. The executed protocol had already added the fixed source-owner and create-only final-access policy before the experiment. [The identity review](../protocol-identity-review.json) explains the exact two added fields and the unchanged scientific settings. The corrected collector checks only the actual executed identity and further verifies the full protocol semantics and six instrumentation source hashes. The successful [r2 result](../cost-collection-result.json) and [cost summary](../cost-summary.json) remain separate evidence.
+
+The earlier report package is also retained unchanged by the owner: SHA-256 `2024d21ec8ce6295ee5a37ccc7ade69396b397af1678f9b3a7506302ce0ad724`. The current report corrects provenance citations and adds available costs; it does not replace failed scientific comparisons or alter the primary 0/6 result.
