@@ -6,9 +6,7 @@ use crate::policy::QualificationPolicy;
 use crate::request_wire::PreparedOrdinaryWire;
 use anyhow::Result;
 use anyhow::anyhow;
-use codex_api::ResponsesApiRequest;
 use codex_api::ResponsesOptions;
-use codex_api::TextControls;
 use codex_core::config::ConfigBuilder;
 use codex_features::Feature;
 use codex_hepta_agent_loop::ManagedResponsesAttempt;
@@ -41,6 +39,8 @@ use tokio_util::sync::CancellationToken;
 
 #[path = "probe_settings.rs"]
 mod settings;
+#[path = "probe_request.rs"]
+mod request_template;
 
 const EXPECTED: &str = "HEPTA_NATIVE_STREAM_OK";
 const MAXIMUM_VISIBLE_BYTES: usize = 8_192;
@@ -98,21 +98,7 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
     let identity = uuid::Uuid::new_v4().to_string();
     let request_id = StableId::new(format!("qualification-request:{identity}"))?;
     let run_id = StableId::new(format!("qualification-run:{identity}"))?;
-    let api_request = ResponsesApiRequest {
-        model: model.to_string(),
-        instructions: "Run this harmless connectivity qualification. Return exactly the requested marker, without explanations or tool calls.".into(),
-        input: vec![serde_json::from_value(json!({
-            "type":"message", "role":"user",
-            "content":[{"type":"input_text", "text":format!("Return only {EXPECTED}")}],
-        }))?],
-        tools: None, tool_choice: "none".into(), parallel_tool_calls: false,
-        reasoning: Some(normalized_settings.reasoning),
-        store: false, stream: true, stream_options: None,
-        include: vec!["reasoning.encrypted_content".into()],
-        service_tier: normalized_settings.service_tier, prompt_cache_key: Some(run_id.to_string()),
-        text: normalized_settings.verbosity.map(|verbosity| TextControls { verbosity: Some(verbosity.into()), format: None }),
-        client_metadata: None,
-    };
+    let api_request = request_template::prepare(model, &run_id, normalized_settings)?;
     let encoded = EncodedJsonBody::encode(&api_request)
         .map_err(|_| anyhow!("qualification request encoding failed"))?;
     let body_digest = Digest32::of_bytes(encoded.as_bytes());
@@ -125,6 +111,7 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
         "wire_semantic_sha256":wire.semantic_digest().to_string(),
         "request_settings_evidence_sha256":request_settings_evidence_digest.to_string(),
         "request_normalization":"shared_original_model_settings_ordinary_v1",
+        "ordinary_tool_shape":"shared_core_empty_tools_auto_v1",
         "catalog_refresh_strategy":"offline", "full_core_request_parity":false,
         "routing_hint":null, "responses_lite":false,
         "routing_and_lite_headers_must_be_absent":true,
@@ -267,6 +254,7 @@ pub(crate) async fn run(args: &Args, evidence: Arc<Evidence>) -> Result<Value> {
         "wire_semantic_sha256":wire.semantic_digest().to_string(),
         "request_settings_evidence_sha256":request_settings_evidence_digest.to_string(),
         "request_normalization":"shared_original_model_settings_ordinary_v1",
+        "ordinary_tool_shape":"shared_core_empty_tools_auto_v1",
         "catalog_refresh_strategy":"offline", "full_core_request_parity":false,
         "routing_and_lite_headers_must_be_absent":true,
         "previous_indeterminate_attempt_repaired":false,
