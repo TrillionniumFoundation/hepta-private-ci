@@ -72,6 +72,27 @@ struct ObjectiveHostState {
 }
 
 impl ObjectiveRuntimeHost {
+    pub(crate) fn with_run_start<T>(
+        &self,
+        run_id: &StableId,
+        read: impl FnOnce(&RunStartRecordV1, Digest32) -> Result<T, AgentdError>,
+    ) -> Result<T, AgentdError> {
+        let state = self.state.lock().map_err(|_| {
+            AgentdError::Protocol("objective runtime mutex is poisoned".to_string())
+        })?;
+        let record = state
+            .journal
+            .get(run_id)
+            .map_err(store_error)?
+            .ok_or_else(|| invalid("no compiled durable objective for this run"))?;
+        if record.admission.profile_digest != self.profile_digest {
+            return Err(invalid(
+                "durable objective profile does not match the attached owner",
+            ));
+        }
+        read(record, state.journal.head_digest())
+    }
+
     pub(crate) fn open(
         identity: &AgentdIdentity,
         profile_file: &Path,
@@ -575,4 +596,4 @@ fn store_error(error: codex_hepta_learning_ledger::RunStartStoreError) -> Agentd
 
 #[cfg(test)]
 #[path = "objective_runtime_tests.rs"]
-mod tests;
+pub(crate) mod tests;

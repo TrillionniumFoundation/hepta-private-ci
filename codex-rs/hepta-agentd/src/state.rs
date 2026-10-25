@@ -29,6 +29,9 @@ use crate::RuntimeComposition;
 
 #[path = "state_control.rs"]
 mod control;
+#[path = "state_current_objective.rs"]
+mod current_objective;
+pub(crate) use current_objective::CurrentObjectiveReadV1;
 
 pub(crate) struct AgentdState {
     pub(crate) native_memory_cell: std::sync::OnceLock<Arc<crate::AgentdNativeMemoryCell>>,
@@ -822,4 +825,4 @@ fn poisoned_state<T>(_error: std::sync::PoisonError<T>) -> AgentdError {
 
 #[cfg(test)]
 #[path = "state_isolation_tests.rs"]
-mod isolation_tests;
+pub(crate) mod isolation_tests;
