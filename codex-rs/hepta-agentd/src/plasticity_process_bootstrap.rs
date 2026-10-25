@@ -38,7 +38,6 @@ use codex_hepta_neuron::InhibitoryEdge;
 use codex_hepta_neuron::JournalAnchor;
 use codex_hepta_neuron::JournalScope;
 use codex_hepta_neuron::SparseConfig;
-use codex_hepta_neuron::SparseJournal;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
@@ -63,6 +62,12 @@ use crate::resume_agentd_plasticity_writer_v1;
 use crate::resume_agentd_topology_writer_v1;
 
 // A descriptor/recovery failure is terminal for this optional organ; callers must never\n// reinterpret it as permission to create a fresh, unanchored proposal history.
+#[path = "neuron_chain_recovery.rs"]
+mod neuron_chain_recovery;
+use neuron_chain_recovery::{
+    NeuronSegmentDescriptorV1, recover_neuron_chain_v1, select_neuron_segments_v1,
+};
+
 const DESCRIPTOR_SCHEMA: &str = "hepta.agentd.plasticity-bootstrap.v1";
 const MAX_DESCRIPTOR_BYTES: u64 = 1_048_576;
 const MAX_NDU_JOURNAL_BYTES: u64 = 2 * 1_048_576;
@@ -194,11 +199,13 @@ struct SparseConfigDescriptorV1 {
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct NeuronDescriptorV1 {
-    journal_path: PathBuf,
+    journal_path: Option<PathBuf>,
+    #[serde(default)]
+    segment_chain: Option<Vec<NeuronSegmentDescriptorV1>>,
     owner_id: String,
     scope_digest: String,
     objective_digest: String,
-    max_records: usize,
+    max_records: Option<usize>,
     anchor_sequence: u64,
     anchor_checkpoint_digest: String,
     config: SparseConfigDescriptorV1,
@@ -288,7 +295,13 @@ pub fn load_plasticity_process_bootstrap_v1(
             "plasticity bootstrap descriptor does not match Agentd identity/generation".to_string(),
         ));
     }
-    validate_process_path_separation(&descriptor)?;
+    let neuron_segments = select_neuron_segments_v1(
+        descriptor.neuron.journal_path.as_deref(),
+        descriptor.neuron.max_records,
+        descriptor.neuron.segment_chain.as_deref(),
+    )
+    .map_err(|error| AgentdError::Invalid(format!("invalid neuron source: {error}")))?;
+    validate_process_path_separation(&descriptor, &neuron_segments)?;
 
     let objective_digest = digest(&descriptor.objective_digest, "objective digest")?;
     let artifacts = load_artifacts(&descriptor.artifacts)?;
@@ -329,15 +342,13 @@ pub fn load_plasticity_process_bootstrap_v1(
             "neuron checkpoint anchor",
         )?,
     };
-    let neuron_file = open_existing_rw(&descriptor.neuron.journal_path, "neuron journal")?;
-    let neuron_journal = SparseJournal::open_anchored(
-        neuron_file,
+    let neuron_journal = recover_neuron_chain_v1(
+        &neuron_segments,
         neuron_config,
         JournalScope {
             scope_digest: neuron_scope_digest,
             objective_digest: neuron_objective_digest,
         },
-        descriptor.neuron.max_records,
         neuron_anchor,
     )
     .map_err(|error| AgentdError::Invalid(format!("invalid anchored neuron journal: {error}")))?;
@@ -751,15 +762,16 @@ fn open_topology_writer(
 
 fn validate_process_path_separation(
     descriptor: &ProcessBootstrapDescriptorV1,
+    neuron_segments: &[NeuronSegmentDescriptorV1],
 ) -> Result<(), AgentdError> {
-    let paths = [
+    let mut paths = vec![
         descriptor.ledger.path.as_path(),
-        descriptor.neuron.journal_path.as_path(),
         descriptor.parameter_registry.registry_path.as_path(),
         descriptor.parameter_registry.anchor_path.as_path(),
         descriptor.topology_registry.registry_path.as_path(),
         descriptor.topology_registry.anchor_path.as_path(),
     ];
+    paths.extend(neuron_segments.iter().map(|segment| segment.journal_path.as_path()));
     for (index, left) in paths.iter().enumerate() {
         for right in paths.iter().skip(index + 1) {
             if left == right {
