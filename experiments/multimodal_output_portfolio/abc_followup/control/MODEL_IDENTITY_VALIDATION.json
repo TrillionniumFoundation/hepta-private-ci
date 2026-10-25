@@ -1,0 +1,71 @@
+{
+  "actual_requests": 20,
+  "bad_identity_refusals": [
+    {
+      "error_type": "ValueError",
+      "field": "model_file_sha256",
+      "refused": true
+    },
+    {
+      "error_type": "ValueError",
+      "field": "model_snapshot_sha256",
+      "refused": true
+    }
+  ],
+  "cpu_ns": 1239191718,
+  "independent_n_claim": false,
+  "media_sha256": "69a3ad49409e55e0ac6e13b5a23873d4bd1b76a389f8a6af545391831b9c0fc9",
+  "models": [
+    {
+      "all_completed": true,
+      "exact_cache_identity": true,
+      "model_file_sha256": "2f766c9356333d86f7c78c1cb18e8c67e776019c1071ff7af4b112f294518549",
+      "model_snapshot_sha256": "e1e494027f722e205bd0f5f40911def7ad1816e689fb10cd959db024907cb301",
+      "requests": 4,
+      "seed": 17
+    },
+    {
+      "all_completed": true,
+      "exact_cache_identity": true,
+      "model_file_sha256": "c990bd7c3121954b2f847496690af4bee3cea65cef840a9a42f78e44940ea140",
+      "model_snapshot_sha256": "9b37cdd7cb39aff89bbf553e3eeb7a6189e06ddf2823a645dba836790fe111e4",
+      "requests": 4,
+      "seed": 29
+    },
+    {
+      "all_completed": true,
+      "exact_cache_identity": true,
+      "model_file_sha256": "2833b3501f311aa026e5f673e24eb7d48a37dc2627859c8e373b68da01dbdcd3",
+      "model_snapshot_sha256": "7b322e7b22865cd0f5f76b65e75782fd580aa47b597f6f43a8faea57ca793e13",
+      "requests": 4,
+      "seed": 43
+    },
+    {
+      "all_completed": true,
+      "exact_cache_identity": true,
+      "model_file_sha256": "3be581e72e979d799fdbf5754a497a3a186095f8250388dd12e2dfaeaa3100a0",
+      "model_snapshot_sha256": "52eb666181e246348b29b71a02af4ea69c53f8040099a1329440efeaf4bca8a9",
+      "requests": 4,
+      "seed": 59
+    },
+    {
+      "all_completed": true,
+      "exact_cache_identity": true,
+      "model_file_sha256": "6e031528054ec32677eca3e1ca42bf933a5dee172d68b4026ca2e6ce1ab6fa3e",
+      "model_snapshot_sha256": "9d67ee181ac0787630c32e2d7373f1d7414e58d447d1b3b1d5afc0298b75e4da",
+      "requests": 4,
+      "seed": 71
+    }
+  ],
+  "new_test_loaded": false,
+  "pair_range": [
+    448,
+    449
+  ],
+  "protocol_sha256": "35601464db2dce9a31e79dc28443f689e4a91c29b706e3e41a45cd865e52c9ef",
+  "quality_evaluated": false,
+  "schema": "hepta.abc4.control-model-identity-smoke.v1",
+  "source_role": "historical_forecast_calibration",
+  "status": "passed",
+  "wall_ns": 1249351206
+}

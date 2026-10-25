@@ -159,7 +159,9 @@ def run(protocol_path, output):
             for entry in spec["controllers"]:
                 seed = entry["seed"]
                 wall, cpu = time.perf_counter_ns(), time.process_time_ns()
-                snapshot = Snapshot.load(model_path(seed, "output_ndu"), expected_file_sha256=entry["model_sha256"])
+                snapshot = Snapshot.load(model_path(seed, "output_ndu"), expected_file_sha256=entry["model_file_sha256"])
+                if snapshot.fingerprint != entry["model_snapshot_sha256"]:
+                    raise ValueError("Frozen snapshot semantics changed after preflight")
                 old = load_controller(Path(entry["old_controller_file"]))
                 compact = load(Path(entry["compact_file"]))
                 model_loads.append({"seed": seed, "wall_ns": time.perf_counter_ns() - wall,

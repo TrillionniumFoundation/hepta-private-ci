@@ -1,0 +1,38 @@
+{
+  "cause": "Development model_sha256 was Snapshot.fingerprint, but serial passed it to expected_file_sha256; this rejects unchanged frozen models before generation.",
+  "changed_source_sha256": {
+    "experiments/multimodal_output_portfolio/abc_followup/control/identity_smoke.py": {
+      "corrected": "5087abd19d21c8761822f3e97ffd40e1c780572c89d85eedb17ad227d733941a",
+      "previous": null
+    },
+    "experiments/multimodal_output_portfolio/abc_followup/control/protocol.py": {
+      "corrected": "92b4464183a7a923adf186c9452c13665f5713d27fe26918824f69ed66914482",
+      "previous": "6e238d07ba7e7f932a2ce71e023ea2ffe8e379ef50844225033f31b231fb49e0"
+    },
+    "experiments/multimodal_output_portfolio/abc_followup/control/serial.py": {
+      "corrected": "b7d29fa48d8f9be705550eddf6c384772bd6bfeee5cb2249f41baa9b0cd26e14",
+      "previous": "7ab6fc6cedcf469b06e35a4a8eef45b60752ea2a62a5c6cfc5fa89ab60a0e133"
+    }
+  },
+  "correction": "Separately pin model_file_sha256 and model_snapshot_sha256; validate checkpoint bytes and loaded snapshot semantics before test loading and at resident load.",
+  "new_final_test_opened": false,
+  "previous_protocol_retained_unchanged": true,
+  "previous_protocol_sha256": "b3d5c8e1483b37514fe64176678d26e8c37a3085a5cb0a027eef5186e62551c9",
+  "publication_required_before_final": true,
+  "recorded_unix_ns": 1792916320961975300,
+  "replacement_protocol_sha256": "35601464db2dce9a31e79dc28443f689e4a91c29b706e3e41a45cd865e52c9ef",
+  "schema": "hepta.abc4.control-model-identity-amendment.v1",
+  "unchanged": [
+    "source allocation and role/range",
+    "five original NDU generator parameters and configuration",
+    "all controller weights",
+    "development data and selection",
+    "policy action rights",
+    "statistics and price grid",
+    "primary comparisons and non-inferiority margins"
+  ],
+  "validation_entry_cpu_ns": 1239191718,
+  "validation_entry_wall_ns": 1249351206,
+  "validation_scope": "One historical forecast_calibration source pair [448,449), five models and four actual policies; 20 completed durable generations, old/cache exact identity, independent wrong-byte and wrong-semantic SHA refusal. No terminal quality evaluation or new final access.",
+  "validation_sha256": "80103e9de141d6ea701a3822f971799bb31511a3c21ff70b1ddab7e6431a2d84"
+}

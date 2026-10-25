@@ -5,16 +5,17 @@ import json
 from pathlib import Path
 import time
 
-from ...abc_next.settings import MANIFEST, MANIFEST_SHA, REPO, RUNS, SEEDS, SENSOR, source_pins
+from ...abc_next.settings import MANIFEST, MANIFEST_SHA, REPO, RUNS, SEEDS, SENSOR, model_path, source_pins
 from ...abc_recovery.base_recovery import file_sha, write_json
 from ...v7.data import VIEWS
+from ...v7.snapshot import Snapshot
 from .analysis import BOOTSTRAP_SEED, PRICES
 from .serial import POLICIES
 
 
 def implementation_pins():
     paths = [Path(__file__).with_name(name + ".py") for name in
-        ("features", "value", "allocation", "development", "serial", "analysis", "protocol", "core_tests")]
+        ("features", "value", "allocation", "development", "serial", "analysis", "protocol", "core_tests", "identity_smoke")]
     paths += [Path(__file__).parents[1] / "process.py",
               Path(__file__).parents[2] / "abc_next/timing.py",
               Path(__file__).parents[2] / "abc_recovery/statistics.py",
@@ -29,7 +30,13 @@ def freeze(development, output):
     entries = []
     for row in data["controllers"]:
         old_path = RUNS / f"controllers-001/seed-{row['seed']}/output_ndu/controller.pt"
-        entries.append({key: row[key] for key in ("seed", "model_sha256", "compact_file", "compact_file_sha256", "old_controller_sha256")}
+        model_file = model_path(row["seed"], "output_ndu")
+        model_file_sha = file_sha(model_file)
+        snapshot = Snapshot.load(model_file, expected_file_sha256=model_file_sha)
+        if snapshot.fingerprint != row["model_sha256"]:
+            raise ValueError("Development snapshot semantics changed")
+        entries.append({key: row[key] for key in ("seed", "compact_file", "compact_file_sha256", "old_controller_sha256")}
+                       | {"model_file_sha256": model_file_sha, "model_snapshot_sha256": snapshot.fingerprint}
                        | {"old_controller_file": str(old_path)}
                        | {key: row["selection"][key] for key in ("selected_candidate", "selected_nonfeedback", "static_plan_index")})
     profile = {"source_role": "test", "pair_start": 512, "pair_count": 256, "views": list(VIEWS),
@@ -60,7 +67,8 @@ def freeze(development, output):
         "allocation_sha256": file_sha(Path(__file__).with_name("SOURCE_ALLOCATION.json")),
         "manifest_sha256": MANIFEST_SHA, "sensor_sha256": file_sha(SENSOR),
         "source_sha256": implementation_pins(), "new_final_outcomes_opened": False,
-        "source_scope": "512 individual MNIST test images absent from earlier source roles/outcome executions; unknown writer clusters not certified"})
+        "source_scope": "512 individual MNIST test images absent from earlier source roles/outcome executions; unknown writer clusters not certified",
+        "model_identity_scope": "model_file_sha256 binds checkpoint bytes; model_snapshot_sha256 binds parameter plus configuration semantics; both checked independently"})
     print(json.dumps({"protocol": str(output), "sha256": file_sha(output)}))
 
 
@@ -83,6 +91,10 @@ def validate(path):
         if (file_sha(Path(row["compact_file"])) != row["compact_file_sha256"]
                 or file_sha(Path(row["old_controller_file"])) != row["old_controller_sha256"]):
             raise ValueError("Frozen controller changed")
+        snapshot = Snapshot.load(model_path(row["seed"], "output_ndu"), expected_file_sha256=row["model_file_sha256"])
+        if (snapshot.fingerprint != row["model_snapshot_sha256"]
+                or snapshot.fingerprint != development_rows[row["seed"]]["model_sha256"]):
+            raise ValueError("Frozen model snapshot semantics changed")
         if any(row[key] != development_rows[row["seed"]]["selection"][key]
                for key in ("selected_candidate", "selected_nonfeedback", "static_plan_index")):
             raise ValueError("Policy or reference differs from development choice")
