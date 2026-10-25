@@ -1,0 +1,55 @@
+{
+  "auditor_source_sha256": "400278cd15933b00f3452334f54a801dbb6ca9a7e8b63102e37160b295b1bd35",
+  "checks": [
+    {
+      "expected": true,
+      "observed": true,
+      "passed": true,
+      "path": "ruff-qualification-001/known-fix/semantic.json",
+      "source_sha256": "dc3d314d1bd782693621a623bc3dccce814417847963b660060810f4b305ab13"
+    },
+    {
+      "expected": false,
+      "observed": false,
+      "passed": true,
+      "path": "ruff-qualification-001/skip-failure/semantic.json",
+      "source_sha256": "eb26edf1121c0f401612459d2a775e3086452d573669e0a82e86b3d69eea8ffc"
+    },
+    {
+      "expected": false,
+      "observed": false,
+      "passed": true,
+      "path": "ruff-qualification-001/semantic-failure/semantic.json",
+      "source_sha256": "c6328e1626eac8233f560165135670d4bf5e086b98836fa5658c1f471a0e2650"
+    },
+    {
+      "expected": true,
+      "observed": true,
+      "passed": true,
+      "path": "codec-qualification-002/known-fix/provisioned/observed/semantic.json",
+      "source_sha256": "7810dc5610fd5dec0ef78d05efb93429e8361cfa114782fc4b4a30fb419de6c7"
+    },
+    {
+      "expected": false,
+      "observed": false,
+      "passed": true,
+      "path": "codec-qualification-002/original/missing_ffmpeg/observed/semantic.json",
+      "source_sha256": "61ffd1343a4743666031182ce1d449cefa42f703c90ffa9884461b741a0cb3bc"
+    },
+    {
+      "expected": false,
+      "observed": false,
+      "passed": true,
+      "path": "codec-qualification-002/partial-suite/provisioned/observed/semantic.json",
+      "source_sha256": "2f2f2fd63cb24bd2d9b290e5a9749b0fb11b408cde733743af702c204ff7cd23"
+    },
+    {
+      "case": "incomplete_evidence_cannot_pass",
+      "passed": true
+    }
+  ],
+  "exact_remote_source_files_verified": 35,
+  "model_queries": 0,
+  "new_task_executions": 0,
+  "passed": true
+}
