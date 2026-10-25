@@ -275,6 +275,18 @@ impl SqliteConfig {
         Ok(pool)
     }
 
+    /// Open an isolated, single-connection in-memory pool for schema fixtures.
+    ///
+    /// This is not a durable owner or a runtime database: it has no filesystem
+    /// home, migration policy, recovery path, or runtime-DB telemetry identity.
+    /// Callers own migrations and close the pool using the normal SQLx lifecycle.
+    pub async fn open_in_memory_pool_for_testing() -> Result<SqlitePool, Error> {
+        SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect("sqlite::memory:")
+            .await
+    }
+
     /// Open a writable Codex SQLite database, creating it if necessary.
     pub async fn open_read_write_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
         let options = SqliteConnectOptions::new()
@@ -381,3 +393,7 @@ impl SqliteConfig {
             .await
     }
 }
+
+#[cfg(test)]
+#[path = "sqlite_in_memory_tests.rs"]
+mod in_memory_tests;
