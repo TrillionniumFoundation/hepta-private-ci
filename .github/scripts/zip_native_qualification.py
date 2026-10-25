@@ -14,17 +14,56 @@ PROFILE_APPENDIX='\n# Owner diagnostic only: original defaults and overrides pre
 NEXTTEST_BASE_BLOB='f0430497b34b5335929e24b9e19745f467362641'
 DEADLINE=None
 FINALIZING=False
-CONTROL_PARENT='f61a23820d2ae6ac510d80e81f72d9638cc2f16a'
+CONTROL_PARENT='42b5f8d07065a6251e83cb0d4ba4f679e3efec63'
 FINAL_READ_REPOS=frozenset()
 FINAL_GIT_READS={('ls-files','-z'),('status','--porcelain','--untracked-files=all'),('rev-parse','HEAD'),('rev-parse','HEAD^{tree}')}
 class Hold(Exception):pass
 
 def sha(b):return hashlib.sha256(b).hexdigest()
 def blob(b):return hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()
-def require(v):
-    if not v:raise Hold()
+DIAGNOSTIC_STAGES={'initial','platform','budget','event','disk','control_admin','source_admin',
+    'control_index','source_index','control_identity','source_identity','source_overlay',
+    'locks','cargo_profile','cargo_config','native_commands','final_identity','complete'}
+DIAGNOSTIC_PREDICATES={'gate_failed','platform','budget_origin','budget_elapsed','deadline',
+    'event_ref','event_sha','workflow_sha','workflow_ref','initial_disk',
+    'admin_directory','admin_forbidden_entry','admin_required_directory','admin_object_bound',
+    'admin_promisor','admin_file_symlink','admin_file_bound','admin_missing_file','admin_ref_bound',
+    'admin_ref_type','admin_identity_changed','config_size','config_encoding','config_section',
+    'config_syntax','config_key','config_duplicate','config_value','config_required','config_branch_pair',
+    'index_empty','index_format','index_mode','index_gitmodules','control_head','control_parent',
+    'control_dirty','control_blob','source_head','source_tree','source_dirty','source_blob',
+    'policy_identity','lock_identity','cargo_config_identity','permission_denied','io_error','unexpected_error'}
+DIAGNOSTIC_ITEMS={'commondir','gitdir','worktrees','modules','config_worktree','config_lock','index_lock',
+    'objects_info_alternates','objects_info_http_alternates','refs_replace','info_grafts',
+    'info','objects','objects_info','objects_pack','refs','config','HEAD','index','shallow','packed-refs','info_attributes'}
+DIAGNOSTIC={'stage':'initial','failure':None,'final_failure':None}
+
+def diagnostic_stage(stage):
+    if stage not in DIAGNOSTIC_STAGES:raise Hold()
+    DIAGNOSTIC['stage']=stage
+
+def diagnostic_failure(predicate,detail=None):
+    # Never serialize arbitrary exception strings, configuration names/values or paths.
+    if predicate not in DIAGNOSTIC_PREDICATES:predicate='unexpected_error'
+    entry={'stage':DIAGNOSTIC['stage'] if DIAGNOSTIC.get('stage') in DIAGNOSTIC_STAGES else 'initial','predicate':predicate}
+    if detail:
+        safe={}
+        if isinstance(detail.get('item'),str) and detail['item'] in DIAGNOSTIC_ITEMS:safe['item']=detail['item']
+        if isinstance(detail.get('sha256'),str) and re.fullmatch('[a-f0-9]{64}',detail['sha256']):safe['sha256']=detail['sha256']
+        for key in ['config_present','head_present','index_present']:
+            if type(detail.get(key)) is bool:safe[key]=detail[key]
+        for key in ['bytes','count']:
+            if type(detail.get(key)) is int and 0<=detail[key]<=16384:safe[key]=detail[key]
+        if safe:entry['detail']=safe
+    key='final_failure' if FINALIZING else 'failure'
+    if DIAGNOSTIC.get(key) is None:DIAGNOSTIC[key]=entry
+
+def require(v,predicate='gate_failed',detail=None):
+    if not v:
+        diagnostic_failure(predicate,detail)
+        raise Hold()
 def guard():
-    require(DEADLINE is not None and time.monotonic()<DEADLINE+(180 if FINALIZING else 0)-10)
+    require(DEADLINE is not None and time.monotonic()<DEADLINE+(180 if FINALIZING else 0)-10,'deadline')
 GIT_ADMIN_BASELINES={}
 CARGO_CONFIG_BASELINE=None
 CARGO_CONFIG_PATHS=[]
@@ -32,8 +71,14 @@ GIT_SAFE_FLAGS=['-c','core.fsmonitor=false','-c','core.untrackedCache=false',
     '-c','core.hooksPath=/dev/null','-c','core.attributesFile=/dev/null',
     '-c','submodule.recurse=false','-c','protocol.allow=never']
 
+def safe_section_detail(line):
+    # Hash only an unambiguous complete section header, never an inline RHS.
+    if re.fullmatch(r'\[[A-Za-z][A-Za-z0-9.-]*(?: "[^"\\\]\r\n]*")?\]',line) is None:
+        return None
+    return {'sha256':sha(line.encode()),'bytes':len(line.encode()),'count':1}
+
 def strict_git_config(data):
-    require(len(data)<=16384)
+    require(len(data)<=16384,'config_size')
     section=None;values={}
     allowed={
       ('core','repositoryformatversion'):{'0'},('core','filemode'):{'true','false'},
@@ -45,49 +90,54 @@ def strict_git_config(data):
       ('extensions','objectformat'):{'sha1'},('gc','auto'):{'0'},
       ('branch \"'+BRANCH+'\"','remote'):{'origin'},
       ('branch \"'+BRANCH+'\"','merge'):{'refs/heads/'+BRANCH}}
-    for line in data.decode('utf-8').splitlines():
+    try:lines=data.decode('utf-8').splitlines()
+    except UnicodeDecodeError:
+        require(False,'config_encoding')
+    for line in lines:
         line=line.strip()
         if not line or line.startswith(('#',';')):continue
         if line.startswith('['):
-            require(line in {'[core]','[remote "origin"]','[extensions]','[http "https://github.com/"]','[gc]','[branch "'+BRANCH+'"]'})
+            require(line in {'[core]','[remote "origin"]','[extensions]','[http "https://github.com/"]','[gc]','[branch "'+BRANCH+'"]'},'config_section',safe_section_detail(line))
             section=line[1:-1];continue
         match=re.fullmatch(r'([A-Za-z][A-Za-z0-9]*)\s*=\s*([^\r\n]+)',line)
-        require(match is not None and section is not None)
+        require(match is not None and section is not None,'config_syntax')
         key=(section,match[1].lower());value=match[2].strip()
-        require(key in allowed and key not in values and value in allowed[key]);values[key]=value
-    require(values.get(('core','repositoryformatversion'))=='0' and values.get(('core','bare'))=='false')
+        require(key in allowed,'config_key',{'sha256':sha((section+'\0'+match[1].lower()).encode()),'bytes':len((section+'\0'+match[1].lower()).encode()),'count':1})
+        require(key not in values,'config_duplicate')
+        require(value in allowed[key],'config_value');values[key]=value
+    require(values.get(('core','repositoryformatversion'))=='0' and values.get(('core','bare'))=='false','config_required')
     branch_section='branch \"'+BRANCH+'\"'
-    require(((branch_section,'remote') in values)==((branch_section,'merge') in values))
+    require(((branch_section,'remote') in values)==((branch_section,'merge') in values),'config_branch_pair')
     return sha(data)
 
 def git_admin_snapshot(repo):
     # Fresh checkout only. No Git command is used to inspect its own configuration.
-    admin=repo/'.git';require(admin.is_dir() and not admin.is_symlink())
+    admin=repo/'.git';require(admin.is_dir() and not admin.is_symlink(),'admin_directory')
     result={'admin_identity':[admin.stat().st_dev,admin.stat().st_ino]}
     for name in ['commondir','gitdir','worktrees','modules','config.worktree','config.lock','index.lock',
                  'objects/info/alternates','objects/info/http-alternates','refs/replace','info/grafts']:
-        path=admin/name;require(not path.exists() and not path.is_symlink())
+        path=admin/name;require(not path.exists() and not path.is_symlink(),'admin_forbidden_entry',{'item':name.replace('/','_').replace('.','_')})
     for name in ['info','objects','objects/info','objects/pack','refs']:
-        path=admin/name;require(path.is_dir() and not path.is_symlink())
+        path=admin/name;require(path.is_dir() and not path.is_symlink(),'admin_required_directory',{'item':name.replace('/','_')})
         result[name]=[path.stat().st_dev,path.stat().st_ino]
     for index,path in enumerate((admin/'objects').rglob('*')):
-        require(index<100000 and not path.is_symlink())
-        require(not path.name.endswith('.promisor'))
+        require(index<100000 and not path.is_symlink(),'admin_object_bound')
+        require(not path.name.endswith('.promisor'),'admin_promisor')
         if DEADLINE is not None:guard()
     for name in ['config','HEAD','index','shallow','packed-refs','info/attributes']:
-        path=admin/name;require(not path.is_symlink())
+        path=admin/name;require(not path.is_symlink(),'admin_file_symlink',{'item':name.replace('/','_')})
         if path.exists():
-            require(path.is_file() and path.stat().st_size<=16*1024**2)
+            require(path.is_file() and path.stat().st_size<=16*1024**2,'admin_file_bound',{'item':name.replace('/','_')})
             data=path.read_bytes();result[name]={'sha256':sha(data),'device':path.stat().st_dev,'inode':path.stat().st_ino}
             if name=='config':strict_git_config(data)
         else:result[name]=None
-    require(result['config'] is not None and result['HEAD'] is not None and result['index'] is not None)
+    require(result['config'] is not None and result['HEAD'] is not None and result['index'] is not None,'admin_missing_file',{'config_present':result['config'] is not None,'head_present':result['HEAD'] is not None,'index_present':result['index'] is not None})
     for index,path in enumerate((admin/'refs').rglob('*')):
-        require(index<100000 and not path.is_symlink())
+        require(index<100000 and not path.is_symlink(),'admin_ref_bound')
         if DEADLINE is not None:guard()
         if path.is_file():
-            require(path.stat().st_size<=4096);result['ref:'+path.relative_to(admin).as_posix()]=sha(path.read_bytes())
-        else:require(path.is_dir())
+            require(path.stat().st_size<=4096,'admin_ref_bound');result['ref:'+path.relative_to(admin).as_posix()]=sha(path.read_bytes())
+        else:require(path.is_dir(),'admin_ref_type')
     return result
 
 def cargo_config_identity():
@@ -101,7 +151,7 @@ def cargo_config_identity():
     return result
 
 def recheck_cargo_config():
-    require(CARGO_CONFIG_BASELINE is not None and cargo_config_identity()==CARGO_CONFIG_BASELINE)
+    require(CARGO_CONFIG_BASELINE is not None and cargo_config_identity()==CARGO_CONFIG_BASELINE,'cargo_config_identity')
 
 def capture(argv,env,maximum,records,disk):
     guard()
@@ -116,7 +166,7 @@ def capture(argv,env,maximum,records,disk):
         disk=None
     if argv and argv[0]=='git':
         require(len(argv)>=4 and argv[:2]==['git','-C'] and argv[2] in GIT_ADMIN_BASELINES)
-        require(git_admin_snapshot(Path(argv[2]))==GIT_ADMIN_BASELINES[argv[2]])
+        require(git_admin_snapshot(Path(argv[2]))==GIT_ADMIN_BASELINES[argv[2]],'admin_identity_changed')
         env=dict(env);env.update({'GIT_OPTIONAL_LOCKS':'0','GIT_NO_LAZY_FETCH':'1',
             'GIT_NO_REPLACE_OBJECTS':'1','GIT_ATTR_NOSYSTEM':'1'})
         argv=['git',*GIT_SAFE_FLAGS,*argv[1:]]
@@ -233,8 +283,9 @@ def command_plan(source,temp):
     return commands
 
 def main(control,source,temp):
-    global DEADLINE,FINALIZING,FINAL_READ_REPOS,GIT_ADMIN_BASELINES,CARGO_CONFIG_BASELINE,CARGO_CONFIG_PATHS
+    global DEADLINE,FINALIZING,FINAL_READ_REPOS,GIT_ADMIN_BASELINES,CARGO_CONFIG_BASELINE,CARGO_CONFIG_PATHS,DIAGNOSTIC
     FINALIZING=False
+    DIAGNOSTIC={'stage':'initial','failure':None,'final_failure':None}
     FINAL_READ_REPOS=frozenset({str(control),str(source)})
     GIT_ADMIN_BASELINES={};CARGO_CONFIG_BASELINE=None;CARGO_CONFIG_PATHS=[]
     temp.mkdir(mode=0o700);public=temp/'public';public.mkdir(mode=0o700)
@@ -247,55 +298,71 @@ def main(control,source,temp):
          'CARGO_TERM_COLOR':'never','CI':'true','LANG':'C.UTF-8','TMPDIR':str(temp/'tmp')}
     for key in ['HOME','CARGO_HOME','RUSTUP_HOME','CARGO_TARGET_DIR','TMPDIR']:Path(env[key]).mkdir(mode=0o700)
     try:
-        require(sys.platform=='linux')
-        started=os.environ.get('ZIP_STARTED_MONOTONIC_NS','');require(bool(re.fullmatch('[0-9]{1,20}',started)))
-        origin=int(started)/1e9;require(0<=time.monotonic()-origin<1500);DEADLINE=origin+1500
-        require(os.environ.get('GITHUB_EVENT_NAME')=='push' and os.environ.get('GITHUB_REF')=='refs/heads/'+BRANCH)
-        event=os.environ.get('GITHUB_SHA','');require(bool(re.fullmatch('[a-f0-9]{40}',event)))
-        require(event==os.environ.get('GITHUB_WORKFLOW_SHA'))
-        require(os.environ.get('GITHUB_WORKFLOW_REF')=='TrillionniumFoundation/hepta-private-ci/'+WORKFLOW+'@refs/heads/'+BRANCH)
-        require(shutil.disk_usage(temp).free>=20*1024**3);owned.DISK_INITIAL_FREE=shutil.disk_usage(temp).free
+        diagnostic_stage('platform');require(sys.platform=='linux','platform')
+        diagnostic_stage('budget')
+        started=os.environ.get('ZIP_STARTED_MONOTONIC_NS','');require(bool(re.fullmatch('[0-9]{1,20}',started)),'budget_origin')
+        origin=int(started)/1e9;require(0<=time.monotonic()-origin<1500,'budget_elapsed');DEADLINE=origin+1500
+        diagnostic_stage('event')
+        require(os.environ.get('GITHUB_EVENT_NAME')=='push' and os.environ.get('GITHUB_REF')=='refs/heads/'+BRANCH,'event_ref')
+        event=os.environ.get('GITHUB_SHA','');require(bool(re.fullmatch('[a-f0-9]{40}',event)),'event_sha')
+        require(event==os.environ.get('GITHUB_WORKFLOW_SHA'),'workflow_sha')
+        require(os.environ.get('GITHUB_WORKFLOW_REF')=='TrillionniumFoundation/hepta-private-ci/'+WORKFLOW+'@refs/heads/'+BRANCH,'workflow_ref')
+        diagnostic_stage('disk')
+        free=shutil.disk_usage(temp).free
+        require(type(free) is int and free>=0,'initial_disk')
+        DIAGNOSTIC['initial_disk']={'preflight_free_bytes':free,'minimum_free_bytes':20*1024**3}
+        require(free>=20*1024**3,'initial_disk');owned.DISK_INITIAL_FREE=shutil.disk_usage(temp).free
+        require(type(owned.DISK_INITIAL_FREE) is int and owned.DISK_INITIAL_FREE>=0,'initial_disk')
+        DIAGNOSTIC['initial_disk']['initial_free_bytes']=owned.DISK_INITIAL_FREE
         for repo in [control,source]:
+            diagnostic_stage('control_admin' if repo==control else 'source_admin')
             GIT_ADMIN_BASELINES[str(repo)]=git_admin_snapshot(repo)
+            diagnostic_stage('control_index' if repo==control else 'source_index')
             entries=git(repo,env,records,temp,'ls-files','--stage','-z').split(b'\0')
-            require(any(entries))
+            require(any(entries),'index_empty')
             for entry in filter(None,entries):
-                fields,name=entry.split(b'\t',1);mode,oid,stage=fields.split(b' ')
-                require(mode in {b'100644',b'100755',b'120000'} and stage==b'0' and re.fullmatch(b'[0-9a-f]{40}',oid))
-                require(name.split(b'/')[-1]!=b'.gitmodules')
+                require(entry.count(b'\t')>=1,'index_format')
+                fields,name=entry.split(b'\t',1);parts=fields.split(b' ');require(len(parts)==3,'index_format');mode,oid,stage=parts
+                require(mode in {b'100644',b'100755',b'120000'} and stage==b'0' and re.fullmatch(b'[0-9a-f]{40}',oid),'index_mode')
+                require(name.split(b'/')[-1]!=b'.gitmodules','index_gitmodules')
+        diagnostic_stage('control_identity')
         report['git_admin_before_sha256']={repo:sha(json.dumps(value,sort_keys=True).encode()) for repo,value in GIT_ADMIN_BASELINES.items()}
-        require(git(control,env,records,temp,'rev-parse','HEAD').decode().strip()==event)
-        require(git(control,env,records,temp,'rev-parse','HEAD^').decode().strip()==CONTROL_PARENT)
-        require(not git(control,env,records,temp,'status','--porcelain','--untracked-files=all'))
+        require(git(control,env,records,temp,'rev-parse','HEAD').decode().strip()==event,'control_head')
+        require(git(control,env,records,temp,'rev-parse','HEAD^').decode().strip()==CONTROL_PARENT,'control_parent')
+        require(not git(control,env,records,temp,'status','--porcelain','--untracked-files=all'),'control_dirty')
         policy_path=control/'.github/scripts/zip_native_policy.json';policy=json.loads(policy_path.read_bytes())
-        require(set(policy)=={'base','base_tree','source_files','locks','tests'} and policy['base']==BASE and policy['base_tree']==BASE_TREE)
+        require(set(policy)=={'base','base_tree','source_files','locks','tests'} and policy['base']==BASE and policy['base_tree']==BASE_TREE,'policy_identity')
         paths=CONTROL+[x['path'] for x in policy['source_files']]
         require(len(paths)==8 and len(set(paths))==8)
         control_before={}
         for name in paths:
             p=control/name;require(p.is_file() and not p.is_symlink() and p.stat().st_size<128*1024)
-            b=p.read_bytes();require(blob(b)==git(control,env,records,temp,'rev-parse','HEAD:'+name).decode().strip());control_before[name]=sha(b)
+            b=p.read_bytes();require(blob(b)==git(control,env,records,temp,'rev-parse','HEAD:'+name).decode().strip(),'control_blob');control_before[name]=sha(b)
         report['control_before']={'head':event,'tree':git(control,env,records,temp,'rev-parse','HEAD^{tree}').decode().strip(),'files':control_before}
         changed=git(control,env,records,temp,'diff','--name-only',BASE,event).decode().splitlines();require(set(changed)==set(paths))
-        require(git(source,env,records,temp,'rev-parse','HEAD').decode().strip()==BASE)
-        require(git(source,env,records,temp,'rev-parse','HEAD^{tree}').decode().strip()==BASE_TREE)
-        require(not git(source,env,records,temp,'status','--porcelain','--untracked-files=all'))
+        diagnostic_stage('source_identity')
+        require(git(source,env,records,temp,'rev-parse','HEAD').decode().strip()==BASE,'source_head')
+        require(git(source,env,records,temp,'rev-parse','HEAD^{tree}').decode().strip()==BASE_TREE,'source_tree')
+        require(not git(source,env,records,temp,'status','--porcelain','--untracked-files=all'),'source_dirty')
         require(b'extraheader' not in (source/'.git/config').read_bytes().lower())
         original=snapshot(source,env,records,temp)
         report['original_snapshot_sha256']=sha(json.dumps(original,sort_keys=True).encode())
+        diagnostic_stage('source_overlay')
         for item in policy['source_files']:
-            p=source/item['path'];require(blob(p.read_bytes())==item['base_blob'])
+            p=source/item['path'];require(blob(p.read_bytes())==item['base_blob'],'source_blob')
             b=(control/item['path']).read_bytes();require(sha(b)==item['sha256'] and blob(b)==item['candidate_blob']);p.write_bytes(b)
         before=snapshot(source,env,records,temp)
         require({p for p in before if before[p]!=original[p]}=={x['path'] for x in policy['source_files']})
         report['source_before_sha256']=sha(json.dumps(before,sort_keys=True).encode())
+        diagnostic_stage('locks')
         report['locks_before']={}
         for name,expected in policy['locks'].items():
-            data=(source/name).read_bytes();require(blob(data)==expected);report['locks_before'][name]={'blob':blob(data),'sha256':sha(data)}
+            data=(source/name).read_bytes();require(blob(data)==expected,'lock_identity');report['locks_before'][name]={'blob':blob(data),'sha256':sha(data)}
         require(set(policy['locks'])=={'codex-rs/Cargo.lock','MODULE.bazel.lock'})
         report['no_v8_locked_reachable_count']=no_v8((source/'codex-rs/Cargo.lock').read_bytes())
         expected=source_inventory((source/'codex-rs/core-plugins/src/startup_sync_tests.rs').read_text())
         require(expected==policy['tests'])
+        diagnostic_stage('cargo_profile')
         manifest_bytes=(source/'codex-rs/Cargo.toml').read_bytes()
         require(blob(manifest_bytes)=='d2703b590935ab17316e6c258657c0ce5ab7412a')
         cargo_config=source/'codex-rs/.cargo/config.toml'
@@ -309,6 +376,7 @@ def main(control,source,temp):
         for name in ['config','config.toml']:
             candidate=Path(env['CARGO_HOME'])/name
             require(not candidate.exists() and not candidate.is_symlink())
+        diagnostic_stage('cargo_config')
         CARGO_CONFIG_PATHS=list(dict.fromkeys([
             directory/'.cargo'/name for directory in [source/'codex-rs',*(source/'codex-rs').parents]
             for name in ['config','config.toml']]+[Path(env['CARGO_HOME'])/name for name in ['config','config.toml']]))
@@ -329,6 +397,7 @@ def main(control,source,temp):
         report['profile_sha256']=sha(profile);report['test_inventory']=expected;report['test_phases']=[]
         os.chdir(source/'codex-rs')
         junit=temp/'target/nextest/zip-owner/junit.xml';pending=None
+        diagnostic_stage('native_commands')
         for index,argv in enumerate(command_plan(source,temp)):
             recheck_cargo_config()
             is_list='nextest' in argv and 'list' in argv
@@ -350,10 +419,12 @@ def main(control,source,temp):
             require(all(blob((source/name).read_bytes())==version for name,version in policy['locks'].items()))
         require([x['phase'] for x in report['test_phases']]==['online','offline'])
         report['native_execution_complete']=True
-    except Exception:
+    except Exception as error:
+        diagnostic_failure('permission_denied' if isinstance(error,PermissionError) else 'io_error' if isinstance(error,OSError) else 'unexpected_error')
         report['hold']=True  # Fixed error only, no raw exceptions.
     finally:
         FINALIZING=True
+        diagnostic_stage('final_identity')
         report['owned_commands_cleanup_confirmed']=not owned.OWNERSHIP_UNCERTAIN and all(x['cleanup']['confirmed'] for x in records)
         try:
             require(not owned.OWNERSHIP_UNCERTAIN)
@@ -363,11 +434,11 @@ def main(control,source,temp):
             require(sha(json.dumps(after,sort_keys=True).encode())==report['source_before_sha256'])
             changed=git(source,env,records,temp,'status','--porcelain','--untracked-files=all').decode().splitlines()
             require(set(changed)=={' M '+x['path'] for x in policy['source_files']})
-            require(not git(control,env,records,temp,'status','--porcelain','--untracked-files=all'))
-            require(git(control,env,records,temp,'rev-parse','HEAD').decode().strip()==event)
+            require(not git(control,env,records,temp,'status','--porcelain','--untracked-files=all'),'control_dirty')
+            require(git(control,env,records,temp,'rev-parse','HEAD').decode().strip()==event,'control_head')
             require(git(control,env,records,temp,'rev-parse','HEAD^{tree}').decode().strip()==report['control_before']['tree'])
             require(git(source,env,records,temp,'rev-parse','HEAD').decode().strip()==BASE)
-            require(git(source,env,records,temp,'rev-parse','HEAD^{tree}').decode().strip()==BASE_TREE)
+            require(git(source,env,records,temp,'rev-parse','HEAD^{tree}').decode().strip()==BASE_TREE,'source_tree')
             control_after={name:sha((control/name).read_bytes()) for name in paths};require(control_after==control_before)
             report['config_after']={p:digest for p,digest in after.items() if '/.cargo/' in p or p.startswith('.cargo/') or p=='codex-rs/.config/nextest.toml'}
             require(report['config_before']==report['config_after'])
@@ -380,7 +451,10 @@ def main(control,source,temp):
             require(report['git_admin_before_sha256']==report['git_admin_after_sha256'])
             report['cleanup_confirmed']=True
             report['qualified']=report['native_execution_complete'] and not report.get('hold',False)
-        except Exception:report['hold']=True;report['cleanup_confirmed']=False
+        except Exception as error:
+            diagnostic_failure('permission_denied' if isinstance(error,PermissionError) else 'io_error' if isinstance(error,OSError) else 'unexpected_error')
+            report['hold']=True;report['cleanup_confirmed']=False
+        report['preflight_diagnostic']=DIAGNOSTIC
         report['commands']=records
         os.chdir(initial_cwd)
         (public/'receipt.json').write_text(json.dumps(report,sort_keys=True,indent=2)+'\n')

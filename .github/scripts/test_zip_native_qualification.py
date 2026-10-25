@@ -44,6 +44,28 @@ class PolicyTests(unittest.TestCase):
         for suffix in bad:
             with self.subTest(suffix=suffix),self.assertRaises(q.Hold):q.strict_git_config(base+suffix)
 
+    def test_section_diagnostic_never_hashes_inline_or_ambiguous_values(self):
+        base=b'[core]\n repositoryformatversion=0\n bare=false\n'
+        secret='SyntheticValueNeverHash'
+        bad=['[core] bare = '+secret,'[unknown] value = '+secret,
+             '[unknown] # '+secret,'[unknown] ; '+secret,'[unknown '+secret,
+             '[unknown "escaped\\name"]', '[unknown "embedded]bracket"]']
+        for line in bad:
+            with self.subTest(line=line):
+                q.DIAGNOSTIC={'stage':'control_admin','failure':None,'final_failure':None}
+                with self.assertRaises(q.Hold):q.strict_git_config(base+line.encode()+b'\n')
+                failure=q.DIAGNOSTIC['failure']
+                self.assertEqual(failure,{'stage':'control_admin','predicate':'config_section'})
+                encoded=json.dumps(failure)
+                self.assertNotIn(secret,encoded);self.assertNotIn(q.sha(line.encode()),encoded)
+                self.assertIsNone(q.safe_section_detail(line))
+
+    def test_complete_unknown_section_digest_remains_name_only(self):
+        for line in ['[unknown]','[unknown "plain-subsection"]']:
+            self.assertEqual(q.safe_section_detail(line),{'sha256':q.sha(line.encode()),'bytes':len(line.encode()),'count':1})
+        for line in ['[core] bare = false','[unknown]\nvalue=x','[unknown] trailing','[unknown "unclosed]']:
+            self.assertIsNone(q.safe_section_detail(line))
+
     def test_commands_locked_targeted_full_metadata_offline(self):
         commands=q.command_plan(Path('/source'),Path('/temp'))
         cargo=[x for x in commands if x[0]=='cargo' and x[2]=='metadata' or x[0]=='cargo' and x[2:4] in [['nextest','list'],['nextest','run']]]
@@ -128,7 +150,7 @@ class PolicyTests(unittest.TestCase):
         self.assertNotIn('write_bytes(stream',s);self.assertNotIn('taskkill',s)
         self.assertIn("report['locks_before']==report['locks_after']",s)
         self.assertIn("return 0 if report['qualified'] else 125",s)
-        self.assertIn("require(sys.platform=='linux')",s)
+        self.assertIn("require(sys.platform=='linux','platform')",s)
         workflow=Path(q.__file__).parent.parent/'workflows/zip-owner-native.yml'
         text=workflow.read_text();self.assertNotIn('workflow_dispatch:',text);self.assertNotIn('windows-',text)
         self.assertLess(text.index('ZIP_STARTED_MONOTONIC_NS'),text.index('uses: actions/checkout'))
@@ -192,6 +214,28 @@ class GitAdminAndCargoIdentityTests(unittest.TestCase):
                 with self.assertRaises(q.Hold):q.capture(['git','-C',str(repo),'status','--porcelain','--untracked-files=all'],{},20,[],root)
                 call.assert_not_called()
             self.assertFalse(marker.exists())
+
+class SafeDiagnosticUnitTests(unittest.TestCase):
+    def setUp(self):q.FINALIZING=False;q.DIAGNOSTIC={'stage':'control_admin','failure':None,'final_failure':None}
+    def tearDown(self):q.FINALIZING=False;q.DIAGNOSTIC={'stage':'initial','failure':None,'final_failure':None}
+    def test_diagnostic_allowlist_no_raw_details_first_failure_preserved(self):
+        q.diagnostic_failure('unknownSecretPredicate',{'item':'SecretPath','sha256':'SecretValue','bytes':'SecretBytes','count':-1,'raw':'SecretRaw'})
+        self.assertEqual(q.DIAGNOSTIC['failure'],{'stage':'control_admin','predicate':'unexpected_error'})
+        q.diagnostic_failure('config_key');self.assertEqual(q.DIAGNOSTIC['failure']['predicate'],'unexpected_error')
+        q.FINALIZING=True;q.diagnostic_stage('final_identity');q.diagnostic_failure('cargo_config_identity')
+        self.assertEqual(q.DIAGNOSTIC['final_failure'],{'stage':'final_identity','predicate':'cargo_config_identity'})
+        self.assertNotIn('Secret',json.dumps(q.DIAGNOSTIC))
+    def test_config_failure_predicates_preserve_rejection_without_values(self):
+        safe=b'[core]\nrepositoryformatversion=0\nbare=false\n'
+        cases=[(b'X'*16385,'config_size'),(b'\xff','config_encoding'),(b'[SecretSection]','config_section'),
+            (safe+b'SecretKey=SecretValue\n','config_key'),(safe+b'bare=false\n','config_duplicate'),
+            (safe.replace(b'bare=false',b'bare=SecretValue'),'config_value'),(b'[core]\nbare=false','config_required'),
+            (safe+b'no_equal_sign SecretValue','config_syntax'),
+            (safe+('[branch "'+q.BRANCH+'"]\nremote=origin\n').encode(),'config_branch_pair')]
+        for data,expected in cases:
+            q.DIAGNOSTIC={'stage':'control_admin','failure':None,'final_failure':None}
+            with self.subTest(expected=expected),self.assertRaises(q.Hold):q.strict_git_config(data)
+            self.assertEqual(q.DIAGNOSTIC['failure']['predicate'],expected);self.assertNotIn('Secret',json.dumps(q.DIAGNOSTIC))
 
 DRIVER = '''import sys,json,os
 sys.path.insert(0,sys.argv[1]);import zip_native_owned as s
@@ -406,6 +450,12 @@ class HarnessTests(unittest.TestCase):
                 for directory in ['.git/info','.git/objects/info','.git/objects/pack','.git/refs']:(repo/directory).mkdir(parents=True,exist_ok=True)
                 (repo/'.git/config').write_text('[core]\nrepositoryformatversion = 0\nbare = false\n')
                 (repo/'.git/HEAD').write_text('a'*40+'\n');(repo/'.git/index').write_bytes(b'fixture-index')
+            if fault=='admin-structure':(control/'.git/objects/info').rmdir()
+            if fault in ['config-section','config-key','config-value']:
+                cp=control/'.git/config';text=cp.read_text()
+                text+= '\n[SecretSectionNeverExport]\n' if fault=='config-section' else '\nSecretKeyNeverExport=SecretValueNeverExport\n' if fault=='config-key' else ''
+                if fault=='config-value':text=text.replace('bare = false','bare = SecretValueNeverExport')
+                cp.write_text(text)
             original={x['path']:q.sha((source/x['path']).read_bytes()) for x in policy['source_files']}
             original.update({name:q.sha((source/name).read_bytes()) for name in policy['locks']})
             original['codex-rs/.config/nextest.toml']=q.sha(config.read_bytes())
@@ -429,10 +479,10 @@ class HarnessTests(unittest.TestCase):
                     return b''
                 if args[0]=='diff':return ('\n'.join(q.CONTROL+[x['path'] for x in policy['source_files']])+'\n').encode()
                 target=args[1]
-                if target=='HEAD':return (event if repo==control else q.BASE).encode()
+                if target=='HEAD':return (('e'*40 if fault=='control-head' else event) if repo==control else q.BASE).encode()
                 if target=='HEAD^':return q.CONTROL_PARENT.encode()
                 if target=='HEAD^{tree}':return ('a'*40 if repo==control else q.BASE_TREE).encode()
-                if target.startswith('HEAD:'):return q.blob((repo/target[5:]).read_bytes()).encode()
+                if target.startswith('HEAD:'):return ('e'*40 if fault=='control-blob' else q.blob((repo/target[5:]).read_bytes())).encode()
                 raise AssertionError(args)
             def capture(argv,env,maximum,records,disk):
                 calls.append(argv)
@@ -464,14 +514,46 @@ class HarnessTests(unittest.TestCase):
                  'GITHUB_SHA':event,'GITHUB_WORKFLOW_SHA':event,
                  'GITHUB_WORKFLOW_REF':'TrillionniumFoundation/hepta-private-ci/'+q.WORKFLOW+'@refs/heads/'+q.BRANCH,
                  'ZIP_STARTED_MONOTONIC_NS':str(time.monotonic_ns())}
+            if fault=='event-ref':env['GITHUB_REF']='SecretRefNeverExport'
+            if fault=='event-sha':env['GITHUB_SHA']='SecretShaNeverExport'
+            if fault=='workflow-sha':env['GITHUB_WORKFLOW_SHA']='SecretShaNeverExport'
+            if fault=='workflow-ref':env['GITHUB_WORKFLOW_REF']='SecretRefNeverExport'
+            if fault=='budget-origin':env['ZIP_STARTED_MONOTONIC_NS']='SecretBudgetNeverExport'
+            if fault=='budget-elapsed':env['ZIP_STARTED_MONOTONIC_NS']='0'
+            admin_original=q.git_admin_snapshot
+            def admin_snapshot(repo):
+                if fault=='admin-denied':raise PermissionError('SecretExceptionNeverExport')
+                if fault=='admin-io':raise OSError('SecretExceptionNeverExport')
+                if fault=='admin-unexpected':raise ValueError('SecretExceptionNeverExport')
+                return admin_original(repo)
             support.OWNERSHIP_UNCERTAIN=False
-            with mock.patch.dict(os.environ,env),mock.patch.object(q,'git',side_effect=git),mock.patch.object(q,'snapshot',side_effect=snapshot),mock.patch.object(q,'capture',side_effect=capture),mock.patch.object(q.shutil,'disk_usage',return_value=SimpleNamespace(free=30*1024**3)):
+            with mock.patch.object(q,'git_admin_snapshot',side_effect=admin_snapshot),mock.patch.dict(os.environ,env),mock.patch.object(q,'git',side_effect=git),mock.patch.object(q,'snapshot',side_effect=snapshot),mock.patch.object(q,'capture',side_effect=capture),mock.patch.object(q.shutil,'disk_usage',return_value=SimpleNamespace(free=(1 if fault=='initial-disk' else 30)*1024**3)):
                 code=q.main(control,source,root/'run')
             output=(root/'run/public/receipt.json').read_text()
             self.assertNotIn('private_never_export_this',output)
             self.assertEqual([x.name for x in (root/'run/public').iterdir()],['receipt.json'])
             support.OWNERSHIP_UNCERTAIN=False;q.DEADLINE=None;q.FINALIZING=False
             return code,json.loads(output),calls
+    def test_safe_preflight_categories_zero_native_and_no_secret_export(self):
+        cases={'initial-disk':('disk','initial_disk'),'event-ref':('event','event_ref'),
+            'admin-structure':('control_admin','admin_required_directory'),
+            'config-section':('control_admin','config_section'),'config-key':('control_admin','config_key'),
+            'config-value':('control_admin','config_value'),'admin-denied':('control_admin','permission_denied'),
+            'admin-io':('control_admin','io_error'),'admin-unexpected':('control_admin','unexpected_error'),
+            'control-head':('control_identity','control_head'),'control-blob':('control_identity','control_blob'),
+            'event-sha':('event','event_sha'),'workflow-sha':('event','workflow_sha'),
+            'workflow-ref':('event','workflow_ref'),'budget-origin':('budget','budget_origin'),
+            'budget-elapsed':('budget','budget_elapsed')}
+        for fault,expected in cases.items():
+            with self.subTest(fault=fault):
+                code,report,calls=self.exercise(fault);self.assertEqual(code,125);self.assertFalse(report['qualified']);self.assertFalse(report['native_execution_complete']);self.assertEqual(calls,[])
+                failure=report['preflight_diagnostic']['failure'];self.assertEqual((failure['stage'],failure['predicate']),expected)
+                output=json.dumps(report)
+                for secret in ['SecretSectionNeverExport','SecretKeyNeverExport','SecretValueNeverExport','SecretExceptionNeverExport','SecretRefNeverExport','SecretShaNeverExport','SecretBudgetNeverExport']:self.assertNotIn(secret,output)
+                if fault in ['config-section','config-key']:
+                    self.assertRegex(failure['detail']['sha256'],'^[0-9a-f]{64}$');self.assertEqual(failure['detail']['count'],1)
+                if fault=='initial-disk':self.assertEqual(report['preflight_diagnostic']['initial_disk'],{'preflight_free_bytes':1024**3,'minimum_free_bytes':20*1024**3})
+
     def test_disk_hold_preserves_final_identity_but_never_qualifies(self):
         code,report,calls=self.exercise('disk')
         self.assertEqual(code,125);self.assertFalse(report['qualified']);self.assertTrue(report['hold'])
