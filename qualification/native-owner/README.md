@@ -1,0 +1,33 @@
+# Native original-owner qualification runners
+
+These run only a new isolated QEMU and private generated ext2 image. They accept
+no existing disk, host block device, network, production policy or private key.
+The output directory may contain newly created qualification keys: retain it
+privately; publish selected source/ELF/lock fingerprints and sanitized results,
+never the disk image. A VM crash is not physical power-loss qualification.
+
+`run-native-owner-qualification.py --help` describes the required exact Desktop
+and Hepta commit/tree pins, original owner ELF/SHA256, new output and kernel
+target paths. Build the Hepta feature `qualification-native-owner` with locked
+normal dependencies as a static musl ET_EXEC. The Desktop revision must contain
+the G2 loader and original HOS2 ABI. The runner builds and verifies that exact
+product profile, then runs complete original ownership and two byte-identity
+rejection cases. `--reuse-kernel-build` admits only its fully verified matching
+product build; a caller cannot supply an arbitrary replacement kernel.
+
+`run-native-owner-history.py` takes the same arguments. It keeps the same disk
+inode, kernel and ELF across two VMs: exact acknowledged Current and stopped
+owner, deliberate SIGKILL and reap, then original read-only WAL recovery of the
+old operation. Unknown cannot reopen a writer, renew authority, replay or retire.
+Root resource observation and Agentd delivery-history observation remain distinct.
+
+Both enforce bounded artifacts/logs, a fixed 3072 MiB experimental guest budget,
+no networking, finite 900-second maximum per boot, and source/artifact rechecks.
+Keep every failed attempt; `passed` is only set after actual evidence validates.
+Neither enables production or claims general cross-boot writer handoff.
+
+`test-native-history-oracle.py` tests only the serial parser with explicitly
+synthetic examples. It is not native evidence. Actual result summaries must bind
+the runner hashes, original raw serial, complete source/lock/ELF measurements,
+kernel manifest and exclusive-disk lifecycle. See
+`codex-rs/hepta-agentd/NATIVE_OWNER_QUALIFICATION.md` for the owner-side contract.
