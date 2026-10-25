@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.ndu-abc-recovery.prospective-amendment.v1",
+  "base_protocol_sha256": "48e7e9fbf940e425825be880de2cc5bec233fd1db5ae198dc88f0a8bbf153e1d",
+  "registered_before": "all new generator fine-tuning, critic fitting, static selection and task generation evaluation",
+  "already_observed": "source recovery and separately reserved observer qualification only",
+  "reason": "The native image/text actions do not change h; clamping h on image-then-text would be a structural null and cannot identify shared-state contribution.",
+  "mechanism_pair": {
+    "generator_arm": "output_ndu",
+    "fixed_continuation": ["refine_semantic", "couple"],
+    "profiles": ["adaptive", "clamped_initial"],
+    "anchor": "common post-prefix decision h",
+    "initial_draft_and_rng": "paired; same emission sampler and subsequent random streams",
+    "intermediate_effect": "semantic action changes h but retains existing actual media",
+    "terminal_effect": "compare both modalities after the subsequent couple action",
+    "oracle_selection_of_mechanism_path": false
+  },
+  "encoder_access_pair": {
+    "generator_arm": "output_ndu",
+    "fixed_continuation": ["refine_image", "refine_text"],
+    "profiles": ["persistent", "initial_only_context_intervention"],
+    "scope": "inference context-removal intervention on identical weights; not a matched retraining claim for a new encoder architecture"
+  },
+  "modality_local_feedback": {
+    "loss": "(0.30*text_fact + 0.15*relation + 0.35*image_fact + 0.10*pixel_mse)/0.90",
+    "utility": "1 - 2*loss",
+    "interpretation": "additive modality scores without the crossmodal agreement term; the entropic risk of their sum still reflects their joint distribution",
+    "primary_evaluation_metric": "unchanged original joint task utility for every policy"
+  },
+  "one_shot_route": {
+    "input": "initial public state and actual initial draft only",
+    "target": "conditional exponential moment for each of the 21 fixed continuation programs",
+    "deployment": "choose once and execute that fixed program without observing subsequent drafts for action selection",
+    "training": "primary forecast_fit outcomes only; 600 Adam steps, hidden 32, batch 256, lr 0.003, MSE on Z"
+  },
+  "independent_random_stream_MPC": {
+    "horizon": 2,
+    "planning_samples_per_first_action": 4,
+    "simulation_inputs": "current public frame and frozen generator only",
+    "future_stream": "separate planning namespace and RNG, never the actual counterfactual outcome stream",
+    "backup": "mean of frozen Q1 predicted feasible minima over planning samples, multiplied by exp(gamma*action_cost); current stop uses Q2 stop prediction",
+    "last_step": "frozen Q1 greedy feedback after the actual committed action outcome",
+    "cost": "all planning transitions, samplers, feature encoders and critic calls counted; fresh full resident latency reported"
+  },
+  "primary_endpoints_and_source_census_changed": false,
+  "all_blockers_closed": false
+}
