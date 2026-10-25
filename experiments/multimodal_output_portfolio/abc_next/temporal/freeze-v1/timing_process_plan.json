@@ -1,0 +1,41 @@
+{
+  "child_source": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_next/temporal/timing.py",
+  "child_source_sha256": "cfde8257b73aaf2234de733e5773342a27caf24fd830cfc58f9d47047c826a06",
+  "command": [
+    "/workspace/scratch/2b3c256bef7d/speech-env/bin/python",
+    "-B",
+    "-m",
+    "experiments.multimodal_output_portfolio.abc_next.temporal.timing",
+    "--assets",
+    "/workspace/scratch/2b3c256bef7d/abc3-temporal-assets/models-001",
+    "--freeze",
+    "experiments/multimodal_output_portfolio/abc_next/temporal/freeze-v1",
+    "--final-protocol",
+    "experiments/multimodal_output_portfolio/abc_next/temporal/freeze-v1/evaluation_protocol.json",
+    "--policies",
+    "/workspace/scratch/2b3c256bef7d/abc3-temporal-runs/policies-002.json",
+    "--qualification",
+    "/workspace/scratch/2b3c256bef7d/abc3-temporal-runs/qualification-001/qualification.json",
+    "--evaluation-run",
+    "/workspace/scratch/2b3c256bef7d/abc3-temporal-runs/evaluation-001",
+    "--output",
+    "/workspace/scratch/2b3c256bef7d/abc3-temporal-runs/timing-001"
+  ],
+  "command_sha256": "9aa13f3c39d50c1b2dee2a0e54c49a8bb85243d5d76079cb431f1bc016f5b102",
+  "cwd": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery",
+  "executable_sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+  "explicit_environment_overrides": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "inherited_environment_recording": "not captured; only the three experiment thread limits are recorded",
+  "primary_protocol": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_next/temporal/freeze-v1/evaluation_protocol.json",
+  "primary_protocol_sha256": "9d74cc54fec42e9828b1b5bc110e861456d1d3bec1d0634507dd207cee038c2b",
+  "receipt_path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_next/temporal/TIMING_PROCESS_RECEIPT.json",
+  "registration_utc": "2026-10-25T07:06:48.586733+00:00",
+  "schema": "hepta.abc3.temporal-full-timing-process-plan.v1",
+  "scope": "post-quality measurement addition, before timing; primary policy/protocol unchanged",
+  "wrapper_path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_next/temporal/measure_process.py",
+  "wrapper_sha256": "2ca5e91a595365b5135ab657370106b88c987b10c5abc49f7b96e47625452ba5"
+}
