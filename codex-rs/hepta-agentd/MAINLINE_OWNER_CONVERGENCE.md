@@ -58,3 +58,37 @@ just test --locked -p codex-hepta-memory -p codex-hepta-agentd \
 Temporary databases used an ordinary ext4 SSD directory; no tmpfs or mocked
 SQLite persistence replaced the original owner. The ignored actual GUI and
 privileged qualifications remain separately selected and reported.
+
+## Root and desktop closure
+
+The subsequent stages retain the original Root issuer, five private authority
+lanes, protected checkpoint, consumer frontiers, whole SQLite pool guard and
+commit hook. They add the Root composition factory and exact Current publication
+barrier without importing the historical stack wholesale. The complete closure
+is larger than the initial four-crate projection described above.
+
+Main's locked Tokio 1.52 API uses `AsyncFd::with_interest` for the two owned Root
+pidfds. Each client exclusively retains its `OwnedFd` until the registration is
+dropped; the descriptor number and open file description never change. This
+compatibility adjustment does not upgrade Tokio or weaken lifetime checks.
+
+The combined six owning libraries passed 1,229 tests, with 47 explicitly skipped,
+using Rust 1.95.0 and the existing lockfile:
+
+```sh
+just test --locked -p codex-hepta-contracts -p codex-hepta-memory \
+  -p codex-hepta-agentd -p codex-hepta-learning-ledger \
+  -p codex-hepta-agent-protocol -p codex-state \
+  --lib --test-threads 2 --retries 0
+```
+
+The locked normal `codex-hepta-agentd` and `hepta-authority-host` binaries also
+built successfully. A separately selected actual X11 qualification used the
+final Desktop Session SHA-256
+`9567224a7a0da4a03554316ab138d90a377f7ee39d314cccf3feb2e0bb534133`.
+The original owner entered the effect once, a stock `xmessage` exited with code
+7, and an independently observed native receipt settled the original SQLite
+outbox after the test withheld its first reply. That test uses an explicit
+qualification issuer and current-cut fixture; it is not production Root or
+native Asterinas evidence. Its receipt asserts X11 server injection, not generic
+third-party business completion.
