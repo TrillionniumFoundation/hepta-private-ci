@@ -1,5 +1,7 @@
 # Current evidence relay: source and local qualification
 
+**Hosted update, 2026-10-25:** the successful run is audited below and in [hosted-result.json](hosted-result.json). Earlier sections preserve the local qualification before hosted execution.
+
 ## Status
 
 The positive remote-evidence handshake is implemented in new modules and a new two-job workflow. The final local control suite passed **11/11 tests, zero skips**, with 79 scoped source/dependency/workflow files unchanged during execution. Those results belong to the retained **pre-format execution bytes**. A later isolated `just fmt` changed four Python files; their location-free Python ASTs remain identical. The formatted bytes were not retested locally. No local model training or decoder invocation was performed for this extension. An independent agent reviewed the current source and found no required source changes.
@@ -90,3 +92,66 @@ The workflow push trigger is **`codex/memory-current-relay-20261025`**; workflow
 Source and target raw evidence remain downloadable Actions artifacts with 14-day retention. Preserve a detailed hosted report and compact receipts in Git; avoid adding another large raw archive. The existing 256-update recipe and raw adapter/base/shuffled quality outcomes must remain visible, including negative outcomes.
 
 This work does not establish online or replicated authority, direct cross-host mTLS, physical hardware attestation, partition/quorum recovery, production admission, future-task superiority, matched-budget split gains, or net compression. The report explicitly keeps those claims false or unqualified, independent future tasks at zero, future accuracy null, and full research gates closed at zero.
+
+## Hosted execution and artifact audit
+
+[Run 40186181816](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40186181816), attempt **1**, executed exact commit **`2fa2bd674fc2187bcf7019fe31f0dd19f1164613`** on `codex/memory-current-relay-20261025`. The final API observation at 11:00:09 UTC confirms every step succeeded in source-owner job **121147337806** and target-worker job **121147337605**. Five source/workflow files fetched at that commit match the formatted publication copy. The pre-format local test result remains separate.
+
+All **eight downloaded ZIPs** match authenticated API SHA-256 and byte lengths. Independent standard-library/cryptography analysis completed **65 artifact consistency checks**: five Ed25519 envelopes, six exact sender/receiver/artifact byte comparisons and transfer receipts, canonical hashes, actual SQLite state, placement frontiers and callback counters. No model, training or product test was rerun. The finished object uses exact-run artifact authentication and stable target identity; it is not an Ed25519 envelope.
+
+### Actual positive evidence and withdrawal
+
+| Transition | Observed result |
+| --- | --- |
+| Granted current source | `remote/source_00`, revision 0, `remote_00` → `red`, epoch **3**; **172 canonical bytes**, hash equal to the granted root |
+| First positive delivery | Target verifies root/scope/epoch/identity/bytes and signs the exact evidence acknowledgment; callbacks **33 → 33** |
+| Source confirms acknowledgment | **Second actual source read**, identical evidence and epoch-3 snapshot, exact acknowledgment bound |
+| Actual source mutation | Source DB advances **3 → 4**, revokes the granted root at epoch **4**; signed withdrawal binds acknowledgment and current confirmation |
+| Later duplicate evidence | Withdrawal-bearing copy refused as current support; the earlier positive delivery remains accepted |
+| Withdrawal inference | `withdrawn inference source`, callbacks **33 → 33** |
+| Fresh-owner old-cut replay | `withdrawal frontier rollback or same-epoch fork`, callbacks **33 → 33** |
+
+Archived SQLite independently contains the epoch-3 completed training job and exact snapshot, actual epoch-4 withdrawal, and queued epoch-4 training job. Target durable fences contain epoch **4**, the withdrawn root and counter **33**. Both source placement refusals retain counter **3 → 3**. The checkpoint remains retained: this proves withdrawal enforcement, not parameter erasure.
+
+Causality requires the recorded sole-writer, monotonic-epoch and no-volume-rollback assumptions. The exact acknowledgment precedes actual revocation while the source snapshot remains identical; synchronized clocks and online target authority are not used.
+
+### Runner, checkpoint and raw model result
+
+Source runner `GitHub Actions 1000233653` and target runner `GitHub Actions 1000233643` have different job and boot identities; full boot hashes are retained in [hosted-result.json](hosted-result.json). Both hostnames are `runnervmwhx2h`. This establishes separate runner/VM environments without physical hardware attestation.
+
+The **1,891,499-byte** adapter/configuration/lineage package is identical in the signed offer, original source publication, source worker and target checkpoint. Target has no `sources.sqlite`; decoder reads finish before source-evidence transfer. All read journals record no fact/retrieval/answer-lexicon input or answer postprocessing; raw-row evidence is empty.
+
+| Decoder condition | Raw accuracy | Behavior |
+| --- | ---: | --- |
+| Source adapter | **3/3** | `red`, `green`, `orange` |
+| Source base | **0/3** | Repeats each question |
+| Source shuffled adapter | **0/3** | Repeats each question |
+| Target adapter | **3/3** | Exact source-adapter text, token IDs and prompt hashes |
+| Target serial load | **32/32** | Same three questions repeated **11 / 11 / 10** times |
+
+The **36 successful decoder processes** are three source batches of three questions, one target batch of three, and 32 single-question processes. Training also succeeds. All 44 answers were not individually cold-started. Repeats do not add future tasks: **0** independent future tasks, future accuracy **null**, no strong-retrieval comparison.
+
+### Measured costs and boundaries
+
+The unchanged rank-8, seed-2718, learning-rate-0.001 recipe executed **256 actual forwards/updates**, **17,345 input tokens**, **512 supervised tokens**, and fact visits **85 / 85 / 86**. Training reports **81.884683 s**; its complete child takes **87.923642 s**. Safetensors-header analysis confirms **120 F32 tensors, 460,800 parameters, 1,843,200 tensor bytes**. Gradient and optimizer records add 1,843,200 and 3,686,880 bytes; these omit base, activations and runtime.
+
+| Cost observation | Value |
+| --- | ---: |
+| 32 serial cold requests, concurrency 1 | **220.360354 s; 0.145216685 requests/s** |
+| Nearest-rank p50 / p95 request wall | **6.859046 / 6.991547 s** |
+| Source prepare wall / CPU | **112.413621 / 199.837886 s** |
+| Target read phase wall / CPU, including artifact wait | **427.978045 / 248.494016 s** |
+| Largest individual child peak RSS, source / target | **1,286,684,672 / 1,143,451,648 B** |
+| Two separately inventoried base copies | **542,342,300 B** |
+| Final source / target evidence, uncompressed file lengths | **6,598,614 / 4,833,857 B** |
+| Two bases plus final evidence file lengths | **553,774,771 B** |
+
+The p50 is sorted observation 16 of 32; the usual two-middle-value median is **6.860377985 s**. Cold wall includes startup/loading; it is not pure generation latency or concurrent throughput. Aggregate peak RSS is unmeasured, so individual peaks are not summed.
+
+All **178 evidence-inventory entries** match final archives. Final totals add four later source files (**14,884 B**) and target inventory itself (**21,329 B**). Bases are inventoried, not included/rehashed in these ZIPs. Logical file lengths omit full dependencies/caches, base-download/TLS/upload traffic and CI billing. Net compression and equal-quality total-budget advantage remain unproven.
+
+### Retained receipts and status
+
+[hosted-result.json](hosted-result.json) preserves eight artifact identities/hashes/sizes/expirations, signed causal receipts, source hashes, costs and limits. Source/target ZIPs (**5,335,101 / 3,714,006 B**) expire on **2026-11-08**; none is added to Git.
+
+The missing **positive current remote-evidence handoff before actual withdrawal** is now demonstrated for authenticated same-run artifact relay. Online/replicated authority, physical-node attestation, partition/quorum recovery, production admission, unseen-task superiority, matched-budget split gain and net compression remain outside this trial. Its full research gates closed count remains **0**.
