@@ -18,6 +18,13 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use std::fs::File;
 
+#[derive(Clone, Copy)]
+pub(crate) struct NativeMemoryJournalContext<'a> {
+    pub subject: &'a StableId,
+    pub objective: Digest32,
+    pub binding: Option<&'a crate::NativeMemoryContextBindingV1>,
+}
+
 /// Handles must name private, exclusively owned regular files. The witness is
 /// retained independently of the journal; it must not be copied from that journal.
 pub struct NativeMemoryShadowFilesV1 {
@@ -46,9 +53,13 @@ pub(crate) fn open_runtime(
     model: &NativeMemoryModelConfigV1,
     source: &MemoryCellSourceBindingV1,
     owner: &str,
-    subject: &StableId,
-    objective: Digest32,
+    context: NativeMemoryJournalContext<'_>,
 ) -> Result<(NeuronRuntime<FileAnchorWitnessStore>, Digest32), NativeMemoryError> {
+    let NativeMemoryJournalContext {
+        subject,
+        objective,
+        binding,
+    } = context;
     model.validate().map_err(NativeMemoryError::Rejected)?;
     let config = NeuronShadowConfigV1 {
         config_id: StableId::new(model.config_id.clone()).map_err(reject)?,
@@ -77,6 +88,7 @@ pub(crate) fn open_runtime(
         &profile.cell_id,
         model,
         config.semantic_digest().map_err(reject)?,
+        binding,
     )?;
     // Keep the real objective in both journals. The independent witness's scope
     // also binds the source/model namespace before any recovery is attempted.
@@ -135,6 +147,7 @@ pub(crate) fn source_namespace(
     cell_id: &StableId,
     model: &NativeMemoryModelConfigV1,
     profile_digest: Digest32,
+    context_binding: Option<&crate::NativeMemoryContextBindingV1>,
 ) -> Result<Digest32, NativeMemoryError> {
     // Query nonce/deadline are deliberately excluded from this stable source
     // cut. Every individual callback still binds them in NativeTickBindingV1.
@@ -155,7 +168,15 @@ pub(crate) fn source_namespace(
         profile_digest.to_string(),
     ))
     .map_err(reject)?;
-    Ok(Digest32::of_bytes(&bytes))
+    let source = Digest32::of_bytes(&bytes);
+    Ok(match context_binding {
+        None => source,
+        Some(binding) => Digest32::of_parts(&[
+            b"hepta.memory-cell.shadow-namespace.v2",
+            source.as_array(),
+            binding.digest().as_array(),
+        ]),
+    })
 }
 
 pub(crate) fn reject(error: impl std::fmt::Display) -> NativeMemoryError {

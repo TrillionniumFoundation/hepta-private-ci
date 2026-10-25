@@ -112,8 +112,11 @@ async fn durable_shadow_namespace_rejects_source_and_profile_substitution_before
         &f.config,
         f.admission.binding(),
         owner,
-        &subject,
-        objective,
+        NativeMemoryJournalContext {
+            subject: &subject,
+            objective,
+            binding: None,
+        },
     )
     .unwrap();
     let features = query_features(&f.admission.query().key.question().unwrap()).unwrap();
@@ -146,8 +149,11 @@ async fn durable_shadow_namespace_rejects_source_and_profile_substitution_before
             &f.config,
             &source,
             owner,
-            &subject,
-            objective
+            NativeMemoryJournalContext {
+                subject: &subject,
+                objective,
+                binding: None
+            }
         )
         .is_err()
     );
@@ -160,8 +166,11 @@ async fn durable_shadow_namespace_rejects_source_and_profile_substitution_before
             &changed,
             f.admission.binding(),
             owner,
-            &subject,
-            objective
+            NativeMemoryJournalContext {
+                subject: &subject,
+                objective,
+                binding: None
+            }
         )
         .is_err()
     );
@@ -179,8 +188,11 @@ async fn durable_shadow_namespace_rejects_source_and_profile_substitution_before
         &f.config,
         f.admission.binding(),
         owner,
-        &subject,
-        objective,
+        NativeMemoryJournalContext {
+            subject: &subject,
+            objective,
+            binding: None,
+        },
     )
     .unwrap();
     assert_eq!(restored_namespace, namespace);
@@ -194,8 +206,11 @@ async fn durable_shadow_namespace_rejects_source_and_profile_substitution_before
             &f.config,
             f.admission.binding(),
             owner,
-            &subject,
-            objective
+            NativeMemoryJournalContext {
+                subject: &subject,
+                objective,
+                binding: None
+            }
         )
         .is_err()
     );
@@ -206,8 +221,11 @@ async fn durable_shadow_namespace_rejects_source_and_profile_substitution_before
             &f.config,
             f.admission.binding(),
             owner,
-            &subject,
-            objective
+            NativeMemoryJournalContext {
+                subject: &subject,
+                objective,
+                binding: None
+            }
         )
         .is_err()
     );

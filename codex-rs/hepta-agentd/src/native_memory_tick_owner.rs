@@ -1,6 +1,12 @@
 //! Opt-in native decoder composition with the real NeuronRuntime transaction.
 
+#[path = "native_memory_current_model.rs"]
+mod current_model;
+
+use current_model::NativeCurrentModel;
+
 use crate::native_memory_model::NativeMemoryModelPort;
+use crate::native_memory_shadow_namespace::NativeMemoryJournalContext;
 use crate::native_memory_shadow_namespace::NativeMemoryShadowFilesV1;
 use crate::native_memory_shadow_namespace::NativeMemoryShadowProfileV1;
 use crate::native_memory_shadow_namespace::open_runtime;
@@ -34,6 +40,16 @@ use tokio::sync::Semaphore;
 /// fixture context, or user prompt is substituted when this provider is absent.
 pub trait NativeMemoryContextAuthorityV1: Send {
     fn current(&mut self) -> Result<NativeMemoryTickContextV1, NativeMemoryError>;
+
+    /// Stable identity of the checked owners; unbound contexts are reserved for
+    /// the explicit qualification profile and cannot enroll a production owner.
+    fn binding(&self) -> Option<&crate::NativeMemoryContextBindingV1> {
+        None
+    }
+
+    fn validate_query(&self, _query: &MemoryCellQueryV1) -> Result<(), NativeMemoryError> {
+        Ok(())
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -88,6 +104,7 @@ pub struct AgentdNativeMemoryShadowOwner<C> {
     subject: StableId,
     objective: Digest32,
     profile_digest: Digest32,
+    context_binding: Option<crate::NativeMemoryContextBindingV1>,
 }
 
 /// Both receipts came from the same admitted callback. The shadow observation
@@ -99,6 +116,7 @@ pub struct NativeMemoryShadowReadV1 {
     namespace: Digest32,
     admission: Arc<MemoryCellAdmissionV1>,
     input: NeuronTickInputV1,
+    context_binding: Option<crate::NativeMemoryContextBindingV1>,
 }
 
 impl NativeMemoryShadowReadV1 {
@@ -111,23 +129,19 @@ impl NativeMemoryShadowReadV1 {
     pub fn source(&self) -> &MemoryCellUseReceiptV1 {
         &self.source
     }
+    pub fn context_binding(&self) -> Option<&crate::NativeMemoryContextBindingV1> {
+        self.context_binding.as_ref()
+    }
 }
 
 impl<C: NativeMemoryContextAuthorityV1 + 'static> AgentdNativeMemoryShadowOwner<C> {
+    #[cfg(feature = "qualification-cognitive-write")]
     pub(crate) async fn open(
         host: NativeShadowHostBinding,
         files: NativeMemoryShadowFilesV1,
         profile: NativeMemoryShadowProfileV1,
-        mut context: C,
+        context: C,
     ) -> Result<Arc<Self>, NativeMemoryError> {
-        let current = context.current()?;
-        if current.objective_digest.is_zero()
-            || current.ndu_snapshot_digest.is_zero()
-            || current.monotonic_time_micros == 0
-            || current.modulator_digest.is_some_and(Digest32::is_zero)
-        {
-            return Err(reject("live tick context is incomplete"));
-        }
         let now = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .map_err(reject)?
@@ -137,10 +151,49 @@ impl<C: NativeMemoryContextAuthorityV1 + 'static> AgentdNativeMemoryShadowOwner<
             key: host.key.clone(),
             deadline_unix_ms: u64::try_from(now).map_err(reject)? + 300_000,
         };
+        Self::open_for_query(host, files, profile, context, &query).await
+    }
+
+    pub(crate) async fn open_for_query(
+        host: NativeShadowHostBinding,
+        files: NativeMemoryShadowFilesV1,
+        profile: NativeMemoryShadowProfileV1,
+        mut context: C,
+        query: &MemoryCellQueryV1,
+    ) -> Result<Arc<Self>, NativeMemoryError> {
+        if query.key != host.key || host.cancellation.is_cancelled() {
+            return Err(reject("closed owner or unknown typed key"));
+        }
+        context.validate_query(query)?;
+        let current = context.current()?;
+        let context_binding = context.binding().cloned();
+        if context_binding.is_none() && !cfg!(feature = "qualification-cognitive-write") {
+            return Err(reject("production shadow requires checked current owners"));
+        }
+        if current.objective_digest.is_zero()
+            || current.ndu_snapshot_digest.is_zero()
+            || current.monotonic_time_micros == 0
+            || current.modulator_digest.is_some_and(Digest32::is_zero)
+        {
+            return Err(reject("live tick context is incomplete"));
+        }
         let source = host
             .writer
-            .authorize_memory_cell(&host.access, &query, &host.claim)
+            .authorize_memory_cell(&host.access, query, &host.claim)
             .await?;
+        let after_source = context.current()?;
+        if after_source.subject_id != current.subject_id
+            || after_source.objective_digest != current.objective_digest
+            || after_source.ndu_snapshot_digest != current.ndu_snapshot_digest
+            || after_source.body_generation != current.body_generation
+            || after_source.modulator_digest != current.modulator_digest
+            || after_source.monotonic_time_micros < current.monotonic_time_micros
+            || context.binding() != context_binding.as_ref()
+        {
+            return Err(reject(
+                "current context changed during source authorization",
+            ));
+        }
         let cell_id = profile.cell_id.clone();
         let (runtime, namespace) = open_runtime(
             files,
@@ -148,8 +201,11 @@ impl<C: NativeMemoryContextAuthorityV1 + 'static> AgentdNativeMemoryShadowOwner<
             &host.model,
             &source,
             host.writer.owner_agent_id().as_str(),
-            &current.subject_id,
-            current.objective_digest,
+            NativeMemoryJournalContext {
+                subject: &current.subject_id,
+                objective: current.objective_digest,
+                binding: context_binding.as_ref(),
+            },
         )?;
         let profile_digest = runtime
             .shadow_profile()
@@ -169,6 +225,7 @@ impl<C: NativeMemoryContextAuthorityV1 + 'static> AgentdNativeMemoryShadowOwner<
             subject: current.subject_id,
             objective: current.objective_digest,
             profile_digest,
+            context_binding,
         }))
     }
 
@@ -191,6 +248,7 @@ impl<C: NativeMemoryContextAuthorityV1 + 'static> AgentdNativeMemoryShadowOwner<
             if state.failed {
                 return Err(reject("shadow owner requires explicit recovery"));
             }
+            state.context.validate_query(&query)?;
             if let Some(pending) = &state.pending
                 && pending.admission.query() != &query
             {
@@ -202,6 +260,11 @@ impl<C: NativeMemoryContextAuthorityV1 + 'static> AgentdNativeMemoryShadowOwner<
             // stops this runtime. SQLite and the sparse journal are not one ACID transaction.
             state.failed = true;
             let current = state.context.current()?;
+            if state.context.binding() != owner.context_binding.as_ref() {
+                return Err(reject(
+                    "current owner binding differs from enrolled journal",
+                ));
+            }
             if current.subject_id != owner.subject || current.objective_digest != owner.objective {
                 return Err(reject(
                     "live subject/objective differs from enrolled journal",
@@ -223,6 +286,7 @@ impl<C: NativeMemoryContextAuthorityV1 + 'static> AgentdNativeMemoryShadowOwner<
                         &owner.cell_id,
                         &owner.host.model,
                         owner.profile_digest,
+                        owner.context_binding.as_ref(),
                     )?;
                     if actual_namespace != owner.namespace {
                         return Err(reject(
@@ -267,7 +331,19 @@ impl<C: NativeMemoryContextAuthorityV1 + 'static> AgentdNativeMemoryShadowOwner<
                 return Err(reject("live context changed before witness reconciliation"));
             }
             handle.block_on(owner.host.writer.revalidate_memory_cell(&job.admission))?;
-            let observation = match state.runtime.tick_shadow(&mut job.model, job.input.clone()) {
+            let tick = {
+                let ShadowState {
+                    runtime, context, ..
+                } = &mut *state;
+                let mut model = NativeCurrentModel {
+                    inner: &mut job.model,
+                    context,
+                    input: &job.input,
+                    binding: owner.context_binding.as_ref(),
+                };
+                runtime.tick_shadow(&mut model, job.input.clone())
+            };
+            let observation = match tick {
                 Ok(output) => output,
                 Err(error @ NeuronRuntimeError::WitnessAfterCommit { .. }) => {
                     state.pending = Some(job);
@@ -276,7 +352,9 @@ impl<C: NativeMemoryContextAuthorityV1 + 'static> AgentdNativeMemoryShadowOwner<
                 }
                 Err(error) => return Err(reject(error)),
             };
-            if !state.context.current()?.matches(&job.input) {
+            if !state.context.current()?.matches(&job.input)
+                || state.context.binding() != owner.context_binding.as_ref()
+            {
                 return Err(reject("live context changed during model execution"));
             }
             let execution = job.model.take_execution()?;
@@ -302,6 +380,7 @@ impl<C: NativeMemoryContextAuthorityV1 + 'static> AgentdNativeMemoryShadowOwner<
                     namespace: owner.namespace,
                     admission: job.admission,
                     input: job.input,
+                    context_binding: owner.context_binding.clone(),
                 },
                 permit,
             ))
@@ -322,7 +401,8 @@ impl<C: NativeMemoryContextAuthorityV1 + 'static> AgentdNativeMemoryShadowOwner<
             if self.host.cancellation.is_cancelled() {
                 return Err(reject("native owner is closed"));
             }
-            if result.namespace != self.namespace {
+            if result.namespace != self.namespace || result.context_binding != self.context_binding
+            {
                 return Err(reject("result belongs to another enrolled owner namespace"));
             }
             let namespace = source_namespace(
@@ -332,6 +412,7 @@ impl<C: NativeMemoryContextAuthorityV1 + 'static> AgentdNativeMemoryShadowOwner<
                 &self.cell_id,
                 &self.host.model,
                 self.profile_digest,
+                self.context_binding.as_ref(),
             )?;
             if namespace != self.namespace {
                 return Err(reject("result belongs to another source/profile namespace"));
@@ -341,7 +422,11 @@ impl<C: NativeMemoryContextAuthorityV1 + 'static> AgentdNativeMemoryShadowOwner<
                 .revalidate_memory_cell_source(&result.admission)
                 .await?;
             let mut state = self.state.try_lock().map_err(reject)?;
-            if state.failed || !state.context.current()?.matches(&result.input) {
+            state.context.validate_query(result.admission.query())?;
+            if state.failed
+                || !state.context.current()?.matches(&result.input)
+                || state.context.binding() != self.context_binding.as_ref()
+            {
                 return Err(reject("live context no longer supports delivery"));
             }
             Ok(())
@@ -357,6 +442,7 @@ impl<C: NativeMemoryContextAuthorityV1 + 'static> AgentdNativeMemoryShadowOwner<
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "qualification-cognitive-write"))]
 #[path = "native_memory_tick_owner_tests.rs"]
 mod tests;
+

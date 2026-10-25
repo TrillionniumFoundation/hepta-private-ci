@@ -19,7 +19,7 @@ impl NativeMemoryContextAuthorityV1 for Context {
     }
 }
 
-fn binding(f: &Fixture) -> NativeShadowHostBinding {
+pub(super) fn binding(f: &Fixture) -> NativeShadowHostBinding {
     NativeShadowHostBinding {
         writer: Arc::clone(&f.writer),
         access: f.access.clone(),
@@ -106,6 +106,7 @@ async fn shadow_delivery_is_immutable_owner_bound_and_late_withdrawal_closes_own
             namespace: owner_a.namespace,
             admission: Arc::clone(&f.admission),
             input,
+            context_binding: owner_a.context_binding.clone(),
         };
         owner_a.revalidate_delivery(&result).await.unwrap();
         assert_eq!(result.execution().text, "fixture-only");
