@@ -24,13 +24,15 @@ runs:
       shell: bash
       run: echo "CI_BUILD_ROOT=$HOME/.cache/codex-ci" >> "$GITHUB_ENV"
 
-    - name: Enable unprivileged user namespaces (Linux)
+    - name: Preserve Linux AppArmor userns restriction
       if: runner.os == 'Linux'
       shell: bash
       run: |
-        sudo sysctl -w kernel.unprivileged_userns_clone=1
-        if sudo sysctl -a 2>/dev/null | grep -q '^kernel.apparmor_restrict_unprivileged_userns'; then
-          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+        set -euo pipefail
+        # CI must not turn off host-wide AppArmor userns confinement.
+        # When this kernel control exists, fail closed if it is disabled.
+        if sysctl -n kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+          test "$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)" = 1
         fi
 
     - name: Configure CI build paths

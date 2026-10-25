@@ -74,7 +74,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build:
-    timeout-minutes: 30
+    timeout-minutes: 90
     name: Build ${{ matrix.variant }} ${{ matrix.target }}
     needs: metadata
     # Metadata always runs; only relevant changes pay for the large matrix.
@@ -319,6 +319,9 @@ jobs:
 
           (
             cd codex-rs
+            # Build-script rustc may run from registry directories with another
+            # rustup default; pin the compiler as well as the Cargo executable.
+            export RUSTUP_TOOLCHAIN=1.95.0
             CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
@@ -336,7 +339,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build-windows-source:
-    timeout-minutes: 30
+    timeout-minutes: 90
     name: Build ptrcomp-sandbox ${{ matrix.target }} from source
     needs: metadata
     if: ${{ needs.metadata.outputs.windows_source_required == 'true' }}

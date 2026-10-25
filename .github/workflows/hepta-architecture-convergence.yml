@@ -126,16 +126,26 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/repository-controls.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_repository_controls scripts.test_hepta_control_hardening scripts.test_hepta_candidate_transport_workflow
-      - name: Prepare native prerequisites
+      - name: Prepare native prerequisites with confined Bubblewrap
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
-          sudo sysctl -w kernel.unprivileged_userns_clone=1
-          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
-            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-          fi
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config apparmor-profiles apparmor-utils
+          # Fail closed rather than changing host-wide namespace security controls.
+          test "$(sysctl -n kernel.unprivileged_userns_clone)" = 1
+          before="$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)"
+          test "$before" = 1
+          distro_profile=/usr/share/apparmor/extra-profiles/bwrap-userns-restrict
+          test -r "$distro_profile"
+          sudo install -m 0644 "$distro_profile" /etc/apparmor.d/bwrap-userns-restrict
+          sudo apparmor_parser -r /etc/apparmor.d/bwrap-userns-restrict
+          test "$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)" = "$before"
+          bwrap --unshare-user --unshare-net --uid 0 --gid 0 \
+            --ro-bind / / --dev-bind /dev /dev --proc /proc \
+            /bin/true
+          printf 'apparmor_userns=%s; confined_bwrap_smoke=passed\n' "$before" \
+            | tee "$RUNNER_TEMP/hepta-command-records/bwrap-apparmor.log"
       - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
         if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
       - name: Expose DotSlash for existing integration tests

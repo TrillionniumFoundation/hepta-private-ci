@@ -1,4 +1,3 @@
-
 use super::*;
 
 fn key(device: &str) -> CompositionKey {
