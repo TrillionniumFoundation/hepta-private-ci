@@ -1,0 +1,45 @@
+{
+  "python_candidates": {
+    "python3.12": "/usr/bin/python3.12",
+    "python3.13": "/home/qian-qi/.local/bin/python3.13",
+    "uv": null
+  },
+  "packages": {
+    "numpy": {
+      "requested": "2.3.5",
+      "resolved_version": "2.3.5",
+      "python_requires": ">=3.11",
+      "file_count": 74,
+      "sha256": "b152ed47e23df7c54138ba3f4841ce36f7c607def65185e80de0367ad51f0c84",
+      "elapsed": 3.9005192360000365,
+      "source": "https://pypi.org/pypi/numpy/2.3.5/json"
+    },
+    "pillow": {
+      "requested": "12.3.0",
+      "resolved_version": "12.3.0",
+      "python_requires": ">=3.10",
+      "file_count": 87,
+      "sha256": "56ca2c3f9e7460b8a47c3f694a02b000ec11811e392522df879c291a20198073",
+      "elapsed": 16.242307733000416,
+      "source": "https://pypi.org/pypi/pillow/12.3.0/json"
+    },
+    "torch": {
+      "requested": "2.14.1+cpu",
+      "exact_cp312_linux_candidates": 1,
+      "newest_cpu_versions": [
+        "2.9.1",
+        "2.10.0",
+        "2.11.0",
+        "2.12.0",
+        "2.12.1",
+        "2.13.0",
+        "2.14.0",
+        "2.14.1"
+      ],
+      "sha256": "f789e9b9acee7b8ca0240d04cb474aad2593d515af4da086a126a5736b6787f4",
+      "elapsed": 10.24792032699952,
+      "source": "https://download.pytorch.org/whl/cpu/torch/"
+    }
+  },
+  "scope": "read-only package resolution; no training or scientific protocol change"
+}
