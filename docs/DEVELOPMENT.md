@@ -706,8 +706,7 @@ strict workspace Clippy, exact Cargo graph and source-integrity checks. The
 actual original concurrent native driver reports zero ThreadSanitizer warnings;
 the earlier eighteen warnings remain failures of source `9cf5de77`. The nine
 tested native/test/workflow/inventory/Rust objects remain exact in this pair.
-Original
-C retains its A wait slot after unknown syscall results; original O retains C,
+Original C retains its A wait slot after unknown syscall results; original O retains C,
 and one fixed C/A owner root survives loss of all temporary caller references.
 The root is retained even after a timely receipt, pending actual retirement.
 The preborn native worker is preparation only; its activation/retirement
@@ -749,6 +748,23 @@ together before merge; the old published pair is not relabeled as TCL4 evidence.
 Disposable cache deletion or
 quota refusal cannot retire M12 paid retention, release an AuthBus reservation,
 authorize installation or qualify the three real-model upgrade rounds.
+
+Inference-platform's existing neural Session now reserves one of two fixed
+custodians before model-process birth. Each custodian keeps the original Child
+and directory handle in a rooted slot; Drop only requests cleanup on the same
+generation. Thread creation failure, cleanup panic, I/O failure or incomplete
+terminal receipts cannot discard that owner or recycle its slot. Foreground
+access refuses a busy slot without waiting behind cleanup. All load/ready reads,
+load return and durable load settlement recheck the same original startup
+deadline/cancellation before delivering the port. The original complete signed
+FinalUse claim, response framing and successful supervisor/worker receipt
+requirements remain intact. The two-package suite passes 361 cases, including
+the actual CLI signed-call/replay control; the twelve inherited opt-in cases
+remain separately required when their environments are supplied. These custody
+and deadline controls grant no real-model, full containment, funding or resource
+return qualification. Actual model tests remain tied to their explicit pinned
+inputs and current source, without extending the two-second read, 120-second
+startup or eight-second terminal bounds.
 
 PN4's source-to-destination interface carries the original verified request and
 one-shot FinalUse token in a sealed `ProductionVerifiedDispatch`. Physical targets
