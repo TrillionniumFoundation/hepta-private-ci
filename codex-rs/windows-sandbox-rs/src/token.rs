@@ -1,4 +1,6 @@
 use crate::winutil::to_wide;
+#[path = "fresh_managed_base.rs"]
+pub(crate) mod fresh_managed_base;
 #[path = "token_full_restriction.rs"]
 mod full_restriction;
 #[path = "token_query.rs"]

@@ -80,6 +80,8 @@ mod identity;
 mod legacy_boundary;
 #[cfg(target_os = "windows")]
 mod logging;
+#[cfg(any(target_os = "windows", test))]
+mod managed_token_policy;
 #[cfg(target_os = "windows")]
 mod path_normalization;
 #[cfg(target_os = "windows")]

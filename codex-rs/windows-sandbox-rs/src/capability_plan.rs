@@ -252,6 +252,7 @@ impl FilesystemCapabilityPlan {
     }
 
     /// Parent root-resolution declaration, independent of the runner's user.
+    #[cfg(target_os = "windows")]
     pub fn root_resolution_context(&self) -> Option<&RootResolutionContext> {
         self.request.as_ref().map(|request| &request.context)
     }
