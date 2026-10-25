@@ -1,0 +1,82 @@
+{
+  "schema": "hepta.native-memory.independent-ci-and-followups.v1",
+  "created_at_utc": "2026-10-25T00:30:48.773765+00:00",
+  "archive": "ci-40144148314-local-002-005-raw.tar.xz",
+  "archive_bytes": 629368,
+  "archive_sha256": "f572d5ff53b9971acf84310a9efcc1a64c24cc43f6253e7225dbf97f378536d5",
+  "archive_members": 53,
+  "readme_sha256": "0fc4260030c9677825e218d1cd74bb894af6321afda07e42d034732be7b04870",
+  "hosted_ci": {
+    "pr": 3787,
+    "run_id": 40144148314,
+    "job_id": 121021816101,
+    "head": "f6b97dca1a8621e96a58d98dfb8c9dcc7b4b5ee5",
+    "tree": "afd6e2286bb48206fff7d38b4fe85bb63f1e2565",
+    "command_exit_code": 100,
+    "tests_run": 510,
+    "passed": 509,
+    "flaky_within_passed": 1,
+    "failed": 1,
+    "skipped": 13,
+    "test_phase_seconds": 96.767,
+    "actual_pretrained_model_calls": 0,
+    "artifact_count_returned_by_github": 1,
+    "original_zip_bytes": 37502,
+    "original_zip_sha256": "b8a273be9491781e0f497b0f6666fb14fb01780bad63b722b852e29d28d9ad70",
+    "github_artifact_digest_verified": true,
+    "decoded_job_log_bytes": 1553872,
+    "decoded_job_log_sha256": "0485d23bbed12cd59c1cee04120ba08394bbb7536bbaa8fcb576fe038eff39db"
+  },
+  "local": [
+    {
+      "attempt": "002",
+      "exit_code": 101,
+      "tests_executed": 0,
+      "wall_seconds": 42.54991853999991,
+      "native_model_calls": 0,
+      "source_unchanged": true,
+      "log_sha256": "8497d4ef45cbcb52f0df119f0df6f9ecce23a4292cd129bb7522bde6e1225383"
+    },
+    {
+      "attempt": "003",
+      "exit_code": 101,
+      "tests_executed": 0,
+      "wall_seconds": 95.60870558200031,
+      "native_model_calls": 0,
+      "source_unchanged": true,
+      "log_sha256": "563d5bc481f95cbf863c60347c4285630a686c15f8c525ac7473359466a21ddb"
+    },
+    {
+      "attempt": "004",
+      "exit_code": 101,
+      "tests_executed": 0,
+      "wall_seconds": 79.04705633399954,
+      "native_model_calls": 0,
+      "source_unchanged": true,
+      "log_sha256": "6d54fdb4109a9734e559d54da6b7cd09b35dd771f6d6bd0fb47a52c341bca2c1"
+    },
+    {
+      "attempt": "005",
+      "exit_code": 100,
+      "tests_executed": 651,
+      "wall_seconds": 97.41614780200052,
+      "native_model_calls": 0,
+      "source_unchanged": true,
+      "log_sha256": "d86a449b4a827adcb564283e8c9e0bbd6e4cbc808763c5e4486b12ee4db97cda"
+    }
+  ],
+  "local005_counts": {
+    "run": 651,
+    "pass": 650,
+    "fail": 1,
+    "skip": 13,
+    "seconds": 50.455
+  },
+  "all_14_local001_failures_pass_in_local005": true,
+  "subsequent_qualification": "pending; this snapshot ends at local005",
+  "prior_local001_archive_unchanged": {
+    "bytes": 517404,
+    "sha256": "1961117cc071d571779608e850f4caf6647de1f5c3e6c6e1471624fab8913e2e"
+  },
+  "collection_actions": "GitHub read/download plus evidence-only filesystem writes. No Rust/model execution, original source changes or remote writes."
+}
