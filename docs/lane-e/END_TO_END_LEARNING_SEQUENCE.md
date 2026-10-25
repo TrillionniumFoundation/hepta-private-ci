@@ -380,9 +380,30 @@ terminal unload assertions pass within the unchanged limits. The original
 runner returns `Ineligible` for `binary-correctness`, so no installation follows.
 The [source-bound observation](../../qualification/learning-generations/real-model-owner-controlled-20261025/parallel-start-original-native.json)
 binds the unchanged tensors and training receipts, explicitly relocated parent
-descriptors with new hashes, original execution receipts and raw archive. The
-4060 is offline; this local result does not replace its pending rerun. The old
+descriptors with new hashes, original execution receipts and raw archive. That local
+result is not a 4060 execution. The old
 077 timeout, failed retry and setup observations remain retained.
+
+The integrated source `b27a2f5e` is also tested using one frozen archive on both
+hosts. The local ROG passes all three cases (0.240, 13.129 and 6.234 seconds).
+After reconnection, the 4060 passes publication/recovery in 3.216 seconds and
+signed neural read/unload in 29.451 seconds. Its comparison fails in 41.219
+seconds: the first candidate query becomes `Indeterminate`, response send gets
+BrokenPipe and the original supervisor fails. Its unchanged retry rejects the
+existing output. Only three records per control phase survive; the required
+66-record chain is not completed. The [paired observations](../../qualification/learning-generations/real-model-owner-controlled-20261025/integrated-b27-original-native.json)
+retain both outcomes and original limits. Existing wall-clock timestamps fit a
+query cutoff, but do not establish the exact earlier host-close cause or a
+per-forward execution duration. No extra forward, warmup or output reset is used.
+
+The original selection owner now validates the fixed canonical positive-zero
+initial material and exposes `SelectedInitialSmolLmMaterialV1`. Each use keeps the
+original signed/trusted-selector expiry, known revocation and fresh original-owner
+CURRENT checks; failure is sticky. Its 124 package cases and a deliberately
+broken trusted-expiry control are retained. This is selected byte material only.
+The host must still preserve measured main-weight/forward evidence, compose a
+distinct initial-only constructor and ordinary task context, then exercise the
+unchanged eligible-child, CURRENT, cold-recovery and three-round upgrade owners.
 
 Learning-platform and agent-runtime must then compose the original ledger,
 evaluation, selection, artifact/CURRENT and next-task owners in the order above.

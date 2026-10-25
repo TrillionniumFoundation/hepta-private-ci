@@ -1,0 +1,99 @@
+{
+  "schema": "trnm.controlled-integrated-neural-native-observations.v1",
+  "hepta_source": "b27a2f5e1164c3befa0cce1ee950ac24aad4ce04",
+  "hepta_tree": "60db3e5ed980fc4e3e9d3ab4f74c1c372bc5eae5",
+  "source_bound_archive": {
+    "bytes": 940538009,
+    "sha256": "0d4a74e2841a0fde298cbc249627d9fa049e5000e187a30290d8fb9e39b36cab",
+    "build_receipt_sha256": "5a254b5f6ba6e204d068c3688bb7af9181cc452ee3a89d6ac9c653f478eca957"
+  },
+  "original_assertions_and_cutoffs_unchanged": true,
+  "local_ROG": {
+    "status": "THREE_ORIGINAL_CASES_PASS",
+    "tests": [
+      {
+        "case": "artifact publication and recovery",
+        "seconds": 0.24
+      },
+      {
+        "case": "full gen2/gen3 comparison",
+        "seconds": 13.129
+      },
+      {
+        "case": "signed neural read and terminal unload",
+        "seconds": 6.234
+      }
+    ],
+    "executor_receipt_sha256": "1ff8c23bf46943a831789d91e2d3d07cf60031b2d782c2f68f53be1a8c25ccc1",
+    "executor_log_sha256": "09406c15e23e11d5292919e0e77407173865af3e0cdc71f5f0b5c779a9990b04",
+    "raw_results": {
+      "path": "local-original-three-results.tar",
+      "bytes": 4249600,
+      "sha256": "bad42c243b3dac52e339e4631cd6f72f43c317bdd7d24a8ab3065400917e8073"
+    },
+    "actual_tasks": 32,
+    "actual_forwards": 64,
+    "submit_reserve_assign_settle_each": 66,
+    "decision": "Ineligible",
+    "failed_metric": "binary-correctness",
+    "CURRENT_installed": false
+  },
+  "4060_restored": {
+    "status": "ACTUAL_ORIGINAL_THREE_CASES_2_PASS_1_FAIL",
+    "tests": [
+      {
+        "name": "real_smollm_material_publishes_and_recovers_through_original_artifact_owner",
+        "status": "PASS",
+        "seconds": 3.216
+      },
+      {
+        "name": "real_gen2_gen3_forwards_score_only_after_original_holdout_consumption",
+        "status": "FAIL",
+        "seconds": 41.219,
+        "error": "DriverFailure(neural supervisor did not exit successfully)",
+        "original_nextest_auto_retry": "AlreadyExists; FAIL0.010s; no manual rerun or output deletion"
+      },
+      {
+        "name": "smollm_neural_read::tests::native::real_smollm_parent_query_original_control_final_use_and_terminal_unload",
+        "status": "PASS",
+        "seconds": 29.451
+      }
+    ],
+    "executor_exit_code": 100,
+    "raw_results": {
+      "bytes": 4270080,
+      "sha256": "f779dca3224a45a405ffa1dc6681d7f91b8bfb7fae00ba638eeb232f8ba76fcd",
+      "files": 80
+    },
+    "comparison": {
+      "accepted_rows": 0,
+      "full32tasks64forwards66records": "NOT_COMPLETED",
+      "original_control_counts": {
+        "submit": 3,
+        "reserve": 3,
+        "assign": 3,
+        "settle": 3
+      },
+      "settlements": ["completed", "completed", "none"],
+      "outer_result": "Provider(Indeterminate)",
+      "candidate_supervisor": {
+        "outcome": "failed",
+        "exit_code": 1,
+        "exact_wait4_reaped": true,
+        "worker_error": "BrokenPipe at connection.sendall after computing response"
+      },
+      "baseline_supervisor": {
+        "outcome": "success",
+        "exit_code": 0,
+        "exact_wait4_reaped": true
+      }
+    },
+    "versions_match_original_core_environment": true,
+    "historical_full_wheel_byte_equality_claimed": false,
+    "original_parent_descriptors_relocated": false,
+    "original_parent_bytes_and_hashes_retained": true,
+    "remaining_cause": "A completed response encounters BrokenPipe after the original query wall deadline; exact earlier host close cause and per-forward elapsed are not present in the original logs. No causal guess is qualification.",
+    "CURRENT_installed": false
+  },
+  "scope": "Same frozen source-bound archive and original three exact cases on two controlled hosts. Actual local success and actual 4060 failure are both retained. Neither demonstrates initial fixed-profile load or three ordinary installed upgrades. No new authority, funding, reward, public acceptance or reset."
+}

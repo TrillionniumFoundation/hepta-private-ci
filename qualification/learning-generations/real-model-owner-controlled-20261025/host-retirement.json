@@ -73,5 +73,28 @@
   },
   "old_unknown_owners_untouched": true,
   "reclaim_or_counter_reset_performed": false,
-  "original_deadline_extended": false
+  "original_deadline_extended": false,
+  "single_cpu_diagnostic_only": {
+    "source": "ec6868da3693bcef54e3ca746956b768f50581ad",
+    "payload": "/bin/true",
+    "original_cutoff_seconds": 8,
+    "scheduler_scope": "One original fresh owner and descendants inherit one allowed CPU for this diagnostic only; not a product policy.",
+    "raw_u_zero_observed": true,
+    "samples": 12,
+    "native_phase": 7,
+    "native_progress": 31,
+    "native_step_state": 5,
+    "native_error": 0,
+    "final_raw_u_memory_current": 0,
+    "final_raw_u_memory_peak": 778240,
+    "raw_log_bytes": 10570,
+    "raw_log_sha256": "ea29d53060d9568dbca1cacc3b7b0ccab23793f3b5ab17d4af9bc7156eea8968",
+    "reviewed_driver_sha256": "78d9793300ee9c7672db9e6b8017e39856cc32f6a40cb3fcf70e102761ae8a6f",
+    "independent_review_sha256": "74e315850d5cee8c88d795608beeba150c68f5cfe3a1b56eb7fe79f7c93dffed",
+    "original_O_root_retained": true,
+    "whole_u_terminal": false,
+    "resource_return_proven": false,
+    "funded": false,
+    "qualification": "Controlled single-CPU observation only. Earlier multi-CPU original-cutoff failure remains. No unique residual-charge cause, general multi-CPU repair, funded entry or whole-unit return is proved."
+  }
 }

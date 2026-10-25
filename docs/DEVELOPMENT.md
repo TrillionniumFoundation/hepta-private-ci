@@ -1153,6 +1153,34 @@ required: this addresses the observed initial cause without claiming all deeper
 ancestors or production sandbox admission will pass. The two deletion failures
 remain independent blockers.
 
+The later source `07731d31` and actual original-base preview `ccff5bed` pass the
+original private-state, FinalUse, Registry, owner-lock and held-RX controls in both
+ARM diagnostic lanes; broad-identity deletion and the guarded legacy route still
+fail. The complete [source workflow](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40177457993)
+and [actual-preview workflow](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40178472384)
+then fail all four ARM test shards. The source executes 18,491 cases: 18,113 pass,
+343 fail and 35 time out. Retained original shard filters are not failed cases.
+The complete failure catalogue includes five native-TLS failures, sixteen shadow
+directory-sync access failures and two terminal-owner fixture directory opens;
+other owner refusals, event waits, terminalization, paths, Matrix, recovery and
+PTY failures remain separately assigned. No common cause is inferred for them.
+
+Within the same PN0 item, the source successor integrates held writable directory
+synchronization with disk/directory/non-reparse identity checks, and typed native
+TLS fallback with explicit certificate/trust/revocation denial. The original
+route, one-replay and deadline gates remain. Its five complete related Linux
+packages pass 632 cases on clean `86853701`; fourteen inherited conditional cases
+are accounted separately, without a new ignore or changed assertion. The actual
+CLI dependency is built on that source before the successful complete run; the
+prior missing-binary failure is retained. Scoped fix, strict Clippy and formatting
+pass. Component MSVC checking is `NOT_NATIVE`. Fresh complete Windows source and
+actual-preview execution, original deletion refusals and the complete qualified
+runner route remain open; process/token prerequisites cannot replace that route.
+The terminal-owner fixture separately requests the Windows directory-open and
+flush access required by the OS, keeping its original owner and all assertions.
+Its full three local cases, including the original history/concurrency profile,
+pass; this still requires the original Windows native target to execute.
+
 The same PN0 sandbox item retains seven source-backed blockers below. Security-authority
 coordinates the sandbox package owners; runtime-control owns the PN4 process-owner
 composition. Paths in the first six rows are under
