@@ -138,6 +138,22 @@ workspace_root_test(
 )
 
 # Caller evidence inspected by the Hepta contracts tests.
+rust_binary(
+    name = "native-owner-qualification",
+    testonly = True,
+    srcs = ["src/bin/hepta-native-owner-qualification.rs"] + glob(["src/bin/native_owner_qualification/*.rs"]),
+    crate_name = "native_owner_qualification",
+    crate_root = "src/bin/hepta-native-owner-qualification.rs",
+    edition = "2024",
+    tags = ["manual"],
+    target_compatible_with = select({
+        "@platforms//os:linux": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
+    deps = [":hepta-agentd"] + all_crate_deps(normal = True),
+)
+
+# Caller evidence inspected by the Hepta contracts tests.
 exports_files(
     [
         "src/config.rs",
