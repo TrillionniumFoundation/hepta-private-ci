@@ -57,7 +57,7 @@ def main():
              "| Artifact | SHA-256 |", "|---|---|",
              f"| Final evaluation protocol | `{data['final_protocol_sha256']}` |",
              f"| Active 15-critic policy bundle | `{data['policies_sha256']}` |",
-             f"| This aggregate evidence file | `{sha256(args.summary)}` |", "",
+             f"| Aggregate `SUMMARY.json` | `{sha256(args.summary)}` |", "",
              "The source-role manifest and qualification/final protocols are in `freeze-v1/`. "
              "The final protocol pins the generator, both observers, parsing, public-state/action "
              "interfaces, trained policy identities, statistical implementation, two primary contrasts, "
@@ -314,6 +314,14 @@ def main():
               "executions or total measured resource use. The main total-cost figures above use the "
               "evaluation's single global elapsed clock and actual parent-plus-child CPU. "
               "`matrix_total_case_cost.wall_ns` is summed worker occupancy, not global elapsed time.", "",
+              f"For independent cost reconciliation, preliminary critic bundle `{sha256(args.preliminary_policy)}` "
+              f"recorded {preliminary['wall_ns_before_report']/1e9:.9f} s wall and "
+              f"{preliminary['cpu_ns_before_report']/1e9:.9f} s CPU. The active bundle "
+              f"`{data['policies_sha256']}` recorded {final_fit['wall_ns_before_report']/1e9:.9f} s wall "
+              f"and {final_fit['cpu_ns_before_report']/1e9:.9f} s CPU. `SUMMARY.json.value_fit_cost` "
+              "contains the active build only; the two-build total above additionally includes the "
+              "preserved preliminary build. These are actual critic-fitting clocks, not acoustic "
+              "generator training costs.", "",
               "Fit-data generation and both critic builds are included above. The second build "
               "kept exactly the same learned arrays and fit-selected fixed action after the public "
               "analytic baseline was made explicitly risk-sensitive; both builds' actual costs are "
