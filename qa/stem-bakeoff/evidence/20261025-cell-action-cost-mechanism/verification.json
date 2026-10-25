@@ -1,0 +1,99 @@
+{
+  "analysis_checks": {
+    "actual_score_sets": 342,
+    "anchors": 18,
+    "direct_h1_full_loss2_equal": 18,
+    "maximum_absolute_errors": {
+      "actual_direct_sum": 0.0,
+      "actual_tracking_sum": 0.0,
+      "contrast_sum": 0.0,
+      "effort_from_physical_norm_squared": 3.3881317890172014e-21,
+      "predicted_direct_sum": 0.0,
+      "predicted_tracking_sum": 0.0
+    },
+    "predicted_score_sets": 684,
+    "registered_conditions_checked": 342
+  },
+  "formatter": {
+    "command": "just fmt",
+    "exit_code": 0,
+    "output": "No changed files need formatting. Use --all for a full repository check.\n",
+    "scope": "Recovered partial checkout; the repository formatter has no route for qa Python. This is not a full-repository formatting claim.",
+    "version": "1.40.0",
+    "working_directory": "codex-rs"
+  },
+  "independent_checks": {
+    "candidate_score_records_checked": 342,
+    "maximum_absolute_arithmetic_discrepancy": 2.220446049250313e-16,
+    "primary_analysis_comparison": {
+      "per_anchor_comparisons_checked": 54,
+      "report_sha256": "cc1d2365a3ae627620cacbbd93c46afe9580ea42ca8f5d72ee73e0214d55b5b6"
+    },
+    "scalar_equalities_checked": 1926
+  },
+  "label_payloads_opened": false,
+  "new_candidate_actions": 0,
+  "new_confidence_intervals": 0,
+  "new_training_runs": 0,
+  "policy_selected": false,
+  "proposed_retention_design_executed": false,
+  "reproduction": {
+    "artifacts": [
+      {
+        "byte_identical": true,
+        "bytes": 144457,
+        "file": "objective-decomposition.json",
+        "sha256": "cc1d2365a3ae627620cacbbd93c46afe9580ea42ca8f5d72ee73e0214d55b5b6"
+      },
+      {
+        "byte_identical": true,
+        "bytes": 2473,
+        "file": "objective-decomposition.md",
+        "sha256": "9dba31914151735bde6e3555b0ebfdcac415e2e25aef6ca72c6ab19a3c4e2118"
+      },
+      {
+        "byte_identical": true,
+        "bytes": 52552,
+        "file": "independent-cost-audit.json",
+        "sha256": "c5e2f0376f286c066601f4da49a47770f2c10b21e92b8427ad71f37e804c58b6"
+      }
+    ],
+    "return_codes": [
+      0,
+      0
+    ],
+    "runs": 2
+  },
+  "restored_inputs_matched_source_tree_git_blob_sha1": 20,
+  "review": {
+    "portable_manifest_cli_change": "Independent narrow review passed; arithmetic and source-binding checks unchanged.",
+    "retention_design_and_report_boundaries": "Independent read-only review passed; proposed, not executed; no new confirmation."
+  },
+  "runtime": "3.12.14",
+  "schema": "hepta.v3-cost-mechanism-verification.v1",
+  "source_commit": "a062749d768ea09838921c7f3bfd8b644541b873",
+  "source_repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_tree": "27d1b25f49ca0e3fa89467e8fa7fdac0568464b3",
+  "supporting_files": {
+    "independent-source-binding.json": {
+      "bytes": 3707,
+      "sha256": "bcd15e4bcc028a84886d34f7246593efae89ef5fc1397f1e3f128772e37af251"
+    },
+    "independent_cost_audit.py": {
+      "bytes": 10570,
+      "sha256": "dfc7dadb277098bfe6f92a641de5a7dca2c0fb10857ec093bc90bd76b31abae4"
+    },
+    "objective_decomposition.py": {
+      "bytes": 15072,
+      "sha256": "aeaf081993358ad5fcae8abf5197962b8cd2e89cb4d4c145aa78b4f17e5dde12"
+    },
+    "retention-pressure-design.json": {
+      "bytes": 6386,
+      "sha256": "dd66e03e0cc788d3206e275dc60d6a406bb84c4b23e1dd5233d9862e7eddd8de"
+    },
+    "source_manifest.json": {
+      "bytes": 2583,
+      "sha256": "d3280bc76ccdaffe2199d7265052ec6085279bd218063c4cfc539d530a6e25f8"
+    }
+  }
+}
