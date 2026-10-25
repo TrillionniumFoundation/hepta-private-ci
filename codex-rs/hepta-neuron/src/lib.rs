@@ -31,6 +31,7 @@ mod runtime_shadow_types;
 mod runtime_types;
 mod shared_encoder;
 mod sparse;
+mod trained_cell_v5;
 mod witness;
 
 pub use cell_evidence::CellEvidenceError;
@@ -153,6 +154,19 @@ pub use sparse::SparseError;
 pub use sparse::SparseSignalReceipt;
 pub use sparse::SparseTick;
 pub use sparse::sparse_tick;
+pub use trained_cell_v5::MAX_TRAINED_CELL_BYTES_V5;
+pub use trained_cell_v5::MAX_TRAINED_CELLS_V5;
+pub use trained_cell_v5::TRAINED_CELL_CLASSES_V5;
+pub use trained_cell_v5::TRAINED_CELL_ENCODER_WIDTH_V5;
+pub use trained_cell_v5::TRAINED_CELL_WIDTH_V5;
+pub use trained_cell_v5::TrainedCellBundleV5;
+pub use trained_cell_v5::TrainedCellErrorV5;
+pub use trained_cell_v5::TrainedCellHeadV5;
+pub use trained_cell_v5::TrainedCellInputBindingV5;
+pub use trained_cell_v5::TrainedCellModeV5;
+pub use trained_cell_v5::TrainedCellOutputV5;
+pub use trained_cell_v5::trained_cell_compatibility_digest_v5;
+pub use trained_cell_v5::trained_cell_normalization_digest_v5;
 pub use witness::FileAnchorWitnessStore;
 
 const MAX_FEATURES: usize = 4_096;
