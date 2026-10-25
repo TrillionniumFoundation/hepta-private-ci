@@ -1,0 +1,67 @@
+{
+  "interventions": 10,
+  "models": 15,
+  "new_outcomes_used_for_tuning": false,
+  "observers": [
+    "primary",
+    "secondary"
+  ],
+  "planned_unix_ns": 1792890880602673230,
+  "policy_sets": {
+    "core_public": [
+      "fixed",
+      "tuned_static",
+      "feedback"
+    ],
+    "ndu_additional_public": [
+      "risk_neutral_feedback",
+      "allocation_only_feedback",
+      "draft_masked_feedback",
+      "modality_local_feedback",
+      "one_shot_route",
+      "semantic_couple_fixed",
+      "independent_random_stream_MPC"
+    ],
+    "offline_oracles": [
+      "oracle_primary",
+      "oracle_primary_allocation"
+    ]
+  },
+  "requires_complete_producer_process_before_raw_reads": true,
+  "schema": "hepta.abc.selected-control-audit-plan.v1",
+  "score_only_unique_selected_tree_outputs_and_all_fixed_interventions": true,
+  "source_roles_read_by_future_auditor": [
+    "development"
+  ],
+  "source_sha256": {
+    "/workspace/scratch/2b3c256bef7d/control_selected_audit_runner.py": "b3d5af2daa97ad16ffaa7e9b553e6aea5f8ab839b5bdf7fc1e2b1b5e97f75cea",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/base_recovery.py": "bfe7f2f635db74075decb0e20dcb1d73d203d1d0445d902e8c4254fca46d80fb",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/control.py": "1c52f4a0d34e8d3bb87d271b4e27903331713efb5b92899f6d21973f475f1669",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/control_run.py": "3cc6ea1e1f1913e54c250dcdeac5a9f43547f16587752ae579754ad07b5d2e3d",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/critic.py": "afbd893c2c6cfceca6dfeb388c18df0d67bf886f64c6be2dcf2f4c612751a30a",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/emission.py": "748cdafc6bca00fa07e88a7e294d331d5217c04d3e8208e094bdb906ec5fe1f3",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/episodes.py": "5cb8c72547ac0c589018a9f8a1fa2860738fc995e7715a4281202889c23962cc",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/evaluation.py": "d664487782b109f3dd7cd27f976fd78cfda9f8426ba5d2c843bf22dd5fb2e4f0",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/evidence_audit.py": "a853beaff15243bbad8eeae587a277e6d5449d12d00351b724ca07db66deabe9",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/evidence_audit_tests.py": "c66db172954326614a68b8415054970c89ad9942dcb92189497edb6171218fb9",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/interventions.py": "96936d23db179c2b732555a448a5cdca3da4be1b98c8c57175870959274a2866",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/media.py": "9ebc2dfe6561e78f306cad8e522e58705a3985bd6991af60dc9c38062a3b8ec9",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/planning.py": "c12cb3645ed151f9608095c02678ff3aa6c8c33fd318a2373bec9bacfa8a800d",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/risk.py": "270543c98e769ba46a08df0125b932be50f1c749343cda74e1f7b5f7fdf1c28f",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/route.py": "2ded3fa995cc8ee3b9dac955e038e3be874d9cf3f0092f475732ccc01aeabed1",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/runtime.py": "11e2e0859d706e3186ee5e4688330ad2f4da54d397fe6b33bd335d8ee69f5919",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/selected_audit.py": "ad874bd4dab6f9187d421795c752b80a2cbb0daed4700e6791f3a07279c08733",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/selected_audit_tests.py": "adfdb5394d63ab2f30105d45444e2061ad1198936c2adaa6341277a1299554d0",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/training_run.py": "3aa56c026cec01279ccb35b754b4fa4fdee77dd810f0024e2ed41d1811395093",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/trees.py": "7bfc3f1c151fcc37499dab0760a5ba7924b9b2a530784de24a8aebf92ed74452",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/abc_recovery/trees_tests.py": "c124f00ede646387ef9e1ab7c26dcae6e088484a2211864114a300dcb964897c",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/v6/data.py": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/v6/neural.py": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/v6/observer.py": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/v7/data.py": "41892eb63420a6288121b39f577597067c3e168d3c7467c868230c64ed092cb9",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/v7/evaluation.py": "9f229b3b1092cfc8f89b8376375a8bb5d7efe9c7bb91979026ee5f32182c79da",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/v7/model.py": "156aa5c73c7e9192ebefecafdc568cbbae3e906e7d1bbb2bf50f7535bd2d8fca",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/v7/snapshot.py": "01655335b9807a09005bde0ae11d9fbe1a0665bd0113d9f28e38310f1f4bb474",
+    "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/experiments/multimodal_output_portfolio/v7/sources.py": "b6b27b86ba71a4bafd9c2abe4af033e7cfe73079296bdd2ed1addad045881e9f"
+  }
+}
