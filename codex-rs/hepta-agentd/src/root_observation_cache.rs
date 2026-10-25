@@ -3,6 +3,8 @@
 use crate::AgentdRootAuthorityError;
 use crate::HOST_AUTHORITY_OBSERVATION_V2;
 use crate::HostAuthorityObservationResponseV2;
+use crate::root_observation_diagnostic::ObservationDiagnostics;
+use crate::root_observation_diagnostic::ObservationFailure;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::AuthorityTrustError;
 use std::sync::Arc;
@@ -40,18 +42,38 @@ pub(crate) struct RootObservationCache {
     retained: Mutex<Option<Retained>>,
     fenced: AtomicBool,
     updating: AtomicBool,
+    pub(super) diagnostics: Arc<ObservationDiagnostics>,
 }
 impl RootObservationCache {
+    #[cfg(test)]
     pub(crate) fn new(boot_id: String) -> Self {
+        Self::with_diagnostics(boot_id, Arc::new(ObservationDiagnostics::default()))
+    }
+    pub(super) fn with_diagnostics(
+        boot_id: String,
+        diagnostics: Arc<ObservationDiagnostics>,
+    ) -> Self {
         Self {
             boot_id,
             retained: Mutex::new(None),
             fenced: AtomicBool::new(false),
             updating: AtomicBool::new(false),
+            diagnostics,
         }
     }
+    #[cfg(test)]
     pub(crate) fn fence(&self) {
-        self.fenced.store(true, Ordering::Release);
+        self.fence_at(ObservationFailure {
+            stage: "explicit_fence",
+            ..Default::default()
+        });
+    }
+    pub(super) fn fence_at(&self, failure: ObservationFailure) {
+        // Publish the authority fence before diagnostics. Later callers cannot
+        // steal its reason while the first fencing thread is preempted.
+        if !self.fenced.swap(true, Ordering::AcqRel) {
+            self.diagnostics.record(failure);
+        }
     }
     pub(crate) fn begin_update(&self) {
         self.updating.store(true, Ordering::Release);
@@ -90,6 +112,16 @@ impl RootObservationCache {
         if self.fenced.load(Ordering::Acquire) {
             return Err(AgentdRootAuthorityError::Unavailable);
         }
+        let mut failure = ObservationFailure {
+            stage: "cache_accept_lock",
+            started_ns: Some(started),
+            ended_ns: Some(ended),
+            ceiling_unix_ms: Some(observation.clock.ceiling_unix_ms),
+            anchor_boottime_ns: Some(observation.clock.anchor_boottime_ns),
+            anchor_unix_ms: Some(observation.clock.anchor_unix_ms),
+            observed_unix_ms: Some(observation.observed_unix_ms),
+            ..Default::default()
+        };
         let result = (|| {
             let mut slot = self
                 .retained
@@ -98,7 +130,10 @@ impl RootObservationCache {
             // The clock sample and retained ordering share one critical section.
             // A sample taken before waiting for this lock can be older than a
             // different reader's last_checked_ns despite a monotonic clock.
+            failure.stage = "cache_accept_clock";
             let now = clock_now()?;
+            failure.now_ns = Some(now);
+            failure.stage = "cache_accept_sample";
             let clock = &observation.clock;
             let head = &observation.revocations;
             if observation.schema_version != 2
@@ -133,8 +168,13 @@ impl RootObservationCache {
             {
                 return Err(AgentdRootAuthorityError::Unavailable);
             }
+            failure.stage = "cache_accept_projection";
             let projected = project(&observation, now)?;
+            failure.projected_unix_ms = Some(projected);
             if let Some(previous) = slot.as_ref() {
+                failure.stage = "cache_accept_previous";
+                failure.previous_started_ns = Some(previous.request_started_ns);
+                failure.previous_checked_ns = Some(previous.last_checked_ns);
                 let old = &previous.observation;
                 if now
                     .checked_sub(previous.request_started_ns)
@@ -172,7 +212,7 @@ impl RootObservationCache {
             Ok(())
         })();
         if result.is_err() {
-            self.fence();
+            self.fence_at(failure);
         }
         result
     }
@@ -197,13 +237,29 @@ impl RootObservationCache {
             Ok(slot) => slot,
             Err(TryLockError::WouldBlock) => return Err(ObservationReadError::Busy),
             Err(TryLockError::Poisoned(_)) => {
-                self.fence();
+                self.fence_at(ObservationFailure {
+                    stage: "cache_current_poison",
+                    ..Default::default()
+                });
                 return Err(ObservationReadError::Unavailable);
             }
         };
+        let mut failure = ObservationFailure {
+            stage: "cache_current_clock",
+            ..Default::default()
+        };
         let result = (|| {
             let now = clock_now()?;
+            failure.now_ns = Some(now);
+            failure.stage = "cache_current_missing";
             let retained = slot.as_mut().ok_or(ObservationReadError::Unavailable)?;
+            failure.stage = "cache_current_age_or_rollback";
+            failure.previous_started_ns = Some(retained.request_started_ns);
+            failure.previous_checked_ns = Some(retained.last_checked_ns);
+            failure.ceiling_unix_ms = Some(retained.observation.clock.ceiling_unix_ms);
+            failure.anchor_boottime_ns = Some(retained.observation.clock.anchor_boottime_ns);
+            failure.anchor_unix_ms = Some(retained.observation.clock.anchor_unix_ms);
+            failure.observed_unix_ms = Some(retained.observation.observed_unix_ms);
             if now < retained.last_checked_ns
                 || now
                     .checked_sub(retained.request_started_ns)
@@ -211,9 +267,12 @@ impl RootObservationCache {
             {
                 return Err(ObservationReadError::Unavailable);
             }
+            failure.stage = "cache_current_projection";
             let projected = project(&retained.observation, now)?;
+            failure.projected_unix_ms = Some(projected);
             retained.last_checked_ns = now;
             if self.fenced.load(Ordering::Acquire) {
+                failure.stage = "cache_current_concurrent_fence";
                 return Err(ObservationReadError::Unavailable);
             }
             if self.updating.load(Ordering::Acquire) {
@@ -222,7 +281,7 @@ impl RootObservationCache {
             Ok((Arc::clone(&retained.observation), projected))
         })();
         if matches!(result, Err(ObservationReadError::Unavailable)) {
-            self.fence();
+            self.fence_at(failure);
         }
         result
     }

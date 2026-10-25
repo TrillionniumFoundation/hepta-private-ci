@@ -189,7 +189,18 @@ impl AgentdProductionOperationRuntimeConfig {
                     "production operation authority rejected: {reason}"
                 ))
             })?;
-        recovered_host.writer.verify_current_authority().await?;
+        recovered_host
+            .writer
+            .verify_current_authority()
+            .await
+            .map_err(|error| match error {
+                codex_hepta_memory::ProductionWriterError::AuthorityRejected(reason) => {
+                    codex_hepta_memory::ProductionWriterError::AuthorityRejected(format!(
+                        "writer_recovered_host_final: {reason}"
+                    ))
+                }
+                other => other,
+            })?;
         Ok(())
     }
 

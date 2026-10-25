@@ -98,3 +98,27 @@ phase, sample age or cache reason. Its successful `02` comparison used the same
 test executable but a different client-helper ELF. These fixes establish two
 reachable concurrency defects; they do not retrospectively establish either as
 the cause of that particular failure. Preserve both original runs.
+
+
+## Bounded authority failure diagnostics
+
+The original observation cache and stream retain one first-published refusal
+record in a shared `OnceLock`. The record contains a static stage plus optional
+scalar clock samples, failed exchange duration, OS error kind/code and pidfd poll result.
+It contains no request/response body, key, policy, grant, path or account identity.
+There is no hot-path log output or diagnostic I/O. The original writer's refusal
+text includes this bounded record; cleanup cannot overwrite it. The cache publishes its fence before recording its own failure. Stream and
+lifetime failures retain their original rejection and session cleanup order. An atomic first-publisher
+claim prevents diagnostic contention from blocking; a preempted publisher may
+temporarily leave the record absent. Concurrent failures do not establish global
+causal order.
+The writer also labels initial open, final open and recovered-host verification
+errors without changing the original error variant or verification call order.
+
+This is evidence for debugging refusal, not an alternate authority state. The
+500 ms maximum age, 100 ms refresh interval, Root lifetime checks, irreversible
+fence, no-reconnect rule and all original proof/revocation checks are unchanged.
+`Busy` and `Updating` neither supply authority nor claim a fatal first-failure
+record. A new sample still cannot revive an expired previous sample. Deterministic
+cache regressions retain the exact failing times and verify that later cleanup
+and attempted acceptance cannot overwrite the first refusal.

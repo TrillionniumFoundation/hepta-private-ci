@@ -199,9 +199,15 @@ async fn exact_original_consumers_activate_writer_and_drop_fences_retained_clone
     assert!(verifier.verify(&changed, &changed.agent_id).is_err());
     verifier.verify(&authority, &authority.agent_id).unwrap();
     let clock = session.clock();
+    let diagnostics = Arc::clone(&session.live.cache.diagnostics);
     drop(session);
-    assert!(verifier.verify(&authority, &authority.agent_id).is_err());
+    let error = verifier
+        .verify(&authority, &authority.agent_id)
+        .unwrap_err();
+    assert!(error.contains("first_failure=Some(ObservationFailure { stage: \"session_drop\""));
+    assert_eq!(diagnostics.first().unwrap().stage, "session_drop");
     assert!(clock.now_unix_ms().is_err());
+    assert_eq!(diagnostics.first().unwrap().stage, "session_drop");
     tokio::time::sleep(Duration::from_millis(20)).await;
     peer.join().unwrap();
 }

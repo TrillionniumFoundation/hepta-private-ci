@@ -276,3 +276,80 @@ fn poisoned_cache_is_not_classified_as_harmless_contention() {
     );
     assert!(cache.fenced.load(Ordering::Acquire));
 }
+
+#[test]
+fn stale_sample_preserves_exact_first_failure_through_cleanup_and_reaccept() {
+    let cache = cache();
+    cache.accept_at(value(0), START, START, START).unwrap();
+    assert_eq!(cache.current_at(START + MAX_AGE_NS).unwrap().1, 2_500);
+    let now = START + MAX_AGE_NS + 1;
+    assert_eq!(
+        cache.current_at(now).unwrap_err(),
+        ObservationReadError::Unavailable
+    );
+    let expected = ObservationFailure {
+        stage: "cache_current_age_or_rollback",
+        now_ns: Some(now),
+        previous_started_ns: Some(START),
+        previous_checked_ns: Some(START + MAX_AGE_NS),
+        ceiling_unix_ms: Some(3_000),
+        anchor_boottime_ns: Some(START),
+        anchor_unix_ms: Some(2_000),
+        observed_unix_ms: Some(2_000),
+        ..Default::default()
+    };
+    assert_eq!(cache.diagnostics.first(), Some(expected));
+    cache.fence_at(ObservationFailure {
+        stage: "session_drop",
+        ..Default::default()
+    });
+    assert!(cache.accept_at(value(501), now, now, now).is_err());
+    assert_eq!(cache.diagnostics.first(), Some(expected));
+}
+
+#[test]
+fn new_sample_cannot_hide_expired_previous_sample_and_reports_both_times() {
+    let cache = cache();
+    cache.accept_at(value(0), START, START, START).unwrap();
+    let now = START + 501_000_000;
+    assert!(cache.accept_at(value(501), now, now, now).is_err());
+    assert_eq!(
+        cache.diagnostics.first(),
+        Some(ObservationFailure {
+            stage: "cache_accept_previous",
+            now_ns: Some(now),
+            started_ns: Some(now),
+            ended_ns: Some(now),
+            previous_started_ns: Some(START),
+            previous_checked_ns: Some(START),
+            projected_unix_ms: Some(2_501),
+            ceiling_unix_ms: Some(3_501),
+            anchor_boottime_ns: Some(now),
+            anchor_unix_ms: Some(2_501),
+            observed_unix_ms: Some(2_501),
+            ..Default::default()
+        })
+    );
+    assert!(cache.current_at(now).is_err());
+}
+
+#[test]
+fn busy_and_updating_samples_never_claim_a_first_fatal_failure() {
+    let cache = cache();
+    cache.accept_at(value(0), START, START, START).unwrap();
+    let held = cache.retained.lock().unwrap();
+    assert_eq!(
+        cache.current_at(START).unwrap_err(),
+        ObservationReadError::Busy
+    );
+    assert_eq!(cache.diagnostics.first(), None);
+    drop(held);
+    cache.begin_update();
+    assert_eq!(
+        cache.current_at(START).unwrap_err(),
+        ObservationReadError::Updating
+    );
+    assert_eq!(cache.diagnostics.first(), None);
+    cache.end_update();
+    assert!(cache.current_at(START).is_ok());
+}

@@ -549,7 +549,9 @@ impl ProductionDurableWriter {
         validate_text(&lease_id, "production lease id", /*max_bytes*/ 512)?;
         verifier
             .verify(&authority, store.owner_agent_id())
-            .map_err(ProductionWriterError::AuthorityRejected)?;
+            .map_err(|reason| {
+                ProductionWriterError::AuthorityRejected(format!("writer_open_initial: {reason}"))
+            })?;
         authority.validate_for_agent(store.owner_agent_id())?;
         verify_durable_store(&store).await?;
         let fencing_token = authority.fencing_token_digest()?.as_str().to_string();
@@ -682,7 +684,15 @@ impl ProductionDurableWriter {
         let mut writer =
             Self::open(store, authority, verifier.as_ref(), lease_id, generation).await?;
         writer.live_verifier = Some(retained_verifier);
-        writer.verify_authority().await?;
+        writer
+            .verify_authority()
+            .await
+            .map_err(|error| match error {
+                ProductionWriterError::AuthorityRejected(reason) => {
+                    ProductionWriterError::AuthorityRejected(format!("writer_open_final: {reason}"))
+                }
+                other => other,
+            })?;
         Ok(writer)
     }
 

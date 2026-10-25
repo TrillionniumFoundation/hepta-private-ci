@@ -99,3 +99,20 @@ chain. Its output must bind both raw serial logs, pre-kill retained head, exact
 SIGKILL/reap result, original disk inode and hashes, and unchanged source/artifacts.
 Host parser examples are not guest evidence. This source addition does not by
 itself establish native or cross-boot qualification; actual runs remain required.
+
+
+## Refusal diagnosis
+
+A native failure before `HEPTA_NATIVE_DAEMON_READY` is not a daemon execution or
+terminal-state result. The original authority verifier preserves a bounded first
+failure record, described in `ROOT_COMPOSITION.md`, and writer-open errors label
+initial, final and recovered-host checks. Retain the complete error and its exact
+source/ELF along with the original serial log. A generic unavailable/fenced error
+without these details cannot establish that a particular clock, freshness bound,
+thread scheduler or transport caused the refusal. A later Root peer error alone
+cannot establish which side first became unavailable.
+
+The diagnostic stage changes no 500 ms bound, authority proof, policy, lease,
+cache recovery rule or effect retry rule. Source review and host regressions do
+not turn a failed native run into a success; the corrected evidence-bearing
+artifact must still complete the actual native chain before the VM-crash case.

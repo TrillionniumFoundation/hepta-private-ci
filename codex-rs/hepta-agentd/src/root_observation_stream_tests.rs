@@ -7,33 +7,12 @@ use std::os::fd::FromRawFd;
 fn fixture(timeout: Duration) -> (RootObservationStream, UnixStream) {
     let (client, server) = UnixStream::pair().unwrap();
     let pid = std::process::id();
-    let stat = bounded_text(&format!("/proc/{pid}/stat"), 8192).unwrap();
-    let peer = AgentdRootAuthorityPeer {
-        pid,
-        boot_id: bounded_text("/proc/sys/kernel/random/boot_id", 128)
-            .unwrap()
-            .trim()
-            .into(),
-        process_start_ticks: stat
-            .rsplit_once(") ")
-            .unwrap()
-            .1
-            .split_whitespace()
-            .nth(19)
-            .unwrap()
-            .parse()
-            .unwrap(),
-    };
-    // SAFETY: live test PID and zero flags create a new exclusively owned fd.
-    let fd = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, 0) };
-    assert!(fd >= 0);
-    let pidfd = unsafe { OwnedFd::from_raw_fd(fd as i32) };
     let uid = unsafe { libc::geteuid() };
     (
         RootObservationStream::from_stream_for_uid(
             client,
-            peer,
-            pidfd,
+            identity_for(pid),
+            pidfd_for(pid),
             timeout,
             Duration::from_secs(10),
             uid,
@@ -75,28 +54,49 @@ async fn original_fixed_stream_accepts_bounded_reads_without_reconnect() {
     });
     assert_eq!(client.read::<u64>(&request()).await.unwrap(), 42);
     assert_eq!(client.read::<u64>(&request()).await.unwrap(), 42);
+    assert_eq!(client.diagnostics().first(), None);
     peer.join().unwrap();
 }
 #[tokio::test]
 async fn cancelled_original_exchange_discards_late_reply_and_stays_closed() {
     let (client, mut server) = fixture(Duration::from_millis(400));
+    let (received, request_received) = tokio::sync::oneshot::channel();
+    let (release, released) = std::sync::mpsc::channel();
     let peer = std::thread::spawn(move || {
         read_request(&mut server);
-        std::thread::sleep(Duration::from_millis(100));
+        received.send(()).unwrap();
+        let _ = released.recv();
         let _ = server.write_all(&[0, 0, 0, 2, b'4', b'2']);
     });
-    assert!(
-        tokio::time::timeout(Duration::from_millis(20), client.read::<u64>(&request()))
-            .await
-            .is_err()
-    );
+    {
+        let request = request();
+        let read = client.read::<u64>(&request);
+        tokio::pin!(read);
+        tokio::select! {
+            result = &mut read => panic!("exchange finished before cancellation: {result:?}"),
+            received = request_received => received.unwrap(),
+        }
+    }
+    let first = client.diagnostics().first().unwrap();
+    assert_eq!(first.stage, "stream_read_cancelled");
+    assert!(first.duration_ns.is_some());
     assert!(client.read::<u64>(&request()).await.is_err());
+    assert_eq!(client.diagnostics().first(), Some(first));
+    release.send(()).unwrap();
     peer.join().unwrap();
 }
 #[tokio::test]
 async fn malformed_oversized_and_partial_frames_permanently_close_the_lane() {
-    for scenario in 0..3 {
-        let (client, mut server) = fixture(Duration::from_millis(40));
+    for (scenario, stage) in [
+        (0, "stream_response_malformed"),
+        (1, "stream_response_length"),
+        (2, "stream_read_timeout"),
+        (3, "stream_response_prefix_read"),
+        (4, "stream_response_body_read"),
+    ] {
+        let timeout = Duration::from_millis(if scenario == 2 { 40 } else { 500 });
+        let (client, mut server) = fixture(timeout);
+        let (release, released) = std::sync::mpsc::channel::<()>();
         let peer = std::thread::spawn(move || {
             read_request(&mut server);
             match scenario {
@@ -104,22 +104,41 @@ async fn malformed_oversized_and_partial_frames_permanently_close_the_lane() {
                 1 => server.write_all(&16_385u32.to_be_bytes()).unwrap(),
                 2 => {
                     server.write_all(&[0, 0]).unwrap();
-                    std::thread::sleep(Duration::from_millis(100));
+                    let _ = released.recv();
                 }
+                3 => {}
+                4 => server.write_all(&[0, 0, 0, 2, b'4']).unwrap(),
                 _ => unreachable!(),
             }
         });
         assert!(client.read::<u64>(&request()).await.is_err());
+        let first = client.diagnostics().first().unwrap();
+        assert_eq!(first.stage, stage);
+        assert_eq!(first.os_error, None);
+        assert_eq!(
+            first.io_error_kind,
+            if scenario >= 3 {
+                Some(std::io::ErrorKind::UnexpectedEof)
+            } else {
+                None
+            }
+        );
+        assert!(first.duration_ns.is_some());
+        if scenario == 2 {
+            assert!(u128::from(first.duration_ns.unwrap()) >= timeout.as_nanos());
+        }
         assert!(client.read::<u64>(&request()).await.is_err());
+        assert_eq!(client.diagnostics().first(), Some(first));
+        drop(release);
         peer.join().unwrap();
     }
 }
 
 fn identity_for(pid: u32) -> AgentdRootAuthorityPeer {
-    let stat = bounded_text(&format!("/proc/{pid}/stat"), 8192).unwrap();
+    let stat = std::fs::read_to_string(format!("/proc/{pid}/stat")).unwrap();
     AgentdRootAuthorityPeer {
         pid,
-        boot_id: bounded_text("/proc/sys/kernel/random/boot_id", 128)
+        boot_id: std::fs::read_to_string("/proc/sys/kernel/random/boot_id")
             .unwrap()
             .trim()
             .into(),
@@ -219,5 +238,12 @@ subprocess.Popen(['/bin/sleep','0.6'],pass_fds=(stream.fileno(),),stdin=subproce
     let started = Instant::now();
     assert!(client.read::<u64>(&request()).await.is_err());
     assert!(started.elapsed() < Duration::from_millis(300));
+    let first = client.diagnostics().first().unwrap();
+    assert_eq!(first.stage, "stream_read_lifetime_before");
+    assert_eq!(first.poll_result, Some(1));
+    assert_ne!(first.poll_revents.unwrap() & libc::POLLIN, 0);
+    assert_eq!(first.os_error, None);
+    assert_eq!(first.io_error_kind, None);
     assert!(client.read::<u64>(&request()).await.is_err());
+    assert_eq!(client.diagnostics().first(), Some(first));
 }

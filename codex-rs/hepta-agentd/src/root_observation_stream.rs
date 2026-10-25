@@ -10,6 +10,8 @@ use std::path::Path;
 use std::time::Duration;
 use std::time::Instant;
 
+use crate::root_observation_diagnostic::ObservationDiagnostics;
+use crate::root_observation_diagnostic::ObservationFailure;
 use crate::root_writer_proof::AgentdRootAuthorityError;
 use std::sync::Arc;
 use tokio::io::AsyncReadExt;
@@ -35,6 +37,7 @@ pub(crate) struct RootObservationStream {
     root: Arc<AsyncFd<OwnedFd>>,
     timeout: Duration,
     end: Instant,
+    diagnostics: Arc<ObservationDiagnostics>,
 }
 
 impl RootObservationStream {
@@ -70,7 +73,8 @@ impl RootObservationStream {
             return Err(AgentdRootAuthorityError::Refused);
         }
         let number = root_pidfd.as_raw_fd();
-        if std::fs::read_link(format!("/proc/self/fd/{number}")).map_err(unavailable)?
+        if std::fs::read_link(format!("/proc/self/fd/{number}"))
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?
             != Path::new("anon_inode:[pidfd]")
             || bounded_text(&format!("/proc/self/fdinfo/{number}"), 4096)?
                 .lines()
@@ -89,9 +93,14 @@ impl RootObservationStream {
             return Err(AgentdRootAuthorityError::Refused);
         }
         check_lifetime(&root_pidfd)?;
-        stream.set_nonblocking(true).map_err(unavailable)?;
-        let stream = tokio::net::UnixStream::from_std(stream).map_err(unavailable)?;
-        let actual = stream.peer_cred().map_err(unavailable)?;
+        stream
+            .set_nonblocking(true)
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        let stream = tokio::net::UnixStream::from_std(stream)
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        let actual = stream
+            .peer_cred()
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
         if actual.uid() != uid
             || actual.pid().and_then(|pid| u32::try_from(pid).ok()) != Some(peer.pid)
         {
@@ -108,6 +117,7 @@ impl RootObservationStream {
             root: Arc::new(root),
             timeout,
             end: Instant::now() + lifetime,
+            diagnostics: Arc::new(ObservationDiagnostics::default()),
         })
     }
 }
@@ -117,77 +127,161 @@ impl RootObservationStream {
         Arc::clone(&self.root)
     }
 
+    pub(super) fn diagnostics(&self) -> Arc<ObservationDiagnostics> {
+        Arc::clone(&self.diagnostics)
+    }
+
     /// Private operation selection: callers cannot forward renderer bytes or
     /// ask this observation lane to issue a grant or modify an owner.
     pub(crate) async fn read<R: serde::de::DeserializeOwned>(
         &self,
         request: &impl serde::Serialize,
     ) -> Result<R, AgentdRootAuthorityError> {
-        let request = serde_json::to_vec(request).map_err(|_| AgentdRootAuthorityError::Refused)?;
+        let mut attempt = ReadAttempt {
+            diagnostics: &self.diagnostics,
+            started: None,
+            complete: false,
+        };
+        let request = serde_json::to_vec(request).map_err(|_| {
+            attempt.record("stream_request_serialize");
+            AgentdRootAuthorityError::Refused
+        })?;
         if request.is_empty() || request.len() > 16_384 {
+            attempt.record("stream_request_length");
             return Err(AgentdRootAuthorityError::Refused);
         }
         let mut slot = self
             .stream
             .try_lock()
-            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
-        let mut stream = slot.take().ok_or(AgentdRootAuthorityError::Unavailable)?;
+            .map_err(|_| attempt.fail("stream_slot_busy"))?;
+        let mut stream = slot
+            .take()
+            .ok_or_else(|| attempt.fail("stream_slot_empty"))?;
         // Cancellation, malformed replies and every uncertain I/O error leave
         // the original slot empty. No reconnect or automatic retry exists.
-        check_lifetime(self.root.get_ref())?;
-        let deadline = (Instant::now() + self.timeout).min(self.end);
+        check_lifetime_diagnosed(
+            self.root.get_ref(),
+            &self.diagnostics,
+            "stream_read_lifetime_before",
+        )?;
+        let started = Instant::now();
+        attempt.started = Some(started);
+        let deadline = (started + self.timeout).min(self.end);
         if deadline <= Instant::now() {
-            return Err(AgentdRootAuthorityError::Unavailable);
+            return Err(attempt.fail("stream_deadline_elapsed_before"));
         }
         let response = tokio::select! {
             biased;
-            _ = self.root.readable() => return Err(AgentdRootAuthorityError::Unavailable),
+            ready = self.root.readable() => {
+                match ready {
+                    Ok(_) => return Err(attempt.fail("stream_root_readable")),
+                    Err(error) => return Err(attempt.io_failure("stream_root_readable_error", error)),
+                }
+            },
             _ = tokio::time::sleep_until(tokio::time::Instant::from_std(deadline)) => {
-                return Err(AgentdRootAuthorityError::Unavailable);
+                return Err(attempt.fail("stream_read_timeout"));
             }
-            response = framed_exchange(&mut stream, &request) => response?,
+            response = framed_exchange(&mut stream, &request, &attempt) => response?,
         };
-        check_lifetime(self.root.get_ref())?;
-        let parsed =
-            serde_json::from_slice(&response).map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        check_lifetime_diagnosed(
+            self.root.get_ref(),
+            &self.diagnostics,
+            "stream_read_lifetime_after",
+        )?;
+        let parsed = serde_json::from_slice(&response)
+            .map_err(|_| attempt.fail("stream_response_malformed"))?;
         if Instant::now() >= deadline {
-            return Err(AgentdRootAuthorityError::Unavailable);
+            return Err(attempt.fail("stream_response_late"));
         }
         *slot = Some(stream);
+        attempt.complete = true;
         Ok(parsed)
+    }
+}
+
+/// An externally cancelled exchange has no error return to annotate. Keep its
+/// first failure without restoring the consumed stream or changing cancellation.
+struct ReadAttempt<'a> {
+    diagnostics: &'a ObservationDiagnostics,
+    started: Option<Instant>,
+    complete: bool,
+}
+
+impl ReadAttempt<'_> {
+    fn failure(&self, stage: &'static str) -> ObservationFailure {
+        ObservationFailure {
+            stage,
+            duration_ns: self
+                .started
+                .and_then(|started| u64::try_from(started.elapsed().as_nanos()).ok()),
+            ..Default::default()
+        }
+    }
+
+    fn record(&self, stage: &'static str) {
+        self.diagnostics.record(self.failure(stage));
+    }
+
+    fn fail(&self, stage: &'static str) -> AgentdRootAuthorityError {
+        self.record(stage);
+        AgentdRootAuthorityError::Unavailable
+    }
+
+    fn io_failure(&self, stage: &'static str, error: std::io::Error) -> AgentdRootAuthorityError {
+        self.diagnostics.record(ObservationFailure {
+            os_error: error.raw_os_error(),
+            io_error_kind: Some(error.kind()),
+            ..self.failure(stage)
+        });
+        AgentdRootAuthorityError::Unavailable
+    }
+}
+
+impl Drop for ReadAttempt<'_> {
+    fn drop(&mut self) {
+        if !self.complete {
+            self.record("stream_read_cancelled");
+        }
     }
 }
 
 async fn framed_exchange(
     stream: &mut tokio::net::UnixStream,
     request: &[u8],
+    attempt: &ReadAttempt<'_>,
 ) -> Result<Vec<u8>, AgentdRootAuthorityError> {
     stream
         .write_all(&(request.len() as u32).to_be_bytes())
         .await
-        .map_err(unavailable)?;
-    stream.write_all(request).await.map_err(unavailable)?;
+        .map_err(|error| attempt.io_failure("stream_request_prefix_write", error))?;
+    stream
+        .write_all(request)
+        .await
+        .map_err(|error| attempt.io_failure("stream_request_body_write", error))?;
     let mut prefix = [0; 4];
-    stream.read_exact(&mut prefix).await.map_err(unavailable)?;
+    stream
+        .read_exact(&mut prefix)
+        .await
+        .map_err(|error| attempt.io_failure("stream_response_prefix_read", error))?;
     let length = u32::from_be_bytes(prefix) as usize;
     if length == 0 || length > 16_384 {
-        return Err(AgentdRootAuthorityError::Unavailable);
+        return Err(attempt.fail("stream_response_length"));
     }
     let mut response = vec![0; length];
     stream
         .read_exact(&mut response)
         .await
-        .map_err(unavailable)?;
+        .map_err(|error| attempt.io_failure("stream_response_body_read", error))?;
     Ok(response)
 }
 
 fn bounded_text(path: &str, limit: u64) -> Result<String, AgentdRootAuthorityError> {
     let mut text = String::new();
     File::open(path)
-        .map_err(unavailable)?
+        .map_err(|_| AgentdRootAuthorityError::Unavailable)?
         .take(limit + 1)
         .read_to_string(&mut text)
-        .map_err(unavailable)?;
+        .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
     if text.len() as u64 > limit {
         return Err(AgentdRootAuthorityError::Refused);
     }
@@ -195,28 +289,63 @@ fn bounded_text(path: &str, limit: u64) -> Result<String, AgentdRootAuthorityErr
 }
 
 pub(crate) fn check_lifetime(pidfd: &OwnedFd) -> Result<(), AgentdRootAuthorityError> {
+    sample_lifetime(pidfd).map_err(|_| AgentdRootAuthorityError::Unavailable)
+}
+
+pub(super) fn check_lifetime_diagnosed(
+    pidfd: &OwnedFd,
+    diagnostics: &ObservationDiagnostics,
+    stage: &'static str,
+) -> Result<(), AgentdRootAuthorityError> {
+    sample_lifetime(pidfd).map_err(|failure| {
+        diagnostics.record(ObservationFailure {
+            stage,
+            os_error: failure.os_error,
+            io_error_kind: failure.io_error_kind,
+            poll_result: Some(failure.result),
+            poll_revents: Some(failure.revents),
+            ..Default::default()
+        });
+        AgentdRootAuthorityError::Unavailable
+    })
+}
+
+struct LifetimeSample {
+    result: i32,
+    revents: i16,
+    os_error: Option<i32>,
+    io_error_kind: Option<std::io::ErrorKind>,
+}
+
+fn sample_lifetime(pidfd: &OwnedFd) -> Result<(), LifetimeSample> {
     let mut descriptor = libc::pollfd {
         fd: pidfd.as_raw_fd(),
         events: libc::POLLIN,
         revents: 0,
     };
-    for _ in 0..3 {
+    for attempt in 0..3 {
         // SAFETY: one live descriptor and a correctly sized writable pollfd.
         // The zero timeout only samples readiness and never waits in a poll.
         let result = unsafe { libc::poll(&mut descriptor, 1, 0) };
         if result == 0 && descriptor.revents == 0 {
             return Ok(());
         }
-        if result < 0 && std::io::Error::last_os_error().kind() == std::io::ErrorKind::Interrupted {
+        let error = (result < 0).then(std::io::Error::last_os_error);
+        if attempt < 2
+            && error
+                .as_ref()
+                .is_some_and(|error| error.kind() == std::io::ErrorKind::Interrupted)
+        {
             continue;
         }
-        return Err(AgentdRootAuthorityError::Unavailable);
+        return Err(LifetimeSample {
+            io_error_kind: error.as_ref().map(std::io::Error::kind),
+            os_error: error.and_then(|error| error.raw_os_error()),
+            result,
+            revents: descriptor.revents,
+        });
     }
-    Err(AgentdRootAuthorityError::Unavailable)
-}
-
-fn unavailable(_: std::io::Error) -> AgentdRootAuthorityError {
-    AgentdRootAuthorityError::Unavailable
+    unreachable!("the third failed poll returns its original sample")
 }
 
 #[cfg(test)]

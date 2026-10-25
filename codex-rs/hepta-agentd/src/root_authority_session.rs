@@ -13,8 +13,9 @@ use crate::root_observation_cache::MAX_AGE_NS;
 use crate::root_observation_cache::ObservationReadError;
 use crate::root_observation_cache::RootObservationCache;
 use crate::root_observation_cache::boottime_ns;
+use crate::root_observation_diagnostic::ObservationFailure;
 use crate::root_observation_stream::RootObservationStream;
-use crate::root_observation_stream::check_lifetime;
+use crate::root_observation_stream::check_lifetime_diagnosed;
 use crate::root_writer_proof::VerifiedRootWriterProof;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::AuthorityClock;
@@ -45,23 +46,54 @@ impl LiveRoot {
     fn current(
         &self,
     ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), ObservationReadError> {
-        if check_lifetime(self.root.get_ref()).is_err()
-            || boottime_ns().map_or(true, |now| now >= self.end_boottime_ns)
+        let mut failure = ObservationFailure {
+            stage: "live_root_lifetime_before",
+            ..Default::default()
+        };
+        if check_lifetime_diagnosed(self.root.get_ref(), &self.cache.diagnostics, failure.stage)
+            .is_err()
         {
-            self.cache.fence();
+            self.cache.fence_at(failure);
+            return Err(ObservationReadError::Unavailable);
+        }
+        failure.stage = "live_root_boottime_or_expiry";
+        let lifetime_now = boottime_ns();
+        failure.now_ns = lifetime_now.as_ref().ok().copied();
+        failure.ended_ns = Some(self.end_boottime_ns);
+        if lifetime_now.map_or(true, |now| now >= self.end_boottime_ns) {
+            self.cache.fence_at(failure);
             return Err(ObservationReadError::Unavailable);
         }
         let (observation, now) = self.cache.current()?;
-        if self.proof.matches_observation(&observation).is_err()
-            || now
-                >= self
-                    .proof
-                    .authority()
-                    .lease_expires_at_unix_seconds
-                    .saturating_mul(1000)
-            || check_lifetime(self.root.get_ref()).is_err()
+        failure.stage = "live_root_proof_mismatch";
+        failure.projected_unix_ms = Some(now);
+        failure.ceiling_unix_ms = Some(observation.clock.ceiling_unix_ms);
+        failure.lease_expires_unix_ms = Some(
+            self.proof
+                .authority()
+                .lease_expires_at_unix_seconds
+                .saturating_mul(1000),
+        );
+        if self.proof.matches_observation(&observation).is_err() {
+            self.cache.fence_at(failure);
+            return Err(ObservationReadError::Unavailable);
+        }
+        failure.stage = "live_root_lease_expiry";
+        if now
+            >= self
+                .proof
+                .authority()
+                .lease_expires_at_unix_seconds
+                .saturating_mul(1000)
         {
-            self.cache.fence();
+            self.cache.fence_at(failure);
+            return Err(ObservationReadError::Unavailable);
+        }
+        failure.stage = "live_root_lifetime_after";
+        if check_lifetime_diagnosed(self.root.get_ref(), &self.cache.diagnostics, failure.stage)
+            .is_err()
+        {
+            self.cache.fence_at(failure);
             return Err(ObservationReadError::Unavailable);
         }
         Ok((observation, now))
@@ -108,7 +140,10 @@ impl ProductionAuthorityVerifier for LiveRoot {
                 "root writer revocation synchronization is incomplete".into()
             }
             ObservationReadError::Unavailable => {
-                "root writer observation is unavailable or fenced".into()
+                format!(
+                    "root writer observation is unavailable or fenced; first_failure={:?}",
+                    self.cache.diagnostics.first()
+                )
             }
         })
     }
@@ -155,7 +190,7 @@ impl AgentdRootAuthoritySession {
         let proof = VerifiedRootWriterProof::verify(response.proof, &trust)?;
         let live = Arc::new(LiveRoot {
             proof,
-            cache: RootObservationCache::new(boot_id),
+            cache: RootObservationCache::with_diagnostics(boot_id, stream.diagnostics()),
             root: stream.root_lifetime(),
             end_boottime_ns: created
                 .checked_add(
@@ -209,7 +244,11 @@ impl AgentdRootAuthoritySession {
         let _serial = tokio::time::timeout(Duration::from_millis(500), self.live.serial.lock())
             .await
             .map_err(|_| {
-                self.live.cache.fence();
+                self.live.cache.fence_at(ObservationFailure {
+                    stage: "activation_lock_timeout",
+                    started_ns: Some(started),
+                    ..Default::default()
+                });
                 AgentdRootAuthorityError::Unavailable
             })?;
         if self.live.active.load(Ordering::Acquire) {
@@ -221,7 +260,15 @@ impl AgentdRootAuthoritySession {
         };
         let (observation, _) = self.live.current()?;
         self.live.cache.begin_update();
-        synchronize_consumers(consumers.clone(), observation.revocations.clone(), started).await?;
+        synchronize_consumers(consumers.clone(), observation.revocations.clone(), started)
+            .await
+            .inspect_err(|_| {
+                self.live.cache.diagnostics.record(ObservationFailure {
+                    stage: "activation_consumer_sync",
+                    started_ns: Some(started),
+                    ..Default::default()
+                });
+            })?;
         *self
             .live
             .consumers
@@ -236,14 +283,20 @@ impl AgentdRootAuthoritySession {
 }
 impl Drop for AgentdRootAuthoritySession {
     fn drop(&mut self) {
-        self.live.cache.fence();
+        self.live.cache.fence_at(ObservationFailure {
+            stage: "session_drop",
+            ..Default::default()
+        });
         self.worker.abort();
     }
 }
 struct FenceOnDrop(Arc<LiveRoot>);
 impl Drop for FenceOnDrop {
     fn drop(&mut self) {
-        self.0.cache.fence();
+        self.0.cache.fence_at(ObservationFailure {
+            stage: "refresh_worker_exit",
+            ..Default::default()
+        });
     }
 }
 struct ActivationAttempt<'a> {
@@ -253,7 +306,10 @@ struct ActivationAttempt<'a> {
 impl Drop for ActivationAttempt<'_> {
     fn drop(&mut self) {
         if !self.complete {
-            self.live.cache.fence();
+            self.live.cache.fence_at(ObservationFailure {
+                stage: "activation_incomplete",
+                ..Default::default()
+            });
         }
     }
 }
@@ -263,15 +319,42 @@ async fn refresh(
     stream: &RootObservationStream,
 ) -> Result<(), AgentdRootAuthorityError> {
     let _serial = live.serial.lock().await;
-    let started = boottime_ns()?;
+    let started = boottime_ns().inspect_err(|_| {
+        live.cache.diagnostics.record(ObservationFailure {
+            stage: "refresh_started_clock",
+            ..Default::default()
+        });
+    })?;
     let observation: HostAuthorityObservationResponseV2 = stream
         .read(&HostAuthorityObservationRequestV2 {
             schema_version: 2,
             operation: HOST_AUTHORITY_OBSERVATION_V2.into(),
         })
-        .await?;
-    let ended = boottime_ns()?;
-    live.proof.matches_observation(&observation)?;
+        .await
+        .inspect_err(|_| {
+            live.cache.diagnostics.record(ObservationFailure {
+                stage: "refresh_stream_read",
+                started_ns: Some(started),
+                ..Default::default()
+            });
+        })?;
+    let ended = boottime_ns().inspect_err(|_| {
+        live.cache.diagnostics.record(ObservationFailure {
+            stage: "refresh_ended_clock",
+            started_ns: Some(started),
+            ..Default::default()
+        });
+    })?;
+    live.proof
+        .matches_observation(&observation)
+        .inspect_err(|_| {
+            live.cache.diagnostics.record(ObservationFailure {
+                stage: "refresh_proof_mismatch",
+                started_ns: Some(started),
+                ended_ns: Some(ended),
+                ..Default::default()
+            });
+        })?;
     let head = observation.revocations.clone();
     let changed = !live.cache.revocations_match(&head);
     if changed {
@@ -286,7 +369,16 @@ async fn refresh(
             .lock()
             .map_err(|_| AgentdRootAuthorityError::Unavailable)?
             .clone();
-        synchronize_consumers(consumers, head, started).await?;
+        synchronize_consumers(consumers, head, started)
+            .await
+            .inspect_err(|_| {
+                live.cache.diagnostics.record(ObservationFailure {
+                    stage: "refresh_consumer_sync",
+                    started_ns: Some(started),
+                    ended_ns: Some(ended),
+                    ..Default::default()
+                });
+            })?;
         live.cache.end_update();
     }
     live.validate_refresh()
