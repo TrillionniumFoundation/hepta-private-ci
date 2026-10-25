@@ -1,0 +1,315 @@
+{
+  "actual_result": "current checkout and dependency cache cannot run the full target compilation; no conclusion about target compiler success/failure",
+  "async_registry_packages_present": [],
+  "audited_at_utc": "2026-10-25T09:14:22.756915+00:00",
+  "auth_boundary_is_separate": "research product admission actually refused at Dataset OwnerEvidence(Unavailable); this build audit is not that runtime authority error",
+  "available_filesystem_bytes": 1451151360,
+  "cached_registry_packages": [
+    "base64ct-1.8.3",
+    "bitflags-2.13.1",
+    "bitflags-2.13.2",
+    "block-buffer-0.10.4",
+    "cfg-if-1.0.4",
+    "const-oid-0.9.6",
+    "cpufeatures-0.2.17",
+    "crypto-common-0.1.7",
+    "curve25519-dalek-4.1.3",
+    "curve25519-dalek-derive-0.1.1",
+    "der-0.7.10",
+    "diff-0.1.13",
+    "digest-0.10.7",
+    "ed25519-2.2.3",
+    "ed25519-dalek-2.2.0",
+    "errno-0.3.14",
+    "fastrand-2.3.0",
+    "generic-array-0.14.7",
+    "getrandom-0.2.17",
+    "getrandom-0.4.2",
+    "itoa-1.0.17",
+    "libc-0.2.186",
+    "linux-raw-sys-0.12.1",
+    "memchr-2.8.1",
+    "once_cell-1.21.4",
+    "pkcs8-0.10.2",
+    "pretty_assertions-1.4.1",
+    "proc-macro2-1.0.106",
+    "quote-1.0.45",
+    "rand_core-0.6.4",
+    "rustc_version-0.4.1",
+    "rustix-1.1.4",
+    "semver-1.0.27",
+    "semver-1.0.28",
+    "serde-1.0.228",
+    "serde_core-1.0.228",
+    "serde_derive-1.0.228",
+    "serde_json-1.0.149",
+    "sha2-0.10.9",
+    "signature-2.2.0",
+    "spki-0.7.3",
+    "subtle-2.6.1",
+    "syn-2.0.117",
+    "tempfile-3.26.0",
+    "tempfile-3.27.0",
+    "typenum-1.20.0",
+    "unicode-ident-1.0.22",
+    "version_check-0.9.5",
+    "yansi-1.0.1",
+    "zeroize-1.8.2",
+    "zmij-1.0.19"
+  ],
+  "ci_run": false,
+  "direct_path_dependency_count": 41,
+  "full_agentd_compile_started": false,
+  "full_target_workspace_materialized": false,
+  "large_dependency_download_started": false,
+  "metadata_actual_first_error": "error: failed to load manifest for workspace member `/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/aws-auth`\nreferenced by workspace at `/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/Cargo.toml`\n\nCaused by:\n  failed to read `/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/aws-auth/Cargo.toml`\n\nCaused by:\n  No such file or directory (os error 2)\n",
+  "metadata_command": [
+    "cargo",
+    "metadata",
+    "--offline",
+    "--no-deps",
+    "--format-version=1",
+    "--manifest-path",
+    "codex-rs/Cargo.toml"
+  ],
+  "metadata_error_sha256": "f9eb40fa587ccdd044204ed1369678c2c6b4b882fc3c8b1678f9d43cee0c08f9",
+  "metadata_exit_code": 101,
+  "missing_agentd_entrypoints": [
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-agentd/src/main.rs",
+    "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs"
+  ],
+  "missing_direct_path_dependency_manifests": [
+    {
+      "manifest_exists": false,
+      "name": "codex-app-server",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/app-server"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-app-server-client",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/app-server-client"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-app-server-protocol",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/app-server-protocol"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-arg0",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/arg0"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-config",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/config"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-features",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/features"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-hepta-agent-protocol",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-agent-protocol"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-hepta-automation",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-automation"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-hepta-bellman-operator",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-bellman-operator"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-hepta-authbus",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-authbus"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-hepta-evidence",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-evidence"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-hepta-codex-adapter",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-codex-adapter"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-hepta-cognitive-store",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-cognitive-store"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-hepta-control-plane",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-control-plane"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-hepta-fleet",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-fleet"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-hepta-memory",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-memory"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-hepta-memory-extension",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/ext/hepta-memory"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-hepta-paths",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-paths"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-model-provider",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/model-provider"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-protocol",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/protocol"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-uds",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/uds"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-utils-absolute-path",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/utils/absolute-path"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-utils-cli",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/utils/cli"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-utils-home-dir",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/utils/home-dir"
+    },
+    {
+      "manifest_exists": false,
+      "name": "codex-state",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/state"
+    }
+  ],
+  "new_scientific_source_access": false,
+  "ordinary_git_target_object_probe": "could not read target object; lazy-fetch attempt failed connecting to configured browser-proxy port8889; selected files were read via GitHub connector",
+  "present_direct_path_dependency_manifests": [
+    {
+      "manifest_exists": true,
+      "name": "codex-hepta-learning-artifacts",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-learning-artifacts"
+    },
+    {
+      "manifest_exists": true,
+      "name": "codex-hepta-intelligence",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-intelligence"
+    },
+    {
+      "manifest_exists": true,
+      "name": "codex-hepta-intuition",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-intuition"
+    },
+    {
+      "manifest_exists": true,
+      "name": "codex-hepta-learning-ledger",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-learning-ledger"
+    },
+    {
+      "manifest_exists": true,
+      "name": "codex-hepta-contracts",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-contracts"
+    },
+    {
+      "manifest_exists": true,
+      "name": "codex-hepta-prompt-registry",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-prompt-registry"
+    },
+    {
+      "manifest_exists": true,
+      "name": "codex-hepta-prompt-optimizer",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-prompt-optimizer"
+    },
+    {
+      "manifest_exists": true,
+      "name": "codex-hepta-cognitive-read",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-cognitive-read"
+    },
+    {
+      "manifest_exists": true,
+      "name": "codex-hepta-types",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-types"
+    },
+    {
+      "manifest_exists": true,
+      "name": "codex-hepta-intelligence-eval",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-intelligence-eval"
+    },
+    {
+      "manifest_exists": true,
+      "name": "codex-hepta-ndu",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-ndu"
+    },
+    {
+      "manifest_exists": true,
+      "name": "codex-hepta-neuron",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-neuron"
+    },
+    {
+      "manifest_exists": true,
+      "name": "codex-hepta-objective",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-objective"
+    },
+    {
+      "manifest_exists": true,
+      "name": "codex-hepta-context-compiler",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-context-compiler"
+    },
+    {
+      "manifest_exists": true,
+      "name": "codex-hepta-memory-retrieval",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-memory-retrieval"
+    },
+    {
+      "manifest_exists": true,
+      "name": "codex-hepta-plasticity",
+      "path": "/workspace/scratch/2b3c256bef7d/hepta-ndu-recovery/codex-rs/hepta-plasticity"
+    }
+  ],
+  "registry_source_package_count": 51,
+  "release_rlib_count": 55,
+  "remote_confirmed_git_blobs": {
+    "codex-rs/Cargo.toml": "d2703b590935ab17316e6c258657c0ce5ab7412a",
+    "codex-rs/hepta-agentd/Cargo.toml": "5d13cd8f355bab3ecb95f8c068517de200dd143f",
+    "codex-rs/hepta-agentd/src/config.rs": "afb9cac35db1c57d58edb3b31c6beee31bab2560",
+    "codex-rs/hepta-agentd/src/error.rs": "2b8c8a85bcae1d91bc3f10a6bf8b468dbf55abdf",
+    "codex-rs/hepta-agentd/src/lib.rs": "c075e561eaa96820706ad98d20972eb5fd924b06",
+    "codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs": "cb2c3ae9bbb75c067c7745e82c33cded0e241baa",
+    "codex-rs/hepta-agentd/src/plasticity_host.rs": "085d85fde32b89d59eb3169d8d8f6e7f005c2ac5",
+    "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs": "c3db02b42db094556889774b40306198292dc27e",
+    "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs": "f44c8858a55886c7997562a02ba87b9a7d359bf2",
+    "codex-rs/hepta-agentd/src/plasticity_runtime.rs": "d1c57448d9c344171ae85d0abe888fe990e7a021",
+    "codex-rs/hepta-agentd/src/topology_plasticity_host.rs": "a21aeb28e95cfaf19c1440ee4f32584f07c6ce36"
+  },
+  "runtime_or_error_stubs_used": false,
+  "schema": "hepta.production-handoff.integration-feasibility.v1",
+  "small_checked_units": [
+    "compiled original journal helper/probe with21checks on real13segmentcopies",
+    "exact patched serde declarations and actual helper JSON source selection with15checks"
+  ],
+  "target_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+}

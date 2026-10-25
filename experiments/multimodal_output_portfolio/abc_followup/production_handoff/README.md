@@ -10,6 +10,8 @@
 
 原 descriptor 的 `neuron.journal_path` 与 `neuron.max_records` 保持兼容。新的 chain 表示使用 `neuron.segment_chain`，其每项必须同时包含绝对 `journal_path` 和该段 `max_records`；顺序是 root、successor 1、successor 2，直到承载独立最终 acknowledged anchor 的段。chain 形式必须省略旧的两个字段，旧形式必须省略 `segment_chain`。同时给出两种形式，即使 chain 为空，也会拒绝。
 
+这里的“省略”也包括 Serde `Option` 的等价 JSON `null`。两个非空表示仍拒绝，空数组 `[]` 属于真实存在的 chain，不能与旧字段并用；详见新增的精确声明解析验证。
+
 本轮对应顺序是 `neuron-0000.journal` 至 `neuron-0012.journal`，每段容量 128，最终独立 anchor sequence 为 1,600。容量是每段上限，不能把 1,600 当作单段容量来伪装恢复。
 
 恢复前检查每个路径存在、非空、普通文件且非 symlink；拒绝重复规范路径和 Unix 上的 inode alias。补丁也把所有 chain 路径纳入原 loader 的全局检查，防止它们与 ledger、proposal registry 或独立 anchor store 重用同一文件。它不创建缺失段，不把空文件初始化成新历史。
@@ -28,6 +30,8 @@
 - 原 13 个文件逐一比对 SHA，未改变；没有新增 native tick、独立样本、角色签名、信任激活或模型更新。
 
 本验证使用已冻结实验的状态作为恢复输入。它证明新增产品 helper 能通过原接口恢复真实链，不能替代完整较新 Agentd 的集成测试或正式部署接受。
+
+另用 exact-base 补丁中的三个真实 serde declaration 与原 helper，实际通过 **15 项 JSON 解析／表示选择检查**，覆盖旧单文件、新 chain、null、冲突、缺字段、unknown 字段及错误类型。这项检查没有替换原 loader/runtime/error，也没有调用完整 loader。[DESCRIPTOR_SERDE_VALIDATION.json](DESCRIPTOR_SERDE_VALIDATION.json) 和 [实际集成可行性审计](INTEGRATION_FEASIBILITY.md) 分别给出可复核结果与当前完整 workspace/依赖缺口。
 
 ## 复现与目标源码应用
 
