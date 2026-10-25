@@ -151,6 +151,28 @@ fn observation(label: &str) -> RetrievalAssignmentObservationV1 {
     value
 }
 
+/// The Ledger witness and event frontier must fsync an actual containing
+/// directory before recording success. Windows requires a directory-specific
+/// handle instead of ordinary File::open; the production Ledger invariants
+/// remain in force and an I/O error still fails the test.
+fn durable_ledger_directory(root: &std::path::Path) -> File {
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+            .open(root)
+            .expect("real learning Ledger directory handle")
+    }
+    #[cfg(not(windows))]
+    {
+        File::open(root).expect("real learning Ledger directory handle")
+    }
+}
+
 fn sink() -> (tempfile::TempDir, CognitiveRetrievalLearningSink) {
     let temp = tempfile::tempdir().expect("temp");
     let binding = digest("agentd-retrieval-learning");
@@ -170,8 +192,8 @@ fn sink() -> (tempfile::TempDir, CognitiveRetrievalLearningSink) {
         .expect("witness file");
     let ledger = DurableLedger::create(ledger_file, binding, 128).expect("ledger");
     let witness = LedgerWitnessStore::create(witness_file, binding).expect("witness");
-    let ledger_directory = File::open(temp.path()).expect("ledger directory");
-    let witness_directory = File::open(temp.path()).expect("witness directory");
+    let ledger_directory = durable_ledger_directory(temp.path());
+    let witness_directory = durable_ledger_directory(temp.path());
     let writer = LedgerWriter::from_durable(
         ledger,
         witness,
