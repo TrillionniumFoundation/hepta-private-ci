@@ -1404,15 +1404,21 @@ async fn independent_decision_requires_the_complete_intact_order_independent_set
 
     // Simulate loss of a previously bound input after admission. This must
     // invalidate the decision even though the remaining input is well formed.
+    let mut transaction = store
+        .pool
+        .begin_with("BEGIN IMMEDIATE")
+        .await
+        .expect("begin test input-loss transaction");
     sqlx::query("DROP TRIGGER qualification_evidence_no_delete")
-        .execute(&store.pool)
+        .execute(&mut *transaction)
         .await
         .expect("allow test input loss");
-    sqlx::query("DELETE FROM qualification_evidence WHERE evidence_id = ?")
+    let removed = sqlx::query("DELETE FROM qualification_evidence WHERE evidence_id = ?")
         .bind(sources[0].evidence_id.as_str())
-        .execute(&store.pool)
+        .execute(&mut *transaction)
         .await
         .expect("remove one bound input");
+    assert_eq!(removed.rows_affected(), 1);
     sqlx::query(
         "CREATE TRIGGER qualification_evidence_no_delete
          BEFORE DELETE ON qualification_evidence
@@ -1420,9 +1426,10 @@ async fn independent_decision_requires_the_complete_intact_order_independent_set
              SELECT RAISE(ABORT, 'qualification evidence is immutable');
          END",
     )
-    .execute(&store.pool)
+    .execute(&mut *transaction)
     .await
     .expect("restore immutable-row trigger");
+    transaction.commit().await.expect("commit test input loss");
     assert!(matches!(
         store
             .qualification()
@@ -1431,6 +1438,18 @@ async fn independent_decision_requires_the_complete_intact_order_independent_set
             .expect("verify decision after input loss"),
         EvidenceDispositionV1::Conflicting { .. }
     ));
+    let protected_delete = sqlx::query("DELETE FROM qualification_evidence WHERE evidence_id = ?")
+        .bind(sources[1].evidence_id.as_str())
+        .execute(&store.pool)
+        .await
+        .expect_err("restored trigger must reject removal of the remaining input");
+    assert_eq!(
+        protected_delete
+            .as_database_error()
+            .expect("immutable-row trigger returns a database error")
+            .message(),
+        "qualification evidence is immutable"
+    );
 }
 
 #[tokio::test]
